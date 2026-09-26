@@ -42,7 +42,6 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 「広く利用可能」と表示される機能は、すべての主要なブラウザで対応してから長い時間がたっているので、本書の対象でもそのまま使えます。「新しく利用可能」と「一部のブラウザのみ」の機能は、Safariの欄のバージョンが18.6以下かどうかを確かめます。上のコンテナスタイルクエリは、2026年5月に「新しく利用可能」になったばかりですが、Safariは18で対応しているので、本書の対象ではそのまま使えます。
 
 ただし、表示されるのは「途切れずに対応している最初のバージョン」です。たとえば `@scope` はSafari 17.4で対応しましたが、Safari 26.0〜26.3に `<input>` などで効かない不具合があったため、Safari 26.4と表示されます。数字が対象の下限より新しいときは、MDNで経緯を確かめてください。
-{/* 要確認: @scope の経緯は MDN の browser-compat-data（css.at-rules.scope）にもとづく */}
 
 ## プログレッシブ・エンハンスメントとして使いやすい機能
 
@@ -170,8 +169,7 @@ JavaScriptで表示を切り替える前提のスタイルは、`@media (scripti
 }
 ```
 
-このコードは、Chromeでは要素が中央に寄りますが、SafariとFirefoxでは `justify-self` が無視され、左に寄ったままです。ブロックの中央寄せには、どのブラウザでも同じ結果になる `margin-inline: auto` を使います。レスポンシブ対応で `display` をgridからブロックに戻す場合も、`justify-items` や `justify-self` が残っていないかを確かめます。
-{/* 要確認: Chrome 153 で中央に寄ることは確認済み。Safari と Firefox で左に寄ることは未確認（web-features のデータからの推論） */}
+このコードは、Chromeでは要素が中央に寄りますが、SafariとFirefoxでは `justify-self` が無視され、左に寄ったままです。2026年9月時点の対応データでは、ブロックレイアウトの `justify-self` に対応しているのは、Chrome 130以降とEdgeだけです。ブロックの中央寄せには、どのブラウザでも同じ結果になる `margin-inline: auto` を使います。レスポンシブ対応で `display` をgridからブロックに戻す場合も、`justify-items` や `justify-self` が残っていないかを確かめます。
 
 ```css title="🙆‍♂ Recommended: ブロックの中央寄せには margin-inline: auto を使う"
 ._more-link {

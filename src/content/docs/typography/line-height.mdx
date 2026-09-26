@@ -103,7 +103,6 @@ CSSの行は、`line-height` の高さを持つ箱として並びます。行の
 <Baseline id="text-box" compatKey="css.properties.text-box-trim" name="text-box-trim" />
 
 web-featuresのデータでは、`text-box-trim` は2026年8月のFirefox 154で主要なブラウザのすべてが対応し、「新しく利用可能」になりました（2026年9月確認）。ただし、`cap` や `alphabetic` の値については、Firefoxの対応が記録されていません。対応していない環境ではハーフレディングが残るだけなので、表示が大きく変わったり崩れたりしない範囲で、プログレッシブ・エンハンスメントとして使います。
-{/* 要確認: Firefox 154 の対応は web-features 3.40.0 と MDN の Baseline 表示にもとづく。text-edge の値（cap、alphabetic）の Firefox の対応は未確認 */}
 
 Adobe製のツールで作ったデザインカンプを再現する案件では、全称セレクタですべての要素に `text-box-trim` を指定するのも選択肢です。すべての余白がハーフレディングを含まない前提になるので、カンプの数値をそのまま `margin` や `gap` に書けます。
 

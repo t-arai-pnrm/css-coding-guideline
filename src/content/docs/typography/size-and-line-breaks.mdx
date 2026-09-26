@@ -131,11 +131,9 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 
 ## 本文は通常の折り返しのままにする
 
-本文の段落には、`word-break: auto-phrase` と `text-wrap: balance` のどちらも指定しません。文節で折り返すと、長い文章では行末に不自然なすき間が生まれ、かえって読みにくくなります。`text-wrap: balance` は処理の負荷が大きく、Chromeでは6行以下のブロックにしか効きません。
-{/* 要確認: 6行の上限は著者の2024年の記事の時点の情報。現在の値は未確認 */}
+本文の段落には、`word-break: auto-phrase` と `text-wrap: balance` のどちらも指定しません。文節で折り返すと、長い文章では行末に不自然なすき間が生まれ、かえって読みにくくなります。`text-wrap: balance` は処理の負荷が大きく、Chromeでは6行以下のブロックにしか効きません（2024年時点の情報）。
 
-英文の段落には、kiso.cssが `text-wrap: pretty` を指定しています。最後の行に1単語だけが残る状態を避ける指定です。一方、和文には `text-wrap: pretty` を指定しません。Safariの不具合で、和文の `pretty` が `balance` と似た折り返しになるからです。
-{/* 要確認: Safari の不具合は著者の gist（2026年8月更新）にもとづく。修正の状況は未確認 */}
+英文の段落には、kiso.cssが `text-wrap: pretty` を指定しています。最後の行に1単語だけが残る状態を避ける指定です。一方、和文には `text-wrap: pretty` を指定しません。Safariの不具合で、和文の `pretty` が `balance` と似た折り返しになるからです（2026年8月時点）。
 
 はみ出しを防ぐための指定にも注意します。URLや長い英単語は、途中に折り返せる位置がないので、狭い場所では要素の外へはみ出します。これを防ぐのは、kiso.cssが `:root` に指定している `overflow-wrap: anywhere` です。`word-break` は初期値のままにします。
 

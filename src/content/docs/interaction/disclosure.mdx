@@ -104,8 +104,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 この例では、ダイアログと背景を不透明度だけで変化させています。画面の大部分を覆うUIが一瞬で現れると、何が起きたのか分かりにくくなります。位置と大きさを変えないフェードなので、動きを減らす設定でも残しています。
 
-`position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合を避けるために明示しています。モーダルを開いている間の背面の固定は「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
-{/* 要確認: Safari の不具合は2025年5月の記事の記述。2026年9月の状況は未確認 */}
+`position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合（2025年5月時点で確認されていたもの）を避けるために明示しています。モーダルを開いている間の背面の固定は「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 
 ## 小さな表示は `popover` 属性で作る
 
@@ -120,7 +119,6 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 ## アコーディオンは `<details>` と `name` 属性で作る
 
 その場で開閉する項目は、`<details>` と `<summary>` で作ります。JavaScriptなしでキーボードでも開閉でき、対応したブラウザでは、ページ内検索で中身が見つかったときに自動で開きます。同じ `name` 属性を付けた `<details>` は、1つを開くとほかが閉じる、排他的なアコーディオンになります。
-{/* 要確認: 出典なし（details がページ内検索で自動で開くブラウザの範囲は未確認） */}
 
 ```html title="name 属性で1つだけ開くアコーディオン"
 <section class="scoped faq-list" aria-labelledby="faq-list-heading">
