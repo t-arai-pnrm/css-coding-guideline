@@ -1,0 +1,177 @@
+---
+title: "6-3 デザイントークン"
+description: "サイト全体で意味を持つ値は、--<分類>--<名前> の形のカスタムプロパティにして :root に置きます。余白は単位なしの数値で持ち、1回しか使わない値や特定のコンポーネント専用の値はトークンにしません。"
+sidebar:
+  order: 3
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+色、余白、イージング、z-indexのように、サイト全体で意味を持つ値は「デザイントークン」として名前を付け、`:root` のカスタムプロパティにまとめます。名前は `--color--neutral--500` や `--spacing--md` のように `--<分類>--<名前>` の形にし、サイズの段階は `xxs` や `xxl` のように数字を使わずに書きます。
+
+余白のトークンは単位なしのピクセル相当の数値で持ち、使う場所で `px` や `rem` に変換します。反対に、1回しか使わない値や、特定のコンポーネント専用の値はトークンにしません。トークンは、CSSから参照できるデザインの取り決めです。何でもトークンにすると、取り決めとしての意味が薄れます。
+
+## 値に名前がないと起きること
+
+トークンを用意せずに、値を直接書いたCSSを考えます。
+
+```css title="🙅‍♂ Not Recommended: デザインの値を直接書く"
+/* 🙅‍♂ Not Recommended */
+.site-header {
+  z-index: 9999;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.site-footer {
+  background-color: #f4f4f4;
+}
+```
+
+このコードからは、値の意味が読み取れません。`9999` はほかの要素とどういう関係の値なのか、`cubic-bezier()` はどのくらいの強さの動きなのかが、数字を見ても分かりません。ヘッダーとフッターの背景色がわずかに違うのが、意図したものなのか、書き写したときの誤りなのかも判断できません。
+
+値を変えるときにも困ります。「グレーの背景を少し明るくしたい」という依頼が来たら、ファイルをまたいで同じような値を探し、1つずつ直すことになります。z-indexでは、ほかの要素より手前へ出そうとして、`9999` や `10000` のような値の積み増しが始まりがちです。
+
+デザイントークンは、こうした値に名前を付けて1か所にまとめたものです。トークンの一覧は、CSSから参照できるデザインガイドとして働きます。コードを書く人は、一覧の値から選ぶだけで、デザインの取り決めどおりのスタイルが書けます。
+
+## `--<分類>--<名前>` で名付ける
+
+トークンの名前は、先頭に分類を置いた `--<分類>--<名前>` の形にします。分類には、`color`（色）、`spacing`（余白）、`rounded`（角丸）、`shadow`（影）などを使います。行の高さの `leading`、文字の太さの `font-weight`、イージングの `ease`、再生時間の `duration`、重なり順の `z` も分類の例です。
+
+```css title="🙆‍♂ Recommended: 分類を先頭に置いて名前を付ける"
+:root {
+  --color--neutral--100: oklch(97% 0 0deg);
+  --color--neutral--900: oklch(20.5% 0 0deg);
+  --color--accent--600: oklch(52% 0.16 250deg);
+  --spacing--xxs: 8;
+  --spacing--sm: 16;
+  --spacing--md: 24;
+  --spacing--xxl: 64;
+  --rounded--md: 8px;
+  --rounded--full: calc(infinity * 1px);
+  --font-weight--semibold: 600;
+  --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --duration--base: 240ms;
+  --z--header: 200;
+}
+```
+
+区切りに `--` を使うのは、`font-weight` や `quint-out` のように、分類や名前そのものにハイフンが入るからです。`--` で区切っておけば、どこまでが分類でどこからが名前なのかを見分けられます。分類を先頭に置くと、エディタの入力補完でも同じ分類のトークンがまとまって表示されます。
+{/* 要確認: 出典なし（区切りを -- にする理由と、補完についての記述は筆者の推論） */}
+
+サイズの段階は、`xxxs`、`xxs`、`xs`、`sm`、`md`、`lg`、`xl`、`xxl`、`xxxl` のように書き、`2xs` や `2xl` のような数字を使いません。WordPressのブロックテーマでは、theme.jsonに書いたトークンの名前がCSSのカスタムプロパティの名前に変換されます。このとき、`2xs` は `2-xs` のように数字と文字の間で分割されてしまい、CSSとtheme.jsonで名前がずれます。どの環境でも同じ名前で書けるように、数字を使わない形にそろえます。theme.jsonの扱いは、「[12-1 CMSと共存する](/operations/cms/)」で説明します。
+
+色のように、デザインの中での役割を表すトークンは、`--<役割>--<バリエーション>` の形にします。`--background--base` や `--foreground--muted` のように、先頭に `background`（背景）や `foreground`（文字やアイコン）といった役割を置きます。コンポーネントの公開プロパティも `--card--radius` のように `--` で区切りますが、こちらは先頭がコンポーネントの名前です。公開プロパティの命名は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
+
+## 余白は単位なしの数値で持つ
+
+余白のトークンは、単位を付けずに、ピクセル相当の数値で定義します。使う場所で `calc(var(--spacing--md) * 1px)` や `calc(var(--spacing--md) / 16 * 1rem)` のように、そのときに適した単位へ変換します。
+
+```css title="🙆‍♂ Recommended: 余白のトークンを、使う場所で単位に変換する"
+@scope (.scoped.media-object) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: calc(var(--spacing--sm) / 16 * 1rem);
+    padding: calc(var(--spacing--md) * 1px);
+  }
+}
+```
+
+単位を固定しないのは、同じ大きさの余白でも、使う場所によって選ぶべき単位が違うからです。たとえば `padding` は `px` で指定します。ユーザーが文字サイズを大きくしたとき、`padding` まで広がると1行の文字数がさらに減り、読みにくくなるからです。段落の間の余白は、文字サイズに合わせて広がるほうが自然なので `rem` にします。単位の選び方は「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
+
+レスポンシブな環境では、余白が `%` やコンテナ単位と組み合わさることも多く、`px` と `rem` の二択では片付けられません。トークンを単なる数値にしておけば、「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」の比例スケールでも、`calc(var(--spacing--md) * var(--px))` のようにそのまま使えます。Tailwind CSSの作者も、単位付きで余白のスケールを設計したことを後悔していると述べています。
+
+余白のスケールは、`xxxs` の4から `xxxl` の80まで、4、8、12、16、24、32、40、64、80の9段階にしています。すべての余白をトークンで書く必要はありません。レスポンシブな余白には `%` や `cqi` が絡むことも多いので、私はレビューでも、余白がトークンを使っていないことはあまり指摘しません。
+
+## 色はプリミティブとセマンティクスの2層で持つ
+
+色は、プリミティブ、セマンティクス、ユニークの3層で考えます。プリミティブは生の色の値で、`--color--neutral--50` から `--color--neutral--950` のように、色相ごとの明るさの段階として定義します。セマンティクスは、背景、文字、枠線、リンク、フォーカスリングのように、デザインの中での色の意味を表すトークンです。
+
+グローバルなトークンとして定義するのは、プリミティブとセマンティクスの2層だけです。デザインで定義されていない固有の色（ユニーク）は、コンポーネントの内部プロパティか、直接書いた値で扱います。
+
+```css title="🙆‍♂ Recommended: セマンティクスのトークンから、プリミティブを参照する"
+:root {
+  --color--neutral--50: oklch(98.5% 0 0deg);
+  --color--neutral--400: oklch(70.8% 0 0deg);
+  --color--neutral--500: oklch(55.6% 0 0deg);
+  --color--neutral--950: oklch(14.5% 0 0deg);
+  --background--base: light-dark(var(--color--neutral--50), var(--color--neutral--950));
+  --foreground--base: light-dark(var(--color--neutral--950), var(--color--neutral--50));
+  --foreground--muted: light-dark(var(--color--neutral--500), var(--color--neutral--400));
+}
+```
+
+セマンティクスの層があると、ライトモードとダークモードのような切り替えを、`light-dark()` を使ってトークンの側で吸収できます。コンポーネントからは、意味の分かるセマンティクスのトークンを参照するのが基本です。こうしておけば、配色を変えるときもトークンの定義を直すだけで済みます。色の書き方と `light-dark()` は、「[10-1 色とダークモード](/color-media/color/)」で扱います。
+{/* 要確認: 出典なし（コンポーネントからはセマンティクスのトークンを参照するのが基本、という記述は筆者の推論。著者の実装はセマンティクスのトークンだけを参照している） */}
+
+## イージングと再生時間
+
+トランジションやアニメーションのイージングも、トークンにします。名前は `--ease--<種類>-<方向>` の形で、種類は動きの強さを表します。弱いものから順に `sine`、`quad`、`cubic`、`quart`、`quint`、`expo` と並び、ほかに加速と減速がゆるやかな `circ` や、少し行き過ぎてから戻る `back` があります。方向は、`in`（だんだん速く）、`out`（だんだん遅く）、`in-out`（両方）です。
+
+```css title="🙆‍♂ Recommended: 動きの強さと方向が分かる名前を付ける"
+:root {
+  --ease--quad-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease--quint-in-out: cubic-bezier(0.86, 0, 0.07, 1);
+  --duration--fast: 200ms;
+  --duration--base: 240ms;
+  --duration--slow: 300ms;
+}
+```
+
+再生時間も、`--duration--fast`、`--duration--base`、`--duration--slow` のような段階のトークンにします。サイトの中で動きの速さがそろい、「全体的にもう少しゆっくりにしたい」という調整もトークンの値を変えるだけで済みます。弾むような動きのように `cubic-bezier()` で表せないイージングは、`linear()` 関数で定義します。
+
+トランジションを書くときは、`transition-duration: var(--duration--base)` のように、個別のプロパティにトークンを渡します。動きを減らす設定への対応を含めたモーションの書き方は、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。
+
+## z-indexのトークン
+
+z-indexのトークンは、絶対的な値と相対的な値に分けて定義します。絶対的な値は、ヘッダーやフッターのようにページ全体で重なり順を保証する要素のためのもので、100の倍数で定義します。間を空けておけば、後から新しい要素を間に差し込めます。
+
+```css title="🙆‍♂ Recommended: 絶対的な値は100刻み、相対的な値は1と-1にする"
+:root {
+  --z--forwards: 1;
+  --z--backwards: -1;
+  --z--footer: 100;
+  --z--header: 200;
+  --z--top: calc(infinity);
+}
+```
+
+相対的な値は、コンポーネントの中で前後を入れ替えるための `--z--forwards`（1）と `--z--backwards`（-1）の2つだけです。`--z--top` は、スキップリンクのように、あらゆる要素より手前に出す必要があるものに使います。コンポーネントのどこにどの値を指定するかは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+
+ある要素を、ヘッダーのすぐ手前に重ねたいこともあります。そのときは、数値を直接書かず、トークンを基準にした計算で表します。こうすれば、ヘッダーの値を変えても関係が崩れません。
+
+```css title="🙆‍♂ Recommended: トークンを基準にして、すぐ手前に重ねる"
+@scope (.scoped.reading-progress) to (.scoped) {
+  :scope {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: calc(var(--z--header) + 1);
+  }
+}
+```
+
+## トークンにするもの、しないもの
+
+トークンにするのは、サイト全体で意味を持つ値だけです。1回しか使わない値や、特定のコンポーネントだけで使う値は、グローバルなトークンにしません。ただし、1つのコンポーネントの中で意味を持つ値は、内部プロパティ（`--_` で始まるカスタムプロパティ）にして名前を付けます。
+
+たとえば、デザインの中で1か所だけ `line-height: 1.8` が使われていても、それを新しいトークンとして追加はしません。トークンに定義されている値ならトークンを使い、定義されていない特殊な値なら、その場に直接書きます。トークンが増えすぎると、一覧から選ぶだけで取り決めに沿うという、トークンの利点が失われます。
+{/* 要確認: 出典なし（トークンが増えすぎると利点が失われる、という理由付けは筆者の推論。冒頭の段落の同じ趣旨の文も同様） */}
+
+トークンは、分類ごとのファイル（`tokens/colors.css`、`tokens/sizes.css` など）に分けて書き、すべて `:root` に定義します。読み込むときは `tokens` レイヤーに入れます。WordPressのブロックテーマでは、トークンはtheme.jsonで定義します（「[12-1 CMSと共存する](/operations/cms/)」）。
+
+トークンの定義に `@property` は使いません。`@property` で型を登録すると、値が定義した要素で計算されてしまうなど、ふつうのカスタムプロパティとは振る舞いが変わるからです。`@property` の使いどころは「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
+{/* 要確認: 出典なし（トークンに @property を使わない理由の説明は筆者の推論。使わないという方針は DECISIONS.md による） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS カスタムプロパティ（変数）の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties)
+- [light-dark() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark)
+- [linear() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/easing-function/linear)
+- [2025年のz-index設計を考える](https://speakerdeck.com/tak_dcxi/2025nian-noz-indexshe-ji-wokao-eru)（TAK）
+- [単位付きの余白のスケールについての Adam Wathan 氏の投稿](https://x.com/adamwathan/status/2003638134840656373)（X）

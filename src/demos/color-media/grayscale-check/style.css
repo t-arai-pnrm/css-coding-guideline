@@ -1,0 +1,83 @@
+@layer components {
+  @scope (.scoped.grayscale-demo) to (.scoped) {
+    :scope {
+      --_foreground: oklch(30% 0 0deg);
+      --_link: oklch(38% 0.12 150deg);
+      --_danger: oklch(52% 0.2 25deg);
+
+      display: block grid;
+      gap: 16px;
+      color: var(--_foreground);
+    }
+
+    ._switch {
+      display: inline flex;
+      gap: 8px;
+      align-items: center;
+      justify-self: start;
+    }
+
+    ._preview {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    /* 簡易的な確認用。実際の確認には OS のグレースケール表示を使う */
+    :scope:has(._switch :checked) ._preview {
+      filter: grayscale(1);
+    }
+
+    ._column {
+      display: block grid;
+      gap: 12px;
+      align-content: start;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._heading {
+      margin: 0;
+      font-size: calc(16 / 16 * 1rem);
+    }
+
+    ._text {
+      margin: 0;
+    }
+
+    ._link {
+      color: var(--_link);
+
+      &:is([data-cue="shape"] *) {
+        text-decoration-line: underline;
+        text-underline-offset: 0.25em;
+      }
+    }
+
+    ._field {
+      display: block grid;
+      gap: 4px;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._input {
+      padding: 8px;
+      border-color: oklch(60% 0 0deg);
+      border-radius: 4px;
+
+      &[aria-invalid="true"] {
+        border-color: var(--_danger);
+      }
+
+      &:is([data-cue="shape"] *)[aria-invalid="true"] {
+        border-width: 2px;
+      }
+    }
+
+    ._error {
+      color: var(--_danger);
+      font-weight: bolder;
+    }
+  }
+}

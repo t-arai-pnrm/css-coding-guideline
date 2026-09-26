@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.object-fit-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    ._figure {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._image {
+      inline-size: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background-color: oklch(92% 0 0deg);
+
+      &[data-fit="fill"] {
+        object-fit: fill;
+      }
+
+      &[data-fit="cover"] {
+        object-fit: cover;
+      }
+
+      &[data-fit="contain"] {
+        object-fit: contain;
+      }
+    }
+
+    ._caption {
+      font-size: calc(14 / 16 * 1rem);
+      text-align: center;
+    }
+  }
+}

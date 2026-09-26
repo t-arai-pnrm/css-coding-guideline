@@ -1,0 +1,203 @@
+---
+title: "5-1 命名規則"
+description: クラス名は、ルート（scoped <名前>）、子要素（._名前）、ユーティリティ（.-名前）、コンポジション（接頭辞なし）の4種類を接頭辞で見分けます。自分で付けて値として使う名前は -- で始めます。
+sidebar:
+  order: 1
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+クラス名は4種類に分け、先頭の記号で見分けます。コンポーネントのルートは `class="scoped <名前>"`、コンポーネントの子要素は `._title` のように `_` で始め、ユーティリティは `.-visually-hidden` のように `-` で始めます。`.cluster` のようなコンポジション（配置のパターン）には、接頭辞を付けません。
+
+どの種類でも、名前は見た目ではなく役割で付けます。`container` や `button` のように、HTMLやCSSで意味が決まっている語は、別の意味で使いません。また、`@keyframes` の名前やグリッドのエリア名のように、自分で付けて値として使う名前は `--` で始めます。
+
+この節では、クラス名の4つの種類と、名前の付け方の原則を説明します。カスタムプロパティの名前の付け方は、第6章の「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で扱います。
+
+## ページ全体で共有される名前の問題
+
+CSSのクラス名は、ページ全体で共有される1つの名前空間に属します。別々のコンポーネントで同じ `.title` という名前を使うと、片方のために書いたスタイルがもう片方にも当たります。この衝突を避けるために広く使われてきたのが、BEMのように、コンポーネントの名前を子要素の名前の先頭に付ける方法です。
+
+```css title="🙅‍♂ Not Recommended: 衝突を避けるためにコンポーネント名を繰り返す"
+/* 🙅‍♂ Not Recommended */
+.media-card__image {
+  aspect-ratio: 16 / 9;
+}
+
+.media-card__title {
+  font-size: 1.125rem;
+}
+
+.media-card--featured .media-card__title {
+  font-size: 1.5rem;
+}
+```
+
+この書き方で衝突は防げますが、代わりに名前が長くなります。子要素の名前に繰り返し現れる `media-card` は、衝突を避けるためだけの情報です。HTMLの `class` 属性も長くなり、どれがどの要素の名前なのかを読み取りにくくなります。
+
+バリエーションを修飾子（`--featured`）で表すと、別の問題も起きます。修飾子の付いたルートから子要素を選ぶと、セレクタの詳細度は上がります。後から上書きするには、さらに詳細度の高いセレクタが必要です。名前で衝突を避ける方法には、名前の長さと詳細度の積み上がりという2つの問題がついて回るのです。
+
+## 4種類のクラス名を接頭辞で見分ける
+
+本書では、衝突を名前で避けるのではなく、`@scope` でスタイルの届く範囲を閉じ込めて防ぎます。範囲が閉じていれば、子要素の名前は `._title` のように短くてかまいません。そのうえで、クラス名を次の4種類に分け、先頭の記号で見分けられるようにします。
+
+| 種類 | 書き方 | 例 |
+|---|---|---|
+| コンポーネントのルート | `scoped <名前>` | `scoped media-card` |
+| コンポーネントの子要素 | `_` で始める | `._title`、`._nav-links` |
+| ユーティリティ | `-` で始め、段階や種類は `--` で続ける | `.-visually-hidden`、`.-fluid-text--md` |
+| コンポジション | 接頭辞を付けない | `.cluster`、`.switcher` |
+
+ルートの `scoped` は、そこからコンポーネントが始まるという目印です。`@scope (.scoped.media-card) to (.scoped)` と書くと、スタイルは `media-card` のルートから、内側にある次の `scoped` の要素（別のコンポーネントのルート）の手前までに届きます。`@scope` の書き方は、第2章の「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明します。
+
+`scoped` の後ろに続く名前は、kebab-caseを基本にします。WordPressのブロックやPHPのテンプレートのように、ファイル名やブロック名がkebab-caseの環境と、そのまま対応させられるからです。一方、Astroのようにコンポーネントの名前がPascalCaseの環境では、`scoped MediaCard` のようにコンポーネント名に合わせてもかまいません。どちらの場合も、ルートの名前からコンポーネントのファイルをたどれることが大切です。ページ固有のスタイルは、`scoped page-about` のように `page-` を付けたルートにまとめます（「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」）。
+
+子要素の `_` は、「このコンポーネントの中だけで意味を持つ名前」という印です。内部用のカスタムプロパティを `--_` で始めるのと同じ考え方で、外から触れるものではないことを示します。なお、スコープの中では `ul` や `[popover]` のように、型セレクタや属性セレクタで要素を選んでもかまいません。
+
+ユーティリティの `-` は、どのコンポーネントからでも使える単機能のクラスであることを示します。`.-fluid-text--md` のように、段階や種類は `--` で続けます。コンポジションは、`.cluster`（折り返して並べる）や `.switcher`（幅に応じて横並びと縦積みを切り替える）のように、配置のパターンの名前をそのまま使います。どちらも、何をユーティリティやコンポジションにするかは、第6章の「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で扱います。
+
+```html title="🙆‍♂ Recommended: 4種類のクラス名を組み合わせたHTML"
+<section class="scoped news-section">
+  <h2 class="_heading -fluid-text--lg">お知らせ</h2>
+  <ul class="_list stack">
+    <li>
+      <article class="scoped news-card">
+        <h3 class="_title">営業時間の変更について</h3>
+      </article>
+    </li>
+  </ul>
+</section>
+```
+
+このHTMLは、`class` 属性を見るだけで読み解けます。`_heading` と `_list` は `news-section` の子要素、`-fluid-text--lg` はユーティリティ、`stack` はコンポジションです。`scoped news-card` から先は別のコンポーネントなので、`news-section` のスタイルは届きません。`news-card` の中に `news-section` と同じ名前の子要素があっても衝突しません。
+
+## BEMの名前を書き直す
+
+冒頭のBEMの例を、本書の命名で書き直します。子要素の名前は短くなり、バリエーションはクラス名の修飾子ではなく、`data-variant` 属性で表しています。
+
+```html title="🙆‍♂ Recommended: ルートにだけコンポーネント名を付ける"
+<article class="scoped media-card" data-variant="featured">
+  <div class="_image"></div>
+  <h2 class="_title">記事のタイトル</h2>
+</article>
+```
+
+```css title="🙆‍♂ Recommended: 子要素は短い名前で、スコープの中に書く"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 12px;
+
+    &[data-variant="featured"] {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+    }
+  }
+
+  ._image {
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+  }
+
+  ._title {
+    font-size: calc(18 / 16 * 1rem);
+  }
+}
+```
+
+`._title` は `media-card` のスコープの中でしか効かないので、ほかのコンポーネントに同じ名前の子要素があっても問題ありません。セレクタの詳細度も、どれも `0.1.0` にそろっています。バリエーションや状態を属性で表す書き方は、「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で扱います。
+
+AIに名前を付けさせると、`.media-card__title` のようなBEMの名前や、`.card-title` のようにコンポーネント名を繰り返した名前が出てくることがよくあります。`@scope` の中に書くコードでは、子要素の名前からコンポーネント名を取り除き、`_` で始まる短い名前に直してください。
+{/* 要確認: 出典なし（AIの傾向についての記述） */}
+
+## 見た目ではなく役割で名前を付ける
+
+名前は、見た目ではなく役割で付けます。`._red-text` や `._big-title` のような見た目の名前は、デザインが変わった時点で実態とずれます。赤かった文字が青になれば、`._red-text` という名前は嘘になります。`._notice` や `._heading` のように役割で名前を付けておけば、見た目を変えても名前を変えずに済みます。
+
+```html title="🙅‍♂ Not Recommended: 見た目や汎用の語で名前を付ける"
+<!-- 🙅‍♂ Not Recommended -->
+<div class="scoped contact-section">
+  <div class="_wrapper">
+    <p class="_red-text">受付は平日のみです。</p>
+    <a class="_button" href="/contact/">お問い合わせ</a>
+  </div>
+</div>
+```
+
+同じ理由で、HTMLやCSSで意味が決まっている語を、別の意味で使いません。上の例の `<a>` は見た目がボタンでも、役割はページを移動するリンクなので、名前は `_link` にします。`button` は `<button>` 要素のための名前です。`container` はCSSの `container` プロパティを持つ要素に、`columns` は段組み（マルチカラム）のレイアウトに使う語なので、ただの入れ物やFlexboxの横並びには使いません。`.container` のクラスについては、「[8-2 コンテナクエリ](/responsive/container-queries/)」でも説明しています。
+
+`wrapper`、`block`、`module`、`widget` のような総称も避けます。何のための要素なのかが名前から分からず、責務の境界もあいまいになるからです。内容の幅を制限して中央に寄せる要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。
+
+```html title="🙆‍♂ Recommended: 役割と責務で名前を付ける"
+<div class="scoped contact-section">
+  <div class="_inner">
+    <p class="_notice">受付は平日のみです。</p>
+    <a class="_link" href="/contact/">お問い合わせ</a>
+  </div>
+</div>
+```
+
+見た目の名前を付けてよいのは、ユーティリティだけです。ユーティリティは1つのことしかしないので、`.-text-center` のように、その効果をそのまま名前にするのがいちばん分かりやすいからです。コンポーネントや、繰り返し使う静的な部品（パターン）には、`section-heading` や `status-badge` のように役割の名前を付けます。`big-title` や `blue-link` のような名前は付けません。
+
+## 自分で付ける名前は `--` で始める
+
+`@keyframes` の名前、グリッドの線とエリアの名前、アンカーの名前、スタイルクエリで比べる値のように、自分で付けて値として使う名前は `--` で始めます。コンテナの名前も同じ規則で、「[8-2 コンテナクエリ](/responsive/container-queries/)」で扱っています。
+
+```css title="🙆‍♂ Recommended: 自分で付ける名前を -- で始める"
+@keyframes --fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-areas:
+      "--image"
+      "--body";
+  }
+
+  ._image {
+    grid-area: --image;
+  }
+
+  ._body {
+    grid-area: --body;
+  }
+}
+```
+
+理由は4つあります。1つ目は、近年のCSSで、自分で付ける名前に `--` を求めるプロパティが増えていることです。`anchor-name` やスクロール連動アニメーションのタイムラインの名前は、`--` で始めないと無効になります。2つ目は、すべての名前を `--` で始めておけば、「このプロパティでは `--` が必要か」を個別に覚えなくて済むことです。
+
+3つ目は、将来CSSに新しいキーワードが追加されても、自分で付けた名前と衝突しにくいことです。CSSのキーワードは `--` で始まらないので、`--` を付けておけば見分けられます。4つ目は、コードを読んだときに、自分で付けた名前だとすぐに分かることです。`fadeIn` や `image` のような名前は、CSSのキーワードと見た目の区別がつきません。
+
+```css title="🙅‍♂ Not Recommended: キーワードと見分けにくい名前"
+/* 🙅‍♂ Not Recommended */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+._layout {
+  grid-template-areas:
+    "image"
+    "body";
+}
+```
+
+グリッドのエリアの名前は、そのエリアに置く子要素のクラス名とそろえます。`._image` を置くエリアは `--image` です。こうしておくと、`grid-template-areas` の図と、各要素の `grid-area` の対応をすぐに読み取れます。グリッドのエリアの使い方は、「[7-1 Gridから考える](/layout/grid-first/)」で扱います。
+
+`--` を付けるのは、値として書く名前だけです。`@layer` のレイヤー名のように、プロパティの値として使わない名前には付けません。`@keyframes` の名前をコンポーネントごとにどう分けるかといった設計は、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。本書のStylelintの設定では、`@keyframes` の名前を `keyframes-name-pattern` で検証しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
+- [&lt;dashed-ident&gt; - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/dashed-ident)
+- [&lt;custom-ident&gt; - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/custom-ident)
+- [grid-template-areas - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-areas)
+- [anchor-name - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/anchor-name)

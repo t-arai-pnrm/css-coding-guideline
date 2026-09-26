@@ -1,0 +1,44 @@
+@layer base {
+  :where(:heading, h1, h2, h3, h4, h5, h6, caption) {
+    &:lang(ja) {
+      /* 文節で区切れるブラウザでだけ、行の長さもそろえる */
+      @supports (word-break: auto-phrase) {
+        text-wrap: balance;
+        word-break: auto-phrase;
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.line-break-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._case {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._label {
+      margin-block: 0 8px;
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._heading {
+      margin: 0;
+      font-size: calc(26 / 16 * 1rem);
+      line-height: 1.4;
+
+      /* 比較のために、文節での折り返しと行の長さの調整を打ち消す */
+      &[data-phrase="off"] {
+        text-wrap: wrap;
+        word-break: normal;
+      }
+    }
+  }
+}

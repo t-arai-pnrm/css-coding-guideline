@@ -1,0 +1,30 @@
+{
+  "plugins": {
+    "mdx": true
+  },
+  "filters": {
+    "comments": true
+  },
+  "rules": {
+    "preset-ja-technical-writing": {
+      "sentence-length": { "max": 120 },
+      "max-ten": { "max": 4 },
+      "no-mix-dearu-desumasu": {
+        "preferInHeader": "",
+        "preferInBody": "ですます",
+        "preferInList": "",
+        "strict": false
+      },
+      "ja-no-weak-phrase": false,
+      "no-exclamation-question-mark": true
+    },
+    "preset-ja-spacing": {
+      "ja-space-between-half-and-full-width": { "space": "never" },
+      "ja-space-around-code": false,
+      "ja-space-around-link": false
+    },
+    "prh": {
+      "rulePaths": ["./prh.yml"]
+    }
+  }
+}

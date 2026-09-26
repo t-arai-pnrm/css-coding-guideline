@@ -1,0 +1,248 @@
+---
+title: "付録C Sassの機能を素のCSSで置き換える"
+description: "Sassの変数、ネスト、mixin、関数、@extend、ループ、色の関数、ファイルの分割、メディアクエリのmixinを、本書の素のCSSの書き方に対応させた表です。カスタムプロパティとトークン、ネイティブのネスト、calc()、相対カラー構文、@import … layer() などで置き換えます。"
+sidebar:
+  order: 3
+---
+
+本書のコード例は、すべて素のCSSで書いています。かつてSassが必要だった変数、ネスト、計算、色の加工は、いまはCSSの標準の機能で書けます。この付録では、Sassでよく使う機能ごとに、本書での書き方を対応させます。
+
+まず次の一覧表で置き換え先を確かめ、詳しくは各見出しの説明と、リンク先の本文を読んでください。1対1で置き換わる機能ばかりではありません。mixinや `@extend` のように、同じ結果をCSSの設計の側で実現するものもあります。表の「詳しい説明」の列には、その書き方を説明している本文のページを挙げています。
+
+私も2020年ごろは、ブレイクポイントのmapとmixin、pxをremに変換する関数などをSassで用意していました。本書の書き方は、それらを標準の機能に置き換えたものです。Sassの書き方をそのまま持ち込んだコードは、AIの出力にもよく見られます。見分け方は付録B「[モダンな書き方への置き換え表](/appendix/modernize/)」とあわせて確かめてください。
+
+## 対応の一覧
+
+| Sassの機能 | 本書の書き方 | 詳しい説明 |
+| --- | --- | --- |
+| `$変数` | サイト全体の値は `:root` のトークン、コンポーネントの中の値は `--_` で始まる内部プロパティ | [6-3](/components/design-tokens/)、[6-4](/components/custom-properties/) |
+| `!default` | 公開プロパティを内部プロパティで受け、デフォルト値を `var()` のフォールバックに書く | [6-4](/components/custom-properties/) |
+| ネスト、`&:hover` | ネイティブのネスト。1段までにし、`&` で始める | [5-2](/notation/nesting-and-order/) |
+| `&__title`、`&--modifier` | `@scope` の中の `._title`、`data-*` 属性や公開プロパティ | [2-4](/cascade/scope/)、[5-1](/notation/naming/) |
+| `@mixin` と `@include` | コンポジション、ユーティリティ、ベーススタイル | [6-2](/components/compositions-and-utilities/) |
+| `@function`、`math.div()` | `calc()`、`min()`、`max()`、`clamp()` の式 | [3-3](/values/math-functions/) |
+| `@extend` とプレースホルダ | トークンの共有、HTMLに付けるコンポジションとユーティリティのクラス | [6-1](/components/boundaries/)、[6-2](/components/compositions-and-utilities/) |
+| `@each` と `@for` | 公開プロパティと `style` 属性 | [6-2](/components/compositions-and-utilities/)、[6-4](/components/custom-properties/) |
+| `darken()`、`lighten()`、`rgba($color, 0.5)`、`mix()` | 相対カラー構文と `color-mix()` | [10-1](/color-media/color/) |
+| `@use`、`@import` とパーシャル | エントリーポイントの `@import url("…") layer(…)` | [2-3](/cascade/layers/) |
+| メディアクエリのmixin | 範囲構文とremの式を、各セレクタの中に書く | [8-3](/responsive/media-queries/) |
+| `//` のコメント | `/* */` | [5-4](/notation/comments/) |
+
+## 変数はカスタムプロパティにする
+
+Sassの変数は、カスタムプロパティに置き換えます。色や余白のように、サイト全体で意味を持つ値は、`--<分類>--<名前>` の形のトークンにして `:root` に置きます。トークンは分類ごとのファイルに分け、`tokens` レイヤーに読み込みます。命名と置き場所は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
+
+1つのコンポーネントの中だけで使う値は、`--_` で始まる内部プロパティにします。外から変えてよい値は、`--<コンポーネント>--<プロパティ>` の公開プロパティとして受け取ります。Sassの `!default` のように「指定がなければこの値」を表すときは、公開プロパティを内部プロパティで受け、デフォルト値を `var()` のフォールバックに書きます。
+
+```scss title="Sass：変数と !default"
+$color-accent: #1f6feb;
+$card-radius: 8px !default;
+
+.card {
+  border-radius: $card-radius;
+  background-color: $color-accent;
+}
+```
+
+```css title="🙆‍♂ Recommended: トークンと、フォールバック付きの公開プロパティ"
+:root {
+  --color--accent--500: oklch(52% 0.16 250deg);
+}
+
+@scope (.scoped.card) to (.scoped) {
+  :scope {
+    --_radius: var(--card--radius, 8px);
+
+    border-radius: var(--_radius);
+    background-color: var(--color--accent--500);
+  }
+}
+```
+
+Sassの変数はビルドの時点で値に置き換わりますが、カスタムプロパティはブラウザの中で継承され、使う場所で値が決まります。そのため、状態やクエリによって値を切り替えられます。`--_background--hocus` のような接尾辞で状態ごとの値を持つ書き方は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
+
+反対に、カスタムプロパティは `@media` や `@container` の条件の中では使えません。ブレイクポイントのmapを変数に置き換えることはできないので、条件はこの付録の最後の見出しのように書きます。z-indexの一覧を変数のリストで管理していた場合は、100刻みの絶対的な値と、`--z--forwards` と `--z--backwards` の相対的な値のトークンに置き換えます。
+
+## ネストはネイティブのネストで書く
+
+`&:hover` のような擬似クラスのネストや、セレクタの中の `@media` は、素のCSSのネストでもそのまま書けます。本書では、ネストを1段までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書きます。規約は「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
+
+Sassと大きく違うのは、`&__title` のように `&` に文字をつなげてクラス名を作れないことです。素のCSSではこれが無効なセレクタになり、ルールごと無視されます。子要素は、`@scope` の中で `._title` のような短いクラス名で選びます。BEMの修飾子で表していたバリエーションは、`data-variant` のような属性か、公開プロパティで表します。
+
+```scss title="Sass：&__ と &-- で名前を作る"
+.media-card {
+  padding: 16px;
+
+  &__title {
+    font-weight: 700;
+  }
+
+  &--featured {
+    border-color: $color-accent;
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: @scope の中の子要素と、属性で表すバリエーション"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    padding: 16px;
+
+    &[data-variant="featured"] {
+      border-color: var(--color--accent--500);
+    }
+  }
+
+  ._title {
+    font-weight: var(--font-weight--bold);
+  }
+}
+```
+
+HTMLの階層をそのままネストで写す書き方も、Sassからよく持ち込まれます。ネストが深くなるほど詳細度が上がり、HTMLの構造を変えただけでスタイルが届かなくなります。独自のスタイルを持つ子要素は、親のルールに入れず、同じ階層に並べます。スコープの考え方は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、子要素の命名は「[5-1 命名規則](/notation/naming/)」で説明しています。
+
+## mixinは、コンポジションとユーティリティにする
+
+mixinは、置き換え先が用途によって分かれます。要素を積む、並べて折り返すといった配置のmixinは、コンポジション（`stack`、`cluster`、`switcher` など）にします。コンポジションはHTMLにクラスとして付け、間隔や列数は公開プロパティで受け取ります。HTMLのクラス名を見るだけで、子の並び方が分かるようになります。
+
+視覚的に隠す、行数を制限するといった単機能のmixinは、`.-visually-hidden` や `.-line-clamp` のようなユーティリティにします。行数のような値は、`style="--line-clamp--limit: 2"` のように公開プロパティで渡します。どちらも「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
+
+```html title="🙆‍♂ Recommended: mixin の代わりに、ユーティリティのクラスと公開プロパティを使う"
+<p class="_excerpt -line-clamp" style="--line-clamp--limit: 2">…</p>
+```
+
+ホバーのmixinは、置き換えるというより、書き方そのものを変えます。以前の私のmixinは、`(hover: hover) and (pointer: fine)` で判定していました。本書では `@media (any-hover: hover)` の中にホバーを書き、同じ見た目を `:focus-visible` にも指定します。条件はmixinにまとめず、各セレクタの中に直接書きます（「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+
+```css title="🙆‍♂ Recommended: ホバーのmixinの代わりに、条件をセレクタの中に書く"
+@scope (.scoped.save-button) to (.scoped) {
+  :scope {
+    --_background: var(--color--accent--600);
+    --_background--hocus: var(--color--accent--700);
+
+    background-color: var(--_background);
+
+    &:focus-visible {
+      background-color: var(--_background--hocus);
+    }
+
+    &:enabled:hover {
+      @media (any-hover: hover) {
+        background-color: var(--_background--hocus);
+      }
+    }
+  }
+}
+```
+
+ハーフレディングを打ち消すmixinは、`calc((1em - 1lh) / 2)` の式か、`text-box-trim` に置き換えます。行の高さをmixinへ渡す方法では、同じ値を2か所で書く必要がありましたが、`lh` 単位なら書き写さずに済みます（「[9-3 行の高さとハーフレディング](/typography/line-height/)」）。フォーカスリングのように全体で共通の見た目は、ベーススタイルに一度だけ書きます（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+
+## 関数は calc() の式にする
+
+pxをremに変換する関数は、`calc(24 / 16 * 1rem)` の式に置き換えます。式にしておけば、デザインカンプの「24px」がコードからそのまま読み取れます。`clamp()`、`min()`、`max()` の中では、`calc()` を省いて `24 / 16 * 1rem` と書けます。変換の考え方は「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 変換の関数の代わりに、式を書く"
+._heading {
+  margin-block-end: calc(24 / 16 * 1rem);
+  font-size: calc(32 / 16 * 1rem);
+}
+```
+
+`math.div()` の割り算も、`calc()` で書けます。ただし、`calc(40px / 1280px * 100svi)` のように単位のついた値どうしを割る書き方（typed arithmetic）は、対応していないブラウザがあるので使いません。単位を外す関数の代わりに、余白のトークンをはじめから単位のない数値で持ち、使う場所で `* 1px` や `/ 16 * 1rem` を掛けます。
+
+流体的な値の傾きと切片を計算する関数も、カスタムプロパティと `calc()` で書けます。基準の幅と値を単位のない数値で持てば、計算はブラウザに任せられます。組み立て方は「[3-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。CSSで関数を定義する `@function` は、2026年9月の時点でChrome系のブラウザしか対応していないので、本書ではまだ使いません。
+
+## @extend の代わりに、トークンとクラスを共有する
+
+`@extend` やプレースホルダは、似た見た目のセレクタをまとめるために使われてきました。しかし、見た目が似ているだけのものを共通化すると、片方の都合で変えたときに、もう片方も一緒に変わります。本書では、似た記述の重複を許容し、共通化は同じものが3回現れてから、役割まで同じかを確かめて検討します（「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」）。
+
+別のコンポーネントの間で見た目をそろえたいときは、コンポーネントを統合せず、同じトークンを参照します。余白、角丸、背景色のトークンを共有すれば、「すべてのカードの背景色を変える」という依頼にも、トークンの値を変えるだけで対応できます。配置の共通化はコンポジションに、単機能の指定はユーティリティにして、HTMLにクラスを付けます（「[6-1 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+## ループの代わりに、公開プロパティで値を渡す
+
+`@each` や `@for` で、`.gap-sm` や `.gap-lg` のような段階ごとのクラスを量産するのはやめます。本書では、コンポジションの間隔や列数を修飾のクラスで増やさず、公開プロパティで受け取ります。値は、呼び出し側の `style` 属性で渡します。
+
+```html title="🙆‍♂ Recommended: 段階ごとのクラスを作らず、style 属性で値を渡す"
+<ul class="_tags cluster" style="--cluster--gap: calc(var(--spacing--xxs) / 16 * 1rem)">
+  <li>…</li>
+</ul>
+```
+
+こうすれば、使う値はトークンの中から選ぶだけで、段階を増やしてもCSSを書き足す必要がありません。値がタグと同じ場所に書かれるので、どの要素に効くのかも一目で分かります。`style` 属性で渡す理由は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
+
+トークンそのものは、ループで生成せず、分類ごとのファイルに1行ずつ書きます。段階のあるユーティリティも、`.-fluid-text--md` のように必要な段階だけを書きます（「[9-4 文字サイズと改行](/typography/size-and-line-breaks/)」）。
+{/* 要確認: 出典なし（Sass のループを公開プロパティと style 属性に置き換えるという対応は、本文の composition-configurable-via-props と pass-values-via-style-attribute からの推論） */}
+
+## 色の関数は、相対カラー構文と color-mix() にする
+
+`darken()` や `lighten()`、`rgba($color, 0.1)` のように1つの色を加工する関数は、相対カラー構文に置き換えます。`oklch(from 元の色 l c h)` と書くと、元の色の明度・彩度・色相が `l`、`c`、`h` に入り、変えたい値だけを書き換えられます。`l` は0から1までの数値なので、明度を下げるときは `calc(l - 0.15)` のように書きます。
+
+2つの色を混ぜる `mix()` は、`color-mix()` に置き換えます。補間の色空間には `oklab` を指定します。私は、1つの色の成分を変えるときは相対カラー構文を、2つの色の間を取るときは `color-mix()` を使います。どちらも「[10-1 色とダークモード](/color-media/color/)」で説明しています。
+
+```scss title="Sass：色を加工する関数"
+.tag {
+  border-color: rgba($color-accent, 0.1);
+  background-color: darken($color-accent, 10%);
+}
+```
+
+```css title="🙆‍♂ Recommended: 相対カラー構文と color-mix() で、元の色から作る"
+._tag {
+  border-color: oklch(from var(--color--accent--500) l c h / 10%);
+  background-color: oklch(from var(--color--accent--500) calc(l - 0.15) c h);
+  color: color-mix(in oklab, var(--foreground--base) 60%, transparent);
+}
+```
+
+Sassの色の関数はビルドの時点で値を計算しますが、相対カラー構文と `color-mix()` はブラウザの中で計算されます。元の色のトークンを1か所直せば、派生させた色もすべて追従し、`light-dark()` で切り替わる色からも派生色を作れます。なお、Sassの `darken()` はHSLの明度を変える関数なので、同じ数値を書いても同じ色にはなりません。見た目はブラウザで確かめます。
+{/* 要確認: 出典なし（Sass の darken() が HSL の明度を変えるという説明は一般論） */}
+
+## ファイルの分割は @import … layer() にする
+
+Sassの `@use` や `@import` で分けていたパーシャルは、CSSの `@import` で読み込みます。エントリーポイントのファイルの先頭で、レイヤーの順番を `@layer` 文で宣言し、各ファイルを `@import url("…") layer(…)` で割り当てます。ファイルの中で `@layer` を書く必要はなく、どのファイルがどのレイヤーに入るのかを1か所で確認できます。
+
+```css title="🙆‍♂ Recommended: エントリーポイントで、ファイルをレイヤーに割り当てる"
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+
+@import url("kiso.css") layer(reset);
+@import url("./tokens/colors.css") layer(tokens);
+@import url("./base/generic.css") layer(base);
+@import url("./compositions/cluster.css") layer(compositions);
+@import url("./utilities/a11y.css") layer(utilities);
+```
+
+ディレクトリは、9つのレイヤーの分類に合わせて分けます。レイヤーの役割と順番は「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。WordPressのように、レイヤーに入っていない外部のCSSと共存する環境では、`layer()` を付けずに、同じ分類の順番で `@import` を並べます（「[12-1 CMSと共存する](/operations/cms/)」）。
+
+## メディアクエリのmixinは、条件をそのまま書く
+
+ブレイクポイントのmapとmixinは、各セレクタの中へ条件をそのまま書く形に置き換えます。条件は `min-width` ではなく範囲構文で書き、値は `calc(768 / 16 * 1rem)` のようにremへの変換の式にします。カスタムプロパティは条件の中で使えないので、ブレイクポイントを変数にまとめることはできません。
+
+```scss title="Sass：ブレイクポイントの mixin"
+.layout {
+  display: grid;
+
+  @include mq(md) {
+    grid-template-columns: 1fr 240px;
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: 範囲構文とremの式を、セレクタの中に書く"
+@scope (.scoped.page-about) to (.scoped) {
+  ._layout {
+    display: block grid;
+    gap: 32px;
+
+    @media (width >= calc((560 + 240 + 32) / 16 * 1rem)) {
+      grid-template-columns: minmax(0, 1fr) calc(240 / 16 * 1rem);
+    }
+  }
+}
+```
+
+名前の付いたブレイクポイントを使い回す代わりに、閾値は「本文の最小幅＋サイドバーの幅＋隙間」のように、レイアウトが成り立つ条件の式で書きます。値の根拠がコードに残り、どこを直せばよいかも分かります（「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」）。コンポーネントの中の切り替えには、メディアクエリではなくコンテナクエリを使います（「[8-2 コンテナクエリ](/responsive/container-queries/)」）。
+
+2サイズのデザインカンプを比率を保って再現する案件で、ビューポートの判定を1か所にまとめたいときは、`:root` で `--screen` の値を決め、各所はスタイルクエリで分岐する方法があります。使ってよい条件は「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」で説明しています。
+
+## コメントは /* */ で書く
+
+Sassでは `//` で1行のコメントを書けますが、素のCSSでは `//` はコメントとして扱われません。Sassから移したコードに `//` が残っていないかを確かめ、コメントはすべて `/* */` で書きます。コメントに書く内容は「[5-4 コメントの書き方](/notation/comments/)」で説明しています。

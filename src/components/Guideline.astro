@@ -1,0 +1,146 @@
+---
+/**
+ * ページのルールを並べる。ルールは src/content/rules/*.yaml に定義し、
+ * `page` がこのページの ID と一致するものを記述順に表示する。
+ * 見出し（`## ガイドライン`）は目次に載せるため、ページ側の MDX に書く。
+ */
+import { getCollection } from 'astro:content';
+import { inlineCode } from '../lib/inline-code';
+
+interface Props {
+  /** 表示するページの ID。省略すると現在のページ。 */
+  page?: string;
+}
+
+const page = Astro.props.page ?? Astro.locals.starlightRoute.id;
+const rules = (await getCollection('rules', ({ data }) => data.page === page)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+if (rules.length === 0) {
+  throw new Error(`「${page}」に掲載するルールが src/content/rules/*.yaml にありません。`);
+}
+---
+
+<ul class="scoped guideline not-content">
+  {
+    rules.map(({ data }) => (
+      <li class="_rule" id={`rule-${data.id}`}>
+        <p class="_statement">
+          <span class="_level" data-level={data.level}>
+            {data.level}
+          </span>
+          <span set:html={inlineCode(data.rule)} />
+        </p>
+        <dl class="_meta">
+          <div class="_row">
+            <dt>ID</dt>
+            <dd>
+              <code>{data.id}</code>
+            </dd>
+          </div>
+          <div class="_row">
+            <dt>理由</dt>
+            <dd set:html={inlineCode(data.reason)} />
+          </div>
+          {data.note && (
+            <div class="_row">
+              <dt>補足</dt>
+              <dd set:html={inlineCode(data.note)} />
+            </div>
+          )}
+          {data.lint && (
+            <div class="_row">
+              <dt>自動チェック</dt>
+              <dd set:html={inlineCode(data.lint)} />
+            </div>
+          )}
+          {data.aiProne && (
+            <div class="_row">
+              <dt>注意</dt>
+              <dd>AIが生成するコードで誤りやすいルールです。</dd>
+            </div>
+          )}
+        </dl>
+      </li>
+    ))
+  }
+</ul>
+
+<style is:global>
+  @layer starlight, base, components;
+
+  @layer components {
+    @scope (.scoped.guideline) to (.scoped) {
+      :scope {
+        display: block grid;
+        gap: 1rem;
+        padding: 0;
+        list-style-type: "";
+      }
+
+      ._rule {
+        padding: 1rem;
+        border: 1px solid var(--sl-color-gray-5);
+        border-inline-start-width: 4px;
+        border-radius: 0.25rem;
+        scroll-margin-block-start: calc(var(--sl-nav-height) + 1rem);
+      }
+
+      ._statement {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      ._level {
+        display: inline flow-root;
+        margin-inline-end: 0.5rem;
+        padding-inline: 0.5rem;
+        border-radius: 0.25rem;
+        background-color: var(--_level-background);
+        color: var(--_level-foreground);
+        font-size: var(--sl-text-sm);
+
+        &[data-level="必須"] {
+          --_level-background: var(--sl-color-blue-low);
+          --_level-foreground: var(--sl-color-blue-high);
+        }
+
+        &[data-level="推奨"] {
+          --_level-background: var(--sl-color-green-low);
+          --_level-foreground: var(--sl-color-green-high);
+        }
+
+        &[data-level="非推奨"] {
+          --_level-background: var(--sl-color-orange-low);
+          --_level-foreground: var(--sl-color-orange-high);
+        }
+
+        &[data-level="禁止"] {
+          --_level-background: var(--sl-color-red-low);
+          --_level-foreground: var(--sl-color-red-high);
+        }
+      }
+
+      ._meta {
+        display: block grid;
+        gap: 0.25rem;
+        margin-block: 0.5rem 0;
+        font-size: var(--sl-text-sm);
+      }
+
+      ._row {
+        display: block grid;
+        grid-template-columns: 7em minmax(0, 1fr);
+        gap: 0.5rem;
+      }
+
+      dt {
+        color: var(--sl-color-gray-3);
+      }
+
+      dd {
+        margin: 0;
+      }
+    }
+  }
+</style>

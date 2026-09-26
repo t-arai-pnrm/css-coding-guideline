@@ -1,0 +1,231 @@
+# 第8章 レスポンシブデザイン
+
+# 8-1 検討する順番
+- id: responsive-escalation-order
+  level: 必須
+  rule: レスポンシブ対応は「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わない。
+  reason: 条件分岐が減り、想定していない幅や置き場所でも崩れにくくなるため。
+  aiProne: true
+  page: responsive/escalation
+  since: 0.1.0
+
+- id: no-responsive-for-static-elements
+  level: 推奨
+  rule: タグ、バッジ、アイコンのように本質的に固定サイズの要素は、レスポンシブにしない。
+  reason: '`clamp()` やクエリを足しても見た目はほとんど変わらず、コードの複雑さだけが増えるため。'
+  note: アイコンは `1em` で文字サイズに追従させれば十分です。
+  page: responsive/escalation
+  since: 0.1.0
+
+- id: max-inline-size-over-fixed-width
+  level: 推奨
+  rule: 幅は固定値ではなく `max-inline-size` で上限を決め、固定値が必要なときは `min(100%, …)` ではみ出しを防ぐ。
+  reason: 狭い画面や狭い場所に置かれたときにも、内容に合わせて縮むため。
+  aiProne: true
+  page: responsive/escalation
+  since: 0.1.0
+
+- id: min-block-size-over-fixed-height
+  level: 推奨
+  rule: 高さは固定せず、`min-block-size` か `aspect-ratio` で決める。
+  reason: 内容が増えたときや、ユーザーが文字サイズを大きくしたときにも、中身があふれないため。
+  aiProne: true
+  page: responsive/escalation
+  since: 0.1.0
+
+- id: query-choice-by-layer
+  level: 推奨
+  rule: '`pages` レイヤーのスタイルではメディアクエリを、`components` レイヤーのスタイルではコンテナクエリを優先する。'
+  reason: ページ全体の段組みはビューポートに依存するが、コンポーネントはどこに置かれるかを自分では知らないため。
+  note: モーダルやトーストのように、ビューポートに固定されるコンポーネントはメディアクエリを使います。
+  page: responsive/escalation
+  since: 0.1.0
+
+# 8-2 コンテナクエリ
+- id: container-name-required
+  level: 必須
+  rule: コンテナには必ず名前を付け、`@container` の条件でもその名前を指定する。
+  reason: コンテナが入れ子になったとき、どのコンテナを参照しているのかが曖昧になるのを防ぐため。
+  aiProne: true
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: container-name-dashed-ident
+  level: 必須
+  rule: コンテナの名前は `--` で始める（例：`--card-list`）。
+  reason: 自分で付けた名前だとすぐに分かり、将来 CSS に追加されるキーワードとも衝突しないため。
+  lint: 'Stylelint: `container-name-pattern`'
+  aiProne: true
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: container-shorthand
+  level: 必須
+  rule: コンテナは `container` ショートハンドで、名前と種類をまとめて指定する（`container-type` を単体で書かない）。
+  reason: 名前の付け忘れを防ぐため。
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: container-query-inline-size
+  level: 必須
+  rule: コンテナクエリの条件では、`width` ではなく `inline-size` を使う。
+  reason: 書字方向に依存しない、論理的な指定にそろえるため。
+  aiProne: true
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: no-container-on-page-root
+  level: 禁止
+  rule: '`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。'
+  reason: 'ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。'
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: no-container-on-intrinsic-size
+  level: 禁止
+  rule: 幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。
+  reason: インライン方向のサイズの封じ込めが働き、幅が極端に小さく計算されるため。
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: no-padding-on-container
+  level: 非推奨
+  rule: コンテナにする要素には `padding` や `border` を指定せず、レイアウトは子要素で行う。
+  reason: コンテナの幅の計算がずれ、クエリの閾値や `cqi` の値が意図とずれるため。
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: cqi-needs-named-container
+  level: 必須
+  rule: '`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。'
+  reason: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
+  aiProne: true
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: no-container-type-size
+  level: 非推奨
+  rule: '`container-type: size` と、それを前提にした `cqb`、`cqw`、`cqmin`、`cqmax` は使わない。'
+  reason: コンテナの高さが確定していないと効かず、使える場面がほとんどないため。
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: no-container-utility-class
+  level: 禁止
+  rule: '`.container` のような汎用のクラスを作らない。`container` プロパティを持つ要素にだけ、`.sidebar-container` のように何のコンテナかが分かる名前を付ける。'
+  reason: '`container` が CSS で意味を持つ語になったので、ただのラッパーに使うと誤解を招くため。'
+  page: responsive/container-queries
+  since: 0.1.0
+
+- id: zoom-as-last-resort
+  level: 非推奨
+  rule: '`zoom` をレスポンシブ対応の手段として使わない。'
+  reason: 文字も含めてすべてが縮小され、レイアウトの問題を解決せずに隠してしまうため。
+  note: 想定の最小幅を下回ると破綻するコンポーネントのルートに限り、`1` を上限とする最後の保険として使えます。
+  page: responsive/container-queries
+  since: 0.1.0
+
+# 8-3 メディアクエリとブレイクポイント
+- id: media-query-for-macro-layout
+  level: 推奨
+  rule: メディアクエリは、ページ全体の段組み、ビューポートに固定された要素、常に画面幅いっぱいに表示されるブロックに限って使う。
+  reason: それ以外の要素は、イントリンシックな手法やコンテナクエリのほうが置き場所の変化に強いため。
+  page: responsive/media-queries
+  since: 0.1.0
+
+- id: query-range-syntax
+  level: 必須
+  rule: メディアクエリとコンテナクエリの条件は範囲構文（`>=` や `<`）で書き、`min-width` や `max-width` の書き方は使わない。
+  reason: 条件を不等式として読め、境界の値を含むかどうかも明確になるため。
+  lint: 'Stylelint: `media-feature-range-notation`（メディアクエリのみ）'
+  aiProne: true
+  page: responsive/media-queries
+  since: 0.1.0
+
+- id: mobile-first-queries
+  level: 推奨
+  rule: メディアクエリでは狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを `width >=` の条件の中に書く。
+  reason: 狭い画面のレイアウトのほうが単純なことが多く、打ち消すための指定が増えずに済むため。
+  page: responsive/media-queries
+  since: 0.1.0
+
+- id: breakpoint-in-rem
+  level: 必須
+  rule: ブレイクポイントは rem で指定し、`calc(640 / 16 * 1rem)` のようにピクセル値からの変換を式で書く。
+  reason: 文字サイズを大きくしているユーザーは実質的に使える幅が狭くなるので、rem で指定すれば切り替えもそれに追従するため。式にすれば、元のピクセル値も読み取れる。
+  aiProne: true
+  page: responsive/media-queries
+  since: 0.1.0
+
+- id: breakpoint-from-content
+  level: 必須
+  rule: ブレイクポイントはデバイスの幅ではなく、レイアウトが崩れる幅から決める。
+  reason: 画面幅の種類は無数にあり、特定の端末の幅に合わせても、その間の幅で崩れるため。
+  page: responsive/media-queries
+  since: 0.1.0
+
+- id: no-device-names
+  level: 禁止
+  rule: '`sp`、`tablet`、`pc` のようにデバイスを連想させる名前を、ブレイクポイントやクラス名（`.sp-only` など）に使わない。'
+  reason: 画面の幅とデバイスの種類は一致せず、名前と実態がずれていくため。
+  aiProne: true
+  page: responsive/media-queries
+  since: 0.1.0
+
+- id: threshold-as-formula
+  level: 推奨
+  rule: クエリの閾値は、「列の最小幅×列数＋隙間×隙間の数」のように、レイアウトが成り立つ条件を `calc()` の式で書く。
+  reason: 数値の根拠がコードに残り、列数や隙間を変えたときにも直しやすいため。
+  page: responsive/media-queries
+  since: 0.1.0
+
+- id: no-var-in-query
+  level: 禁止
+  rule: '`@media` と `@container` の条件式の中で `var()` を使わない。'
+  reason: クエリの条件ではカスタムプロパティを参照できず、条件そのものが無効になるため。
+  aiProne: true
+  page: responsive/media-queries
+  since: 0.1.0
+
+# 8-4 実践パターン：2サイズのデザインカンプを再現する
+- id: screen-mode-for-two-size-comps
+  level: 推奨
+  rule: '`--screen` とスタイルクエリによる切り替えと、`--px`・`--rem` による比例スケールは、2サイズのデザインカンプを比率を保って再現する案件に限って使う。'
+  reason: どちらもビューポートを基準にする方法なので、置き場所に合わせて振る舞うべきコンポーネントには向かないため。
+  page: responsive/design-comp-pattern
+  since: 0.1.0
+
+- id: screen-mode-single-source
+  level: 必須
+  rule: '`--screen` を使う場合、ビューポートの `@media` は `--screen` を決める1か所だけにし、各所の分岐は `@container style(--screen: …)` で書く。'
+  reason: ブレイクポイントの値が1か所にまとまり、変えたときの修正漏れがなくなるため。
+  page: responsive/design-comp-pattern
+  since: 0.1.0
+
+- id: screen-mode-state-names
+  level: 推奨
+  rule: モードの名前は `--compact` や `--spacious` のように、デバイスではなく状態を表す `--` で始まる名前にする。
+  reason: デバイス名は実態とずれやすく、`--` で始めれば自分で付けた名前だと分かるため。
+  page: responsive/design-comp-pattern
+  since: 0.1.0
+
+- id: proportional-scale-comp-values
+  level: 推奨
+  rule: 比例スケールの寸法は `calc(N * var(--px))` と `calc(N * var(--rem))` で書き、`N` にはカンプ上のピクセル値をそのまま書く。
+  reason: カンプとの対応がそのまま読め、`calc((60 + 72) * var(--px))` のように値の足し算も式で残せるため。
+  page: responsive/design-comp-pattern
+  since: 0.1.0
+
+- id: proportional-scale-rem-for-text
+  level: 必須
+  rule: 比例スケールでも、文字サイズには `--px` ではなく `--rem` を使う。
+  reason: 文字サイズを大きくしているユーザーでは画面を狭いものとして扱う補正が掛かるので、`--px` を使うと文字まで縮んでしまうため。
+  page: responsive/design-comp-pattern
+  since: 0.1.0
+
+- id: screen-mode-compact-base
+  level: 推奨
+  rule: '`--compact` の表示はクエリの外に基本のスタイルとして書き、`--spacious` の差分だけをスタイルクエリで書く。'
+  reason: スタイルクエリに対応していないブラウザでも、コンパクトな表示で内容を読めるようにするため。
+  page: responsive/design-comp-pattern
+  since: 0.1.0

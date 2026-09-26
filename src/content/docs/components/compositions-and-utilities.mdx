@@ -1,0 +1,185 @@
+---
+title: "6-2 コンポジションとユーティリティ"
+description: "並べる、積む、折り返すといった、コンポーネントに依存しない配置はコンポジションで扱い、間隔のデフォルト値は0にします。ユーティリティは、どこに付けても同じ意味を持つ単機能のクラスに限ります。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import compositionsHtml from '../../../demos/components/compositions/index.html?raw';
+import compositionsCss from '../../../demos/components/compositions/style.css?raw';
+
+要素を縦に積む、横に並べて折り返す、幅に応じて列数を切り替えるといった配置は、多くのコンポーネントに共通します。こうした配置は、コンポーネントから切り離した「コンポジション」（`stack`、`cluster`、`switcher` など）で扱います。コンポジションは配置だけを受け持ち、間隔や列数は公開プロパティで受け取ります。間隔のデフォルト値は0にして、使う側で指定します。
+
+ユーティリティは、視覚的に隠す、数字の幅をそろえるといった、どこに付けても同じ意味を持つ単機能のクラスに限ります。余白や配置の調整は、まずコンポーネントのCSSで行い、それで足りなければコンポジションやユーティリティを検討します。この節の最後には、Tailwind CSSのようなユーティリティファーストの手法との付き合い方をコラムとしてまとめました。
+
+## 配置をコンポーネントごとに書くと起きること
+
+タグの一覧、ボタンの並び、フッターのリンク集のように、「横に並べて、入りきらなければ折り返す」配置はサイトのあちこちに出てきます。これを各コンポーネントで毎回書くと、似た指定が少しずつ違う形で散らばります。
+
+```css title="🙅‍♂ Not Recommended: 同じ配置をコンポーネントごとに書く"
+/* 🙅‍♂ Not Recommended */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button-group {
+  display: flex;
+}
+
+.button-group > * + * {
+  margin-left: 10px;
+}
+```
+
+本書は、重複をむやみに恐れない立場です（「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」）。この例で問題なのは重複そのものより、守りの指定が抜けやすいことです。2つ目の `.button-group` には `flex-wrap: wrap` がないので、ボタンが増えたり画面が狭くなったりすると、はみ出します。間隔を子の `margin` で作っているので、仮に折り返せたとしても、2行目の先頭に余計な余白が残ります。
+
+配置のたびに同じ注意点を思い出すのは、人とAIのどちらにとっても負担です。また、CSSを読まないと、その要素の子がどう並ぶのかが分かりません。配置をコンポジションにしておけば、守りの指定は1か所に集まり、HTMLのクラス名を見るだけで並び方の意図が読み取れます。
+{/* 要確認: 出典なし（コンポジションにする利点の説明は筆者の推論） */}
+
+## 配置のパターンをコンポジションにする
+
+コンポジションは、レイアウト上の再利用パターンをまとめたクラスです。`compositions` レイヤーに置き、名前は接頭辞のないkebab-caseにします。コンポジションが受け持つのは配置だけで、色や文字の大きさのような見た目は持ちません。
+
+```css title="🙆‍♂ Recommended: 配置だけを受け持ち、間隔は公開プロパティで受け取る"
+/**
+ * 子要素を縦に積む。
+ *
+ * @prop {length} --stack--gap [0] - 子要素の間隔
+ */
+.stack {
+  display: block flex;
+  flex-direction: column;
+  gap: var(--stack--gap, 0);
+}
+
+/**
+ * 子要素を横に並べ、入りきらなければ折り返す。
+ *
+ * @prop {length}  --cluster--gap           [0]      - 行と列の間隔（一括）
+ * @prop {length}  --cluster--row-gap       [0]      - 行の間隔
+ * @prop {length}  --cluster--column-gap    [0]      - 列の間隔
+ * @prop {keyword} --cluster--justification [normal] - 主軸の配置
+ * @prop {keyword} --cluster--alignment     [normal] - 交差軸の配置
+ */
+.cluster {
+  display: block flex;
+  flex-wrap: wrap;
+  gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+  justify-content: var(--cluster--justification, normal);
+  align-items: var(--cluster--alignment, normal);
+}
+```
+
+使う側は、HTMLにクラス名を書き、間隔などの値を `style` 属性で渡します。`class="cluster"` とあれば、その要素の子が横に並んで折り返すことが、CSSを開かなくても分かります。
+
+```html
+<ul class="_tags cluster" style="--cluster--gap: calc(var(--spacing--xxs) / 16 * 1rem)">
+  <li>…</li>
+</ul>
+```
+
+コンポジションは、コンポーネントの中の要素に付けても、コンポーネントのルートに付けてもかまいません。コンポジションが決めるのは直下の子の並び方と間隔だけで、子の内部には触れないからです。「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明した「配置は置く側が持つ」という考え方を、再利用できる形にしたものだと言えます。
+
+ファイルの先頭には、JSDocの形式で公開プロパティの一覧を書きます。`@prop {型} --名前 [デフォルト値] - 説明` の形で書いておけば、使う人は実装を読まずに、変えられる値とデフォルト値を確認できます。コメント全般の書き方は「[5-4 コメントの書き方](/notation/comments/)」で扱います。
+
+## 主なコンポジション
+
+私が使っている主なコンポジションは次のとおりです。stack、cluster、switcher、sidebarといった名前は、Every Layoutなどで広まった配置パターンの名前にならっています。
+{/* 要確認: 出典なし（名前の由来についての記述） */}
+
+| 名前 | 配置 | 主な公開プロパティ |
+|---|---|---|
+| `stack` | 子を縦に積む | `--stack--gap` |
+| `cluster` | 子を横に並べ、入りきらなければ折り返す | `--cluster--gap`、`--cluster--justification` |
+| `apart` | 子をインライン方向の両端に分け、入りきらなければ折り返す | `--apart--gap`、`--apart--alignment` |
+| `switcher` | 幅が閾値以上なら指定の列数で並べ、下回ったら1列にする | `--switcher--column-count`、`--switcher--column-min-width` |
+| `sidebar` | メインとサイドの2カラムにし、狭ければ縦に積む | `--sidebar--side-width`、`--sidebar--main-min-width` |
+| `grid` | 列の最小幅と最大数から、列数を自動で決める | `--grid--column-min-width`、`--grid--column-max-count` |
+| `pile` | すべての子を同じグリッドのセルに重ねる | なし |
+| `primary-layout` | コンテンツの最大幅とガターを決め、子ごとに全幅などの幅を選ばせる | `--primary-layout--content-max-width`、`--primary-layout--gutter` |
+
+幅によって列数や折り返しが変わるコンポジションも、メディアクエリは使いません。`flex-wrap: wrap` による折り返し、`auto-fit` と `minmax()` による列数の自動調整、`sign()` による閾値の判定で、幅の変化に対応します。「[8-1 検討する順番](/responsive/escalation/)」で説明した「イントリンシック」の段階を、部品として用意しておくわけです。子を重ねる `pile` は、ルートに `isolation: isolate` を指定して、重なりをコンポジションの中に閉じ込めています。
+
+本文の段落の間隔を作る `prose` もコンポジションの1つです。ただし、本文の余白の設計と切り離せないので、「[7-2 余白を設計する](/layout/spacing/)」で扱います。
+
+## 間隔のデフォルト値は0にする
+
+コンポジションの間隔のデフォルト値は `0` にします。間隔は、コンポジションを置く文脈によって決まる値で、コンポジション自身が知っているものではないからです。デフォルト値に余白のトークンを入れておくと、指定し忘れた箇所にも何となく余白が付き、デザインと合っていないことに気付きにくくなります。
+{/* 要確認: 出典なし（デフォルトの間隔を0にする理由は筆者の推論。著者の最近の実装でデフォルト値が0に変わっていることは確認済み） */}
+
+`cluster` のように行と列の2方向の間隔を持つコンポジションでは、`--cluster--gap` で一括に、`--cluster--row-gap` と `--cluster--column-gap` で個別に指定できるようにします。`var(--cluster--gap, var(--cluster--row-gap, 0))` のようにフォールバックを連ねると、「一括の指定があればそれを、なければ個別の指定を、どちらもなければ0を使う」という意味になります。
+
+間隔の値には、余白のトークンを単位に変換したものを渡します。上のHTMLの例では、`--spacing--xxs` を `calc(var(--spacing--xxs) / 16 * 1rem)` でremに変換しています。トークンを単位なしの数値で持つ理由は「[6-3 デザイントークン](/components/design-tokens/)」で説明します。
+
+`switcher` のように、受け取った値から閾値などを計算するコンポジションでは、計算の途中の値を `--_c--` で始まる内部プロパティに置きます。`switcher` の中心は次の1行です。
+
+```css
+grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr));
+```
+
+`--_c--threshold` は、「列の最小幅×列数＋列の間隔×（列数−1）」で求めた閾値です。`sign()` は、引数が正なら1、負なら-1を返す関数です。要素の幅が閾値以上なら掛け算の結果は `-100%` になり、列の最小幅は1列あたりの幅の目安（`--_c--column-preferred-width`）のままです。閾値を下回ると `100%` になるので、列の最小幅が要素の幅いっぱいになり、1列に切り替わります。実際の列の幅は `1fr` で均等に広がります。
+
+<Baseline id="abs-sign" name="abs() と sign()" />
+
+`sign()` は、2025年6月にすべての主要なブラウザで使えるようになった関数です（2026年9月確認）。本書の対象のブラウザ（Safari 18系の最終版以降）では動作します。内部プロパティの命名は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
+
+## コード例とデモ
+
+次のデモでは、全体を `stack` で縦に積み、タグの一覧に `cluster` を、3つのパネルに `switcher` を使っています。パネルの中の見出しと本文も `stack` です。どのコンポジションにも、間隔は `style` 属性で渡しています。幅のボタンで480pxと768pxを切り替えると、3つのパネルが1列と3列の間で切り替わります。
+
+<Demo title="stack、cluster、switcher を組み合わせ、間隔を style 属性で渡す" html={compositionsHtml} css={compositionsCss} />
+
+`switcher` の閾値は「160px相当×3列＋16px相当×2」の512px相当です。デモのCSSのうち、コンポーネント（`composition-demo`）が書いているのは、タグとパネルの見た目だけです。並び方と間隔は、すべてコンポジションとHTMLの `style` 属性で決まっています。
+
+## ユーティリティにする範囲
+
+ユーティリティは、単機能の補助クラスです。名前は `-` で始め、`.-visually-hidden` や `.-tabular-nums` のように付けます。段階のあるものは、`.-fluid-text--md` のように `--` の修飾で表します。命名の規則は「[5-1 命名規則](/notation/naming/)」で扱います。
+
+ユーティリティは、レイヤーの順序で最後の `utilities` に置くので、コンポーネントのスタイルより優先されます。そのため、ユーティリティにしてよいのは、どこへ付けても同じ意味を持ち、コンポーネントの指定に勝っても困らないものだけです。視覚的に隠してスクリーンリーダーには読ませる `.-visually-hidden` は、その典型です。付けた以上は、どのコンポーネントの中でも確実に隠れなければ意味がありません。
+
+私が使っているテンプレートでは、アクセシビリティのための `.-visually-hidden` と、タイポグラフィのためのクラスをユーティリティにしています。後者には、中央揃えにする `.-text-center`、数字の幅をそろえる `.-tabular-nums`、行の上下のハーフレディングを削る `.-trim-both` などがあります。
+
+```css title="🙆‍♂ Recommended: どこに付けても同じ意味を持つ単機能のクラス"
+.-tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.-text-center {
+  text-align: center;
+  text-wrap: balance;
+}
+```
+
+余白や配置の細かな調整は、まずコンポーネントのCSSで行います。そこで閉じられなければコンポジションかユーティリティを検討し、それでも静的な見た目の断片として残るなら、次に説明するパターンを考えます。
+
+コンポジションとユーティリティの間には、もう1つ「パターン」という分類があります。パターンは、アイコンの大きさを決める `.icon` のような、静的で再利用できる見た目の断片で、`patterns` レイヤーに置きます。名前は `big-title` のような見た目ではなく、`section-heading` のような役割から付けます。同じ見た目が3回出てきたらパターンへの昇格を検討してよいという目安がありますが、回数だけで機械的に昇格させることはしません。「少しだけ角丸がほしい」「ここだけ影がほしい」といった都合だけで、パターンやコンポーネントを作らないようにします。
+
+## コラム：ユーティリティファーストとの付き合い方
+
+本書は、素のCSSで書くことを前提にしています。私が使っているテンプレートの規約にも、「明示的な要求がない限り、Tailwind CSSやCSS-in-JSは使わない」と書いています。Web標準の機能だけで書いておけば、この本で説明しているカスケードレイヤーや `@scope` などの仕組みを、そのまま使えるからです。
+{/* 要確認: 出典なし（素のCSSを前提にする理由は筆者の推論） */}
+
+とはいえ、実務でTailwind CSSの案件に関わることもあります。私は、Tailwind CSSをデザイントークンのlintとして優秀だと評価しています。あらかじめ定義した値の中から選んで書くので、トークンにない中途半端な値が紛れ込みにくいからです。
+{/* 要確認: 出典なし（lint として優秀だとする理由の説明は筆者の推論） */}
+
+一方で、Tailwind CSSはGridのレイアウトが苦手です。`grid-template-areas` は任意の値として書けるものの扱いにくく、何でもFlexboxで組んだ実装になりがちです。私は素のCSSで `grid-template` を組んでから、AIにTailwind CSSの任意の値へ変換させることが多く、これは本末転倒だとも感じています。そこで、UIのコンポーネントはTailwind CSSで、レイアウトは素のCSSで書くという分担も有効だと考えています。
+
+Tailwind CSSを使う場合も、この章の考え方はそのまま生かせます。コンポーネントのルートに外側の余白を持たせないこと、ほかのコンポーネントの内部に触れないこと、共有する値をトークンにまとめることは、道具に関係なくコンポーネントの境界を守るための原則です。
+{/* 要確認: 出典なし（Tailwind CSS でも章の原則が使えるという記述は筆者の推論） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [Every Layout](https://every-layout.dev/)
+- [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)
+- [flex-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex-wrap)

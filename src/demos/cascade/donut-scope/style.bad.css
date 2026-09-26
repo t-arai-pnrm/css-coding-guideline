@@ -1,0 +1,31 @@
+@layer components {
+  /* 下限（to (.scoped)）がないので、入れ子のコンポーネントの中までスコープに含まれる */
+  @scope (.scoped.media-card) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._title {
+      color: oklch(50% 0.2 260deg);
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+
+  @scope (.scoped.author-note) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 4px;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    ._title {
+      font-weight: bolder;
+    }
+  }
+}

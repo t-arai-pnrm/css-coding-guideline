@@ -1,0 +1,178 @@
+---
+title: "2-4 @scopeでスタイルを閉じ込める"
+description: "コンポーネントのスタイルは@scope (.scoped.<名前>) to (.scoped)の中に書きます。ドーナツスコープで入れ子のコンポーネントを範囲から外し、Astroではルート要素の中に置いたstyle要素でスコープを作ります。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import donutHtml from '../../../demos/cascade/donut-scope/index.html?raw';
+import donutCss from '../../../demos/cascade/donut-scope/style.css?raw';
+import donutBadCss from '../../../demos/cascade/donut-scope/style.bad.css?raw';
+
+コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書きます。ルート要素には `class="scoped <名前>"` を付けます。`to (.scoped)` を付けると、スコープは入れ子になった別のコンポーネントのルートで止まります。この形を「ドーナツスコープ」と呼びます。
+
+スタイルの範囲がコンポーネントの中に閉じるので、子要素には `._title` のような短いクラス名を付けられます。この節では、`@scope` の基本形とドーナツスコープの仕組み、ページへの応用、Astroでの書き方、ブラウザの対応状況を説明します。
+
+## クラス名の工夫だけでは範囲を閉じ込められない
+
+CSSのセレクタは、ページ全体のどの要素にも当てはまる可能性があります。そのため、コンポーネントのスタイルがほかのコンポーネントに漏れないように、これまではクラス名を工夫してきました。代表的なのが、BEMのようにコンポーネント名を接頭辞にする命名です。
+
+```css title="🙅‍♂ Not Recommended: 子孫セレクタで範囲を限ろうとする"
+/* 🙅‍♂ Not Recommended */
+.news-card .title {
+  color: var(--foreground--accent);
+  font-size: 1.5rem;
+}
+```
+
+子孫セレクタで範囲を限ろうとすると、カードの中に置いた別のコンポーネントの `.title` にもスタイルが当たります。詳細度も0.2.0に上がります。BEMのように `.news-card__title` と名前で区別すれば漏れは防げますが、名前が長くなり、すべての子要素に同じ接頭辞を付け続ける必要があります。
+
+`@scope` は、この問題をセレクタが当てはまる範囲そのもので解決します。スコープのルートと下限を指定すれば、その間にある要素にだけスタイルが当たります。子要素のクラス名は、ほかのコンポーネントと同じ名前でもかまいません。
+
+## `@scope` の基本形
+
+コンポーネントのスタイルは、次の形で書きます。`@scope` の後ろの括弧にスコープのルートを、`to` の後ろの括弧にスコープの下限を書きます。
+
+```css title="🙆‍♂ Recommended: コンポーネントのスタイルを @scope に閉じ込める"
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  ._title {
+    font-size: calc(20 / 16 * 1rem);
+  }
+
+  time {
+    color: var(--foreground--muted);
+  }
+}
+```
+
+```html title="index.html"
+<article class="scoped news-card">
+  <h2 class="_title">お知らせの見出し</h2>
+  <time datetime="2026-09-25">2026年9月25日</time>
+</article>
+```
+
+スコープのルートの要素は、`:scope` で選びます。`._title` のように書いたセレクタは、スコープの中の要素にだけ当てはまります。`@scope` の括弧の中のセレクタは詳細度に加わらないので、`._title` の詳細度は0.1.0のままです。`:scope` も、擬似クラス1つ分の0.1.0です。
+
+スコープの中は範囲が狭いので、`time` のようにタイプセレクタや属性セレクタで要素を選んでもかまいません。すべての要素にクラスを付ける必要はなく、HTMLの要素の種類をそのままセレクタに使えます。
+
+ルートを `.news-card` ではなく `.scoped.news-card` と書くのは、すべてのコンポーネントのルートに `scoped` クラスがあることを前提にしているからです。`scoped` クラスは、外側にあるコンポーネントのスコープにとっての下限になります。ルートに `scoped` を付け忘れると、外側のコンポーネントのスタイルがそのコンポーネントの中まで届いてしまいます。ルートと子要素の名前の付け方は、第5章「[5-1 命名規則](/notation/naming/)」で説明します。
+
+ルートの選び方には、もうひとつ注意があります。`@scope` の直下では `&` を使わず、必ず `:scope` と書きます。MDNのブラウザ互換性データによると、`@scope` の直下の `&` を `:where(:scope)` として扱うのは、Chrome 143、Firefox 142、Safari 26.2以降のブラウザです（2026年9月確認）。本書の対象のブラウザには、これより古いSafariも含まれます。
+
+## ドーナツスコープで入れ子のコンポーネントを除く
+
+`to (.scoped)` は、スコープの下限です。ルートの子孫のうち、`.scoped` に当てはまる要素とその中身は、スコープから外れます。下限の要素そのものも、スコープの外です。ルートから下限までの間だけにスタイルが当たるので、穴の開いたドーナツにたとえて「ドーナツスコープ」と呼ばれます。
+
+次のデモでは、`.media-card` の中に、別のコンポーネントの `.author-note` を入れ子にしています。どちらのコンポーネントの子要素にも、`._title` というクラスを付けています。外側のスコープでは `._title` を大きな青い文字にしていますが、入れ子のコンポーネントの見出しには届いていません。
+
+<Demo title="to (.scoped) があるので、入れ子のコンポーネントの ._title に外側のスタイルが届かない" html={donutHtml} css={donutCss} />
+
+下限を書かなかった場合と比べてみます。次のデモは、外側の `@scope` から `to (.scoped)` を消しただけのものです。入れ子のコンポーネントの見出しも、大きな青い文字になります。
+
+<Demo title="to (.scoped) がないと、入れ子のコンポーネントの ._title にも外側のスタイルが届く" html={donutHtml} css={donutBadCss} variant="not-recommended" />
+
+入れ子のコンポーネントにも、`._title` に `font-weight` を指定するルールがあります。詳細度の同じルールどうしでは、スコープのルートに近いほうの指定が勝ちます。そのため、文字の太さには入れ子のコンポーネントの指定が使われます。しかし、入れ子のコンポーネントが指定していない色と大きさには、外側のスタイルがそのまま当たります。スコープの近さだけでは漏れを防げないので、下限を必ず書きます。
+
+外側のコンポーネントから、入れ子のコンポーネントの見た目を変えたい場面もあります。そのときは、入れ子のコンポーネントの中の要素を直接選ばず、そのコンポーネントが公開しているカスタムプロパティに値を渡します。この考え方は、第6章「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明します。
+
+## ページのルートにもスコープを作る
+
+ページ固有のスタイルも、コンポーネントと同じ形で書きます。ページのルートの要素に `scoped page-<スラッグ>` のクラスを付け、スタイルは `@scope (.scoped.page-<スラッグ>) to (.scoped)` の中で指定します。
+
+```css title="🙆‍♂ Recommended: ページのルートにもスコープを作る"
+@scope (.scoped.page-about) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 64px;
+  }
+
+  ._lead {
+    font-size: calc(18 / 16 * 1rem);
+  }
+}
+```
+
+ページのルートも `scoped` クラスを持つので、ページの中に置いたコンポーネントは、ページのスコープから外れます。ページのスタイルがコンポーネントの中に漏れる心配はありません。WordPressの案件では、ページのルートになるブロックへこのクラスを付けています。
+
+1つのファイルに、複数の `@scope` を並べてもかまいません。1つのブロックから複数のコンポーネントを出力する場合などは、関係するスコープを同じファイルにまとめると見通しがよくなります。
+
+`@scope` の中で `@media` や `@container` を使うときは、各セレクタの中に書きます。`@scope` の直下に上書き用の条件のブロックを先に書くと、同じ詳細度の元のルールが後ろに来て、上書きが効かなくなるからです。この規約は、第5章「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明します。
+
+## Astroでは、ルート要素の中に `<style>` を置く
+
+Astroでコンポーネントを作るときは、ルート要素の中に `<style is:inline>` を置き、その中に `@scope to (.scoped)` と書きます。`@scope` の後ろのルートのセレクタを省略すると、`<style>` 要素の親要素がスコープのルートになります。
+
+```astro title="🙆‍♂ Recommended: ルート要素の中に置いた style 要素でスコープを作る"
+---
+const { title } = Astro.props;
+---
+
+<article class="scoped NewsCard">
+  <style is:inline>
+    @layer components {
+      @scope to (.scoped) {
+        :scope {
+          display: block grid;
+          gap: 8px;
+        }
+
+        ._title {
+          font-size: calc(20 / 16 * 1rem);
+        }
+      }
+    }
+  </style>
+  <h2 class="_title">{title}</h2>
+</article>
+```
+
+この書き方では、ルートのクラス名をCSSに書く必要がありません。コンポーネントのファイルの中で、マークアップとスタイルが完結します。ルートのクラスは、Astroのコンポーネント名に合わせてPascalCaseにしてもかまいません。
+
+`is:inline` を付けると、Astroはこの `<style>` を変換やバンドルをせずに、書いたとおりに出力します。Astroのスコープ付きCSSのように、要素に属性を自動で付ける処理も行いません。そのため、`@scope` やネストは、ビルドツールではなくブラウザが直接解釈します。
+
+`@import` で読み込まないスタイルなので、レイヤーはここで書きます。ページ固有のセクションなら `@layer pages` で、複数の場所で使うコンポーネントなら `@layer components` で包みます。レイヤーを書き忘れると、そのスタイルはすべてのレイヤーより強くなります（[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
+
+この方式には、いくつか注意点があります。`<style>` 要素はルート要素の最初の子になるので、`:first-child` や `* + *` のように、子要素の位置を数えるセレクタの対象に入ります。また、同じコンポーネントをページに何度も置くと、その回数だけ `<style>` も出力されます。
+{/* 要確認: 出典なし（:first-child への影響と CSS の重複出力は、実装から推論した注意点） */}
+HTMLの検証ツールによっては、`<body>` の中の `<style>` を誤りとして報告するので、設定で許可しておきます。私のテンプレートでは、markuplintの設定で許可しています。
+
+ルート要素の中に `<style>` を置く方法は、Astroに限りません。PHPのテンプレートの中に `<style>` を書く場合も、同じ形で使えます。私は、WordPressの管理画面で使うプラグインでも、この書き方でスタイルを書いています。
+
+## 対応状況と注意点
+
+`@scope` の対応状況は、どの範囲を見るかで2通りに読めます。まず、基本の動作から確認します。
+
+<Baseline id="scope" compatKey="api.CSSScopeRule" name="@scope（基本の動作）" />
+
+`@scope` の基本の動作は、Chrome 118、Safari 17.4、Firefox 146から使えます。すべての主要なブラウザで使えるようになったのは、Firefoxが対応した2025年12月です。本書の対象のブラウザ（Safari 18系の最終版以降と、ほかのブラウザの最新版）では、この節で紹介した形はすべて動作します。
+
+<Baseline id="scope" name="@scope（機能全体）" />
+
+一方、web-featuresは、`@scope` の機能全体を2026年3月に「新しく利用可能」になったものとして扱っています。MDNのブラウザ互換性データによると、Safari 26.0から26.3には、`@scope` の中のルールが `<input>` と `<textarea>` に当たらない不具合がありました。この不具合はSafari 26.4で直っています（2026年9月確認）。Safari 18系には、この不具合はありません。機能全体のChromeのバージョンが143になっているのは、`@scope` の直下の `&` の扱いを含むためです。
+
+Safari 26.0から26.3を使い続けているユーザーには、スコープの中で指定した入力欄のスタイルが当たりません。ただし、kiso.cssはスコープの外で入力欄に枠線を付けているので、入力欄が見えなくなるわけではありません。
+{/* 要確認: 出典なし（Safari 26.0〜26.3 での入力欄の見え方は、ブラウザで確認していない推論） */}
+
+`@scope` は、プログレッシブ・エンハンスメントとしては使いにくい機能です。対応していないブラウザでは `@scope` の中のスタイルがすべて無視され、コンポーネントの見た目がまったく付かないからです。本書の対象のブラウザはすべて基本の動作に対応しているので、本書では前提の機能として使います。対象のブラウザの考え方は、第1章「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明します。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
+- [:scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:scope)
+- [CSS Cascading and Inheritance Level 6: Scoping Styles](https://drafts.csswg.org/css-cascade-6/#scoped-styles)
+- [スタイルとCSS | Astro Docs](https://docs.astro.build/ja/guides/styling/)
+- [browser-compat-data: css/at-rules/scope.json](https://github.com/mdn/browser-compat-data/blob/main/css/at-rules/scope.json)

@@ -1,0 +1,223 @@
+---
+title: "11-1 状態とフォーカスを表す"
+description: "ホバーのスタイルは@media (any-hover: hover)の中に書き、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態は擬似クラスとARIA属性で表します。"
+sidebar:
+  order: 1
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import hoverHtml from '../../../demos/interaction/hover-focus/index.html?raw';
+import hoverCss from '../../../demos/interaction/hover-focus/style.css?raw';
+import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?raw';
+
+ホバーのスタイルは `@media (any-hover: hover)` の中に書き、同じ見た目を `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
+
+選択中や展開中といった状態は、`:checked` などの擬似クラスか、`aria-selected` などのARIA属性をセレクタにして表します。`.is-active` のような状態クラスは使いません。この節では、ホバーとフォーカスの書き方、状態の表し方、カード全体をリンクにする方法を説明します。
+
+## タッチ操作ではホバーの状態が残る
+
+`:hover` をメディアクエリの条件なしに書くと、スマートフォンのようなタッチ操作の端末で問題が起きます。タップした要素にホバーのスタイルが当たったまま、ほかの場所をタップするまで残り続けるのです。リンクによっては、1回目のタップでホバーの表示だけが変わり、2回目でようやく移動することもあります。
+
+```css title="🙅‍♂ Not Recommended: 条件なしのホバーと、画面の幅によるホバーの判定"
+/* 🙅‍♂ Not Recommended */
+._button:hover {
+  background-color: var(--_background--hocus);
+}
+
+@media (width >= 768px) {
+  ._link:hover {
+    color: var(--_color--hocus);
+  }
+}
+```
+
+画面の幅で判定する2つ目の書き方も、問題を解決しません。幅の広いタブレットはタッチで操作しますし、幅の狭いウィンドウをマウスで操作することもあります。画面の幅は、入力の方法を表していないからです。
+
+`@media (hover: hover)` や `@media (hover: hover) and (pointer: fine)` も、よく見かける書き方です。しかし、`hover` が調べるのは「主な入力」がホバーできるかどうかだけです。iPadにトラックパッド付きのキーボードをつないだ場合、主な入力はタッチのままなので、トラックパッドでカーソルを重ねてもホバーのスタイルが当たりません。
+
+## ホバーは `any-hover` の中に書き、フォーカスにも同じ見た目を
+
+ホバーのスタイルは、`@media (any-hover: hover)` の中に書きます。`any-hover` は、使える入力のうち「どれかひとつでも」ホバーできるかを調べるメディア特性です。トラックパッドをつないだタブレットでもホバーが有効になり、つなぐ・外すの変化にも追従します。
+
+```css title="🙆‍♂ Recommended: ホバーを any-hover の中に書き、:focus-visible にも同じ見た目を指定する"
+@scope (.scoped.save-button) to (.scoped) {
+  :scope {
+    --_background: var(--color--accent--600);
+    --_background--hocus: var(--color--accent--700);
+
+    background-color: var(--_background);
+
+    &:focus-visible {
+      background-color: var(--_background--hocus);
+    }
+
+    &:enabled:hover {
+      @media (any-hover: hover) {
+        background-color: var(--_background--hocus);
+      }
+    }
+  }
+}
+```
+
+<Baseline id="interaction" compatKey="css.at-rules.media.any-hover" name="any-hover メディア特性" />
+
+条件は `(any-hover)` と省略せずに、`(any-hover: hover)` と値まで書きます。値のない書き方も同じ意味になりますが、`prefers-reduced-motion: no-preference` のようなほかの条件と同じ形で、何を調べているのかを読み取れるからです。私のテンプレートは省略した形で書いていましたが、その後の案件では値まで書くようにしています。
+{/* 要確認: 出典なし（値まで書く理由は筆者の推論。案件での書き方の変化は調査メモの記録による） */}
+
+ホバーで変える見た目は、`:focus-visible` にも同じように指定します。キーボードで操作するユーザーにも、マウスで操作するユーザーと同じ手がかりが届きます。祖先の `overflow` でフォーカスリングの一部が切り取られた場合にも、背景色の変化がフォーカスの位置を補ってくれます。`:focus-visible` のスタイルはメディアクエリの外に書きます。タッチ操作の端末にも、キーボードをつないで使うユーザーはいるからです。
+
+フォーカスリングそのものは、ベーススタイルで二重のリングを定義しています（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。コンポーネントで指定するのは、リングに加える背景色などの変化だけです。リングを `outline: none` で消すことはしません。
+
+ホバーは、操作できる状態の要素に限って反応させます。上の例では `:enabled:hover` と書いて、無効にしたボタンを除いています。リンクも同じで、`:any-link:hover` と書けば、`href` を持たない現在のページのリンクは反応しません。押せないものが押せそうに見えるのを防ぐためです。
+
+なお、タッチスクリーンを持つノートパソコンでは、マウスもあるので `any-hover: hover` が当てはまります。この環境では、指でタップしたときにホバーのスタイルが残ります。入力の方法を操作ごとに見分けたい場合は、JavaScriptのポインターイベントを併用するしかありません。
+{/* 要確認: 出典なし（タッチスクリーンを持つノートパソコンでの挙動は推論。著者の記事は「タップ操作かどうかまで判定したいなら JS の併用が必要」とだけ述べている） */}
+
+`@layer` の中の `@scope` にこの形を書く場合は、ネストの深さに注意します。本書のStylelintの設定では、`&:enabled:hover` の中の `@media` が3段目になり、エラーになります。その場合は、`._button:enabled:hover` のように状態のセレクタを同じ階層に並べ、その中に条件を書きます（「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」）。この節のデモは、この形で書いています。
+
+## キーボードでの移動にはトランジションを掛けない
+
+ホバーの変化にトランジションを掛けるときは、キーボードでフォーカスを移したときの変化には掛けないようにします。Tabキーで次々とフォーカスを移しているのに、背景色が遅れて変わると、入力と表示がずれて反応が遅く感じられるからです。
+
+```css title="🙆‍♂ Recommended: トランジションを :not(:focus-visible) の中に書く"
+._button {
+  &:not(:focus-visible) {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--fast);
+      transition-property: background-color;
+      transition-timing-function: var(--ease--quint-out);
+    }
+  }
+}
+```
+
+`:focus-visible` が当てはまっている間は、トランジションの指定がありません。そのため、フォーカスが来た瞬間に一度で色が変わります。フォーカスが離れるときとホバーのときは、`:not(:focus-visible)` が当てはまるので、なめらかに色が戻ります。トランジションを動きを減らす設定の条件で囲む理由は、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。
+
+## 変化は透明度ではなく色で示す
+
+ホバーの表現として手軽なのが、`opacity: 0.7` のように要素を透かす方法です。しかし、この方法はおすすめしません。背景だけでなく文字まで透けるので、コントラストが下がって読みにくくなります。背景に画像や別の色があると、それが透けて見えるのも問題です。
+
+```css title="🙅‍♂ Not Recommended: ホバーを透明度で表す"
+/* 🙅‍♂ Not Recommended */
+._button:hover {
+  opacity: 0.7;
+}
+```
+
+もうひとつの問題は、意図が伝わらないことです。コードを読んだ人には、「ホバーしたら暗くしたい」のか「目立たなくしたい」のかが分かりません。デザインで別の色が指定されているなら、その色をそのまま書いたほうが、意図とコードが一致します。
+
+背景色や文字色を変えるときは、状態ごとの値を `--_background--hocus` のような接尾辞を付けた内部プロパティにまとめます。値には、デザインで決まっている色のトークンを使います。専用の色がない場合は、`oklch(from var(--_background) calc(l - 0.1) c h)` のように、相対カラー構文で元の色から明るさだけを変えた色を作ります。接尾辞の付け方は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で、相対カラー構文は「[10-1 色とダークモード](/color-media/color/)」で扱います。
+
+次のデモでは、ボタンとリンクにマウスを重ねたときと、Tabキーでフォーカスを移したときに、同じように色が変わります。無効にしたボタンと、`href` のない現在のページのリンクは反応しません。
+
+<Demo title="ホバーとフォーカスで同じように色が変わり、操作できないものは反応しない" html={hoverHtml} css={hoverCss} />
+
+比較のために、ホバーを `opacity` で表したものが次のデモです。文字まで薄くなり、無効にしたボタンも反応します。Tabキーでフォーカスを移しても、フォーカスリング以外は何も変わりません。
+
+<Demo title="ホバーを透明度で表すと、文字まで薄くなり、フォーカスでは何も変わらない" html={hoverHtml} css={hoverBadCss} variant="not-recommended" />
+
+## 状態は擬似クラスとARIA属性で表す
+
+選択中のタブ、開いているメニュー、現在のページのリンクのような状態は、JavaScriptでクラスを付け外しして表すことがよくあります。しかし、こうした状態の多くは、アクセシビリティのためにARIA属性でも表す必要があります。クラスと属性の両方を切り替えると、同じ状態を2か所で管理することになります。
+
+```css title="🙅‍♂ Not Recommended: ARIA属性と別に、状態のクラスを付ける"
+/* 🙅‍♂ Not Recommended */
+._tab.is-active {
+  border-color: currentColor;
+}
+```
+
+状態のスタイルは、ブラウザが持っている擬似クラスを最初に検討します。`:checked`、`:disabled`、`:popover-open`、`:modal`、`:user-invalid` などです。擬似クラスで表せない状態は、`aria-selected`、`aria-expanded`、`aria-current`、`aria-pressed` のようなARIA属性をセレクタにします。
+
+```css title="🙆‍♂ Recommended: ARIA属性をそのままセレクタにする"
+@scope (.scoped.tab-list) to (.scoped) {
+  ._tab {
+    border-block-end: 2px solid transparent;
+
+    &[aria-selected="true"] {
+      border-color: currentColor;
+    }
+  }
+
+  ._tab:not([aria-selected="true"]):hover {
+    @media (any-hover: hover) {
+      border-color: var(--border--base);
+    }
+  }
+}
+```
+
+ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た目の状態が必ず一致します。JavaScriptが属性の更新を忘れたら見た目も変わらないので、不具合にもすぐ気づけます。私は2020年ごろから、状態の管理は原則としてARIA属性とdata属性で行うと決めています。
+{/* 要確認: 出典なし（「不具合にすぐ気づける」という利点は筆者の推論） */}
+
+子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+
+擬似クラスでもARIA属性でも表せない状態だけを、data属性で表します。たとえば、画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` のように、見た目のためだけにある状態です。支援技術に伝える意味のない値を、ARIA属性にしてはいけません。
+
+## カード全体をリンクにする
+
+記事の一覧のカードでは、見出しだけでなくカードのどこを押しても記事へ移動させたいことがよくあります。いちばん簡単なのは、カード全体を `<a>` で包む方法です。しかし、この方法ではカードの中身すべてがリンクのテキストになり、スクリーンリーダーは日付やカテゴリーまで続けて読み上げます。カードの中にカテゴリーへのリンクを置きたくても、リンクの中にリンクは入れられません。
+
+そこで、リンクは見出しの `<a>` だけにし、その `::after` をカードいっぱいに広げます。見た目の上ではカードのどこを押してもリンクが反応しますが、リンクのテキストは見出しだけです。
+
+```css title="🙆‍♂ Recommended: 見出しのリンクの ::after をカードいっぱいに広げる"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    position: relative;
+    isolation: isolate;
+
+    &:has(._link:focus-visible) {
+      outline: 3px solid CanvasText;
+      outline-offset: 3px;
+    }
+  }
+
+  ._link {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    /* フォーカスリングはカードの外周に出すので、色だけを透明にする */
+    &:focus-visible {
+      box-shadow: none;
+      outline-color: transparent;
+    }
+  }
+
+  ._category-link {
+    position: relative;
+    z-index: 1;
+  }
+}
+```
+
+カードに `position: relative` を指定し、`::after` の配置の基準にします。フォーカスリングは、リンクの周りではなく `:has(._link:focus-visible)` でカードの外周に出します。見出しのリンクにフォーカスしたとき、押せる範囲（カード全体）とリングの範囲が一致するからです。カードの中にほかのリンクを置くときは、`position: relative` と `z-index: 1` で `::after` より手前に重ねます。
+{/* 要確認: 出典なし（リングをカードに出す理由として「押せる範囲とリングの範囲が一致する」と書いたのは筆者の推論。著者のコードのコメントは「article でフォーカスリングを表示するため」） */}
+
+リンク自身のリングは `outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります。私の案件のコードでは `outline: none` で消していましたが、本書のルール（「[4-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」の `no-outline-none`）に合わせて、この書き方にしました。
+{/* 要確認: 出典なし（outline-color: transparent にする書き方と、強制カラーモードでの振る舞いは筆者の推論。著者の実装は outline: none !important） */}
+
+この方法にも弱点があります。`::after` がカードの上に重なるので、カードの中の文章をドラッグして選択できません。以前の私は、この問題を避けるためにJavaScriptでカードのクリックを拾っていました。現在は、実装の手軽さとJavaScriptのない環境でも動くことを優先して、`::after` を広げる方法を使っています。
+{/* 要確認: 出典なし（方法を切り替えた理由は筆者の推論） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [hoverを指定するならany-hoverメディア特性を使いなさい！俺流hover実装例も紹介します](https://www.tak-dcxi.com/article/disable-hover-on-mobile-and-hover-implementation-example/)（TAKLOG、2024年3月）
+- [少しの記述でユーザビリティやアクセシビリティを向上させるHTML/CSSテクニック集](https://www.tak-dcxi.com/article/html-css-techniques-to-improve-usability-and-accessibility-with-minimal-code/)（TAKLOG、2024年5月）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。ホバーを `opacity` で表さない理由）
+- [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月。本書と一部の方針が異なります）
+- [アクセシビリティに配慮したタブメニューの実装例](https://www.tak-dcxi.com/article/accessibility-conscious-tab-menu/)（TAKLOG、2024年4月）
+- [any-hover - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/any-hover)
+- [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)

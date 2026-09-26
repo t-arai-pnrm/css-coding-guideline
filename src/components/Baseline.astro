@@ -1,0 +1,146 @@
+---
+/**
+ * 機能のブラウザ対応状況（Baseline）を表示する。データはビルド時に web-features から読む。
+ * 未知の ID を指定するとビルドが失敗する。
+ *
+ * @example
+ * <Baseline id="container-queries" />
+ * <Baseline id="text-autospace" compatKey="css.properties.text-autospace.normal" name="text-autospace: normal" />
+ */
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { features } from 'web-features';
+import { BASELINE_CHECKED } from '../lib/book.mjs';
+
+interface Props {
+  /** web-features の機能 ID。 */
+  id: string;
+  /** 機能の一部（プロパティの値など）だけを示すときの BCD のキー。 */
+  compatKey?: string;
+  /** 表示名。省略すると web-features の名前。 */
+  name?: string;
+}
+
+const { id, compatKey, name } = Astro.props;
+
+const feature = features[id];
+if (!feature || feature.kind !== 'feature') {
+  throw new Error(`web-features に機能「${id}」がありません。`);
+}
+const status = compatKey ? feature.status.by_compat_key?.[compatKey] : feature.status;
+if (!status) {
+  throw new Error(`web-features の「${id}」に「${compatKey}」がありません。`);
+}
+
+const { version } = JSON.parse(
+  readFileSync(join(process.cwd(), 'node_modules/web-features/package.json'), 'utf8'),
+);
+
+const formatDate = (date?: string) => {
+  if (!date) return '';
+  const [year, month] = date.split('-');
+  return `${year}年${Number(month)}月`;
+};
+
+const level = String(status.baseline);
+const summary = {
+  high: '広く利用可能',
+  low: '新しく利用可能',
+  false: '一部のブラウザのみ',
+}[level];
+const since =
+  status.baseline === 'high'
+    ? `${formatDate(status.baseline_high_date)}から（新しく利用可能になったのは${formatDate(status.baseline_low_date)}）`
+    : status.baseline === 'low'
+      ? `${formatDate(status.baseline_low_date)}から`
+      : '';
+
+const BROWSERS = [
+  ['chrome', 'Chrome'],
+  ['edge', 'Edge'],
+  ['firefox', 'Firefox'],
+  ['safari', 'Safari'],
+  ['safari_ios', 'iOS Safari'],
+] as const;
+---
+
+<div class="scoped baseline not-content" data-baseline={level}>
+  <p class="_summary">
+    <span class="_label">Baseline</span>
+    <strong>{summary}</strong>
+    {since && <span class="_since">{since}</span>}
+  </p>
+  <p class="_feature">
+    <code>{name ?? feature.name}</code>
+  </p>
+  <ul class="_browsers">
+    {
+      BROWSERS.map(([key, label]) => (
+        <li>
+          {label} {status.support[key] ?? '未対応'}
+        </li>
+      ))
+    }
+  </ul>
+  <p class="_source">web-features {version} のデータ（{BASELINE_CHECKED}確認）</p>
+</div>
+
+<style is:global>
+  @layer starlight, base, components;
+
+  @layer components {
+    @scope (.scoped.baseline) to (.scoped) {
+      :scope {
+        --_accent: var(--sl-color-gray-3);
+
+        padding-block: 0.75rem;
+        padding-inline: 1rem;
+        border: 1px solid var(--sl-color-gray-5);
+        border-inline-start: 4px solid var(--_accent);
+        border-radius: 0.25rem;
+        font-size: var(--sl-text-sm);
+
+        &[data-baseline="high"] {
+          --_accent: var(--sl-color-green);
+        }
+
+        &[data-baseline="low"] {
+          --_accent: var(--sl-color-blue);
+        }
+
+        &[data-baseline="false"] {
+          --_accent: var(--sl-color-orange);
+        }
+      }
+
+      p {
+        margin: 0;
+      }
+
+      ._summary {
+        display: block flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: baseline;
+      }
+
+      ._label {
+        font-weight: 600;
+      }
+
+      ._since,
+      ._source {
+        color: var(--sl-color-gray-3);
+      }
+
+      ._browsers {
+        display: block flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 1rem;
+        margin-block: 0.25rem;
+        padding: 0;
+        list-style-type: "";
+      }
+    }
+  }
+</style>

@@ -1,0 +1,203 @@
+---
+title: "12-1 CMSと共存する"
+description: "WordPressのようにレイヤーの外のCSSと共存する環境では、@layerを使わずに読み込む順番で9つの分類を保ちます。衝突は@scopeと独自のクラス名で減らし、トークンはtheme.jsonに置いて、編集画面の自由度も絞ります。"
+sidebar:
+  order: 1
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+WordPressのようなCMSでは、CMSの本体やプラグインのCSSが、レイヤーに入っていない状態で出力されます。この環境では、テーマのCSSに `@layer` を使いません。9つの分類は、ディレクトリの構成と `@import` の順番で保ちます。
+
+本体のCSSとの衝突は、`@scope` と独自のクラス名で減らします。トークンはtheme.jsonの `settings.custom` とパレットに定義し、CSSからは `--wp--custom--*` と `--wp--preset--*` で参照します。あわせて、theme.jsonで編集画面の自由度を絞り、トークンの外の値が入り込む余地を小さくします。
+
+この節では、WordPressのブロックテーマを例に、自分で管理できないCSSと同じページで共存するための書き方を説明します。考え方そのものは、ほかのCMSにも当てはまります。
+
+## テンプレートの構成をそのまま持ち込むと
+
+私は、Astroで作るサイトのテンプレートで、9つのカスケードレイヤーを使っています。WordPressのブロックテーマを作り始めたときも、最初は同じレイヤーの構成で書き始めました。しかし、数日後にはレイヤーの宣言をすべて外しています。
+
+理由は、WordPressの本体が出力するCSSにあります。ブロックの標準のCSS、theme.jsonから生成されるグローバルスタイル、プラグインのCSSは、どれもレイヤーの外で出力されます。レイヤーの外のCSSは、詳細度に関係なくレイヤーの中のCSSに勝つので、テーマのCSSだけをレイヤーに入れると、テーマが構造的に負けます。この仕組みは「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。
+
+```css title="🙅‍♂ Not Recommended: WordPressのテーマでレイヤーを宣言する"
+/* 🙅‍♂ Not Recommended */
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+@import url("kiso.css") layer(reset);
+@import url("./components/action-button.css") layer(components);
+@import url("./components/content-area.css") layer(components);
+```
+
+実際に試したときは、コアのボタンへの上書き、投稿の本文にあるコアブロックの調整、修正済みだったデザインの崩れが、まとめて元に戻りました。どれも、本体のCSSに詳細度と書く順番で勝っていた指定です。レイヤーへ入れた瞬間に、勝ち負けの前提がひっくり返ったわけです。
+
+テンプレートのレイヤーの構成は、すべてのCSSを自分で書き、サードパーティのCSSも自分で読み込める環境を前提にしています。CMSのように、読み込み方を変えられないCSSが常に同じページにある環境では、その前提が成り立ちません。レイヤーを使うかどうかの判断は、ルール `no-layers-with-unlayered-css` として第2章にまとめています。
+
+## 読み込む順番で9つの分類を保つ
+
+レイヤーを使わなくても、9つの分類は捨てません。ディレクトリを `tokens`、`base`、`compositions`、`pages`、`components`、`utilities` のように分類ごとに分け、エントリーポイントの `@import` をその順番に並べます。分類の名前、順番、数は、テンプレートと変えません。
+
+```css title="🙆‍♂ Recommended: エントリーポイントで、9つの分類の順に読み込む"
+/**
+ * テーマ全体のスタイルの入り口。
+ * WordPress 本体の CSS がレイヤーの外で出力されるため、@layer は使わない。
+ */
+@import url("kiso.css");
+@import url("./tokens/shapes.css");
+@import url("./base/generic.css");
+@import url("./vendors/slider.css");
+@import url("./compositions/cluster.css");
+@import url("./compositions/stack.css");
+@import url("./pages/about.css");
+@import url("./components/site-header.css");
+@import url("./components/content-area.css");
+@import url("./utilities/a11y.css");
+```
+
+リセットCSSのkiso.cssは、レイヤーなしで先頭に読み込みます。kiso.cssのセレクタはすべて `:where()` で包まれていて詳細度が0なので、後から書いた指定には必ず負けます。トークンは `:root` にカスタムプロパティを定義するだけでリセットと競合しないので、kiso.cssを先に置いても分類の順番は崩れません。レイヤーがない環境では、この「詳細度を低くそろえる設計」がレイヤーの代わりになります。ベーススタイルも `:where()` で詳細度を0にし、コンポーネントの中はクラス1つ分にそろえます。詳細度の設計は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+{/* 要確認: 出典なし（kiso.css を tokens より前に置いてよい理由は筆者の推論。案件の global.css は reset → tokens の順、規約文書は tokens → reset の順） */}
+
+テーマ全体で使うCSSと、ブロックごとのCSSも分けます。テーマのエントリーポイントに入れるのは、トークン、リセット、ベース、コンポジション、ユーティリティ、ヘッダーとフッター、投稿の本文、サイト全体で必ず使うコンポーネントです。1つのブロックでしか使わないレイアウトや装飾は、そのブロックのCSSに書きます。同じCSSをテーマとブロックの両方に重複させないのが約束です。
+
+ブロックのCSSは、WordPressがブロックごとに読み込むので、テーマの `@import` の順番では並びを決められません。そのため、ブロックのCSSは、読み込む順番に頼らなくても成り立つように書きます。次の見出しで説明する `@scope` と独自のクラス名は、そのための仕組みでもあります。
+{/* 要確認: 出典なし（ブロックのCSSとテーマのCSSの読み込み順を @import で制御できない、という説明は筆者の推論） */}
+
+## `@scope` と独自のクラス名で衝突を減らす
+
+CMSの本体と衝突しにくくするには、そもそも同じ要素を取り合わないことが大切です。自分で作るブロックやコンポーネントには独自のクラス名を付け、`@scope` の中にスタイルを書きます。コアブロックが出力するクラス名にスタイルを書く場面が減るほど、詳細度の競争に巻き込まれにくくなります。
+
+```css title="🙆‍♂ Recommended: ブロックのCSSは、ルートを明示した @scope に書く"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    padding-block: calc(var(--wp--custom--spacing--sm) * 1px);
+  }
+
+  ._nav {
+    justify-self: end;
+  }
+}
+```
+
+Astroのようにルート要素の中へ `<style>` を置く方式では、`@scope to (.scoped)` と書くだけでルートが決まりました。ブロックの `style.css` のような外部のファイルでは、スコープのルートを `(.scoped.site-header)` のように明示します。1つのブロックが複数のコンポーネントを出力する場合は、1つのファイルに `@scope` を並べてかまいません。`@scope` の基本形は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
+
+ページ固有のスタイルも、同じ形で書きます。ページのルートには、コアのグループブロックを使い、その `className` に `scoped page-<スラッグ>` を指定します。
+
+```html title="🙆‍♂ Recommended: ブロックの属性と、保存されるHTMLの両方に scoped を書く"
+<!-- wp:group {"className":"scoped page-about"} -->
+<div class="wp-block-group scoped page-about">
+  <!-- ... -->
+</div>
+<!-- /wp:group -->
+```
+
+パターンやテンプレートにこのマークアップを書くときは、ブロックの属性と保存されるHTMLの両方に、同じクラスを書きます。片方だけに書くと、ブロックエディタがブロックの内容を正しくないと判断し、検証エラーになることがあります。このエラーを消す目的で `scoped` を削ってはいけません。`scoped` がなくなると、ページのスコープそのものが成り立たなくなるからです。
+{/* 要確認: 出典なし（属性とHTMLが食い違うと検証エラーになる、という WordPress の挙動の説明は筆者の補足。「検証エラーを避けるために scoped を消さない」という規約は案件の設計書による） */}
+
+WordPressの管理画面で使うプラグインのように、kiso.cssを読み込めない環境もあります。私は、管理画面のプラグインでは、PHPのテンプレートの中の `<style>` に `@scope to (.scoped)` を書き、kiso.cssの設定のうち必要なものだけを `:scope` の中で再現しています。和文の約物の詰めや改行の規則のように、見た目と読みやすさに直接関わるものです。
+
+## コアのスタイルは、上から順に手段を選ぶ
+
+コアブロックの見た目を変えたいときも、いきなりCSSで上書きしません。私の案件では、次の順番で手段を選んでいます。
+
+1. 独自のブロックには独自のクラス名を使い、コアのスタイルと競合させない
+2. コアブロックの標準的な調整は、theme.jsonで行う
+3. それで足りなければ、`wp_enqueue_block_style()` でコアブロックごとにCSSを読み込む
+4. それでも足りない場合に限り、コアのCSSを打ち消す最小限のCSSを書く
+
+4番目のCSSは、先回りして用意しません。実際に衝突を確かめてから、その箇所にだけ書きます。「たぶんぶつかるだろう」という理由で書いた打ち消しは、コアの更新で相手のCSSが変わったとき、何を打ち消しているのか分からないコードとして残ります。
+
+WordPressの機能の選び方も、同じ考え方です。私が案件のために書いたブロックテーマの規約では、「theme.json → コアブロック → パターン → ブロックスタイル → ダイナミックブロック → 独自ブロック」の順に検討します。下の手段を選ぶときは、上の手段で満たせない理由を説明することにしています。上の手段ほど、WordPressの標準の仕組みに乗れるので、編集画面とフロントの両方で同じように動きます。
+
+## トークンをtheme.jsonに置く
+
+ブロックテーマでは、トークンをCSSの `:root` ではなく、theme.jsonに定義します。色はパレット（`settings.color.palette`）に、それ以外の値は `settings.custom` に書きます。WordPressは、これらをカスタムプロパティとして出力します。
+
+```json title="theme.json（抜粋）"
+{
+  "version": 3,
+  "settings": {
+    "custom": {
+      "spacing": { "xxs": 8, "sm": 16, "md": 24, "xxl": 64 },
+      "rounded": { "md": "8px", "full": "calc(infinity * 1px)" },
+      "duration": { "fast": "200ms", "base": "240ms", "slow": "300ms" },
+      "z": { "forwards": 1, "backwards": -1, "header": 200 }
+    }
+  }
+}
+```
+
+`settings.custom` に書いた値は、`--wp--custom--<グループ>--<キー>` という名前のカスタムプロパティになります。上の例なら `--wp--custom--spacing--sm` や `--wp--custom--z--header` です。パレットの色は、`--wp--preset--color--<スラッグ>` という名前になります。CSSからは、これらの名前で参照します。
+
+```css title="🙆‍♂ Recommended: theme.jsonのトークンを参照する"
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    padding: calc(var(--wp--custom--spacing--md) * 1px);
+    border-radius: var(--wp--custom--rounded--md);
+    background-color: var(--wp--preset--color--surface);
+    color: var(--wp--preset--color--ink);
+  }
+}
+```
+
+グループの名前は、CSSでトークンを定義するときの分類名（`spacing`、`rounded`、`ease`、`z` など）と同じにします。環境が変わっても同じ名前でトークンを考えられ、テンプレートのコンポーネントを移すときも、参照する名前の置き換えだけで済みます。余白のトークンを単位のない数値で持ち、使う場所で `* 1px` や `/ 16 * 1rem` を掛けるのも、テンプレートと同じです。トークンの設計は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
+
+サイズの段階名は、`xxs` や `xxl` のように書き、`2xs` のような数字を使いません。theme.jsonのキーは、カスタムプロパティの名前へ変換されるとき、kebab-caseに直されます。このとき `2xs` は `2-xs` のように数字と文字の間で分割され、CSSで想定した名前とずれるからです。私の案件でも、この問題があったので、スペーシングの名前を `3xs` から `xxxs` に変えました。
+
+theme.jsonの値には、CSSの式も書けます。角丸の `calc(infinity * 1px)` や、相対カラー構文でパレットの色から作った罫線の色などです。一方で、SVGのデータURIのようにtheme.jsonで表しにくい値だけは、`tokens/shapes.css` のようなCSSのファイルに残しています。トークンの置き場所が2つに分かれるので、CSSに残すものは、本当にtheme.jsonで表せないものに限ります。
+{/* 要確認: 出典なし（相対カラー構文のトークンは案件の theme.json にあるが、theme.json に書ける値の範囲は WordPress のバージョンで確認していない） */}
+
+## 編集画面の自由度を絞る
+
+CMSでは、見た目の一部を編集者が決められます。自由度が高いほど便利に見えますが、トークンの外の色や余白が本文に入り込み、デザインの一貫性が崩れます。後からCSSで直そうとすると、編集者が入力した値を打ち消す指定が必要になり、詳細度の競争が始まります。
+
+私は、theme.jsonで次の設定を無効にしています。
+
+```json title="theme.json（抜粋）"
+{
+  "version": 3,
+  "settings": {
+    "appearanceTools": false,
+    "color": {
+      "custom": false,
+      "customGradient": false,
+      "defaultPalette": false,
+      "defaultGradients": false,
+      "palette": [
+        { "slug": "ink", "name": "Ink", "color": "#040404" },
+        { "slug": "surface", "name": "Surface", "color": "#fdfdfd" }
+      ]
+    },
+    "typography": {
+      "fluid": false,
+      "dropCap": false
+    },
+    "layout": {
+      "contentSize": "calc(1140 / 16 * 1rem)",
+      "wideSize": "calc(1200 / 16 * 1rem)"
+    }
+  }
+}
+```
+
+`color.custom` と `customGradient` を無効にすると、編集者はパレットの外の色を選べなくなります。`defaultPalette` と `defaultGradients` を無効にすると、WordPressの標準の色が選択肢から消え、テーマのパレットだけが残ります。`appearanceTools` は、枠線や余白、行の高さなどの設定の画面をまとめて有効にする設定なので、無効のままにしておきます。
+
+`typography.fluid` を無効にしているのは、文字サイズの流体的な変化をテーマのCSSで設計しているからです。WordPressが生成する `clamp()` とテーマの設計が混ざると、同じ見出しでも、どちらの計算で大きさが決まっているのかが分からなくなります。`layout.contentSize` のような長さは、CSSと同じく `calc(1140 / 16 * 1rem)` の形で書き、元のピクセル値が読み取れるようにします。
+{/* 要確認: 出典なし（fluid を無効にする理由は筆者の推論。設定は案件の theme.json による） */}
+
+パレットの色は16進数で書いています。本書では色を `oklch()` で書く方針ですが、theme.jsonのパレットは編集画面の色の選択にも使われるため、編集画面が確実に扱える形式を選んでいます。
+{/* 要確認: 出典なし（theme.json のパレットに oklch() を書いたときの編集画面の挙動は未確認。案件の theme.json は16進数で書いている） */}
+
+本文とは別に、ページの構造そのものを編集者に変えさせない設定もあります。パターンで組んだページの構造は、ブロックのロック（`templateLock` の `contentOnly` や `all`、ブロックごとのロック）で固定します。構造が変わらないと分かっていれば、CSSは想定した構造だけを前提に書けます。投稿の本文で使えるブロックを絞る方法は、「[12-2 CMSの本文エリアをスタイリングする](/operations/cms-content/)」で説明します。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Theme.json Reference - Block Editor Handbook](https://developer.wordpress.org/block-editor/reference-guides/theme-json-reference/theme-json-living/)
+- [Global Settings & Styles (theme.json) - Block Editor Handbook](https://developer.wordpress.org/block-editor/how-to-guides/themes/global-settings-and-styles/)
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
+- [@layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@layer)
+- [kiso.css - GitHub](https://github.com/tak-dcxi/kiso.css)

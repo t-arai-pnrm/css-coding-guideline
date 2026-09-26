@@ -1,0 +1,35 @@
+---
+/**
+ * 用意できていない画像（スクリーンショットなど）のプレースホルダー。
+ * 代替テキストは「電話越しでも伝わる」くらい詳しく書く。
+ * 残っているプレースホルダーは `grep -rn "<ImagePlaceholder" src/content/docs` で一覧できる。
+ */
+interface Props {
+  alt: string;
+}
+
+const { alt } = Astro.props;
+---
+
+<figure class="scoped image-placeholder not-content" data-image-placeholder>
+  <p class="_text">【参考画像：{alt}】</p>
+</figure>
+
+<style is:global>
+  @layer starlight, base, components;
+
+  @layer components {
+    @scope (.scoped.image-placeholder) to (.scoped) {
+      :scope {
+        padding: 1rem;
+        border: 2px dashed var(--sl-color-gray-4);
+        border-radius: 0.25rem;
+        color: var(--sl-color-gray-2);
+      }
+
+      ._text {
+        margin: 0;
+      }
+    }
+  }
+</style>

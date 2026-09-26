@@ -1,0 +1,219 @@
+---
+title: "6-4 公開プロパティと内部プロパティ"
+description: "外から変えてよい値は --<コンポーネント>--<プロパティ> の公開プロパティ、コンポーネントの中だけで使う値は --_ で始まる内部プロパティにします。値はできるだけ style 属性で渡し、@property は型やアニメーションが必要なときだけ使います。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import propsHtml from '../../../demos/components/public-properties/index.html?raw';
+import propsCss from '../../../demos/components/public-properties/style.css?raw';
+
+コンポーネントのカスタムプロパティは、名前で役割を分けます。外から変えてよい値は `--<コンポーネント>--<プロパティ>` の「公開プロパティ」にし、コンポーネントの中だけで使う値は `--_` で始まる「内部プロパティ」にします。状態やモードによって変わる値は、`--_background--hocus` のように、`--` で区切った接尾辞を付けて表します。
+
+公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書きます。値は、できるだけ呼び出し側の `style` 属性で渡します。`@property` による登録は、型の指定やアニメーションが必要なカスタムプロパティにだけ使います。
+
+## 名前で役割を分ける
+
+カスタムプロパティは、どれも `--` で始まる同じ見た目の名前です。名前の形を決めておかないと、ある値がサイト全体のトークンなのか、コンポーネントが外に開いた入り口なのか、内部の計算用なのかを、宣言を追いかけないと判断できません。本書では、次の形で役割を見分けます。
+
+| 種類 | 名前の形 | 例 | 値を定義する場所 |
+|---|---|---|---|
+| トークン | `--<分類>--<名前>` | `--spacing--md` | `:root` |
+| セマンティクスのトークン | `--<役割>--<バリエーション>` | `--foreground--muted` | `:root` |
+| 公開プロパティ | `--<コンポーネント>--<プロパティ>` | `--card--radius` | 呼び出し側（`style` 属性など） |
+| 内部プロパティ | `--_<プロパティ>` | `--_background--hocus` | コンポーネントの `:scope` |
+| コンポジションなどの内部プロパティ | `--_c--`、`--_u--`、`--_b--` で始める | `--_c--threshold` | コンポジション、ユーティリティ、ベースのスタイル |
+
+公開プロパティの名前には、必ずコンポーネントの名前を付けます。`--foreground` のような汎用的な名前にすると、ほかのコンポーネントの公開プロパティと衝突します。1つの要素に複数のコンポーネントの公開プロパティが渡されたとき、どれがどのコンポーネントのものかも分からなくなります。トークンの命名は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
+
+内部プロパティの `_` は、子要素のクラス名 `._title` の `_` と同じく、「そのコンポーネントの中だけで使う」という印です。コンポジションとユーティリティとベースのスタイルでは、内部プロパティをそれぞれ `--_c--`、`--_u--`、`--_b--` で始めます。コンポジションのクラスは、コンポーネントのルートや子要素と同じ要素に付くことがあります。接頭辞を分けておけば、コンポーネントの `--_gap` とコンポジションの `--_c--gap` がぶつかりません。
+{/* 要確認: 出典なし（--_c-- などの接頭辞を分ける理由の説明は筆者の推論） */}
+
+## 公開プロパティは内部プロパティで受ける
+
+公開プロパティを、コンポーネント自身で宣言してはいけません。次の例は、公開プロパティのデフォルト値を、ルートの宣言として書いています。
+
+```css title="🙅‍♂ Not Recommended: 公開プロパティをコンポーネント自身で宣言する"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.info-card) to (.scoped) {
+  :scope {
+    --info-card--accent: gray;
+
+    border: 2px solid var(--info-card--accent);
+  }
+}
+```
+
+カスタムプロパティは継承されますが、要素自身に宣言があれば、継承した値よりその宣言が使われます。この書き方では、親がまとめて渡した `--info-card--accent` は、カードのルートの宣言に負けて届きません。値を変えられるのは、カードの `style` 属性に直接書いたときだけになり、公開プロパティが入り口として半分しか働きません。
+
+公開プロパティは、`:scope` で内部プロパティに受け、デフォルト値を `var()` のフォールバックに書きます。こうすれば、親の要素から継承した値も、`style` 属性で渡した値も、同じように受け取れます。
+
+```css title="🙆‍♂ Recommended: :scope で内部プロパティに受け、デフォルト値をフォールバックに書く"
+/**
+ * 情報カード。
+ *
+ * @prop {color}  --info-card--accent [var(--color--neutral--500)] - 枠線と見出しの色
+ * @prop {length} --info-card--radius [8px]                         - 角丸の半径
+ */
+@scope (.scoped.info-card) to (.scoped) {
+  :scope {
+    --_accent: var(--info-card--accent, var(--color--neutral--500));
+    --_radius: var(--info-card--radius, 8px);
+
+    padding: 16px;
+    border: 2px solid var(--_accent);
+    border-radius: var(--_radius);
+  }
+
+  ._title {
+    color: var(--_accent);
+  }
+}
+```
+
+`:scope` の先頭に受けておくと、そのコンポーネントが外から受け取る値の一覧が1か所で読めます。公開プロパティの長い名前は受け取る1行にしか出てこず、中のスタイルは短い内部プロパティで書けます。角丸の内側の半径のように、受け取った値から計算する値も、`--_inner-radius: calc(var(--_radius) - var(--_padding))` のように内部プロパティにすれば、数値の意味を名前で説明できます。ファイルの先頭には、JSDocの `@prop` で公開プロパティの一覧を書いておきます。
+
+内部プロパティも継承されることには注意が必要です。内側に置いた別のコンポーネントが、自分では定義していない `--_accent` を参照すると、外側のカードの値を拾ってしまいます。内部プロパティは、参照するコンポーネント自身の `:scope` で必ず定義します。
+{/* 要確認: 出典なし（内部プロパティを自分の :scope で定義する理由の説明は筆者の推論） */}
+
+## 状態やモードは接尾辞で表す
+
+ホバーや選択中のように、状態によって変わる値は、内部プロパティの名前の後ろに `--` で区切った接尾辞を付けて表します。デフォルトの状態には接尾辞を付けません。`hocus` は、ホバー（hover）とフォーカス（focus）をまとめて表す言葉です。
+
+```css title="🙆‍♂ Recommended: 状態ごとの値を :scope にまとめ、状態のセレクタでは参照だけする"
+@scope (.scoped.toggle-button) to (.scoped) {
+  :scope {
+    --_background: var(--background--base);
+    --_background--hocus: var(--background--surface);
+    --_background--selected: var(--background--muted);
+    --_foreground: var(--foreground--base);
+  }
+
+  ._button {
+    background-color: var(--_background);
+    color: var(--_foreground);
+
+    &:enabled:hover {
+      @media (any-hover: hover) {
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    &:focus-visible {
+      background-color: var(--_background--hocus);
+    }
+
+    &[aria-pressed="true"] {
+      background-color: var(--_background--selected);
+    }
+  }
+}
+```
+
+状態ごとの値は、すべて `:scope` の先頭に並べます。状態のセレクタの中では、どの内部プロパティを使うかを切り替えるだけにします。こうしておくと、そのコンポーネントがどんな状態を持ち、それぞれで何色になるのかを、先頭の数行で確認できます。配色を変えるときも、直すのは先頭の値だけです。ホバーの書き方と状態の表し方は、「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明します。
+
+公開プロパティにも、同じ形の接尾辞を使います。たとえば「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」の画面モードを使う場合は、モードの名前を接尾辞にします。`--primary-layout--gutter--compact` と `--primary-layout--gutter--spacious` のように、モードごとの値を別の公開プロパティとして受け取ります。
+
+```css title="🙆‍♂ Recommended: モードごとの値を、接尾辞を付けた公開プロパティで受ける"
+.primary-layout {
+  --_c--gutter: var(--primary-layout--gutter--compact, calc(20 * var(--px, 1px)));
+
+  @container style(--screen: --spacious) {
+    --_c--gutter: var(--primary-layout--gutter--spacious, calc(40 * var(--px, 1px)));
+  }
+}
+```
+
+## style 属性で値を渡す
+
+公開プロパティの値は、できるだけ呼び出し側の `style` 属性で渡します。`style` 属性は優先度が高いので避けられがちですが、公開プロパティに値を渡す手段として使うなら、安全で分かりやすい方法です。
+
+```html
+<article class="scoped info-card" style="--info-card--radius: 24px">…</article>
+```
+
+`style` 属性で渡す理由は4つあります。1つ目は、値がコンポーネントのタグと同じ場所に書かれることです。CSSで渡すと、どの要素に値が届くのかを、離れた場所のセレクタから読み解かなければなりません。2つ目は、セレクタが要らないことです。子のクラス名や構造に依存しないので、子の中身を作り直しても壊れません。
+
+3つ目は、詳細度の問題が起きないことです。`style` 属性の宣言は、カスケードの中でセレクタによるルールとは別に扱われるので、詳細度の競争に巻き込まれません。4つ目は、値がどの要素に効くのかが一目で分かることです。ページごとに少しだけ値を変えたいときも、修飾のクラスを増やさずに `style` 属性で渡せば済みます。
+
+ただし、次のような場合は、CSSの側で公開プロパティに値を渡してかまいません。
+
+- 同じ値を、複数の子のコンポーネントにまとめて渡したい場合（親の要素に定義して、継承させる）
+- メディアクエリやコンテナクエリで、値を切り替えたい場合
+- `:hover` や `:has()` のように、状態によって値を変えたい場合
+
+最後の場合の例として、親のヘッダーが、自分の状態に合わせて子のナビゲーションの色を変えるコードを示します。親は自分の内部プロパティを、子の公開プロパティにつないでいるだけで、子のナビゲーションは自分がヘッダーの中にあることを知りません。
+
+```css title="🙆‍♂ Recommended: 親の内部プロパティを、子の公開プロパティにつなぐ"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    --_foreground: var(--foreground--base);
+    --global-nav--foreground: var(--_foreground);
+
+    &[data-appearance="dark"] {
+      --_foreground: var(--foreground--on-accent);
+    }
+  }
+}
+```
+
+## コード例とデモ
+
+次のデモでは、セクションの中に置いた3枚のカードが、`--info-card--accent` を受け取っています。セクションは、カードを並べる自分の要素（`._list`）に値を定義して、継承でまとめて渡しています。3枚目のカードだけは、`style` 属性で色と角丸を上書きしています。
+
+<Demo title="親から継承で、また style 属性で、子のカードに公開プロパティの値を渡す" html={propsHtml} css={propsCss} />
+
+セクションの外に置いた4枚目のカードは、どこからも値を受け取っていないので、フォールバックに書いたデフォルト値で表示されます。どのカードのCSSにも、セクションの名前は出てきません。
+
+## @property は型やアニメーションが必要なときだけ使う
+
+`@property` は、カスタムプロパティに型と継承の有無と初期値を登録するアットルールです。登録していないカスタムプロパティは、ただの文字の並びとして扱われます。値は `var()` で参照された場所で初めて解釈され、アニメーションでは途中の値を補間できません。
+
+<Baseline id="registered-custom-properties" name="@property" />
+
+`@property` を使うのは、型の指定やアニメーションが必要な場合だけです。代表的なのは、カスタムプロパティの値そのものをトランジションやアニメーションで変化させたい場合です。次の例は、進み具合を表すバーの値を `<number>` 型で登録し、値が変わったときに滑らかに伸び縮みさせています。
+
+```css title="🙆‍♂ Recommended: 値の変化をトランジションさせるために型を登録する"
+@property --progress-bar--value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@scope (.scoped.progress-bar) to (.scoped) {
+  :scope {
+    block-size: 8px;
+    border-radius: var(--rounded--full);
+    background-image: linear-gradient(to right, var(--background--accent) calc(var(--progress-bar--value) * 1%), var(--background--muted) 0);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: --progress-bar--value;
+      transition-timing-function: var(--ease--quint-out);
+    }
+  }
+}
+```
+
+型を登録しておくと、数値ではない値が渡されたときは無効になり、親から継承した値か、初期値の `0` が使われます（2026年9月、Chromeで確認）。公開プロパティの入り口で、おかしな値を弾けるわけです。3つの記述子（`syntax`、`inherits`、`initial-value`）は省略しません。`syntax` と `inherits` のどちらかが欠けると、`@property` のルールごと無視されます。
+
+もう1つは、値を型に沿って計算させたい場合です。8-4の比例スケールが `--100svi` と `--1rem` を `<length>` 型で登録しているのは、`:root` の時点で絶対的な長さに変換し、その値を子孫に引き継ぐためです。また、`style` 属性で要素ごとに渡した値が、さらに内側の要素へ継承されては困るときは、`inherits: false` で登録すれば継承を止められます。
+
+反対に、トークンのように、型の指定とアニメーションのどちらも要らない値は登録しません。登録すると振る舞いが変わるからです。たとえば `<length>` 型で登録して `:root` に `1em` を指定すると、`:root` の文字サイズで計算した値（16px）が子孫に継承されます。登録していなければ `var()` を書いた場所で `1em` として計算されるので、文字サイズが32pxの要素では32pxになります（2026年9月、Chromeで確認）。
+
+登録した名前は、文書全体に効きます。`--_value` のような短い内部プロパティの名前を登録すると、同じ名前を別の意味で使っているほかのコンポーネントにも型が適用されます。登録する名前は、上の例の `--progress-bar--value` のように、コンポーネントの名前を含むものにしておくと安全です。
+{/* 要確認: 出典なし（登録する名前にコンポーネントの名前を含めるという提案は筆者の推論） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS カスタムプロパティ（変数）の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties)
+- [var() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/var)
+- [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）

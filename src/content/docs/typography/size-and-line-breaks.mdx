@@ -1,0 +1,229 @@
+---
+title: "9-4 文字サイズと改行"
+description: "画面の幅で変える文字サイズはclamp()のユーティリティにまとめます。和文の見出しはword-break: auto-phraseとtext-wrap: balanceで文節ごとに折り返し、見た目のための改行に<br>を使いません。行数の制限は-webkit-line-clampとoverflow-block: clipで書きます。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import breakHtml from '../../../demos/typography/heading-line-breaks/index.html?raw';
+import breakCss from '../../../demos/typography/heading-line-breaks/style.css?raw';
+
+画面の幅に合わせて変えたい文字サイズは、クエリで段階的に切り替えず、`clamp()` で最小値と最大値の間をなめらかに変えます。サイト全体で使うなら、計算をまとめたユーティリティを用意します。改行は、和文の見出しを `word-break: auto-phrase` と `text-wrap: balance` で文節ごとに折り返し、本文は通常の折り返しのままにします。見た目を整えるための `<br>` は使いません。
+
+この節では、流体的な文字サイズの使い方、見出しと本文の折り返し、手で改行を制御する方法、行数の制限を説明します。`clamp()` の式の組み立て方は、「[3-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+
+## 文字サイズをクエリで切り替えると段差ができる
+
+見出しの文字サイズを画面の幅で変えるとき、ブレイクポイントごとに値を切り替える書き方をよく見かけます。デザインカンプが画面の幅ごとに用意されていると、その値をそのまま書き写したくなるからです。
+
+```css title="🙅‍♂ Not Recommended: 文字サイズをブレイクポイントごとに切り替える"
+/* 🙅‍♂ Not Recommended */
+.heading {
+  font-size: 24px;
+}
+
+@media (min-width: 768px) {
+  .heading {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    font-size: 40px;
+  }
+}
+```
+
+この書き方では、ブレイクポイントの前後で文字サイズが急に変わり、その間の幅では値がまったく変わりません。767pxと768pxでは8pxも違うのに、768pxと1023pxでは同じ大きさです。文字サイズを変えたい要素が増えるたびに、クエリも増えていきます。値がpxなので、ユーザーが文字サイズの設定を大きくしても、文字は大きくなりません。
+
+## 流体的な文字サイズをユーティリティにする
+
+文字サイズを幅に合わせて変えるなら、`clamp()` を使います。最小値と最大値をremで決め、その間を画面の幅に比例して補間すれば、どの幅でも段差のない大きさになります。最小値と最大値をremにし、推奨値にremを含める理由は、「[3-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+
+ただし、傾きと切片を要素ごとに計算して書くのは大変です。オンラインのジェネレーターで作った数値を貼ると、計算の手順がコードに残りません。そこで、計算をユーティリティの中にまとめ、使う側は最小値と最大値だけを渡すようにします。
+
+```css title="🙆‍♂ Recommended: 最小値と最大値を受け取って、流体的な文字サイズを計算する"
+[class*="-fluid-text"] {
+  --_u--relative-max-width: var(--fluid-text--relative-max-width, 1280);
+  --_u--relative-min-width: var(--fluid-text--relative-min-width, 375);
+  --_u--min-font-size: var(--fluid-text--min-font-size, 14);
+  --_u--max-font-size: var(--fluid-text--max-font-size, 16);
+  --_u--base-font-size: var(--fluid-text--base-font-size, 16);
+  --_u--relative-unit: var(--fluid-text--relative-unit, 100svi);
+
+  /* 2つの基準点を結ぶ直線の傾きと切片 */
+  --_u--fluid-slope: calc(
+    (var(--_u--max-font-size) - var(--_u--min-font-size)) /
+    (var(--_u--relative-max-width) - var(--_u--relative-min-width))
+  );
+  --_u--fluid-intercept: calc(var(--_u--min-font-size) - var(--_u--fluid-slope) * var(--_u--relative-min-width));
+
+  font-size: clamp(
+    var(--_u--min-font-size) / var(--_u--base-font-size) * 1rem,
+    var(--_u--fluid-slope) * var(--_u--relative-unit) + var(--_u--fluid-intercept) / var(--_u--base-font-size) * 1rem,
+    var(--_u--max-font-size) / var(--_u--base-font-size) * 1rem
+  );
+}
+
+.-fluid-text--md {
+  --fluid-text--min-font-size: 16;
+  --fluid-text--max-font-size: 20;
+}
+
+.-fluid-text--lg {
+  --fluid-text--min-font-size: 20;
+  --fluid-text--max-font-size: 24;
+}
+```
+
+値は、デザインカンプのピクセル値を単位のない数値で受け取ります。画面の幅が375pxのとき最小値、1280pxのとき最大値となり、その間の幅では値が連続して変わります。使う側は、`.-fluid-text--lg` のように段階のクラスを付けるか、`style` 属性で最小値と最大値を渡します。セレクタを `[class*="-fluid-text"]` としたのは、段階のクラスを1つ付けるだけで、計算のルールも当たるからです。
+
+```html title="段階のクラスを付けるか、style 属性で値を渡す"
+<h2 class="_heading -fluid-text--lg">お知らせ</h2>
+<p class="_lead -fluid-text" style="--fluid-text--min-font-size: 18; --fluid-text--max-font-size: 22">…</p>
+```
+
+公開プロパティは `--fluid-text--` で始め、内部で使う値は `--_u--` で始めています。コンポーネントの内部プロパティと名前がぶつからないようにするためです。公開プロパティと内部プロパティの考え方は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
+
+比例させる基準は、`--fluid-text--relative-unit` で切り替えます。サイト全体で文字の大きさの調和をとるなら、デフォルトの `100svi`（画面の幅）を使います。置かれた場所の幅に合わせたいコンポーネントでは `100cqi` を渡し、名前付きのコンテナの幅を基準にします。`cqi` はコンテナが見つからないと `svi` として計算されるので、デフォルトを `svi` にそろえています。コンテナの書き方は「[8-2 コンテナクエリ](/responsive/container-queries/)」で説明しています。
+
+流体的にするのは、見出しやリード文のように、画面の幅によって大きさを変えたい文字だけです。タグやラベルのように大きさを変える必要のない文字には使いません。2サイズのデザインカンプの比率を保つ案件では、文字サイズも比例スケールの `--rem` で書きます（[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)）。
+
+## 和文の見出しは文節で折り返す
+
+ブラウザは、和文をどの文字の間でも折り返します。本文ならそれで困りませんが、見出しでは「読みや／すく」のように単語の途中で改行され、読みにくくなることがあります。見出しは短く大きいので、1か所の不自然な改行が目立ちます。
+
+`word-break: auto-phrase` を指定すると、ブラウザが文節の区切りを判断し、文節の間でだけ折り返します。さらに `text-wrap: balance` を組み合わせると、各行の長さがそろい、最後の行だけが短くなるのを防げます。
+
+```css title="🙆‍♂ Recommended: 見出しの折り返しを言語ごとに整える"
+:where(:heading, h1, h2, h3, h4, h5, h6, caption) {
+  &:lang(en) {
+    text-wrap: balance;
+  }
+
+  &:lang(ja) {
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}
+```
+
+<Baseline id="word-break-auto-phrase" />
+
+`word-break: auto-phrase` に対応しているのは、2026年9月の時点でChrome系のブラウザだけです。和文の `text-wrap: balance` を `@supports` の中に入れているのは、文節の区切りが分からない環境では、行の長さだけをそろえても単語の途中の改行が残るからです。対応していない環境では、通常の折り返しのままになります。本書のサイトの見出しも、この指定で折り返しています。
+{/* 要確認: 出典なし（balance を @supports の中に入れる理由の説明は筆者の推論） */}
+
+次のデモで、幅のボタンを切り替えて比べてください。Chrome系のブラウザでは、下の見出しが文節の区切りで折り返し、各行の長さもそろいます。
+
+<Demo title="通常の折り返しと、auto-phrase と balance で文節ごとに折り返した見出し" html={breakHtml} css={breakCss} variant="neutral" />
+
+SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライブラリのBudouXを導入する方法があります。ただし、導入と保守の手間がかかります。Chrome系のブラウザだけで文節の折り返しを行い、ほかのブラウザは従来のままにするという、プログレッシブ・エンハンスメントの考え方で割り切るのも選択肢です。
+
+英文の見出しには `text-wrap: balance` を指定します。kiso.cssは英文の見出しに `text-wrap: pretty` を指定していますが、見出しは行の長さをそろえたほうが整って見えるので、ベーススタイルで上書きしています。`text-align: center` を指定するときも、`text-wrap: balance` と組み合わせます。
+
+<Baseline id="text-wrap-balance" />
+
+## 本文は通常の折り返しのままにする
+
+本文の段落には、`word-break: auto-phrase` と `text-wrap: balance` のどちらも指定しません。文節で折り返すと、長い文章では行末に不自然なすき間が生まれ、かえって読みにくくなります。`text-wrap: balance` は処理の負荷が大きく、Chromeでは6行以下のブロックにしか効きません。
+{/* 要確認: 6行の上限は著者の2024年の記事の時点の情報。現在の値は未確認 */}
+
+英文の段落には、kiso.cssが `text-wrap: pretty` を指定しています。最後の行に1単語だけが残る状態を避ける指定です。一方、和文には `text-wrap: pretty` を指定しません。Safariの不具合で、和文の `pretty` が `balance` と似た折り返しになるからです。
+{/* 要確認: Safari の不具合は著者の gist（2026年8月更新）にもとづく。修正の状況は未確認 */}
+
+はみ出しを防ぐための指定にも注意します。URLや長い英単語は、途中に折り返せる位置がないので、狭い場所では要素の外へはみ出します。これを防ぐのは、kiso.cssが `:root` に指定している `overflow-wrap: anywhere` です。`word-break` は初期値のままにします。
+
+```css title="🙅‍♂ Not Recommended: はみ出しを防ぐために、どこでも折り返す"
+/* 🙅‍♂ Not Recommended */
+p {
+  word-break: break-all;
+}
+```
+
+`word-break: break-all` は、英単語の文字の間でも常に折り返します。次の行に移せば収まる単語まで途中で分かれるので、英文が読みにくくなります。`overflow-wrap: anywhere` なら、1行に収まらない単語だけを途中で折り返します。
+
+段落に `text-align: justify` を指定するのも避けます。行の両端をそろえるために文字の間隔を広げるので、英単語やURLが混ざると、行の中に大きなすき間ができます。表の見出しのように1行で収まる文字を均等に割り付けたいときは、`text-align-last: justify` を使えます。
+
+## 見た目のための改行にbrを使わない
+
+デザインカンプでは、見出しやリード文が、きりのよい位置で改行されていることがあります。これを `<br>` で再現すると、どの画面の幅でもその位置で改行されます。狭い画面では、自然な折り返しと `<br>` の改行が重なり、1〜2文字だけの短い行が生まれます。
+
+`<br>` を使うのは、詩のように、文章の構造として改行に意味がある場合だけです。見た目のための改行は、CSSで制御します。次の2つのユーティリティは、日本語のときだけ効き、ほかの言語では何もしません。
+
+```css title="🙆‍♂ Recommended: 日本語のときだけ改行を制御するユーティリティ"
+.-br {
+  display: contents;
+
+  &:lang(ja) {
+    display: block flow;
+  }
+}
+
+.-wbr {
+  display: contents;
+
+  &:lang(ja) {
+    display: inline flow-root;
+  }
+}
+```
+
+`.-br` を付けた `span` は、ブロックになって前後で改行します。`.-wbr` を付けた `span` はインラインブロックになり、幅が足りる限り、その中では改行されません。見出しを `.-wbr` の `span` で区切れば、幅が足りないときに、`span` の境目でだけ折り返します。`span` を並べた親に `display: block flex` と `flex-wrap: wrap` を指定する方法もあります。
+
+```html title="区切りたい位置で span を分ける"
+<h2 class="_heading">
+  <span class="-wbr">和文の見出しは、</span><span class="-wbr">文節で折り返すと</span><span class="-wbr">読みやすくなります</span>
+</h2>
+```
+
+ほかの言語で `display: contents` にしているのは、手動の改行が日本語の都合だからです。機械翻訳で言語が変わると、`span` の箱がなくなり、翻訳後の文章は通常どおりに折り返します。インラインブロックの `span` が残ったままだと、翻訳の単位が細切れになり、不自然な訳文になることもあります。
+
+段落の中での手動の改行は、`word-break: auto-phrase` と同じく読みにくさの原因になり、画面の幅が変わると簡単に崩れます。デザインで段落の中に改行が入っていたら、再現は難しいとデザイナーに伝えて相談します。特定の語の途中で改行させたくないだけなら、`相&zwj;殺` のように、文字の間に `&zwj;` を入れて分離を禁止する方法もあります。
+
+## 行数を制限する
+
+カードの一覧で、タイトルや抜粋を2〜3行で打ち切りたいことがあります。接頭辞のない `line-clamp` プロパティは、まだどのブラウザも対応していません。そのため、`-webkit-line-clamp` に `display: -webkit-box` と `-webkit-box-orient` を組み合わせて使います。
+
+<Baseline id="line-clamp" name="line-clamp（接頭辞なし）" />
+
+```css title="🙆‍♂ Recommended: 行数を制限するユーティリティ"
+.-line-clamp {
+  /* 行数の制限は、接頭辞付きの指定でしか動かない（2026年9月） */
+  /* stylelint-disable-next-line value-no-vendor-prefix */
+  display: -webkit-box;
+  overflow-block: clip;
+  /* stylelint-disable-next-line property-no-vendor-prefix, property-no-deprecated */
+  -webkit-box-orient: block-axis;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-line-clamp: var(--line-clamp--limit, 3);
+
+  /* Safari 18 は overflow-block に対応していない */
+  @supports not (overflow-block: clip) {
+    overflow-y: clip;
+  }
+}
+```
+
+`-webkit-box-orient` には、`vertical` ではなく `block-axis` を指定します。書字方向に合わせたブロック方向の指定で、縦書きでも同じように行数を制限できます。行数は `--line-clamp--limit` で受け取り、指定がなければ3行にします。ベンダープレフィックスを書くときの作法は、「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
+
+はみ出した行を隠すには、`overflow: hidden` ではなく `overflow-block: clip` を使います。`overflow: hidden` では、`hanging-punctuation` でぶら下げた約物まで切り取られます。`overflow-y: hidden` を指定すると、横方向の `overflow` が `auto` に変わり、スクロールバーの表示される場合があります。`clip` ならブロック方向だけを切り取り、スクロールできる領域も作りません。`overflow-block` はSafari 26で対応したので、Safari 18のために `overflow-y: clip` を用意しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [clamp() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clamp)
+- [word-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/word-break)
+- [text-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-wrap)
+- [overflow-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-wrap)
+- [-webkit-line-clamp - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-line-clamp)
+- [BudouX](https://github.com/google/budoux)（GitHub）
+- [Typography troubles: Balancing lines in Japanese & Korean](https://ryelle.codes/2025/04/typography-troubles-balancing-in-japanese-korean/)（ryelle.codes、2025年4月）

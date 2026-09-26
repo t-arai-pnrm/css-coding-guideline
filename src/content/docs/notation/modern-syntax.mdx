@@ -1,0 +1,218 @@
+---
+title: "5-3 モダンな記法にそろえる"
+description: 寸法と余白は論理プロパティ、display は2値構文、変形は translate・rotate・scale の個別プロパティで書きます。色の関数はスペース区切りにし、rgba() とカンマ区切りは使いません。
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+同じ見た目を作れる書き方が複数あるときは、新しい記法にそろえます。寸法や余白は `width` ではなく `inline-size` のような論理プロパティで、`display` は `block flex` のような2値構文で書きます。変形は `transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティで書きます。
+
+色の関数は `rgb(0 0 0 / 80%)` のようにスペースで区切り、`rgba()` やカンマ区切りは使いません。色相には `deg` を付けます。ベンダープレフィックスは、接頭辞なしでは動かないものを除いて書きません。メディアクエリの範囲構文もこの仲間ですが、ルールは第8章で扱います。
+
+どれも、新しいことができるようになる書き方ではありません。目的は、コードの書き方をそろえ、読んだときに意図が伝わるようにすることです。ほとんどは本書のStylelintの設定で検出できるので、覚えるより先に、ツールに指摘してもらえば十分です。
+
+## 古い記法が混ざると何が困るか
+
+次のコードは、昔の記事やAIの出力でよく見かける書き方です。どれも動きますが、物理的な方向の指定、1値の `display`、`transform` の関数、カンマ区切りの `rgba()` が混ざっています。
+
+```css title="🙅‍♂ Not Recommended: 古い記法が混ざったコード"
+/* 🙅‍♂ Not Recommended */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: 90%;
+  max-width: 600px;
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: translate(-50%, -50%);
+}
+```
+
+書き方が混ざると、同じことを表すコードが人によって違う形になり、読むたびに頭の中で変換する必要が出てきます。古い記法には、ほかの書き方と組み合わせにくいものもあります。たとえば `rgba()` のカンマ区切りは、`oklch()` のような新しい色の関数では使えません。
+
+AIは、学習したコードの量が多い古い記法を選びがちです。本書の記法を指示しておき、生成されたコードに古い記法が残っていないかを確認してください。
+{/* 要確認: 出典なし（AIの傾向についての記述） */}
+
+## 寸法と余白は論理プロパティで書く
+
+論理プロパティは、上下左右ではなく、書字方向を基準に方向を表すプロパティです。横書きでは、インライン方向（文字が並ぶ方向）が左右、ブロック方向（行が積み重なる方向）が上下にあたります。`width` は `inline-size`、`margin-top` は `margin-block-start`、`top` は `inset-block-start` になります。
+
+| 物理プロパティ | 論理プロパティ |
+|---|---|
+| `width`、`height` | `inline-size`、`block-size` |
+| `max-width`、`min-height` | `max-inline-size`、`min-block-size` |
+| `margin-top`、`margin-bottom` | `margin-block-start`、`margin-block-end` |
+| `padding-left`、`padding-right` | `padding-inline`（まとめて指定） |
+| `top`、`right`、`bottom`、`left` | `inset` と `inset-block-start` など |
+
+私が論理プロパティを使う理由は、多言語への対応よりも、主要なレイアウトの仕組みとそろえたいからです。Flexboxの主軸もGridのトラックも、書字方向を基準に決まります。コンテナクエリの条件も `inline-size` で書きます。レイアウトの仕組みが論理的な方向で動いているのに、寸法や余白だけを物理的な方向で書くと、考え方が混ざってしまいます。
+
+実用上の利点もあります。`margin-inline: auto` はインライン方向の余白だけを指定するので、`margin: 0 auto` のように、ブロック方向の余白を `0` で上書きしてしまうことがありません。
+
+```css title="🙆‍♂ Recommended: 寸法、余白、位置を論理プロパティで書く"
+._panel {
+  position: absolute;
+  inset: 0;
+  max-inline-size: calc(600 / 16 * 1rem);
+  margin-inline: auto;
+  padding-block: 24px;
+  padding-inline: 16px;
+  border-block-end: 1px solid oklch(85% 0 0deg);
+}
+```
+
+物理的な方向に意味がある値は、物理プロパティで書きます。代表的なのは、端末の画面の切り欠きを避ける `env(safe-area-inset-left)` です。切り欠きは画面の物理的な左右にあるので、書字方向によって左右が入れ替わる論理プロパティでは困ります。この場合は、Stylelintのルールを1行だけ無効にし、理由をコメントに残します。
+{/* 要確認: 出典なし（テンプレートは env(safe-area-inset-*) を物理プロパティで書いているが、理由のコメントはない。理由は筆者の推論） */}
+
+```css title="🙆‍♂ Recommended: 物理的な方向が必要なときは理由を残す"
+body {
+  /* 切り欠きは画面の物理的な左右にあるので、書字方向で入れ替わらないようにする */
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-right: env(safe-area-inset-right);
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-left: env(safe-area-inset-left);
+}
+```
+
+メディアクエリの `width` や、`background-position` のように、物理的な方向でしか書けないものもあります。本書のStylelintの設定は、物理プロパティを `logical-css/require-logical-properties` で警告します。なお、既存のプロジェクトが物理プロパティでそろっているなら、無理に混ぜず、統一を優先してかまいません。
+
+<Baseline id="logical-properties" name="論理プロパティ" />
+
+## `display` は2値構文で書く
+
+`display` の値は、本来2つの情報からできています。要素が周りに対してブロックとインラインのどちらで振る舞うか（外側の表示）と、子要素をどう並べるか（内側の表示）です。`display: flex` は、外側がブロックで内側がフレックスという意味の、`block flex` の省略形です。
+
+| 1値の構文 | 2値構文 |
+|---|---|
+| `block` | `block flow` |
+| `flow-root` | `block flow-root` |
+| `inline-block` | `inline flow-root` |
+| `flex`、`inline-flex` | `block flex`、`inline flex` |
+| `grid`、`inline-grid` | `block grid`、`inline grid` |
+
+2値構文にしても、できることは増えません。それでも2値構文を使うのは、要素の振る舞いが値から読み取れるからです。`inline-block` が「インラインとして並び、中は新しいブロック整形コンテキストになる」ことは、`inline flow-root` と書けばそのまま分かります。通常のフローも `block flow` と明示できるので、レイアウトの仕組みを人に説明するときにも役立ちます。
+
+```css title="🙆‍♂ Recommended: 外側と内側の表示を両方書く"
+._actions {
+  display: block flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+._badge {
+  display: inline flow-root;
+  padding-inline: 8px;
+}
+```
+
+`none` や `contents` のように、2値構文のない値はそのまま書きます。本書のStylelintの設定では、著者が公開しているプラグインの `plugin/display-multi-keyword-syntax` で1値の構文を検出し、自動修正もできます。
+
+<Baseline id="two-value-display" name="display の2値構文" />
+
+## 変形は個別のプロパティで書く
+
+移動、回転、拡大・縮小には、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティを使います。いちばんの利点は、変形ごとに値を変えられることです。矢印を45度回転させておき、ホバーで右に少し動かす例で比べます。
+
+```css title="🙅‍♂ Not Recommended: 動かすたびに回転も書き直す"
+/* 🙅‍♂ Not Recommended */
+._link::after {
+  transform: rotate(45deg);
+  transition: transform 200ms;
+}
+
+._link:any-link:hover::after {
+  transform: translateX(4px) rotate(45deg);
+}
+```
+
+`transform` はすべての変形を1つの値で持つので、移動を足すだけでも回転を書き直さなければなりません。書き忘れると、ホバーした瞬間に矢印の向きが戻ります。トランジションも `transform` 全体に掛かるので、どの変形を動かしたいのかがコードから読み取れません。
+
+```css title="🙆‍♂ Recommended: 回転はそのままに、移動だけを変える"
+._link::after {
+  rotate: 45deg;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-duration: 200ms;
+    transition-property: translate;
+  }
+}
+
+._link:any-link:hover::after {
+  @media (any-hover: hover) {
+    translate: 4px 0;
+  }
+}
+```
+
+個別のプロパティなら、ホバーで書くのは移動の値だけです。トランジションの対象も `translate` に絞れます。値の書き方は、`translate: 4px 0`（横と縦）、`rotate: 45deg`、`scale: 1.1` のようにシンプルです。
+
+`transform` を使うのは、個別のプロパティがない `skewX()` などの変形と、変形の順番を変える必要がある場合だけです。個別のプロパティは、常に `transform: translate() rotate() scale()` と書いたときと同じ順番で組み合わされます。「回転してから、回転した向きに移動する」ように順番を変えたいときは、`transform` に関数を並べて書きます。
+{/* 要確認: 出典なし（順番を変える場合の例外は筆者の追加。著者の資料が挙げる例外は skew だけ） */}
+
+<Baseline id="individual-transforms" name="個別の変形プロパティ" />
+
+## クエリの条件は範囲構文で書く
+
+メディアクエリとコンテナクエリの条件は、`min-width: 768px` ではなく `width >= 768px` のような範囲構文で書きます。不等式としてそのまま読めて、境界の値を含むかどうかも明確になるからです。書き方と理由は「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」で説明しています。
+
+## 色の関数はスペースで区切る
+
+色の関数は、`rgb(0 0 0 / 80%)` のように値をスペースで区切り、不透明度は `/` の後ろに書きます。`rgba()` と `hsla()` は使わず、`rgb()` と `hsl()` にそろえます。色相には `210deg` のように単位を付けます。
+
+```css title="🙅‍♂ Not Recommended: カンマ区切りと rgba()"
+/* 🙅‍♂ Not Recommended */
+._overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: hsl(210, 20%, 98%);
+}
+```
+
+```css title="🙆‍♂ Recommended: スペース区切りと / の不透明度"
+._overlay {
+  background-color: rgb(0 0 0 / 60%);
+  color: hsl(210deg 20% 98%);
+}
+```
+
+スペース区切りにそろえる理由は、`oklch()`、`lab()`、`hwb()` のような新しい色の関数が、スペース区切りしか受け付けないからです。カンマ区切りを使えるのは古い `rgb()` と `hsl()` だけなので、そちらをスペース区切りに合わせれば、すべての色の関数を同じ形で書けます。
+
+`rgba()` は、仕様上は `rgb()` の別名で、古い書き方として廃止されたわけではありません。ただ、`rgb()` でも不透明度を指定できるので、同じ意味の関数を2つ使い分ける理由がありません。不透明度はパーセントで書き、色相の `deg` も省略しません。数値が角度だとはっきりし、明度や彩度の値と見分けやすくなるからです。
+{/* 要確認: 出典なし（deg を付ける理由は筆者の推論。著者のコードと Stylelint の設定は deg を付ける形） */}
+
+本書のStylelintの設定では、これらを4つのルールで検出し、自動修正もできます。対象のルールは、`color-function-notation`、`color-function-alias-notation`、`alpha-value-notation`、`hue-degree-notation` です。`white` のような色の名前（`color-named`）と、`#00000080` のような不透明度付きの16進数（`color-hex-alpha`）も禁止しています。どの色の関数を選ぶかは、「[10-1 色とダークモード](/color-media/color/)」で扱います。
+
+## ベンダープレフィックスは原則として書かない
+
+`-webkit-` のようなベンダープレフィックスは、接頭辞なしでは対象のブラウザで動かないものを除いて書きません。本書の対象のブラウザ（Safari 18系の最終版以降と、ほかの主要なブラウザの最新版）は、ほとんどの機能に接頭辞なしで対応しています。たとえば `backdrop-filter` は、Safari 18から接頭辞なしで使えます。
+
+書く必要があるのは、`-webkit-font-smoothing` のように標準のプロパティがないものと、Safariがまだ接頭辞なしに対応していないものです。2026年9月時点では、`box-decoration-break` と `user-select` がこれにあたります。後者はStylelintの `property-no-vendor-prefix` に検出されるので、無効化のコメントと理由を添えて書きます。
+
+```css title="🙆‍♂ Recommended: 必要なプレフィックスには理由を残す"
+._marker {
+  /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年9月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+```
+
+接頭辞が必要かどうかは、記憶ではなく、そのときのブラウザの対応状況で判断します。理由をコメントに残しておけば、Safariが対応した時点で、どの行を消せばよいかがすぐに分かります。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS 論理的プロパティと値 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_logical_properties_and_values)
+- [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)
+- [translate - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/translate)
+- [rgb() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/rgb)
+- [tak-dcxi/stylelint-plugin-display-multi-keyword-syntax - GitHub](https://github.com/tak-dcxi/stylelint-plugin-display-multi-keyword-syntax)
+- [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）
+- [えっ！？まだ色の指定でrgba()関数を使っているの！？](https://www.tak-dcxi.com/article/rgba-function-is-legacy-syntax/)（TAKLOG、2024年5月）
+- [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月）

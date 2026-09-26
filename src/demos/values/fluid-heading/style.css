@@ -1,0 +1,27 @@
+@layer components {
+  @scope (.scoped.fluid-heading) to (.scoped) {
+    ._heading {
+      /* 基準にする画面の幅と、そのときの文字サイズ（どちらも px 相当の数値） */
+      --_min-width: 375;
+      --_max-width: 1280;
+      --_min-size: 24;
+      --_max-size: 40;
+
+      /* 画面の幅が 1px 増えたときに増える量（傾き）と、幅 0 のときの値（切片） */
+      --_slope: calc((var(--_max-size) - var(--_min-size)) / (var(--_max-width) - var(--_min-width)));
+      --_intercept: calc(var(--_min-size) - var(--_slope) * var(--_min-width));
+
+      margin: 0;
+      font-size: clamp(
+        var(--_min-size) / 16 * 1rem,
+        var(--_slope) * 100svi + var(--_intercept) / 16 * 1rem,
+        var(--_max-size) / 16 * 1rem
+      );
+      line-height: 1.4;
+    }
+
+    ._lead {
+      margin-block: calc(12 / 16 * 1rem) 0;
+    }
+  }
+}

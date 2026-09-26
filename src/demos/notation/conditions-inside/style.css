@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.site-header) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    ._logo {
+      font-weight: bold;
+    }
+
+    ._links {
+      display: none;
+      gap: 16px;
+
+      @media (width >= calc(640 / 16 * 1rem)) {
+        display: block flex;
+      }
+    }
+
+    ._menu-button {
+      padding-block: 4px;
+      padding-inline: 12px;
+      border-radius: 4px;
+
+      @media (width >= calc(640 / 16 * 1rem)) {
+        display: none;
+      }
+    }
+  }
+}

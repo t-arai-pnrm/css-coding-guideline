@@ -1,0 +1,50 @@
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+
+      /* ページ全体の段組みはビューポートで切り替える */
+      @media (width >= calc(720 / 16 * 1rem)) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.fluid-card) to (.scoped) {
+    :scope {
+      container: --fluid-card / inline-size;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    ._label {
+      margin: 0;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._sample {
+      margin: 0;
+      font-weight: bold;
+      line-height: 1.4;
+
+      /* 画面の幅 375px で 20px、1280px で 32px。置き場所に関係なく同じ大きさになる */
+      &[data-unit="svi"] {
+        font-size: clamp(20 / 16 * 1rem, 1.326svi + 15.03 / 16 * 1rem, 32 / 16 * 1rem);
+      }
+
+      /* コンテナの幅 240px で 20px、640px で 32px */
+      &[data-unit="cqi"] {
+        font-size: clamp(20 / 16 * 1rem, 3cqi + 12.8 / 16 * 1rem, 32 / 16 * 1rem);
+      }
+    }
+  }
+}

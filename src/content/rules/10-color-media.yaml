@@ -1,0 +1,229 @@
+# 第10章 色・画像・装飾
+
+# 10-1 色とダークモード
+- id: oklch-for-colors
+  level: 推奨
+  rule: 色のトークンと色の値は、`oklch()` で定義する。
+  reason: 明度・彩度・色相が値から読み取れ、色相が違っても明度をそろえれば同じくらいの明るさに見えるため。
+  note: 16進数や `hsl()` の明度は、見た目の明るさと一致しません。
+  aiProne: true
+  page: color-media/color
+  since: 0.1.0
+
+- id: derive-colors-from-base
+  level: 推奨
+  rule: 透過させた色や明度を変えた色は元の色から作り、そのためのトークンや RGB の値を別に用意しない。
+  reason: 元の色を1か所直すだけで派生させた色も追従し、元の色との関係がコードに残るため。
+  note: '`--color-primary-rgb: 228 161 83` のような、`rgb()` で不透明度を付けるためだけのトークンは作りません。'
+  aiProne: true
+  page: color-media/color
+  since: 0.1.0
+
+- id: relative-color-for-single-color
+  level: 推奨
+  rule: '1つの色の不透明度や明度だけを変えるときは、`oklch(from var(--color) l c h / 10%)` のような相対カラー構文で書く。'
+  reason: 変えたい成分だけを書き換え、ほかの成分は元の色のまま保てるため。
+  note: 相対カラー構文の `l` は 0 から 1 の数値なので、計算するときは `calc(l - 0.15)` のように数値で書きます。
+  page: color-media/color
+  since: 0.1.0
+
+- id: color-mix-for-two-colors
+  level: 推奨
+  rule: 2つの色の間の色は `color-mix()` で作り、補間の色空間には `oklab` を指定する。
+  reason: 背景色と文字色の中間のように、2つの色の関係で決まる色を、両方の色の変化に追従させられるため。
+  note: '`currentColor` に不透明度を付けるときは、`color-mix(in oklab, currentColor 60%, transparent)` のように透明と混ぜます。'
+  page: color-media/color
+  since: 0.1.0
+
+- id: light-dark-in-semantic-tokens
+  level: 推奨
+  rule: ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。
+  reason: 配色の切り替えがトークンの定義にまとまり、ダーク用の値の書き忘れや、色の散らばりを防げるため。
+  aiProne: true
+  page: color-media/color
+  since: 0.1.0
+
+- id: color-scheme-meta-for-light-dark
+  level: 必須
+  rule: '`light-dark()` を使うページでは、`<meta name="color-scheme" content="light dark">` で両方の配色に対応していることを宣言する。'
+  reason: 宣言がないと、OS がダークモードでも `light-dark()` は常にライトの値になり、ブラウザの部品の配色も切り替わらないため。
+  note: ダークモードに対応しないサイトでは、この宣言を書きません（第4章の `no-color-scheme-without-dark-mode`）。
+  page: color-media/color
+  since: 0.1.0
+
+- id: theme-switch-via-meta
+  level: 推奨
+  rule: テーマを手動で切り替えるときは、`<meta name="color-scheme">` の `content` を `light only`、`dark only`、`light dark` のいずれかに書き換える。
+  reason: 色の切り替えをすべて `light-dark()` に任せられ、切り替えの仕組みが1か所にまとまるため。
+  note: 選んだ値は localStorage に保存し、`<head>` の中のスクリプトで描画の前に読み戻します。localStorage へのアクセスは `try` で囲みます。
+  page: color-media/color
+  since: 0.1.0
+
+# 10-2 強制カラーモードとコントラスト
+- id: forced-colors-system-colors
+  level: 推奨
+  rule: 強制カラーモードに合わせて色を指定し直すときは、`CanvasText`、`LinkText`、`ButtonText`、`GrayText` などのシステムカラーを使う。
+  reason: ユーザーが選んだ配色に合わせた色になり、背景とのコントラストが保たれるため。
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: transparent-border-over-none
+  level: 必須
+  rule: '枠線を消すときは、`border: none` ではなく `border-color: transparent` で透明にする。'
+  reason: 強制カラーモードでは透明な枠線にも色が付くので、背景色が消えても、ボタンなどの範囲が分かるため。
+  aiProne: true
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: no-box-shadow-only-boundary
+  level: 禁止
+  rule: 要素の境界や区切りを、`box-shadow` だけで描かない。
+  reason: 強制カラーモードでは `box-shadow` が `none` になり、境界が消えるため。
+  note: フォーカスリングについては、第4章の `focus-ring-not-box-shadow-only` を参照してください。
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: background-current-for-shapes
+  level: 必須
+  rule: '`mask-image` や `clip-path` で切り抜き、`background-color` で塗る図形は、`currentColor` を直接指定せず、強制カラーモードでシステムカラーに切り替わるカスタムプロパティ（`--background-current`）から色を受け取る。'
+  reason: 強制カラーモードでは `background-color` がページの背景色に置き換わり、図形が見えなくなるため。
+  note: 通常の文字の文脈でしか使わない図形は、`background-image` に `conic-gradient(currentColor 0 0)` を、`background-color` に `CanvasText` を指定する方法でも描けます。
+  aiProne: true
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: forced-colors-svg-system-colors
+  level: 推奨
+  rule: 強制カラーモードでは、インライン SVG の `fill` と `stroke` を、文脈に合ったシステムカラーに `!important` で固定する。
+  reason: SVG の色は強制カラーモードでも置き換わるとは限らず、`currentColor` がシステムカラーにならない環境もあるため。
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: forced-colors-image-icon-filter
+  level: 推奨
+  rule: '単色のアイコンを `<img>` で表示するときは、強制カラーモードで `filter` を使い、背景と反対の色に塗りつぶす。'
+  reason: 画像は強制カラーモードの影響を受けないので、黒いアイコンは黒い背景に、白いアイコンは白い背景に溶け込むため。
+  note: '`prefers-color-scheme` と組み合わせ、ライトでは `brightness(0)`、ダークでは `brightness(0) invert(1)` にします。'
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: forced-colors-none-for-fragile-decoration
+  level: 推奨
+  rule: '強制カラーモードで意味が変わる装飾（`outline` のオーバーレイ、スクロールバーの色など）は、`@media (forced-colors: none)` の中に書く。'
+  reason: 強制カラーモードでは色がシステムカラーに置き換わり、装飾が内容を覆ったり、部品が見えなくなったりするため。
+  note: '条件は `not (forced-colors: active)` ではなく、`(forced-colors: none)` と書きます。'
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: no-color-only-information
+  level: 必須
+  rule: 本文の中のリンク、フォーカスやホバーの状態、入力エラーのような情報を、色の違いだけで伝えない。
+  reason: 色の見え方は人によって違い、グレースケールで表示している人もいるため（WCAG 2.1 の「色の使用」）。
+  note: 下線、太さ、アイコン、文言のような、色以外の手がかりを足します。
+  aiProne: true
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: grayscale-check
+  level: 推奨
+  rule: 実装を終えたら、グレースケールの表示で、リンクや状態を見分けられるかを確かめる。
+  reason: 色だけに頼った表現は、カラーの画面では気づきにくいため。
+  note: '基本は OS のグレースケール表示を使い、手早く確かめるときは `body` に `filter: grayscale(1)` を一時的に指定します。'
+  page: color-media/forced-colors
+  since: 0.1.0
+
+- id: text-contrast-aa
+  level: 必須
+  rule: 文字と背景のコントラスト比は、WCAG 2.1 の AA（通常の文字で 4.5:1 以上、大きな文字で 3:1 以上）を満たす。
+  reason: 視力の弱い人や、明るい屋外で画面を見る人にも文字を読めるようにするため。
+  note: 薄い文字色のトークンは、組み合わせる背景のトークンごとに確かめます。
+  aiProne: true
+  page: color-media/forced-colors
+  since: 0.1.0
+
+# 10-3 画像と装飾
+- id: aspect-ratio-for-ratios
+  level: 必須
+  rule: 要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作らない。
+  reason: 比率のための擬似要素や絶対配置が要らず、比率の指定だとコードから読み取れるため。
+  note: '正方形や正円は `aspect-ratio: 1` で作ります。'
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: object-fit-cover-or-contain
+  level: 推奨
+  rule: 大きさを決めた画像や動画には `object-fit` の `cover` か `contain` を指定し、初期値の `fill` で引き伸ばさない。
+  reason: 比率の違う画像が入っても歪まないようにするため。
+  note: '写真のように枠を埋めたい画像は `cover`、ロゴのように切り取られると困る画像は `contain` にします。ベーススタイルで `img` と `video` を `cover` にしておく方法もあります。'
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: img-width-height-attributes
+  level: 必須
+  rule: '`<img>` には、画像の実際の大きさを `width` と `height` の属性で書く。'
+  reason: ブラウザが読み込む前から縦横比を計算して場所を確保し、読み込んだときにレイアウトがずれるのを防ぐため。
+  aiProne: true
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: text-on-image-fallback-background
+  level: 必須
+  rule: 画像や動画の上に文字を載せるときは、画像が表示されなくても文字を読める背景色を指定する。
+  reason: 画像を読み込めないと、文字と背景の色が近くなり、文字を読めなくなることがあるため。
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: sizes-by-tool
+  level: 推奨
+  rule: '`srcset` と `sizes` の値は、手で計算せず、RespImageLint などのツールで確かめて決める。'
+  reason: 表示される幅は余白や段組みの切り替えによって変わり、手で計算すると誤りやすいため。
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: no-lazy-loading-first-view
+  level: 禁止
+  rule: 'ファーストビューに表示される画像に、`loading="lazy"` を指定しない。'
+  reason: ページでいちばん大きな要素の表示が遅れるため。
+  note: 'ファーストビューの画像には `fetchpriority="high"` を指定し、スクロールしないと見えない画像にだけ `loading="lazy"` を付けます。'
+  aiProne: true
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: avif-for-photos
+  level: 推奨
+  rule: 写真のような画像は、AVIF で書き出す。
+  reason: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
+  note: AVIF への変換は WebP より時間がかかるので、画像の多いサイトではビルドの時間を見積もります。
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: clip-path-shape-tokens
+  level: 推奨
+  rule: 三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。
+  reason: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
+  aiProne: true
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: icon-current-color
+  level: 推奨
+  rule: 単色のアイコンの色は `currentColor` で文字色に合わせ、状態ごとにアイコンの色を指定し直さない。
+  reason: 文字色を切り替えるだけでアイコンも追従し、色を2か所に書く必要がなくなるため。
+  note: '`border` の色も、省略すれば `currentColor` になります。'
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: inline-svg-hidden-with-text
+  level: 推奨
+  rule: '意味を持つインライン SVG のアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。'
+  reason: '`<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。'
+  page: color-media/images-and-decoration
+  since: 0.1.0
+
+- id: shadow-black-in-dark-mode
+  level: 推奨
+  rule: 影の色はダークモードでも黒にし、不透明度を上げて奥行きを表す。
+  reason: 暗い背景に白い影を付けると、影ではなく光って見えるため。
+  note: '`--shadow--color: light-dark(oklch(0% 0 0deg / 8%), oklch(0% 0 0deg / 25%))` のように、影の色のトークンに `light-dark()` を使います。'
+  page: color-media/images-and-decoration
+  since: 0.1.0

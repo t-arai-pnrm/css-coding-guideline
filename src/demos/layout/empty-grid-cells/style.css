@@ -1,0 +1,67 @@
+@layer components {
+  @scope (.scoped.contact-section) to (.scoped) {
+    :scope {
+      container: --contact-section / inline-size;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    ._layout {
+      display: block grid;
+
+      /* 余白は "." の行で作る。見出しの下は 24px、本文の下は 16px */
+      grid-template:
+        "--heading"
+        "." 24px
+        "--text"
+        "." 16px
+        "--button";
+      padding: 40px 16px;
+
+      /* 広い場所では、余白の行の高さだけを変える */
+      @container --contact-section (inline-size >= calc(560 / 16 * 1rem)) {
+        grid-template:
+          "--heading"
+          "." 48px
+          "--text"
+          "." 32px
+          "--button";
+        padding: 64px 40px;
+      }
+
+      & > ._heading {
+        grid-area: --heading;
+      }
+
+      & > ._text {
+        grid-area: --text;
+      }
+
+      & > ._button {
+        grid-area: --button;
+        justify-self: center;
+      }
+    }
+
+    ._heading {
+      text-align: center;
+    }
+
+    ._title {
+      font-size: calc(24 / 16 * 1rem);
+    }
+
+    ._subtitle {
+      color: oklch(45% 0.05 260deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._button {
+      padding: 12px 32px;
+      border-radius: 4px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+      text-decoration: none;
+    }
+  }
+}

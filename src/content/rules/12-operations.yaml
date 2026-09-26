@@ -1,0 +1,256 @@
+# 第12章 実務での運用
+
+# 12-1 CMSと共存する
+- id: cms-own-class-names
+  level: 必須
+  rule: CMS の中で作るブロックやコンポーネントには独自のクラス名を付け、そのクラスをルートにした `@scope` の中にスタイルを書く。
+  reason: レイヤーを使えない環境では、衝突した相手との優劣を詳細度と書く順番でしか決められないので、CMS の本体と同じ要素を取り合わないことが最大の対策になるため。
+  note: レイヤーを使わない判断の基準は、第2章のルール `no-layers-with-unlayered-css` にあります。
+  page: operations/cms
+  since: 0.1.0
+
+- id: cms-adjust-core-with-theme-json
+  level: 推奨
+  rule: コアブロックの標準的な見た目は、CSS で上書きする前に、theme.json の設定で調整できないかを検討する。
+  reason: theme.json の設定は WordPress の標準の仕組みでエディタと公開ページの両方に反映され、コアの CSS と詳細度を競わずに済むため。
+  page: operations/cms
+  since: 0.1.0
+
+- id: cms-override-after-conflict
+  level: 推奨
+  rule: コアやプラグインの CSS を打ち消す CSS は、実際に衝突を確かめてから、その箇所にだけ最小限に書く。
+  reason: 先回りして書いた打ち消しは、コアの更新で相手の CSS が変わったとき、何を打ち消しているのか分からないコードとして残るため。
+  page: operations/cms
+  since: 0.1.0
+
+- id: cms-feature-priority
+  level: 推奨
+  rule: WordPress の機能は「theme.json → コアブロック → パターン → ブロックスタイル → ダイナミックブロック → 独自ブロック」の順に検討し、下の手段を選ぶときは上の手段で満たせない理由を残す。
+  reason: 上の手段ほど WordPress の標準の仕組みに乗れ、エディタと公開ページで同じように動くため。
+  page: operations/cms
+  since: 0.1.0
+
+- id: cms-keep-scoped-in-block-markup
+  level: 必須
+  rule: コアブロックでスコープのルートを作るときは、`scoped` クラスをブロックの `className` と保存される HTML の両方に書き、ブロックの検証エラーを避ける目的で消さない。
+  reason: '`scoped` がなくなると `@scope (.scoped.page-<スラッグ>)` のルートが見つからず、ページのスタイルが当たらなくなるため。'
+  page: operations/cms
+  since: 0.1.0
+
+- id: cms-tokens-in-theme-json
+  level: 必須
+  rule: WordPress のブロックテーマでは、トークンを theme.json の `settings.custom` とパレットに定義し、CSS からは `--wp--custom--*` と `--wp--preset--*` の名前で参照する。
+  reason: トークンの定義が1か所にまとまり、エディタの色の選択肢のような編集画面の設定にも、同じ値が使われるため。
+  note: SVG のデータ URI のように theme.json で表しにくい値だけを、CSS のトークンのファイルに残します。サイズの段階名に数字を使わない理由は、第6章のルール `token-size-names-without-digits` にあります。
+  page: operations/cms
+  since: 0.1.0
+
+- id: cms-token-groups-same-as-css
+  level: 推奨
+  rule: theme.json の `settings.custom` のグループ名は、CSS でトークンを定義するときの分類名（`spacing`、`rounded`、`ease`、`z` など）と同じにする。
+  reason: 環境が変わっても同じ名前でトークンを考えられ、コンポーネントを移すときも参照する名前の置き換えだけで済むため。
+  page: operations/cms
+  since: 0.1.0
+
+- id: cms-restrict-editor-options
+  level: 推奨
+  rule: theme.json で、任意の色、デフォルトのパレット、流体タイポグラフィ、`appearanceTools` のように、トークンの外の値を入力できる設定を無効にする。
+  reason: 編集者がトークンの外の値を入力できると、デザインの一貫性が崩れ、打ち消すための CSS が必要になるため。
+  note: '設定の例は、`color.custom: false`、`color.defaultPalette: false`、`typography.fluid: false`、`appearanceTools: false` です。'
+  page: operations/cms
+  since: 0.1.0
+
+# 12-2 CMSの本文エリアをスタイリングする
+- id: content-area-single-selector
+  level: 必須
+  rule: 本文エリアのスタイルは、公開ページとエディタの本文の両方に当たるセレクタ（`:is(.content-area, .editor-styles-wrapper .is-root-container)`）で、1か所に書く。
+  reason: 公開ページとエディタで別々に書くと、片方だけを直す機会が生まれ、編集画面と公開ページの見た目がずれるため。
+  note: エディタには、`add_editor_style()` で公開ページと同じ CSS のファイルを読み込みます。
+  page: operations/cms-content
+  since: 0.1.0
+
+- id: content-area-spacing-public-properties
+  level: 推奨
+  rule: 本文エリアのブロック間の余白は、`--content-area--flow-space` のような公開プロパティで受け取り、デフォルト値を `var()` のフォールバックに書く。
+  reason: '`:is()` によって本文エリアのセレクタの詳細度が高くなるので、ページごとに余白を変えるとき、詳細度で競わずに値だけを渡せるようにするため。'
+  page: operations/cms-content
+  since: 0.1.0
+
+- id: content-area-allowed-blocks
+  level: 推奨
+  rule: 本文で使えるブロックを許可リストで絞り、許可したブロックにはすべて本文エリア用のスタイルを用意する。
+  reason: 用意するスタイルと、確かめる組み合わせの数が限られ、スタイルのないブロックが本文に入り込まないため。
+  page: operations/cms-content
+  since: 0.1.0
+
+- id: core-block-flat-selectors
+  level: 推奨
+  rule: コアブロックの内部の要素は、ブロックのクラスから始まる完全なセレクタで選び、ネストを重ねない（例：`& .wp-block-media-text > .wp-block-media-text__content`）。
+  reason: コアブロックの HTML にはクラスを足せず、ネストを重ねると、コアの CSS との詳細度の関係が読めなくなるため。
+  page: operations/cms-content
+  since: 0.1.0
+
+- id: important-for-core-inline-style
+  level: 必須
+  rule: コアブロックが `style` 属性に出力した値を `!important` で打ち消すときは、打ち消す対象と理由をコメントに書く。
+  reason: コメントがないと、詳細度の競争に負けて付けた `!important` と区別できず、コアの更新後に消してよいかも判断できないため。
+  note: 本文エリアで `!important` を使ってよいのは、この場合だけです。`!important` の使いどころの全体は、第2章のルール `important-only-for-guarantees` にあります。
+  page: operations/cms-content
+  since: 0.1.0
+
+- id: block-style-for-appearance
+  level: 推奨
+  rule: コアブロックに見た目の種類を足すときは、独自のブロックやブロックのバリエーションを作らず、ブロックスタイル（`register_block_style()`）を登録して `.is-style-*` のクラスで装飾する。
+  reason: ブロックの機能と構造をそのまま使え、編集者はスタイルを選ぶだけで済むため。
+  page: operations/cms-content
+  since: 0.1.0
+
+- id: block-style-name-prefix
+  level: 推奨
+  rule: ブロックスタイルの名前には、テーマやサイトの接頭辞を付ける（例：`is-style-site-action`）。
+  reason: コアやプラグインが登録するスタイルの名前と重ならないようにするため。
+  page: operations/cms-content
+  since: 0.1.0
+
+- id: no-reimplementing-core-layout
+  level: 推奨
+  rule: ボタンのグループの並びや間隔のように、コアのレイアウトの設定が担う配置は、CSS で作り直さない。
+  reason: コアの機能と CSS の役割が重なると、コアの更新で挙動が変わったときに、どちらを直せばよいか分からなくなるため。
+  page: operations/cms-content
+  since: 0.1.0
+
+# 12-3 Stylelintでルールを守る
+- id: run-stylelint-before-done
+  level: 必須
+  rule: CSS を変更したら Stylelint を実行し、エラーを残さない。
+  reason: 機械的に判断できる違反をレビューに持ち込まず、レビューを命名や設計の判断に集中させるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: no-disabling-to-silence
+  level: 禁止
+  rule: エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。
+  reason: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
+  aiProne: true
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: disable-one-line-with-reason
+  level: 必須
+  rule: ルールを無効にするときは、`stylelint-disable-next-line` とルール名で1行・1つのルールに絞り、直前のコメントに理由を書く。
+  reason: 範囲を広げると、同じ場所にある別の誤りまで見逃すうえ、なぜ無効にしたのかが後から分からなくなるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: autofix-mechanical-issues
+  level: 推奨
+  rule: プロパティの並び順のように自動で直せる違反は、手で直さず、`stylelint --fix` とエディタの保存時の自動修正に任せる。
+  reason: 整形はツールの仕事で、人が手作業でそろえると時間がかかるうえ、漏れが出るため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: disallowed-list-with-message
+  level: 推奨
+  rule: 禁止リストのルール（`unit-disallowed-list` など）には、`message` で代わりの書き方を示す。
+  reason: 何を書けばよいかがその場で分かり、ルールを無効にして済ませる動機を減らせるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: warning-for-judgement-rules
+  level: 推奨
+  rule: 置き換え先を人が選ぶ必要のあるルールは警告に、正解が1つに決まるルールはエラーにする。
+  reason: 機械的に直せる違反は確実に止め、判断の要る違反は人に判断を促せるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: resolve-warnings
+  level: 推奨
+  rule: 警告は放置せず、直すか、意図して使う場合は理由を添えてルールを1行だけ無効にする。
+  reason: 警告を放置すると、本当に直すべき警告が一覧に埋もれ、誰も警告を読まなくなるため。
+  note: 警告だけでは Stylelint の終了コードは失敗になりません。CI で警告も失敗にするときは、`--max-warnings 0` を付けて実行します。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: lint-config-matches-guideline
+  level: 必須
+  rule: ガイドラインのルールを変えたら、Stylelint の設定も合わせて変え、本文と設定を食い違わせない。
+  reason: 設定がガイドラインの意図とずれると、ツールが誤りを直すどころか、誤りを強制するため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: lint-documented-examples
+  level: 推奨
+  rule: ガイドラインや設計のドキュメントに載せる推奨のコード例も、同じ Stylelint の設定で検証する。
+  reason: コード例が自分のルールに違反していると、ドキュメントが信用されず、AI にもそのまま手本として真似されるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+# 12-4 レビューとAIとの協働
+- id: review-reason-and-solution
+  level: 必須
+  rule: レビューの指摘には、理由と解決策を必ずセットで書く。
+  reason: 何が問題で、どう直せばよいかが伝わらないと、書いた人が調べ直すことになり、同じ誤りを繰り返すため。
+  note: 本書のルールに当てはまる指摘には、ルールの ID を添えます。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-severity-labels
+  level: 推奨
+  rule: レビューの指摘には `MUST`、`IMO`、`Q` のラベルを付けて、深刻度を区別する。
+  reason: 直さなければならない指摘と、好みの提案と、質問が混ざらないようにするため。
+  note: '`MUST` は、仕様や規約への違反、バグ、将来の深刻な問題、使いやすさやアクセシビリティの阻害です。'
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-preferences-as-imo
+  level: 推奨
+  rule: 挙動に問題がなく、合意のない好みが入る指摘は `IMO` にとどめ、修正を強制しない。
+  reason: 教義的なレビューは、ユーザーやクライアントのメリットにならない修正を増やすため。
+  note: 規約として合意したルールへの違反は、`MUST` として指摘します。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-ask-unclear-intent
+  level: 推奨
+  rule: 意図が読み取れない記述は、誤りと決めつけずに `Q` で質問する。
+  reason: 書いた人にしか分からない事情がある場合があり、理由が分かればコメントとして残せるため。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-check-order
+  level: 推奨
+  rule: レビューは、規約、トークン、ブラウザ対応、不要な記述、グローバルの CSS、内容の変化への耐性、コンポーネントの境界、レスポンシブ、コメントの順に確認する。
+  reason: 影響の大きい問題から確かめ、細部の指摘に埋もれて重大な問題を見逃すのを防ぐため。
+  note: インデントや並び順のような整形は、ツールが機能していないときだけ指摘します。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: cite-rule-ids
+  level: 推奨
+  rule: レビューのコメントと AI への指示では、ルールを ID で引用する（例：`no-vw-vh`）。
+  reason: ID は章の構成が変わっても変わらず、どのルールのことかが正確に伝わるため。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: ai-read-rules-first
+  level: 推奨
+  rule: AI に CSS を書かせるときやレビューさせるときは、先に本書のルール集（またはスキル）を読ませる。
+  reason: AI が誤りやすいルールを、書く前に確認させられるため。
+  note: Claude Code では `skills/css-coding-guideline/` をスキルとして登録し、ほかのツールでは `AGENTS.md` や `CLAUDE.md` から `rules.md` を参照させます。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: verify-ai-output
+  level: 必須
+  rule: AI が生成した CSS は、Stylelint とレビューの両方で確かめてから採用する。
+  reason: Stylelint で検出できるのはルールの一部で、lint が通っても規約を守っているとは限らないため。
+  note: レビューでは、lint で検出できない「AI が誤りやすい」ルールを重点的に確かめます。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: record-ai-corrections
+  level: 推奨
+  rule: AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。
+  reason: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
+  page: operations/review-and-ai
+  since: 0.1.0

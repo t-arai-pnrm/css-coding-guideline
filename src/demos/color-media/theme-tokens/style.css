@@ -1,0 +1,96 @@
+@layer tokens {
+  :root {
+    --color--neutral--50: oklch(98.5% 0 0deg);
+    --color--neutral--100: oklch(97% 0 0deg);
+    --color--neutral--400: oklch(70.8% 0 0deg);
+    --color--neutral--600: oklch(43.9% 0 0deg);
+    --color--neutral--900: oklch(20.5% 0 0deg);
+    --color--neutral--950: oklch(14.5% 0 0deg);
+    --color--accent--400: oklch(70% 0.14 250deg);
+    --color--accent--600: oklch(52% 0.16 250deg);
+    --background--base: light-dark(var(--color--neutral--100), var(--color--neutral--900));
+    --background--accent: light-dark(var(--color--accent--600), var(--color--accent--400));
+    --foreground--base: light-dark(var(--color--neutral--950), var(--color--neutral--50));
+    --foreground--muted: light-dark(var(--color--neutral--600), var(--color--neutral--400));
+  }
+}
+
+@layer pages {
+  @scope (.scoped.theme-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    ._panel {
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+
+      /* 実際のサイトでは meta 要素が配色を決める。デモでは2つの配色を並べるために要素ごとに指定する */
+      &[data-scheme="light"] {
+        color-scheme: light;
+      }
+
+      &[data-scheme="dark"] {
+        color-scheme: dark;
+      }
+    }
+
+    ._label {
+      margin: 0;
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.notice-card) to (.scoped) {
+    :scope {
+      --_accent: var(--background--accent);
+
+      display: block grid;
+      gap: 8px;
+      justify-items: start;
+      padding: 16px;
+      border: 1px solid oklch(from var(--foreground--base) l c h / 15%);
+      border-radius: 8px;
+      background-color: color-mix(in oklab, var(--background--base), var(--foreground--base) 5%);
+    }
+
+    ._badge {
+      margin: 0;
+      padding-inline: 8px;
+      border-radius: calc(infinity * 1px);
+      background-color: oklch(from var(--_accent) l c h / 20%);
+      font-size: calc(12 / 16 * 1rem);
+      font-weight: bolder;
+    }
+
+    ._title {
+      margin: 0;
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._text {
+      margin: 0;
+      color: var(--foreground--muted);
+    }
+
+    ._button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: var(--_accent);
+
+      /* アクセントカラーを差し替えても、文字色を選び直さずに済むようにする */
+      color: oklch(from var(--_accent) sign(0.6 - l) 0 0deg);
+    }
+  }
+}

@@ -1,0 +1,160 @@
+---
+title: "9-3 行の高さとハーフレディング"
+description: "ベースのline-heightは1.5以上にして継承させ、line-height: 1は使いません。上下の余白を詰めたいときは、行の高さを小さくせず、text-box-trimか余白の計算でハーフレディングを取り除きます。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import trimHtml from '../../../demos/typography/text-box-trim/index.html?raw';
+import trimCss from '../../../demos/typography/text-box-trim/style.css?raw';
+
+行の高さ（`line-height`）は、ベーススタイルで1.5以上にして各要素に継承させ、`line-height: 1` は使いません。値はトークンから選び、和文の本文は1.7〜2、見出しは1.25〜1.5を目安にします。デザインの都合で文字の上下の余白を詰めたいときは、行の高さを小さくするのではなく、`text-box-trim` でハーフレディングを取り除きます。
+
+`line-height` を単位のない数値で書く理由は、「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。この節では、ハーフレディングの仕組みと、デザインカンプとの差を埋める方法を説明します。
+
+## ハーフレディングがデザインカンプとの差を生む
+
+CSSの行は、`line-height` の高さを持つ箱として並びます。行の高さが文字の大きさより大きいとき、その差は文字の上と下に半分ずつ配分されます。この上下の余白を「ハーフレディング」と呼びます。16pxの文字で `line-height` が1.75なら、行の高さは28pxで、文字の上下に6pxずつのハーフレディングができます。
+
+行と行の間では、上の行の下側と下の行の上側のハーフレディングが合わさり、行間になります。問題は、1行目の上と最後の行の下にも、同じ量の余白が残ることです。見出しの上や段落の下の余白を測ると、CSSで指定した `margin` より、ハーフレディングのぶんだけ広くなります。
+
+デザインツールによって、この余白の扱いが異なります。Figmaは、テキストの上下のトリミングを設定していなければ、ハーフレディングを含めた位置から余白を測ります。一方、Adobe XDやIllustratorなどのAdobe製のツールは、ハーフレディングを含めずに余白を測ります。Adobe製のツールで作ったデザインカンプの余白をそのまま `margin` に書くと、実装の余白が広く見えるのはこのためです。
+
+デザインカンプとの見た目の差を指摘されたとき、原因の多くはこのハーフレディングにあるという印象です。そこで、余白を詰めるために `line-height: 1` を指定したくなりますが、これは後で説明するとおり避けます。ハーフレディングを取り除く手段は、別に用意されています。
+
+## ベースの行の高さは1.5以上にする
+
+ベースの `line-height` は1.5以上にします。WCAG 2.1の達成基準1.4.8（レベルAAA）では、段落の中の行送りを文字の大きさの1.5倍以上にすることを求めています。行の間が狭いと、読んでいる行を目で追いにくくなるからです。kiso.cssも、`:root` の `line-height` を1.5にしています。
+
+そのうえで、見出しや本文には、それぞれに合った値を指定します。目安は、和文の本文が1.7〜2、英文の本文が1.5〜1.8です。見出しは文字が大きいぶん行の間も広がるので、和文で1.25〜1.5、英文で1.2〜1.4ほどに狭めます。
+
+見出しの行の高さは、1行で収まっているうちは見た目にほとんど影響しません。差が出るのは、狭い画面や長い文言で2行以上に折り返したときです。見出しの値を決めるときは、表示の幅を狭めて、折り返した状態の行の間を確かめます。
+{/* 要確認: 出典なし（折り返した状態で確かめるという手順は筆者の推論） */}
+
+これらの値は、トークンにして段階ごとに名前を付けます。私のテンプレートでは、`tight`、`snug`、`normal`、`relaxed`、`loose` の5段階にしています。数値ではなく名前で選べば、本文や見出しに使う値が、サイトの中でそろいます。
+
+```css title="🙆‍♂ Recommended: 行の高さのトークンを段階で定義し、要素ごとに選ぶ"
+:root {
+  --leading--tight: 1.25;
+  --leading--snug: 1.4;
+  --leading--normal: 1.6;
+  --leading--relaxed: 1.75;
+  --leading--loose: 2;
+}
+
+:where(:root) {
+  line-height: var(--leading--normal);
+}
+
+._article {
+  line-height: var(--leading--relaxed);
+}
+
+._heading {
+  line-height: var(--leading--snug);
+}
+```
+
+デザインの中で1か所だけ使われている `1.8` のような値は、トークンに加えず、その場に直接書きます。トークンを増やしすぎると、一覧から選ぶだけで取り決めに沿えるという利点が失われるからです。トークンの粒度は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
+
+## line-height: 1 を使わない
+
+`line-height: 1` は使いません。ボタンやラベルのように1行で表示する前提の要素でも、指定しないようにします。コーディングしやすいからと、ベーススタイルの `line-height` を1にする方法もありますが、これも避けます。
+
+```css title="🙅‍♂ Not Recommended: ハーフレディングをなくすために行の高さを1にする"
+/* 🙅‍♂ Not Recommended */
+.button {
+  padding: 16px 24px;
+  line-height: 1;
+}
+```
+
+デザインの上では1行でも、実際の表示では改行が起こりえます。ラベルの文言が変わったとき、画面の幅が狭いとき、ユーザーが文字を大きくしたとき、機械翻訳で文章が長くなったときです。`line-height: 1` のまま改行すると、行と行の間がなくなり、フォントによっては文字が重なって読めなくなります。
+
+この指定は、アクセシビリティも損ないます。行の間が極端に狭いと、認知に障害のある人を含め、多くの人が文字を目で追いにくくなります。本書のStylelintの設定では、`line-height` に単位を付けていないかに加えて、`1` という値も `declaration-property-value-disallowed-list` で警告します。
+
+やりたいことが「文字の上下の余白をなくすこと」なら、行の高さはそのままにして、ハーフレディングだけを取り除きます。方法は2つあり、`text-box-trim` を使う方法と、余白の計算で打ち消す方法です。
+
+## text-box-trimでハーフレディングを取り除く
+
+`text-box-trim` は、要素の1行目の上と最後の行の下にあるハーフレディングを取り除くプロパティです。行と行の間の行送りは変わりません。`line-height: 1` の代わりに使えば、改行したときの読みやすさを保ったまま、デザインカンプの余白に合わせられます。
+
+```css title="🙆‍♂ Recommended: ハーフレディングを取り除くユーティリティ"
+.-trim-both {
+  text-box-trim: trim-both;
+
+  &:lang(en) {
+    text-box-edge: cap alphabetic;
+  }
+}
+```
+
+`text-box-trim` には、上下の両方を削る `trim-both`、上だけを削る `trim-start`、下だけを削る `trim-end` があります。ハーフレディングをなくしたいなら `trim-both` を使います。画像と見出しを横に並べて上端をそろえたいときは、`trim-start` だけで足りることが多いでしょう。
+
+どこまで削るかは `text-box-edge` で決めます。デフォルト値の `text` は、フォントの文字の領域の上端と下端で切り取ります。英文では、大文字の上端とベースラインで切り取る `cap alphabetic` が適していますが、和文に使うと詰まりすぎるので、和文はデフォルト値のままにします。上のユーティリティは、英語の要素でだけ `text-box-edge` を変えています。
+
+次のデモでは、同じバッジと段落を、ハーフレディングが残った状態と、`.-trim-both` で取り除いた状態で並べています。背景色の範囲を比べると、上下の余白が `padding` の値だけになっているのが分かります。英語のバッジは、大文字の上端とベースラインで切り取られるので、和文のバッジより低くなります。
+
+<Demo title="ハーフレディングが残った状態と、.-trim-both で取り除いた状態" html={trimHtml} css={trimCss} variant="neutral" />
+
+<Baseline id="text-box" compatKey="css.properties.text-box-trim" name="text-box-trim" />
+
+web-featuresのデータでは、`text-box-trim` は2026年8月のFirefox 154で主要なブラウザのすべてが対応し、「新しく利用可能」になりました（2026年9月確認）。ただし、`cap` や `alphabetic` の値については、Firefoxの対応が記録されていません。対応していない環境ではハーフレディングが残るだけなので、表示が大きく変わったり崩れたりしない範囲で、プログレッシブ・エンハンスメントとして使います。
+{/* 要確認: Firefox 154 の対応は web-features 3.40.0 と MDN の Baseline 表示にもとづく。text-edge の値（cap、alphabetic）の Firefox の対応は未確認 */}
+
+Adobe製のツールで作ったデザインカンプを再現する案件では、全称セレクタですべての要素に `text-box-trim` を指定するのも選択肢です。すべての余白がハーフレディングを含まない前提になるので、カンプの数値をそのまま `margin` や `gap` に書けます。
+
+## 余白の計算でハーフレディングを打ち消す
+
+もう1つの方法は、ハーフレディングの量を計算し、余白から差し引くことです。ハーフレディングは、1文字の高さ（`1em`）と1行の高さ（`1lh`）の差の半分なので、`calc((1em - 1lh) / 2)` で求められます。行の高さが文字より大きければ、この値は負になります。
+
+```css title="🙆‍♂ Recommended: ハーフレディングの量をカスタムプロパティにする"
+:root {
+  --leading-trim: calc((1em - 1lh) / 2);
+}
+
+:where(:lang(en)) {
+  --leading-trim: calc((1cap - 1lh) / 2);
+}
+
+._button {
+  padding-block: calc(16px + var(--leading-trim));
+  padding-inline: 24px;
+}
+```
+
+`lh` は、その要素の行の高さを表す単位です。`@property` で登録していないカスタムプロパティでは、`em` と `lh` は値を使う要素で計算されます。`line-height` の違う要素で使っても、打ち消す量は自動で合います。英文では、大文字の高さを表す `cap` を基準にします。
+
+<Baseline id="lh" />
+
+以前は、Sassのミックスインに行の高さの値を渡し、擬似要素の余白で打ち消していました。この方法では、同じ行の高さを `line-height` とミックスインの2か所に書くので、片方だけを変えると打ち消す量がずれます。`lh` 単位を使えば、行の高さを書き写す必要はありません。
+
+`text-box-trim` と比べると、この方法は削る量をフォントに左右されにくいという利点があります。フォントによっては、`text-box-edge: text` で切り取っても、わずかなアキの残る場合があります。厳密に取り除きたい場所では、`margin-block: calc((1em - 1lh) / 2)` のように余白で打ち消します。
+
+Adobe製のツールで作ったデザインカンプの余白を再現するときにも、この値が使えます。カンプで測った余白に `--leading-trim` を足せば、ハーフレディングのぶんだけ余白が差し引かれ、カンプの見た目に近づきます。
+
+```css title="🙆‍♂ Recommended: カンプで測った余白からハーフレディングを差し引く"
+._heading {
+  /* カンプで測った見出しの上の余白は 32px */
+  margin-block-start: calc(32px + var(--leading-trim));
+}
+```
+
+同じ調整を何度も使うなら、余白のトークンに、ハーフレディングを差し引いた版を用意しておく方法もあります。ただし、デザインで決めた余白がハーフレディングを含むのか含まないのかは、ツールや作り手によって違います。実装を始める前に、デザイナーとどちらの前提で測るかをそろえておくと、後から余白を直す手間が減ります。
+{/* 要確認: 出典なし（実装前にデザイナーと前提をそろえるという助言は、2020年の記事の「作業前にデザイナーへ確認すること」からの推論） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [line-height - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/line-height)
+- [text-box-trim - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-box-trim)
+- [text-box-edge - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-box-edge)
+- [Web Content Accessibility Guidelines (WCAG) 2.1 達成基準 1.4.8 視覚的提示](https://waic.jp/translations/WCAG21/#visual-presentation)（WAICによる日本語訳）
+- [line-heightのハーフ・レディングを打ち消すcalc((1em - 1lh) / 2)をCSS変数に定義しておくとよい](https://www.tak-dcxi.com/article/use-line-height-trim-as-css-variable/)（TAKLOG、2024年5月）
+- [ウェブデザインにおけるline-heightについて](https://parashuto.com/rriver/development/line-height-in-web-design)（Rriver）

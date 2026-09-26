@@ -1,0 +1,205 @@
+---
+title: "1-3 ブラウザサポートとプログレッシブ・エンハンスメント"
+description: 対象のブラウザは、Safariが現行のメジャーバージョンから2つ前の最終版以降、ほかの主要ブラウザが最新版です。対象の一部しか対応していない機能は、未対応の環境で内容と操作が損なわれない場合に限って使い、確認はChromeだけで済ませません。
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import fieldHtml from '../../../demos/principles/field-sizing/index.html?raw';
+import fieldCss from '../../../demos/principles/field-sizing/style.css?raw';
+
+本書が対象にするブラウザは、Safariが現行のメジャーバージョンから2つ前の最終版以降、Chrome、Edge、Firefoxが最新版です。2026年9月時点ではSafari 27が最新なので、Safari 18系の最終版である18.6以降が対象になります。新しい機能を使うときは、まずSafariの対応状況を確認します。
+
+対象のブラウザの一部しか対応していない機能は、プログレッシブ・エンハンスメントとして使えるかどうかで判断します。未対応の環境でも内容を読めて操作でき、対応した環境ではより良い体験になるものだけを使います。分岐には `@supports` と `scripting` メディア特性を使い、表示の確認はChromeだけで済ませません。
+
+## Safariを基準に対象を決める
+
+Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザーが最新版を使っています。一方、SafariはOSのアップデートと一緒に更新されるため、古いバージョンを使い続けるユーザーが一定数残ります。そのため、対象のブラウザの中で最も保守的な基準になるのがSafariです。新しいプロパティを使うときも、最初に確認するのはSafariの対応状況です。
+{/* 要確認: Safari が OS のアップデートと一緒に更新されるという理由は出典なし（著者の資料は「Safari が最も保守的なターゲットとなる」とだけ述べている） */}
+
+注意したいのは、バージョンの数え方です。Safariのバージョンは18の次が26になっていて、番号が連続していません。そのため「2つ前」は番号の引き算ではなく、実際に出たメジャーバージョンを数えて求めます。2026年9月14日にSafari 27が出たので、1つ前が26、2つ前が18です。18系の最後のバージョンは18.6（2025年7月）なので、対象はSafari 18.6以降になります。
+
+| 時期 | 最新のメジャーバージョン | 対象の下限 |
+| --- | --- | --- |
+| 2024年9月〜2025年9月 | Safari 18 | Safari 16.6 |
+| 2025年9月〜2026年9月 | Safari 26 | Safari 17.6 |
+| 2026年9月〜 | Safari 27 | Safari 18.6 |
+
+対象の下限は、新しいメジャーバージョンが出るたびに1つずつ上がります。次のメジャーバージョンが出たら、下限はSafari 26系の最終版です。iOSのSafariも同じ番号で考えます。
+
+この基準は、本書のコード例とルールの前提です。案件で動作環境が決まっている場合は、案件の基準に従います。案件の基準がより古いSafariを含むなら、本書で「そのまま使える」としている機能にも、フォールバックが必要になることがあります。
+{/* 要確認: 案件の基準に従うという記述は推論（レビューのチェックリストの「プロジェクトで定められている動作環境」にもとづく） */}
+
+## 対応状況の確かめ方
+
+本書では、機能の対応状況を次のような枠で示しています。データはweb-featuresのもので、主要なブラウザごとに、対応した最初のバージョンが並びます。ほかに、Can I Use、MDN、WebKitのリリースノートでも確認できます。
+
+<Baseline id="container-style-queries" name="コンテナスタイルクエリ" />
+
+「広く利用可能」と表示される機能は、すべての主要なブラウザで対応してから長い時間がたっているので、本書の対象でもそのまま使えます。「新しく利用可能」と「一部のブラウザのみ」の機能は、Safariの欄のバージョンが18.6以下かどうかを確かめます。上のコンテナスタイルクエリは、2026年5月に「新しく利用可能」になったばかりですが、Safariは18で対応しているので、本書の対象ではそのまま使えます。
+
+ただし、表示されるのは「途切れずに対応している最初のバージョン」です。たとえば `@scope` はSafari 17.4で対応しましたが、Safari 26.0〜26.3に `<input>` などで効かない不具合があったため、Safari 26.4と表示されます。数字が対象の下限より新しいときは、MDNで経緯を確かめてください。
+{/* 要確認: @scope の経緯は MDN の browser-compat-data（css.at-rules.scope）にもとづく */}
+
+## プログレッシブ・エンハンスメントとして使いやすい機能
+
+対象の一部しか対応していない機能でも、プログレッシブ・エンハンスメントとして使えるものがあります。判断の基準は2つあります。1つは、未対応の環境で従来どおりに表示されるか、簡単なフォールバックを用意できることです。もう1つは、対応した環境で、より良い体験を提供できることです。未対応のブラウザは、理解できない宣言を無視します。無視されても困らない機能なら、使わない理由はありません。
+
+| 機能 | 未対応のブラウザ | 未対応の環境での表示 |
+| --- | --- | --- |
+| `text-wrap: pretty` | Firefox、Safari 18系 | 通常の折り返しになる |
+| `word-break: auto-phrase` | Safari、Firefox | 文節で区切らずに折り返す |
+| `field-sizing` | Safari 26.1以前 | 入力欄が内容に合わせて伸び縮みしない |
+| `text-box`（`cap` や `alphabetic` を指定した場合） | Firefox | 宣言が無効になり、文字の上下の余白が残る |
+| ドキュメント間のビュートランジション | Firefox | アニメーションせずにページが切り替わる |
+
+この表は2026年9月時点のものです。`text-box` のように、未対応の環境で余白の大きさが変わる機能は、レイアウトが崩れたり、表示が大きく変わったりしない範囲で使います。
+
+対象の下限が上がると、プログレッシブ・エンハンスメントとして扱っていた機能が、そのまま使える機能に変わります。たとえば `::details-content` はSafari 18.4で対応したので、下限がSafari 17.6だった2026年1月の時点では対象外でした。下限がSafari 18.6になった現在は、本書の対象のすべてで使えます。
+
+## プログレッシブ・エンハンスメントとして使いにくい機能
+
+反対に、未対応の環境での影響が大きく、プログレッシブ・エンハンスメントとして使いにくい機能もあります。未対応の環境でブロックごと無視されるアットルールと、無視されたときに表示の崩れが大きくなるレイアウト関連の機能です。2026年9月時点では、アンカーポジショニングと、絶対配置の要素への `place-self`（どちらもSafari 26で対応）がこれに当たります。`sibling-index()` と `sibling-count()`（Safari 26.2で対応）も同じです。
+
+アットルールでは、以前はコンテナスタイルクエリがこの例でした。`@scope` も未対応の環境では中身がまとめて無視されますが、本書の対象はすべて対応しているので、前提の機能として使っています。詳しくは「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明します。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.anchor-name" name="アンカーポジショニング（anchor-name）" />
+
+たとえば、アンカーポジショニングでツールチップをボタンの横に配置したとします。未対応の環境では配置の指定が無視され、ツールチップは意図しない場所に表示されて、ほかの内容に重なることがあります。レイアウトの要になる機能は、対象のすべてが対応するまで待つか、別の方法で実現します。
+
+ただし、使いにくいのは、その機能をレイアウトの要として使う場合です。ホバーしたカードに背景が滑らかに追従するような装飾的な演出なら、未対応の環境向けに従来の表現を用意して使えます。次の例は、アンカーポジショニングに未対応の環境でだけ、ホバーしたカードに直接背景色を付けるものです。
+
+```css title="🙆‍♂ Recommended: 未対応の環境では、従来のホバーの表現に切り替える"
+._card:has(:any-link:hover) {
+  @supports not (anchor-name: --card) {
+    @media (any-hover: hover) {
+      background-color: oklch(96% 0.02 250deg);
+    }
+  }
+}
+```
+
+## `@supports` で対応した環境だけを変える
+
+`@supports` は、ブラウザが宣言を理解できるかどうかで分岐します。未対応の宣言はもともと無視されるので、新しいプロパティそのものを `@supports` で囲む必要はありません。`@supports` が必要になるのは、新しい機能に合わせて、既存の宣言も一緒に変えるときです。
+
+`<textarea>` に `field-sizing: content` を指定すると、入力した量に合わせて入力欄が伸び縮みします。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（`resize`）は不要です。ただし、`resize: none` を無条件に書くと、未対応の環境では入力欄の高さが固定され、手で広げることもできなくなります。
+
+```css title="🙆‍♂ Recommended: 自動で伸び縮みする環境でだけ、手動のリサイズを止める"
+._textarea {
+  --_min-rows: 3;
+  --_max-rows: 8;
+  --_padding: 0.5em;
+
+  inline-size: 100%;
+  min-block-size: calc(var(--_min-rows) * 1lh + var(--_padding) * 2);
+  max-block-size: calc(var(--_max-rows) * 1lh + var(--_padding) * 2);
+  padding: var(--_padding);
+  field-sizing: content;
+
+  @supports (field-sizing: content) {
+    resize: none;
+  }
+}
+```
+
+<Baseline id="field-sizing" />
+
+次のデモで、入力欄に改行や文章を足してみてください。対応しているブラウザでは入力欄が伸び縮みし、未対応のブラウザでは右下のつまみで高さを変えられます。どちらの環境でも、入力するという目的は損なわれません。
+
+<Demo title="field-sizing に対応した環境でだけ、入力欄が内容に合わせて伸び縮みする" html={fieldHtml} css={fieldCss} />
+
+反対に、対象のすべてが対応した機能のフォールバックは消します。次の例は、`lh` 単位に未対応の環境のために書いていたものです。`lh` はSafari 16.4で対応しているので、本書の対象ではこの分岐が使われることはありません。
+
+```css title="🙅‍♂ Not Recommended: 対象のすべてが対応している機能のフォールバックを残す"
+/* 🙅‍♂ Not Recommended */
+:root {
+  --leading-trim: calc((1em - 1lh) / 2);
+}
+
+@supports not (top: 1lh) {
+  :root {
+    --leading-trim: 0px;
+  }
+}
+```
+
+使われないフォールバックは、読む人に「まだ対応していないブラウザがある」と思わせ、消してよいかの判断を迷わせます。対象の下限を上げたときは、こうした分岐を見直す機会にしてください。なお、`@supports selector(::-webkit-scrollbar)` のように、`selector()` を使えばセレクタの対応状況でも分岐できます。
+
+## `scripting` メディア特性でJavaScriptのない環境に備える
+
+JavaScriptで表示を切り替える前提のスタイルは、`@media (scripting: enabled)` の中に書きます。典型的なのが、画面に入ったらふわっと表示するアニメーションです。表示する前の状態として要素を透明にしておき、JavaScriptが `data-animated="true"` を付けたら元に戻します。
+
+```css title="🙆‍♂ Recommended: JavaScriptが使える環境でだけ、表示する前の状態にする"
+._item {
+  @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+    transition-duration: 0.6s;
+    transition-property: opacity, translate;
+
+    &:not([data-animated="true"]) {
+      opacity: 0;
+      translate: 0 40px;
+    }
+  }
+}
+```
+
+この条件がないと、JavaScriptが無効な環境では、要素がいつまでも透明なままになります。`scripting: enabled` の中に書いておけば、JavaScriptが動かない環境には表示する前の状態が当たらず、内容を普通に読めます。動きを減らす設定との組み合わせは、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。
+
+<Baseline id="scripting" name="scripting メディア特性" />
+
+同じように、JavaScriptでカード全体をクリックできるようにしているなら、`cursor: pointer` を `scripting: enabled` のときだけ指定します。反対に、`@media (scripting: none)` を使えば、JavaScriptが動かない環境で読み込み中の表示を隠すこともできます。以前はiOS 17より前のSafariが `scripting` に対応していなかったため、属性で代わりに判定する工夫が必要でした。現在の本書の対象では、その必要はありません。
+
+## Chromeだけで確認しない
+
+表示の確認は、Chromeだけで済ませません。Chromeは、既存のプロパティの新しい仕様を、ほかのブラウザより先に実装することがよくあります。Chromeの最新版だけで確認していると、Chromeでしか成り立たない書き方に気づけません。
+
+たとえば、`justify-self` と `justify-items` は、ブロックレイアウトでも使えるように仕様が広がりました。しかし、2026年9月時点で対応しているのはChromeだけです。
+
+<Baseline id="justify-self-block" name="ブロックレイアウトの justify-self" />
+
+```css title="🙅‍♂ Not Recommended: ブロックレイアウトの要素を justify-self で中央に寄せる"
+/* 🙅‍♂ Not Recommended */
+._more-link {
+  display: block flow;
+  inline-size: fit-content;
+  justify-self: center;
+}
+```
+
+このコードは、Chromeでは要素が中央に寄りますが、SafariとFirefoxでは `justify-self` が無視され、左に寄ったままです。ブロックの中央寄せには、どのブラウザでも同じ結果になる `margin-inline: auto` を使います。レスポンシブ対応で `display` をgridからブロックに戻す場合も、`justify-items` や `justify-self` が残っていないかを確かめます。
+{/* 要確認: Chrome 153 で中央に寄ることは確認済み。Safari と Firefox で左に寄ることは未確認（web-features のデータからの推論） */}
+
+```css title="🙆‍♂ Recommended: ブロックの中央寄せには margin-inline: auto を使う"
+._more-link {
+  display: block flow;
+  inline-size: fit-content;
+  margin-inline: auto;
+}
+```
+
+ほかにも、単位つきの値どうしの割り算は、ブラウザによって対応の時期が大きく異なります。`vw` も、Chrome 145から条件によってスクロールバーを除いた幅で計算されるようになりました（2026年2月時点では、SafariとFirefoxは従来どおりです）。どちらも「[3-3 計算関数で根拠を式に残す](/values/math-functions/)」と「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で扱います。
+
+開発中はChromeを使っていてもかまいません。ただし、作業を終える前に、Safari（iOSを含む）とFirefoxでも表示を確かめます。対象の下限にあたる古いSafariは手元で用意しにくいので、この節で紹介した対応状況のデータでの確認と組み合わせます。
+{/* 要確認: 出典なし（古い Safari は手元で用意しにくいので、データでの確認と組み合わせるという記述は筆者の推論） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。`field-sizing` とアンカーポジショニングの例）
+- [スクロール連動アニメーションの実装例](https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
+- [@supports - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@supports)
+- [scripting - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/scripting)
+- [Baseline | web.dev](https://web.dev/baseline?hl=ja)
+- [Safari Release Notes | Apple Developer Documentation](https://developer.apple.com/documentation/safari-release-notes)
+
+{/* textlint-enable ja-technical-writing/no-doubled-joshi */}

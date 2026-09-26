@@ -1,0 +1,86 @@
+---
+/**
+ * 付録用。すべてのルールを章ごとに一覧にする。
+ */
+import { getCollection } from 'astro:content';
+import { CHAPTERS, chapterLabel } from '../lib/book.mjs';
+import { inlineCode } from '../lib/inline-code';
+
+const rules = (await getCollection('rules')).sort((a, b) => a.data.order - b.data.order);
+const docs = await getCollection('docs');
+const titleOf = new Map(docs.map((doc) => [doc.id, doc.data.title]));
+
+const groups = CHAPTERS.map((chapter) => ({
+  label: chapterLabel(chapter),
+  rules: rules.filter(({ data }) => data.page.split('/')[0] === chapter.dir),
+})).filter((group) => group.rules.length > 0);
+---
+
+<div class="scoped rule-list not-content">
+  {
+    groups.map((group) => (
+      <section class="_group">
+        <h2 class="_heading">{group.label}</h2>
+        <table class="_table">
+          <thead>
+            <tr>
+              <th scope="col">強度</th>
+              <th scope="col">ルール</th>
+              <th scope="col">ID</th>
+              <th scope="col">掲載ページ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {group.rules.map(({ data }) => (
+              <tr>
+                <td>{data.level}</td>
+                <td set:html={inlineCode(data.rule)} />
+                <td>
+                  <code>{data.id}</code>
+                </td>
+                <td>
+                  <a href={`/${data.page}/#rule-${data.id}`}>{titleOf.get(data.page) ?? data.page}</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    ))
+  }
+</div>
+
+<style is:global>
+  @layer starlight, base, components;
+
+  @layer components {
+    @scope (.scoped.rule-list) to (.scoped) {
+      ._group + ._group {
+        margin-block-start: 2rem;
+      }
+
+      ._heading {
+        margin-block-end: 0.5rem;
+        font-size: var(--sl-text-h4);
+      }
+
+      ._table {
+        inline-size: 100%;
+        border-collapse: collapse;
+        font-size: var(--sl-text-sm);
+      }
+
+      th,
+      td {
+        padding: 0.5rem;
+        border-block-end: 1px solid var(--sl-color-gray-5);
+        vertical-align: top;
+        text-align: start;
+      }
+
+      td:first-child {
+        white-space: nowrap;
+      }
+    }
+  }
+</style>

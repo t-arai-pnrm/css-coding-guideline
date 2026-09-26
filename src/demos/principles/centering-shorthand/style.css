@@ -1,0 +1,42 @@
+@layer components {
+  @scope (.scoped.centering-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    ._article {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+
+      /* 子要素の間に、同じ大きさの余白を入れる */
+      & > * + * {
+        margin-block-start: 16px;
+      }
+    }
+
+    ._heading {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._figure-shorthand,
+    ._figure-logical {
+      inline-size: min(100%, calc(160 / 16 * 1rem));
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+    }
+
+    /* 🙅‍♂ 上下のマージンまで 0 にするので、上の余白の指定を打ち消してしまう */
+    ._figure-shorthand {
+      margin: 0 auto;
+    }
+
+    /* 🙆‍♂ 左右のマージンだけを auto にするので、上下の余白は残る */
+    ._figure-logical {
+      margin-inline: auto;
+    }
+  }
+}

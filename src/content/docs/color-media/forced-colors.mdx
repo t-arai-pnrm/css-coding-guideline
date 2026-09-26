@@ -1,0 +1,289 @@
+---
+title: "10-2 強制カラーモードとコントラスト"
+description: "強制カラーモードでは、ブラウザが色をシステムカラーに置き換えます。枠線は消さずに透明にし、背景色で描いた図形はシステムカラーにフォールバックさせます。色だけで情報を伝えていないかは、グレースケール表示で確かめます。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import ImagePlaceholder from '../../../components/ImagePlaceholder.astro';
+import forcedHtml from '../../../demos/color-media/forced-colors-fallback/index.html?raw';
+import forcedCss from '../../../demos/color-media/forced-colors-fallback/style.css?raw';
+import grayscaleHtml from '../../../demos/color-media/grayscale-check/index.html?raw';
+import grayscaleCss from '../../../demos/color-media/grayscale-check/style.css?raw';
+
+強制カラーモードでは、ブラウザがページの色を、ユーザーが選んだ少数のシステムカラーに置き換えます。背景色や影で表していた境界や図形は、この置き換えで消えてしまうことがあります。枠線は `border: none` にせず、透明にして残します。`background-color` で描いたアイコンは、カスタムプロパティを経由して、システムカラーにフォールバックさせます。
+
+色の違いだけで情報を伝えないことも、同じくらい大切です。実装を終えたら、グレースケールの表示に切り替えて、リンクや入力エラーのような状態を見分けられるかを確かめます。文字と背景のコントラスト比は、WCAGのAAを満たすようにします。
+
+<Baseline id="forced-colors" name="forced-colors メディア特性" />
+
+## 強制カラーモードで起きること
+
+強制カラーモードは、Windowsの「コントラスト テーマ」などを有効にしたときの表示モードです。ユーザーが選んだ配色（黒地に白い文字など）で、すべてのページが表示されます。Microsoftのデータでは、Windowsのユーザーの約4%がこの機能を使っています。WebAIMが視力の弱い人に行った調査では、約半数が使っていると答えています。訪問者の25人に1人程度が、強制カラーモードでページを見ている可能性があるということです。
+
+ブラウザにも、似た機能が広がっています。Edge 130にはページの配色を指定する設定が、Firefox 138にはコントラストを制御する設定が入りました。Windowsだけの特殊な環境だと考えて、対応を後回しにする理由はありません。
+
+強制カラーモードでは、`color`、`background-color`、`border-color`、`outline-color`、`text-decoration-color` などの色が、システムカラーに置き換わります。`box-shadow` と `text-shadow` は `none` になり、URLで指定した画像以外の `background-image`（グラデーションなど）も表示されなくなります。`color-scheme` は `light dark` として扱われ、`scrollbar-color` は `auto` に戻ります。
+
+問題になるのは、色だけで何かを表していた部分です。背景色だけで範囲を示していたボタンは、背景色が置き換わると、ただの文字になります。`background-color` に `currentColor` を指定して描いたアイコンは、背景色がページの背景と同じ色に置き換わり、見えなくなります。
+
+<ImagePlaceholder alt="強制カラーモード（黒地に白い文字のテーマ）で、この節のデモを表示した画面。左の「対策なし」の列では、青い背景のボタンが背景色を失い、白い「資料をダウンロード」の文字だけが残っていて、どこまでがボタンなのか分からない。ボタンの中の矢印のアイコンと、黄色い文字のリンク「お知らせの一覧へ」の後ろにある矢印のアイコンは、どちらも表示されていない。右の「対策あり」の列では、同じボタンの周りに白い1pxの枠線が表示され、ボタンの中に白い矢印が見えている。リンクの後ろの矢印も、リンクの文字と同じ黄色で表示されている。" />
+
+## システムカラーで色を指定し直す
+
+強制カラーモードに合わせて色を指定し直すときは、システムカラーを使います。システムカラーは、ユーザーの配色の設定から決まる色のキーワードです。よく使うのは、次の組み合わせです。
+
+- `Canvas` と `CanvasText`：ページの背景色と文字色
+- `LinkText`：リンクの文字色
+- `ButtonFace` と `ButtonText`：ボタンの背景色と文字色
+- `GrayText`：無効な要素の文字色
+- `Highlight` と `HighlightText`：選択した部分の背景色と文字色
+
+kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `Highlight` と `HighlightText` にしています。強制カラーモードでは `<mark>` の色が変わらない場合もあり、蛍光ペンで強調したという意味を伝えられなくなるからです。
+
+```css title="🙆‍♂ Recommended: 強制カラーモードのときだけ、システムカラーで指定し直す"
+:where(mark) {
+  @media (forced-colors: active) {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}
+```
+
+システムカラーは、強制カラーモード以外でも使えます。「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で紹介したフォーカスリングは、`Canvas` と `CanvasText` の2色を重ねているので、強制カラーモードでもそのまま見えます。
+
+要素ごとに強制カラーモードを無効にする、`forced-color-adjust: none` というプロパティもあります。ただし、ユーザーが自分で選んだ配色を打ち消す指定なので、本書では扱いません。Safariも対応していません（2026年9月確認）。
+{/* 要確認: 出典なし（forced-color-adjust: none を扱わない判断は筆者の推論） */}
+
+## 枠線は消さずに透明にする
+
+背景色で範囲を示すボタンやカードでも、枠線を `border: none` で消さないようにします。代わりに `border-color: transparent` で、枠線を透明にしておきます。
+
+```css title="🙅‍♂ Not Recommended: 枠線を消す"
+/* 🙅‍♂ Not Recommended */
+.button {
+  border: none;
+  background-color: oklch(52% 0.16 250deg);
+  color: oklch(100% 0 0deg);
+}
+```
+
+```css title="🙆‍♂ Recommended: 枠線を透明にして残す"
+._button {
+  border: 1px solid transparent;
+  background-color: oklch(52% 0.16 250deg);
+  color: oklch(100% 0 0deg);
+}
+```
+
+通常の表示では、2つのボタンの見た目は変わりません。違いが出るのは強制カラーモードのときです。`border-color` はシステムカラーに置き換わるので、透明にしておいた枠線に色が付きます。背景色が消えても枠線が残るので、クリックできる範囲が分かります。
+
+kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を付けています。デザインで枠線を消したいときも、kiso.cssのREADMEのとおり、`border: none` ではなく `border-color: transparent` で上書きします。kiso.cssの方針は「[4-1 壊さないリセット](/reset/kiso/)」で説明しています。
+
+同じ理由で、要素の境界を `box-shadow` だけで描かないようにします。`box-shadow` で描いた枠線は、強制カラーモードでは `none` になって消えます。フォーカスリングを `box-shadow` だけで描かないことは、「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+
+## 背景色で描いた図形をフォールバックさせる
+
+`mask-image` や `clip-path` で形を切り抜き、`background-color` で色を塗るアイコンは、背景色を文字色（前景色）のように使っています。強制カラーモードでは、この背景色がページの背景色に置き換わるため、アイコンが見えなくなります。
+
+そこで、背景色をカスタムプロパティ `--background-current` から受け取るようにします。通常は `currentColor` を、強制カラーモードでは文脈に合ったシステムカラーを入れておきます。
+
+```css title="🙆‍♂ Recommended: 強制カラーモードでは、文脈に合ったシステムカラーにする"
+:root {
+  --background-current: currentColor;
+
+  @media (forced-colors: active) {
+    --background-current: CanvasText;
+  }
+}
+
+:where(:any-link) {
+  @media (forced-colors: active) {
+    --background-current: LinkText;
+  }
+}
+
+:where(button:enabled) {
+  @media (forced-colors: active) {
+    --background-current: ButtonText;
+  }
+}
+
+:where(:disabled) {
+  @media (forced-colors: active) {
+    --background-current: GrayText;
+  }
+}
+```
+
+通常の文字の中では `CanvasText`、リンクの中では `LinkText`、有効なボタンの中では `ButtonText`、無効な要素の中では `GrayText` になります。アイコンは、周りの文字と同じシステムカラーで描かれます。セレクタは `:where()` で包み、詳細度を0にしています。コンポーネントの側で文脈を足したいときに、簡単に上書きできるようにするためです。
+
+アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[10-3 画像と装飾](/color-media/images-and-decoration/)」）。
+
+```css title="🙆‍♂ Recommended: アイコンの色を --background-current から受け取る"
+._more::after {
+  content: "";
+  mask-image: var(--chevron--rightward);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  inline-size: 1em;
+  aspect-ratio: 1;
+  background-color: var(--background-current);
+}
+```
+
+`background-color` のフォールバックくらいなら、意識さえしていれば手間はかかりません。一度 `:root` に定義しておけば、あとは `currentColor` の代わりに `var(--background-current)` と書くだけです。
+
+### グラデーションを重ねる方法
+
+グローバルなカスタムプロパティに頼らず、1つのコンポーネントの中で済ませたい場合は、グラデーションを重ねる方法もあります。`background-image` に単色のグラデーションを、`background-color` にシステムカラーを指定します。
+
+```css title="🙆‍♂ Recommended: グラデーションが消えると、下のシステムカラーが見える"
+._crumb::before {
+  content: "";
+  mask-image: var(--chevron--rightward);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  inline-size: 0.75em;
+  aspect-ratio: 1;
+  background-image: conic-gradient(currentColor 0 0);
+  background-color: CanvasText;
+}
+```
+
+通常の表示では、グラデーションが `currentColor` で上を塗りつぶすので、下の `CanvasText` は見えません。強制カラーモードではグラデーションが消え、`CanvasText` が見えます。私は最近の案件で、パンくずリストの区切りの矢印をこの方法で描きました。
+
+ただし、この方法では、リンクの中でも色は `CanvasText` のままです（2026年9月、Chrome 153のエミュレーションで確認）。パンくずリストの区切りのように、通常の文字の文脈でしか使わない図形に向いています。リンクやボタンの中のアイコンには、`--background-current` を使います。
+{/* 要確認: 2つの方法の使い分けは筆者の推論。著者は2025年の記事で --background-current を、2026年の案件でグラデーションを重ねる方法を使っている */}
+
+## コード例とデモ
+
+次のデモでは、ボタンとリンクを「対策なし」と「対策あり」の2列で並べています。通常の表示では、2列の見た目は同じです。
+
+<Demo title="通常の表示では同じでも、強制カラーモードでは差が出るボタンとリンク" html={forcedHtml} css={forcedCss} variant="neutral" />
+
+強制カラーモードの見え方は、ChromeのDevToolsで確かめられます。「Rendering」パネルの「Emulate CSS media feature forced-colors」で `forced-colors: active` を選ぶと、ページ全体が強制カラーモードで描画されます。「対策なし」の列では、ボタンの範囲が分からなくなり、矢印のアイコンが消えます。この節の冒頭の図は、このエミュレーションで表示したものです。
+
+## インラインSVGと画像のアイコン
+
+インラインSVGの色は、強制カラーモードでも置き換わるとは限りません。Firefox 138のコントラストの設定では、`currentColor` がシステムカラーに置き換わらない場合があります。Chrome 153のエミュレーションでも、`fill` 属性やCSSで指定したSVGの色は、元の色のままでした（2026年9月確認）。そこで、強制カラーモードのときは、SVGの `fill` と `stroke` をシステムカラーに固定します。
+
+```css title="🙆‍♂ Recommended: インラインSVGの色を、文脈に合ったシステムカラーに固定する"
+:where(svg) {
+  @media (forced-colors: active) {
+    --_b--svg-foreground: CanvasText;
+
+    stroke: var(--_b--svg-foreground) !important;
+  }
+}
+
+:where(svg [fill]:not([fill="none"])) {
+  @media (forced-colors: active) {
+    fill: var(--_b--svg-foreground) !important;
+  }
+}
+
+:where(:any-link svg) {
+  @media (forced-colors: active) {
+    --_b--svg-foreground: LinkText;
+  }
+}
+
+:where(button:enabled svg) {
+  @media (forced-colors: active) {
+    --_b--svg-foreground: ButtonText;
+  }
+}
+
+:where(:disabled svg) {
+  @media (forced-colors: active) {
+    --_b--svg-foreground: GrayText;
+  }
+}
+```
+
+ここで `!important` を使うのは、ベーススタイルの詳細度が0だからです。コンポーネントの側でSVGの色を指定していると、`!important` がなければそちらが勝ち、システムカラーになりません。強制カラーモードでは、どのような指定にも負けずにシステムカラーを使う必要があるので、`!important` を付けます。`!important` を使ってよい場面は、「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で整理しています。
+
+`<img>` で表示するアイコンは、強制カラーモードの影響を受けません。強制カラーモードでは配色が `light dark` として扱われるので、黒いアイコンは黒い背景に、白いアイコンは白い背景に溶け込むおそれがあります。単色のアイコンなら、`filter` で背景と反対の色に塗りつぶします。
+
+```css title="🙆‍♂ Recommended: 単色の画像のアイコンを、背景と反対の色に塗りつぶす"
+._logo {
+  @media (forced-colors: active) and (prefers-color-scheme: light) {
+    filter: brightness(0);
+  }
+
+  @media (forced-colors: active) and (prefers-color-scheme: dark) {
+    filter: brightness(0) invert(1);
+  }
+}
+```
+
+## 強制カラーモードで崩れる装飾を分ける
+
+強制カラーモードでは意味が変わってしまう装飾は、`@media (forced-colors: none)` の中に書きます。たとえば、画像の上に大きな `outline` を内側へずらして重ね、半透明のオーバーレイにする方法があります。強制カラーモードでは `outline` の色が不透明なシステムカラーに置き換わり、画像全体が塗りつぶされてしまいます（2026年9月、Chrome 153のエミュレーションで確認）。
+
+```css title="🙆‍♂ Recommended: 強制カラーモードでないときだけ、オーバーレイを重ねる"
+._image {
+  @media (forced-colors: none) {
+    outline: 100lvmax solid oklch(0% 0 0deg / 60%);
+    outline-offset: -100lvmax;
+  }
+}
+```
+
+スクロールバーの色も同じです。強制カラーモードでは指定した色のせいでスクロールバーを見失うおそれがあるので、変えるなら `forced-colors: none` の中に限ります。スクロールバーの扱いは「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+
+以前の私は、この条件を `@media not (forced-colors: active)` と書いていました。いまは `@media (forced-colors: none)` にそろえています。否定の `not` を使わずに条件を書けるので、読み間違いが起きにくくなります。
+{/* 要確認: 出典なし（none にそろえた理由は筆者の推論。著者の資料は書き方の変化だけを示している） */}
+
+## 色だけで情報を伝えない
+
+色の見え方は人によって違います。色覚の特性がある人や、年齢とともに色を見分けにくくなった人にとって、色の違いだけで示された情報は伝わりません。電子ペーパーの端末を使う人や、スマートフォンの使いすぎを防ぐために、あえてグレースケールで表示している人もいます。色だけに頼る表現は、WCAG 2.1のレベルAの達成基準（色の使用）にも反します。
+
+そこで、実装後の確認の項目に「グレースケール表示での確認」を入れておきます。とくに見るのは、本文の中のリンク、フォーカスやホバーの状態、入力エラーのように、色の変化で状態を表しがちな部分です。グレースケールで見分けられなければ、下線、太さ、アイコン、文言のような、色以外の手がかりを足します。
+
+<Demo title="グレースケールにすると、色だけで区別したリンクと入力エラーが見分けられなくなる" html={grayscaleHtml} css={grayscaleCss} variant="neutral" />
+
+チェックボックスをオンにすると、2つの列がグレースケールで表示されます。左の列では、リンクが周りの文字と区別できず、入力エラーの枠線も通常の枠線と見分けられません。右の列では、リンクに下線があり、エラーの枠線は太く、エラーの内容も文章で表示されています。
+
+確認には、OSのグレースケール表示を使うのが基本です。macOSとWindowsには、画面全体をグレースケールにする設定があります。手早く確かめたいときは、DevToolsで `body` に `filter: grayscale(1)` を一時的に書き足します。
+
+```css
+body {
+  filter: grayscale(1);
+}
+```
+
+濃い赤のように、グレースケールにしても見分けにくい色もあります。必要に応じて、DevToolsの「Rendering」パネルにある色覚のエミュレーションも使います。色以外の手がかりを足すときは、下線を足す、アイコンを動かす、形を変えるといった、手間の少ない方法から始めるとよいでしょう。どの方法にするかは、デザイナーと相談して決めます。
+
+kiso.cssにも、同じ考え方の指定があります。印刷するときは、`<mark>` の背景色に加えて、文字を囲む点線の枠を付けています。プリンターがカラーに対応していない場合や、グレースケールで印刷した場合でも、どこが強調されているかが分かるようにするためです。
+
+## コントラスト比を確かめる
+
+文字と背景のコントラスト比は、WCAG 2.1のAAを満たすようにします。通常の大きさの文字では4.5:1以上、大きな文字では3:1以上が基準です。確認には、WebAIMのContrast Checkerや、DevToolsのカラーピッカーに表示されるコントラスト比を使います。
+{/* 要確認: 出典なし（AA の数値基準は WCAG の一般的な説明。著者の資料は「AA を目指す」とだけ述べている） */}
+
+気をつけたいのは、「補足の文字」のような薄い文字色のトークンです。たとえば `oklch(55.6% 0 0deg)` のグレーは、`oklch(97% 0 0deg)` の背景の上ではコントラスト比が約4.3:1になり、AAに届きません。トークンを定義するときは、組み合わせる背景のトークンごとに確かめます。WordPressの案件でも、図のキャプションの色をAAを満たす値に調整し、その理由をコメントに残しました。
+{/* 要確認: 約4.3:1 は筆者が OKLCH から sRGB に変換して計算した値 */}
+
+AIにデザインを実装させると、薄いグレーの文字や、淡い色の上の白い文字をそのまま出力することがあります。色の値を受け取ったら、コントラスト比を確かめるところまでを1つの作業にします。
+{/* 要確認: 出典なし（AIの傾向についての記述） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [背景色を前景色として扱う場合はシステムカラーをフォールバックする](https://www.tak-dcxi.com/article/background-to-foreground-with-fallback/)（TAKLOG、2025年5月）
+- [実装後のチェック項目には「グレースケール表示での確認」を追加したほうがいい](https://www.tak-dcxi.com/article/grayscale-display-should-be-added-to-post-implementation-checklist/)（TAKLOG、2024年4月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月。`forced-colors: none` の中に書くオーバーレイの例）
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
+- [forced-colors - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/forced-colors)
+- [system-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/system-color)
+- [WebAIM: Contrast Checker](https://webaim.org/resources/contrastchecker/)

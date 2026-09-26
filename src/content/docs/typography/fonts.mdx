@@ -1,0 +1,186 @@
+---
+title: "9-1 フォントを指定する"
+description: "和文のフォントは、特に指定がなければ総称ファミリーのsans-serifだけで十分です。Noto Sans JPを必ず表示するときは端末のフォントを優先し、和文には斜体を使わず、font-weightは数値のトークンで指定します。"
+sidebar:
+  order: 1
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+和文のフォントは、デザインで特に指定されていなければ、総称ファミリーの `sans-serif` だけを指定します。いまの主要なOSには読みやすい和文のゴシック体が入っていて、ユーザーが自分で選んだフォントも尊重できるからです。日本語のサイトでは、`system-ui` は使いません。
+
+デザインでNoto Sans JPが指定され、どの環境でも表示する必要があるときは、端末に入っているフォントを優先する `@font-face` を用意します。この節では、フォントスタックの考え方、Webフォントの読み込み方、和文で斜体を使わない理由、`font-weight` の書き方を説明します。
+
+## 長いフォントスタックが必要だった理由
+
+以前は、和文のフォントを指定するときに、OSごとのフォントの名前を長く並べるのが一般的でした。私も2020年の記事では、次のようなフォントスタックを勧め、総称ファミリーだけの指定は勧めていませんでした。
+
+```css title="🙅‍♂ Not Recommended: OSごとのフォントを並べる"
+/* 🙅‍♂ Not Recommended */
+body {
+  font-family: "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+}
+```
+
+当時のWindowsには、ヒラギノ角ゴシックのような和文フォントが入っていませんでした。游ゴシックは入っていたものの、Windowsでは文字がかすれて見えやすく、メイリオを指定するのが最も安定していました。総称ファミリーだけに任せると、ブラウザの仕様変更や不具合で、意図しない書体が選ばれることもありました。
+
+こうした事情は、この数年で変わりました。2025年のアップデートで、Windows 11と10にNoto Sans JPが標準で入りました。Androidでは、メーカーが削除していなければNoto Sans CJK JPが、MacとiOSではヒラギノ角ゴシックが使われます。どのOSでも、`sans-serif` を指定するだけで読みやすい和文フォントが表示されます。
+
+長いフォントスタックには、別の問題もあります。フォントの名前を並べると、ユーザーがブラウザに設定したフォントより、並べたフォントが優先されます。ディスレクシアのある人は、UDデジタル教科書体のような読みやすいフォントを設定していることがあります。フォントの名前を並べると、その設定を上書きしてしまいます。
+
+## 総称ファミリーのsans-serifに任せる
+
+デザインで特に指定がなければ、`font-family` には `sans-serif` だけを指定します。本書が推奨するリセットCSSのkiso.cssも、`:root` に `sans-serif` を指定しています。Safariは `font-family` の指定がないと明朝体で表示するので、何も指定しないわけにはいきません。
+
+```css title="🙆‍♂ Recommended: 総称ファミリーだけを指定する"
+:where(:root) {
+  font-family: sans-serif;
+}
+```
+
+OSのアップデートで表示されるフォントが変わる可能性はあります。それでも、ユーザーが設定したフォントを尊重できることを重く見て、アクセシビリティの観点から `sans-serif` だけの指定を勧めます。本書のサイトも、フォントは `sans-serif` だけで指定しています。
+
+欧文にブランドのフォントを使う場合も、考え方は同じです。欧文のフォントを先頭に置き、最後に `sans-serif` を書けば、欧文のフォントに含まれない和文は総称ファミリーで表示されます。フォントスタックは、トークンにしておきます。
+
+```css title="🙆‍♂ Recommended: 欧文のフォントの後ろを総称ファミリーに任せる"
+:root {
+  --font-family--inter: "Inter", sans-serif;
+}
+
+:where(:root) {
+  font-family: var(--font-family--inter);
+}
+```
+
+## 日本語のサイトでsystem-uiを使わない
+
+総称ファミリーには、OSの画面の表示に使われるフォントを表す `system-ui` もあります。英語のサイトではよく使われますが、日本語のサイトでは避けます。Windowsでは、Noto Sans JPではなく、游ゴシックの画面表示用の書体が使われるからです。
+
+```css title="🙅‍♂ Not Recommended: 日本語のサイトで system-ui を使う"
+/* 🙅‍♂ Not Recommended */
+body {
+  font-family: system-ui, sans-serif;
+}
+```
+
+注意したいのは、自分で書いていなくても `system-ui` が入り込むことです。海外製のUIフレームワークやリセットCSSには、`system-ui` を指定しているものがあります。特にTailwind CSSでは、フォントを設定しないままにすると、`system-ui` を含むフォントスタックが使われます。導入するときに、フォントの指定を確かめてください。
+
+AIにCSSを書かせたときも、OSごとのフォントを並べたスタックや、`system-ui` から始まるスタックがよく出てきます。日本語のサイトなら、`sans-serif` だけに書き換えます。
+{/* 要確認: 出典なし（AIの傾向についての記述） */}
+
+## Noto Sans JPは端末のフォントを優先する
+
+デザインでNoto Sans JPが使われている場合は、まず端末のフォントで表示してよいかをデザイナーに確かめます。OSによって書体が変わってもよいなら、`sans-serif` だけで足ります。どの環境でもNoto Sans JPで表示する必要があるときだけ、Webフォントを読み込みます。
+
+このとき、Google FontsのNoto Sans JPをそのまま指定すると、フォントが入っているWindowsとAndroidでも、同じフォントをダウンロードします。和文のWebフォントは容量が大きいので、無駄な通信になります。そこで、端末に入っているフォントだけを参照する `@font-face` を定義し、フォントスタックの先頭に置きます。
+
+```css title="🙆‍♂ Recommended: 端末に入っているNoto Sans JPを優先する"
+@font-face {
+  font-family: "Local Noto Sans JP";
+  src:
+    local("Noto Sans JP"),
+    local("Noto Sans CJK JP Regular");
+}
+
+:where(:root) {
+  font-family: "Local Noto Sans JP", "Noto Sans JP", sans-serif;
+}
+```
+
+`local()` は、端末にインストールされているフォントを参照する関数です。1つ目の名前はWindowsの、2つ目はAndroidのNoto Sans JPに当たります。`"Local Noto Sans JP"` という別名のファミリーは、フォントが見つかった環境では端末のフォントを使い、見つからない環境では無視されます。MacとiOSにはNoto Sans JPが入っていないので、次に並べた `"Noto Sans JP"`、つまりGoogle FontsのWebフォントが使われます。
+
+ただし、Androidではメーカーによってフォントが入っていないことがあり、その場合はWebフォントが使われます。また、Android側の名前は標準の太さのフォントを指しているので、太字がどう表示されるかは実機で確かめてください。
+{/* 要確認: 出典なし（Android で太字がどう表示されるかは未検証） */}
+
+明朝体を使う場合は、さらに注意が必要です。Androidでは、メーカーによって明朝体そのものが削除されていることがあります。Noto Serif JPはWindows 11には入っていますが、10には入っていません。明朝体をデザインどおりに表示するなら、Noto Serif JPなどのWebフォントを使い、同じように `@font-face` で端末のフォントを優先させます。
+
+## Webフォントを読み込む
+
+Webフォントを自分のサーバーから配信するときは、`@font-face` にいくつかの記述子を加えます。私が使っているテンプレートでは、形式をWOFF2だけにし、`unicode-range` で文字の範囲ごとにファイルを分け、`font-display` で読み込み中の表示を決めています。`@font-face` は、ベーススタイルと同じ `base` レイヤーに置きます（[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
+
+```css title="🙆‍♂ Recommended: 本文用のWebフォントを定義する"
+@font-face {
+  font-family: Inter;
+  src: url("/fonts/inter-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+2000-206F;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+```
+
+WOFF2は圧縮率が高く、本書の対象のブラウザはすべて対応しているので、ほかの形式を並べる必要はありません。`unicode-range` を書くと、ブラウザは、ページで使われている文字を含むファイルだけをダウンロードします。`font-weight: 100 900` は、1つのファイルで太さを変えられるバリアブルフォントであることを表します。
+
+`font-display` は、フォントを読み込んでいる間の表示を決める記述子です。本文のフォントには `swap` を指定し、代わりのフォントですぐに文字を表示して、読み込みが終わったら切り替えます。装飾のためのフォントは `optional` にします。`optional` では、キャッシュにあるときのようにすぐ使える場合だけフォントを使います。表示の途中でフォントが切り替わらないので、レイアウトもずれません。
+
+いちばん重要なフォントのファイルは、HTMLの `<link rel="preload">` で先に読み込ませます。テンプレートでは、本文で使う欧文のファイルだけを、`crossorigin` 属性を付けてプリロードしています。すべてのファイルをプリロードすると、ほかの重要なリソースの読み込みを遅らせてしまうからです。
+{/* 要確認: 出典なし（すべてをプリロードしない理由は推論。テンプレートは1ファイルだけをプリロードしている） */}
+
+```html title="本文のフォントだけをプリロードする"
+<link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+```
+
+Google Fontsを使う場合は、2つのサーバーへの `preconnect`、スタイルシートの `preload`、`media="print"` を使った読み込みを組み合わせます。`media="print"` で読み込んだスタイルシートは画面の表示に使われないので、ページの描画を止めません。読み込みが終わった時点で `onload` が `media` を `all` に書き換え、フォントが使われるようになります。
+
+```html title="Google Fontsの読み込みでページの描画を止めない"
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="style" fetchpriority="high" href="{href}" />
+<link rel="stylesheet" href="{href}" media="print" onload='this.media="all"' />
+```
+
+## 和文には斜体を使わない
+
+HTMLの `em`、`cite`、`i`、`dfn`、`address` は、ブラウザのデフォルトスタイルで斜体になります。欧文では強調や書名を斜体で表しますが、日本語では斜体をほとんど使いません。日本語で強調を表すときは、太字にするのが一般的です。
+
+和文のフォントの多くは、斜体の字形を持っていません。そのためブラウザは、文字を機械的に傾けて斜体を作ります。傾いた漢字や仮名は読みにくく、強調としても伝わりにくいという印象です。
+{/* 要確認: 出典なし（和文フォントが斜体を持たず、ブラウザが傾けて作るという記述は一般論） */}
+
+kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体を解除し、`em` を太字にしています。kiso.cssを使わない場合は、次の指定を `reset` レイヤーに入れます。
+
+```css title="🙆‍♂ Recommended: 日本語の文書では斜体を解除し、強調を太字にする"
+:where(em:lang(ja)) {
+  font-weight: bolder;
+}
+
+:where(:is(address, i, cite, em, dfn):lang(ja)) {
+  font-style: unset;
+}
+```
+
+数式やプログラムの変数の名前を表す `var` は、対象から外しています。また、`:lang(ja)` で条件を付けているので、`lang="en"` を付けた英文の中の `em` は、これまでどおり斜体で表示されます。デザインで欧文に斜体を使うのはかまいませんが、日本語の部分には使いません。
+
+## font-weightは数値で指定する
+
+`font-weight` は、`bold` のようなキーワードではなく、`700` のような数値で指定します。キーワードで表せる太さは、`normal`（400）と `bold`（700）の2つだけです。Noto Sans JPのように太さを9段階持つフォントやバリアブルフォントでは、数値でなければデザインカンプの指定を再現できません。
+{/* 要確認: 数値を優先する理由の説明は推論（資料は ICS MEDIA の記事を参考として挙げるだけ） */}
+
+数値は、コンポーネントに直接書かず、トークンにします。太さの名前を決めておけば、デザインで使う太さがそろい、トークンにない中途半端な値も紛れ込みにくくなります。トークンの命名は「[6-3 デザイントークン](/components/design-tokens/)」で説明します。
+
+```css title="🙆‍♂ Recommended: 太さを数値のトークンで指定する"
+:root {
+  --font-weight--regular: 400;
+  --font-weight--medium: 500;
+  --font-weight--bold: 700;
+}
+
+._title {
+  font-weight: var(--font-weight--bold);
+}
+```
+
+kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定しています。ブラウザのデフォルトスタイルに合わせるためです。`bolder` は親より一段太くする相対的なキーワードなので、プロジェクトで太さをそろえたいときは、`base` レイヤーで数値のトークンに上書きします。kiso.cssの値を上書きする方法は、「[4-1 壊さないリセット](/reset/kiso/)」で説明しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [font-family - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-family)
+- [@font-face - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face)
+- [font-display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/font-display)
+- [font-weight - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-weight)
+- [【令和最新版】Google Fontsの読み込み最適化の結論](https://www.tak-dcxi.com/article/optimization-of-google-font-loading/)（TAKLOG、2024年3月）
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
+- [デザイナーとフロントエンドエンジニアに知ってほしいWebのフォント周りのお話](https://zenn.dev/tak_dcxi/articles/588fbc205251043dc357)（TAK、2020年10月。本書と一部の方針が異なります）

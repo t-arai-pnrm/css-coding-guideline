@@ -1,0 +1,30 @@
+<div class="scoped demo-page">
+  <div class="_column">
+    <p class="_label">デフォルトの余白</p>
+    <div class="scoped content-area">
+      <h2>本文の見出し</h2>
+      <p>CMSで入力した本文です。段落や見出しにはクラスを付けられないので、本文エリアの側でブロック間の余白を決めます。</p>
+      <p>2つ目以降のブロックにだけ、前のブロックとの間の余白を付けています。</p>
+      <ul>
+        <li>リストのマーカーは、リセットで消したものを戻しています。</li>
+        <li>最初のブロックの前には余白を付けません。</li>
+      </ul>
+      <h3>小見出し</h3>
+      <p>見出しの前は広く、見出しの後ろは狭くして、内容のまとまりを示します。</p>
+    </div>
+  </div>
+  <div class="_column">
+    <p class="_label">公開プロパティで広げた余白</p>
+    <div class="scoped content-area" style="--content-area--flow-space: calc(32 / 16 * 1rem); --content-area--space-before-heading: calc(64 / 16 * 1rem)">
+      <h2>本文の見出し</h2>
+      <p>CMSで入力した本文です。段落や見出しにはクラスを付けられないので、本文エリアの側でブロック間の余白を決めます。</p>
+      <p>こちらは、style 属性で公開プロパティを渡し、余白だけを広げています。</p>
+      <ul>
+        <li>本文エリアのセレクタに、詳細度で勝つ必要はありません。</li>
+        <li>渡していない値は、デフォルト値のままです。</li>
+      </ul>
+      <h3>小見出し</h3>
+      <p>見出しの後ろの余白は渡していないので、左の本文エリアと同じです。</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,221 @@
+---
+title: "5-2 ネストとプロパティの並び順"
+description: セレクタのネストは1段までにして、先頭に & を書きます。@media と @container は各セレクタの中に書き、プロパティの並び順は taks-stylelint-order に任せます。
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import outsideHtml from '../../../demos/notation/conditions-outside/index.html?raw';
+import outsideCss from '../../../demos/notation/conditions-outside/style.bad.css?raw';
+import insideHtml from '../../../demos/notation/conditions-inside/index.html?raw';
+import insideCss from '../../../demos/notation/conditions-inside/style.css?raw';
+
+セレクタのネストは1段までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書き、Sassのような `&__title` の連結は使いません。ネストは、要素自身の状態や、条件によって変わるスタイルをまとめるために使います。
+
+`@media` と `@container` は、`@scope` の直下に置かず、各セレクタの中に書きます。条件のブロックを `@scope` の先頭にまとめると、後ろにある元のルールが勝ってしまい、上書きが効かなくなるからです。Stylelintの並び順の設定は、何もしなければこの誤った並びに導きます。本書では独自のルールでこれを防いでいます。
+
+プロパティの並び順は、著者が公開しているtaks-stylelint-orderに従います。並び順は人が覚えるものではなく、Stylelintの自動修正に任せるものです。
+
+<Baseline id="nesting" name="CSS のネスト" />
+
+## ネストを深くすると何が起きるか
+
+Sassに慣れていると、HTMLの階層をそのままネストで写したくなります。見た目は整理されているようですが、このネストはHTMLの構造に強く依存します。リストを `ol` に変えたり、リンクを `button` に置き換えたりしただけで、セレクタが要素に届かなくなります。
+
+```css title="🙅‍♂ Not Recommended: HTMLの階層をネストで写す"
+/* 🙅‍♂ Not Recommended */
+.site-nav {
+  ul {
+    display: flex;
+
+    li {
+      a {
+        color: #333;
+
+        &:hover {
+          color: #000;
+        }
+      }
+    }
+  }
+}
+```
+
+詳細度も知らないうちに上がります。最も内側のルールは `.site-nav ul li a:hover` と同じ意味になり、詳細度は `0.2.3` です。この色を別の場所で変えたくなると、さらに詳細度の高いセレクタが必要になり、上書きのための上書きが積み重なっていきます。
+
+また、ネイティブのCSSのネストはSassと同じではありません。Sassでは `&__title` のように `&` に文字をつなげてクラス名を作れますが、素のCSSではこれが無効なセレクタになり、ルールごと無視されます（2026年9月、Chrome 153で確認）。Stylelintの `selector-nested-pattern` は `&` で始まるかどうかしか見ないので、この誤りは検出できません。
+
+## ネストは1段、`&` で始める
+
+本書では、ネストを「そのスタイルが誰のものか」を示すために使います。ネストしてよいのは、次の4つだけです。
+
+- 要素自身の擬似クラスと擬似要素（`&:hover`、`&::before`）
+- 要素自身の属性やクラスで表す状態（`&[aria-current="page"]`）
+- レイアウトに欠かせない直下の子（`& > *`、`& > ._icon`）
+- 条件付きのアットルール（`@media`、`@container`、`@supports`）
+
+独自のスタイルを持つ子要素は、親のルールに入れず、同じ階層に並べます。HTMLの階層を写すことや、詳細度を上げることは、ネストの目的にしません。スコープを閉じるのは `@scope` の役割で、ネストで代わりをさせることもしません。
+
+```css title="🙆‍♂ Recommended: 要素自身の状態と直下の子だけをネストする"
+@scope (.scoped.site-nav) to (.scoped) {
+  ._list {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    & > * {
+      flex-grow: 1;
+    }
+  }
+
+  ._link {
+    padding-block: 8px;
+
+    &[aria-current="page"] {
+      font-weight: bold;
+    }
+  }
+}
+```
+
+ネストしたセレクタは、必ず `&` で始めます。`&` がなくてもネストは書けますが、先頭に `&` があれば、それが自身の状態なのか、直下の子なのか、子孫なのかをすぐに読み取れます。宣言は、ネストしたルールや条件付きのアットルールより前に書きます。要素の基本のスタイルが先頭にまとまり、状態や条件による変化が後に続くので、読む順と上書きの順が一致するからです。
+{/* 要確認: 出典なし（& を必須にする理由は筆者の推論。著者の規約は「暗黙の子孫セレクタを使わない」とだけ書いている） */}
+
+## Stylelintでネストの深さを検査する
+
+本書のStylelintの設定では、ネストの深さを `max-nesting-depth: 2` で検査しています。このルールは、ネストしたセレクタだけでなく、`@media` などのアットルールも1段として数えます。セレクタを1段ネストし、その中に条件を1段入れると、深さはちょうど2です。ファイルの直下に置いた `@scope` は数えません。
+
+`ignoreAtRules` というオプションを使えば、アットルールを深さから外せそうに見えますが、本書では使いません。このオプションは「数えない」ではなく、「そのアットルールの中を検査しない」という動作をするからです。たとえば `ignoreAtRules: ['scope']` と指定すると、`@scope` の中でセレクタを3段ネストしてもエラーになりません（2026年9月、Stylelint 17.15.0で確認）。私の案件でも、このオプションが検査の穴になっていたため、使わないことにしました。
+
+`max-nesting-depth: 2` にも弱点があります。アットルールを挟まずにセレクタを2段ネストしても、深さは2なので通ってしまいます。セレクタの段数が1段かどうかは、レビューで確かめる必要があります。
+
+もうひとつ注意したいのは、`@layer` の中で `@scope` を書くと、`@scope` も1段として数えられることです。この場合、`&:hover` の中へさらに `@media (any-hover: hover)` を入れると、深さが3となり、エラーになります。状態のセレクタを `._link:any-link:hover` のように同じ階層に並べ、その中に条件を書けば通ります。
+{/* 要確認: @layer の中の @scope が1段に数えられる点は、本書の Stylelint 設定（stylelint 17.15.0）で確認した挙動。設定を見直すかどうかを著者に確認する */}
+
+## 条件付きのアットルールはセレクタの中に書く
+
+ここからが、この節でいちばん伝えたいことです。`@media` と `@container` を `@scope` の直下にまとめて書くと、上書きの効かない場合があります。例として、狭い画面ではナビゲーションのリンクを隠し、広い画面になったら表示するヘッダーを見てみます。
+
+```css title="🙅‍♂ Not Recommended: 条件のブロックを @scope の先頭にまとめる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.site-header) to (.scoped) {
+  @media (width >= calc(640 / 16 * 1rem)) {
+    ._links {
+      display: block flex;
+    }
+  }
+
+  ._links {
+    display: none;
+  }
+}
+```
+
+このCSSでは、広い画面でもリンクは表示されません。2つの `._links` のルールは、同じレイヤーの同じスコープにあり、詳細度はどちらも `0.1.0` です。`@media` は条件を付けるだけで、詳細度を上げません。条件が同じなら後に書いたルールが勝つので、画面の幅にかかわらず `display: none` が残ります。
+
+誰もこんな順番で書かないと思うかもしれませんが、Stylelintがこの順番を求めてきます。本書が使っている `order/order` の設定は、ブロックの中の並びを「宣言 → `@supports` → `@container` → `@media` → ネストしたルール」と決めています。この決まりはセレクタの中だけでなく、`@scope` の中身にも当てはまります。条件のブロックを `@scope` の直下へ書くと、自動修正はそれを先頭へ移し、上書きの順番を逆転させてしまうのです。
+
+私のテンプレートでも、Stylelintに従って並べた結果、いくつかのコンポーネントでレスポンシブの指定の効いていない箇所が後から見つかりました。エラーや警告が出ないうえ、狭い画面では正しく見えるので、気づきにくい不具合です。3つの書き方を比べた結果は次のとおりです（幅1200pxで、どれも条件に一致する状態。2026年9月、Chrome 153で確認）。
+
+| 書き方 | 結果 |
+|---|---|
+| `@scope` の先頭に `@media` を置き、後ろに元のルールを書く | `none`（上書きが効かない） |
+| 元のルールの中に `@media` を書く | `flex`（上書きが効く） |
+| 元のルールの後ろに `@media` を置く | `flex`（上書きが効く） |
+
+3つ目の書き方でも上書きは効きますが、Stylelintの並び順と衝突します。そこで本書では、条件付きのアットルールを各セレクタの中に書きます。セレクタの中なら、`order/order` の並び順（宣言が先、条件が後）と、上書きに必要な順番が一致します。条件の中の宣言は、同じセレクタの基本の宣言より後にあるものとして扱われるので、確実に上書きできます。
+
+```css title="🙆‍♂ Recommended: 条件をセレクタの中に書く"
+@scope (.scoped.site-header) to (.scoped) {
+  ._links {
+    display: none;
+
+    @media (width >= calc(640 / 16 * 1rem)) {
+      display: block flex;
+    }
+  }
+}
+```
+
+ルート要素の条件は、`:scope` の中に書きます。`@supports` も同じ考え方で、セレクタの中に書きます。要素ごとのスタイルが1か所にまとまるのも利点です。ある要素の見た目がどの幅でどう変わるのかを、コードを上下へ行き来せずに読み取れます。
+
+本書では、この規約をStylelintの独自ルール `book/conditions-inside-rules` で検査しています。`@media` と `@container` がセレクタの中にないと、エラーになります。`@scope` の直下だけでなく、ファイルの直下に書いた `@media` も対象です。
+
+## コード例とデモ
+
+次の2つのデモは、同じHTMLに、条件の置き場所だけが違うCSSを当てたものです。幅のボタンで768px以上を選ぶと、上のデモではメニューのボタンが消えてリンクが並びます。下のデモではボタンは消えますが、リンクは表示されないままです。
+
+<Demo title="条件をセレクタの中に書いたヘッダー" html={insideHtml} css={insideCss} />
+
+<Demo title="条件を @scope の先頭にまとめたヘッダー" html={outsideHtml} css={outsideCss} variant="not-recommended" />
+
+下のデモで、ボタンは正しく消えている点に注目してください。`._menu-button` の元のルールは `display` を指定していないので、先頭の条件のブロックが負けないのです。上書きが効かないのは、元のルールが同じプロパティを指定しているときだけです。一部だけが効かない壊れ方をするので、見落としやすくなります。
+
+## 条件のブロックに宣言をじかに書かない
+
+もうひとつ、`@scope` の直下に置いた条件のブロックには別の落とし穴があります。セレクタを書かずに、条件のブロックの中へ宣言をじかに書く書き方です。
+
+```css title="🙅‍♂ Not Recommended: 条件のブロックの中に宣言をじかに書く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.hero-section) to (.scoped) {
+  @container style(--screen: --spacious) {
+    min-block-size: calc(800 * var(--px));
+
+    & ._title {
+      font-size: calc(64 * var(--rem));
+    }
+
+    ._lead {
+      font-size: calc(20 * var(--rem));
+    }
+  }
+}
+```
+
+Chrome 153で確かめたところ、この書き方では、条件のブロックの中の宣言がすべて破棄されました。さらに、直後の `& ._title` のルールも一緒に消え、残ったのは `._lead` のルールだけでした。条件を挟まずに `@scope` の直下へ宣言を書いた場合はルート要素に適用されるので、条件のブロックの中だけで起きる現象です（2026年9月確認）。
+{/* 要確認: Chrome 153 でのみ確認。Safari と Firefox での挙動は未確認 */}
+
+私の案件でも、この書き方をしたページで、ヒーローの高さや背景、カルーセルの配置など、主要なスタイルがまとめて効かなくなったことがあります。Stylelintの標準のルールでは検出できず、ビルドも通ったので、ブラウザで確認するまで気づけませんでした。条件をセレクタの中に書く規約を守っていれば、この書き方は `book/conditions-inside-rules` のエラーになります。
+
+## プロパティの並び順
+
+宣言の並び順は、著者が公開しているStylelintの設定、taks-stylelint-orderに従います。CSSの仕様のモジュールを単位に、プロパティを47のグループに分けて並べたものです。大まかには「生成コンテンツ・配置 → 表示・レイアウト → 箱の大きさ・余白 → ボーダー・背景 → 色 → 文字 → UI → 変形・アニメーション」の順になります。
+
+```css title="🙆‍♂ Recommended: taks-stylelint-order の順に並んだ宣言"
+._card {
+  --_padding: 16px;
+
+  position: relative;
+  display: block grid;
+  gap: 12px;
+  inline-size: min(100%, calc(360 / 16 * 1rem));
+  padding: var(--_padding);
+  border: 1px solid oklch(85% 0 0deg);
+  border-radius: 8px;
+  background-color: oklch(100% 0 0deg);
+  color: oklch(20% 0 0deg);
+  font-size: calc(14 / 16 * 1rem);
+  line-height: 1.6;
+}
+```
+
+いくつか、直感と違う位置に来るプロパティがあります。`box-shadow` はボーダーのグループに入るので、`border-radius` の後に来ます。`background-color` は背景のグループの最後で、`background-image` や `background-size` より後です。トランジションは `transition-duration`、`transition-property`、`transition-timing-function` の順に並びます。
+
+ルールの中の並びは、先ほど説明した `order/order` で決まります。カスタムプロパティを先頭にまとめ、空行を1行挟んで宣言を書き、その後に条件付きのアットルール、最後にネストしたルールを書きます。
+
+並び順は、統一されていること自体に価値があります。どの宣言がどこにあるかの見当がつくので、差分やレビューで変更点を探しやすくなるからです。一方で、47のグループの順番を人が覚える必要はありません。この種の整形はリンターの仕事であり、エディタの保存時か `stylelint --fix` で自動で並べ替えれば十分です。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS 入れ子の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
+- [& 入れ子セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Nesting_selector)
+- [max-nesting-depth - Stylelint](https://stylelint.io/user-guide/rules/max-nesting-depth/)
+- [tak-dcxi/taks-stylelint-order - GitHub](https://github.com/tak-dcxi/taks-stylelint-order)
+- [hudochenkov/stylelint-order - GitHub](https://github.com/hudochenkov/stylelint-order)

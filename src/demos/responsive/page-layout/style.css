@@ -1,0 +1,25 @@
+@layer pages {
+  @scope (.scoped.page-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+
+      /* 本文の最小幅 560px + サイドバー 240px + 隙間 32px */
+      @media (width >= calc((560 + 240 + 32) / 16 * 1rem)) {
+        grid-template-columns: minmax(0, 1fr) calc(240 / 16 * 1rem);
+      }
+    }
+
+    ._main,
+    ._aside {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    ._heading {
+      margin-block: 0 8px;
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}

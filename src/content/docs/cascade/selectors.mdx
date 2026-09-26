@@ -1,0 +1,214 @@
+---
+title: "2-2 セレクタで詳細度を設計する"
+description: "ベーススタイルは:where()で詳細度を0にし、コンポーネントの中はクラス1つ分にそろえます。IDセレクタと詳細度を上げるための技は使わず、:is()と:has()は詳細度の決まり方を理解して使います。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+セレクタは、要素を選ぶと同時に、そのルールの詳細度を決めます。本書では、ベーススタイルのタイプセレクタを `:where()` で包んで詳細度を0にし、コンポーネントの中はクラス1つ分（0.1.0）を基本にそろえます。IDセレクタと、詳細度を上げるためだけのセレクタは使いません。
+
+`:is()` と `:has()` は便利な擬似クラスですが、引数によって詳細度が変わります。この節では、詳細度の低いセレクタで設計する方法と、`:is()`、`:has()`、`:heading` の使いどころを説明します。詳細度の数え方と、カスケードの中での位置付けは「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明しています。
+
+## 詳細度のばらつきが上書きを難しくする
+
+詳細度の問題は、多くの場合、上書きしたい側ではなく、上書きされる側の書き方から始まります。次の例では、フォームのボタンと見出しのスタイルを上書きしようとして、うまくいきません。
+
+```css title="🙅‍♂ Not Recommended: 詳細度がばらばらのセレクタ"
+/* 🙅‍♂ Not Recommended */
+input[type="submit"] {
+  background-color: var(--background--accent);
+}
+
+/* 0.1.0 なので、上の 0.1.1 に負ける */
+.submit-button {
+  background-color: var(--background--muted);
+}
+
+#news h2 {
+  font-size: 1.5rem;
+}
+
+/* 0.2.0 なので、上の 1.0.1 に負ける */
+.news-list .title {
+  font-size: 1.25rem;
+}
+```
+
+`input[type="submit"]` は、タイプセレクタと属性セレクタで0.1.1になります。ボタンに `.submit-button` を付けても、0.1.0なので背景色を変えられません。見出しの例では、IDセレクタを含む `#news h2` が1.0.1になり、クラスをいくつ重ねても勝てなくなっています。
+
+原因は、上書きされる側のセレクタが、必要以上に高い詳細度を持っていることです。上書きする側でどう工夫しても、この差は埋められません。だからこそ、詳細度はセレクタを書く最初の段階で低くそろえておきます。
+
+## IDセレクタと上書きの技を使わない
+
+IDセレクタでは、スタイルを指定しません。詳細度が1.0.0になり、クラスをいくつ重ねても上書きできないからです。IDセレクタで指定したスタイルを変えられるのは、別のIDセレクタか `style` 属性、あるいは `!important` だけです。本書のStylelintの設定では、`selector-max-id` でIDセレクタを検出しています。
+
+`id` 属性そのものは使います。JavaScriptから要素を参照するとき、`aria-labelledby` などのARIAの属性から参照するとき、ページ内リンクの移動先にするときです。スタイルはクラスで指定し、`id` 属性はこうした用途のために残しておきます。
+
+私は2020年に、`!important` を使わずに上書きする方法として、次のようなセレクタを紹介していました。同じクラスを連結する、`[class]` を足す、存在しないIDを `:not()` に入れる、といった技です。当時はセレクタのほかに詳細度を調整する手段がなく、既存のCSSを直せない場面での最終手段として使っていました。
+
+```css title="🙅‍♂ Not Recommended: 詳細度を上げるためだけのセレクタ"
+/* 🙅‍♂ Not Recommended */
+.large-text.large-text {
+  font-size: 1.5rem;
+}
+
+.large-text[class] {
+  font-size: 1.5rem;
+}
+
+.large-text:not(#_) {
+  font-size: 1.5rem;
+}
+```
+
+いまは、こうした技を使いません。セレクタから意図が読み取れないうえ、次に上書きする人はさらに詳細度を上げる必要があるからです。祖先のクラスを足す書き方（`.top-page .large-text`）や、タイプセレクタを足す書き方（`p.large-text`）も同様です。どちらもHTMLの構造に依存するので、コンポーネントを別の場所で使いにくくなります。
+
+上書きが必要になったら、先に次の手段を検討します。優先順位の問題なら、レイヤーの順番で解決します（[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。上書きされる側の詳細度が高すぎるなら、`:where()` で下げます。親のコンポーネントから子のコンポーネントの見た目を変えたいなら、子が公開しているカスタムプロパティに値を渡します（[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)）。
+
+## `:where()` で土台の詳細度を0にする
+
+`:where()` は、引数にどのようなセレクタを書いても、詳細度が0になる擬似クラスです。ベーススタイルのように、あらゆる場所で上書きされる前提のスタイルは、`:where()` で包みます。
+
+```css title="🙆‍♂ Recommended: ベースのタイプセレクタは :where() で包む"
+:where(a:any-link) {
+  color: var(--foreground--link);
+}
+
+:where(h1, h2, h3, h4, h5, h6, caption) {
+  font-kerning: normal;
+}
+```
+
+リンクの色を `a:link, a:visited` ではなく `:where(a:any-link)` と書けば、詳細度は0.1.1から0になります。リンクで作ったボタンにクラスを付ければ、それだけで文字色を上書きできます。`:any-link` は `href` 属性を持つリンクすべてに当てはまる擬似クラスで、`:link` と `:visited` をまとめて書くのと同じ意味です。
+
+私が作ったリセットCSSのkiso.cssも、すべてのセレクタを `:where()` で書いています。カスケードレイヤーを使えない環境でも、どのクラスやタイプセレクタからでも上書きできるようにするためです。反対に、`:where()` を使っていないリセットCSSと組み合わせると、リセットCSSのタイプセレクタの詳細度が上回り、ベーススタイルの指定を打ち消すことがあります。リセットCSSを選ぶときも、詳細度が下げられているかを確認します。kiso.cssの設計は、第4章「[4-1 壊さないリセット](/reset/kiso/)」で説明します。
+
+`:where()` は、コンポーネントの中でも使えます。親のルールの中にネストして直下の子を選ぶと、詳細度は0.2.0に上がります。`& > :where(._heading)` と書けば、子を選ぶ部分の詳細度が0になり、全体は0.1.0のままです。子の要素のルールと詳細度がそろうので、書いた順番どおりに上書きが効きます。
+
+```css title="🙆‍♂ Recommended: 直下の子を選ぶときに詳細度を上げない"
+@scope (.scoped.contact-section) to (.scoped) {
+  ._layout {
+    display: block grid;
+    grid-template-areas:
+      "--heading"
+      "--body";
+
+    & > :where(._heading) {
+      grid-area: --heading;
+    }
+  }
+}
+```
+
+グリッドのエリアのように、親との関係で決まるプロパティは、親のルールの中に書くと構造が読み取りやすくなります。そのときに詳細度まで上がらないようにするのが、`:where()` の役割です。
+
+## `:is()` の詳細度は引数でいちばん高いもの
+
+`:is()` は、複数のセレクタをまとめて書くための擬似クラスです。`:where()` と違い、詳細度は0になりません。引数の中でいちばん詳細度の高いセレクタが、`:is()` 全体の詳細度になります。`:not()` と `:has()` も、同じ決まり方です。
+
+2020年の上書きの技 `:not(#_)` が効いたのも、この仕組みによるものでした。存在しないIDを引数に書くだけで、`:not()` の詳細度がIDセレクタと同じになるからです。反対に言えば、`:is()` の引数にIDセレクタや長いセレクタを1つ混ぜるだけで、ほかの引数に当てはまった要素まで高い詳細度になります。
+
+```css title="🙅‍♂ Not Recommended: 引数に詳細度の高いセレクタを混ぜる"
+/* 🙅‍♂ Not Recommended */
+:is(#sidebar, .card) ._title {
+  font-size: 1rem;
+}
+```
+
+この例では、`.card` の中の `._title` にも、1.1.0という高い詳細度が付きます。まとめるセレクタの詳細度をそろえるか、詳細度を加えたくないときは `:where()` を使います。
+
+`:is()` が特に役立つのは、祖先の状態によって変わるスタイルを、子のルールの中に書くときです。次の例では、`<details>` が開いているときだけ、中のアイコンを回転させています。
+
+```css title="🙆‍♂ Recommended: 祖先の状態による変化を、子のルールの中に書く"
+@scope (.scoped.faq-item) to (.scoped) {
+  ._icon {
+    inline-size: 1em;
+    block-size: 1em;
+
+    &:is(:scope[open] *) {
+      rotate: 180deg;
+    }
+  }
+}
+```
+
+`&:is(:scope[open] *)` は、「開いているスコープのルートの子孫である、この要素」という意味です。スコープのルートは `<details class="scoped faq-item">` で、開いているときだけ `open` 属性を持ちます（2026年9月、Chrome 152で確認）。アイコンのスタイルが `._icon` のルールにまとまるので、状態による変化を探しやすくなります。
+{/* 要確認: 出典なし（:scope を使う形は、著者の記事の &:is([open] > *) を @scope 向けに置き換えた推論） */}
+
+同じ指定は、`:scope[open] ._icon` という別のルールとしても書けます。しかし、`._icon` のルールの中にネストして書くなら、ネストしたセレクタを `&` で始めるという本書の規約から、この形になります。ネストの規約は第5章「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明します。
+
+## `:has()` で子孫の状態から祖先を変える
+
+`:has()` は、引数のセレクタに当てはまる子孫や後続の兄弟を持つ要素を選ぶ擬似クラスです。これまでJavaScriptで親にクラスを付けていた多くの場面を、CSSだけで書けるようになりました。
+
+<Baseline id="has" name=":has()" />
+
+たとえば、画像があるときだけ2列にするカードは、次のように書けます。画像の有無をJavaScriptで調べて、`has-image` のようなクラスを付ける必要はありません。
+
+```css title="🙆‍♂ Recommended: 子の有無でレイアウトを切り替える"
+@scope (.scoped.media-object) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 16px;
+
+    &:has(> ._image) {
+      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+    }
+  }
+}
+```
+
+状態の表し方にも使えます。チェックされた入力欄を含むラベルの背景色を変える `label:has(:checked)` や、中の要素にキーボードでフォーカスしたときにカード全体を強調する `:has(:focus-visible)` がその例です。状態をHTMLとCSSだけで表せるので、クラスの付け外しと実際の状態のずれを心配せずに済みます。
+
+ページ全体の状態にも使えます。モーダルを開いている間は背面のスクロールを止める `:root:has(:modal)` がその例で、第4章「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明します。
+
+`:has()` の詳細度も、引数でいちばん高いセレクタの詳細度になります。上の例の `&:has(> ._image)` は、`:scope` の0.1.0に `._image` の0.1.0が加わり、0.2.0になります。状態のスタイルは元のスタイルより詳細度が高くなるので、書く位置に関係なく元のスタイルを上書きできます。引数にIDセレクタや長いセレクタを入れないのは、`:is()` と同じです。
+
+`:has()` は、2023年12月にすべての主要なブラウザで使えるようになり、2026年6月に「広く利用可能」になりました（2026年9月確認）。本書の対象のブラウザでは、問題なく使えます。
+
+## `:heading` で見出しをまとめて選ぶ
+
+`:heading` は、`h1` から `h6` までの見出しをまとめて選ぶ擬似クラスです。見出しのスタイルを `h1, h2, h3, h4, h5, h6` と並べて書く代わりに使えます。
+
+<Baseline id="heading-selectors" compatKey="css.selectors.heading" name=":heading" />
+
+web-featuresのデータでは、2026年9月の時点で `:heading` に対応しているのはSafari 27だけです。そのため、`:heading` を単独では使いません。従来のタイプセレクタと並べて、`:where()` の中に書きます。
+
+```css title="🙆‍♂ Recommended: 従来のセレクタと並べて :where() の中に書く"
+:where(:heading, h1, h2, h3, h4, h5, h6, caption) {
+  font-kerning: normal;
+}
+```
+
+`:where()` と `:is()` の引数は、「寛容なセレクタリスト」として解釈されます。解釈できないセレクタがあっても、それだけが無視され、残りのセレクタは有効です。`:heading` に対応していないブラウザでも、このルールは `h1` から `h6` と `caption` に当てはまります（2026年9月、Chrome 152で確認）。
+
+普通のセレクタリストでは、そうはいきません。カンマで区切ったセレクタのうち1つでも解釈できないと、ルール全体が無効になります。次の書き方では、`:heading` に対応していないブラウザで、`caption` にもスタイルが当たりません。
+
+```css title="🙅‍♂ Not Recommended: 対応していないブラウザでルール全体が無効になる"
+/* 🙅‍♂ Not Recommended */
+:heading,
+caption {
+  font-kerning: normal;
+}
+```
+
+対象のブラウザがすべて対応すれば、`h1` から `h6` を消して `:where(:heading, caption)` と書けるようになります。
+{/* 要確認: 出典なし（将来 h1〜h6 を消せるという見通しは筆者の推論） */}
+見出しのレベルを引数で指定する関数形の `:heading()` は、web-featuresのデータで対応しているブラウザがまだないので使いません（2026年9月確認）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [詳細度 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Specificity)
+- [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)
+- [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)
+- [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
+- [Selectors Level 5: Heading Pseudo-classes](https://drafts.csswg.org/selectors-5/#headings)
+- [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
+- [【脱!important】保守性を意識したスタイルを確実に上書きするためのテクニック](https://zenn.dev/tak_dcxi/articles/f464f90a24f754b15dd9)（Zenn、2020年10月。本書と方針が異なります）

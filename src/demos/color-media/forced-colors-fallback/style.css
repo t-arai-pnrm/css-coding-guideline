@@ -1,0 +1,99 @@
+@layer tokens {
+  :root {
+    --chevron--rightward: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4L16 12L8 20" /></svg>');
+  }
+}
+
+@layer base {
+  :root {
+    --background-current: currentColor;
+
+    @media (forced-colors: active) {
+      --background-current: CanvasText;
+    }
+  }
+
+  :where(:any-link) {
+    @media (forced-colors: active) {
+      --background-current: LinkText;
+    }
+  }
+
+  :where(button:enabled) {
+    @media (forced-colors: active) {
+      --background-current: ButtonText;
+    }
+  }
+
+  :where(:disabled) {
+    @media (forced-colors: active) {
+      --background-current: GrayText;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.forced-colors-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    ._column {
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+    }
+
+    ._heading {
+      margin: 0;
+      font-size: calc(16 / 16 * 1rem);
+    }
+
+    ._button {
+      --_icon-color: var(--background-current);
+
+      display: inline flex;
+      gap: 8px;
+      align-items: center;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: oklch(52% 0.16 250deg);
+      color: oklch(100% 0 0deg);
+
+      &[data-fallback="none"] {
+        --_icon-color: currentColor;
+
+        border: none;
+      }
+    }
+
+    ._more {
+      --_icon-color: var(--background-current);
+
+      display: inline flex;
+      gap: 4px;
+      align-items: center;
+      color: oklch(52% 0.16 250deg);
+
+      &[data-fallback="none"] {
+        --_icon-color: currentColor;
+      }
+    }
+
+    ._button::after,
+    ._more::after {
+      content: "";
+      mask-image: var(--chevron--rightward);
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      inline-size: 1em;
+      aspect-ratio: 1;
+      background-color: var(--_icon-color);
+    }
+  }
+}

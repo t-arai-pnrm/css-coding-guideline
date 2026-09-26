@@ -1,0 +1,42 @@
+@layer components {
+  @scope (.scoped.inquiry-form) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._textarea {
+      --_min-rows: 3;
+      --_max-rows: 8;
+      --_padding: 0.5em;
+
+      inline-size: 100%;
+      min-block-size: calc(var(--_min-rows) * 1lh + var(--_padding) * 2);
+      max-block-size: calc(var(--_max-rows) * 1lh + var(--_padding) * 2);
+      padding: var(--_padding);
+      field-sizing: content;
+
+      /* 自動で伸び縮みする環境でだけ、手動のリサイズを止める */
+      @supports (field-sizing: content) {
+        resize: none;
+      }
+    }
+
+    ._supported,
+    ._unsupported {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._supported {
+      @supports not (field-sizing: content) {
+        display: none;
+      }
+    }
+
+    ._unsupported {
+      @supports (field-sizing: content) {
+        display: none;
+      }
+    }
+  }
+}

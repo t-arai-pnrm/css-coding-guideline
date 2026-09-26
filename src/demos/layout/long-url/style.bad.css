@@ -1,0 +1,28 @@
+@layer components {
+  @scope (.scoped.link-cards) to (.scoped) {
+    :scope {
+      display: block grid;
+
+      /* 1fr の最小値は中身の最小幅になるので、長い URL の列が押し広げられる */
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    ._card {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._url {
+      margin-block-start: 8px;
+
+      /* 折り返すつもりの指定だが、break-word は中身の最小幅を小さくしない */
+      overflow-wrap: break-word;
+    }
+  }
+}

@@ -1,0 +1,182 @@
+# 第4章 リセットとベーススタイル
+
+# 4-1 壊さないリセット
+- id: reset-kiso-css
+  level: 推奨
+  rule: リセット CSS には kiso.css を使う。
+  reason: 詳細度が 0 で上書きしやすく、和文向けの初期値が入っていて、ブラウザの便利なデフォルトを壊さないため。
+  note: ほかのリセット CSS を使う場合も、セレクタの詳細度が 0 で、破壊的なリセットをしないものを選びます。
+  page: reset/kiso
+  since: 0.1.0
+
+- id: reset-in-reset-layer
+  level: 必須
+  rule: 'リセット CSS は `@import url("kiso.css") layer(reset);` のように、`reset` レイヤーに読み込む。'
+  reason: ベースやコンポーネントのレイヤーより弱くなり、それらの指定が詳細度に関係なくリセットに勝つため。
+  note: 'レイヤーを使わない環境（WordPress など）では、`@import url("kiso.css");` とレイヤーなしで読み込み、ほかの CSS より前に置きます。'
+  page: reset/kiso
+  since: 0.1.0
+
+- id: reset-zero-specificity
+  level: 必須
+  rule: リセット CSS は、セレクタを `:where()` で包んで詳細度を 0 にしたものを使う。
+  reason: レイヤーを使えない環境でも、ベースやコンポーネントの指定がリセットに負けず、クラス1つで上書きできるため。
+  page: reset/kiso
+  since: 0.1.0
+
+- id: reset-no-destructive-reset
+  level: 禁止
+  rule: 'リセットで、`input` への `appearance: none` や `* { margin: 0; padding: 0; }` のように、要素の機能や便利なデフォルトを一律に消す指定をしない。'
+  reason: チェックボックスが見えなくなったり、ボタンの余白のように毎回指定し直すものが増えたりするため。
+  note: '`appearance: none` は、見た目を作り直す部品にだけ個別に指定します。色を変えるだけなら `accent-color` で足ります。'
+  aiProne: true
+  page: reset/kiso
+  since: 0.1.0
+
+- id: reset-japanese-defaults-on-root
+  level: 推奨
+  rule: 和文向けの組版の初期値（`text-spacing-trim`、`text-autospace`、`line-break`、`overflow-wrap`）は、`:root` に指定して継承させる。
+  reason: 要素ごとに指定し直す必要がなく、`pre` や入力欄のような例外だけを個別に打ち消せば済むため。
+  note: kiso.css を使えば指定済みです。値の選び方は第9章「タイポグラフィと和文組版」で扱います。
+  page: reset/kiso
+  since: 0.1.0
+
+- id: reset-restore-with-revert
+  level: 推奨
+  rule: リセットで消したスタイルを本文エリアなどで戻すときは、値を書き直さずに `revert` を使う。
+  reason: ブラウザのデフォルトに戻す意図がコードから読み取れ、元の値を覚えておく必要もないため。
+  page: reset/kiso
+  since: 0.1.0
+
+- id: reset-override-in-base
+  level: 推奨
+  rule: kiso.css の値を変えたいときは、kiso.css 本体を書き換えず、`base` レイヤーで上書きする。
+  reason: リセットを新しいバージョンに更新しやすく、プロジェクトで変えた箇所がベーススタイルにまとまるため。
+  page: reset/kiso
+  since: 0.1.0
+
+# 4-2 ベーススタイルに書くもの
+- id: focus-ring-double
+  level: 推奨
+  rule: ベーススタイルのフォーカスリングは、`:focus-visible` に `CanvasText` の `outline` と `Canvas` の `box-shadow` を重ねた二重リングで定義する。
+  reason: 背景が明るくても暗くても2色のどちらかが背景と区別でき、システムカラーなのでダークモードや強制カラーモードにも追従するため。
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: focus-ring-not-box-shadow-only
+  level: 禁止
+  rule: フォーカスリングを `box-shadow` だけで描かない。
+  reason: 強制カラーモードでは `box-shadow` が `none` になり、フォーカスの位置が見えなくなるため。
+  note: '`box-shadow` は、`outline` で描いたリングを補う用途に限って使います。'
+  aiProne: true
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: no-global-smooth-scroll
+  level: 禁止
+  rule: '`html` や `:root` に、`scroll-behavior: smooth` を無条件に指定しない。'
+  reason: キーボードでのフォーカス移動や `scrollTo()` のスクロールまでなめらかになり、動きを減らす設定をしているユーザーにもアニメーションが適用されるため。
+  note: カルーセルのような個別のスクロールコンテナに指定するのは問題ありません。
+  aiProne: true
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: smooth-scroll-conditional
+  level: 推奨
+  rule: 'スムーススクロールは、`prefers-reduced-motion: no-preference` の中で、`:root:has(:target):not(:has(:focus-visible))` のときだけ有効にする。'
+  reason: ページ内リンクで移動するときだけなめらかにし、キーボードでフォーカスを移すときや、動きを減らす設定をしているときは即座にスクロールさせるため。
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: scroll-margin-for-targets
+  level: 推奨
+  rule: '`[id]` と `:focus` に `scroll-margin-block-start` を指定し、ページ内リンクの移動先やフォーカスした要素が固定ヘッダーに隠れないようにする。'
+  reason: 移動先の見出しやフォーカスした要素が、固定ヘッダーの下に隠れて見えなくなるのを防ぐため。
+  note: 本書のベーススタイルでは `4rlh` を目安にしています。
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: modal-scroll-lock-root
+  level: 必須
+  rule: 'モーダル表示中の背面のスクロールは、`:root:has(:modal)` に `overflow: hidden` を指定して止める。'
+  reason: '`:modal` ならモーダルとして開いたダイアログだけに限定でき、ルート要素の `overflow` はビューポートに伝わるので `position: sticky` の要素を妨げないため。'
+  note: '`body:has(dialog[open])` はモーダルでないダイアログにも反応するので使いません。スクロールバーの分のずれは、`:root` の `scrollbar-gutter: stable` で防ぎます。'
+  aiProne: true
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: scrollbar-gutter-stable
+  level: 推奨
+  rule: '`:root` に `scrollbar-gutter: stable` を指定し、スクロールバーの出入りによるレイアウトのずれを防ぐ。'
+  reason: モーダルの開閉や内容の増減でスクロールバーが出入りしても、コンテンツが横にずれないため。
+  note: kiso.css が指定しているので、kiso.css を使う場合は書き足す必要はありません。
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: no-custom-scrollbar
+  level: 非推奨
+  rule: スクロールバーの色や太さを変えない。
+  reason: OS やユーザーの設定と見た目がずれて操作の一貫性が損なわれ、強制カラーモードではスクロールバーが見えなくなるおそれがあるため。
+  note: 'デザイン上どうしても変える場合は、`@media (forced-colors: none)` の中で、標準の `scrollbar-color` と `scrollbar-width` を使います。'
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: interpolate-size-in-base
+  level: 推奨
+  rule: '`interpolate-size: allow-keywords` はリセットではなくベーススタイルの `:root` に、`prefers-reduced-motion: no-preference` の条件付きで指定する。'
+  reason: 既存のトランジションに意図しないアニメーションを起こしうる指定なので、影響を判断できるプロジェクトの側で有効にするため。
+  note: 対応していないブラウザでは、大きさが一瞬で切り替わるだけです。
+  page: reset/base-styles
+  since: 0.1.0
+
+- id: global-min-inline-size-zero
+  level: 推奨
+  rule: 'ベーススタイルで、全称セレクタ（`*, ::before, ::after`）に `min-inline-size: 0` を指定する。'
+  reason: フレックスアイテムとグリッドアイテムが、中身の最小幅より縮まずに親からはみ出す問題を、既定で防げるため。
+  note: '縮ませたくない要素には、個別に `flex-shrink: 0` などを指定します。'
+  page: reset/base-styles
+  since: 0.1.0
+
+# 4-3 グローバルに書いてはいけないもの
+- id: no-heavy-specificity-in-global
+  level: 禁止
+  rule: リセットやベーススタイルに、クラス1つで上書きできない詳細度のセレクタ（`a:link, a:visited` など）を書かない。
+  reason: 上書きのために詳細度を上げたり `!important` を付けたりする対応が増え、保守しにくくなるため。
+  note: 'タイプセレクタを `:where()` で包む書き方は、第2章のルール `where-for-base-selectors` で定めています。`:focus-visible` や `:root:has(:modal)` のような擬似クラスのセレクタも、同じように `:where()` で包みます。'
+  aiProne: true
+  page: reset/global-pitfalls
+  since: 0.1.0
+
+- id: no-layout-properties-in-base
+  level: 禁止
+  rule: 'ベーススタイルで、要素全体に `display`、`position`、`max-inline-size` のようなレイアウトのプロパティを指定しない（例：`div { display: flex; }`、`* { position: relative; }`）。'
+  reason: レイアウトは文脈によって必要なものが変わるので、ほかの文脈で打ち消しの指定が増え、打ち消し忘れによる不具合も起きやすいため。
+  note: '全称セレクタの `min-inline-size: 0`（4-2）は、フレックスアイテムとグリッドアイテムの最小幅だけを変える例外です。'
+  page: reset/global-pitfalls
+  since: 0.1.0
+
+- id: no-outline-none
+  level: 禁止
+  rule: '`outline: none` や `outline: 0` で、フォーカスリングを消さない。'
+  reason: キーボードで操作するユーザーが、フォーカスの位置を見失うため。
+  note: 'クリックしたときにリングが出る問題は、ブラウザが `:focus-visible` で解決しています。見た目を変えたいときは、消さずに定義し直します。'
+  aiProne: true
+  page: reset/global-pitfalls
+  since: 0.1.0
+
+- id: list-style-type-empty-string
+  level: 必須
+  rule: 'リストのマーカーは、`list-style: none` ではなく `list-style-type: ""` で消す。'
+  reason: 'Safari の VoiceOver は、`list-style: none` を指定したリストをリストとして読み上げないため。'
+  note: kiso.css を使えば、`ul`、`ol`、`menu` のマーカーは消えています。
+  aiProne: true
+  page: reset/global-pitfalls
+  since: 0.1.0
+
+- id: no-color-scheme-without-dark-mode
+  level: 禁止
+  rule: 'ダークモードに対応していないサイトで、`color-scheme: light dark` を指定しない。'
+  reason: ダークモードの環境で、サイトが色を指定していない部分だけが暗い配色になり、文字色と背景色が同化することがあるため。
+  note: '暗い背景だけのサイトでは、`<meta name="color-scheme" content="dark">` を指定します。'
+  page: reset/global-pitfalls
+  since: 0.1.0

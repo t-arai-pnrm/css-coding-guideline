@@ -1,0 +1,65 @@
+@layer tokens {
+  :root {
+    --duration--base: 240ms;
+    --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --z--top: calc(infinity);
+  }
+}
+
+@layer components {
+  @scope (.scoped.notice-demo) to (.scoped) {
+    ._button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: currentColor;
+      border-radius: 4px;
+    }
+
+    ._panel {
+      --_scale-from: 1;
+
+      position: fixed;
+      inset: auto 16px 16px;
+      z-index: var(--z--top);
+      display: block grid;
+      gap: 12px;
+      justify-items: end;
+      max-inline-size: calc(400 / 16 * 1rem);
+      margin-inline: auto;
+      padding: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px oklch(0% 0 0deg / 16%);
+      background-color: Canvas;
+      color: CanvasText;
+      transform-origin: 50% 100%;
+      transition-duration: var(--duration--base);
+      transition-property: opacity, scale, display, overlay;
+      transition-timing-function: var(--ease--quint-out);
+      transition-behavior: allow-discrete;
+
+      /* 動きを減らす設定のときは拡大と縮小をやめ、フェードだけを残す */
+      @media (prefers-reduced-motion: no-preference) {
+        --_scale-from: 0.96;
+      }
+    }
+
+    /* 表示されたときの、トランジションの開始地点 */
+    ._panel:popover-open {
+      @starting-style {
+        opacity: 0;
+        scale: var(--_scale-from);
+      }
+    }
+
+    /* 閉じるときの、トランジションの終了地点 */
+    ._panel:not(:popover-open) {
+      opacity: 0;
+      scale: var(--_scale-from);
+    }
+
+    ._text {
+      justify-self: stretch;
+    }
+  }
+}

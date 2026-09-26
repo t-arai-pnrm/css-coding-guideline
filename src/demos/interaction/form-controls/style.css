@@ -1,0 +1,115 @@
+@layer tokens {
+  :root {
+    --duration--fast: 200ms;
+    --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@layer components {
+  @scope (.scoped.contact-form) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+      --_error: oklch(50% 0.2 25deg);
+
+      display: block grid;
+      gap: 20px;
+      justify-items: start;
+      accent-color: var(--_accent);
+    }
+
+    ._field {
+      display: block grid;
+      gap: 4px;
+      justify-self: stretch;
+    }
+
+    ._label {
+      font-weight: bold;
+    }
+
+    ._input {
+      inline-size: 100%;
+      padding: 8px;
+      border-color: oklch(62% 0 0deg);
+      border-radius: 4px;
+
+      /* 入力して離れた後や、送信しようとした後にだけエラーの色にする */
+      &:user-invalid {
+        border-color: var(--_error);
+      }
+    }
+
+    ._hint {
+      margin: 0;
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      &:is(._field:has(:user-invalid) *) {
+        color: var(--_error);
+        font-weight: bold;
+      }
+    }
+
+    ._choice {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* switch 属性に対応していない環境でも、同じ見た目のスイッチにする */
+    ._switch {
+      --_background: oklch(70% 0 0deg);
+
+      display: inline flex;
+      flex-shrink: 0;
+      inline-size: calc(1lh * 2);
+      block-size: 1lh;
+      padding: 2px;
+      border-color: transparent;
+      border-radius: calc(infinity * 1px);
+      background-color: var(--_background);
+      appearance: none;
+
+      &:checked {
+        --_background: var(--_accent);
+      }
+
+      /* つまみの手前の余白。オンのときに広がり、つまみを押し出す */
+      &::before {
+        content: "";
+        flex-grow: 0;
+      }
+
+      /* つまみ */
+      &::after {
+        content: "";
+        flex-shrink: 0;
+        block-size: 100%;
+        aspect-ratio: 1;
+        border-radius: inherit;
+        background-color: oklch(100% 0 0deg);
+      }
+    }
+
+    ._switch:checked::before {
+      flex-grow: 1;
+    }
+
+    ._switch::before {
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+        transition-property: flex-grow;
+        transition-timing-function: var(--ease--quint-out);
+      }
+    }
+
+    ._submit {
+      padding-block: 8px;
+      padding-inline: 20px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: var(--_accent);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

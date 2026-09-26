@@ -1,0 +1,41 @@
+@layer components {
+  @scope (.scoped.site-header) to (.scoped) {
+    /* Stylelint の order/order に従うと、条件のブロックがスコープの先頭に並ぶ */
+    @media (width >= calc(640 / 16 * 1rem)) {
+      ._links {
+        display: block flex;
+      }
+
+      ._menu-button {
+        display: none;
+      }
+    }
+
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    ._logo {
+      font-weight: bold;
+    }
+
+    ._links {
+      display: none;
+      gap: 16px;
+    }
+
+    ._menu-button {
+      padding-block: 4px;
+      padding-inline: 12px;
+      border-radius: 4px;
+    }
+  }
+}

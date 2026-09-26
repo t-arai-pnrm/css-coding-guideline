@@ -1,0 +1,199 @@
+---
+title: "9-2 和文組版を整える"
+description: "和文組版の土台は、text-autospace、text-spacing-trim、line-breakの3つの初期値です。本文はベタ組みにし、見出しだけをpaltとカーニングで詰めます。言語ごとの切り替えはlang属性と:lang()で行います。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import trimHtml from '../../../demos/typography/autospace-trim/index.html?raw';
+import trimCss from '../../../demos/typography/autospace-trim/style.css?raw';
+import paltHtml from '../../../demos/typography/heading-palt/index.html?raw';
+import paltCss from '../../../demos/typography/heading-palt/style.css?raw';
+
+和文組版の土台は、`:root` に指定する3つの初期値です。`text-autospace: normal` で和文と英数字の間にアキを入れ、`text-spacing-trim: trim-start` で約物のアキを詰め、`line-break: strict` で厳格な禁則を適用します。そのうえで、本文は文字を詰めないベタ組みにし、見出しだけを `palt` とカーニングで詰めます。
+
+これらの指定は、どれも `lang` 属性で決まる言語を手がかりにしています。この節では、和文と英数字の間の空白の扱いから始めて、本文をベタ組みにする理由、見出しの詰め方、約物のぶら下げと注釈の字下げを説明します。
+
+## 手で入れた空白は組版を固定してしまう
+
+日本語のWebの文章では、読みやすさのために、和文と英数字の間に半角スペースを手で入れる書き方がよく見られます。「CSS」や「2026」の前後に、空白の文字を入力しておく書き方です。和文と英数字の間に少しアキを入れると読みやすくなる、という考え自体は正しいと思います。
+
+問題は、そのアキを原稿の文字で作ることです。手で入れた空白は文章の一部になるので、表示を変えたくなっても、原稿をすべて書き換えるしかありません。空白の幅はフォントの半角スペースで決まり、組版で使う細かなアキとは一致しません。書く人によって入れたり入れなかったりするので、CMSで複数の人が入力するサイトでは表記もそろいません。
+{/* 要確認: 出典なし（手で入れた空白の問題点は筆者の推論） */}
+
+そこで、アキはCSSに任せます。`text-autospace: normal` を指定すると、ブラウザが和文と英数字の境目に、文字の大きさの8分の1ほどのアキを自動で入れます。原稿には空白を入れずに済み、アキの量も文字の大きさに合わせて決まります。本書の原稿も、和文と英数字の間に空白を入れず、アキは表示の側に任せています。本書のサイトでは、土台にしているStarlightが、日本語のページに `text-autospace: normal` を指定しています。
+
+<Baseline id="text-autospace" compatKey="css.properties.text-autospace.normal" name="text-autospace: normal" />
+
+`text-autospace: normal` は、2025年11月にすべての主要なブラウザで使えるようになり、本書の対象のブラウザ（Safari 18系の最終版以降）でもそのまま使えます（2026年9月確認）。値を明示するのは、kiso.cssを公開した時点で、初期値の振る舞いがブラウザによって異なっていたからです。いまも、何も指定しなければアキを入れないブラウザがあります（2026年9月、Chrome 153で確認）。
+
+## 和文組版の3つの初期値
+
+kiso.cssは、和文組版のための3つの初期値を `:root` に指定しています。どれも継承されるプロパティなので、`:root` に1回書けば文書全体に効きます。`:root` に書く理由と書き方は「[4-1 壊さないリセット](/reset/kiso/)」で説明しているので、ここではそれぞれの値を選んだ理由を説明します。
+
+`text-spacing-trim` は、括弧や句読点のような約物の周りのアキを調整するプロパティです。和文の約物は、全角の幅の中に半分ほどのアキを含んでいます。閉じ括弧と開き括弧のように約物が隣り合うと、アキが重なって間延びするので、`trim-start` はこれを詰めます。さらに、行頭にある開き括弧のアキも詰めます。
+
+<Baseline id="text-spacing-trim" />
+
+行頭のアキまで詰めるのは、Webの文章では段落の先頭を字下げしないからです。字下げのない段落や見出しでは、先頭の開き括弧が半文字ぶん右にずれて見えます。2026年9月の時点で対応しているのはChrome系のブラウザだけですが、対応していないブラウザでは詰めないまま表示されるだけです。
+
+`line-break: strict` は、小書きの仮名（「ッ」や「ゃ」など）や長音記号を行頭に置かない、厳格な禁則を適用します。行末に余白が出やすくなる面はありますが、読み誤りを防ぐほうを優先します。
+
+反対に、アキを入れると困る要素もあります。等幅フォントで桁をそろえる `pre`、日付を表す `time`、ユーザーが文字を入力する欄です。入力中にアキが入ると、カーソルの動きが不自然になるおそれがあります。これらの要素では `text-autospace` を無効にし、`pre` では `text-spacing-trim` の詰めも止めます。kiso.cssを使っていれば指定済みです。
+
+```css title="🙆‍♂ Recommended: アキを入れると困る要素で、自動のアキを止める"
+:where(pre) {
+  text-spacing-trim: space-all;
+  text-autospace: no-autospace;
+}
+
+:where(time, input:not([type="button" i], [type="submit" i], [type="reset" i]), textarea, [contenteditable]) {
+  text-autospace: no-autospace;
+}
+```
+
+次のデモでは、上の段落でkiso.cssの初期値を打ち消し、下の段落は初期値のままにしています。和文と「CSS」「2026年」の境目のアキ、閉じ括弧と開き括弧が隣り合う部分の間隔、先頭の括弧の位置を比べてください。`text-spacing-trim` の違いは、Chrome系のブラウザでだけ確認できます。
+
+<Demo title="和文組版の初期値を打ち消した段落と、kiso.cssの初期値のままの段落" html={trimHtml} css={trimCss} variant="neutral" />
+
+## 本文はベタ組みにする
+
+和文の本文は、ベタ組みにします。ベタ組みは、全角の文字を1文字ずつ同じ幅の枠に収め、詰めずに並べる組み方です。文字が等間隔に並ぶので、リズムが一定になり、長い文章でも読み進めやすくなります。
+
+文字を詰める方法には、OpenTypeの `palt` とカーニングがあります。`font-feature-settings: "palt"` は、フォントが持つ文字ごとの幅の情報を使い、仮名や約物の周りのアキを詰めます。`font-kerning` は、隣り合う文字の組み合わせに応じて間隔を調整する機能です。どちらも本文に掛けると文字の間隔が不ぞろいになり、かえって読みにくくなります。
+
+私は2020年の記事で、本文全体に `palt` と字間を指定する例を紹介していました。いまは、この書き方を勧めていません。
+
+```css title="🙅‍♂ Not Recommended: 本文全体の文字を詰める"
+/* 🙅‍♂ Not Recommended */
+body {
+  font-feature-settings: "palt";
+  letter-spacing: 0.06em;
+}
+```
+
+注意したいのは、`font-kerning` の初期値の `auto` です。`auto` はカーニングの有無をブラウザに任せる値なので、何も指定しないと、和文の本文にもカーニングの掛かる場合があります。そこで、日本語の文書では `:root` に `font-kerning: none` を指定します。英文はカーニングを掛けたほうが読みやすいので、英語の要素には `normal` を指定します。
+
+```css title="🙆‍♂ Recommended: 和文の本文はカーニングを止め、英文には掛ける"
+:where(:root:lang(ja)) {
+  font-kerning: none;
+}
+
+:where(:lang(en)) {
+  font-kerning: normal;
+}
+```
+
+和文のほうを `:lang(ja)` だけで書かず、`:root` に限っているのは、継承を生かすためです。`:where(:lang(ja))` と書くと、日本語のすべての要素に `none` が直接指定されます。見出しで `normal` を指定しても、見出しの中の `span` には `none` が当たり、カーニングが途切れてしまいます。
+{/* 要確認: 出典なし（:root に限る理由は筆者の推論。著者の gist は :where(:lang(ja))、テンプレートと案件は :root:lang(ja) で書いている） */}
+
+## 見出しは詰めて引き締める
+
+見出しは、本文と違って文字を詰めます。大きな文字では、約物や仮名の周りのアキが目立ち、間延びして見えるからです。見出しには `font-kerning: normal` を指定し、日本語のときは `font-feature-settings: "palt"` も指定します。
+
+```css title="🙆‍♂ Recommended: 見出しだけを詰める"
+:where(:heading, h1, h2, h3, h4, h5, h6, caption) {
+  font-kerning: normal;
+
+  &:lang(ja) {
+    font-feature-settings: "palt";
+  }
+}
+```
+
+`:heading` は見出しをまとめて選ぶ新しい擬似クラスで、対応していないブラウザのために、従来のタイプセレクタと並べて `:where()` の中に書きます。この書き方は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。表の見出しにあたる `caption` も、見出しと同じ扱いにしています。本書のサイトも、見出しに `palt` を指定しています。
+
+次のデモでは、同じ見出しをベタ組みのままと、`palt` とカーニングを指定した状態で並べています。詰めた見出しは、括弧や読点の周りのアキが小さくなり、1行に入る文字も増えます。
+
+<Demo title="ベタ組みの見出しと、palt とカーニングで詰めた見出し" html={paltHtml} css={paltCss} variant="neutral" />
+
+`palt` が効くのは、文字ごとの幅の情報（プロポーショナルメトリクス）を持つOpenTypeのフォントだけです。ヒラギノ角ゴシックやNoto Sans JPには含まれていますが、メイリオには含まれていないので、指定しても詰まりません。縦書きの見出しでは、`palt` の代わりに縦書き用の `"vpal"` を指定します。`palt` のままだと、文章全体が横にずれてしまうからです。
+
+`hgroup` の中の副題のように、見出しの要素ではないけれど詰めたい文字もあります。そうした場所のために、同じ指定をユーティリティとして用意しておきます。
+
+```css title="🙆‍♂ Recommended: 見出し以外を詰めるユーティリティ"
+.-kerning {
+  font-kerning: normal;
+
+  &:lang(ja) {
+    font-feature-settings: "palt";
+  }
+}
+```
+
+反対に、デザインカンプに合わせて1文字ずつ間隔を調整するのは避けます。特定の文字を `span` で囲んで詰めていくと、HTMLが `span` だらけになり、CMSで文章を差し替えたときに調整がすべて無駄になります。Webサイトは公開してからも文章が変わり続けるので、文字組は要素ごとの指定で整えられる範囲にとどめます。
+
+## 約物をぶら下げて行末をそろえる
+
+段落の行末に句読点が来ると、その行だけ右端が内側に入り、行末がそろっていないように見えることがあります。`hanging-punctuation` を指定すると、行末の句読点や段落の最後の閉じ括弧を、行の外側にぶら下げて表示できます。印刷の組版で使われてきた手法です。
+
+```css title="🙆‍♂ Recommended: 段落の約物をぶら下げるユーティリティ"
+.-hanging {
+  hanging-punctuation: last allow-end;
+
+  &:lang(en) {
+    hanging-punctuation: first allow-end last;
+  }
+}
+```
+
+和文では、段落の最後の閉じ括弧をぶら下げる `last` と、行末の句読点をぶら下げる `allow-end` を組み合わせます。英文では、段落の先頭の引用符をぶら下げる `first` も加えます。
+
+<Baseline id="hanging-punctuation" />
+
+2026年9月の時点で `hanging-punctuation` に対応しているのはSafariだけです。web-featuresのデータではSafari 26.5からとなっていますが、MDNの互換性データによると、それ以前のSafariも、半角の引用符を除いて対応しています。対応していないブラウザではぶら下がらないだけなので、プログレッシブ・エンハンスメントとして使えます。
+
+注意点は、ぶら下げた約物が要素の幅の外に出ることです。幅いっぱいに置いた段落では、約物が親の要素からはみ出し、横スクロールの原因になります。インライン方向の `padding` とセットで指定し、ぶら下がる場所を確保します。使うのは段落だけにし、見出しやボタンのラベルには指定しません。
+
+行末のがたつきには、段落の幅を全角1文字の倍数に丸める方法もあります。`ic` は全角の「水」1文字の幅を表す単位で、`round()` で幅を `1ic` の倍数に切り下げると、ベタ組みの行の右端に半端なすき間が残りにくくなります。英数字が混ざるとそろわない行も出ますが、多少は改善します。
+
+```css title="🙆‍♂ Recommended: 段落の幅を全角1文字の倍数に丸める"
+._paragraph {
+  inline-size: round(down, 100%, 1ic);
+}
+```
+
+## 注釈は2行目以降を字下げする
+
+「※」で始まる注釈では、2行目以降を1文字ぶん字下げして、「※」の後ろに文字の頭をそろえるのが一般的です。以前は `padding-inline-start: 1em` と `text-indent: -1em` を組み合わせていましたが、いまは `text-indent` の `hanging` キーワードを使います。`hanging` は、1行目以外のすべての行を字下げする指定です。
+
+```css title="🙆‍♂ Recommended: 注釈の2行目以降を「※」の幅だけ字下げする"
+:where(p[role="note"], [role="note"] li) {
+  text-indent: hanging 1ic;
+
+  &::before {
+    content: "※";
+  }
+}
+```
+
+<Baseline id="text-indent-hanging" />
+
+`hanging` にはChromeが2026年3月に対応し、本書の対象のブラウザはすべて対応しています（2026年9月確認）。注釈の要素には `role="note"` を付けます。注釈を箇条書きにするときは、`ul` と `li` の役割を消さないように、`ul` を `div` で包み、その `div` に `role="note"` を付けます。
+
+## lang属性で言語ごとに切り替える
+
+この節で紹介した指定の多くは、`:lang(ja)` と `:lang(en)` で言語ごとに切り替えています。前提になるのは、HTMLの `lang` 属性です。`html` 要素に `lang="ja"` を付け、英文の段落や引用のように、ほかの言語で書いた部分にはその言語の `lang` を付けます。
+
+`lang` が正しくないと、組版も正しく切り替わりません。たとえば `lang="ja"` のページに `lang` のない英文を置くと、英文にも和文向けの `palt` やカーニングの指定が効き、英文向けの指定は効きません。言語の指定はスクリーンリーダーの読み上げにも使われるので、組版のためだけでなく、アクセシビリティのためにも欠かせません。
+
+機械翻訳との関係も覚えておきます。ブラウザの翻訳機能でページを翻訳すると、`html` 要素の `lang` が翻訳先の言語に変わります。すると `:lang(ja)` の指定は外れ、日本語のための詰めや改行の制御が、翻訳後の文章に残りません。言語で条件を付けておけば、翻訳されたときに和文向けの指定が自然に外れます。
+{/* 要確認: 翻訳で lang が変わることは著者の記事（1文字ずつのアニメーション）にもとづくが、ブラウザごとの挙動は未確認 */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [text-autospace - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-autospace)
+- [text-spacing-trim - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-spacing-trim)
+- [line-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/line-break)
+- [font-kerning - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-kerning)
+- [font-feature-settings - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-feature-settings)
+- [hanging-punctuation - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/hanging-punctuation)
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
+- [デザイナーとフロントエンドエンジニアに知ってほしいWebのフォント周りのお話](https://zenn.dev/tak_dcxi/articles/588fbc205251043dc357)（TAK、2020年10月。本書と一部の方針が異なります）

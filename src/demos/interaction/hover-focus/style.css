@@ -1,0 +1,101 @@
+@layer tokens {
+  :root {
+    --duration--fast: 200ms;
+    --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@layer components {
+  @scope (.scoped.hover-demo) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+      --_accent--hocus: oklch(from var(--_accent) calc(l - 0.14) c h);
+
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._actions,
+    ._links {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    ._button {
+      --_background: var(--_accent);
+
+      padding-block: 8px;
+      padding-inline: 20px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: var(--_background);
+      color: oklch(100% 0 0deg);
+
+      &:disabled {
+        --_background: oklch(60% 0 0deg);
+      }
+
+      /* キーボードでフォーカスしたときも、ホバーと同じ見た目にする */
+      &:focus-visible {
+        --_background: var(--_accent--hocus);
+      }
+    }
+
+    /* 無効にしたボタンは、ホバーしても反応させない */
+    ._button:enabled:hover {
+      @media (any-hover: hover) {
+        --_background: var(--_accent--hocus);
+      }
+    }
+
+    /* キーボードでフォーカスを移したときは、一度で切り替える */
+    ._button:not(:focus-visible) {
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+        transition-property: background-color;
+        transition-timing-function: var(--ease--quint-out);
+      }
+    }
+
+    ._link {
+      --_color: var(--_accent);
+
+      color: var(--_color);
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.25em;
+
+      &[aria-current="page"] {
+        --_color: currentColor;
+
+        font-weight: bold;
+        text-decoration-line: none;
+      }
+
+      &:focus-visible {
+        --_color: var(--_accent--hocus);
+
+        text-decoration-thickness: 3px;
+      }
+    }
+
+    /* href のないカレントのリンクは、ホバーしても反応させない */
+    ._link:any-link:hover {
+      @media (any-hover: hover) {
+        --_color: var(--_accent--hocus);
+
+        text-decoration-thickness: 3px;
+      }
+    }
+
+    ._link:not(:focus-visible) {
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+        transition-property: color, text-decoration-thickness;
+        transition-timing-function: var(--ease--quint-out);
+      }
+    }
+  }
+}

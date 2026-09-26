@@ -1,0 +1,70 @@
+@layer base {
+  :where(:focus-visible) {
+    outline: 2px solid oklch(50% 0.2 260deg);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  @scope (.scoped.focus-ring-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    ._panel {
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+      padding: 24px;
+      border-radius: 8px;
+      background-color: var(--_background);
+      color: var(--_foreground);
+
+      &[data-tone="light"] {
+        --_background: oklch(97% 0 0deg);
+        --_foreground: oklch(20% 0 0deg);
+        --_button-background: oklch(100% 0 0deg);
+        --_button-foreground: oklch(20% 0 0deg);
+      }
+
+      &[data-tone="dark"] {
+        --_background: oklch(22% 0.02 260deg);
+        --_foreground: oklch(96% 0 0deg);
+        --_button-background: oklch(30% 0.02 260deg);
+        --_button-foreground: oklch(96% 0 0deg);
+      }
+
+      &[data-tone="accent"] {
+        --_background: oklch(50% 0.2 260deg);
+        --_foreground: oklch(100% 0 0deg);
+        --_button-background: oklch(50% 0.2 260deg);
+        --_button-foreground: oklch(100% 0 0deg);
+      }
+    }
+
+    ._heading {
+      margin: 0;
+      font-size: calc(16 / 16 * 1rem);
+    }
+
+    ._field {
+      inline-size: 100%;
+      padding: 8px;
+      border-color: oklch(70% 0 0deg);
+      border-radius: 4px;
+      background-color: oklch(100% 0 0deg);
+      color: oklch(20% 0 0deg);
+    }
+
+    ._button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: currentColor;
+      border-radius: 4px;
+      background-color: var(--_button-background);
+      color: var(--_button-foreground);
+    }
+  }
+}

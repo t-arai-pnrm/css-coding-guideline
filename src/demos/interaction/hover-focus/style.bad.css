@@ -1,0 +1,52 @@
+@layer components {
+  @scope (.scoped.hover-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._actions,
+    ._links {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    ._button {
+      padding-block: 8px;
+      padding-inline: 20px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: oklch(48% 0.17 260deg);
+      color: oklch(100% 0 0deg);
+      transition: all 0.3s;
+
+      &:disabled {
+        background-color: oklch(60% 0 0deg);
+      }
+
+      /* ホバーを透明度で表し、フォーカスには何も指定していない */
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+
+    ._link {
+      color: oklch(48% 0.17 260deg);
+      text-decoration-line: underline;
+      text-underline-offset: 0.25em;
+      transition: all 0.3s;
+
+      &[aria-current="page"] {
+        color: currentColor;
+        font-weight: bold;
+        text-decoration-line: none;
+      }
+
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+  }
+}

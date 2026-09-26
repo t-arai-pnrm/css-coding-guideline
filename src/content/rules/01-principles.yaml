@@ -1,0 +1,185 @@
+# 第1章 本書の前提となる考え方
+
+# 1-1 CSSはブラウザへの「提案」である
+- id: css-as-suggestion
+  level: 推奨
+  rule: 寸法は1つの値に決めつけず、上限・下限・比率などの制約を示して、具体的な値の計算はブラウザに任せる。
+  reason: 画面の幅、文字サイズの設定、文章量など、実装者には決められない条件が変わっても崩れないため。
+  note: 幅と高さの具体的な指定のしかたは「8-1 検討する順番」にあります。アイコンのように本質的に大きさが決まった要素は、固定値でかまいません。
+  aiProne: true
+  page: principles/browser-suggestion
+  since: 0.1.0
+
+- id: delegate-to-browser
+  level: 推奨
+  rule: 画像の切り抜き、テキストの折り返し、列数の決定のようにブラウザが計算できる処理は、自前で作り込まずに CSS の機能に任せる。
+  reason: 表示する環境を知っているのはブラウザであり、どの大きさや条件でも同じ仕組みで対応できるため。
+  note: '画像の切り抜きは `object-fit: cover`、装飾のグラデーションは CSS のグラデーションで描きます。'
+  page: principles/browser-suggestion
+  since: 0.1.0
+
+- id: consensus-over-pixel-perfect
+  level: 推奨
+  rule: すべての環境でデザインカンプと同じ見た目にすること（ピクセルパーフェクト）ではなく、どの環境でもデザインの意図が伝わり、内容を読めて操作できることを目標にする。
+  reason: 表示を左右する変数は無数にあり、特定の環境に合わせて決め打ちした値は、ほかの環境で崩れる原因になるため。
+  note: 2サイズのカンプの比率を保つことが案件の要件として合意されている場合は、「8-4 実践パターン：2サイズのデザインカンプを再現する」の方法を使います。
+  page: principles/browser-suggestion
+  since: 0.1.0
+
+- id: agree-on-responsive-behavior
+  level: 推奨
+  rule: カンプの幅以外での見せ方、文章量や要素の数が変わったときの見せ方、細部の再現の程度を、実装の前にデザイナーやクライアントと合意しておく。
+  reason: どこまでを許容するかは実装者だけでは決められず、実装の後で食い違うと手戻りが大きいため。
+  page: principles/browser-suggestion
+  since: 0.1.0
+
+# 1-2 保守しやすさを最優先にする
+- id: maintainability-first
+  level: 推奨
+  rule: 書き方に迷ったら、コードの短さや共通化よりも、ほかの人が読んで安全に直せる書き方を選ぶ。
+  reason: Web サイトは公開後の更新と改修の期間のほうが長く、書いた本人以外が触ることも多いため。
+  note: 公開後に更新する予定のない短期のキャンペーンサイトなどは例外です。
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: rule-of-three
+  level: 推奨
+  rule: 似た記述の重複は許容し、共通化は同じものが3回現れてから、役割まで同じかを確かめて検討する。
+  reason: 早すぎる共通化は影響範囲を広げ、一部だけ変えたいときに修飾クラスや上書きの分岐が増えるため。
+  note: 一緒に変わるべき値だけを、デザイントークンで共有します。
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: explainable-declarations
+  level: 必須
+  rule: 宣言はひとつひとつ、なぜ必要かを説明できるものだけを書く。
+  reason: 余計な宣言はほかのセレクタとぶつかり、どの値が勝つかが状況しだいになるうえ、打ち消すための上書きが増えるため。
+  aiProne: true
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: no-redundant-width-100
+  level: 禁止
+  rule: 'ブロックレベルの要素や、`inset: 0` で広げた絶対配置の要素に、`width: 100%`（`inline-size: 100%`）を指定しない。'
+  reason: 指定しなくても利用できる幅いっぱいに広がり、左右のマージンや `box-sizing` の変更と組み合わさると、はみ出しの原因になるため。
+  note: '`<img>` のような置換要素や、`<button>` のようなフォーム部品には必要なことがあります。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` は対象外です。'
+  aiProne: true
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: stretch-over-height-100
+  level: 推奨
+  rule: '子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。'
+  reason: '`height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないため。'
+  aiProne: true
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: no-redundant-defaults
+  level: 非推奨
+  rule: CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。
+  reason: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
+  note: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「2-1 カスケード・詳細度・継承」のルールに従います。
+  aiProne: true
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: margin-inline-auto-centering
+  level: 必須
+  rule: 'ブロックの左右の中央寄せには、`margin: 0 auto` や `margin: auto` ではなく `margin-inline: auto` を使う。'
+  reason: '`margin: 0 auto` は上下のマージンまで上書きし、周りのレイアウトが子要素の間に入れた余白を消してしまうため。'
+  aiProne: true
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: longhand-for-partial-change
+  level: 推奨
+  rule: サブプロパティの一部だけを変えるときは、ショートハンドではなくロングハンドで書く（`background` ではなく `background-color` など）。
+  reason: ショートハンドは指定しなかったサブプロパティも初期値に戻し、ほかの場所で設定した値を壊すため。
+  note: '`inset` や `border` のように、すべての辺にまとめて値を与える用途では問題になりにくいです。`flex: 1` は `flex-basis` も `0` にするので、`flex-grow: 1` とは別物です。'
+  aiProne: true
+  page: principles/maintainability
+  since: 0.1.0
+
+- id: no-font-shorthand
+  level: 禁止
+  rule: '`font` ショートハンドは、リセットの目的以外で使わない。'
+  reason: 文字の大きさやファミリーだけでなく、`line-height` や `font-kerning` まで初期値に戻し、継承させたい値を壊すため。
+  page: principles/maintainability
+  since: 0.1.0
+
+# 1-3 ブラウザサポートとプログレッシブ・エンハンスメント
+# 要確認: note の「案件で動作環境が決まっている場合は、そちらに従います」は推論
+- id: browser-support-target
+  level: 必須
+  rule: 対象のブラウザは、Safari は現行のメジャーバージョンから2つ前の最終版以降、Chrome、Edge、Firefox は最新版とする。
+  reason: 古いバージョンが残りやすい Safari が最も保守的な基準になり、ここで使える機能ならほかのブラウザでも使えることが多いため。
+  note: 2026年9月時点では Safari 27 が最新なので、Safari 18 系の最終版（18.6）以降が対象です。番号は 18 の次が 26 なので、実際に出たメジャーバージョンを数えます。案件で動作環境が決まっている場合は、そちらに従います。
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: check-safari-support-first
+  level: 推奨
+  rule: 新しい機能を使うときは、最初に対象の Safari で使えるかを確認する。
+  reason: 対象のブラウザの中で、新しい機能への対応が最も遅れやすいのが Safari だため。
+  note: 本書では、対応状況を web-features のデータ（Baseline）で示しています。
+  aiProne: true
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: progressive-enhancement-if-harmless
+  level: 必須
+  rule: 対象のブラウザの一部しか対応していない機能は、未対応の環境でも内容を読めて操作できる場合に限って、プログレッシブ・エンハンスメントとして使う。
+  reason: 対応した環境の体験を良くしつつ、未対応の環境のユーザーを切り捨てないため。
+  note: '2026年9月時点では、`text-wrap: pretty`、`word-break: auto-phrase`、`field-sizing`、`text-box`、ドキュメント間のビュートランジションが使いやすい例です。'
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: no-unsupported-layout-features
+  level: 禁止
+  rule: 対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。
+  reason: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
+  note: 2026年9月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports not` で従来の表現を用意して使えます。
+  aiProne: true
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: supports-for-dependent-declarations
+  level: 推奨
+  rule: 新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。
+  reason: 未対応の環境で、従来の手段まで取り上げてしまうのを防ぐため。
+  note: '例：`field-sizing: content` を使うときの `resize: none`。新しいプロパティそのものは、未対応の環境で無視されるので `@supports` で囲む必要はありません。'
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: remove-unneeded-fallbacks
+  level: 推奨
+  rule: 対象のブラウザがすべて対応している機能には、フォールバックや `@supports` の分岐を書かず、残っていれば消す。
+  reason: 使われないコードが残り、読む人に「まだ対応していないブラウザがある」と誤解させるため。
+  note: '例：`lh` 単位は Safari 16.4 で対応しているので、`@supports not (top: 1lh)` の分岐は不要です。'
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: scripting-for-js-dependent-styles
+  level: 必須
+  rule: 'JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書く。'
+  reason: JavaScript が動かない環境で、内容が隠れたままになるのを防ぐため。
+  aiProne: true
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: no-chrome-only-check
+  level: 必須
+  rule: 表示の確認は Chrome だけで済ませず、Safari（iOS を含む）と Firefox でも行う。
+  reason: 既存のプロパティの新しい仕様を Chrome が先に実装することが多く、Chrome だけで確認すると、ほかのブラウザとの差に気づけないため。
+  page: principles/browser-support
+  since: 0.1.0
+
+- id: no-justify-self-in-block-layout
+  level: 禁止
+  rule: ブロックレイアウトの要素に、`justify-self` や `justify-items` を指定しない。
+  reason: 2026年9月時点で対応しているのは Chrome だけで、Safari と Firefox では無視されるため。
+  note: 'ブロックの中央寄せには `margin-inline: auto` を使います。`display` を grid からブロックに戻すときは、指定が残っていないかを確かめます。'
+  aiProne: true
+  page: principles/browser-support
+  since: 0.1.0

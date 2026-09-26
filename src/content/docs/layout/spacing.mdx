@@ -1,0 +1,204 @@
+---
+title: "7-2 余白を設計する"
+description: "並んだ要素の間隔は親の gap で作り、間ごとに違う余白は grid-template の空のセルで作ります。要素の有無が変わる場所と本文の流れには、* + * の margin を使います。"
+sidebar:
+  order: 2
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import emptyCellsHtml from '../../../demos/layout/empty-grid-cells/index.html?raw';
+import emptyCellsCss from '../../../demos/layout/empty-grid-cells/style.css?raw';
+
+並んだ要素の間隔は、子要素の `margin` ではなく、親の `gap` で作ります。見出しの下は24px、本文の下は16pxのように、間ごとに大きさの違う余白は、`grid-template` に空のセルの行を置いて作ります。こうすると、余白の指定が `grid-template` の1か所にまとまります。
+
+一方で、要素の有無が状況によって変わる場所や、本文のように種類の違う要素が続く領域では、`margin` が今でも役に立ちます。`* + *` のセレクタで、2つ目以降の要素にだけ `margin-block-start` を付けます。最近は「`margin` を使わない開発」を勧める声もありますが、私は、`margin` もまだ現役だと考えています。ただし、レイアウトのために `margin` を使う場面は、確実に減っています。
+
+この節では、`gap`、空のグリッドセル、`margin` の3つを、場面ごとにどう使い分けるかを説明します。コンポーネントのルートに外側の `margin` を持たせない理由は、「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で扱っています。
+
+## 子要素のmarginで間隔を作ると起きること
+
+お知らせの一覧のように、同じ種類の要素を縦に並べる場面を考えます。子要素の下に `margin` を付け、最後の要素だけ打ち消す書き方をよく見かけます。
+
+```css title="🙅‍♂ Not Recommended: 子要素の margin で間隔を作り、最後だけ打ち消す"
+/* 🙅‍♂ Not Recommended */
+.news-list > li {
+  margin-bottom: 24px;
+}
+
+.news-list > li:last-child {
+  margin-bottom: 0;
+}
+```
+
+1列で並べている間は問題なく見えます。しかし、広い画面で2列のグリッドに変えると、最後の行の左側の要素には `margin-bottom` が残ったままになります。列の間隔は別に指定しなければならず、列数を変えるたびに「どの要素の余白を打ち消すか」を考え直すことになります。
+
+`margin` には、上下に隣り合う要素の間で大きいほうだけが残る「相殺」という仕組みもあります。上の要素の `margin-bottom` と下の要素の `margin-top` を両方指定すると、合計ではなく大きいほうの値だけが効きます。上下のどちらに付けるかをチームで決めておかないと、相殺と打ち消しが入り混じり、実際の間隔がどの指定で決まっているのかを追えなくなります。
+{/* 要確認: 出典なし（相殺の仕組みの説明は一般的な仕様の説明） */}
+
+## 並んだ要素の間隔はgapで作る
+
+FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`gap` は要素と要素の間にだけ空くので、最初や最後の要素の余白を打ち消す必要がありません。
+
+```css title="🙆‍♂ Recommended: 間隔は親の gap で作る"
+._news-list {
+  display: block grid;
+  gap: 24px;
+
+  @media (width >= calc(768 / 16 * 1rem)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+}
+```
+
+列の数を変えても、子要素の側には何も書き足す必要がありません。行と列の間隔は `row-gap` と `column-gap` で別々に決められ、要素が折り返したときも、行の頭に余計な余白が残りません。間隔を決める情報が親の1か所にあるので、「この一覧の間隔は何pxか」という問いには、親のルールを見るだけで答えられます。
+
+`gap` はFlexboxでも使えます。要素を横に並べて折り返す `cluster` や、縦に積む `stack` のようなコンポジションは、どれも `gap` で間隔を作っています。コンポジションの間隔のデフォルト値を0にして、使う側で指定する理由は「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
+
+## 不規則な余白は空のグリッドセルで作る
+
+`gap` の弱点は、すべての間隔が同じ大きさになることです。お問い合わせのセクションのように、見出しの下は24px、本文の下は16pxと、間ごとに余白が違うデザインはよくあります。これを `gap` で作ろうとすると、差の分だけ `padding` を持つ `div` を足したり、特定の子要素にだけ `margin` を付けたりすることになります。余白の指定がHTMLとCSSのあちこちに散らばり、どこで余白が決まっているのかを推理しなければなりません。
+
+そこで私が勧めているのが、空のグリッドセルで余白を作る方法です。`grid-template` の中の `.` は、何も置かない空のセルを表します。要素を置く行の間に、高さを指定した空のセルの行を挟めば、その行の高さがそのまま余白になります。
+
+```css title="🙆‍♂ Recommended: 余白を、高さを指定した空のセルの行で作る"
+@scope (.scoped.contact-section) to (.scoped) {
+  :scope {
+    container: --contact-section / inline-size;
+  }
+
+  ._layout {
+    display: block grid;
+    grid-template:
+      "--heading"
+      "." 24px
+      "--text"
+      "." 16px
+      "--button";
+
+    @container --contact-section (inline-size >= calc(560 / 16 * 1rem)) {
+      grid-template:
+        "--heading"
+        "." 48px
+        "--text"
+        "." 32px
+        "--button";
+    }
+
+    & > ._heading {
+      grid-area: --heading;
+    }
+
+    & > ._text {
+      grid-area: --text;
+    }
+
+    & > ._button {
+      grid-area: --button;
+    }
+  }
+}
+```
+
+`grid-template` の各行は、エリアの名前と行の高さの組です。高さを省略した行は `auto` になり、要素の大きさに合わせて決まります。余白の行だけに高さを書いておけば、上から順に「見出し、24pxの余白、本文、16pxの余白、ボタン」と読めます。
+
+次のデモでは、置かれた場所の幅が560px相当以上になると、余白の行の高さが2倍に変わります。クエリの中で書き換えているのは `grid-template` だけで、子要素のCSSには余白の指定がありません。
+
+<Demo title="空のグリッドセルの行で、見出しの下と本文の下に違う大きさの余白を作る" html={emptyCellsHtml} css={emptyCellsCss} />
+
+この方法の利点は3つあります。1つ目は、余白を1か所で管理できることです。ブレイクポイントごとに余白を変えるときも、`grid-template` を書き換えるだけで済みます。2つ目は、余白のための要素が要らないことです。3つ目は、`grid-template` を見ればレイアウトの構造が分かることです。
+
+余白の行の高さには、`"." calc(var(--spacing--lg) * 1px)` のようにトークンも使えます。トークンを使うかどうかは、ほかの余白と同じ基準で決めます。ここでは分かりやすさのため、pxの値をそのまま書きました。トークンの設計は「[6-3 デザイントークン](/components/design-tokens/)」で扱います。
+
+子要素の側から見ると、この方法では自分の周りに余白が一切ありません。余白を持つのは親のテンプレートだけなので、子要素をほかの場所へ移しても、余計な余白が付いてくることはありません。「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明した、外側の余白は置く側が持つという考え方を、そのまま形にしたものです。
+
+## 余白の列でコンテンツの幅を決める
+
+空のセルは、列にも使えます。ページのセクションで、コンテンツの最大幅と画面の端の余白（ガター）を決めるとき、`max-inline-size` と `margin-inline: auto` の代わりに、左右に余白の列を持つグリッドを作ります。
+
+```css title="🙆‍♂ Recommended: 左右に余白の列を置き、中央の列にコンテンツを置く"
+@scope (.scoped.page-section) to (.scoped) {
+  ._layout {
+    --_gutter: 16px;
+    --_content-max-width: calc(1140 / 16 * 1rem);
+
+    display: block grid;
+    grid-template-columns:
+      [--full-start] minmax(var(--_gutter), 1fr)
+      [--content-start] min(100% - var(--_gutter) * 2, var(--_content-max-width))
+      [--content-end] minmax(var(--_gutter), 1fr)
+      [--full-end];
+
+    & > * {
+      grid-column: --content;
+    }
+
+    & > ._banner {
+      grid-column: --full;
+    }
+  }
+}
+```
+
+中央の列は、最大で1140px相当の幅になり、画面が狭いときも左右にガターの分だけ余白が残ります。子要素は、デフォルトでは中央の列に置かれ、`._banner` だけが左右の余白の列まで広がって、画面幅いっぱいに表示されます。列の境界の線にも `--full-start` のように名前を付けておくと、子要素の側は `--content` や `--full` という名前だけで置き場所を選べます。
+
+最大幅と左右の `padding` で同じことをしようとすると、`box-sizing: border-box` の環境では、最大幅から `padding` の分だけコンテンツが狭くなります。そこで「最大幅に左右の `padding` を足す」という計算をしがちですが、余白の列を使えば、中央の列の最大幅がそのままコンテンツの幅になります。どうしても `padding` で書くなら、その要素だけ `box-sizing: revert` で `content-box` に戻せば、足し算は要りません。
+
+1つのセクションだけなら、`margin-inline: auto` のほうが簡潔かもしれません。この方法が生きるのは、コンテンツの幅に収まる要素と、画面幅いっぱいに広げたい要素が混在する場合です。ビューポートの単位を使った負の `margin` で要素を広げる必要がなくなります。画面幅いっぱいに広げるほかの方法は「[7-4 重なりと配置](/layout/positioning/)」で比べます。第6章のコンポジション `primary-layout` は、この形に「少し狭い」「少し広い」などの列を加えて部品にしたものです。
+
+## 要素の有無が変わる場所ではmarginを使う
+
+空のグリッドセルにも、向かない場面があります。ページによって本文がない、フォームを置いた場合はボタンが要らない、というように、要素の有無や数が状況で変わる場合です。空のセルで余白を決めておくと、要素が欠けたときに、その前後の余白の行だけが残ってしまいます。
+
+こうした場所では、`* + *` のセレクタで、2つ目以降の要素にだけ `margin-block-start` を付けます。前に要素があるときだけ上に余白を付けるので、どの要素が欠けても、残った要素の間にだけ間隔が空きます。「上と下のどちらに `margin` を付けるか」も、このセレクタを使えば迷いません。
+
+```css title="🙆‍♂ Recommended: 前に要素があるときだけ、上に余白を付ける"
+._body {
+  & > * + * {
+    margin-block-start: 16px;
+  }
+
+  & > * + ._note {
+    margin-block-start: 8px;
+  }
+}
+```
+
+要素が1つ欠けるだけなら、`:has()` でテンプレートを切り替える方法もあります。しかし、欠ける可能性のある要素が複数あると、組み合わせの数だけテンプレートが必要になります。そもそも置かれる文脈ごとにレイアウトが大きく変わるなら、コンポーネントを分けることも検討します。
+
+## 本文の流れは通常フローのままにする
+
+記事の本文のように、見出し、段落、リスト、図が続く領域でも、間隔は `* + *` の `margin` で作ります。本書では、この並び方を `prose` というコンポジションにしています。間隔は公開プロパティ `--prose--space` で受け取ります。
+
+```css title="🙆‍♂ Recommended: 本文の流れの間隔を作るコンポジション"
+/**
+ * 本文の流れの間隔を作る。
+ *
+ * @prop {length} --prose--space [0] - 子要素の間隔
+ */
+.prose {
+  & > * + * {
+    margin-block-start: var(--prose--space, 0);
+  }
+}
+```
+
+`margin-block-start` は子要素に指定されるので、`var(--prose--space)` も子要素の側で値が決まります。そのため、見出しの前だけ間隔を広げたいときは、その見出しに `style="--prose--space: …"` のように値を渡せば、その要素の間隔だけを変えられます。
+
+本文の領域を、FlexboxやGridにして `gap` で間隔を作ることはしません。1つ目の理由は、`float` による回り込みが効かなくなることです。フレックスアイテムやグリッドアイテムには、`float` が効きません。2つ目の理由は、`margin` の相殺を活かせなくなることです。通常フローなら、図の下の `margin` のように要素が自分で持っている余白と、流れの間隔が隣り合っても、足し算にはならず大きいほうだけが効きます。`gap` の中では `margin` が相殺されず、`gap` に足されるので、要素ごとの余白を調整しにくくなります。
+{/* 要確認: 出典なし（本文の領域を通常フローに保つ理由の説明は推論。著者の記事には「CMSの本文ブロック間は margin の相殺をあえて活かすのがベストプラクティス」とだけある） */}
+
+CMSの本文エリアでは、エディタでの見た目と公開ページの見た目を一致させる工夫も必要になります。その書き方は「[12-2 CMSの本文エリアをスタイリングする](/operations/cms-content/)」で扱います。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [gap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gap)
+- [grid-template-areas - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-areas)
+- [マージンの相殺の各種 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing)

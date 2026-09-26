@@ -1,0 +1,228 @@
+---
+title: "11-3 開閉するUI"
+description: "モーダルは<dialog>をcommand属性とclosedby属性で開閉し、小さな表示にはpopover属性を使います。アコーディオンは<details>とname属性で作り、見出しの構造が必要なパネルやタブはhidden=\"until-found\"で隠します。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import detailsHtml from '../../../demos/interaction/details-accordion/index.html?raw';
+import detailsCss from '../../../demos/interaction/details-accordion/style.css?raw';
+
+開閉するUIは、HTMLの機能で作ります。モーダルは `<dialog>` を `command` 属性で開き、`closedby="any"` で背景のクリックでも閉じられるようにします。メニューのような小さな表示には `popover` 属性を、その場で開閉する項目には `<details>` を使います。
+
+見出しの構造を保ちたいアコーディオンやタブでは、閉じたパネルを `hidden="until-found"` で隠します。どれも `display: none` とクラスの付け外しで作るより、少ないコードで、キーボードやページ内検索にも対応できます。この節では、それぞれの書き方と、開閉を動かす方法を説明します。
+
+## 開閉をブラウザの機能に任せる
+
+モーダルやアコーディオンは、`div` に `.is-open` のようなクラスを付け外しし、閉じているときは `display: none` で隠す形で作られてきました。この方法では、ブラウザが本来持っている振る舞いを、すべて自分で作り直すことになります。
+
+```css title="🙅‍♂ Not Recommended: クラスの付け外しで開閉する"
+/* 🙅‍♂ Not Recommended */
+.modal {
+  display: none;
+}
+
+.modal.is-open {
+  display: block;
+}
+```
+
+モーダルなら、開いたときのフォーカスの移動、Escキーで閉じる操作、背面を操作できなくする処理、ほかの要素より手前に出すための `z-index` の調整が必要です。アコーディオンなら、閉じたパネルの中身がページ内検索で見つからなくなります。どれもJavaScriptで補えますが、補うほどコードが増え、抜け漏れも生まれます。
+
+現在は、用途に合わせた要素と属性がそろっています。
+
+| 用途 | 使う要素・属性 |
+| --- | --- |
+| 背面の操作を止めるモーダル | `<dialog>` と `command="show-modal"` |
+| メニューや通知のような小さな表示 | `popover` 属性 |
+| その場で開閉する項目（FAQなど） | `<details>` と `<summary>` |
+| 見出しの下で開閉するパネル、タブ | `hidden="until-found"` |
+
+## ダイアログは `command` 属性と `closedby` 属性で開閉する
+
+モーダルのダイアログは、`<dialog>` で作ります。開くボタンに `commandfor` 属性で対象のIDを、`command="show-modal"` で操作を指定すれば、`showModal()` を呼ぶJavaScriptは要りません。閉じるボタンには `command="close"` を指定します。
+
+```html title="command 属性と closedby 属性で開閉するダイアログ"
+<button type="button" commandfor="contact-dialog" command="show-modal">お問い合わせ</button>
+
+<dialog id="contact-dialog" class="scoped site-dialog" closedby="any" aria-labelledby="contact-dialog-heading">
+  <h1 id="contact-dialog-heading">お問い合わせ</h1>
+  <p>…</p>
+  <button type="button" commandfor="contact-dialog" command="close">閉じる</button>
+</dialog>
+```
+
+`command` 属性は `<button>` でしか使えません。そのため、`div` や `span` にクリックの処理を付けたボタンのような、マークアップの誤りも防げます。`closedby="any"` を指定すると、Escキーに加えて、背景（`::backdrop`）のクリックでも閉じます。これまでクリックの位置を調べていた処理は不要です。
+
+`showModal()` で開いたダイアログは、背面の要素を操作できない状態にし、閉じたときには開く前の要素へフォーカスを戻します。独自のフォーカストラップは作りません。ブラウザのアドレスバーやツールバーへの移動まで妨げてしまうからです。ダイアログの中は独立した文書のように扱われるので、見出しは `<h1>` から始め、`aria-labelledby` でダイアログの名前にします。
+
+<Baseline id="invoker-commands" name="command 属性と commandfor 属性" />
+
+<Baseline id="dialog-closedby" name="closedby 属性" />
+
+2026年9月の時点で、`command` 属性はSafari 26.2から、`closedby` 属性はSafariで未対応です。`command` 属性に対応していないブラウザでは、ボタンを押してもダイアログが開きません。私は、Web標準で使えるようになる機能はポリフィルを入れてでも使う方針なので、`invokers-polyfill` と、私が作った `dialog-closedby-polyfill` を読み込んでいます。`closedby` 属性に対応していなくても、Escキーと閉じるボタンでは閉じられます。
+
+## ダイアログの開閉を動かす
+
+ダイアログの開閉は、「[11-2 モーションを実装する](/interaction/motion/)」で説明した `@starting-style` で動かします。`display` と `overlay` を `transition-behavior: allow-discrete` でトランジションの対象にし、開いたときの開始地点を `@starting-style` で指定します。
+
+```css title="🙆‍♂ Recommended: ダイアログと背景をフェードさせる"
+@scope (.scoped.site-dialog) to (.scoped) {
+  :scope {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z--top);
+    transition-duration: var(--duration--slow);
+    transition-property: display, overlay, opacity;
+    transition-timing-function: var(--ease--quint-out);
+    transition-behavior: allow-discrete;
+
+    &::backdrop {
+      background-color: oklch(0% 0 0deg / 50%);
+      transition-duration: inherit;
+      transition-property: opacity;
+      transition-timing-function: inherit;
+    }
+  }
+
+  :scope:modal,
+  :scope:modal::backdrop {
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  :scope:not(:modal),
+  :scope:not(:modal)::backdrop {
+    opacity: 0;
+  }
+}
+```
+
+この例では、ダイアログと背景を不透明度だけで変化させています。画面の大部分を覆うUIが一瞬で現れると、何が起きたのか分かりにくくなります。位置と大きさを変えないフェードなので、動きを減らす設定でも残しています。
+
+`position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合を避けるために明示しています。モーダルを開いている間の背面の固定は「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+{/* 要確認: Safari の不具合は2025年5月の記事の記述。2026年9月の状況は未確認 */}
+
+## 小さな表示は `popover` 属性で作る
+
+メニュー、ツールチップ、通知のように、背面の操作を止めない小さな表示には、`popover` 属性を使います。ボタンの `popovertarget` 属性で対象を指定すれば、JavaScriptなしで開閉できます。`popover` 属性の要素はトップレイヤーに表示されるので、ほかの要素より手前に出すための `z-index` の調整も要りません。
+
+`popover` 属性の値が `auto`（値を省略したとき）なら、外側をクリックするかEscキーを押すと閉じます。ほかの `auto` のポップオーバーを開くと、先に開いていたものは閉じます。自動で閉じてほしくない通知には、`popover="manual"` を指定します。開いている状態は `:popover-open` 擬似クラスで選べます。
+
+<Baseline id="popover" />
+
+注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[7-4 重なりと配置](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、11-2のデモを参考にしてください。
+
+## アコーディオンは `<details>` と `name` 属性で作る
+
+その場で開閉する項目は、`<details>` と `<summary>` で作ります。JavaScriptなしでキーボードでも開閉でき、対応したブラウザでは、ページ内検索で中身が見つかったときに自動で開きます。同じ `name` 属性を付けた `<details>` は、1つを開くとほかが閉じる、排他的なアコーディオンになります。
+{/* 要確認: 出典なし（details がページ内検索で自動で開くブラウザの範囲は未確認） */}
+
+```html title="name 属性で1つだけ開くアコーディオン"
+<section class="scoped faq-list" aria-labelledby="faq-list-heading">
+  <h2 id="faq-list-heading">よくある質問</h2>
+  <details class="_item" name="faq-list" open>
+    <summary>送料はかかりますか？</summary>
+    <p>…</p>
+  </details>
+  <details class="_item" name="faq-list">
+    <summary>注文をキャンセルできますか？</summary>
+    <p>…</p>
+  </details>
+</section>
+```
+
+<Baseline id="details-name" name="details の name 属性" />
+
+`<summary>` の中に見出しの要素は入れません。`<summary>` の中では見出しの役割が失われ、見出しで移動するユーザーが項目にたどり着けなくなります。見出しの構造が必要なら、後で説明する `hidden="until-found"` の方法を使います。デフォルトの三角のマーカーは、kiso.cssが `summary` の `list-style-type` を空にして消しています。
+
+開いているときのスタイルは、`[open]` 属性のセレクタで書きます。`:open` という擬似クラスもありますが、Safariは26.5から対応したので、2026年9月の時点では本書の対象のすべてでは使えません。
+
+## `<details>` の開閉を動かす
+
+`<details>` の開閉する部分は、`::details-content` 擬似要素で選べます。以前は、余白を付けたり高さを動かしたりするために、中身を `div` で包む必要がありました。`::details-content` を使えば包む要素は要らず、閉じる動きまでCSSだけで書けます。
+
+```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす"
+@scope (.scoped.faq-list) to (.scoped) {
+  ._item::details-content {
+    overflow: clip;
+    block-size: 0;
+    opacity: 0;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: content-visibility, block-size, opacity;
+      transition-timing-function: var(--ease--quint-out);
+      transition-behavior: allow-discrete;
+    }
+  }
+
+  ._item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+}
+```
+
+閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。`block-size: 0` から `auto` への変化は、ベーススタイルの `interpolate-size: allow-keywords` があって初めて補間されます（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+
+<Demo title="::details-content の高さと不透明度を動かし、name 属性で1つだけを開く" html={detailsHtml} css={detailsCss} />
+
+<Baseline id="details-content" name="::details-content" />
+
+<Baseline id="interpolate-size" />
+
+`interpolate-size` に対応しているのは、2026年9月の時点でChrome系のブラウザだけです。ほかのブラウザでは高さが一瞬で切り替わり、開くときにフェードするだけですが、開閉の機能は損なわれません。SafariとFirefoxでも高さを動かすよう求められた場合に限り、`::details-content` をグリッドにして `grid-template-rows` を `0fr` と `1fr` で切り替える方法を使います。この方法は中身を包む要素が必要になるので、私は必要なときだけ使っています。
+
+## タブとアコーディオンは `hidden="until-found"` で隠す
+
+見出しの下で開閉するパネルやタブのパネルは、閉じているときに `hidden="until-found"` で隠します。`display: none` で隠したパネルの中身は、ページ内検索で見つかりません。`hidden="until-found"` なら、ページ内検索やページ内リンクで中身が見つかったとき、ブラウザが自動で `hidden` 属性を外して表示します。
+
+```html title="見出しの下で開閉するパネル"
+<section class="scoped shipping-section" aria-labelledby="shipping-heading">
+  <h2 id="shipping-heading">
+    <a role="button" href="#shipping-panel" aria-expanded="false" aria-controls="shipping-panel">配送について</a>
+  </h2>
+  <div id="shipping-panel" hidden="until-found">
+    <div class="_panel-inner">…</div>
+  </div>
+</section>
+```
+
+自動で開いたときには `beforematch` イベントが発生するので、JavaScriptで `aria-expanded` を更新します。開閉のボタンは、JavaScriptが動かない環境でもページ内リンクとして働くように、`href` を持つ `<a>` にしています。見た目の状態は、「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
+
+`hidden="until-found"` に対応したブラウザは、要素を `display: none` ではなく `content-visibility: hidden` で隠します。中身だけが隠れて要素自体は描画されるので、その要素の余白、枠線、背景は、閉じていても表示されます。これらは内側の要素に指定します。
+
+```css title="🙆‍♂ Recommended: 余白と背景は、内側の要素に指定する"
+@scope (.scoped.shipping-section) to (.scoped) {
+  ._panel-inner {
+    padding: 16px;
+    background-color: var(--background--surface);
+  }
+}
+```
+
+<Baseline id="hidden-until-found" name='hidden="until-found"' />
+
+Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、ページ内検索で見つからないだけで、開閉は問題なく動きます。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[4-1 壊さないリセット](/reset/kiso/)」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [JavaScriptを書かない2025年のモーダルの実装方法](https://www.tak-dcxi.com/article/modal-implementation-in-2025/)（TAKLOG、2025年5月）
+- [dialog要素を使用したモーダルウィンドウの実装例](https://www.tak-dcxi.com/article/implementation-example-of-a-modal-created-using-the-dialog-element/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
+- [CSSのみでdetails要素のアニメーションを実装する方法](https://www.tak-dcxi.com/article/css-only-details-animation-2025/)（TAKLOG、2025年5月）
+- [details要素のname属性を使用した排他的なアコーディオンの実装例](https://www.tak-dcxi.com/article/accordion-implementation-example-using-the-name-attribute-of-details/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
+- [タブやアコーディオンの非表示コンテンツにはhidden="until-found"を使うべし](https://www.tak-dcxi.com/article/use-until-found-for-hiding-tabs-and-accordions/)（TAKLOG、2024年4月）
+- [アクセシビリティに配慮したタブメニューの実装例](https://www.tak-dcxi.com/article/accessibility-conscious-tab-menu/)（TAKLOG、2024年4月）
+- [dialog-closedby-polyfill](https://github.com/tak-dcxi/dialog-closedby-polyfill)（TAK）
+- [invokers-polyfill](https://github.com/keithamus/invokers-polyfill)
+- [dialog 要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/dialog)
+- [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)

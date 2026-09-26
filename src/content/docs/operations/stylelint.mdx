@@ -1,0 +1,181 @@
+---
+title: "12-3 Stylelintでルールを守る"
+description: "機械的に判断できる規約はStylelintに任せます。本書の設定の全体像、著者のプラグイン、独自ルール、代わりの書き方を示す禁止リスト、エラーと警告の使い分け、コード例の自動検証を説明します。"
+sidebar:
+  order: 3
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+規約のうち、機械的に判断できるものはStylelintに任せます。本書の設定は、Stylelintの標準の設定（stylelint-config-standard）と、著者が公開しているプロパティの並び順の設定（taks-stylelint-order）を土台にしています。そこに3つのプラグインと、本書の独自ルールを1つ加えています。
+
+禁止リストのルールには、違反したときに代わりの書き方を示すメッセージを付けます。置き換え先を人が選ぶ必要のあるルールは警告に、機械的に直せるルールはエラーにして、警告も放置しません。本書の推奨のコード例とデモも、同じ設定で検証しています。
+
+この節では、本書の設定の要所と、Stylelintを運用するうえでの約束を説明します。設定の全体は、本書のリポジトリの `stylelint.config.mjs` にあります。
+
+## 規約を人の目だけで守るのは難しい
+
+本書のルールは、全体で数百件あります。レビューのたびにこれをすべて確かめるのは、現実的ではありません。宣言の並び順や `display` の書き方のように、正しいかどうかを機械的に判断できるものまで人が見ていると、命名や設計のように人にしか判断できない部分に割く時間がなくなります。
+
+私のレビューのチェックリストでも、インデントやプロパティの並び順は「本来はフォーマッターやリンターの仕事で、人が手作業でそろえるものではない」としています。自動化が機能していない場合に限って、そのことを指摘します。並び順は、統一されていること自体に価値があり、方式はプロジェクトで合意できていれば何でもかまいません。
+
+ただし、ツールに従えば安全というわけでもありません。私のテンプレートでは、Stylelintの並び順の設定に従った結果、メディアクエリによる上書きが効かないコンポーネントをいくつも作っていました。設定がガイドラインの意図とずれていれば、ツールは誤りを直すどころか、誤りを強制します。Stylelintの設定は、ガイドラインの本文と同じだけ注意して保守する必要があります。
+
+## 本書の設定の全体像
+
+本書の設定は、著者のテンプレートの設定をもとに、ネストの規約、ベンダープレフィックスの扱い、独自ルールなどを見直したものです。骨組みは次のとおりです。
+
+```js title="stylelint.config.mjs（抜粋）"
+export default {
+  ignoreFiles: ['dist/**', 'node_modules/**', 'src/demos/**/*.bad.css'],
+  overrides: [{ files: ['**/*.astro'], customSyntax: 'postcss-html' }],
+  extends: ['stylelint-config-standard', 'taks-stylelint-order'],
+  plugins: [
+    'stylelint-plugin-logical-css',
+    'stylelint-order',
+    'stylelint-plugin-display-multi-keyword-syntax',
+    './stylelint/conditions-inside-rules.mjs',
+  ],
+  rules: {
+    /* ... */
+  },
+};
+```
+
+標準の設定からは、色の関数の書き方（`rgb()` のスペース区切りや `deg` の付いた色相）、メディアクエリの範囲構文、`@import url()` の書き方など、記法の多くを受け継いでいます。`rules` では、それを本書の規約に合わせて足したり緩めたりしています。たとえば、IDセレクタの禁止（`selector-max-id: 0`）、単位のない `line-height`、ネストの深さ（`max-nesting-depth: 2`）です。ネストしたセレクタを `&` で始めることや、コンテナと `@keyframes` の名前を `--` で始めることも、ここで検査しています。
+
+`.astro` ファイルは、`postcss-html` で `<style>` の中身を検査します。`ignoreFiles` の `*.bad.css` は、悪い例をわざと書いたデモのファイルです。これまで検査すると、エラーが出続けて本当の違反が埋もれます。
+
+設定の保守には、新しいプロパティへの対応も含まれます。`field-sizing` や `text-box` のように、Stylelintのデータがまだ知らないプロパティは、`property-no-unknown` の例外に加えています。Stylelintを更新したら、データが追いついた項目を例外から外します。
+{/* 要確認: 出典なし（Stylelint の更新時に例外の一覧を見直す運用は筆者の推論） */}
+
+各ルールの「自動チェック」の欄には、そのルールを検査するStylelintのルール名を書いています。ただし、欄があるルールは全体の一部にとどまります。残りのルールは、レビューで確かめる必要があります。レビューの進め方は「[12-4 レビューとAIとの協働](/operations/review-and-ai/)」で説明します。
+
+## 著者のプラグインと並び順の設定
+
+プロパティの並び順は、著者が公開しているtaks-stylelint-orderに従います。CSSの仕様のモジュールを単位に、プロパティを47のグループに分けて並べた設定です。これとは別に、ブロックの中の並び（カスタムプロパティ、宣言、`@supports`、`@container`、`@media`、ネストしたルール）を `order/order` で決めています。どちらも `stylelint --fix` で自動で並べ替えられるので、並び順を覚える必要はありません。並び順の規約は「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
+
+stylelint-plugin-display-multi-keyword-syntaxも、著者が公開しているプラグインです。`display: flex` のような1値の構文を見つけ、`block flex` のような2値構文で書くように求めます。`none` や `contents` のように、2値構文のない値は対象外です。プラグインには自動修正のオプション（`fix`）もありますが、本書の設定では有効にしていません。
+
+stylelint-plugin-logical-cssは、論理プロパティと論理的な単位を求めるプラグインです。本書では、物理プロパティ（`width` や `margin-top`）を見つける `require-logical-properties` を、警告として有効にしています。物理的な単位（`svw` や `cqw`）を見つける `require-logical-units` も、同じく警告です。`float: left` のような値のキーワードを見つける `require-logical-keywords` は、有効にしていません。`overflow-x` と `overflow-y` は、対応する論理プロパティがまだ使いにくいため、対象から外しています。
+{/* 要確認: 出典なし（overflow-x/y を除外している理由は筆者の推論。設定はテンプレートから引き継いだもの） */}
+
+## 独自ルールで、上書きの効かない書き方を防ぐ
+
+本書の設定には、独自ルールの `book/conditions-inside-rules` を1つ加えています。`@media` と `@container` がセレクタの中に書かれていないと、エラーにするルールです。
+
+```css title="🙅‍♂ Not Recommended: @scope の直下に条件のブロックを置く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.card) to (.scoped) {
+  @media (width >= calc(768 / 16 * 1rem)) {
+    ._title {
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+
+  ._title {
+    font-size: calc(18 / 16 * 1rem);
+  }
+}
+```
+
+```text title="Stylelintの出力"
+2:3  ✖  `@media`はセレクタの中に書いてください。条件付きのアットルールをセレクタの外に置くと、上書きの順序が崩れます。  book/conditions-inside-rules
+```
+
+このルールを作ったのは、`order/order` が「アットルールをネストしたルールより前に置く」並びを、`@scope` の中にも求めるからです。条件のブロックが元のルールより前に並ぶと、同じ詳細度の元のルールが後から勝ち、広い画面向けの上書きが効きません。上の例では、画面が広くなっても見出しは18px相当のままです。標準のルールには、この並びを見つけるものがありませんでした。
+
+ルールの中身は50行ほどです。すべての `@media` と `@container` について親をたどり、ファイルの直下に着くまでにセレクタのルールが1つもなければ報告します。規約として大切なのに、既存のルールで見つけられないものは、このように小さな独自ルールを書く価値があります。
+{/* 要確認: 出典なし（独自ルールを書く判断基準の一般化は筆者の推論） */}
+
+```js title="stylelint/conditions-inside-rules.mjs（抜粋）"
+root.walkAtRules((atRule) => {
+  if (!TARGETS.has(atRule.name.toLowerCase())) return;
+  for (let parent = atRule.parent; parent && parent.type !== 'root'; parent = parent.parent) {
+    if (parent.type === 'rule') return;
+  }
+  report({ result, ruleName, message: messages.rejected(atRule.name), node: atRule });
+});
+```
+
+なお、ガイドラインでは `@supports` もセレクタの中に書くと決めていますが、このルールの対象は `@media` と `@container` だけです。`@supports` の位置は、レビューで確かめます。ネストの深さの検査に `ignoreAtRules` を使わない理由は、「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
+
+## 禁止リストには代わりの書き方を添える
+
+Stylelintには、`unit-disallowed-list` や `declaration-property-value-disallowed-list` のような禁止リストのルールがあります。これらのルールは、デフォルトでは `Disallowed unit "vw"` のようなメッセージを出します。何が禁止なのかは分かりますが、代わりに何を書けばよいのかは分かりません。調べる手間が増えるうえに、禁止の理由を知らない人は、ルールを無効にして済ませたくなります。
+
+本書の設定では、禁止リストのルールに `message` を指定し、代わりの書き方を示しています。`message` には関数を渡せるので、禁止した値ごとに違う案内を出せます。
+
+```js title="stylelint.config.mjs（抜粋）"
+'unit-disallowed-list': [
+  ['vw', 'vh', 'vi', 'vb', 'vmin', 'vmax'],
+  {
+    message: (unit) => {
+      const recommendationMap = {
+        vw: 'svw, dvw, lvw',
+        vh: 'svh, dvh, lvh',
+        /* ... */
+      };
+      return `\`${unit}\`は使用しないでください。代わりに\`${recommendationMap[unit]}\`を検討してください。`;
+    },
+    severity: 'warning',
+  },
+],
+```
+
+この書き方は、Web制作向けのリンターの設定を公開しているリポジトリ（d-zero-dev/linters）に、私が提案したものです。2025年5月に「禁止リストを指定するときは回答を用意する」という提案を出し、2026年1月に、ビューポート単位、色、`content` プロパティ、`z-index` の数値などのメッセージを加える変更が取り込まれました。禁止するなら、その場で答えも渡すという考え方です。
+
+`vw` を書くと、2つの警告が出ます。禁止リストのメッセージは `svw`、`dvw`、`lvw` を勧め、`logical-css/require-logical-units` は論理的な単位の `vi` を勧めます。2つをたどると、本書が勧める `svi` にたどり着きます。ビューポート単位の選び方は「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で説明しています。
+
+`z-index` の数値の禁止にも、トークンを使うように促すメッセージを付けています。このルールは、相対的な重なりに使う `1` と `-1` 以外の数値を警告します。以前のテンプレートの正規表現は `10` から `19` のような1で始まる値を通していたので、本書の設定で直しました。z-indexのトークンは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+
+## エラーと警告を使い分ける
+
+Stylelintのルールは、デフォルトではエラーとして報告されます。`severity: 'warning'` を指定すると、警告になります。本書の設定で警告にしているのは、ビューポート単位の禁止、`z-index` の数値の禁止、論理プロパティと論理的な単位の2つのルールです。
+
+警告とエラーの違いは、終了コードに表れます。エラーが1つでもあると、Stylelintは失敗の終了コードを返し、CIの検査も失敗します。警告だけなら成功の終了コードを返すので、CIは通ります（2026年9月、Stylelint 17.15.0で確認）。警告でも失敗させたいときは、`--max-warnings 0` を付けて実行します。
+
+私は、置き換え先を人が選ぶ必要のあるルールを警告にするものだと理解しています。`vw` を `svi`、`dvi`、`lvi` のどれに置き換えるか、`z-index: 10` をどのトークンに置き換えるかは、機械的には決められません。物理プロパティも、画面の切り欠きを避ける場合のように、意図して使う場面があります。反対に、`display` の構文や色の関数の書き方は、正解が1つに決まるのでエラーにしています。
+{/* 要確認: 出典なし（警告とエラーの使い分けの基準は筆者の推論。設定はテンプレートと d-zero-dev/linters への提案から引き継いだもの） */}
+
+警告は、放置しません。直すか、意図して使う場合はルールを1行だけ無効にし、直前に理由を書きます。次の例は、「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」でも紹介した、画面の切り欠きを避ける指定です。警告を放置すると、本当に直すべき警告が一覧に埋もれ、誰も警告を読まなくなります。
+{/* 要確認: 出典なし（警告を放置しない運用は筆者の推論） */}
+
+```css title="🙆‍♂ Recommended: 意図して物理プロパティを使うときは、理由を残して1行だけ無効にする"
+body {
+  /* 切り欠きは画面の物理的な左右にあるので、書字方向で入れ替わらないようにする */
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-right: env(safe-area-inset-right);
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-left: env(safe-area-inset-left);
+}
+```
+
+無効にする範囲は、`stylelint-disable-next-line` とルール名で、1行と1つのルールに絞ります。ファイル全体やすべてのルールを無効にすると、同じ場所にある別の誤りまで見逃します。エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしてはいけません。私のテンプレートのAI向けの規約でも、このことを明記しています。無効にするコメントの書き方は「[5-4 コメントの書き方](/notation/comments/)」で説明しています。
+
+並び順のように自動で直せるものは、手で直しません。私は、エディタの保存時にStylelintの自動修正が走るように設定しています。手で直す作業がなくなれば、並び順の違反がレビューに上がってくることもありません。
+
+## コード例を自動で検証する
+
+本書では、`🙆‍♂ Recommended` のCSSのコード例を、本文から取り出して同じStylelintの設定で検証しています。`pnpm lint:examples` を実行すると、原稿（MDX）の中からタイトルが `🙆‍♂ Recommended` で始まるCSSのコードブロックを集め、一時ファイルに書き出して検査します。`🙅‍♂ Not Recommended` の例と、ラベルのない式だけの例は対象外です。
+
+デモのCSSは、サイトのCSSと一緒に `pnpm lint:css` で検証します。悪い例のデモは `style.bad.css` という名前にして、`ignoreFiles` で対象から外しています。原稿の文章はtextlintで検証し、「セレクタ」「ブレイクポイント」のような用語の表記も辞書でそろえています。
+
+コード例を検証するのは、ガイドラインのコード例が自分のルールに違反していたら、ガイドラインそのものが信用されなくなるからです。AIに本書を読ませる場合、コード例はそのまま手本として真似されます。実際に、本書の執筆中にも、`@layer` の中の `@scope` がネストの1段に数えられることや、`currentColor` の大文字と小文字の扱いのように、検証して初めて気づいたことがありました。
+
+この仕組みは、本書に限らず使えます。プロジェクトの設計のドキュメントや、AI向けの規約に載せたコード例も、同じ設定で検証しておくと、ドキュメントとコードが食い違いません。
+{/* 要確認: 出典なし（プロジェクトのドキュメントへの応用は筆者の推論） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Configuring - Stylelint](https://stylelint.io/user-guide/configure/)
+- [unit-disallowed-list - Stylelint](https://stylelint.io/user-guide/rules/unit-disallowed-list/)
+- [Writing plugins - Stylelint](https://stylelint.io/developer-guide/plugins/)
+- [tak-dcxi/taks-stylelint-order - GitHub](https://github.com/tak-dcxi/taks-stylelint-order)
+- [tak-dcxi/stylelint-plugin-display-multi-keyword-syntax - GitHub](https://github.com/tak-dcxi/stylelint-plugin-display-multi-keyword-syntax)
+- [yuschick/stylelint-plugin-logical-css - GitHub](https://github.com/yuschick/stylelint-plugin-logical-css)
+- [[Stylelint] disallowed-listを指定する時は回答を用意する - d-zero-dev/linters](https://github.com/d-zero-dev/linters/pull/491)（TAK、2026年1月）

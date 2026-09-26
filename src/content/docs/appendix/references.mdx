@@ -1,0 +1,247 @@
+---
+title: "付録G 参考資料"
+description: "本書の各ページの参考リンクを集め、重複を除いて分類した一覧です。著者の資料、仕様とMDN、ツール、参考にしたサイトに分け、それぞれに一言の説明を付けています。"
+sidebar:
+  order: 7
+---
+
+この付録は、本書の各ページの「参考リンク」に挙げた資料を集め、重複を除いて分類した一覧です。著者の資料、仕様とMDN、ツール、参考にしたサイトの4つに分け、それぞれに一言の説明を付けています。どのページで参照しているかは省いたので、ページごとの資料は各ページの末尾を見てください。
+
+著者の資料には、本書より古い時期に書いたものも含まれます。とくにZennの記事（2020〜2021年）とブログの一部の記事は、本書と方針の異なる部分があります。そうした資料には注記を付けました。内容が食い違うときは、本書の書き方を優先してください。
+
+外部の資料は、2026年9月の時点で確認したものです。仕様やブラウザの対応状況は変わり続けるので、最新の情報はリンク先で確かめてください。
+
+## 著者の資料
+
+### サイトとリポジトリ
+
+- [TAKLOG](https://www.tak-dcxi.com/)：著者のブログ
+- [tak_dcxi - Zenn](https://zenn.dev/tak_dcxi)：著者の記事の一覧（2020〜2021年）
+- [tak-dcxi - GitHub](https://github.com/tak-dcxi)：著者が公開しているリポジトリ
+- [kiso.css - GitHub](https://github.com/tak-dcxi/kiso.css)：本書が使う、日本語のサイトのためのリセットCSS
+- [kiso.css のデモサイト](https://tak-dcxi.github.io/kiso.css/)：kiso.cssを当てた表示を確かめられるデモ
+- [tak-dcxi/taks-stylelint-order - GitHub](https://github.com/tak-dcxi/taks-stylelint-order)：プロパティの並び順を決めるStylelintの設定
+- [tak-dcxi/stylelint-plugin-display-multi-keyword-syntax - GitHub](https://github.com/tak-dcxi/stylelint-plugin-display-multi-keyword-syntax)：`display` の2値構文を求めるStylelintのプラグイン
+- [dialog-closedby-polyfill](https://github.com/tak-dcxi/dialog-closedby-polyfill)：`<dialog>` の `closedby` 属性のポリフィル
+- [[Stylelint] disallowed-listを指定する時は回答を用意する - d-zero-dev/linters](https://github.com/d-zero-dev/linters/pull/491)：禁止リストのルールに代わりの書き方を示すメッセージを加えた変更（2026年1月）
+
+### gist
+
+- [タイポグラフィ](https://gist.github.com/tak-dcxi/0f8b924d6dd81aaeb58dc2e287f2ab3a)：フォントの指定と和文組版の書き方のメモ
+- [CSS Responsive Rules](https://gist.github.com/tak-dcxi/acd985cd8b7486a807f1c240731cc7e0)：レスポンシブ対応の検討の順番と判断の基準
+- [Animations Skill](https://gist.github.com/tak-dcxi/b1870cfe73e3089a1e4aa7da19c3374a)：アニメーションの要否の判断と、`@keyframes` の設計の規約
+- [CSSのレビュー時に確認しておくものリスト](https://gist.github.com/tak-dcxi/7aa206f63944877b361fb232126919f3)：レビューの心構えと確認項目の下書き
+
+### 登壇
+
+- [俺流レスポンシブコーディング 2025](https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025)：ピクセルパーフェクトを目指さないレスポンシブの考え方（2025年11月）
+- [2025年のz-index設計を考える](https://speakerdeck.com/tak_dcxi/2025nian-noz-indexshe-ji-wokao-eru)：z-indexをトークンで管理し、ルートと内部で役割を分ける設計
+
+### ブログ（TAKLOG）
+
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)：kiso.cssの設計の方針（2025年6月）
+- [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)：`grid-template` の空のセルで余白を作る方法（2025年5月）
+- [CSSのみでdetails要素のアニメーションを実装する方法](https://www.tak-dcxi.com/article/css-only-details-animation-2025/)：`::details-content` で開閉を動かす方法（2025年5月）
+- [背景色を前景色として扱う場合はシステムカラーをフォールバックする](https://www.tak-dcxi.com/article/background-to-foreground-with-fallback/)：背景色で描いたアイコンを強制カラーモードで消さない方法（2025年5月）
+- [JavaScriptを書かない2025年のモーダルの実装方法](https://www.tak-dcxi.com/article/modal-implementation-in-2025/)：`command` 属性と `closedby` 属性で開閉するモーダル（2025年5月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)：レイアウトの実例ごとのFlexboxとGridの選び方（2024年8月）
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)：`field-sizing` やホバーの色の作り方など、短いテクニック集（2024年7月）
+{/* textlint-enable ja-technical-writing/no-doubled-joshi */}
+- [input[type="checkbox"]要素のswitch属性を使用したスイッチUIの実装例](https://www.tak-dcxi.com/article/example-of-implementation-of-switch-using-switch-attribute/)：`switch` 属性のスイッチを `input` 自体に描く例（2024年5月。本書と一部の方針が異なります）
+- [line-heightのハーフ・レディングを打ち消すcalc((1em - 1lh) / 2)をCSS変数に定義しておくとよい](https://www.tak-dcxi.com/article/use-line-height-trim-as-css-variable/)：ハーフレディングを式で打ち消す方法（2024年5月）
+- [少しの記述でユーザビリティやアクセシビリティを向上させるHTML/CSSテクニック集](https://www.tak-dcxi.com/article/html-css-techniques-to-improve-usability-and-accessibility-with-minimal-code/)：kiso.cssの元になった、使いやすさのための指定の一覧（2024年5月）
+- [えっ！？まだ色の指定でrgba()関数を使っているの！？](https://www.tak-dcxi.com/article/rgba-function-is-legacy-syntax/)：色の関数をスペース区切りで書く理由（2024年5月。`color-mix()` の補間の色空間などが本書と異なります）
+- [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)：カードのマークアップとスタイルの例（2024年5月。本書と一部の方針が異なります）
+- [details要素のname属性を使用した排他的なアコーディオンの実装例](https://www.tak-dcxi.com/article/accordion-implementation-example-using-the-name-attribute-of-details/)：1つだけを開くアコーディオンの例（2024年4月。本書と一部の方針が異なります）
+- [テキストを1文字ずつアニメーションさせる時の注意点と実装例](https://www.tak-dcxi.com/article/text-animation-considerations-and-implementation-examples/)：文字を分割して動かすときの読み上げと翻訳への配慮（2024年4月）
+- [実装後のチェック項目には「グレースケール表示での確認」を追加したほうがいい](https://www.tak-dcxi.com/article/grayscale-display-should-be-added-to-post-implementation-checklist/)：色だけで情報を伝えていないかの確かめ方（2024年4月）
+- [スクロール連動アニメーションの実装例](https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/)：画面へ入ったときに動かす演出の例（2024年4月。本書と一部の方針が異なります）
+- [スムーススクロールの実装例](https://www.tak-dcxi.com/article/smooth-scroll-implementation-example/)：スムーススクロールを一律に掛けない理由（2024年4月。本書と一部の方針が異なります）
+- [dialog要素を使用したモーダルウィンドウの実装例](https://www.tak-dcxi.com/article/implementation-example-of-a-modal-created-using-the-dialog-element/)：2024年時点のモーダルの例（2024年4月。本書と一部の方針が異なります）
+- [アクセシビリティに配慮したタブメニューの実装例](https://www.tak-dcxi.com/article/accessibility-conscious-tab-menu/)：ARIA属性と `hidden="until-found"` を使ったタブ（2024年4月）
+- [タブやアコーディオンの非表示コンテンツにはhidden="until-found"を使うべし](https://www.tak-dcxi.com/article/use-until-found-for-hiding-tabs-and-accordions/)：閉じたパネルをページ内検索で見つけられるようにする方法（2024年4月）
+- [スクロールバーにまつわるエトセトラ](https://www.tak-dcxi.com/article/scroll-bar-related-etcetera/)：スクロールバーの見た目と領域の扱い（2024年3月。本書と一部の方針が異なります）
+- [カードの高さを揃えたければsubgridを使えばいい](https://www.tak-dcxi.com/article/if-you-want-to-align-the-heights-of-the-cards-you-can-use-subgrid/)：サブグリッドでカードの中の行をそろえる方法（2024年3月）
+- [calc(infinity)の使い道](https://www.tak-dcxi.com/article/use-of-calc-infinity/)：「十分に大きい値」を `calc(infinity)` で表す例（2024年3月）
+- [hoverを指定するならany-hoverメディア特性を使いなさい！俺流hover実装例も紹介します](https://www.tak-dcxi.com/article/disable-hover-on-mobile-and-hover-implementation-example/)：`any-hover` でホバーを書く理由（2024年3月）
+- [横スクロールバーの発生源を素早く特定する方法と最新の防止策](https://www.tak-dcxi.com/article/methods-to-quickly-identify-the-source-of-horizontal-scrolling-and-the-latest-prevention-measures/)：はみ出している要素の見つけ方と `clip` による防止（2024年3月）
+- [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)：古い書き方とその置き換え先（2024年3月）
+- [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)：個別の変形プロパティを使う理由（2024年3月）
+- [インラインSVGの代替テキストはどうするべきか](https://www.tak-dcxi.com/article/how-to-handle-alt-text-for-inline-svg/)：意味を持つアイコンに、視覚的に隠したテキストを添える方法（2024年3月）
+- [当ブログのレスポンシブコーディングについて](https://www.tak-dcxi.com/article/my-blogs-responsive-coding/)：著者のブログのレスポンシブの書き方とRespImageLintの使い方（2024年3月。本書と一部の方針が異なります）
+- [【令和最新版】Google Fontsの読み込み最適化の結論](https://www.tak-dcxi.com/article/optimization-of-google-font-loading/)：Google Fontsを描画を止めずに読み込む書き方（2024年3月）
+- [AVIFの普及でWebPはもういらないかもしれない](https://www.tak-dcxi.com/article/avif-format-is-fine-for-astros-images/)：写真をAVIFで書き出す理由（2024年3月）
+
+### Zenn
+
+- [「font-sizeの指定はpxとremどちらを使うべきか？」問題に対する回答](https://zenn.dev/tak_dcxi/articles/26280e7607bcd2)：pxとremの使い分け（2020年12月。本書と一部の方針が異なります）
+- [よく使うSassのmixinとfunctionのスニペットをまとめてみた](https://zenn.dev/tak_dcxi/articles/2cc1828e9c1fe2)：ブレイクポイントやpxの変換のためのSassのmixinと関数（2020年12月。本書と方針が異なります）
+- [実装者が作業前にデザイナーへ確認しておくとよいこと](https://zenn.dev/tak_dcxi/articles/88762df24ef2eb3013c2)：実装の前にデザイナーと合意しておくこと（2020年11月。本書と一部の方針が異なります）
+- [デザイナーとフロントエンドエンジニアに知ってほしいWebのフォント周りのお話](https://zenn.dev/tak_dcxi/articles/588fbc205251043dc357)：OSごとのフォントの事情と指定の仕方（2020年10月。本書と一部の方針が異なります）
+- [CSS設計において特に大切にしている思想をまとめてみた](https://zenn.dev/tak_dcxi/articles/65629b78ee3bf7f82c4a)：保守性を優先するCSS設計の考え方（2020年10月。本書と一部の方針が異なります）
+- [【脱!important】保守性を意識したスタイルを確実に上書きするためのテクニック](https://zenn.dev/tak_dcxi/articles/f464f90a24f754b15dd9)：詳細度を上げて上書きする技（2020年10月。本書と方針が異なります）
+
+## 仕様とMDN
+
+### 仕様とガイドライン
+
+- [CSS Cascading and Inheritance Level 5: Cascade Layers](https://www.w3.org/TR/css-cascade-5/#layering)：カスケードレイヤーの仕様
+- [CSS Cascading and Inheritance Level 6](https://drafts.csswg.org/css-cascade-6/)：`@scope` を含むカスケードの仕様
+- [CSS Cascading and Inheritance Level 6: Scoping Styles](https://drafts.csswg.org/css-cascade-6/#scoped-styles)：`@scope` の節
+- [CSS Values and Units Module Level 4: Viewport-percentage Lengths](https://www.w3.org/TR/css-values-4/#viewport-relative-lengths)：スモール・ラージ・ダイナミックのビューポート単位の仕様
+- [CSS Media Queries Level 4: Range Context](https://www.w3.org/TR/mediaqueries-4/#range-context)：メディアクエリの範囲構文の仕様
+- [CSS Fonts Module Level 5（Editor's Draft）](https://drafts.csswg.org/css-fonts-5/#scale-keyword)：文字サイズの設定に比例させる仕組みの策定中の仕様
+- [Selectors Level 5: Heading Pseudo-classes](https://drafts.csswg.org/selectors-5/#headings)：`:heading` 擬似クラスの仕様
+- [Web Content Accessibility Guidelines (WCAG) 2.1 達成基準 1.4.8 視覚的提示](https://waic.jp/translations/WCAG21/#visual-presentation)：行送りの基準を含む達成基準（WAICによる日本語訳）
+- [C40: Creating a two-color focus indicator to ensure sufficient contrast with all components](https://www.w3.org/WAI/WCAG22/Techniques/css/C40)：2色のフォーカスリングの達成方法（W3C）
+
+### ブラウザの対応状況
+
+- [Baseline | web.dev](https://web.dev/baseline?hl=ja)：本書の対応状況の表示に使っている指標の解説
+- [Safari Release Notes | Apple Developer Documentation](https://developer.apple.com/documentation/safari-release-notes)：Safariのバージョンごとの変更点
+- [browser-compat-data: css/at-rules/scope.json](https://github.com/mdn/browser-compat-data/blob/main/css/at-rules/scope.json)：`@scope` のブラウザ互換性データ
+
+### MDN：仕組みの解説
+
+- [カスケード - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Cascade)：宣言の優先順位が決まる手順
+- [詳細度 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Specificity)：セレクタの詳細度の数え方
+- [継承 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Inheritance)：継承されるプロパティとされないプロパティ
+- [ショートハンドプロパティ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Shorthand_properties)：ショートハンドが省略した値を初期値に戻す仕組み
+- [CSS 入れ子の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)：ネイティブのネストの書き方
+- [CSS カスタムプロパティ（変数）の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties)：カスタムプロパティの基本
+- [CSS 論理的プロパティと値 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_logical_properties_and_values)：論理プロパティの一覧
+- [長さの単位（length） - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/length)：rem、ビューポート単位、コンテナ単位などの長さの単位
+- [メディアクエリの使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_media_queries/Using_media_queries)：メディアクエリと範囲構文の書き方
+- [CSS コンテナクエリ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_containment/Container_queries)：コンテナクエリの基本
+- [コンテナーのサイズおよびスタイルクエリーの使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_containment/Container_size_and_style_queries)：サイズクエリとスタイルクエリの書き方
+- [マージンの相殺の各種 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing)：上下の `margin` が相殺される条件
+- [包含ブロック - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Containing_block)：位置の基準になる包含ブロックの決まり方
+- [スタッキングコンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_positioned_layout/Stacking_context)：重なり順を決める単位と、それを作る条件
+- [サブグリッド - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Subgrid)：親のグリッドの行や列を使う仕組み
+- [CSS アンカー位置指定 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_anchor_positioning)：アンカーポジショニングの全体像
+- [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)：相対カラー構文の書き方
+- [CSS スクロール駆動アニメーション - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations)：スクロールに合わせて進むアニメーション
+- [View Transition API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/View_Transition_API)：画面の切り替えをアニメーションでつなぐAPI
+- [コメント - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Comments)：CSSのコメントの書き方
+- [dialog 要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/dialog)：`<dialog>` 要素
+
+### MDN：セレクタ、アットルール、メディア特性
+
+- [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)：詳細度を0にする擬似クラス
+- [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)：セレクタをまとめる擬似クラス
+- [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)：子孫や後続の兄弟で要素を選ぶ擬似クラス
+- [:scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:scope)：スコープのルートを選ぶ擬似クラス
+- [& 入れ子セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Nesting_selector)：ネストの `&`
+- [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)：フォーカスリングを表示すべきときに一致する擬似クラス
+- [:modal - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:modal)：モーダルとして開いた要素に一致する擬似クラス
+- [:user-invalid - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:user-invalid)：ユーザーが操作した後の不正な入力に一致する擬似クラス
+- [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)：`<details>` の開閉する部分を選ぶ擬似要素
+- [@layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@layer)：カスケードレイヤーの宣言
+- [@import - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@import)：`layer()` を含むファイルの読み込み
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)：スタイルの範囲を限るアットルール
+- [@container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@container)：コンテナクエリの条件
+- [@supports - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@supports)：機能の対応で分岐するアットルール
+- [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)：カスタムプロパティの型の登録
+- [@starting-style - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@starting-style)：表示されたときのトランジションの開始地点
+- [@font-face - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face)：Webフォントの定義
+- [font-display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/font-display)：フォントの読み込み中の表示を決める記述子
+- [any-hover - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/any-hover)：いずれかの入力がホバーできるかを調べるメディア特性
+- [prefers-reduced-motion - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/prefers-reduced-motion)：動きを減らす設定を調べるメディア特性
+- [forced-colors - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/forced-colors)：強制カラーモードを調べるメディア特性
+- [scripting - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/scripting)：JavaScriptが使えるかを調べるメディア特性
+- [!important - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/important)：`!important` の働き
+
+### MDN：値と関数
+
+- [calc() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/calc)：四則演算の関数
+- [min() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/min)：最も小さい値を返す関数
+- [max() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/max)：最も大きい値を返す関数
+- [clamp() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clamp)：値を最小値と最大値の範囲に収める関数
+- [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)：値の正負を返す関数
+- [atan2() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/atan2)：2つの値から角度を求める関数
+- [minmax() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/minmax)：グリッドのトラックの大きさの範囲
+- [repeat() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/repeat)：グリッドのトラックの繰り返し
+- [var() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/var)：カスタムプロパティの参照とフォールバック
+- [revert - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert)：ブラウザのデフォルトスタイルに戻すキーワード
+- [revert-layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert-layer)：1つ前までのレイヤーの値に戻すキーワード
+- [&lt;color&gt; - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value)：色の値（`currentcolor` キーワードの説明を含みます）
+- [rgb() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/rgb)：`rgb()` の書き方
+- [oklch() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/oklch)：明度、彩度、色相で色を表す関数
+- [color-mix() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color-mix)：2つの色を混ぜる関数
+- [light-dark() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark)：配色によって値を切り替える関数
+- [system-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/system-color)：システムカラーのキーワード
+- [linear() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/easing-function/linear)：複雑なイージングを表す関数
+- [&lt;custom-ident&gt; - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/custom-ident)：自分で付ける名前の型
+- [&lt;dashed-ident&gt; - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/dashed-ident)：`--` で始まる名前の型
+
+### MDN：プロパティ
+
+- [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)：外側と内側の表示を決めるプロパティ
+- [gap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gap)：並んだ要素の間隔
+- [flex-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex-wrap)：フレックスアイテムの折り返し
+- [grid-template - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template)：グリッドの行、列、エリアのショートハンド
+- [grid-template-areas - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-areas)：グリッドのエリアの名前
+- [container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/container)：コンテナの名前と種類のショートハンド
+- [max-inline-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/max-inline-size)：インライン方向の最大の大きさ
+- [aspect-ratio - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)：縦横比
+- [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)：画像や動画を枠に収める方法
+- [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)：はみ出した部分の扱い（`clip` を含みます）
+- [isolation - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/isolation)：スタッキングコンテキストを作るプロパティ
+- [anchor-name - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/anchor-name)：アンカーの名前
+- [translate - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/translate)：移動の個別プロパティ
+- [interpolate-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/interpolate-size)：キーワードで決まる大きさとの間のアニメーション
+- [scrollbar-gutter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/scrollbar-gutter)：スクロールバーの領域の確保
+- [color-scheme - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color-scheme)：対応する配色の宣言
+- [accent-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/accent-color)：フォーム部品の色
+- [field-sizing - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing)：入力欄を内容に合わせて伸び縮みさせるプロパティ
+- [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)：マスクにする画像
+- [font - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font)：フォントのショートハンド
+- [font-family - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-family)：フォントの指定と総称ファミリー
+- [font-weight - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-weight)：文字の太さ
+- [font-feature-settings - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-feature-settings)：`palt` などのOpenTypeの機能
+- [font-kerning - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-kerning)：カーニングの有無
+- [line-height - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/line-height)：行の高さ
+- [text-box-trim - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-box-trim)：ハーフレディングを取り除くプロパティ
+- [text-box-edge - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-box-edge)：`text-box-trim` で削る位置
+- [text-autospace - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-autospace)：和文と英数字の間のアキ
+- [text-spacing-trim - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-spacing-trim)：約物のアキの詰め
+- [line-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/line-break)：禁則の厳しさ
+- [hanging-punctuation - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/hanging-punctuation)：約物のぶら下げ
+- [text-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-wrap)：`balance` や `pretty` による折り返し
+- [word-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/word-break)：改行の位置（`auto-phrase` を含みます）
+- [overflow-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-wrap)：長い単語やURLの折り返し
+- [-webkit-line-clamp - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-line-clamp)：行数の制限
+
+## ツール
+
+- [Configuring - Stylelint](https://stylelint.io/user-guide/configure/)：Stylelintの設定の書き方
+- [Writing plugins - Stylelint](https://stylelint.io/developer-guide/plugins/)：独自ルールを書くためのガイド
+- [max-nesting-depth - Stylelint](https://stylelint.io/user-guide/rules/max-nesting-depth/)：ネストの深さを検査するルール
+- [unit-disallowed-list - Stylelint](https://stylelint.io/user-guide/rules/unit-disallowed-list/)：使わない単位を検出するルール
+- [hudochenkov/stylelint-order - GitHub](https://github.com/hudochenkov/stylelint-order)：宣言の並び順を検査するStylelintのプラグイン
+- [yuschick/stylelint-plugin-logical-css - GitHub](https://github.com/yuschick/stylelint-plugin-logical-css)：論理プロパティと論理的な単位を求めるStylelintのプラグイン
+- [RespImageLint](https://ausi.github.io/respimagelint/)：`srcset` と `sizes` の値を確かめるブックマークレット
+- [WebAIM: Contrast Checker](https://webaim.org/resources/contrastchecker/)：文字と背景のコントラスト比を確かめるツール
+- [BudouX](https://github.com/google/budoux)：和文を文節で区切るJavaScriptのライブラリ
+- [invokers-polyfill](https://github.com/keithamus/invokers-polyfill)：`command` 属性と `commandfor` 属性のポリフィル
+- [スタイルとCSS | Astro Docs](https://docs.astro.build/ja/guides/styling/)：AstroでのCSSの書き方と `is:inline`
+- [Global Settings & Styles (theme.json) - Block Editor Handbook](https://developer.wordpress.org/block-editor/how-to-guides/themes/global-settings-and-styles/)：WordPressのtheme.jsonの概要
+- [Theme.json Reference - Block Editor Handbook](https://developer.wordpress.org/block-editor/reference-guides/theme-json-reference/theme-json-living/)：theme.jsonの設定の一覧
+- [Editor Styles - Block Editor Handbook](https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#editor-styles)：エディタにテーマのCSSを読み込む方法
+- [Block Styles - Block Editor Handbook](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/)：ブロックスタイルの登録
+- [Extend Claude with skills - Claude Code Docs](https://code.claude.com/docs/en/skills)：Claude Codeのスキルの仕組み
+- [AGENTS.md](https://agents.md/)：AIのコーディングエージェントに規約を伝えるファイルの形式
+
+## 参考にしたサイト
+
+- [zudo-css-wisdom](https://zudo-css-wisdom.takazudomodular.com/)：AIのコーディングエージェント向けの、実践的なCSSのリファレンス
+- [Kevin Powell](https://kevinpowell.co/)：CSSの講座と解説を公開しているKevin Powell氏のサイト
+- [Every Layout](https://every-layout.dev/)：stackやclusterのような、配置のパターンを部品にする考え方
+- [Defensive CSS](https://defensivecss.dev/)：想定外の内容に備えるCSSの書き方の集まり
+- [Linearly Scale font-size with CSS clamp() Based on the Viewport](https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/)：`clamp()` の推奨値を傾きと切片から求める方法（CSS-Tricks）
+- [The Surprising Truth About Pixels and Accessibility](https://www.joshwcomeau.com/css/surprising-truth-about-pixels-and-accessibility/)：pxとremの使い分けとアクセシビリティ（Josh W. Comeau）
+- [Removing list styles without affecting semantics](https://matuzo.at/blog/2023/removing-list-styles-without-affecting-semantics)：リストの意味を保ったままマーカーを消す方法（Manuel Matuzović）
+- [ウェブデザインにおけるline-heightについて](https://parashuto.com/rriver/development/line-height-in-web-design)：行の高さとハーフレディングの解説（Rriver）
+- [Typography troubles: Balancing lines in Japanese & Korean](https://ryelle.codes/2025/04/typography-troubles-balancing-in-japanese-korean/)：和文と韓国語の行の長さをそろえるときの問題（ryelle.codes、2025年4月）
+- [単位付きの余白のスケールについての Adam Wathan 氏の投稿](https://x.com/adamwathan/status/2003638134840656373)：余白のスケールを単位付きで設計したことについての振り返り（X）

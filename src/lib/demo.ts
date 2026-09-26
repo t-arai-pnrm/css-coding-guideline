@@ -1,0 +1,52 @@
+import kisoCss from 'kiso.css/kiso.css?raw';
+
+/**
+ * デモの土台。
+ * - `kiso`: 本書が推奨する環境（レイヤーの順序宣言と、`reset` レイヤーに入れた kiso.css）
+ * - `none`: ブラウザのデフォルトスタイルのまま
+ */
+export type DemoBase = 'kiso' | 'none';
+
+export type DemoScheme = 'light' | 'dark' | 'light dark';
+
+const LAYER_ORDER =
+  '@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;';
+
+/**
+ * デモの枠に合わせるための最小限の調整。
+ * kiso.css は `body` に `min-block-size: 100dvb` を指定しているが、そのままだと
+ * iframe の高さを中身に合わせられないため、デモでは解除する。
+ */
+const DEMO_BASE = `@layer base {
+  :where(body) {
+    min-block-size: auto;
+    padding: 16px;
+  }
+}`;
+
+export const buildSrcdoc = ({
+  html,
+  css,
+  base = 'kiso',
+  scheme = 'light',
+}: {
+  html: string;
+  css: string;
+  base?: DemoBase;
+  scheme?: DemoScheme;
+}) => {
+  const head = [
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    `<meta name="color-scheme" content="${scheme}">`,
+  ];
+  if (base === 'kiso') {
+    head.push(
+      `<style>${LAYER_ORDER}</style>`,
+      `<style>@layer reset {\n${kisoCss}\n}</style>`,
+      `<style>${DEMO_BASE}</style>`,
+    );
+  }
+  head.push(`<style>\n${css}\n</style>`);
+  return `<!doctype html><html lang="ja"><head>${head.join('')}</head><body>\n${html}\n</body></html>`;
+};

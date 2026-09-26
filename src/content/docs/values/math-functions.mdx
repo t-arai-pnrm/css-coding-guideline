@@ -1,0 +1,200 @@
+---
+title: "3-3 計算関数で根拠を式に残す"
+description: 計算して決まる値は、結果ではなくcalc()の式で書きます。上限と下限はmin()とmax()で、幅に応じて変わる値はclamp()で表し、文字サイズの推奨値はremと相対単位の和にします。
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import fluidHtml from '../../../demos/values/fluid-heading/index.html?raw';
+import fluidCss from '../../../demos/values/fluid-heading/style.css?raw';
+
+計算して決まる値は、計算した結果ではなく、`calc()` の式で書きます。式にしておけば、その値が何から決まったのかがコードに残ります。上限と下限は `min()` と `max()` で、幅に応じて連続的に変わる値は `clamp()` で表します。
+
+文字サイズのような値を `clamp()` で書くときは、最小値と最大値をremにし、推奨値をremと相対単位の和にします。推奨値は、2つの基準の幅とそのときの値から、傾きと切片を求めて組み立てます。単位のついた値どうしの割り算は、対応していないブラウザがあるので使いません。
+
+## マジックナンバーはどこから生まれるか
+
+コードを読んでいると、`border-radius: 16px` や `font-size: clamp(1.25rem, 0.614rem + 3.18vi, 3rem)` のような値に出会います。どれも、書いた人が何かを計算して出した数値です。しかし、コードに残っているのは計算の結果だけで、何を計算したのかは分かりません。こうした根拠の読み取れない数値を「マジックナンバー」と呼びます。
+
+```css title="🙅‍♂ Not Recommended: 計算した結果だけを書く"
+/* 🙅‍♂ Not Recommended */
+.card {
+  padding: 8px;
+  border-radius: 24px;
+}
+
+.card img {
+  border-radius: 16px;
+}
+
+.card-title {
+  font-size: clamp(1.25rem, 0.614rem + 3.18vi, 3rem);
+}
+```
+
+マジックナンバーが困るのは、元になった値を変えるときです。カードの `padding` を8pxから12pxに変えたら、内側の角丸はいくつにすればよいのか。見出しの最大値を少し小さくしたいとき、推奨値の `0.614rem` と `3.18vi` はどう変わるのか。計算の手順が残っていないので、同じ計算をもう一度たどり直すことになります。
+
+この傾向は、AIが生成するコードでも変わりません。流体的な文字サイズを求められたAIは、ジェネレーターで作ったような小数の並ぶ `clamp()` を、根拠のコメントなしに出力しがちです。推奨値が `vw` だけで書かれていることも少なくありません。
+{/* 要確認: 出典なし（AIの傾向についての記述） */}
+
+## calc()で式を残す
+
+計算して決まる値は、結果ではなく式で書きます。`calc()` は四則演算のための関数ですが、本書ではそれ以上に、値の根拠をコードに残すための手段として使います。
+
+先ほどのカードの内側の角丸は、「外側の角丸から `padding` を引いた値」という関係で決まっています。この関係をそのまま式にし、式に使う値にはローカルのカスタムプロパティで名前を付けます。
+
+```css title="🙆‍♂ Recommended: 値の関係を式で書き、式の部品に名前を付ける"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    --_padding: 8px;
+    --_outer-radius: 24px;
+    --_inner-radius: calc(var(--_outer-radius) - var(--_padding));
+
+    padding: var(--_padding);
+    border-radius: var(--_outer-radius);
+  }
+
+  ._image {
+    border-radius: var(--_inner-radius);
+  }
+}
+```
+
+こうしておけば、`padding` を12pxに変えると、内側の角丸は自動で12pxになります。`--_inner-radius` という名前が、その値の意味も説明しています。カスタムプロパティの命名については「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で扱います。
+
+式で表せる値は、ほかにもあります。「コンテンツの幅＋左右の `padding`」や「列の最小幅×列数＋隙間×隙間の数」などです。後者のようなクエリの閾値の書き方は、「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」で説明しています。クエリの条件の中では `var()` が使えない点にも注意してください。
+
+反対に、根拠のない値を `calc(48rem)` のように包むだけでは意味がありません。`border-width: 1px` のように、値が本当に固定で、分解しても説明が増えないなら、そのまま書きます。一度しか使わない複雑な式には、何列分・何個分なのかをコメントで補足します。
+
+「十分に大きい値」を表したいときは、`calc(infinity * 1px)` と書く方法もあります。錠剤型のボタンの角丸を `9999px` と書く代わりに `calc(infinity * 1px)` と書けば、「大きさが変わっても完全に丸くする」という意図がそのまま読み取れます。
+
+<Baseline id="calc-constants" name="calc() の定数（infinity など）" />
+
+## min()とmax()で上限と下限を表す
+
+`min()` は引数のうち最も小さい値を、`max()` は最も大きい値を返す関数です。名前と働きが逆に感じられるので、注意が必要です。`min()` は値に上限を設け、`max()` は値に下限を設けます。
+
+`inline-size: min(100%, 320px)` は、「幅は320pxだが、親の幅は超えない」という意味です。固定の幅が必要な要素でも、狭い場所ではみ出しません。反対に `padding-inline: max(16px, 5%)` は、「左右の余白は親の幅の5%だが、16pxより狭くしない」という意味で、ページの左右の余白によく使います。
+
+```css title="🙆‍♂ Recommended: min() で上限を、max() で下限を決める"
+._thumbnail {
+  inline-size: min(100%, 320px);
+}
+
+._section {
+  padding-inline: max(16px, 5%);
+}
+```
+
+どちらも、クエリを使わずに幅の変化へ対応する手段です。「[8-1 検討する順番](/responsive/escalation/)」で説明したイントリンシックな方法の1つで、クエリを書く前に、これらの関数で解決できないかを検討します。
+
+`min()`、`max()`、`clamp()` の引数では、`calc()` を書かずに四則演算が使えます。`min(100%, 320 / 16 * 1rem)` のように書けるので、`calc()` を入れ子にする必要はありません。
+
+## clamp()で流体的な値を組み立てる
+
+`clamp(最小値, 推奨値, 最大値)` は、推奨値を最小値と最大値の範囲に収める関数です。推奨値にビューポート単位やコンテナ単位を含めると、幅に応じて連続的に変わり、しかも決めた範囲からはみ出さない値になります。文字サイズを画面の幅で変えたいとき、クエリで段階的に切り替えるよりもコードが短く済み、切り替わる幅の前後で値が急に変わることもありません。
+
+推奨値は、2つの基準点から組み立てます。たとえば「画面の幅が375pxのとき24px、1280pxのとき40px」にしたいなら、この2点を結ぶ直線の傾きと切片を求めます。
+
+```text
+傾き   = (最大値 - 最小値) / (最大の幅 - 最小の幅)
+       = (40 - 24) / (1280 - 375) ≈ 0.01768
+切片   = 最小値 - 傾き × 最小の幅
+       = 24 - 0.01768 × 375 ≈ 17.37
+推奨値 = 傾き × 100svi + 切片 / 16 * 1rem
+       = 1.768svi + 17.37 / 16 * 1rem
+```
+
+傾きは、画面の幅が1px増えたときの値の増え方です。`100svi` を掛ければ、画面の幅に比例する値が得られます。0.01768に `100svi` を掛けた値は、`1.768svi` と同じです。切片は幅が0のときの値で、これをremに変換して足します。
+
+```css title="🙆‍♂ Recommended: 最小値と最大値は rem、推奨値は rem と svi の和"
+._title {
+  /* 画面の幅 375px で 24px、1280px で 40px */
+  font-size: clamp(24 / 16 * 1rem, 1.768svi + 17.37 / 16 * 1rem, 40 / 16 * 1rem);
+}
+```
+
+最小値と最大値をremにし、推奨値にremを含めるのは、文字サイズの設定とズームを効かせるためです。推奨値が `svi` だけだと、「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で説明したとおり、設定を変えても文字は大きくなりません。remの部分があれば、その分は設定に追従し、最小値と最大値も一緒に大きくなります。
+
+相対単位には、ページ全体の値なら `svi` を、コンポーネントの中の値なら名前付きのコンテナの `cqi` を使います。`cqi` で書く場合は、基準の幅も画面の幅ではなく、コンテナの幅で考えます。
+
+この組み立て方は、文字サイズのように設定に追従させる値のためのものです。`gap` のように追従させない値なら、`clamp(8px, 2cqi, 16px)` のように最小値と最大値をpxにしてもかまいません。
+
+## 計算はCSSに任せる
+
+上の例では傾きと切片を手で計算しましたが、計算の結果を書けば、それ自体がマジックナンバーになります。基準の幅や値を変えるたびに、計算をやり直す必要もあります。そこで、基準の値を単位のない数値のカスタムプロパティで持ち、傾きと切片の計算もCSSに任せます。
+
+```css title="🙆‍♂ Recommended: 基準の値から、傾きと切片を CSS で計算する"
+._title {
+  --_min-width: 375;
+  --_max-width: 1280;
+  --_min-size: 24;
+  --_max-size: 40;
+  --_slope: calc((var(--_max-size) - var(--_min-size)) / (var(--_max-width) - var(--_min-width)));
+  --_intercept: calc(var(--_min-size) - var(--_slope) * var(--_min-width));
+
+  font-size: clamp(
+    var(--_min-size) / 16 * 1rem,
+    var(--_slope) * 100svi + var(--_intercept) / 16 * 1rem,
+    var(--_max-size) / 16 * 1rem
+  );
+}
+```
+
+基準の値を単位のない数値にしているのは、単位のない数値どうしなら、割り算を含めてどのブラウザでも計算できるからです。値を変えたいときは、最初の4行を書き換えるだけで済みます。
+
+サイト全体でこの式を使うなら、ユーティリティにまとめます。最小値と最大値だけを公開プロパティで受け取り、傾きと切片の計算はユーティリティの中で行う形です。ユーティリティの設計は「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で、流体的な文字サイズの使いどころは「[9-4 文字サイズと改行](/typography/size-and-line-breaks/)」で説明します。
+
+オンラインのジェネレーターで推奨値を作る方法もありますが、コードとの間を行き来する手間がかかり、出力された数値だけでは計算の手順が分かりません。使う場合も、基準の幅と値をコメントに残します。Sassを使っているなら、自分で `@function` を作って計算させる方法もあります。
+
+CSSの `progress()` 関数や、CSSで関数を定義できる `@function` が広く使えるようになれば、この計算はもっと簡単に書けるはずです。ただし2026年9月の時点では、`progress()` はSafari 26以降でしか使えず、`@function` に対応しているのはChrome系のブラウザだけです。本書の対象のブラウザで使えるようになるまでは、カスタムプロパティで計算します。
+
+## コード例とデモ
+
+次のデモの見出しは、上のカスタムプロパティを使った式で文字サイズを決めています。幅のボタンで表示の幅を変えると、見出しの大きさがなめらかに変わります。320pxでは最小値の24pxで止まり、1280pxで最大値の40pxになります。
+
+<Demo title="clamp() で、画面の幅に合わせて文字サイズが変わる見出し" html={fluidHtml} css={fluidCss} />
+
+768pxのときの文字サイズは約30.9pxで、2つの基準点を結ぶ直線の上にあります。ブレイクポイントは1つもありませんが、どの幅の画面でも、決めた範囲の大きさに収まります。
+
+## 単位のついた値どうしの割り算を控える
+
+`calc()` の割り算では、割る数を単位のない数値にします。`calc(40px / 1280px * 100svi)` のように単位のついた値どうしを割り、単位を打ち消して数値にする計算は、「typed arithmetic」と呼ばれる新しい仕様です。
+
+```css title="🙅‍♂ Not Recommended: 単位のついた値どうしで割る"
+/* 🙅‍♂ Not Recommended */
+.section {
+  padding-inline: calc(40px / 1280px * 100svi);
+}
+```
+
+MDNの互換性データによると、typed arithmeticに対応しているのはChrome 140以降とSafari 26以降で、Firefoxは対応していません（2026年9月確認）。対応していないブラウザでは、この宣言全体が無効になります。本書の対象のブラウザ（Safari 18系の最終版以降）でも使えないので、使いません。新しい仕様だと気付かずに書いてしまうことも多いので、レビューでも注意します。
+
+デザインカンプの値を使う計算なら、はじめから単位のない数値で割れば済みます。「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明したように、サイズのトークンを単位のない数値で持っておくと、こうした計算もしやすくなります。
+
+```css title="🙆‍♂ Recommended: 単位のない数値で割る"
+._section {
+  padding-inline: calc(40 / 1280 * 100svi);
+}
+```
+
+長さどうしの比がどうしても必要な場合は、三角関数で単位を外す方法があります。`tan(atan2(a, b))` は、`a / b` と同じ値を単位のない数値として返します。`atan2()` が2つの長さから角度を求め、`tan()` がその角度から比を求めるからです。「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」では、この方法で画面の幅を数値に変換しています。
+
+<Baseline id="trig-functions" name="三角関数（tan() と atan2() など）" />
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [calc() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/calc)
+- [min() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/min)
+- [max() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/max)
+- [clamp() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clamp)
+- [calc(infinity)の使い道](https://www.tak-dcxi.com/article/use-of-calc-infinity/)（TAKLOG、2024年3月）
+- [当ブログのレスポンシブコーディングについて](https://www.tak-dcxi.com/article/my-blogs-responsive-coding/)（TAKLOG、2024年3月。本書と一部の方針が異なります）
+- [Linearly Scale font-size with CSS clamp() Based on the Viewport](https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/)（CSS-Tricks）

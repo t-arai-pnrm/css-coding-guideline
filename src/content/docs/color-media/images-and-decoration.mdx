@@ -1,0 +1,338 @@
+---
+title: "10-3 画像と装飾"
+description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選びます。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import objectFitHtml from '../../../demos/color-media/object-fit/index.html?raw';
+import objectFitCss from '../../../demos/color-media/object-fit/style.css?raw';
+
+画像の縦横比は `aspect-ratio` で決め、中身は `object-fit` の `cover` か `contain` で収めます。初期値の `fill` のまま、画像を引き伸ばさないようにします。`<img>` には `width` と `height` の属性を書き、`srcset` と `sizes` の値は、手で計算せずにツールで確かめて決めます。
+
+単色のアイコンは `currentColor` で文字色に合わせ、三角形のような図形は `clip-path` で描いて、形をトークンにします。影と角丸もトークンから選びます。影の色はダークモードでも黒のままにして、不透明度で強さを変えます。
+
+<Baseline id="aspect-ratio" />
+
+## 古い書き方で比率を保つと起きること
+
+`aspect-ratio` が使えなかった頃は、`padding-top` に割合を指定して、縦横比を保っていました。`padding` の割合は親要素の幅を基準に計算されるので、`9 / 16 * 100%` を指定すれば、幅に対して16:9の高さを作れます。
+
+```css title="🙅‍♂ Not Recommended: padding-top の割合で比率を作る"
+/* 🙅‍♂ Not Recommended */
+.frame {
+  position: relative;
+}
+
+.frame::after {
+  content: "";
+  display: block;
+  padding-top: calc(9 / 16 * 100%);
+}
+
+.frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+```
+
+この書き方では、比率を作るための擬似要素と、中身を重ねるための絶対配置が必要です。中身は枠から外れた状態になるので、テキストが増えても枠は伸びません。コードを読んでも、`padding-top` が比率のための指定だとすぐには分かりません。
+
+画像の側にも、よくある問題があります。枠の大きさに合わせようとして、画像へ `width: 100%` と `height: 100%` だけを指定すると、比率の違う画像が縦や横に引き伸ばされます。CMSで編集者が画像を差し替えるサイトでは、どのような比率の画像が入るかを事前に決められません。
+
+## aspect-ratio で比率を決める
+
+縦横比は `aspect-ratio` で指定します。幅が決まれば、高さは比率から計算されます。擬似要素と絶対配置は要りません。
+
+```css title="🙆‍♂ Recommended: aspect-ratio で比率を決め、object-fit で収める"
+._thumbnail {
+  inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+._avatar {
+  inline-size: 48px;
+  aspect-ratio: 1;
+  border-radius: calc(infinity * 1px);
+  object-fit: cover;
+}
+```
+
+正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[8-1 検討する順番](/responsive/escalation/)」でも触れています。
+
+`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。ブラウザは、この2つの属性から縦横比を計算し、画像を読み込む前から表示する場所を確保します。属性がないと、画像が読み込まれた瞬間に高さが決まり、下にある文章がずれて、読んでいた位置を見失います。
+
+```html
+<img src="thumbnail.avif" width="800" height="450" alt="" />
+```
+
+属性に書いた値が、そのまま表示の大きさになるわけではありません。kiso.cssは、画像に `max-inline-size: 100%` と `block-size: auto` を指定しています。枠より大きな画像は枠の幅まで縮み、高さは属性の比率を保ったまま決まります。
+
+## object-fit は cover か contain にする
+
+大きさを決めた画像には、`object-fit` を指定します。初期値の `fill` は、画像を枠いっぱいに引き伸ばすので、比率の違う画像が歪みます。`fill` が望ましい場面は、ほとんどありません。
+
+<Demo title="16:9の画像を正方形の枠に入れたときの、object-fit の違い" html={objectFitHtml} css={objectFitCss} variant="neutral" />
+
+`cover` は、比率を保ったまま枠を覆うように拡大し、はみ出した部分を切り取ります。写真のサムネイルやメインビジュアルのように、枠を埋めることを優先する画像に向いています。`contain` は、画像全体が枠に収まるように縮めます。ロゴや図版のように、切り取られると困る画像に使います。
+
+私のテンプレートでは、ベーススタイルで `<img>` と `<video>` を `cover` にしています。`contain` が必要な画像だけ、コンポーネントで上書きします。切り取る位置は `object-position` で調整できます。人物の顔が写真の上のほうにあるなら、`object-position: 50% 20%` のように上寄りにすれば、顔が切れにくくなります。
+{/* 要確認: 出典なし（object-position の説明は一般論） */}
+
+```css title="🙆‍♂ Recommended: 画像と動画は cover を既定にする"
+:where(img, video) {
+  object-fit: cover;
+}
+```
+
+### 隣の要素の高さに合わせる
+
+グリッドの中で、画像の高さを隣の本文の高さに合わせたい場合があります。画像に `block-size: 100%` を指定すると、画像の元の高さで行が押し広げられ、本文の下に余白ができて間延びします。この場合は、`block-size: 0` と `min-block-size: 100%` を組み合わせます（2026年9月、Chrome 153で確認）。
+
+```css title="🙆‍♂ Recommended: 画像の高さを、同じ行の本文の高さに合わせる"
+._image {
+  inline-size: 100%;
+  block-size: 0;
+  min-block-size: 100%;
+  object-fit: cover;
+}
+```
+
+`block-size: 0` で画像が行の高さを押し広げないようにし、`min-block-size: 100%` でセルの高さまで広げています。行の高さは本文だけで決まり、画像はその高さに合わせて `cover` で切り取られます。
+
+### 画像の上の文字には背景色を用意する
+
+画像や動画の上に文字を載せるときは、画像が表示されなかった場合に備えて、文字と対になる背景色を指定しておきます。通信の状態によって画像を読み込めないと、白い背景の上に白い文字だけが残り、読めなくなるからです。
+
+```css title="🙆‍♂ Recommended: 画像がなくても白い文字が読める背景色を敷く"
+@scope (.scoped.hero-header) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-areas: "--stack";
+    background-color: oklch(20% 0 0deg);
+    color: oklch(100% 0 0deg);
+  }
+
+  ._image,
+  ._body {
+    grid-area: --stack;
+  }
+
+  ._image {
+    inline-size: 100%;
+    block-size: 0;
+    min-block-size: 100%;
+    object-fit: cover;
+  }
+}
+```
+
+背景色は、画像の平均的な色ではなく、文字色とのコントラストが取れる色にします。このコード例では、白い文字に対して暗いグレーを敷いています。画像と本文は同じグリッドのエリアに重ね、画像の高さは前の項目と同じ方法で本文に合わせています。
+
+## レスポンシブ画像
+
+画面の幅や解像度に合わせて、大きさの違う画像を出し分けるには、`srcset` と `sizes` の属性を使います。`srcset` には画像の候補とその幅を、`sizes` には画像がレイアウトの中で表示される幅を書きます。ブラウザは、表示される幅と画面の解像度から、ちょうどよい候補を選んで読み込みます。
+
+```html
+<img
+  src="photo-800.avif"
+  srcset="photo-400.avif 400w, photo-800.avif 800w, photo-1200.avif 1200w"
+  sizes="(width >= 1024px) 50vw, 100vw"
+  width="1200"
+  height="800"
+  alt="川沿いの桜並木"
+/>
+```
+
+難しいのは `sizes` です。表示される幅はCSSのレイアウトで決まるので、余白、段組み、コンテナクエリによる切り替えまで考えて、ビューポートの幅との関係を書き出す必要があります。私は、`sizes` を手で計算しません。仮の値を入れたページでRespImageLintのブックマークレットを実行し、提案された値を採用しています。
+
+RespImageLintが提案する `sizes` の値は、`vw` を使って書かれています。`sizes` はCSSのプロパティではなくHTMLの属性で、画像を選ぶ時点のビューポートの幅を基準にします。本書では、`sizes` の中の `vw` を、`vw` を使わないという規約（「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）の例外として扱います。
+{/* 要確認: sizes の中の vw を no-vw-vh の例外とする判断は筆者の推論。著者に確認する。コード例の sizes の値は説明のための仮の値 */}
+
+`<picture>` の `<source>` にある `media` 属性は、ビューポートを基準にした条件しか書けません。コンテナクエリで配置を切り替えるコンポーネントでも、画像の切り替えはビューポートを基準にして書くしかありません。この制約は「[8-2 コンテナクエリ](/responsive/container-queries/)」でも触れています。
+
+### 形式と読み込みの優先度
+
+写真のような画像は、AVIFで書き出します。AVIFは、WebPより10〜30%ほど小さく、2024年1月にすべての主要なブラウザで使えるようになりました。JPEGやPNGを主な形式にする理由はもうありません。ただし、AVIFへの変換はWebPの2倍以上の時間がかかるので、画像の多いサイトでは、ビルドの時間を見積もっておきます。
+
+ファーストビューに表示される画像には、`loading="lazy"` を指定しません。遅延読み込みにすると、ページでいちばん大きな要素の表示が遅れるからです。代わりに `fetchpriority="high"` を指定して、優先して読み込ませます。スクロールしないと見えない画像にだけ、`loading="lazy"` を付けます。
+
+装飾のための画像や、隣の見出しと同じ内容を表すだけの画像には、`alt=""` を指定します。カードのサムネイルのように、見出しのリンクと同じ内容を繰り返す画像がその例です。意味のある画像には、内容が伝わる代替テキストを書きます。
+
+なお、遅延読み込みの画像で `sizes` を自動で決める `sizes="auto"` は、Safariが対応していません（2026年9月確認）。
+
+## 図形は clip-path とマスクで描く
+
+吹き出しの三角形のような図形は、`clip-path` で描きます。以前は、透明な `border` を組み合わせて三角形を作る方法がよく使われていました。
+
+```css title="🙅‍♂ Not Recommended: border を組み合わせて三角形を作る"
+/* 🙅‍♂ Not Recommended */
+.tooltip::after {
+  --size: 16px;
+
+  border-left: calc(var(--size) / 2) solid transparent;
+  border-right: calc(var(--size) / 2) solid transparent;
+  border-top: calc(tan(60deg) * calc(var(--size) / 2)) solid;
+}
+```
+
+この方法では、三角形の大きさを3つの `border` の幅から逆算する必要があり、どの向きの三角形なのかもコードから読み取りにくくなります。`clip-path` なら、要素の幅と高さを決めて、形で切り抜くだけです。
+
+```css title="🙆‍♂ Recommended: 形をトークンにして、clip-path で切り抜く"
+:root {
+  --shape--triangle-top: polygon(50% 0, 100% 100%, 0 100%);
+  --shape--triangle-bottom: polygon(0 0, 100% 0, 50% 100%);
+  --shape--triangle-right: polygon(0 0, 100% 50%, 0 100%);
+  --shape--triangle-left: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+._tooltip::after {
+  --_size: 16px;
+
+  content: "";
+  clip-path: var(--shape--triangle-bottom);
+  inline-size: var(--_size);
+  block-size: calc(var(--_size) / 2 * tan(60deg));
+  background-color: inherit;
+}
+```
+
+`polygon()` の値は直接書かず、トークンとして定義します。`polygon(0 0, 100% 0, 50% 100%)` という値を見て、下向きの三角形だとすぐに気づく人は多くないでしょう。`--shape--triangle-bottom` という名前なら、形がすぐに分かります。高さを `tan(60deg)` で計算すると、正三角形になります。
+
+アイコンは、SVGを `mask-image` のマスクにして描く方法もあります。テンプレートでは、矢印のアイコンをdata URIのトークン（`--chevron--rightward` など）として定義し、擬似要素の `mask-image` で参照しています。色は `background-color` で塗るので、文字色やホバーの状態に合わせて変えられます。
+
+```css title="🙆‍♂ Recommended: マスクで切り抜き、背景色で塗る"
+._more::after {
+  content: "";
+  mask-image: var(--chevron--rightward);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  inline-size: 1em;
+  aspect-ratio: 1;
+  background-color: var(--background-current);
+}
+```
+
+`background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
+
+<Baseline id="masks" name="マスク（mask-image など）" />
+
+## アイコンは currentColor で文字色に合わせる
+
+インラインSVGのアイコンは、`fill` や `stroke` を `currentColor` にして、文字色に合わせます。ボタンの種類や状態ごとにアイコンの色を指定し直す必要がなくなり、文字色を変えるだけで、アイコンも一緒に変わります。
+
+```css title="🙅‍♂ Not Recommended: 状態ごとにアイコンの色を指定し直す"
+/* 🙅‍♂ Not Recommended */
+.button--primary {
+  color: var(--color-primary);
+}
+
+.button--primary svg {
+  fill: var(--color-primary);
+}
+
+.button:disabled {
+  color: var(--color-disabled);
+}
+
+.button:disabled svg {
+  fill: var(--color-disabled);
+}
+```
+
+```css title="🙆‍♂ Recommended: アイコンは文字色に合わせ、文字色だけを切り替える"
+._button {
+  color: var(--foreground--base);
+
+  &:disabled {
+    color: var(--foreground--muted);
+  }
+}
+
+._icon {
+  fill: currentColor;
+}
+```
+
+`border` の色を省略した場合も、初期値は `currentColor` です。文字と同じ色の枠線なら、`border: 1px solid` とだけ書けば足ります。色を2か所に書かなければ、片方だけ変え忘れることもありません。
+
+アイコンの大きさは、`inline-size: 1em` と `aspect-ratio: 1` で文字の大きさに合わせます。テンプレートでは `.icon` というクラスで、`--icon--size` を受け取れるようにしています。アイコンを画面の幅に合わせて変える必要がないことは、「[8-1 検討する順番](/responsive/escalation/)」で説明しています。
+
+### インラインSVGの代替テキスト
+
+意味を持つアイコンをインラインSVGで置くときは、SVGに `aria-hidden="true"` を付けて読み上げの対象から外し、隣に視覚的に隠したテキストを置きます。
+
+```html
+<a href="https://example.com/" target="_blank">
+  関連資料
+  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path d="M17 2H22V7" />
+    <path d="M13 11L21.5 2.5" />
+  </svg>
+  <span class="-visually-hidden">新しいウィンドウが開きます</span>
+</a>
+```
+
+SVGの中の `<title>` や `aria-label` で名前を付ける方法もありますが、これらは機械翻訳されず、ページ内検索の対象にもなりません。ふつうのテキストとして置けば、翻訳、検索、選択してのコピーのすべてに対応できます。視覚的に隠すユーティリティは「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で扱います。
+
+## 影と角丸はトークンから選ぶ
+
+影は、段階的に強くなる「高さ」のスケールとしてトークンにします。ぼかしの大きさと不透明度を段階ごとに増やし、要素がどのくらい浮いているかを表します。
+
+```css title="🙆‍♂ Recommended: 影の色はダークモードでも黒にし、不透明度で強さを変える"
+:root {
+  --shadow--color: light-dark(oklch(0% 0 0deg / 8%), oklch(0% 0 0deg / 25%));
+  --shadow--sm: 0 2px 4px -1px var(--shadow--color);
+  --shadow--md: 0 4px 8px -2px var(--shadow--color), 0 2px 4px -2px var(--shadow--color);
+  --shadow--lg: 0 8px 16px -4px var(--shadow--color), 0 4px 6px -2px var(--shadow--color);
+}
+```
+
+影の色は、ダークモードでも黒のままにします。暗い背景で白い影を付けると、影ではなく光って見えてしまうからです。代わりに、ダークモードでは黒の不透明度を上げて、暗い背景の上でも奥行きが分かるようにします。影は強制カラーモードでは消えるので、要素の境界を影だけで表さないことも忘れないでください。
+
+角丸も、`--rounded--sm` から `--rounded--xl` までの段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。
+{/* 要確認: 出典なし（infinity を選ぶ理由は筆者の推論。著者は2024年3月の記事で 999em で十分としていたが、その後のテンプレートでは calc(infinity * 1px) をトークンにしている） */}
+
+```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする"
+@scope (.scoped.menu) to (.scoped) {
+  :scope {
+    --_radius: var(--rounded--md);
+    --_padding: 4px;
+
+    padding: var(--_padding);
+    border-radius: var(--_radius);
+  }
+
+  ._item {
+    border-radius: calc(var(--_radius) - var(--_padding));
+  }
+}
+```
+
+角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。影や角丸の値をpxで指定する理由は、「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
+{/* 要確認: 出典なし（内側の角丸を外側から余白を引いた値にする理由は一般論。著者の実装はこの計算をしている） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月。`aspect-ratio`、`clip-path`、`currentColor` の例）
+- [AVIFの普及でWebPはもういらないかもしれない](https://www.tak-dcxi.com/article/avif-format-is-fine-for-astros-images/)（TAKLOG、2024年3月）
+- [当ブログのレスポンシブコーディングについて](https://www.tak-dcxi.com/article/my-blogs-responsive-coding/)（TAKLOG、2024年3月。RespImageLintの使い方。本書と一部の方針が異なります）
+- [インラインSVGの代替テキストはどうするべきか](https://www.tak-dcxi.com/article/how-to-handle-alt-text-for-inline-svg/)（TAKLOG、2024年3月）
+- [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [RespImageLint](https://ausi.github.io/respimagelint/)
+- [aspect-ratio - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)
+- [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)
+- [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)

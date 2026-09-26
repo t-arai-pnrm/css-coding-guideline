@@ -1,0 +1,16 @@
+<!-- デモの中で送信しても画面が切り替わらないように、method="dialog" にしている -->
+<form class="scoped contact-form" method="dialog">
+  <div class="_field">
+    <label class="_label" for="contact-form-email">メールアドレス（必須）</label>
+    <input class="_input" id="contact-form-email" type="email" name="email" autocomplete="email" required aria-describedby="contact-form-email-hint">
+    <p class="_hint" id="contact-form-email-hint">例：name@example.com</p>
+  </div>
+  <fieldset class="_field">
+    <legend class="_label">お問い合わせの種類</legend>
+    <label class="_choice"><input type="radio" name="type" value="product" checked>製品について</label>
+    <label class="_choice"><input type="radio" name="type" value="other">その他</label>
+  </fieldset>
+  <label class="_choice"><input class="_switch" type="checkbox" name="newsletter" switch>お知らせのメールを受け取る</label>
+  <label class="_choice"><input type="checkbox" name="agree" required>個人情報の取り扱いに同意する（必須）</label>
+  <button class="_submit" type="submit">送信する</button>
+</form>

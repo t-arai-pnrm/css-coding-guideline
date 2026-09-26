@@ -1,0 +1,72 @@
+@layer tokens {
+  :root {
+    --color--neutral--500: oklch(55.6% 0 0deg);
+    --background--base: oklch(100% 0 0deg);
+    --background--surface: oklch(95% 0.02 250deg);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.card-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      padding: 24px;
+      border-radius: 12px;
+      background-color: var(--background--surface);
+    }
+
+    ._heading {
+      font-size: calc(20 / 16 * 1rem);
+    }
+
+    ._list {
+      /* 中に置くカードすべてに、継承で届ける */
+      --info-card--accent: oklch(50% 0.15 250deg);
+
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    ._item {
+      display: block grid;
+    }
+  }
+
+  /**
+   * 情報カード。
+   *
+   * @prop {color}  --info-card--accent [var(--color--neutral--500)] - 枠線と見出しの色
+   * @prop {length} --info-card--radius [8px]                         - 角丸の半径
+   */
+  @scope (.scoped.info-card) to (.scoped) {
+    :scope {
+      --_accent: var(--info-card--accent, var(--color--neutral--500));
+      --_radius: var(--info-card--radius, 8px);
+
+      padding: 16px;
+      border: 2px solid var(--_accent);
+      border-radius: var(--_radius);
+      background-color: var(--background--base);
+    }
+
+    ._title {
+      color: var(--_accent);
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._text {
+      margin-block: 8px 0;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "css-coding-guideline",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CSSコーディングガイドライン（Astro Starlight）",
+  "author": "TAK",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "check:mdx": "node scripts/check-mdx.mjs",
+    "gen:ai": "node scripts/gen-ai.mjs",
+    "lint": "pnpm lint:css && pnpm lint:examples && pnpm lint:text",
+    "lint:css": "stylelint 'src/**/*.{css,astro}'",
+    "lint:examples": "node scripts/lint-examples.mjs",
+    "lint:text": "textlint 'src/content/docs/**/*.mdx'"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@astrojs/starlight": "^0.42.4",
+    "astro": "^7.3.5",
+    "kiso.css": "^1.2.4",
+    "sharp": "^0.35.4",
+    "starlight-links-validator": "^0.26.0",
+    "web-features": "^3.40.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@mdx-js/mdx": "^3.1.1",
+    "postcss-html": "^1.8.1",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-order": "^8.1.1",
+    "stylelint-plugin-display-multi-keyword-syntax": "^0.1.1",
+    "stylelint-plugin-logical-css": "^2.1.0",
+    "taks-stylelint-order": "^1.1.3",
+    "textlint": "^15.8.0",
+    "textlint-filter-rule-comments": "^1.3.0",
+    "textlint-plugin-mdx": "^1.1.0",
+    "textlint-rule-preset-ja-spacing": "^3.0.3",
+    "textlint-rule-preset-ja-technical-writing": "^12.0.2",
+    "textlint-rule-prh": "^6.1.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,248 @@
+# 第5章 記法の規約
+
+# 5-1 命名規則
+- id: root-name-kebab-case
+  level: 推奨
+  rule: コンポーネントのルートに付ける `scoped <名前>` の `<名前>` は、kebab-case にする（例：`class="scoped media-card"`）。
+  reason: ルートの名前はコンポーネントの名前そのものなので、ブロック名やファイル名と対応させておくと、CSS から実装のファイルをたどりやすいため。
+  note: Astro のようにコンポーネント名が PascalCase の環境では、`scoped MediaCard` のようにコンポーネント名に合わせてもかまいません。`scoped` のクラスと `@scope` の書き方は第2章で扱います。
+  page: notation/naming
+  since: 0.1.0
+
+- id: child-class-underscore
+  level: 必須
+  rule: コンポーネントの子要素のクラス名は、`_` で始まる kebab-case にする（例：`._title`、`._nav-links`）。
+  reason: HTML を見ただけで、そのコンポーネントの中だけで意味を持つ名前だと分かるため。`@scope` で範囲を閉じているので、短い名前でもほかのコンポーネントと衝突しない。
+  note: BEM の `block__element` や `block--modifier` の形にはしません。バリエーションや状態は、クラス名ではなく属性で表します。
+  aiProne: true
+  page: notation/naming
+  since: 0.1.0
+
+- id: utility-class-hyphen
+  level: 必須
+  rule: ユーティリティのクラス名は `-` で始まる kebab-case にし、段階や種類は `--` で続ける（例：`.-visually-hidden`、`.-fluid-text--md`）。
+  reason: コンポーネントの子要素やコンポジションと見分けられ、どこからでも使える単機能のクラスだと分かるため。
+  page: notation/naming
+  since: 0.1.0
+
+- id: composition-class-plain
+  level: 必須
+  rule: コンポジションのクラス名は、接頭辞を付けない kebab-case にする（例：`.cluster`、`.switcher`）。
+  reason: 配置のパターンの名前をそのまま使え、接頭辞の付いたほかの種類のクラスと並べたときに役割の違いが分かるため。
+  page: notation/naming
+  since: 0.1.0
+
+- id: name-by-role
+  level: 必須
+  rule: コンポーネント、子要素、パターンの名前は、見た目ではなく役割で付ける（`._big-title` ではなく `._heading`）。
+  reason: 見た目の名前はデザインが変わると実態とずれるが、役割の名前なら見た目を変えても名前を変えずに済むため。
+  note: ユーティリティは1つのことしかしないので、`.-text-center` のように効果をそのまま名前にします。
+  page: notation/naming
+  since: 0.1.0
+
+- id: no-redefining-web-terms
+  level: 禁止
+  rule: '`container`、`button`、`columns` のように HTML や CSS で意味が決まっている語を、別の意味の名前に使わない。'
+  reason: 名前から CSS の機能や HTML の要素を連想させ、読む人の誤解を招くため。
+  note: '`<a>` の要素は、見た目がボタンでも `link` と呼びます。`.container` のクラスについては、第8章のルール `no-container-utility-class` も参照してください。'
+  page: notation/naming
+  since: 0.1.0
+
+- id: no-vague-names
+  level: 非推奨
+  rule: '`wrapper`、`block`、`module`、`widget` のように、責務を表さない総称を名前に使わない。'
+  reason: 何のための要素なのかが名前から分からず、責務の境界もあいまいになるため。
+  note: 内容の幅を制限する要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。
+  page: notation/naming
+  since: 0.1.0
+
+- id: dashed-ident-names
+  level: 必須
+  rule: 自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。
+  reason: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
+  note: コンテナの名前は、第8章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
+  lint: 'Stylelint: `keyframes-name-pattern`（`@keyframes` のみ）'
+  aiProne: true
+  page: notation/naming
+  since: 0.1.0
+
+# 5-2 ネストとプロパティの並び順
+- id: nesting-depth-one
+  level: 推奨
+  rule: セレクタのネストは1段までにする。
+  reason: ネストはスタイルの持ち主を示すために使うもので、HTML の階層を写したり詳細度を上げたりするために使うと、構造への依存が強まり詳細度も読み取りにくくなるため。
+  note: '`@scope` はスコープの境界なので、段数に数えません。セレクタの中に `@media` などの条件付きのアットルールを1段挟むのはかまいません。'
+  lint: 'Stylelint: `max-nesting-depth: 2`（条件付きのアットルールも1段として数える）'
+  page: notation/nesting-and-order
+  since: 0.1.0
+
+- id: nest-own-states-only
+  level: 推奨
+  rule: ネストするのは、要素自身の擬似クラス・擬似要素・属性の状態、レイアウトに欠かせない直下の子、条件付きのアットルールに限る。
+  reason: 1つの要素のスタイルが1か所にまとまり、独立した要素のスタイルを親のルールに抱え込まずに済むため。
+  note: 独立した基本のスタイルを持つ子要素は、ネストせずに同じ階層に並べます。
+  page: notation/nesting-and-order
+  since: 0.1.0
+
+- id: nested-selector-ampersand
+  level: 必須
+  rule: ネストしたセレクタは、`&:hover` や `& > ._icon` のように `&` で始める。
+  reason: 親のセレクタとの関係（自身の状態か、直下の子か、子孫か）が、先頭を見ただけで分かるため。
+  lint: 'Stylelint: `selector-nested-pattern`'
+  page: notation/nesting-and-order
+  since: 0.1.0
+
+- id: no-nesting-concatenation
+  level: 禁止
+  rule: '`&__title` や `&--large` のように、`&` に文字をつなげてクラス名を作らない。'
+  reason: Sass の書き方で、素の CSS では無効なセレクタになり、ルールごと無視されるため。
+  aiProne: true
+  page: notation/nesting-and-order
+  since: 0.1.0
+
+- id: conditions-inside-rules
+  level: 必須
+  rule: '`@media` と `@container` は、`@scope` やファイルの直下に置かず、各セレクタの中に書く。'
+  reason: 条件のブロックが元のルールより前に並ぶと、同じ詳細度の元のルールが後から勝ち、上書きが効かなくなるため。
+  note: ルート要素の条件は `:scope` の中に書きます。`@supports` も同じようにセレクタの中に書きます。
+  lint: 'Stylelint: `book/conditions-inside-rules`（本書の独自ルール）'
+  aiProne: true
+  page: notation/nesting-and-order
+  since: 0.1.0
+
+- id: block-content-order
+  level: 必須
+  rule: ルールの中は、カスタムプロパティ、宣言、条件付きのアットルール、ネストしたルールの順に書く。
+  reason: 要素の基本のスタイルが先頭にまとまり、条件による上書きや状態の変化が後に続くので、読む順と上書きの順が一致するため。
+  note: 条件付きのアットルールは、`@supports`、`@container`、`@media` の順に並べます。
+  lint: 'Stylelint: `order/order`'
+  page: notation/nesting-and-order
+  since: 0.1.0
+
+- id: property-order
+  level: 必須
+  rule: プロパティは taks-stylelint-order の順に並べる。
+  reason: 並び順が統一され、宣言を探しやすく、差分やレビューで変更を読み取りやすくなるため。
+  note: 並び順を覚える必要はありません。`stylelint --fix` で自動で並べ替えます。
+  lint: 'Stylelint: `order/properties-order`（taks-stylelint-order）'
+  page: notation/nesting-and-order
+  since: 0.1.0
+
+# 5-3 モダンな記法にそろえる
+- id: logical-properties
+  level: 推奨
+  rule: 寸法、余白、位置、ボーダーは、物理プロパティではなく論理プロパティで書く（`width` ではなく `inline-size`、`top` ではなく `inset-block-start`）。
+  reason: Flexbox、Grid、コンテナクエリのような主要なレイアウトの仕組みが、書字方向を基準にした論理的な指定を前提にしているため。
+  note: 端末の切り欠きに合わせる `env(safe-area-inset-left)` のように、物理的な方向に意味がある値は物理プロパティで書き、Stylelint の無効化コメントと理由を添えます。
+  lint: 'Stylelint: `logical-css/require-logical-properties`（警告）'
+  aiProne: true
+  page: notation/modern-syntax
+  since: 0.1.0
+
+- id: display-two-value-syntax
+  level: 必須
+  rule: '`display` は、`block flex` や `inline flow-root` のような2値構文で書く。'
+  reason: 要素が周りに対してどう振る舞うか（外側の表示）と、子要素をどう並べるか（内側の表示）を、値から読み取れるため。
+  note: '`none` や `contents` のように、2値構文のない値はそのまま書きます。'
+  lint: 'Stylelint: `plugin/display-multi-keyword-syntax`'
+  aiProne: true
+  page: notation/modern-syntax
+  since: 0.1.0
+
+- id: individual-transform-properties
+  level: 推奨
+  rule: 移動、回転、拡大・縮小は、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティで書く。
+  reason: 変形ごとに値を変えたりトランジションを掛けたりでき、ほかの変形の値を書き直さずに済むため。
+  note: '`skew()` のように個別のプロパティがない変形と、変形を適用する順番を変える必要がある場合に限り、`transform` を使います。'
+  aiProne: true
+  page: notation/modern-syntax
+  since: 0.1.0
+
+- id: color-space-separated
+  level: 必須
+  rule: 色の関数の値はカンマではなくスペースで区切り、不透明度は `/` の後ろにパーセントで書く（`rgb(0 0 0 / 80%)`）。
+  reason: '`oklch()` などの新しい色の関数はスペース区切りしか受け付けないので、すべての色の関数を同じ書き方にそろえられるため。'
+  lint: 'Stylelint: `color-function-notation`、`alpha-value-notation`'
+  aiProne: true
+  page: notation/modern-syntax
+  since: 0.1.0
+
+- id: no-rgba-hsla
+  level: 禁止
+  rule: '`rgba()` と `hsla()` を使わず、`rgb()` と `hsl()` に統一する。'
+  reason: '`rgba()` と `hsla()` は `rgb()` と `hsl()` の別名にすぎず、`rgb()` と `hsl()` でも不透明度を指定できるため。'
+  lint: 'Stylelint: `color-function-alias-notation`'
+  aiProne: true
+  page: notation/modern-syntax
+  since: 0.1.0
+
+- id: hue-degree-unit
+  level: 必須
+  rule: 色相の値には `deg` を付ける（例：`oklch(60% 0.2 250deg)`）。
+  reason: その値が角度であることがはっきりし、明度や彩度の値と見分けやすくなるため。
+  lint: 'Stylelint: `hue-degree-notation`'
+  page: notation/modern-syntax
+  since: 0.1.0
+
+- id: no-vendor-prefix
+  level: 非推奨
+  rule: ベンダープレフィックスは、接頭辞なしでは対象のブラウザで動かないプロパティを除いて書かない。
+  reason: 対象のブラウザが接頭辞なしで対応している機能に接頭辞を足しても、コードが増えるだけのため。
+  note: '`-webkit-font-smoothing` のように標準のプロパティがないものや、Safari で `-webkit-` が必要な `box-decoration-break` などは書きます。'
+  lint: 'Stylelint: `property-no-vendor-prefix`'
+  page: notation/modern-syntax
+  since: 0.1.0
+
+# 5-4 コメントの書き方
+- id: file-header-doc-block
+  level: 必須
+  rule: CSS ファイルの先頭には、そのファイルの責務と使い方を `/** */` の説明ブロックで書く。
+  reason: 後からファイルを開いた人が、何のためのスタイルで、どう使うのかを最初に把握できるため。
+  note: 使用例は `@example`、参考資料は `@see` で示します。Astro のコンポーネントのように CSS をマークアップと同じファイルに書く場合は、コンポーネントの説明として書きます。
+  page: notation/comments
+  since: 0.1.0
+
+- id: doc-block-file-top-only
+  level: 必須
+  rule: '`/** */` の形式は、ファイル先頭の説明ブロックだけに使う。'
+  reason: ファイル全体の説明と、コードの途中の補足とを、記法で見分けられるようにするため。
+  page: notation/comments
+  since: 0.1.0
+
+- id: prop-tag-for-public-properties
+  level: 必須
+  rule: 公開プロパティを持つファイルでは、説明ブロックの `@prop` に、型、デフォルト値、説明を書く。
+  reason: 使う人がコードを読まなくても、外から変えられる値とその初期値が分かるため。
+  page: notation/comments
+  since: 0.1.0
+
+- id: comments-why-only
+  level: 必須
+  rule: コードの途中のコメントには「なぜそう書くのか」と「なぜ別の書き方をしないのか」だけを書き、コードが何をしているかは書かない。
+  reason: 何をしているかはコードを読めば分かり、コードと食い違ったコメントは誤解のもとになるため。
+  aiProne: true
+  page: notation/comments
+  since: 0.1.0
+
+- id: no-history-comments
+  level: 禁止
+  rule: 変更の経緯（以前の実装、日付、タスクや計画書の番号）と、コメントアウトしたコードを残さない。
+  reason: 経緯はバージョン管理に残っており、コメントに書くと現在のコードを読む妨げになり、時間とともに古くなるため。
+  note: ブラウザの不具合の報告のように、書き方の根拠になる資料は `@see` で示してかまいません。
+  page: notation/comments
+  since: 0.1.0
+
+- id: comment-heading-styles
+  level: 推奨
+  rule: 見出しのコメントは、大見出し、セクション見出し、小見出しの3つの記法で書き分ける。
+  reason: 見出しの階層が記法で分かり、ファイルの構造をひと目で把握できるため。
+  note: コメントは、インデントを含めて60文字を目安に折り返します。
+  page: notation/comments
+  since: 0.1.0
+
+- id: todo-comment-format
+  level: 必須
+  rule: 'TODO、FIXME、HACK は、`/* TODO: … */` のように、コメントの先頭に大文字で書く。'
+  reason: 未完了の作業や一時的な対処を、検索でまとめて見つけられるようにするため。
+  page: notation/comments
+  since: 0.1.0

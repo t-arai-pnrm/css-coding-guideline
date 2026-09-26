@@ -1,0 +1,185 @@
+# 第2章 カスケードを制御する
+
+# 2-1 カスケード・詳細度・継承
+- id: order-by-layer-not-specificity
+  level: 推奨
+  rule: スタイルの優先順位は詳細度の高さで決めず、レイヤーの順番と書く順番で決める。
+  reason: 詳細度で優先順位を決めると、上書きのたびにセレクタが重くなり、後から誰も上書きできなくなるため。
+  note: 詳細度は、ベースでは 0、コンポーネントの中ではクラス1つ分（0.1.0）を基本にそろえます。
+  page: cascade/cascade-basics
+  since: 0.1.0
+
+- id: no-important-for-specificity
+  level: 禁止
+  rule: 詳細度や読み込み順の競争に勝つ目的で `!important` を使わない。
+  reason: '`!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。'
+  aiProne: true
+  page: cascade/cascade-basics
+  since: 0.1.0
+
+- id: important-only-for-guarantees
+  level: 推奨
+  rule: '`!important` は、`[hidden]` を確実に隠す、CMS が要素に出力する `style` 属性を打ち消すなど、ほかの手段では実現できない場面に限って使う。'
+  reason: どのような上書きにも負けてはいけない指定だけに絞れば、`!important` 同士の競争が起きないため。
+  note: レイヤーの中の `!important` は、前のレイヤーほど強くなります。ユーティリティは `utilities` レイヤーに置けば、`!important` なしで勝ちます。
+  page: cascade/cascade-basics
+  since: 0.1.0
+
+- id: inherit-from-root
+  level: 推奨
+  rule: '`color` や `font-size` のように継承されるプロパティは、`:root` やコンポーネントのルートでまとめて指定し、子要素では継承を使う。'
+  reason: 同じ値を子要素ごとに指定し直すと、ルートの値を変えたときに直す場所が増えるため。
+  page: cascade/cascade-basics
+  since: 0.1.0
+
+- id: explicit-rollback-keyword
+  level: 推奨
+  rule: 値を戻すときは、`initial`、`unset`、`revert`、`revert-layer` のうち、戻したい先に合うキーワードを選んで書く。
+  reason: 具体的な値を書き直すより、どこまで戻したいのかという意図がコードに残るため。
+  note: '`display: initial` は、要素の種類に関係なく `inline` になります。ブラウザのデフォルトスタイルに戻すなら `revert` を使います。'
+  page: cascade/cascade-basics
+  since: 0.1.0
+
+# 2-2 セレクタで詳細度を設計する
+- id: no-id-selector
+  level: 禁止
+  rule: ID セレクタでスタイルを指定しない。
+  reason: 詳細度が 1.0.0 になり、クラスをいくつ重ねても上書きできなくなるため。
+  note: id 属性は、JavaScript から参照するとき、ARIA の属性で参照するとき、ページ内リンクの移動先にするときに限って使います。
+  lint: 'Stylelint: `selector-max-id`'
+  aiProne: true
+  page: cascade/selectors
+  since: 0.1.0
+
+- id: no-specificity-hacks
+  level: 禁止
+  rule: '上書きのために、`.a.a`、`.a[class]`、`.a:not(#_)` のような詳細度を上げるためだけのセレクタや、祖先やタイプセレクタを足したセレクタを書かない。'
+  reason: 意図がコードから読み取れず、次の上書きでさらに詳細度を上げる必要が生まれるため。
+  note: 上書きが必要になったら、レイヤーの順番、`:where()`、公開カスタムプロパティで解決できないかを先に検討します。
+  aiProne: true
+  page: cascade/selectors
+  since: 0.1.0
+
+- id: where-for-base-selectors
+  level: 必須
+  rule: ベーススタイルのタイプセレクタは `:where()` で包み、詳細度を 0 にする（例：`:where(a:any-link)`）。
+  reason: '`a:link` のような指定は詳細度が 0.1.1 になり、クラス1つでは上書きできなくなるため。'
+  aiProne: true
+  page: cascade/selectors
+  since: 0.1.0
+
+- id: is-keeps-highest-specificity
+  level: 推奨
+  rule: '`:is()`、`:not()`、`:has()` の引数には、詳細度の高いセレクタを混ぜない。'
+  reason: これらの擬似クラスの詳細度は、引数の中でいちばん高いセレクタの詳細度になるため。
+  note: まとめたいだけで詳細度を加えたくないときは、`:where()` を使います。
+  page: cascade/selectors
+  since: 0.1.0
+
+- id: has-over-state-class
+  level: 推奨
+  rule: 子孫の状態や有無によって祖先のスタイルを変えるときは、JavaScript で状態のクラスを付けずに `:has()` を使う。
+  reason: 状態をHTMLとCSSだけで表せ、クラスの付け外しと実際の状態がずれることがないため。
+  aiProne: true
+  page: cascade/selectors
+  since: 0.1.0
+
+- id: is-for-ancestor-context
+  level: 推奨
+  rule: '祖先の状態によって変わるスタイルは、子のルールの中に `&:is(<祖先のセレクタ> *)` の形で書く。'
+  reason: ひとつの要素のスタイルがひとつのルールにまとまり、ネストのセレクタを `&` で始める規約とも両立するため。
+  note: '例：`&:is(:scope[open] *)` は、スコープのルートの `<details>` が開いているときだけ当てはまります。'
+  page: cascade/selectors
+  since: 0.1.0
+
+- id: heading-with-fallback
+  level: 必須
+  rule: '`:heading` を使うときは、`:where(:heading, h1, h2, h3, h4, h5, h6)` のように従来のタイプセレクタと並べ、`:where()` か `:is()` の中に書く。'
+  reason: 対応していないブラウザでは、普通のセレクタリストに書いた `:heading` がルール全体を無効にするため。
+  note: '`:where()` と `:is()` の引数では、解釈できないセレクタだけが無視され、残りは有効になります。'
+  page: cascade/selectors
+  since: 0.1.0
+
+# 2-3 カスケードレイヤーで順位を決める
+- id: layer-order-declaration
+  level: 必須
+  rule: レイヤーの順序は、読み込むCSSの先頭で `@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;` と宣言する。
+  reason: レイヤーの順番は最初に現れた順で決まるので、先頭で宣言すれば `@import` やスタイルを書く順番に左右されなくなるため。
+  aiProne: true
+  page: cascade/layers
+  since: 0.1.0
+
+- id: import-into-layer
+  level: 推奨
+  rule: 'ファイル単位でレイヤーに入れるときは、`@import url("…") layer(<レイヤー>);` で割り当てる。'
+  reason: どのファイルがどのレイヤーに入るのかを1か所で確認でき、各ファイルの中に `@layer` を書かずに済むため。
+  page: cascade/layers
+  since: 0.1.0
+
+- id: third-party-in-vendors
+  level: 推奨
+  rule: 自分で読み込むサードパーティのCSSは、`@import url("…") layer(vendors);` で `vendors` レイヤーに入れる。
+  reason: レイヤーの外に置くとどのスタイルよりも強くなり、自分のコンポーネントから上書きできなくなるため。
+  page: cascade/layers
+  since: 0.1.0
+
+- id: no-unlayered-styles
+  level: 禁止
+  rule: レイヤーを使うプロジェクトでは、`@layer` の外にスタイルを書かない。
+  reason: レイヤーの外のスタイルは詳細度に関係なくすべてのレイヤーに勝つので、決めた順番が崩れるため。
+  page: cascade/layers
+  since: 0.1.0
+
+- id: layer-by-role
+  level: 推奨
+  rule: ページ固有のセクションは `pages` レイヤーに、複数の場所で使うコンポーネントは `components` レイヤーに書く。
+  reason: レイヤーの役割とファイルの置き場所が対応し、クエリの選び方（ページはメディアクエリ、コンポーネントはコンテナクエリ）もそろうため。
+  page: cascade/layers
+  since: 0.1.0
+
+- id: no-layers-with-unlayered-css
+  level: 必須
+  rule: CMS のように、レイヤーに入っていない外部のCSSと共存する環境では `@layer` を使わず、9つの分類はディレクトリ構成と `@import` の順番で保つ。
+  reason: レイヤーの外のCSSは詳細度に関係なくレイヤーの中のCSSに勝つので、自分のCSSだけをレイヤーに入れると構造的に負けるため。
+  note: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。CMS での詳細は第12章で扱います。
+  aiProne: true
+  page: cascade/layers
+  since: 0.1.0
+
+# 2-4 @scope でスタイルを閉じ込める
+- id: scope-with-donut
+  level: 必須
+  rule: コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書く。
+  reason: スタイルの範囲がコンポーネントの中に限られ、入れ子になった別のコンポーネントにも届かないので、子要素に短い名前を付けてもぶつからないため。
+  aiProne: true
+  page: cascade/scope
+  since: 0.1.0
+
+- id: scoped-class-on-root
+  level: 必須
+  rule: 'スコープのルートになる要素には、必ず `scoped` クラスを付ける（例：`class="scoped news-card"`）。'
+  reason: '`scoped` クラスが外側のスコープの下限（`to (.scoped)`）になり、入れ子のコンポーネントとの境界になるため。'
+  page: cascade/scope
+  since: 0.1.0
+
+- id: scope-root-with-scope-pseudo
+  level: 推奨
+  rule: スコープのルート要素は `:scope` で選び、`@scope` の直下では `&` を使わない。
+  reason: '`@scope` の直下の `&` を `:where(:scope)` として扱うブラウザは新しく、Safari では 26.2 以降に限られるため。'
+  page: cascade/scope
+  since: 0.1.0
+
+- id: page-scope-root
+  level: 推奨
+  rule: ページ固有のスタイルは、ページのルート要素に `scoped page-<スラッグ>` を付け、`@scope (.scoped.page-<スラッグ>) to (.scoped)` の中に書く。
+  reason: ページのスタイルもほかのページやコンポーネントに漏れず、コンポーネントと同じ書き方で管理できるため。
+  page: cascade/scope
+  since: 0.1.0
+
+- id: astro-inline-scope
+  level: 推奨
+  rule: Astro では、コンポーネントのルート要素の中に `<style is:inline>` を置き、`@scope to (.scoped)` をレイヤーで包んで書く。
+  reason: '`<style>` の親要素がスコープのルートになるので、ルートのセレクタを書かずにコンポーネントのファイルの中でスタイルを完結できるため。'
+  note: '`is:inline` の CSS はビルドで変換されないので、`@scope` やネストはブラウザが直接解釈します。'
+  page: cascade/scope
+  since: 0.1.0

@@ -1,0 +1,47 @@
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+
+      /* ページ全体の段組みはビューポートで切り替える */
+      @media (width >= calc(720 / 16 * 1rem)) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.media-card) to (.scoped) {
+    :scope {
+      container: --media-card / inline-size;
+    }
+
+    ._layout {
+      display: block grid;
+      gap: 12px;
+
+      /* コンポーネントの中の配置は、置かれた場所の幅で切り替える */
+      @container --media-card (inline-size >= calc(400 / 16 * 1rem)) {
+        grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+        align-items: start;
+      }
+    }
+
+    ._image {
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+    }
+
+    ._title {
+      margin: 0;
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._text {
+      margin-block: 8px 0;
+    }
+  }
+}

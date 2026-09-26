@@ -1,0 +1,251 @@
+---
+/**
+ * HTML と CSS をその場で描画するデモ。
+ * iframe（srcdoc）で分離しているので、デモの CSS がページに漏れない。
+ * iframe の幅がそのままデモのビューポートになるので、メディアクエリも本物どおりに動く。
+ * 同じ文字列をコードブロックにも渡すので、表示とコードが食い違わない。
+ *
+ * @example
+ * import html from '../../../demos/responsive/intrinsic-grid/index.html?raw';
+ * import css from '../../../demos/responsive/intrinsic-grid/style.css?raw';
+ * <Demo title="auto-fit で列数が変わるカード" html={html} css={css} />
+ */
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+import { buildSrcdoc, type DemoBase, type DemoScheme } from '../lib/demo';
+
+interface Props {
+  /** デモの内容を表す説明。iframe の title とキャプションに使う。 */
+  title: string;
+  html: string;
+  css: string;
+  /** `none` にするとブラウザのデフォルトスタイルのまま描画する。 */
+  base?: DemoBase;
+  scheme?: DemoScheme;
+  /** コード例のラベル。 */
+  variant?: 'recommended' | 'not-recommended' | 'neutral';
+  /** 幅を切り替えるボタン（px）。本文の幅より広い値も選べる。空の配列なら幅の操作を出さない。 */
+  widths?: number[];
+  /** iframe の高さ。`auto` なら中身の高さに合わせる。ビューポートの高さに依存するデモでは固定値にする。 */
+  height?: string;
+  /** HTML のタブを出すか。 */
+  showHtml?: boolean;
+}
+
+const {
+  title,
+  html,
+  css,
+  base = 'kiso',
+  scheme = 'light',
+  variant = 'recommended',
+  widths = [320, 480, 768, 1024, 1280],
+  height = 'auto',
+  showHtml = true,
+} = Astro.props;
+
+const srcdoc = buildSrcdoc({ html, css, base, scheme });
+const label = {
+  recommended: '🙆‍♂ Recommended',
+  'not-recommended': '🙅‍♂ Not Recommended',
+  neutral: '',
+}[variant];
+const cssTitle = label ? `${label}: style.css` : 'style.css';
+// 悪い例はコードだけ切り出されても分かるよう、先頭行にもラベルを入れる
+const cssCode = variant === 'not-recommended' ? `/* 🙅‍♂ Not Recommended */\n${css}` : css;
+const isAutoHeight = height === 'auto';
+---
+
+<figure
+  class="scoped css-demo not-content"
+  data-css-demo
+  data-auto-height={isAutoHeight ? '' : undefined}
+  data-pagefind-ignore
+  style={isAutoHeight ? undefined : `--css-demo--height: ${height}`}
+>
+  {
+    widths.length > 0 && (
+      <div class="_toolbar">
+        <div class="_presets" role="group" aria-label="プレビューの幅">
+          {widths.map((width) => (
+            <button type="button" class="_preset" data-width={width} aria-pressed="false">
+              {width}
+            </button>
+          ))}
+          <button type="button" class="_preset" data-width="full" aria-pressed="true">
+            最大
+          </button>
+        </div>
+        <input
+          type="range"
+          class="_range"
+          min="240"
+          max="1280"
+          step="1"
+          value="1280"
+          aria-label="プレビューの幅（px）"
+        />
+        <output class="_width" aria-live="polite"></output>
+      </div>
+    )
+  }
+  <div class="_stage">
+    <div class="_frame">
+      <iframe class="_iframe" srcdoc={srcdoc} title={title} loading="lazy"></iframe>
+    </div>
+  </div>
+  <figcaption class="_caption">{title}</figcaption>
+</figure>
+<Tabs>
+  <TabItem label="CSS">
+    <Code code={cssCode} lang="css" title={cssTitle} />
+  </TabItem>
+  {
+    showHtml && (
+      <TabItem label="HTML">
+        <Code code={html} lang="html" title="index.html" />
+      </TabItem>
+    )
+  }
+</Tabs>
+
+<script>
+  const MIN_WIDTH = 240;
+
+  for (const demo of document.querySelectorAll<HTMLElement>('[data-css-demo]')) {
+    const stage = demo.querySelector<HTMLElement>('._stage');
+    const frame = demo.querySelector<HTMLElement>('._frame');
+    const iframe = demo.querySelector<HTMLIFrameElement>('._iframe');
+    const range = demo.querySelector<HTMLInputElement>('._range');
+    const output = demo.querySelector<HTMLOutputElement>('._width');
+    const presets = demo.querySelectorAll<HTMLButtonElement>('._preset');
+    if (!stage || !frame || !iframe) continue;
+
+    const setWidth = (width: string) => {
+      if (width === 'full') {
+        frame.style.removeProperty('--_width');
+      } else {
+        frame.style.setProperty('--_width', `${width}px`);
+      }
+      for (const preset of presets) {
+        preset.setAttribute('aria-pressed', String(preset.dataset.width === width));
+      }
+    };
+
+    for (const preset of presets) {
+      preset.addEventListener('click', () => setWidth(preset.dataset.width ?? 'full'));
+    }
+    range?.addEventListener('input', () => setWidth(range.value));
+
+    new ResizeObserver(([entry]) => {
+      const width = Math.round(entry.contentRect.width);
+      if (output) output.textContent = `${width}px`;
+      if (range) range.value = String(width);
+    }).observe(iframe);
+
+    // iframe の中の body の大きさを監視して、高さを中身に合わせる。
+    // ビューポートの高さに依存する中身のデモは、height を固定値にして自動調整を止める。
+    const fitHeight = () => {
+      const root = iframe.contentDocument?.documentElement;
+      if (!root) return;
+      const height = Math.ceil(root.getBoundingClientRect().height);
+      if (Math.abs(height - iframe.getBoundingClientRect().height) >= 1) {
+        iframe.style.blockSize = `${height}px`;
+      }
+    };
+    const observeContent = () => {
+      const win = iframe.contentWindow;
+      const body = iframe.contentDocument?.body;
+      if (!demo.hasAttribute('data-auto-height') || !win || !body) return;
+      new win.ResizeObserver(fitHeight).observe(body);
+    };
+    iframe.addEventListener('load', observeContent);
+    if (iframe.contentDocument?.readyState === 'complete') observeContent();
+
+    // 本文の幅より広いビューポートも試せるよう、上限はプリセットの最大値と表示領域の広いほうにする
+    const widest = Math.max(MIN_WIDTH, ...[...presets].map((preset) => Number(preset.dataset.width) || 0));
+    new ResizeObserver(([entry]) => {
+      if (range) range.max = String(Math.max(widest, Math.floor(entry.contentRect.width)));
+    }).observe(stage);
+  }
+</script>
+
+<style is:global>
+  @layer starlight, base, components;
+
+  @layer components {
+    @scope (.scoped.css-demo) to (.scoped) {
+      :scope {
+        --_border-color: var(--sl-color-gray-5);
+      }
+
+      ._toolbar {
+        display: block flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-block-end: 0.5rem;
+        font-size: var(--sl-text-sm);
+      }
+
+      ._presets {
+        display: block flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+
+      ._preset {
+        padding-block: 0.125rem;
+        padding-inline: 0.5rem;
+        border: 1px solid var(--_border-color);
+        border-radius: 0.25rem;
+        background-color: transparent;
+        color: inherit;
+        font: inherit;
+        font-variant-numeric: tabular-nums;
+        cursor: pointer;
+
+        &[aria-pressed="true"] {
+          border-color: var(--sl-color-accent);
+          background-color: var(--sl-color-accent-low);
+        }
+      }
+
+      ._range {
+        flex: 1 1 8rem;
+        accent-color: var(--sl-color-accent);
+      }
+
+      ._width {
+        min-inline-size: 6ch;
+        font-variant-numeric: tabular-nums;
+        text-align: end;
+      }
+
+      ._stage {
+        overflow-x: auto;
+      }
+
+      /* 表示領域より広い幅を選んだときは、._stage の中で横にスクロールする */
+      ._frame {
+        inline-size: var(--_width, 100%);
+        min-inline-size: 240px;
+      }
+
+      /* 枠線で iframe の幅（デモのビューポート）が減らないよう、内側に描く outline を使う */
+      ._iframe {
+        display: block flow;
+        inline-size: 100%;
+        block-size: var(--css-demo--height, 8rem);
+        border: 0;
+        outline: 1px solid var(--_border-color);
+        outline-offset: -1px;
+      }
+
+      ._caption {
+        margin-block-start: 0.5rem;
+        color: var(--sl-color-gray-3);
+        font-size: var(--sl-text-sm);
+      }
+    }
+  }
+</style>

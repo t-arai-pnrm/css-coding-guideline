@@ -1,0 +1,24 @@
+/* テーマの CSS：components レイヤーに入れている */
+@layer components {
+  @scope (.scoped.notice-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    /* 詳細度は 0.1.0 で、下のプラグインの h2（0.0.1）より高い */
+    ._title {
+      color: oklch(50% 0.2 260deg);
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}
+
+/* プラグインが出力する CSS：レイヤーの外にある */
+h2 {
+  color: oklch(55% 0.22 25deg);
+  font-size: calc(28 / 16 * 1rem);
+}

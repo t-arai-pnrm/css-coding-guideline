@@ -1,0 +1,24 @@
+@layer components {
+  @scope (.scoped.cta-list) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* 最小の大きさと余白だけを決め、ラベルの長さと置き場所の幅に合わせて形を変える */
+    ._button {
+      display: inline flex;
+      justify-content: center;
+      align-items: center;
+      min-inline-size: min(100%, calc(240 / 16 * 1rem));
+      min-block-size: calc(56 / 16 * 1rem);
+      padding-block: 8px;
+      padding-inline: 24px;
+      border-radius: 8px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+      text-align: center;
+    }
+  }
+}

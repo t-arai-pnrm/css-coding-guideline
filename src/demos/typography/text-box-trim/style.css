@@ -1,0 +1,55 @@
+@layer components {
+  @scope (.scoped.trim-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 12px;
+    }
+
+    ._label {
+      margin: 0;
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._badges {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      /* バッジごとの高さの違いが見えるように、高さをそろえない */
+      align-items: start;
+    }
+
+    ._badge {
+      display: inline flow-root;
+      padding-block: 6px;
+      padding-inline: 12px;
+      border-radius: 4px;
+      background-color: oklch(92% 0.04 250deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._text {
+      margin: 0;
+      background-color: oklch(95% 0.03 90deg);
+      line-height: 2;
+    }
+  }
+}
+
+@layer utilities {
+  /* 1行目の上と最後の行の下にあるハーフレディングを取り除く */
+  .-trim-both {
+    text-box-trim: trim-both;
+
+    /* 英文は大文字の上端とベースラインで切り取る */
+    &:lang(en) {
+      text-box-edge: cap alphabetic;
+    }
+  }
+}

@@ -1,0 +1,172 @@
+---
+title: "4-1 壊さないリセット"
+description: リセットCSSにはkiso.cssを使い、resetレイヤーに読み込みます。詳細度を0にし、和文向けの初期値を入れ、ブラウザの便利なデフォルトは残すという3つの方針で作られたリセットCSSです。
+sidebar:
+  order: 1
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import sampleHtml from '../../../demos/reset/ua-vs-kiso/index.html?raw';
+import sampleCss from '../../../demos/reset/ua-vs-kiso/style.css?raw';
+
+リセットCSSには、私が作って公開しているkiso.cssを使い、`reset` レイヤーに読み込みます。kiso.cssは、すべてのセレクタの詳細度を0にし、和文向けの初期値を入れ、ブラウザの便利なデフォルトは残すという3つの方針で作っています。目標は「リセットCSSがなくても、レイアウトが大きく崩れない」ことです。
+
+この節では、リセットCSSが原因で起きがちな問題と、kiso.cssがそれをどう避けているかを説明します。ほかのリセットCSSを使う場合も、選ぶときの基準として読んでください。
+
+## リセットCSSが土台を壊すとき
+
+リセットCSSは、ブラウザごとに異なるデフォルトスタイルをそろえるためのCSSです。すべての要素に効くので、その性質はサイト全体に及びます。よくある問題は、消しすぎること、詳細度が高いこと、欧文を前提にしていることの3つです。
+
+```css title="🙅‍♂ Not Recommended: 便利なデフォルトまで一律に消すリセット"
+/* 🙅‍♂ Not Recommended */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+input,
+button {
+  appearance: none;
+}
+
+ul {
+  list-style: none;
+}
+```
+
+このリセットでは、ボタンの `padding` まで消えるので、ボタンを置くたびに余白を指定し直すことになります。`input` への `appearance: none` はさらに危険で、チェックボックスやラジオボタンの見た目がなくなり、画面から消えてしまいます。`list-style: none` には、SafariのVoiceOverがリストとして読み上げなくなる問題もあります。これは「[4-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明します。
+
+詳細度の問題も見落とされがちです。`svg:not([fill])` のように、タイプセレクタと擬似クラスを組み合わせたリセットの詳細度は0.1.1です。この指定があると、アイコンの色を `.icon` のようなクラス1つでは上書きできません。私も以前、使っていたリセットCSSのこの指定に悩まされました。
+
+日本語のサイトでは、もうひとつ問題があります。海外で作られたリセットCSSの多くは欧文の組版を前提にしていて、和文と英数字の間隔や約物の詰め、禁則の扱いを含んでいません。そのため、日本語のサイトを作るたびに、同じ調整を足すことになります。
+
+## kiso.cssの設計
+
+kiso.cssは、こうした問題を避けるために作ったリセットCSSです。名前は日本語の「基礎」から取っています。設計の目標は、先に書いた「リセットCSSがなくてもレイアウトが大きく崩れない」ことで、リセットは最小限にとどめ、破壊的な指定はしません。
+
+何を消して何を残すかは、「毎回指定し直すことになるか」で決めています。リンクの下線やリストのマーカーは、デザインの上でほぼ毎回消すのでリセットします。見出しの太さやボタンの `padding` は、消しても結局また指定することになるので残します。
+
+それぞれの指定には、なぜそうするのかを英語のコメントで書いています。リセットCSSは中身を知らないまま使われがちですが、土台の挙動を決めるものです。導入する前に、一度ソースを読んでおくことをおすすめします。
+
+kiso.cssは、レイヤーの順序を宣言したうえで、`@import` で `reset` レイヤーに読み込みます。`reset` は、トークンだけを置く `tokens` の次に弱いレイヤーです。そのため、ベースやコンポーネントの指定は、詳細度とは関係なくリセットより優先されます。
+
+```css title="🙆‍♂ Recommended: kiso.cssを reset レイヤーに読み込む"
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+@import url("kiso.css") layer(reset);
+@import url("./base/generic.css") layer(base);
+```
+
+WordPressのように、レイヤーに入っていない外部のCSSと共存する環境では、レイヤーを使わないことがあります。判断の基準は「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明します。その場合も、kiso.cssは `@import url("kiso.css");` とレイヤーなしで読み込み、ほかのCSSより前に置けば成り立ちます。詳細度が0なので、後から書いた指定には必ず負けるからです。
+
+## 詳細度を0にする
+
+kiso.cssは、すべてのセレクタを `:where()` で包んでいます。`:where()` は、中に書いたセレクタの詳細度を0にする擬似クラスです。リセットの指定はどれも詳細度が0になるので、タイプセレクタ1つ、クラス1つで上書きできます。
+
+```css title="🙆‍♂ Recommended: kiso.cssのリストの指定（詳細度は0）"
+:where(ul, ol, menu) {
+  padding-inline-start: unset;
+  list-style-type: "";
+}
+```
+
+kiso.cssが `:where()` を使うのは、カスケードレイヤーを導入できない環境でも、上書きしやすくするためです。本書のようにレイヤーを使う場合は、レイヤーの順序と `:where()` の両方で、リセットを弱くしていることになります。
+
+反対に、リセットCSSが `:where()` を使っていないと困ったことが起きます。ベーススタイルを `:where()` で書いても、レイヤーを使わない環境では、タイプセレクタのまま書かれたリセットのほうが詳細度で勝ち、ベーススタイルが打ち消されてしまいます。リセットCSSを選ぶときは、詳細度が0かどうかを必ず確認します。
+
+例外は、全称セレクタで指定した `box-sizing: border-box`、`::placeholder` のような擬似要素、`!important` を付けた一部の指定です。全称セレクタは、もともと詳細度が0です。擬似要素は、`:where()` の中に書けません。`!important` を付けているのは、`hidden` 属性を持つ要素や、閉じた状態のダイアログとポップオーバーを隠す指定などです。ほかのスタイルで `display` を指定されても、表示されてしまわないようにしています。ページ内検索で開けるように、`hidden="until-found"` はこの対象から外しています。
+
+`reset` レイヤーの `!important` は、レイヤーの優先順位が逆転するため、ほかのどのレイヤーの `!important` よりも強くなります。この仕組みは「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明します。「必ず隠す」という目的には、この強さが合っています。
+{/* 要確認: 出典なし（reset レイヤーの !important が最も強くなることを、意図どおりとする評価は推論） */}
+
+## 和文向けの初期値を入れる
+
+kiso.cssは、日本語のサイトのための初期値を `:root` に入れています。どれも継承されるプロパティなので、`:root` に1回書けば文書全体に効きます。
+
+```css title="🙆‍♂ Recommended: kiso.cssが :root に入れている和文向けの初期値（抜粋）"
+:where(:root) {
+  text-spacing-trim: trim-start;
+  text-autospace: normal;
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+```
+
+`text-spacing-trim: trim-start` は、括弧や句読点のような約物が隣り合ったときのアキと、行頭の約物のアキを詰めます。`text-autospace: normal` は、和文と英数字の間に小さなアキを入れます。kiso.cssを公開した2025年6月の時点では、初期の挙動がブラウザによって異なっていたので、値を明示しました。本書の原稿で、和文と英数字の間にスペースを手で入れないのも、この指定に任せるためです。
+
+<Baseline id="text-autospace" compatKey="css.properties.text-autospace.normal" name="text-autospace: normal" />
+
+<Baseline id="text-spacing-trim" />
+
+`line-break: strict` は、小書きの仮名（「ッ」や「ゃ」など）の前で改行しない、厳格な禁則を適用します。行末に余白が出やすくなる面はありますが、読み誤りを防ぐほうを優先しています。`overflow-wrap: anywhere` は、URLや長い英単語のように、途中に折り返せる位置がない文字列も途中で折り返します。`break-word` ではなく `anywhere` を選んでいるのは、要素の最小幅の計算にも効き、フレックスやグリッドの中ではみ出すのも防げるからです。
+
+`text-spacing-trim` に対応しているのは、2026年9月の時点ではChrome系のブラウザだけです。対応していないブラウザでは指定が無視されるだけで、表示が崩れることはありません。組版の指定は、こうしたプログレッシブ・エンハンスメントとして使いやすい機能の代表です。
+
+要素ごとの指定もあります。日本語の文書（`:lang(ja)`）では `em` を太字にし、`i`、`cite`、`em`、`dfn`、`address` の斜体を解除しています。日本語では強調を太字で表すのが一般的で、斜体はあまり使わないからです。反対に、`pre`、`time`、入力欄には `text-autospace: no-autospace` を指定しています。等幅のそろいが崩れたり、日付の表記や入力中の文字にアキが入ったりするのを防ぐためです。
+
+一方で、本文のプロポーショナル詰め（`palt`）やカーニング、`word-break: auto-phrase` は入れていません。本文はベタ組みのほうが読みやすく、これらは見出しなどに限って指定するものだからです。見出しの組版はベーススタイルで指定します。値の選び方は、「[9-2 和文組版を整える](/typography/japanese-typesetting/)」で説明します。
+
+## ブラウザの便利なデフォルトは残す
+
+kiso.cssは、ブラウザのデフォルトスタイルのうち、役に立つものを残します。見出しの太さと大きさ、ボタンの `padding`、ダイアログの `margin` などです。ダイアログの `margin: auto` は、`inset: 0` と組み合わせるだけで中央に配置できるので、消すとかえって不便です。一方、ポップオーバーの `margin` は、アンカーポジショニングで配置するときの邪魔になるので、リセットしています。
+
+フォームの部品には `1px` の実線の枠線を付け、枠線の色は文字色に合わせています。文字色やフォントは、親要素から継承させています。スタイルを当てていない状態でも入力欄の範囲が分かり、デザインで枠線を付けるときも色を変えるだけで済みます。枠線を消したいときは、`border: none` ではなく `border-color: transparent` にします。強制カラーモードでは透明な枠線にも色が付くので、背景色が消えても部品の範囲が分かるからです。強制カラーモードへの対応は、「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明します。
+
+チェックボックスやラジオボタンの `appearance` には触れていません。色を変えたいだけなら `accent-color` で足ります。見た目を作り直す場合だけ、その部品に個別に `appearance: none` を指定します。フォーム部品の作り方は、「[11-4 フォーム部品](/interaction/forms/)」で扱います。
+
+反対に、kiso.cssがリセットしたスタイルを使いたい場面もあります。CMSで入力する記事の本文のように、リストのマーカーを表示したい場所です。この場合は値を書き直さず、`revert` でブラウザのデフォルトに戻します。
+
+```css title="🙆‍♂ Recommended: 本文の中だけ、リストのマーカーを戻す"
+@scope (.scoped.article-body) to (.scoped) {
+  :where(ul, ol) {
+    padding-inline-start: revert;
+    list-style-type: revert;
+  }
+}
+```
+
+`revert` は、プロパティの値をブラウザのデフォルトスタイルの値まで戻すキーワードです。`disc` や `40px` のような値を覚えて書き直す必要がなく、「デフォルトに戻したい」という意図もコードに残ります。マーカーを表示する場所がなくならないように、`padding-inline-start` も一緒に戻しています。
+{/* 要確認: padding-inline-start を一緒に戻すのは筆者の推論（kiso.css の記事の例は list-style-type だけ） */}
+
+## デフォルトスタイルと比べる
+
+次の2つのデモは、同じHTMLを、ブラウザのデフォルトスタイルのままで表示したものと、kiso.cssを読み込んで表示したものです。見出しの太さと大きさ、ボタンの余白、チェックボックスの見た目はそのままで、段落の余白、リストのマーカー、リンクの色と下線が消えていることが分かります。
+
+<Demo title="ブラウザのデフォルトスタイルのまま表示した状態" html={sampleHtml} css={sampleCss} base="none" variant="neutral" widths={[]} />
+
+<Demo title="kiso.cssを読み込んで表示した状態" html={sampleHtml} css={sampleCss} variant="neutral" widths={[]} />
+
+点線の枠の中の長い英単語にも注目してください。デフォルトのままでは枠からはみ出しますが、kiso.cssを読み込んだ状態では、`overflow-wrap: anywhere` によって枠の中で折り返します。`em` が太字になり、`cite` が斜体でなくなるのは、デモの文書の言語が日本語だからです。
+
+## kiso.cssの値を変えたいとき
+
+kiso.cssの初期値がプロジェクトに合わないときは、kiso.cssのファイルを書き換えず、`base` レイヤーで上書きします。たとえばkiso.cssは、WCAGの達成基準に合わせて `line-height` を1.5にしています。プロジェクトのトークンで1.6にしたいなら、ベーススタイルの `:root` で指定し直します。`base` レイヤーは `reset` レイヤーより強いので、詳細度を気にする必要はありません。
+
+```css title="🙆‍♂ Recommended: kiso.cssの値は base レイヤーで上書きする"
+:where(:root) {
+  line-height: var(--leading--normal);
+}
+
+:where(h1) {
+  margin-block: unset;
+}
+```
+
+`h1` の `margin-block` と `font-size` は、kiso.cssがあえて指定しているものです。セクションの中に置いた `h1` のデフォルトスタイルが、ブラウザの変更で変わったことへの対応です。ただし、余白を `gap` で管理するプロジェクトでは不要なので、上の例のようにベーススタイルで打ち消します。
+
+本体を書き換えずにおけば、kiso.cssを新しいバージョンに更新しても、プロジェクトでの変更は失われません。変更点がベーススタイルに集まるので、そのプロジェクトがリセットの何を変えているのかも一目で分かります。ベーススタイルに何を書くかは、「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明します。
+{/* 要確認: 出典なし（本体を書き換えない理由は筆者の推論。テンプレートでは base で上書きしている） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [kiso.css](https://github.com/tak-dcxi/kiso.css)（GitHub）
+- [kiso.css のデモサイト](https://tak-dcxi.github.io/kiso.css/)
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
+- [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)
+- [revert - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert)
+- [text-autospace - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-autospace)

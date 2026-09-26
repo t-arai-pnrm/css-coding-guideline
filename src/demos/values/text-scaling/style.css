@@ -1,0 +1,91 @@
+/* デモ用：ブラウザの文字サイズの設定を変える代わりに、ルートの文字サイズを切り替えて再現する */
+@layer base {
+  :root {
+    &:has(input[name="text-scale"][value="125"]:checked) {
+      font-size: 125%;
+    }
+
+    &:has(input[name="text-scale"][value="150"]:checked) {
+      font-size: 150%;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.text-scaling) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._controls {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin: 0;
+      padding: 12px 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._legend {
+      padding-inline: 4px;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 比べやすいよう、列の幅は文字サイズの設定で変えない */
+    ._samples {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    ._card {
+      padding-block: var(--_padding-block);
+      padding-inline: var(--_padding-inline);
+      border-inline-start: var(--_border-width) solid oklch(60% 0.15 250deg);
+      border-radius: 8px;
+      background-color: oklch(97% 0.01 250deg);
+      font-size: var(--_font-size);
+
+      /* 文字も余白も線も px */
+      &[data-unit="px"] {
+        --_font-size: 16px;
+        --_title-size: 20px;
+        --_text-gap: 8px;
+        --_padding-block: 16px;
+        --_padding-inline: 24px;
+        --_border-width: 6px;
+      }
+
+      /* 文字も余白も線も rem */
+      &[data-unit="rem"] {
+        --_font-size: 1rem;
+        --_title-size: calc(20 / 16 * 1rem);
+        --_text-gap: calc(8 / 16 * 1rem);
+        --_padding-block: 1rem;
+        --_padding-inline: calc(24 / 16 * 1rem);
+        --_border-width: calc(6 / 16 * 1rem);
+      }
+
+      /* 文字と段落の間隔は rem、余白と線は px */
+      &[data-unit="mixed"] {
+        --_font-size: 1rem;
+        --_title-size: calc(20 / 16 * 1rem);
+        --_text-gap: calc(8 / 16 * 1rem);
+        --_padding-block: 16px;
+        --_padding-inline: 24px;
+        --_border-width: 6px;
+      }
+    }
+
+    ._title {
+      margin: 0;
+      font-size: var(--_title-size);
+    }
+
+    ._text {
+      margin-block: var(--_text-gap) 0;
+    }
+  }
+}

@@ -1,0 +1,234 @@
+---
+title: "7-4 重なりと配置"
+description: "要素を重ねるときは、まずGridの同じエリアに置きます。絶対配置は包含ブロックを、重なり順はスタッキングコンテキストを意識して書き、アンカーポジショニングはレイアウトの要にしません。画面幅いっぱいに広げる手法も比べます。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+要素を重ねるときは、`position: absolute` の前に、Gridの同じエリアに置く方法を検討します。絶対配置を使うときは、位置の基準になる「包含ブロック」を、同じコンポーネントの中にはっきり作ります。重なり順がおかしいときは、z-indexの値を大きくする前に、どの「スタッキングコンテキスト」の中で比べられているかを確かめます。
+
+アンカーポジショニングは、2026年9月の時点で本書の対象のすべてのブラウザが対応しているわけではないので、レイアウトの要にはしません。最後に、要素を画面幅いっぱいに広げる手法を比べます。まずレイアウトの余白の列まで広げる方法を使い、ビューポート単位で広げるのは、背景の装飾と横スクロールの領域だけにします。
+
+## 重ねるならGridの同じエリアに置く
+
+画像の上に見出しを重ねるヒーローを考えます。よくあるのは、見出しを絶対配置にして、`translate` で中央に寄せる書き方です。
+
+```css title="🙅‍♂ Not Recommended: 絶対配置と translate で見出しを重ねる"
+/* 🙅‍♂ Not Recommended */
+.hero {
+  position: relative;
+}
+
+.hero-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+絶対配置にした要素は、通常のレイアウトの流れから外れます。ヒーローの高さは画像だけで決まり、見出しの大きさは反映されません。見出しが長くなったり、画面が狭くて行数が増えたりすると、見出しは画像の外へはみ出し、下にある内容と重なります。
+
+Gridなら、すべての子要素を同じエリアに置くだけで重ねられます。重ねた要素はどれもレイアウトの流れに残るので、エリアの高さは、画像と見出しのうち高いほうに合わせて決まります。見出しが長くなれば、ヒーロー全体が伸びます。
+
+```css title="🙆‍♂ Recommended: すべての子要素を同じエリアに置いて重ねる"
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-areas: "--stack";
+    place-items: center;
+
+    & > * {
+      grid-area: --stack;
+    }
+  }
+
+  ._image {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  ._title {
+    padding: 24px;
+  }
+}
+```
+
+重なり順は、HTMLの順番で決まります。画像を先に、見出しを後に書けば、見出しが手前に描かれるので、z-indexは要りません。HTMLの順番で足りないときだけ、相対的なz-indexを使います。この重ね方は、第6章のコンポジション `pile` として部品にしています（「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。
+
+## 絶対配置の基準は包含ブロックで決まる
+
+絶対配置の要素の位置と、`inset` のパーセントの値は、「包含ブロック」を基準に決まります。`position: absolute` の包含ブロックは、`position` が `static` 以外の、いちばん近い祖先です。あとで説明する `transform` などを指定した祖先も、包含ブロックになります。どの祖先も当てはまらなければ、ページの最初の包含ブロックが基準になり、置く場所によって位置がずれます。
+
+そのため、絶対配置の要素を置くときは、基準としたい祖先へ `position: relative` を指定し、包含ブロックをはっきりさせます。基準とする祖先は、同じコンポーネントの中に置きます。コンポーネントの外の祖先を基準にすると、置く場所によって位置が変わってしまうからです。コンポーネントのルートそのものに `position: absolute` と `inset` を指定しない理由は、「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+
+絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使います。`inset: 0` で包含ブロックいっぱいの範囲を作り、大きさを決めたうえで、残りを `margin: auto` で均等に分けます。Gridの中なら、先ほどのように `place-items: center` で足ります。
+
+```css title="🙆‍♂ Recommended: inset: 0 と margin: auto で中央に置く"
+._badge {
+  position: absolute;
+  inset: 0;
+  inline-size: fit-content;
+  block-size: fit-content;
+  margin: auto;
+}
+```
+
+`translate` を使う方法は、位置を決める指定が `inset` と変形の2か所に分かれ、何のための変形なのかが読み取りにくくなります。絶対配置の要素に `place-self: center` を指定する方法もありますが、Safariは26から対応したので、2026年9月の時点ではまだ使えません（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
+{/* 要確認: 出典なし（translate を使わない理由の説明は推論。著者の記事は非推奨とするだけで理由を書いていない） */}
+
+`position: fixed` の包含ブロックは、通常はビューポートです。ただし、祖先に `transform`、`filter`、`perspective`、`contain: paint` などが指定されていると、その祖先が包含ブロックになります。フェードインの演出のために `transform` を指定した要素の中に固定ヘッダーを置くと、ヘッダーはビューポートではなく、その要素に対して固定されてしまいます。モーダルは `<dialog>` の `showModal()` でトップレイヤーに表示し、この問題を避けます。ダイアログの実装は「[11-3 開閉するUI](/interaction/disclosure/)」で扱います。
+{/* 要確認: 出典なし（fixed の包含ブロックになるプロパティの列挙は仕様からの説明） */}
+
+## 重なり順はスタッキングコンテキストの中で決まる
+
+z-indexの値は、ページ全体で比べられるわけではありません。比べられるのは、同じ「スタッキングコンテキスト」の中にある要素どうしだけです。スタッキングコンテキストは、重なり順を決める単位のようなもので、その中の要素は、外の要素と比べるときに1つのまとまりとして扱われます。
+
+```css title="🙅‍♂ Not Recommended: 子要素の z-index を大きくして、祖先の順位を超えようとする"
+/* 🙅‍♂ Not Recommended */
+.site-header {
+  position: relative;
+  z-index: 1;
+}
+
+.site-header .dropdown {
+  position: absolute;
+  z-index: 9999;
+}
+
+.hero {
+  position: relative;
+  z-index: 2;
+}
+```
+
+この例では、ヘッダーのドロップダウンメニューが、下のヒーローの後ろに隠れます。ヘッダーは `z-index: 1` でスタッキングコンテキストを作っていて、ドロップダウンの9999は、ヘッダーの中でしか効かないからです。ヘッダーのまとまりは、`z-index: 2` のヒーローより奥にあります。ドロップダウンの値をいくら大きくしても、この順位は変わりません。直すべきなのは、ヘッダーとヒーローの間の順位です。
+
+スタッキングコンテキストは、z-indexを指定した位置指定の要素のほかにも、さまざまな指定で作られます。たとえば、`position: fixed` と `position: sticky` の要素や、z-indexを指定したフレックスアイテムとグリッドアイテムです。`opacity` が1未満の要素、`transform` や `filter` を指定した要素、`isolation: isolate` を指定した要素も、コンテキストを作ります。アニメーションのために `opacity` や `transform` を指定しただけで、知らないうちにコンテキストができていることもあります。
+{/* 要確認: 出典なし（スタッキングコンテキストを作る条件の列挙は仕様からの説明） */}
+
+重なり順がおかしいときは、値を大きくする前に、DevToolsで祖先の要素をたどり、どの要素がコンテキストを作っているかを確かめます。z-indexの値をトークンで管理する方法と、`isolation: isolate` でコンポーネントの中の重なりを閉じ込める方法は、「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。`calc(infinity)` のような大きな値でも、祖先のコンテキストの順位は超えられません。
+
+## アンカーポジショニングはレイアウトの要にしない
+
+アンカーポジショニングは、ある要素（アンカー）の位置を基準にして、別の要素を配置する仕組みです。アンカーに `anchor-name` で名前を付け、配置する要素の `inset` に `anchor()` 関数を書くと、ツールチップやメニューを、ボタンのすぐ下に表示できます。画面の端で収まらないときは、`position-try-fallbacks` で反対側に回すこともできます。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.anchor-name" name="アンカーポジショニング（anchor-name）" />
+
+`anchor-name` と `anchor()` は、Chrome 125、Firefox 147、Safari 26で対応し、2026年1月に主要なブラウザがそろいました。一方、機能全体のBaselineは「一部のブラウザのみ」のままです。`position-visibility` の一部の値のように、Safari 27でようやく対応したものが含まれているからです（2026年9月確認）。いずれにしても、本書の対象のSafari 18系は対応していません。
+
+未対応の環境では、アンカーを基準にした配置の指定がすべて無視されます。ツールチップが意図しない場所に表示され、ほかの内容に重なることもあります。そのため、第1章のルールに従い、アンカーポジショニングはレイアウトの要として使いません（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。未対応の環境でも内容を読めて操作できる形を先に書き、対応した環境でだけ、アンカーを基準とした配置へ切り替えます。
+
+```css title="🙆‍♂ Recommended: 未対応の環境では画面の中央に、対応した環境ではボタンの下に表示する"
+@scope (.scoped.help-tip) to (.scoped) {
+  :scope {
+    anchor-scope: --help-tip;
+  }
+
+  ._button {
+    anchor-name: --help-tip;
+  }
+
+  ._tip {
+    margin: auto;
+
+    @supports (anchor-name: --help-tip) {
+      inset: auto;
+      inset-block-start: anchor(--help-tip end);
+      inset-inline-start: anchor(--help-tip start);
+      position-try-fallbacks: flip-block;
+      margin: 4px 0 0;
+    }
+  }
+}
+```
+
+```html
+<span class="scoped help-tip">
+  <button class="_button" type="button" popovertarget="help-tip-1">入力のヒント</button>
+  <span class="_tip" id="help-tip-1" popover>半角の数字で入力してください。</span>
+</span>
+```
+
+ヒントは `popover` 属性でトップレイヤーに表示しています。未対応の環境では、`margin: auto` によって画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。アンカーの名前は、ほかの名前と同じく `--` で始めます（「[5-1 命名規則](/notation/naming/)」）。
+{/* 要確認: 出典なし（ポップオーバーと組み合わせたフォールバックの書き方は推論。対応した環境での配置は Chrome 153 で確認したが、未対応の環境（Safari 18）での表示は未確認） */}
+
+ルートの `anchor-scope` は、アンカーの名前が届く範囲を、このコンポーネントの中に限る指定です。同じコンポーネントがページに複数あると、同じ名前のアンカーも複数できます。トップレイヤーの要素のように、ページ全体を包含ブロックにする要素からは、どのアンカーも見えるので、最後のアンカーが基準に選ばれ、別のコンポーネントのボタンの下に表示されてしまいます。繰り返し置くコンポーネントでアンカーを使うときは、ルートで範囲を限ります。
+{/* 要確認: 出典なし（anchor-scope の必要性は著者の資料になく、仕様と Chrome 153 での動作確認に基づく。anchor-scope がないと、後にある同名のアンカーが基準になることを確認した） */}
+
+## 画面幅いっぱいに広げる
+
+コンテンツの幅の中にある要素を、画面の幅いっぱいに広げたい場面はよくあります。かつては `margin-inline: calc(50% - 50vw)` のような指定が定番でしたが、本書では `vw` を使いません。スクロールバーの幅を含めて計算されるので、横スクロールの原因になるからです（「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。本書では、用途に合わせて3つの方法を使い分けます。
+
+1つ目は、レイアウトの側に画面の端までの列を用意しておく方法で、これを最初に検討します。「[7-2 余白を設計する](/layout/spacing/)」で説明したとおり、ページのレイアウトの左右に余白の列（ガター）を作っておけば、広げたい要素は `grid-column: --full` と書くだけで画面の端まで届きます。ビューポート単位を使わないので、スクロールバーの幅の違いにも影響されません。
+
+2つ目は、コンテンツの幅の中にある要素の背景だけを、画面の端まで広げる方法です。擬似要素を絶対配置にして、`inset-inline` に画面の幅と親の幅の差の半分を負の値で指定します。
+
+```css title="🙆‍♂ Recommended: 擬似要素の背景を、画面の端まで広げる"
+._band {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline: calc((100lvi - 100%) / -2);
+    z-index: var(--z--backwards);
+    background-color: oklch(96% 0.01 250deg);
+  }
+}
+```
+
+`inset-inline` の `100%` は、包含ブロック（`._band`）の幅です。`100lvi` との差の半分だけ左右へ広げるので、`._band` が画面の中央にあれば、擬似要素はちょうど画面の端まで届きます。背景を文字の後ろへ回すため、`z-index: var(--z--backwards)` を使い、`._band` には `isolation: isolate` を指定しています。単色やグラデーションの背景なら、`border-image: linear-gradient(色 0 0) fill 0 / / 0 100lvi` のように `border-image` で広げる方法もあります。`border-image` のはみ出しはスクロールの範囲に含まれないので、横スクロールも起きません。
+
+3つ目は、横にスクロールするカルーセルを、画面の端まで広げる方法です。コンポーネントのルートを名前付きのコンテナにして、`100lvi` と `100cqi` の差の半分を、負の `margin` と `padding` に指定します。
+
+```css title="🙆‍♂ Recommended: スクロールする領域を画面の端まで広げ、止まる位置を内側にそろえる"
+@scope (.scoped.carousel) to (.scoped) {
+  :scope {
+    container: --carousel / inline-size;
+  }
+
+  ._scroller {
+    --_gutter: calc((100lvi - 100cqi) / 2);
+
+    display: block grid;
+    grid-auto-columns: calc((100cqi - 16px * 2) / 3);
+    grid-auto-flow: column;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    margin-inline: calc(var(--_gutter) * -1);
+    padding-inline: var(--_gutter);
+    scroll-snap-type: inline mandatory;
+    scroll-padding-inline: var(--_gutter);
+  }
+}
+```
+
+ここで `100%` ではなく `100cqi` を使うのは、プロパティによって `%` の基準が変わるからです。`padding` の `%` は包含ブロックの幅を、`scroll-padding` の `%` はスクロールする要素自身の幅を基準にします。`100cqi` なら、どのプロパティに書いてもコンテナの幅を指すので、スクロールが止まる位置を、コンテンツの幅の左端にそろえられます。
+
+どちらの方法でも、ビューポートの単位には `lvi` を使っています。横方向では、ブラウザのUIの出入りで幅が変わることはほとんどないので、`svi` と `lvi` は多くの場合同じ値です。私は、画面の端まで確実に届かせたい値には、最も大きい `lvi` を使っています。ただし、クラシックなスクロールバーが幅を取る環境では、`lvi` もスクロールバーの幅を含むので、わずかにはみ出します。ルートで横方向のはみ出しを `clip` で切り取っておきます（「[7-3 変化に強いレイアウト](/layout/defensive/)」）。
+{/* 要確認: 出典なし（lvi を選ぶ理由とスクロールバーの扱いの説明は推論。著者の案件のコードでは 100lvi を使っている） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。`border-image` で背景を広げる例）
+- [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月）
+- [包含ブロック - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Containing_block)
+- [重ね合わせコンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_positioned_layout/Stacking_context)
+- [CSS アンカー位置指定 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_anchor_positioning)
+- [2025年のz-index設計を考える](https://speakerdeck.com/tak_dcxi/2025nian-noz-indexshe-ji-wokao-eru)（TAK）

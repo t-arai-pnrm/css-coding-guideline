@@ -1,0 +1,31 @@
+/**
+ * サイト全体の調整。Starlight の CSS は `starlight` レイヤーに入っているため、
+ * 自前のレイヤーはその後ろに並べる。このファイルも本書のルールと Stylelint の設定に従う。
+ */
+@layer starlight, base, components;
+
+@layer base {
+  :root {
+    /* 和文は総称ファミリーだけで十分（第9章） */
+    --sl-font: sans-serif;
+
+    &:lang(ja) {
+      font-kerning: none;
+      text-spacing-trim: trim-start;
+      line-break: strict;
+    }
+  }
+
+  pre {
+    text-spacing-trim: space-all;
+  }
+
+  :is(h1[id="_top"], .sl-markdown-content :is(h2, h3, h4)) {
+    font-feature-settings: "palt";
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}

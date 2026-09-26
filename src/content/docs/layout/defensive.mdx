@@ -1,0 +1,196 @@
+---
+title: "7-3 変化に強いレイアウト"
+description: "テキストが長くなったら、画像がなかったら、要素の数が変わったらと考えて書くディフェンシブCSSの節です。固定の長さには上限を付け、列は minmax(0, 1fr) で分け、はみ出しは clip で切り取ります。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import longUrlHtml from '../../../demos/layout/long-url/index.html?raw';
+import longUrlCss from '../../../demos/layout/long-url/style.css?raw';
+import longUrlBadCss from '../../../demos/layout/long-url/style.bad.css?raw';
+
+CSSを書くときは、「テキストが2倍の長さになったら」「画像がなかったら」「要素の数が変わったら」と、常に自問します。想定外の内容が入っても崩れないように書くCSSを、「ディフェンシブ（防衛的）なCSS」と呼びます。固定の長さには親の幅の上限を付け、列は `1fr` ではなく `minmax(0, 1fr)` で分け、はみ出しは `hidden` ではなく `clip` で切り取ります。
+
+一度公開したら終わりの短期のキャンペーンサイトは別として、一般的なWebサイトは公開後も更新と改修が続きます。とくにCMSの案件では、クライアントの都合で、デザインカンプにない長さの見出しや、画像のない記事が入ってきます。この節では、内容の長さ、単語の長さ、要素の数という3つの変化に備える書き方を説明します。
+
+## デザインカンプの内容はそのまま続かない
+
+デザインカンプの見出しは、たいていちょうど良い長さで書かれています。しかし、実際に入る見出しは2倍の長さかもしれませんし、英語に翻訳されて単語が長くなるかもしれません。ユーザーが文字サイズを大きくすれば、同じ文章でも行数が増えます。次のコードは、カンプの内容だけを前提に書いた例です。
+
+```css title="🙅‍♂ Not Recommended: デザインカンプの内容だけを前提にしたレイアウト"
+/* 🙅‍♂ Not Recommended */
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+
+.card-title {
+  height: 48px;
+  white-space: nowrap;
+}
+
+.tag-list {
+  display: flex;
+}
+
+.tag-list > * {
+  flex-shrink: 0;
+}
+```
+
+カードの一覧は、親の幅が360pxを下回るとはみ出します。見出しは高さが固定されているうえに折り返せないので、長くなるとカードの外へ突き抜けます。タグの一覧は、タグが増えると折り返せずに横へはみ出します。どれも、カンプの内容のままなら何も起きない問題です。
+
+こうした不具合は、デザインの段階から「もし〜だったら」を織り込んでおけば、多くを防げます。書いたCSSは、長い見出し、画像のない記事、要素が1つだけの一覧や多すぎる一覧を入れて確かめます。既存のサイトの改修では、このあと説明する最小幅に起因するはみ出しを直す作業が、定期的に発生しています。書く段階で防いでおくほうが、ずっと安上がりです。
+
+## 固定の長さには親の幅の上限を付ける
+
+幅や高さを固定値で決めない、というのが最初の守りです。幅は `max-inline-size` で上限だけを決め、高さは `min-block-size` か `aspect-ratio` で決めます。この2つは「[8-1 検討する順番](/responsive/escalation/)」で詳しく説明しています。固定値の幅を許すのは、アイコンやチェックボックスのような小さなグラフィックの要素に限ります。
+
+見落としやすいのが、最小の長さの指定です。`minmax(360px, 1fr)` の360pxや、`min-inline-size: 320px` の320pxは、親がそれより狭くなってもその長さを保とうとするので、はみ出しの原因になります。最小の長さには、`min(100%, …)` で親の幅を上限にします。
+
+```css title="🙆‍♂ Recommended: 最小の長さは、親の幅を超えないようにする"
+._card-list {
+  display: block grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(360 / 16 * 1rem)), 1fr));
+  gap: 24px;
+}
+
+._search-field {
+  min-inline-size: min(100%, 320px);
+}
+```
+
+`min(100%, …)` は、2つの値のうち小さいほうを使う関数です。親が十分に広いときは360px相当が列の最小幅になり、親が狭いときは親の幅（`100%`）が最小幅になります。
+
+## `1fr` が押し広げられる理由
+
+Gridで列を均等に分けるとき、`1fr` と書くことが多いと思います。しかし、`1fr` は `minmax(auto, 1fr)` の省略形で、列の最小幅は `auto` です。グリッドアイテムの最小幅の `auto` は、0ではなく中身の最小幅として扱われます。途中で折り返せない長いURLや、ブラウザが最小幅を決めている `<input>` が入ると、その列だけが中身の幅まで押し広げられ、全体が親からはみ出します。
+
+これを防ぐには、列の最小値を0にした `minmax(0, 1fr)` と書きます。最小値が0なので、中身の大きさにかかわらず、列は親の幅を均等に分けます。
+
+```css title="🙆‍♂ Recommended: 列の最小値を0にして、中身に押し広げられないようにする"
+._columns {
+  display: block grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+```
+
+同じ問題は、ベーススタイルで全称セレクタに `min-inline-size: 0` を指定しておけば、フレックスアイテムとグリッドアイテムのどちらでも防げます（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。Chrome 153で確かめたところ、アイテムの最小幅が0なら、`1fr` の列も長いURLに押し広げられませんでした（2026年9月確認）。それでも私は、列の側にも `minmax(0, 1fr)` と書いています。コンポーネントの中で最小値を決めておけば、グローバルの指定がない環境へ持ち出しても崩れないからです。
+{/* 要確認: 出典なし（グローバルの指定と併用する理由は推論。著者の案件のコードでは、全称セレクタの指定がある環境でも minmax(0, Nfr) を使っている） */}
+
+## 長い単語やURLで崩れないようにする
+
+長い英単語やURLの折り返しには、`overflow-wrap: anywhere` を使います。本書で使う[kiso.css](/reset/kiso/)は、これを `:root` に指定しているので、個別に書く必要はありません。ここで気を付けたいのは、古い対策として知られる `overflow-wrap: break-word`（`word-wrap: break-word`）で上書きしないことです。
+
+`break-word` と `anywhere` は、どちらも行に収まらない単語を途中で折り返します。違いは、要素の最小幅の計算に効くかどうかです。`anywhere` は途中の折り返しを最小幅の計算にも含めるので、中身の最小幅が小さくなります。`break-word` は最小幅の計算に含めないので、フレックスアイテムやグリッドアイテムの最小幅は、長いURLの幅のままです。通常のブロックの中では同じように見えるのに、FlexboxやGridの中では `break-word` だけがはみ出します。
+
+次のデモは、2列のカードの片方に長いURLを入れたものです。1つ目は、列を `1fr` で分け、URLに `overflow-wrap: break-word` を指定しています。幅のボタンで320pxを選ぶと、URLのある列が押し広げられ、カードが枠の外へはみ出します。
+
+<Demo title="1fr の列と overflow-wrap: break-word では、長い URL が列を押し広げる" html={longUrlHtml} css={longUrlBadCss} variant="not-recommended" />
+
+2つ目は、列を `minmax(0, 1fr)` で分け、折り返しはkiso.cssの `overflow-wrap: anywhere` に任せたものです。どの幅でも2つの列は同じ幅を保ち、URLは列の中で折り返します。
+
+<Demo title="minmax(0, 1fr) と overflow-wrap: anywhere で、長い URL を列の中で折り返す" html={longUrlHtml} css={longUrlCss} />
+
+このデモでは、列の最小値と折り返しの2か所で守っています。どちらか一方でもURLのはみ出しは防げますが、`<input>` や横にスクロールさせる表のように、折り返しでは縮まない中身もあります。列やアイテムの最小幅を0にしておけば、こうした中身が入っても、列の幅は保たれます。`word-break: break-all` のように、収まる単語まで途中で折り返す指定は使いません。改行の制御は「[9-4 文字サイズと改行](/typography/size-and-line-breaks/)」で扱います。
+
+## 縮ませたくない要素を守る
+
+全称セレクタで最小幅を0にすると、今度はフレックスアイテムが縮みすぎる場合もあります。ボタンの中の「送信する」が「送信す／る」と折り返すような場合です。このとき、`flex-shrink: 0` で縮まないようにしたくなります。しかし、これは乱用されやすい指定です。`flex-shrink: 0` の要素は、親より長くなっても一切縮まないので、文字が長ければそのままはみ出します。
+
+文字を含む要素には、まず `min-inline-size: fit-content` を検討します。`fit-content` を最小幅にすると、親に余裕があるうちは中身の幅を保って折り返さず、親より長くなったときだけ親の幅で折り返します。縮まない指定に、はみ出さないための逃げ道を付けた形です。
+
+```css title="🙆‍♂ Recommended: 文字は fit-content で守り、アイコンだけ縮ませない"
+._button {
+  display: inline flex;
+  gap: 8px;
+  align-items: center;
+}
+
+._label {
+  min-inline-size: fit-content;
+}
+
+._icon {
+  flex-shrink: 0;
+  inline-size: 1em;
+  block-size: 1em;
+}
+```
+
+アイコンのように、大きさが変わると困る要素には、`flex-shrink: 0` を指定します。縮ませないことが目的の要素と、折り返してもよいが縮みすぎては困る要素を、分けて考えるのがポイントです。同じ理由で、`white-space: nowrap` も明確な理由がない限り指定しません。折り返せない文字は、内容が長くなったときや画面が狭いときに、必ずどこかではみ出します。
+
+## 要素の数や有無の変化に備える
+
+要素の数が変わる場所では、Flexboxに `flex-wrap: wrap` を指定します。タグやボタンの並びは、カンプでは2〜3個でも、運用が始まると増えていきます。折り返しの指定があれば、入りきらない要素は次の行へ回ります。この守りを毎回書き忘れないように、第6章ではコンポジション `cluster` に組み込んでいます。
+
+要素の有無でレイアウトを変えたいときは、`:has()` で判定します。次の例は、画像がない記事では、本文だけの1列に切り替えるものです。JavaScriptで状態のクラスを付ける必要はありません。`:has()` の使い方は「[2-2 セレクタと詳細度](/cascade/selectors/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 画像がないときは、テンプレートを1列に切り替える"
+._layout {
+  display: block grid;
+  grid-template: "--body --media" / minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+
+  &:not(:has(> ._media)) {
+    grid-template: "--body" / minmax(0, 1fr);
+  }
+
+  & > ._body {
+    grid-area: --body;
+  }
+
+  & > ._media {
+    grid-area: --media;
+  }
+}
+```
+
+画像の上に文字を重ねるレイアウトでは、画像を読み込めなかったとき、背景と文字の色が近いと文字を読めなくなります。画像の後ろに、文字と十分なコントラストを持つ背景色を用意しておきます。`aspect-ratio` で比率を決めた枠に画像を入れるなら、違う比率の画像が入っても引き伸ばされないように、`object-fit: cover` を指定します。画像の扱いは、「[10-3 画像と装飾](/color-media/images-and-decoration/)」で扱います。
+
+## 横スクロールは原因を直し、clipで防ぐ
+
+ページに横スクロールが出たら、まず、はみ出している要素を特定します。DevToolsのコンソールで次のスクリプトを実行すると、すべての要素に枠線を付けたうえで、ビューポートより広い要素を一覧できます。`$$()` は、DevToolsのコンソールで使える `querySelectorAll()` の省略形です。
+
+```js title="DevTools のコンソールで、ビューポートより広い要素を探す"
+const windowWidth = document.documentElement.clientWidth;
+$$('*').forEach((el) => {
+  el.style.outline = '1px solid tomato';
+  if (windowWidth < el.getBoundingClientRect().width) console.log(el);
+});
+```
+
+`margin` が原因のはみ出しは、このスクリプトでは見つかりません。枠線を目で追って確かめます。原因が分かったら、ここまでに説明した方法で、その要素を直します。
+
+そのうえで、画面の端まで広げた装飾などが意図せずはみ出す場合に備えて、ルートで横方向のはみ出しを切り取ることがあります。このとき、`overflow-x: hidden` は使いません。`hidden` を指定した要素はスクロールコンテナになり、中にある `position: sticky` の要素が、その要素を基準に粘着しようとして効かなくなるからです。`clip` は、はみ出した部分を切り取るだけでスクロールコンテナを作らないので、`sticky` を壊しません。
+
+```css title="🙆‍♂ Recommended: 横方向のはみ出しを clip で切り取る"
+:where(:root, body) {
+  overflow-inline: clip;
+
+  @supports not (overflow-inline: clip) {
+    overflow-x: clip;
+  }
+}
+```
+
+<Baseline id="overflow-clip" />
+
+`overflow: clip` は、本書の対象のすべてのブラウザで使えます。論理プロパティの `overflow-inline` は、Safariでは26から対応したので、対応していない環境には `@supports` で `overflow-x` を指定しています（2026年9月確認）。はみ出しの対策に `contain: paint` を使う方法もありますが、中にある `position: fixed` の要素の基準が変わってしまうので使いません。この仕組みは「[7-4 重なりと配置](/layout/positioning/)」で説明します。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [横スクロールバーの発生源を素早く特定する方法と最新の防止策](https://www.tak-dcxi.com/article/methods-to-quickly-identify-the-source-of-horizontal-scrolling-and-the-latest-prevention-measures/)（TAKLOG、2024年3月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [overflow-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-wrap)
+- [minmax() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/minmax)
+- [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
+- [Defensive CSS](https://defensivecss.dev/)

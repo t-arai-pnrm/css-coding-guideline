@@ -1,0 +1,234 @@
+---
+title: "11-4 フォーム部品"
+description: "フォーム部品は、色を変えるだけならaccent-colorで済ませ、作り直すときはinput自体にappearance: noneを指定して描きます。スイッチはswitch属性、入力エラーは:user-invalidで示し、入力欄の文字サイズは1rem以上にします。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import formHtml from '../../../demos/interaction/form-controls/index.html?raw';
+import formCss from '../../../demos/interaction/form-controls/style.css?raw';
+
+フォーム部品は、ブラウザが用意している部品をできるだけそのまま使います。チェックボックスやラジオボタンの色を変えるだけなら、`accent-color` で済ませます。見た目を作り直す必要があるときは、`input` を隠さずに、`input` 自体に `appearance: none` を指定して描きます。
+
+スイッチは `<input type="checkbox" switch>` で作り、入力エラーの見た目は `:invalid` ではなく `:user-invalid` に指定します。入力欄の文字サイズは1rem以上にし、ズームを止める指定は書きません。この節では、これらの書き方と理由を説明します。
+
+## kiso.cssが整えるフォームの初期値
+
+フォーム部品のスタイルを書く前に、リセットCSSが何を整えているかを確認しておきます。本書が推奨するkiso.cssは、フォーム部品に1pxの実線の枠線を付け、枠線の色、文字色、フォントを親から継承させています。スタイルを当てていない状態でも入力欄の範囲が分かり、コンポーネントでは色や余白を足すだけで済みます。枠線を消したいときは、強制カラーモードを考えて `border: none` ではなく `border-color: transparent` にします。
+
+ほかにも、入力欄には `text-autospace: no-autospace` を指定して、入力中に和文と英数字の間へアキが入るのを防いでいます。ボタンには `touch-action: manipulation` を指定して、iOSで連続してタップしたときの拡大を防ぎ、押せる部品のカーソルを `pointer` にしています。`<textarea>` は、縦方向にだけリサイズできます。詳しくは「[4-1 壊さないリセット](/reset/kiso/)」で説明しています。
+
+CSSではありませんが、入力欄には `autocomplete` 属性で入力する内容の種類（`name`、`email`、`postal-code` など）を正しく指定します。ブラウザの自動入力が働き、入力の手間と誤りを減らせます。`autocomplete="off"` は、多くのブラウザで無視されます。
+{/* 要確認: autocomplete="off" が無視されるという記述は2024年5月の記事による。2026年9月の状況は未確認 */}
+
+## 色を変えるだけなら `accent-color` を使う
+
+チェックボックスの色をデザインに合わせたいとき、`input` を透明にして、隣の要素で四角とチェックを描き直す方法がよく使われてきました。しかし、色を変えるだけなら、描き直す必要はありません。`accent-color` を指定すれば、チェックボックス、ラジオボタン、スライダー（`type="range"`）、プログレスバーの色が変わります。
+
+```css title="🙆‍♂ Recommended: フォーム全体のアクセントカラーを指定する"
+@scope (.scoped.contact-form) to (.scoped) {
+  :scope {
+    accent-color: var(--color--accent--600);
+  }
+}
+```
+
+`accent-color` は継承されるので、フォームのルートに1回書けば、中のすべての部品に効きます。部品の操作性やアクセシビリティは、ブラウザのものがそのまま残ります。
+
+<Baseline id="accent-color" />
+
+web-featuresのデータでは、SafariはSafari 26.2からの対応になっています。MDNの互換性データによると、それより前のSafariも `accent-color` に対応していますが、チェックマークの色を背景に合わせて調整しません（2026年9月確認）。本書の対象のSafariでも色は変わるので、チェックマークとのコントラストが十分に取れる色を選べば使えます。
+{/* 要確認: Safari 18.6 でチェックマークの色がどう描かれるかは、ブラウザで確認していない */}
+
+なお、リセットCSSで、すべての `input` へ一律に `appearance: none` を指定するのは禁止です。チェックボックスやラジオボタンの見た目が消え、画面から見えなくなるからです（「[4-1 壊さないリセット](/reset/kiso/)」）。
+
+## 作り直すときは `input` 自体を描く
+
+デザインの都合で、形まで作り直す必要がある場合もあります。そのときも、`input` を隠して別の要素で描く方法は使いません。
+
+```css title="🙅‍♂ Not Recommended: input を隠し、隣の要素でチェックボックスを描く"
+/* 🙅‍♂ Not Recommended */
+._checkbox {
+  display: none;
+}
+
+._checkbox + ._icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid;
+}
+
+._checkbox:checked + ._icon {
+  background-color: var(--color--accent--600);
+}
+```
+
+`display: none` や `visibility: hidden` で隠した `input` は、キーボードでフォーカスできません。Tabキーで操作するユーザーは、チェックボックスを操作できなくなります。透明にして残す方法でも、フォーカスリングを隣の要素に描き直す手間がかかり、隣接セレクタや `:has()` で状態をつなぐ必要もあります。
+
+見た目を作り直すときは、`input` 自体に `appearance: none` を指定して、ブラウザの見た目だけを消します。そのうえで、`input` の枠と背景、`::before` で描いたチェックマークで見た目を作ります。
+
+```css title="🙆‍♂ Recommended: input 自体に appearance: none を指定して描く"
+@scope (.scoped.check-field) to (.scoped) {
+  ._checkbox {
+    display: inline grid;
+    place-content: center;
+    inline-size: 1lh;
+    block-size: 1lh;
+    border-color: currentColor;
+    border-radius: 4px;
+    color: var(--color--neutral--50);
+    appearance: none;
+
+    &::before {
+      content: "";
+      inline-size: 0.3lh;
+      block-size: 0.55lh;
+      border-block-end: 2px solid transparent;
+      border-inline-end: 2px solid transparent;
+      rotate: 45deg;
+    }
+
+    &:checked {
+      border-color: var(--color--accent--600);
+      background-color: var(--color--accent--600);
+    }
+
+    &:checked::before {
+      border-color: currentColor;
+    }
+  }
+}
+```
+
+`input` そのものなので、キーボードで操作でき、ベーススタイルのフォーカスリングもそのまま表示されます。状態は `:checked` で選べるので、ほかの要素とつなぐ必要もありません。大きさは `inline-size` と `block-size` の両方で指定します。`input` の大きさを `aspect-ratio` で決めると、Safariでは縦横の比率を保てずに、部品を潰してしまうことがあるからです。強制カラーモードで背景色が消えたときの見え方は、「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で確かめてください。
+
+`<select>` についても、`appearance: base-select` で見た目を自由に変えられる仕様が進んでいます。ただし、2026年9月の時点で対応しているのはChrome系のブラウザとSafari 27だけです。
+{/* 要確認: 出典なし（appearance: base-select についての記述は、著者の資料になく web-features の customizable-select のデータによる） */}
+
+## スイッチは `switch` 属性で作る
+
+オンとオフを切り替えるスイッチは、`<input type="checkbox" switch>` で作ります。`switch` 属性に対応したブラウザでは、スクリーンリーダーが「スイッチ」として、状態を「オン」「オフ」で読み上げます。JavaScriptは要らず、スペースキーでも切り替えられます。
+
+<Baseline id="switch-control" name="switch 属性" />
+
+2026年9月の時点で、`switch` 属性に対応しているのはSafariだけです。ほかのブラウザでは、ふつうのチェックボックスとして扱われます。操作は損なわれないので、チェックボックスとして読み上げられることを許容できるなら、プログレッシブ・エンハンスメントとして使えます。許容できない場合は、`<button>` と `aria-pressed` で作ります。
+
+見た目は、`appearance: none` を指定した `input` 自体に描きます。`::after` をつまみに、`::before` をつまみの手前の余白にして、オンのときに `::before` を伸ばしてつまみを押し出します。
+
+```css title="🙆‍♂ Recommended: つまみの手前の余白を伸ばして、つまみを動かす"
+@scope (.scoped.setting-switch) to (.scoped) {
+  ._switch {
+    display: inline flex;
+    inline-size: calc(1lh * 2);
+    block-size: 1lh;
+    padding: 2px;
+    border-color: transparent;
+    border-radius: calc(infinity * 1px);
+    background-color: var(--color--neutral--400);
+    appearance: none;
+
+    &::before {
+      content: "";
+      flex-grow: 0;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+        transition-property: flex-grow;
+        transition-timing-function: var(--ease--quint-out);
+      }
+    }
+
+    &::after {
+      content: "";
+      flex-shrink: 0;
+      block-size: 100%;
+      aspect-ratio: 1;
+      border-radius: inherit;
+      background-color: var(--color--neutral--50);
+    }
+
+    &:checked {
+      background-color: var(--color--accent--600);
+    }
+
+    &:checked::before {
+      flex-grow: 1;
+    }
+  }
+}
+```
+
+高さは `1lh` にして、隣のラベルの行の高さにそろえています。kiso.cssは入力欄のフォントを継承させているので、`1lh` はラベルと同じ行の高さになり、幅はその2倍です。
+
+つまみもスイッチの地も背景色で描いているので、強制カラーモードでは背景色が置き換わり、つまみが見えなくなります。枠線を消さずに `border-color: transparent` で残しているのは、強制カラーモードでも枠線に色が付き、スイッチの範囲が分かるようにするためです。つまみの色を補う方法は「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で扱います。
+
+`flex-grow` はレイアウトが変わるプロパティですが、小さな部品なので負荷は問題になりません。`translate` でつまみを動かすより、スイッチの幅を変えたときや、右から左へ書く言語でも調整が要らないという利点があります。
+{/* 要確認: 出典なし（レイアウトが変わるプロパティを使ってよい理由は筆者の推論。著者の記事は「translate などで頑張るより実装コストが少なく、横幅可変にも対応」とだけ述べている） */}
+
+## 入力エラーは `:user-invalid` で示す
+
+入力エラーの見た目を `:invalid` に指定すると、ページを開いた時点でエラーが表示されてしまいます。`required` を付けた空の入力欄は、何も入力していなくても `:invalid` に当てはまるからです。私も以前は、この問題を避けるためにJavaScriptで検証し、data属性で状態を表していました。
+
+`:user-invalid` は、ユーザーが値を変えて入力欄を離れた後や、送信しようとした後にだけ当てはまる擬似クラスです。入力する前にエラーが表示されることはありません。
+{/* 要確認: 出典なし（:user-invalid を使う方針は、2020年のフォームのテンプレートで JavaScript を使っていた理由から導いた推論。著者の資料に :user-invalid の記述はない） */}
+
+```css title="🙆‍♂ Recommended: 入力した後にだけ、エラーの見た目にする"
+@scope (.scoped.contact-form) to (.scoped) {
+  ._input {
+    border-color: var(--color--neutral--400);
+
+    &:user-invalid {
+      border-color: var(--color--error--600);
+    }
+  }
+
+  ._hint {
+    &:is(._field:has(:user-invalid) *) {
+      color: var(--color--error--600);
+      font-weight: bold;
+    }
+  }
+}
+```
+
+<Baseline id="user-pseudos" compatKey="css.selectors.user-invalid" name=":user-invalid" />
+
+エラーは、色だけで伝えないようにします。上の例では、入力例を示すヒントの文字を太くしています。また、`:user-invalid` が変えるのは見た目だけで、スクリーンリーダーには伝わりません。エラーの内容を読み上げさせるには、`aria-invalid` や、エラーの文章を関連付ける `aria-describedby` を、JavaScriptで設定します。
+{/* 要確認: 出典なし（エラーを色だけで伝えないことと、支援技術への伝え方は一般論） */}
+
+次のデモで、メールアドレスの欄に不正な値を入れて欄を離れるか、何も入力せずに「送信する」を押してみてください。ラジオボタンとチェックボックスは `accent-color` で色だけを変え、スイッチは `input` 自体に描いています。
+
+<Demo title="accent-color、switch 属性のスイッチ、:user-invalid によるエラーの表示" html={formHtml} css={formCss} />
+
+## 入力欄の大きさと文字サイズ
+
+`<textarea>` には `field-sizing: content` を指定します。入力した量に合わせて入力欄が伸び縮みし、最小と最大の高さは `lh` 単位で行数として決められます。対応していない環境では従来どおりの入力欄になるだけなので、プログレッシブ・エンハンスメントとして使えます。対応した環境でだけ手動のリサイズを止める書き方とデモは、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」にあります。
+
+<Baseline id="field-sizing" />
+
+入力欄の文字サイズは、1rem（16px相当）以上にします。iOSのSafariは、文字サイズが16px未満の入力欄にフォーカスすると、ページを拡大します。拡大されたページは、ユーザーが自分で縮小するまでそのままです。kiso.cssは入力欄の文字サイズを親から継承させているので、フォームの周りで文字サイズを小さくしていないかを確かめます。
+{/* 要確認: 出典なし（拡大がそのまま残るという iOS の挙動は一般論） */}
+
+この拡大を防ぐために、`<meta name="viewport">` に `maximum-scale=1` や `user-scalable=no` を指定する方法が知られています。しかし、この指定はページ全体の拡大を止めてしまい、拡大して読む必要のあるユーザーを困らせます。デザインでどうしても小さな文字にしたい場合は、フォーカスしている間だけ1remにする方法もありますが、まずは1remで成り立つデザインにできないかを相談します。
+{/* 要確認: 出典なし（「まず相談する」という進め方は筆者の推論。著者の記事はフォーカス中だけ1remにする方法と、scale で縮小する方法を紹介している） */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [input[type="checkbox"]要素のswitch属性を使用したスイッチUIの実装例](https://www.tak-dcxi.com/article/example-of-implementation-of-switch-using-switch-attribute/)（TAKLOG、2024年5月。本書と一部の方針が異なります）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。`field-sizing` と、`input` 自体に描くチェックボックス）
+- [少しの記述でユーザビリティやアクセシビリティを向上させるHTML/CSSテクニック集](https://www.tak-dcxi.com/article/html-css-techniques-to-improve-usability-and-accessibility-with-minimal-code/)（TAKLOG、2024年5月。入力欄の文字サイズ）
+- [kiso.cssを公開しました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
+- [accent-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/accent-color)
+- [:user-invalid - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:user-invalid)
+- [field-sizing - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing)

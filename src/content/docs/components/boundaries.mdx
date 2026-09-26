@@ -1,0 +1,226 @@
+---
+title: "6-1 コンポーネントの境界を守る"
+description: "コンポーネントのルートには外部関連型のレイアウトを書かず、ほかのコンポーネントの内部をセレクタで選びません。z-index は、ルートに絶対的な値、内部の要素に相対的な値だけをトークンで指定します。"
+sidebar:
+  order: 1
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import zIndexHtml from '../../../demos/components/z-index-isolation/index.html?raw';
+import zIndexCss from '../../../demos/components/z-index-isolation/style.css?raw';
+import zIndexBadCss from '../../../demos/components/z-index-isolation/style.bad.css?raw';
+
+コンポーネントは、自分以外のことを何も知らない状態で書きます。ルートには `padding` や `gap` のような、自分の中で完結するレイアウトだけを書きます。`margin` や `grid-area` のように周りとの関係で決まるレイアウトは、コンポーネントを置く側に任せます。ほかのコンポーネントの内部の要素はセレクタで選ばず、そのコンポーネントが公開しているカスタムプロパティを通じて値を渡します。
+
+z-indexも同じ考え方で扱います。ルートにはページ全体の重なり順を決める絶対的な値だけを、内部の要素には1か-1の相対的な値だけを、どちらもトークンで指定します。内部で相対的な値を使うコンポーネントは、ルートに `isolation: isolate` を指定して、重なりをコンポーネントの中に閉じ込めます。
+
+## 似ているだけのものを1つにまとめない
+
+境界の話の前に、何を1つのコンポーネントにするかを考えます。ここでは、私が遊んでいるゲーム「モンスターハンター」シリーズのリオレウスを例にします。リオレウスには亜種や希少種などの派生種がいて、見た目は色違いのようでも、攻撃のパターンや弱点、手に入る素材はまったく違います。これらを「リオレウス」という1つの部品にまとめると、分岐が増えて部品が肥大化し、後から不要になった派生種を捨てることもできなくなります。
+
+Webサイトでは、カードが同じ状況になりがちです。商品カードと記事カードは見た目が似ていても、役割も中に入る内容も違います。見た目や大まかなジャンルだけで共通化せず、機能まで同じかどうかを判断の基準に加えます。CSSはDRY原則を徹底すればよいとは限らず、あえて重複を許すことで複雑さを抑える考え方もあります。共通化を考える時期は「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」で説明しています。
+
+それでも見た目をそろえたいときは、コンポーネントを統合せず、同じデザイントークンを参照します。次の例では、2つのカードが余白と角丸と背景色のトークンを共有しています。「カードの背景色をすべて変えたい」という依頼にはトークンの値を変えるだけで対応でき、それぞれのカードは独立したまま保てます。
+
+```css title="🙆‍♂ Recommended: 別のコンポーネントのまま、トークンで見た目をそろえる"
+@scope (.scoped.product-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: calc(var(--spacing--xs) * 1px);
+    padding: calc(var(--spacing--md) * 1px);
+    border-radius: var(--rounded--lg);
+    background-color: var(--background--surface);
+  }
+}
+
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: calc(var(--spacing--sm) * 1px);
+    padding: calc(var(--spacing--md) * 1px);
+    border-radius: var(--rounded--lg);
+    background-color: var(--background--surface);
+  }
+}
+```
+
+なお、見た目が共通だという理由だけで、新しいコンポーネントを作ることもしません。コンポーネントにするのは、HTMLの構造や属性、振る舞いを1つの定義から管理したいときです。見た目の共通化だけなら、トークンや、「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明する仕組みを使えば足ります。
+
+## 外部関連型のレイアウトをルートに書かない
+
+「外部関連型のレイアウト」は私の造語です。レイアウトの指定には、`padding` や `grid-template` のように自分のスタイルだけで完結する「内部関連型」と、周りの要素との関係で成り立つ「外部関連型」があると考えています。外部関連型に当たるのは、次のようなプロパティです。
+
+- `margin`：周りの要素との距離なので、置かれる場所によって必要な値が変わる
+- `position: absolute` と `inset`：基準になる祖先の要素があって、初めて位置が決まる
+- `flex`、`grid-area`、`justify-self`、`align-self`：親のFlexboxやGridの指定とセットで成り立つ
+- `inline-size` と `block-size`（`width` と `height`）：多くの場合、親に決めさせたほうが使い回しやすい
+
+`min-inline-size` や `max-inline-size` は、文脈によって扱いが変わります。「このコンポーネントには最低でもこの幅が必要」のようにコンポーネント自身の決まりなら内部関連型、「親に対して最大50%」のように親との関係で決まるなら外部関連型です。`subgrid` は親がグリッドであることを前提にするので、両方の性質を持ちます。サブグリッドを使うカードは、並べる側のグリッドまで含めて1つのコンポーネントとして扱います。
+
+外部関連型のレイアウトをルートに書くと、次のようなコンポーネントになります。
+
+```css title="🙅‍♂ Not Recommended: ルートに幅と外側の余白を持たせる"
+/* 🙅‍♂ Not Recommended */
+.news-card {
+  width: calc(50% - 12px);
+  margin-top: 40px;
+  padding: 24px;
+  border: 1px solid #ddd;
+}
+```
+
+このカードは、2列のグリッドの中で、前の要素から40px離れて置かれることを前提にしています。サイドバーに置けば半分の幅では狭すぎ、ページの先頭に置けば上に余計な余白ができます。置き場所ごとに `margin-top: 0` のような打ち消しを書くことになり、やがて打ち消しのための詳細度の競争が始まります。
+
+外部関連型のレイアウトは、コンポーネントを置く側が持ちます。並べるときの間隔は親の `gap` で、特定の場所への配置や特別な余白は、親が子のコンポーネントを包む要素で指定します。この包む要素を、本書では「Outer」と呼びます。Outerは親のコンポーネントの子要素であり、単独のコンポーネントにはしません。
+
+```css title="🙆‍♂ Recommended: 配置と外側の余白は、置く側のコンポーネントが持つ"
+@scope (.scoped.news-section) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: calc(var(--spacing--lg) * 1px);
+  }
+
+  ._list {
+    display: block grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+    gap: calc(var(--spacing--md) * 1px);
+  }
+
+  ._banner-outer {
+    max-inline-size: calc(480 / 16 * 1rem);
+    margin-block-start: calc(var(--spacing--xl) * 1px);
+  }
+}
+
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: calc(var(--spacing--xs) * 1px);
+    padding: calc(var(--spacing--md) * 1px);
+    border: 1px solid var(--border--base);
+    border-radius: var(--rounded--md);
+  }
+}
+```
+
+```html
+<section class="scoped news-section">
+  <h2 class="_heading">お知らせ</h2>
+  <ul class="_list">
+    <li class="_item">
+      <article class="scoped news-card">…</article>
+    </li>
+  </ul>
+  <div class="_banner-outer">
+    <aside class="scoped campaign-banner">…</aside>
+  </div>
+</section>
+```
+
+カードのルートには、内部関連型の指定しかありません。カードの幅はリストのグリッドが決め、キャンペーンのバナーの幅と上の余白は `._banner-outer` が決めています。同じカードをサイドバーに置いても、サイドバー側のレイアウトに合わせて幅が決まるだけで、カードのCSSを直す必要はありません。
+
+この形は、本書のスコープの基本形とも相性のよい書き方です。`@scope (.scoped.news-section) to (.scoped)` は、内側にある別の `.scoped` の要素でスコープを打ち切ります。打ち切る境界の要素そのものも範囲の外になるので、親のCSSからは子のコンポーネントのルートも選べません。親が子の配置を決めたければ自分の子要素であるOuterを用意するしかなく、書き方そのものが境界を守る仕組みになっています。スコープの書き方は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
+
+同じ理由で、子のコンポーネントに `class` 属性を渡して、親から見た目や配置を変えることもしません。Astroなどのコンポーネントでは `class` を受け取れるようにするのは簡単ですが、これを許すと、たいていは後で困ることになります。親が子のルートに自由にスタイルを当てられるようになり、どこまでが子の責任なのかが曖昧になるからです。
+
+例外もあります。`position: fixed` で表示するモーダルは、ビューポートを基準に配置されることが明らかなので、ルートに外部関連型の指定を持たせてかまいません。ビューポートに粘着するグローバルヘッダーの `position: sticky` と `inset` も同じです。アイコンのような小さなグラフィックの要素は、自分で大きさを持つ必要があるので、`inline-size: 1em` のように親の文字サイズに追従する指定をルートに書きます。
+
+## ほかのコンポーネントの中に触れない
+
+親のコンポーネントが、置いた子の見た目を場所に合わせて変えたいことがあります。このとき、親のCSSで子のクラス名を選んで上書きするのは避けます。
+
+```css title="🙅‍♂ Not Recommended: 親から子のコンポーネントの内部を上書きする"
+/* 🙅‍♂ Not Recommended */
+.hero .news-card {
+  border-radius: 24px;
+}
+
+.hero .news-card ._title {
+  font-size: 24px;
+}
+```
+
+この書き方には3つの問題があります。まず、子の元のスタイルより詳細度を高くしないと上書きできないので、詳細度の競争が始まります。次に、親が子の内部の構造（`._title` という要素があること）を知っているので、子の構造を変えると親のCSSも直さなければなりません。最後に、子のCSSだけを読んでも、どこで見た目が変えられているのかが分かりません。
+
+子のコンポーネントは、外から変えてよい値だけを「公開プロパティ」として用意します。親は、その公開プロパティに値を渡すだけにします。次の例では、カードが角丸の半径を `--news-card--radius` として公開し、デフォルト値を `var()` のフォールバックに書いています。
+
+```css title="🙆‍♂ Recommended: 子は外から変えてよい値を公開プロパティにする"
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    --_radius: var(--news-card--radius, var(--rounded--md));
+
+    padding: calc(var(--spacing--md) * 1px);
+    border-radius: var(--_radius);
+  }
+}
+```
+
+```html
+<article class="scoped news-card" style="--news-card--radius: 24px">…</article>
+```
+
+値はカスタムプロパティを経由するので、セレクタの詳細度とは切り離されます。親は、子の中のどこでその値が使われているかを知る必要がありません。子も、親のどこで値が定義されるかを知る必要はなく、継承で届けばどこでもかまいません。子の構造を変えても、公開プロパティの名前さえ変えなければ親は壊れません。名前の付け方と値の渡し方は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
+
+ページのCSSから、置いた子のコンポーネントのルートを選ぶしかない場面もあります。その場合も、ルートに指定するのは公開プロパティの値と配置だけにし、子の内部の要素には触れません。
+
+AIにコンポーネントの見た目の調整を頼むと、親のセレクタから子のクラスを選んで上書きするコードをよく書きます。生成されたコードに別のコンポーネントのクラス名が出てきたら、公開プロパティで書き直せないかを確認してください。
+{/* 要確認: 出典なし（AIの傾向についての記述） */}
+
+なお、stackやclusterのようなコンポジションは、直下の子の並び方と間隔を決めます。これは「配置は置く側が持つ」という考え方を再利用できる形にしたもので、子の内部には触れないので、この節の方針とは矛盾しません。
+
+## z-indexはルートと内部で役割を分ける
+
+z-indexは、コンポーネントのルートと内部の要素で、指定してよい値の種類を分けます。ルートに指定するのは、ヘッダーやフッターのようにページ全体での重なり順を決める「絶対的なz-index」だけです。内部の要素に指定するのは、コンポーネントの中で前後を入れ替えるための「相対的なz-index」だけで、値は1か-1に限ります。
+
+どちらの値も、数値を直接書かずにトークンで指定します。絶対的な値には `--z--header` のように役割の名前を付けたトークンを使い、相対的な値には `--z--forwards`（1）と `--z--backwards`（-1）を使います。重なり順はまずHTMLの順番で解決し、それで足りないときだけ相対的なz-indexを使います。本書のStylelintの設定では、1と-1以外の数値を `declaration-property-value-disallowed-list` で警告します。トークンの設計は「[6-3 デザイントークン](/components/design-tokens/)」で説明します。
+
+```css title="🙆‍♂ Recommended: ルートには絶対的な値、内部には相対的な値をトークンで指定する"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z--header);
+  }
+}
+
+@scope (.scoped.feature-card) to (.scoped) {
+  :scope {
+    position: relative;
+    isolation: isolate;
+  }
+
+  ._decoration {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z--backwards);
+  }
+}
+```
+
+内部の要素で相対的なz-indexを使うコンポーネントは、ルートに `isolation: isolate` を指定します。`isolation: isolate` は、その要素に新しいスタッキングコンテキストを作るプロパティです。これがないと、内部のz-indexは外側のスタッキングコンテキストの中で比べられ、ほかのコンポーネントの重なりと干渉します。
+
+とくに影響が大きいのは-1です。スタッキングコンテキストを作っていないルートの中で-1を指定すると、その要素は外側のコンテキストの背面に回り、ルートや親の背景の下に隠れてしまいます。次の2つのデモは、カードの背景と文字の間に円の飾りを置いたものです。1つ目はルートに `isolation: isolate` がないので、飾りは親のセクションの背景の下に隠れて見えません。
+
+<Demo title="ルートに isolation: isolate がないと、z-index: -1 の飾りが親の背景に隠れる" html={zIndexHtml} css={zIndexBadCss} variant="not-recommended" />
+
+2つ目は、ルートに `isolation: isolate` を指定したものです。飾りはカードの背景より手前、文字より奥に描かれます。カードの外にある要素とも干渉しません。
+
+<Demo title="ルートに isolation: isolate を指定すると、飾りがカードの背景と文字の間に描かれる" html={zIndexHtml} css={zIndexCss} />
+
+トップレイヤーへ表示する `<dialog>` や `popover` 属性の要素にも、いまは `z-index: var(--z--top)`（値は `calc(infinity)`）を指定しておきます。トップレイヤーの要素は、本来はz-indexと関係なく最前面へ描かれます。しかし、閉じるアニメーションの間も要素をトップレイヤーにとどめる `transition-property: overlay` は、Chromium系のブラウザでしか使えません（2026年9月確認）。対応していないブラウザでは、閉じる途中で要素がトップレイヤーから外れ、z-indexの大きい要素の下へ潜り込むことがあります。
+
+ただし、`calc(infinity)` は何にでも勝てる値ではありません。トップレイヤーには勝てず、祖先のスタッキングコンテキストの中でしか比べられないので、z-indexを管理する必要はなくなりません。スタッキングコンテキストが作られる条件と、重なり順の決まり方は、「[7-4 重なりと配置](/layout/positioning/)」で説明します。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [2025年のz-index設計を考える](https://speakerdeck.com/tak_dcxi/2025nian-noz-indexshe-ji-wokao-eru)（TAK）
+- [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
+- [calc(infinity)の使い道](https://www.tak-dcxi.com/article/use-of-calc-infinity/)（TAKLOG、2024年3月）
+- [isolation - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/isolation)
+- [スタッキングコンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_positioned_layout/Stacking_context)
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)

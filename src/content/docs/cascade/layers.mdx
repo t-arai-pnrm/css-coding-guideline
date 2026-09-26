@@ -1,0 +1,133 @@
+---
+title: "2-3 カスケードレイヤーで順位を決める"
+description: "スタイルの優先順位は、9つのレイヤーの順番で決めます。順番は先頭で宣言し、ファイルは@import … layer()で割り当てます。レイヤーに入っていない外部のCSSと共存するCMSの環境では、レイヤーを使いません。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import unlayeredHtml from '../../../demos/cascade/unlayered-wins/index.html?raw';
+import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?raw';
+
+カスケードレイヤーを使うと、スタイルの優先順位を、詳細度ではなくレイヤーの順番で決められます。本書の基本の順番は `tokens, reset, base, vendors, compositions, pages, components, patterns, utilities` の9つで、読み込むCSSの先頭で宣言します。ファイルは `@import url("…") layer(…);` の形でレイヤーに割り当てます。
+
+ただし、レイヤーはどの環境でも使えるわけではありません。レイヤーに入っていないCSSは、詳細度に関係なく、レイヤーの中のCSSに勝つからです。この節では、9つのレイヤーの役割と書き方に加えて、CMSのようにレイヤーを使わないと判断する基準を説明します。
+
+<Baseline id="cascade-layers" name="カスケードレイヤー" />
+
+## 詳細度では役割の強さを表せない
+
+スタイルには、役割による強さの違いがあります。リセットCSSはベーススタイルに上書きされるべきで、コンポーネントのスタイルはユーティリティクラスに上書きされるべきです。しかし、詳細度はセレクタの形で決まる値なので、この役割の違いを表せません。
+
+たとえば、要素を視覚的に隠すユーティリティクラス `.-visually-hidden` は、どのコンポーネントの要素に付けても効かなければなりません。レイヤーがなければ、ユーティリティとコンポーネントのクラスはどちらも0.1.0なので、頼れるのは書いた順番だけです。読み込む順番が変わっただけで効かなくなるので、以前はユーティリティに `!important` を付けるのが一般的でした。
+
+私も2024年のブログでは、ITCSSという設計手法にならった7つのレイヤーを使っていました。全称セレクタで指定した詳細度0の文字サイズが、リセットCSSの `inherit` の指定に負けてしまうおそれがあり、それをレイヤーの順番で解決したのがきっかけです。詳細度の低いセレクタでも、後ろのレイヤーにあれば勝てます。レイヤーを使えば、優先順位を「役割の順番」として宣言できます。
+
+## 9つのレイヤーと役割
+
+本書の基本のレイヤーは、次の9つです。前に書いたレイヤーほど弱く、後ろに書いたレイヤーほど強くなります。
+
+1. `tokens`：デザイントークン。`:root` のカスタムプロパティだけを置く
+2. `reset`：リセットCSS（kiso.css）
+3. `base`：HTML要素のデフォルトの見た目、`@font-face`、グローバルな `@keyframes`、`@property`
+4. `vendors`：自分で読み込むサードパーティのCSS
+5. `compositions`：stack、cluster、sidebarなど、レイアウトの再利用パターン
+6. `pages`：ページ固有のセクション
+7. `components`：複数の場所で使うコンポーネント
+8. `patterns`：静的で再利用できる見た目のパターン
+9. `utilities`：単機能の補助クラス
+
+最初の3つは、すべてのページの土台です。`tokens` を最も弱いレイヤーにしているのは、トークンの中身がカスタムプロパティの定義だけだからです。後ろのレイヤーで同じ名前のトークンを定義し直せば、そちらが優先されます。`reset` の後ろに `base` を置くのは、kiso.cssのデフォルト（`line-height: 1.5` など）をベーススタイルで上書きできるようにするためです。
+
+`vendors` は、スライダーのようなサードパーティのCSSを入れるレイヤーです。自分たちのコンポジションやコンポーネントより前に置くので、サードパーティのCSSの見た目を、自分たちのCSSから上書きできます。
+{/* 要確認: 出典なし（vendors をこの位置に置く理由は筆者の推論。2024年のブログの構成でも vendors は components より前にある） */}
+
+`compositions`、`pages`、`components` は、ページを組み立てるためのレイヤーです。ページ固有のセクションは `pages` に、複数の場所で使うコンポーネントは `components` に書きます。この区別は、レスポンシブ対応の手段の選び方とも対応しています。`pages` ではメディアクエリを、`components` ではコンテナクエリを優先します（[8-1 検討する順番](/responsive/escalation/)）。コンポジションとユーティリティの中身は、第6章「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明します。
+
+`patterns` は、コンポーネントの要素に重ねて使う見た目のパターンです。`components` より後ろにあるので、`class="status-badge _label"` のようにコンポーネントの子要素に付けると、パターンの指定が勝ちます。最後の `utilities` は、どこに付けても効かなければならない補助クラスなので、最も強いレイヤーにします。`.-visually-hidden` も、`!important` なしでコンポーネントのスタイルに勝ちます。
+
+## 順番を先頭で宣言し、`@import` で割り当てる
+
+レイヤーの順番は、そのレイヤーの名前が最初に現れた順で決まります。そこで、読み込むCSSの先頭で、すべてのレイヤーの順番を `@layer` 文で宣言します。その後ろで、各ファイルを `@import … layer()` の形で読み込みます。
+
+```css title="🙆‍♂ Recommended: 先頭で順番を宣言し、ファイルごとにレイヤーを割り当てる"
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+
+@import url("kiso.css") layer(reset);
+@import url("./tokens/colors.css") layer(tokens);
+@import url("./tokens/sizes.css") layer(tokens);
+@import url("./base/generic.css") layer(base);
+@import url("./vendors/slider.css") layer(vendors);
+@import url("./compositions/cluster.css") layer(compositions);
+@import url("./utilities/a11y.css") layer(utilities);
+```
+
+この例では、kiso.cssを `tokens` のファイルより先に読み込んでいます。それでも、`reset` は `tokens` より強いレイヤーのままです。順番は先頭の `@layer` 文で決まっているので、`@import` を書く順番には左右されません。順番を宣言しなければ、先頭で読み込んだ `reset` が最も弱いレイヤーになってしまいます。
+
+`@import` に `layer()` を付けると、読み込んだファイルの中身がすべてそのレイヤーに入ります。各ファイルの中で `@layer base { … }` のように包む必要はありません。どのファイルがどのレイヤーに入るのかを、エントリーポイントのファイルの1か所で確認できます。kiso.cssを `reset` レイヤーに入れる理由は、第4章「[4-1 壊さないリセット](/reset/kiso/)」で説明します。
+
+`@import` は、`@layer` 文を除くすべてのルールより前に書く必要があります。ほかのルールの後ろに書いた `@import` は無視されるので、エントリーポイントのファイルには、レイヤーの宣言と `@import` だけを置きます。
+
+コンポーネントのファイルのように `@import` で読み込まないCSSには、`@layer components { … }` の形でレイヤーを自分で書きます。Astroのコンポーネントの中に書くスタイルがその例で、書き方は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明します。
+
+## レイヤーの外に書いたスタイルは最も強い
+
+レイヤーを使うプロジェクトでは、すべてのスタイルをいずれかのレイヤーに入れます。レイヤーに入っていないスタイルは、すべてのレイヤーより後ろにある「暗黙の最後のレイヤー」として扱われるからです。`!important` を付けていない宣言どうしなら、レイヤーの外のスタイルは、詳細度に関係なくすべてのレイヤーに勝ちます。
+
+`@layer` を書き忘れたスタイルは、`utilities` のユーティリティクラスよりも強くなります（2026年9月、Chrome 152で確認）。ユーティリティクラスを付けたのに効かないときは、レイヤーの書き忘れを疑います。1か所の書き忘れで、9つのレイヤーで決めた順番が崩れてしまいます。
+
+サードパーティのCSSも同じです。`<link>` 要素などを使ってレイヤーの外で読み込むと、そのCSSはどのレイヤーよりも強くなり、自分のコンポーネントからは上書きできません。自分で読み込むサードパーティのCSSは、前の見出しのコード例のように `@import url("…") layer(vendors);` で `vendors` レイヤーに入れます。
+
+この「レイヤーの外のCSSが勝つ」という性質は、自分で読み込み方を決められないCSSがある環境で、大きな問題になります。その代表がCMSです。
+
+## CMSでは、レイヤーを使わない
+
+WordPressのようなCMSでは、CMSの本体やプラグインの出力するCSSが、レイヤーに入っていない状態で読み込まれます。この環境で自分のテーマのCSSだけをレイヤーに入れると、テーマのCSSは構造的に負けます。どれほど詳細度を上げても、レイヤーの外にあるプラグインのCSSには勝てません。
+
+次のデモでは、テーマのCSSを `components` レイヤーに入れ、見出しにクラスで色と大きさを指定しています。一方、プラグインを想定したCSSは、レイヤーの外にタイプセレクタ `h2` で書いています。詳細度はテーマのCSSのほうが高いのに、見出しにはプラグインの色と大きさが使われます。
+
+<Demo title="レイヤーの外のタイプセレクタが、レイヤーの中のクラスセレクタに勝つ" html={unlayeredHtml} css={unlayeredCss} variant="not-recommended" />
+
+私も、WordPressの案件を始めたときは、Astroのテンプレートと同じレイヤーの構成で書き始めました。しかし、CMSの本体やプラグインのCSSとの関係でこの問題があるため、数日後にはレイヤーの使用をやめています。本書のレイヤーの構成は、すべてのCSSを自分で管理できる環境を前提にしたものです。
+
+レイヤーを使わない環境でも、9つの分類そのものは捨てません。ディレクトリを分類ごとに分け、エントリーポイントの `@import` を9つの分類の順番に並べます。レイヤーがなければ、優先順位は詳細度と書いた順番で決まります。ベーススタイルを `:where()` で詳細度0にし、コンポーネントの中をクラス1つ分にそろえておけば、読み込む順番がレイヤーの代わりになります。
+
+```css title="🙆‍♂ Recommended: CMSでは、読み込む順番で9つの分類を保つ"
+@import url("kiso.css");
+@import url("./tokens/shapes.css");
+@import url("./base/generic.css");
+@import url("./compositions/cluster.css");
+@import url("./pages/about.css");
+@import url("./components/site-header.css");
+@import url("./utilities/a11y.css");
+```
+
+CMSの本体と衝突しにくくするために、テーマのスタイルは `@scope` と独自のクラス名で範囲を限ります。CMSが出力するクラス名にスタイルを書く場面を減らせば、詳細度の競争に巻き込まれにくくなります。詳細度をそろえる書き方は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で、`@scope` は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
+
+## レイヤーを使うかどうかの判断基準
+
+レイヤーを使うかどうかは、「レイヤーに入っていない外部のCSSがあるか」と「そのCSSを自分でレイヤーに入れられるか」の2点で判断します。
+
+- すべてのCSSを自分で書くか、サードパーティのCSSも自分で `@import` できる：レイヤーを使い、サードパーティのCSSは `vendors` に入れる
+- CMSの本体やプラグインのように、外部のCSSがレイヤーの外で出力され、読み込み方を変えられない：レイヤーを使わず、読み込む順番で9つの分類を保つ
+
+AstroのようにすべてのCSSを自分で管理できる静的サイトは、前者に当たります。WordPressのテーマやプラグインは、後者に当たります。迷ったときは、ブラウザの開発者ツールでページに読み込まれているCSSを確認し、自分が書いていないCSSがレイヤーの外にあるかどうかを調べます。
+{/* 要確認: 出典なし（開発者ツールで確認する手順は筆者の推論） */}
+
+レイヤーを使わない判断をしても、それで設計が崩れるわけではありません。レイヤーは優先順位を宣言する便利な仕組みです。一方で、詳細度を低くそろえる設計ができていれば、読み込む順番でも同じ結果を得られます。kiso.cssを `:where()` で書き、「レイヤーに頼らなくても上書きしやすい」ことを重視したのも、レイヤーを導入しにくい環境があるからです。
+
+CMSが出力するCSSの具体的な扱いや、theme.jsonで定義するトークンについては、「[12-1 CMSと共存する](/operations/cms/)」で説明します。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [@layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@layer)
+- [@import - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@import)
+- [CSS Cascading and Inheritance Level 5: Cascade Layers](https://www.w3.org/TR/css-cascade-5/#layering)
+- [当ブログのレスポンシブコーディングについて](https://www.tak-dcxi.com/article/my-blogs-responsive-coding/)（TAKLOG、2024年3月。本書と一部の方針が異なります）
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）

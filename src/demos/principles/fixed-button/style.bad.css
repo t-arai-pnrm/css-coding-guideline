@@ -1,0 +1,22 @@
+@layer components {
+  @scope (.scoped.cta-list) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* カンプの寸法を固定値で書き写している */
+    ._button {
+      display: inline-block;
+      width: 240px;
+      height: 56px;
+      border-radius: 8px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+      line-height: 56px;
+      text-align: center;
+      white-space: nowrap;
+    }
+  }
+}

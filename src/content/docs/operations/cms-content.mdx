@@ -1,0 +1,214 @@
+---
+title: "12-2 CMSの本文エリアをスタイリングする"
+description: "CMSの本文エリアは、フロントとエディタの両方に当たるセレクタで1か所に書きます。ブロック間の余白は公開プロパティで上書きできるようにし、コアブロックの内部はフラットなセレクタで選び、見た目の種類はブロックスタイルで足します。"
+sidebar:
+  order: 2
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import flowHtml from '../../../demos/operations/content-flow/index.html?raw';
+import flowCss from '../../../demos/operations/content-flow/style.css?raw';
+
+CMSで入力する本文のエリア（本文エリア）のスタイルは、公開ページの本文とエディタの本文の両方に当たるセレクタで、1か所に書きます。WordPressなら `:is(.content-area, .editor-styles-wrapper .is-root-container)` です。こうすれば、編集画面で見た目を確かめながら書いた内容が、公開後もそのままの見た目で表示されます。
+
+ブロック間の余白は、2つ目以降のブロックに付け、値は公開プロパティで上書きできるようにします。コアブロックの内部の要素は、ブロックのクラスから始まるセレクタをフラットに並べて選びます。`!important` は、コアが `style` 属性に出力した値を打ち消すときだけに使います。見た目の種類を増やすときは、独自のブロックを作る前に、ブロックスタイルを検討します。
+
+この節では、WordPressのブロックエディタを例に、本文エリアのスタイルの書き方を説明します。
+
+## 編集画面と公開ページで見た目がずれる
+
+本文エリアは、コンポーネントと事情が大きく違います。本文の段落や見出しを書くのは、コードを書く人ではなく編集者です。編集者は要素にクラスを付けられないので、本文エリアの側で、中に入ってくる `h2` や `p` やコアブロックの見た目を決めておく必要があります。
+
+もうひとつの事情が、編集画面です。ブロックエディタは、公開ページとは別のHTMLの構造で本文を表示します。公開ページ用のセレクタ（`.content-area h2` など）だけでスタイルを書くと、編集画面ではWordPressの標準の見た目で表示されます。編集者は、公開ページを確かめるまで、見出しの大きさや余白が分かりません。
+
+```css title="🙅‍♂ Not Recommended: 公開ページとエディタで、別々のセレクタに書く"
+/* 🙅‍♂ Not Recommended */
+.content-area > * + * {
+  margin-block-start: 20px;
+}
+
+/* editor.css */
+.editor-styles-wrapper .is-root-container > * + * {
+  margin-top: 24px;
+}
+```
+
+エディタ用のCSSを別に用意しても、問題は解決しません。2つのファイルに同じ意味のスタイルを書くと、片方だけを直す機会が必ず生まれます。上の例では、公開ページの余白は20pxなのに、エディタは24pxのまま残っています。私が案件のために書いたブロックテーマの規約でも、「公開ページとエディタで、主要なフォント、色、幅、余白を一致させる」ことを求めています。
+
+## 1つのセレクタで両方に当てる
+
+WordPressのブロックエディタでは、投稿の本文のブロックが `.is-root-container` の子要素として並びます。その外側には、テーマのスタイルを当てるための `.editor-styles-wrapper` があります。公開ページの本文を包む要素のクラス（ここでは `.content-area`）と、エディタのこの構造を `:is()` でまとめれば、1つのルールで両方に当てられます。
+
+```css title="🙆‍♂ Recommended: 公開ページとエディタの本文を、1つのセレクタで選ぶ"
+:is(.content-area, .editor-styles-wrapper .is-root-container) {
+  color: var(--wp--preset--color--ink);
+  line-height: 1.8;
+
+  & h2 {
+    font-size: calc(24 / 16 * 1rem);
+    line-height: 1.4;
+  }
+}
+```
+
+公開ページ側のクラスは、テンプレートで本文のブロックに付けます。ブロックテーマなら、`single.html` のようなテンプレートの中で、投稿の本文のブロックの `className` に指定します。エディタ側には、`add_theme_support( 'editor-styles' )` と `add_editor_style()` で、公開ページと同じCSSのファイルを読み込みます。同じファイルを読み込むので、編集画面用の書き分けは要りません。
+
+```html title="single.html（抜粋）"
+<!-- wp:post-content {"className":"content-area","layout":{"type":"constrained"}} /-->
+```
+
+投稿タイプによって本文の見た目を変えたいときは、エディタの `body` に付くクラスでセレクタを絞ります。私の案件では、ブログの投稿だけにこのスタイルを当てるために、`.post-type-post` を加えています。
+
+ここで、`:is()` の詳細度に注意します。`:is()` の詳細度は、引数の中でいちばん高いものになります。`.editor-styles-wrapper .is-root-container` はクラス2つ分なので、公開ページの `.content-area` にも、クラス2つ分の詳細度が付きます。本文エリアのスタイルは、ほかの場所から詳細度で上書きしにくいということです。この性質は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。だからこそ、次の見出しで説明する公開プロパティが必要になります。
+
+## ブロック間の余白を公開プロパティで変えられるようにする
+
+本文のブロック間の余白は、2つ目以降のブロックの `margin-block-start` に付けます。`& > * + *` と書けば、直下の子要素のうち、前に兄弟要素がある要素だけが選ばれます。最初のブロックの前や、最後のブロックの後ろに余計な余白が付かないので、本文エリアを置く場所の余白と干渉しません。本文の流れの余白の考え方そのものは、「[7-2 余白を設計する](/layout/spacing/)」で説明します。
+
+WordPressにも、ブロック間の余白を出力する仕組み（`blockGap`）があります。私は、theme.jsonの `settings.spacing.blockGap` を `null` にして、WordPressがこの余白のスタイルを出力しないようにしています。ブロック間の余白を決める場所を、本文エリアのCSSの1か所にまとめるためです。
+{/* 要確認: 出典なし（blockGap を null にする理由は筆者の推論。設定は案件の theme.json による。null で blockGap のスタイルが出力されなくなることは WordPress のドキュメントで確認） */}
+
+```css title="🙆‍♂ Recommended: 余白の値を公開プロパティで受け取る"
+:is(.content-area, .editor-styles-wrapper .is-root-container) {
+  --_flow-space: var(--content-area--flow-space, calc(20 / 16 * 1rem));
+  --_space-before-heading: var(--content-area--space-before-heading, calc(48 / 16 * 1rem));
+  --_space-after-heading: var(--content-area--space-after-heading, calc(16 / 16 * 1rem));
+
+  & > * + * {
+    margin-block-start: var(--_flow-space);
+  }
+
+  & > * + :is(h2, h3, h4, h5, h6) {
+    margin-block-start: var(--_space-before-heading);
+  }
+
+  & > :is(h2, h3, h4, h5, h6) + * {
+    margin-block-start: var(--_space-after-heading);
+  }
+}
+```
+
+余白の値は、すべて `--content-area--flow-space` のような公開プロパティで受け取り、デフォルト値を `var()` のフォールバックに書きます。公開プロパティを内部プロパティ（`--_flow-space`）で受ける書き方は、「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」と同じです。見出しの前は広く、見出しの後ろは狭くして、内容のまとまりが見て分かるようにします。
+
+公開プロパティで受け取っておけば、ページや投稿タイプで余白を変えたいときも、本文エリアのセレクタを書き換える必要がありません。ページのスコープで値を渡せば、継承によって本文エリアに届きます。詳細度で勝つ必要はなく、ページの側は本文エリアのセレクタの構造を知らなくてかまいません。
+
+```css title="🙆‍♂ Recommended: ページのスコープから、本文エリアの余白を変える"
+@scope (.scoped.page-interview) to (.scoped) {
+  :scope {
+    --content-area--flow-space: calc(32 / 16 * 1rem);
+    --content-area--space-before-heading: calc(64 / 16 * 1rem);
+  }
+}
+```
+
+私の案件では、段落どうしの余白を別に変えられるように、`--content-area--flow-space-paragraph` のような公開プロパティも用意しています。フォールバックには `--content-area--flow-space` を指定し、渡されなければブロック間の余白と同じにしています。画面の幅でデフォルト値を切り替えるときも、公開プロパティで受ける形は変わりません。条件ごとに、内部プロパティのフォールバックを書き分けるだけです。
+
+次のデモでは、同じ本文エリアを2つ並べ、右の本文エリアにだけ `style` 属性で公開プロパティを渡しています。ブロック間の余白と見出しの前の余白だけが広がり、渡していない見出しの後ろの余白はデフォルト値のままです。
+
+<Demo title="公開プロパティで、本文エリアのブロック間の余白を上書きする" html={flowHtml} css={flowCss} widths={[320, 768, 1024]} />
+
+デモの本文エリアでは、リセットCSSで消したリストのマーカーを `revert` でブラウザのデフォルトに戻しています。本文のリストは、マーカーがなければリストに見えないからです。値を書き直さずに `revert` を使う理由は、「[4-1 壊さないリセット](/reset/kiso/)」で説明しています。
+
+## コアブロックを扱う
+
+本文エリアに入ってくるのは、段落や見出しだけではありません。画像、ギャラリー、テーブル、メディアとテキストのようなコアブロックも入ります。私は、投稿の本文で使えるブロックを許可リストで絞り、許可したブロックには、すべて本文エリア用のスタイルを用意しています。使えるブロックが限られていれば、用意するスタイルも、確かめる組み合わせも限られます。
+
+コアブロックの内部の要素には、クラスを足せません。そのため、メディアとテキストのブロックの `__media` や `__content` のような要素は、コアが付けたクラスで選ぶことになります。このとき、ネストを重ねずに、ブロックのクラスから始まるセレクタを1行ずつフラットに並べます。
+
+```css title="🙆‍♂ Recommended: コアブロックの内部は、ブロックのクラスから始まるセレクタで選ぶ"
+:is(.content-area, .editor-styles-wrapper .is-root-container) {
+  & .wp-block-media-text > .wp-block-media-text__content {
+    padding: 0;
+  }
+
+  & .wp-block-media-text .wp-block-media-text__content > * + * {
+    margin-block-start: calc(12 / 16 * 1rem);
+  }
+
+  & .wp-block-table {
+    overflow-x: auto;
+  }
+
+  & figcaption {
+    /* カンプの #aeaeae は白の背景とのコントラスト比が約2.3:1で、WCAG 2.2 の AA を満たさないため、同じ系統の色に変える */
+    color: var(--wp--preset--color--text-muted);
+    font-size: calc(12 / 16 * 1rem);
+  }
+}
+```
+
+ネストを重ねると、最終的なセレクタが何になり、コアのCSSとどちらの詳細度が高いのかが読めなくなります。セレクタが長くなっても、各ルールに完全なセレクタを書いておけば、コアのCSSと並べて見比べられます。本書のネストは1段までというルールとも一致します。ネストの規約は「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
+
+テーブルのブロックに `overflow-x: auto` を指定しているのは、列の多いテーブルが入力されても、本文エリアからはみ出さないようにするためです。本文エリアに何が入力されるかは、コードを書く時点では分かりません。「長い表が入ったら」「画像がなかったら」と想定外の入力を考えて書くディフェンシブなCSSは、CMSでとくに大切です。考え方は「[7-3 変化に強いレイアウト](/layout/defensive/)」で説明します。
+
+図のキャプションの色には、カンプの値を変えた理由をコメントで残しています。カンプの色をそのまま使うと、文字と背景のコントラストが足りなかったからです。こうした「なぜカンプと違うのか」は、コードからは読み取れないので、コメントに書く価値があります。
+
+## `!important` はコアの `style` 属性を打ち消すときだけ
+
+本文エリアで `!important` を使ってよいのは、コアブロックが `style` 属性に出力した値を打ち消すときだけです。`style` 属性の宣言は、どのセレクタよりも優先されるので、`!important` 以外では上書きできません。
+
+たとえば、コアのメディアとテキストのブロックは、編集画面でメディアの幅を変えると、`grid-template-columns` を `style` 属性に出力します。デザインで決めた列の比率にそろえたいなら、この `style` 属性に勝つ必要があります。
+{/* 要確認: 出典なし（メディアの幅を変えたときに style 属性に grid-template-columns が出力される、という WordPress の挙動の説明。案件のコメントでは「コアが出力するインラインのグリッド指定」とだけ記録している） */}
+
+```css title="🙆‍♂ Recommended: 打ち消す対象と理由をコメントに残す"
+:is(.content-area, .editor-styles-wrapper .is-root-container) {
+  & .wp-block-media-text {
+    @media (width >= calc(768 / 16 * 1rem)) {
+      /* メディアの幅を変えると、コアが style 属性に grid-template-columns を出力する。カンプの列の比率にそろえるため、style 属性に勝てる !important で打ち消す */
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) !important;
+    }
+  }
+}
+```
+
+この `!important` には、何を打ち消しているのかをコメントで必ず残します。コメントがないと、後から読んだ人には、詳細度の競争に負けて付けた `!important` と区別がつきません。コアの更新で `style` 属性が出力されなくなれば、この指定は消せます。コメントは、そのときに消してよいかを判断する手がかりにもなります。
+
+狭い画面では、コアのブロックが持つ縦積みの設定に任せています。`!important` を付けた宣言は、コアが狭い画面用に用意した指定とも競合するので、広い画面に限って書いています。`!important` の使いどころの全体は、「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」でルール `important-only-for-guarantees` として説明しています。詳細度や読み込み順の競争に勝つための `!important` は、本文エリアでも使いません。
+{/* 要確認: 出典なし（狭い画面の縦積みをコアの設定に任せる書き方は、説明を単純にするための例。案件では狭い画面でも !important で列を指定している） */}
+
+## ブロックスタイルで見た目の種類を足す
+
+「コアのボタンに、矢印付きの見た目を追加したい」のように、コアブロックの見た目の種類を増やしたいことがあります。この場合は、独自のブロックを作る前に、ブロックスタイルを検討します。ブロックスタイルは、`register_block_style()` で登録する見た目のバリエーションで、選ぶとブロックのルートに `is-style-<名前>` のクラスが付きます。
+
+```php title="functions.php（抜粋）"
+register_block_style(
+  'core/button',
+  array(
+    'name'  => 'site-action',
+    'label' => __( 'Action', 'site' ),
+  )
+);
+```
+
+```css title="🙆‍♂ Recommended: ブロックスタイルのクラスで、コアのボタンを装飾する"
+.wp-block-button.is-style-site-action .wp-block-button__link {
+  display: block flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--wp--custom--rounded--sm);
+  background-color: var(--wp--preset--color--accent);
+  color: var(--wp--preset--color--white);
+  font-weight: var(--wp--custom--font-weight--bold);
+  text-decoration: none;
+}
+```
+
+ブロックスタイルを選ぶのは、見た目を足すだけで、ブロックの機能や構造は変えないからです。ブロックのバリエーションは、属性や中のブロックの初期値をまとめた「別の種類のブロック」を作る仕組みで、見た目を足すだけなら大げさです。私の案件でも、「既存のボタンに外観を追加するだけなので、バリエーションではなくブロックスタイルを選ぶ」と、登録する関数のコメントに残しています。編集者は、サイドバーでスタイルを選ぶだけで済み、追加のクラス名を覚える必要もありません。
+
+スタイルの名前には、`site-action` のように、テーマやサイトの接頭辞を付けます。クラス名は `is-style-site-action` になり、コアやプラグインが登録するスタイルの名前と重なりません。
+{/* 要確認: 出典なし（接頭辞を付ける理由は筆者の推論。案件ではテーマの名前を接頭辞にしている） */}
+
+コアのボタンを並べるボタンのグループのように、コアのレイアウトの機能が並べ方を担っている部分は、CSSで作り直しません。縦に積む、間隔を空けるといった配置は、ブロックのレイアウトの設定に任せ、CSSでは各ボタンの幅のように、コアの設定では表せない部分だけを足します。コアの機能とCSSの役割が重ならないようにしておくと、コアの更新で挙動が変わったときにも、どちらを直せばよいかが分かります。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Block Styles - Block Editor Handbook](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/)
+- [Editor Styles - Block Editor Handbook](https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#editor-styles)
+- [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)
+- [revert - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert)

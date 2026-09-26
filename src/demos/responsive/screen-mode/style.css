@@ -1,0 +1,88 @@
+/* ルートで計算した長さを子孫に引き継ぐため、型を登録して絶対値にする */
+@property --100svi {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --1rem {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@layer tokens {
+  :root {
+    --100svi: 100svi;
+    --1rem: 1rem;
+
+    /* 単位を外した画面幅。文字サイズを大きくしているユーザーには、狭い画面として扱う */
+    --window-width: calc(tan(atan2(var(--100svi), 1px)) * min(1, 16 / tan(atan2(var(--1rem), 1px))));
+    --screen: --compact;
+    --zoom-scale: calc(var(--window-width) / 375);
+    --px: calc(1px * var(--zoom-scale));
+    --rem: calc(1 / 16 * 1rem * var(--zoom-scale));
+
+    /* ビューポートの判定はここだけ。1680px 相当で拡大を止める */
+    @media (width >= calc(768 / 16 * 1rem)) {
+      --screen: --spacious;
+      --zoom-scale: min(var(--window-width) / 1280, 1680 / 1280);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.feature-section) to (.scoped) {
+    :scope {
+      padding: calc(24 * var(--px));
+      border-radius: calc(8 * var(--px));
+      background-color: oklch(96% 0.01 250deg);
+
+      @container style(--screen: --spacious) {
+        padding: calc(48 * var(--px));
+      }
+    }
+
+    ._heading {
+      margin: 0;
+      font-size: calc(24 * var(--rem));
+
+      @container style(--screen: --spacious) {
+        font-size: calc(40 * var(--rem));
+      }
+    }
+
+    ._lead {
+      margin-block: calc(12 * var(--px)) 0;
+      font-size: calc(14 * var(--rem));
+
+      @container style(--screen: --spacious) {
+        font-size: calc(18 * var(--rem));
+      }
+    }
+
+    ._list {
+      display: block grid;
+      gap: calc(12 * var(--px));
+      margin-block: calc(24 * var(--px)) 0;
+      padding: 0;
+      list-style-type: "";
+
+      @container style(--screen: --spacious) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: calc(24 * var(--px));
+      }
+    }
+
+    ._item {
+      padding: calc(16 * var(--px));
+      border-radius: calc(8 * var(--px));
+      background-color: oklch(100% 0 0deg);
+      font-size: calc(14 * var(--rem));
+
+      @container style(--screen: --spacious) {
+        font-size: calc(16 * var(--rem));
+      }
+    }
+  }
+}

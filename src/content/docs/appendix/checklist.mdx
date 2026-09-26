@@ -1,0 +1,180 @@
+---
+title: "付録D レビューのチェックリスト"
+description: "CSSをレビューするときの確認項目を、12-4で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
+sidebar:
+  order: 4
+---
+
+この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[12-4 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
+
+各項目には、関係するルールのIDを添えています。指摘するときは、IDを引用すると、理由と詳しい説明をすぐに示せます。項目に当てはまらない記述でも、意図が読み取れないものは誤りと決めつけずに `Q` で質問します。反対に、プロジェクトで合意していない規約を求める指摘は `IMO` にとどめます。
+
+インデントやプロパティの並び順は、この一覧に入れていません。整形はStylelintの仕事で、レビューで指摘するのは、自動化が機能していないときだけです。Stylelintで検出できるルールは、各ページのガイドラインの「自動チェック」の欄で分かります。このチェックリストでは、Stylelintが通ったことを前提に、人が確かめる項目を中心に挙げています。
+
+## レビューの前に
+
+- [ ] Stylelintを実行し、エラーが残っていないか（[`run-stylelint-before-done`](/operations/stylelint/#rule-run-stylelint-before-done)）
+- [ ] エラーや警告を消すためだけに、ルールを無効にしていないか（[`no-disabling-to-silence`](/operations/stylelint/#rule-no-disabling-to-silence)）
+- [ ] ルールを無効にする場合は、1行と1つのルールに絞り、理由を書いているか（[`disable-one-line-with-reason`](/operations/stylelint/#rule-disable-one-line-with-reason)）
+- [ ] 警告を放置していないか（[`resolve-warnings`](/operations/stylelint/#rule-resolve-warnings)）
+- [ ] AIが生成したCSSを、lintとレビューの両方で確かめたか（[`verify-ai-output`](/operations/review-and-ai/#rule-verify-ai-output)）
+
+## 指摘の書き方
+
+- [ ] 指摘に、理由と解決策をセットで書いているか（[`review-reason-and-solution`](/operations/review-and-ai/#rule-review-reason-and-solution)）
+- [ ] `MUST`、`IMO`、`Q` のラベルで深刻度を分けているか（[`review-severity-labels`](/operations/review-and-ai/#rule-review-severity-labels)）
+- [ ] 合意のない好みの指摘を、`IMO` にとどめているか（[`review-preferences-as-imo`](/operations/review-and-ai/#rule-review-preferences-as-imo)）
+- [ ] 意図が読み取れない記述を、`Q` で質問しているか（[`review-ask-unclear-intent`](/operations/review-and-ai/#rule-review-ask-unclear-intent)）
+- [ ] 本書のルールに関わる指摘で、ルールのIDを添えているか（[`cite-rule-ids`](/operations/review-and-ai/#rule-cite-rule-ids)）
+
+`MUST` は、仕様やコーディング規約に反するもの、バグが起きているもの、将来深刻な問題になりそうなもの、使いやすさやアクセシビリティを損なうものに付けます。レビューを通したコードには、レビュアーも責任を負います。承認するときは、自分が書いたコードと同じ基準で見ます。
+
+## 1. 仕様とプロジェクトの規約
+
+プロジェクトでコーディングガイドラインが定められている場合は、それを守れているかを最優先で確かめます。本書の規約を採用しているプロジェクトなら、次の項目が対象です。
+
+### 命名とスコープ
+
+- [ ] コンポーネントのルートに `scoped` クラスを付け、スタイルを `@scope (.scoped.<名前>) to (.scoped)` の中に書いているか（[`scoped-class-on-root`](/cascade/scope/#rule-scoped-class-on-root)、[`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)）
+- [ ] 子要素は `._`、ユーティリティは `.-` で始め、コンポジションは接頭辞なしか（[`child-class-underscore`](/notation/naming/#rule-child-class-underscore)、[`utility-class-hyphen`](/notation/naming/#rule-utility-class-hyphen)、[`composition-class-plain`](/notation/naming/#rule-composition-class-plain)）
+- [ ] 名前が、見た目ではなく役割を表しているか（[`name-by-role`](/notation/naming/#rule-name-by-role)）
+- [ ] `container` や `button` のような語を、別の意味の名前に使っていないか（[`no-redefining-web-terms`](/notation/naming/#rule-no-redefining-web-terms)）
+- [ ] `wrapper` や `module` のように、責務を表さない名前を使っていないか（[`no-vague-names`](/notation/naming/#rule-no-vague-names)）
+- [ ] `@keyframes`、グリッドのエリア、アンカー、コンテナの名前を `--` で始めているか（[`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names)、[`container-name-dashed-ident`](/responsive/container-queries/#rule-container-name-dashed-ident)）
+
+### カスケードとセレクタ
+
+- [ ] IDセレクタでスタイルを指定していないか（[`no-id-selector`](/cascade/selectors/#rule-no-id-selector)）
+- [ ] `.a.a` や祖先のクラスを足すような、詳細度を上げるためだけのセレクタがないか（[`no-specificity-hacks`](/cascade/selectors/#rule-no-specificity-hacks)）
+- [ ] 詳細度や読み込み順の競争に勝つための `!important` がないか（[`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)）
+- [ ] レイヤーを使うプロジェクトで、`@layer` の外にスタイルを書いていないか（[`no-unlayered-styles`](/cascade/layers/#rule-no-unlayered-styles)）
+- [ ] ページ固有のセクションを `pages` に、使い回すコンポーネントを `components` に書いているか（[`layer-by-role`](/cascade/layers/#rule-layer-by-role)）
+- [ ] CMSのように外部のCSSと共存する環境で、`@layer` を使っていないか（[`no-layers-with-unlayered-css`](/cascade/layers/#rule-no-layers-with-unlayered-css)）
+
+### ネストと記法
+
+- [ ] ネストが1段までで、ネストしたセレクタが `&` で始まっているか（[`nesting-depth-one`](/notation/nesting-and-order/#rule-nesting-depth-one)、[`nested-selector-ampersand`](/notation/nesting-and-order/#rule-nested-selector-ampersand)）
+- [ ] `&__title` のように、`&` に文字をつなげていないか（[`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation)）
+- [ ] `@media`、`@container`、`@supports` を、各セレクタの中に書いているか（[`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules)）
+- [ ] 寸法、余白、位置を論理プロパティで書いているか（[`logical-properties`](/notation/modern-syntax/#rule-logical-properties)）
+- [ ] `display` を2値構文で、変形を `translate` などの個別のプロパティで書いているか（[`display-two-value-syntax`](/notation/modern-syntax/#rule-display-two-value-syntax)、[`individual-transform-properties`](/notation/modern-syntax/#rule-individual-transform-properties)）
+- [ ] 色の関数をスペース区切りで書き、`rgba()` を使っていないか（[`color-space-separated`](/notation/modern-syntax/#rule-color-space-separated)、[`no-rgba-hsla`](/notation/modern-syntax/#rule-no-rgba-hsla)）
+- [ ] 必要のないベンダープレフィックスがないか（[`no-vendor-prefix`](/notation/modern-syntax/#rule-no-vendor-prefix)）
+
+## 2. デザイントークン
+
+- [ ] トークンとして定義されている値を、数値や色で直接書いていないか（[`use-defined-tokens`](/components/design-tokens/#rule-use-defined-tokens)）
+- [ ] z-indexを数値ではなくトークンで指定しているか（[`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)）
+- [ ] トランジションの再生時間とイージングに、トークンを使っているか（[`transition-longhand-with-tokens`](/interaction/motion/#rule-transition-longhand-with-tokens)）
+- [ ] 新しいトークンが `--<分類>--<名前>` の形で、サイズの段階に数字を使っていないか（[`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first)、[`token-size-names-without-digits`](/components/design-tokens/#rule-token-size-names-without-digits)）
+- [ ] 1回しか使わない値や、特定のコンポーネント専用の値をトークンにしていないか（[`no-single-use-token`](/components/design-tokens/#rule-no-single-use-token)）
+- [ ] 派生させた色のために、トークンやRGBの値を別に用意していないか（[`derive-colors-from-base`](/color-media/color/#rule-derive-colors-from-base)）
+
+余白のトークンは、レスポンシブの環境では `%` や `cqi` が絡み、二者択一で片付かないことが多いので、使っていなくてもあまり細かく指摘しません。
+
+## 3. 対象のブラウザ
+
+- [ ] 新しい機能が、対象のSafari（現行から2つ前のメジャーバージョンの最終版）で使えるか（[`browser-support-target`](/principles/browser-support/#rule-browser-support-target)、[`check-safari-support-first`](/principles/browser-support/#rule-check-safari-support-first)）
+- [ ] 一部のブラウザしか対応していない機能を、未対応の環境でも内容を読めて操作できる範囲で使っているか（[`progressive-enhancement-if-harmless`](/principles/browser-support/#rule-progressive-enhancement-if-harmless)）
+- [ ] アンカーポジショニングのような未対応の環境があるレイアウトの機能を、レイアウトの要にしていないか（[`no-unsupported-layout-features`](/principles/browser-support/#rule-no-unsupported-layout-features)）
+- [ ] 新しい機能に合わせて既存の宣言も変える場合に、`@supports` で分岐しているか（[`supports-for-dependent-declarations`](/principles/browser-support/#rule-supports-for-dependent-declarations)）
+- [ ] 対象のすべてが対応した機能のフォールバックが、残っていないか（[`remove-unneeded-fallbacks`](/principles/browser-support/#rule-remove-unneeded-fallbacks)）
+- [ ] JavaScriptで表示を切り替える前提のスタイルを、`@media (scripting: enabled)` の中に書いているか（[`scripting-for-js-dependent-styles`](/principles/browser-support/#rule-scripting-for-js-dependent-styles)）
+- [ ] ブロックレイアウトの要素に `justify-self` を指定していないか（[`no-justify-self-in-block-layout`](/principles/browser-support/#rule-no-justify-self-in-block-layout)）
+- [ ] 単位のついた値どうしの割り算を使っていないか（[`no-typed-arithmetic`](/values/math-functions/#rule-no-typed-arithmetic)）
+- [ ] Chromeだけでなく、Safari（iOSを含む）とFirefoxでも表示を確かめたか（[`no-chrome-only-check`](/principles/browser-support/#rule-no-chrome-only-check)）
+
+## 4. 不要な記述と副作用のある上書き
+
+- [ ] どの宣言も、なぜ必要かを説明できるか（[`explainable-declarations`](/principles/maintainability/#rule-explainable-declarations)）
+- [ ] 何にでも `width: 100%` や `height: 100%` を指定していないか（[`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100)、[`stretch-over-height-100`](/principles/maintainability/#rule-stretch-over-height-100)）
+- [ ] 初期値、デフォルトスタイル、リセットやベーススタイルで決まっている値を、指定し直していないか（[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults)）
+- [ ] 中央寄せに `margin: 0 auto` ではなく `margin-inline: auto` を使っているか（[`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering)）
+- [ ] 一部だけを変えるのに、`background` のような影響範囲の広いショートハンドを使っていないか（[`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change)）
+- [ ] 値を戻すときに、戻したい先に合うキーワード（`revert` など）を選んでいるか（[`explicit-rollback-keyword`](/cascade/cascade-basics/#rule-explicit-rollback-keyword)）
+- [ ] 継承されるプロパティを、子要素ごとに指定し直していないか（[`inherit-from-root`](/cascade/cascade-basics/#rule-inherit-from-root)）
+
+## 5. グローバルのCSS
+
+リセットやベーススタイルの変更は、すべてのページに影響します。変更があったときは、とくに丁寧に確かめます。
+
+- [ ] ベーススタイルのタイプセレクタを `:where()` で包み、詳細度を0にしているか（[`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)、[`no-heavy-specificity-in-global`](/reset/global-pitfalls/#rule-no-heavy-specificity-in-global)）
+- [ ] 要素全体に `display` や `position` のようなレイアウトのプロパティを指定していないか（[`no-layout-properties-in-base`](/reset/global-pitfalls/#rule-no-layout-properties-in-base)）
+- [ ] `* { margin: 0; padding: 0; }` や `input { appearance: none; }` のような、機能を一律に消すリセットがないか（[`reset-no-destructive-reset`](/reset/kiso/#rule-reset-no-destructive-reset)）
+- [ ] `outline: none` でフォーカスリングを消していないか（[`no-outline-none`](/reset/global-pitfalls/#rule-no-outline-none)）
+- [ ] フォーカスリングを `box-shadow` だけで描いていないか（[`focus-ring-not-box-shadow-only`](/reset/base-styles/#rule-focus-ring-not-box-shadow-only)）
+- [ ] リストのマーカーを `list-style: none` ではなく `list-style-type: ""` で消しているか（[`list-style-type-empty-string`](/reset/global-pitfalls/#rule-list-style-type-empty-string)）
+- [ ] ベースの `line-height` が1.5以上で、`line-height: 1` がないか（[`base-line-height-min`](/typography/line-height/#rule-base-line-height-min)、[`no-line-height-one`](/typography/line-height/#rule-no-line-height-one)）
+- [ ] `scroll-behavior: smooth` を無条件に指定していないか（[`no-global-smooth-scroll`](/reset/base-styles/#rule-no-global-smooth-scroll)）
+- [ ] ダークモードに対応しないのに `color-scheme: light dark` を指定していないか（[`no-color-scheme-without-dark-mode`](/reset/global-pitfalls/#rule-no-color-scheme-without-dark-mode)）
+
+## 6. 内容の変化への耐性
+
+テキストが2倍の長さになったら、画像がなかったら、要素の数が変わったら、と考えながら見ます。
+
+- [ ] 長い見出し、画像のない記事、要素の数が違う一覧で、表示を確かめたか（[`design-for-content-changes`](/layout/defensive/#rule-design-for-content-changes)）
+- [ ] 幅や高さを固定値で決めず、`max-inline-size` や `min-block-size` を使っているか（[`max-inline-size-over-fixed-width`](/responsive/escalation/#rule-max-inline-size-over-fixed-width)、[`min-block-size-over-fixed-height`](/responsive/escalation/#rule-min-block-size-over-fixed-height)）
+- [ ] `minmax()` や `min-inline-size` の固定の最小値を、`min(100%, …)` で包んでいるか（[`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent)）
+- [ ] 列を `1fr` ではなく `minmax(0, 1fr)` で分けているか（[`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr)）
+- [ ] 要素の数が変わるFlexboxに `flex-wrap: wrap` を指定しているか（[`flex-wrap-for-variable-items`](/layout/defensive/#rule-flex-wrap-for-variable-items)）
+- [ ] 理由のない `white-space: nowrap` がないか（[`no-nowrap-without-reason`](/layout/defensive/#rule-no-nowrap-without-reason)）
+- [ ] はみ出しを切り取るのに、`hidden` ではなく `clip` を使っているか（[`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)）
+- [ ] 横スクロールを隠す前に、はみ出している要素を特定して直したか（[`find-overflow-source-first`](/layout/defensive/#rule-find-overflow-source-first)）
+- [ ] 画像の上の文字に、画像が表示されなくても読める背景色があるか（[`text-on-image-fallback-background`](/color-media/images-and-decoration/#rule-text-on-image-fallback-background)）
+- [ ] ブラウザの文字サイズの設定を大きくして、表示を確かめたか（[`verify-with-text-scaling`](/values/px-and-rem/#rule-verify-with-text-scaling)）
+
+## 7. コンポーネントの境界
+
+- [ ] 見た目が似ているだけのものを、1つのコンポーネントにまとめていないか（[`component-split-by-role`](/components/boundaries/#rule-component-split-by-role)、[`rule-of-three`](/principles/maintainability/#rule-rule-of-three)）
+- [ ] コンポーネントのルートに、`margin` や `grid-area` のような外部関連型のレイアウトを指定していないか（[`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)）
+- [ ] 子のコンポーネントの配置と外側の余白を、親の `gap` やOuterで決めているか（[`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)）
+- [ ] ほかのコンポーネントのルートや内部の要素を、セレクタで選んで上書きしていないか（[`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)）
+- [ ] 外から変えてよい値を `--<コンポーネント>--<プロパティ>` の公開プロパティにし、内部で使う値を `--_` で始めているか（[`public-property-naming`](/components/custom-properties/#rule-public-property-naming)、[`internal-property-prefix`](/components/custom-properties/#rule-internal-property-prefix)）
+- [ ] 公開プロパティを自分で宣言せず、内部プロパティで受けてフォールバックにデフォルト値を書いているか（[`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)）
+- [ ] ルートには絶対的なz-indexだけを、内部には相対的なz-indexだけを指定しているか（[`z-index-absolute-root-relative-inside`](/components/boundaries/#rule-z-index-absolute-root-relative-inside)）
+- [ ] 内部で相対的なz-indexを使うコンポーネントのルートに、`isolation: isolate` があるか（[`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index)）
+
+## 8. レスポンシブ
+
+- [ ] 「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、不要なクエリを書いていないか（[`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)）
+- [ ] タグやアイコンのような固定サイズの要素を、レスポンシブにしていないか（[`no-responsive-for-static-elements`](/responsive/escalation/#rule-no-responsive-for-static-elements)）
+- [ ] コンテナに名前を付け、条件を `inline-size` で書いているか（[`container-name-required`](/responsive/container-queries/#rule-container-name-required)、[`container-query-inline-size`](/responsive/container-queries/#rule-container-query-inline-size)）
+- [ ] `cqi` を、名前付きのコンテナがあると言い切れる要素でだけ使っているか（[`cqi-needs-named-container`](/responsive/container-queries/#rule-cqi-needs-named-container)）
+- [ ] クエリの条件を範囲構文で書き、ブレイクポイントをremの式にしているか（[`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)、[`breakpoint-in-rem`](/responsive/media-queries/#rule-breakpoint-in-rem)）
+- [ ] ブレイクポイントを、デバイスの幅ではなくレイアウトが崩れる幅から決めているか（[`breakpoint-from-content`](/responsive/media-queries/#rule-breakpoint-from-content)）
+- [ ] `sp` や `pc` のようなデバイスの名前を使っていないか（[`no-device-names`](/responsive/media-queries/#rule-no-device-names)）
+- [ ] クエリの条件の中で `var()` を使っていないか（[`no-var-in-query`](/responsive/media-queries/#rule-no-var-in-query)）
+- [ ] `vw` や `vh` を使っていないか（[`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)）
+
+## 9. コメント
+
+- [ ] コードの途中のコメントが、「なぜ」だけを書いているか（[`comments-why-only`](/notation/comments/#rule-comments-why-only)）
+- [ ] 変更の経緯や、コメントアウトしたコードが残っていないか（[`no-history-comments`](/notation/comments/#rule-no-history-comments)）
+- [ ] ファイルの先頭に、責務と使い方の説明ブロックがあるか（[`file-header-doc-block`](/notation/comments/#rule-file-header-doc-block)）
+- [ ] 公開プロパティを `@prop` で説明しているか（[`prop-tag-for-public-properties`](/notation/comments/#rule-prop-tag-for-public-properties)）
+- [ ] `!important` でコアブロックの `style` 属性を打ち消す箇所に、対象と理由を書いているか（[`important-for-core-inline-style`](/operations/cms-content/#rule-important-for-core-inline-style)）
+
+## あわせて確かめる項目
+
+次の項目は、確認の順番の9つには含まれていません。しかし、使いやすさやアクセシビリティを損なうものは `MUST` の対象です。関係するスタイルがあれば、あわせて確かめます。
+
+- [ ] ホバーを `@media (any-hover: hover)` の中に書き、`:focus-visible` にも同じ見た目を指定しているか（[`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover)、[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
+- [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
+- [ ] トランジションとアニメーションを `@media (prefers-reduced-motion: no-preference)` の中で指定しているか（[`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference)）
+- [ ] `transition: all` を使っていないか（[`no-transition-all`](/interaction/motion/#rule-no-transition-all)）
+- [ ] 開閉するUIを、`<dialog>`、`popover` 属性、`<details>` のようなHTMLの機能で作っているか（[`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)）
+- [ ] リンクや入力エラーのような情報を、色の違いだけで伝えていないか（[`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)、[`grayscale-check`](/color-media/forced-colors/#rule-grayscale-check)）
+- [ ] 文字と背景のコントラスト比が、WCAG 2.1のAAを満たしているか（[`text-contrast-aa`](/color-media/forced-colors/#rule-text-contrast-aa)）
+- [ ] 枠線を `border: none` ではなく `border-color: transparent` で消しているか（[`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none)）
+- [ ] 入力欄の文字サイズが1rem以上で、ズームを止める指定がないか（[`input-font-size-min-1rem`](/interaction/forms/#rule-input-font-size-min-1rem)、[`no-maximum-scale`](/interaction/forms/#rule-no-maximum-scale)）
+- [ ] `<img>` に `width` と `height` の属性があり、ファーストビューの画像を遅延読み込みにしていないか（[`img-width-height-attributes`](/color-media/images-and-decoration/#rule-img-width-height-attributes)、[`no-lazy-loading-first-view`](/color-media/images-and-decoration/#rule-no-lazy-loading-first-view)）
+
+## AIが生成したコードを見るとき
+
+AIが生成したCSSでは、Stylelintで検出できない誤りが残りやすくなります。付録A「[ルール一覧](/appendix/rules/)」のうち、AIが誤りやすい印の付いたルールを重点的に確かめます。よく見かける古い書き方と置き換え先は、付録B「[モダンな書き方への置き換え表](/appendix/modernize/)」にまとめています。
+
+- [ ] 名前のないコンテナや、コンテナにした要素そのものを条件にしたクエリがないか（[`container-name-required`](/responsive/container-queries/#rule-container-name-required)）
+- [ ] 何にでも付いた `width: 100%` や、中央寄せの `margin: 0 auto` がないか（[`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100)、[`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering)）
+- [ ] 上書きが効かない原因を調べずに足した `!important` がないか（[`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)）
+- [ ] 宣言を1つずつ言い換えたコメントが付いていないか（[`comments-why-only`](/notation/comments/#rule-comments-why-only)）
+- [ ] AIの出力を直した内容を、プロジェクトの規約の文書に書き足したか（[`record-ai-corrections`](/operations/review-and-ai/#rule-record-ai-corrections)）
