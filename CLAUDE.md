@@ -97,5 +97,11 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 ## 情報源
 
 - 著者の資料：gist、astro-template、tak-dcxi.com、Zenn、CodePen、案件リポジトリのうち著者本人が書いた CSS。
-- 調査メモは、作業したセッションの scratchpad にある。コミットしない（案件名を含むため）。
+- 調査メモは `.notes/` にある（git の管理外）。案件名を含むのでコミットしない。原稿に案件名を書かない。
+  - `.notes/gists/`：著者の gist の原文（執筆スタイル、タイポグラフィ、レスポンシブ、keyframes、animations スキル、レビューのチェックリスト）
+  - `.notes/local/`：astro-template と案件リポジトリの調査（著者本人が書いた CSS だけ）
+  - `.notes/blog/`、`.notes/zenn/`、`.notes/codepen/`：記事の一覧と実践のまとめ（`PRACTICES.md`）
+  - `.notes/refs/`：参考サイトのトピック
+  - `.notes/starlight.md`：Starlight の調査
+  - `.notes/talk-2025.md`：登壇の要旨
 - 他人が書いた CSS は参考にしない。
