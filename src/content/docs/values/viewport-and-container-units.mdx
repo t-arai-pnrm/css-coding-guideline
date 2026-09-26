@@ -119,7 +119,6 @@ import unitsCss from '../../../demos/values/svi-and-cqi/style.css?raw';
 プロジェクト全体でビューポート単位を使う流体的な値を多用するなら、その都度値を書かずに、トークンかユーティリティにまとめます。基準にする画面の幅や係数がコードのあちこちに散らばると、カンプの幅が変わったときに直しきれなくなるからです。流体的な文字サイズをユーティリティにまとめる考え方は、「[3-3 計算関数で根拠を式に残す](/values/math-functions/)」で紹介します。
 
 なお、kiso.cssは `body` の `min-block-size` に `100dvb` を指定しています。これはフッターを画面の下端に置くための最小の高さで、内容が画面より短く、スクロールが起きないときにだけ効く指定です。スクロールによる伸び縮みが問題にならない場面なので、`dvb` を使っています。
-{/* 要確認: 出典なし（kiso.cssが dvb を使う理由の説明は筆者の推論。kiso.cssのコメントにはフッターのためとだけある） */}
 
 本書のStylelintの設定では、`unit-disallowed-list` で `vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` を警告しています。`svh` や `svw` のような物理方向の単位は `logical-css/require-logical-units` が警告し、論理方向の `svb` や `svi` を勧めます。Stylelintの設定の全体は、「[12-3 Stylelintでルールを守る](/operations/stylelint/)」で説明します。
 

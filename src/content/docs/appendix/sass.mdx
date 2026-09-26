@@ -170,7 +170,6 @@ pxをremに変換する関数は、`calc(24 / 16 * 1rem)` の式に置き換え�
 こうすれば、使う値はトークンの中から選ぶだけで、段階を増やしてもCSSを書き足す必要がありません。値がタグと同じ場所に書かれるので、どの要素に効くのかも一目で分かります。`style` 属性で渡す理由は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
 トークンそのものは、ループで生成せず、分類ごとのファイルに1行ずつ書きます。段階のあるユーティリティも、`.-fluid-text--md` のように必要な段階だけを書きます（「[9-4 文字サイズと改行](/typography/size-and-line-breaks/)」）。
-{/* 要確認: 出典なし（Sass のループを公開プロパティと style 属性に置き換えるという対応は、本文の composition-configurable-via-props と pass-values-via-style-attribute からの推論） */}
 
 ## 色の関数は、相対カラー構文と color-mix() にする
 

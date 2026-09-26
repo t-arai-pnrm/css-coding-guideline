@@ -117,7 +117,6 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 <Baseline id="word-break-auto-phrase" />
 
 `word-break: auto-phrase` に対応しているのは、2026年9月の時点でChrome系のブラウザだけです。和文の `text-wrap: balance` を `@supports` の中に入れているのは、文節の区切りが分からない環境では、行の長さだけをそろえても単語の途中の改行が残るからです。対応していない環境では、通常の折り返しのままになります。本書のサイトの見出しも、この指定で折り返しています。
-{/* 要確認: 出典なし（balance を @supports の中に入れる理由の説明は筆者の推論） */}
 
 次のデモで、幅のボタンを切り替えて比べてください。Chrome系のブラウザでは、下の見出しが文節の区切りで折り返し、各行の長さもそろいます。
 

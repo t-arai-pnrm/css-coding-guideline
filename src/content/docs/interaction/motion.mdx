@@ -210,7 +210,6 @@ Firefoxは、2026年9月の時点で `display` のトランジションに対応
 <Baseline id="scroll-driven-animations" />
 
 スクロール駆動アニメーションは、2026年9月の時点でFirefoxが対応していません。対応していない環境では `animation-timeline` が無視され、普通のアニメーションとして一瞬で終わった状態になってしまいます。そこで、`@supports` で対応している環境に限り、さらに動きを減らす設定の条件でも囲みます。
-{/* 要確認: 出典なし（未対応の環境で一瞬で終わった状態になる、という説明は筆者の推論） */}
 
 ```css title="🙆‍♂ Recommended: スクロール駆動アニメーションを、対応した環境でだけ動かす"
 @keyframes --hero--parallax {
@@ -301,7 +300,6 @@ View Transitionsは、画面の状態が切り替わる前後のスナップシ�
 ```
 
 ページ間の遷移のデフォルトはクロスフェードで、位置や大きさは変わりません。そのため、`@view-transition` そのものは条件で囲まず、独自の動きだけを `no-preference` の中に書いています。この例は、テーマを切り替えるときだけ、新しい画面を上から塗り替えるように表示するものです。`clip-path` は `none` との間では補間できないので、ここでは `to` も書いています。
-{/* 要確認: 出典なし（@view-transition を条件で囲まない理由と、clip-path の補間についての説明は筆者の推論） */}
 
 <Baseline id="view-transitions" name="View Transitions（同じページの中）" />
 
@@ -343,7 +341,6 @@ root.dataset.motionMode = reduced.matches ? 'reduced' : 'motion';
 ```
 
 `scripting: enabled` の条件は、JavaScriptが有効なことしか表しません。スクリプトの読み込みに失敗したり、途中でエラーが起きたりした場合でも、条件は当てはまります。属性はJavaScriptが実際に動いたときにしか付かないので、演出の準備が整ったことを確実に表せます。動きを減らす設定のときは、要素をすぐに表示し、パララックスやスクロールに合わせた動きを止めます。どちらの状態でも、伝える情報と操作の結果は同じにします。
-{/* 要確認: 出典なし（scripting: enabled と比べた利点は筆者の推論。JavaScript のコードも調査メモの記述から再構成した例） */}
 
 ## ガイドライン
 
