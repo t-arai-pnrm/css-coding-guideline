@@ -11,6 +11,16 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.2.0（2026年9月27日）
+
+内容の確認で見つかった、アクセシビリティとプログレッシブ・エンハンスメントの誤りを直しました。
+
+- ルールを1件追加しました：[`hide-panels-after-init`](/interaction/disclosure/#rule-hide-panels-after-init)（開閉するパネルは、初期化が成功してから隠す）。
+- ルールを2件変更しました。
+  - [`proportional-scale-rem-for-text`](/responsive/design-comp-pattern/#rule-proportional-scale-rem-for-text)：比例スケールの `--rem` に、カンプ上の寸法をremで表した下限を付けます。以前の式では、ブラウザの文字サイズの設定を変えても文字が大きくなりませんでした。
+  - [`scripting-for-js-dependent-styles`](/principles/browser-support/#rule-scripting-for-js-dependent-styles)：`scripting: enabled` に加えて、初期化に成功したJavaScriptが付ける属性を、要素を隠す条件にします。
+- 「[11-4 フォーム部品](/interaction/forms/)」で、スイッチの代わりに `<button>` と `aria-pressed` を勧めていた説明を、`role="switch"` を使う説明に直しました。
+
 ## 0.1.0（2026年9月26日）
 
 最初の原稿です。

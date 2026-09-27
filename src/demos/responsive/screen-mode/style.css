@@ -21,7 +21,9 @@
     --screen: --compact;
     --zoom-scale: calc(var(--window-width) / 375);
     --px: calc(1px * var(--zoom-scale));
-    --rem: calc(1 / 16 * 1rem * var(--zoom-scale));
+
+    /* 文字はカンプ上の寸法（rem）を下限にし、文字サイズの設定とズームで必ず拡大できるようにする */
+    --rem: max(1 / 16 * 1rem, 1 / 16 * 1rem * var(--zoom-scale));
 
     /* ビューポートの判定はここだけ。1680px 相当で拡大を止める */
     @media (width >= calc(768 / 16 * 1rem)) {

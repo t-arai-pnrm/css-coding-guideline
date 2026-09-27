@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.1.0
-- 生成日: 2026-09-26
-- ルールの数: 337
+- バージョン: 0.2.0
+- 生成日: 2026-09-27
+- ルールの数: 338
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は例外なく守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -45,8 +45,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
   - 補足: 2026年9月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports not` で従来の表現を用意して使えます。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
-- 【必須】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書く。（`scripting-for-js-dependent-styles`）
-  - 理由: JavaScript が動かない環境で、内容が隠れたままになるのを防ぐため。
+- 【必須】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。（`scripting-for-js-dependent-styles`）
+  - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【禁止】ブロックレイアウトの要素に、`justify-self` や `justify-items` を指定しない。（`no-justify-self-in-block-layout`）
   - 理由: 2026年9月時点で対応しているのは Chrome だけで、Safari と Firefox では無視されるため。
@@ -318,6 +318,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【禁止】`@media` と `@container` の条件式の中で `var()` を使わない。（`no-var-in-query`）
   - 理由: クエリの条件ではカスタムプロパティを参照できず、条件そのものが無効になるため。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【必須】比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。（`proportional-scale-rem-for-text`）
+  - 理由: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
+  - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【推奨】デザインで特に指定がなければ、`font-family` は総称ファミリーの `sans-serif` だけにする。（`font-family-sans-serif`）
   - 理由: 主要な OS に読みやすい和文フォントが入っており、ユーザーが自分で設定した読みやすいフォントも尊重できるため。
   - 補足: kiso.css で指定済みです。欧文のフォントを使うときも、最後に `sans-serif` を置き、和文は総称ファミリーに任せます。
@@ -426,6 +429,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】タブやアコーディオンの閉じたパネルは `hidden="until-found"` で隠し、`display: none` で隠さない。（`hidden-until-found-for-panels`）
   - 理由: ページ内検索やページ内リンクで中身が見つかったとき、ブラウザが自動でパネルを開くため。
   - 詳細: 11-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+- 【必須】開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してから JavaScript で隠す。（`hide-panels-after-init`）
+  - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境でも、中身を読めるようにするため。
+  - 詳細: 11-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】チェックボックスやラジオボタンの見た目を作り直すときは、`input` 自体に `appearance: none` を指定して描き、`input` を隠して別の要素で描かない。（`style-input-directly`）
   - 理由: キーボードで操作できなくなる事故を防げ、フォーカスリングもそのまま表示されるため。
   - 詳細: 11-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
@@ -517,8 +523,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 使われないコードが残り、読む人に「まだ対応していないブラウザがある」と誤解させるため。
   - 補足: 例：`lh` 単位は Safari 16.4 で対応しているので、`@supports not (top: 1lh)` の分岐は不要です。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
-- 【必須】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書く。（`scripting-for-js-dependent-styles`）
-  - 理由: JavaScript が動かない環境で、内容が隠れたままになるのを防ぐため。
+- 【必須】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。（`scripting-for-js-dependent-styles`）
+  - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【必須】表示の確認は Chrome だけで済ませず、Safari（iOS を含む）と Firefox でも行う。（`no-chrome-only-check`）
   - 理由: 既存のプロパティの新しい仕様を Chrome が先に実装することが多く、Chrome だけで確認すると、ほかのブラウザとの差に気づけないため。
@@ -1228,8 +1234,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】比例スケールの寸法は `calc(N * var(--px))` と `calc(N * var(--rem))` で書き、`N` にはカンプ上のピクセル値をそのまま書く。（`proportional-scale-comp-values`）
   - 理由: カンプとの対応がそのまま読め、`calc((60 + 72) * var(--px))` のように値の足し算も式で残せるため。
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
-- 【必須】比例スケールでも、文字サイズには `--px` ではなく `--rem` を使う。（`proportional-scale-rem-for-text`）
-  - 理由: 文字サイズを大きくしているユーザーでは画面を狭いものとして扱う補正が掛かるので、`--px` を使うと文字まで縮んでしまうため。
+- 【必須】比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。（`proportional-scale-rem-for-text`）
+  - 理由: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【推奨】`--compact` の表示はクエリの外に基本のスタイルとして書き、`--spacious` の差分だけをスタイルクエリで書く。（`screen-mode-compact-base`）
   - 理由: スタイルクエリに対応していないブラウザでも、コンパクトな表示で内容を読めるようにするため。
@@ -1543,6 +1549,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】タブやアコーディオンの閉じたパネルは `hidden="until-found"` で隠し、`display: none` で隠さない。（`hidden-until-found-for-panels`）
   - 理由: ページ内検索やページ内リンクで中身が見つかったとき、ブラウザが自動でパネルを開くため。
   - 詳細: 11-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+- 【必須】開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してから JavaScript で隠す。（`hide-panels-after-init`）
+  - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境でも、中身を読めるようにするため。
+  - 詳細: 11-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【非推奨】`hidden="until-found"` を付ける要素自体には、余白、枠線、背景を指定しない。（`no-box-style-on-until-found`）
   - 理由: 対応したブラウザは `content-visibility: hidden` で中身だけを隠すので、要素自体の余白や枠線は閉じていても表示されるため。
   - 補足: 余白や背景は、内側の要素に指定します。
@@ -1559,7 +1568,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】スイッチは `<input type="checkbox" switch>` で作り、`switch` 属性に対応していない環境でチェックボックスとして扱われることを許容する。（`switch-attribute-progressive`）
   - 理由: 対応した環境ではスクリーンリーダーがオンとオフで読み上げ、未対応の環境でも操作は損なわれないため。
-  - 補足: チェックボックスとして読み上げられると困る場合は、`<button>` と `aria-pressed` で作ります。
+  - 補足: すべての環境でスイッチとして読み上げる必要がある場合は、`role="switch"` を加えます。`<button>` と `aria-pressed` はトグルボタンを表し、オンとオフの意味にならないので使いません。
   - 詳細: 11-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】入力エラーの見た目は、`:invalid` ではなく `:user-invalid` に指定する。（`user-invalid-for-errors`）
   - 理由: `:invalid` は入力する前から当てはまり、ページを開いた時点でエラーが表示されてしまうため。

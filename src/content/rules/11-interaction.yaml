@@ -221,6 +221,14 @@
   page: interaction/disclosure
   since: 0.1.0
 
+- id: hide-panels-after-init
+  level: 必須
+  rule: 開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してから JavaScript で隠す。
+  reason: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境でも、中身を読めるようにするため。
+  aiProne: true
+  page: interaction/disclosure
+  since: 0.2.0
+
 - id: no-box-style-on-until-found
   level: 非推奨
   rule: '`hidden="until-found"` を付ける要素自体には、余白、枠線、背景を指定しない。'
@@ -257,7 +265,7 @@
   level: 推奨
   rule: スイッチは `<input type="checkbox" switch>` で作り、`switch` 属性に対応していない環境でチェックボックスとして扱われることを許容する。
   reason: 対応した環境ではスクリーンリーダーがオンとオフで読み上げ、未対応の環境でも操作は損なわれないため。
-  note: チェックボックスとして読み上げられると困る場合は、`<button>` と `aria-pressed` で作ります。
+  note: 'すべての環境でスイッチとして読み上げる必要がある場合は、`role="switch"` を加えます。`<button>` と `aria-pressed` はトグルボタンを表し、オンとオフの意味にならないので使いません。'
   page: interaction/forms
   since: 0.1.0
 

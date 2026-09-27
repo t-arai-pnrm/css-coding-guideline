@@ -161,8 +161,8 @@
 
 - id: scripting-for-js-dependent-styles
   level: 必須
-  rule: 'JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書く。'
-  reason: JavaScript が動かない環境で、内容が隠れたままになるのを防ぐため。
+  rule: 'JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。'
+  reason: 'JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。'
   aiProne: true
   page: principles/browser-support
   since: 0.1.0

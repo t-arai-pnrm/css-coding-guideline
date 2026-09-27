@@ -128,7 +128,7 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 
 ## `scripting` メディア特性でJavaScriptのない環境に備える
 
-JavaScriptで表示を切り替える前提のスタイルは、`@media (scripting: enabled)` の中に書きます。典型的なのが、画面に入ったらふわっと表示するアニメーションです。表示する前の状態として要素を透明にしておき、JavaScriptが `data-animated="true"` を付けたら元に戻します。
+JavaScriptで表示を切り替える前提のスタイルは、`@media (scripting: enabled)` の中に書きます。典型的なのが、画面に入ったらふわっと表示するアニメーションです。表示する前の状態として要素を透明にしておき、画面に入ったらJavaScriptが元に戻します。
 
 ```css title="🙆‍♂ Recommended: JavaScriptが使える環境でだけ、表示する前の状態にする"
 ._item {
@@ -136,7 +136,8 @@ JavaScriptで表示を切り替える前提のスタイルは、`@media (scripti
     transition-duration: 0.6s;
     transition-property: opacity, translate;
 
-    &:not([data-animated="true"]) {
+    /* 初期化に成功した JavaScript が付ける属性でだけ隠す */
+    &[data-reveal="pending"] {
       opacity: 0;
       translate: 0 40px;
     }
@@ -144,7 +145,7 @@ JavaScriptで表示を切り替える前提のスタイルは、`@media (scripti
 }
 ```
 
-この条件がないと、JavaScriptが無効な環境では、要素がいつまでも透明なままになります。`scripting: enabled` の中に書いておけば、JavaScriptが動かない環境には表示する前の状態が当たらず、内容を普通に読めます。動きを減らす設定との組み合わせは、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。
+この条件がないと、JavaScriptが無効な環境では、要素がいつまでも透明なままになります。ただし、`scripting: enabled` はJavaScriptが有効なことしか表しません。スクリプトの読み込みに失敗したり、実行の途中でエラーが起きたりしても、条件は当てはまります。そこで、隠す条件には、JavaScriptが初期化に成功した時点で付ける属性（ここでは `data-reveal="pending"`）も加えます。画面に入ったら、JavaScriptがこの属性を外して表示します。属性が付く前に処理が止まれば、要素は最初から表示されたままです。動きを減らす設定との組み合わせは、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。
 
 <Baseline id="scripting" name="scripting メディア特性" />
 

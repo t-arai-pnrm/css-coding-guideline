@@ -183,15 +183,31 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 ```html title="見出しの下で開閉するパネル"
 <section class="scoped shipping-section" aria-labelledby="shipping-heading">
   <h2 id="shipping-heading">
-    <a role="button" href="#shipping-panel" aria-expanded="false" aria-controls="shipping-panel">配送について</a>
+    <a href="#shipping-panel">配送について</a>
   </h2>
-  <div id="shipping-panel" hidden="until-found">
+  <!-- 初期の HTML では隠さない。開閉の処理の初期化が成功してから隠す -->
+  <div id="shipping-panel">
     <div class="_panel-inner">…</div>
   </div>
 </section>
 ```
 
-自動で開いたときには `beforematch` イベントが発生するので、JavaScriptで `aria-expanded` を更新します。開閉のボタンは、JavaScriptが動かない環境でもページ内リンクとして働くように、`href` を持つ `<a>` にしています。見た目の状態は、「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
+初期のHTMLでは、パネルを隠さずに表示しておきます。JavaScriptが無効な環境や、スクリプトの読み込みや実行に失敗した環境でも、中身を読めるようにするためです。開閉の処理の初期化が成功した時点で、JavaScriptからリンクに `role="button"`、`aria-expanded`、`aria-controls` を付け、パネルに `hidden="until-found"` を付けて閉じます。開閉のボタンを `href` を持つ `<a>` にしているのは、初期化の前でも、パネルへのページ内リンクとして働くようにするためです。
+
+```js title="開閉の処理が動く状態になってから隠す"
+const initializeDisclosure = (link) => {
+  const panel = document.getElementById(link.hash.slice(1));
+  if (!panel) return;
+  link.setAttribute('role', 'button');
+  link.setAttribute('aria-controls', panel.id);
+  link.setAttribute('aria-expanded', 'false');
+  panel.hidden = 'until-found';
+  panel.addEventListener('beforematch', () => link.setAttribute('aria-expanded', 'true'));
+  // クリックとキー操作での開閉は省略
+};
+```
+
+ページ内検索などで自動で開いたときには `beforematch` イベントが発生するので、`aria-expanded` を更新します。見た目の状態は、「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
 
 `hidden="until-found"` に対応したブラウザは、要素を `display: none` ではなく `content-visibility: hidden` で隠します。中身だけが隠れて要素自体は描画されるので、その要素の余白、枠線、背景は、閉じていても表示されます。これらは内側の要素に指定します。
 
@@ -206,7 +222,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 <Baseline id="hidden-until-found" name='hidden="until-found"' />
 
-Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、ページ内検索で見つからないだけで、開閉は問題なく動きます。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[4-1 壊さないリセット](/reset/kiso/)」）。
+Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、閉じたパネルの中身はページ内検索で見つかりません。ただし、隠すのは初期化が成功した後なので、開閉の処理は動き、JavaScriptが動かない環境では最初から中身が表示されています。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[4-1 壊さないリセット](/reset/kiso/)」）。
 
 ## ガイドライン
 

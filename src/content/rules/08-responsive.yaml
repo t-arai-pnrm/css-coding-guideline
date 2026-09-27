@@ -218,8 +218,9 @@
 
 - id: proportional-scale-rem-for-text
   level: 必須
-  rule: 比例スケールでも、文字サイズには `--px` ではなく `--rem` を使う。
-  reason: 文字サイズを大きくしているユーザーでは画面を狭いものとして扱う補正が掛かるので、`--px` を使うと文字まで縮んでしまうため。
+  rule: 比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。
+  reason: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
+  aiProne: true
   page: responsive/design-comp-pattern
   since: 0.1.0
 
