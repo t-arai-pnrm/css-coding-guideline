@@ -74,6 +74,14 @@
   page: responsive/container-queries
   since: 0.1.0
 
+- id: hide-label-visually-in-container-query
+  level: 推奨
+  rule: 'アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナクエリの中で `display: none` ではなく視覚的に隠す指定を書く。'
+  reason: 'アイコンを `aria-hidden="true"` にしている場合、ラベルまで消すとリンクやボタンの名前がなくなるため。幅の違う複数の場所に置いても、修飾クラスなしで切り替えられる。'
+  note: 隠し方は `.-visually-hidden` と同じ考え方です。ユーティリティのクラスはクエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書きます。
+  page: responsive/container-queries
+  since: 0.3.0
+
 - id: no-container-on-page-root
   level: 禁止
   rule: '`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。'
@@ -163,6 +171,14 @@
   reason: 画面幅の種類は無数にあり、特定の端末の幅に合わせても、その間の幅で崩れるため。
   page: responsive/media-queries
   since: 0.1.0
+
+- id: framework-breakpoint-variables
+  level: 推奨
+  rule: ブレイクポイントを変数として持つフレームワークを使う案件では、独自の値を足さず、フレームワークの変数を使う。
+  reason: 案件の中でブレイクポイントの値がばらばらになるのを防ぐため。
+  note: 'Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティはクエリの条件で使えません（`no-var-in-query`）。'
+  page: responsive/media-queries
+  since: 0.3.0
 
 - id: no-device-names
   level: 禁止

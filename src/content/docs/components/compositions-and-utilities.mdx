@@ -125,6 +125,42 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
 
 `sign()` は、2025年6月にすべての主要なブラウザで使えるようになった関数です（2026年9月確認）。本書の対象のブラウザ（Safari 18系の最終版以降）では動作します。内部プロパティの命名は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
 
+`grid` も、内部プロパティで列の幅を計算するコンポジションです。`auto-fill` と `minmax()` だけで列数をブラウザに任せると、広い画面では列がいくらでも増えます。「列の数は幅に合わせて変えたいが、4列より多くはしたくない」という要件に応えるのが `grid` です。
+
+```css title="🙆‍♂ Recommended: 列の最小幅と最大数から、列の幅を計算する"
+/**
+ * 列の最小幅と最大数から、列数を自動で決める。
+ *
+ * @prop {length}  --grid--column-min-width [calc(320 / 16 * 1rem)] - 列の最小幅（これより狭くなると列が減る）
+ * @prop {integer} --grid--column-max-count [4]                     - 列の最大数
+ * @prop {length}  --grid--gap              [0px]                   - 行と列の間隔（一括）
+ * @prop {length}  --grid--row-gap          [0px]                   - 行の間隔
+ * @prop {length}  --grid--column-gap       [0px]                   - 列の間隔
+ */
+.grid {
+  --_c--row-gap: var(--grid--gap, var(--grid--row-gap, 0px));
+  --_c--column-gap: var(--grid--gap, var(--grid--column-gap, 0px));
+  --_c--column-max-count: var(--grid--column-max-count, 4);
+  --_c--column-min-width: var(--grid--column-min-width, calc(320 / 16 * 1rem));
+
+  /* 要素の幅から列の間隔の合計を引き、最大の列数で割った幅 */
+  --_c--column-width-at-max: calc(
+    (100% - var(--_c--column-gap) * (var(--_c--column-max-count) - 1)) / var(--_c--column-max-count)
+  );
+
+  /* 最小幅と、最大の列数で割った幅の大きいほう。ただし要素の幅は超えない */
+  --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-width-at-max)));
+
+  display: block grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--_c--column-width), 1fr));
+  gap: var(--_c--row-gap) var(--_c--column-gap);
+}
+```
+
+`--_c--column-width-at-max` は、最大の列数で並べたときの1列の幅です。要素の幅から列の間隔の合計を引き、最大の列数で割って求めます。`minmax()` の最小値には、この幅と列の最小幅の大きいほうを使います。広い場所では最大の列数で割った幅のほうが大きくなるので、それより多くの列は入りません。狭い場所では列の最小幅のほうが大きくなり、入らなくなった列から順に次の行へ回ります。
+
+全体を `min(100%, …)` で包んでいるのは、要素の幅が列の最小幅より狭いときに、列が要素からはみ出さないようにするためです。たとえば列の間隔を24px相当にすると、960pxの場所では列の最小幅の320px相当が効いて2列に、2400pxの場所では最大の列数で割った幅が効いて4列になります。列の数を決めるキーワードに `auto-fit` ではなく `auto-fill` を使っているので、アイテムが3つしかないときも、列の幅は4列のときのまま変わりません。2つのキーワードの違いは「[8-1 検討する順番](/responsive/escalation/)」で説明しています。
+
 ## コード例とデモ
 
 次のデモでは、全体を `stack` で縦に積み、タグの一覧に `cluster` を、3つのパネルに `switcher` を使っています。パネルの中の見出しと本文も `stack` です。どのコンポジションにも、間隔は `style` 属性で渡しています。幅のボタンで480pxと768pxを切り替えると、3つのパネルが1列と3列の間で切り替わります。
@@ -174,6 +210,7 @@ Tailwind CSSを使う場合も、この章の考え方はそのまま生かせ�
 
 - [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
 - [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [俺流レスポンシブコーディング 2025](https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025)（TAK、2025年11月）
 - [Every Layout](https://every-layout.dev/)
 - [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)
 - [flex-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex-wrap)

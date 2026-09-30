@@ -190,12 +190,12 @@ ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た�
 
   ._category-link {
     position: relative;
-    z-index: 1;
+    z-index: var(--z--forwards);
   }
 }
 ```
 
-カードに `position: relative` を指定し、`::after` の配置の基準にします。フォーカスリングは、リンクの周りではなく `:has(._link:focus-visible)` でカードの外周に出します。見出しのリンクにフォーカスしたとき、押せる範囲（カード全体）とリングの範囲が一致するからです。カードの中にほかのリンクを置くときは、`position: relative` と `z-index: 1` で `::after` より手前に重ねます。
+カードに `position: relative` を指定し、`::after` の配置の基準にします。フォーカスリングは、リンクの周りではなく `:has(._link:focus-visible)` でカードの外周に出します。見出しのリンクにフォーカスしたとき、押せる範囲（カード全体）とリングの範囲が一致するからです。カードの中にほかのリンクを置くときは、`position: relative` と `z-index: var(--z--forwards)` で `::after` より手前に重ねます。
 
 リンク自身のリングは `outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります。私の案件のコードでは `outline: none` で消していましたが、本書のルール（「[4-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」の `no-outline-none`）に合わせて、この書き方にしました。
 

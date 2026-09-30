@@ -172,7 +172,7 @@ AIにコンポーネントの見た目の調整を頼むと、親のセレクタ
 
 z-indexは、コンポーネントのルートと内部の要素で、指定してよい値の種類を分けます。ルートに指定するのは、ヘッダーやフッターのようにページ全体での重なり順を決める「絶対的なz-index」だけです。内部の要素に指定するのは、コンポーネントの中で前後を入れ替えるための「相対的なz-index」だけで、値は1か-1に限ります。
 
-どちらの値も、数値を直接書かずにトークンで指定します。絶対的な値には `--z--header` のように役割の名前を付けたトークンを使い、相対的な値には `--z--forwards`（1）と `--z--backwards`（-1）を使います。重なり順はまずHTMLの順番で解決し、それで足りないときだけ相対的なz-indexを使います。本書のStylelintの設定では、1と-1以外の数値を `declaration-property-value-disallowed-list` で警告します。トークンの設計は「[6-3 デザイントークン](/components/design-tokens/)」で説明します。
+どちらの値も、数値を直接書かずにトークンで指定します。絶対的な値には `--z--header` のように役割の名前を付けたトークンを使い、相対的な値には `--z--forwards`（1）と `--z--backwards`（-1）を使います。重なり順はまずHTMLの順番で解決し、それで足りないときだけ相対的なz-indexを使います。本書のStylelintの設定では、1と-1も含めて、数値を直接書いたz-indexを `declaration-property-value-disallowed-list` で警告します。「相対的な値は1か-1だけ」と決めても、数値を書ける限り、いずれ誰かが `z-index: 2` と書き始めるからです。トークンの設計は「[6-3 デザイントークン](/components/design-tokens/)」で説明します。
 
 ```css title="🙆‍♂ Recommended: ルートには絶対的な値、内部には相対的な値をトークンで指定する"
 @scope (.scoped.site-header) to (.scoped) {
@@ -208,6 +208,40 @@ z-indexは、コンポーネントのルートと内部の要素で、指定し�
 2つ目は、ルートに `isolation: isolate` を指定したものです。飾りはカードの背景より手前、文字より奥に描かれます。カードの外にある要素とも干渉しません。
 
 <Demo title="ルートに isolation: isolate を指定すると、飾りがカードの背景と文字の間に描かれる" html={zIndexHtml} css={zIndexCss} />
+
+スタッキングコンテキストは、`opacity` や `transform`、`position` と数値のz-indexの組み合わせでも作れます。しかし、それらは見た目や包含ブロック、ページの中での重なり順にも影響します。`isolation` はスタッキングコンテキストを作るかどうかだけを決めるプロパティなので、ほかの手段より副作用が少なく済みます。意図してスタッキングコンテキストを作るときは、`isolation: isolate` を使います。
+
+コンポーネントのルートそのものには、相対的なz-indexを持たせません。ルートに `margin` を持たせないのと同じ理由で、隣のコンポーネントより手前に出るかどうかは、置かれる場所で決まることだからです。次のカードは、どこに置いても周りの要素より1つ手前に出ようとします。
+
+```css title="🙅‍♂ Not Recommended: コンポーネントのルートに相対的な z-index を持たせる"
+/* 🙅‍♂ Not Recommended */
+.promo-card {
+  position: relative;
+  z-index: 1;
+}
+```
+
+子のコンポーネントどうしの前後は、それらを並べる親のコンポーネントが決めます。外側の余白と同じく、親は子を包むOuterの要素を用意し、そこに相対的なz-indexを指定します。次の例では、HTMLで先に書いたカードを、後に書いた画像の手前に重ねています。
+
+```css title="🙆‍♂ Recommended: 子のコンポーネントどうしの前後は、親が Outer の要素で決める"
+@scope (.scoped.hero-section) to (.scoped) {
+  :scope {
+    display: block grid;
+    isolation: isolate;
+  }
+
+  ._card-outer,
+  ._visual-outer {
+    grid-area: 1 / 1;
+  }
+
+  ._card-outer {
+    z-index: var(--z--forwards);
+  }
+}
+```
+
+この形なら、カードのCSSは重なりについて何も知らずに済み、別の場所に置いても余計な重なりを持ち込みません。親のルートにも `isolation: isolate` を指定し、Outerのz-indexを親の中に閉じ込めます。なお、ヘッダーのようにページ全体での順位を持つ絶対的なz-indexは、これまでどおりそのコンポーネントのルートに指定します。
 
 トップレイヤーへ表示する `<dialog>` や `popover` 属性の要素にも、いまは `z-index: var(--z--top)`（値は `calc(infinity)`）を指定しておきます。トップレイヤーの要素は、本来はz-indexと関係なく最前面へ描かれます。しかし、閉じるアニメーションの間も要素をトップレイヤーにとどめる `transition-property: overlay` は、Chromium系のブラウザでしか使えません（2026年9月確認）。対応していないブラウザでは、閉じる途中で要素がトップレイヤーから外れ、z-indexの大きい要素の下へ潜り込むことがあります。
 

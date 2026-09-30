@@ -1,0 +1,53 @@
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+
+      /* ページ全体の段組みはビューポートで切り替える */
+      @media (width >= calc(720 / 16 * 1rem)) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.share-button) to (.scoped) {
+    :scope {
+      container: --share-button / inline-size;
+    }
+
+    ._link {
+      position: relative;
+      display: block flex;
+      column-gap: 1em;
+      justify-content: center;
+      align-items: center;
+      padding-block: 12px;
+      padding-inline: 24px;
+      border-radius: 8px;
+      background-color: oklch(30% 0 0deg);
+      color: oklch(100% 0 0deg);
+      text-decoration: none;
+    }
+
+    ._icon {
+      flex-shrink: 0;
+      inline-size: calc(24 / 16 * 1rem);
+      block-size: calc(24 / 16 * 1rem);
+    }
+
+    ._label {
+      /* アイコン 24px・隙間 16px・ラベル 160px と、左右の余白が並ぶ幅より狭いときは、ラベルを視覚的に隠す */
+      @container --share-button (inline-size < calc((24 + 16 + 160 + 24 * 2) / 16 * 1rem)) {
+        position: absolute;
+        overflow: clip;
+        inline-size: 4px;
+        block-size: 4px;
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+}

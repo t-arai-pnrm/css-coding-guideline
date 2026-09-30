@@ -1,11 +1,11 @@
 ---
 title: "付録D レビューのチェックリスト"
-description: "CSSをレビューするときの確認項目を、12-4で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
+description: "CSSをレビューするときの確認項目を、12-2で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
 sidebar:
   order: 4
 ---
 
-この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[12-4 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
+この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
 
 各項目には、関係するルールのIDを添えています。指摘するときは、IDを引用すると、理由と詳しい説明をすぐに示せます。項目に当てはまらない記述でも、意図が読み取れないものは誤りと決めつけずに `Q` で質問します。反対に、プロジェクトで合意していない規約を求める指摘は `IMO` にとどめます。
 
@@ -66,7 +66,7 @@ sidebar:
 - [ ] トークンとして定義されている値を、数値や色で直接書いていないか（[`use-defined-tokens`](/components/design-tokens/#rule-use-defined-tokens)）
 - [ ] z-indexを数値ではなくトークンで指定しているか（[`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)）
 - [ ] トランジションの再生時間とイージングに、トークンを使っているか（[`transition-longhand-with-tokens`](/interaction/motion/#rule-transition-longhand-with-tokens)）
-- [ ] 新しいトークンが `--<分類>--<名前>` の形で、サイズの段階に数字を使っていないか（[`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first)、[`token-size-names-without-digits`](/components/design-tokens/#rule-token-size-names-without-digits)）
+- [ ] 新しいトークンが `--<分類>--<名前>` の形になっているか（[`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first)）
 - [ ] 1回しか使わない値や、特定のコンポーネント専用の値をトークンにしていないか（[`no-single-use-token`](/components/design-tokens/#rule-no-single-use-token)）
 - [ ] 派生させた色のために、トークンやRGBの値を別に用意していないか（[`derive-colors-from-base`](/color-media/color/#rule-derive-colors-from-base)）
 
@@ -152,7 +152,6 @@ sidebar:
 - [ ] 変更の経緯や、コメントアウトしたコードが残っていないか（[`no-history-comments`](/notation/comments/#rule-no-history-comments)）
 - [ ] ファイルの先頭に、責務と使い方の説明ブロックがあるか（[`file-header-doc-block`](/notation/comments/#rule-file-header-doc-block)）
 - [ ] 公開プロパティを `@prop` で説明しているか（[`prop-tag-for-public-properties`](/notation/comments/#rule-prop-tag-for-public-properties)）
-- [ ] `!important` でコアブロックの `style` 属性を打ち消す箇所に、対象と理由を書いているか（[`important-for-core-inline-style`](/operations/cms-content/#rule-important-for-core-inline-style)）
 
 ## あわせて確かめる項目
 

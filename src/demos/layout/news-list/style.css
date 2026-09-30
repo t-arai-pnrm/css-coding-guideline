@@ -1,0 +1,44 @@
+@layer components {
+  @scope (.scoped.news-list) to (.scoped) {
+    :scope {
+      container: --news-list / inline-size;
+    }
+
+    ._list {
+      display: block grid;
+
+      /* 日付は改行しない（不変）、カテゴリは 160px 相当まで（可変）、タイトルは残りすべて（可変） */
+      grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) minmax(0, 1fr);
+      column-gap: 24px;
+      padding-inline: 24px;
+    }
+
+    ._item {
+      display: block grid;
+
+      /* 列は親のグリッドに参加させ、どの行でも日付・カテゴリ・タイトルの位置をそろえる */
+      grid-template-columns: subgrid;
+      grid-column: 1 / -1;
+      row-gap: 4px;
+      align-items: baseline;
+      padding-block: 1rlh;
+      border-block-end: 1px solid oklch(85% 0 0deg);
+    }
+
+    ._category {
+      justify-self: start;
+      padding-block: 2px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(94% 0.02 250deg);
+      font-size: calc(12 / 16 * 1rem);
+    }
+
+    ._title {
+      /* 日付 96px・カテゴリ 160px・タイトル 160px と、列の隙間 2 つ、左右の余白が並ぶ幅 */
+      @container --news-list (inline-size < calc((96 + 160 + 160 + 24 * 2 + 24 * 2) / 16 * 1rem)) {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+}

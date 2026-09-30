@@ -2,7 +2,7 @@
 
 - バージョン: 0.3.0
 - 生成日: 2026-09-30
-- ルールの数: 358
+- ルールの数: 338
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は例外なく守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -79,7 +79,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】CMS のように、レイヤーに入っていない外部のCSSと共存する環境では `@layer` を使わず、9つの分類はディレクトリ構成と `@import` の順番で保つ。（`no-layers-with-unlayered-css`）
   - 理由: レイヤーの外のCSSは詳細度に関係なくレイヤーの中のCSSに勝つので、自分のCSSだけをレイヤーに入れると構造的に負けるため。
-  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。CMS での詳細は第12章で扱います。
+  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書く。（`scope-with-donut`）
   - 理由: スタイルの範囲がコンポーネントの中に限られ、入れ子になった別のコンポーネントにも届かないので、子要素に短い名前を付けてもぶつからないため。
@@ -211,7 +211,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【必須】z-index の値は、数値を直接書かずにトークンで指定する。（`z-index-tokens-only`）
   - 理由: 重なり順の関係が名前から読め、値の積み増しを防げるため。
-  - 自動チェック: Stylelint: `declaration-property-value-disallowed-list`（1 と -1 以外の数値を警告）
+  - 補足: 相対的な値の 1 と -1 も、`--z--forwards` と `--z--backwards` で指定します。
+  - 自動チェック: Stylelint: `declaration-property-value-disallowed-list`（1 と -1 を含むすべての数値を警告）
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【必須】内部の要素で相対的な z-index を使うコンポーネントは、ルートに `isolation: isolate` を指定する。（`isolation-for-relative-z-index`）
   - 理由: 内部の z-index がほかのコンポーネントと干渉せず、-1 の要素がルートや親の背景の下に隠れることもなくなるため。
@@ -219,9 +220,6 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】トークンは `--<分類>--<名前>` の形で名付ける（例：`--color--neutral--500`、`--spacing--md`）。（`token-naming-category-first`）
   - 理由: 先頭の分類で値の種類が分かり、コンポーネントの公開プロパティとも見分けられるため。
   - 補足: 色の役割を表すセマンティクスのトークンは、`--<役割>--<バリエーション>`（例：`--foreground--muted`）にします。
-  - 詳細: 6-3 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
-- 【必須】サイズの段階名は `xxs`、`xxl` のように書き、`2xs` や `2xl` のような数字を使わない。（`token-size-names-without-digits`）
-  - 理由: WordPress の theme.json では `2xs` が `2-xs` に分割され、CSS と名前がずれるため。
   - 詳細: 6-3 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
 - 【推奨】トークンとして定義されている値は、数値や色を直接書かずにトークンを参照する。（`use-defined-tokens`）
   - 理由: デザインの変更をトークンの修正だけで反映でき、わずかに違う値が紛れ込むのを防げるため。
@@ -470,15 +468,15 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
 - 【禁止】エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。（`no-disabling-to-silence`）
   - 理由: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。（`verify-support-claims`）
   - 理由: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
   - 補足: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 
 ## すべてのルール
 
@@ -638,7 +636,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】CMS のように、レイヤーに入っていない外部のCSSと共存する環境では `@layer` を使わず、9つの分類はディレクトリ構成と `@import` の順番で保つ。（`no-layers-with-unlayered-css`）
   - 理由: レイヤーの外のCSSは詳細度に関係なくレイヤーの中のCSSに勝つので、自分のCSSだけをレイヤーに入れると構造的に負けるため。
-  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。CMS での詳細は第12章で扱います。
+  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書く。（`scope-with-donut`）
   - 理由: スタイルの範囲がコンポーネントの中に限られ、入れ子になった別のコンポーネントにも届かないので、子要素に短い名前を付けてもぶつからないため。
@@ -758,7 +756,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 4-1 壊さないリセット（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/kiso.mdx）
 - 【必須】リセット CSS は `@import url("kiso.css") layer(reset);` のように、`reset` レイヤーに読み込む。（`reset-in-reset-layer`）
   - 理由: ベースやコンポーネントのレイヤーより弱くなり、それらの指定が詳細度に関係なくリセットに勝つため。
-  - 補足: レイヤーを使わない環境（WordPress など）では、`@import url("kiso.css");` とレイヤーなしで読み込み、ほかの CSS より前に置きます。
+  - 補足: レイヤーを使わない環境（CMS など）では、`@import url("kiso.css");` とレイヤーなしで読み込み、ほかの CSS より前に置きます。
   - 詳細: 4-1 壊さないリセット（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/kiso.mdx）
 - 【必須】リセット CSS は、セレクタを `:where()` で包んで詳細度を 0 にしたものを使う。（`reset-zero-specificity`）
   - 理由: レイヤーを使えない環境でも、ベースやコンポーネントの指定がリセットに負けず、クラス1つで上書きできるため。
@@ -982,11 +980,12 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【必須】z-index の値は、数値を直接書かずにトークンで指定する。（`z-index-tokens-only`）
   - 理由: 重なり順の関係が名前から読め、値の積み増しを防げるため。
-  - 自動チェック: Stylelint: `declaration-property-value-disallowed-list`（1 と -1 以外の数値を警告）
+  - 補足: 相対的な値の 1 と -1 も、`--z--forwards` と `--z--backwards` で指定します。
+  - 自動チェック: Stylelint: `declaration-property-value-disallowed-list`（1 と -1 を含むすべての数値を警告）
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【必須】コンポーネントのルートには絶対的な z-index だけを、内部の要素には相対的な z-index（`--z--forwards` と `--z--backwards`）だけを指定する。（`z-index-absolute-root-relative-inside`）
   - 理由: ページ全体の重なり順と、コンポーネントの中の前後関係を分けて管理できるため。
-  - 補足: 重なり順は、まず HTML の順番で解決し、足りないときだけ相対的な z-index を使います。
+  - 補足: 重なり順は、まず HTML の順番で解決し、足りないときだけ相対的な z-index を使います。子のコンポーネントどうしの前後は、ルートに相対的な z-index を持たせず、親のコンポーネントが子を包む Outer の要素で指定します。
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【必須】内部の要素で相対的な z-index を使うコンポーネントは、ルートに `isolation: isolate` を指定する。（`isolation-for-relative-z-index`）
   - 理由: 内部の z-index がほかのコンポーネントと干渉せず、-1 の要素がルートや親の背景の下に隠れることもなくなるため。
@@ -1020,12 +1019,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 先頭の分類で値の種類が分かり、コンポーネントの公開プロパティとも見分けられるため。
   - 補足: 色の役割を表すセマンティクスのトークンは、`--<役割>--<バリエーション>`（例：`--foreground--muted`）にします。
   - 詳細: 6-3 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
-- 【必須】サイズの段階名は `xxs`、`xxl` のように書き、`2xs` や `2xl` のような数字を使わない。（`token-size-names-without-digits`）
-  - 理由: WordPress の theme.json では `2xs` が `2-xs` に分割され、CSS と名前がずれるため。
-  - 詳細: 6-3 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
 - 【推奨】トークンは分類ごとのファイルに分けて `:root` に定義し、`tokens` レイヤーに入れる。（`tokens-on-root`）
   - 理由: サイト全体の値の一覧が1か所にまとまり、CSS から参照できるデザインガイドとして使えるため。
-  - 補足: WordPress のブロックテーマでは、トークンを theme.json で定義します（第12章）。
   - 詳細: 6-3 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
 - 【推奨】色のトークンはプリミティブとセマンティクスの2層で定義し、デザインにない固有の色はグローバルなトークンにしない。（`color-token-two-layers`）
   - 理由: 配色の変更やダークモードをセマンティクスの層で吸収でき、トークンの一覧もデザインの取り決めだけに保てるため。
@@ -1099,6 +1094,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。（`subgrid-span-rows`）
   - 理由: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
   - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+- 【推奨】グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。（`column-width-by-variability`）
+  - 理由: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
+  - 補足: 一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。
+  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。（`display-contents-keep-role`）
   - 理由: `display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。
   - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
@@ -1118,7 +1117,6 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】本文のように種類の違う要素が続く領域は、Flexbox や Grid の `gap` にせず、通常フローのまま `margin` で間隔を作る。（`prose-in-normal-flow`）
   - 理由: `float` による回り込みや `margin` の相殺が働き、要素ごとの余白の大小を自然に調整できるため。
-  - 補足: CMS の本文エリアでの書き方は、第12章「実務での運用」で扱います。
   - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】ページのコンテンツの最大幅と画面の端の余白は、グリッドの左右に余白の列（ガター）を作って決める。（`gutter-columns-for-content-width`）
   - 理由: 画面幅いっぱいに広げたい要素を、ガターの列まで広げるだけで作れるため。
@@ -1231,6 +1229,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】コンテナクエリの条件では、`width` ではなく `inline-size` を使う。（`container-query-inline-size`）
   - 理由: 書字方向に依存しない、論理的な指定にそろえるため。
   - 詳細: 8-2 コンテナクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-queries.mdx）
+- 【推奨】アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナクエリの中で `display: none` ではなく視覚的に隠す指定を書く。（`hide-label-visually-in-container-query`）
+  - 理由: アイコンを `aria-hidden="true"` にしている場合、ラベルまで消すとリンクやボタンの名前がなくなるため。幅の違う複数の場所に置いても、修飾クラスなしで切り替えられる。
+  - 補足: 隠し方は `.-visually-hidden` と同じ考え方です。ユーティリティのクラスはクエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書きます。
+  - 詳細: 8-2 コンテナクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-queries.mdx）
 - 【禁止】`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。（`no-container-on-page-root`）
   - 理由: ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。
   - 詳細: 8-2 コンテナクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-queries.mdx）
@@ -1268,6 +1270,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【必須】ブレイクポイントはデバイスの幅ではなく、レイアウトが崩れる幅から決める。（`breakpoint-from-content`）
   - 理由: 画面幅の種類は無数にあり、特定の端末の幅に合わせても、その間の幅で崩れるため。
+  - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【推奨】ブレイクポイントを変数として持つフレームワークを使う案件では、独自の値を足さず、フレームワークの変数を使う。（`framework-breakpoint-variables`）
+  - 理由: 案件の中でブレイクポイントの値がばらばらになるのを防ぐため。
+  - 補足: Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティはクエリの条件で使えません（`no-var-in-query`）。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【禁止】`sp`、`tablet`、`pc` のようにデバイスを連想させる名前を、ブレイクポイントやクラス名（`.sp-only` など）に使わない。（`no-device-names`）
   - 理由: 画面の幅とデバイスの種類は一致せず、名前と実態がずれていくため。
@@ -1520,29 +1526,6 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
   - 補足: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
-- 【推奨】ナビゲーション、操作のためのボタン、動画の埋め込みのように紙の上で役に立たない部品は、各セレクタの中の `@media print` で `display: none` にする。（`print-hide-screen-only-ui`）
-  - 理由: 紙面を内容のために使え、コンポーネントの印刷のときの振る舞いがコンポーネントの中にまとまるため。
-  - 補足: 印刷用の指定をファイルの末尾にまとめて書きません。ロゴや問い合わせ先のように、紙の上でも身元を示す情報は残します。
-  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
-- 【推奨】本文の外部リンクには、`@media print` の中で擬似要素の `content` に `attr(href)` を指定し、URL を添える。（`print-link-urls`）
-  - 理由: 紙の上ではリンクをたどれず、行き先が分からなくなるため。
-  - 補足: `attr(href)` は属性の値をそのまま返すので、対象は `href` が `http` で始まる本文のリンクに絞ります。
-  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
-- 【推奨】図、表、引用のように途中で分かれると読みにくいまとまりには、印刷のときに `break-inside: avoid` を指定する。（`break-inside-avoid-for-units`）
-  - 理由: まとまりの途中で改ページされると、内容を2ページにまたがって読むことになるため。
-  - 補足: 分けないことを求める指定であって保証ではなく、1ページに収まらない要素は分かれます。長い表は見出しの行を `<thead>` に入れます。
-  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
-- 【非推奨】改ページの制御に `page-break-before`、`page-break-after`、`page-break-inside` を使わず、`break-before`、`break-after`、`break-inside` で書く。（`no-page-break-properties`）
-  - 理由: `page-break-*` は古い名前で、いまは `break-*` の別名として扱われているため。
-  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
-- 【推奨】`print-color-adjust: exact` は背景色が情報を持つ要素にだけ指定し、ページ全体には指定しない。（`print-color-adjust-exact-narrowly`）
-  - 理由: ページ全体の背景を印刷させるとユーザーのインクを大量に使い、色の情報が必要な要素は限られるため。
-  - 補足: ユーザーの印刷設定が優先されることがあるので、枠線などの色以外の手がかりも残します。`-webkit-print-color-adjust` は書きません。
-  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
-- 【推奨】`@page` には余白だけを指定し、`size` で用紙を決めるのは用紙が決まっている文書に限る。（`page-rule-margin-only`）
-  - 理由: ユーザーが使う用紙は A4 とは限らず、用紙の大きさはユーザーの設定に任せたほうがよいため。
-  - 補足: `@page` の値はカスタムプロパティを使わずに直接書きます。`@page` の中で宣言したカスタムプロパティは効きません（2026年9月、Chrome 154 で確認）。
-  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
 
 ### 第11章 インタラクションとモーション
 
@@ -1688,125 +1671,72 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 
 ### 第12章 実務での運用
 
-- 【必須】CMS の中で作るブロックやコンポーネントには独自のクラス名を付け、そのクラスをルートにした `@scope` の中にスタイルを書く。（`cms-own-class-names`）
-  - 理由: レイヤーを使えない環境では、衝突した相手との優劣を詳細度と書く順番でしか決められないので、CMS の本体と同じ要素を取り合わないことが最大の対策になるため。
-  - 補足: レイヤーを使わない判断の基準は、第2章のルール `no-layers-with-unlayered-css` にあります。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【推奨】コアブロックの標準的な見た目は、CSS で上書きする前に、theme.json の設定で調整できないかを検討する。（`cms-adjust-core-with-theme-json`）
-  - 理由: theme.json の設定は WordPress の標準の仕組みでエディタと公開ページの両方に反映され、コアの CSS と詳細度を競わずに済むため。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【推奨】コアやプラグインの CSS を打ち消す CSS は、実際に衝突を確かめてから、その箇所にだけ最小限に書く。（`cms-override-after-conflict`）
-  - 理由: 先回りして書いた打ち消しは、コアの更新で相手の CSS が変わったとき、何を打ち消しているのか分からないコードとして残るため。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【推奨】WordPress の機能は「theme.json → コアブロック → パターン → ブロックスタイル → ダイナミックブロック → 独自ブロック」の順に検討し、下の手段を選ぶときは上の手段で満たせない理由を残す。（`cms-feature-priority`）
-  - 理由: 上の手段ほど WordPress の標準の仕組みに乗れ、エディタと公開ページで同じように動くため。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【必須】コアブロックでスコープのルートを作るときは、`scoped` クラスをブロックの `className` と保存される HTML の両方に書き、ブロックの検証エラーを避ける目的で消さない。（`cms-keep-scoped-in-block-markup`）
-  - 理由: `scoped` がなくなると `@scope (.scoped.page-<スラッグ>)` のルートが見つからず、ページのスタイルが当たらなくなるため。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【必須】WordPress のブロックテーマでは、トークンを theme.json の `settings.custom` とパレットに定義し、CSS からは `--wp--custom--*` と `--wp--preset--*` の名前で参照する。（`cms-tokens-in-theme-json`）
-  - 理由: トークンの定義が1か所にまとまり、エディタの色の選択肢のような編集画面の設定にも、同じ値が使われるため。
-  - 補足: SVG のデータ URI のように theme.json で表しにくい値だけを、CSS のトークンのファイルに残します。サイズの段階名に数字を使わない理由は、第6章のルール `token-size-names-without-digits` にあります。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【推奨】theme.json の `settings.custom` のグループ名は、CSS でトークンを定義するときの分類名（`spacing`、`rounded`、`ease`、`z` など）と同じにする。（`cms-token-groups-same-as-css`）
-  - 理由: 環境が変わっても同じ名前でトークンを考えられ、コンポーネントを移すときも参照する名前の置き換えだけで済むため。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【推奨】theme.json で、任意の色、デフォルトのパレット、流体タイポグラフィ、`appearanceTools` のように、トークンの外の値を入力できる設定を無効にする。（`cms-restrict-editor-options`）
-  - 理由: 編集者がトークンの外の値を入力できると、デザインの一貫性が崩れ、打ち消すための CSS が必要になるため。
-  - 補足: 設定の例は、`color.custom: false`、`color.defaultPalette: false`、`typography.fluid: false`、`appearanceTools: false` です。
-  - 詳細: 12-1 CMSと共存する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms.mdx）
-- 【必須】本文エリアのスタイルは、公開ページとエディタの本文の両方に当たるセレクタ（`:is(.content-area, .editor-styles-wrapper .is-root-container)`）で、1か所に書く。（`content-area-single-selector`）
-  - 理由: 公開ページとエディタで別々に書くと、片方だけを直す機会が生まれ、編集画面と公開ページの見た目がずれるため。
-  - 補足: エディタには、`add_editor_style()` で公開ページと同じ CSS のファイルを読み込みます。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
-- 【推奨】本文エリアのブロック間の余白は、`--content-area--flow-space` のような公開プロパティで受け取り、デフォルト値を `var()` のフォールバックに書く。（`content-area-spacing-public-properties`）
-  - 理由: `:is()` によって本文エリアのセレクタの詳細度が高くなるので、ページごとに余白を変えるとき、詳細度で競わずに値だけを渡せるようにするため。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
-- 【推奨】本文で使えるブロックを許可リストで絞り、許可したブロックにはすべて本文エリア用のスタイルを用意する。（`content-area-allowed-blocks`）
-  - 理由: 用意するスタイルと、確かめる組み合わせの数が限られ、スタイルのないブロックが本文に入り込まないため。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
-- 【推奨】コアブロックの内部の要素は、ブロックのクラスから始まる完全なセレクタで選び、ネストを重ねない（例：`& .wp-block-media-text > .wp-block-media-text__content`）。（`core-block-flat-selectors`）
-  - 理由: コアブロックの HTML にはクラスを足せず、ネストを重ねると、コアの CSS との詳細度の関係が読めなくなるため。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
-- 【必須】コアブロックが `style` 属性に出力した値を `!important` で打ち消すときは、打ち消す対象と理由をコメントに書く。（`important-for-core-inline-style`）
-  - 理由: コメントがないと、詳細度の競争に負けて付けた `!important` と区別できず、コアの更新後に消してよいかも判断できないため。
-  - 補足: 本文エリアで `!important` を使ってよいのは、この場合だけです。`!important` の使いどころの全体は、第2章のルール `important-only-for-guarantees` にあります。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
-- 【推奨】コアブロックに見た目の種類を足すときは、独自のブロックやブロックのバリエーションを作らず、ブロックスタイル（`register_block_style()`）を登録して `.is-style-*` のクラスで装飾する。（`block-style-for-appearance`）
-  - 理由: ブロックの機能と構造をそのまま使え、編集者はスタイルを選ぶだけで済むため。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
-- 【推奨】ブロックスタイルの名前には、テーマやサイトの接頭辞を付ける（例：`is-style-site-action`）。（`block-style-name-prefix`）
-  - 理由: コアやプラグインが登録するスタイルの名前と重ならないようにするため。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
-- 【推奨】ボタンのグループの並びや間隔のように、コアのレイアウトの設定が担う配置は、CSS で作り直さない。（`no-reimplementing-core-layout`）
-  - 理由: コアの機能と CSS の役割が重なると、コアの更新で挙動が変わったときに、どちらを直せばよいか分からなくなるため。
-  - 詳細: 12-2 CMSの本文エリアをスタイリングする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/cms-content.mdx）
 - 【必須】CSS を変更したら Stylelint を実行し、エラーを残さない。（`run-stylelint-before-done`）
   - 理由: 機械的に判断できる違反をレビューに持ち込まず、レビューを命名や設計の判断に集中させるため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【禁止】エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。（`no-disabling-to-silence`）
   - 理由: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【必須】ルールを無効にするときは、`stylelint-disable-next-line` とルール名で1行・1つのルールに絞り、直前のコメントに理由を書く。（`disable-one-line-with-reason`）
   - 理由: 範囲を広げると、同じ場所にある別の誤りまで見逃すうえ、なぜ無効にしたのかが後から分からなくなるため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】プロパティの並び順のように自動で直せる違反は、手で直さず、`stylelint --fix` とエディタの保存時の自動修正に任せる。（`autofix-mechanical-issues`）
   - 理由: 整形はツールの仕事で、人が手作業でそろえると時間がかかるうえ、漏れが出るため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】禁止リストのルール（`unit-disallowed-list` など）には、`message` で代わりの書き方を示す。（`disallowed-list-with-message`）
   - 理由: 何を書けばよいかがその場で分かり、ルールを無効にして済ませる動機を減らせるため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】置き換え先を人が選ぶ必要のあるルールは警告に、正解が1つに決まるルールはエラーにする。（`warning-for-judgement-rules`）
   - 理由: 機械的に直せる違反は確実に止め、判断の要る違反は人に判断を促せるため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】警告は放置せず、直すか、意図して使う場合は理由を添えてルールを1行だけ無効にする。（`resolve-warnings`）
   - 理由: 警告を放置すると、本当に直すべき警告が一覧に埋もれ、誰も警告を読まなくなるため。
   - 補足: 警告だけでは Stylelint の終了コードは失敗になりません。CI で警告も失敗にするときは、`--max-warnings 0` を付けて実行します。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【必須】ガイドラインのルールを変えたら、Stylelint の設定も合わせて変え、本文と設定を食い違わせない。（`lint-config-matches-guideline`）
   - 理由: 設定がガイドラインの意図とずれると、ツールが誤りを直すどころか、誤りを強制するため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】ガイドラインや設計のドキュメントに載せる推奨のコード例も、同じ Stylelint の設定で検証する。（`lint-documented-examples`）
   - 理由: コード例が自分のルールに違反していると、ドキュメントが信用されず、AI にもそのまま手本として真似されるため。
-  - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【必須】レビューの指摘には、理由と解決策を必ずセットで書く。（`review-reason-and-solution`）
   - 理由: 何が問題で、どう直せばよいかが伝わらないと、書いた人が調べ直すことになり、同じ誤りを繰り返すため。
   - 補足: 本書のルールに当てはまる指摘には、ルールの ID を添えます。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】レビューの指摘には `MUST`、`IMO`、`Q` のラベルを付けて、深刻度を区別する。（`review-severity-labels`）
   - 理由: 直さなければならない指摘と、好みの提案と、質問が混ざらないようにするため。
   - 補足: `MUST` は、仕様や規約への違反、バグ、将来の深刻な問題、使いやすさやアクセシビリティの阻害です。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】挙動に問題がなく、合意のない好みが入る指摘は `IMO` にとどめ、修正を強制しない。（`review-preferences-as-imo`）
   - 理由: 教義的なレビューは、ユーザーやクライアントのメリットにならない修正を増やすため。
   - 補足: 規約として合意したルールへの違反は、`MUST` として指摘します。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】意図が読み取れない記述は、誤りと決めつけずに `Q` で質問する。（`review-ask-unclear-intent`）
   - 理由: 書いた人にしか分からない事情がある場合があり、理由が分かればコメントとして残せるため。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】レビューは、規約、トークン、ブラウザ対応、不要な記述、グローバルの CSS、内容の変化への耐性、コンポーネントの境界、レスポンシブ、コメントの順に確認する。（`review-check-order`）
   - 理由: 影響の大きい問題から確かめ、細部の指摘に埋もれて重大な問題を見逃すのを防ぐため。
   - 補足: インデントや並び順のような整形は、ツールが機能していないときだけ指摘します。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】レビューのコメントと AI への指示では、ルールを ID で引用する（例：`no-vw-vh`）。（`cite-rule-ids`）
   - 理由: ID は章の構成が変わっても変わらず、どのルールのことかが正確に伝わるため。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】AI に CSS を書かせるときやレビューさせるときは、先に本書のルール集（またはスキル）を読ませる。（`ai-read-rules-first`）
   - 理由: AI が誤りやすいルールを、書く前に確認させられるため。
   - 補足: Claude Code では `skills/css-coding-guideline/` をスキルとして登録し、ほかのツールでは `AGENTS.md` や `CLAUDE.md` から `rules.md` を参照させます。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【必須】AI が生成した CSS は、Stylelint とレビューの両方で確かめてから採用する。（`verify-ai-output`）
   - 理由: Stylelint で検出できるのはルールの一部で、lint が通っても規約を守っているとは限らないため。
   - 補足: レビューでは、lint で検出できない「AI が誤りやすい」ルールを重点的に確かめます。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。（`record-ai-corrections`）
   - 理由: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。（`verify-support-claims`）
   - 理由: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
   - 補足: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
-  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）

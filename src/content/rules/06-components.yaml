@@ -53,7 +53,8 @@
   level: 必須
   rule: z-index の値は、数値を直接書かずにトークンで指定する。
   reason: 重なり順の関係が名前から読め、値の積み増しを防げるため。
-  lint: 'Stylelint: `declaration-property-value-disallowed-list`（1 と -1 以外の数値を警告）'
+  note: 相対的な値の 1 と -1 も、`--z--forwards` と `--z--backwards` で指定します。
+  lint: 'Stylelint: `declaration-property-value-disallowed-list`（1 と -1 を含むすべての数値を警告）'
   aiProne: true
   page: components/boundaries
   since: 0.1.0
@@ -62,7 +63,7 @@
   level: 必須
   rule: コンポーネントのルートには絶対的な z-index だけを、内部の要素には相対的な z-index（`--z--forwards` と `--z--backwards`）だけを指定する。
   reason: ページ全体の重なり順と、コンポーネントの中の前後関係を分けて管理できるため。
-  note: 重なり順は、まず HTML の順番で解決し、足りないときだけ相対的な z-index を使います。
+  note: 重なり順は、まず HTML の順番で解決し、足りないときだけ相対的な z-index を使います。子のコンポーネントどうしの前後は、ルートに相対的な z-index を持たせず、親のコンポーネントが子を包む Outer の要素で指定します。
   page: components/boundaries
   since: 0.1.0
 
@@ -138,19 +139,10 @@
   page: components/design-tokens
   since: 0.1.0
 
-- id: token-size-names-without-digits
-  level: 必須
-  rule: サイズの段階名は `xxs`、`xxl` のように書き、`2xs` や `2xl` のような数字を使わない。
-  reason: WordPress の theme.json では `2xs` が `2-xs` に分割され、CSS と名前がずれるため。
-  aiProne: true
-  page: components/design-tokens
-  since: 0.1.0
-
 - id: tokens-on-root
   level: 推奨
   rule: トークンは分類ごとのファイルに分けて `:root` に定義し、`tokens` レイヤーに入れる。
   reason: サイト全体の値の一覧が1か所にまとまり、CSS から参照できるデザインガイドとして使えるため。
-  note: WordPress のブロックテーマでは、トークンを theme.json で定義します（第12章）。
   page: components/design-tokens
   since: 0.1.0
 

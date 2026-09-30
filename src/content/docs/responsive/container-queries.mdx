@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import cardHtml from '../../../demos/responsive/container-card/index.html?raw';
 import cardCss from '../../../demos/responsive/container-card/style.css?raw';
+import shareHtml from '../../../demos/responsive/share-button/index.html?raw';
+import shareCss from '../../../demos/responsive/share-button/style.css?raw';
 
 複数の場所に置かれるコンポーネントは、ビューポートではなく、置かれた場所の幅で切り替えます。そのための仕組みがコンテナクエリです。コンテナには必ず `--` で始まる名前を付け、`container` ショートハンドで `inline-size` を指定します。
 
@@ -98,6 +100,57 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
 1カラムのときは2つのカードが同じ幅なので、どちらも同じ配置になります。カードの側には「メインエリア用」や「サイドバー用」の指定が一切ありません。カードは自分が使える幅だけを見て、配置を決めています。
 
+## 狭い場所ではラベルを隠すボタン
+
+コンテナクエリが効くのは、配置の組み替えだけではありません。アイコンと「この記事をシェアする」のようなラベルを並べたシェアボタンを、本文の下とサイドバーの両方に置く場面を考えます。本文の下では余裕があるのでラベルまで見せ、狭いサイドバーではラベルを隠してアイコンだけにしたい、という要件です。1か所でしか使わないならメディアクエリでも書けますが、幅の違う複数の場所に置くなら、修飾クラスを足すか、置き場所ごとにコンポーネントを複製することになります。
+
+```css title="🙆‍♂ Recommended: 置かれた場所が狭いときだけ、ラベルを視覚的に隠す"
+@scope (.scoped.share-button) to (.scoped) {
+  :scope {
+    container: --share-button / inline-size;
+  }
+
+  ._link {
+    position: relative;
+    display: block flex;
+    column-gap: 1em;
+    justify-content: center;
+    align-items: center;
+    padding-block: 12px;
+    padding-inline: 24px;
+  }
+
+  ._label {
+    /* アイコン 24px・隙間 16px・ラベル 160px と、左右の余白が並ぶ幅 */
+    @container --share-button (inline-size < calc((24 + 16 + 160 + 24 * 2) / 16 * 1rem)) {
+      position: absolute;
+      overflow: clip;
+      inline-size: 4px;
+      block-size: 4px;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+}
+```
+
+```html
+<div class="scoped share-button">
+  <a class="_link" href="…" target="_blank" rel="external">
+    <svg class="_icon" aria-hidden="true">…</svg>
+    <span class="_label">この記事をシェアする</span>
+  </a>
+</div>
+```
+
+ラベルは `display: none` で消さずに、視覚的にだけ隠しています。アイコンのSVGは `aria-hidden="true"` で読み上げの対象から外しているので、ラベルまで消すと、リンクの名前がなくなってしまうからです。隠し方は、ユーティリティの `.-visually-hidden` と同じ考え方です。ただし、ユーティリティはHTMLに付けるクラスなので、クエリの条件で付け外しはできません。そのため、同じ種類の指定をコンポーネントの中のクエリに書いています。ユーティリティについては「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
+
+コンテナにしているのは、リンクを包むルートの `<div>` です。コンテナにした要素には `padding` を指定しないので、余白や背景はリンクの側に指定します。閾値は、アイコン、隙間、ラベル、左右の余白が1行に並ぶ幅を式で書いています。次のデモで幅のボタンを768pxにすると、同じボタンが本文の側ではラベル付きで、サイドバーではアイコンだけで表示されます。
+
+<Demo title="同じシェアボタンが、置かれた場所の幅に合わせてラベルを隠す" html={shareHtml} css={shareCss} />
+
+コンテナクエリには、デザイナーとのやり取りが増えやすいという面もあります。メディアクエリなら、切り替わる幅はページで共通なので、画面の幅ごとのカンプで確認できます。コンテナクエリでは、コンポーネントごとに切り替わる幅が違い、その幅はページのカンプからは読み取れません。{/* 要確認: 出典なし */}コンポーネントがどの幅で、どう変わるのかは、実装の前にデザイナーと確認しておきます。確認しておきたい点は「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」にまとめています。
+
 ## コンテナの副作用
 
 `container-type: inline-size` を指定した要素には、インライン方向のサイズの封じ込め（`contain: inline-size`）が暗黙的に適用されます。これは「この要素の幅は、中身の大きさに影響されない」という指定です。中身の幅から自分の幅を決める要素にこれを指定すると、幅が極端に小さく計算され、レイアウトが崩れます。
@@ -106,7 +159,9 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
 コンテナにした要素には `padding` や `border` も指定しません。これらがあると、コンテナとしての幅の計算がずれ、クエリの閾値やコンテナ単位の値が意図とずれます。コンテナはあくまで幅の基準として使い、余白などのレイアウトは子要素で指定します。
 
-`html`、`body`、ページ全体のレイアウト要素をコンテナにするのも避けます。ページ全体の切り替えはメディアクエリの役割です。また、以前の仕様ではコンテナにレイアウトの封じ込めも適用されたため、中にある `position: fixed` の要素がビューポートではなくコンテナを基準に配置されていました。主要なブラウザでは修正されていますが、古い環境が残る可能性を考えると、ページ全体をコンテナにする理由はありません。
+`html`、`body`、ページ全体のレイアウト要素をコンテナにするのも避けます。ページ全体の切り替えはメディアクエリの役割です。また、以前の仕様では、コンテナにレイアウトの封じ込め（`contain: layout`）も暗黙的に適用されていました。そのため、コンテナは中にある `position: fixed` や `position: absolute` の要素の包含ブロックになり、スタッキングコンテキストも作っていました。固定したつもりのヘッダーやモーダルが、ビューポートではなくコンテナを基準に配置されてしまいます。
+
+この仕様は制約が強すぎたため、2024年7月にCSSワーキンググループが、コンテナにはレイアウトの封じ込めを適用しないと決めました。ブラウザでは、Chrome 129（2024年9月）、Firefox 133（2024年11月）、Safari 18.4（2025年3月）で修正されています（2026年9月確認）。本書の対象のブラウザ（Safari 18系の最終版以降）では修正後の動作ですが、古い環境が残る可能性を考えると、`position: fixed` の要素を含むページ全体をコンテナにする理由はありません。
 
 ほかにも、覚えておきたい制約がいくつかあります。`subgrid` を指定した要素とは併用できないので、グリッドの親をコンテナにし、サブグリッド側の切り替えには `calc()` で求めた値を使います。`<picture>` の `<source>` にある `media` 属性はコンテナクエリを理解しないので、画像の切り替えはビューポートを基準にするしかありません。`container-type: size` はコンテナの高さが確定していないと効かないため、原則として使いません。
 
@@ -129,4 +184,6 @@ AIが生成するコードでは、次のように名前のないコンテナと
 - [CSS コンテナクエリ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_containment/Container_queries)
 - [@container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@container)
 - [container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/container)
+- [Weaker form of layout containment for container queries（csswg-drafts #10544）](https://github.com/w3c/csswg-drafts/issues/10544)（CSSワーキンググループ、2024年7月に決定）
+- [WebKit Features in Safari 18.4](https://webkit.org/blog/16574/webkit-features-in-safari-18-4/)（WebKit Blog、2025年3月）
 - [俺流レスポンシブコーディング 2025](https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025)（TAK、2025年11月）

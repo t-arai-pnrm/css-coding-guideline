@@ -56,6 +56,14 @@
   page: layout/grid-first
   since: 0.1.0
 
+- id: column-width-by-variability
+  level: 推奨
+  rule: 'グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。'
+  reason: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
+  note: '一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。'
+  page: layout/grid-first
+  since: 0.3.0
+
 - id: display-contents-keep-role
   level: 推奨
   rule: 'サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。'
@@ -99,7 +107,6 @@
   level: 推奨
   rule: 本文のように種類の違う要素が続く領域は、Flexbox や Grid の `gap` にせず、通常フローのまま `margin` で間隔を作る。
   reason: '`float` による回り込みや `margin` の相殺が働き、要素ごとの余白の大小を自然に調整できるため。'
-  note: CMS の本文エリアでの書き方は、第12章「実務での運用」で扱います。
   page: layout/spacing
   since: 0.1.0
 

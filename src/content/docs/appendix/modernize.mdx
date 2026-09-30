@@ -76,7 +76,7 @@ sidebar:
 | ルートに何も指定せず、内部の要素に `z-index: -1` | ルートに `isolation: isolate` を指定し、内部は `var(--z--backwards)` | [`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index) | AI |
 | コンポーネントのルートに `margin-top: 40px` | 親の `gap` か、親の子要素として置くOuterで間隔を作る | [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root) | AI |
 | 親のCSSで `.news-card ._title` を選んで上書きする | 子の公開プロパティ（`--news-card--radius` など）に値を渡す | [`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals) | AI |
-| `--space-2xl`、`--primary-color` | `--spacing--xxl`、`--color--neutral--500` | [`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first)、[`token-size-names-without-digits`](/components/design-tokens/#rule-token-size-names-without-digits) | AI |
+| `--space-lg`、`--primary-color` | `--spacing--lg`、`--color--neutral--500` | [`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first) | AI |
 
 ## レイアウト
 
@@ -132,7 +132,6 @@ sidebar:
 | コンポーネントごとの `@media (prefers-color-scheme: dark)` | セマンティクスのトークンに `light-dark()` で持たせる | [`light-dark-in-semantic-tokens`](/color-media/color/#rule-light-dark-in-semantic-tokens) | AI |
 | `border: none` | `border-color: transparent` | [`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none) | AI |
 | `-webkit-text-stroke` だけで縁取り、文字が細くなる | `paint-order: stroke fill` で縁取りを塗りの下に置く | [`text-stroke-paint-order`](/color-media/images-and-decoration/#rule-text-stroke-paint-order) |  |
-| `page-break-inside: avoid` | `break-inside: avoid` | [`no-page-break-properties`](/color-media/print/#rule-no-page-break-properties) |  |
 
 ## インタラクションとモーション
 

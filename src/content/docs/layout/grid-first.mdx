@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import subgridHtml from '../../../demos/layout/subgrid-cards/index.html?raw';
 import subgridCss from '../../../demos/layout/subgrid-cards/style.css?raw';
+import newsHtml from '../../../demos/layout/news-list/index.html?raw';
+import newsCss from '../../../demos/layout/news-list/style.css?raw';
 
 レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討します。Gridなら配置が親の指定だけで完結し、子要素の側に幅の計算や個別の指定を書かずに済みます。ただし、GridはFlexboxの上位互換ではありません。タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すなら、Flexboxのほうが向いています。
 
@@ -197,6 +199,35 @@ Gridなら、どちらの例も親の指定だけで書けます。
 
 <Demo title="サブグリッドで、カードの見出し・本文・ボタンの位置をそろえる" html={subgridHtml} css={subgridCss} />
 
+サブグリッドは、列をそろえるときにも使えます。日付、カテゴリ、タイトルを1行ずつ並べるニュースの一覧を考えます。列の幅を決める前に、それぞれの列が可変か不変かを考えます。日付は途中で改行されると読みにくいので、改行しない不変の列です。カテゴリは長すぎると窮屈になるので、上限を決めた可変の列にします。タイトルは、残りの幅をすべて使う可変の列です。
+
+```css title="🙆‍♂ Recommended: 列ごとに可変か不変かを決め、項目の列をサブグリッドでそろえる"
+@scope (.scoped.news-list) to (.scoped) {
+  ._list {
+    display: block grid;
+    grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) minmax(0, 1fr);
+    column-gap: 24px;
+    padding-inline: 24px;
+  }
+
+  ._item {
+    display: block grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: baseline;
+    padding-block: 1rlh;
+  }
+}
+```
+
+1列目の `max-content` は、日付の幅そのものです。日付の列は、中身より狭くならず、改行もされません。2列目の `fit-content()` は、中身の幅に合わせつつ、括弧の中の値を上限にする指定です。カテゴリが短ければ短いなりの幅になり、長ければ160px相当で折り返します。3列目の `minmax(0, 1fr)` は、残りの幅をすべて受け取ります。
+
+`<li>` にあたる `._item` は、`grid-column: 1 / -1` で親の3列すべてにまたがり、`grid-template-columns: subgrid` で親の列をそのまま使います。どの項目のカテゴリが長くても、列の幅は一覧全体で1つに決まるので、日付、カテゴリ、タイトルの開始位置がすべての行でそろいます。`align-items: baseline` は、文字の大きさが違うカテゴリとタイトルを、文字のベースラインでそろえる指定です。項目の上下の余白には、ルート要素の行の高さを単位にした `1rlh` を使っています。
+
+{/* 要確認: 出典なし */}ただし、一覧を狭い場所に置くと、日付とカテゴリの列に幅を取られて、タイトルの列が極端に細くなります。次のデモでは、一覧のルートをコンテナにして、タイトルが160px相当を確保できない幅ではタイトルを次の行に回しています。
+
+<Demo title="日付・カテゴリ・タイトルの列を、サブグリッドで全項目にそろえる" html={newsHtml} css={newsCss} />
+
 サブグリッドが効くのは、グリッドの直接の子だけです。カードを `<li>` で包んでいるなど、グリッドとカードの間に別の要素があるときは、その要素に `display: contents` を指定して箱をなくします。ただし、`display: contents` を指定した要素は、ブラウザによっては暗黙のロールを失うことがあります。ロールを持たない `<div>` なら問題はありません。`<li>` や `<section>` なら、`role` 属性でロールを明示し、スクリーンリーダーで読み上げを確かめます。
 
 サブグリッドを使うカードは、親がグリッドであることを前提にしています。そのため、カードを並べる側のグリッドまで含めて、1つのコンポーネントとして扱います。この考え方は「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
@@ -211,6 +242,7 @@ Gridなら、どちらの例も親の指定だけで書けます。
 - [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
 - [カードの高さを揃えたければsubgridを使えばいい](https://www.tak-dcxi.com/article/if-you-want-to-align-the-heights-of-the-cards-you-can-use-subgrid/)（TAKLOG、2024年3月）
 - [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月）
+- [俺流レスポンシブコーディング 2025](https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025)（TAK、2025年11月）
 - [grid-template - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template)
 - [サブグリッド - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Subgrid)
 - [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)
