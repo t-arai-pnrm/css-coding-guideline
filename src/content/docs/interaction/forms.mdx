@@ -21,7 +21,7 @@ import formCss from '../../../demos/interaction/form-controls/style.css?raw';
 
 ほかにも、入力欄には `text-autospace: no-autospace` を指定して、入力中に和文と英数字の間へアキが入るのを防いでいます。ボタンには `touch-action: manipulation` を指定して、iOSで連続してタップしたときの拡大を防ぎ、押せる部品のカーソルを `pointer` にしています。`<textarea>` は、縦方向にだけリサイズできます。詳しくは「[4-1 壊さないリセット](/reset/kiso/)」で説明しています。
 
-CSSではありませんが、入力欄には `autocomplete` 属性で入力する内容の種類（`name`、`email`、`postal-code` など）を正しく指定します。ブラウザの自動入力が働き、入力の手間と誤りを減らせます。`autocomplete="off"` は、多くのブラウザで無視されます。
+CSSではありませんが、入力欄には `autocomplete` 属性で入力する内容の種類（`name`、`email`、`postal-code` など）を正しく指定します。ブラウザの自動入力が働き、入力の手間と誤りを減らせます。ログインのフォームでは、多くのブラウザがパスワードマネージャーのために `autocomplete="off"` を無視します（MDN、2026年9月確認）。
 
 ## `accent-color` で色を変える
 

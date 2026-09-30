@@ -43,7 +43,7 @@ import ringBadCss from '../../../demos/reset/focus-ring/style.bad.css?raw';
 
 外側のリングは、太さ3pxの `outline` です。`outline-offset` で要素から3px離し、その隙間を `box-shadow` で埋めています。`box-shadow` の広がりは隙間とリングの太さを足した6pxですが、外側の3pxは `outline` に隠れるので、見えるのは要素のすぐ外側の3pxだけです。接頭辞の `--_b--` は、コンポーネントの内部用のプロパティと名前が重複しないように付けています。
 
-色に使っている `Canvas` と `CanvasText` はシステムカラーで、ブラウザが決める背景色と文字色です。ダークモードや強制カラーモードでは、互いにコントラストが取れた2色の組み合わせに切り替わります。
+色に使っている `Canvas` と `CanvasText` はシステムカラーで、ブラウザが決める背景色と文字色です。強制カラーモードでは、互いにコントラストが取れた2色の組み合わせに切り替わります。ダークモードでは、`color-scheme` に `dark` を含めたときだけ、暗い背景と明るい文字の組み合わせに切り替わります。
 
 強制カラーモードでは `box-shadow` が `none` になりますが、`outline` は残ります。リングの本体を `outline` で描くのはこのためで、`box-shadow` だけで描いたリングは強制カラーモードで消えます。
 
@@ -102,7 +102,7 @@ html {
 
 モーダルのダイアログを開いている間は、背面のページがスクロールしないようにするのが一般的です。以前は、`body` を `position: fixed` にしたり、`dialog` の `open` 属性で判定したりする方法が使われていました。
 
-```css title="🙅‍♂ Not Recommended: open 属性を持つ dialog で、body を固定する"
+```css title="🙅‍♂ Not Recommended: open 属性を持つ dialog で、背面のスクロールを止める"
 /* 🙅‍♂ Not Recommended */
 body:has(dialog[open]) {
   overflow: hidden;
