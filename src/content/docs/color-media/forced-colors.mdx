@@ -42,6 +42,10 @@ import grayscaleCss from '../../../demos/color-media/grayscale-check/style.css?r
 - `GrayText`：無効な要素の文字色
 - `Highlight` と `HighlightText`：選択した部分の背景色と文字色
 
+入力欄やボタンの枠線を描き直す場面では、ほかのシステムカラーも使えます。`Field` と `FieldText` は入力欄の背景色と文字色、`ButtonBorder` はボタンの枠線の色、`AccentColor` と `AccentColorText` はチェックボックスの選択色のような強調の色とその上の文字色を表します。`ButtonBorder` は、Safariが対応していないので、`ButtonText` などで代用します。
+
+<Baseline id="system-color" compatKey="css.types.color.system-color.buttonborder" name="システムカラー ButtonBorder" />
+
 kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `Highlight` と `HighlightText` にしています。強制カラーモードでは `<mark>` の色が変わらない場合もあり、蛍光ペンで強調したという意味を伝えられなくなるからです。
 
 ```css title="🙆‍♂ Recommended: 強制カラーモードのときだけ、システムカラーで指定し直す"
@@ -81,6 +85,18 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 通常の表示では、2つのボタンの見た目は変わりません。違いが出るのは強制カラーモードのときです。`border-color` はシステムカラーに置き換わるので、透明にしておいた枠線に色が付きます。背景色が消えても枠線が残るので、クリックできる範囲が分かります。
 
 kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を付けています。デザインで枠線を消したいときも、kiso.cssのREADMEのとおり、`border: none` ではなく `border-color: transparent` で上書きします。kiso.cssの方針は「[4-1 壊さないリセット](/reset/kiso/)」で説明しています。
+
+フォーカスリングを `box-shadow` などで描き直すときも、`outline` は消さず、透明にして残します。通常の表示では、透明な `outline` は見えず、`box-shadow` の表現だけが見えます。強制カラーモードでは `outline-color` がシステムカラーに置き換わるので、キーボードで操作している位置が見えます。`outline: none` で消すと、強制カラーモードでもリングが消えます。
+
+```css title="🙆‍♂ Recommended: フォーカスリングを描き直すときは、outline を透明にして残す"
+._field {
+  &:focus-visible {
+    box-shadow: 0 0 0 4px oklch(60% 0.16 250deg / 40%);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+}
+```
 
 同じ理由で、要素の境界を `box-shadow` だけで描かないようにします。`box-shadow` で描いた枠線は、強制カラーモードでは `none` になって消えます。フォーカスリングを `box-shadow` だけで描かないことは、「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
 
@@ -278,4 +294,5 @@ AIにデザインを実装させると、薄いグレーの文字や、淡い色
 - [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
 - [forced-colors - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/forced-colors)
 - [system-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/system-color)
+- [Forced Colors Explained: A Practical Guide](https://polypane.app/blog/forced-colors-explained-a-practical-guide/)（Polypane。`outline-color: transparent` とシステムカラーの一覧）
 - [WebAIM: Contrast Checker](https://webaim.org/resources/contrastchecker/)

@@ -83,6 +83,8 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 `padding` と `border-radius` は重複していますが、これは意図したものです。それぞれのカードは、相手を気にせず変更したり削除したりできます。「カード類の背景色をまとめて変えたい」といった、そろって変わるべき値だけをトークンで共有します。トークンの設計は「[6-3 デザイントークン](/components/design-tokens/)」で説明します。
 
+共通化の粒度は、大きめから始めます。たとえば「左に画像、右に文章」という配置が何度か出てきたからといって、その配置だけを部品にすると、似た配置を見つけるたびに部品が増えていきます。配置の共通点は部品の境界とは限らず、部品が散らばるほど、どれをどこで使うかを把握できなくなって破綻します。共通化するなら、商品の詳細や記事の一覧のように、役割が名前で言える単位にします。
+
 同じものが3回現れたら、それらが見た目だけでなく役割まで同じかを確かめます。役割まで同じなら、コンポーネントやコンポジションとして切り出します。切り出す単位の考え方は「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で扱います。最適化は、ひととおり書き終えてから行うくらいがちょうど良いと私は考えています。
 
 ## 不要な記述をしない
@@ -195,6 +197,7 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 - [CSS設計において特に大切にしている思想をまとめてみた](https://zenn.dev/tak_dcxi/articles/65629b78ee3bf7f82c4a)（Zenn、2020年10月。本書と一部の方針が異なります）
 - [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月）
+- [細かすぎるけど伝わってほしい私的BEMプラクティス30（ぐらい）](https://necomesi.jp/blog/tsmd/posts/152)（necomesi、共通化の粒度と、重複を許容する考え方）
 - [ショートハンドプロパティ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Shorthand_properties)
 - [revert - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert)
 - [revert-layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert-layer)

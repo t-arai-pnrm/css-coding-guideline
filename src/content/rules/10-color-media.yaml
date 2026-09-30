@@ -35,6 +35,14 @@
   page: color-media/color
   since: 0.1.0
 
+- id: gradient-interpolation-space
+  level: 推奨
+  rule: 彩度の高い2色以上をつなぐグラデーションには、`linear-gradient(in oklch, …)` のように補間の色空間を書く。
+  reason: 初期値の sRGB 補間では中間の色が灰色にくすみ、色空間を指定すると知覚に近い明度と彩度で補間されるため。
+  note: '`oklch` の色相は `shorter hue` の経路で補間されます。長いほうを通すときは `in oklch longer hue` と書きます。対応していない環境ではこの宣言が無視されるので、`background-color` も書いておきます。'
+  page: color-media/color
+  since: 0.4.0
+
 - id: light-dark-in-semantic-tokens
   level: 推奨
   rule: ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。
@@ -74,6 +82,14 @@
   aiProne: true
   page: color-media/forced-colors
   since: 0.1.0
+
+- id: transparent-outline-for-custom-focus
+  level: 推奨
+  rule: 'フォーカスリングを `box-shadow` などで描き直すときは、`outline` を消さずに `outline-color: transparent` で透明にして残す。'
+  reason: 通常の表示では独自の表現だけが見え、強制カラーモードでは `outline` がシステムカラーに置き換わって、キーボードで操作している位置が見えるため。
+  note: '`outline: none` や `outline: 0` で消さない理由は、第4章の `no-outline-none` を参照してください。'
+  page: color-media/forced-colors
+  since: 0.4.0
 
 - id: no-box-shadow-only-boundary
   level: 禁止
@@ -184,7 +200,7 @@
   level: 禁止
   rule: 'ファーストビューに表示される画像に、`loading="lazy"` を指定しない。'
   reason: ページでいちばん大きな要素の表示が遅れるため。
-  note: 'ファーストビューの画像には `fetchpriority="high"` を指定し、スクロールしないと見えない画像にだけ `loading="lazy"` を付けます。'
+  note: 'ファーストビューの画像には `fetchpriority="high"` を指定し、`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。'
   aiProne: true
   page: color-media/images-and-decoration
   since: 0.1.0
@@ -222,11 +238,34 @@
 
 - id: shadow-black-in-dark-mode
   level: 推奨
-  rule: 影の色はダークモードでも黒にし、不透明度を上げて奥行きを表す。
-  reason: 暗い背景に白い影を付けると、影ではなく光って見えるため。
-  note: '`--shadow--color: light-dark(oklch(0% 0 0deg / 8%), oklch(0% 0 0deg / 25%))` のように、影の色のトークンに `light-dark()` を使います。'
+  rule: 影の色は、ライトモードでは背景の色相に寄せた色にし、ダークモードでは黒にして不透明度を上げて奥行きを表す。
+  reason: 黒に近い影は色のある背景をくすませ、暗い背景に白い影を付けると、影ではなく光って見えるため。
+  note: '`--shadow--color: light-dark(oklch(30% 0.05 250deg / 14%), oklch(0% 0 0deg / 30%))` のように、影の色のトークンに `light-dark()` を使います。背景が無彩色のサイトでは、ライトモードも黒で構いません。'
   page: color-media/images-and-decoration
   since: 0.1.0
+
+- id: shadow-tokens-light-source
+  level: 推奨
+  rule: 影のトークンは光源の向きをそろえ、段階が上がるほどオフセットとぼかしを大きくし、不透明度を下げる。
+  reason: 影の向きや強さがばらつくと、要素の高さの関係が読み取れず、画面に光源が複数あるように見えるため。
+  page: color-media/images-and-decoration
+  since: 0.4.0
+
+- id: no-animate-layered-shadow
+  level: 非推奨
+  rule: 重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。
+  reason: 描画の計算量が影の数に比例して増え、古い端末ではコマ落ちしやすいため。
+  note: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
+  page: color-media/images-and-decoration
+  since: 0.4.0
+
+- id: marker-for-list-number-style
+  level: 推奨
+  rule: '番号付きリストの番号を装飾するときは、`list-style: none` と `::before` ではなく、`::marker` で色やフォントを指定する。'
+  reason: 'リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。'
+  note: '`::marker` には `background` や `border` を指定できません。円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。'
+  page: color-media/images-and-decoration
+  since: 0.4.0
 
 - id: text-stroke-paint-order
   level: 推奨

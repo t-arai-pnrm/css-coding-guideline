@@ -153,3 +153,37 @@
   aiProne: true
   page: operations/review-and-ai
   since: 0.3.0
+
+# 12-3 CMSのWYSIWYG本文にスタイルを当てる
+- id: wysiwyg-scope-root
+  level: 推奨
+  rule: CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中に要素セレクタで書く。
+  reason: 編集者は要素にクラスを付けられず、子孫セレクタで書くと詳細度が上がり、独自ブロックの側に打ち消しが要るため。
+  note: 本文エリアは、`scoped <名前>` の規約（第2章）の例外です。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。
+  page: operations/wysiwyg
+  since: 0.4.0
+
+- id: wysiwyg-cms-prefix
+  level: 推奨
+  rule: 編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。
+  reason: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
+  note: '`[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。'
+  aiProne: true
+  page: operations/wysiwyg
+  since: 0.4.0
+
+- id: wysiwyg-scope-exception
+  level: 推奨
+  rule: CMS の本文エリアに限り、`@scope` のネストと、独自ブロックの `@scope` での `to()` の省略を認める。
+  reason: 本文エリアと独自ブロックの2段だけで、ブロックの中にコンポーネントを置かない前提が成り立てば、スタイルの漏れが起きにくいため。
+  note: ブロックの中にコンポーネントを入れるなら、通常の `@scope (.scoped.<名前>) to (.scoped)` に戻します。
+  page: operations/wysiwyg
+  since: 0.4.0
+
+- id: wysiwyg-flow-margin
+  level: 推奨
+  rule: 本文のブロック間の余白は、2つ目以降の直下の子に `margin-block-start` を `rlh` で付け、見出しと独自ブロックの前だけ広げる。
+  reason: 見出しや段落の行間が違っても、余白がルート要素の行の高さの倍数で揃うため。
+  note: 中にブロックを持つ `blockquote` などは、中の余白を `0.5rlh` に詰めます。
+  page: operations/wysiwyg
+  since: 0.4.0

@@ -1,6 +1,6 @@
 ---
 title: "10-3 画像と装飾"
-description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選び、文字の縁取りは paint-order で塗りの下に描きます。"
+description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選びます。すりガラスの背景、番号付きリストのマーカー、文字の縁取りも扱います。"
 sidebar:
   order: 3
 ---
@@ -15,7 +15,7 @@ import strokeCss from '../../../demos/color-media/text-stroke/style.css?raw';
 
 画像の縦横比は `aspect-ratio` で決め、中身は `object-fit` の `cover` か `contain` で収めます。初期値の `fill` のまま、画像を引き伸ばさないようにします。`<img>` には `width` と `height` の属性を書き、`srcset` と `sizes` の値は、手で計算せずにツールで確かめて決めます。
 
-単色のアイコンは `currentColor` で文字色に合わせ、三角形のような図形は `clip-path` で描いて、形をトークンにします。影と角丸もトークンから選びます。影の色はダークモードでも黒のままにして、不透明度で強さを変えます。
+単色のアイコンは `currentColor` で文字色に合わせ、三角形のような図形は `clip-path` で描いて、形をトークンにします。影と角丸もトークンから選びます。影の色は、ライトモードでは背景の色相に寄せ、ダークモードでは黒のままにして不透明度で強さを変えます。
 
 <Baseline id="aspect-ratio" />
 
@@ -162,7 +162,11 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 写真のような画像は、AVIFで書き出します。AVIFは、WebPより10〜30%ほど小さく、2024年1月にすべての主要なブラウザで使えるようになりました。Webページで表示する画像では、ブラウザの対応を理由にJPEGやPNGを主な形式にする必要はもうありません。ただし、AVIFへの変換はWebPの2倍以上の時間がかかるので、画像の多いサイトでは、ビルドの時間を見積もっておきます。
 
-ファーストビューに表示される画像には、`loading="lazy"` を指定しません。遅延読み込みにすると、ページでいちばん大きな要素の表示が遅れるからです。代わりに `fetchpriority="high"` を指定して、優先して読み込ませます。スクロールしないと見えない画像にだけ、`loading="lazy"` を付けます。
+ファーストビューに表示される画像には、`loading="lazy"` を指定しません。遅延読み込みにすると、ページでいちばん大きな要素の表示が遅れるからです。代わりに `fetchpriority="high"` を指定して、優先して読み込ませます。スクロールしないと見えない画像と `<iframe>` にだけ、`loading="lazy"` を付けます。
+
+<Baseline id="loading-lazy" />
+
+遅延読み込みは、通信やデコードの仕事をなくすのではなく、あとへ先送りするだけです。先送りした先がスクロールや操作の最中だと、通信、デコード、レイアウトの処理が同じ時間に重なり、操作への応答（INP）や体感を悪くすることがあります。ページ内のすべての `<img>` に一括で付けると、この状態を作りやすくなります。ファーストビューの直下の画像にまで付けるかどうかは、実測で決めます。遅延読み込みする画像や埋め込みにも、`width` と `height` の属性か `aspect-ratio` で場所を確保しておきます。確保しないと、読み込んだ瞬間にレイアウトがずれます。
 
 装飾のための画像や、隣の見出しと同じ内容を表すだけの画像には、`alt=""` を指定します。カードのサムネイルのように、見出しのリンクと同じ内容を繰り返す画像がその例です。意味のある画像には、内容が伝わる代替テキストを書きます。
 
@@ -285,18 +289,27 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 ## 影と角丸はトークンから選ぶ
 
-影は、段階的に強くなる「高さ」のスケールとしてトークンにします。ぼかしの大きさと不透明度を段階ごとに増やし、要素がどのくらい浮いているかを表します。
+影は、段階的に強くなる「高さ」のスケールとしてトークンにします。画面の光源は1つに決め、どのトークンも同じ向きの影にします。本書の例は真上からの光なので、水平方向のオフセットは0です。斜めの光にするなら、水平と垂直のオフセットの比を、すべてのトークンでそろえます。要素が高く浮くほど、オフセットとぼかしを大きくし、不透明度は下げます。浮いた要素ほど、影が遠くまで広がって薄くなるからです。
 
-```css title="🙆‍♂ Recommended: 影の色はダークモードでも黒にし、不透明度で強さを変える"
+```css title="🙆‍♂ Recommended: 光源をそろえ、高いほどオフセットとぼかしを大きく、不透明度を低くする"
 :root {
-  --shadow--color: light-dark(oklch(0% 0 0deg / 8%), oklch(0% 0 0deg / 25%));
+  --shadow--hue: 250deg;
+  --shadow--color: light-dark(oklch(30% 0.05 var(--shadow--hue) / 14%), oklch(0% 0 0deg / 30%));
   --shadow--sm: 0 2px 4px -1px var(--shadow--color);
-  --shadow--md: 0 4px 8px -2px var(--shadow--color), 0 2px 4px -2px var(--shadow--color);
-  --shadow--lg: 0 8px 16px -4px var(--shadow--color), 0 4px 6px -2px var(--shadow--color);
+  --shadow--md:
+    0 4px 8px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent),
+    0 2px 4px -2px var(--shadow--color);
+  --shadow--lg:
+    0 8px 16px -4px color-mix(in oklab, var(--shadow--color) 60%, transparent),
+    0 4px 6px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent);
 }
 ```
 
-影の色は、ダークモードでも黒のままにします。暗い背景で白い影を付けると、影ではなく光って見えてしまうからです。代わりに、ダークモードでは黒の不透明度を上げて、暗い背景の上でも奥行きが分かるようにします。影は強制カラーモードでは消えるので、要素の境界は影だけで表しません。
+ライトモードの影は、背景の色相に寄せます。灰色がかった黒の影を色のある背景に重ねると、背景がくすんで見えるからです。背景の色相に合わせ、明度と彩度を下げた色にすると、背景と自然になじみます。上の例では、背景のアクセントカラーの色相を `--shadow--hue` に持たせています。背景が無彩色のサイトでは、彩度が0の黒のままでも構いません。
+
+影の色は、ダークモードでは黒のままにします。暗い背景で白い影を付けると、影ではなく光って見えてしまうからです。代わりに、ダークモードでは黒の不透明度を上げて、暗い背景の上でも奥行きが分かるようにします。影は強制カラーモードでは消えるので、要素の境界は影だけで表しません。
+
+複数の影を重ねたトークンは、描画の計算量が影の数に比例して増えます。`transition` や `animation` で影そのものを動かすと、古い端末ではコマ落ちしやすくなります。影を動かしたいときは、影を付けた擬似要素の `opacity` だけを動かします。{/* 要確認: 出典なし */}透明な部分の輪郭に沿わせたいときは、`box-shadow` ではなく `filter: drop-shadow()` を使います。
 
 角丸も、`--rounded--sm` から `--rounded--xl` までの段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。
 
@@ -317,6 +330,40 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 ```
 
 角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。影や角丸の値をpxで指定する理由は、「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
+
+## すりガラスの背景は、真後ろの色だけが混ざる
+
+`backdrop-filter: blur()` で、要素の背後をぼかしたすりガラスの背景を作れます。効果を見せるには、要素の背景を半透明にします。ぼかしの対象になるのは、その要素の真後ろにあるピクセルだけです。固定ヘッダーの少し下にある色付きの要素は、ヘッダーに重なるまでぼかしに混ざらず、スクロールの途中で急に色が現れます。
+
+```css title="🙆‍♂ Recommended: 半透明の背景に backdrop-filter を重ねる"
+._header {
+  position: sticky;
+  inset-block-start: 0;
+  background-color: oklch(from var(--background--base) l c h / 70%);
+  backdrop-filter: blur(12px);
+}
+```
+
+`-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[7-4 重なりと配置](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
+
+<Baseline id="backdrop-filter" />
+
+固定ヘッダーの背景色を、スクロール位置のセクションに合わせて切り替えたいときは、ヘッダーの背景を書き換える代わりに、ヘッダーの後ろに `position: sticky` の色付きの要素（ブロッカー）を置く方法があります。ブロッカーは、自分の入っているセクションの外へは追従しないので、セクションを抜けると次のセクションの色に入れ替わります。ただし、各セクションの先頭に、ヘッダーと同じ高さの余白が必要です。ヘッダーを高さのあるときだけ固定する場合（「[7-4 重なりと配置](/layout/positioning/)」）は、ブロッカーも同じ条件の中に書き、余白が取れない場面では別の方法を選びます。
+
+## 番号付きリストのマーカーは ::marker で装飾する
+
+`<ol>` の番号の色や太さを変えたいときは、`::marker` を使います。リストの意味を保ったまま、`color`、`font-*`、`content` を指定できます。
+
+```css title="🙆‍♂ Recommended: マーカーの色と太さを ::marker で変える"
+._step::marker {
+  color: var(--color--accent--500);
+  font-weight: 700;
+}
+```
+
+`::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲むような装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[4-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
+
+<Baseline id="marker" />
 
 ## 文字の縁取りは塗りの下に描く
 
@@ -368,6 +415,12 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 - [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月）
 - [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
 - [RespImageLint](https://ausi.github.io/respimagelint/)
+- [Lazy loading - Performance | MDN](https://developer.mozilla.org/ja/docs/Web/Performance/Guides/Lazy_loading)
+- [Designing Beautiful Shadows in CSS](https://www.joshwcomeau.com/css/designing-shadows/)（Josh W. Comeau。光源、高さと影の関係、背景の色相に寄せた影。記事のダークモードの扱いは本書と異なります）
+- [Next-level frosted glass with backdrop-filter](https://www.joshwcomeau.com/css/backdrop-filter/)（Josh W. Comeau。記事は `-webkit-` の併記を勧めますが、本書は接頭辞なしで書きます）
+- [Sneaky Header Blocker Trick](https://www.joshwcomeau.com/css/header-blockers/)（Josh W. Comeau）
+- [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)
+- [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)
 - [aspect-ratio - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)
 - [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)
 - [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)

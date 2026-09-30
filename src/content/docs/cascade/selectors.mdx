@@ -168,6 +168,44 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 `:has()` は、2023年12月にすべての主要なブラウザで使えるようになり、2026年6月に「広く利用可能」になりました（2026年9月確認）。本書の対象のブラウザでは、問題なく使えます。
 
+## `:has()` と `:not()` を組み合わせる
+
+「画像を持たないカード」を選びたいとき、`:has()` と `:not()` を入れ子にします。そのとき、入れ子の順序で意味が逆になります。次の3枚のカードで考えます。1枚目は画像と説明文を、2枚目は説明文だけを、3枚目は画像だけを持っています。
+
+```html
+<article class="card"><img src="…" alt=""><span>説明文</span></article>
+<article class="card"><span>説明文</span></article>
+<article class="card"><img src="…" alt=""></article>
+```
+
+`.card:has(:not(img))` は、「`img` 以外の子孫を1つでも持つカード」を選びます。1枚目と2枚目には、`img` 以外の要素（`span`）があるので、どちらも当てはまります。画像を持たないカードだけを選んだことにはなりません。一方、`.card:not(:has(img))` は、「`img` の子孫を持たないカード」を選ぶので、当てはまるのは2枚目だけです。
+
+```css title="🙅‍♂ Not Recommended: 「画像を持たない」のつもりで :has() の中に :not() を入れる"
+/* 🙅‍♂ Not Recommended */
+.card:has(:not(img)) {
+  /* 1枚目と2枚目に当てはまる */
+  padding-inline: 24px;
+}
+```
+
+```css title="🙆‍♂ Recommended: 「持たない」は :not() の中に :has() を入れる"
+@scope (.scoped.card) to (.scoped) {
+  :scope {
+    &:not(:has(> img)) {
+      padding-inline: 24px;
+    }
+  }
+}
+```
+
+入れ子のセレクタは、次の順に読むと取り違えません。まず、`:not(img)` のような引数を、暗黙の `*` を補って `*:not(img)` と読みます。「`img` ではない任意の要素」です。次に、その部品を外側の関数に渡します。`:has(*:not(img))` は、「そういう要素を子孫に持つ」という意味です。内側から外へ評価すれば、`:not(:has(img))` は「`img` を持つ」の否定、`:has(:not(img))` は「`img` ではない要素を持つ」になり、意味の違いが式の形に現れます。
+
+2つのセレクタの詳細度は、どちらも0.1.1です。`:not()` と `:has()` の詳細度は、引数のうち最も高いセレクタの詳細度になります。順序を入れ替えると、詳細度は変わらずに意味だけが変わるので、誤りに気づきにくくなります。
+
+<Baseline id="not" name=":not()" />
+
+引数を `> img` のように直接の子に絞ると、何を探しているのかが読み取りやすくなり、調べる範囲も狭くなります。{/* 要確認: 出典なし */}上の例の `:not(:has(> img))` は、`img` が直接の子でなければ、孫の位置にあっても当てはまる点に注意します。画像が別の要素に包まれることがあるなら、`>` を付けず、子孫全体を探す形にします。
+
 ## `:has()` の起点と引数の範囲
 
 `:has()` は、起点の要素（`A:has(B)` の `A`）と、引数で探す範囲（`B`）を狭くして使います。祖先のスタイルが子孫によって決まるので、DOMが変わるたびに、ブラウザは起点の要素がまだ条件を満たすかを調べ直すからです。起点の子孫が多く、引数の範囲が広いほど、この調べ直しは重くなります。
@@ -242,6 +280,8 @@ caption {
 - [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)
 - [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)
 - [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
+- [:not() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:not)
+- [Decoding CSS selectors: :has(:not()) vs :not(:has())](https://polypane.app/blog/decoding-css-selectors-has-not-vs-not-has/)（Polypane）
 - [:has() - CSS | MDN: Performance considerations](https://developer.mozilla.org/en-US/docs/Web/CSS/:has#performance_considerations)
 - [Analyze CSS selector performance during Recalculate Style events | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/selector-stats)
 - [Selectors Level 5: Heading Pseudo-classes](https://drafts.csswg.org/selectors-5/#headings)

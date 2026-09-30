@@ -71,7 +71,7 @@ import gridCss from '../../../demos/responsive/intrinsic-grid/style.css?raw';
 
 次に検討するのは、クエリを使わず、要素の中身とブラウザのレイアウトアルゴリズムだけで幅に合わせる方法です。「イントリンシック」は「本来備わっている」という意味で、要素とレイアウトアルゴリズムがもともと持つ伸び縮みの性質を使います。
 
-具体的には、`auto` や `fit-content` による自然なサイズ、`flex-wrap: wrap` による折り返し、Gridの `auto-fit` と `minmax()` による列数の自動調整があります。`clamp()`、`min()`、`max()` による流体的なサイズや、`max-inline-size` による上限の指定も、この段階の手段です。
+具体的には、`auto` や `fit-content` による自然なサイズ、`flex-wrap: wrap` による折り返し、Gridの `auto-fit` と `minmax()` による列数の自動調整があります。`clamp()`、`min()`、`max()` による流体的なサイズや、`max-inline-size` による上限の指定も、この段階の手段です。読み物のように、要素が縦に流れる内容を複数の段に分けたいときは、CSSの段組み（`column-width`）も使えます。列の幅の下限だけを決めれば、段の数はブラウザが決めます。ただし、要素はブロック方向に順に流れ込むので、カードのように行をそろえたい並びには向かず、高さが決まらないと段の切れ目が定まりません。行や列をそろえたいときは、Gridの `auto-fit` を使います。
 
 たとえばボタンを横に並べるだけなら、`flex-wrap: wrap` を指定すれば、入りきらないボタンは自動で次の行へ折り返されます。ボタンの幅は中身の文字数で決まるので、幅の指定は要らず、ブレイクポイントも不要です。
 
@@ -163,4 +163,5 @@ import gridCss from '../../../demos/responsive/intrinsic-grid/style.css?raw';
 - [当ブログのレスポンシブコーディングについて](https://www.tak-dcxi.com/article/my-blogs-responsive-coding/)（TAKLOG、2024年3月。本書と一部の方針が異なります）
 - [repeat() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/repeat)
 - [minmax() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/minmax)
+- [column-width - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/column-width)
 - [max-inline-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/max-inline-size)

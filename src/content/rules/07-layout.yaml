@@ -64,6 +64,31 @@
   page: layout/grid-first
   since: 0.3.0
 
+- id: flex-auto-margin-for-end-items
+  level: 推奨
+  rule: 'Flexbox の並びで一部の要素だけを行末側へ寄せるときは、その要素に `margin-inline-start: auto` を指定し、空の要素や `flex-grow` を使わない。'
+  reason: 余白の吸収先が1か所に決まり、要素の数が変わっても、寄せる位置が変わらないため。
+  note: '均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。'
+  page: layout/grid-first
+  since: 0.4.0
+
+- id: grid-columns-fr-not-percent
+  level: 推奨
+  rule: 'Grid の列を比率で分けるときは、`%` ではなく `fr` を使う。'
+  reason: '`%` は `gap` を除かない親の幅を基準にするので、列の合計が `gap` の分だけ親を超えるが、`fr` は `gap` を除いた残りを分けるため。'
+  note: '`fr` の最小幅を0にする理由は、ルール `minmax-zero-for-fr` を参照してください。'
+  page: layout/grid-first
+  since: 0.4.0
+
+- id: no-dense-for-ordered-items
+  level: 非推奨
+  rule: '順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。'
+  reason: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
+  note: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
+  aiProne: true
+  page: layout/grid-first
+  since: 0.4.0
+
 - id: display-contents-keep-role
   level: 推奨
   rule: 'サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。'
@@ -109,6 +134,14 @@
   reason: '`float` による回り込みや `margin` の相殺が働き、要素ごとの余白の大小を自然に調整できるため。'
   page: layout/spacing
   since: 0.1.0
+
+- id: flow-root-for-margin-collapse
+  level: 推奨
+  rule: '親子のマージンの相殺を止めたいときは、`overflow: auto` や見えない `padding`、`border` ではなく、親に `display: flow-root` を指定する。'
+  reason: '`overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取る副作用があるため。'
+  note: 'Flexbox や Grid にした親と、その子の間では、余白は相殺しません。'
+  page: layout/spacing
+  since: 0.4.0
 
 - id: gutter-columns-for-content-width
   level: 推奨
@@ -187,7 +220,7 @@
   level: 必須
   rule: 'はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。'
   reason: '`hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなるため。'
-  note: '`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。'
+  note: '`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-5 を参照してください。'
   aiProne: true
   page: layout/defensive
   since: 0.1.0
@@ -213,7 +246,7 @@
   level: 推奨
   rule: '絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。'
   reason: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
-  note: '`inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。'
+  note: '`inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。'
   aiProne: true
   page: layout/positioning
   since: 0.1.0
@@ -230,7 +263,7 @@
   level: 推奨
   rule: 重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。
   reason: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
-  note: z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
+  note: '不要なコンテキストは指定を外して消し、必要なものは `isolation: isolate` で意図して作ります。`html` 要素は最初からコンテキストを作ります。z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。'
   aiProne: true
   page: layout/positioning
   since: 0.1.0
@@ -285,3 +318,28 @@
   aiProne: true
   page: layout/positioning
   since: 0.1.0
+
+# 7-5 sticky が動かないとき
+- id: sticky-align-self-start
+  level: 必須
+  rule: 'Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。'
+  reason: '`align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。'
+  note: '親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。'
+  aiProne: true
+  page: layout/sticky
+  since: 0.4.0
+
+- id: sticky-needs-inset
+  level: 必須
+  rule: '`position: sticky` には、留めたい軸の `inset-block-start` などの inset を、`auto` 以外の値で1つ以上指定する。'
+  reason: 指定がないと、その軸では留まる位置が決まらず、`relative` と同じ動きになるため。
+  page: layout/sticky
+  since: 0.4.0
+
+- id: sticky-cap-block-size
+  level: 推奨
+  rule: '画面より高くなりうる `sticky` の要素には、`max-block-size` と `overflow-y: auto` を指定する。'
+  reason: 要素が画面より高いと、下端が見えないまま上端で留まり、末尾に届かなくなるため。
+  note: '上限は、`calc(100svb - 16px * 2)` のように、スクロールで値が変わらない `svb` から余白を引いて決めます。'
+  page: layout/sticky
+  since: 0.4.0

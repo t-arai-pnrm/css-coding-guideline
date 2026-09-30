@@ -1,6 +1,6 @@
 ---
 title: "5-2 ネストとプロパティの並び順"
-description: セレクタのネストは1段までにして、先頭に & を書きます。@media と @container は各セレクタの中に書き、プロパティの並び順は taks-stylelint-order に任せます。
+description: セレクタのネストは2層（親と、その中の1段）までにして、先頭に & を書きます。@ルールは層に数えません。@media と @container は各セレクタの中に書き、プロパティの並び順は taks-stylelint-order に任せます。
 sidebar:
   order: 2
 ---
@@ -13,7 +13,7 @@ import outsideCss from '../../../demos/notation/conditions-outside/style.bad.css
 import insideHtml from '../../../demos/notation/conditions-inside/index.html?raw';
 import insideCss from '../../../demos/notation/conditions-inside/style.css?raw';
 
-セレクタのネストは1段までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書き、Sassのような `&__title` の連結は使いません。ネストは、要素自身の状態や、条件によって変わるスタイルをまとめるために使います。
+セレクタは2層まで、つまり親のセレクタと、その中にネストした1段までにします。ネストしたセレクタは必ず `&` で始めます。`@scope`、`@media`、`@container` などの@ルールは、層に数えません。宣言はネストしたルールより前に書き、Sassのような `&__title` の連結は使いません。ネストは、要素自身の状態や、条件によって変わるスタイルをまとめるために使います。
 
 `@media` と `@container` は、`@scope` の直下に置かず、各セレクタの中に書きます。条件のブロックを `@scope` の先頭にまとめると、後ろにある元のルールが勝ってしまい、上書きが効かなくなるからです。Stylelintの並び順の設定は、何もしなければ条件のブロックを先頭へ移す並びにします。本書では、独自のルールでこれを防いでいます。
 
@@ -83,15 +83,13 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 
 ネストしたセレクタは、必ず `&` で始めます。`&` がなくてもネストは書けますが、先頭に `&` があれば、それが自身の状態なのか、直下の子なのか、子孫なのかをすぐに読み取れます。宣言は、ネストしたルールや条件付きのアットルールより前に書きます。要素の基本のスタイルが先頭にまとまり、状態や条件による変化が後に続くので、読む順と上書きの順が一致するからです。
 
-## Stylelintでネストの深さを検査する
+## @ルールを層に数えない理由
 
-本書のStylelintの設定では、ネストの深さを `max-nesting-depth: 2` で検査しています。このルールは、ネストしたセレクタだけでなく、`@media` などのアットルールも1段として数えます。セレクタを1段ネストし、その中に条件を1段入れると、深さはちょうど2です。ファイルの直下に置いた `@scope` は数えません。
+「2層まで」は、セレクタだけを数えます。`@scope`、`@media`、`@container`、`@supports`、`@layer` は数えません。@ルールまで数えると、`@layer` と `@scope` で2段、その内側のセレクタで2段と、ネストの残り枠がファイルの構造で決まってしまいます。同じセレクタが、置く場所によって書けたり書けなかったりするので、ルールが分散して、どこまで書いてよいのかが分かりにくくなります。
 
-`ignoreAtRules` というオプションを使えば、アットルールを深さから外せそうに見えますが、本書では使いません。このオプションは「数えない」ではなく、「そのアットルールの中を検査しない」という動作をするからです。たとえば `ignoreAtRules: ['scope']` と指定すると、`@scope` の中でセレクタを3段ネストしてもエラーになりません（2026年9月、Stylelint 17.15.0で確認）。私の案件でも、このオプションが検査の穴になっていたため、使わないことにしました。
+セレクタだけを数えれば、数え方は単純です。`&:hover` の中に `@media (any-hover: hover)` を入れても、セレクタは2層のままです。状態ごとにセレクタを別のルールへ分けずに済むので、要素の見た目がひとまとまりになります。
 
-`max-nesting-depth: 2` にも弱点があります。アットルールを挟まずにセレクタを2段ネストしても、深さは2なので通ってしまいます。セレクタの段数が1段かどうかは、レビューで確かめる必要があります。
-
-もうひとつ注意したいのは、`@layer` の中で `@scope` を書くと、`@scope` も1段として数えられることです。この場合、`&:hover` の中へさらに `@media (any-hover: hover)` を入れると、深さが3となり、エラーになります。状態のセレクタを `._link:any-link:hover` のように同じ階層に並べ、その中に条件を書けば通ります。
+Stylelintには、この数え方に合う設定がありません。標準の `max-nesting-depth` は、アットルールも深さに数えます。`ignoreAtRules` は「数えない」ではなく、「その@ルールの中を検査しない」という動作です。`@scope` を指定すると、中で3段ネストしてもエラーになりません（2026年9月、Stylelint 17.15.0で確認）。そのため、本書の設定では `max-nesting-depth` を使いません。セレクタが2層に収まっているかは、レビューで確かめます。
 
 ## 条件付きのアットルールの置き場所
 
@@ -213,6 +211,5 @@ Chrome 153で確かめたところ、この書き方では、条件のブロッ�
 
 - [CSS 入れ子の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
 - [& 入れ子セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Nesting_selector)
-- [max-nesting-depth - Stylelint](https://stylelint.io/user-guide/rules/max-nesting-depth/)
 - [tak-dcxi/taks-stylelint-order - GitHub](https://github.com/tak-dcxi/taks-stylelint-order)
 - [hudochenkov/stylelint-order - GitHub](https://github.com/hudochenkov/stylelint-order)

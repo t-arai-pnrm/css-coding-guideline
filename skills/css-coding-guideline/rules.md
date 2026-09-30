@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.3.0
+- バージョン: 0.4.0
 - 生成日: 2026-09-30
-- ルールの数: 338
+- ルールの数: 372
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は例外なく守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -73,6 +73,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`:has()` の起点は `:root` や `body` ではなくコンポーネントのルートのような狭い要素にし、引数は `>` や `+` で範囲を絞る（例：`&:has(> ._input:checked)`）。（`has-narrow-anchor`）
   - 理由: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
   - 補足: `:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。
+  - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
+- 【推奨】「X を持たない要素」は `:not(:has(X))` で書き、`:has(:not(X))` は使わない。（`not-has-for-absence`）
+  - 理由: `:has(:not(X))` は「X 以外の要素を子孫に持つ要素」を選ぶので、X 以外の子孫が1つでもあれば、X を持つ要素にも当てはまるため。
+  - 補足: 2つの詳細度は同じなので、入れ子の順序を取り違えても、見た目の差から気づけません。
   - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【必須】レイヤーの順序は、読み込むCSSの先頭で `@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;` と宣言する。（`layer-order-declaration`）
   - 理由: レイヤーの順番は最初に現れた順で決まるので、先頭で宣言すれば `@import` やスタイルを書く順番に左右されなくなるため。
@@ -248,6 +252,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
   - 補足: `flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。
   - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+- 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
+  - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
+  - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
+  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】Flexbox や Grid の子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作る。（`gap-over-child-margin`）
   - 理由: 端の要素の余白を打ち消す指定が要らず、折り返したときに行の頭へ余計な余白が残ることもないため。
   - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
@@ -267,7 +275,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【必須】はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。（`overflow-clip-over-hidden`）
   - 理由: `hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなるため。
-  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。
+  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-5 を参照してください。
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素を重ねるときは、`position: absolute` の前に、Grid の同じエリアに置く方法を検討する。（`grid-stack-before-absolute`）
   - 理由: 重ねたどの要素の大きさも親の高さに反映されるので、文字が増えても画像からはみ出さないため。
@@ -275,11 +283,11 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。（`absolute-centering-with-margin-auto`）
   - 理由: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
-  - 補足: `inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。
+  - 補足: `inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。（`check-stacking-context-first`）
   - 理由: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
-  - 補足: z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
+  - 補足: 不要なコンテキストは指定を外して消し、必要なものは `isolation: isolate` で意図して作ります。`html` 要素は最初からコンテキストを作ります。z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
   - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
@@ -297,6 +305,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
   - 補足: 横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第3章のルール `no-vw-vh` を参照してください。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【必須】Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。（`sticky-align-self-start`）
+  - 理由: `align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。
+  - 補足: 親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。
+  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
 - 【必須】レスポンシブ対応は「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わない。（`responsive-escalation-order`）
   - 理由: 条件分岐が減り、想定していない幅や置き場所でも崩れにくくなるため。
   - 詳細: 8-1 検討する順番（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/escalation.mdx）
@@ -331,6 +343,13 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【禁止】`@media` と `@container` の条件式の中で `var()` を使わない。（`no-var-in-query`）
   - 理由: クエリの条件ではカスタムプロパティを参照できず、条件そのものが無効になるため。
+  - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【禁止】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
+  - 理由: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
+  - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【推奨】操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。（`any-pointer-not-width-for-input`）
+  - 理由: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
+  - 補足: `pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第11章）。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【必須】比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。（`proportional-scale-rem-for-text`）
   - 理由: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
@@ -398,7 +417,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
 - 【禁止】ファーストビューに表示される画像に、`loading="lazy"` を指定しない。（`no-lazy-loading-first-view`）
   - 理由: ページでいちばん大きな要素の表示が遅れるため。
-  - 補足: ファーストビューの画像には `fetchpriority="high"` を指定し、スクロールしないと見えない画像にだけ `loading="lazy"` を付けます。
+  - 補足: ファーストビューの画像には `fetchpriority="high"` を指定し、`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
 - 【推奨】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
   - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
@@ -436,6 +455,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
   - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
+  - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
+  - 補足: `!important` や詳細度を上げるセレクタでは解決しません。`@keyframes` の値は通常の宣言より優先されます。
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】開閉する UI は、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のような HTML の機能で作り、`div` とクラスの付け外しで作らない。（`native-disclosure-elements`）
   - 理由: フォーカスの移動、Esc キーでの閉じる操作、トップレイヤーへの表示、ページ内検索での展開を、ブラウザが引き受けてくれるため。
@@ -477,6 +500,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
   - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨】編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。（`wysiwyg-cms-prefix`）
+  - 理由: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
+  - 補足: `[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。
+  - 詳細: 12-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 
 ## すべてのルール
 
@@ -503,7 +530,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【推奨】似た記述の重複は許容し、共通化は同じものが3回現れてから、役割まで同じかを確かめて検討する。（`rule-of-three`）
   - 理由: 早すぎる共通化は影響範囲を広げ、一部だけ変えたいときに修飾クラスや上書きの分岐が増えるため。
-  - 補足: 一緒に変わるべき値だけを、デザイントークンで共有します。
+  - 補足: 一緒に変わるべき値だけを、デザイントークンで共有します。共通化の単位は、「画像と文章を横に並べる」程度の配置の共通点ではなく、役割まで同じ実質的な部品にします。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【必須】宣言はひとつひとつ、なぜ必要かを説明できるものだけを書く。（`explainable-declarations`）
   - 理由: 余計な宣言はほかのセレクタとぶつかり、どの値が勝つかが状況しだいになるうえ、打ち消すための上書きが増えるため。
@@ -540,6 +567,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】対象のブラウザの一部しか対応していない機能は、未対応の環境でも内容を読めて操作できる場合に限って、プログレッシブ・エンハンスメントとして使う。（`progressive-enhancement-if-harmless`）
   - 理由: 対応した環境の体験を良くしつつ、未対応の環境のユーザーを切り捨てないため。
   - 補足: 2026年9月時点では、`text-wrap: pretty`、`word-break: auto-phrase`、`field-sizing`、`text-box`、ドキュメント間のビュートランジションが使いやすい例です。
+  - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
+- 【推奨】プログレッシブ・エンハンスメントとして使う機能は、その宣言を外した表示を確かめてから使う。同じ機能を複数の箇所で使うときは、箇所ごとに確かめる。（`verify-fallback-by-removal`）
+  - 理由: 未対応の環境では宣言が無視されるだけなので、宣言を外した表示を見れば、読めて操作できるかを、未対応のブラウザなしで判断できるため。
+  - 補足: 宣言のコメントアウトか、開発者ツールでの無効化で確かめます。案件の基準を決めるときは、未対応の環境での体験、自サイトのアクセス解析のブラウザ分布、使えなかったときの害の大きさを合わせて見ます。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【禁止】対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。（`no-unsupported-layout-features`）
   - 理由: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
@@ -606,6 +637,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`:has()` の起点は `:root` や `body` ではなくコンポーネントのルートのような狭い要素にし、引数は `>` や `+` で範囲を絞る（例：`&:has(> ._input:checked)`）。（`has-narrow-anchor`）
   - 理由: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
   - 補足: `:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。
+  - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
+- 【推奨】「X を持たない要素」は `:not(:has(X))` で書き、`:has(:not(X))` は使わない。（`not-has-for-absence`）
+  - 理由: `:has(:not(X))` は「X 以外の要素を子孫に持つ要素」を選ぶので、X 以外の子孫が1つでもあれば、X を持つ要素にも当てはまるため。
+  - 補足: 2つの詳細度は同じなので、入れ子の順序を取り違えても、見た目の差から気づけません。
   - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【推奨】祖先の状態によって変わるスタイルは、子のルールの中に `&:is(<祖先のセレクタ> *)` の形で書く。（`is-for-ancestor-context`）
   - 理由: ひとつの要素のスタイルがひとつのルールにまとまり、ネストのセレクタを `&` で始める規約とも両立するため。
@@ -860,17 +895,23 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【非推奨】`wrapper`、`block`、`module`、`widget` のように、責務を表さない総称を名前に使わない。（`no-vague-names`）
   - 理由: 何のための要素なのかが名前から分からず、責務の境界もあいまいになるため。
-  - 補足: 内容の幅を制限する要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。
+  - 補足: 内容の幅を制限する要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。名前に迷ったら、その要素が何なのかを日本語で1文に書き、特徴的な語を名前にします（`text-box` や `center-box` のような見た目や配置だけの名前は避けます）。
+  - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
+- 【推奨】クラス名は単語を省略せずに書く（`._desc` ではなく `._description`）。HTML の要素名として広く通じている `nav` などは、そのまま使ってよい。（`no-abbreviation`）
+  - 理由: 文字数を削っても節約できるのはわずかなバイト数で、読む人には意味を推測する負担が残るため。
+  - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
+- 【推奨】子要素のクラス名に HTML の階層を映さない。孫にあたる要素にも、親の名前をつなげず、役割の名前を `._kebab` で付ける（`._tags-item-link` ではなく `._tag-link`）。（`child-name-flat`）
+  - 理由: 階層を名前に写すと名前が要素の位置を表し、HTML の構造を変えるたびにクラス名とセレクタも変えなければならなくなるため。
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【必須】自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。（`dashed-ident-names`）
   - 理由: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
   - 補足: `view-transition-name` の名前にも付けます。コンテナの名前は、第8章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
   - 自動チェック: Stylelint: `keyframes-name-pattern`（`@keyframes` のみ）
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
-- 【推奨】セレクタのネストは1段までにする。（`nesting-depth-one`）
+- 【推奨】セレクタのネストは2層（親と、その中の1段）までにする。（`nesting-depth-one`）
   - 理由: ネストはスタイルの持ち主を示すために使うもので、HTML の階層を写したり詳細度を上げたりするために使うと、構造への依存が強まり詳細度も読み取りにくくなるため。
-  - 補足: `@scope` はスコープの境界なので、段数に数えません。セレクタの中に `@media` などの条件付きのアットルールを1段挟むのはかまいません。
-  - 自動チェック: Stylelint: `max-nesting-depth: 2`（条件付きのアットルールも1段として数える）
+  - 補足: `@scope` `@media` `@container` `@supports` `@layer` などの@ルールは層に数えません。@ルールまで数えると、ファイルの構造によって同じセレクタが書けたり書けなかったりして、ルールが分散し、分かりにくくなるためです。ID は初期の「1段まで」の名残で、変えません。
+  - 自動チェック: Stylelint に対応する設定がないため、レビューで確認する（`max-nesting-depth` は @ルールを数えるため使わない）
   - 詳細: 5-2 ネストとプロパティの並び順（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-and-order.mdx）
 - 【推奨】ネストするのは、要素自身の擬似クラス・擬似要素・属性の状態、レイアウトに欠かせない直下の子、条件付きのアットルールに限る。（`nest-own-states-only`）
   - 理由: 1つの要素のスタイルが1か所にまとまり、独立した要素のスタイルを親のルールに抱え込まずに済むため。
@@ -973,6 +1014,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【非推奨】子のコンポーネントに `class` 属性を渡して、親から見た目や配置を変えない。（`no-class-to-child-component`）
   - 理由: 親が子のルートに自由にスタイルを当てられるようになり、どこまでが子の責任なのかが曖昧になるため。
+  - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
+- 【非推奨】コンポーネントの中で、`li` や `p` のような要素型のセレクタで、同じ要素のすべてにまとめてスタイルを当てない。何度も現れる要素には子要素のクラスを付け、そのクラスで選ぶ。（`no-bulk-element-selector`）
+  - 理由: 入れ子の要素や後から増える内容にも意図せず当たり、名前から役割を読み取れないうえ、親のクラスと組み合わせると詳細度が上がって上書きが難しくなるため。
+  - 補足: コンポーネントの中に1つしかない要素を、要素の種類で選ぶのはかまいません。リセットやベースのスタイルは第4章で扱います。
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【禁止】ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしない。（`no-other-component-internals`）
   - 理由: 詳細度の競争が起き、子の構造を変えたときに親の CSS も直す必要が出るため。
@@ -1098,6 +1143,18 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
   - 補足: 一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。
   - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+- 【推奨】Flexbox の並びで一部の要素だけを行末側へ寄せるときは、その要素に `margin-inline-start: auto` を指定し、空の要素や `flex-grow` を使わない。（`flex-auto-margin-for-end-items`）
+  - 理由: 余白の吸収先が1か所に決まり、要素の数が変わっても、寄せる位置が変わらないため。
+  - 補足: 均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。
+  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+- 【推奨】Grid の列を比率で分けるときは、`%` ではなく `fr` を使う。（`grid-columns-fr-not-percent`）
+  - 理由: `%` は `gap` を除かない親の幅を基準にするので、列の合計が `gap` の分だけ親を超えるが、`fr` は `gap` を除いた残りを分けるため。
+  - 補足: `fr` の最小幅を0にする理由は、ルール `minmax-zero-for-fr` を参照してください。
+  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+- 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
+  - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
+  - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
+  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。（`display-contents-keep-role`）
   - 理由: `display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。
   - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
@@ -1117,6 +1174,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】本文のように種類の違う要素が続く領域は、Flexbox や Grid の `gap` にせず、通常フローのまま `margin` で間隔を作る。（`prose-in-normal-flow`）
   - 理由: `float` による回り込みや `margin` の相殺が働き、要素ごとの余白の大小を自然に調整できるため。
+  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+- 【推奨】親子のマージンの相殺を止めたいときは、`overflow: auto` や見えない `padding`、`border` ではなく、親に `display: flow-root` を指定する。（`flow-root-for-margin-collapse`）
+  - 理由: `overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取る副作用があるため。
+  - 補足: Flexbox や Grid にした親と、その子の間では、余白は相殺しません。
   - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】ページのコンテンツの最大幅と画面の端の余白は、グリッドの左右に余白の列（ガター）を作って決める。（`gutter-columns-for-content-width`）
   - 理由: 画面幅いっぱいに広げたい要素を、ガターの列まで広げるだけで作れるため。
@@ -1152,7 +1213,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【必須】はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。（`overflow-clip-over-hidden`）
   - 理由: `hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなるため。
-  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。
+  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-5 を参照してください。
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素を重ねるときは、`position: absolute` の前に、Grid の同じエリアに置く方法を検討する。（`grid-stack-before-absolute`）
   - 理由: 重ねたどの要素の大きさも親の高さに反映されるので、文字が増えても画像からはみ出さないため。
@@ -1163,7 +1224,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。（`absolute-centering-with-margin-auto`）
   - 理由: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
-  - 補足: `inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。
+  - 補足: `inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【非推奨】`position: fixed` の要素を、`transform`、`filter`、`contain` などを指定した祖先の中に置かない。（`no-fixed-inside-transformed-ancestor`）
   - 理由: これらの祖先が包含ブロックになり、要素がビューポートではなくその祖先を基準に配置されるため。
@@ -1171,7 +1232,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。（`check-stacking-context-first`）
   - 理由: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
-  - 補足: z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
+  - 補足: 不要なコンテキストは指定を外して消し、必要なものは `isolation: isolate` で意図して作ります。`html` 要素は最初からコンテキストを作ります。z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
   - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
@@ -1196,6 +1257,17 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
   - 補足: 横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第3章のルール `no-vw-vh` を参照してください。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【必須】Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。（`sticky-align-self-start`）
+  - 理由: `align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。
+  - 補足: 親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。
+  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+- 【必須】`position: sticky` には、留めたい軸の `inset-block-start` などの inset を、`auto` 以外の値で1つ以上指定する。（`sticky-needs-inset`）
+  - 理由: 指定がないと、その軸では留まる位置が決まらず、`relative` と同じ動きになるため。
+  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+- 【推奨】画面より高くなりうる `sticky` の要素には、`max-block-size` と `overflow-y: auto` を指定する。（`sticky-cap-block-size`）
+  - 理由: 要素が画面より高いと、下端が見えないまま上端で留まり、末尾に届かなくなるため。
+  - 補足: 上限は、`calc(100svb - 16px * 2)` のように、スクロールで値が変わらない `svb` から余白を引いて決めます。
+  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
 
 ### 第8章 レスポンシブデザイン
 
@@ -1284,6 +1356,17 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【禁止】`@media` と `@container` の条件式の中で `var()` を使わない。（`no-var-in-query`）
   - 理由: クエリの条件ではカスタムプロパティを参照できず、条件そのものが無効になるため。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【禁止】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
+  - 理由: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
+  - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【推奨】操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。（`any-pointer-not-width-for-input`）
+  - 理由: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
+  - 補足: `pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第11章）。
+  - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【推奨】薄い境界線や補助テキストの色で区別や意味を伝えている部品は、`@media (prefers-contrast: more)` の中で色を濃くする。（`prefers-contrast-more-for-faint-borders`）
+  - 理由: OS でコントラストを上げる設定にしているユーザーが、薄い区切りや補助テキストを読み取れる状態を保つため。
+  - 補足: `prefers-contrast: custom` は強制カラーモードの配色に対応する値で、色は上書きされるため指定しない。強制カラーモードの扱いは第10章で説明する。
+  - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】`--screen` とスタイルクエリによる切り替えと、`--px`・`--rem` による比例スケールは、2サイズのデザインカンプを比率を保って再現する案件に限って使う。（`screen-mode-for-two-size-comps`）
   - 理由: どちらもビューポートを基準にする方法なので、置き場所に合わせて振る舞うべきコンポーネントには向かないため。
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
@@ -1360,7 +1443,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 9-2 和文組版を整える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/japanese-typesetting.mdx）
 - 【必須】ベースの `line-height` は 1.5 以上にして、各要素に継承させる。（`base-line-height-min`）
   - 理由: 行の間が狭いと、認知に障害のある人を含め、読んでいる行を目で追いにくくなるため（WCAG 2.1 の達成基準 1.4.8）。
-  - 補足: kiso.css は 1.5 を指定しています。見出しは、ベースより狭い値を個別に指定します。
+  - 補足: kiso.css は 1.5 を指定しています。見出しは、ベースより狭い値を個別に指定します。ユーザーが行の高さを 1.5 倍に上書きしても中身が切れないことも求められます（WCAG 2.1 の達成基準 1.4.12）。
   - 詳細: 9-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
 - 【禁止】`line-height: 1` を指定しない。（`no-line-height-one`）
   - 理由: 文言の変更、画面の幅、文字サイズの設定、機械翻訳で改行が起きたとき、行が重なって読めなくなることがあるため。
@@ -1435,6 +1518,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 背景色と文字色の中間のように、2つの色の関係で決まる色を、両方の色の変化に追従させられるため。
   - 補足: `currentColor` に不透明度を付けるときは、`color-mix(in oklab, currentColor 60%, transparent)` のように透明と混ぜます。
   - 詳細: 10-1 色とダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/color.mdx）
+- 【推奨】彩度の高い2色以上をつなぐグラデーションには、`linear-gradient(in oklch, …)` のように補間の色空間を書く。（`gradient-interpolation-space`）
+  - 理由: 初期値の sRGB 補間では中間の色が灰色にくすみ、色空間を指定すると知覚に近い明度と彩度で補間されるため。
+  - 補足: `oklch` の色相は `shorter hue` の経路で補間されます。長いほうを通すときは `in oklch longer hue` と書きます。対応していない環境ではこの宣言が無視されるので、`background-color` も書いておきます。
+  - 詳細: 10-1 色とダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/color.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
   - 理由: 配色の切り替えがトークンの定義にまとまり、ダーク用の値の書き忘れや、色の散らばりを防げるため。
   - 詳細: 10-1 色とダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/color.mdx）
@@ -1451,6 +1538,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 10-2 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
 - 【必須】枠線を消すときは、`border: none` ではなく `border-color: transparent` で透明にする。（`transparent-border-over-none`）
   - 理由: 強制カラーモードでは透明な枠線にも色が付くので、背景色が消えても、ボタンなどの範囲が分かるため。
+  - 詳細: 10-2 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
+- 【推奨】フォーカスリングを `box-shadow` などで描き直すときは、`outline` を消さずに `outline-color: transparent` で透明にして残す。（`transparent-outline-for-custom-focus`）
+  - 理由: 通常の表示では独自の表現だけが見え、強制カラーモードでは `outline` がシステムカラーに置き換わって、キーボードで操作している位置が見えるため。
+  - 補足: `outline: none` や `outline: 0` で消さない理由は、第4章の `no-outline-none` を参照してください。
   - 詳細: 10-2 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
 - 【禁止】要素の境界や区切りを、`box-shadow` だけで描かない。（`no-box-shadow-only-boundary`）
   - 理由: 強制カラーモードでは `box-shadow` が `none` になり、境界が消えるため。
@@ -1502,7 +1593,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
 - 【禁止】ファーストビューに表示される画像に、`loading="lazy"` を指定しない。（`no-lazy-loading-first-view`）
   - 理由: ページでいちばん大きな要素の表示が遅れるため。
-  - 補足: ファーストビューの画像には `fetchpriority="high"` を指定し、スクロールしないと見えない画像にだけ `loading="lazy"` を付けます。
+  - 補足: ファーストビューの画像には `fetchpriority="high"` を指定し、`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
 - 【推奨】写真のような画像は、AVIF で書き出す。（`avif-for-photos`）
   - 理由: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
@@ -1518,9 +1609,20 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】意味を持つインライン SVG のアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。（`inline-svg-hidden-with-text`）
   - 理由: `<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
-- 【推奨】影の色はダークモードでも黒にし、不透明度を上げて奥行きを表す。（`shadow-black-in-dark-mode`）
-  - 理由: 暗い背景に白い影を付けると、影ではなく光って見えるため。
-  - 補足: `--shadow--color: light-dark(oklch(0% 0 0deg / 8%), oklch(0% 0 0deg / 25%))` のように、影の色のトークンに `light-dark()` を使います。
+- 【推奨】影の色は、ライトモードでは背景の色相に寄せた色にし、ダークモードでは黒にして不透明度を上げて奥行きを表す。（`shadow-black-in-dark-mode`）
+  - 理由: 黒に近い影は色のある背景をくすませ、暗い背景に白い影を付けると、影ではなく光って見えるため。
+  - 補足: `--shadow--color: light-dark(oklch(30% 0.05 250deg / 14%), oklch(0% 0 0deg / 30%))` のように、影の色のトークンに `light-dark()` を使います。背景が無彩色のサイトでは、ライトモードも黒で構いません。
+  - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
+- 【推奨】影のトークンは光源の向きをそろえ、段階が上がるほどオフセットとぼかしを大きくし、不透明度を下げる。（`shadow-tokens-light-source`）
+  - 理由: 影の向きや強さがばらつくと、要素の高さの関係が読み取れず、画面に光源が複数あるように見えるため。
+  - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
+- 【非推奨】重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。（`no-animate-layered-shadow`）
+  - 理由: 描画の計算量が影の数に比例して増え、古い端末ではコマ落ちしやすいため。
+  - 補足: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
+  - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
+- 【推奨】番号付きリストの番号を装飾するときは、`list-style: none` と `::before` ではなく、`::marker` で色やフォントを指定する。（`marker-for-list-number-style`）
+  - 理由: リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。
+  - 補足: `::marker` には `background` や `border` を指定できません。円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
 - 【推奨】文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。（`text-stroke-paint-order`）
   - 理由: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
@@ -1556,6 +1658,17 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げ、フォーカスリングはカードの `:has(:focus-visible)` に出す。（`stretched-link-for-card`）
   - 理由: リンクのテキストが見出しだけになり、スクリーンリーダーでカードの中身をすべて読み上げるような冗長さを避けられるため。
   - 補足: カードの中にほかのリンクやボタンを置くときは、それらを `::after` より手前に重ねます。
+  - 詳細: 11-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【推奨】キーボード操作でのフォーカスに限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。（`focus-visible-over-focus-within`）
+  - 理由: `:focus-within` は、子孫がマウスのクリックでフォーカスを受けたときにも当てはまり、フォーカスリングを出すべき場面に絞れないため。
+  - 補足: 入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。
+  - 詳細: 11-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【推奨】ホバーで位置や大きさが変わる要素は、ホバーを受ける要素を動かさず、子要素（または擬似要素）を動かす。（`hover-target-stays-still`）
+  - 理由: ホバーを受ける要素自身が動くと、カーソルが要素の外に出てホバーが外れ、戻るとまた当たるという繰り返しで、ちらつくため。
+  - 詳細: 11-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【推奨】操作する要素には 24px 相当の最小の大きさを確保し、`@media (any-pointer: coarse)` では 44px 相当にする。大きさは内部のカスタムプロパティの値だけを切り替える。（`hit-area-min-size`）
+  - 理由: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
+  - 補足: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。`rem` で書きます。
   - 詳細: 11-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨】アニメーションを足す前に、状態の変化や操作の結果を伝えるという目的があるかを確かめ、目的のない動きは入れない。（`motion-needs-purpose`）
   - 理由: 何度も触る UI の装飾的な動きは、待ち時間と操作の負担を増やすだけになるため。
@@ -1596,6 +1709,32 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】JavaScript で動かす演出の準備のスタイルは、JavaScript がルートに `data-motion-mode="motion"` を付けたときだけ当て、基本のスタイルは動かないときの最終状態として書く。（`motion-mode-attribute`）
   - 理由: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】現れる動きには `ease-out` 系、画面から出ていく動きには `ease-in` 系のトークンを使い、開いた状態と閉じた状態のルールに分けて指定する。（`ease-in-for-exit`）
+  - 理由: トランジションは変化したあとの状態の値で動くので、状態ごとに書き分けられ、出ていく動きは加速しながら見えなくなるほうが自然なため。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
+  - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
+  - 補足: どちらの再生時間もトークンから選びます。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
+  - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
+  - 補足: `!important` や詳細度を上げるセレクタでは解決しません。`@keyframes` の値は通常の宣言より優先されます。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書く。遅延を付けるときや、開始値を待機中にも見せたいときは `animation-fill-mode: both` を指定する。（`animation-longhand-fill-mode`）
+  - 理由: 略記は `animation-timeline` と `animation-range` もリセットするため。また、指定しないと遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
+  - 補足: `transition-longhand-with-tokens` と対になるルールです。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】スクロール駆動アニメーションは、`animation-range` で範囲を明示する。（`scroll-animation-explicit-range`）
+  - 理由: 指定しないと `view()` では `cover`（画面に入り始めてから出終わるまで）の全体になり、見せたいタイミングとずれやすいため。
+  - 補足: `entry`、`exit`、`contain` で範囲を絞るときは、範囲の前後の見た目のために `animation-fill-mode: both` も指定します。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】ばねやバウンスの動きは、`linear()` をジェネレーターで作り、再生時間とセットでトークンにして、コンポーネントに値を直接書かない。（`spring-easing-token`）
+  - 理由: 点の数が多く手で保守できず、トークンにすれば、揺れが収まるまでの時間とイージングを対で使い回せるため。
+  - 補足: 揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。
+  - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
+- 【推奨】動きは CSS のトランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作り、JavaScript のアニメーションライブラリは、CSS だけでは作れない動きにだけ使う。（`css-before-js-animation`）
+  - 理由: 合成だけで動かせる CSS の動きはメインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担も要らないため。
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】開閉する UI は、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のような HTML の機能で作り、`div` とクラスの付け外しで作らない。（`native-disclosure-elements`）
   - 理由: フォーカスの移動、Esc キーでの閉じる操作、トップレイヤーへの表示、ページ内検索での展開を、ブラウザが引き受けてくれるため。
@@ -1740,3 +1879,19 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
   - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨】CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中に要素セレクタで書く。（`wysiwyg-scope-root`）
+  - 理由: 編集者は要素にクラスを付けられず、子孫セレクタで書くと詳細度が上がり、独自ブロックの側に打ち消しが要るため。
+  - 補足: 本文エリアは、`scoped <名前>` の規約（第2章）の例外です。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。
+  - 詳細: 12-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+- 【推奨】編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。（`wysiwyg-cms-prefix`）
+  - 理由: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
+  - 補足: `[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。
+  - 詳細: 12-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+- 【推奨】CMS の本文エリアに限り、`@scope` のネストと、独自ブロックの `@scope` での `to()` の省略を認める。（`wysiwyg-scope-exception`）
+  - 理由: 本文エリアと独自ブロックの2段だけで、ブロックの中にコンポーネントを置かない前提が成り立てば、スタイルの漏れが起きにくいため。
+  - 補足: ブロックの中にコンポーネントを入れるなら、通常の `@scope (.scoped.<名前>) to (.scoped)` に戻します。
+  - 詳細: 12-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+- 【推奨】本文のブロック間の余白は、2つ目以降の直下の子に `margin-block-start` を `rlh` で付け、見出しと独自ブロックの前だけ広げる。（`wysiwyg-flow-margin`）
+  - 理由: 見出しや段落の行間が違っても、余白がルート要素の行の高さの倍数で揃うため。
+  - 補足: 中にブロックを持つ `blockquote` などは、中の余白を `0.5rlh` に詰めます。
+  - 詳細: 12-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）

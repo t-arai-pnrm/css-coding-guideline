@@ -108,6 +108,7 @@ import Guideline from '../../../components/Guideline.astro';
 :root {
   --ease--quad-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease--quint-in: cubic-bezier(0.64, 0, 0.78, 0);
   --ease--quint-in-out: cubic-bezier(0.86, 0, 0.07, 1);
   --duration--fast: 200ms;
   --duration--base: 240ms;
@@ -115,7 +116,7 @@ import Guideline from '../../../components/Guideline.astro';
 }
 ```
 
-再生時間も、`--duration--fast`、`--duration--base`、`--duration--slow` のような段階のトークンにします。サイトの中で動きの速さがそろい、「全体的にもう少しゆっくりにしたい」という調整もトークンの値を変えるだけで済みます。弾むような動きのように `cubic-bezier()` で表せないイージングは、`linear()` 関数で定義します。
+再生時間も、`--duration--fast`、`--duration--base`、`--duration--slow` のような段階のトークンにします。サイトの中で動きの速さがそろい、「全体的にもう少しゆっくりにしたい」という調整もトークンの値を変えるだけで済みます。画面に現れる動きには `out` 系、画面から出ていく動きには `in` 系を使います（「[11-2 モーションを実装する](/interaction/motion/)」）。弾むような動きのように `cubic-bezier()` で表せないイージングは、`linear()` 関数で定義し、再生時間とセットでトークンにします。
 
 トランジションを書くときは、`transition-duration: var(--duration--base)` のように、個別のプロパティにトークンを渡します。動きを減らす設定への対応を含めたモーションの書き方は、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。
 

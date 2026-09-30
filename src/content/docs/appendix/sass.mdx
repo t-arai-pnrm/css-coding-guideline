@@ -17,7 +17,7 @@ sidebar:
 | --- | --- | --- |
 | `$変数` | サイト全体の値は `:root` のトークン、コンポーネントの中の値は `--_` で始まる内部プロパティ | [6-3](/components/design-tokens/)、[6-4](/components/custom-properties/) |
 | `!default` | 公開プロパティを内部プロパティで受け、デフォルト値を `var()` のフォールバックに書く | [6-4](/components/custom-properties/) |
-| ネスト、`&:hover` | ネイティブのネスト。1段までにし、`&` で始める | [5-2](/notation/nesting-and-order/) |
+| ネスト、`&:hover` | ネイティブのネスト。セレクタは2層までにし、`&` で始める | [5-2](/notation/nesting-and-order/) |
 | `&__title`、`&--modifier` | `@scope` の中の `._title`、`data-*` 属性や公開プロパティ | [2-4](/cascade/scope/)、[5-1](/notation/naming/) |
 | `@mixin` と `@include` | コンポジション、ユーティリティ、ベーススタイル | [6-2](/components/compositions-and-utilities/) |
 | `@function`、`math.div()` | `calc()`、`min()`、`max()`、`clamp()` の式 | [3-3](/values/math-functions/) |
@@ -65,7 +65,7 @@ Sassの変数はビルドの時点で値に置き換わりますが、カスタ�
 
 ## ネストはネイティブのネストで書く
 
-`&:hover` のような擬似クラスのネストや、セレクタの中の `@media` は、素のCSSのネストでもそのまま書けます。本書では、ネストを1段までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書きます。規約は「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
+`&:hover` のような擬似クラスのネストや、セレクタの中の `@media` は、素のCSSのネストでもそのまま書けます。本書では、セレクタを2層（親と、その中の1段）までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書きます。規約は「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
 
 Sassと大きく違うのは、`&__title` のように `&` に文字をつなげてクラス名を作れないことです。素のCSSではこれが無効なセレクタになり、ルールごと無視されます。子要素は、`@scope` の中で `._title` のような短いクラス名で選びます。BEMの修飾子で表していたバリエーションは、`data-variant` のような属性か、公開プロパティで表します。
 

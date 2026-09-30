@@ -1,0 +1,98 @@
+---
+title: "7-5 sticky が動かないとき"
+description: "position: sticky が効かない原因は、GridやFlexboxの align-self による伸長、inset の指定漏れ、祖先のスクロールコンテナ、画面より高い要素の4つです。それぞれの直し方と、DevToolsでの確かめ方をまとめます。"
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+`position: sticky` を指定したのに、要素が画面の端に留まらないことがあります。原因の多くは、次の4つのどれかです。GridやFlexboxの子になった要素が `align-self` の初期値で伸びている、`inset` を指定していない、祖先がスクロールコンテナになっている、要素が画面より高い、のいずれかです。
+
+<Baseline id="sticky-positioning" />
+
+`sticky` は、通常のフローの位置に置かれた要素を、スクロールに合わせて、祖先のスクロールコンテナと包含ブロックの範囲の中でずらす指定です。範囲の外へは出られないので、ずらす余地がなければ、何も指定していないのと同じに見えます。4つの原因は、どれもこの余地を奪う形で現れます。
+
+## GridやFlexboxの子は伸びる
+
+サイドバーの目次を右の列に置き、スクロールに合わせて留めたい場面を考えます。親をGridにして、目次に `position: sticky` を指定しただけでは、目次は動きません。
+
+```css title="🙅‍♂ Not Recommended: Grid の子に sticky だけを指定する"
+/* 🙅‍♂ Not Recommended */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+}
+
+.toc {
+  position: sticky;
+  inset-block-start: 16px;
+}
+```
+
+GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` として働き、セルの高さいっぱいに伸びます。本文が長ければセルも高いので、目次もそれと同じ高さになります。目次の高さが包含ブロックの高さと等しいと、ずらす余地がなく、目次は留まりません。`align-self: start` を指定すれば、目次は中身の高さで止まり、セルの中に余地ができます。
+
+```css title="🙆‍♂ Recommended: sticky の子には align-self: start を指定する"
+@scope (.scoped.article-layout) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-columns: minmax(0, 1fr) calc(240 / 16 * 1rem);
+    gap: 32px;
+  }
+
+  ._toc {
+    position: sticky;
+    inset-block-start: 16px;
+    align-self: start;
+  }
+}
+```
+
+親の `align-items: start` でも同じ結果になります。ただし、親に指定すると、同じ親のほかの子も中身の高さになります。`sticky` の要素だけが伸びなければよいので、私は要素の側に `align-self: start` を書いています。`align-self` は、配置が親のテンプレートと対になっている指定です。本来は子の側に置かない方針ですが、この場合は `sticky` と一組の指定として、同じルールに書きます。
+
+## inset を指定する
+
+`sticky` は、どの位置で留めるかを `inset` で決めます。`inset-block-start` のように、留めたい軸のプロパティが1つは `auto` 以外でなければ、その軸では `relative` と同じ動きになります。先ほどの例の `inset-block-start: 16px` は、スクロールコンテナの上端から16px離れた位置で留める指定です。
+
+下端や、横にスクロールする領域の端に留めるときも同じです。見出しを上端に、フッターの操作欄を下端に留めるなら、それぞれ `inset-block-start` と `inset-block-end` を指定します。本書では、ほかの場面と同じく、物理プロパティの `top` ではなく論理プロパティで書きます。
+
+## 祖先のスクロールコンテナ
+
+`sticky` の要素は、`overflow` が `visible` 以外の祖先のうち、いちばん近いものを基準に留まります。その祖先が実際にはスクロールしなくても同じです。たとえば、祖先の `overflow: hidden` は、スクロールしない領域を作ります。`sticky` の要素はその領域を基準にしてしまい、ページのスクロールには反応しなくなります。
+
+原因がはっきりしないときは、DevToolsで `sticky` の要素から祖先へ順にたどり、`overflow` が `visible` 以外の要素を探します。見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[7-3 変化に強いレイアウト](/layout/defensive/)」）。
+
+親子のマージンの相殺を止めるために `overflow: auto` を使う書き方も、同じ理由で避けます。相殺を止めるなら `display: flow-root` を使います（「[7-2 余白を設計する](/layout/spacing/)」）。
+
+スクロールコンテナが意図したものである場合は、別の話です。たとえば、高さを決めて `overflow: auto` にした領域の中で見出しを留めるなら、見出しはその領域の中で留まります。領域に高さがなければスクロールせず、何も起きません。この場合に必要なのは、その領域に高さの上限を決めて、スクロールが起きるようにすることです。ページ全体のスクロールで留める通常の `sticky` では、親に高さを指定する必要はありません。
+
+## 画面より高い要素
+
+`sticky` の要素が画面より高いと、要素の下端が見えないまま上端で留まり、末尾に届かなくなります。目次が長い記事のサイドバーは、典型的な例です。要素の高さに上限を決め、上限を超える分は要素の中でスクロールさせます。
+
+```css title="🙆‍♂ Recommended: 画面より高くなりうる sticky の要素には、高さの上限を決める"
+@scope (.scoped.article-layout) to (.scoped) {
+  ._toc {
+    position: sticky;
+    inset-block-start: 16px;
+    align-self: start;
+    overflow-y: auto;
+    max-block-size: calc(100svb - 16px * 2);
+  }
+}
+```
+
+上限は、スクロールで値が変わらない `svb`（小さいほうのビューポートの高さ）から、上下の余白を引いた値にしています。本書は `dvb` を要素の大きさに使いません。スクロールのたびに値が変わり、レイアウトシフトの原因になるからです（「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。`overflow-y: auto` を指定した要素自身はスクロールコンテナになりますが、要素の中の話なので、留まる動きには影響しません。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [position - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/position)
+- [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
+- [align-self - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/align-self)
+- [CSS Positioned Layout Module Level 3 - Sticky positioning](https://drafts.csswg.org/css-position-3/#sticky-pos)（W3C）
+- [Getting stuck: all the ways position: sticky can fail](https://polypane.app/blog/getting-stuck-all-the-ways-position-sticky-can-fail/)（Polypane）

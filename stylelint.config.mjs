@@ -113,9 +113,7 @@ export default {
       },
     ],
     'function-url-no-scheme-relative': true,
-    // ignoreAtRules は「数えない」ではなく「中を検査しない」になるので使わない。
-    // `@layer` の中の `@scope` は 1 段に数えられる（第5章 5-2）。
-    'max-nesting-depth': 2,
+    // セレクタのネストは 2 層までだが、@ルールを数えない設定が Stylelint にないので、検査しない（第5章 5-2）。
     'media-feature-name-value-no-unknown': true,
     'no-descending-specificity': null,
     'order/order': [

@@ -76,7 +76,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 なお、タッチスクリーンを持つノートパソコンでは、マウスもあるので `any-hover: hover` が当てはまります。この環境では、指でタップしたときにホバーのスタイルが残ります。入力の方法を操作ごとに見分けたい場合は、JavaScriptのポインターイベントを併用するしかありません。
 
-`@layer` の中の `@scope` にこの形を書く場合は、ネストの深さに注意します。本書のStylelintの設定では、`&:enabled:hover` の中の `@media` が3段目になり、エラーになります。その場合は、`._button:enabled:hover` のように状態のセレクタを同じ階層に並べ、その中に条件を書きます（「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」）。この節のデモは、この形で書いています。
+`@media` は、`&:enabled:hover` のようなセレクタの中に書けます。セレクタの層には、@ルールを数えないからです（「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」）。
 
 ## キーボード操作とトランジション
 
@@ -95,6 +95,70 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 ```
 
 `:focus-visible` が当てはまっている間は、トランジションの指定がありません。そのため、フォーカスが来た瞬間に一度で色が変わります。フォーカスが離れるときとホバーのときは、`:not(:focus-visible)` が当てはまるので、なめらかに色が戻ります。トランジションを動きを減らす設定の条件で囲む理由は、「[11-2 モーションを実装する](/interaction/motion/)」で説明します。
+
+## ホバーで動く要素の当たり判定
+
+ホバーで位置や大きさが変わる要素を、そのまま `:hover` の対象にすると、ちらつくことがあります。カーソルが縁にあるとき要素が動くと、ホバーが外れて要素がもとの位置に戻り、戻るとまたホバーが当たる、という繰り返しになるからです。
+
+```css title="🙅‍♂ Not Recommended: ホバーを受ける要素自身を動かす"
+/* 🙅‍♂ Not Recommended */
+._button:hover {
+  translate: 0 -4px;
+}
+```
+
+ホバーを受ける要素は動かさず、動かすのは子要素（または擬似要素）にします。ホバーを受ける側は、動かない当たり判定として働きます。
+
+```css title="🙆‍♂ Recommended: ホバーを受ける要素は動かさず、子要素を動かす"
+@scope (.scoped.lift-button) to (.scoped) {
+  :scope {
+    display: inline grid;
+
+    &:enabled:hover {
+      @media (any-hover: hover) {
+        --_lift: -4px;
+      }
+    }
+  }
+
+  ._face {
+    translate: 0 var(--_lift, 0);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--fast);
+      transition-property: translate;
+      transition-timing-function: var(--ease--quint-out);
+    }
+  }
+}
+```
+
+この例の `:focus-visible` の指定は省略しています。ホバーとフォーカスに同じ見た目を指定する理由は、先に説明したとおりです。
+
+## 操作する領域の大きさ
+
+指で操作する環境では、操作する領域が小さいと、押し間違いの原因になります。WCAG 2.2の達成基準2.5.8「ターゲットのサイズ（最低限）」（レベルAA）は、ポインターで操作する対象を24×24 CSSピクセル以上にすることを求めています。周囲に十分な間隔がある場合や、文章中のリンクのような場合は例外です。より厳しい達成基準2.5.5「ターゲットのサイズ（強化）」（レベルAAA）は、44×44 CSSピクセルを求めています。
+
+本書では、ボタンやアイコンのような操作する要素に、24px相当の最小の大きさを確保します。タッチ操作ができる環境では、44px相当に広げます。切り替えるのは大きさの値だけで、`min-block-size` と `min-inline-size` の指定は1か所にします。大きさは、ボタンの最小の高さと同じく、文字と一緒に大きくなるように `rem` で書きます（「[3-1 pxとremを使い分ける](/values/px-and-rem/)」）。
+
+```css title="🙆‍♂ Recommended: 最小の大きさをカスタムプロパティで受け、タッチ操作では値だけを変える"
+@scope (.scoped.icon-button) to (.scoped) {
+  :scope {
+    --_hit-size: calc(24 / 16 * 1rem);
+
+    display: inline grid;
+    place-content: center;
+    min-inline-size: var(--_hit-size);
+    min-block-size: var(--_hit-size);
+
+    @media (any-pointer: coarse) {
+      --_hit-size: calc(44 / 16 * 1rem);
+    }
+  }
+}
+```
+
+条件には、`pointer` ではなく `any-pointer` を使います。使える入力にタッチ操作がひとつでもあれば、広いほうの大きさにするためです。`pointer` と `any-pointer` の違いは、「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」で説明しています。
 
 ## ホバーの変化を透明度で表す方法
 
@@ -153,6 +217,8 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た目の状態が同じ属性から決まるので、両者がずれません。JavaScriptが属性の更新を忘れたら見た目も変わらないので、不具合にもすぐ気づけます。私は2020年ごろから、状態の管理は原則としてARIA属性とdata属性で行うと決めています。
 
 子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+
+フォーカスを受けた子に応じて親の見た目を変えるときは、`:focus-within` と `:has(:focus-visible)` を使い分けます。`:focus-within` は、子孫のどれかが `:focus` に当てはまれば、マウスでクリックしたときにも当てはまります（MDN）。入力欄をクリックした時点で、グループ全体を強調してよいなら、これで足ります。キーボード操作でフォーカスが来たときだけに絞りたいなら、`&:has(:focus-visible)` と書きます。`:has()` には `:checked` のような任意の擬似クラスも入れられるので、条件をより細かく決められます。
 
 擬似クラスでもARIA属性でも表せない状態だけを、data属性で表します。たとえば、画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` のように、見た目のためだけにある状態です。支援技術に伝える意味のない値を、ARIA属性にするわけにはいきません。
 
@@ -216,5 +282,9 @@ ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た�
 - [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月。本書と一部の方針が異なります）
 - [アクセシビリティに配慮したタブメニューの実装例](https://www.tak-dcxi.com/article/accessibility-conscious-tab-menu/)（TAKLOG、2024年4月）
 - [any-hover - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/any-hover)
+- [:focus-within - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-within)
+- [解説書 達成基準 2.5.8: ターゲットのサイズ (最低限)](https://waic.jp/translations/WCAG22/Understanding/target-size-minimum)（WAICによるWCAG 2.2解説書の日本語訳）
+- [The Undeniable Utility Of CSS :has | Josh W. Comeau](https://www.joshwcomeau.com/css/has/)
+- [An Interactive Guide to CSS Transitions | Josh W. Comeau](https://www.joshwcomeau.com/animation/css-transitions/)（2021年。ホバーで動く要素のちらつき）
 - [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)
 - [解説書 達成基準 2.4.11: 隠されないフォーカス (最低限)](https://waic.jp/translations/WCAG22/Understanding/focus-not-obscured-minimum)（WAICによるWCAG 2.2解説書の日本語訳）

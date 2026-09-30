@@ -1,0 +1,133 @@
+---
+title: "12-3 CMSのWYSIWYG本文にスタイルを当てる"
+description: "CMSのWYSIWYGエディタが出力する本文には、編集者がクラスを付けられません。本文エリアのルートに wysiwyg を付け、@scope の中で要素セレクタにスタイルを当て、cms- で始まる独自ブロックは @scope の下限で切り離します。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import wysiwygHtml from '../../../demos/operations/wysiwyg/index.html?raw';
+import wysiwygCss from '../../../demos/operations/wysiwyg/style.css?raw';
+
+CMSのWYSIWYGエディタが出力する本文は、`wysiwyg` クラスを付けた要素で囲み、`@scope (.wysiwyg)` の中に要素セレクタでスタイルを書きます。編集者が入力した `h2` や `p` に、クラスを付けてもらう必要はありません。
+
+編集画面から挿入できる独自のブロックには、`cms-` で始まるクラスを付けます。本文エリアの `@scope` は `to ([class|="cms"])` で独自ブロックの手前で止めるので、本文の `h2` のスタイルが、ブロックの中の `h2` に漏れることはありません。ブロックの内側は、ブロック自身の `@scope` が持ちます。
+
+この節は、ほかの章の規約に対する例外を2つ含みます。`@scope` をネストすることと、独自ブロックの `@scope` で `to()` を省略することです。どちらも、CMSの本文エリアに限って認めます。例外にする理由は、後半で説明します。
+
+## 編集者はクラスを付けられない
+
+コンポーネントのマークアップは、コードを書く人が決めます。子要素には `._title` のようなクラスを付けて、そのクラスにスタイルを当てます。CMSの本文は違います。見出しと段落を書くのは編集者で、エディタは `h2`、`p`、`blockquote` をクラスなしで出力します。本文の見た目は、要素の種類だけを手がかりに決めるしかありません。
+
+素直に書くと、本文エリアのクラスに子孫セレクタを並べることになります。
+
+```css title="🙅‍♂ Not Recommended: 子孫セレクタで本文の要素にスタイルを当てる"
+/* 🙅‍♂ Not Recommended */
+.wysiwyg h2 {
+  padding-inline-start: 16px;
+  border-inline-start: 4px solid;
+}
+
+.wysiwyg p {
+  line-height: 1.8;
+}
+```
+
+このセレクタは、本文エリアの中にあるすべての `h2` と `p` に当たります。本文の中に独自ブロックがあれば、ブロックの内側の見出しと段落も対象です。独自ブロックは見た目を自分で決めたいので、本文の装飾を打ち消すルールを、ブロックの側へ足すことになります。打ち消すには、詳細度で上回るか、`revert` のような指定を使います。詳細度の競争は、独自ブロックが増えるたびに厳しくなります。
+
+## @scope で本文エリアを囲む
+
+`@scope` を使えば、本文エリアの中だけに効くルールを、詳細度を上げずに書けます。`@scope (.wysiwyg)` の中に書いたセレクタは、`.wysiwyg` の子孫にだけ一致します。スコープのルートの `.wysiwyg` は、詳細度に加わりません。
+
+独自ブロックは、スコープの下限で切り離します。`@scope (:scope) to ([class|="cms"])` のように、`to()` にブロックの目印を指定すると、そのブロックの中にはスタイルが届きません。内側の `@scope` の `:scope` は、外側のスコープのルート、つまり `.wysiwyg` を指します。
+
+```css title="🙆‍♂ Recommended: 本文エリアの @scope から、独自ブロックを切り離す"
+@layer components {
+  @scope (.wysiwyg) {
+    @scope (:scope) to ([class|="cms"]) {
+      h2 {
+        padding-block: 8px;
+        padding-inline-start: 16px;
+        border-inline-start: 4px solid;
+      }
+
+      p {
+        line-height: 1.8;
+      }
+    }
+  }
+}
+```
+
+通常の規約では、`@scope` は `@scope (.scoped.<名前>) to (.scoped)` の形で書き、ネストはしません。本文エリアは、中に入る要素を自分で決められないので、この形を使えません。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。代わりに、`cms-` で始まるクラスを、独自ブロックの目印にします。
+
+## 独自ブロックは下限で切り離す
+
+独自ブロックのスタイルは、ブロックのクラスを起点とする `@scope` で書きます。このスコープは、本文エリアの中で使う前提なので、`to()` を省略します。ブロックの内側に、別のブロックを入れないからです。入れ子にするブロックを作るときは、通常の規約どおり `to (.scoped)` を付けた形で書きます。
+
+```css title="🙆‍♂ Recommended: 独自ブロックのスタイルは、ブロック自身の @scope に書く"
+@layer components {
+  @scope (.cms-custom-section) {
+    :scope {
+      padding: max(5%, 24px);
+      background-color: var(--color-darkest);
+      color: var(--color-lightest);
+    }
+
+    :where(h2, h3, h4) {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}
+```
+
+デモでは、本文エリアの `h2` に左の線と背景色が付き、独自ブロックの `h2` には付かないことを確かめられます。ブロックの中の `p` も、本文エリアの行間 `1.8` を受け取りません。
+
+<Demo title="本文エリアのスタイルが、独自ブロックの中には届かない" html={wysiwygHtml} css={wysiwygCss} widths={[320, 768]} />
+
+## ブロック間の余白は rlh で決める
+
+本文のブロックの間隔は、2つ目以降の直下の子に付けます。`& > * + *` に `margin-block-start: 1rlh` を指定し、見出しと独自ブロックの前だけ `2rlh` に広げます。`rlh` は、ルート要素の行の高さを単位にした長さです。本文の `p` の `line-height` が `1.8` でも、見出しが別の行間でも、余白はルート要素の行の高さの倍数で揃います。
+
+```css title="🙆‍♂ Recommended: 余白は rlh で、見出しと独自ブロックの前だけ広げる"
+@layer components {
+  @scope (.wysiwyg) {
+    & > * + * {
+      margin-block-start: 1rlh;
+    }
+
+    & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
+      margin-block-start: 2rlh;
+    }
+  }
+}
+```
+
+`blockquote` のように、中にブロックを持つ要素は、中の余白を半分の `0.5rlh` に詰めます。引用の中の段落は、本文のブロックより近くに置くほうが、ひとまとまりに見えるからです。`blockquote` の中は、セレクタを1段ネストして `& > * + *` と書きます。セレクタは、`blockquote` と `& > * + *` の2層です。
+
+## 例外にする理由と注意点
+
+`@scope` のネストと `to()` の省略は、通常の規約では認めません。前者は、`@scope` を入れ子にすると、ルールの届く範囲が読みにくくなるためです。後者は、`to()` を省略すると、入れ子のコンポーネントへスタイルが漏れるためです。本文エリアでは、この2つを認めても危険が小さくなります。ネストするのは本文エリアと独自ブロックの2段だけで、独自ブロックの中にコンポーネントを置かない前提が成り立つからです。この前提が崩れるなら、例外ではなく、通常の規約に戻します。
+
+`[class|="cms"]` には、制約があります。この属性セレクタは、`class` 属性の値の全体が `cms` か、`cms-` で始まるときに一致します。`class="cms-custom-section"` は一致しますが、`class="foo cms-custom-section"` は、先頭が `foo` なので一致しません。独自ブロックのクラスは、`class` 属性の先頭に書くと決めてください。CMSのエディタが、クラスを並べ替えたり先頭に別のクラスを足したりする場合は、`to ([class*="cms-"])` のように部分一致にする手もあります。ただし、`xcms-` のようなクラスにも一致するので、クラス名の付け方を別に決める必要があります。
+
+`@scope` のBaselineは「新しく使える」の段階です。対応していないブラウザでは、`@scope` の中のルールがすべて無視されます。対象のブラウザの基準は、案件ごとに確かめます。
+
+<Baseline id="scope" name="@scope" />
+
+`rlh` は、2026年9月の時点で広く使えます。
+
+<Baseline id="rlh" name="rlh 単位" />
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
+- [:scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:scope)
+- [属性セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Attribute_selectors)
+- [長さ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/length)

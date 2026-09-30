@@ -65,6 +65,29 @@
   page: interaction/states-and-focus
   since: 0.1.0
 
+- id: focus-visible-over-focus-within
+  level: 推奨
+  rule: キーボード操作でのフォーカスに限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。
+  reason: '`:focus-within` は、子孫がマウスのクリックでフォーカスを受けたときにも当てはまり、フォーカスリングを出すべき場面に絞れないため。'
+  note: 入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。
+  page: interaction/states-and-focus
+  since: 0.4.0
+
+- id: hover-target-stays-still
+  level: 推奨
+  rule: ホバーで位置や大きさが変わる要素は、ホバーを受ける要素を動かさず、子要素（または擬似要素）を動かす。
+  reason: ホバーを受ける要素自身が動くと、カーソルが要素の外に出てホバーが外れ、戻るとまた当たるという繰り返しで、ちらつくため。
+  page: interaction/states-and-focus
+  since: 0.4.0
+
+- id: hit-area-min-size
+  level: 推奨
+  rule: '操作する要素には 24px 相当の最小の大きさを確保し、`@media (any-pointer: coarse)` では 44px 相当にする。大きさは内部のカスタムプロパティの値だけを切り替える。'
+  reason: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
+  note: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。`rem` で書きます。
+  page: interaction/states-and-focus
+  since: 0.4.0
+
 # 11-2 モーションを実装する
 - id: motion-needs-purpose
   level: 推奨
@@ -159,6 +182,61 @@
   reason: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
   page: interaction/motion
   since: 0.1.0
+
+- id: ease-in-for-exit
+  level: 推奨
+  rule: 現れる動きには `ease-out` 系、画面から出ていく動きには `ease-in` 系のトークンを使い、開いた状態と閉じた状態のルールに分けて指定する。
+  reason: トランジションは変化したあとの状態の値で動くので、状態ごとに書き分けられ、出ていく動きは加速しながら見えなくなるほうが自然なため。
+  page: interaction/motion
+  since: 0.4.0
+
+- id: transition-duration-per-direction
+  level: 推奨
+  rule: '状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。'
+  reason: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
+  note: どちらの再生時間もトークンから選びます。
+  page: interaction/motion
+  since: 0.4.0
+
+- id: starting-style-not-overridden
+  level: 推奨
+  rule: '`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。'
+  reason: '`@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。'
+  note: '`!important` や詳細度を上げるセレクタでは解決しません。`@keyframes` の値は通常の宣言より優先されます。'
+  aiProne: true
+  page: interaction/motion
+  since: 0.4.0
+
+- id: animation-longhand-fill-mode
+  level: 推奨
+  rule: 'アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書く。遅延を付けるときや、開始値を待機中にも見せたいときは `animation-fill-mode: both` を指定する。'
+  reason: 略記は `animation-timeline` と `animation-range` もリセットするため。また、指定しないと遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
+  note: '`transition-longhand-with-tokens` と対になるルールです。'
+  page: interaction/motion
+  since: 0.4.0
+
+- id: scroll-animation-explicit-range
+  level: 推奨
+  rule: スクロール駆動アニメーションは、`animation-range` で範囲を明示する。
+  reason: 指定しないと `view()` では `cover`（画面に入り始めてから出終わるまで）の全体になり、見せたいタイミングとずれやすいため。
+  note: '`entry`、`exit`、`contain` で範囲を絞るときは、範囲の前後の見た目のために `animation-fill-mode: both` も指定します。'
+  page: interaction/motion
+  since: 0.4.0
+
+- id: spring-easing-token
+  level: 推奨
+  rule: ばねやバウンスの動きは、`linear()` をジェネレーターで作り、再生時間とセットでトークンにして、コンポーネントに値を直接書かない。
+  reason: 点の数が多く手で保守できず、トークンにすれば、揺れが収まるまでの時間とイージングを対で使い回せるため。
+  note: '揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。'
+  page: interaction/motion
+  since: 0.4.0
+
+- id: css-before-js-animation
+  level: 推奨
+  rule: 動きは CSS のトランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作り、JavaScript のアニメーションライブラリは、CSS だけでは作れない動きにだけ使う。
+  reason: 合成だけで動かせる CSS の動きはメインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担も要らないため。
+  page: interaction/motion
+  since: 0.4.0
 
 # 11-3 開閉する UI
 - id: native-disclosure-elements

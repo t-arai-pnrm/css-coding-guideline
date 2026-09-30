@@ -1,0 +1,77 @@
+@layer tokens {
+  :root {
+    --duration--base: 240ms;
+    --duration--spring: 700ms;
+    --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+    /* 減衰するばねを32区間に分けて近似した値。1を超える部分が行き過ぎになる */
+    --ease--spring: linear(
+      0, 0.094, 0.315, 0.581, 0.829, 1.022, 1.144, 1.199, 1.2, 1.166, 1.114,
+      1.06, 1.014, 0.981, 0.963, 0.958, 0.962, 0.971, 0.982, 0.993, 1.001, 1.006,
+      1.008, 1.008, 1.007, 1.005, 1.003, 1.001, 0.999, 0.998, 0.998, 0.998, 1
+    );
+  }
+}
+
+@layer components {
+  @scope (.scoped.spring-demo) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+    }
+
+    ._row {
+      display: block flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    ._toggle {
+      --_background: oklch(70% 0 0deg);
+      --_duration: var(--duration--base);
+      --_ease: var(--ease--quint-out);
+
+      display: inline flex;
+      flex-shrink: 0;
+      inline-size: calc(1lh * 2);
+      block-size: 1lh;
+      padding: 2px;
+      border-color: transparent;
+      border-radius: calc(infinity * 1px);
+      background-color: var(--_background);
+      appearance: none;
+
+      &:checked {
+        --_background: var(--_accent);
+      }
+
+      &.-spring {
+        --_duration: var(--duration--spring);
+        --_ease: var(--ease--spring);
+      }
+
+      /* つまみ */
+      &::after {
+        content: "";
+        block-size: 100%;
+        aspect-ratio: 1;
+        border-radius: inherit;
+        background-color: oklch(100% 0 0deg);
+        translate: 0 0;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--_duration);
+          transition-property: translate;
+          transition-timing-function: var(--_ease);
+        }
+      }
+
+      &:checked::after {
+        translate: calc(100% + 4px) 0;
+      }
+    }
+  }
+}

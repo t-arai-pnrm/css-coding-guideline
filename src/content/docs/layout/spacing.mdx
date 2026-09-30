@@ -5,6 +5,7 @@ sidebar:
   order: 2
 ---
 
+import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import emptyCellsHtml from '../../../demos/layout/empty-grid-cells/index.html?raw';
@@ -34,6 +35,18 @@ import emptyCellsCss from '../../../demos/layout/empty-grid-cells/style.css?raw'
 1列で並べている間は問題なく見えます。しかし、広い画面で2列のグリッドに変えると、最後の行の左側の要素には `margin-bottom` が残ったままになります。列の間隔は別に指定しなければならず、列数を変えるたびに「どの要素の余白を打ち消すか」を考え直すことになります。
 
 `margin` には、上下に隣り合う要素の間で大きいほうだけが残る「相殺」という仕組みもあります。上の要素の `margin-bottom` と下の要素の `margin-top` を両方指定すると、合計ではなく大きいほうの値だけが効きます。上下のどちらに付けるかをチームで決めておかないと、相殺と打ち消しが入り混じり、実際の間隔がどの指定で決まっているのかを追えなくなります。
+
+相殺は、兄弟の間だけでなく、親と最初の子、親と最後の子の間でも起きます。親に `border` や `padding`、中身のインライン要素がなければ、最初の子の `margin-block-start` は親の外へ出て、親自身の `margin-block-start` と相殺します。子に余白を付けたのに、親の内側ではなく外側に余白ができて、親の背景が余白を含まない、という現象です。止めるなら、親に `display: flow-root` を指定します。親が新しい通常フローの起点になり、子の余白が外へ出なくなります。
+
+<Baseline id="display-flow-root" />
+
+```css title="🙆‍♂ Recommended: 親子の相殺は flow-root で止める"
+._section {
+  display: block flow-root;
+}
+```
+
+`overflow: auto` や、見えない `padding` と `border` でも相殺は止まりますが、使いません。`overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取ります（「[7-5 sticky が動かないとき](/layout/sticky/)」）。FlexboxやGridにした要素の子も、親との間では相殺しません。余白を子と親の枠の間に取りたいだけなら、親の `padding` で足ります。
 
 ## 親の `gap` による間隔
 

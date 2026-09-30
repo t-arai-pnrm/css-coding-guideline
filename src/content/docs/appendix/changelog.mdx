@@ -11,6 +11,50 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.4.0（2026年10月1日）
+
+外部の記事（DebugBear、Polypane、Geary、necomesiのブログ、Josh W. Comeauのブログ）から、取り入れる内容を洗い出し、各章に加えました。記事と本書が食い違うときは記事を優先し、記事が古いときや対応状況と合わないときは、一次情報を確かめ、今も正しい部分だけを取り入れています。
+
+- ネストの規約を改めました。「セレクタのネストは2層まで」とし、`@scope` や `@media` などの@ルールは層に数えません。@ルールまで数えると、ルールが分散して分かりにくくなるためです。Stylelintの `max-nesting-depth` は外しました。ルール `nesting-depth-one` のIDは変えていません。
+- 節を2つ追加しました：「[7-5 sticky が動かないとき](/layout/sticky/)」と「[12-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」。後者では、CMSの本文エリアに限り、`@scope` のネストと `to()` の省略を認めています。
+- 退場のアニメーションのイージングを `ease-out` から `ease-in` に改めました。デモとコード例も書き換えています。
+- ライトモードの影の色は、背景の色相へ寄せる方針にしました。ダークモードは、黒のまま不透明度で強さを変えます。
+- ルールを34件追加しました。
+  - [`verify-fallback-by-removal`](/principles/browser-support/#rule-verify-fallback-by-removal)：宣言を外した表示を確かめてから、新しい機能を使う
+  - [`not-has-for-absence`](/cascade/selectors/#rule-not-has-for-absence)：「持たない」は `:not(:has())` で書く
+  - [`no-abbreviation`](/notation/naming/#rule-no-abbreviation)：クラス名を省略しない
+  - [`child-name-flat`](/notation/naming/#rule-child-name-flat)：子要素の名前にHTMLの階層を映さない
+  - [`no-bulk-element-selector`](/components/boundaries/#rule-no-bulk-element-selector)：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない
+  - [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
+  - [`grid-columns-fr-not-percent`](/layout/grid-first/#rule-grid-columns-fr-not-percent)：Gridの列の比率には `fr` を使う
+  - [`no-dense-for-ordered-items`](/layout/grid-first/#rule-no-dense-for-ordered-items)：順序に意味のある要素に `grid-auto-flow: dense` を使わない
+  - [`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)：マージンの相殺は `display: flow-root` で止める
+  - [`sticky-align-self-start`](/layout/sticky/#rule-sticky-align-self-start)：stickyな要素をGridやFlexboxの子にするときは `align-self: start`
+  - [`sticky-needs-inset`](/layout/sticky/#rule-sticky-needs-inset)：stickyにはinsetを指定する
+  - [`sticky-cap-block-size`](/layout/sticky/#rule-sticky-cap-block-size)：画面より高くなりうるstickyな要素の高さを制限する
+  - [`no-device-width-feature`](/responsive/media-queries/#rule-no-device-width-feature)：`device-width` などをメディアクエリに使わない
+  - [`any-pointer-not-width-for-input`](/responsive/media-queries/#rule-any-pointer-not-width-for-input)：操作の手段に合わせる指定は `any-pointer` で書く
+  - [`prefers-contrast-more-for-faint-borders`](/responsive/media-queries/#rule-prefers-contrast-more-for-faint-borders)：薄い境界線は `prefers-contrast: more` で濃くする
+  - [`gradient-interpolation-space`](/color-media/color/#rule-gradient-interpolation-space)：グラデーションには補間の色空間を書く
+  - [`transparent-outline-for-custom-focus`](/color-media/forced-colors/#rule-transparent-outline-for-custom-focus)：フォーカスリングを描き直すときは透明な `outline` を残す
+  - [`shadow-tokens-light-source`](/color-media/images-and-decoration/#rule-shadow-tokens-light-source)：影のトークンは光源の向きをそろえる
+  - [`no-animate-layered-shadow`](/color-media/images-and-decoration/#rule-no-animate-layered-shadow)：重ねた影そのものを動かさない
+  - [`marker-for-list-number-style`](/color-media/images-and-decoration/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
+  - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：キーボードのフォーカスに限るときは `:has(:focus-visible)` を使う
+  - [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーを受ける要素は動かさない
+  - [`hit-area-min-size`](/interaction/states-and-focus/#rule-hit-area-min-size)：操作する要素の最小の大きさを確保する
+  - [`ease-in-for-exit`](/interaction/motion/#rule-ease-in-for-exit)：出ていく動きには `ease-in` 系を使う
+  - [`transition-duration-per-direction`](/interaction/motion/#rule-transition-duration-per-direction)：入るときと外れるときで再生時間を変える
+  - [`starting-style-not-overridden`](/interaction/motion/#rule-starting-style-not-overridden)：`@starting-style` で動かすプロパティを上書きしない
+  - [`animation-longhand-fill-mode`](/interaction/motion/#rule-animation-longhand-fill-mode)：アニメーションはロングハンドで書く
+  - [`scroll-animation-explicit-range`](/interaction/motion/#rule-scroll-animation-explicit-range)：スクロール駆動アニメーションの範囲を明示する
+  - [`spring-easing-token`](/interaction/motion/#rule-spring-easing-token)：ばねの動きは `linear()` のトークンにする
+  - [`css-before-js-animation`](/interaction/motion/#rule-css-before-js-animation)：動きはまずCSSで作る
+  - [`wysiwyg-scope-root`](/operations/wysiwyg/#rule-wysiwyg-scope-root)：WYSIWYGの本文エリアは `@scope (.wysiwyg)` で書く
+  - [`wysiwyg-cms-prefix`](/operations/wysiwyg/#rule-wysiwyg-cms-prefix)：独自ブロックは `cms-` のクラスで切り離す
+  - [`wysiwyg-scope-exception`](/operations/wysiwyg/#rule-wysiwyg-scope-exception)：本文エリアに限り、`@scope` のネストと `to()` の省略を認める
+  - [`wysiwyg-flow-margin`](/operations/wysiwyg/#rule-wysiwyg-flow-margin)：本文のブロック間の余白は `rlh` で決める
+
 ## 0.3.0（2026年9月30日）
 
 CSSの新しい仕様と注意点を、各章に加えました。話題は外部のサイトから拾い、内容は仕様とMDNなどの一次情報で確かめています。あわせて、著者の登壇資料を本文と照らし合わせて反映し、WordPressに関する内容を一旦外しました。

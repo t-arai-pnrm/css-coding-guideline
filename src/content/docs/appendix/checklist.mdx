@@ -53,7 +53,7 @@ sidebar:
 
 ### ネストと記法
 
-- [ ] ネストが1段までで、ネストしたセレクタが `&` で始まっているか（[`nesting-depth-one`](/notation/nesting-and-order/#rule-nesting-depth-one)、[`nested-selector-ampersand`](/notation/nesting-and-order/#rule-nested-selector-ampersand)）
+- [ ] セレクタのネストが2層までで、ネストしたセレクタが `&` で始まっているか（[`nesting-depth-one`](/notation/nesting-and-order/#rule-nesting-depth-one)、[`nested-selector-ampersand`](/notation/nesting-and-order/#rule-nested-selector-ampersand)）
 - [ ] `&__title` のように、`&` に文字をつなげていないか（[`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation)）
 - [ ] `@media`、`@container`、`@supports` を、各セレクタの中に書いているか（[`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules)）
 - [ ] 寸法、余白、位置を論理プロパティで書いているか（[`logical-properties`](/notation/modern-syntax/#rule-logical-properties)）
@@ -160,6 +160,7 @@ sidebar:
 - [ ] ホバーを `@media (any-hover: hover)` の中に書き、`:focus-visible` にも同じ見た目を指定しているか（[`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover)、[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
 - [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
 - [ ] トランジションとアニメーションを `@media (prefers-reduced-motion: no-preference)` の中で指定しているか（[`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference)）
+- [ ] 出ていく動きに `ease-in` 系、現れる動きに `ease-out` 系を使っているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして、動きが減ることを確かめたか（[`ease-in-for-exit`](/interaction/motion/#rule-ease-in-for-exit)）
 - [ ] `transition: all` を使っていないか（[`no-transition-all`](/interaction/motion/#rule-no-transition-all)）
 - [ ] 開閉するUIを、`<dialog>`、`popover` 属性、`<details>` のようなHTMLの機能で作っているか（[`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)）
 - [ ] リンクや入力エラーのような情報を、色の違いだけで伝えていないか（[`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)、[`grayscale-check`](/color-media/forced-colors/#rule-grayscale-check)）

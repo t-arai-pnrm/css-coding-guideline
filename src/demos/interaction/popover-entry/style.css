@@ -1,6 +1,7 @@
 @layer tokens {
   :root {
     --duration--base: 240ms;
+    --ease--quint-in: cubic-bezier(0.64, 0, 0.78, 0);
     --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
     --z--top: calc(infinity);
   }
@@ -35,7 +36,9 @@
       transform-origin: 50% 100%;
       transition-duration: var(--duration--base);
       transition-property: opacity, scale, display, overlay;
-      transition-timing-function: var(--ease--quint-out);
+
+      /* 閉じるときは加速しながら消える */
+      transition-timing-function: var(--ease--quint-in);
       transition-behavior: allow-discrete;
 
       /* 動きを減らす設定のときは拡大と縮小をやめ、フェードだけを残す */
@@ -46,6 +49,9 @@
 
     /* 表示されたときの、トランジションの開始地点 */
     ._panel:popover-open {
+      /* 開くときは減速しながら現れる */
+      transition-timing-function: var(--ease--quint-out);
+
       @starting-style {
         opacity: 0;
         scale: var(--_scale-from);

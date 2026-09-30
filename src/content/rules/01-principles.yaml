@@ -46,7 +46,7 @@
   level: 推奨
   rule: 似た記述の重複は許容し、共通化は同じものが3回現れてから、役割まで同じかを確かめて検討する。
   reason: 早すぎる共通化は影響範囲を広げ、一部だけ変えたいときに修飾クラスや上書きの分岐が増えるため。
-  note: 一緒に変わるべき値だけを、デザイントークンで共有します。
+  note: 一緒に変わるべき値だけを、デザイントークンで共有します。共通化の単位は、「画像と文章を横に並べる」程度の配置の共通点ではなく、役割まで同じ実質的な部品にします。
   page: principles/maintainability
   since: 0.1.0
 
@@ -133,6 +133,14 @@
   note: '2026年9月時点では、`text-wrap: pretty`、`word-break: auto-phrase`、`field-sizing`、`text-box`、ドキュメント間のビュートランジションが使いやすい例です。'
   page: principles/browser-support
   since: 0.1.0
+
+- id: verify-fallback-by-removal
+  level: 推奨
+  rule: プログレッシブ・エンハンスメントとして使う機能は、その宣言を外した表示を確かめてから使う。同じ機能を複数の箇所で使うときは、箇所ごとに確かめる。
+  reason: 未対応の環境では宣言が無視されるだけなので、宣言を外した表示を見れば、読めて操作できるかを、未対応のブラウザなしで判断できるため。
+  note: 宣言のコメントアウトか、開発者ツールでの無効化で確かめます。案件の基準を決めるときは、未対応の環境での体験、自サイトのアクセス解析のブラウザ分布、使えなかったときの害の大きさを合わせて見ます。
+  page: principles/browser-support
+  since: 0.4.0
 
 - id: no-unsupported-layout-features
   level: 禁止

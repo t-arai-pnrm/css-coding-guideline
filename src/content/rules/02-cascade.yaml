@@ -93,6 +93,15 @@
   page: cascade/selectors
   since: 0.3.0
 
+- id: not-has-for-absence
+  level: 推奨
+  rule: '「X を持たない要素」は `:not(:has(X))` で書き、`:has(:not(X))` は使わない。'
+  reason: '`:has(:not(X))` は「X 以外の要素を子孫に持つ要素」を選ぶので、X 以外の子孫が1つでもあれば、X を持つ要素にも当てはまるため。'
+  note: '2つの詳細度は同じなので、入れ子の順序を取り違えても、見た目の差から気づけません。'
+  aiProne: true
+  page: cascade/selectors
+  since: 0.4.0
+
 - id: is-for-ancestor-context
   level: 推奨
   rule: '祖先の状態によって変わるスタイルは、子のルールの中に `&:is(<祖先のセレクタ> *)` の形で書く。'

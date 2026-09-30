@@ -52,9 +52,23 @@
   level: 非推奨
   rule: '`wrapper`、`block`、`module`、`widget` のように、責務を表さない総称を名前に使わない。'
   reason: 何のための要素なのかが名前から分からず、責務の境界もあいまいになるため。
-  note: 内容の幅を制限する要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。
+  note: 内容の幅を制限する要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。名前に迷ったら、その要素が何なのかを日本語で1文に書き、特徴的な語を名前にします（`text-box` や `center-box` のような見た目や配置だけの名前は避けます）。
   page: notation/naming
   since: 0.1.0
+
+- id: no-abbreviation
+  level: 推奨
+  rule: クラス名は単語を省略せずに書く（`._desc` ではなく `._description`）。HTML の要素名として広く通じている `nav` などは、そのまま使ってよい。
+  reason: 文字数を削っても節約できるのはわずかなバイト数で、読む人には意味を推測する負担が残るため。
+  page: notation/naming
+  since: 0.4.0
+
+- id: child-name-flat
+  level: 推奨
+  rule: 子要素のクラス名に HTML の階層を映さない。孫にあたる要素にも、親の名前をつなげず、役割の名前を `._kebab` で付ける（`._tags-item-link` ではなく `._tag-link`）。
+  reason: 階層を名前に写すと名前が要素の位置を表し、HTML の構造を変えるたびにクラス名とセレクタも変えなければならなくなるため。
+  page: notation/naming
+  since: 0.4.0
 
 - id: dashed-ident-names
   level: 必須
@@ -69,10 +83,10 @@
 # 5-2 ネストとプロパティの並び順
 - id: nesting-depth-one
   level: 推奨
-  rule: セレクタのネストは1段までにする。
+  rule: セレクタのネストは2層（親と、その中の1段）までにする。
   reason: ネストはスタイルの持ち主を示すために使うもので、HTML の階層を写したり詳細度を上げたりするために使うと、構造への依存が強まり詳細度も読み取りにくくなるため。
-  note: '`@scope` はスコープの境界なので、段数に数えません。セレクタの中に `@media` などの条件付きのアットルールを1段挟むのはかまいません。'
-  lint: 'Stylelint: `max-nesting-depth: 2`（条件付きのアットルールも1段として数える）'
+  note: '`@scope` `@media` `@container` `@supports` `@layer` などの@ルールは層に数えません。@ルールまで数えると、ファイルの構造によって同じセレクタが書けたり書けなかったりして、ルールが分散し、分かりにくくなるためです。ID は初期の「1段まで」の名残で、変えません。'
+  lint: 'Stylelint に対応する設定がないため、レビューで確認する（`max-nesting-depth` は @ルールを数えるため使わない）'
   page: notation/nesting-and-order
   since: 0.1.0
 

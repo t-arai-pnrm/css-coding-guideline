@@ -203,6 +203,31 @@
   page: responsive/media-queries
   since: 0.1.0
 
+- id: no-device-width-feature
+  level: 禁止
+  rule: '`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。'
+  reason: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
+  aiProne: true
+  page: responsive/media-queries
+  since: 0.4.0
+
+- id: any-pointer-not-width-for-input
+  level: 推奨
+  rule: '操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。'
+  reason: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
+  note: '`pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第11章）。'
+  aiProne: true
+  page: responsive/media-queries
+  since: 0.4.0
+
+- id: prefers-contrast-more-for-faint-borders
+  level: 推奨
+  rule: '薄い境界線や補助テキストの色で区別や意味を伝えている部品は、`@media (prefers-contrast: more)` の中で色を濃くする。'
+  reason: OS でコントラストを上げる設定にしているユーザーが、薄い区切りや補助テキストを読み取れる状態を保つため。
+  note: '`prefers-contrast: custom` は強制カラーモードの配色に対応する値で、色は上書きされるため指定しない。強制カラーモードの扱いは第10章で説明する。'
+  page: responsive/media-queries
+  since: 0.4.0
+
 # 8-4 実践パターン：2サイズのデザインカンプを再現する
 - id: screen-mode-for-two-size-comps
   level: 推奨

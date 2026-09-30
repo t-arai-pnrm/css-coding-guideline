@@ -77,7 +77,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
     z-index: var(--z--top);
     transition-duration: var(--duration--slow);
     transition-property: display, overlay, opacity;
-    transition-timing-function: var(--ease--quint-out);
+    transition-timing-function: var(--ease--quint-in);
     transition-behavior: allow-discrete;
 
     &::backdrop {
@@ -86,6 +86,10 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
       transition-property: opacity;
       transition-timing-function: inherit;
     }
+  }
+
+  :scope:modal {
+    transition-timing-function: var(--ease--quint-out);
   }
 
   :scope:modal,
@@ -102,7 +106,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 }
 ```
 
-この例では、ダイアログと背景を不透明度だけで変化させています。画面の大部分を覆うUIが一瞬で現れると、何が起きたのか分かりにくくなります。位置と大きさを変えないフェードなので、動きを減らす設定でも残しています。
+この例では、ダイアログと背景を不透明度だけで変化させています。イージングは、開くときに `--ease--quint-out`、閉じるときに `--ease--quint-in` を使います（理由は「[11-2 モーションを実装する](/interaction/motion/)」で説明しています）。背景は、ダイアログの値を `inherit` で受け取るので、同じイージングになります。画面の大部分を覆うUIが一瞬で現れると、何が起きたのか分かりにくくなります。位置と大きさを変えないフェードなので、動きを減らす設定でも残しています。
 
 `position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合（2025年5月時点で確認されていたもの）を避けるために明示しています。モーダルを開いている間の背面の固定は「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 
@@ -175,7 +179,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
     @media (prefers-reduced-motion: no-preference) {
       transition-duration: var(--duration--slow);
       transition-property: content-visibility, block-size, opacity;
-      transition-timing-function: var(--ease--quint-out);
+      transition-timing-function: var(--ease--quint-in);
       transition-behavior: allow-discrete;
     }
   }
@@ -183,6 +187,10 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
   ._item[open]::details-content {
     block-size: auto;
     opacity: 1;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-timing-function: var(--ease--quint-out);
+    }
   }
 }
 ```

@@ -1,0 +1,95 @@
+@layer tokens {
+  :root {
+    --color-lightest: oklch(97% 0.01 250deg);
+    --color-darker: oklch(35% 0.03 250deg);
+    --color-darkest: oklch(25% 0.04 250deg);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.demo-page) to (.scoped) {
+    :scope {
+      padding: 16px;
+    }
+  }
+}
+
+@layer components {
+  /**
+   * CMS（WYSIWYG エディタ）が出力する本文エリア。
+   * 編集者は要素にクラスを付けられないので、要素セレクタでスタイルを決める。
+   * 独自ブロック（`cms-` で始まるクラス）の中には、スタイルが届かないようにする。
+   */
+  @scope (.wysiwyg) {
+    & > * + * {
+      margin-block-start: 1rlh;
+    }
+
+    & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
+      margin-block-start: 2rlh;
+    }
+
+    @scope (:scope) to ([class|="cms"]) {
+      :where(h1, h2, h3, h4, h5, h6) {
+        line-height: 1.4;
+      }
+
+      h2 {
+        padding-block: 8px;
+        padding-inline-start: 16px;
+        border-inline-start: 4px solid;
+        background-color: var(--color-lightest);
+      }
+
+      h3 {
+        padding-inline-start: 16px;
+        border-inline-start: 4px solid;
+      }
+
+      p {
+        line-height: 1.8;
+      }
+
+      blockquote {
+        padding: 1em;
+        border: 1px solid;
+        background-color: var(--color-lightest);
+        color: var(--color-darker);
+        font-size: calc(14 / 16 * 1rem);
+
+        & > * + * {
+          margin-block-start: 0.5rlh;
+        }
+      }
+    }
+  }
+
+  /**
+   * CMS の編集画面から挿入する独自ブロック。
+   * 本文エリアの外側のスコープからは切り離されているので、`to()` は付けない。
+   */
+  @scope (.cms-custom-section) {
+    :scope {
+      padding: max(5%, 24px);
+      background-color: var(--color-darkest);
+      color: var(--color-lightest);
+      font-size: calc(14 / 16 * 1rem);
+
+      & > * + * {
+        margin-block-start: 0.5rlh;
+      }
+    }
+
+    :where(h2, h3, h4) {
+      font-size: calc(20 / 16 * 1rem);
+
+      &::after {
+        content: "";
+        display: block flow;
+        inline-size: 2em;
+        margin-block-start: 0.5rlh;
+        border-block-end: 4px solid;
+      }
+    }
+  }
+}

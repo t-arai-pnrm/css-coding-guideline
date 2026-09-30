@@ -46,6 +46,8 @@ import shareCss from '../../../demos/responsive/share-button/style.css?raw';
 
 コンテナクエリを使えば、カードは自分が使える幅だけを条件に配置を決められます。置き場所を知らなくても、どこに置かれても適切に配置されるコンポーネントになります。
 
+コンテナクエリに対応していない環境では、`@container` の中のスタイルが適用されず、クエリの外に書いたスタイルだけが残ります。そのため、基本のスタイルは狭い幅で成り立つように書きます。広い幅でも狭いレイアウトのままになりますが、崩れではなく縮退に収まります。この考え方は、[8-3](/responsive/media-queries/) のモバイルファーストの書き方と同じです。
+
 ## 名前付きのコンテナを作る
 
 コンテナクエリは、基準にする要素（コンテナ）の指定と、その幅を判定する条件の2つで書きます。基本の形は、コンポーネントのルートをコンテナにして、中の要素で条件を判定するものです。
@@ -157,6 +159,8 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
 そのため、インライン要素や、`fit-content` など中身から幅が決まる要素は、コンテナにしません。`flex-grow` や `flex-basis` を指定していないflexアイテムと、`auto` のサイズで配置したgridアイテムも同様です。コンテナにするのは、親から幅を与えられる要素に限ります。
 
+カードを一覧にして並べるときは、カードをgridやflexのアイテムにするだけでなく、その一段内側に注意します。コンテナにした要素は、自分の幅を条件にしたスタイルを受け取れないので、配置を変えたいカード自身をコンテナにすると、カード自身の配置は切り替わりません。一覧側でカードを `<li>` などの要素で包んでそれをコンテナにするか、カードのルート（`:scope`）をコンテナにして、配置を変える要素を一段内側に置きます。
+
 コンテナにした要素には `padding` や `border` も指定しません。クエリの条件やコンテナ単位が基準にするのは、コンテナのコンテンツボックスの幅です。`padding` や `border` があると、要素の幅から、その分を引いた値で判定されるので、閾値やコンテナ単位の値が、見た目の幅とずれます。余白などのレイアウトは子要素に指定し、コンテナは幅の基準に専念させます。
 
 `html`、`body`、ページ全体のレイアウト要素をコンテナにするのも避けます。ページ全体の切り替えはメディアクエリの役割だからです。また、以前の仕様では、コンテナにレイアウトの封じ込め（`contain: layout`）も暗黙的に適用されていました。そのため、コンテナは中にある `position: fixed` や `position: absolute` の要素の包含ブロックになり、スタッキングコンテキストも作っていました。固定したつもりのヘッダーやモーダルが、ビューポートではなくコンテナを基準に配置されていたわけです。
@@ -183,6 +187,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
 - [CSS コンテナクエリ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_containment/Container_queries)
 - [@container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@container)
+- [Container Queries Unleashed](https://www.joshwcomeau.com/css/container-queries-unleashed/)（Josh W. Comeau）
 - [container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/container)
 - [Weaker form of layout containment for container queries（csswg-drafts #10544）](https://github.com/w3c/csswg-drafts/issues/10544)（CSSワーキンググループ、2024年7月に決定）
 - [WebKit Features in Safari 18.4](https://webkit.org/blog/16574/webkit-features-in-safari-18-4/)（WebKit Blog、2025年3月）

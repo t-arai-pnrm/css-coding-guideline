@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import popoverHtml from '../../../demos/interaction/popover-entry/index.html?raw';
 import popoverCss from '../../../demos/interaction/popover-entry/style.css?raw';
+import springHtml from '../../../demos/interaction/spring-easing/index.html?raw';
+import springCss from '../../../demos/interaction/spring-easing/style.css?raw';
 
 アニメーションを足す前に、その動きが必要かどうかを確かめます。動かすと決めたら、トランジションとアニメーションは `@media (prefers-reduced-motion: no-preference)` の中で指定します。トランジションは `transition: all` を使わず、動かすプロパティを絞ってロングハンドで書き、再生時間とイージングにはトークンを使います。
 
@@ -30,7 +32,7 @@ import popoverCss from '../../../demos/interaction/popover-entry/style.css?raw';
 
 何度も触るUIでは、短い動きでも毎回ユーザーを待たせることになります。ユーザーが求めているのは、「すぐ反応した」と感じられる速さです。
 
-動かすと決めたら、機能的な動きの再生時間は原則として300ms以下にし、ダイアログのような大きなUIでも500ms以下にします。イージングは、出現と退場には `ease-out` 系、画面上にあるものの移動には `ease-in-out` 系を選び、CSSのキーワードではなく `--ease--quint-out` のようなトークンを使います。ポップオーバーは `scale: 0` からではなく、`0.95` 前後から拡大させ、`transform-origin` をトリガーの側に向けます。トークンの定義は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
+動かすと決めたら、機能的な動きの再生時間は原則として300ms以下にし、ダイアログのような大きなUIでも500ms以下にします。イージングは、現れる動きには減速する `ease-out` 系、画面から出ていく動きには加速する `ease-in` 系、画面上にあるものの移動には `ease-in-out` 系を選びます。出ていく動きは、速度が上がりきった状態で見えなくなるので、ゆっくり終わる必要がないからです。CSSのキーワードではなく、`--ease--quint-out` や `--ease--quint-in` のようなトークンを使います。ポップオーバーは `scale: 0` からではなく、`0.95` 前後から拡大させ、`transform-origin` をトリガーの側に向けます。トークンの定義は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
 
 ## 動きを減らす設定への対応
 
@@ -76,6 +78,8 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
 
 「維持」にあたる動きは、動きそのものが「処理中」のような情報を伝えているので、条件の外に書きます。「簡素化」と「短縮」では、位置や大きさの変化だけを条件の中へ書きます（後の `@starting-style` の例を参照）。
 
+この設定を有効にした状態は、開発者ツールで再現できます。ChromeのDevToolsでは、Renderingパネルの `prefers-reduced-motion` のエミュレーションで `reduce` を選びます。OSの設定を切り替えずに、動きが止まったか、簡素化されたか、残すべきフェードが残っているかを確かめられます。
+
 ## トランジションの書き方
 
 `transition: all` は、手軽ですが使いません。関係のないプロパティまでアニメーションするからです。たとえば、ブレイクポイントをまたいで余白が変わったときや、ダークモードに切り替えたときにも、要素がゆっくりと変化します。動かす必要のないプロパティまで補間するので、描画の負荷も増えます。
@@ -92,6 +96,35 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
 動かすプロパティは、`opacity` と、`translate`、`scale`、`rotate` を優先します。これらは描画をやり直さずに合成だけで動かせるので、滑らかに動きます。`background-color` や `box-shadow` は描画のやり直しが必要ですが、ホバーの変化なら問題ありません。ただし、大きくぼかした影をループするアニメーションで動かし続けるのは避けます。ぼかしを含む影は描画に時間がかかり、動いている間は描画のやり直しが続くからです。こうした場面では、影を擬似要素に描いてその `opacity` を動かすなど、`opacity` と変形だけで表せないかを考えます。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、アコーディオンの高さのように、ほかに方法のない場合に限ります。変形に個別のプロパティを使う理由は「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
 
 `will-change` は、必要のない合成レイヤーを作ってメモリを無駄に使うので、常に指定することはしません。
+
+状態に入るときと外れるときで、再生時間を変えることもできます。トランジションは、変化したあとの状態に指定された再生時間とイージングで動きます。そのため、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書けば、入るときは素早く、戻るときはゆっくり動きます。反応の速さと、戻るときの自然さの両方を取れます。どちらの値もトークンから選びます。
+
+```css title="🙆‍♂ Recommended: 押したときは素早く、戻るときはゆっくり変える"
+@scope (.scoped.like-button) to (.scoped) {
+  :scope {
+    --_background: var(--color--accent--600);
+    --_background--pressed: var(--color--accent--700);
+
+    background-color: var(--_background);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: background-color;
+      transition-timing-function: var(--ease--quint-out);
+    }
+
+    &[aria-pressed="true"] {
+      --_background: var(--_background--pressed);
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+      }
+    }
+  }
+}
+```
+
+入る側の `transition-duration` も、動きを減らす設定の条件の中に書きます。`transition-property` の初期値は `all` なので、条件の外に再生時間だけを書くと、動きを減らす設定のときにもすべてのプロパティが動いてしまいます。
 
 ## `@keyframes` の置き場所と命名
 
@@ -157,6 +190,10 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
 
 なお、途中で中断される動きには、`@keyframes` よりトランジションが向いています。トランジションは、ホバーをすぐに外したときなどに、途中の状態から逆向きに戻るからです。
 
+アニメーションは、略記の `animation` ではなく、ここまでの例のようにロングハンドで書きます。略記は、`animation-timeline` と `animation-range` もリセットするので、略記をあとに書くと、先に指定したスクロール駆動の設定が消えます。ロングハンドなら、指定していないプロパティに影響しません。
+
+`animation-fill-mode` は、遅延の間と、終わったあとの見た目を決めます。指定しない（`none`）と、遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻ります。`backwards` は遅延の間に最初のキーフレームの値を当て、`forwards` は終わったあとも最後のキーフレームの値を保ち、`both` はその両方を行います。遅延を付けるときや、開始値を待機中にも見せたいときは、`both` を指定します。
+
 ## `@starting-style` で出現と退場を動かす
 
 `display: none` の要素は、表示された瞬間に最終的な見た目で現れるので、これまではトランジションで動かせず、JavaScriptで1フレーム待ってからクラスを付けるような工夫が必要でした。現在は、`@starting-style` で表示されたときの開始地点を指定すれば、CSSだけで出現を動かせます。
@@ -169,7 +206,7 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
     transform-origin: 50% 100%;
     transition-duration: var(--duration--base);
     transition-property: opacity, scale, display, overlay;
-    transition-timing-function: var(--ease--quint-out);
+    transition-timing-function: var(--ease--quint-in);
     transition-behavior: allow-discrete;
 
     @media (prefers-reduced-motion: no-preference) {
@@ -178,6 +215,8 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
   }
 
   :scope:popover-open {
+    transition-timing-function: var(--ease--quint-out);
+
     @starting-style {
       opacity: 0;
       scale: var(--_scale-from);
@@ -191,6 +230,8 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
 }
 ```
 
+イージングは、開くときと閉じるときで分けています。トランジションは変化したあとの状態のルールの値で動きます。閉じた状態の基本のルールには `--ease--quint-in`（加速しながら消える）を、`:popover-open` のルールには `--ease--quint-out`（減速しながら現れる）を書きます。
+
 `transition-behavior: allow-discrete` は、`display` のように途中の値がないプロパティも、トランジションの対象にする指定です。閉じるときは、`opacity` と `scale` が終わるまで `display: none` への切り替えが待たされるので、退場も動きます。`overlay` は、閉じる途中の要素をトップレイヤーに残しておくための指定です。`@starting-style` は、開いた状態のセレクタの中に書きます。
 
 この例では、拡大の起点だけを `no-preference` の中で変えています。動きを減らす設定のときは拡大しないので、短いフェードだけが残ります。ポップオーバーのような出現は、一瞬で切り替わるとかえって何が起きたのか分かりにくいので、位置と大きさを変えないフェードは残しています。次のデモで、ボタンを押して動きを確かめられます。
@@ -202,6 +243,10 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
 <Baseline id="display-animation" name="display と content-visibility のトランジション" />
 
 Firefoxは、2026年9月の時点で `display` のトランジションに対応していません。開くときは動きますが、閉じるときは一瞬で消えます。閉じる機能は損なわれないので、プログレッシブ・エンハンスメントとして扱えます。`overlay` に対応しているのはChrome系のブラウザだけなので、閉じる途中でほかの要素の下に潜り込まないように、`z-index: var(--z--top)` も指定しておきます（「[6-1 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+`@starting-style` の中の宣言は、特別に優先されるわけではなく、通常のカスケードでほかの規則と競い合います。同じ要素の同じプロパティに、詳細度の高い規則やインラインスタイルが値を指定していると、そちらが勝って開始値にならず、トランジションが起きません。MDNによれば、元の規則と `@starting-style` の詳細度は同じなので、上の例のように `@starting-style` を元の規則の中に書けば、ソース順で負けることもありません。`!important` や詳細度を上げるセレクタで解決することはしません（「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」）。
+
+出現だけを動かせば足りるなら、`@keyframes` の `from` を使うほうが壊れにくくなります。アニメーションの値は、通常の宣言よりカスケードで優先されるからです。退場も動かしたいとき、つまり `display` を扱うときに、`@starting-style` を使います。
 
 ## スクロールに合わせて動かす
 
@@ -230,11 +275,14 @@ Firefoxは、2026年9月の時点で `display` のトランジションに対応
         animation-timing-function: linear;
         animation-fill-mode: both;
         animation-timeline: view();
+        animation-range: cover;
       }
     }
   }
 }
 ```
+
+`animation-range` を指定しない（`normal`）と、範囲はタイムラインの全体になり、`view()` では、要素が画面に入り始めてから出終わるまでの全体（`cover`）に広がります。見せたいタイミングとずれやすいので、範囲は明示します。`entry` は画面に入る間、`exit` は出ていく間、`contain` は要素の全体が画面に収まっている間だけを範囲にします。範囲の前後の見た目は `animation-fill-mode` で決まるので、例では `both` を指定しています。
 
 画面に入ったら1回だけ動かす演出では、`animation-play-state: paused` と `animation-fill-mode: both` を組み合わせます。一時停止していても、`both` によって `from` の状態が描画されるので、要素は動き始める前の位置で待機します。JavaScriptが `data-revealed` を付けたら、再生に切り替えるだけです。
 
@@ -260,13 +308,40 @@ Firefoxは、2026年9月の時点で `display` のトランジションに対応
 
 動き始める前の状態のために `opacity: 0` を別に書く必要はなく、`@keyframes` が開始地点のただひとつの情報源になります。JavaScriptのない環境には `scripting: enabled` の条件で何も当たらないので、内容はそのまま読めます（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。動く前の要素を隠すのに、`visibility: hidden` や `display: none` を使わないのも大切です。スクリーンリーダーで読めなくなったり、ページ内検索で見つからなくなったりします。
 
+## ばねとバウンスを `linear()` で作る
+
+`cubic-bezier()` では、終わりの値を行き過ぎてから戻る、何度か揺れて止まるといった、ばねの動きを表せません。`linear()` は、進み具合を点の列で与え、点の間を直線でつなぐイージング関数です。値は0から1の範囲を超えてよく、1を超えた部分が行き過ぎになります。点を多く並べれば、ばねやバウンスの曲線を近似できます。
+
+点の列は手で書けないので、ジェネレーターで作ります（[MDNが紹介しているジェネレーター](https://linear-easing-generator.netlify.app/)があります）。値が長く、揺れが収まるまでの時間はイージングの作り方で決まるので、コンポーネントに直接書かず、再生時間とセットでトークンにします。
+
+```css title="🙆‍♂ Recommended: ばねのイージングを、再生時間とセットでトークンにする"
+:root {
+  --duration--spring: 700ms;
+  --ease--spring: linear(
+    0, 0.094, 0.315, 0.581, 0.829, 1.022, 1.144, 1.199, 1.2, 1.166, 1.114,
+    1.06, 1.014, 0.981, 0.963, 0.958, 0.962, 0.971, 0.982, 0.993, 1.001, 1.006,
+    1.008, 1.008, 1.007, 1.005, 1.003, 1.001, 0.999, 0.998, 0.998, 0.998, 1
+  );
+}
+```
+
+使う側では、`--duration--spring` と `--ease--spring` を指定するだけです。次のデモでは、同じ距離を動くつまみを、`cubic-bezier()` のイージングとばねで比べられます。
+
+<Demo title="スイッチのつまみを、cubic-bezier() のイージングとばねで動かして比べる" html={springHtml} css={springCss} height="8rem" />
+
+<Baseline id="linear-easing" />
+
+ばねは、揺れが収まるまでの時間が要るので、上の例のように機能的な動きの上限（300ms）を超えます。頻繁に触るUIには使わず、数回しか触らない操作や、ブランドの個性を出したい場面に限ります。行き過ぎる動きは大きな変動にもなりやすいので、動きを減らす設定のときは条件の外に書かず、`no-preference` の中でだけ指定します。
+
 ## View Transitionsで切り替えをつなぐ
 
 画面の状態が切り替わる前後をアニメーションでつなぐView Transitionsは、「[11-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)」で扱います。同じページの中の切り替えとページ間の遷移を有効にする方法、要素への名前の付け方、動きを減らす設定への対応を説明しています。
 
 ## JavaScriptの演出と `data-motion-mode`
 
-スクロールに合わせて段落を入れ替えるような凝った演出は、JavaScriptのアニメーションライブラリで作ることがあります。このとき、演出のためのスタイル（要素を重ねる、最初は隠しておくなど）を常に当てておくと、JavaScriptが動かない環境で内容が読めなくなります。
+JavaScriptのアニメーションライブラリを使う前に、CSSで作れないかを確かめます。トランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作れる動きには、ライブラリを足す必要がありません。`transform` や `opacity` の動きは合成だけで動かせるので、メインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担もありません。ライブラリを使うのは、複数の要素にまたがる複雑な連動のように、CSSだけでは作れない動きに限ります。
+
+スクロールに合わせて段落を入れ替えるような凝った演出は、そうした動きの例で、JavaScriptのアニメーションライブラリで作ることがあります。このとき、演出のためのスタイル（要素を重ねる、最初は隠しておくなど）を常に当てておくと、JavaScriptが動かない環境で内容が読めなくなります。
 
 私は、JavaScriptがコンポーネントのルートに `data-motion-mode` を付け、演出のためのスタイルを `data-motion-mode="motion"` のときだけ当てるようにしています。JavaScriptは、動きを減らす設定がないときに `motion` を、設定があるときに `reduced` を付けます。基本のスタイルは、JavaScriptがないときと動きを減らす設定のときの、最終的な状態として書きます。
 
@@ -313,3 +388,10 @@ root.dataset.motionMode = reduced.matches ? 'reduced' : 'motion';
 - [@starting-style - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@starting-style)
 - [CSS スクロール駆動アニメーション - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations)
 - [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)
+- [linear() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/easing-function/linear)
+- [animation-range - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-range)
+- [animation-fill-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-fill-mode)
+- [Emulate CSS media features | Chrome DevTools](https://developer.chrome.com/docs/devtools/rendering/emulate-css)
+- [Springs and Bounces in Native CSS | Josh W. Comeau](https://www.joshwcomeau.com/animation/linear-timing-function/)（2025年）
+- [The Big Gotcha With @starting-style | Josh W. Comeau](https://www.joshwcomeau.com/css/starting-style/)（2025年）
+- [An Interactive Guide to CSS Transitions | Josh W. Comeau](https://www.joshwcomeau.com/animation/css-transitions/)（2021年）
