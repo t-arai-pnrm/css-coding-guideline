@@ -13,7 +13,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 開閉するUIは、HTMLの機能で作ります。モーダルは `<dialog>` を `command` 属性で開き、`closedby="any"` で背景のクリックでも閉じられるようにします。メニューのような小さな表示には `popover` 属性を、その場で開閉する項目には `<details>` を使います。
 
-見出しの構造を保ちたいアコーディオンやタブでは、閉じたパネルを `hidden="until-found"` で隠します。どれも `display: none` とクラスの付け外しで作るより、少ないコードで、キーボードやページ内検索にも対応できます。この節では、それぞれの書き方と、開閉を動かす方法を説明します。
+見出しの構造を保ちたいアコーディオンやタブでは、閉じたパネルを `hidden="until-found"` で隠します。どれも `display: none` とクラスの付け外しで作るより、少ないコードで、キーボードやページ内検索にも対応できます。
 
 ## 開閉をブラウザの機能に任せる
 
@@ -30,7 +30,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 }
 ```
 
-モーダルなら、開いたときのフォーカスの移動、Escキーで閉じる操作、背面を操作できなくする処理、ほかの要素より手前に出すための `z-index` の調整が必要です。アコーディオンなら、閉じたパネルの中身がページ内検索で見つからなくなります。どれもJavaScriptで補えますが、補うほどコードが増え、抜け漏れも生まれます。
+モーダルなら、開いたときのフォーカスの移動、Escキーで閉じる操作、背面を操作できなくする処理、ほかの要素より手前に出すための `z-index` の調整が必要です。アコーディオンなら、閉じたパネルの中身がページ内検索で見つからなくなります。どれもJavaScriptで補えますが、補うほどコードが増え、抜け漏れも出ます。
 
 現在は、用途に合わせた要素と属性がそろっています。
 
@@ -41,7 +41,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 | その場で開閉する項目（FAQなど） | `<details>` と `<summary>` |
 | 見出しの下で開閉するパネル、タブ | `hidden="until-found"` |
 
-## ダイアログは `command` 属性と `closedby` 属性で開閉する
+## `command` 属性と `closedby` 属性によるダイアログの開閉
 
 モーダルのダイアログは、`<dialog>` で作ります。開くボタンに `commandfor` 属性で対象のIDを、`command="show-modal"` で操作を指定すれば、`showModal()` を呼ぶJavaScriptは要りません。閉じるボタンには `command="close"` を指定します。
 
@@ -63,7 +63,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 <Baseline id="dialog-closedby" name="closedby 属性" />
 
-2026年9月の時点で、`command` 属性はSafari 26.2から、`closedby` 属性はSafariで未対応です。`command` 属性に対応していないブラウザでは、ボタンを押してもダイアログが開きません。私は、Web標準で使えるようになる機能はポリフィルを入れてでも使う方針なので、`invokers-polyfill` と、私が作った `dialog-closedby-polyfill` を読み込んでいます。`closedby` 属性に対応していなくても、Escキーと閉じるボタンでは閉じられます。
+2026年9月の時点で、`command` 属性はSafari 26.2から対応していますが、`closedby` 属性はSafariが未対応です。`command` 属性に対応していないブラウザでは、ボタンを押してもダイアログが開きません。私は、Web標準で使えるようになる機能はポリフィルを入れてでも使う方針なので、`invokers-polyfill` と、私が作った `dialog-closedby-polyfill` を読み込んでいます。`closedby` 属性に対応していなくても、Escキーと閉じるボタンでは閉じられます。
 
 ## ダイアログの開閉を動かす
 
@@ -125,9 +125,9 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 <Baseline id="overscroll-behavior" compatKey="css.properties.overscroll-behavior-block" name="overscroll-behavior-block" />
 
-上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも効くという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
-## 小さな表示は `popover` 属性で作る
+## `popover` 属性による小さな表示
 
 メニュー、ツールチップ、通知のように、背面の操作を止めない小さな表示には、`popover` 属性を使います。ボタンの `popovertarget` 属性で対象を指定すれば、JavaScriptなしで開閉できます。`popover` 属性の要素はトップレイヤーに表示されるので、ほかの要素より手前に出すための `z-index` の調整も要りません。
 
@@ -135,9 +135,9 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 <Baseline id="popover" />
 
-注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[7-4 重なりと配置](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、11-2のデモを参考にしてください。
+注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[7-4 重なりと配置](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、11-2のデモにあります。
 
-## アコーディオンは `<details>` と `name` 属性で作る
+## `<details>` と `name` 属性によるアコーディオン
 
 その場で開閉する項目は、`<details>` と `<summary>` で作ります。JavaScriptなしでキーボードでも開閉でき、対応したブラウザでは、ページ内検索で中身が見つかったときに自動で開きます。同じ `name` 属性を付けた `<details>` は、1つを開くとほかが閉じる、排他的なアコーディオンになります。
 
@@ -187,7 +187,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 }
 ```
 
-閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。`block-size: 0` から `auto` への変化は、ベーススタイルの `interpolate-size: allow-keywords` があって初めて補間されます（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。`block-size: 0` から `auto` への変化は、ベーススタイルの `interpolate-size: allow-keywords` があるときに限って補間されます（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
 <Demo title="::details-content の高さと不透明度を動かし、name 属性で1つだけを開く" html={detailsHtml} css={detailsCss} />
 
@@ -197,7 +197,7 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 `interpolate-size` に対応しているのは、2026年9月の時点でChrome系のブラウザだけです。ほかのブラウザでは高さが一瞬で切り替わり、開くときにフェードするだけですが、開閉の機能は損なわれません。SafariとFirefoxでも高さを動かすよう求められた場合に限り、`::details-content` をグリッドにして `grid-template-rows` を `0fr` と `1fr` で切り替える方法を使います。この方法は中身を包む要素が必要になるので、私は必要なときだけ使っています。
 
-## タブとアコーディオンは `hidden="until-found"` で隠す
+## `hidden="until-found"` で隠すタブとアコーディオン
 
 見出しの下で開閉するパネルやタブのパネルは、閉じているときに `hidden="until-found"` で隠します。`display: none` で隠したパネルの中身は、ページ内検索で見つかりません。`hidden="until-found"` なら、ページ内検索やページ内リンクで中身が見つかったとき、ブラウザが自動で `hidden` 属性を外して表示します。
 
