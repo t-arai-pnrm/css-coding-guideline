@@ -2,7 +2,7 @@
 
 - バージョン: 0.4.0
 - 生成日: 2026-09-30
-- ルールの数: 372
+- ルールの数: 371
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は例外なく守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -24,7 +24,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: `<img>` のような置換要素や、`<button>` のようなフォーム部品には必要なことがあります。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` は対象外です。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
-  - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないため。
+  - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
@@ -265,7 +265,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】列を均等や比率で分けるときは、`1fr` ではなく `minmax(0, 1fr)` と書く。（`minmax-zero-for-fr`）
   - 理由: `1fr` の最小値は中身の最小幅になり、長い URL や入力欄が列を押し広げるため。
-  - 補足: 全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
+  - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
   - 理由: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。
@@ -540,7 +540,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: `<img>` のような置換要素や、`<button>` のようなフォーム部品には必要なことがあります。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` は対象外です。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
-  - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないため。
+  - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
@@ -1017,7 +1017,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【非推奨】コンポーネントの中で、`li` や `p` のような要素型のセレクタで、同じ要素のすべてにまとめてスタイルを当てない。何度も現れる要素には子要素のクラスを付け、そのクラスで選ぶ。（`no-bulk-element-selector`）
   - 理由: 入れ子の要素や後から増える内容にも意図せず当たり、名前から役割を読み取れないうえ、親のクラスと組み合わせると詳細度が上がって上書きが難しくなるため。
-  - 補足: コンポーネントの中に1つしかない要素を、要素の種類で選ぶのはかまいません。リセットやベースのスタイルは第4章で扱います。
+  - 補足: コンポーネントの中に1つしかない要素を、要素の種類で選ぶのはかまいません。ベースのスタイルのタイプセレクタは、`:where()` で詳細度を 0 にして書きます（第2章のルール `where-for-base-selectors`）。リセットは第4章で扱います。
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【禁止】ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしない。（`no-other-component-internals`）
   - 理由: 詳細度の競争が起き、子の構造を変えたときに親の CSS も直す必要が出るため。
@@ -1147,10 +1147,6 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 余白の吸収先が1か所に決まり、要素の数が変わっても、寄せる位置が変わらないため。
   - 補足: 均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。
   - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】Grid の列を比率で分けるときは、`%` ではなく `fr` を使う。（`grid-columns-fr-not-percent`）
-  - 理由: `%` は `gap` を除かない親の幅を基準にするので、列の合計が `gap` の分だけ親を超えるが、`fr` は `gap` を除いた残りを分けるため。
-  - 補足: `fr` の最小幅を0にする理由は、ルール `minmax-zero-for-fr` を参照してください。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
   - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
   - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
@@ -1196,7 +1192,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】列を均等や比率で分けるときは、`1fr` ではなく `minmax(0, 1fr)` と書く。（`minmax-zero-for-fr`）
   - 理由: `1fr` の最小値は中身の最小幅になり、長い URL や入力欄が列を押し広げるため。
-  - 補足: 全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
+  - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
   - 理由: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。

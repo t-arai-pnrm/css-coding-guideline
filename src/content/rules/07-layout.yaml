@@ -72,14 +72,6 @@
   page: layout/grid-first
   since: 0.4.0
 
-- id: grid-columns-fr-not-percent
-  level: 推奨
-  rule: 'Grid の列を比率で分けるときは、`%` ではなく `fr` を使う。'
-  reason: '`%` は `gap` を除かない親の幅を基準にするので、列の合計が `gap` の分だけ親を超えるが、`fr` は `gap` を除いた残りを分けるため。'
-  note: '`fr` の最小幅を0にする理由は、ルール `minmax-zero-for-fr` を参照してください。'
-  page: layout/grid-first
-  since: 0.4.0
-
 - id: no-dense-for-ordered-items
   level: 非推奨
   rule: '順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。'
@@ -180,7 +172,7 @@
   level: 推奨
   rule: 列を均等や比率で分けるときは、`1fr` ではなく `minmax(0, 1fr)` と書く。
   reason: '`1fr` の最小値は中身の最小幅になり、長い URL や入力欄が列を押し広げるため。'
-  note: '全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。'
+  note: '列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。'
   aiProne: true
   page: layout/defensive
   since: 0.1.0

@@ -19,14 +19,13 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 節を2つ追加しました：「[7-5 sticky が動かないとき](/layout/sticky/)」と「[12-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」。後者では、CMSの本文エリアに限り、`@scope` のネストと `to()` の省略を認めています。
 - 退場のアニメーションのイージングを `ease-out` から `ease-in` に改めました。デモとコード例も書き換えています。
 - ライトモードの影の色は、背景の色相へ寄せる方針にしました。ダークモードは、黒のまま不透明度で強さを変えます。
-- ルールを34件追加しました。
+- ルールを33件追加しました。
   - [`verify-fallback-by-removal`](/principles/browser-support/#rule-verify-fallback-by-removal)：宣言を外した表示を確かめてから、新しい機能を使う
   - [`not-has-for-absence`](/cascade/selectors/#rule-not-has-for-absence)：「持たない」は `:not(:has())` で書く
   - [`no-abbreviation`](/notation/naming/#rule-no-abbreviation)：クラス名を省略しない
   - [`child-name-flat`](/notation/naming/#rule-child-name-flat)：子要素の名前にHTMLの階層を映さない
   - [`no-bulk-element-selector`](/components/boundaries/#rule-no-bulk-element-selector)：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない
   - [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
-  - [`grid-columns-fr-not-percent`](/layout/grid-first/#rule-grid-columns-fr-not-percent)：Gridの列の比率には `fr` を使う
   - [`no-dense-for-ordered-items`](/layout/grid-first/#rule-no-dense-for-ordered-items)：順序に意味のある要素に `grid-auto-flow: dense` を使わない
   - [`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)：マージンの相殺は `display: flow-root` で止める
   - [`sticky-align-self-start`](/layout/sticky/#rule-sticky-align-self-start)：stickyな要素をGridやFlexboxの子にするときは `align-self: start`
