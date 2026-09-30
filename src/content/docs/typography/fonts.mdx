@@ -5,6 +5,7 @@ sidebar:
   order: 1
 ---
 
+import Baseline from '../../../components/Baseline.astro';
 import Guideline from '../../../components/Guideline.astro';
 
 和文のフォントは、デザインで特に指定されていなければ、総称ファミリーの `sans-serif` だけを指定します。いまの主要なOSには読みやすい和文のゴシック体が入っていて、ユーザーが自分で選んだフォントも尊重できるからです。日本語のサイトでは、`system-ui` は使いません。
@@ -126,6 +127,35 @@ Google Fontsを使う場合は、2つのサーバーへの `preconnect`、スタ
 <link rel="stylesheet" href="{href}" media="print" onload='this.media="all"' />
 ```
 
+### 代わりのフォントの寸法をWebフォントに近づける
+
+`font-display: swap` では、代わりのフォントで先に文字を表示し、読み込みが終わるとWebフォントに切り替えます。2つのフォントの字幅や行の高さが違うと、切り替わった瞬間に行の折り返しが変わり、下にある要素が動きます。これは、Core Web VitalsのCLS（レイアウトのずれ）の原因になります。
+
+このずれは、代わりのフォントの寸法を補正して小さくできます。端末のフォントを `local()` で参照する `@font-face` を別に作り、寸法をWebフォントに合わせます。字幅は `size-adjust` で、行の高さに関わる寸法は `ascent-override`、`descent-override`、`line-gap-override` で補正します。補正したファミリーは、フォントスタックでWebフォントの直後に置きます。
+
+```css title="🙆‍♂ Recommended: 補正した代わりのフォントを、Webフォントの直後に置く"
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --font-family--inter: "Inter", "Inter Fallback", sans-serif;
+}
+```
+
+数値は説明のための例です。値は、2つのフォントのファイルに入っている寸法（平均の字幅、アセント、ディセントなど）から計算します。手で見当を付けずに、Capsizeやfontaineのようなツールで計算します。Next.jsのように、フレームワークがこの `@font-face` を自動で作る場合もあります。{/* 要確認: 出典なし */}
+
+代わりのフォントはOSによって違うので、1組の値ですべての環境のずれがなくなるわけではありません。上の例はArialを基準にしているので、Arialのない環境では補正が効きません。また、`size-adjust` はすべての主要なブラウザで使えますが、`ascent-override` などの3つの記述子は、2026年9月の時点でSafariが対応していません。対応していない環境では補正の一部が効かないだけで、表示が壊れることはありません。
+
+<Baseline id="font-metric-overrides" name="ascent-override、descent-override、line-gap-override" />
+
+この補正が役に立つのは、欧文のWebフォントを本文に使う場合です。和文を総称ファミリーの `sans-serif` に任せるなら、Webフォントへの切り替えそのものが起きません。
+
 ## 和文には斜体を使わない
 
 HTMLの `em`、`cite`、`i`、`dfn`、`address` は、ブラウザのデフォルトスタイルで斜体になります。欧文では強調や書名を斜体で表しますが、日本語では斜体をほとんど使いません。日本語で強調を表すときは、太字にするのが一般的です。
@@ -176,6 +206,9 @@ kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定し�
 - [@font-face - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face)
 - [font-display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/font-display)
 - [font-weight - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-weight)
+- [size-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/size-adjust)
+- [ascent-override - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/ascent-override)
+- [Improved font fallbacks](https://developer.chrome.com/blog/font-fallbacks)（Chrome for Developers、2023年2月更新）
 - [【令和最新版】Google Fontsの読み込み最適化の結論](https://www.tak-dcxi.com/article/optimization-of-google-font-loading/)（TAKLOG、2024年3月）
 - [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
 - [デザイナーとフロントエンドエンジニアに知ってほしいWebのフォント周りのお話](https://zenn.dev/tak_dcxi/articles/588fbc205251043dc357)（TAK、2020年10月。本書と一部の方針が異なります）

@@ -50,6 +50,14 @@
   page: typography/fonts
   since: 0.1.0
 
+- id: fallback-font-metric-overrides
+  level: 推奨
+  rule: '本文の Web フォントを `font-display: swap` で使うときは、`local()` で参照する代わりのフォントの `@font-face` に `size-adjust` などの補正を指定し、Web フォントの直後に置く。'
+  reason: 代わりのフォントから Web フォントに切り替わるときの、字幅や行の高さの違いによるレイアウトのずれを小さくできるため。
+  note: '値はフォントのファイルの寸法から、Capsize や fontaine のようなツールで計算します。`ascent-override`、`descent-override`、`line-gap-override` は Safari が対応していません（2026年9月）。'
+  page: typography/fonts
+  since: 0.3.0
+
 # 9-2 和文組版を整える
 - id: lang-for-typesetting
   level: 必須
@@ -197,6 +205,14 @@
   aiProne: true
   page: typography/size-and-line-breaks
   since: 0.1.0
+
+- id: wbr-for-long-urls
+  level: 推奨
+  rule: 本文に長い URL やファイルパスをそのまま表示するときは、`.` や `/` のような区切りの記号の前に `<wbr>` を入れる。
+  reason: '`overflow-wrap: anywhere` は区切りと関係のない文字の間で折り返すので、どこまでが1つの語なのか分かりにくくなるため。'
+  note: '原稿を書く人が `<wbr>` を入れられない CMS の本文などでは、`overflow-wrap: anywhere` に任せます。`word-break: break-all` は使いません。'
+  page: typography/size-and-line-breaks
+  since: 0.3.0
 
 - id: no-br-for-visual-breaks
   level: 非推奨

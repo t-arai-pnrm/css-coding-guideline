@@ -1,0 +1,158 @@
+---
+title: "10-4 印刷のスタイル"
+description: "印刷のスタイルは、画面のスタイルとの差分だけを各セレクタの中の @media print に書きます。紙で役に立たない部品を隠し、外部リンクにはURLを添え、改ページは break-* で制御します。print-color-adjust: exact は色が意味を持つ要素に限り、@page には余白だけを指定します。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+印刷のスタイルは、画面のスタイルとの差分だけを、各セレクタの中の `@media print` に書きます。印刷用のスタイルシートを別に作り直す必要はありません。紙の上で役に立たないナビゲーションやボタンを隠し、本文の外部リンクにはURLを添えます。
+
+改ページは `break-before`、`break-after`、`break-inside` で制御し、図や表が途中で分かれないようにします。背景色を印刷させる `print-color-adjust: exact` は色が意味を持つ要素だけに指定し、`@page` には余白だけを書きます。この節では、画面のためだけに作ったページを印刷したときに起きることと、その対処を順に説明します。
+
+## 画面のためだけのページを印刷すると
+
+請求書の控え、申し込みの手順、イベントの案内など、ユーザーがWebページを印刷したりPDFに保存したりする場面は、いまも残っています。印刷のことを考えずに作ったページでは、画面では気にならなかった問題がまとめて表に出ます。
+
+まず、紙面の多くを、紙の上では使えない部品が占めます。固定したヘッダー、グローバルナビゲーション、「ページの先頭へ」のボタン、動画の埋め込みは、紙の上では押せず、再生もできません。次に、リンクの行き先が失われます。画面ではクリックすれば移動できたリンクも、紙の上では下線の付いた文字でしかありません。
+
+色も変わります。ブラウザは、インクを節約するために背景色や背景画像を省き、文字の色を調整することがあります。背景色だけで区別していたステータスのラベルや、背景色で描いたグラフの凡例は、印刷すると見分けられなくなります。さらに、図や表の途中でページが分かれ、見出しだけがページの最後に取り残されることもあります。
+
+こうした問題に対処しようとして、ファイルの末尾に印刷用の指定をまとめて書くことがあります。
+
+```css title="🙅‍♂ Not Recommended: 印刷用の指定をファイルの末尾にまとめる"
+/* 🙅‍♂ Not Recommended */
+@media print {
+  .header,
+  .global-nav,
+  .page-top-button,
+  .video-embed {
+    display: none !important;
+  }
+
+  .card {
+    page-break-inside: avoid;
+  }
+}
+```
+
+この書き方では、コンポーネントの印刷のときの振る舞いが、コンポーネントから離れた場所に書かれます。コンポーネントを消したり名前を変えたりしても、末尾の指定は残り続けます。上書きのために `!important` を足すことにもなりがちです。`page-break-inside` は、あとで説明するとおり古い名前のプロパティです。
+
+## 画面との差分を @media print で書く
+
+印刷のスタイルは、ほかの条件付きのスタイルと同じく、各セレクタの中に書きます。コンポーネントの画面での指定と、印刷のときの差分が同じ場所に並ぶので、コンポーネントを読むだけで印刷の振る舞いも分かります。`@media` をセレクタの中に書く理由は「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 紙の上で使えない部品を、印刷のときだけ隠す"
+@scope (.scoped.global-nav) to (.scoped) {
+  :scope {
+    display: block flex;
+    gap: 16px;
+
+    @media print {
+      display: none;
+    }
+  }
+}
+```
+
+隠すのは、ナビゲーション、操作のためのボタン、動画の埋め込みのように、紙の上で役に立たない部品です。本文、見出し、図版、表のように、読む人が必要とする内容は残します。何を隠すかはページの目的によって変わるので、ヘッダーのロゴや問い合わせ先のように、紙の上でも身元を示す情報は残すのがよいでしょう。{/* 要確認: 出典なし */}
+
+印刷のときの表示は、ChromeのDevToolsの「Rendering」パネルにある「Emulate CSS media type」で `print` を選ぶと、画面の上で確かめられます。ただし、ページの分かれ目や余白は反映されないので、最後はブラウザの印刷プレビューで確かめます。
+
+## 外部リンクにはURLを添える
+
+紙の上でもリンクの行き先が分かるように、本文の外部リンクには、印刷のときだけURLを添えます。擬似要素の `content` で `attr(href)` を使うと、`href` 属性の値を文字として表示できます。
+
+```css title="🙆‍♂ Recommended: 印刷のときだけ、外部リンクの後ろにURLを表示する"
+._body a[href^="http"]::after {
+  @media print {
+    content: " (" attr(href) ")";
+  }
+}
+```
+
+対象は、`href` が `http` で始まるリンクに絞ります。`attr(href)` は属性に書かれた文字列をそのまま返すので、`/about/` のような相対パスや、ページの中の `#section` を表示しても、紙の上では意味が分かりません。ナビゲーションのリンクまでURLを並べると紙面が埋まるので、本文の領域（この例では `._body`）の中に限ります。{/* 要確認: 出典なし */}
+
+表示したURLが長いと、行に収まらないことがあります。kiso.cssは `:root` に `overflow-wrap: anywhere` を指定しているので、行に収まらないURLは途中で折り返され、紙の外にはみ出しません。長いURLの折り返しについては、「[9-4 文字サイズと改行](/typography/size-and-line-breaks/)」で説明しています。
+
+## 改ページで内容を分けない
+
+図、表、引用、カードのように、途中で分かれると読みにくいまとまりには、`break-inside: avoid` を指定します。ブラウザは、できるだけその要素の中でページを分けないように配置します。章の始まりのように、必ず新しいページから始めたい要素には `break-before: page` を指定します。
+
+```css title="🙆‍♂ Recommended: まとまりの途中で改ページしない"
+:where(figure, blockquote, table) {
+  @media print {
+    break-inside: avoid;
+  }
+}
+```
+
+改ページのプロパティには、`page-break-before`、`page-break-after`、`page-break-inside` という古い名前もあります。これらは、いまでは `break-*` の別名として扱われています。新しく書くときは `break-*` を使います。`break-*` は、ページだけでなく段組みの区切りにも使える、共通のプロパティです。
+
+<Baseline id="page-breaks" name="break-before、break-after、break-inside" />
+
+`break-inside: avoid` は、分けないことを求める指定であって、保証ではありません。1ページに収まらない高さの要素は、指定していても途中で分かれます。長い表は分かれる前提で、見出しの行を `<thead>` に入れておきます。CSS 2.1の仕様では、印刷のときに `<thead>` の行をページごとに繰り返してよいとされています。
+
+見出しの直後で改ページしないようにする `break-after: avoid` は、2026年9月の時点でChrome系のブラウザだけが対応しています。対応していない環境では、見出しがページの最後に残ることがありますが、内容が欠けるわけではありません。
+
+## 色が意味を持つ要素だけ exact にする
+
+ブラウザが印刷のときに色を調整するかどうかは、`print-color-adjust` で指定します。初期値の `economy` では、ブラウザがインクを節約するために背景を省くなどの調整をしてかまいません。`exact` を指定すると、色が意図して決めたものであり、変えないでほしいことをブラウザに伝えます。
+
+```css title="🙆‍♂ Recommended: 背景色が意味を持つ要素にだけ exact を指定する"
+._status-label {
+  padding-inline: 8px;
+  border: 1px solid;
+  print-color-adjust: exact;
+  background-color: var(--_status-color);
+}
+```
+
+`exact` は、ステータスのラベルや、グラフの凡例のように、背景色が情報を持つ要素にだけ指定します。`:root` に指定してページ全体の背景を印刷させると、ユーザーのインクを大量に使います。接頭辞のない `print-color-adjust` は2025年5月にすべての主要なブラウザで使えるようになったので、`-webkit-print-color-adjust` は書きません。{/* 要確認: 出典なし */}
+
+<Baseline id="print-color-adjust" />
+
+ただし、`exact` は指定したとおりに印刷される保証ではありません。仕様では、ブラウザの印刷設定のような、ユーザーの選択が優先されます。上の例で枠線を付けているように、背景色が省かれても区別できる手がかりを残しておきます。kiso.cssも、印刷のときに `<mark>` を点線の枠で囲み、グレースケールで印刷しても強調が分かるようにしています。色だけで情報を伝えない考え方は「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+
+## @page には余白だけを指定する
+
+印刷するページの大きさと余白は、`@page` で指定します。`@page` はセレクタの中には書けないので、ファイルの直下に置きます。`size` を指定すると用紙の大きさと向きを決められますが、ユーザーが使う用紙はA4とは限りません。Webページでは、余白だけを指定し、用紙はユーザーの設定に任せます。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 余白だけを指定し、用紙の大きさはユーザーに任せる"
+@page {
+  margin: 15mm;
+}
+```
+
+印刷では、`mm` のような絶対単位が紙の上の実際の長さになります。画面のためのpxとremの使い分けとは別に、紙の余白は `mm` で書くと、値の意味がそのまま伝わります。見積書や帳票のPDFのように、用紙が決まっている文書を作るときだけ、`size: A4` のように用紙を指定します。
+
+<Baseline id="page-setup" name="@page" />
+
+`@page` の値は、カスタムプロパティを使わずに直接書きます。2026年9月にChrome 154で確かめたところ、`:root` で定義したカスタムプロパティは `@page` の中で参照できましたが、`@page` の中で宣言したカスタムプロパティは効きませんでした。ほかのブラウザでの扱いは確認できていません。印刷の余白をトークンと共有する場面は少ないので、直接書いても困りません。{/* 要確認: 出典なし */}
+
+## そのほかの注意点
+
+kiso.cssは、印刷のときに `<pre>` の `text-wrap-mode` を `unset` にしています。画面では横にスクロールして読める長い行も、紙の上ではスクロールできないので、折り返して最後まで印刷するためです。コードのブロックを独自に作る場合も、印刷では折り返すようにします。
+
+`<details>` で作ったアコーディオンは、閉じたまま印刷すると中身が印刷されません。私は、よくある質問のように全文を印刷してほしい内容では、`beforeprint` のイベントですべてのパネルを開き、`afterprint` のイベントで元の状態に戻しています。メニューのように印刷しなくてよいものは、紙を無駄にしないように閉じたままにします。アコーディオンの作り方は「[11-3 開閉するUI](/interaction/disclosure/)」で説明しています。
+
+最後に、印刷のスタイルは、実際に印刷プレビューを開かないと確かめにくいものです。テンプレートを作るときに、代表的なページを1度PDFに保存して、隠すべき部品が残っていないか、図や表が分かれていないかを確かめておくと、あとから印刷の問題に気づくことが減ります。{/* 要確認: 出典なし */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [印刷 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_media_queries/Printing)
+- [@page - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@page)
+- [print-color-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/print-color-adjust)
+- [break-inside - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/break-inside)
+- [CSS Paged Media Module Level 3](https://www.w3.org/TR/css-page-3/)（W3C）
+- [CSS Fragmentation Module Level 3](https://www.w3.org/TR/css-break-3/)（W3C）
+- [CSS Color Adjustment Module Level 1](https://www.w3.org/TR/css-color-adjust-1/)（W3C）
+- [Emulate CSS media features](https://developer.chrome.com/docs/devtools/rendering/emulate-css)（Chrome for Developers）
+- [details要素のname属性を使用した排他的なアコーディオンの実装例](https://www.tak-dcxi.com/article/accordion-implementation-example-using-the-name-attribute-of-details/)（TAKLOG、2024年4月。印刷のときにすべて開く方法）
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）

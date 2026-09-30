@@ -254,3 +254,21 @@
   reason: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
   page: operations/review-and-ai
   since: 0.1.0
+
+- id: verify-support-claims
+  level: 推奨
+  rule: 「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。
+  reason: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
+  note: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
+  aiProne: true
+  page: operations/review-and-ai
+  since: 0.3.0
+
+- id: no-unrequested-css-framework
+  level: 推奨
+  rule: プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。
+  reason: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
+  note: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
+  aiProne: true
+  page: operations/review-and-ai
+  since: 0.3.0

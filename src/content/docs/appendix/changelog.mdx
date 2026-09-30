@@ -11,6 +11,39 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.3.0（2026年9月30日）
+
+CSSの新しい仕様と注意点を、各章に加えました。話題は外部のサイトから拾い、内容は仕様とMDNなどの一次情報で確かめています。
+
+- 節を2つ追加しました：「[10-4 印刷のスタイル](/color-media/print/)」と「[11-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)」。View Transitionsの説明は、11-2から11-5に移しました。
+- ルールを20件追加しました。
+  - [`has-narrow-anchor`](/cascade/selectors/#rule-has-narrow-anchor)：`:has()` の起点と引数の範囲を絞る
+  - [`declared-layer-names-only`](/cascade/layers/#rule-declared-layer-names-only)：宣言したレイヤー名だけを使う
+  - [`spacing-proximity`](/layout/spacing/#rule-spacing-proximity)：グループの間の余白を、グループの中の余白より大きくする
+  - [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query)：ヘッダーは高さに余裕があるときだけ固定する
+  - [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first)：暗黙のアンカーを優先する
+  - [`position-area-logical-keywords`](/layout/positioning/#rule-position-area-logical-keywords)：`position-area` は論理キーワードで書く
+  - [`fallback-font-metric-overrides`](/typography/fonts/#rule-fallback-font-metric-overrides)：代わりのフォントの寸法を補正する
+  - [`wbr-for-long-urls`](/typography/size-and-line-breaks/#rule-wbr-for-long-urls)：長いURLには `<wbr>` を入れる
+  - [`text-stroke-paint-order`](/color-media/images-and-decoration/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く
+  - [`print-hide-screen-only-ui`](/color-media/print/#rule-print-hide-screen-only-ui)：紙の上で役に立たない部品を隠す
+  - [`print-link-urls`](/color-media/print/#rule-print-link-urls)：外部リンクのURLを添える
+  - [`break-inside-avoid-for-units`](/color-media/print/#rule-break-inside-avoid-for-units)：まとまりの途中で改ページしない
+  - [`no-page-break-properties`](/color-media/print/#rule-no-page-break-properties)：`page-break-*` を使わない
+  - [`print-color-adjust-exact-narrowly`](/color-media/print/#rule-print-color-adjust-exact-narrowly)：`print-color-adjust: exact` は必要な要素にだけ指定する
+  - [`page-rule-margin-only`](/color-media/print/#rule-page-rule-margin-only)：`@page` には余白だけを指定する
+  - [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：モーダルの中のスクロールの連鎖を止める
+  - [`view-transition-name-unique`](/interaction/view-transitions/#rule-view-transition-name-unique)：同じ `view-transition-name` を複数の要素に付けない
+  - [`view-transition-match-element`](/interaction/view-transitions/#rule-view-transition-match-element)：並んだ要素には `match-element` を使う
+  - [`verify-support-claims`](/operations/review-and-ai/#rule-verify-support-claims)：「未対応」という判断は対応状況を確かめてから受け入れる
+  - [`no-unrequested-css-framework`](/operations/review-and-ai/#rule-no-unrequested-css-framework)：採用していないCSSフレームワークを持ち込まない
+- ルールの補足を2件更新しました。[`no-fixed-inside-transformed-ancestor`](/layout/positioning/#rule-no-fixed-inside-transformed-ancestor) に包含ブロックを作るプロパティの例を、[`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names) に `view-transition-name` を加えました。
+- 本書のStylelintの設定で、宣言していないレイヤー名を `layer-name-pattern` で検出するようにしました。
+- 主に次の内容を加えました。
+  - レイアウト：アンカーポジショニングの `position-area` と暗黙のアンカー、`fixed` の包含ブロックを作るプロパティ、固定ヘッダーとフォーカス、サブグリッドの注意点、表の列幅
+  - カスケードとカスタムプロパティ：`:has()` の性能、IACVT、`@property` の名前の衝突
+  - そのほか：フォントの寸法の補正、文字の縁取り、スクロールの連鎖、AIが誤りやすいパターンの4件
+
 ## 0.2.0（2026年9月27日）
 
 内容の確認で見つかった、アクセシビリティとプログレッシブ・エンハンスメントの誤りを直しました。

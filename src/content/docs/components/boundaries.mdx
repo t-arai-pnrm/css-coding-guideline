@@ -177,9 +177,11 @@ z-indexは、コンポーネントのルートと内部の要素で、指定し�
 ```css title="🙆‍♂ Recommended: ルートには絶対的な値、内部には相対的な値をトークンで指定する"
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
-    position: sticky;
-    inset-block-start: 0;
-    z-index: var(--z--header);
+    @media (height >= calc(600 / 16 * 1rem)) {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: var(--z--header);
+    }
   }
 }
 

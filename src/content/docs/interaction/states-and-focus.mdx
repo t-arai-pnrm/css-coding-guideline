@@ -70,6 +70,8 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 フォーカスリングそのものは、ベーススタイルで二重のリングを定義しています（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。コンポーネントで指定するのは、リングに加える背景色などの変化だけです。リングを `outline: none` で消すことはしません。
 
+リングを描いても、フォーカスした要素が固定ヘッダーの下に隠れていては見えません。WCAG 2.2の達成基準2.4.11「隠されないフォーカス（最低限）」（レベルAA）は、キーボードでフォーカスを受けた要素が、制作者の置いたコンテンツで完全に隠れないことを求めています。本書では、ベーススタイルで `:focus` にも `scroll-margin-block-start` を指定して、この問題を防いでいます（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。スクロールする側に `scroll-padding-block-start` で余白を取る方法は、「[7-4 重なりと配置](/layout/positioning/)」で説明しています。
+
 ホバーは、操作できる状態の要素に限って反応させます。上の例では `:enabled:hover` と書いて、無効にしたボタンを除いています。リンクも同じで、`:any-link:hover` と書けば、`href` を持たない現在のページのリンクは反応しません。押せないものが押せそうに見えるのを防ぐためです。
 
 なお、タッチスクリーンを持つノートパソコンでは、マウスもあるので `any-hover: hover` が当てはまります。この環境では、指でタップしたときにホバーのスタイルが残ります。入力の方法を操作ごとに見分けたい場合は、JavaScriptのポインターイベントを併用するしかありません。
@@ -215,3 +217,4 @@ ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た�
 - [アクセシビリティに配慮したタブメニューの実装例](https://www.tak-dcxi.com/article/accessibility-conscious-tab-menu/)（TAKLOG、2024年4月）
 - [any-hover - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/any-hover)
 - [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)
+- [解説書 達成基準 2.4.11: 隠されないフォーカス (最低限)](https://waic.jp/translations/WCAG22/Understanding/focus-not-obscured-minimum)（WAICによるWCAG 2.2解説書の日本語訳）

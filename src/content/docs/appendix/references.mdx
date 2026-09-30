@@ -87,14 +87,31 @@ sidebar:
 ### 仕様とガイドライン
 
 - [CSS Cascading and Inheritance Level 5: Cascade Layers](https://www.w3.org/TR/css-cascade-5/#layering)：カスケードレイヤーの仕様
+- [CSS Cascading and Inheritance Level 5: Layer Ordering](https://www.w3.org/TR/css-cascade-5/#layer-ordering)：レイヤーの順番の決まり方（宣言していない名前の扱いを含みます）
 - [CSS Cascading and Inheritance Level 6](https://drafts.csswg.org/css-cascade-6/)：`@scope` を含むカスケードの仕様
 - [CSS Cascading and Inheritance Level 6: Scoping Styles](https://drafts.csswg.org/css-cascade-6/#scoped-styles)：`@scope` の節
 - [CSS Values and Units Module Level 4: Viewport-percentage Lengths](https://www.w3.org/TR/css-values-4/#viewport-relative-lengths)：スモール・ラージ・ダイナミックのビューポート単位の仕様
 - [CSS Media Queries Level 4: Range Context](https://www.w3.org/TR/mediaqueries-4/#range-context)：メディアクエリの範囲構文の仕様
 - [CSS Fonts Module Level 5（Editor's Draft）](https://drafts.csswg.org/css-fonts-5/#scale-keyword)：文字サイズの設定に比例させる仕組みの策定中の仕様
 - [Selectors Level 5: Heading Pseudo-classes](https://drafts.csswg.org/selectors-5/#headings)：`:heading` 擬似クラスの仕様
+- [CSS Custom Properties for Cascading Variables Module Level 1: Invalid Variables](https://www.w3.org/TR/css-variables-1/#invalid-variables)：計算値の時点で無効になるカスタムプロパティ
+- [CSS Properties and Values API Level 1](https://drafts.css-houdini.org/css-properties-values-api-1/)：`@property` によるカスタムプロパティの登録
+- [CSS Anchor Positioning Module Level 1](https://drafts.csswg.org/css-anchor-position-1/)：アンカーポジショニングの仕様
+- [CSS Anchor Positioning Module Level 2](https://drafts.csswg.org/css-anchor-position-2/)：アンカーの位置のフォールバックを調べるコンテナクエリ
+- [CSS Conditional Rules Module Level 5 - container-type](https://drafts.csswg.org/css-conditional-5/#container-type)：`container-type` が適用する封じ込め
+- [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)：スクロールで見せる範囲を狭める `scroll-padding`
+- [CSS Overscroll Behavior Module Level 1](https://drafts.csswg.org/css-overscroll-1/)：スクロールの連鎖を制御する仕様
+- [CSS View Transitions Module Level 1](https://drafts.csswg.org/css-view-transitions-1/)：View Transitionsの仕様
+- [csswg-drafts Issue #12629](https://github.com/w3c/csswg-drafts/issues/12629)：View Transitionsで撮影された要素とアクセシビリティの扱い
+- [CSS Paged Media Module Level 3](https://www.w3.org/TR/css-page-3/)：`@page` の仕様
+- [CSS Fragmentation Module Level 3](https://www.w3.org/TR/css-break-3/)：改ページを制御する `break-*` の仕様
+- [CSS Color Adjustment Module Level 1](https://www.w3.org/TR/css-color-adjust-1/)：`print-color-adjust` を含む色の調整の仕様
+- [Compatibility Standard: -webkit-text-stroke](https://compat.spec.whatwg.org/#the-webkit-text-stroke)：接頭辞付きの `-webkit-text-stroke` の定義
 - [Web Content Accessibility Guidelines (WCAG) 2.1 達成基準 1.4.8 視覚的提示](https://waic.jp/translations/WCAG21/#visual-presentation)：行送りの基準を含む達成基準（WAICによる日本語訳）
 - [C40: Creating a two-color focus indicator to ensure sufficient contrast with all components](https://www.w3.org/WAI/WCAG22/Techniques/css/C40)：2色のフォーカスリングの達成方法（W3C）
+- [解説書 達成基準 2.4.11: 隠されないフォーカス (最低限)](https://waic.jp/translations/WCAG22/Understanding/focus-not-obscured-minimum)：フォーカスした要素を固定の要素で隠さないための基準（日本語訳）
+- [Understanding Success Criterion 2.4.11: Focus Not Obscured (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)：同じ達成基準の原文
+- [C43: Using CSS scroll-padding to un-obscure content](https://www.w3.org/WAI/WCAG22/Techniques/css/C43)：`scroll-padding` で固定ヘッダーの下にフォーカスが隠れるのを防ぐ達成方法
 
 ### ブラウザの対応状況
 
@@ -120,9 +137,11 @@ sidebar:
 - [スタッキングコンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_positioned_layout/Stacking_context)：重なり順を決める単位と、それを作る条件
 - [サブグリッド - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Subgrid)：親のグリッドの行や列を使う仕組み
 - [CSS アンカー位置指定 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_anchor_positioning)：アンカーポジショニングの全体像
+- [Using CSS anchor positioning - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning/Using)：暗黙のアンカーと `position-area` の使い方
 - [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)：相対カラー構文の書き方
 - [CSS スクロール駆動アニメーション - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations)：スクロールに合わせて進むアニメーション
 - [View Transition API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/View_Transition_API)：画面の切り替えをアニメーションでつなぐAPI
+- [印刷 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_media_queries/Printing)：印刷のスタイルの書き方
 - [コメント - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Comments)：CSSのコメントの書き方
 - [dialog 要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/dialog)：`<dialog>` 要素
 
@@ -131,6 +150,7 @@ sidebar:
 - [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)：詳細度を0にする擬似クラス
 - [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)：セレクタをまとめる擬似クラス
 - [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)：子孫や後続の兄弟で要素を選ぶ擬似クラス
+- [:has() - CSS | MDN: Performance considerations](https://developer.mozilla.org/en-US/docs/Web/CSS/:has#performance_considerations)：`:has()` の起点と引数の範囲による性能の違い
 - [:scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:scope)：スコープのルートを選ぶ擬似クラス
 - [& 入れ子セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Nesting_selector)：ネストの `&`
 - [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)：フォーカスリングを表示すべきときに一致する擬似クラス
@@ -144,7 +164,10 @@ sidebar:
 - [@supports - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@supports)：機能の対応で分岐するアットルール
 - [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)：カスタムプロパティの型の登録
 - [@starting-style - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@starting-style)：表示されたときのトランジションの開始地点
+- [@page - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@page)：印刷するページの余白と大きさ
 - [@font-face - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face)：Webフォントの定義
+- [size-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/size-adjust)：フォントの字面の大きさを補正する記述子
+- [ascent-override - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/ascent-override)：アセントの高さを上書きする記述子
 - [font-display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/font-display)：フォントの読み込み中の表示を決める記述子
 - [any-hover - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/any-hover)：いずれかの入力がホバーできるかを調べるメディア特性
 - [prefers-reduced-motion - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/prefers-reduced-motion)：動きを減らす設定を調べるメディア特性
@@ -189,6 +212,13 @@ sidebar:
 - [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)：はみ出した部分の扱い（`clip` を含みます）
 - [isolation - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/isolation)：スタッキングコンテキストを作るプロパティ
 - [anchor-name - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/anchor-name)：アンカーの名前
+- [position-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-anchor)：配置の基準にするアンカーの指定
+- [position-area - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area)：アンカーの周りの3×3の領域で配置するプロパティ
+- [anchor-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size)：アンカーの大きさを参照する関数
+- [overscroll-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior)：スクロールの連鎖を止めるプロパティ
+- [view-transition-name - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/view-transition-name)：View Transitionsで動かす要素の名前（`match-element` を含みます）
+- [view-transition-class - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/view-transition-class)：View Transitionsの擬似要素を選ぶためのクラス
+- [Element: startViewTransition() method - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/startViewTransition)：要素の中だけで切り替えるView Transitions
 - [translate - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/translate)：移動の個別プロパティ
 - [interpolate-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/interpolate-size)：キーワードで決まる大きさとの間のアニメーション
 - [scrollbar-gutter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/scrollbar-gutter)：スクロールバーの領域の確保
@@ -212,6 +242,12 @@ sidebar:
 - [word-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/word-break)：改行の位置（`auto-phrase` を含みます）
 - [overflow-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-wrap)：長い単語やURLの折り返し
 - [-webkit-line-clamp - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-line-clamp)：行数の制限
+- [table-layout - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/table-layout)：表の列幅の決め方
+- [break-inside - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/break-inside)：要素の途中での改ページの制御
+- [print-color-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/print-color-adjust)：印刷するときの色の調整
+- [-webkit-text-stroke - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-text-stroke)：文字の縁取り
+- [paint-order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/paint-order)：塗りと線を描く順番
+- [&lt;wbr&gt; - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/wbr)：改行してよい位置を示す要素
 
 ## ツール
 
@@ -219,6 +255,9 @@ sidebar:
 - [Writing plugins - Stylelint](https://stylelint.io/developer-guide/plugins/)：独自ルールを書くためのガイド
 - [max-nesting-depth - Stylelint](https://stylelint.io/user-guide/rules/max-nesting-depth/)：ネストの深さを検査するルール
 - [unit-disallowed-list - Stylelint](https://stylelint.io/user-guide/rules/unit-disallowed-list/)：使わない単位を検出するルール
+- [layer-name-pattern - Stylelint](https://stylelint.io/user-guide/rules/layer-name-pattern/)：レイヤー名を検査するルール
+- [Analyze CSS selector performance during Recalculate Style events | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/selector-stats)：セレクタごとのスタイルの再計算の時間を測る機能
+- [Emulate CSS media features | Chrome DevTools](https://developer.chrome.com/docs/devtools/rendering/emulate-css)：印刷のメディアタイプを画面で再現する機能
 - [hudochenkov/stylelint-order - GitHub](https://github.com/hudochenkov/stylelint-order)：宣言の並び順を検査するStylelintのプラグイン
 - [yuschick/stylelint-plugin-logical-css - GitHub](https://github.com/yuschick/stylelint-plugin-logical-css)：論理プロパティと論理的な単位を求めるStylelintのプラグイン
 - [RespImageLint](https://ausi.github.io/respimagelint/)：`srcset` と `sizes` の値を確かめるブックマークレット
@@ -238,6 +277,10 @@ sidebar:
 - [zudo-css-wisdom](https://zudo-css-wisdom.takazudomodular.com/)：AIのコーディングエージェント向けの、実践的なCSSのリファレンス
 - [Kevin Powell](https://kevinpowell.co/)：CSSの講座と解説を公開しているKevin Powell氏のサイト
 - [Every Layout](https://every-layout.dev/)：stackやclusterのような、配置のパターンを部品にする考え方
+- [griponminds](https://griponminds.jp/blog/)：アンカーポジショニングやView Transitionsなど、CSSの新しい仕様と注意点を扱うブログ
+- [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)：動かすプロパティと描画の負荷
+- [Improved font fallbacks | Chrome for Developers](https://developer.chrome.com/blog/font-fallbacks)：代わりのフォントの寸法を補正する方法
+- [Proximity Principle in Visual Design | Nielsen Norman Group](https://www.nngroup.com/articles/gestalt-proximity/)：近接の原則
 - [Defensive CSS](https://defensivecss.dev/)：想定外の内容に備えるCSSの書き方の集まり
 - [Linearly Scale font-size with CSS clamp() Based on the Viewport](https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/)：`clamp()` の推奨値を傾きと切片から求める方法（CSS-Tricks）
 - [The Surprising Truth About Pixels and Accessibility](https://www.joshwcomeau.com/css/surprising-truth-about-pixels-and-accessibility/)：pxとremの使い分けとアクセシビリティ（Josh W. Comeau）

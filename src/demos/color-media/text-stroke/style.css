@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.text-stroke-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    ._figure {
+      display: block grid;
+      gap: 8px;
+      justify-items: center;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(85% 0.08 230deg);
+    }
+
+    ._text {
+      margin: 0;
+      color: oklch(100% 0 0deg);
+      font-size: calc(40 / 16 * 1rem);
+      font-weight: 700;
+      line-height: 1.5;
+
+      /* 文字の縁取りは、接頭辞付きの指定でしか書けない（2026年9月） */
+      /* stylelint-disable-next-line property-no-vendor-prefix */
+      -webkit-text-stroke: 8px oklch(25% 0 0deg);
+
+      &[data-order="stroke"] {
+        paint-order: stroke fill;
+      }
+    }
+
+    ._caption {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

@@ -84,6 +84,15 @@
   page: cascade/selectors
   since: 0.1.0
 
+- id: has-narrow-anchor
+  level: 推奨
+  rule: '`:has()` の起点は `:root` や `body` ではなくコンポーネントのルートのような狭い要素にし、引数は `>` や `+` で範囲を絞る（例：`&:has(> ._input:checked)`）。'
+  reason: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
+  note: '`:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。'
+  aiProne: true
+  page: cascade/selectors
+  since: 0.3.0
+
 - id: is-for-ancestor-context
   level: 推奨
   rule: '祖先の状態によって変わるスタイルは、子のルールの中に `&:is(<祖先のセレクタ> *)` の形で書く。'
@@ -115,6 +124,14 @@
   reason: どのファイルがどのレイヤーに入るのかを1か所で確認でき、各ファイルの中に `@layer` を書かずに済むため。
   page: cascade/layers
   since: 0.1.0
+
+- id: declared-layer-names-only
+  level: 必須
+  rule: '`@layer` と `@import` の `layer()` には、先頭の `@layer` 文で宣言した9つのレイヤー名だけを使う。'
+  reason: 宣言していない名前はエラーにならず、最後に宣言したレイヤーより後ろに新しいレイヤーとして作られるので、打ち間違えると順番が崩れるため。
+  lint: 'Stylelint: `layer-name-pattern`'
+  page: cascade/layers
+  since: 0.3.0
 
 - id: third-party-in-vendors
   level: 推奨

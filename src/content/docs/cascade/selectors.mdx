@@ -168,6 +168,41 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 `:has()` は、2023年12月にすべての主要なブラウザで使えるようになり、2026年6月に「広く利用可能」になりました（2026年9月確認）。本書の対象のブラウザでは、問題なく使えます。
 
+## `:has()` の起点と引数の範囲を絞る
+
+`:has()` は、起点の要素（`A:has(B)` の `A`）と、引数で探す範囲（`B`）を狭くして使います。祖先のスタイルが子孫によって決まるので、DOMが変わるたびに、ブラウザは起点の要素がまだ条件を満たすかを調べ直すからです。起点の子孫が多く、引数の範囲が広いほど、この調べ直しは重くなります。
+
+次の例は、どちらもページ全体を起点にしています。ページのどこかで要素が追加されたり、属性が変わったりするたびに、`body` や `:root` の子孫全体から `._image` や `[aria-invalid="true"]` を探し直す可能性があります。要素の多いページで、DOMを頻繁に書き換える処理と組み合わせると、スタイルの再計算に時間がかかります。
+
+```css title="🙅‍♂ Not Recommended: ページ全体を起点に、子孫を広く探す"
+/* 🙅‍♂ Not Recommended */
+body:has(._image) {
+  /* ... */
+}
+
+:root:has([aria-invalid="true"]) {
+  /* ... */
+}
+```
+
+起点はコンポーネントのルートのような狭い要素にし、引数は `>` や `+` の結合子で範囲を絞ります。次の例では、選択肢のカードが、直下の入力欄がチェックされたときだけ背景色を変えます。ブラウザが調べるのはカードの直下の子だけなので、ページの大きさには左右されません。
+
+```css title="🙆‍♂ Recommended: コンポーネントのルートを起点にし、直下の子だけを調べる"
+@scope (.scoped.plan-option) to (.scoped) {
+  :scope {
+    background-color: var(--background--base);
+
+    &:has(> ._input:checked) {
+      background-color: var(--background--muted);
+    }
+  }
+}
+```
+
+前の見出しで触れた `:root:has(:modal)` は、ページ全体を起点にしています。ページのスクロールという、ページ全体の状態を変えるスタイルで、ほかの要素を起点にできないので、例外として使います。こうした `:root` や `body` を起点にするルールは、ページ全体の状態を表すものに限り、数を少なく保ちます。{/* 要確認: 出典なし */}
+
+重さが気になったときは、推測せずに測ります。Chromeの開発者ツールでは、パフォーマンスパネルの記録の設定（Capture settings）で「Enable CSS selector stats」を有効にすると、スタイルの再計算の内訳がセレクタごとに表示されます。かかった時間（Elapsed）の長いセレクタのうち、照合を試みた数（Match Attempts）に比べて一致した数（Match Count）の少ないものを見直します（2026年9月確認）。
+
 ## `:heading` で見出しをまとめて選ぶ
 
 `:heading` は、`h1` から `h6` までの見出しをまとめて選ぶ擬似クラスです。見出しのスタイルを `h1, h2, h3, h4, h5, h6` と並べて書く代わりに使えます。
@@ -207,6 +242,8 @@ caption {
 - [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)
 - [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)
 - [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
+- [:has() - CSS | MDN: Performance considerations](https://developer.mozilla.org/en-US/docs/Web/CSS/:has#performance_considerations)
+- [Analyze CSS selector performance during Recalculate Style events | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/selector-stats)
 - [Selectors Level 5: Heading Pseudo-classes](https://drafts.csswg.org/selectors-5/#headings)
 - [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
 - [【脱!important】保守性を意識したスタイルを確実に上書きするためのテクニック](https://zenn.dev/tak_dcxi/articles/f464f90a24f754b15dd9)（Zenn、2020年10月。本書と方針が異なります）

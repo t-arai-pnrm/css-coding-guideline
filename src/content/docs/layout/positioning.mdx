@@ -8,9 +8,9 @@ sidebar:
 import Baseline from '../../../components/Baseline.astro';
 import Guideline from '../../../components/Guideline.astro';
 
-要素を重ねるときは、`position: absolute` の前に、Gridの同じエリアに置く方法を検討します。絶対配置を使うときは、位置の基準になる「包含ブロック」を、同じコンポーネントの中にはっきり作ります。重なり順がおかしいときは、z-indexの値を大きくする前に、どの「スタッキングコンテキスト」の中で比べられているかを確かめます。
+要素を重ねるときは、`position: absolute` の前に、Gridの同じエリアに置く方法を検討します。絶対配置を使うときは、位置の基準になる「包含ブロック」を、同じコンポーネントの中にはっきり作ります。重なり順がおかしいときは、z-indexの値を大きくする前に、どの「スタッキングコンテキスト」の中で比べられているかを確かめます。ヘッダーを画面の上に固定するのは、ビューポートの高さに余裕があるときだけにします。
 
-アンカーポジショニングは、2026年9月の時点で本書の対象のすべてのブラウザが対応しているわけではないので、レイアウトの要にはしません。最後に、要素を画面幅いっぱいに広げる手法を比べます。まずレイアウトの余白の列まで広げる方法を使い、ビューポート単位で広げるのは、背景の装飾と横スクロールの領域だけにします。
+アンカーポジショニングは、2026年9月の時点で本書の対象のすべてのブラウザが対応しているわけではないので、レイアウトの要にはしません。使うときは、暗黙のアンカーと `position-area` の論理キーワードで書きます。最後に、要素を画面幅いっぱいに広げる手法を比べます。まずレイアウトの余白の列まで広げる方法を使い、ビューポート単位で広げるのは、背景の装飾と横スクロールの領域だけにします。
 
 ## 重ねるならGridの同じエリアに置く
 
@@ -82,6 +82,8 @@ Gridなら、すべての子要素を同じエリアに置くだけで重ねら�
 
 `position: fixed` の包含ブロックは、通常はビューポートです。ただし、祖先に `transform`、`filter`、`perspective`、`contain: paint` などが指定されていると、その祖先が包含ブロックになります。フェードインの演出のために `transform` を指定した要素の中に固定ヘッダーを置くと、ヘッダーはビューポートではなく、その要素に対して固定されてしまいます。モーダルは `<dialog>` の `showModal()` でトップレイヤーに表示し、この問題を避けます。ダイアログの実装は「[11-3 開閉するUI](/interaction/disclosure/)」で扱います。
 
+見落としやすいのは、個別の変形プロパティ（`translate`、`rotate`、`scale`）、すりガラスの効果に使う `backdrop-filter`、`content-visibility: auto` です。`will-change: transform` のように、これらのプロパティを `will-change` に書いただけでも包含ブロックになります。一方、コンテナクエリの `container-type` は、現在の仕様ではレイアウトの封じ込めを含まないので、包含ブロックを作りません。ただし、以前の仕様に沿って実装したブラウザでは、包含ブロックになることがあります。固定ヘッダーやモーダルを含む `html` と `body` には、`container-type` を指定しません。
+
 ## 重なり順はスタッキングコンテキストの中で決まる
 
 z-indexの値は、ページ全体で比べられるわけではありません。比べられるのは、同じ「スタッキングコンテキスト」の中にある要素どうしだけです。スタッキングコンテキストは、重なり順を決める単位のようなもので、その中の要素は、外の要素と比べるときに1つのまとまりとして扱われます。
@@ -109,6 +111,38 @@ z-indexの値は、ページ全体で比べられるわけではありません�
 スタッキングコンテキストは、z-indexを指定した位置指定の要素のほかにも、さまざまな指定で作られます。たとえば、`position: fixed` と `position: sticky` の要素や、z-indexを指定したフレックスアイテムとグリッドアイテムです。`opacity` が1未満の要素、`transform` や `filter` を指定した要素、`isolation: isolate` を指定した要素も、コンテキストを作ります。アニメーションのために `opacity` や `transform` を指定しただけで、知らないうちにコンテキストができていることもあります。
 
 重なり順がおかしいときは、値を大きくする前に、DevToolsで祖先の要素をたどり、どの要素がコンテキストを作っているかを確かめます。z-indexの値をトークンで管理する方法と、`isolation: isolate` でコンポーネントの中の重なりを閉じ込める方法は、「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。`calc(infinity)` のような大きな値でも、祖先のコンテキストの順位は超えられません。
+
+## 固定ヘッダーは高さに余裕があるときだけ固定する
+
+ヘッダーを画面の上に固定するのは、ビューポートの高さが十分にあるときだけにします。横向きのスマートフォンや拡大した画面では、固定したヘッダーが画面の多くを覆い、本文を読める範囲が狭くなるからです。拡大するとCSSピクセルで数えたビューポートの高さが縮むので、パソコンでも同じことが起きます。{/* 要確認: 出典なし */}
+
+固定したヘッダーは、フォーカスした要素も隠します。WCAG 2.2の達成基準2.4.11（レベルAA）は、キーボードでフォーカスした要素が、作成者の置いたコンテンツで完全に隠れないことを求めています。固定ヘッダーは、その典型的な原因として挙げられています。
+
+```css title="🙆‍♂ Recommended: ビューポートの高さが十分なときだけ、ヘッダーを固定する"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    @media (height >= calc(600 / 16 * 1rem)) {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: var(--z--header);
+    }
+  }
+}
+```
+
+閾値は、ほかのクエリと同じく `rem` で書きます（「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」）。ユーザーがブラウザの文字サイズを大きくすると閾値も大きくなり、ヘッダーは早めに固定をやめます。600px相当は、横向きのスマートフォンや、200%に拡大したノートパソコンの画面で固定を外すための目安です。{/* 要確認: 出典なし */}
+
+固定しているときも、フォーカスした要素がヘッダーの下に入ることはあります。「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」では、`[id]` と `:focus` に `scroll-margin-block-start: 4rlh` を指定し、移動先の上に余白を空けています。ヘッダーの高さが決まっているなら、スクロールする側のルートに `scroll-padding-block-start` を指定する方法もあります。スクロールで内容を見せる範囲からヘッダーの分を除く指定で、仕様では、フォーカスやページ内リンクによるスクロールと、Spaceキーなどで1画面ずつ送るときの送り幅に効くとされています。
+
+```css title="🙆‍♂ Recommended: ヘッダーを固定するときだけ、スクロールで見せる範囲からヘッダーの高さを除く"
+:root {
+  @media (height >= calc(600 / 16 * 1rem)) {
+    scroll-padding-block-start: calc(64 / 16 * 1rem);
+  }
+}
+```
+
+閾値は、ヘッダーのクエリとそろえます。`scroll-padding` と `scroll-margin` を両方指定すると、2つの余白は足し合わされます。ルートでヘッダーの高さを除くなら、ベーススタイルの `scroll-margin-block-start` は、見出しの上に少しゆとりを残す程度の値に下げます。{/* 要確認: 出典なし */}
 
 ## アンカーポジショニングはレイアウトの要にしない
 
@@ -154,6 +188,42 @@ z-indexの値は、ページ全体で比べられるわけではありません�
 ヒントは `popover` 属性でトップレイヤーに表示しています。未対応の環境では、`margin: auto` によって画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。アンカーの名前は、ほかの名前と同じく `--` で始めます（「[5-1 命名規則](/notation/naming/)」）。
 
 ルートの `anchor-scope` は、アンカーの名前が届く範囲を、このコンポーネントの中に限る指定です。同じコンポーネントがページに複数あると、同じ名前のアンカーも複数できます。トップレイヤーの要素のように、ページ全体を包含ブロックにする要素からは、どのアンカーも見えるので、最後のアンカーが基準に選ばれ、別のコンポーネントのボタンの下に表示されてしまいます。繰り返し置くコンポーネントでアンカーを使うときは、ルートで範囲を限ります。
+
+## 暗黙のアンカーと `position-area` で配置する
+
+ポップオーバーを開くボタンを基準にするなら、`anchor-name` で名前を付ける必要はありません。`popovertarget` 属性や `commandfor` 属性でボタンとポップオーバーを結び付けると、ボタンがポップオーバーの「暗黙のアンカー」になります。カスタマイズ可能な `<select>` でも、選択肢の一覧（`::picker(select)`）の暗黙のアンカーは `<select>` です。暗黙のアンカーは要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要りません。本書では、使える場面では暗黙のアンカーを優先します。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 暗黙のアンカーを基準に、position-area で表示する位置を決める"
+@scope (.scoped.help-tip) to (.scoped) {
+  ._tip {
+    margin: auto;
+
+    @supports (position-area: block-end span-inline-end) {
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block;
+      margin: 4px 0 0;
+    }
+  }
+}
+```
+
+HTMLは先ほどと同じです。`position-area` は、アンカーを中央のマスとする3×3のマス目を考え、配置する要素を置くマスを選ぶプロパティです。`block-end span-inline-end` は、アンカーの下の行で、アンカーの列から行末側の列までにまたがるという意味です。`inset` と `anchor()` で1辺ずつ書くより短く、揃え方も選んだマスに合わせて決まります。`anchor()` は、マス目で表せない配置に使います。
+
+値には、`bottom` や `right` のような物理キーワードと、`block-end` や `span-inline-end` のような論理キーワードがあります。本書では、プロパティと同じく論理キーワードで書きます（「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」）。縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示されるからです。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.position-area" name="position-area" />
+
+`position-area` は、Chrome 129、Firefox 147、Safari 26で対応しています。ボタンの暗黙のアンカーは、`popovertarget` ならChrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです（2026年9月確認）。`position-area` を指定すると、`auto` の `margin` と `inset` は0として扱われます。ポップオーバーのデフォルトの `margin: auto` も効かなくなるので、`@supports` の中で指定し直しています。
+
+暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。`position-anchor` の初期値 `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使うからです。初期値は2026年にChrome 151、Firefox 151、Safari 27で `normal` に変わり、それより前のChromeとSafari 26では、指定しなくても `anchor()` が暗黙のアンカーを使っていました。
+
+アンカーの大きさに合わせるときは、`min-inline-size: anchor-size(inline)` のように `anchor-size()` を使います。この関数を書けるのは、大きさ、`inset`、`margin` のプロパティだけで、`padding` などに書いた宣言は無視されます。また、`position-area` と `position-try-fallbacks` は離散的に切り替わるので、反転するときの位置の変化をトランジションで滑らかにはできません。アンカーが動いたときの `anchor()` の値の変化を補間できるのも、Chrome 125以降とSafari 26以降だけです（2026年9月確認）。
+
+<Baseline id="anchor-positioning-animations" />
+
+位置が反転したときに、吹き出しの矢印の向きを変えたい場面もあります。CSS Anchor Positioning Module Level 2では、配置する要素に `container-type: anchored` を指定します。`@container anchored(fallback: flip-block)` の中に、反転したときの子孫のスタイルを書けます。ただし、2026年9月の時点で対応しているのはChrome 143以降だけです。使うなら、矢印の向きが変わらなくても意味が通るデザインにしたうえで、上乗せの演出にとどめます。{/* 要確認: 出典なし */}
+
+<Baseline id="container-anchor-position-queries" />
 
 ## 画面幅いっぱいに広げる
 
@@ -225,4 +295,14 @@ z-indexの値は、ページ全体で比べられるわけではありません�
 - [包含ブロック - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Containing_block)
 - [重ね合わせコンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_positioned_layout/Stacking_context)
 - [CSS アンカー位置指定 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_anchor_positioning)
+- [Using CSS anchor positioning - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning/Using)（暗黙のアンカー）
+- [position-area - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area)
+- [position-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-anchor)
+- [anchor-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size)
+- [CSS Anchor Positioning Module Level 1](https://drafts.csswg.org/css-anchor-position-1/)（W3C）
+- [CSS Anchor Positioning Module Level 2](https://drafts.csswg.org/css-anchor-position-2/)（W3C、エディターズドラフト）
+- [CSS Conditional Rules Module Level 5 - container-type](https://drafts.csswg.org/css-conditional-5/#container-type)（W3C）
+- [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)（W3C）
+- [Understanding Success Criterion 2.4.11: Focus Not Obscured (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)（W3C）
+- [C43: Using CSS scroll-padding to un-obscure content](https://www.w3.org/WAI/WCAG22/Techniques/css/C43)（W3C）
 - [2025年のz-index設計を考える](https://speakerdeck.com/tak_dcxi/2025nian-noz-indexshe-ji-wokao-eru)（TAK）

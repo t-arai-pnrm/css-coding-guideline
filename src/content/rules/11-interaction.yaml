@@ -191,6 +191,14 @@
   page: interaction/disclosure
   since: 0.1.0
 
+- id: overscroll-contain-in-overlay
+  level: 推奨
+  rule: 'モーダルやドロワーの中でスクロールする要素には、`overscroll-behavior-block: contain` のように、スクロールする方向の軸だけにスクロールの連鎖を止める指定をする。'
+  reason: 中の要素を端までスクロールしたときに、背面のページが続けてスクロールするのを防ぐため。
+  note: '`dialog` と `[popover]` 自体には kiso.css が指定しています。軸を付けない `overscroll-behavior` は、横のスワイプで前のページに戻る操作まで止めてしまいます。'
+  page: interaction/disclosure
+  since: 0.3.0
+
 - id: details-name-for-exclusive
   level: 推奨
   rule: 1つだけを開くアコーディオンは、同じ `name` 属性を付けた `<details>` で作る。
@@ -299,3 +307,22 @@
   aiProne: true
   page: interaction/forms
   since: 0.1.0
+
+# 11-5 View Transitions で画面の切り替えをつなぐ
+- id: view-transition-name-unique
+  level: 禁止
+  rule: 同時に表示される複数の要素に、同じ `view-transition-name` を付けない。
+  reason: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
+  note: 固定の名前は、ページに1つしかない要素にだけ付けます。
+  aiProne: true
+  page: interaction/view-transitions
+  since: 0.3.0
+
+- id: view-transition-match-element
+  level: 推奨
+  rule: '同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。'
+  reason: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
+  note: '`match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。'
+  aiProne: true
+  page: interaction/view-transitions
+  since: 0.3.0

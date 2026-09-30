@@ -4,6 +4,7 @@
  * - ベンダープレフィックスの例外をなくした（例外の指定が効いていなかったため）
  * - `@media` と `@container` をセレクタの中に書くことを求める独自ルールを追加
  * - z-index の数値の禁止パターンが 10〜19 などを通していた問題を修正
+ * - レイヤー名を、宣言した名前だけに限定（第2章 2-3）
  *
  * @type {import('stylelint').Config}
  */
@@ -173,6 +174,14 @@ export default {
     // 例外は設けない。必要なプレフィックスは、理由のコメントと無効化のコメントを添えて書く（第5章 5-3）。
     'property-no-vendor-prefix': true,
     'keyframes-name-pattern': /^--[\w][\w-]*$/,
+    // 打ち間違えたレイヤー名は、エラーにならず新しいレイヤーになる（第2章 2-3）。
+    // `starlight` はこのサイトの CSS だけで使う、Starlight のレイヤー。
+    'layer-name-pattern': [
+      '^(tokens|reset|base|vendors|compositions|pages|components|patterns|utilities|starlight)$',
+      {
+        message: (name) => `レイヤー名「${name}」は宣言されていません。先頭の\`@layer\`文で宣言した名前を使用してください。`,
+      },
+    ],
     'selector-class-pattern': null,
     'selector-max-id': 0,
     'selector-max-universal': [

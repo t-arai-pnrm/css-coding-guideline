@@ -36,6 +36,7 @@ sidebar:
 | `#news h2` | クラスで指定し、`id` 属性はJavaScriptやページ内リンクのために残す | [`no-id-selector`](/cascade/selectors/#rule-no-id-selector) | AI |
 | ベーススタイルの `a:link, a:visited` | `:where(a:any-link)` | [`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)、[`no-heavy-specificity-in-global`](/reset/global-pitfalls/#rule-no-heavy-specificity-in-global) | AI |
 | JavaScriptで親に `has-image` のようなクラスを付ける | `&:has(> ._image)` | [`has-over-state-class`](/cascade/selectors/#rule-has-over-state-class) | AI |
+| `body:has(.modal-open)` のように、ページ全体を起点にした `:has()` | コンポーネントのルートを起点にし、`&:has(> ._input:checked)` のように引数の範囲を絞る | [`has-narrow-anchor`](/cascade/selectors/#rule-has-narrow-anchor) | AI |
 | BEMの `.news-card__title` | `@scope (.scoped.news-card) to (.scoped)` の中の `._title` | [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)、[`child-class-underscore`](/notation/naming/#rule-child-class-underscore) | AI |
 
 ## リセットとベーススタイル
@@ -91,6 +92,9 @@ sidebar:
 | `overflow-x: hidden` | `overflow-x: clip` | [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden) | AI |
 | `top: 50%; left: 50%; transform: translate(-50%, -50%);` | `inset: 0; margin: auto;`。Gridの中なら `place-items: center` | [`absolute-centering-with-margin-auto`](/layout/positioning/#rule-absolute-centering-with-margin-auto) | AI |
 | カードの見出しの高さを `min-height` やJavaScriptでそろえる | サブグリッド（`grid-template-rows: subgrid`） | [`subgrid-for-aligned-rows`](/layout/grid-first/#rule-subgrid-for-aligned-rows) | AI |
+| 条件なしの `position: sticky` のヘッダー | `@media (height >= calc(600 / 16 * 1rem))` の中で固定する | [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query) | AI |
+| ポップオーバーとボタンに `anchor-name` を付け、`top: anchor(bottom)` で配置する | `popovertarget` や `commandfor` の暗黙のアンカーと `position-area` | [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first) | AI |
+| `position-area: bottom right` | `position-area: block-end span-inline-end` | [`position-area-logical-keywords`](/layout/positioning/#rule-position-area-logical-keywords) | AI |
 
 ## レスポンシブ
 
@@ -127,6 +131,8 @@ sidebar:
 | `--color-primary-rgb` や `--color-primary-dark` のような派生色のトークン | `oklch(from var(--color--accent--500) l c h / 10%)` のように元の色から作る | [`derive-colors-from-base`](/color-media/color/#rule-derive-colors-from-base)、[`relative-color-for-single-color`](/color-media/color/#rule-relative-color-for-single-color) | AI |
 | コンポーネントごとの `@media (prefers-color-scheme: dark)` | セマンティクスのトークンに `light-dark()` で持たせる | [`light-dark-in-semantic-tokens`](/color-media/color/#rule-light-dark-in-semantic-tokens) | AI |
 | `border: none` | `border-color: transparent` | [`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none) | AI |
+| `-webkit-text-stroke` だけで縁取り、文字が細くなる | `paint-order: stroke fill` で縁取りを塗りの下に置く | [`text-stroke-paint-order`](/color-media/images-and-decoration/#rule-text-stroke-paint-order) |  |
+| `page-break-inside: avoid` | `break-inside: avoid` | [`no-page-break-properties`](/color-media/print/#rule-no-page-break-properties) |  |
 
 ## インタラクションとモーション
 
@@ -140,6 +146,7 @@ sidebar:
 | `.is-active`、`.is-open` の状態クラス | `:checked` などの擬似クラスや `[aria-selected="true"]` | [`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria) | AI |
 | `transition: all 0.3s` | `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドとトークン | [`no-transition-all`](/interaction/motion/#rule-no-transition-all)、[`transition-longhand-with-tokens`](/interaction/motion/#rule-transition-longhand-with-tokens) | AI |
 | `prefers-reduced-motion: reduce` のときに全称セレクタと `!important` で動きを止める | `@media (prefers-reduced-motion: no-preference)` の中で動きを付ける | [`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference) | AI |
+| 並んだ要素に `view-transition-name: card-1`、`card-2` と連番を振る | `view-transition-name: match-element` と `view-transition-class` | [`view-transition-match-element`](/interaction/view-transitions/#rule-view-transition-match-element) | AI |
 | 入力エラーの見た目を `:invalid` に指定する | `:user-invalid` に指定する | [`user-invalid-for-errors`](/interaction/forms/#rule-user-invalid-for-errors) | AI |
 
 ## 関連する付録

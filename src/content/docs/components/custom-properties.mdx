@@ -166,6 +166,26 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 
 セクションの外に置いた4枚目のカードは、どこからも値を受け取っていないので、フォールバックに書いたデフォルト値で表示されます。どのカードのCSSにも、セクションの名前は出てきません。
 
+## 無効な値を渡されても、フォールバックには戻らない
+
+`var()` のフォールバックが使われるのは、参照したカスタムプロパティが定義されていないときだけです。公開プロパティに、プロパティに合わない値が渡されたときには使われません。たとえば `style="--info-card--radius: large"` と渡すと、`var(--info-card--radius, 8px)` は `large` に置き換わります。`border-radius: large` という無効な宣言になり、`8px` は使われません。
+
+普通の宣言なら、無効な値は構文を解釈する時点で捨てられ、前に書いた宣言が使われます。一方、`var()` を含む宣言は、値を置き換えるまで有効かどうかが分かりません。置き換えた後で無効と分かった宣言は「計算値の時点で無効（invalid at computed-value time）」になり、`unset` を指定したのと同じ結果になります。継承するプロパティなら親の値に、継承しないプロパティなら初期値になるということです。
+
+そのため、次のように前の行に安全な値を書いておいても、フォールバックの役には立ちません。`--info-card--radius` に `large` が渡されると、2行目の宣言が勝ったうえで無効になり、`border-radius` は初期値の `0` になります。
+
+```css title="🙅‍♂ Not Recommended: 前の宣言がフォールバックになると期待する"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.info-card) to (.scoped) {
+  :scope {
+    border-radius: 8px;
+    border-radius: var(--info-card--radius, 8px);
+  }
+}
+```
+
+登録していない公開プロパティでは、渡された値の型をCSSの側で確かめる手段がありません。JSDocの `@prop` に型を書き、呼び出し側が正しい値を渡せるようにしておきます。型の確認が欠かせない値は、次の見出しの `@property` で登録すると、無効な値を受けたときにカスタムプロパティ自身の初期値や継承した値に戻せます。
+
 ## @property は型やアニメーションが必要なときだけ使う
 
 `@property` は、カスタムプロパティに型と継承の有無と初期値を登録するアットルールです。登録していないカスタムプロパティは、ただの文字の並びとして扱われます。値は `var()` で参照された場所で初めて解釈され、アニメーションでは途中の値を補間できません。
@@ -202,7 +222,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 
 反対に、トークンのように、型の指定とアニメーションのどちらも要らない値は登録しません。登録すると振る舞いが変わるからです。たとえば `<length>` 型で登録して `:root` に `1em` を指定すると、`:root` の文字サイズで計算した値（16px）が子孫に継承されます。登録していなければ `var()` を書いた場所で `1em` として計算されるので、文字サイズが32pxの要素では32pxになります（2026年9月、Chromeで確認）。
 
-登録した名前は、文書全体に効きます。`--_value` のような短い内部プロパティの名前を登録すると、同じ名前を別の意味で使っているほかのコンポーネントにも型が適用されます。登録する名前は、上の例の `--progress-bar--value` のように、コンポーネントの名前を含むものにしておくと安全です。
+登録した名前は、文書全体に効きます。`--_value` のような短い内部プロパティの名前を登録すると、同じ名前を別の意味で使っているほかのコンポーネントにも型が適用されます。同じ名前を2つの `@property` で登録した場合も、両方が使い分けられるわけではなく、スタイルシートの中で後に現れた登録だけが有効になります。登録する名前は、上の例の `--progress-bar--value` のように、コンポーネントの名前を含むものにしておくと安全です。
 
 ## ガイドライン
 
@@ -213,4 +233,6 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 - [CSS カスタムプロパティ（変数）の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties)
 - [var() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/var)
 - [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)
+- [CSS Custom Properties for Cascading Variables Module Level 1: Invalid Variables](https://www.w3.org/TR/css-variables-1/#invalid-variables)
+- [CSS Properties and Values API Level 1](https://drafts.css-houdini.org/css-properties-values-api-1/)
 - [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）

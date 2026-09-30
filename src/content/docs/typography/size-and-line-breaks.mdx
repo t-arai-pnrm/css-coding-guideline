@@ -145,6 +145,18 @@ p {
 
 `word-break: break-all` は、英単語の文字の間でも常に折り返します。次の行に移せば収まる単語まで途中で分かれるので、英文が読みにくくなります。`overflow-wrap: anywhere` なら、1行に収まらない単語だけを途中で折り返します。
 
+ただし、`overflow-wrap: anywhere` は、はみ出しを防ぐための最後の手段です。行に収まらないときは任意の文字の間で折り返すので、URLやファイルパスが `example.c` と `om` のように、区切りと関係のない位置で分かれます。読む人は、どこまでが1つの語なのかを判断しにくくなります。
+
+本文に長いURLやファイルパスをそのまま表示するときは、`.` や `/` のような区切りの記号の前に `<wbr>` を入れます。`<wbr>` は、折り返してもよい位置を示すHTMLの要素です。行に収まらないときは `<wbr>` の位置で折り返し、収まるときは何もしません。ハイフンも入りません。{/* 要確認: 出典なし */}
+
+```html title="区切りの記号の前で折り返せるようにする"
+<p>
+  設定ファイルは <code>src<wbr />/content<wbr />/rules<wbr />/09-typography<wbr />.yaml</code> にあります。
+</p>
+```
+
+記号の前で折り返すのは、行末に記号が残ると、そこでURLが終わったように見えるからです。CMSの本文のように、原稿を書く人が `<wbr>` を入れられない場所では、`overflow-wrap: anywhere` に任せます。
+
 段落に `text-align: justify` を指定するのも避けます。行の両端をそろえるために文字の間隔を広げるので、英単語やURLが混ざると、行の中に大きなすき間ができます。表の見出しのように1行で収まる文字を均等に割り付けたいときは、`text-align-last: justify` を使えます。
 
 ## 見た目のための改行にbrを使わない
@@ -221,6 +233,7 @@ p {
 - [word-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/word-break)
 - [text-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-wrap)
 - [overflow-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-wrap)
+- [`<wbr>` - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/wbr)
 - [-webkit-line-clamp - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-line-clamp)
 - [BudouX](https://github.com/google/budoux)（GitHub）
 - [Typography troubles: Balancing lines in Japanese & Korean](https://ryelle.codes/2025/04/typography-troubles-balancing-in-japanese-korean/)（ryelle.codes、2025年4月）

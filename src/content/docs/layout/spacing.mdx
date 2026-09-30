@@ -112,6 +112,24 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 子要素の側から見ると、この方法では自分の周りに余白が一切ありません。余白を持つのは親のテンプレートだけなので、子要素をほかの場所へ移しても、余計な余白が付いてくることはありません。「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明した、外側の余白は置く側が持つという考え方を、そのまま形にしたものです。
 
+## 余白の大小でまとまりを伝える
+
+余白の大きさを決めるときは、グループの間の余白を、グループの中の余白より大きくします。人は、近くにあるものを同じまとまりとして読み取るからです。デザインの原則では「近接」と呼ばれます。カードの一覧なら、カードの中の見出しと本文の間より、カードとカードの間を広くします。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: カードの中の間隔より、カードの間の間隔を大きくする"
+._card-list {
+  display: block grid;
+  gap: 32px;
+}
+
+._card {
+  display: block grid;
+  gap: 8px;
+}
+```
+
+2つの余白の差が小さいと、見出しが上のカードと下のカードのどちらに属するのかが分からなくなります。本文の流れでも同じで、見出しの上の余白を下の余白より大きくすると、見出しは後ろに続く段落とひとまとまりに見えます。デザインカンプの余白がこの原則から外れているときは、実装の前にデザイナーへ確認します。{/* 要確認: 出典なし */}
+
 ## 余白の列でコンテンツの幅を決める
 
 空のセルは、列にも使えます。ページのセクションで、コンテンツの最大幅と画面の端の余白（ガター）を決めるとき、`max-inline-size` と `margin-inline: auto` の代わりに、左右に余白の列を持つグリッドを作ります。
@@ -200,3 +218,4 @@ CMSの本文エリアでは、エディタでの見た目と公開ページの�
 - [gap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gap)
 - [grid-template-areas - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-areas)
 - [マージンの相殺の各種 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing)
+- [Proximity Principle in Visual Design](https://www.nngroup.com/articles/gestalt-proximity/)（Nielsen Norman Group、2020年8月）

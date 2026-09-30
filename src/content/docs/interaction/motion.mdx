@@ -13,7 +13,7 @@ import popoverCss from '../../../demos/interaction/popover-entry/style.css?raw';
 
 アニメーションを足す前に、その動きが必要かどうかを確かめます。動かすと決めたら、トランジションとアニメーションは `@media (prefers-reduced-motion: no-preference)` の中で指定します。トランジションは `transition: all` を使わず、動かすプロパティを絞ってロングハンドで書き、再生時間とイージングにはトークンを使います。
 
-`@keyframes` はユーティリティのように設計し、1つにつき1つのプロパティだけを変えます。自明な `from` と `to` は省略し、動きの起点はカスタムプロパティで受け取ります。この節では、これらの書き方に加えて、`@starting-style` による出現、スクロールに合わせた動き、View Transitions、JavaScriptで動かす演出の切り替え方を説明します。
+`@keyframes` はユーティリティのように設計し、1つにつき1つのプロパティだけを変えます。自明な `from` と `to` は省略し、動きの起点はカスタムプロパティで受け取ります。この節では、これらの書き方に加えて、`@starting-style` による出現、スクロールに合わせた動き、JavaScriptで動かす演出の切り替え方を説明します。
 
 ## 動かす前に目的を確かめる
 
@@ -89,7 +89,7 @@ OSには、画面の動きを減らす設定があります。前庭障害のあ
 
 トランジションは、`transition-duration`、`transition-property`、`transition-timing-function` のロングハンドで書きます。動かすプロパティが一目で分かり、再生時間とイージングにはトークンを渡せます。複数のプロパティを動かすときは、`transition-timing-function: var(--ease--quint-out), var(--ease--quint-in-out)` のように、プロパティごとにイージングを選び分けます。
 
-動かすプロパティは、`opacity` と、`translate`、`scale`、`rotate` を優先します。これらは描画をやり直さずに合成だけで動かせるので、滑らかに動きます。`background-color` や `box-shadow` は描画のやり直しが必要ですが、ホバーの変化なら問題ありません。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、アコーディオンの高さのように、ほかに方法のない場合に限ります。変形に個別のプロパティを使う理由は「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
+動かすプロパティは、`opacity` と、`translate`、`scale`、`rotate` を優先します。これらは描画をやり直さずに合成だけで動かせるので、滑らかに動きます。`background-color` や `box-shadow` は描画のやり直しが必要ですが、ホバーの変化なら問題ありません。ただし、大きくぼかした影をループするアニメーションで動かし続けるのは避けます。ぼかしを含む影は描画に時間がかかり、動いている間は描画のやり直しが続くからです。こうした場面では、影を擬似要素に描いてその `opacity` を動かすなど、`opacity` と変形だけで表せないかを考えます。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、アコーディオンの高さのように、ほかに方法のない場合に限ります。変形に個別のプロパティを使う理由は「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
 
 `will-change` は、必要のない合成レイヤーを作ってメモリを無駄に使うので、常に指定することはしません。
 
@@ -262,50 +262,7 @@ Firefoxは、2026年9月の時点で `display` のトランジションに対応
 
 ## View Transitionsで切り替えをつなぐ
 
-View Transitionsは、画面の状態が切り替わる前後のスナップショットを撮り、その間をアニメーションでつなぐ仕組みです。同じページの中の切り替えはJavaScriptの `document.startViewTransition()` で、ページ間の遷移はCSSの `@view-transition` で有効にします。
-
-```css title="🙆‍♂ Recommended: ページ間の遷移を有効にし、独自の動きは条件の中で指定する"
-@view-transition {
-  navigation: auto;
-}
-
-@keyframes --theme-toggle--reveal {
-  from {
-    clip-path: inset(0 0 100% 0);
-  }
-
-  to {
-    clip-path: inset(0);
-  }
-}
-
-:active-view-transition-type(theme-toggle) {
-  &::view-transition-old(root) {
-    animation: none;
-  }
-
-  &::view-transition-new(root) {
-    @media (prefers-reduced-motion: no-preference) {
-      animation-name: --theme-toggle--reveal;
-      animation-duration: var(--duration--slow);
-      animation-timing-function: var(--ease--quint-in-out);
-      animation-fill-mode: both;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: none;
-    }
-  }
-}
-```
-
-ページ間の遷移のデフォルトはクロスフェードで、位置や大きさは変わりません。そのため、`@view-transition` そのものは条件で囲まず、独自の動きだけを `no-preference` の中に書いています。この例は、テーマを切り替えるときだけ、新しい画面を上から塗り替えるように表示するものです。`clip-path` は `none` との間では補間できないので、ここでは `to` も書いています。
-
-<Baseline id="view-transitions" name="View Transitions（同じページの中）" />
-
-<Baseline id="cross-document-view-transitions" name="View Transitions（ページ間）" />
-
-ページ間のView Transitionsは、Firefoxが対応していません。対応していない環境では、アニメーションせずにページが切り替わるだけなので、プログレッシブ・エンハンスメントとして使えます。
+画面の状態が切り替わる前後をアニメーションでつなぐView Transitionsは、「[11-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)」で扱います。同じページの中の切り替えとページ間の遷移を有効にする方法、要素への名前の付け方、動きを減らす設定への対応を説明しています。
 
 ## JavaScriptの演出は `data-motion-mode` で切り替える
 
@@ -355,4 +312,4 @@ root.dataset.motionMode = reduced.matches ? 'reduced' : 'motion';
 - [prefers-reduced-motion - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/prefers-reduced-motion)
 - [@starting-style - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@starting-style)
 - [CSS スクロール駆動アニメーション - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations)
-- [View Transition API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/View_Transition_API)
+- [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)

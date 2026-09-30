@@ -106,6 +106,27 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 `position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合（2025年5月時点で確認されていたもの）を避けるために明示しています。モーダルを開いている間の背面の固定は「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 
+## スクロールの連鎖を止める
+
+モーダルやドロワーの中を端までスクロールすると、そのまま背面のページがスクロールし始めます。このスクロールの連鎖は、`overscroll-behavior` で止められます。
+
+`dialog` と `[popover]` 自体には、kiso.cssが `overscroll-behavior-block: contain` を指定しています。ドロワーの本文のように、中の要素がスクロールする場合は、その要素にも指定します。
+
+```css title="🙆‍♂ Recommended: ドロワーの中でスクロールする部分に、スクロールの連鎖を止める指定をする"
+@scope (.scoped.site-drawer) to (.scoped) {
+  ._body {
+    overflow-y: auto;
+    overscroll-behavior-block: contain;
+  }
+}
+```
+
+`contain` は連鎖だけを止め、要素の中の跳ね返りの動きは残します。軸を付けない `overscroll-behavior: contain` は、横方向のスワイプで前のページに戻る操作まで止めてしまうので、スクロールする方向の軸だけに指定します。
+
+<Baseline id="overscroll-behavior" compatKey="css.properties.overscroll-behavior-block" name="overscroll-behavior-block" />
+
+上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも効くという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+
 ## 小さな表示は `popover` 属性で作る
 
 メニュー、ツールチップ、通知のように、背面の操作を止めない小さな表示には、`popover` 属性を使います。ボタンの `popovertarget` 属性で対象を指定すれば、JavaScriptなしで開閉できます。`popover` 属性の要素はトップレイヤーに表示されるので、ほかの要素より手前に出すための `z-index` の調整も要りません。
@@ -240,3 +261,5 @@ Safariは、2026年9月の時点で `hidden="until-found"` に対応していま
 - [invokers-polyfill](https://github.com/keithamus/invokers-polyfill)
 - [dialog 要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/dialog)
 - [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)
+- [overscroll-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior)
+- [CSS Overscroll Behavior Module Level 1](https://drafts.csswg.org/css-overscroll-1/)（W3C）

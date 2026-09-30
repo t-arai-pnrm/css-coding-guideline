@@ -1,0 +1,181 @@
+---
+title: "11-5 View Transitionsで画面の切り替えをつなぐ"
+description: "View Transitionsは、同じページの中ではdocument.startViewTransition()で、ページ間では@view-transitionで有効にし、未対応の環境では普通に切り替わるだけのプログレッシブ・エンハンスメントとして使います。要素に付ける名前は重複させず、並んだ要素にはmatch-elementとview-transition-classを使います。"
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+View Transitionsは、画面の状態が切り替わる前後のスナップショットを撮り、その間をアニメーションでつなぐ仕組みです。同じページの中の切り替えはJavaScriptの `document.startViewTransition()` で、ページ間の遷移はCSSの `@view-transition` で有効にします。対応していない環境では、アニメーションせずに切り替わるだけなので、プログレッシブ・エンハンスメントとして使えます。
+
+要素ごとに動かしたいときは、`view-transition-name` で名前を付けます。この名前は、同時に表示される要素の間で重複させてはいけません。カードの一覧のように同じ要素が並ぶ場合は、名前を連番で振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせます。独自の動きと要素ごとの名前は、ほかの動きと同じく `@media (prefers-reduced-motion: no-preference)` の中で指定します。
+
+## 切り替えの前後がつながらない
+
+DOMを書き換えると、画面は一瞬で次の状態に変わります。一覧のカードを押して詳細を表示したときや、タブで表示する内容を入れ替えたとき、ユーザーは「さっきの要素がどこへ行ったのか」を目で追えません。こうした空間のつながりを保つことは、「[11-2 モーションを実装する](/interaction/motion/)」の判断の表で「条件付きで必要」とした動きの目的です。
+
+以前は、この切り替えを動かすのにJavaScriptの工夫が必要でした。切り替える前の要素の位置と大きさを測り、新しい状態を描いたあとで差分を `transform` で打ち消してから戻す、といった方法です。切り替えの前後の両方の要素を一時的にDOMへ残す必要もあり、コードは複雑になりがちでした。ページ間の遷移に至っては、前のページの要素が残らないので、SPAにしない限り実現できませんでした。
+
+View Transitionsでは、切り替えの前後をブラウザが画像として撮影し、その画像の間をアニメーションでつなぎます。DOMの書き換えそのものは一瞬で終わり、見た目の動きだけが後から付きます。実際のレイアウトの変化と、スナップショットによる見た目の動きを分けて考えるのが、この機能を扱うときの要点です。
+
+## 切り替えの前後をスナップショットでつなぐ
+
+同じページの中で使うときは、DOMを書き換える処理を `document.startViewTransition()` に渡します。ブラウザは、処理の前の画面を撮影し、処理を実行し、処理の後の画面を撮影してから、2枚の間をアニメーションでつなぎます。対応していない環境のために、関数があるかどうかを確かめてから呼びます。
+
+```js title="同じページの中の切り替えを View Transitions でつなぐ JavaScript の例"
+const update = () => {
+  /* ... */
+};
+
+if (document.startViewTransition) {
+  document.startViewTransition(update);
+} else {
+  update();
+}
+```
+
+ページ間の遷移は、CSSの `@view-transition` で有効にします。遷移の前後の両方のページに書く必要があり、同じオリジンのページの間でだけ動きます。本書では、ベーススタイルのレイヤーに置いています。
+
+```css title="🙆‍♂ Recommended: ページ間の遷移を有効にする"
+@view-transition {
+  navigation: auto;
+}
+```
+
+アニメーションの間、ページの上には `::view-transition` を頂点とする擬似要素の木が作られます。名前ごとに `::view-transition-group()` があり、その中の `::view-transition-image-pair()` に2枚の画像が入ります。前の画面が `::view-transition-old()` で、後の画面が `::view-transition-new()` です。ページ全体には、デフォルトで `root` という名前が付いています。
+
+デフォルトの動きはクロスフェードで、ページ全体の位置や大きさは変わりません。そのため、`@view-transition` そのものは動きを減らす設定の条件で囲みません。動きを減らす設定のときに「簡素化」してフェードだけを残すという、11-2の方針にそのまま当てはまるからです。
+
+<Baseline id="view-transitions" name="View Transitions（同じページの中）" />
+
+<Baseline id="cross-document-view-transitions" name="View Transitions（ページ間）" />
+
+ページ間のView Transitionsは、2026年9月の時点でFirefoxが対応していません。対応していない環境では、アニメーションせずにページが切り替わるだけです。
+
+## 切り替えの種類ごとに動きを変える
+
+切り替えの種類によって動きを変えたいときは、`document.startViewTransition()` に `types` を渡し、CSSでは `:active-view-transition-type()` で選びます。次の例は、テーマを切り替えるときだけ、新しい画面を上から塗り替えるように表示するものです。JavaScriptでは、`document.startViewTransition({ update, types: ['theme-toggle'] })` のように呼びます。
+
+```css title="🙆‍♂ Recommended: 切り替えの種類を選び、独自の動きは条件の中で指定する"
+@keyframes --theme-toggle--reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+:active-view-transition-type(theme-toggle) {
+  &::view-transition-old(root) {
+    animation: none;
+  }
+
+  &::view-transition-new(root) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: --theme-toggle--reveal;
+      animation-duration: var(--duration--slow);
+      animation-timing-function: var(--ease--quint-in-out);
+      animation-fill-mode: both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+}
+```
+
+前の画面のアニメーションを止め、新しい画面だけを `clip-path` で広げています。動きを減らす設定のときは、新しい画面のアニメーションも止めるので、テーマは一瞬で切り替わります。`clip-path` は `none` との間では補間できないので、ここでは `to` も書いています。
+
+## 並んだ要素に名前を付ける
+
+要素ごとに動かすには、`view-transition-name` で名前を付けます。名前を付けた要素は、ページ全体とは別に撮影され、前後の画面で同じ名前を持つ要素の間で、位置と大きさがアニメーションします。この名前は、切り替えに参加する要素の間で一意でなければなりません。
+
+カードの一覧のように同じ要素が並ぶ場合、以前は1枚ずつ別の名前を振る必要がありました。
+
+```css title="🙅‍♂ Not Recommended: 並んだ要素に、連番の名前を手で振る"
+/* 🙅‍♂ Not Recommended */
+.product-card:nth-child(1) {
+  view-transition-name: --card-1;
+}
+
+.product-card:nth-child(2) {
+  view-transition-name: --card-2;
+}
+
+/* ... */
+
+::view-transition-group(--card-1),
+::view-transition-group(--card-2) {
+  animation-duration: 0.3s;
+}
+```
+
+この書き方では、要素が増えるたびにセレクタと名前を足すことになり、動きを指定するセレクタも名前の数だけ並びます。テンプレートで `style` 属性にIDを埋め込んで名前を作る方法もありますが、名前の管理がHTMLとCSSに分かれてしまいます。
+
+`view-transition-name: match-element` を指定すると、ブラウザが要素そのものを手がかりに、要素ごとに一意の名前を内部で付けます。この名前はDOMから読めないので、CSSで選ぶための目印として `view-transition-class` も付けます。クラスは `::view-transition-group(.product-card)` のように、擬似要素の引数に `.` を付けて選びます。
+
+```css title="🙆‍♂ Recommended: 名前はブラウザに任せ、動きはクラスで指定する"
+@scope (.scoped.product-list) to (.scoped) {
+  ._item {
+    @media (prefers-reduced-motion: no-preference) {
+      view-transition-name: match-element;
+      view-transition-class: product-card;
+    }
+  }
+}
+
+::view-transition-group(.product-card) {
+  @media (prefers-reduced-motion: no-preference) {
+    animation-duration: var(--duration--base);
+    animation-timing-function: var(--ease--quint-in-out);
+  }
+}
+```
+
+名前そのものを動きを減らす設定の条件の中で付けているのは、名前を付けた要素は位置と大きさが動くからです。条件に当てはまらないときは名前がないので、要素はページ全体のスナップショットに含まれ、フェードだけで切り替わります。`view-transition-class` は動きを指定するための目印でしかなく、`view-transition-name` の代わりにはなりません。名前のない要素にクラスだけを付けても、要素ごとには撮影されません。
+
+<Baseline id="view-transitions" compatKey="css.properties.view-transition-name.match-element" name="view-transition-name: match-element" />
+
+<Baseline id="view-transition-class" />
+
+`match-element` は、要素そのものを手がかりにするので、同じページの中の切り替えでしか使えません。ページ間の遷移では、前のページの要素と次のページの要素は別のものだからです。一覧のカードと詳細ページの画像をつなぐような場合は、遷移の前後のページで、つなぎたい要素にだけ同じ名前を明示的に付けます。
+
+## 名前が重複すると、切り替え全体が動かない
+
+同じ `view-transition-name` を持つ要素が同時に2つ表示されていると、撮影に失敗し、その切り替え全体が行われません。仕様では、このとき `InvalidStateError` で失敗し、`ViewTransition` の `ready` のPromiseが拒否されます。DOMの書き換えは実行されるので、画面は切り替わりますが、アニメーションは一切付きません。
+
+重複した1つの要素だけでなく、ほかの要素やページ全体の動きまで止まるので、原因に気付きにくい不具合です。コンポーネントのCSSに固定の名前を書くと、そのコンポーネントを同じページに2つ置いた時点で重複します。名前を固定で書くのは、ページに1つしかない要素に限り、並ぶ可能性のある要素には `match-element` を使います。
+
+## 切り替えの間も、キーボードでは操作できる
+
+切り替えのアニメーションの間、撮影された要素は画面に描画されず、代わりに擬似要素の画像が表示されます。このとき、マウスやタッチの操作は元の要素に届きません。一方で、キーボードのフォーカスと操作は効き続け、要素はアクセシビリティツリーにも残ります。ChromeとFirefoxは、このように振る舞います。
+
+仕様には「`visibility: hidden` のように描画されない」という説明がありますが、`visibility: hidden` の要素はアクセシビリティツリーから外れるので、実際の振る舞いと合いません。この食い違いは2025年8月にCSSWGで取り上げられ、実際の振る舞いに合わせて説明を正すことが決まりました（[csswg-drafts #12629](https://github.com/w3c/csswg-drafts/issues/12629)）。
+
+つまり、キーボードで操作するユーザーは、アニメーションの間、まだ見えていない内容を操作できてしまいます。{/* 要確認: 出典なし */}そのため、私は切り替えのアニメーションを短くし、見えている状態と操作できる状態がずれる時間を減らすようにしています。
+
+## 要素の中だけで切り替える
+
+`Element.startViewTransition()` は、ページ全体ではなく、特定の要素の中だけで切り替えを行う機能です。擬似要素の木はその要素の中に作られ、複数の切り替えを同時に実行できます。操作が届かなくなるのもその要素の中だけで、ページのほかの部分は操作できます。
+
+<Baseline id="view-transitions-element-scoped" />
+
+2026年9月の時点では試験的な機能で、ChromeとEdgeの147以降しか対応していません。使うときは、`document.startViewTransition()` と同じく関数があるかどうかを確かめ、対応していない環境では、更新の処理だけを直接呼ぶようにします。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [View Transition API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/View_Transition_API)
+- [view-transition-name - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/view-transition-name)
+- [view-transition-class - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/view-transition-class)
+- [Element: startViewTransition() method - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/startViewTransition)
+- [CSS View Transitions Module Level 1](https://drafts.csswg.org/css-view-transitions-1/)
+- [csswg-drafts Issue #12629（View Transitionsで撮影された要素とアクセシビリティ）](https://github.com/w3c/csswg-drafts/issues/12629)（2025年8月）

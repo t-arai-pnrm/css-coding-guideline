@@ -151,6 +151,25 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 
 画像の上に文字を重ねるレイアウトでは、画像を読み込めなかったとき、背景と文字の色が近いと文字を読めなくなります。画像の後ろに、文字と十分なコントラストを持つ背景色を用意しておきます。`aspect-ratio` で比率を決めた枠に画像を入れるなら、違う比率の画像が入っても引き伸ばされないように、`object-fit: cover` を指定します。画像の扱いは、「[10-3 画像と装飾](/color-media/images-and-decoration/)」で扱います。
 
+## 表の列幅は `table-layout: fixed` で決める
+
+表の列幅は、デフォルトの `table-layout: auto` では、セルの中身から計算されます。ある行に長い文字列が入ると、その列が広がり、ほかの列が狭くなります。CMSで行が追加されるたびに列幅が変わり、同じ表のデザインを保てません。
+
+列幅をデザインどおりに保ちたい表には、`table-layout: fixed` を指定します。列幅は、`<col>` 要素か最初の行のセルに指定した幅で決まり、指定のない列は残りの幅を分け合います。中身は列幅に影響しないので、長い文字列は、kiso.cssの `overflow-wrap: anywhere` によってセルの中で折り返します。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 列幅を中身ではなく、表の幅と列の指定で決める"
+._table {
+  inline-size: 100%;
+  table-layout: fixed;
+}
+
+._date-column {
+  inline-size: calc(120 / 16 * 1rem);
+}
+```
+
+`table-layout: fixed` は、表の幅が `auto` のときには効きません。`inline-size` で表の幅を決めておきます。列の数が多く、狭い画面で列幅を保てない表は、横にスクロールする領域で包みます。{/* 要確認: 出典なし */}
+
 ## 横スクロールは原因を直し、clipで防ぐ
 
 ページに横スクロールが出たら、まず、はみ出している要素を特定します。DevToolsのコンソールで次のスクリプトを実行すると、すべての要素に枠線を付けたうえで、ビューポートより広い要素を一覧できます。`$$()` は、DevToolsのコンソールで使える `querySelectorAll()` の省略形です。
@@ -192,4 +211,5 @@ $$('*').forEach((el) => {
 - [overflow-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-wrap)
 - [minmax() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/minmax)
 - [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
+- [table-layout - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/table-layout)
 - [Defensive CSS](https://defensivecss.dev/)

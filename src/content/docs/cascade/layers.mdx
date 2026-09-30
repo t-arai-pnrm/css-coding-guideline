@@ -71,6 +71,21 @@ import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?ra
 
 コンポーネントのファイルのように `@import` で読み込まないCSSには、`@layer components { … }` の形でレイヤーを自分で書きます。Astroのコンポーネントの中に書くスタイルがその例で、書き方は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明します。
 
+## 宣言していないレイヤー名は、新しいレイヤーになる
+
+レイヤー名を打ち間違えても、エラーにはなりません。先頭の `@layer` 文にない名前は、その場で新しいレイヤーとして作られ、それまでに現れたすべてのレイヤーの後ろに加わります。次の例では、`components` を `component` と書いたことで、`utilities` よりも後ろの、より強いレイヤーができてしまいます。
+
+```css title="🙅‍♂ Not Recommended: 宣言していないレイヤー名を使う"
+/* 🙅‍♂ Not Recommended */
+@layer component {
+  /* ... */
+}
+```
+
+この打ち間違いは、見た目ではすぐに気づけません。コンポーネントのスタイルはほぼ意図どおりに表示され、ユーティリティクラスを付けたときだけ効かないという形で現れます。`@import url("…") layer(utility);` のように、`@import` の `layer()` で打ち間違えた場合も同じです。
+
+そのため、`@layer` と `layer()` には、先頭で宣言した9つの名前だけを使います。{/* 要確認: 出典なし */} この確認は、Stylelintに任せられます。Stylelintの `layer-name-pattern` は、`@layer` と `@import` の `layer()` に書いたレイヤー名を正規表現で検証するルールです。stylelint-config-standardのデフォルトは、名前がケバブケースかどうかしか調べません。本書の設定では、9つの名前を列挙した `^(tokens|reset|base|vendors|compositions|pages|components|patterns|utilities)$` のようなパターンを指定しています。これで、宣言していない名前を検出できます。本書のStylelintの設定は、「[12-3 Stylelintでルールを守る](/operations/stylelint/)」で説明しています。
+
 ## レイヤーの外に書いたスタイルは最も強い
 
 レイヤーを使うプロジェクトでは、すべてのスタイルをいずれかのレイヤーに入れます。レイヤーに入っていないスタイルは、すべてのレイヤーより後ろにある「暗黙の最後のレイヤー」として扱われるからです。`!important` を付けていない宣言どうしなら、レイヤーの外のスタイルは、詳細度に関係なくすべてのレイヤーに勝ちます。
@@ -127,5 +142,7 @@ CMSが出力するCSSの具体的な扱いや、theme.jsonで定義するトー�
 - [@layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@layer)
 - [@import - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@import)
 - [CSS Cascading and Inheritance Level 5: Cascade Layers](https://www.w3.org/TR/css-cascade-5/#layering)
+- [CSS Cascading and Inheritance Level 5: Layer Ordering](https://www.w3.org/TR/css-cascade-5/#layer-ordering)
+- [layer-name-pattern | Stylelint](https://stylelint.io/user-guide/rules/layer-name-pattern/)
 - [当ブログのレスポンシブコーディングについて](https://www.tak-dcxi.com/article/my-blogs-responsive-coding/)（TAKLOG、2024年3月。本書と一部の方針が異なります）
 - [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）

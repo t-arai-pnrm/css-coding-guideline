@@ -111,6 +111,14 @@
   page: layout/spacing
   since: 0.1.0
 
+- id: spacing-proximity
+  level: 推奨
+  rule: 余白の大きさは、グループの間の余白をグループの中の余白より大きくして、要素のまとまりが見て分かるようにする。
+  reason: 人は近くにあるものを同じまとまりとして読み取るので、余白の差が小さいと、どの要素がどのグループに属するのかが分からなくなるため。
+  note: カードの一覧なら、カードの中の間隔より、カードとカードの間隔を大きくします。
+  page: layout/spacing
+  since: 0.3.0
+
 # 7-3 変化に強いレイアウト
 - id: design-for-content-changes
   level: 推奨
@@ -207,7 +215,7 @@
   level: 非推奨
   rule: '`position: fixed` の要素を、`transform`、`filter`、`contain` などを指定した祖先の中に置かない。'
   reason: これらの祖先が包含ブロックになり、要素がビューポートではなくその祖先を基準に配置されるため。
-  note: モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第11章）。
+  note: '個別の変形プロパティ（`translate` など）、`backdrop-filter`、`perspective`、`content-visibility: auto` と、これらを書いた `will-change` も包含ブロックを作ります。モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第11章）。'
   page: layout/positioning
   since: 0.1.0
 
@@ -220,6 +228,15 @@
   page: layout/positioning
   since: 0.1.0
 
+- id: sticky-header-height-query
+  level: 推奨
+  rule: 'ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。'
+  reason: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
+  note: 'ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.3.0
+
 - id: anchor-scope-for-repeated-components
   level: 推奨
   rule: 繰り返し置くコンポーネントの中でアンカーポジショニングを使うときは、ルートに `anchor-scope` を指定して、アンカーの名前が届く範囲をコンポーネントの中に限る。
@@ -227,6 +244,24 @@
   note: アンカーポジショニングをレイアウトの要として使わない規則は、第1章のルール `no-unsupported-layout-features` で扱います。
   page: layout/positioning
   since: 0.1.0
+
+- id: implicit-anchor-first
+  level: 推奨
+  rule: ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。
+  reason: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
+  note: '暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.3.0
+
+- id: position-area-logical-keywords
+  level: 推奨
+  rule: '`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。'
+  reason: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
+  note: 論理プロパティを使う規則は、第5章のルール `logical-properties` で扱います。
+  aiProne: true
+  page: layout/positioning
+  since: 0.3.0
 
 - id: full-bleed-via-layout-first
   level: 推奨

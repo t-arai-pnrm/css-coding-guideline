@@ -1,6 +1,6 @@
 ---
 title: "10-3 画像と装飾"
-description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選びます。"
+description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選び、文字の縁取りは paint-order で塗りの下に描きます。"
 sidebar:
   order: 3
 ---
@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import objectFitHtml from '../../../demos/color-media/object-fit/index.html?raw';
 import objectFitCss from '../../../demos/color-media/object-fit/style.css?raw';
+import strokeHtml from '../../../demos/color-media/text-stroke/index.html?raw';
+import strokeCss from '../../../demos/color-media/text-stroke/style.css?raw';
 
 画像の縦横比は `aspect-ratio` で決め、中身は `object-fit` の `cover` か `contain` で収めます。初期値の `fill` のまま、画像を引き伸ばさないようにします。`<img>` には `width` と `height` の属性を書き、`srcset` と `sizes` の値は、手で計算せずにツールで確かめて決めます。
 
@@ -316,6 +318,43 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。影や角丸の値をpxで指定する理由は、「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
 
+## 文字の縁取りは塗りの下に描く
+
+写真の上の見出しやバナーの文字に、縁取りを付けたいことがあります。文字の縁取りは `-webkit-text-stroke` で描きます。接頭辞が付いていますが、WHATWGのCompatibility Standardで定義され、すべての主要なブラウザが対応しています。接頭辞のない書き方はないので、理由のコメントを添えて、Stylelintの警告を無効にします。
+
+<Baseline id="text-stroke-fill" name="-webkit-text-stroke" />
+
+ただし、縁取りの線は字形の輪郭を中心に、内側と外側へ半分ずつ描かれます。初期値では塗りの上に線を重ねるので、線を太くするほど、内側の半分が塗りを覆って文字が細くなります。画数の多い漢字では、字の中のすき間が線で埋まり、読めなくなることもあります。
+
+```css title="🙅‍♂ Not Recommended: 太い縁取りを塗りの上に重ねる"
+/* 🙅‍♂ Not Recommended */
+.title {
+  color: oklch(100% 0 0deg);
+  -webkit-text-stroke: 8px oklch(25% 0 0deg);
+}
+```
+
+`paint-order: stroke fill` を指定すると、線を先に描き、その上に塗りを重ねます。線の内側の半分は塗りに隠れ、外側の半分だけが縁取りとして見えます。字の形が崩れないので、縁取りを太くしても読みやすさを保てます。
+
+```css title="🙆‍♂ Recommended: 縁取りを塗りの下に描く"
+._title {
+  color: oklch(100% 0 0deg);
+
+  /* 文字の縁取りは、接頭辞付きの指定でしか書けない（2026年9月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-text-stroke: 8px oklch(25% 0 0deg);
+  paint-order: stroke fill;
+}
+```
+
+<Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} variant="neutral" />
+
+見えるのは線の外側の半分なので、線の幅は、見せたい縁取りの2倍を指定します。上の例では、8pxの線で4pxの縁取りになります。`paint-order` はもともとSVGのプロパティで、HTMLの文字には、2024年3月にすべての主要なブラウザで使えるようになりました。対応していない環境では、縁取りが塗りの上に重なるだけです。
+
+<Baseline id="paint-order" />
+
+縁取りは、読みやすさを補う装飾として使います。`-webkit-text-fill-color: transparent` で塗りを消して、縁取りだけの文字にすると、細い線だけで字の形を読み取ることになり、背景とのコントラストも確かめにくくなります。本文や長い見出しには使わず、短い装飾の文字に限ります。{/* 要確認: 出典なし */}
+
 ## ガイドライン
 
 <Guideline />
@@ -332,3 +371,6 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 - [aspect-ratio - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)
 - [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)
 - [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)
+- [-webkit-text-stroke - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-text-stroke)
+- [paint-order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/paint-order)
+- [Compatibility Standard: -webkit-text-stroke](https://compat.spec.whatwg.org/#the-webkit-text-stroke)（WHATWG）

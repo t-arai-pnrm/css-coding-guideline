@@ -227,3 +227,59 @@
   note: '`--shadow--color: light-dark(oklch(0% 0 0deg / 8%), oklch(0% 0 0deg / 25%))` のように、影の色のトークンに `light-dark()` を使います。'
   page: color-media/images-and-decoration
   since: 0.1.0
+
+- id: text-stroke-paint-order
+  level: 推奨
+  rule: '文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。'
+  reason: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
+  note: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
+  page: color-media/images-and-decoration
+  since: 0.3.0
+
+# 10-4 印刷のスタイル
+- id: print-hide-screen-only-ui
+  level: 推奨
+  rule: 'ナビゲーション、操作のためのボタン、動画の埋め込みのように紙の上で役に立たない部品は、各セレクタの中の `@media print` で `display: none` にする。'
+  reason: 紙面を内容のために使え、コンポーネントの印刷のときの振る舞いがコンポーネントの中にまとまるため。
+  note: 印刷用の指定をファイルの末尾にまとめて書きません。ロゴや問い合わせ先のように、紙の上でも身元を示す情報は残します。
+  page: color-media/print
+  since: 0.3.0
+
+- id: print-link-urls
+  level: 推奨
+  rule: '本文の外部リンクには、`@media print` の中で擬似要素の `content` に `attr(href)` を指定し、URL を添える。'
+  reason: 紙の上ではリンクをたどれず、行き先が分からなくなるため。
+  note: '`attr(href)` は属性の値をそのまま返すので、対象は `href` が `http` で始まる本文のリンクに絞ります。'
+  page: color-media/print
+  since: 0.3.0
+
+- id: break-inside-avoid-for-units
+  level: 推奨
+  rule: '図、表、引用のように途中で分かれると読みにくいまとまりには、印刷のときに `break-inside: avoid` を指定する。'
+  reason: まとまりの途中で改ページされると、内容を2ページにまたがって読むことになるため。
+  note: 分けないことを求める指定であって保証ではなく、1ページに収まらない要素は分かれます。長い表は見出しの行を `<thead>` に入れます。
+  page: color-media/print
+  since: 0.3.0
+
+- id: no-page-break-properties
+  level: 非推奨
+  rule: '改ページの制御に `page-break-before`、`page-break-after`、`page-break-inside` を使わず、`break-before`、`break-after`、`break-inside` で書く。'
+  reason: '`page-break-*` は古い名前で、いまは `break-*` の別名として扱われているため。'
+  page: color-media/print
+  since: 0.3.0
+
+- id: print-color-adjust-exact-narrowly
+  level: 推奨
+  rule: '`print-color-adjust: exact` は背景色が情報を持つ要素にだけ指定し、ページ全体には指定しない。'
+  reason: ページ全体の背景を印刷させるとユーザーのインクを大量に使い、色の情報が必要な要素は限られるため。
+  note: ユーザーの印刷設定が優先されることがあるので、枠線などの色以外の手がかりも残します。`-webkit-print-color-adjust` は書きません。
+  page: color-media/print
+  since: 0.3.0
+
+- id: page-rule-margin-only
+  level: 推奨
+  rule: '`@page` には余白だけを指定し、`size` で用紙を決めるのは用紙が決まっている文書に限る。'
+  reason: ユーザーが使う用紙は A4 とは限らず、用紙の大きさはユーザーの設定に任せたほうがよいため。
+  note: '`@page` の値はカスタムプロパティを使わずに直接書きます。`@page` の中で宣言したカスタムプロパティは効きません（2026年9月、Chrome 154 で確認）。'
+  page: color-media/print
+  since: 0.3.0

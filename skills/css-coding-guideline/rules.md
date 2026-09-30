@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.2.0
-- 生成日: 2026-09-27
-- ルールの数: 338
+- バージョン: 0.3.0
+- 生成日: 2026-09-30
+- ルールの数: 358
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は例外なく守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -69,6 +69,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【推奨】子孫の状態や有無によって祖先のスタイルを変えるときは、JavaScript で状態のクラスを付けずに `:has()` を使う。（`has-over-state-class`）
   - 理由: 状態をHTMLとCSSだけで表せ、クラスの付け外しと実際の状態がずれることがないため。
+  - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
+- 【推奨】`:has()` の起点は `:root` や `body` ではなくコンポーネントのルートのような狭い要素にし、引数は `>` や `+` で範囲を絞る（例：`&:has(> ._input:checked)`）。（`has-narrow-anchor`）
+  - 理由: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
+  - 補足: `:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。
   - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【必須】レイヤーの順序は、読み込むCSSの先頭で `@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;` と宣言する。（`layer-order-declaration`）
   - 理由: レイヤーの順番は最初に現れた順で決まるので、先頭で宣言すれば `@import` やスタイルを書く順番に左右されなくなるため。
@@ -161,7 +165,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【必須】自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。（`dashed-ident-names`）
   - 理由: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
-  - 補足: コンテナの名前は、第8章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
+  - 補足: `view-transition-name` の名前にも付けます。コンテナの名前は、第8章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
   - 自動チェック: Stylelint: `keyframes-name-pattern`（`@keyframes` のみ）
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【禁止】`&__title` や `&--large` のように、`&` に文字をつなげてクラス名を作らない。（`no-nesting-concatenation`）
@@ -278,6 +282,18 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。（`check-stacking-context-first`）
   - 理由: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
   - 補足: z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
+  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
+  - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
+  - 補足: ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。
+  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。（`implicit-anchor-first`）
+  - 理由: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
+  - 補足: 暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。
+  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
+  - 理由: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
+  - 補足: 論理プロパティを使う規則は、第5章のルール `logical-properties` で扱います。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【必須】親の幅を超えて画面の端まで広げる量は、`calc((100lvi - 100%) / -2)` のように「画面の幅と親の幅の差の半分」の式で書き、`100vw` や `calc(50% - 50vw)` を使わない。（`full-bleed-offset-formula`）
   - 理由: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
@@ -444,9 +460,25 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【禁止】入力欄での拡大を防ぐために、`<meta name="viewport">` の `maximum-scale` や `user-scalable=no` でズームを止めない。（`no-maximum-scale`）
   - 理由: 拡大して読む必要のあるユーザーが、ページを拡大できなくなるため。
   - 詳細: 11-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+- 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
+  - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
+  - 補足: 固定の名前は、ページに1つしかない要素にだけ付けます。
+  - 詳細: 11-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
+- 【推奨】同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。（`view-transition-match-element`）
+  - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
+  - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
+  - 詳細: 11-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
 - 【禁止】エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。（`no-disabling-to-silence`）
   - 理由: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
   - 詳細: 12-3 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+- 【推奨】「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。（`verify-support-claims`）
+  - 理由: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
+  - 補足: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
+  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
+  - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
+  - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
+  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 
 ## すべてのルール
 
@@ -573,6 +605,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】子孫の状態や有無によって祖先のスタイルを変えるときは、JavaScript で状態のクラスを付けずに `:has()` を使う。（`has-over-state-class`）
   - 理由: 状態をHTMLとCSSだけで表せ、クラスの付け外しと実際の状態がずれることがないため。
   - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
+- 【推奨】`:has()` の起点は `:root` や `body` ではなくコンポーネントのルートのような狭い要素にし、引数は `>` や `+` で範囲を絞る（例：`&:has(> ._input:checked)`）。（`has-narrow-anchor`）
+  - 理由: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
+  - 補足: `:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。
+  - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【推奨】祖先の状態によって変わるスタイルは、子のルールの中に `&:is(<祖先のセレクタ> *)` の形で書く。（`is-for-ancestor-context`）
   - 理由: ひとつの要素のスタイルがひとつのルールにまとまり、ネストのセレクタを `&` で始める規約とも両立するため。
   - 補足: 例：`&:is(:scope[open] *)` は、スコープのルートの `<details>` が開いているときだけ当てはまります。
@@ -586,6 +622,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【推奨】ファイル単位でレイヤーに入れるときは、`@import url("…") layer(<レイヤー>);` で割り当てる。（`import-into-layer`）
   - 理由: どのファイルがどのレイヤーに入るのかを1か所で確認でき、各ファイルの中に `@layer` を書かずに済むため。
+  - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
+- 【必須】`@layer` と `@import` の `layer()` には、先頭の `@layer` 文で宣言した9つのレイヤー名だけを使う。（`declared-layer-names-only`）
+  - 理由: 宣言していない名前はエラーにならず、最後に宣言したレイヤーより後ろに新しいレイヤーとして作られるので、打ち間違えると順番が崩れるため。
+  - 自動チェック: Stylelint: `layer-name-pattern`
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【推奨】自分で読み込むサードパーティのCSSは、`@import url("…") layer(vendors);` で `vendors` レイヤーに入れる。（`third-party-in-vendors`）
   - 理由: レイヤーの外に置くとどのスタイルよりも強くなり、自分のコンポーネントから上書きできなくなるため。
@@ -826,7 +866,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【必須】自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。（`dashed-ident-names`）
   - 理由: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
-  - 補足: コンテナの名前は、第8章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
+  - 補足: `view-transition-name` の名前にも付けます。コンテナの名前は、第8章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
   - 自動チェック: Stylelint: `keyframes-name-pattern`（`@keyframes` のみ）
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【推奨】セレクタのネストは1段までにする。（`nesting-depth-one`）
@@ -1084,6 +1124,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 画面幅いっぱいに広げたい要素を、ガターの列まで広げるだけで作れるため。
   - 補足: 第6章のコンポジション `primary-layout` は、この形を部品にしたものです。
   - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+- 【推奨】余白の大きさは、グループの間の余白をグループの中の余白より大きくして、要素のまとまりが見て分かるようにする。（`spacing-proximity`）
+  - 理由: 人は近くにあるものを同じまとまりとして読み取るので、余白の差が小さいと、どの要素がどのグループに属するのかが分からなくなるため。
+  - 補足: カードの一覧なら、カードの中の間隔より、カードとカードの間隔を大きくします。
+  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】CSS を書くときは、テキストが2倍の長さになったら、画像がなかったら、要素の数が変わったらと考え、そのパターンで表示を確かめる。（`design-for-content-changes`）
   - 理由: CMS での更新や改修によって、デザインカンプにない内容が入ることは避けられないため。
   - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
@@ -1125,15 +1169,27 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【非推奨】`position: fixed` の要素を、`transform`、`filter`、`contain` などを指定した祖先の中に置かない。（`no-fixed-inside-transformed-ancestor`）
   - 理由: これらの祖先が包含ブロックになり、要素がビューポートではなくその祖先を基準に配置されるため。
-  - 補足: モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第11章）。
+  - 補足: 個別の変形プロパティ（`translate` など）、`backdrop-filter`、`perspective`、`content-visibility: auto` と、これらを書いた `will-change` も包含ブロックを作ります。モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第11章）。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。（`check-stacking-context-first`）
   - 理由: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
   - 補足: z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
+  - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
+  - 補足: ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。
+  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】繰り返し置くコンポーネントの中でアンカーポジショニングを使うときは、ルートに `anchor-scope` を指定して、アンカーの名前が届く範囲をコンポーネントの中に限る。（`anchor-scope-for-repeated-components`）
   - 理由: 同じ名前のアンカーが複数あると、別のコンポーネントのアンカーが基準に選ばれることがあるため。
   - 補足: アンカーポジショニングをレイアウトの要として使わない規則は、第1章のルール `no-unsupported-layout-features` で扱います。
+  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。（`implicit-anchor-first`）
+  - 理由: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
+  - 補足: 暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。
+  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
+  - 理由: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
+  - 補足: 論理プロパティを使う規則は、第5章のルール `logical-properties` で扱います。
   - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】要素を画面幅いっぱいに広げるときは、まずレイアウトのガターの列まで広げる方法を使い、ビューポート単位で広げるのは、背景の装飾と横にスクロールする領域に限る。（`full-bleed-via-layout-first`）
   - 理由: ビューポート単位はスクロールバーの幅の扱いがブラウザによって異なり、横スクロールの原因になりやすいため。
@@ -1266,6 +1322,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: キーワードでは 400 と 700 しか表せず、太さの多いフォントやデザインカンプの指定と対応させにくいため。
   - 補足: kiso.css はブラウザのデフォルトに合わせて `bolder` を使っているので、太さをそろえたいときは `base` レイヤーで上書きします。
   - 詳細: 9-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
+- 【推奨】本文の Web フォントを `font-display: swap` で使うときは、`local()` で参照する代わりのフォントの `@font-face` に `size-adjust` などの補正を指定し、Web フォントの直後に置く。（`fallback-font-metric-overrides`）
+  - 理由: 代わりのフォントから Web フォントに切り替わるときの、字幅や行の高さの違いによるレイアウトのずれを小さくできるため。
+  - 補足: 値はフォントのファイルの寸法から、Capsize や fontaine のようなツールで計算します。`ascent-override`、`descent-override`、`line-gap-override` は Safari が対応していません（2026年9月）。
+  - 詳細: 9-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
 - 【必須】`html` 要素と、ほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替える。（`lang-for-typesetting`）
   - 理由: 和文と欧文では適した組版が異なり、`lang` がないと言語に合った指定を当て分けられないため。
   - 補足: ブラウザの翻訳機能で言語が変わると、`:lang(ja)` の指定は外れます。
@@ -1334,6 +1394,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`word-break` は初期値のままにし、長い単語や URL のはみ出しは `overflow-wrap: anywhere` で防ぐ。（`overflow-wrap-over-word-break`）
   - 理由: `word-break: break-all` は次の行に移せば収まる英単語まで途中で分けてしまうが、`overflow-wrap: anywhere` は収まらない単語だけを折り返すため。
   - 補足: kiso.css は `:root` に `overflow-wrap: anywhere` を指定しています。
+  - 詳細: 9-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
+- 【推奨】本文に長い URL やファイルパスをそのまま表示するときは、`.` や `/` のような区切りの記号の前に `<wbr>` を入れる。（`wbr-for-long-urls`）
+  - 理由: `overflow-wrap: anywhere` は区切りと関係のない文字の間で折り返すので、どこまでが1つの語なのか分かりにくくなるため。
+  - 補足: 原稿を書く人が `<wbr>` を入れられない CMS の本文などでは、`overflow-wrap: anywhere` に任せます。`word-break: break-all` は使いません。
   - 詳細: 9-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
 - 【非推奨】見た目を整えるための改行に `<br>` を使わない。（`no-br-for-visual-breaks`）
   - 理由: どの画面の幅でも同じ位置で改行され、狭い画面で自然な折り返しと重なって短い行が生まれるため。
@@ -1452,6 +1516,33 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 暗い背景に白い影を付けると、影ではなく光って見えるため。
   - 補足: `--shadow--color: light-dark(oklch(0% 0 0deg / 8%), oklch(0% 0 0deg / 25%))` のように、影の色のトークンに `light-dark()` を使います。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
+- 【推奨】文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。（`text-stroke-paint-order`）
+  - 理由: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
+  - 補足: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
+  - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
+- 【推奨】ナビゲーション、操作のためのボタン、動画の埋め込みのように紙の上で役に立たない部品は、各セレクタの中の `@media print` で `display: none` にする。（`print-hide-screen-only-ui`）
+  - 理由: 紙面を内容のために使え、コンポーネントの印刷のときの振る舞いがコンポーネントの中にまとまるため。
+  - 補足: 印刷用の指定をファイルの末尾にまとめて書きません。ロゴや問い合わせ先のように、紙の上でも身元を示す情報は残します。
+  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
+- 【推奨】本文の外部リンクには、`@media print` の中で擬似要素の `content` に `attr(href)` を指定し、URL を添える。（`print-link-urls`）
+  - 理由: 紙の上ではリンクをたどれず、行き先が分からなくなるため。
+  - 補足: `attr(href)` は属性の値をそのまま返すので、対象は `href` が `http` で始まる本文のリンクに絞ります。
+  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
+- 【推奨】図、表、引用のように途中で分かれると読みにくいまとまりには、印刷のときに `break-inside: avoid` を指定する。（`break-inside-avoid-for-units`）
+  - 理由: まとまりの途中で改ページされると、内容を2ページにまたがって読むことになるため。
+  - 補足: 分けないことを求める指定であって保証ではなく、1ページに収まらない要素は分かれます。長い表は見出しの行を `<thead>` に入れます。
+  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
+- 【非推奨】改ページの制御に `page-break-before`、`page-break-after`、`page-break-inside` を使わず、`break-before`、`break-after`、`break-inside` で書く。（`no-page-break-properties`）
+  - 理由: `page-break-*` は古い名前で、いまは `break-*` の別名として扱われているため。
+  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
+- 【推奨】`print-color-adjust: exact` は背景色が情報を持つ要素にだけ指定し、ページ全体には指定しない。（`print-color-adjust-exact-narrowly`）
+  - 理由: ページ全体の背景を印刷させるとユーザーのインクを大量に使い、色の情報が必要な要素は限られるため。
+  - 補足: ユーザーの印刷設定が優先されることがあるので、枠線などの色以外の手がかりも残します。`-webkit-print-color-adjust` は書きません。
+  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
+- 【推奨】`@page` には余白だけを指定し、`size` で用紙を決めるのは用紙が決まっている文書に限る。（`page-rule-margin-only`）
+  - 理由: ユーザーが使う用紙は A4 とは限らず、用紙の大きさはユーザーの設定に任せたほうがよいため。
+  - 補足: `@page` の値はカスタムプロパティを使わずに直接書きます。`@page` の中で宣言したカスタムプロパティは効きません（2026年9月、Chrome 154 で確認）。
+  - 詳細: 10-4 印刷のスタイル（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/print.mdx）
 
 ### 第11章 インタラクションとモーション
 
@@ -1536,6 +1627,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【禁止】モーダルに、独自のフォーカストラップを実装しない。（`no-custom-focus-trap`）
   - 理由: `showModal()` で開いたダイアログは背面を操作できない状態にするので不要であり、ブラウザのツールバーへの移動まで妨げてしまうため。
   - 詳細: 11-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+- 【推奨】モーダルやドロワーの中でスクロールする要素には、`overscroll-behavior-block: contain` のように、スクロールする方向の軸だけにスクロールの連鎖を止める指定をする。（`overscroll-contain-in-overlay`）
+  - 理由: 中の要素を端までスクロールしたときに、背面のページが続けてスクロールするのを防ぐため。
+  - 補足: `dialog` と `[popover]` 自体には kiso.css が指定しています。軸を付けない `overscroll-behavior` は、横のスワイプで前のページに戻る操作まで止めてしまいます。
+  - 詳細: 11-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】1つだけを開くアコーディオンは、同じ `name` 属性を付けた `<details>` で作る。（`details-name-for-exclusive`）
   - 理由: JavaScript を書かずに、ほかの項目を閉じる動作をブラウザに任せられるため。
   - 詳細: 11-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
@@ -1582,6 +1677,14 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【禁止】入力欄での拡大を防ぐために、`<meta name="viewport">` の `maximum-scale` や `user-scalable=no` でズームを止めない。（`no-maximum-scale`）
   - 理由: 拡大して読む必要のあるユーザーが、ページを拡大できなくなるため。
   - 詳細: 11-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+- 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
+  - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
+  - 補足: 固定の名前は、ページに1つしかない要素にだけ付けます。
+  - 詳細: 11-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
+- 【推奨】同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。（`view-transition-match-element`）
+  - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
+  - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
+  - 詳細: 11-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
 
 ### 第12章 実務での運用
 
@@ -1698,4 +1801,12 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。（`record-ai-corrections`）
   - 理由: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
+  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨】「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。（`verify-support-claims`）
+  - 理由: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
+  - 補足: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
+  - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
+  - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
+  - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
   - 詳細: 12-4 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
