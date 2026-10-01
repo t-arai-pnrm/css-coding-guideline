@@ -176,7 +176,7 @@
   level: 推奨
   rule: ブレイクポイントを変数として持つフレームワークを使う案件では、独自の値を足さず、フレームワークの変数を使う。
   reason: 案件の中でブレイクポイントの値がばらばらになるのを防ぐため。
-  note: 'Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティはクエリの条件で使えません（`no-var-in-query`）。'
+  note: 'Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティは、メディアクエリの条件では使えません（`no-var-in-query`）。'
   page: responsive/media-queries
   since: 0.3.0
 
@@ -197,8 +197,9 @@
 
 - id: no-var-in-query
   level: 禁止
-  rule: '`@media` と `@container` の条件式の中で `var()` を使わない。'
-  reason: クエリの条件ではカスタムプロパティを参照できず、条件そのものが無効になるため。
+  rule: '`@media` の条件と、`@container` のサイズの条件の中で `var()` を使わない。'
+  reason: メディアクエリの条件ではカスタムプロパティを参照できず、コンテナのサイズの条件では仕様で認められていても対象のブラウザでそろって動かず、値が問い合わせるコンテナで解決されて意図とずれやすいため。
+  note: 'スタイルクエリで `style(--a: var(--b))` のようにカスタムプロパティどうしを比べる条件は、対象にしません。'
   aiProne: true
   page: responsive/media-queries
   since: 0.1.0

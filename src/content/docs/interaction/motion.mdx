@@ -284,29 +284,33 @@ Firefoxは、2026年9月の時点で `display` のトランジションに対応
 
 `animation-range` を指定しない（`normal`）と、範囲はタイムラインの全体になり、`view()` では、要素が画面に入り始めてから出終わるまでの全体（`cover`）に広がります。見せたいタイミングとずれやすいので、範囲は明示します。`entry` は画面に入る間、`exit` は出ていく間、`contain` は要素の全体が画面に収まっている間だけを範囲にします。範囲の前後の見た目は `animation-fill-mode` で決まるので、例では `both` を指定しています。
 
-画面に入ったら1回だけ動かす演出では、`animation-play-state: paused` と `animation-fill-mode: both` を組み合わせます。一時停止していても、`both` によって `from` の状態が描画されるので、要素は動き始める前の位置で待機します。JavaScriptが `data-revealed` を付けたら、再生に切り替えるだけです。
+画面に入ったら1回だけ動かす演出では、`animation-play-state: paused` と `animation-fill-mode: both` を組み合わせます。一時停止していても、`both` によって `from` の状態が描画されるので、要素は動き始める前の位置で待機します。待機させるのは、JavaScriptがルートに `data-motion-mode="motion"` を付けたときだけです。要素が画面に入り、JavaScriptが `data-revealed` を付けたら、再生に切り替えます。
 
 ```css title="🙆‍♂ Recommended: 一時停止したアニメーションを、画面に入ったら再生する"
 @scope (.scoped.feature-list) to (.scoped) {
   ._item {
     --translate-from--y-value: 24px;
 
-    @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-      animation-name: --opacity-from, --translate-from;
-      animation-duration: var(--duration--slow);
-      animation-timing-function: var(--ease--quint-out);
-      animation-fill-mode: both;
-      animation-play-state: paused;
+    &:is(:scope[data-motion-mode="motion"] *) {
+      @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+        animation-name: --opacity-from, --translate-from;
+        animation-duration: var(--duration--slow);
+        animation-timing-function: var(--ease--quint-out);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+      }
     }
 
-    &[data-revealed] {
+    &[data-revealed]:is(:scope[data-motion-mode="motion"] *) {
       animation-play-state: running;
     }
   }
 }
 ```
 
-動き始める前の状態のために `opacity: 0` を別に書く必要はなく、`@keyframes` が開始地点のただひとつの情報源になります。JavaScriptのない環境には `scripting: enabled` の条件で何も当たらないので、内容はそのまま読めます（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。動く前の要素を隠すのに、`visibility: hidden` や `display: none` を使わないのも大切です。スクリーンリーダーで読めなくなったり、ページ内検索で見つからなくなったりします。
+動き始める前の状態のために `opacity: 0` を別に書く必要はなく、`@keyframes` が開始地点のただひとつの情報源になります。動く前の要素を隠すのに、`visibility: hidden` や `display: none` を使わないのも大切です。スクリーンリーダーで読めなくなったり、ページ内検索で見つからなくなったりします。
+
+待機の条件が `scripting: enabled` だけだと、スクリプトの読み込みや初期化に失敗した環境で、要素が透明のまま止まります。`data-motion-mode` は `IntersectionObserver` で監視を始めた後に付けるので、処理が途中で止まれば属性は付かず、内容はそのまま読めます（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。再生のセレクタにも同じ条件を書くのは、待機の宣言より詳細度を高くして、確実に上書きするためです。属性の付け方は、後の「JavaScriptの演出と `data-motion-mode`」で説明します。
 
 画面に入ったら1回だけ動かす演出も、CSSだけで書ける仕様が出てきています。`timeline-trigger` で「ビュー進行タイムラインのどの範囲に入ったか」を引き金として定義し、`animation-trigger` で、その引き金が引かれたときにアニメーションを再生します。スクロール駆動アニメーションと違い、再生はスクロール量に連動しないので、スクロールを戻しても逆再生されません。ただし、2026年10月の時点で対応しているのはChrome系のブラウザ（Chrome 146以降）だけです。対応していない環境では `animation-trigger` が無視され、アニメーションは読み込んだ直後に画面の外で再生を終えてしまいます。そのため本書では、`IntersectionObserver` で属性を付ける方法を基本とし、すべてのブラウザが対応したら置き換えを検討します。
 
@@ -345,7 +349,7 @@ JavaScriptのアニメーションライブラリを使う前に、CSSで作れ�
 
 スクロールに合わせて段落を入れ替えるような凝った演出は、そうした動きの例で、JavaScriptのアニメーションライブラリで作ることがあります。このとき、演出のためのスタイル（要素を重ねる、最初は隠しておくなど）を常に当てておくと、JavaScriptが動かない環境で内容が読めなくなります。
 
-私は、JavaScriptがコンポーネントのルートに `data-motion-mode` を付け、演出のためのスタイルを `data-motion-mode="motion"` のときだけ当てるようにしています。JavaScriptは、動きを減らす設定がないときに `motion` を、設定があるときに `reduced` を付けます。基本のスタイルは、JavaScriptがないときと動きを減らす設定のときの、最終的な状態として書きます。
+私は、JavaScriptがコンポーネントのルートに `data-motion-mode` を付け、演出のためのスタイルを `data-motion-mode="motion"` のときだけ当てるようにしています。JavaScriptは、動きを減らす設定がないときに `motion` を、設定があるときに `reduced` を付けます。基本のスタイルは、JavaScriptがないときと動きを減らす設定のときの、最終的な状態として書きます。演出のためのスタイルは、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」のルールに合わせて、`@media (scripting: enabled)` の中にも書きます。
 
 ```css title="🙆‍♂ Recommended: 演出のためのスタイルを、motion のときだけ当てる"
 @scope (.scoped.story-section) to (.scoped) {
@@ -354,15 +358,19 @@ JavaScriptのアニメーションライブラリを使う前に、CSSで作れ�
     gap: 48px;
 
     &:is(:scope[data-motion-mode="motion"] *) {
-      grid-template-areas: "--step";
-      gap: 0;
+      @media (scripting: enabled) {
+        grid-template-areas: "--step";
+        gap: 0;
+      }
     }
   }
 
   ._step {
     &:is(:scope[data-motion-mode="motion"] *) {
-      grid-area: --step;
-      opacity: 0;
+      @media (scripting: enabled) {
+        grid-area: --step;
+        opacity: 0;
+      }
     }
   }
 }
@@ -371,6 +379,7 @@ JavaScriptのアニメーションライブラリを使う前に、CSSで作れ�
 ```js title="data-motion-mode を付ける JavaScript の例"
 const root = document.querySelector('.story-section');
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+// 演出の準備（ライブラリの読み込みや監視の登録）が終わってから付ける
 root.dataset.motionMode = reduced.matches ? 'reduced' : 'motion';
 ```
 

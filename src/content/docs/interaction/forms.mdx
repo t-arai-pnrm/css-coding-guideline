@@ -76,33 +76,31 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
     place-content: center;
     inline-size: 1lh;
     block-size: 1lh;
-    border-color: currentColor;
+    border-color: var(--color--neutral--600);
     border-radius: 4px;
-    color: var(--color--neutral--50);
     appearance: none;
-
-    &::before {
-      content: "";
-      inline-size: 0.3lh;
-      block-size: 0.55lh;
-      border-block-end: 2px solid transparent;
-      border-inline-end: 2px solid transparent;
-      rotate: 45deg;
-    }
 
     &:checked {
       border-color: var(--color--accent--600);
       background-color: var(--color--accent--600);
     }
 
+    /* チェックマークは、選択したときだけ作る */
     &:checked::before {
-      border-color: currentColor;
+      content: "";
+      inline-size: 0.3lh;
+      block-size: 0.55lh;
+      border-block-end: 2px solid var(--color--neutral--50);
+      border-inline-end: 2px solid var(--color--neutral--50);
+      rotate: 45deg;
     }
   }
 }
 ```
 
 `input` そのものなので、キーボードで操作でき、ベーススタイルのフォーカスリングもそのまま表示されます。状態は `:checked` で選べるので、ほかの要素とつなぐ必要もありません。大きさは `inline-size` と `block-size` の両方で指定します。`input` の大きさを `aspect-ratio` で決めると、Safariでは縦横の比率を保てずに、部品を潰してしまうことがあるからです。強制カラーモードで背景色が消えたときの見え方は、「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で扱います。
+
+チェックマークの `::before` は、選択したときだけ作ります。未選択のときも作っておき、枠線を `transparent` にして隠すと、強制カラーモードで枠線の色がシステムカラーに置き換わり、未選択でもチェックマークが見えてしまいます。状態の違いを、色を透明にするかどうかだけで表さないようにします。
 
 `<select>` についても、`appearance: base-select` で見た目を自由に変えられる仕様が進んでいます。ただし、2026年9月の時点で対応しているのはChrome系のブラウザとSafari 27だけです。
 
@@ -194,9 +192,9 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 エラーは、色だけで伝えないようにします。上の例では、入力例を示すヒントの文字を太くしています。また、`:user-invalid` が変えるのは見た目だけで、スクリーンリーダーには伝わりません。エラーの内容を読み上げさせるには、`aria-invalid` や、エラーの文章を関連付ける `aria-describedby` を、JavaScriptで設定します。
 
-次のデモでは、メールアドレスの欄に不正な値を入れて欄を離れるか、何も入力せずに「送信する」を押すと、エラーの表示を確かめられます。ラジオボタンとチェックボックスは `accent-color` で色だけを変え、スイッチは `input` 自体に描いています。
+次のデモでは、メールアドレスの欄に不正な値を入れて欄を離れるか、何も入力せずに「送信する」を押すと、エラーの表示を確かめられます。ラジオボタンは `accent-color` で色だけを変え、同意のチェックボックスとスイッチは `input` 自体に描いています。開発者ツールで強制カラーモードを再現すると、未選択のチェックボックスにチェックマークが出ないことも確かめられます。
 
-<Demo title="accent-color、switch 属性のスイッチ、:user-invalid によるエラーの表示" html={formHtml} css={formCss} />
+<Demo title="accent-color、input 自体に描いたチェックボックスとスイッチ、:user-invalid によるエラーの表示" html={formHtml} css={formCss} />
 
 ## 入力欄の大きさと文字サイズ
 

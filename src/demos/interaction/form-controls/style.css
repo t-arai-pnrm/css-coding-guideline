@@ -102,6 +102,32 @@
       }
     }
 
+    /* 見た目を作り直したチェックボックス。チェックマークは選択したときだけ作る */
+    ._checkbox {
+      display: inline grid;
+      flex-shrink: 0;
+      place-content: center;
+      inline-size: 1lh;
+      block-size: 1lh;
+      border-color: oklch(45% 0 0deg);
+      border-radius: 4px;
+      appearance: none;
+
+      &:checked {
+        border-color: var(--_accent);
+        background-color: var(--_accent);
+      }
+
+      &:checked::before {
+        content: "";
+        inline-size: 0.3lh;
+        block-size: 0.55lh;
+        border-block-end: 2px solid oklch(100% 0 0deg);
+        border-inline-end: 2px solid oklch(100% 0 0deg);
+        rotate: 45deg;
+      }
+    }
+
     ._submit {
       padding-block: 8px;
       padding-inline: 20px;

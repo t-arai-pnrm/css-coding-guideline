@@ -142,7 +142,9 @@ Safariが対応したのはバージョン18なので、本書の対象のブラ
 
 ## グラデーションは補間の色空間を指定する
 
-グラデーションの途中の色は、2色のあいだを補間して作られます。補間の色空間を指定しないと、sRGBのチャンネルごとに補間するので、彩度の高い2色をつなぐと、中間の色が灰色にくすみます。黄色と青のように、色相が離れた2色でとくに目立ちます。`in oklch` のように色空間を書くと、知覚に近い明度、彩度、色相で補間されます。
+グラデーションの途中の色は、2色のあいだを補間して作られます。補間の色空間を書かないときに使われる色空間は、色の書き方で決まります。`#rrggbb` や `rgb()`、`hsl()` のような旧来の書き方の色だけをつなぐと、互換性のためにsRGBのチャンネルごとに補間され、彩度の高い2色の中間が灰色にくすみます。`oklch()` などの新しい書き方の色を含むと、既定の色空間はOklabになります。
+
+本書では、色の書き方にかかわらず、`in oklch` のように補間の色空間を書きます。既定に任せると、色の書き方を変えただけで中間の色が変わり、どの補間を意図したのかがコードから読み取れないからです。`oklch` で補間すると、知覚に近い明度、彩度、色相で中間の色が作られます。黄色と青のように色相が離れた2色でも、中間が灰色にくすみません。
 
 ```css title="🙆‍♂ Recommended: グラデーションに補間の色空間を書く"
 ._hero {
@@ -292,6 +294,8 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 - [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)
 - [color-mix() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color-mix)
 - [linear-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/linear-gradient)
+- [CSS Images Level 4: Coloring the Gradient Line](https://drafts.csswg.org/css-images-4/#coloring-gradient-line)（既定の補間の色空間はOklab）
+- [CSS Color Level 4: Color Space for Interpolation](https://drafts.csswg.org/css-color-4/#interpolation-space)（旧来のsRGBの書き方の色どうしはsRGBで補間する）
 - [Make Beautiful Gradients](https://www.joshwcomeau.com/css/make-beautiful-gradients/)（Josh W. Comeau。補間の色空間と灰色のくすみ。記事はHSLも勧めますが、本書は `oklch` を使います）
 - [Color Formats in CSS](https://www.joshwcomeau.com/css/color-formats/)（Josh W. Comeau。広色域と色の形式。記事は当時の推奨として `hsl()` を挙げています）
 - [light-dark() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark)

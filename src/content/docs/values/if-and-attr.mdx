@@ -83,7 +83,9 @@ import rowsCss from '../../../demos/values/textarea-rows/style.css?raw';
 
 一方で、2つの方法には性質の違いがあります。`style` 属性で渡したカスタムプロパティは、子孫の要素に継承されます。`attr()` が読むのは、その要素自身の属性だけです。また、`style` 属性の方法は本書の対象のすべてのブラウザで動きますが、型付きの `attr()` はSafariで動きません（2026年10月確認）。
 
-どちらの方法でも、HTMLに書いた値を、CSSのメディアクエリや `:hover` で上書きできません。`style` 属性の宣言は、同じ要素へのCSSの宣言よりも優先されるからです（「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」）。状態や画面の幅で変える値は、CSSの側で公開プロパティに渡します。HTMLから状態ごとの値を渡したいときは、`--card--background--hocus` のように接尾辞を付けた公開プロパティでモードごとの値を渡し、どれを使うかはコンポーネントの内部で選びます。
+HTMLに書いた値そのものは、CSSで書き換えられません。属性の値はCSSから変えられず、`style` 属性で渡したカスタムプロパティは、同じ要素へのCSSの宣言より優先されます（「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」）。一方、その値を読むプロパティの宣言は、ふつうの宣言としてカスケードで比べられます。`padding-inline: attr(data-gap type(<length>), 16px)` の後に、メディアクエリの中で `padding-inline: 24px` と書けば、属性はそのままで余白だけが変わります。
+
+`style` 属性のカスタムプロパティを `var()` で読む宣言も、同じように上書きできます。ただし、変わるのは読む側の宣言だけで、`style` 属性で渡した公開プロパティの値は変わりません。状態や画面の幅で変える値は、CSSの側で公開プロパティに渡します。HTMLから状態ごとの値を渡したいときは、`--card--background--hocus` のように接尾辞を付けた公開プロパティでモードごとの値を渡し、どれを使うかはコンポーネントの内部で選びます。
 
 そのため本書では、コンポーネントに値を渡す手段は、`style` 属性の公開プロパティのままにします。`attr()` を使うのは、`rows` のようにHTMLが意味を持たせた属性の値を、CSSでも使いたいときです。{/* 要確認: 出典なし */}`data-variant="featured"` のように、選択肢から1つを選ぶバリエーションは、複数のプロパティをまとめて変えることが多いので、これまでどおり属性セレクタで書きます。Safariが型付きの `attr()` に対応したら、この分け方を見直します。
 
@@ -185,6 +187,7 @@ import rowsCss from '../../../demos/values/textarea-rows/style.css?raw';
 - [if() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/if)
 - [CSS Values and Units Module Level 5: Attribute References](https://drafts.csswg.org/css-values-5/#attr-notation)（W3C）
 - [CSS Values and Units Module Level 5: Conditional Value Selection](https://drafts.csswg.org/css-values-5/#if-notation)（W3C）
+- [CSS Cascading and Inheritance Level 5: Cascade Sorting Order](https://www.w3.org/TR/css-cascade-5/#cascade-sort)（W3C）
 - [CSS Conditional Rules Module Level 5: Style Container Queries](https://drafts.csswg.org/css-conditional-5/#style-container)（W3C）
 - [Introduction to CSS if statements and conditional logic](https://markodenic.com/introduction-to-css-if-statements-and-conditional-logic/)（Marko Denic）
 - [field-sizing - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing)

@@ -38,7 +38,7 @@
 - id: gradient-interpolation-space
   level: 推奨
   rule: 彩度の高い2色以上をつなぐグラデーションには、`linear-gradient(in oklch, …)` のように補間の色空間を書く。
-  reason: 初期値の sRGB 補間では中間の色が灰色にくすみ、色空間を指定すると知覚に近い明度と彩度で補間されるため。
+  reason: 既定の補間の色空間は色の書き方で変わり（旧来の書き方の色だけなら sRGB で、中間の色が灰色にくすむ。それ以外は Oklab）、色空間を書けば意図した補間がコードから分かるため。
   note: '`oklch` の色相は `shorter hue` の経路で補間されます。長いほうを通すときは `in oklch longer hue` と書きます。対応していない環境ではこの宣言が無視されるので、`background-color` も書いておきます。'
   page: color-media/color
   since: 0.4.0
