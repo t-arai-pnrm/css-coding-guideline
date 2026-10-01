@@ -67,9 +67,9 @@
 
 - id: focus-visible-over-focus-within
   level: 推奨
-  rule: キーボード操作でのフォーカスに限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。
-  reason: '`:focus-within` は、子孫がマウスのクリックでフォーカスを受けたときにも当てはまり、フォーカスリングを出すべき場面に絞れないため。'
-  note: 入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。
+  rule: ブラウザがフォーカスの表示を必要と判断する場合に限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。
+  reason: '`:focus-within` は、ボタンをマウスでクリックしたときのように、ブラウザがフォーカスリングを出さない場面にも当てはまるため。'
+  note: '`:focus-visible` は入力の手段を判定しません。テキストの入力欄は、クリックでフォーカスしたときにも当てはまります。入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。'
   page: interaction/states-and-focus
   since: 0.4.0
 

@@ -95,17 +95,27 @@ env(safe-area-inset-bottom, 16px)
   position: fixed;
   inset-inline: 0;
   inset-block-end: 0;
+
+  /* セーフエリアは画面の物理的な左右にあるので、物理プロパティで書く */
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-right: max(16px, env(safe-area-inset-right));
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-left: max(16px, env(safe-area-inset-left));
   padding-block: 12px max(12px, env(safe-area-inset-bottom));
 }
 ```
 
-画面の端から離して浮かせるボタンは、`inset-block-end` に通常の距離とセーフエリアを `calc()` で足します。浮かせるボタンには、ボタンとホームインジケーターの間にも背景のない隙間が必要だからです。
+画面の端から離して浮かせるボタンは、通常の距離とセーフエリアを `calc()` で足します。浮かせるボタンには、ボタンとホームインジケーターや切り欠きの間にも、背景のない隙間が必要だからです。画面の右下に置くボタンは、横向きの端末で右側へ来る切り欠きに備えて、下端だけでなく右端のセーフエリアも足します。位置もセーフエリアと同じく画面の物理的な方向で決まるので、`right` と `bottom` で書きます。
 
 ```css title="🙆‍♂ Recommended: 浮かせるボタンは、通常の距離にセーフエリアを足す"
 ._back-to-top {
   position: fixed;
-  inset-block-end: calc(16px + env(safe-area-inset-bottom));
-  inset-inline-end: 16px;
+
+  /* 画面の物理的な右下に置き、物理的な方向のセーフエリアを足す */
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  right: calc(16px + env(safe-area-inset-right));
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  bottom: calc(16px + env(safe-area-inset-bottom));
 }
 ```
 
@@ -170,6 +180,7 @@ iframeの中では、実機のセーフエリアは再現できません。ifram
 - [&lt;meta name="viewport"&gt; - HTML | MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/viewport)
 - [CSS Environment Variables Module Level 1](https://drafts.csswg.org/css-env-1/)
 - [CSS Viewport Module Level 1](https://drafts.csswg.org/css-viewport/)
+- [Designing Websites for iPhone X | WebKit](https://webkit.org/blog/7929/designing-websites-for-iphone-x/)（2017年。横向きの左右のセーフエリアと `max()` の組み合わせ）
 - [Prepare for viewport resize behavior changes coming to Chrome on Android | Chrome for Developers](https://developer.chrome.com/blog/viewport-resize-behavior)
 - [Using safe-area-inset to build mobile-safe layouts | Polypane](https://polypane.app/blog/using-safe-area-inset-to-build-mobile-safe-layouts/)
 - [少しの記述でユーザビリティやアクセシビリティを向上させるHTML/CSSテクニック集 | TAK](https://www.tak-dcxi.com/article/html-css-techniques-to-improve-usability-and-accessibility-with-minimal-code/)

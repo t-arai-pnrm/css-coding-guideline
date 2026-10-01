@@ -313,7 +313,7 @@
   level: 必須
   rule: '画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。'
   reason: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
-  note: 対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
+  note: 横向きの画面では左右にもセーフエリアがあるので、左右の端に接するバーやボタンには `env(safe-area-inset-left)` と `env(safe-area-inset-right)` も加えます。対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
   aiProne: true
   page: responsive/safe-area
   since: 0.5.0

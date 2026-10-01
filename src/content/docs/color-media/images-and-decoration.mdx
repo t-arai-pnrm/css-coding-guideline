@@ -197,16 +197,28 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
   --shape--triangle-left: polygon(0 50%, 100% 0, 100% 100%);
 }
 
+._tooltip {
+  position: relative;
+}
+
 ._tooltip::after {
   --_size: 16px;
 
   content: "";
+
+  /* ツールチップの下端の中央から、下へ突き出す */
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 50%;
   clip-path: var(--shape--triangle-bottom);
   inline-size: var(--_size);
   block-size: calc(var(--_size) / 2 * tan(60deg));
   background-color: inherit;
+  translate: -50% 0;
 }
 ```
+
+三角形は、ツールチップの本体を基準に絶対配置します。絶対配置した擬似要素はブロックの箱になるので、`display` を指定しなくても、`inline-size` と `block-size` が効きます。`translate: -50% 0` で三角形の幅の半分だけ戻し、本体の中央にそろえます。
 
 `polygon()` の値は直接書かず、トークンとして定義します。`polygon(0 0, 100% 0, 50% 100%)` という値を見て、下向きの三角形だとすぐに気づく人は多くないでしょう。`--shape--triangle-bottom` という名前なら、形がすぐに分かります。高さを `tan(60deg)` で計算すると、正三角形になります。
 
@@ -215,6 +227,9 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 ```css title="🙆‍♂ Recommended: マスクで切り抜き、背景色で塗る"
 ._more::after {
   content: "";
+
+  /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
+  display: inline flow-root;
   mask-image: var(--chevron--rightward);
   mask-repeat: no-repeat;
   mask-position: center;
@@ -224,6 +239,8 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
   background-color: var(--background-current);
 }
 ```
+
+`display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定がなくても描けます。
 
 `background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
 

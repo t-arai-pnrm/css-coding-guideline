@@ -539,7 +539,7 @@
   level: 推奨
   rule: 同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。
   reason: '`stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。'
-  note: "横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。"
+  note: "横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。CMS で編集者が入力する本文エリアの中には、どちらも使わず `.wysiwyg` で余白を決めます（`prose-not-on-cms-body`）。"
   aiProne: true
   page: layout/compositions/stack
   since: 0.5.0

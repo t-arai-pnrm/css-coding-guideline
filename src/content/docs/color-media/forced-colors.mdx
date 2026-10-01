@@ -141,6 +141,9 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 ```css title="🙆‍♂ Recommended: アイコンの色を --background-current から受け取る"
 ._more::after {
   content: "";
+
+  /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
+  display: inline flow-root;
   mask-image: var(--chevron--rightward);
   mask-repeat: no-repeat;
   mask-position: center;
@@ -160,6 +163,9 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 ```css title="🙆‍♂ Recommended: グラデーションが消えると、下のシステムカラーが見える"
 ._crumb::before {
   content: "";
+
+  /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
+  display: inline flow-root;
   mask-image: var(--chevron--rightward);
   mask-repeat: no-repeat;
   mask-position: center;
@@ -185,20 +191,28 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 ## インラインSVGと画像のアイコン
 
-インラインSVGの色は、強制カラーモードでも置き換わるとは限りません。Firefox 138のコントラストの設定では、`currentColor` がシステムカラーに置き換わらない場合があります。Chrome 153のエミュレーションでも、`fill` 属性やCSSで指定したSVGの色は、元の色のままでした（2026年9月確認）。そこで、強制カラーモードのときは、SVGの `fill` と `stroke` をシステムカラーに固定します。
+インラインSVGの色は、強制カラーモードでも置き換わるとは限りません。Firefox 138のコントラストの設定では、`currentColor` がシステムカラーに置き換わらない場合があります。Chrome 153のエミュレーションでも、`fill` 属性やCSSで指定したSVGの色は、元の色のままでした（2026年9月確認）。そこで、強制カラーモードのときは、プロジェクトで管理している単色のアイコンに限って、`fill` と `stroke` をシステムカラーに固定します。
 
-```css title="🙆‍♂ Recommended: インラインSVGの色を、文脈に合ったシステムカラーに固定する"
+対象を見分けるために、単色のアイコンは `svg` 要素に `fill="currentColor"`（塗りで描く場合）か `stroke="currentColor"`（線で描く場合）を書き、図形の要素には色を書かないことにします。塗りで描くアイコンには `fill` だけを、線で描くアイコンには `stroke` だけを補正します。両方をすべての `svg` に指定すると、もともと線のない塗りのアイコンにも、`svg` 要素から継承した線が描かれてしまいます。`stroke` の初期値は `none` で、`fill` と `stroke` はどちらも継承するからです（SVG 2）。
+
+```css title="🙆‍♂ Recommended: 単色のアイコンの色を、文脈に合ったシステムカラーに固定する"
 :where(svg) {
   @media (forced-colors: active) {
     --_b--svg-foreground: CanvasText;
-
-    stroke: var(--_b--svg-foreground) !important;
   }
 }
 
-:where(svg [fill]:not([fill="none"])) {
+/* 塗りで描くアイコン */
+:where(svg[fill="currentColor" i]) {
   @media (forced-colors: active) {
     fill: var(--_b--svg-foreground) !important;
+  }
+}
+
+/* 線で描くアイコン */
+:where(svg[stroke="currentColor" i]) {
+  @media (forced-colors: active) {
+    stroke: var(--_b--svg-foreground) !important;
   }
 }
 
@@ -221,7 +235,11 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 }
 ```
 
-ここで `!important` を使うのは、ベーススタイルの詳細度が0だからです。コンポーネントの側でSVGの色を指定していると、`!important` がなければそちらが勝ち、システムカラーになりません。強制カラーモードでは、どのような指定にも負けずにシステムカラーを使う必要があるので、`!important` を付けます。`!important` を使ってよい場面は、「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で整理しています。
+ここで `!important` を使うのは、ベーススタイルの詳細度が0だからです。コンポーネントの側で `svg` 要素の色を指定していると、`!important` がなければそちらが勝ち、システムカラーになりません。`!important` を使ってよい場面は、「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で整理しています。
+
+ただし、この指定が補正できるのは、`svg` 要素に書いた色と、それを継承する図形だけです。図形の要素に `fill` や `stroke` を属性やCSSで書くと、その値が継承した値より優先されるので、システムカラーには置き換わりません。CSSの `fill: currentColor` で色を決めるアイコンも、属性のセレクタには当てはまらないので、そのコンポーネントの中で同じ補正を書きます。`fill="none"` のように描かない部分は、もとの `none` のまま残ります。
+
+ロゴやイラストのような多色のSVGは、この補正の対象にしません。1色に置き換えると、色の違いで描き分けていた部分の区別がなくなるからです。多色のSVGは、次の `<img>` のアイコンと同じく、強制カラーモードの背景に溶け込まないかを確かめます。{/* 要確認: 出典なし */}
 
 `<img>` で表示するアイコンは、強制カラーモードの影響を受けません。強制カラーモードでは配色が `light dark` として扱われるので、黒いアイコンは黒い背景に、白いアイコンは白い背景に溶け込むおそれがあります。単色のアイコンなら、`filter` で背景と反対の色に塗りつぶします。
 
@@ -295,4 +313,5 @@ AIにデザインを実装させると、薄いグレーの文字や、淡い色
 - [forced-colors - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/forced-colors)
 - [system-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/system-color)
 - [Forced Colors Explained: A Practical Guide](https://polypane.app/blog/forced-colors-explained-a-practical-guide/)（Polypane。`outline-color: transparent` とシステムカラーの一覧）
+- [Scalable Vector Graphics (SVG) 2 — Painting: Filling, Stroking and Marker Symbols](https://www.w3.org/TR/SVG2/painting.html)（W3C。`fill` と `stroke` の初期値と継承）
 - [WebAIM: Contrast Checker](https://webaim.org/resources/contrastchecker/)

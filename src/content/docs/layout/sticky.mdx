@@ -59,9 +59,13 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 ## 祖先のスクロールコンテナ
 
-`sticky` の要素は、`overflow` が `visible` 以外の祖先のうち、いちばん近いものを基準に留まります。その祖先が実際にはスクロールしなくても同じです。たとえば、祖先の `overflow: hidden` は、スクロールしない領域を作ります。`sticky` の要素はその領域を基準にしてしまい、ページのスクロールには反応しなくなります。
+`sticky` の要素は、いちばん近い祖先のスクロールコンテナを基準に留まります。スクロールコンテナを作るのは、`overflow` が `auto`、`scroll`、`hidden` の要素です。`visible` と `clip` は、それだけではスクロールコンテナを作りません。
 
-原因がはっきりしないときは、DevToolsで `sticky` の要素から祖先へ順にたどり、`overflow` が `visible` 以外の要素を探します。見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[7-8 変化に強いレイアウト](/layout/defensive/)」）。
+スクロールコンテナは、実際にはスクロールしなくても基準になります。たとえば、祖先の `overflow: hidden` は、ユーザーがスクロールできないスクロールコンテナを作ります。`sticky` の要素はその領域を基準にしてしまい、ページのスクロールには反応しなくなります。
+
+原因がはっきりしないときは、DevToolsで `sticky` の要素から祖先へ順にたどります。Computedタブで `overflow-x` と `overflow-y` の算出値を見て、`auto`、`scroll`、`hidden` のどれかになっている要素を探します。書いた値ではなく算出値を見るのは、片方の軸だけを指定すると、もう一方の軸の値も変わることがあるからです。たとえば `overflow-x: hidden` だけを書くと、`overflow-y` の `visible` は `auto` として算出され、その要素は縦方向にもスクロールするスクロールコンテナになります。
+
+見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[7-8 変化に強いレイアウト](/layout/defensive/)」）。
 
 親子のマージンの相殺を止めるために `overflow: auto` を使う書き方も、同じ理由で避けます。相殺を止めるなら `display: flow-root` を使います（「[7-7 余白を設計する](/layout/spacing/)」）。
 
@@ -132,4 +136,5 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 - [align-self - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/align-self)
 - [Using container scroll-state queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
 - [CSS Positioned Layout Module Level 3 - Sticky positioning](https://drafts.csswg.org/css-position-3/#sticky-pos)（W3C）
+- [CSS Overflow Module Level 3 - Scrolling and Clipping Overflow](https://drafts.csswg.org/css-overflow-3/#overflow-properties)（W3C）
 - [Getting stuck: all the ways position: sticky can fail](https://polypane.app/blog/getting-stuck-all-the-ways-position-sticky-can-fail/)（Polypane）

@@ -218,7 +218,9 @@ ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た�
 
 子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
 
-フォーカスを受けた子に応じて親の見た目を変えるときは、`:focus-within` と `:has(:focus-visible)` を使い分けます。`:focus-within` は、子孫のどれかが `:focus` に当てはまれば、マウスでクリックしたときにも当てはまります（MDN）。入力欄をクリックした時点で、グループ全体を強調してよいなら、これで足ります。キーボード操作でフォーカスが来たときだけに絞りたいなら、`&:has(:focus-visible)` と書きます。`:has()` には `:checked` のような任意の擬似クラスも入れられるので、条件をより細かく決められます。
+フォーカスを受けた子に応じて親の見た目を変えるときは、`:focus-within` と `:has(:focus-visible)` を使い分けます。`:focus-within` は、子孫のどれかが `:focus` に当てはまれば当てはまるので、ボタンをマウスでクリックしたときにも親が強調されます（MDN）。子のどれかにフォーカスした時点でグループ全体を強調してよいなら、これで足ります。ブラウザがフォーカスの表示を必要と判断する場合だけ親を強調したいなら、`&:has(:focus-visible)` と書きます。
+
+ただし、`:focus-visible` は入力の手段を判定する擬似クラスではありません。仕様が示す目安では、ボタンをマウスでクリックしたときには当てはまりませんが、テキストの入力欄はクリックやタッチでフォーカスしたときにも当てはまります（Selectors Level 4）。入力欄の多いグループでは、`:has(:focus-visible)` と `:focus-within` の差はほとんどありません。ユーザーがフォーカスの常時表示を選んでいる場合は、クリックでフォーカスした要素も `:focus-visible` に当てはまるとされています。
 
 擬似クラスでもARIA属性でも表せない状態だけを、data属性で表します。たとえば、画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` のように、見た目のためだけにある状態です。支援技術に伝える意味のない値を、ARIA属性にするわけにはいきません。
 
@@ -287,4 +289,5 @@ ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た�
 - [The Undeniable Utility Of CSS :has | Josh W. Comeau](https://www.joshwcomeau.com/css/has/)
 - [An Interactive Guide to CSS Transitions | Josh W. Comeau](https://www.joshwcomeau.com/animation/css-transitions/)（2021年。ホバーで動く要素のちらつき）
 - [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)
+- [Selectors Level 4 — The Focus-Indicated Pseudo-class: :focus-visible](https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo)（W3C、仕様が示すブラウザの判断の目安）
 - [解説書 達成基準 2.4.11: 隠されないフォーカス (最低限)](https://waic.jp/translations/WCAG22/Understanding/focus-not-obscured-minimum)（WAICによるWCAG 2.2解説書の日本語訳）

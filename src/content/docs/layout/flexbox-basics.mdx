@@ -68,14 +68,14 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 ## `flex: 1` は `flex-basis` も変える
 
-`flex` は、`flex-grow`、`flex-shrink`、`flex-basis` をまとめて指定するショートハンドです。よく使う値は次の4つで、`flex: 1` は「伸びる」という意味に見えますが、`flex-basis` も0にします。
+`flex` は、`flex-grow`、`flex-shrink`、`flex-basis` をまとめて指定するショートハンドです。よく使う値は次の4つで、`flex: 1` は「伸びる」という意味に見えますが、`flex-basis` も `0%` にします。
 
 | 値 | `flex-grow` | `flex-shrink` | `flex-basis` |
 |---|---|---|---|
 | 初期値 | `0` | `1` | `auto` |
 | `flex: auto` | `1` | `1` | `auto` |
 | `flex: none` | `0` | `0` | `auto` |
-| `flex: 1` | `1` | `1` | `0` |
+| `flex: 1` | `1` | `1` | `0%` |
 
 この違いが、2つのアイテムに `flex-grow: 1` を指定しても幅がそろわない理由です。`flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと、中身の幅の差がそのまま残ります。`flex: 1` なら、どのアイテムも `flex-basis` が0から始まるので、コンテナの幅のすべてが1：1で配られ、中身の量によらず幅がそろいます。
 
@@ -103,6 +103,10 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 ```
 
 このように別物なので、`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（ルール [`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change) の補足）。`flex: 1` でも列の幅が厳密にはそろわない理由は、「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」で説明しています。
+
+表の `flex: 1` の `flex-basis` を `0%` としたのは、ブラウザの実装に合わせたためです。仕様では、`flex: 1` は `flex: 1 1 0` に等しいと定義されています。しかし、主要なブラウザは `0%` として扱い、ブラウザの実装を検証するテスト（Web Platform Tests）も、算出値が `0%` になることを確かめています（2026年10月確認）。コンテナの幅が決まっている横並びでは、`0%` も0pxに解決されるので、どちらでも結果は変わりません。
+
+違いが出るのは、`flex-direction: column` で、コンテナの高さが中身で決まる場合です。パーセントの基準になる主軸の大きさが決まっていないので、`0%` は解決できず、`flex-basis` は `content` として扱われます。アイテムは0からではなく中身の高さから伸びるので、等分にはなりません。高さの決まっていない縦のFlexboxでも0を起点にしたいなら、`flex: 1 1 0` と3つの値を書きます。単位のない0は、前に2つの数値があるときだけ `flex-basis` として読まれるので、`flex: 1 0` のように省略すると、0は `flex-shrink` になります。
 
 ## アイテムが縮まない原因になる自動の最小幅
 
@@ -183,5 +187,6 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 - [Cheatsheets for Flex, Grid, Anchor positioning and Invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
 - [CSS Flexible Box Layout Module Level 1](https://drafts.csswg.org/css-flexbox-1/)（W3C）
 - [flex - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex)
+- [flexbox_computedstyle_flex-shorthand-number.html](https://github.com/web-platform-tests/wpt/blob/master/css/css-flexbox/getcomputedstyle/flexbox_computedstyle_flex-shorthand-number.html)（Web Platform Tests）
 - [主軸に沿ったフレックスアイテムの比率の制御 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_flexible_box_layout/Controlling_ratios_of_flex_items_along_the_main_axis)
 - [order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/order)

@@ -110,8 +110,9 @@
 
 - id: forced-colors-svg-system-colors
   level: 推奨
-  rule: 強制カラーモードでは、インライン SVG の `fill` と `stroke` を、文脈に合ったシステムカラーに `!important` で固定する。
-  reason: SVG の色は強制カラーモードでも置き換わるとは限らず、`currentColor` がシステムカラーにならない環境もあるため。
+  rule: 強制カラーモードでは、管理している単色のインライン SVG アイコンの色を、塗りで描くものは `fill`、線で描くものは `stroke` だけ、文脈に合ったシステムカラーに `!important` で固定する。
+  reason: SVG の色は強制カラーモードでも置き換わるとは限らず、`currentColor` がシステムカラーにならない環境もあるため。すべての SVG に両方を指定すると、線のない図形に線が付くため。
+  note: 多色の SVG は対象にしません。値が `none` の描画要素は、そのままにします。
   page: color-media/forced-colors
   since: 0.1.0
 
