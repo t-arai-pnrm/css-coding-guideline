@@ -21,3 +21,15 @@ sidebar:
 - [10-5 輪郭と枠線を描く](/color-media/outlines/)：`clip-path` の `shape()` によるタブと吹き出し、`border-shape`、`border-area` のグラデーションの枠線とドーナツグラフ
 
 色の関数をスペースで区切る記法は[第5章「記法の規約」](/notation/)で、色のトークンをプリミティブとセマンティクスの2層で持つ設計は[第6章「コンポーネントとカスタムプロパティ」](/components/)で扱います。ダークモードに対応しないときの `color-scheme` の注意と、フォーカスリングは[第4章「リセットとベーススタイル」](/reset/)で、ホバーのときの色の変え方は[第11章「インタラクションとモーション」](/interaction/)で説明します。この章のコード例では `@layer` の記述を省略していますが、デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`text-contrast-aa`](/color-media/forced-colors/#rule-text-contrast-aa)：文字と背景のコントラスト比は、WCAG 2.1のAAを満たします。
+- [`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)：本文の中のリンク、フォーカスやホバーの状態、入力エラーを、色の違いだけで伝えません。
+- [`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none)：枠線を消すときは、`border: none` ではなく `border-color: transparent` で透明にします。
+- [`img-width-height-attributes`](/color-media/images-and-decoration/#rule-img-width-height-attributes)：`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。
+- [`no-lazy-loading-first-view`](/color-media/images-and-decoration/#rule-no-lazy-loading-first-view)：ファーストビューで表示される画像には、`loading="lazy"` を指定しません。

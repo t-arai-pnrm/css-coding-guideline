@@ -8,7 +8,6 @@ sidebar:
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
-import ImagePlaceholder from '../../../components/ImagePlaceholder.astro';
 import unitsHtml from '../../../demos/values/svi-and-cqi/index.html?raw';
 import unitsCss from '../../../demos/values/svi-and-cqi/style.css?raw';
 
@@ -38,7 +37,10 @@ import unitsCss from '../../../demos/values/svi-and-cqi/style.css?raw';
 
 こうした問題を解決するために、ビューポートの大きさを3つに分けた単位が追加されました。ブラウザのUIが表示されているときの最も小さい領域が「スモールビューポート」、UIが引っ込んだときの最も大きい領域が「ラージビューポート」です。そのときどきで実際に見えている領域を「ダイナミックビューポート」と呼びます。それぞれを参照する単位は、`sv*`、`lv*`、`dv*` で始まります。
 
-<ImagePlaceholder alt="スマートフォンのブラウザを横に3つ並べた図。左はアドレスバーとツールバーが表示された状態で、その間の見えている領域の高さに「100svb（スモールビューポート）」と書かれている。中央はスクロールしてアドレスバーとツールバーが引っ込んだ状態で、画面全体の高さに「100lvb（ラージビューポート）」と書かれている。右はスクロールの途中でツールバーが半分ほど引っ込んだ状態で、そのとき見えている領域の高さに「100dvb（ダイナミックビューポート）」と書かれ、UIの出入りに合わせて値が伸び縮みすることを上下の矢印で示している。" />
+{/* textlint-disable ja-technical-writing/sentence-length -- 画像の代替テキストは1文として数えられるため */}
+![スマートフォンのブラウザを2つ並べた図。左はアドレスバーとツールバーが表示された状態で、その間の見えている領域の高さが「100svb」で、このときの「100dvb」と等しい。右はスクロールしてアドレスバーとツールバーが引っ込んだ状態で、画面全体の高さが「100lvb」で、このときの「100dvb」と等しい。dvbはUIの出入りに合わせて、svbとlvbの間で伸び縮みする。](../../../assets/figures/values/viewport-sizes.svg)
+
+{/* textlint-enable ja-technical-writing/sentence-length */}
 
 <Baseline id="viewport-unit-variants" name="スモール・ラージ・ダイナミックのビューポート単位" />
 

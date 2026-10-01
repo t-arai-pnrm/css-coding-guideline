@@ -21,3 +21,15 @@ sidebar:
 - [8-5 セーフエリアに対応する](/responsive/safe-area/)：ノッチやホームインジケーターを避ける余白と、画面の下に固定する要素の書き方
 
 単位の選び方（pxとrem、ビューポート単位とコンテナ単位）は[第3章「値と単位」](/values/)で、コード例で使っている `@scope` とカスケードレイヤーは[第2章「カスケードを制御する」](/cascade/)で説明しています。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSでは省略していません。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)：「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使いません。
+- [`container-name-required`](/responsive/container-queries/#rule-container-name-required)：コンテナには必ず名前を付け、`@container` の条件でもその名前を指定します。
+- [`no-container-on-intrinsic-size`](/responsive/container-queries/#rule-no-container-on-intrinsic-size)：インライン要素や `fit-content` の要素のように、幅が中身で決まる要素をコンテナにしません。
+- [`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)：クエリの条件は範囲構文で書き、`min-width` や `max-width` の書き方は使いません。
+- [`breakpoint-in-rem`](/responsive/media-queries/#rule-breakpoint-in-rem)：ブレイクポイントはremで指定し、`calc(640 / 16 * 1rem)` のように変換を式で書きます。

@@ -20,3 +20,15 @@ sidebar:
 - [2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)：ドーナツスコープでコンポーネントの範囲を区切る書き方と、Astroでの応用
 
 リセットCSSをレイヤーに入れる方法とベーススタイルの中身は第4章「[リセットとベーススタイル](/reset/)」で、スコープのルートや子要素の命名、条件付きのアットルールを書く位置は第5章「[記法の規約](/notation/)」で扱います。親のコンポーネントから子のコンポーネントの見た目を変える方法は、第6章「[コンポーネントとカスタムプロパティ](/components/)」で説明します。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)：`!important` は、詳細度や読み込み順の競争で勝つ目的には使いません。
+- [`no-specificity-hacks`](/cascade/selectors/#rule-no-specificity-hacks)：上書きのためだけに詳細度を上げるセレクタ（`.a.a` や、祖先を足したセレクタなど）を書きません。
+- [`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)：ベーススタイルのタイプセレクタは `:where()` で包み、詳細度を0にします。
+- [`no-layers-with-unlayered-css`](/cascade/layers/#rule-no-layers-with-unlayered-css)：レイヤーに入っていない外部のCSSと共存するCMSのような環境では、`@layer` を使いません。
+- [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)：コンポーネントのスタイルは `@scope (.scoped.<名前>) to (.scoped)` の中に書きます。

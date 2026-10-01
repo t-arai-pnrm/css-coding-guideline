@@ -1,0 +1,210 @@
+---
+title: 最小の構成で始める
+description: 本書の書き方をそのまま試せる最小の構成です。HTML、レイヤーの順番を宣言するエントリーポイント、kiso.css、トークン、1つのコンポーネントを示し、本文のコード例の読み方と命名の早見表をまとめています。
+sidebar:
+  order: 3
+---
+
+import Demo from '../../../components/Demo.astro';
+import quickStartHtml from '../../../demos/introduction/quick-start/index.html?raw';
+import quickStartCss from '../../../demos/introduction/quick-start/style.css?raw';
+
+本書の書き方を手元で試すには、HTML、エントリーポイントのCSS、kiso.css、トークン、コンポーネントの5種類のファイルがあれば足ります。エントリーポイントで9つのレイヤーの順番を宣言し、kiso.cssを `reset` レイヤーに、トークンを `tokens` レイヤーに、コンポーネントを `components` レイヤーに読み込みます。コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書きます。
+
+このページでは、コピーしてそのままブラウザに表示できる最小の構成を示します。あわせて、本文のコード例が省略している部分を説明し、本書独自の名前の付け方を早見表にまとめます。
+
+## 本文のコード例だけでは動かない理由
+
+本文のコード例は、説明に必要な部分だけを抜き出したものです。「[本書の読み方](/introduction/how-to-read/)」で説明しているとおり、ほとんどのコード例ではカスケードレイヤー（`@layer`）の記述を省略しています。`._title` のように `_` で始まるクラスのルールは、`@scope` の中に書く前提で、`@scope` の記述も省略していることがあります。
+
+コード例が参照しているトークンも、別のファイルで定義されている前提です。たとえば `color: var(--foreground--muted);` だけを貼り付けると、`--foreground--muted` がどこにも定義されていないので、`var()` の参照が無効になります。このとき `color` はエラーにならず、親から継承した色のまま表示されます。説明している機能が動かないように見えても、原因はトークンがないことかもしれません。
+
+kiso.cssの読み込み方にも、環境による違いがあります。本文では `@import url("kiso.css") layer(reset);` と書いていますが、ブラウザはこの `kiso.css` を、書いたCSSファイルと同じ場所にあるファイルのURLとして読みます。npmでパッケージをインストールしただけでは、`node_modules` の中のファイルは読まれません。
+
+こうした前提を1か所にまとめたのが、次の最小の構成です。本文のコード例を試すときは、この構成のコンポーネントのファイルに貼り付ければ、レイヤーとスコープとトークンがそろった状態で確かめられます。
+
+## 最小の構成のファイル
+
+ファイルは次のように置きます。`css` ディレクトリの中は、9つのレイヤーの分類に合わせてディレクトリを分けています。kiso.cssは、エントリーポイントの `style.css` と同じ場所に置きます。
+
+```text title="ファイルの配置"
+index.html
+css/
+├── style.css           … エントリーポイント
+├── kiso.css            … リセットCSS
+├── tokens/
+│   ├── colors.css      … 色のトークン
+│   └── sizes.css       … 余白と角丸のトークン
+└── components/
+    └── news-card.css   … コンポーネント
+```
+
+HTMLは、エントリーポイントの `style.css` だけを読み込みます。コンポーネントのルートの要素には `class="scoped news-card"` を付け、子要素には `_` で始まるクラスを付けます。`time` のように、スコープの中に1つしかない要素にはクラスを付けていません。
+
+```html title="index.html"
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>最小の構成</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <article class="scoped news-card">
+      <h2 class="_title">サイトを公開しました</h2>
+      <time datetime="2026-10-01">2026年10月1日</time>
+      <p>最初のお知らせです。</p>
+    </article>
+  </body>
+</html>
+```
+
+エントリーポイントには、レイヤーの順番の宣言と `@import` だけを書きます。先頭の `@layer` 文で9つのレイヤーの順番を決め、その後ろで各ファイルを `layer()` 付きの `@import` でレイヤーに割り当てます。レイヤーの順番は先頭の `@layer` 文で決まるので、`@import` を並べる順番には左右されません（「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
+
+```css title="🙆‍♂ Recommended: css/style.css"
+/**
+ * サイト全体のスタイルの入り口。
+ * レイヤーの順番を宣言し、各ファイルをレイヤーに割り当てる。
+ */
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+
+@import url("kiso.css") layer(reset);
+@import url("./tokens/colors.css") layer(tokens);
+@import url("./tokens/sizes.css") layer(tokens);
+@import url("./components/news-card.css") layer(components);
+```
+
+トークンのファイルには、`:root` のカスタムプロパティだけを書きます。色はプリミティブ（`--color--…`）と、役割を表すセマンティクス（`--foreground--…` など）の2層にしています。余白のトークンは単位を付けずに定義し、使う場所で単位に変換します（「[6-3 デザイントークン](/components/design-tokens/)」）。
+
+```css title="🙆‍♂ Recommended: css/tokens/colors.css"
+/**
+ * 色のトークン。
+ * プリミティブの色と、役割を表すセマンティクスの色を定義する。
+ */
+:root {
+  --color--neutral--100: oklch(97% 0 0deg);
+  --color--neutral--600: oklch(43.9% 0 0deg);
+  --color--accent--600: oklch(52% 0.16 250deg);
+  --background--surface: var(--color--neutral--100);
+  --foreground--accent: var(--color--accent--600);
+  --foreground--muted: var(--color--neutral--600);
+}
+```
+
+```css title="🙆‍♂ Recommended: css/tokens/sizes.css"
+/**
+ * 余白と角丸のトークン。
+ * 余白はピクセル相当の数値で定義し、使う場所で単位に変換する。
+ */
+:root {
+  --spacing--xxs: 8;
+  --spacing--md: 24;
+  --rounded--md: 8px;
+}
+```
+
+コンポーネントのファイルには、1つのコンポーネントの `@scope` だけを書きます。外から変えてよい見出しの色は、公開プロパティ `--news-card--accent` として受け取ります。`:scope` で内部プロパティ `--_accent` に受け、渡されなかったときのデフォルト値を `var()` のフォールバックに書いています（「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
+
+```css title="🙆‍♂ Recommended: css/components/news-card.css"
+/**
+ * お知らせのカード。
+ * 一覧としての並べ方は、置く側のレイアウトが受け持つ。
+ *
+ * @prop {color} --news-card--accent [var(--foreground--accent)] - 見出しの色
+ *
+ * @example
+ * <article class="scoped news-card" style="--news-card--accent: oklch(50% 0.17 30deg)">
+ *   ...
+ * </article>
+ */
+
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    --_accent: var(--news-card--accent, var(--foreground--accent));
+
+    display: block grid;
+    gap: calc(var(--spacing--xxs) * 1px);
+    padding: calc(var(--spacing--md) * 1px);
+    border-radius: var(--rounded--md);
+    background-color: var(--background--surface);
+  }
+
+  ._title {
+    color: var(--_accent);
+    font-size: calc(20 / 16 * 1rem);
+  }
+
+  time {
+    color: var(--foreground--muted);
+  }
+}
+```
+
+このファイルには `@layer components { … }` を書いていません。エントリーポイントの `@import` に `layer(components)` を付けているので、ファイルの中身がすべて `components` レイヤーに入ります。Astroのコンポーネントの中に書くスタイルのように、`@import` で読み込まないCSSでは、`@layer` を自分で書きます（「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」）。
+
+## kiso.cssを読み込む方法
+
+この構成をビルドツールなしで試すときは、kiso.cssのファイルをダウンロードして `css/kiso.css` に置きます。ブラウザは `@import url("kiso.css")` を、`style.css` からの相対URLとして読むので、同じ場所にファイルがあれば、エントリーポイントの記述を変えずに読み込めます。ファイルは、kiso.cssの[GitHubのリポジトリ](https://github.com/tak-dcxi/kiso.css)から入手できます。
+
+ファイルを置かずに、CDNのURLを直接書く方法もあります。kiso.cssのREADMEは、jsDelivrで配信しているファイルのURLを案内しています。URLにバージョンを書いておけば、kiso.cssが更新されても、知らないうちに見た目が変わることはありません。
+
+```css title="🙆‍♂ Recommended: CDNのURLから reset レイヤーに読み込む"
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+
+@import url("https://cdn.jsdelivr.net/npm/kiso.css@1.2.4/kiso.css") layer(reset);
+```
+
+npmでインストールする場合（`npm install kiso.css`）は、CSSの `@import` でパッケージ名を解決するビルドツールが必要です。Viteは、CSSの `@import` を `postcss-import` で展開し、その過程で `node_modules` の中のパッケージも探します。{/* 要確認: Vite と postcss-import の解決順（相対パスを先に探す）を公式ドキュメントで確認する */} この場合は、エントリーポイントの `@import url("kiso.css") layer(reset);` が、パッケージに含まれる `kiso.css` を指します。
+
+同じ `@import url("kiso.css")` でも、ブラウザが直接読むときは隣にあるファイルを、ビルドツールが処理するときはパッケージを指します。手元で試すときに `kiso.css` が読み込まれていないようなら、開発者ツールのネットワークのパネルで、どのURLを読みにいったのかを確かめてください。
+
+## デモで確かめる
+
+次のデモは、この構成と同じCSSで、カードを2枚並べたものです。2枚目のカードは、`style` 属性で公開プロパティ `--news-card--accent` に値を渡し、見出しの色を変えています。
+
+<Demo title="最小の構成で表示したお知らせのカード" html={quickStartHtml} css={quickStartCss} widths={[]} />
+
+デモの下のCSSのタブは、本文のコード例と違い、省略のない全体です。トークンを `@layer tokens { … }` で、コンポーネントを `@layer components { … }` で包み、1つのファイルにまとめています。カードを並べるための余白は、置く側の `demo-layout` のスコープに書いています。
+
+デモの枠には、レイヤーの順番の宣言と、`reset` レイヤーに入れたkiso.cssを読み込んでいます。そのため、CSSのタブには、エントリーポイントにあたる記述がありません。デモのCSSを手元で試すときは、上のエントリーポイントと組み合わせてください。
+
+## 命名の早見表
+
+本書のコード例には、CSSの構文ではなく、本書の規約で決めている名前が多く出てきます。どれも先頭の記号で種類を見分けられるようにしています。各行の詳しい説明は、右の列のページにあります。
+
+| 記法 | 例 | 意味 | 詳しい節 |
+|---|---|---|---|
+| `scoped <名前>` | `class="scoped news-card"` | コンポーネントのルート。`scoped` は、外側のスコープの下限にもなる | [2-4](/cascade/scope/)、[5-1](/notation/naming/) |
+| `scoped page-<スラッグ>` | `class="scoped page-about"` | ページ固有のスタイルのルート | [2-4](/cascade/scope/) |
+| `._<名前>` | `._title`、`._nav-links` | コンポーネントの子要素。スコープの中だけで意味を持つ | [5-1](/notation/naming/) |
+| `.-<名前>` | `.-visually-hidden`、`.-fluid-text--md` | ユーティリティ。段階や種類は `--` で続ける | [5-1](/notation/naming/)、[6-2](/components/compositions-and-utilities/) |
+| 接頭辞なし | `.cluster`、`.switcher` | コンポジション（配置のパターン） | [6-2](/components/compositions-and-utilities/) |
+| `--<分類>--<名前>` | `--color--accent--600`、`--spacing--md` | デザイントークン | [6-3](/components/design-tokens/) |
+| `--<役割>--<バリエーション>` | `--foreground--muted` | 役割を表す色のトークン | [6-3](/components/design-tokens/) |
+| `--<コンポーネント>--<プロパティ>` | `--news-card--accent` | 公開プロパティ。外から値を渡してよい | [6-4](/components/custom-properties/) |
+| `--_<名前>` | `--_accent` | 内部プロパティ。コンポーネントの中だけで使う | [6-4](/components/custom-properties/) |
+| `--_<名前>--<状態>` | `--_background--hocus` | 状態やモードごとの値 | [6-4](/components/custom-properties/) |
+| `--<名前>`（値として使う名前） | `@keyframes --fade-in` | 自分で付けて値として使う名前 | [5-1](/notation/naming/) |
+| `data-variant` | `data-variant="featured"` | コンポーネントのバリエーション | [5-1](/notation/naming/) |
+| 擬似クラス、ARIA属性 | `:checked`、`[aria-selected="true"]` | 状態。`.is-active` のような状態クラスは使わない | [11-1](/interaction/states-and-focus/) |
+| 9つのレイヤー名 | `tokens`、`components` | レイヤー名。値として使わないので `--` を付けない | [2-3](/cascade/layers/) |
+
+内部プロパティの `--_` には、種類ごとの接頭辞もあります。コンポジションは `--_c--`、ユーティリティは `--_u--`、ベーススタイルは `--_b--` で始めます。コンポーネントの内部プロパティと名前がぶつからないようにするためです。
+
+## 本書の規約と仕様上の制約
+
+本書が勧めない書き方の多くは、CSSとして正しく動きます。BEMの `.card__title`、`display: flex`、`margin-top`、`@media (min-width: 768px)` は、どれも有効なCSSで、ブラウザも問題なく表示します。本書がこれらを使わないのは、読みやすさや変更のしやすさ、多言語への対応のような保守の理由からです。
+
+そのため、本書のルールの「必須」や「禁止」は、本書を採用したプロジェクトの中での約束を表しています。CSSの仕様に反しているという意味ではありません。チームで使うときは、ルールの理由に納得したうえで、規約として合意することが前提になります。
+
+一方で、仕様上の制約から決めているルールもあります。`@import` をほかのルールの後ろに書くと無視されることや、宣言していないレイヤー名が新しいレイヤーになることは、書き方の好みではなく、ブラウザの動作です。付録B「[モダンな書き方への置き換え表](/appendix/modernize/)」の左の列にも、有効なCSSが多く含まれています。置き換えの理由は、リンク先の本文で確かめてください。
+
+## 参考リンク
+
+- [kiso.css](https://github.com/tak-dcxi/kiso.css)（GitHub）
+- [@import - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@import)
+- [@layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@layer)
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
+- [CSS Custom Properties for Cascading Variables Module Level 1: Invalid Variables](https://www.w3.org/TR/css-variables-1/#invalid-variables)
+- [Features: CSS | Vite](https://vite.dev/guide/features.html#css)

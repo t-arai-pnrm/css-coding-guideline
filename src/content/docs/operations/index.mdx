@@ -19,3 +19,14 @@ AIと一緒にCSSを書くことが当たり前になったことも、この章
 - [12-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)：本文エリアを囲む `@scope`、要素セレクタによるスタイル、下限で切り離す独自ブロック、`rlh` で決めるブロック間の余白
 
 トークンと公開プロパティの設計は[第6章「コンポーネントとカスタムプロパティ」](/components/)で説明しています。Stylelintで検査している記法の規約は[第5章「記法の規約」](/notation/)にまとめています。すべてのルールは、付録A「[ルール一覧](/appendix/rules/)」で確認できます。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`run-stylelint-before-done`](/operations/stylelint/#rule-run-stylelint-before-done)：CSSを変更したらStylelintを実行し、エラーを残しません。
+- [`no-disabling-to-silence`](/operations/stylelint/#rule-no-disabling-to-silence)：エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしません。
+- [`disable-one-line-with-reason`](/operations/stylelint/#rule-disable-one-line-with-reason)：ルールを無効にするときは1行・1つのルールに絞り、直前のコメントに理由を書きます。
+- [`verify-ai-output`](/operations/review-and-ai/#rule-verify-ai-output)：AIが生成したCSSは、Stylelintとレビューの両方で確かめてから採用します。

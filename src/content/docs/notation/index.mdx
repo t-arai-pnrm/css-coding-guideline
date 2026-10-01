@@ -22,3 +22,15 @@ sidebar:
 - [5-4 コメントの書き方](/notation/comments/)：ファイル先頭の説明ブロックと、「なぜ」だけを書くコメント
 
 コード例で使っている `@scope` は、第2章の「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。カスタムプロパティの名前の付け方は第6章の「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」、コンテナの名前とクエリの範囲構文は[第8章「レスポンシブデザイン」](/responsive/)で扱います。Stylelintの設定の運用は、「[12-1 Stylelintでルールを守る](/operations/stylelint/)」で説明します。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`child-class-underscore`](/notation/naming/#rule-child-class-underscore)：コンポーネントの子要素のクラス名は、`._title` のように `_` で始まるkebab-caseにします。
+- [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation)：`&__title` のように、`&` に文字をつなげてクラス名を作りません。
+- [`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules)：`@media` と `@container` は、`@scope` やファイルの直下ではなく各セレクタの中に書きます。
+- [`display-two-value-syntax`](/notation/modern-syntax/#rule-display-two-value-syntax)：`display` は `block flex` のような2値構文で書きます。
+- [`comments-why-only`](/notation/comments/#rule-comments-why-only)：コードの途中のコメントには「なぜそう書くのか」と「なぜ別の書き方をしないのか」だけを書き、何をしているかは書きません。

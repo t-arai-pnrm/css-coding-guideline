@@ -101,6 +101,13 @@ Flexboxは、アイテムの中身の大きさから出発して、余った空�
 
 配置のプロパティは、`*-items` と `*-content` で対象が違います。`align-items` は、各アイテムを、自分に割り当てられた領域（Gridならセル）の中でそろえます。`align-content` は、行や列のまとまり全体を、コンテナの中でそろえます。コンテナに余白があるときに、この違いが見た目に現れます。Gridでの使い分けは「[7-5 Gridの基礎](/layout/grid-basics/)」で詳しく説明しています。
 
+折り返したFlexboxで、2つのプロパティの値ごとの配置を並べると、次の図のようになります。
+
+{/* textlint-disable ja-technical-writing/sentence-length -- 画像の代替テキストは1文として数えられるため */}
+![折り返したFlexboxのコンテナを6つ並べた図。上の段は align-items の start、center、stretch で、コンテナの高さを分け合った2つの行の中で、アイテムがそれぞれ行の上端、行の中央、行の高さいっぱいに配置されている。下の段は align-content の start、center、space-between で、アイテムの高さに縮んだ2つの行が、まとまってコンテナの上端、コンテナの中央、コンテナの上下の端に配置されている。](../../../assets/figures/layout/align-items-and-align-content.svg)
+
+{/* textlint-enable ja-technical-writing/sentence-length */}
+
 `align-content` は、2024年からブロックコンテナにも使えるようになりました（2026年10月確認）。親を `display: block grid` に変えなくても、`align-content: center` だけで、中身を上下の中央に置けます。ただし、ブロックコンテナでは `justify-content` は効かないので、左右の中央寄せは、`margin-inline: auto` か、親をGridにして `place-content: center` で書きます。{/* 要確認: 出典なし */}
 
 <Baseline id="align-content-block" name="ブロックコンテナの align-content" />

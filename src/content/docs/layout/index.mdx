@@ -31,3 +31,15 @@ sidebar:
 コンポーネントのルートに外側の余白を持たせない考え方と、z-indexの管理は[第6章「コンポーネントとカスタムプロパティ」](/components/)で扱います。幅に応じてレイアウトを切り替える方法は[第8章「レスポンシブデザイン」](/responsive/)で、フレックスアイテムとグリッドアイテムの最小幅を0にするベーススタイルは[第4章「リセットとベーススタイル」](/reset/)で説明しています。
 
 この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent)：`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にします。
+- [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)：はみ出しを切り取るだけなら、`overflow: hidden` ではなく `clip` を使います。
+- [`sticky-align-self-start`](/layout/sticky/#rule-sticky-align-self-start)：GridやFlexboxの子に `position: sticky` を指定するときは、その要素に `align-self: start` も指定します。
+- [`full-bleed-offset-formula`](/layout/positioning/#rule-full-bleed-offset-formula)：親の幅を超えて画面の端まで広げる量は「画面の幅と親の幅の差の半分」の式で書き、`100vw` を使いません。
+- [`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)：フォーカスできる要素や順番に意味のある要素を、`order` や `row-reverse` で見た目だけ入れ替えません。

@@ -1,0 +1,52 @@
+@layer tokens {
+  :root {
+    --color--neutral--100: oklch(97% 0 0deg);
+    --color--neutral--600: oklch(43.9% 0 0deg);
+    --color--accent--600: oklch(52% 0.16 250deg);
+    --background--surface: var(--color--neutral--100);
+    --foreground--accent: var(--color--accent--600);
+    --foreground--muted: var(--color--neutral--600);
+    --spacing--xxs: 8;
+    --spacing--sm: 16;
+    --spacing--md: 24;
+    --rounded--md: 8px;
+  }
+}
+
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: calc(var(--spacing--sm) * 1px);
+    }
+  }
+}
+
+@layer components {
+  /**
+   * お知らせのカード。
+   * 一覧としての並べ方は、置く側のレイアウトが受け持つ。
+   *
+   * @prop {color} --news-card--accent [var(--foreground--accent)] - 見出しの色
+   */
+  @scope (.scoped.news-card) to (.scoped) {
+    :scope {
+      --_accent: var(--news-card--accent, var(--foreground--accent));
+
+      display: block grid;
+      gap: calc(var(--spacing--xxs) * 1px);
+      padding: calc(var(--spacing--md) * 1px);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
+    }
+
+    ._title {
+      color: var(--_accent);
+      font-size: calc(20 / 16 * 1rem);
+    }
+
+    time {
+      color: var(--foreground--muted);
+    }
+  }
+}

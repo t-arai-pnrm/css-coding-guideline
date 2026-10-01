@@ -294,9 +294,15 @@ body {
 
 ## コントラスト比を確かめる
 
-文字と背景のコントラスト比は、WCAG 2.1のAAを満たすようにします。通常の大きさの文字では4.5:1以上、大きな文字では3:1以上が基準です。確認には、WebAIMのContrast Checkerや、DevToolsのカラーピッカーに表示されるコントラスト比を使います。
+文字と背景のコントラスト比は、WCAG 2.1のAAを満たすようにします。通常の大きさの文字では4.5:1以上、大きな文字では3:1以上が基準です。確認には、WebAIMのContrast Checkerや、DevToolsのカラーピッカーに表示されるコントラスト比を使います。計算した比は四捨五入せずに比べるので、4.49:1は4.5:1の基準を満たしません。
+
+ここでいう「大きな文字」は、[WCAGの定義](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)では18ポイント以上、太字なら14ポイント以上の文字です。CSSの単位に直すと、約24px以上、太字なら約18.7px以上になります。和文の場合は、これと同じ大きさに見える文字が該当します。見出しのつもりで大きくした文字でも、太字でない20pxの文字は通常の文字として扱うので、4.5:1が必要です。
 
 「補足の文字」のような薄い文字色のトークンは、基準に届きにくくなります。たとえば `oklch(55.6% 0 0deg)` のグレーは、`oklch(97% 0 0deg)` の背景の上ではコントラスト比が約4.3:1になり、AAに届きません。トークンを定義するときは、組み合わせる背景のトークンごとに確かめます。私の案件でも、図のキャプションの色をAAを満たす値に調整し、その理由をコメントに残しました。
+
+文字でない部分にも基準があります。WCAG 2.1の[達成基準1.4.11（非テキストのコントラスト）](https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html)では、ボタンや入力欄のようなUIコンポーネントの範囲と状態を示す部分に、隣り合う色との3:1以上のコントラスト比を求めています。入力欄の枠線、チェックボックスのオンとオフの違い、フォーカスリングが対象です。ボタンの文字やアイコンのように、範囲を示すほかの手がかりがあれば、枠線そのものは3:1に届かなくてもかまいません。
+
+この基準には例外もあります。無効にしたコンポーネントと、ブラウザのデフォルトの見た目から変えていないコンポーネントは対象外です。逆にいえば、`accent-color` や枠線の色を変えた時点で、その色は自分で3:1を確かめる必要があります。淡いグレーの枠線だけで入力欄の範囲を示すデザインは、白い背景の上では基準に届かないことが多いので、トークンを決める段階で確かめます。{/* 要確認: 出典なし */}
 
 AIにデザインを実装させると、薄いグレーの文字や、淡い色の上の白い文字をそのまま出力することがあります。色の値を受け取ったら、コントラスト比を確かめるところまでを1つの作業にします。
 
@@ -315,3 +321,5 @@ AIにデザインを実装させると、薄いグレーの文字や、淡い色
 - [Forced Colors Explained: A Practical Guide](https://polypane.app/blog/forced-colors-explained-a-practical-guide/)（Polypane。`outline-color: transparent` とシステムカラーの一覧）
 - [Scalable Vector Graphics (SVG) 2 — Painting: Filling, Stroking and Marker Symbols](https://www.w3.org/TR/SVG2/painting.html)（W3C。`fill` と `stroke` の初期値と継承）
 - [WebAIM: Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Understanding Success Criterion 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)（W3C。大きな文字の定義と、比を四捨五入しないこと）
+- [Understanding Success Criterion 1.4.11: Non-text Contrast](https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html)（W3C。UIコンポーネントの範囲と状態のコントラスト）

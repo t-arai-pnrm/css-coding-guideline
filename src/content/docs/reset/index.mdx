@@ -19,3 +19,15 @@ sidebar:
 - [4-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)：詳細度の高い指定、ほかの要素を壊すプロパティ、アクセシビリティを損なう指定
 
 リセットCSSとベーススタイルを置く `reset` と `base` のレイヤー、`:where()` による詳細度の調整は、第2章「[カスケードを制御する](/cascade/)」で扱います。和文組版の値の選び方は[第9章「タイポグラフィと和文組版」](/typography/)で、フォーカスの状態の表し方やダイアログの実装は[第11章「インタラクションとモーション」](/interaction/)で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`no-outline-none`](/reset/global-pitfalls/#rule-no-outline-none)：`outline: none` や `outline: 0` でフォーカスリングを消しません。
+- [`focus-ring-not-box-shadow-only`](/reset/base-styles/#rule-focus-ring-not-box-shadow-only)：フォーカスリングを `box-shadow` だけで描きません。
+- [`reset-no-destructive-reset`](/reset/kiso/#rule-reset-no-destructive-reset)：`* { margin: 0; padding: 0; }` のように、要素の機能や便利なデフォルトを一律に消すリセットをしません。
+- [`no-heavy-specificity-in-global`](/reset/global-pitfalls/#rule-no-heavy-specificity-in-global)：リセットやベーススタイルに、クラス1つで上書きできない詳細度のセレクタを書きません。
+- [`no-global-smooth-scroll`](/reset/base-styles/#rule-no-global-smooth-scroll)：`html` や `:root` に、`scroll-behavior: smooth` を無条件に指定しません。

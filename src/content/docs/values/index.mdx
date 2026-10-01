@@ -22,3 +22,15 @@ sidebar:
 - [3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)：型付きの `attr()` でHTMLの属性値を読む書き方と、`if()` を使う場面、未対応の環境へのフォールバック
 
 ブレイクポイントの単位とコンテナクエリの書き方は第8章「[レスポンシブデザイン](/responsive/)」で、トークンの命名は第6章「[コンポーネントとカスタムプロパティ](/components/)」で扱います。見出しや本文の文字サイズと行の高さの具体的な値は、[第9章「タイポグラフィと和文組版」](/typography/)で説明します。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)：`font-size` はremで指定し、pxを使いません（要素の文字サイズに比例させるならem）。
+- [`no-root-font-size-change`](/values/px-and-rem/#rule-no-root-font-size-change)：`html { font-size: 62.5% }` などで、remの計算を簡単にする目的でルートの文字サイズを変えません。
+- [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height)：`line-height` は単位のない数値で指定します。
+- [`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)：`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` は使いません。
+- [`clamp-rem-bounds`](/values/math-functions/#rule-clamp-rem-bounds)：文字サイズを `clamp()` で書くときは、最小値と最大値をremにし、推奨値をremと相対単位の和にします。

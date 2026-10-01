@@ -21,3 +21,15 @@ sidebar:
 - [1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)：Safariを基準にした対象範囲、プログレッシブ・エンハンスメントとして使える機能の見分け方、`@supports` と `scripting` メディア特性の使い方
 
 固定値を避けてブラウザに任せる具体的な方法は、[第8章「レスポンシブデザイン」](/responsive/)で扱います。共通化の単位になるコンポーネントとコンポジションは[第6章「コンポーネントとカスタムプロパティ」](/components/)で、上書きの仕組みは[第2章「カスケードを制御する」](/cascade/)で説明します。想定外の内容に備えるディフェンシブCSSは「[7-8 変化に強いレイアウト](/layout/defensive/)」で、レビューとAIとの協働は「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」で扱います。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`scripting-for-js-dependent-styles`](/principles/browser-support/#rule-scripting-for-js-dependent-styles)：JavaScriptで表示を切り替える前提の隠す指定は、`@media (scripting: enabled)` と、初期化が成功したら付く属性を条件にして書きます。
+- [`progressive-enhancement-if-harmless`](/principles/browser-support/#rule-progressive-enhancement-if-harmless)：対象のブラウザの一部しか対応していない機能は、未対応の環境でも内容を読めて操作できる場合に限って使います。
+- [`no-unsupported-layout-features`](/principles/browser-support/#rule-no-unsupported-layout-features)：対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要にしません。
+- [`no-chrome-only-check`](/principles/browser-support/#rule-no-chrome-only-check)：表示はChromeだけでなく、Safari（iOSを含む）とFirefoxでも確かめます。
+- [`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100)：ブロックレベルの要素や `inset: 0` で広げた絶対配置の要素に、`width: 100%` を書きません。

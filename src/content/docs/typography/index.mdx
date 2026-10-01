@@ -22,3 +22,14 @@ sidebar:
 - [9-4 文字サイズと改行](/typography/size-and-line-breaks/)：流体的な文字サイズのユーティリティ、見出しを文節で折り返す方法、手動の改行と行数の制限
 
 単位のない `line-height` と `clamp()` の組み立て方は第3章「[値と単位](/values/)」で、kiso.cssが入れている和文向けの初期値は第4章「[リセットとベーススタイル](/reset/)」で扱います。行の高さや文字の太さのトークンは第6章「[コンポーネントとカスタムプロパティ](/components/)」で、文字を含む要素のアニメーションは第11章「[インタラクションとモーション](/interaction/)」で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`base-line-height-min`](/typography/line-height/#rule-base-line-height-min)：ベースの `line-height` は1.5以上にして、各要素に継承させます。
+- [`no-line-height-one`](/typography/line-height/#rule-no-line-height-one)：`line-height: 1` を指定しません。
+- [`lang-for-typesetting`](/typography/japanese-typesetting/#rule-lang-for-typesetting)：`html` 要素とほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替えます。
+- [`overflow-wrap-over-word-break`](/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break)：`word-break` は初期値のままにし、長い単語やURLのはみ出しは `overflow-wrap: anywhere` で防ぎます。

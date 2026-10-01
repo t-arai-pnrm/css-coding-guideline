@@ -20,3 +20,15 @@ sidebar:
 - [6-4 公開プロパティと内部プロパティ](/components/custom-properties/)：カスタムプロパティの命名、状態を表す接尾辞、`style` 属性での受け渡し、`@property` の使いどころ
 
 コード例で使っている `@scope (.scoped.<名前>) to (.scoped)` の仕組みは「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、レイヤーの順序は「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。クラス名の付け方は「[5-1 命名規則](/notation/naming/)」で扱います。`gap` と `margin` の使い分けは「[7-7 余白を設計する](/layout/spacing/)」で、スタッキングコンテキストの仕組みは「[7-9 重なりと配置](/layout/positioning/)」で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)：ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしません。
+- [`one-component-per-file`](/components/boundaries/#rule-one-component-per-file)：コンポーネントのCSSは、コンポーネントごとに1つのファイルに書きます。
+- [`public-property-naming`](/components/custom-properties/#rule-public-property-naming)：外から変えてよい値は、`--card--radius` のような `--<コンポーネント>--<プロパティ>` の公開プロパティにします。
+- [`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)：公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書きます。
+- [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：z-indexの値は、数値を直接書かずにトークンで指定します。
