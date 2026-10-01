@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.5.0
+- バージョン: 0.5.1
 - 生成日: 2026-10-01
 - ルールの数: 453
 
@@ -57,7 +57,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: ブロックの中央寄せには `margin-inline: auto` を使います。`display` を grid からブロックに戻すときは、指定が残っていないかを確かめます。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【禁止】詳細度や読み込み順の競争に勝つ目的で `!important` を使わない。（`no-important-for-specificity`）
-  - 理由: `!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。
+  - 理由: スタイルの宣言どうしでは `!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。
   - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
 - 【非推奨】プロパティをまとめて戻すときに `all: unset` を使わず、レイヤーを使うなら `all: revert-layer`、使わないなら `all: revert` を指定する。（`no-all-unset`）
   - 理由: `unset` は継承されないプロパティを初期値に戻すので、`display` が `inline` になり、ブラウザのデフォルトスタイルのうち必要なものまで消えるため。
@@ -115,7 +115,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 自動チェック: Stylelint: `declaration-property-unit-allowed-list`
   - 詳細: 3-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【禁止】`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` を使わない。（`no-vw-vh`）
-  - 理由: どの大きさの画面を基準にするかがブラウザ任せで意図が曖昧になり、モバイルでは要素が見切れたり、横スクロールが起きたりするため。
+  - 理由: ブラウザの UI が引っ込んだ最も大きい画面（ラージビューポート）が基準で、どの状態に合わせたいのかがコードから読み取れず、モバイルでは UI が表示された状態で要素が見切れたり、スクロールバーの幅の分だけ横スクロールが起きたりするため。
   - 補足: 代わりに `svi` や `svb` などを使います。
   - 自動チェック: Stylelint: `unit-disallowed-list`（警告）
   - 詳細: 3-2 ビューポート単位とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/viewport-and-container-units.mdx）
@@ -400,7 +400,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
 - 【推奨】同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。（`stack-vs-prose`）
   - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
-  - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。
+  - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。CMS で編集者が入力する本文エリアの中には、どちらも使わず `.wysiwyg` で余白を決めます（`prose-not-on-cms-body`）。
   - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
 - 【推奨】`stack` の一部の間隔だけを変えたいときは、子に `margin` を足さず、近い要素を `stack` で包んで入れ子にするか、`grid-template` の空のセルに切り替える。（`stack-uneven-gaps`）
   - 理由: フレックスアイテムの `margin` は相殺されずに `gap` に足され、間隔が2か所の指定の和で決まって読み取りにくくなるため。
@@ -502,8 +502,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【禁止】`sp`、`tablet`、`pc` のようにデバイスを連想させる名前を、ブレイクポイントやクラス名（`.sp-only` など）に使わない。（`no-device-names`）
   - 理由: 画面の幅とデバイスの種類は一致せず、名前と実態がずれていくため。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
-- 【禁止】`@media` と `@container` の条件式の中で `var()` を使わない。（`no-var-in-query`）
-  - 理由: クエリの条件ではカスタムプロパティを参照できず、条件そのものが無効になるため。
+- 【禁止】`@media` の条件と、`@container` のサイズの条件の中で `var()` を使わない。（`no-var-in-query`）
+  - 理由: メディアクエリの条件ではカスタムプロパティを参照できず、コンテナのサイズの条件では仕様で認められていても対象のブラウザでそろって動かず、値が問い合わせるコンテナで解決されて意図とずれやすいため。
+  - 補足: スタイルクエリで `style(--a: var(--b))` のようにカスタムプロパティどうしを比べる条件は、対象にしません。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【禁止】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
   - 理由: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
@@ -526,7 +527,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【必須】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
   - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
-  - 補足: 対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
+  - 補足: 横向きの画面では左右にもセーフエリアがあるので、左右の端に接するバーやボタンには `env(safe-area-inset-left)` と `env(safe-area-inset-right)` も加えます。対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
   - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【推奨】デザインで特に指定がなければ、`font-family` は総称ファミリーの `sans-serif` だけにする。（`font-family-sans-serif`）
   - 理由: 主要な OS に読みやすい和文フォントが入っており、ユーザーが自分で設定した読みやすいフォントも尊重できるため。
@@ -805,7 +806,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: 詳細度は、ベースでは 0、コンポーネントの中ではクラス1つ分（0.1.0）を基本にそろえます。
   - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
 - 【禁止】詳細度や読み込み順の競争に勝つ目的で `!important` を使わない。（`no-important-for-specificity`）
-  - 理由: `!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。
+  - 理由: スタイルの宣言どうしでは `!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。
   - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
 - 【推奨】`!important` は、`[hidden]` を確実に隠す、CMS が要素に出力する `style` 属性を打ち消すなど、ほかの手段では実現できない場面に限って使う。（`important-only-for-guarantees`）
   - 理由: どのような上書きにも負けてはいけない指定だけに絞れば、`!important` 同士の競争が起きないため。
@@ -816,7 +817,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
 - 【推奨】値を戻すときは、`initial`、`unset`、`revert`、`revert-layer` のうち、戻したい先に合うキーワードを選んで書く。（`explicit-rollback-keyword`）
   - 理由: 具体的な値を書き直すより、どこまで戻したいのかという意図がコードに残るため。
-  - 補足: `display: initial` は、要素の種類に関係なく `inline` になります。ブラウザのデフォルトスタイルに戻すなら `revert` を使います。
+  - 補足: `display: initial` は、要素の種類に関係なく `inline` になります。ブラウザのデフォルトスタイルに戻すなら `revert` を使います（`revert` はサイトの CSS の指定を取り除くので、ユーザーのスタイルがあればその値になります）。
   - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
 - 【非推奨】プロパティをまとめて戻すときに `all: unset` を使わず、レイヤーを使うなら `all: revert-layer`、使わないなら `all: revert` を指定する。（`no-all-unset`）
   - 理由: `unset` は継承されないプロパティを初期値に戻すので、`display` が `inline` になり、ブラウザのデフォルトスタイルのうち必要なものまで消えるため。
@@ -939,7 +940,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 設定が効いているかどうかと、文字が大きくなったときに崩れないかどうかは、設定を変えて見なければ分からないため。
   - 詳細: 3-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【禁止】`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` を使わない。（`no-vw-vh`）
-  - 理由: どの大きさの画面を基準にするかがブラウザ任せで意図が曖昧になり、モバイルでは要素が見切れたり、横スクロールが起きたりするため。
+  - 理由: ブラウザの UI が引っ込んだ最も大きい画面（ラージビューポート）が基準で、どの状態に合わせたいのかがコードから読み取れず、モバイルでは UI が表示された状態で要素が見切れたり、スクロールバーの幅の分だけ横スクロールが起きたりするため。
   - 補足: 代わりに `svi` や `svb` などを使います。
   - 自動チェック: Stylelint: `unit-disallowed-list`（警告）
   - 詳細: 3-2 ビューポート単位とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/viewport-and-container-units.mdx）
@@ -1585,7 +1586,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
 - 【推奨】同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。（`stack-vs-prose`）
   - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
-  - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。
+  - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。CMS で編集者が入力する本文エリアの中には、どちらも使わず `.wysiwyg` で余白を決めます（`prose-not-on-cms-body`）。
   - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
 - 【推奨】`stack` の一部の間隔だけを変えたいときは、子に `margin` を足さず、近い要素を `stack` で包んで入れ子にするか、`grid-template` の空のセルに切り替える。（`stack-uneven-gaps`）
   - 理由: フレックスアイテムの `margin` は相殺されずに `gap` に足され、間隔が2か所の指定の和で決まって読み取りにくくなるため。
@@ -1767,7 +1768,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。（`cqi-needs-named-container`）
   - 理由: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
   - 詳細: 8-2 コンテナクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-queries.mdx）
-- 【非推奨】`container-type: size` と、それを前提にした `cqb`、`cqw`、`cqmin`、`cqmax` は使わない。（`no-container-type-size`）
+- 【非推奨】`container-type: size` と、それを前提にした `cqb`、`cqh`、`cqmin`、`cqmax` は使わない。（`no-container-type-size`）
   - 理由: コンテナの高さが確定していないと効かず、使える場面がほとんどないため。
   - 詳細: 8-2 コンテナクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-queries.mdx）
 - 【禁止】`.container` のような汎用のクラスを作らない。`container` プロパティを持つ要素にだけ、`.sidebar-container` のように何のコンテナかが分かる名前を付ける。（`no-container-utility-class`）
@@ -1795,7 +1796,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】ブレイクポイントを変数として持つフレームワークを使う案件では、独自の値を足さず、フレームワークの変数を使う。（`framework-breakpoint-variables`）
   - 理由: 案件の中でブレイクポイントの値がばらばらになるのを防ぐため。
-  - 補足: Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティはクエリの条件で使えません（`no-var-in-query`）。
+  - 補足: Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティは、メディアクエリの条件では使えません（`no-var-in-query`）。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【禁止】`sp`、`tablet`、`pc` のようにデバイスを連想させる名前を、ブレイクポイントやクラス名（`.sp-only` など）に使わない。（`no-device-names`）
   - 理由: 画面の幅とデバイスの種類は一致せず、名前と実態がずれていくため。
@@ -1803,8 +1804,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】クエリの閾値は、「列の最小幅×列数＋隙間×隙間の数」のように、レイアウトが成り立つ条件を `calc()` の式で書く。（`threshold-as-formula`）
   - 理由: 数値の根拠がコードに残り、列数や隙間を変えたときにも直しやすいため。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
-- 【禁止】`@media` と `@container` の条件式の中で `var()` を使わない。（`no-var-in-query`）
-  - 理由: クエリの条件ではカスタムプロパティを参照できず、条件そのものが無効になるため。
+- 【禁止】`@media` の条件と、`@container` のサイズの条件の中で `var()` を使わない。（`no-var-in-query`）
+  - 理由: メディアクエリの条件ではカスタムプロパティを参照できず、コンテナのサイズの条件では仕様で認められていても対象のブラウザでそろって動かず、値が問い合わせるコンテナで解決されて意図とずれやすいため。
+  - 補足: スタイルクエリで `style(--a: var(--b))` のようにカスタムプロパティどうしを比べる条件は、対象にしません。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【禁止】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
   - 理由: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
@@ -1854,7 +1856,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【必須】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
   - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
-  - 補足: 対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
+  - 補足: 横向きの画面では左右にもセーフエリアがあるので、左右の端に接するバーやボタンには `env(safe-area-inset-left)` と `env(safe-area-inset-right)` も加えます。対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
   - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 
 ### 第9章 タイポグラフィと和文組版
@@ -1913,8 +1915,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: ぶら下げた約物は要素の幅の外に出るので、余白がないと親からはみ出し、横スクロールの原因になるため。
   - 詳細: 9-2 和文組版を整える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/japanese-typesetting.mdx）
 - 【必須】ベースの `line-height` は 1.5 以上にして、各要素に継承させる。（`base-line-height-min`）
-  - 理由: 行の間が狭いと、認知に障害のある人を含め、読んでいる行を目で追いにくくなるため（WCAG 2.1 の達成基準 1.4.8）。
-  - 補足: kiso.css は 1.5 を指定しています。見出しは、ベースより狭い値を個別に指定します。ユーザーが行の高さを 1.5 倍に上書きしても中身が切れないことも求められます（WCAG 2.1 の達成基準 1.4.12）。
+  - 理由: 行の間が狭いと、認知に障害のある人を含め、読んでいる行を目で追いにくくなるため。
+  - 補足: WCAG 2.1 の達成基準 1.4.8 は 1.5 倍以上の行送りを達成できる仕組みを求める基準で、初期値を 1.5 以上にするのは本書の方針です。kiso.css は 1.5 を指定しています。見出しは、ベースより狭い値を個別に指定します。ユーザーが行の高さを 1.5 倍に上書きしても中身が切れないことも求められます（WCAG 2.1 の達成基準 1.4.12）。
   - 詳細: 9-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
 - 【禁止】`line-height: 1` を指定しない。（`no-line-height-one`）
   - 理由: 文言の変更、画面の幅、文字サイズの設定、機械翻訳で改行が起きたとき、行が重なって読めなくなることがあるため。
@@ -1990,7 +1992,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: `currentColor` に不透明度を付けるときは、`color-mix(in oklab, currentColor 60%, transparent)` のように透明と混ぜます。
   - 詳細: 10-1 色とダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/color.mdx）
 - 【推奨】彩度の高い2色以上をつなぐグラデーションには、`linear-gradient(in oklch, …)` のように補間の色空間を書く。（`gradient-interpolation-space`）
-  - 理由: 初期値の sRGB 補間では中間の色が灰色にくすみ、色空間を指定すると知覚に近い明度と彩度で補間されるため。
+  - 理由: 既定の補間の色空間は色の書き方で変わり（旧来の書き方の色だけなら sRGB で、中間の色が灰色にくすむ。それ以外は Oklab）、色空間を書けば意図した補間がコードから分かるため。
   - 補足: `oklch` の色相は `shorter hue` の経路で補間されます。長いほうを通すときは `in oklch longer hue` と書きます。対応していない環境ではこの宣言が無視されるので、`background-color` も書いておきます。
   - 詳細: 10-1 色とダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/color.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
@@ -2022,8 +2024,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 強制カラーモードでは `background-color` がページの背景色に置き換わり、図形が見えなくなるため。
   - 補足: 通常の文字の文脈でしか使わない図形は、`background-image` に `conic-gradient(currentColor 0 0)` を、`background-color` に `CanvasText` を指定する方法でも描けます。
   - 詳細: 10-2 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
-- 【推奨】強制カラーモードでは、インライン SVG の `fill` と `stroke` を、文脈に合ったシステムカラーに `!important` で固定する。（`forced-colors-svg-system-colors`）
-  - 理由: SVG の色は強制カラーモードでも置き換わるとは限らず、`currentColor` がシステムカラーにならない環境もあるため。
+- 【推奨】強制カラーモードでは、管理している単色のインライン SVG アイコンの色を、塗りで描くものは `fill`、線で描くものは `stroke` だけ、文脈に合ったシステムカラーに `!important` で固定する。（`forced-colors-svg-system-colors`）
+  - 理由: SVG の色は強制カラーモードでも置き換わるとは限らず、`currentColor` がシステムカラーにならない環境もあるため。すべての SVG に両方を指定すると、線のない図形に線が付くため。
+  - 補足: 多色の SVG は対象にしません。値が `none` の描画要素は、そのままにします。
   - 詳細: 10-2 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
 - 【推奨】単色のアイコンを `<img>` で表示するときは、強制カラーモードで `filter` を使い、背景と反対の色に塗りつぶす。（`forced-colors-image-icon-filter`）
   - 理由: 画像は強制カラーモードの影響を受けないので、黒いアイコンは黒い背景に、白いアイコンは白い背景に溶け込むため。
@@ -2146,9 +2149,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: リンクのテキストが見出しだけになり、スクリーンリーダーでカードの中身をすべて読み上げるような冗長さを避けられるため。
   - 補足: カードの中にほかのリンクやボタンを置くときは、それらを `::after` より手前に重ねます。
   - 詳細: 11-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
-- 【推奨】キーボード操作でのフォーカスに限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。（`focus-visible-over-focus-within`）
-  - 理由: `:focus-within` は、子孫がマウスのクリックでフォーカスを受けたときにも当てはまり、フォーカスリングを出すべき場面に絞れないため。
-  - 補足: 入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。
+- 【推奨】ブラウザがフォーカスの表示を必要と判断する場合に限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。（`focus-visible-over-focus-within`）
+  - 理由: `:focus-within` は、ボタンをマウスでクリックしたときのように、ブラウザがフォーカスリングを出さない場面にも当てはまるため。
+  - 補足: `:focus-visible` は入力の手段を判定しません。テキストの入力欄は、クリックでフォーカスしたときにも当てはまります。入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。
   - 詳細: 11-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨】ホバーで位置や大きさが変わる要素は、ホバーを受ける要素を動かさず、子要素（または擬似要素）を動かす。（`hover-target-stays-still`）
   - 理由: ホバーを受ける要素自身が動くと、カーソルが要素の外に出てホバーが外れ、戻るとまた当たるという繰り返しで、ちらつくため。

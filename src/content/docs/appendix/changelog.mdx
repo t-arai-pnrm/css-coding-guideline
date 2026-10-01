@@ -11,6 +11,36 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.5.1（2026年10月1日）
+
+全体のレビューを受けて、仕様と食い違う説明、動かない例、章どうしの矛盾を直しました。仕様の記述は一次資料と照らし、表示の問題は、確かめられたものだけブラウザで確認しています。ルールの追加や方針の変更はありません。
+
+- 次の4件のルールは、意味を正しくするために文言を訂正しました。ルールの強さは変えていません。
+  - [`no-var-in-query`](/responsive/media-queries/#rule-no-var-in-query)：対象を、メディアクエリの条件と、コンテナクエリのサイズの条件に限りました。スタイルクエリでカスタムプロパティどうしを比べる条件は対象にしません。
+  - [`no-container-type-size`](/responsive/container-queries/#rule-no-container-type-size)：`size` を前提にする単位の `cqw` を `cqh` に直しました。
+  - [`forced-colors-svg-system-colors`](/color-media/forced-colors/#rule-forced-colors-svg-system-colors)：対象を管理している単色のアイコンに限り、塗りで描くものは `fill`、線で描くものは `stroke` だけを補正するようにしました。
+  - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：`:focus-visible` が当てはまる条件を、キーボードの操作から、ブラウザがフォーカスの表示を必要と判断する場合に改めました。
+- 本文の例と説明を直しました。
+  - 「[11-2 モーションを実装する](/interaction/motion/)」：画面に入ったら動かす演出の待機を、`data-motion-mode="motion"` と `scripting: enabled` の両方を条件にしました。スクリプトの初期化に失敗しても、本文が透明のまま残りません。
+  - 「[11-4 フォーム部品](/interaction/forms/)」：チェックマークを選択したときだけ作るようにし、強制カラーモードで未選択にも見える問題と、未選択の枠線が見えない色だった問題を直しました。デモにも同じチェックボックスを加えました。
+  - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」：HTMLに書いた値そのものと、その値を読む宣言の上書きを分けて説明しました。
+  - 「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」：クエリの中の `var()` を、メディアクエリ、サイズの条件、スタイルクエリに分けて説明しました。
+  - 「[10-1 色とダークモード](/color-media/color/)」：グラデーションの既定の補間は、旧来の書き方の色だけならsRGB、それ以外はOklabだと直しました。
+  - 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」「[5-4 コメントの書き方](/notation/comments/)」：1つのファイルに複数のコンポーネントを書く説明を、[`one-component-per-file`](/components/boundaries/#rule-one-component-per-file) に合わせました。2-4には、`<body>` の中の `<style>` がHTML標準の配置条件から外れることと、適合が必要な場合の書き方も加えました。
+  - 「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」：接頭辞のない `vh` は、現在の仕様ではラージビューポートが基準だと直しました。
+  - 「[7-11 sticky が動かないとき](/layout/sticky/)」：基準を最寄りのスクロールコンテナとし、`overflow: clip` を区別しました。
+  - 「[7-4 Flexboxの基礎](/layout/flexbox-basics/)」：`flex: 1` の `flex-basis` が実装では `0%` になることと、縦のFlexboxでの違いを加えました。
+  - 「[8-5 セーフエリアに対応する](/responsive/safe-area/)」：固定するバーと浮かせるボタンに、左右のセーフエリアを加えました。
+  - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」「[10-3 画像と装飾](/color-media/images-and-decoration/)」：寸法を持つ擬似要素に `display` を加え、単独で写しても描けるようにしました。
+  - 「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」：`:focus-visible` はキーボードの操作に限らないことを説明しました。
+  - 「[7-13 コンポジション集](/layout/compositions/)」：CMSの本文の中では `stack` と `prose` を使わず、`wysiwyg` を使うことに統一しました。
+  - 「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」：スキルを登録する前に、自分の環境で `pnpm gen:ai` を実行する手順を加えました。
+  - 第12章の概要に12-3を加え、サイドバーの順番を節の番号にそろえました。
+  - 第2章のカスケードの説明（`all`、`!important` とトランジション、`revert` の戻り先）を、仕様に合わせて正確にしました。
+  - `rlh` の基準、マージンの相殺、段組みの切れ目、絶対配置とFlexboxの幅、`cubic-bezier()` の行き過ぎの説明を、仕様に合わせて正確にしました。
+  - WCAG 1.4.8の要件と本書の行間の方針を分け、Stylelintの単位の案内を現在の設定に合わせました。
+  - 付録E（用語集）の包含ブロックの定義を広げ、付録G（参考資料）を主要な資料の一覧と位置づけて、新しい節の仕様を加えました。
+
 ## 0.5.0（2026年10月1日）
 
 著者のXのポスト（2019年12月〜2026年9月の本人の投稿約1,800件と、2024年4月以降のリポスト約680件）を読み、本書にまだない内容を加えました。仕様の挙動は、ブラウザで確かめてから書いています。一部のブラウザで出荷済みの新しい機能は、プログレッシブ・エンハンスメントとして、新しい節にまとめました。

@@ -64,7 +64,7 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 `margin` の間に何かが挟まると、相殺は起きません。親と子の間なら、親の `padding` や `border` が1pxでもあれば、子の `margin` は親の内側に留まります。兄弟の間に文字だけの行があったり、`<br>` が挟まったりした場合も同じです。インラインの要素や `inline flow-root` の要素も行を作るので、その前後の `margin` は相殺しません。
 
-高さの指定は、片側にだけ影響します。親に `block-size` や0でない `min-block-size` を指定すると、最後の子の `margin-block-end` は親の外へ出なくなります。一方で、最初の子の `margin-block-start` は、親の高さに関係なく親の外へ出ます。空の要素も、`block-size` や `min-block-size` を指定すると上下の `margin` が隣り合わなくなり、通り抜けは起きません。
+高さの指定は、片側にだけ影響します。親に `block-size` や0でない `min-block-size` を指定すると、最後の子の `margin-block-end` は親の外へ出なくなります。一方で、最初の子の `margin-block-start` は、親の高さに関係なく親の外へ出ます。空の要素も、0より大きい `block-size` か `min-block-size` を指定すると上下の `margin` が隣り合わなくなり、通り抜けは起きません（値が0なら、指定していても通り抜けます）。
 
 {/* 要確認: 親の min-block-size が下の端の相殺を止める挙動は CSS 2.2 の 8.3.1 の注記にもとづく。ブラウザでは未確認 */}
 

@@ -109,8 +109,8 @@ Stylelintには、`unit-disallowed-list` や `declaration-property-value-disallo
   {
     message: (unit) => {
       const recommendationMap = {
-        vw: 'svw, dvw, lvw',
-        vh: 'svh, dvh, lvh',
+        vw: 'svi, dvi, lvi',
+        vh: 'svb, dvb, lvb',
         /* ... */
       };
       return `\`${unit}\`は使用しないでください。代わりに\`${recommendationMap[unit]}\`を検討してください。`;
@@ -122,7 +122,7 @@ Stylelintには、`unit-disallowed-list` や `declaration-property-value-disallo
 
 この書き方は、Web制作向けのリンターの設定を公開しているリポジトリ（d-zero-dev/linters）に、私が提案したものです。2025年5月に「禁止リストを指定するときは回答を用意する」という提案を出し、2026年1月に、ビューポート単位、色、`content` プロパティ、`z-index` の数値などのメッセージを加える変更が取り込まれました。禁止するなら、その場で答えも渡すという考え方です。
 
-`vw` を書くと、2つの警告が出ます。禁止リストのメッセージは `svw`、`dvw`、`lvw` を勧め、`logical-css/require-logical-units` は論理的な単位の `vi` を勧めます。2つをたどると、本書が勧める `svi` にたどり着きます。ビューポート単位の選び方は「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で説明しています。
+`vw` を書くと、2つの警告が出ます。`logical-css/require-logical-units` は論理的な単位の `vi` を勧め、禁止リストのメッセージは、本書が勧める `svi`、`dvi`、`lvi` を直接示します。禁止リストで物理方向の `svw` を勧めると、それを書いた時点で論理単位のルールに掛かるので、最初から論理方向の単位を案内しています。ビューポート単位の選び方は「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で説明しています。
 
 `z-index` の数値の禁止にも、トークンを使うように促すメッセージを付けています。本書の設定では、相対的な重なりに使う `1` と `-1` も含めて、z-indexに数値を直接書くとすべて警告します。1と-1だけを許すと、いずれ `z-index: 2` のような値が紛れ込むので、相対的な値も `--z--forwards` と `--z--backwards` で書かせます。以前のテンプレートの正規表現は `10` から `19` のような1で始まる値も通していましたが、すべての整数を対象にしたことで、この問題もなくなりました。z-indexのトークンは「[6-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 

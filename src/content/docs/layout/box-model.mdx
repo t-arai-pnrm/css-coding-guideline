@@ -59,7 +59,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 ## `auto` と中身に合わせた大きさ
 
-`inline-size` と `block-size` の初期値は `auto` です。通常フローのブロックでは、`inline-size: auto` は包含ブロックの幅から左右の `margin` を引いた残りいっぱいの幅、`block-size: auto` は中身を収める高さを表します。一方、絶対配置の要素、`float` の要素、`inline flow-root` の要素、フレックスアイテムの `inline-size: auto` は、中身に合わせた幅を表します。`auto` の意味は、要素がどのレイアウトの方式の中にあるかで変わります（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
+`inline-size` と `block-size` の初期値は `auto` です。通常フローのブロックでは、`inline-size: auto` は包含ブロックの幅から左右の `margin` を引いた残りいっぱいの幅、`block-size: auto` は中身を収める高さを表します。一方、`float` の要素、`inline flow-root` の要素、左右の片側しか位置を指定していない絶対配置の要素、横に並ぶフレックスアイテムの `inline-size: auto` は、中身に合わせた幅を表します。絶対配置の要素でも `inset-inline` で左右の両方を指定すると、`auto` の幅は包含ブロックいっぱいに広がり、縦に並ぶフレックスアイテムも `align-items` の初期値（`stretch`）によってコンテナの幅まで広がります。`auto` の意味は、要素がどのレイアウトの方式の中にあるかと、位置や揃え方の指定で変わります（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
 
 中身に合わせた幅は、キーワードで明示できます。`min-content` は、折り返せる位置ですべて折り返したときの幅で、英語なら最も長い単語の幅です。日本語は文字の間で折り返せるので、ほぼ1文字の幅になります。`max-content` は、一度も折り返さないときの幅です。
 

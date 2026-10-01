@@ -12,7 +12,7 @@
 - id: no-important-for-specificity
   level: 禁止
   rule: 詳細度や読み込み順の競争に勝つ目的で `!important` を使わない。
-  reason: '`!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。'
+  reason: 'スタイルの宣言どうしでは `!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。'
   aiProne: true
   page: cascade/cascade-basics
   since: 0.1.0
@@ -36,7 +36,7 @@
   level: 推奨
   rule: 値を戻すときは、`initial`、`unset`、`revert`、`revert-layer` のうち、戻したい先に合うキーワードを選んで書く。
   reason: 具体的な値を書き直すより、どこまで戻したいのかという意図がコードに残るため。
-  note: '`display: initial` は、要素の種類に関係なく `inline` になります。ブラウザのデフォルトスタイルに戻すなら `revert` を使います。'
+  note: '`display: initial` は、要素の種類に関係なく `inline` になります。ブラウザのデフォルトスタイルに戻すなら `revert` を使います（`revert` はサイトの CSS の指定を取り除くので、ユーザーのスタイルがあればその値になります）。'
   page: cascade/cascade-basics
   since: 0.1.0
 
