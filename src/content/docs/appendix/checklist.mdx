@@ -91,6 +91,7 @@ sidebar:
 - [ ] 初期値、デフォルトスタイル、リセットやベーススタイルで決まっている値を、指定し直していないか（[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults)）
 - [ ] 中央寄せに `margin: 0 auto` ではなく `margin-inline: auto` を使っているか（[`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering)）
 - [ ] 一部だけを変えるのに、`background` のような影響範囲の広いショートハンドを使っていないか（[`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change)）
+- [ ] kiso.cssで0になっているマージンを、`margin: 0` や `margin-block: 8px 0` で打ち消していないか。片側だけ付けるならロングハンドで書いているか（[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults)、[`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change)）
 - [ ] 値を戻すときに、戻したい先に合うキーワード（`revert` など）を選んでいるか（[`explicit-rollback-keyword`](/cascade/cascade-basics/#rule-explicit-rollback-keyword)）
 - [ ] 継承されるプロパティを、子要素ごとに指定し直していないか（[`inherit-from-root`](/cascade/cascade-basics/#rule-inherit-from-root)）
 
@@ -126,6 +127,7 @@ sidebar:
 ## 7. コンポーネントの境界
 
 - [ ] 見た目が似ているだけのものを、1つのコンポーネントにまとめていないか（[`component-split-by-role`](/components/boundaries/#rule-component-split-by-role)、[`rule-of-three`](/principles/maintainability/#rule-rule-of-three)）
+- [ ] コンポーネントごとにCSSのファイルを分け、複数のコンポーネントのCSSを1つのファイルに混ぜていないか（[`one-component-per-file`](/components/boundaries/#rule-one-component-per-file)）
 - [ ] コンポーネントのルートに、`margin` や `grid-area` のような外部関連型のレイアウトを指定していないか（[`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)）
 - [ ] 子のコンポーネントの配置と外側の余白を、親の `gap` やOuterで決めているか（[`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)）
 - [ ] ほかのコンポーネントのルートや内部の要素を、セレクタで選んで上書きしていないか（[`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)）
@@ -159,7 +161,7 @@ sidebar:
 
 - [ ] ホバーを `@media (any-hover: hover)` の中に書き、`:focus-visible` にも同じ見た目を指定しているか（[`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover)、[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
 - [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
-- [ ] トランジションとアニメーションを `@media (prefers-reduced-motion: no-preference)` の中で指定しているか（[`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference)）
+- [ ] トランジションとアニメーションを `@media (prefers-reduced-motion: no-preference)` の中で指定しているか。動きそのものが情報を伝えるスピナーと、ポップオーバーやダイアログの出現に使う、位置や大きさを変えないフェードは、条件の外にあっても違反ではない（[`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference)）
 - [ ] 出ていく動きに `ease-in` 系、現れる動きに `ease-out` 系を使っているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして、動きが減ることを確かめたか（[`ease-in-for-exit`](/interaction/motion/#rule-ease-in-for-exit)）
 - [ ] `transition: all` を使っていないか（[`no-transition-all`](/interaction/motion/#rule-no-transition-all)）
 - [ ] 開閉するUIを、`<dialog>`、`popover` 属性、`<details>` のようなHTMLの機能で作っているか（[`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)）

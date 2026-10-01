@@ -1,0 +1,190 @@
+---
+title: "3-4 if()とattr()で条件と属性を値にする"
+description: 型付きのattr()はHTMLの属性値を数値や名前として読み、if()は1つのプロパティの値を条件で切り替えます。どちらも未対応のブラウザがあるので、attr()は@supportsの中に書き、if()は前に従来の宣言を書いて、使う場面を限ります。
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import rowsHtml from '../../../demos/values/textarea-rows/index.html?raw';
+import rowsCss from '../../../demos/values/textarea-rows/style.css?raw';
+
+型付きの `attr()` を使うと、HTMLの属性値を数値や長さ、名前として、`content` 以外のプロパティで使えます。`if()` は、1つのプロパティの値を、条件によって切り替える関数です。どちらもSafariが対応していないので（2026年10月確認）、従来の宣言を外に書き、対応した環境でだけ新しい値が使われるようにします。`attr()` は `var()` と組み合わせることが多いので、宣言を `@supports` の中に書きます。
+
+使う場面も限ります。`attr()` で読むのは、`<textarea>` の `rows` のように、HTMLがすでに持っている属性の値です。`if()` は、要素自身に定義したカスタムプロパティで値を分岐するときにだけ、条件1つと `else` の形で書きます。
+
+<Baseline id="attr" name="型付きの attr()" />
+
+<Baseline id="if" name="if()" />
+
+## HTMLの属性値をCSSの値にできなかった理由
+
+これまでの `attr()` は、`content` プロパティでしか使えず、属性値を文字列として返すだけでした。印刷のときにリンクのURLを添えるような使い方はできても、属性に書いた数値を高さや列の数に使うことはできません。そのため、HTMLの値をCSSに渡すときは、`style` 属性でカスタムプロパティを渡す方法を使ってきました。この方法は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
+
+困るのは、同じ値をHTMLがすでに属性として持っている場合です。`<textarea>` に `field-sizing: content` を指定すると、入力欄は入力した量に合わせて伸び縮みします。その代わり、`rows` 属性で決めていた高さが効かなくなり、空の入力欄は1行分の高さに縮みます（2026年10月、Chrome 152で確認）。本文の入力欄に `rows="6"` を指定して6行分の高さを用意していても、その高さは失われます。
+
+```html title="🙅‍♂ Not Recommended: rows と同じ値を style 属性でも渡す"
+<!-- 🙅‍♂ Not Recommended -->
+<textarea class="_textarea" rows="6" style="--comment-form--min-rows: 6"></textarea>
+```
+
+最小の高さを残そうとして、`rows` と同じ値を `style` 属性でも渡すと、1つの値を2か所で管理することになります。片方だけを書き換えると、`field-sizing` に対応した環境と未対応の環境で、入力欄の高さが食い違います。CSSが `rows` 属性を直接読めれば、値は1か所で済みます。
+
+## 型付きのattr()で属性値を読む
+
+型付きの `attr()` は、属性値を指定した型として解釈して返します。`attr(rows type(<number>), 3)` と書くと、`rows` 属性の値を数値として読み、属性がないときや数値として読めないときは、第2引数の `3` を返します。型には `<number>`、`<integer>`、`<length>`、`<color>`、`<custom-ident>` などを指定でき、`attr(data-gap px, 16px)` のように単位を付けて読む書き方もあります。
+
+```css title="🙆‍♂ Recommended: rows 属性の行数を、入力欄の最小の高さにする"
+@scope (.scoped.comment-form) to (.scoped) {
+  ._textarea {
+    --_max-rows: 10;
+    --_padding: 0.5em;
+
+    inline-size: 100%;
+
+    /* 型付きの attr() に未対応の環境で使う、3行分の高さ */
+    min-block-size: calc(3 * 1lh + var(--_padding) * 2);
+    max-block-size: calc(var(--_max-rows) * 1lh + var(--_padding) * 2);
+    padding: var(--_padding);
+    field-sizing: content;
+
+    @supports (min-block-size: calc(attr(rows type(<number>), 3) * 1lh)) {
+      min-block-size: calc(attr(rows type(<number>), 3) * 1lh + var(--_padding) * 2);
+    }
+
+    @supports (field-sizing: content) {
+      resize: none;
+    }
+  }
+}
+```
+
+`attr()` を使う宣言は、型付きの `attr()` を条件にした `@supports` の中に書きます。外に書いた3行分の `min-block-size` は、未対応の環境で使う値です。第2引数の `3` は、`attr()` に対応した環境で属性がないときにしか使われないので、未対応の環境のフォールバックにはなりません。
+
+同じプロパティを2回書き、未対応の環境では後の宣言が捨てられることに頼る書き方は、この宣言では成り立ちません。宣言に `var()` が含まれていると、ブラウザは構文の検査を値の計算まで先送りするからです。未対応の関数があると分かるのは計算値を求める時点なので、宣言は「計算値の時点で無効」になり、前の宣言には戻らずに初期値が使われます。`min-block-size` の初期値は `auto` で、`field-sizing: content` の空の入力欄は1行分の高さに縮みます。`var()` を含む宣言で、未知の関数を使って試すと、`min-block-size` は前に書いた88pxではなく0pxになりました（2026年10月、Chrome 152で確認）。`field-sizing` と `lh` 単位で入力欄の高さを行数で決める書き方は、「[11-4 フォーム部品](/interaction/forms/)」で扱っています。
+
+第2引数は省略しません。対応した環境で属性がなかったり、値を型として読めなかったりすると、宣言は「計算値の時点で無効」になり、前に書いた宣言ではなくプロパティの初期値が使われます。`z-index: 5` の後に `z-index: attr(data-layer type(<integer>))` と書き、属性値を `abc` にして試しました。`z-index` は `5` ではなく `auto` になります（2026年10月、Chrome 152で確認）。
+
+列の数や、グリッドのエリアの名前を属性で渡す書き方もあります。`grid-area: attr(data-area type(<custom-ident>), auto)` と書けば、HTMLの側でどのエリアに置くかを決められます。ただし、エリアの名前は本書の命名どおり `data-area="--aside"` のように `--` で始めるので、HTMLの側にもCSSの命名の規則が現れます。命名の規則は「[5-1 命名規則](/notation/naming/)」で説明しています。
+
+## コード例とデモ
+
+次のデモには、`rows="1"` の件名と、`rows="6"` の本文の入力欄があります。型付きの `attr()` に対応したブラウザでは、入力欄の最小の高さがそれぞれ1行と6行になり、入力した量に合わせて最大10行まで伸びます。
+
+<Demo title="rows 属性の行数を、伸び縮みする入力欄の最小の高さにする" html={rowsHtml} css={rowsCss} />
+
+未対応のブラウザでは、どちらの入力欄も最小の高さが3行になります。件名の欄が少し高くなるだけで、入力するという目的は損なわれません。このように、未対応の環境で値が少し変わるだけで済む箇所が、型付きの `attr()` を使える場面です。
+
+## style属性の公開プロパティとの使い分け
+
+型付きの `attr()` が使えるなら、カスタムプロパティを `style` 属性で渡す方法が要らなくなるのではないでしょうか。私は2025年2月の時点で、型付きの `attr()` がすべてのブラウザで使えるようになれば、修飾や状態、ユーティリティをデータ属性で表すほうが良くなると考えていました。2026年3月の時点では、コンポーネントや小さな汎用の部品の上書きを `attr()` で行い、コンポジションとユーティリティをこれまでどおり公開プロパティで行う、という分け方を考えています。
+
+一方で、2つの方法には性質の違いがあります。`style` 属性で渡したカスタムプロパティは、子孫の要素に継承されます。`attr()` が読むのは、その要素自身の属性だけです。また、`style` 属性の方法は本書の対象のすべてのブラウザで動きますが、型付きの `attr()` はSafariで動きません（2026年10月確認）。
+
+どちらの方法でも、HTMLに書いた値を、CSSのメディアクエリや `:hover` で上書きできません。`style` 属性の宣言は、同じ要素へのCSSの宣言よりも優先されるからです（「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」）。状態や画面の幅で変える値は、CSSの側で公開プロパティに渡します。HTMLから状態ごとの値を渡したいときは、`--card--background--hocus` のように接尾辞を付けた公開プロパティでモードごとの値を渡し、どれを使うかはコンポーネントの内部で選びます。
+
+そのため本書では、コンポーネントに値を渡す手段は、`style` 属性の公開プロパティのままにします。`attr()` を使うのは、`rows` のようにHTMLが意味を持たせた属性の値を、CSSでも使いたいときです。{/* 要確認: 出典なし */}`data-variant="featured"` のように、選択肢から1つを選ぶバリエーションは、複数のプロパティをまとめて変えることが多いので、これまでどおり属性セレクタで書きます。Safariが型付きの `attr()` に対応したら、この分け方を見直します。
+
+ルートの要素で、カスタムプロパティに `attr()` を代入するときは注意が必要です。`:scope` に `--_columns: attr(data-columns type(<integer>), 1)` と書くと、値はルートの属性で計算されてから子孫の要素に継承されます。子孫の要素が同じ名前の属性を持っていても、使われるのはルートの値です（2026年10月、Chrome 152で確認）。
+
+## if()で1つの値を条件で切り替える
+
+`if()` は、条件と値の組をセミコロンで区切って並べ、最初に成り立った条件の値を返します。条件には、カスタムプロパティの値を調べる `style()`、メディアクエリの `media()`、機能の対応を調べる `supports()` を書けます。どの条件も成り立たなかったときのために、最後に `else` の値を書きます。
+
+```css title="🙆‍♂ Recommended: ルート自身の余白を、ルートで決めたモードで切り替える"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    --_density: --compact;
+
+    /* if() に未対応の環境で使う値 */
+    padding-block: 12px;
+    padding-block: if(style(--_density: --spacious): 24px; else: 12px);
+
+    @media (width >= calc(768 / 16 * 1rem)) {
+      --_density: --spacious;
+    }
+  }
+
+  ._logo {
+    block-size: 32px;
+
+    @container style(--_density: --spacious) {
+      block-size: 40px;
+    }
+  }
+}
+```
+
+この例で `if()` を使っているのは、ルート自身の `padding-block` だけです。スタイルクエリ（`@container style()`）は、親の要素に定義されたカスタムプロパティを調べるので、`--_density` を定義したルート自身には当たりません。`if()` の `style()` は、その要素自身の値を調べます。同じ要素に `--_pressed: 1` を定義して試すと、スタイルクエリの色は変わらず、`if()` の色は変わりました（2026年10月、Chrome 152で確認）。
+
+`if()` がなければ、ルートの余白のためにメディアクエリをもう1つ書くことになり、モードの判定が2か所に分かれます。判定を1か所に集め、子孫の要素はスタイルクエリで分岐する書き方は、「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」で説明しています。`if()` は、その書き方でルート自身だけが分岐できないという穴を埋めるものとして使います。
+
+## if()の条件の書き方と評価のタイミング
+
+条件は書いた順に調べられ、`else` は常に成り立つので、`else` は最後に書きます。`style()` では `and`、`or`、`not` で条件を組み合わせられ、Chrome 142以降は `style(--_columns > 2)` のような範囲の比較も書けます（2026年10月確認）。ただし、複数のカスタムプロパティを組み合わせると状態の掛け合わせを値の中で表すことになるので、本書では使いません。{/* 要確認: 出典なし */}
+
+<Baseline id="style-query-range-syntax" name="スタイルクエリの範囲の比較" />
+
+`if()` は、ショートハンドの一部や `calc()` の中にも書けます。変わる部分だけを `if()` で書けば、変わらない部分を条件ごとに書き写す必要がなくなります。
+
+```css title="🙆‍♂ Recommended: ショートハンドのうち、線の太さだけを切り替える"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    --_density: --compact;
+
+    /* if() に未対応の環境で使う値 */
+    border-block-end: 1px solid currentColor;
+    border-block-end: if(style(--_density: --spacious): 2px; else: 1px) solid currentColor;
+  }
+}
+```
+
+`if()` は `var()` と同じく、値を計算する時点で条件を調べて置き換わる関数です。そのため、カスタムプロパティの値に `if()` を書くと、条件は定義した要素で一度だけ調べられ、子孫の要素には選ばれた値が継承されます。子孫の要素で条件のカスタムプロパティが変わっても、値は選び直されません。要素ごとに条件を調べたいときは、`if()` をプロパティの値に直接書きます。
+
+## if()を使う場面を限る
+
+`if()` は、どのプロパティの値の中にも書け、入れ子にもできます。そのため、メディアクエリや状態のセレクタで書いていた分岐を、すべて値の中に書けてしまいます。私は2025年5月から7月にかけて `if()` を試し、便利すぎて歯止めが効かなくなると感じました。時短のために使えば、コードが破綻するという考えです。条件1つと `else` の形なら、使ってもよいと考えています。
+
+```css title="🙅‍♂ Not Recommended: クエリと状態の分岐を値の中に詰め込む"
+/* 🙅‍♂ Not Recommended */
+._button {
+  padding-inline: if(media(width >= 768px): 24px; else: 16px);
+  background-color: if(
+    style(--_variant: --primary): if(style(--_hover: 1): var(--color--accent--700); else: var(--color--accent--600));
+    style(--_variant: --danger): var(--color--error--600);
+    else: var(--color--neutral--50)
+  );
+}
+```
+
+このコードには前に書いた宣言がないので、`if()` に未対応の環境では、背景色と余白のどちらも指定されません。また、メディアクエリは各セレクタの中の `@media` に、状態ごとの値は `--_background--hocus` のような接尾辞の内部プロパティに書くのが本書の規約です。値の中に条件を書くと、コンポーネントがどんな状態を持つのかを、`:scope` の先頭の数行から読み取れなくなります。状態の表し方は、「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」の「状態やモードは接尾辞で表す」で説明しています。
+
+`media()` と `supports()` も使いません。1つの値だけを切り替える場面でも、`@media` か `@supports` で書けば、未対応の環境で宣言ごと捨てられる心配はありません。`if()` を使うのは、要素自身に定義したカスタムプロパティを `style()` で調べる場面だけです。{/* 要確認: 出典なし */}
+
+## 未対応の環境での振る舞いと制約
+
+`if()` に対応しているのは、Chrome 137以降とEdgeだけで、FirefoxとSafariは対応していません（2026年10月確認）。未対応の環境では `if()` を含む宣言が構文の誤りとして捨てられるので、必ず前に従来の宣言を書きます。前の宣言が使われても表示が崩れない値、つまりコンパクトなモードのような基本の値を前に書きます。
+
+ただし、前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`if()` の値に `var()` を書くと、`attr()` の例と同じく宣言は計算値の時点で無効になり、前の宣言ではなく初期値か継承した値が使われます。`var()` を使う値を `if()` で切り替えたいときは、`@supports` の中に書くか、`if()` を使わずにスタイルクエリや状態のセレクタで書きます。どの書き方でフォールバックを用意するかの判断は、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」の「フォールバックの書き方を選ぶ」にまとめています。
+
+対応した環境では、前の宣言はフォールバックになりません。どの条件も成り立たず、`else` を書いていないとき、`if()` は何も返さず（空の値になり）、宣言は計算値の時点で無効になります。親の文字色が緑の要素に、`color: blue` と `color: if(style(--nope: 1): red)` を続けて書いて試しました。文字色は青ではなく、継承した緑になります（2026年10月、Chrome 152で確認）。そのため、`if()` には必ず `else` を書きます。
+
+`attr()` の値は、URLとしては使えません。属性には、スクリプトが使うトークンのように、スタイルのためではない値が入っていることがあります。その値を外部に送るURLを組み立てられると危険だからです。`url(attr(data-src))`、`image-set()` に文字列で渡す形、カスタムプロパティを経由する形のどれでも、`background-image` は `none` でした（2026年10月、Chrome 152で確認）。CMSから背景画像を渡すときは、これまでどおり `style` 属性で、`url()` を含む公開プロパティを渡します。
+
+対応を `@supports` で調べるときは、`content` 以外のプロパティに型付きの `attr()` を書きます。コード例とデモでは `min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` を条件にしています。型を付けない `attr()` を条件にすると、従来の `attr()` だけに対応した環境でも成り立つので、判別できません。条件の中には `var()` を書きません。`@supports` は条件の宣言を構文として調べるので、`var()` があると、どの環境でも成り立ってしまいます。{/* 要確認: 出典なし */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [attr() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/attr)
+- [if() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/if)
+- [CSS Values and Units Module Level 5: Attribute References](https://drafts.csswg.org/css-values-5/#attr-notation)（W3C）
+- [CSS Values and Units Module Level 5: Conditional Value Selection](https://drafts.csswg.org/css-values-5/#if-notation)（W3C）
+- [CSS Conditional Rules Module Level 5: Style Container Queries](https://drafts.csswg.org/css-conditional-5/#style-container)（W3C）
+- [Introduction to CSS if statements and conditional logic](https://markodenic.com/introduction-to-css-if-statements-and-conditional-logic/)（Marko Denic）
+- [field-sizing - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing)

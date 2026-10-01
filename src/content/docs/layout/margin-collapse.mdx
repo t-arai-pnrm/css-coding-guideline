@@ -1,0 +1,152 @@
+---
+title: "7-3 マージンの相殺"
+description: "通常フローでは、ブロック方向に隣り合う margin は足し算にならず、大きいほうだけが残ります。相殺が起きる条件と起きない条件、負の値を含む計算を説明し、本書が子の margin より親の gap を選び、相殺を止めるときに display: flow-root を使う理由を述べます。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import modesHtml from '../../../demos/layout/margin-collapse-modes/index.html?raw';
+import modesCss from '../../../demos/layout/margin-collapse-modes/style.css?raw';
+import emptyHtml from '../../../demos/layout/margin-collapse-empty/index.html?raw';
+import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw';
+
+通常フローでは、ブロック方向で隣り合う2つ以上の `margin` は、足し算されず、1つにまとまります。これをマージンの相殺（margin collapsing）と呼びます。まとまった余白の大きさは、正の値どうしなら大きいほうの値です。上の要素の `margin-block-end: 24px` と下の要素の `margin-block-start: 40px` が隣り合えば、間は64pxではなく40pxになります。
+
+相殺は、兄弟の間だけでなく、親と最初の子、親と最後の子、中身のない要素の上下の間でも起きます。一方で、FlexboxやGridのアイテム、`display: flow-root` の要素とその子の間、`float` や絶対配置の要素では起きません。余白が思った大きさにならないときは、値を調整する前に、その `margin` がどの要素の `margin` と隣り合っているかを確かめます。
+
+本書は、並んだ要素の間隔を子の `margin` ではなく親の `gap` で作り、親子の相殺を止めたいときは親に `display: block flow-root` を指定します。この節では、相殺の規則と、この書き方を選ぶ理由を説明します。
+
+## 余白が足し算にならない場面
+
+お知らせの一覧の見出しの下に24px、本文の段落の上に40pxの余白を付けたとします。デザインカンプでは2つの余白を合わせた64pxの間隔を想定していても、ブラウザでは40pxになります。2つの `margin` が相殺し、大きいほうだけが残ったからです。
+
+```css title="🙅‍♂ Not Recommended: 上下の両方に margin を付けて、合計の間隔を期待する"
+/* 🙅‍♂ Not Recommended */
+.news-heading {
+  margin-block-end: 24px;
+}
+
+.news-text {
+  margin-block-start: 40px;
+}
+```
+
+親と子の間でも、似たことが起きます。背景色を付けたセクションの見出しに `margin-block-start: 32px` を付けると、セクションの背景の内側ではなく、セクションの外側に32pxの余白ができます。見出しの `margin` が、セクション自身の `margin-block-start` と相殺して、親の外へ出るからです。セクションの背景は見出しの上端から始まり、余白の部分には背景が付きません。
+
+どちらの場面でも、CSSの指定に誤りはありません。ずれの原因は値ではなく、通常フローで隣り合う `margin` をまとめる規則にあります。この規則を知らないまま、`padding-block-start: 1px` や `overflow: hidden` で直すと、なぜ直ったのかがコードから読み取れなくなります。
+
+## 相殺が起きる場面
+
+相殺するのは、ブロック方向の `margin` だけです。横書きでは上下の `margin` が相殺し、左右の `margin` は隣り合っても足し算になります。縦書きではブロック方向が横になるので、左右の `margin` が相殺します。物理的な上下ではなく、`writing-mode` が決めるブロック方向を基準にします（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
+
+1つ目の場面は、通常フローで隣り合う兄弟です。上の要素の `margin-block-end` と、すぐ下の要素の `margin-block-start` が相殺します。「隣り合う」は、2つの `margin` の間に、行（文字やインラインの要素が並んだ行ボックス）、`padding`、`border` のどれもないことを指します。HTMLのタグの間の改行や空白は、それだけでは行を作らないので、相殺を妨げません。
+
+2つ目の場面は、親と最初の子、親と最後の子です。親に `border-block-start` と `padding-block-start` がなく、最初の子の前に文字もなければ、子の `margin-block-start` は親の `margin-block-start` と隣り合い、相殺します。親の `margin-block-start` が0でも相殺は起き、子の余白が親の外へ出ます。下の端でも同じことが起きますが、こちらは親の `block-size` が `auto` のときに限られます。
+
+3つ目の場面は、中身のない要素です。`padding`、`border`、中身のいずれもなく、高さが0の要素では、自分の `margin-block-start` と `margin-block-end` が隣り合って1つにまとまり、さらに前後の兄弟の `margin` と相殺します。空の要素の `margin` は、前後の余白を通り抜けて1か所に吸収されるわけです。CMSの本文に入った空の `<p>` が余白を増やさないのは、この規則によるものです。
+
+## 相殺した余白の大きさ
+
+正の値どうしが相殺すると、余白は大きいほうの値になります。24pxと40pxなら40pxです。2つの値が等しければその値のままで、16pxと16pxは16pxです。
+
+負の値が混ざると、計算が変わります。正の値と負の値が相殺するときは、2つを足します。30pxと-20pxなら10px、25pxと-25pxなら0pxです。負の値どうしなら、絶対値の大きいほうが残り、-25pxと-75pxでは-75pxになって、下の要素は上の要素に75px重なります。
+
+3つ以上の `margin` が相殺することもあります。CSS 2.2の仕様では、相殺に加わる正の値のうち最大のものから、負の値のうち絶対値が最大のものを引きます。上の要素の `margin-block-end: 40px` に、ラッパーの `margin-block-start: -16px` とその最初の子の `margin-block-start: 24px` が続くと、3つが1か所で相殺します。正の値の最大は40px、負の値の絶対値の最大は16pxなので、間は24pxです。
+
+{/* 要確認: ブラウザでの実測は権限で止められたため行っていない。この節の数値は CSS 2.2 の 8.3.1 の計算規則にもとづく */}
+
+親子と兄弟の相殺が重なると、1か所に4つ以上の `margin` が集まることもあります。加わる `margin` が増えるほど、どの指定で間隔が決まっているのかを追いにくくなります。本書が子の `margin` で間隔を作らない理由の1つは、この追いにくさです。
+
+## 相殺が起きない場面
+
+`margin` の間に何かが挟まると、相殺は起きません。親と子の間なら、親の `padding` や `border` が1pxでもあれば、子の `margin` は親の内側に留まります。兄弟の間に文字だけの行があったり、`<br>` が挟まったりした場合も同じです。インラインの要素や `inline flow-root` の要素も行を作るので、その前後の `margin` は相殺しません。
+
+高さの指定は、片側にだけ影響します。親に `block-size` や0でない `min-block-size` を指定すると、最後の子の `margin-block-end` は親の外へ出なくなります。一方で、最初の子の `margin-block-start` は、親の高さに関係なく親の外へ出ます。空の要素も、`block-size` や `min-block-size` を指定すると上下の `margin` が隣り合わなくなり、通り抜けは起きません。
+
+{/* 要確認: 親の min-block-size が下の端の相殺を止める挙動は CSS 2.2 の 8.3.1 の注記にもとづく。ブラウザでは未確認 */}
+
+`gap` は、通常フローのブロックコンテナには効きません。`gap` が働くのはFlexbox、Grid、段組みで、FlexboxとGridではそもそも相殺が起きません。フレックスアイテムとグリッドアイテムの `margin` は、隣のアイテムや親の `margin` と相殺せず、`gap` に足されます。`gap: 16px` の中で要素に `margin-block-start: 24px` を付けると、間は40pxになります。
+
+新しいブロック整形コンテキストを作る要素は、子の `margin` を外へ出しません。`display: flow-root`、`overflow` が `visible` と `clip` 以外の要素、`float` した要素、`inline flow-root` の要素がこれにあたります。また、`float` した要素と絶対配置の要素は通常フローから外れるので、自分の `margin` がほかの要素の `margin` と相殺することもありません。ルート要素（`<html>`）の `margin` も相殺しません。
+
+## 本書の書き方：親の `gap` と `display: flow-root`
+
+本書は、FlexboxやGridの子要素の間隔を、子の `margin` ではなく親の `gap` で作ります（「[7-7 余白を設計する](/layout/spacing/)」）。`gap` は要素と要素の間にだけ空き、相殺も起きないので、`gap` の値がそのまま間隔になります。相殺の規則を思い出さなくても、コードを読めば間隔が分かります。
+
+```css title="🙆‍♂ Recommended: 間隔は親の gap で作る"
+._news-list {
+  display: block grid;
+  gap: 24px;
+}
+```
+
+親の背景の内側に余白を取りたいだけなら、子の `margin` ではなく親の `padding-block` で作ります。子の `margin` は、親に `padding` や `border` がないと親の外へ出るからです。コンポーネントのルートに外側の `margin` を持たせない方針（「[6-1 コンポーネントの境界を守る](/components/boundaries/)」）も、子の `margin` が外へ出ると守れなくなります。
+
+```css title="🙆‍♂ Recommended: 背景の内側の余白は親の padding で作る"
+._section {
+  padding-block: 32px;
+  background-color: oklch(96% 0.01 250deg);
+}
+```
+
+子の `margin` を残したまま親子の相殺を止めたいときは、親に `display: block flow-root` を指定します（ルール「[`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)」）。`flow-root` は、新しいブロック整形コンテキストを作るためだけの値で、ほかのレイアウトに影響しません。止まるのは親子の相殺で、`flow-root` の中の兄弟どうしは相殺したままです。
+
+<Baseline id="display-flow-root" />
+
+```css title="🙆‍♂ Recommended: 親子の相殺は flow-root で止める"
+._section {
+  display: block flow-root;
+}
+```
+
+```css title="🙅‍♂ Not Recommended: 見えない padding や overflow で相殺を止める"
+/* 🙅‍♂ Not Recommended */
+.section {
+  overflow: hidden;
+  padding-top: 1px;
+}
+```
+
+`overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が効かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が効かなくなる理由は「[7-11 sticky が動かないとき](/layout/sticky/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
+
+## コード例とデモ
+
+次のデモでは、同じ2つの子要素を、3種類の親に入れています。1つ目の子は上に32px、下に24px、2つ目の子は上に40px、下に32pxの `margin` を持ちます。点線の枠は親を囲む要素で、親の外へ出た余白がその内側に見えます。
+
+<Demo title="通常フロー、flow-root、Grid で、同じ margin の相殺の仕方が変わる" html={modesHtml} css={modesCss} variant="neutral" />
+
+通常フローの親では、最初の子の上の32pxと最後の子の下の32pxが親の外へ出て、枠と背景の間に空きができます。子どうしの間は、24pxと40pxが相殺して40pxです。`display: block flow-root` の親では、32pxが背景の内側に収まりますが、子どうしの間は40pxのままです。Gridの親では、親子と兄弟のどちらも相殺せず、子どうしの間は24pxと40pxを足した64pxになります。
+
+次のデモは、段落、空の `<p>`、`<hr>` を並べた本文です。左は通常フローで、`* + *` で2つ目以降の要素に `margin-block-start: 16px` を付けています。右はGridで、`gap: 16px` で間隔を作っています。`<hr>` は、どちらも上下に24pxの `margin` を持ちます。
+
+<Demo title="空の p と hr の余白は、通常フローでは相殺し、Grid では gap に足される" html={emptyHtml} css={emptyCss} variant="neutral" />
+
+通常フローでは、空の `<p>` の `margin` が前後の16pxと相殺して通り抜けるので、1つ目と2つ目の段落の間は16pxです。`<hr>` は `border` を持つので通り抜けませんが、自分の24pxと前後の16pxが相殺し、線の上下はどちらも24pxになります。Gridでは、空の `<p>` の前後に `gap` が1つずつ空いて32pxになり、`<hr>` の上下は16pxと24pxを足した40pxになります。
+
+## 補足と注意点
+
+本文のように種類の違う要素が続く領域では、相殺がむしろ役に立ちます。図や区切り線のように自分で余白を持つ要素と、流れの間隔が隣り合っても、大きいほうだけが効くからです。本書が本文の領域を通常フローのまま `margin` で組むのは、この性質を使うためです（「[7-7 余白を設計する](/layout/spacing/)」の「本文の流れの間隔」）。
+
+余白を作るために、空の要素や `<p>&nbsp;</p>` を置くのは避けます。空の要素は、上のデモのとおり通常フローでは相殺で消え、`gap` で並べた領域では `gap` の2つ分の間隔になり、置き場所の親によって結果が変わります。`&nbsp;` だけの段落や `<br>` は1行を作るので、余白の大きさが行の高さで決まり、文字の大きさを変えると一緒に変わります。
+
+{/* 要確認: 出典なし（空の要素で余白を作らない方針） */}
+
+ブラウザの開発者ツールのボックスモデルの表示は、要素に指定された `margin` を示し、相殺した後の余白は示しません。親の外へ出た余白を探すときは、親と子を順に選び、それぞれの `margin` の領域が重なる位置を見比べます。
+
+AIが生成するコードでは、親子の相殺を `overflow: hidden` で止める例をよく見かけます。切り取りの副作用はレビューで見落とされやすく、後から `position: sticky` を足したときなどに不具合として現れます。レビューでは、`overflow` の指定に「何を切り取るためか」が説明されているかを確かめ、相殺を止めるためだけなら `display: block flow-root` に置き換えます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [The Rules of Margin Collapse](https://www.joshwcomeau.com/css/rules-of-margin-collapse/)（Josh W. Comeau）
+- [Understanding the fundamentals of CSS Layout](https://polypane.app/blog/understanding-the-fundamentals-of-css-layout/)（Polypane）
+- [8.3.1 Collapsing margins - CSS 2.2](https://www.w3.org/TR/CSS22/box.html#collapsing-margins)
+- [CSS Box Model Module Level 3](https://www.w3.org/TR/css-box-3/)
+- [マージンの相殺の各種 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing)
+- [ブロック整形コンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Block_formatting_context)

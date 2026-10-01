@@ -154,6 +154,13 @@
   page: operations/review-and-ai
   since: 0.3.0
 
+- id: ai-layout-with-grid-areas
+  level: 推奨
+  rule: AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。
+  reason: '指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。'
+  page: operations/review-and-ai
+  since: 0.5.0
+
 # 12-3 CMSのWYSIWYG本文にスタイルを当てる
 - id: wysiwyg-scope-root
   level: 推奨

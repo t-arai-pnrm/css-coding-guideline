@@ -1,0 +1,53 @@
+@layer components {
+  @scope (.scoped.margin-collapse-modes) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    ._label {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 枠線で、親の外に抜けた余白が見えるようにする */
+    ._frame {
+      border: 1px dashed oklch(60% 0 0deg);
+    }
+
+    ._parent {
+      background-color: oklch(92% 0.04 250deg);
+
+      &[data-mode="flow-root"] {
+        display: block flow-root;
+      }
+
+      &[data-mode="grid"] {
+        display: block grid;
+      }
+    }
+
+    ._first,
+    ._second {
+      padding: 8px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 相殺を見せるため、子の margin で間隔を作っている */
+    ._first {
+      margin-block: 32px 24px;
+    }
+
+    ._second {
+      margin-block: 40px 32px;
+    }
+  }
+}

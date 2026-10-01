@@ -200,3 +200,39 @@
   aiProne: true
   page: values/math-functions
   since: 0.1.0
+
+# 3-4 if()とattr()で条件と属性を値にする
+- id: attr-for-html-attributes
+  level: 推奨
+  rule: 型付きの `attr()` は、`<textarea>` の `rows` のように HTML がすでに持っている属性の値を CSS でも使うときに限り、コンポーネントに値を渡す手段は `style` 属性の公開プロパティのままにする。
+  reason: 型付きの `attr()` に未対応のブラウザがあり（2026年10月確認）、同じ値を属性と `style` 属性の2か所に書くことも避けられるため。
+  note: '`data-variant` のように選択肢から1つを選ぶバリエーションは、属性セレクタで書きます。`attr()` の値は `url()` に使えないので、背景画像は `style` 属性の公開プロパティで渡します。'
+  page: values/if-and-attr
+  since: 0.5.0
+
+- id: typed-attr-fallback
+  level: 必須
+  rule: '`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。'
+  reason: '宣言に `var()` が含まれると、未対応の環境でも宣言は計算値の時点で無効になって前の宣言に戻らず、対応した環境でも属性がないか型として読めないと、宣言がプロパティの初期値に戻るため。'
+  note: '第2引数は、対応した環境でしか使われないので、未対応の環境のフォールバックにはなりません。`@supports` の条件は `min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` のように型付きで書き、`var()` を含めません。'
+  aiProne: true
+  page: values/if-and-attr
+  since: 0.5.0
+
+- id: if-for-own-custom-property
+  level: 推奨
+  rule: '`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。'
+  reason: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
+  note: '`media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。'
+  aiProne: true
+  page: values/if-and-attr
+  since: 0.5.0
+
+- id: if-fallback-and-else
+  level: 必須
+  rule: '`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。'
+  reason: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
+  note: '前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`var()` を含むと計算値の時点で無効になり、前の宣言に戻らないので、`@supports` の中に書くか、スタイルクエリや状態のセレクタで書きます。'
+  aiProne: true
+  page: values/if-and-attr
+  since: 0.5.0

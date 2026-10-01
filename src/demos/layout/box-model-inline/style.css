@@ -1,0 +1,20 @@
+@layer components {
+  @scope (.scoped.box-model-inline) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      max-inline-size: calc(400 / 16 * 1rem);
+    }
+
+    ._mark {
+      margin-block: 12px;
+      padding-block: 12px;
+      padding-inline: 8px;
+      background-color: oklch(85% 0.1 250deg / 70%);
+
+      &[data-display="inline-flow-root"] {
+        display: inline flow-root;
+      }
+    }
+  }
+}

@@ -1,8 +1,8 @@
 ---
-title: "7-3 変化に強いレイアウト"
+title: "7-8 変化に強いレイアウト"
 description: "テキストが長くなったら、画像がなかったら、要素の数が変わったらと考えて書くディフェンシブCSSの節です。固定の長さには上限を付け、列は minmax(0, 1fr) で分け、はみ出しは clip で切り取ります。"
 sidebar:
-  order: 3
+  order: 8
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -188,7 +188,7 @@ $$('*').forEach((el) => {
 
 `margin` が原因のはみ出しは、このスクリプトでは見つかりません。枠線を目で追って確かめます。原因が分かったら、ここまでに説明した方法で、その要素を直します。
 
-そのうえで、画面の端まで広げた装飾などが意図せずはみ出す場合に備えて、ルートで横方向のはみ出しを切り取ることがあります。このとき、`overflow-x: hidden` は使いません。`hidden` を指定した要素はスクロールコンテナになり、中にある `position: sticky` の要素が、その要素を基準に粘着しようとして機能しなくなるからです。`clip` は、はみ出した部分を切り取るだけでスクロールコンテナを作らないので、`sticky` を壊しません。`sticky` が動かない原因の切り分けは「[7-5 sticky が動かないとき](/layout/sticky/)」にまとめています。
+そのうえで、画面の端まで広げた装飾などが意図せずはみ出す場合に備えて、ルートで横方向のはみ出しを切り取ることがあります。このとき、`overflow-x: hidden` は使いません。`hidden` を指定した要素はスクロールコンテナになり、中にある `position: sticky` の要素が、その要素を基準に粘着しようとして機能しなくなるからです。`clip` は、はみ出した部分を切り取るだけでスクロールコンテナを作らないので、`sticky` を壊しません。`sticky` が動かない原因の切り分けは「[7-11 sticky が動かないとき](/layout/sticky/)」にまとめています。
 
 ```css title="🙆‍♂ Recommended: 横方向のはみ出しを clip で切り取る"
 :where(:root, body) {
@@ -202,7 +202,26 @@ $$('*').forEach((el) => {
 
 <Baseline id="overflow-clip" />
 
-`overflow: clip` は、本書の対象のすべてのブラウザで使えます。論理プロパティの `overflow-inline` は、Safariでは26から対応したので、対応していない環境には `@supports` で `overflow-x` を指定しています（2026年9月確認）。はみ出しの対策に `contain: paint` を使う方法もありますが、中にある `position: fixed` の要素の基準が変わってしまうので使いません。この仕組みは「[7-4 重なりと配置](/layout/positioning/)」で説明します。
+`overflow: clip` は、本書の対象のすべてのブラウザで使えます。論理プロパティの `overflow-inline` は、Safariでは26から対応したので、対応していない環境には `@supports` で `overflow-x` を指定しています（2026年9月確認）。はみ出しの対策に `contain: paint` を使う方法もありますが、中にある `position: fixed` の要素の基準が変わってしまうので使いません。この仕組みは「[7-9 重なりと配置](/layout/positioning/)」で説明します。`hidden` ではなく `clip` を選ぶ理由は、ページのスクロールを入れ子にしないためでもあります。`html` と `body` の両方に `overflow-x: hidden` を指定すると、`body` がスクロールコンテナになり、ページのスクロールが `body` に移ることがあります（「[7-10 ページのスクロールとルートスクローラー](/layout/root-scroller/)」）。
+
+## 中央に寄せたスクロール領域の先頭が切れる
+
+`justify-content: center` や `align-content: center` で中身を中央へ寄せ、`overflow: auto` でスクロールを付けた要素では、中身が要素より大きくなると先頭側が切れます。中央に寄せる計算は、はみ出した分を前後に均等に振り分けます。そのため、先頭側へはみ出した部分は、スクロールで戻れない位置に置かれるからです。モーダルの中身や、横にスクロールするカードの列でよく起きます。
+
+`safe` キーワードを付けて `safe center` と書くと、中身が収まるときは中央に寄せ、はみ出すときは先頭に寄せます。先頭から読めるので、スクロールで末尾まで確かめられます。
+
+```css title="🙆‍♂ Recommended: はみ出すときは先頭に寄せる"
+@scope (.scoped.dialog-body) to (.scoped) {
+  :scope {
+    display: block grid;
+    align-content: safe center;
+    overflow-y: auto;
+    max-block-size: calc(100svb - 32px * 2);
+  }
+}
+```
+
+`safe` は、Safariでは17.6から使えるので、本書の対象のブラウザはすべて対応しています。中身が要素に収まるかどうかがデザインカンプの時点で決まっていない場所では、中央寄せに `safe` を付けておきます（2026年10月、Chrome 152で確認）。
 
 ## ガイドライン
 

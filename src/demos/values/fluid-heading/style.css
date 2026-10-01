@@ -11,7 +11,6 @@
       --_slope: calc((var(--_max-size) - var(--_min-size)) / (var(--_max-width) - var(--_min-width)));
       --_intercept: calc(var(--_min-size) - var(--_slope) * var(--_min-width));
 
-      margin: 0;
       font-size: clamp(
         var(--_min-size) / 16 * 1rem,
         var(--_slope) * 100svi + var(--_intercept) / 16 * 1rem,
@@ -21,7 +20,7 @@
     }
 
     ._lead {
-      margin-block: calc(12 / 16 * 1rem) 0;
+      margin-block-start: calc(12 / 16 * 1rem);
     }
   }
 }

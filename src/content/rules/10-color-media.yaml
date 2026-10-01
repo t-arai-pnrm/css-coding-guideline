@@ -275,4 +275,41 @@
   page: color-media/images-and-decoration
   since: 0.3.0
 
-# 10-4 印刷のスタイル
+# 10-4 角の形を変える
+- id: corner-shape-guard-when-broken
+  level: 推奨
+  rule: '`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。'
+  reason: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
+  note: '錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。'
+  aiProne: true
+  page: color-media/shapes
+  since: 0.5.0
+
+- id: full-bleed-radius-with-sign
+  level: 推奨
+  rule: '画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。'
+  reason: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
+  note: '`/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。'
+  aiProne: true
+  page: color-media/shapes
+  since: 0.5.0
+
+# 10-5 輪郭と枠線を描く
+- id: guard-new-shapes-with-supports
+  level: 推奨
+  rule: '`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。'
+  reason: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
+  note: '未対応の環境では、単色の枠線や中心まで塗った円グラフのように、意味の読み取れる形に縮退させます。'
+  aiProne: true
+  page: color-media/outlines
+  since: 0.5.0
+
+- id: shape-function-with-custom-properties
+  level: 推奨
+  rule: '`clip-path: shape()` の座標は、半径などをカスタムプロパティに入れて、そこから計算する。'
+  reason: '`shape()` の値は長く、数値を直接並べると形が読み取れず、大きさを変えるたびにすべての座標を書き直すことになるため。'
+  note: '`shape()` に対応していない環境には、`@supports not` で `border-radius` の形に戻します。'
+  page: color-media/outlines
+  since: 0.5.0
+
+# 10-6 印刷のスタイル

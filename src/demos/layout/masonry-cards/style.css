@@ -1,0 +1,34 @@
+@layer components {
+  @scope (.scoped.post-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+      gap: 16px;
+      padding: 0;
+      list-style-type: "";
+
+      /* 対応している環境だけ、項目を短い列へ詰める */
+      @supports (display: block grid-lanes) {
+        display: block grid-lanes;
+      }
+    }
+
+    ._item {
+      display: block grid;
+      row-gap: 8px;
+      align-content: start;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._number {
+      color: oklch(45% 0.15 260deg);
+      font-size: calc(20 / 16 * 1rem);
+      font-weight: bold;
+    }
+
+    ._text {
+    }
+  }
+}

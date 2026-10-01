@@ -1,0 +1,71 @@
+@layer tokens {
+  :root {
+    --spacing--xxs: 8;
+    --spacing--xs: 12;
+    --spacing--md: 24;
+    --spacing--lg: 32;
+  }
+}
+
+@layer compositions {
+  /**
+   * 子要素を縦に積む。
+   *
+   * @prop {length} --stack--gap [0] - 子要素の間隔
+   */
+  .stack {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--stack--gap, 0);
+  }
+
+  /**
+   * 幅が閾値以上なら指定の列数で並べ、閾値を下回ったら 1 列にする。
+   *
+   * @prop {integer} --switcher--column-count     [3]                     - 横に並べるときの列数
+   * @prop {length}  --switcher--column-min-width [calc(320 / 16 * 1rem)] - 列の最小幅（閾値の計算に使う）
+   * @prop {length}  --switcher--gap              [0px]                   - 行と列の間隔（一括）
+   * @prop {length}  --switcher--row-gap          [0px]                   - 行の間隔
+   * @prop {length}  --switcher--column-gap       [0px]                   - 列の間隔
+   */
+  .switcher {
+    --_c--row-gap: var(--switcher--gap, var(--switcher--row-gap, 0px));
+    --_c--column-gap: var(--switcher--gap, var(--switcher--column-gap, 0px));
+    --_c--column-count: var(--switcher--column-count, 3);
+    --_c--column-min-width: var(--switcher--column-min-width, calc(320 / 16 * 1rem));
+
+    /* 列の最小幅で指定の列数を並べるのに必要な幅 */
+    --_c--threshold: calc(
+      var(--_c--column-min-width) * var(--_c--column-count) + var(--_c--column-gap) * (var(--_c--column-count) - 1)
+    );
+
+    /* 指定の列数でちょうど埋まる 1 列の幅。auto-fit がこれより多くの列を作らないようにする */
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-count) - 1)) / var(--_c--column-count)
+    );
+
+    display: block grid;
+
+    /* 閾値より狭いと sign() が -1 になり、列の最小幅が 100%（1 列）になる */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr)
+    );
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+}
+
+@layer components {
+  @scope (.scoped.feature-list) to (.scoped) {
+    ._item {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+      background-color: oklch(98% 0.01 250deg);
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+  }
+}

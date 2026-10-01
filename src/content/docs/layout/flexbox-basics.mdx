@@ -1,0 +1,187 @@
+---
+title: "7-4 Flexboxの基礎"
+description: "Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配る方式です。主軸と交差軸、配置のプロパティが動かす対象、flex-grow・flex-shrink・flex-basisの計算、自動の最小幅を押さえれば、効かない指定の原因を理由から説明できます。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import distributionHtml from '../../../demos/layout/flexbox-distribution/index.html?raw';
+import distributionCss from '../../../demos/layout/flexbox-distribution/style.css?raw';
+import alignmentHtml from '../../../demos/layout/flexbox-alignment/index.html?raw';
+import alignmentCss from '../../../demos/layout/flexbox-alignment/style.css?raw';
+
+Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配るレイアウトの方式です。アイテムを並べる向きを主軸、それに直交する向きを交差軸と呼び、`justify-content` は主軸の配置を、`align-items` は交差軸の配置を決めます。伸び縮みの量は、`flex-grow`、`flex-shrink`、`flex-basis` の3つから計算で決まります。
+
+この節では、その計算を数値で追い、`flex: 1` の意味やアイテムが縮まない原因を説明します。FlexboxとGridの選び方は「[7-6 Gridから考える](/layout/grid-first/)」で扱います。
+
+<Baseline id="flexbox" />
+
+## Flexboxの指定が思いどおりにならないとき
+
+Flexboxの不具合には、よく見かける型があります。2つのアイテムに `flex-grow: 1` を指定したのに同じ幅にならない、`flex-direction: column` にしたら `justify-content: center` で横の中央に寄らなくなった、といったものです。`flex-shrink` を指定しているのに、長いURLを含むアイテムが縮まずにはみ出すこともあります。
+
+どれも、ブラウザの不具合ではなく、Flexboxの規則どおりの振る舞いです。`flex-grow` は余った空間だけを配るので、アイテムの元の幅の差は残ります。`justify-content` が動かすのは主軸で、`column` にすると主軸が縦に変わります。アイテムが縮まないのは、フレックスアイテムには中身より小さくならない最小幅が自動で付くからです。
+
+これを固定の幅や `overflow: hidden` で直すと、中身や画面の幅が変わったときに崩れます。AIが生成するコードにも、`flex: 1` と `flex-grow: 1` を区別しない例がよくあります。値を足す前に、どの規則が働いているかを確かめます（ルール [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)）。
+
+## 主軸と交差軸
+
+主軸は `flex-direction` で決まります。初期値の `row` では、主軸はインライン方向（横書きでは左から右）です。`column` にすると、主軸はブロック方向（横書きでは上から下）になり、交差軸が横に変わります。
+
+`row` は「横」ではなく「インライン方向」を指し、向きはコンテナの `writing-mode` と `direction` で決まります。縦書きのコンテナでは、`row` のアイテムは上から下へ並びます。論理プロパティと同じく、Flexboxの指定も物理的な上下左右ではなく軸で読みます（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
+
+`row-reverse` と `column-reverse` は、主軸の始点と終点を入れ替えます。`justify-content: flex-start` は主軸の始点に寄せるので、`row-reverse` では行末側に寄ります。書字方向の始点に寄せる `start` なら、行頭側に寄ります。
+
+`column` で縦に積むと、`justify-content` と `align-items` の役割も入れ替わります。縦に積んだ要素を横の中央へ寄せるのは、`align-items: center` です。
+
+## 配置のプロパティが動かすもの
+
+配置のプロパティは、名前の `justify` と `align` で軸が決まり、`content`、`items`、`self` で動かす対象が決まります。
+
+| プロパティ | 軸 | 動かす対象 | 指定する要素 |
+|---|---|---|---|
+| `justify-content` | 主軸 | 行の中のアイテムのまとまりと、その間隔 | コンテナ |
+| `align-items` | 交差軸 | 各アイテムの、行の中での位置 | コンテナ |
+| `align-self` | 交差軸 | そのアイテムだけ | アイテム |
+| `align-content` | 交差軸 | 折り返してできた行のまとまりと、行の間隔 | コンテナ |
+
+`justify-content` は、主軸の余りを、アイテムの前後や間にどう分けるかを決めます。Flexboxは主軸の配置を行の中のまとまりとして扱うので、`justify-items` と `justify-self` は効きません。主軸で1つだけを離すときは、`auto` の `margin` を使います。
+
+`align-items` は、各アイテムを、自分のいる行の中で交差軸のどこに置くかを決めます。初期値の `normal` は、フレックスアイテムでは `stretch` として扱われるので、交差軸の大きさを指定していないアイテムは行の高さいっぱいに伸びます。`align-self` は、同じ指定をアイテムの側から1つだけ上書きします。
+
+`align-content` は、折り返してできた行を、コンテナの交差軸のどこに置くかを決めます。`flex-wrap` が初期値の `nowrap` のコンテナは1行のコンテナとして扱われ、`align-content` は効きません。
+
+## 余った空間と足りない空間の配り方
+
+Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め、それを並べたときの余りや不足を計算します。`flex-basis` の初期値 `auto` は、`inline-size` などの主軸の大きさが指定されていればその値を、なければ中身の大きさを使います。`flex-basis` に値を指定すると、`inline-size` より優先されます。コンテナの主軸の大きさから、すべてのアイテムの `flex-basis` と `margin`、そして `gap` を引いた残りが、配る空間です。
+
+余りがあるときは、`flex-grow` の比で配ります。幅480pxのコンテナに、`flex-basis` が80px、80px、160pxの3つのアイテムを置くと、余りは160pxです。`flex-grow` を1、1、2にすると、余りは1：1：2に分けられて40px、40px、80pxずつ足され、アイテムは120px、120px、240pxになります。`flex-grow` の初期値は0なので、指定しなければアイテムは伸びません。
+
+不足があるときは、`flex-shrink` に `flex-basis` を掛けた値の比で縮めます。幅480pxのコンテナに、`flex-basis` が400pxと200pxのアイテムを置くと、120px足りません。`flex-shrink` はどちらも初期値の1ですが、縮む量の比は1：1ではなく400：200、つまり2：1です。80pxと40pxを縮めて、アイテムは320pxと160pxになります。大きなアイテムほど多く縮みます。
+
+細かい規則も2つあります。`flex-shrink` に掛ける `flex-basis` は `padding` と `border` を除いた大きさなので、`border-box` でも、インライン方向の `padding` が違うアイテムどうしでは比がずれます。また、`flex-grow` の合計が1より小さいと、余りのうち合計の割合だけが配られます。`flex-grow: 0.5` のアイテムが1つだけなら、余りの半分だけ伸びます。
+
+余りと不足は同時に起きないので、`flex-grow` と `flex-shrink` のどちらか一方だけが使われます。また、`flex-grow` で余りを使い切ると、`justify-content` を変えても見た目は変わりません。配る余りが残っていないからです。
+
+## `flex: 1` は `flex-basis` も変える
+
+`flex` は、`flex-grow`、`flex-shrink`、`flex-basis` をまとめて指定するショートハンドです。よく使う値は次の4つで、`flex: 1` は「伸びる」という意味に見えますが、`flex-basis` も0にします。
+
+| 値 | `flex-grow` | `flex-shrink` | `flex-basis` |
+|---|---|---|---|
+| 初期値 | `0` | `1` | `auto` |
+| `flex: auto` | `1` | `1` | `auto` |
+| `flex: none` | `0` | `0` | `auto` |
+| `flex: 1` | `1` | `1` | `0` |
+
+この違いが、2つのアイテムに `flex-grow: 1` を指定しても幅がそろわない理由です。`flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと、中身の幅の差がそのまま残ります。`flex: 1` なら、どのアイテムも `flex-basis` が0から始まるので、コンテナの幅のすべてが1：1で配られ、中身の量によらず幅がそろいます。
+
+```css title="🙆‍♂ Recommended: 中身にかかわらず等分するときは、flex で flex-basis も0にする"
+._tab-list {
+  display: block flex;
+}
+
+._tab {
+  flex: 1;
+}
+```
+
+反対に、中身の幅を保ったまま余りだけを足したいときは、`flex-grow` だけを指定します。検索フォームで入力欄だけを伸ばし、ボタンは中身の幅のままにする、といった場面です。どちらも1と書きますが、伸ばし方が違います。
+
+```css title="🙆‍♂ Recommended: 入力欄だけを、余りの分だけ伸ばす"
+._search {
+  display: block flex;
+  gap: 8px;
+}
+
+._input {
+  flex-grow: 1;
+}
+```
+
+このように別物なので、`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（ルール [`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change) の補足）。`flex: 1` でも列の幅が厳密にはそろわない理由は、「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」で説明しています。
+
+## アイテムが縮まない原因になる自動の最小幅
+
+フレックスアイテムが縮まずにはみ出すときは、`flex-shrink` より先に最小幅を確かめます。`min-inline-size`（`min-width`）の初期値 `auto` は、通常のブロックでは0として扱われますが、フレックスアイテムでは中身の最小幅（`min-content`）として扱われます。`flex-shrink` で縮む量を計算しても、この最小幅より小さくはならないので、長いURLや `<input>`、横にスクロールさせる表を含むアイテムは親からはみ出します。
+
+`overflow` を `hidden` や `auto` にしてスクロールコンテナになったアイテムは、自動の最小幅が0になります。ただし、`overflow: hidden` で止めると中身が切り取られ、URLや入力欄の一部が見えなくなります。隠すのではなく、最小幅を0にして、中身を折り返させるかスクロールさせます。
+
+本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[7-8 変化に強いレイアウト](/layout/defensive/)」で説明しています。
+
+`flex-direction: column` では、同じことが高さで起き、`min-block-size: auto` が中身の高さとして扱われます。高さを決めた縦のFlexboxで、スクロールさせたいアイテムがはみ出すときは、そのアイテムに `overflow: auto` か `min-block-size: 0` を指定します。
+
+## 折り返しと間隔
+
+初期値の `flex-wrap: nowrap` では、入りきらないアイテムは縮み、縮みきるとはみ出します。`flex-wrap: wrap` なら、次の行へ回ります。要素の数が運用で変わる並びには、折り返しを指定しておきます（[`flex-wrap-for-variable-items`](/layout/defensive/#rule-flex-wrap-for-variable-items)）。
+
+折り返したFlexboxでは、行ごとに空間を配ります。`flex-grow` を指定したアイテムは行ごとに伸びるので、最後の行に1つだけ残ったアイテムは、行の幅いっぱいに広がります。行をまたいで列の位置をそろえる仕組みはないので、格子状にそろえたい並びはGridで組みます。
+
+アイテムの間隔は、アイテムの `margin` ではなく、コンテナの `gap` で作ります（[`gap-over-child-margin`](/layout/spacing/#rule-gap-over-child-margin)）。`gap` はアイテムの間にだけ入るので、行の端に余計な余白ができません。`gap` の分は、配る空間を計算する前に差し引かれます。
+
+<Baseline id="flexbox-gap" name="Flexbox の gap" />
+
+フレックスアイテムの `auto` の `margin` は、`flex-grow` で配った後の余りを吸収し、`justify-content` より先に適用されます。最後のリンクだけを行末へ寄せる使い方は、7-6のルール [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items) で扱っています。
+
+## 見た目の順番と読み上げの順番
+
+`order` はアイテムを値の小さい順に並べ直し、`row-reverse` と `column-reverse` は並びを逆にします。変わるのは見た目の順番だけなので、読み上げの順番と、Tabキーでフォーカスが移る順番はHTMLの順番のままです。
+
+フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（[`source-order-for-reading`](/layout/grid-first/#rule-source-order-for-reading)）。
+
+並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、2026年10月の時点でBaselineではありません。
+
+<Baseline id="reading-flow" />
+
+## コード例とデモ
+
+次のデモの1段目と2段目は、この節の計算を幅480pxのコンテナで再現したものです。3段目と4段目は、同じ2つのアイテムに `flex-grow: 1` と `flex: 1` を指定したもので、前者では中身の幅の差が残り、後者では240pxずつに分かれます。
+
+<Demo title="flex-grow、flex-shrink、flex-basis による空間の配り方" html={distributionHtml} css={distributionCss} widths={[]} />
+
+次のデモは、高さ160pxのコンテナで配置のプロパティを比べたものです。2つ目のアイテムだけ高さを変えています。4つ目では、折り返した2行のまとまりが、`align-content: end` でコンテナの下端に移っています。
+
+<Demo title="justify-content、align-items、align-self、align-content の対象の違い" html={alignmentHtml} css={alignmentCss} />
+
+アイコン、本文、ボタンを1行に並べる部品は、次のように書けます。大きさを変えたくないアイコンは `flex-shrink: 0` で縮む計算から外し、本文は `flex-grow: 1` で余りを受け取ります。
+
+```css title="🙆‍♂ Recommended: アイコン、伸びる本文、ボタンを1行に並べる"
+._notice {
+  display: block flex;
+  gap: 12px;
+  align-items: center;
+}
+
+._icon {
+  flex-shrink: 0;
+  inline-size: 1.5em;
+  block-size: 1.5em;
+}
+
+._message {
+  flex-grow: 1;
+}
+```
+
+## FlexboxとGridの使い分け
+
+FlexboxとGridは、大きさを決める向きが違います。Flexboxはアイテムの中身の大きさから出発して余りや不足を配り、Gridは先に親で行と列を決めてアイテムをそのセルに置きます。タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すなら、Flexboxが向いています（[`flexbox-for-content-sized-items`](/layout/grid-first/#rule-flexbox-for-content-sized-items)）。
+
+一方、列の数と幅を親で決めたい並びや、行をまたいで位置をそろえたい並びは、Gridで組みます。使い分けの基準と例は「[7-6 Gridから考える](/layout/grid-first/)」に、Gridの仕組みは「[7-5 Gridの基礎](/layout/grid-basics/)」にまとめています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [An Interactive Guide to Flexbox](https://www.joshwcomeau.com/css/interactive-guide-to-flexbox/)（Josh W. Comeau）
+- [CSS Flexbox](https://markodenic.com/css-flexbox/)（Marko Denic）
+- [Cheatsheets for Flex, Grid, Anchor positioning and Invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
+- [CSS Flexible Box Layout Module Level 1](https://drafts.csswg.org/css-flexbox-1/)（W3C）
+- [flex - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex)
+- [主軸に沿ったフレックスアイテムの比率の制御 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_flexible_box_layout/Controlling_ratios_of_flex_items_along_the_main_axis)
+- [order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/order)

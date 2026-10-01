@@ -1,0 +1,127 @@
+@layer base {
+  :where(body) {
+    /* デモの枠の余白を外し、ページと同じく画面の端から使う */
+    padding: 0;
+  }
+}
+
+@layer components {
+  @scope (.scoped.safe-area-demo) to (.scoped) {
+    :scope {
+      --_gutter: 16px;
+      --_bar-block-size: calc(72 / 16 * 1rem);
+      --_inset-left: env(safe-area-inset-left);
+      --_inset-right: env(safe-area-inset-right);
+      --_inset-bottom: env(safe-area-inset-bottom);
+
+      /* 固定したバーに最後の行が隠れないよう、バーの高さとセーフエリアの分を空ける */
+      padding-block-end: calc(var(--_bar-block-size) + var(--_inset-bottom));
+    }
+
+    /*
+     * 実機の値は iframe の中では0なので、ブラウザが知らない名前の env() を書き、
+     * 第2引数の値を使わせて模擬する。
+     */
+    :scope:has(._portrait:checked) {
+      --_inset-bottom: env(demo-safe-area-inset-bottom, 34px);
+    }
+
+    :scope:has(._landscape:checked) {
+      --_inset-left: env(demo-safe-area-inset-left, 48px);
+      --_inset-right: env(demo-safe-area-inset-right, 48px);
+      --_inset-bottom: env(demo-safe-area-inset-bottom, 20px);
+    }
+
+    ._band,
+    ._body,
+    ._bar {
+      /* セーフエリアは画面の物理的な左右にあるので、物理プロパティで書く */
+      /* stylelint-disable-next-line logical-css/require-logical-properties */
+      padding-right: max(var(--_gutter), var(--_inset-right));
+      /* stylelint-disable-next-line logical-css/require-logical-properties */
+      padding-left: max(var(--_gutter), var(--_inset-left));
+    }
+
+    ._band {
+      padding-block: 24px;
+      background-color: oklch(45% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+    }
+
+    ._title {
+      font-size: calc(20 / 16 * 1rem);
+      font-weight: bold;
+    }
+
+    ._body {
+      display: block grid;
+      gap: calc(16 / 16 * 1rem);
+      padding-block: 24px;
+    }
+
+    ._controls {
+      display: block grid;
+      gap: 4px;
+      padding: 12px 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._legend {
+      font-weight: bold;
+    }
+
+    ._bar {
+      position: fixed;
+      inset-inline: 0;
+      inset-block-end: 0;
+      display: block flex;
+      justify-content: center;
+      padding-block: 12px max(12px, var(--_inset-bottom));
+      border-block-start: 1px solid oklch(85% 0 0deg);
+      background-color: oklch(97% 0.01 250deg);
+    }
+
+    ._button {
+      display: block flex;
+      justify-content: center;
+      align-items: center;
+      inline-size: 100%;
+      min-block-size: calc(48 / 16 * 1rem);
+      max-inline-size: calc(400 / 16 * 1rem);
+      border-radius: 9999px;
+      background-color: oklch(45% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+      text-decoration: none;
+    }
+
+    ._unsafe {
+      position: fixed;
+      background-image: repeating-linear-gradient(45deg, oklch(55% 0.2 25deg / 40%) 0 4px, transparent 4px 10px);
+      pointer-events: none;
+    }
+
+    ._unsafe-left,
+    ._unsafe-right {
+      inset-block: 0;
+    }
+
+    ._unsafe-left {
+      /* stylelint-disable-next-line logical-css/require-logical-properties */
+      left: 0;
+      inline-size: var(--_inset-left);
+    }
+
+    ._unsafe-right {
+      /* stylelint-disable-next-line logical-css/require-logical-properties */
+      right: 0;
+      inline-size: var(--_inset-right);
+    }
+
+    ._unsafe-bottom {
+      inset-inline: 0;
+      inset-block-end: 0;
+      block-size: var(--_inset-bottom);
+    }
+  }
+}

@@ -102,6 +102,7 @@ export default {
       {
         ignoreProperties: {
           'word-break': 'auto-phrase',
+          display: '/grid-lanes$/',
           'inline-size': ['/^round\\(/', '/^calc-size\\(/'],
         },
       },
@@ -109,7 +110,7 @@ export default {
     'function-no-unknown': [
       true,
       {
-        ignoreFunctions: ['anchor', 'anchor-size'],
+        ignoreFunctions: ['anchor', 'anchor-size', 'alpha'],
       },
     ],
     'function-url-no-scheme-relative': true,
@@ -165,6 +166,8 @@ export default {
           'text-box',
           'interactivity',
           'corner-shape',
+          'border-shape',
+          'flow-tolerance',
           'text-decoration-inset',
         ],
       },
@@ -181,6 +184,12 @@ export default {
       },
     ],
     'selector-class-pattern': null,
+    'selector-pseudo-class-no-unknown': [
+      true,
+      {
+        ignorePseudoClasses: ['target-current'],
+      },
+    ],
     'selector-max-id': 0,
     'selector-max-universal': [
       1,

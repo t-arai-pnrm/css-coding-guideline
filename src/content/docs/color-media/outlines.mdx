@@ -1,0 +1,175 @@
+---
+title: 10-5 輪郭と枠線を描く
+description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で、グラデーションの枠線やドーナツグラフは background-clip の border-area で描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+要素の輪郭は `clip-path` の `shape()` で、枠線の塗りは `background-clip: border-area` で描きます。どちらも、以前は複数の擬似要素やマスクの重ね合わせで作っていた形を、1つか2つの宣言で書けるようにする機能です。`shape()` はすべての主要なブラウザが対応していますが、`border-area` は対応が分かれています。
+
+`border-area` は、未対応の環境で宣言全体が無効になり、何も描かれなくなることがあります。そのため、未対応の環境での見え方を先に確かめ、`@supports` で従来の書き方に切り替えます。角の形だけを変える `corner-shape` は「[10-4 角の形を変える](/color-media/shapes/)」で扱います。
+
+## 輪郭を描く方法の違い
+
+三角の尻尾が付いた吹き出し、下の端が反り返るタブ、グラデーションで塗った枠線は、`border-radius` だけでは作れません。これまでは、擬似要素を重ねたり、`mask-composite: exclude` で内側をくり抜いたりして作ってきました。形を作るための要素と、半径から逆算した位置の値が増え、コードから形を読み取れなくなります。
+
+`shape()` は、輪郭そのものを直線と曲線の命令で描きます。`border-area` は、背景を枠線の部分だけに切り抜くので、枠線をグラデーションや円グラフで塗れます。どちらも、形を作るための余分な要素が要らず、形を決める値がカスタムプロパティから計算できるので、コードから形を読み取れます。
+
+## clip-path の shape() で輪郭を描く
+
+`shape()` は、`clip-path` などで使う図形の関数です。`polygon()` は頂点を直線でつなぐことしかできず、`path()` はSVGのパスの文字列なので、`%` や `calc()`、カスタムプロパティが使えませんでした。`shape()` は、直線と曲線の命令をCSSの値で書けるので、要素の大きさに合わせて伸び縮みする輪郭を描けます。
+
+次の例は、「[10-4 角の形を変える](/color-media/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
+
+```css title="🙆‍♂ Recommended: 反り返るタブを、擬似要素1つの shape() で描く"
+@scope (.scoped.tab-list) to (.scoped) {
+  ._tab {
+    --_radius: var(--tab-list--radius, 12px);
+
+    position: relative;
+    padding-block: 8px;
+    padding-inline: 24px;
+    isolation: isolate;
+
+    &::before {
+      --_r: var(--_radius);
+
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline: calc(var(--_r) * -1);
+      z-index: var(--z--backwards);
+      clip-path: shape(
+        from 0 100%,
+        curve to var(--_r) calc(100% - var(--_r)) with var(--_r) 100%,
+        vline to var(--_r),
+        curve to calc(var(--_r) * 2) 0 with var(--_r) 0,
+        hline to calc(100% - var(--_r) * 2),
+        curve to calc(100% - var(--_r)) var(--_r) with calc(100% - var(--_r)) 0,
+        vline to calc(100% - var(--_r)),
+        curve to 100% 100% with calc(100% - var(--_r)) 100%,
+        close
+      );
+      background-color: var(--background--base);
+
+      @supports not (clip-path: shape(from 0 0, hline to 0)) {
+        inset-inline: 0;
+        clip-path: none;
+        border-start-start-radius: var(--_r);
+        border-start-end-radius: var(--_r);
+      }
+    }
+  }
+}
+```
+
+擬似要素をタブより左右に半径の分だけ広げ、その輪郭を `shape()` で切り抜いています。左下から始めて、外側へ反った曲線、左上の角丸、上の辺、右上の角丸、右下の反った曲線の順に、輪郭を一周します。`curve to 終点 with 制御点` は2次ベジェ曲線なので、正確な四分円ではありませんが、この大きさの角では見分けがつきません。{/* 要確認: 出典なし */}
+
+`shape()` の値は長く、そのままでは何を描いているのか読み取れません。そこで、半径を `--_r` に入れ、すべての座標をその半径から計算します。角の大きさを変えるときは、公開用の `--tab-list--radius` を変えるだけで済み、座標を書き直す必要がありません。輪郭の高さは半径の2倍以上必要なので、タブの高さに対して半径を大きくしすぎないようにします。
+
+`shape()` は、2026年2月にすべての主要なブラウザで使えるようになりました。Safariは18.4から対応しているので、本書の対象（Safari 18系の最終版以降）では使えます。それより古い環境で `clip-path` が無効になると、背面の擬似要素が切り抜かれずに左右へはみ出すので、`@supports not` の中で幅を戻し、上だけを `border-radius` で丸めます（2026年10月確認）。
+
+<Baseline id="shape-function" name="shape()" />
+
+### 吹き出しの枠線と border-shape
+
+吹き出しも、本体と三角の尻尾を1つの `shape()` で描けば、擬似要素を使わずに作れます。ただし、`clip-path` は要素の描画を切り抜くだけなので、枠線を付けると、尻尾の部分と下の辺の枠線が切り落とされます（2026年10月、Chrome 152で確認）。そのため、`clip-path` で作る吹き出しは、枠線のない塗りだけのデザインに向いています。
+
+枠線のある吹き出しには、`border-shape` が使えるようになる見込みです。`border-shape` は、要素の枠線そのものを図形の関数で指定するプロパティです。枠線と影は、指定した輪郭に沿って描かれます。私は、吹き出しに枠線を付けるときに重宝しそうだと考えています。ただし、対応しているのはChrome 147以降だけなので、いまは対応状況を見守る段階です（2026年10月確認）。
+
+<Baseline id="border-shape" name="border-shape" />
+
+## background-clip: border-area でボーダーを塗る
+
+`background-clip: border-area` は、背景を枠線が描かれる部分だけに切り抜く値です。枠線の色を `transparent` にし、背景のグラデーションを `border-area` で切り抜けば、グラデーションの枠線になります。擬似要素とマスクは要りません。
+
+```css title="🙆‍♂ Recommended: 対応している環境だけ、枠線をグラデーションにする"
+@scope (.scoped.feature-card) to (.scoped) {
+  :scope {
+    padding: 24px;
+    border: 2px solid var(--color--accent--500);
+    border-radius: var(--rounded--lg);
+    background-color: var(--background--base);
+
+    @supports (background-clip: border-area) {
+      border-color: transparent;
+      background:
+        linear-gradient(in oklch 90deg, var(--color--accent--500), var(--color--accent--700)) border-area,
+        var(--background--base);
+    }
+  }
+}
+```
+
+`border-color: transparent` は、`@supports` の中に書きます。外に書くと、未対応の環境では背景の切り抜きが効かないまま枠線だけが透明になり、枠線が消えるからです。`@supports` で分けておけば、未対応の環境では単色の枠線として表示されます。グラデーションの枠線は装飾なので、多くの場合は単色の枠線で足ります。
+
+すべての環境でグラデーションにしたい場合は、擬似要素にグラデーションを敷いて内側をマスクでくり抜く、従来の書き方を使います。ただし、擬似要素と `mask-composite` の指定が増えるので、私は単色の枠線に縮退させるほうを選びます。
+
+`border-area` は、Safari 18.2以降とChrome 150以降が対応しています。Firefoxは未対応です（2026年10月確認）。
+
+<Baseline id="background-clip-border-area" name="background-clip: border-area" />
+
+### ドーナツグラフ
+
+`conic-gradient()` の円グラフも、`border-area` で切り抜けばドーナツグラフになります。以前は、円グラフの中心を `radial-gradient()` のマスクでくり抜いていました。`border-area` なら、枠線の太さがそのままドーナツの太さになります。
+
+```css title="🙆‍♂ Recommended: 未対応の環境では円グラフ、対応している環境ではドーナツグラフにする"
+@property --donut-chart--value {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+@scope (.scoped.donut-chart) to (.scoped) {
+  :scope {
+    --_fill: conic-gradient(var(--color--accent--500) var(--donut-chart--value), var(--color--neutral--200) 0);
+
+    inline-size: 160px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--_fill);
+
+    @supports (background-clip: border-area) {
+      border: 24px solid transparent;
+      background: var(--_fill) border-area;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: --donut-chart--value;
+      transition-timing-function: var(--ease--quint-out);
+    }
+  }
+}
+```
+
+値は、HTMLの `style` 属性で `--donut-chart--value: 40%` のように渡します。枠線は `@supports` の中でだけ付けます。未対応の環境で透明な枠線を付けると、`border-area` を含む `background` の宣言が無効になり、グラフが何も描かれないからです。分岐しておけば、未対応の環境では中心まで塗った円グラフとして表示され、割合は読み取れます。
+
+`--donut-chart--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。型を登録すると、`transition` で割合をなめらかに変えられます（2026年10月、Chrome 152で確認）。グラフを動かすのは、`prefers-reduced-motion: no-preference` のときだけにします。
+
+<Baseline id="registered-custom-properties" name="@property" />
+
+## 未対応の環境と強制カラーモードでの見え方
+
+この節で扱った機能を使ったら、未対応の環境での見え方を、ブラウザを替えるか、開発者ツールで宣言を外して確かめます。`shape()` を使った `clip-path` は無効になると切り抜きがなくなるだけですが、`border-area` は宣言全体が無効になって何も描かれなくなるので、`@supports` がないと表示が崩れます。
+
+`@supports` の条件には、実際に使う値の形を書きます。`@supports (background-clip: border-area)` のように値まで書くと、プロパティにだけ対応していて値に対応していない環境も、未対応として扱えます。`shape()` の条件は、`shape(from 0 0, hline to 0)` のように、構文として成り立つ最も短い形にしておくと読みやすくなります。
+
+強制カラーモードでは、グラデーションの `background-image` が表示されなくなり、`border-color` はシステムカラーに置き換わります。そのため、グラデーションの枠線は、透明にした枠線がシステムカラーで描かれ、境界は残ります。一方、ドーナツグラフはグラデーションごと消えるので、割合は数値のテキストでも示しておきます。強制カラーモードで置き換わる色の一覧は、「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+
+`clip-path` で作った形は、要素の当たり判定も切り抜きます。切り抜いた外側はクリックできないので、タブの反り返りのような装飾は、この節の例のように背面の擬似要素に描き、タブ本体の当たり判定を変えないようにします（2026年10月、Chrome 152で確認）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Rounded Tab](https://codepen.io/tak-dcxi/pen/MYaaQwv)（CodePen、2025年7月）
+- [shape() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/basic-shape/shape)
+- [border-shape - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-shape)
+- [background-clip - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/background-clip)
+- [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)

@@ -1,11 +1,11 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.4.0
-- 生成日: 2026-09-30
-- ルールの数: 371
+- バージョン: 0.5.0
+- 生成日: 2026-10-01
+- ルールの数: 453
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
-強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は例外なく守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
+強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 各ルールの背景とコード例は、「詳細」に書いたページを読んでください。
 
 ## AIが誤りやすいルール
@@ -45,6 +45,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
   - 補足: 2026年9月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports not` で従来の表現を用意して使えます。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
+- 【推奨】フォールバックは、新しいプロパティならそのまま書き、`var()` を含まない新しい値なら従来の宣言を前に書くか `@supports` の中に書き、`var()` を含む宣言と、ほかの宣言もまとめて切り替える宣言は必ず `@supports` の中に書く。（`fallback-method-by-invalidation`）
+  - 理由: `var()` を含む宣言は計算値の時点で無効になり、前に書いた宣言に戻らないため。まとめて切り替える宣言は、`@supports` の条件で意図が読め、不要になったときに検索して消せるため。
+  - 補足: 従来の宣言を前に書くときは、同じプロパティの重複が誤記に見えないように、未対応の環境で使う値であることをコメントで書きます。
+  - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【必須】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。（`scripting-for-js-dependent-styles`）
   - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
@@ -54,6 +58,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【禁止】詳細度や読み込み順の競争に勝つ目的で `!important` を使わない。（`no-important-for-specificity`）
   - 理由: `!important` を打ち消せるのは `!important` だけなので、上書きのたびに `!important` が増えていくため。
+  - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
+- 【非推奨】プロパティをまとめて戻すときに `all: unset` を使わず、レイヤーを使うなら `all: revert-layer`、使わないなら `all: revert` を指定する。（`no-all-unset`）
+  - 理由: `unset` は継承されないプロパティを初期値に戻すので、`display` が `inline` になり、ブラウザのデフォルトスタイルのうち必要なものまで消えるため。
   - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
 - 【禁止】ID セレクタでスタイルを指定しない。（`no-id-selector`）
   - 理由: 詳細度が 1.0.0 になり、クラスをいくつ重ねても上書きできなくなるため。
@@ -83,7 +90,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】CMS のように、レイヤーに入っていない外部のCSSと共存する環境では `@layer` を使わず、9つの分類はディレクトリ構成と `@import` の順番で保つ。（`no-layers-with-unlayered-css`）
   - 理由: レイヤーの外のCSSは詳細度に関係なくレイヤーの中のCSSに勝つので、自分のCSSだけをレイヤーに入れると構造的に負けるため。
-  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。
+  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。壊れた既存のCSSから新しいコンポーネントを切り離すときに限り、`revert-layer-isolation-for-legacy` の書き方でレイヤーを使ってよいです。
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書く。（`scope-with-donut`）
   - 理由: スタイルの範囲がコンポーネントの中に限られ、入れ子になった別のコンポーネントにも届かないので、子要素に短い名前を付けてもぶつからないため。
@@ -135,6 +142,18 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 対応していないブラウザがあり（2026年9月確認）、その環境では宣言ごと無効になるため。
   - 補足: デザインカンプの値は `calc(40 / 1280 * 100svi)` のように単位のない数値で割ります。長さどうしの比がどうしても必要なら、`tan(atan2(長さ, 1px))` で単位を外します（8-4）。
   - 詳細: 3-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
+- 【必須】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）
+  - 理由: 宣言に `var()` が含まれると、未対応の環境でも宣言は計算値の時点で無効になって前の宣言に戻らず、対応した環境でも属性がないか型として読めないと、宣言がプロパティの初期値に戻るため。
+  - 補足: 第2引数は、対応した環境でしか使われないので、未対応の環境のフォールバックにはなりません。`@supports` の条件は `min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` のように型付きで書き、`var()` を含めません。
+  - 詳細: 3-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+- 【推奨】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
+  - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
+  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。
+  - 詳細: 3-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+- 【必須】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
+  - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
+  - 補足: 前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`var()` を含むと計算値の時点で無効になり、前の宣言に戻らないので、`@supports` の中に書くか、スタイルクエリや状態のセレクタで書きます。
+  - 詳細: 3-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【禁止】リセットで、`input` への `appearance: none` や `* { margin: 0; padding: 0; }` のように、要素の機能や便利なデフォルトを一律に消す指定をしない。（`reset-no-destructive-reset`）
   - 理由: チェックボックスが見えなくなったり、ボタンの余白のように毎回指定し直すものが増えたりするため。
   - 補足: `appearance: none` は、見た目を作り直す部品にだけ個別に指定します。色を変えるだけなら `accent-color` で足ります。
@@ -205,6 +224,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】コードの途中のコメントには「なぜそう書くのか」と「なぜ別の書き方をしないのか」だけを書き、コードが何をしているかは書かない。（`comments-why-only`）
   - 理由: 何をしているかはコードを読めば分かり、コードと食い違ったコメントは誤解のもとになるため。
   - 詳細: 5-4 コメントの書き方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/comments.mdx）
+- 【必須】コンポーネントの CSS は、コンポーネントごとに1つのファイルに書き、複数のコンポーネントの CSS を1つのファイルに混ぜない。（`one-component-per-file`）
+  - 理由: 混ぜると、どこに何が書いてあるかがファイル名から分からなくなり、使わなくなったコンポーネントを安全に消せなくなるため。
+  - 補足: ファイル名はルートの名前とそろえます。Astro のように CSS をコンポーネントのファイルに書く環境では、そのファイルが単位になります。小さな部品でも例外にしません。
+  - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【非推奨】コンポーネントのルートに、外部関連型のレイアウト（`margin`、`position: absolute` と `inset`、`flex`、`grid-area`、`align-self`、`inline-size`、`block-size` など）を指定しない。（`no-external-layout-on-root`）
   - 理由: 置かれる場所を前提にしたコンポーネントになり、ほかの場所に置いたときに打ち消しや上書きが必要になるため。
   - 補足: 例外は、`position: fixed` で表示するモーダル、ビューポートに粘着するグローバルヘッダーの `position: sticky` と `inset`、`inline-size: 1em` などで文字サイズに追従させるアイコンのような小さな要素です。
@@ -244,71 +267,209 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 値が対象のタグと同じ場所に書かれ、セレクタや詳細度に依存せずに渡せるため。
   - 補足: 複数の子にまとめて渡すとき、クエリで値を切り替えるとき、`:hover` や `:has()` などの状態で値を変えるときは、CSS で渡してもかまいません。
   - 詳細: 6-4 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
+- 【推奨】配置が思いどおりにならないときは、値を足したり `position` でずらしたりする前に、その要素がどのレイアウトの方式（通常フロー、Flexbox、Grid、位置指定）の中にあり、どの要素が包含ブロックとスタッキングコンテキストになっているかを確かめる。（`identify-layout-mode-first`）
+  - 理由: 効かない指定の多くは、その方式の規則どおりの振る舞いで、値を足して見た目を合わせても原因が残り、内容や文字の大きさが変わったときに崩れるため。
+  - 詳細: 7-1 レイアウトの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/fundamentals.mdx）
+- 【非推奨】要素を横に並べるために `display: inline-block`（`inline flow-root`）を使わず、親を Flexbox か Grid にして `gap` で間隔を決める。（`no-inline-block-for-rows`）
+  - 理由: タグの間の改行や空白が匿名のインラインボックスになり、親の `font-size` で幅の変わる隙間が要素の間に入るため。
+  - 補足: `inline flow-root` は、文中のインライン要素に上下の余白や幅を持たせたいときに使います。
+  - 詳細: 7-1 レイアウトの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/fundamentals.mdx）
+- 【推奨】`box-sizing` はベーススタイル（kiso.css）の全称セレクタで `border-box` にそろえ、コンポーネントで `box-sizing: border-box` を書き足さない。（`box-sizing-border-box-base`）
+  - 理由: `inline-size` に指定した値が `border` までを含んだ幅になり、`padding` や `border` を変えても幅の計算を直さずに済むため。全称セレクタで指定済みなら、コンポーネントでの指定は何も変えない。
+  - 補足: 内容の幅を固定したい要素（`max-inline-size` で本文の幅を決め、左右の `padding` だけを変えたい要素など）に限り、`box-sizing: content-box` に戻します。
+  - 詳細: 7-2 ボックスモデルの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/box-model.mdx）
+- 【推奨】要素の幅を中身に合わせるときは、`display: inline-block` や `float` に変えず、`inline-size: fit-content` を指定する。（`box-fit-content-over-display-change`）
+  - 理由: `display` や `float` を変えると、前後の文字と同じ行に並ぶ、ベースラインにそろうといった外側の振る舞いまで変わるが、`fit-content` ならブロックのまま幅だけが変わるため。
+  - 補足: 親より長い中身は、`fit-content` なら親の幅で折り返します。折り返させたくない場合だけ `max-content` を使います。
+  - 詳細: 7-2 ボックスモデルの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/box-model.mdx）
+- 【推奨】ホバーや選択などの状態で枠線を足すときは、`border-width` を変えず、同じ太さの透明な `border` を最初から置いて色だけを変えるか、`outline` か `box-shadow` で描く。（`box-state-border-without-shift`）
+  - 理由: `border` はボックスの大きさに含まれ、状態によって太さが変わると要素が広がって周りの要素が押し出されるが、`outline` と `box-shadow` は大きさに含まれないため。
+  - 補足: 枠線を消すときに `border: none` ではなく `border-color: transparent` にする理由は、第10章の `transparent-border-over-none` を参照してください。
+  - 詳細: 7-2 ボックスモデルの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/box-model.mdx）
+- 【推奨】親の背景や枠線の内側に余白を取るときは、最初の子の `margin-block-start` や最後の子の `margin-block-end` ではなく、親の `padding-block` で作る。（`margin-collapse-padding-for-inner-space`）
+  - 理由: 通常フローでは、親に `padding` や `border` がないと子の `margin` が親の `margin` と相殺して親の外へ出て、背景の外に余白ができるため。
+  - 補足: コンポーネントのルートに外側の `margin` を持たせない方針（第6章）も、子の `margin` が外へ出ると守れなくなります。相殺そのものを止めたいときは、親に `display: block flow-root` を指定します（ルール `flow-root-for-margin-collapse`）。
+  - 詳細: 7-3 マージンの相殺（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/margin-collapse.mdx）
+- 【推奨】Flexbox のアイテムを中身にかかわらず比率で分けるときは `flex: 1` のように `flex-basis` も0にし、中身の大きさに余りを足して伸ばすときは `flex-grow` だけを指定して、2つを区別する。（`flexbox-basis-zero-for-ratio`）
+  - 理由: `flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと中身の大きさの差が残り、同じ値を指定しても同じ幅にならないため。
+  - 補足: `flex: 1` は `1 1 0` に展開されます。`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（第1章のルール `longhand-for-partial-change`）。列の幅を厳密にそろえるなら、Grid で列を決めます。
+  - 詳細: 7-4 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
+- 【推奨】フレックスアイテムが縮まずにはみ出すときは、固定の幅を足したり `overflow: hidden` で隠したりする前に、自動の最小幅（`min-inline-size: auto`）が中身の最小幅になっていないかを確かめる。（`flexbox-check-auto-min-size`）
+  - 理由: フレックスアイテムの `min-inline-size: auto` は中身の最小幅（`min-content`）として扱われ、`flex-shrink` で縮む量を計算してもそれより小さくならないため。`overflow: hidden` でも最小幅は0になるが、中身を切り取って隠すだけになる。
+  - 補足: 本書のベーススタイルでは、全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）で前もって防いでいます。`flex-direction: column` のコンテナでは、同じことが `min-block-size` で起きます。
+  - 詳細: 7-4 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
+- 【非推奨】フォーカスできる要素や、順番に意味のある要素を並べた Flexbox で、`order` や `row-reverse`・`column-reverse` によって見た目の順番を入れ替えない。（`flexbox-no-visual-reorder`）
+  - 理由: 読み上げの順番とキーボードでフォーカスが移る順番は HTML の順番のままなので、見た目の順番と食い違うため。
+  - 補足: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、2026年10月の時点で Baseline ではありません。
+  - 詳細: 7-4 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
+- 【推奨】アイテムの数で行数が変わるグリッドでは、`grid-template-rows` で行を決めず、`grid-auto-rows` で暗黙の行の大きさを決める。（`grid-auto-rows-for-item-count`）
+  - 理由: 明示的な行の数を超えたアイテムは暗黙の行に入り、`grid-template-rows` の大きさが当てはまらず、行の高さが途中から変わるため。
+  - 補足: 暗黙の行の大きさの初期値は `auto`（中身の大きさ）です。列の方向に足していく `grid-auto-flow: column` では、`grid-auto-columns` で決めます。
+  - 詳細: 7-5 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【非推奨】暗黙の行や列が作られるグリッドで、アイテムを最後まで届かせるために `-1` などの負の線番号を使わない。（`grid-negative-lines-explicit-only`）
+  - 理由: 負の線番号は明示的なグリッドの終わりから数え、暗黙のトラックを数に入れないので、アイテムが途中のトラックで止まるため。
+  - 補足: 列を明示的に決めたグリッドで、端から端までまたがらせる `grid-column: 1 / -1` は使えます。明示的な行がないグリッドの `grid-row: 1 / -1` は、1行分にしかまたがりません。
+  - 詳細: 7-5 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
 - 【推奨】レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討する。（`grid-template-first`）
   - 理由: 配置が親の指定だけで完結し、子要素の側に幅の計算や個別の指定を書かずに済むため。
   - 補足: 「1次元なら Flexbox、2次元なら Grid」という分け方は正確ではありません。1列や1行の並びでも、Grid のほうが簡潔に書ける場面は多くあります。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。（`subgrid-for-aligned-rows`）
   - 理由: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
   - 補足: `flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
   - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
   - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】Flexbox や Grid の子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作る。（`gap-over-child-margin`）
   - 理由: 端の要素の余白を打ち消す指定が要らず、折り返したときに行の頭へ余計な余白が残ることもないため。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【必須】`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にする。（`minmax-min-capped-at-100-percent`）
   - 理由: 親がその長さより狭くなったときに、はみ出すのを防ぐため。
   - 補足: 例：`repeat(auto-fit, minmax(min(100%, calc(360 / 16 * 1rem)), 1fr))`、`min-inline-size: min(100%, 320px)`。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】列を均等や比率で分けるときは、`1fr` ではなく `minmax(0, 1fr)` と書く。（`minmax-zero-for-fr`）
   - 理由: `1fr` の最小値は中身の最小幅になり、長い URL や入力欄が列を押し広げるため。
   - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
   - 理由: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【非推奨】明確な理由がない限り、`white-space: nowrap` を指定しない。（`no-nowrap-without-reason`）
   - 理由: 内容が長くなったときや画面が狭いときに、折り返せずにはみ出すため。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【必須】はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。（`overflow-clip-over-hidden`）
   - 理由: `hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなるため。
-  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-5 を参照してください。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-11 を参照してください。
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+- 【推奨】スクロールさせる要素の中身を `justify-content` や `align-content` で中央に寄せるときは、`safe center` と書く。（`safe-center-for-scrollable`）
+  - 理由: `center` のままでは、中身がはみ出したときに先頭側がスクロールで戻れない位置に置かれ、読めなくなるため。
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素を重ねるときは、`position: absolute` の前に、Grid の同じエリアに置く方法を検討する。（`grid-stack-before-absolute`）
   - 理由: 重ねたどの要素の大きさも親の高さに反映されるので、文字が増えても画像からはみ出さないため。
   - 補足: 第6章のコンポジション `pile` は、この形を部品にしたものです。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。（`absolute-centering-with-margin-auto`）
   - 理由: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
   - 補足: `inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。（`check-stacking-context-first`）
   - 理由: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
   - 補足: 不要なコンテキストは指定を外して消し、必要なものは `isolation: isolate` で意図して作ります。`html` 要素は最初からコンテキストを作ります。z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
   - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
   - 補足: ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。（`implicit-anchor-first`）
   - 理由: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
   - 補足: 暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
   - 理由: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
   - 補足: 論理プロパティを使う規則は、第5章のルール `logical-properties` で扱います。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【必須】親の幅を超えて画面の端まで広げる量は、`calc((100lvi - 100%) / -2)` のように「画面の幅と親の幅の差の半分」の式で書き、`100vw` や `calc(50% - 50vw)` を使わない。（`full-bleed-offset-formula`）
   - 理由: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
   - 補足: 横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第3章のルール `no-vw-vh` を参照してください。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】ページ全体のスクロールはビューポート（ルートスクローラー）に任せ、`html`、`body`、ページ全体を包むラッパーをスクロールコンテナにしない。（`root-scroller-for-page-scroll`）
+  - 理由: 戻ったときのスクロール位置の復元、キーボードでのスクロール、`window.scrollY` とスクロールのイベント、ルートに書いた `scroll-padding` や背面の固定など、ページのスクロールを前提にした機能が働かなくなるため。
+  - 補足: 表やコードブロックのように、ページの一部だけをスクロールさせる要素は対象外です。ページがどこでスクロールしているかは、スクロールしてから `window.scrollY` が0のままでないかで確かめます。
+  - 詳細: 7-10 ページのスクロールとルートスクローラー（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/root-scroller.mdx）
+- 【非推奨】`html` と `body` に `height: 100%` を指定しない。画面の高さが必要なら、ページのレイアウトの要素に `min-block-size: 100svb` で最小値を決める。（`root-scroller-no-fixed-root-height`）
+  - 理由: 高さを固定すると内容があふれ、あふれた分のための `overflow` が入れ子のスクロールコンテナを作るため。`overflow-x: hidden` と組み合わせると、`body` がスクロールコンテナになる。
+  - 補足: kiso.css は `body` に `min-block-size: 100dvb` を指定しています。`body` の直下の要素には `%` の高さが効かないので、その要素にも `100svb` を指定します。
+  - 詳細: 7-10 ページのスクロールとルートスクローラー（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/root-scroller.mdx）
 - 【必須】Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。（`sticky-align-self-start`）
   - 理由: `align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。
   - 補足: 親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。
-  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+  - 詳細: 7-11 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+- 【推奨】`sticky` の要素が留まっている間だけ見た目を変えるときは、`scroll` イベントではなく `container-type: scroll-state` と `@container scroll-state(stuck: …)` を使い、変える内容は見えなくても操作に困らない装飾に限る。（`scroll-state-for-sticky-styles`）
+  - 理由: スクロールのたびに JavaScript で位置を調べる処理が要らなくなり、クエリに対応していない環境でも装飾が付かないだけで済むため。
+  - 補足: コンテナクエリなので、変えられるのはコンテナの子孫だけです。2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。
+  - 詳細: 7-11 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+- 【推奨】`display: block grid-lanes` は `@supports (display: block grid-lanes)` の中に書き、その外には通常の Grid（`display: block grid`）と同じ `grid-template-columns` を書く。（`grid-lanes-inside-supports`）
+  - 理由: 未対応の環境では行の高さがそろった Grid として読めて操作でき、分岐の条件がコードに残るので、全ブラウザが対応した時点で検索して消せるため。
+  - 補足: `display` を2つ並べて後の宣言の無効化に頼る書き方は、意図が読めず、重複として消されやすいので使いません。写真を正方形にそろえるなど、フォールバックだけの宣言を切り替えるときも、各要素の中の `@supports` に書きます。`display` は、ほかの値と同じく `block grid-lanes` の2値構文で書きます。
+  - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
+- 【推奨】上から下へ読む1つのリストを段に分けるときは `columns` を使い、項目に `break-inside: avoid` を指定して、間隔は `margin` ではなく `padding-block` で空ける。（`columns-for-top-to-bottom-lists`）
+  - 理由: 段組みは並び順が縦なので HTML の順番と読む順番がそろい、2段目以降の先頭の `margin` は段の境目で切り取られて上端がそろわないため。
+  - 補足: `column-width` は `%` を受け付けず、`min(100%, …)` と書くと宣言ごと無効になります。段の幅をコンテナに比例させるときは `cqi` を使います。横方向の順番で並べながら高さの違いを詰めるなら `grid-lanes` を使います。
+  - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
+- 【推奨】同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。（`stack-vs-prose`）
+  - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
+  - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。
+  - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
+- 【推奨】`stack` の一部の間隔だけを変えたいときは、子に `margin` を足さず、近い要素を `stack` で包んで入れ子にするか、`grid-template` の空のセルに切り替える。（`stack-uneven-gaps`）
+  - 理由: フレックスアイテムの `margin` は相殺されずに `gap` に足され、間隔が2か所の指定の和で決まって読み取りにくくなるため。
+  - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
+- 【推奨】`stack` の子のうち、ボタンやリンクのように中身の幅で見せたい要素には、置く側の CSS で `align-self: start` を指定する。（`stack-align-self-start`）
+  - 理由: `align-items` のデフォルト値 `normal` はフレックスアイテムでは `stretch` と同じに振る舞い、子が `stack` の幅いっぱいに広がるため。
+  - 補足: 子が別のコンポーネントのルートなら、そのコンポーネントの中には書かず、置く側のコンポーネントが子クラスで指定します。
+  - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
+- 【推奨】子を両端に分けて置くときは、`cluster` に `--cluster--justification: space-between` を渡さず、`apart` を使う。（`cluster-apart-for-two-ends`）
+  - 理由: 子が3つ以上ある `cluster` で `space-between` を使うと、行ごとに子の間隔がばらつき、最後の行の子が左右に離れて置かれるうえ、クラス名から「両端に分ける」意図を読み取れないため。
+  - 補足: `cluster` の寄せ方は `start`（デフォルトの `normal`）、`center`、`end` から選びます。
+  - 詳細: 7-13-2 cluster：子を横に並べ、入りきらなければ折り返す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/cluster.mdx）
+- 【推奨】`apart` は役割の違う2つのまとまりを両端に分けるときに使い、片側に複数の要素を置くときは1つの要素に包む。（`apart-for-two-groups`）
+  - 理由: `justify-content: space-between` は子の数と幅によって間隔と折り返した行の位置が変わるので、子が3つ以上あると並び方が予測しにくくなるため。
+  - 補足: タグの一覧やナビゲーションのリンクのように、同じ種類の要素を並べるときは `cluster` を使います。
+  - 詳細: 7-13-3 apart：子要素を両端に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/apart.mdx）
+- 【必須】`switcher` の列の幅の目安は「（100% − 列の間隔 ×（列数 − 1））÷ 列数」で計算する。（`switcher-preferred-width-formula`）
+  - 理由: 「100% ÷ 列数 − 列の間隔 ×（列数 − 1）」と書くと目安が小さくなりすぎ、`auto-fit` が指定より多くの列を作るため。
+  - 補足: 例：列数4、列の最小幅200px、列の間隔24pxで要素の幅が1000pxのとき、正しい式では4列、誤った式では5列になります。
+  - 詳細: 7-13-4 switcher：n列と1列を幅で切り替える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/switcher.mdx）
+- 【必須】閾値などの `calc()` で長さと足し合わせる間隔のデフォルト値は、単位のない `0` ではなく `0px` と書く。（`switcher-gap-default-with-unit`）
+  - 理由: 単位のない `0` は数値として扱われ、「長さ＋数値」の式が無効になって、宣言全体が初期値に戻るため。
+  - 補足: `switcher` では、`grid-template-columns` が `none` に戻り、どの幅でも1列になります。
+  - 詳細: 7-13-4 switcher：n列と1列を幅で切り替える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/switcher.mdx）
+- 【必須】`sidebar` の直接の子は2つだけにし、それぞれに `.main-column` と `.side-column` を付ける。（`sidebar-two-direct-children`）
+  - 理由: `flex-grow` と `flex-basis` は2つのクラスにだけ指定されており、クラスのない子や3つ目の子が加わると、折り返す幅の計算が成り立たなくなるため。
+  - 補足: `:first-child` のような位置で選ばず、クラスで役割を指定するので、サイドを先に書いてもメインとサイドは入れ替わらない。
+  - 詳細: 7-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/sidebar.mdx）
+- 【推奨】`sidebar` のサイドを左右どちらに置くかは HTML の順番で決め、`flex-direction: row-reverse` や `order` で見た目だけを入れ替えない。（`sidebar-side-position-by-source-order`）
+  - 理由: 横に並んでいる間、キーボードで移動する順番と読み上げの順番が、見た目の順番と食い違うため。
+  - 補足: 本文の後に見る補助の内容（関連記事など）は本文の後に、先に知っておくと便利な内容（章の目次、絞り込みの条件など）は本文の前に書く。
+  - 詳細: 7-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/sidebar.mdx）
+- 【推奨】同じ形のアイテムを並べる一覧で列の数に上限があるときは、メディアクエリで列数を切り替えず、`grid` の `--grid--column-min-width` と `--grid--column-max-count` で列の最小幅と最大数を渡す。（`grid-max-count-over-queries`）
+  - 理由: 列数が画面ではなく一覧自身の幅から決まり、どこに置いても最小幅を下回らず、最大数を超えないため。
+  - 詳細: 7-13-6 grid：列の最小幅と最大数から列数を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/grid.mdx）
+- 【必須】`grid` の列の間隔には、`0` を渡すときも `0px` のように単位の付いた長さを渡す。（`grid-gap-with-unit`）
+  - 理由: 列の幅の計算で間隔を `100%` から引くので、単位のない `0` を渡すと `grid-template-columns` の宣言が無効になり、1列に並ぶため。
+  - 詳細: 7-13-6 grid：列の最小幅と最大数から列数を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/grid.mdx）
+- 【推奨】`columns` コンポジションの直下には段に分けるリストを1つだけ置き、見出しなどはその外に置く。（`columns-single-list-child`）
+  - 理由: 段組みと負のマージンは直下の子すべてに付くので、リスト以外の要素を入れると、その要素まで段組みになり、余白も崩れるため。
+  - 補足: 項目の `li` や `div` は、段組みを付けたリストの直下に置きます。`dl` では用語と説明を `div` で包むと、まとめて段の境目で分かれなくなります。
+  - 詳細: 7-13-7 columns：上から下へ読むリストを段に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/columns.mdx）
+- 【推奨】`masonry` コンポジションの `--masonry--tolerance` のデフォルト値は `flow-tolerance` の初期値と同じ `normal` にし、項目が左右へ飛んで見えるときだけ `3em` のような大きめの長さを渡す。（`masonry-tolerance-default-normal`）
+  - 理由: `0` にすると、ほぼ同じ高さの列のどちらに置くかを厳密に決めることになり、項目が左右へ大きく飛ぶ配置が起きやすいため。
+  - 補足: `infinite` は渡しません。
+  - 詳細: 7-13-8 masonry：高さの違う子を短い列へ詰めて並べる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/masonry.mdx）
+- 【推奨】`pile` の子の位置を変えるときは、`--pile--placement` などの公開プロパティを、`.pile` ではなく動かしたい子の `style` 属性で渡す。（`pile-placement-on-target-child`）
+  - 理由: `.pile` で渡すと、継承ですべての子に同じ配置がかかり、大きさを指定していない背景用の要素が中身の大きさに縮むため。
+  - 補足: `--pile--placement` に渡すキーワードは1つだけです。方向ごとに違う値を使うときは、`--pile--alignment` と `--pile--justification` を個別に指定します。
+  - 詳細: 7-13-9 pile：子要素を同じセルに重ねる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/pile.mdx）
+- 【推奨】`pile` で画像の上に文字を重ねるときは、文字と画像の間に暗い層を置き、どの画像でも文字のコントラスト比が保たれるようにする。（`pile-scrim-for-text-on-image`）
+  - 理由: 画像の差し替えや文字の折り返しで、文字の下に来る部分の明るさが変わるため。
+  - 補足: 白い文字なら、黒い層の不透明度を55％以上にすると、真っ白な画像の上でもコントラスト比が4.5:1を超えます。画像を読み込めなかったときのために、ルートに暗い `background-color` も指定します。
+  - 詳細: 7-13-9 pile：子要素を同じセルに重ねる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/pile.mdx）
+- 【推奨】`primary-layout` の子の幅は、子に最大幅や負の `margin` を書かず、`full-column` などのクラスか `grid-column: --wide` のような線の名前で選ぶ。（`primary-layout-width-by-line-names`）
+  - 理由: 幅の段階とガターの値が `primary-layout` の1か所にまとまり、画面の幅で値を変えるときも子を直さずに済むため。
+  - 補足: 画面の端まで広げる方法の比較は、第7章のルール `full-bleed-via-layout-first` を参照してください。
+  - 詳細: 7-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/primary-layout.mdx）
+- 【必須】中央の列の最大幅は、コンテンツ幅の最大値から、その両側に足す列の上限を2本分引いて求める（`var(--_c--content-max-width) - var(--_c--narrow-reduction) * 2`）。（`primary-layout-center-column-subtract-both-sides`）
+  - 理由: 片側の分しか引かないと、コンテンツ幅が指定した最大値より列1本分だけ広くなるため。
+  - 詳細: 7-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/primary-layout.mdx）
+- 【推奨】`prose` の中で特定の間だけ間隔を変えるときは、`margin` を足さず、その間の後ろにある子に `--prose--space` を渡す。（`prose-space-on-following-child`）
+  - 理由: `margin-block-start` の `var(--prose--space)` は子要素の上で解決されるので、渡した子の前の間隔だけが変わり、打ち消しや差分の計算が要らないため。
+  - 補足: 見出しの前を広げるなら見出しに、見出しの直後を詰めるなら見出しの次の要素に渡します。値は `style` 属性で渡し、画面の幅で変えるときや複数の子にまとめて渡すときはコンポーネントの CSS で渡します。
+  - 詳細: 7-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/prose.mdx）
+- 【必須】`prose` の `--prose--space` はルートで内部プロパティに受け直さず、子要素の `margin-block-start` の `var()` で直接参照する。（`prose-no-internal-property`）
+  - 理由: ルートで受け直すと `var()` がルートの上で解決され、子には解決済みの値が継承されるので、子に渡した `--prose--space` が効かなくなるため。
+  - 補足: 公開プロパティを `:scope` で内部プロパティに受ける規約（第6章のルール `receive-public-property-with-fallback`）の例外です。
+  - 詳細: 7-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/prose.mdx）
 - 【必須】レスポンシブ対応は「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わない。（`responsive-escalation-order`）
   - 理由: 条件分岐が減り、想定していない幅や置き場所でも崩れにくくなるため。
   - 詳細: 8-1 検討する順番（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/escalation.mdx）
@@ -353,7 +514,20 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【必須】比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。（`proportional-scale-rem-for-text`）
   - 理由: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
+  - 補足: `--rem` が保証するのは、カンプ上の寸法に文字サイズの設定の倍率を掛けた下限です。文字が設定と同じ割合で大きくなるわけではなく、画面がカンプより広い区間では、設定を上げても文字の大きさが変わらないことがあります。
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
+- 【必須】`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。（`safe-area-inset-with-viewport-fit-cover`）
+  - 理由: `cover` を指定するとブラウザはページをセーフエリアの内側に寄せなくなり、余白を書かないと、ノッチやホームインジケーターのある端末でだけ内容が隠れるため。
+  - 補足: 画面の端まで描画する必要がないページでは、`viewport-fit` をデフォルトの `auto` のままにします。パソコンのブラウザではセーフエリアがすべて0なので、実機か iOS シミュレーターで確かめます。
+  - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+- 【推奨】セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。（`safe-area-combine-with-max`）
+  - 理由: セーフエリアの値は切り欠きやシステムの UI が占める幅そのもので、長方形の画面では0になるため。比べるか足すかは、余白の一部をセーフエリアで兼ねてよいかで決まる。
+  - 補足: `env()` の第2引数は、ブラウザがその名前の環境変数を知らないときだけ使われます。`env(safe-area-inset-bottom, 16px)` と書いても、セーフエリアのない画面では16pxではなく0になります。
+  - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+- 【必須】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
+  - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
+  - 補足: 対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
+  - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【推奨】デザインで特に指定がなければ、`font-family` は総称ファミリーの `sans-serif` だけにする。（`font-family-sans-serif`）
   - 理由: 主要な OS に読みやすい和文フォントが入っており、ユーザーが自分で設定した読みやすいフォントも尊重できるため。
   - 補足: kiso.css で指定済みです。欧文のフォントを使うときも、最後に `sans-serif` を置き、和文は総称ファミリーに任せます。
@@ -422,6 +596,18 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
   - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
+- 【推奨】`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。（`corner-shape-guard-when-broken`）
+  - 理由: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
+  - 補足: 錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。
+  - 詳細: 10-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/shapes.mdx）
+- 【推奨】画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。（`full-bleed-radius-with-sign`）
+  - 理由: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
+  - 補足: `/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。
+  - 詳細: 10-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/shapes.mdx）
+- 【推奨】`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。（`guard-new-shapes-with-supports`）
+  - 理由: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
+  - 補足: 未対応の環境では、単色の枠線や中心まで塗った円グラフのように、意味の読み取れる形に縮退させます。
+  - 詳細: 10-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/outlines.mdx）
 - 【必須】`:hover` のスタイルは `@media (any-hover: hover)` の中に書き、`(hover: hover)` や画面の幅で判定しない。（`hover-inside-any-hover`）
   - 理由: タッチ操作の端末でホバーの状態が残り続けるのを防ぎつつ、タブレットにマウスをつないだ場合のように、ホバーできる入力がひとつでもあればホバーを有効にできるため。
   - 補足: 条件は `(any-hover)` と省略せず、`(any-hover: hover)` と値まで書きます。
@@ -455,6 +641,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
   - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
+  - 補足: 1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
   - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
@@ -489,6 +676,18 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
   - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
   - 詳細: 11-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
+- 【禁止】カルーセルを自動で再生しない。（`no-autoplay-carousel`）
+  - 理由: 読み上げや操作の途中で内容が切り替わり、一時停止の手段を用意しても問題が残るうえ、自動で切り替わるスライドをユーザーは最後まで見ないため。
+  - 補足: カルーセルにする前に、カードを一覧で並べられないかを検討します。
+  - 詳細: 11-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+- 【必須】`::scroll-button()`、`::scroll-marker`、`scroll-marker-group`、`scrollbar-width: none` は、`@supports selector(::scroll-button(*))` などの中に書く。（`carousel-controls-in-supports`）
+  - 理由: 未対応の環境ではボタンとインジケーターが表示されないので、スクロールバーを残して横スクロールとして読めるようにし、Safari でネストした以降のスタイルが無効になるのも防ぐため。
+  - 補足: 土台はスクロールスナップの横スクロールにし、ボタンとインジケーターはプログレッシブ・エンハンスメントとして足します。
+  - 詳細: 11-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+- 【推奨】`<dialog>` のモーダルにできないドロワーで背面を操作できなくするときは、`interactivity: inert` ではなく、JavaScript で背面の要素に `inert` 属性を付ける。（`inert-attribute-for-background`）
+  - 理由: `interactivity` に対応していない環境では背面を操作できてしまい、見えないリンクにフォーカスが移るため。
+  - 補足: CSS で書く場合も、`body:has()` ではなく、`.global-header:has(…) ~ *` のように起点をヘッダーに絞ります。
+  - 詳細: 11-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 - 【禁止】エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。（`no-disabling-to-silence`）
   - 理由: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
   - 詳細: 12-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
@@ -584,6 +783,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 使われないコードが残り、読む人に「まだ対応していないブラウザがある」と誤解させるため。
   - 補足: 例：`lh` 単位は Safari 16.4 で対応しているので、`@supports not (top: 1lh)` の分岐は不要です。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
+- 【推奨】フォールバックは、新しいプロパティならそのまま書き、`var()` を含まない新しい値なら従来の宣言を前に書くか `@supports` の中に書き、`var()` を含む宣言と、ほかの宣言もまとめて切り替える宣言は必ず `@supports` の中に書く。（`fallback-method-by-invalidation`）
+  - 理由: `var()` を含む宣言は計算値の時点で無効になり、前に書いた宣言に戻らないため。まとめて切り替える宣言は、`@supports` の条件で意図が読め、不要になったときに検索して消せるため。
+  - 補足: 従来の宣言を前に書くときは、同じプロパティの重複が誤記に見えないように、未対応の環境で使う値であることをコメントで書きます。
+  - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【必須】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。（`scripting-for-js-dependent-styles`）
   - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
@@ -614,6 +817,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】値を戻すときは、`initial`、`unset`、`revert`、`revert-layer` のうち、戻したい先に合うキーワードを選んで書く。（`explicit-rollback-keyword`）
   - 理由: 具体的な値を書き直すより、どこまで戻したいのかという意図がコードに残るため。
   - 補足: `display: initial` は、要素の種類に関係なく `inline` になります。ブラウザのデフォルトスタイルに戻すなら `revert` を使います。
+  - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
+- 【非推奨】プロパティをまとめて戻すときに `all: unset` を使わず、レイヤーを使うなら `all: revert-layer`、使わないなら `all: revert` を指定する。（`no-all-unset`）
+  - 理由: `unset` は継承されないプロパティを初期値に戻すので、`display` が `inline` になり、ブラウザのデフォルトスタイルのうち必要なものまで消えるため。
   - 詳細: 2-1 カスケード・詳細度・継承（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/cascade-basics.mdx）
 - 【禁止】ID セレクタでスタイルを指定しない。（`no-id-selector`）
   - 理由: 詳細度が 1.0.0 になり、クラスをいくつ重ねても上書きできなくなるため。
@@ -671,7 +877,11 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】CMS のように、レイヤーに入っていない外部のCSSと共存する環境では `@layer` を使わず、9つの分類はディレクトリ構成と `@import` の順番で保つ。（`no-layers-with-unlayered-css`）
   - 理由: レイヤーの外のCSSは詳細度に関係なくレイヤーの中のCSSに勝つので、自分のCSSだけをレイヤーに入れると構造的に負けるため。
-  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。
+  - 補足: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。壊れた既存のCSSから新しいコンポーネントを切り離すときに限り、`revert-layer-isolation-for-legacy` の書き方でレイヤーを使ってよいです。
+  - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
+- 【推奨】直せない既存のCSSがコンポーネントに流れ込むときは、レイヤーの中でコンポーネントの要素すべてに `all: revert-layer !important` を指定し、コンポーネント自身のスタイルは同じレイヤーの入れ子の無名レイヤーに書く。（`revert-layer-isolation-for-legacy`）
+  - 理由: `!important` どうしではレイヤーの順番が逆になるので、レイヤーの外のスタイルを詳細度や `!important` に関係なく遮断でき、入れ子のレイヤーの値だけを戻せるため。
+  - 補足: 後ろのレイヤーやユーティリティクラスも遮断されます。`style` 属性に `!important` を付けた指定は防げません。`all` はカスタムプロパティを戻さず、`*` は擬似要素を選ばないので、継承する値に加え、書き換えられたトークンや擬似要素への指定は別に考えます。既存のCSSを直せるなら、そちらを先に検討します。
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書く。（`scope-with-donut`）
   - 理由: スタイルの範囲がコンポーネントの中に限られ、入れ子になった別のコンポーネントにも届かないので、子要素に短い名前を付けてもぶつからないため。
@@ -782,6 +992,22 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 対応していないブラウザがあり（2026年9月確認）、その環境では宣言ごと無効になるため。
   - 補足: デザインカンプの値は `calc(40 / 1280 * 100svi)` のように単位のない数値で割ります。長さどうしの比がどうしても必要なら、`tan(atan2(長さ, 1px))` で単位を外します（8-4）。
   - 詳細: 3-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
+- 【推奨】型付きの `attr()` は、`<textarea>` の `rows` のように HTML がすでに持っている属性の値を CSS でも使うときに限り、コンポーネントに値を渡す手段は `style` 属性の公開プロパティのままにする。（`attr-for-html-attributes`）
+  - 理由: 型付きの `attr()` に未対応のブラウザがあり（2026年10月確認）、同じ値を属性と `style` 属性の2か所に書くことも避けられるため。
+  - 補足: `data-variant` のように選択肢から1つを選ぶバリエーションは、属性セレクタで書きます。`attr()` の値は `url()` に使えないので、背景画像は `style` 属性の公開プロパティで渡します。
+  - 詳細: 3-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+- 【必須】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）
+  - 理由: 宣言に `var()` が含まれると、未対応の環境でも宣言は計算値の時点で無効になって前の宣言に戻らず、対応した環境でも属性がないか型として読めないと、宣言がプロパティの初期値に戻るため。
+  - 補足: 第2引数は、対応した環境でしか使われないので、未対応の環境のフォールバックにはなりません。`@supports` の条件は `min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` のように型付きで書き、`var()` を含めません。
+  - 詳細: 3-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+- 【推奨】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
+  - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
+  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。
+  - 詳細: 3-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+- 【必須】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
+  - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
+  - 補足: 前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`var()` を含むと計算値の時点で無効になり、前の宣言に戻らないので、`@supports` の中に書くか、スタイルクエリや状態のセレクタで書きます。
+  - 詳細: 3-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 
 ### 第4章 リセットとベーススタイル
 
@@ -1001,6 +1227,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 別物を1つにまとめると分岐が増えて肥大化し、後から不要になった部分も捨てられなくなるため。
   - 補足: 見た目の共通化だけを理由に、新しいコンポーネントを作ることもしません。
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
+- 【必須】コンポーネントの CSS は、コンポーネントごとに1つのファイルに書き、複数のコンポーネントの CSS を1つのファイルに混ぜない。（`one-component-per-file`）
+  - 理由: 混ぜると、どこに何が書いてあるかがファイル名から分からなくなり、使わなくなったコンポーネントを安全に消せなくなるため。
+  - 補足: ファイル名はルートの名前とそろえます。Astro のように CSS をコンポーネントのファイルに書く環境では、そのファイルが単位になります。小さな部品でも例外にしません。
+  - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【推奨】別のコンポーネントの間で見た目をそろえたいときは、コンポーネントを統合せず、同じトークンを参照する。（`share-look-with-tokens`）
   - 理由: 見た目の変更はトークンの値を変えるだけで済み、それぞれのコンポーネントは独立したまま保てるため。
   - 詳細: 6-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
@@ -1051,7 +1281,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-2 コンポジションとユーティリティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/compositions-and-utilities.mdx）
 - 【推奨】コンポジションの間隔のデフォルト値は `0` にし、間隔は使う側で指定する。（`composition-default-gap-zero`）
   - 理由: 間隔は置く文脈で決まる値なので、指定し忘れた箇所に意図しない余白が付くのを防ぐため。
-  - 補足: 行と列の間隔を持つコンポジションでは、`--cluster--gap` で一括に、`--cluster--row-gap` と `--cluster--column-gap` で個別に指定できるようにします。
+  - 補足: 行と列の間隔を持つコンポジションでは、`--cluster--gap` で一括に、`--cluster--row-gap` と `--cluster--column-gap` で個別に指定できるようにします。`switcher` や `grid` のように間隔を `calc()` で長さと足し合わせるコンポジションでは、デフォルト値を `0px` にします（`switcher-gap-default-with-unit`）。
   - 詳細: 6-2 コンポジションとユーティリティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/compositions-and-utilities.mdx）
 - 【推奨】ユーティリティは、`.-visually-hidden` のように、どこに付けても同じ意味を持つ単機能のクラスに限る。（`utility-single-purpose`）
   - 理由: `utilities` レイヤーはコンポーネントより優先されるので、どこで勝っても困らないものでなければならないため。
@@ -1111,159 +1341,383 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】`@property` では、`syntax`、`inherits`、`initial-value` の3つの記述子を省略しない。（`at-property-all-descriptors`）
   - 理由: `syntax` か `inherits` が欠けると、`@property` のルールごと無視されるため。
   - 詳細: 6-4 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
+- 【推奨】トランジションやアニメーションで値を動かすカスタムプロパティは、`inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介さずに直接動かす。（`animated-property-no-inherit`）
+  - 理由: 継承するカスタムプロパティを動かすと、子孫の要素すべてでスタイルの計算がフレームごとに繰り返され、カスタムプロパティを介すと合成処理だけで済まなくなるため。
+  - 詳細: 6-4 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
 
 ### 第7章 レイアウト
 
+- 【推奨】配置が思いどおりにならないときは、値を足したり `position` でずらしたりする前に、その要素がどのレイアウトの方式（通常フロー、Flexbox、Grid、位置指定）の中にあり、どの要素が包含ブロックとスタッキングコンテキストになっているかを確かめる。（`identify-layout-mode-first`）
+  - 理由: 効かない指定の多くは、その方式の規則どおりの振る舞いで、値を足して見た目を合わせても原因が残り、内容や文字の大きさが変わったときに崩れるため。
+  - 詳細: 7-1 レイアウトの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/fundamentals.mdx）
+- 【非推奨】要素を横に並べるために `display: inline-block`（`inline flow-root`）を使わず、親を Flexbox か Grid にして `gap` で間隔を決める。（`no-inline-block-for-rows`）
+  - 理由: タグの間の改行や空白が匿名のインラインボックスになり、親の `font-size` で幅の変わる隙間が要素の間に入るため。
+  - 補足: `inline flow-root` は、文中のインライン要素に上下の余白や幅を持たせたいときに使います。
+  - 詳細: 7-1 レイアウトの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/fundamentals.mdx）
+- 【推奨】`box-sizing` はベーススタイル（kiso.css）の全称セレクタで `border-box` にそろえ、コンポーネントで `box-sizing: border-box` を書き足さない。（`box-sizing-border-box-base`）
+  - 理由: `inline-size` に指定した値が `border` までを含んだ幅になり、`padding` や `border` を変えても幅の計算を直さずに済むため。全称セレクタで指定済みなら、コンポーネントでの指定は何も変えない。
+  - 補足: 内容の幅を固定したい要素（`max-inline-size` で本文の幅を決め、左右の `padding` だけを変えたい要素など）に限り、`box-sizing: content-box` に戻します。
+  - 詳細: 7-2 ボックスモデルの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/box-model.mdx）
+- 【推奨】要素の幅を中身に合わせるときは、`display: inline-block` や `float` に変えず、`inline-size: fit-content` を指定する。（`box-fit-content-over-display-change`）
+  - 理由: `display` や `float` を変えると、前後の文字と同じ行に並ぶ、ベースラインにそろうといった外側の振る舞いまで変わるが、`fit-content` ならブロックのまま幅だけが変わるため。
+  - 補足: 親より長い中身は、`fit-content` なら親の幅で折り返します。折り返させたくない場合だけ `max-content` を使います。
+  - 詳細: 7-2 ボックスモデルの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/box-model.mdx）
+- 【推奨】ホバーや選択などの状態で枠線を足すときは、`border-width` を変えず、同じ太さの透明な `border` を最初から置いて色だけを変えるか、`outline` か `box-shadow` で描く。（`box-state-border-without-shift`）
+  - 理由: `border` はボックスの大きさに含まれ、状態によって太さが変わると要素が広がって周りの要素が押し出されるが、`outline` と `box-shadow` は大きさに含まれないため。
+  - 補足: 枠線を消すときに `border: none` ではなく `border-color: transparent` にする理由は、第10章の `transparent-border-over-none` を参照してください。
+  - 詳細: 7-2 ボックスモデルの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/box-model.mdx）
+- 【推奨】親の背景や枠線の内側に余白を取るときは、最初の子の `margin-block-start` や最後の子の `margin-block-end` ではなく、親の `padding-block` で作る。（`margin-collapse-padding-for-inner-space`）
+  - 理由: 通常フローでは、親に `padding` や `border` がないと子の `margin` が親の `margin` と相殺して親の外へ出て、背景の外に余白ができるため。
+  - 補足: コンポーネントのルートに外側の `margin` を持たせない方針（第6章）も、子の `margin` が外へ出ると守れなくなります。相殺そのものを止めたいときは、親に `display: block flow-root` を指定します（ルール `flow-root-for-margin-collapse`）。
+  - 詳細: 7-3 マージンの相殺（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/margin-collapse.mdx）
+- 【非推奨】余白を作るために、空の要素、`<br>`、`<p>&nbsp;</p>` を置かない。（`margin-collapse-no-empty-spacers`）
+  - 理由: 中身のない要素は上下の `margin` が相殺して通り抜けるので余白にならず、`&nbsp;` や `<br>` の行は行の高さで余白が決まり、文字の大きさで変わるため。
+  - 補足: 余白は、前後の要素の `margin` か、親の `gap` や `grid-template` で作ります。CMS の本文に入った空の段落は、通常フローでは相殺で消えますが、`gap` で並べた領域では `gap` の2つ分の間隔になります。
+  - 詳細: 7-3 マージンの相殺（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/margin-collapse.mdx）
+- 【推奨】Flexbox のアイテムを中身にかかわらず比率で分けるときは `flex: 1` のように `flex-basis` も0にし、中身の大きさに余りを足して伸ばすときは `flex-grow` だけを指定して、2つを区別する。（`flexbox-basis-zero-for-ratio`）
+  - 理由: `flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと中身の大きさの差が残り、同じ値を指定しても同じ幅にならないため。
+  - 補足: `flex: 1` は `1 1 0` に展開されます。`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（第1章のルール `longhand-for-partial-change`）。列の幅を厳密にそろえるなら、Grid で列を決めます。
+  - 詳細: 7-4 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
+- 【推奨】フレックスアイテムが縮まずにはみ出すときは、固定の幅を足したり `overflow: hidden` で隠したりする前に、自動の最小幅（`min-inline-size: auto`）が中身の最小幅になっていないかを確かめる。（`flexbox-check-auto-min-size`）
+  - 理由: フレックスアイテムの `min-inline-size: auto` は中身の最小幅（`min-content`）として扱われ、`flex-shrink` で縮む量を計算してもそれより小さくならないため。`overflow: hidden` でも最小幅は0になるが、中身を切り取って隠すだけになる。
+  - 補足: 本書のベーススタイルでは、全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）で前もって防いでいます。`flex-direction: column` のコンテナでは、同じことが `min-block-size` で起きます。
+  - 詳細: 7-4 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
+- 【非推奨】フォーカスできる要素や、順番に意味のある要素を並べた Flexbox で、`order` や `row-reverse`・`column-reverse` によって見た目の順番を入れ替えない。（`flexbox-no-visual-reorder`）
+  - 理由: 読み上げの順番とキーボードでフォーカスが移る順番は HTML の順番のままなので、見た目の順番と食い違うため。
+  - 補足: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、2026年10月の時点で Baseline ではありません。
+  - 詳細: 7-4 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
+- 【推奨】アイテムの数で行数が変わるグリッドでは、`grid-template-rows` で行を決めず、`grid-auto-rows` で暗黙の行の大きさを決める。（`grid-auto-rows-for-item-count`）
+  - 理由: 明示的な行の数を超えたアイテムは暗黙の行に入り、`grid-template-rows` の大きさが当てはまらず、行の高さが途中から変わるため。
+  - 補足: 暗黙の行の大きさの初期値は `auto`（中身の大きさ）です。列の方向に足していく `grid-auto-flow: column` では、`grid-auto-columns` で決めます。
+  - 詳細: 7-5 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【非推奨】暗黙の行や列が作られるグリッドで、アイテムを最後まで届かせるために `-1` などの負の線番号を使わない。（`grid-negative-lines-explicit-only`）
+  - 理由: 負の線番号は明示的なグリッドの終わりから数え、暗黙のトラックを数に入れないので、アイテムが途中のトラックで止まるため。
+  - 補足: 列を明示的に決めたグリッドで、端から端までまたがらせる `grid-column: 1 / -1` は使えます。明示的な行がないグリッドの `grid-row: 1 / -1` は、1行分にしかまたがりません。
+  - 詳細: 7-5 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】意味のある位置にアイテムを置くときは、線の番号ではなく、`--` で始まる線の名前かエリアの名前で指定する。（`grid-named-lines-for-placement`）
+  - 理由: トラックを足したり減らしたりしてもアイテムの指定を直さずに済み、どの位置に置くのかがコードから読み取れるため。
+  - 補足: `--content-start` と `--content-end` の組を付けると、`grid-column: --content` で置けます。名前を書き間違えるとエラーにならず、アイテムが明示的なグリッドの外に置かれます。端から端までの `1 / -1` や、数でまたがる `span 2` は番号のままでかまいません。名前の付け方は第5章のルール `dashed-ident-names` で扱います。
+  - 詳細: 7-5 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
 - 【推奨】レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討する。（`grid-template-first`）
   - 理由: 配置が親の指定だけで完結し、子要素の側に幅の計算や個別の指定を書かずに済むため。
   - 補足: 「1次元なら Flexbox、2次元なら Grid」という分け方は正確ではありません。1列や1行の並びでも、Grid のほうが簡潔に書ける場面は多くあります。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すときは、Flexbox を使う。（`flexbox-for-content-sized-items`）
   - 理由: 子要素の幅を決めずに並べられ、入りきらない要素は自動で次の行へ回るため。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】幅や中身によって配置の構造が変わるレイアウトは、`grid-template` のエリアで書き、条件ごとにテンプレートだけを書き換える。（`grid-areas-for-changing-structure`）
   - 理由: 配置の変化が1か所にまとまり、子要素ごとに条件を書かずに済むため。
   - 補足: エリアの名前を `--` で始める規則は、第5章のルール `dashed-ident-names` で扱います。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】グリッドのエリアの名前は、そのエリアに置く子要素のクラス名とそろえる（`._image` を置くエリアは `--image`）。（`grid-area-names-match-children`）
   - 理由: `grid-template` の図と、各要素の `grid-area` の対応をすぐに読み取れるため。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。（`source-order-for-reading`）
   - 理由: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
   - 補足: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。見た目と操作の順番をそろえる `reading-flow` は、2026年9月時点で Chrome 系のブラウザだけが対応しています。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。（`subgrid-for-aligned-rows`）
   - 理由: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
   - 補足: `flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【必須】`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。（`subgrid-span-rows`）
   - 理由: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。（`column-width-by-variability`）
   - 理由: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
   - 補足: 一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】Flexbox の並びで一部の要素だけを行末側へ寄せるときは、その要素に `margin-inline-start: auto` を指定し、空の要素や `flex-grow` を使わない。（`flex-auto-margin-for-end-items`）
   - 理由: 余白の吸収先が1か所に決まり、要素の数が変わっても、寄せる位置が変わらないため。
   - 補足: 均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
   - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
   - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。（`display-contents-keep-role`）
   - 理由: `display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】画像のまわりに文字を回り込ませるときは `float` を使い、囲む要素には clearfix ではなく `display: flow-root` を指定する。（`float-for-text-wrap`）
   - 理由: 回り込みは `float` の本来の用途で、`flow-root` なら余計な擬似要素なしに `float` を内側に収められるため。
   - 補足: 値は `float: inline-end` のように論理値で書きます。
-  - 詳細: 7-1 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 7-6 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
 - 【推奨】Flexbox や Grid の子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作る。（`gap-over-child-margin`）
   - 理由: 端の要素の余白を打ち消す指定が要らず、折り返したときに行の頭へ余計な余白が残ることもないため。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】要素の間ごとに大きさの違う余白は、`grid-template` に空のセル（`.`）の行や列を置いて作る。（`empty-grid-cells-for-spacing`）
   - 理由: 余白の指定が `grid-template` の1か所にまとまり、見れば構造が分かるうえ、余白のための要素を足さずに済むため。
   - 補足: 余白の差を作るためだけに、`padding` を持つ `div` を足しません。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】状況によって要素の有無や数が変わる場所では、`* + *` で2つ目以降の要素にだけ `margin-block-start` を付けて間隔を作る。（`owl-margin-for-optional-elements`）
   - 理由: 空のセルで余白を決めておくと、要素が欠けたときに余白だけが残るため。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】本文のように種類の違う要素が続く領域は、Flexbox や Grid の `gap` にせず、通常フローのまま `margin` で間隔を作る。（`prose-in-normal-flow`）
   - 理由: `float` による回り込みや `margin` の相殺が働き、要素ごとの余白の大小を自然に調整できるため。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】親子のマージンの相殺を止めたいときは、`overflow: auto` や見えない `padding`、`border` ではなく、親に `display: flow-root` を指定する。（`flow-root-for-margin-collapse`）
   - 理由: `overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取る副作用があるため。
   - 補足: Flexbox や Grid にした親と、その子の間では、余白は相殺しません。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】ページのコンテンツの最大幅と画面の端の余白は、グリッドの左右に余白の列（ガター）を作って決める。（`gutter-columns-for-content-width`）
   - 理由: 画面幅いっぱいに広げたい要素を、ガターの列まで広げるだけで作れるため。
   - 補足: 第6章のコンポジション `primary-layout` は、この形を部品にしたものです。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】余白の大きさは、グループの間の余白をグループの中の余白より大きくして、要素のまとまりが見て分かるようにする。（`spacing-proximity`）
   - 理由: 人は近くにあるものを同じまとまりとして読み取るので、余白の差が小さいと、どの要素がどのグループに属するのかが分からなくなるため。
   - 補足: カードの一覧なら、カードの中の間隔より、カードとカードの間隔を大きくします。
-  - 詳細: 7-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+  - 詳細: 7-7 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】CSS を書くときは、テキストが2倍の長さになったら、画像がなかったら、要素の数が変わったらと考え、そのパターンで表示を確かめる。（`design-for-content-changes`）
   - 理由: CMS での更新や改修によって、デザインカンプにない内容が入ることは避けられないため。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【必須】`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にする。（`minmax-min-capped-at-100-percent`）
   - 理由: 親がその長さより狭くなったときに、はみ出すのを防ぐため。
   - 補足: 例：`repeat(auto-fit, minmax(min(100%, calc(360 / 16 * 1rem)), 1fr))`、`min-inline-size: min(100%, 320px)`。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】列を均等や比率で分けるときは、`1fr` ではなく `minmax(0, 1fr)` と書く。（`minmax-zero-for-fr`）
   - 理由: `1fr` の最小値は中身の最小幅になり、長い URL や入力欄が列を押し広げるため。
   - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。全称セレクタの `min-inline-size: 0`（第4章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
   - 理由: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】文字を含む flex アイテムが縮みすぎないようにするときは、`flex-shrink: 0` ではなく `min-inline-size: fit-content` を使う。（`fit-content-over-flex-shrink-zero`）
   - 理由: `flex-shrink: 0` の要素は親より長くても縮まずにはみ出すが、`fit-content` なら親の幅を超えるときだけ折り返すため。
   - 補足: アイコンのように、大きさを変えたくない要素には `flex-shrink: 0` を指定します。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【非推奨】明確な理由がない限り、`white-space: nowrap` を指定しない。（`no-nowrap-without-reason`）
   - 理由: 内容が長くなったときや画面が狭いときに、折り返せずにはみ出すため。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】横スクロールが起きたら、はみ出しを隠す前に、はみ出している要素を特定して原因を直す。（`find-overflow-source-first`）
   - 理由: 隠すだけでは、はみ出した内容が切れて読めなくなることがあり、同じ原因の不具合がほかの場所でも残るため。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【必須】はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。（`overflow-clip-over-hidden`）
   - 理由: `hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなるため。
-  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-5 を参照してください。
-  - 詳細: 7-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+  - 補足: `contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-11 を参照してください。
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
+- 【推奨】スクロールさせる要素の中身を `justify-content` や `align-content` で中央に寄せるときは、`safe center` と書く。（`safe-center-for-scrollable`）
+  - 理由: `center` のままでは、中身がはみ出したときに先頭側がスクロールで戻れない位置に置かれ、読めなくなるため。
+  - 詳細: 7-8 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素を重ねるときは、`position: absolute` の前に、Grid の同じエリアに置く方法を検討する。（`grid-stack-before-absolute`）
   - 理由: 重ねたどの要素の大きさも親の高さに反映されるので、文字が増えても画像からはみ出さないため。
   - 補足: 第6章のコンポジション `pile` は、この形を部品にしたものです。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】`position: absolute` の要素の基準にする祖先には、同じコンポーネントの中で `position: relative` を指定する。（`containing-block-inside-component`）
   - 理由: 基準がコンポーネントの外の祖先に決まると、置く場所によって位置が変わるため。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。（`absolute-centering-with-margin-auto`）
   - 理由: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
   - 補足: `inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【非推奨】`position: fixed` の要素を、`transform`、`filter`、`contain` などを指定した祖先の中に置かない。（`no-fixed-inside-transformed-ancestor`）
   - 理由: これらの祖先が包含ブロックになり、要素がビューポートではなくその祖先を基準に配置されるため。
   - 補足: 個別の変形プロパティ（`translate` など）、`backdrop-filter`、`perspective`、`content-visibility: auto` と、これらを書いた `will-change` も包含ブロックを作ります。モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第11章）。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。（`check-stacking-context-first`）
   - 理由: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
   - 補足: 不要なコンテキストは指定を外して消し、必要なものは `isolation: isolate` で意図して作ります。`html` 要素は最初からコンテキストを作ります。z-index の値の決め方と `isolation` は、第6章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
   - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
   - 補足: ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】繰り返し置くコンポーネントの中でアンカーポジショニングを使うときは、ルートに `anchor-scope` を指定して、アンカーの名前が届く範囲をコンポーネントの中に限る。（`anchor-scope-for-repeated-components`）
   - 理由: 同じ名前のアンカーが複数あると、別のコンポーネントのアンカーが基準に選ばれることがあるため。
   - 補足: アンカーポジショニングをレイアウトの要として使わない規則は、第1章のルール `no-unsupported-layout-features` で扱います。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。（`implicit-anchor-first`）
   - 理由: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
   - 補足: 暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
   - 理由: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
   - 補足: 論理プロパティを使う規則は、第5章のルール `logical-properties` で扱います。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【推奨】要素を画面幅いっぱいに広げるときは、まずレイアウトのガターの列まで広げる方法を使い、ビューポート単位で広げるのは、背景の装飾と横にスクロールする領域に限る。（`full-bleed-via-layout-first`）
   - 理由: ビューポート単位はスクロールバーの幅の扱いがブラウザによって異なり、横スクロールの原因になりやすいため。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
 - 【必須】親の幅を超えて画面の端まで広げる量は、`calc((100lvi - 100%) / -2)` のように「画面の幅と親の幅の差の半分」の式で書き、`100vw` や `calc(50% - 50vw)` を使わない。（`full-bleed-offset-formula`）
   - 理由: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
   - 補足: 横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第3章のルール `no-vw-vh` を参照してください。
-  - 詳細: 7-4 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+  - 詳細: 7-9 重なりと配置（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
+- 【推奨】ページ全体のスクロールはビューポート（ルートスクローラー）に任せ、`html`、`body`、ページ全体を包むラッパーをスクロールコンテナにしない。（`root-scroller-for-page-scroll`）
+  - 理由: 戻ったときのスクロール位置の復元、キーボードでのスクロール、`window.scrollY` とスクロールのイベント、ルートに書いた `scroll-padding` や背面の固定など、ページのスクロールを前提にした機能が働かなくなるため。
+  - 補足: 表やコードブロックのように、ページの一部だけをスクロールさせる要素は対象外です。ページがどこでスクロールしているかは、スクロールしてから `window.scrollY` が0のままでないかで確かめます。
+  - 詳細: 7-10 ページのスクロールとルートスクローラー（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/root-scroller.mdx）
+- 【非推奨】`html` と `body` に `height: 100%` を指定しない。画面の高さが必要なら、ページのレイアウトの要素に `min-block-size: 100svb` で最小値を決める。（`root-scroller-no-fixed-root-height`）
+  - 理由: 高さを固定すると内容があふれ、あふれた分のための `overflow` が入れ子のスクロールコンテナを作るため。`overflow-x: hidden` と組み合わせると、`body` がスクロールコンテナになる。
+  - 補足: kiso.css は `body` に `min-block-size: 100dvb` を指定しています。`body` の直下の要素には `%` の高さが効かないので、その要素にも `100svb` を指定します。
+  - 詳細: 7-10 ページのスクロールとルートスクローラー（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/root-scroller.mdx）
+- 【推奨】画面に残したいヘッダーやサイドバーは、本文だけをスクロールさせる構造ではなく、`position: sticky` で留める。（`root-scroller-sticky-instead-of-pane`）
+  - 理由: ページ全体がビューポートでスクロールしたまま、留めたい要素だけが位置を保てるため。
+  - 補足: ヘッダーは、ビューポートの高さが十分なときだけ留めます（7-9）。
+  - 詳細: 7-10 ページのスクロールとルートスクローラー（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/root-scroller.mdx）
 - 【必須】Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。（`sticky-align-self-start`）
   - 理由: `align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。
   - 補足: 親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。
-  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+  - 詳細: 7-11 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
 - 【必須】`position: sticky` には、留めたい軸の `inset-block-start` などの inset を、`auto` 以外の値で1つ以上指定する。（`sticky-needs-inset`）
   - 理由: 指定がないと、その軸では留まる位置が決まらず、`relative` と同じ動きになるため。
-  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+  - 詳細: 7-11 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
 - 【推奨】画面より高くなりうる `sticky` の要素には、`max-block-size` と `overflow-y: auto` を指定する。（`sticky-cap-block-size`）
   - 理由: 要素が画面より高いと、下端が見えないまま上端で留まり、末尾に届かなくなるため。
   - 補足: 上限は、`calc(100svb - 16px * 2)` のように、スクロールで値が変わらない `svb` から余白を引いて決めます。
-  - 詳細: 7-5 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+  - 詳細: 7-11 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+- 【推奨】`sticky` の要素が留まっている間だけ見た目を変えるときは、`scroll` イベントではなく `container-type: scroll-state` と `@container scroll-state(stuck: …)` を使い、変える内容は見えなくても操作に困らない装飾に限る。（`scroll-state-for-sticky-styles`）
+  - 理由: スクロールのたびに JavaScript で位置を調べる処理が要らなくなり、クエリに対応していない環境でも装飾が付かないだけで済むため。
+  - 補足: コンテナクエリなので、変えられるのはコンテナの子孫だけです。2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。
+  - 詳細: 7-11 sticky が動かないとき（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/sticky.mdx）
+- 【推奨】`display: block grid-lanes` は `@supports (display: block grid-lanes)` の中に書き、その外には通常の Grid（`display: block grid`）と同じ `grid-template-columns` を書く。（`grid-lanes-inside-supports`）
+  - 理由: 未対応の環境では行の高さがそろった Grid として読めて操作でき、分岐の条件がコードに残るので、全ブラウザが対応した時点で検索して消せるため。
+  - 補足: `display` を2つ並べて後の宣言の無効化に頼る書き方は、意図が読めず、重複として消されやすいので使いません。写真を正方形にそろえるなど、フォールバックだけの宣言を切り替えるときも、各要素の中の `@supports` に書きます。`display` は、ほかの値と同じく `block grid-lanes` の2値構文で書きます。
+  - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
+- 【非推奨】`grid-lanes` で順序に意味のある項目を並べるときは、項目に `grid-column: span N` や線の番号による配置を指定しない。（`grid-lanes-no-placement-for-ordered-items`）
+  - 理由: 複数の列にまたがる項目や、位置を決めた項目が空きを作り、後の項目が前に表示されて、読み上げやフォーカスの順番と見た目の順番が大きく食い違うため。
+  - 補足: ランキングや手順のように、順番そのものが内容になる一覧には `grid-lanes` を使いません。
+  - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
+- 【非推奨】`flow-tolerance` に `infinite` を指定しない。並び順を優先したいときは、`3em` のように初期値（`1em`）より大きい長さを指定する。（`flow-tolerance-no-infinite`）
+  - 理由: `infinite` は列の高さを無視して左から順に置くので、隣り合う項目が縦に大きく離れた位置に置かれ、読み手が順番を追えなくなるため。
+  - 補足: 仕様も、`infinite` の代わりに大きめの長さを指定するよう勧めています。
+  - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
+- 【推奨】上から下へ読む1つのリストを段に分けるときは `columns` を使い、項目に `break-inside: avoid` を指定して、間隔は `margin` ではなく `padding-block` で空ける。（`columns-for-top-to-bottom-lists`）
+  - 理由: 段組みは並び順が縦なので HTML の順番と読む順番がそろい、2段目以降の先頭の `margin` は段の境目で切り取られて上端がそろわないため。
+  - 補足: `column-width` は `%` を受け付けず、`min(100%, …)` と書くと宣言ごと無効になります。段の幅をコンテナに比例させるときは `cqi` を使います。横方向の順番で並べながら高さの違いを詰めるなら `grid-lanes` を使います。
+  - 詳細: 7-12 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
+- 【推奨】同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。（`stack-vs-prose`）
+  - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
+  - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。
+  - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
+- 【推奨】`stack` の一部の間隔だけを変えたいときは、子に `margin` を足さず、近い要素を `stack` で包んで入れ子にするか、`grid-template` の空のセルに切り替える。（`stack-uneven-gaps`）
+  - 理由: フレックスアイテムの `margin` は相殺されずに `gap` に足され、間隔が2か所の指定の和で決まって読み取りにくくなるため。
+  - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
+- 【推奨】`stack` を入れ子にするときは、内側の `stack` にも `--stack--gap` を渡し、間隔を空けない場合も `0` と明示する。（`stack-nested-gap`）
+  - 理由: カスタムプロパティは継承されるので、値を渡さない内側の `stack` には、デフォルト値の `0` ではなく外側の値が使われるため。
+  - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
+- 【推奨】`stack` の子のうち、ボタンやリンクのように中身の幅で見せたい要素には、置く側の CSS で `align-self: start` を指定する。（`stack-align-self-start`）
+  - 理由: `align-items` のデフォルト値 `normal` はフレックスアイテムでは `stretch` と同じに振る舞い、子が `stack` の幅いっぱいに広がるため。
+  - 補足: 子が別のコンポーネントのルートなら、そのコンポーネントの中には書かず、置く側のコンポーネントが子クラスで指定します。
+  - 詳細: 7-13-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
+- 【推奨】子を両端に分けて置くときは、`cluster` に `--cluster--justification: space-between` を渡さず、`apart` を使う。（`cluster-apart-for-two-ends`）
+  - 理由: 子が3つ以上ある `cluster` で `space-between` を使うと、行ごとに子の間隔がばらつき、最後の行の子が左右に離れて置かれるうえ、クラス名から「両端に分ける」意図を読み取れないため。
+  - 補足: `cluster` の寄せ方は `start`（デフォルトの `normal`）、`center`、`end` から選びます。
+  - 詳細: 7-13-2 cluster：子を横に並べ、入りきらなければ折り返す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/cluster.mdx）
+- 【推奨】`flex-wrap: balance` は `@supports (flex-wrap: balance)` の中に書き、その外には `flex-wrap: wrap` を書く。（`cluster-balance-inside-supports`）
+  - 理由: 新しい値に頼った指定であることが条件から読み取れ、未対応の環境では通常の折り返しのまま表示でき、すべての対象ブラウザが対応したときに分岐ごと消せるため。
+  - 補足: 2026年10月時点で `flex-wrap: balance` に対応しているのは Chrome と Edge の150以降だけです。
+  - 詳細: 7-13-2 cluster：子を横に並べ、入りきらなければ折り返す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/cluster.mdx）
+- 【推奨】入れ子にした `cluster` で行と列の間隔を別々に指定するときは、`--cluster--gap: initial` も渡し、外側から継承した一括の間隔を打ち消す。（`cluster-reset-inherited-gap`）
+  - 理由: カスタムプロパティは継承し、フォールバックの連鎖では一括の `--cluster--gap` が個別の指定より優先されるので、打ち消さないと内側の `--cluster--row-gap` と `--cluster--column-gap` が使われないため。
+  - 補足: 内側でも一括の `--cluster--gap` を渡すなら、外側の値は上書きされるので不要です。
+  - 詳細: 7-13-2 cluster：子を横に並べ、入りきらなければ折り返す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/cluster.mdx）
+- 【推奨】`apart` は役割の違う2つのまとまりを両端に分けるときに使い、片側に複数の要素を置くときは1つの要素に包む。（`apart-for-two-groups`）
+  - 理由: `justify-content: space-between` は子の数と幅によって間隔と折り返した行の位置が変わるので、子が3つ以上あると並び方が予測しにくくなるため。
+  - 補足: タグの一覧やナビゲーションのリンクのように、同じ種類の要素を並べるときは `cluster` を使います。
+  - 詳細: 7-13-3 apart：子要素を両端に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/apart.mdx）
+- 【推奨】`apart` には、両端の要素の最小の間隔を `--apart--column-gap`（または `--apart--gap`）で渡す。（`apart-column-gap-as-minimum`）
+  - 理由: `space-between` が配る余白は幅が狭くなると0まで減るので、列の間隔がないと、両端の要素が接するまで折り返さないため。
+  - 詳細: 7-13-3 apart：子要素を両端に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/apart.mdx）
+- 【推奨】折り返した2行目でも行末側の要素を行末に寄せたいときは、`apart` ではなく、その要素に `margin-inline-start: auto` を指定する。（`apart-auto-margin-for-wrapped-end`）
+  - 理由: `space-between` は行に要素が1つしかないとき行頭に置くが、`auto` の `margin` は2行目でも余った空間を吸収して要素を行末に寄せるため。
+  - 詳細: 7-13-3 apart：子要素を両端に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/apart.mdx）
+- 【推奨】対等な項目を「指定の列数か1列か」のどちらかで並べたいときは `switcher` を使い、列数が段階的に減ってよい一覧には `grid` を使う。（`switcher-for-all-or-nothing`）
+  - 理由: `auto-fit` だけで並べると、途中の幅で最後の項目が1つだけ次の行に落ち、項目が対等に見えなくなるため。
+  - 補足: 幅の違う2つの要素（メインとサイド）を並べるときは `sidebar` を使います。
+  - 詳細: 7-13-4 switcher：n列と1列を幅で切り替える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/switcher.mdx）
+- 【必須】`switcher` の列の幅の目安は「（100% − 列の間隔 ×（列数 − 1））÷ 列数」で計算する。（`switcher-preferred-width-formula`）
+  - 理由: 「100% ÷ 列数 − 列の間隔 ×（列数 − 1）」と書くと目安が小さくなりすぎ、`auto-fit` が指定より多くの列を作るため。
+  - 補足: 例：列数4、列の最小幅200px、列の間隔24pxで要素の幅が1000pxのとき、正しい式では4列、誤った式では5列になります。
+  - 詳細: 7-13-4 switcher：n列と1列を幅で切り替える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/switcher.mdx）
+- 【必須】閾値などの `calc()` で長さと足し合わせる間隔のデフォルト値は、単位のない `0` ではなく `0px` と書く。（`switcher-gap-default-with-unit`）
+  - 理由: 単位のない `0` は数値として扱われ、「長さ＋数値」の式が無効になって、宣言全体が初期値に戻るため。
+  - 補足: `switcher` では、`grid-template-columns` が `none` に戻り、どの幅でも1列になります。
+  - 詳細: 7-13-4 switcher：n列と1列を幅で切り替える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/switcher.mdx）
+- 【推奨】幅の決まったサイドと伸び縮みするメインの2つを横に並べ、狭ければ縦に積む配置は、クエリで閾値を書かず、`sidebar` コンポジションで組む。（`sidebar-before-queries`）
+  - 理由: 折り返す幅が「メインの最小幅＋サイドの幅＋列の間隔」として子の幅の指定から決まり、サイドの幅や間隔を変えても閾値を計算し直さずに済むため。
+  - 補足: 要素が3つ以上ある配置、折り返す幅をデザインの都合で決めたい配置、並べたときと積んだときで見た目の順番を変えたい配置は、`grid-template` のエリアとコンテナクエリで組む。
+  - 詳細: 7-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/sidebar.mdx）
+- 【必須】`sidebar` の直接の子は2つだけにし、それぞれに `.main-column` と `.side-column` を付ける。（`sidebar-two-direct-children`）
+  - 理由: `flex-grow` と `flex-basis` は2つのクラスにだけ指定されており、クラスのない子や3つ目の子が加わると、折り返す幅の計算が成り立たなくなるため。
+  - 補足: `:first-child` のような位置で選ばず、クラスで役割を指定するので、サイドを先に書いてもメインとサイドは入れ替わらない。
+  - 詳細: 7-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/sidebar.mdx）
+- 【推奨】`sidebar` のサイドを左右どちらに置くかは HTML の順番で決め、`flex-direction: row-reverse` や `order` で見た目だけを入れ替えない。（`sidebar-side-position-by-source-order`）
+  - 理由: 横に並んでいる間、キーボードで移動する順番と読み上げの順番が、見た目の順番と食い違うため。
+  - 補足: 本文の後に見る補助の内容（関連記事など）は本文の後に、先に知っておくと便利な内容（章の目次、絞り込みの条件など）は本文の前に書く。
+  - 詳細: 7-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/sidebar.mdx）
+- 【推奨】`--sidebar--main-min-width` と `--sidebar--side-width` には、それぞれの子の中身の最小幅（長い単語、固定幅の画像、表など）より大きな値を渡す。（`sidebar-widths-above-min-content`）
+  - 理由: フレックスアイテムは中身の最小幅より狭くならず、折り返しの判定にも大きいほうが使われるので、指定より広い幅で折り返すようになるため。
+  - 詳細: 7-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/sidebar.mdx）
+- 【推奨】同じ形のアイテムを並べる一覧で列の数に上限があるときは、メディアクエリで列数を切り替えず、`grid` の `--grid--column-min-width` と `--grid--column-max-count` で列の最小幅と最大数を渡す。（`grid-max-count-over-queries`）
+  - 理由: 列数が画面ではなく一覧自身の幅から決まり、どこに置いても最小幅を下回らず、最大数を超えないため。
+  - 詳細: 7-13-6 grid：列の最小幅と最大数から列数を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/grid.mdx）
+- 【推奨】件数が変わる一覧では `--grid--mode` をデフォルトの `auto-fill` のままにし、`auto-fit` は件数が最大数に届かないときに行いっぱいに広げたい並びにだけ渡す。（`grid-mode-auto-fill-default`）
+  - 理由: `auto-fit` では件数が少ないときにアイテムが行いっぱいに広がり、件数によってカードの幅や見た目が変わるため。
+  - 詳細: 7-13-6 grid：列の最小幅と最大数から列数を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/grid.mdx）
+- 【必須】`grid` の列の間隔には、`0` を渡すときも `0px` のように単位の付いた長さを渡す。（`grid-gap-with-unit`）
+  - 理由: 列の幅の計算で間隔を `100%` から引くので、単位のない `0` を渡すと `grid-template-columns` の宣言が無効になり、1列に並ぶため。
+  - 詳細: 7-13-6 grid：列の最小幅と最大数から列数を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/grid.mdx）
+- 【推奨】数が決まっていて揃いで見せたいアイテム（特徴や料金プランなど）は、`grid` ではなく `switcher` で並べる。（`grid-switcher-for-fixed-sets`）
+  - 理由: `grid` は列が1つずつ減るので、幅によっては1つのアイテムだけが次の行に残り、揃いの印象が崩れるため。
+  - 詳細: 7-13-6 grid：列の最小幅と最大数から列数を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/grid.mdx）
+- 【推奨】`columns` コンポジションの直下には段に分けるリストを1つだけ置き、見出しなどはその外に置く。（`columns-single-list-child`）
+  - 理由: 段組みと負のマージンは直下の子すべてに付くので、リスト以外の要素を入れると、その要素まで段組みになり、余白も崩れるため。
+  - 補足: 項目の `li` や `div` は、段組みを付けたリストの直下に置きます。`dl` では用語と説明を `div` で包むと、まとめて段の境目で分かれなくなります。
+  - 詳細: 7-13-7 columns：上から下へ読むリストを段に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/columns.mdx）
+- 【非推奨】画面の高さを超える長さのリストを、1つの段組みにしない。（`columns-not-for-tall-lists`）
+  - 理由: 1段目を読み終えるたびに、2段目の先頭まで上へスクロールして戻る必要があるため。
+  - 補足: 長いサイトマップは、見出しとリストのまとまりに分けて `grid` や `masonry` で並べ、各まとまりの中だけを `columns` にします。
+  - 詳細: 7-13-7 columns：上から下へ読むリストを段に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/columns.mdx）
+- 【推奨】コンポジションの中の要素に負のマージンを付けて端の余白を打ち消すときは、ルートを `display: block flow-root` にする。（`columns-negative-margin-in-flow-root`）
+  - 理由: 通常のフローでは、先頭の子の負のマージンが親を突き抜けて外の要素のマージンと相殺し、コンポジションの外側の余白が変わるため。
+  - 補足: 負のマージンはルートには付けず、内側の要素に付けます。ルートに付けると、親の `gap` や隣の要素との間隔が変わります。
+  - 詳細: 7-13-7 columns：上から下へ読むリストを段に分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/columns.mdx）
+- 【推奨】`masonry` コンポジションは、新着順の一覧のように高さがそろわず、おおよその順番が伝われば足りる項目に使い、高さのそろう項目や順番が内容になる項目は `grid` コンポジションで並べる。（`masonry-for-loose-order-lists`）
+  - 理由: 高さがそろう項目では詰める隙間がなく、`grid-lanes` の配置では見た目の順番と HTML の順番（読み上げとフォーカスの順番）がずれる可能性だけが残るため。
+  - 補足: 上から下へ読む1つのリストを段に分けるときは、`columns` コンポジションを使います。
+  - 詳細: 7-13-8 masonry：高さの違う子を短い列へ詰めて並べる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/masonry.mdx）
+- 【推奨】`masonry` コンポジションの `--masonry--tolerance` のデフォルト値は `flow-tolerance` の初期値と同じ `normal` にし、項目が左右へ飛んで見えるときだけ `3em` のような大きめの長さを渡す。（`masonry-tolerance-default-normal`）
+  - 理由: `0` にすると、ほぼ同じ高さの列のどちらに置くかを厳密に決めることになり、項目が左右へ大きく飛ぶ配置が起きやすいため。
+  - 補足: `infinite` は渡しません。
+  - 詳細: 7-13-8 masonry：高さの違う子を短い列へ詰めて並べる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/masonry.mdx）
+- 【推奨】`pile` の子の位置を変えるときは、`--pile--placement` などの公開プロパティを、`.pile` ではなく動かしたい子の `style` 属性で渡す。（`pile-placement-on-target-child`）
+  - 理由: `.pile` で渡すと、継承ですべての子に同じ配置がかかり、大きさを指定していない背景用の要素が中身の大きさに縮むため。
+  - 補足: `--pile--placement` に渡すキーワードは1つだけです。方向ごとに違う値を使うときは、`--pile--alignment` と `--pile--justification` を個別に指定します。
+  - 詳細: 7-13-9 pile：子要素を同じセルに重ねる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/pile.mdx）
+- 【禁止】`pile` の子に、コンポーネントの CSS で `grid-area`、`grid-row`、`grid-column` を指定しない。（`pile-no-grid-placement-on-children`）
+  - 理由: `components` レイヤーが `compositions` レイヤーより優先されるので、子が `--pile` のエリアから外れて重ならなくなるため。
+  - 補足: `.pile > *` で選ばれない `::before` と `::after` は例外で、重ねるならコンポーネントの側で `grid-area: --pile` を指定します。
+  - 詳細: 7-13-9 pile：子要素を同じセルに重ねる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/pile.mdx）
+- 【推奨】`pile` で画像の上に文字を重ねるときは、文字と画像の間に暗い層を置き、どの画像でも文字のコントラスト比が保たれるようにする。（`pile-scrim-for-text-on-image`）
+  - 理由: 画像の差し替えや文字の折り返しで、文字の下に来る部分の明るさが変わるため。
+  - 補足: 白い文字なら、黒い層の不透明度を55％以上にすると、真っ白な画像の上でもコントラスト比が4.5:1を超えます。画像を読み込めなかったときのために、ルートに暗い `background-color` も指定します。
+  - 詳細: 7-13-9 pile：子要素を同じセルに重ねる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/pile.mdx）
+- 【推奨】枠の外へはみ出させる要素（角からはみ出すバッジ、ドロップダウンなど）は、`pile` で重ねず、絶対配置やトップレイヤーで表示する。（`pile-not-for-overflowing-layers`）
+  - 理由: `pile` の子は親の大きさに反映されて枠の中に収まり、`isolation: isolate` で重なり順も `pile` の中に閉じるため。
+  - 詳細: 7-13-9 pile：子要素を同じセルに重ねる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/pile.mdx）
+- 【推奨】`primary-layout` の子の幅は、子に最大幅や負の `margin` を書かず、`full-column` などのクラスか `grid-column: --wide` のような線の名前で選ぶ。（`primary-layout-width-by-line-names`）
+  - 理由: 幅の段階とガターの値が `primary-layout` の1か所にまとまり、画面の幅で値を変えるときも子を直さずに済むため。
+  - 補足: 画面の端まで広げる方法の比較は、第7章のルール `full-bleed-via-layout-first` を参照してください。
+  - 詳細: 7-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/primary-layout.mdx）
+- 【必須】中央の列の最大幅は、コンテンツ幅の最大値から、その両側に足す列の上限を2本分引いて求める（`var(--_c--content-max-width) - var(--_c--narrow-reduction) * 2`）。（`primary-layout-center-column-subtract-both-sides`）
+  - 理由: 片側の分しか引かないと、コンテンツ幅が指定した最大値より列1本分だけ広くなるため。
+  - 詳細: 7-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/primary-layout.mdx）
+- 【推奨】コンポジションの子に付けて置き場所を選ぶクラスは、`full-column` のように接頭辞を付けずに名付け、`& > .full-column` のように直下の子に限って効かせる。（`primary-layout-child-classes-unprefixed`）
+  - 理由: `_` はコンポーネントの子要素、`-` はどこでも効くユーティリティの印なので、どちらでもないコンポジションの一部であることを名前とセレクタで示すため。
+  - 詳細: 7-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/primary-layout.mdx）
+- 【推奨】`prose` の中で特定の間だけ間隔を変えるときは、`margin` を足さず、その間の後ろにある子に `--prose--space` を渡す。（`prose-space-on-following-child`）
+  - 理由: `margin-block-start` の `var(--prose--space)` は子要素の上で解決されるので、渡した子の前の間隔だけが変わり、打ち消しや差分の計算が要らないため。
+  - 補足: 見出しの前を広げるなら見出しに、見出しの直後を詰めるなら見出しの次の要素に渡します。値は `style` 属性で渡し、画面の幅で変えるときや複数の子にまとめて渡すときはコンポーネントの CSS で渡します。
+  - 詳細: 7-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/prose.mdx）
+- 【必須】`prose` の `--prose--space` はルートで内部プロパティに受け直さず、子要素の `margin-block-start` の `var()` で直接参照する。（`prose-no-internal-property`）
+  - 理由: ルートで受け直すと `var()` がルートの上で解決され、子には解決済みの値が継承されるので、子に渡した `--prose--space` が効かなくなるため。
+  - 補足: 公開プロパティを `:scope` で内部プロパティに受ける規約（第6章のルール `receive-public-property-with-fallback`）の例外です。
+  - 詳細: 7-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/prose.mdx）
+- 【推奨】`prose` の中に `prose` を入れるときは、内側のルートの `--prose--space` を外側との間隔に使い、内側の間隔は内側の子に渡す。（`prose-nested-inner-space`）
+  - 理由: ルートに渡した値は継承によって内側の子にも届き、外側との間隔と内側の間隔が同じ値になってしまうため。
+  - 補足: 例：`._note { & > * { --prose--space: calc(var(--spacing--xxs) / 16 * 1rem); } }`
+  - 詳細: 7-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/prose.mdx）
+- 【非推奨】CMS で編集者が入力する本文エリア（`.wysiwyg` など）には `prose` を付けず、`prose` は本文エリアとその前後の要素を並べる外側に使う。（`prose-not-on-cms-body`）
+  - 理由: 編集者は子に `style` 属性を付けられないうえ、本文エリアの余白のルールと同じ `margin-block-start` を指定し合い、`compositions` レイヤーの `prose` が黙って負けるため。
+  - 詳細: 7-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/prose.mdx）
 
 ### 第8章 レスポンシブデザイン
 
@@ -1363,6 +1817,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: OS でコントラストを上げる設定にしているユーザーが、薄い区切りや補助テキストを読み取れる状態を保つため。
   - 補足: `prefers-contrast: custom` は強制カラーモードの配色に対応する値で、色は上書きされるため指定しない。強制カラーモードの扱いは第10章で説明する。
   - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+- 【推奨】半透明の背景や `backdrop-filter` の上に文字を置く部品は、`@media (prefers-reduced-transparency: reduce)` の中で背景を不透明にする。（`reduced-transparency-opaque-background`）
+  - 理由: OS で透明度を下げる設定にしているユーザーが、背景に左右されずに文字を読める状態を保つため。
+  - 補足: 2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
+  - 詳細: 8-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】`--screen` とスタイルクエリによる切り替えと、`--px`・`--rem` による比例スケールは、2サイズのデザインカンプを比率を保って再現する案件に限って使う。（`screen-mode-for-two-size-comps`）
   - 理由: どちらもビューポートを基準にする方法なので、置き場所に合わせて振る舞うべきコンポーネントには向かないため。
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
@@ -1377,10 +1835,27 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【必須】比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。（`proportional-scale-rem-for-text`）
   - 理由: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
+  - 補足: `--rem` が保証するのは、カンプ上の寸法に文字サイズの設定の倍率を掛けた下限です。文字が設定と同じ割合で大きくなるわけではなく、画面がカンプより広い区間では、設定を上げても文字の大きさが変わらないことがあります。
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【推奨】`--compact` の表示はクエリの外に基本のスタイルとして書き、`--spacious` の差分だけをスタイルクエリで書く。（`screen-mode-compact-base`）
   - 理由: スタイルクエリに対応していないブラウザでも、コンパクトな表示で内容を読めるようにするため。
   - 詳細: 8-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
+- 【必須】`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。（`safe-area-inset-with-viewport-fit-cover`）
+  - 理由: `cover` を指定するとブラウザはページをセーフエリアの内側に寄せなくなり、余白を書かないと、ノッチやホームインジケーターのある端末でだけ内容が隠れるため。
+  - 補足: 画面の端まで描画する必要がないページでは、`viewport-fit` をデフォルトの `auto` のままにします。パソコンのブラウザではセーフエリアがすべて0なので、実機か iOS シミュレーターで確かめます。
+  - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+- 【推奨】セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。（`safe-area-combine-with-max`）
+  - 理由: セーフエリアの値は切り欠きやシステムの UI が占める幅そのもので、長方形の画面では0になるため。比べるか足すかは、余白の一部をセーフエリアで兼ねてよいかで決まる。
+  - 補足: `env()` の第2引数は、ブラウザがその名前の環境変数を知らないときだけ使われます。`env(safe-area-inset-bottom, 16px)` と書いても、セーフエリアのない画面では16pxではなく0になります。
+  - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+- 【推奨】セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。（`safe-area-background-to-edge`）
+  - 理由: `viewport-fit=cover` を指定する目的は背景を端まで描くことで、`margin` や外側の要素の `padding` で空けると、背景が途切れた帯ができるため。
+  - 補足: セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（7-13-10 `primary-layout` など）にセーフエリアを入れます。
+  - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+- 【必須】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
+  - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
+  - 補足: 対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
+  - 詳細: 8-5 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 
 ### 第9章 タイポグラフィと和文組版
 
@@ -1624,6 +2099,22 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
   - 補足: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
   - 詳細: 10-3 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/images-and-decoration.mdx）
+- 【推奨】`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。（`corner-shape-guard-when-broken`）
+  - 理由: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
+  - 補足: 錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。
+  - 詳細: 10-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/shapes.mdx）
+- 【推奨】画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。（`full-bleed-radius-with-sign`）
+  - 理由: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
+  - 補足: `/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。
+  - 詳細: 10-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/shapes.mdx）
+- 【推奨】`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。（`guard-new-shapes-with-supports`）
+  - 理由: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
+  - 補足: 未対応の環境では、単色の枠線や中心まで塗った円グラフのように、意味の読み取れる形に縮退させます。
+  - 詳細: 10-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/outlines.mdx）
+- 【推奨】`clip-path: shape()` の座標は、半径などをカスタムプロパティに入れて、そこから計算する。（`shape-function-with-custom-properties`）
+  - 理由: `shape()` の値は長く、数値を直接並べると形が読み取れず、大きさを変えるたびにすべての座標を書き直すことになるため。
+  - 補足: `shape()` に対応していない環境には、`@supports not` で `border-radius` の形に戻します。
+  - 詳細: 10-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/outlines.mdx）
 
 ### 第11章 インタラクションとモーション
 
@@ -1702,6 +2193,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
   - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
+  - 補足: 1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。
   - 詳細: 11-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】JavaScript で動かす演出の準備のスタイルは、JavaScript がルートに `data-motion-mode="motion"` を付けたときだけ当て、基本のスタイルは動かないときの最終状態として書く。（`motion-mode-attribute`）
   - 理由: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
@@ -1803,6 +2295,22 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
   - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
   - 詳細: 11-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
+- 【禁止】カルーセルを自動で再生しない。（`no-autoplay-carousel`）
+  - 理由: 読み上げや操作の途中で内容が切り替わり、一時停止の手段を用意しても問題が残るうえ、自動で切り替わるスライドをユーザーは最後まで見ないため。
+  - 補足: カルーセルにする前に、カードを一覧で並べられないかを検討します。
+  - 詳細: 11-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+- 【必須】`::scroll-button()`、`::scroll-marker`、`scroll-marker-group`、`scrollbar-width: none` は、`@supports selector(::scroll-button(*))` などの中に書く。（`carousel-controls-in-supports`）
+  - 理由: 未対応の環境ではボタンとインジケーターが表示されないので、スクロールバーを残して横スクロールとして読めるようにし、Safari でネストした以降のスタイルが無効になるのも防ぐため。
+  - 補足: 土台はスクロールスナップの横スクロールにし、ボタンとインジケーターはプログレッシブ・エンハンスメントとして足します。
+  - 詳細: 11-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+- 【推奨】カルーセルのスライドを `container: --<名前> / scroll-state` のコンテナにし、止まっていないスライドの中身を `@container --<名前> not scroll-state(snapped: inline)` で `interactivity: inert` にする。（`carousel-inert-unsnapped`）
+  - 理由: 隠れているスライドが読み上げとフォーカスの対象から外れ、見えている1枚の後にカルーセルの後ろの要素へ移れるため。
+  - 補足: 1枚ずつ表示するカルーセルが前提です。複数枚を表示すると、見えていてもスナップの位置にないスライドが不活性になるので、条件を見直すか、この指定を使いません。`interactivity` は継承し、子孫から `auto` で打ち消せません。コンテナクエリで変えられるのは子孫だけなので、スライドではなくその中の要素に指定します。
+  - 詳細: 11-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+- 【推奨】`<dialog>` のモーダルにできないドロワーで背面を操作できなくするときは、`interactivity: inert` ではなく、JavaScript で背面の要素に `inert` 属性を付ける。（`inert-attribute-for-background`）
+  - 理由: `interactivity` に対応していない環境では背面を操作できてしまい、見えないリンクにフォーカスが移るため。
+  - 補足: CSS で書く場合も、`body:has()` ではなく、`.global-header:has(…) ~ *` のように起点をヘッダーに絞ります。
+  - 詳細: 11-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 
 ### 第12章 実務での運用
 
@@ -1874,6 +2382,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
+  - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨】AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。（`ai-layout-with-grid-areas`）
+  - 理由: 指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。
   - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中に要素セレクタで書く。（`wysiwyg-scope-root`）
   - 理由: 編集者は要素にクラスを付けられず、子孫セレクタで書くと詳細度が上がり、独自ブロックの側に打ち消しが要るため。

@@ -1,0 +1,78 @@
+@layer tokens {
+  :root {
+    --spacing--xxs: 8;
+    --spacing--sm: 16;
+    --spacing--lg: 32;
+  }
+}
+
+@layer compositions {
+  /**
+   * 子要素をインライン方向に並べ、入りきらなければ折り返す。
+   * タグの一覧やボタンの並びのように、同じ側に寄せて並べる要素に使う。
+   *
+   * @prop {length}  --cluster--gap           [0]      - 行と列の間隔（一括。個別の指定より優先する）
+   * @prop {length}  --cluster--row-gap       [0]      - 行の間隔
+   * @prop {length}  --cluster--column-gap    [0]      - 列の間隔
+   * @prop {keyword} --cluster--justification [normal] - 主軸の配置（justify-content）
+   * @prop {keyword} --cluster--alignment     [normal] - 交差軸の配置（align-items）
+   *
+   * @example
+   * <ul class="cluster" style="--cluster--gap: calc(var(--spacing--xxs) / 16 * 1rem)">
+   *   <li>…</li>
+   * </ul>
+   */
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    /* 最後の行に子が1つだけ取り残されないよう、各行の長さをそろえる */
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+
+  .stack {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--stack--gap, 0);
+  }
+}
+
+@layer components {
+  @scope (.scoped.cluster-demo) to (.scoped) {
+    ._tag {
+      padding-block: 4px;
+      padding-inline: 12px;
+      border-radius: calc(infinity * 1px);
+      background-color: oklch(94% 0.02 250deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._price {
+      font-size: calc(28 / 16 * 1rem);
+      font-weight: bold;
+    }
+
+    ._note {
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._button {
+      padding-block: 8px;
+      padding-inline: 20px;
+      border: 1px solid oklch(50% 0.15 250deg);
+      border-radius: 4px;
+      color: oklch(45% 0.15 250deg);
+    }
+
+    ._submit {
+      background-color: oklch(50% 0.15 250deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

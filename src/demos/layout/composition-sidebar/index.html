@@ -1,0 +1,37 @@
+<div class="scoped sidebar-demo stack" style="--stack--gap: calc(var(--spacing--lg) / 16 * 1rem)">
+  <div
+    class="sidebar"
+    style="--sidebar--side-width: calc(240 / 16 * 1rem); --sidebar--gap: calc(var(--spacing--md) / 16 * 1rem)"
+  >
+    <article class="_article main-column stack" style="--stack--gap: calc(var(--spacing--xs) / 16 * 1rem)">
+      <h2 class="_title">記事の本文（メイン）</h2>
+      <p>メインの最小幅は480px相当、サイドの幅は240px相当、間隔は24px相当です。3つの合計の744px相当を確保できる間は横に並び、確保できなくなると縦に積まれます。</p>
+      <p>HTMLでは本文を先に書いているので、縦に積んだときも本文が上に来ます。</p>
+    </article>
+    <aside class="_aside side-column stack" style="--stack--gap: calc(var(--spacing--xs) / 16 * 1rem)" aria-labelledby="sidebar-demo-related">
+      <h2 class="_label" id="sidebar-demo-related">関連する記事（サイド）</h2>
+      <ul class="_links stack" style="--stack--gap: calc(var(--spacing--xs) / 16 * 1rem)">
+        <li><a href="#">コンポジションとユーティリティ</a></li>
+        <li><a href="#">Gridから考える</a></li>
+        <li><a href="#">検討する順番</a></li>
+      </ul>
+    </aside>
+  </div>
+  <div
+    class="sidebar"
+    style="--sidebar--side-width: calc(200 / 16 * 1rem); --sidebar--main-min-width: calc(400 / 16 * 1rem); --sidebar--gap: calc(var(--spacing--md) / 16 * 1rem)"
+  >
+    <nav class="_nav side-column" aria-labelledby="sidebar-demo-toc">
+      <h2 class="_label" id="sidebar-demo-toc">この章の目次（サイド）</h2>
+      <ol class="_links">
+        <li><a href="#">stack</a></li>
+        <li><a href="#">cluster</a></li>
+        <li><a href="#">sidebar</a></li>
+      </ol>
+    </nav>
+    <div class="_content main-column stack" style="--stack--gap: calc(var(--spacing--xs) / 16 * 1rem)">
+      <h2 class="_title">章のページ（メイン）</h2>
+      <p>こちらはHTMLで目次を先に書いているので、横に並ぶと目次が左に、縦に積むと目次が上に来ます。閾値は400＋200＋24で624px相当です。</p>
+    </div>
+  </div>
+</div>

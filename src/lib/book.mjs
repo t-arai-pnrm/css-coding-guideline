@@ -22,7 +22,13 @@ export const PARTS = [
   {
     label: '第III部 実装編',
     chapters: [
-      { number: 7, dir: 'layout', title: 'レイアウト' },
+      {
+        number: 7,
+        dir: 'layout',
+        title: 'レイアウト',
+        // 節の下にまとめるページ群。`after` の節の直後に、折りたたみのグループとして並べる
+        groups: [{ dir: 'compositions', label: '7-13 コンポジション集', after: 'masonry' }],
+      },
       { number: 8, dir: 'responsive', title: 'レスポンシブデザイン' },
       { number: 9, dir: 'typography', title: 'タイポグラフィと和文組版' },
       { number: 10, dir: 'color-media', title: '色・画像・装飾' },

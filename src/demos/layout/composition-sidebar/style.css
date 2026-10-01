@@ -1,0 +1,88 @@
+@layer tokens {
+  :root {
+    --spacing--xs: 12;
+    --spacing--md: 24;
+    --spacing--lg: 32;
+  }
+}
+
+@layer compositions {
+  /**
+   * 子要素を縦に積む。
+   *
+   * @prop {length} --stack--gap [0] - 子要素の間隔
+   */
+  .stack {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--stack--gap, 0);
+  }
+
+  /**
+   * メインとサイドの 2 カラムに並べ、メインが最小幅を確保できなければ縦に積む。
+   *
+   * @prop {length} --sidebar--main-min-width [calc(480 / 16 * 1rem)] - メインの最小幅（これを確保できないと縦に積む）
+   * @prop {length} --sidebar--side-width     [calc(320 / 16 * 1rem)] - 横に並べたときのサイドの幅
+   * @prop {length} --sidebar--gap            [0px]                   - 行と列の間隔（一括）
+   * @prop {length} --sidebar--row-gap        [0px]                   - 縦に積んだときの間隔
+   * @prop {length} --sidebar--column-gap     [0px]                   - 横に並べたときの間隔
+   *
+   * @example
+   * <div class="sidebar" style="--sidebar--side-width: calc(240 / 16 * 1rem)">
+   *   <article class="main-column">...</article>
+   *   <aside class="side-column">...</aside>
+   * </div>
+   */
+  .sidebar {
+    --_c--row-gap: var(--sidebar--gap, var(--sidebar--row-gap, 0px));
+    --_c--column-gap: var(--sidebar--gap, var(--sidebar--column-gap, 0px));
+    --_c--main-min-width: var(--sidebar--main-min-width, calc(480 / 16 * 1rem));
+    --_c--side-width: var(--sidebar--side-width, calc(320 / 16 * 1rem));
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+
+    /* サイドの 9999 倍で伸びるので、横に並んでいる間は余った幅をほぼすべて受け取る */
+    & > .main-column {
+      flex-grow: 9999;
+      flex-basis: var(--_c--main-min-width);
+    }
+
+    & > .side-column {
+      flex-grow: 1;
+      flex-basis: var(--_c--side-width);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.sidebar-demo) to (.scoped) {
+    ._article,
+    ._content {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._aside,
+    ._nav {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(95% 0.02 250deg);
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._label {
+      font-size: calc(14 / 16 * 1rem);
+      font-weight: bold;
+    }
+
+    ._links {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

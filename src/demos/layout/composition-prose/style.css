@@ -1,0 +1,64 @@
+@layer tokens {
+  :root {
+    --spacing--xxs: 8;
+    --spacing--sm: 16;
+    --spacing--lg: 32;
+    --spacing--xl: 48;
+  }
+}
+
+@layer compositions {
+  /**
+   * 子要素を通常フローのまま縦に並べ、2つ目以降の子の前に間隔を空ける。
+   * 間隔は子要素の側で解決されるので、子ごとに値を上書きできる。
+   *
+   * @prop {length} --prose--space [0] - その子要素の前の間隔。ルートに渡すと全体の値に、子に渡すとその子の前だけの値になる
+   *
+   * @example
+   * <div class="prose" style="--prose--space: calc(var(--spacing--sm) / 16 * 1rem)">
+   *   <p>...</p>
+   *   <h2 style="--prose--space: calc(var(--spacing--xl) / 16 * 1rem)">...</h2>
+   *   <p>...</p>
+   * </div>
+   */
+  .prose {
+    & > * + * {
+      margin-block-start: var(--prose--space, 0);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.prose-demo) to (.scoped) {
+    ._title {
+      font-size: calc(24 / 16 * 1rem);
+      line-height: 1.4;
+    }
+
+    ._heading {
+      padding-inline-start: 12px;
+      border-inline-start: 4px solid oklch(60% 0.15 250deg);
+      font-size: calc(18 / 16 * 1rem);
+      line-height: 1.5;
+    }
+
+    ._note {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.02 250deg);
+
+      /* 内側の間隔は内側の子に渡す。ルートの値は外側との間隔に使う */
+      & > * {
+        --prose--space: calc(var(--spacing--xxs) / 16 * 1rem);
+      }
+    }
+
+    ._note-title {
+      font-weight: bold;
+    }
+
+    ._back {
+      color: oklch(45% 0.15 250deg);
+    }
+  }
+}

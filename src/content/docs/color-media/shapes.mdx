@@ -1,0 +1,142 @@
+---
+title: 10-4 角の形を変える
+description: 角丸だけでは作れない角の形は corner-shape で書きます。錠剤型のボタンをスクワークルにする、タブの下の端を反り返らせるといった形を、未対応の環境での見え方を確かめて取り入れます。要素が画面いっぱいに広がったときだけ角丸を消す sign() の書き方も扱います。
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+角の形は、`border-radius` で角丸の大きさを決め、`corner-shape` でその角をどんな曲線で結ぶかを決めます。Appleの画面にあるようななめらかな角や、タブの下の端が外側へ反り返る形は、以前は画像や複数の擬似要素、マスクの重ね合わせで作っていました。`corner-shape` なら、1つの宣言で書けます。
+
+ただし、`corner-shape` に対応しているブラウザは、まだ限られています。未対応の環境で「形が少し素朴になるだけ」で済むなら、そのまま書きます。「部品が崩れて見える」なら、`@supports` で従来の書き方に切り替えます。この節では、そのうえで、要素が画面いっぱいに広がったときだけ角丸を消す `sign()` の書き方も説明します。輪郭そのものを描く `shape()` と、枠線を塗る `border-area` は「[10-5 輪郭と枠線を描く](/color-media/outlines/)」で扱います。
+
+## 角丸だけでは作れない形
+
+`border-radius` で作れるのは、四分円か四分楕円の角だけです。実際のデザインには、ここから外れる形がよく出てきます。直線から曲線へなめらかにつながる角（スクワークル）、角を斜めに切り落とした形、下の端が外側へ反り返るように広がるタブなどです。
+
+これらは、これまで別の手段で作ってきました。反り返るタブなら、左右に擬似要素を1つずつ置き、`radial-gradient()` のマスクで角を削ります。動きはしますが、形を作るための要素と、半径から逆算した位置の値が増え、コードから形を読み取れなくなります。
+
+新しい仕様では、こうした角をプロパティで直接書けるようになりました。一方で、新しい書き方を選ぶときは、未対応の環境での見え方を見分ける必要があります。この考え方は「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明しています。
+
+## corner-shape で角の形を変える
+
+`corner-shape` は、`border-radius` で決めた角の領域を、どんな曲線で結ぶかを指定するプロパティです。初期値の `round` が従来の角丸で、`squircle` にするとスクワークルになります。ほかに、外側から内側へえぐる `scoop`、角を直線で切り落とす `bevel`、角を四角く切り欠く `notch` があります。キーワードは `superellipse()` の値の別名です。計算された値は、`squircle` が `superellipse(2)`、`round` が `superellipse(1)` です。`bevel` は `superellipse(0)`、`scoop` は `superellipse(-1)` になります（2026年10月、Chrome 152で確認）。
+
+```css title="🙆‍♂ Recommended: 錠剤型のボタンに corner-shape を1行足す"
+@scope (.scoped.button) to (.scoped) {
+  :scope {
+    padding-block: 12px;
+    padding-inline: 32px;
+    border-radius: calc(infinity * 1px);
+    corner-shape: squircle;
+    background-color: var(--color--accent--600);
+    color: var(--foreground--on-accent);
+  }
+}
+```
+
+私は、スクワークルのボタンを作るときに、錠剤型のボタンへ `corner-shape: squircle` を1行足すだけにしています。対応していない環境では、この宣言が無視され、錠剤型のボタンとして表示されます。形は少し変わりますが、ボタンとしての見え方は崩れないので、`@supports` で囲む必要はありません。`border-radius` の値に `calc(infinity * 1px)` を使う理由は、「[10-3 画像と装飾](/color-media/images-and-decoration/)」で説明しています。
+
+`corner-shape` は、`border-radius` が0の角には効きません。描くのは `border-radius` で決めた領域の中の曲線だけなので、角丸の大きさは必ず `border-radius` で指定します。枠線、影、`outline` も、`corner-shape` で変えた輪郭に沿って描かれます（2026年10月、Chrome 152で確認）。
+
+未対応の環境で別の角丸にしたい場合は、`@supports` で分岐します。たとえば、対応している環境ではスクワークルに、対応していない環境では小さめの角丸にするとします。この場合は `border-radius: var(--rounded--md)` を基本に書きます。そして、`@supports (corner-shape: squircle)` の中で `border-radius` と `corner-shape` を一緒に指定します。新しい機能に合わせて既存の宣言まで変える場合に、その宣言を `@supports` の中に入れる書き方です。
+
+<Baseline id="corner-shape" name="corner-shape" />
+
+### 下の端が反り返るタブ
+
+下の端が外側へ反り返るタブは、`corner-shape: scoop` で書けます。タブの背面に、左右へ角丸の半径だけはみ出した擬似要素を置き、上の2つの角をえぐります。擬似要素の上の角がえぐれることで、タブの両脇の外側に、内側へ反った曲線が残ります。
+
+```css title="🙆‍♂ Recommended: 対応している環境だけ、scoop で反り返りを付ける"
+@scope (.scoped.tab-list) to (.scoped) {
+  ._tab {
+    --_radius: var(--tab-list--radius, 12px);
+
+    position: relative;
+    padding-block: 8px;
+    padding-inline: 24px;
+    border-start-start-radius: var(--_radius);
+    border-start-end-radius: var(--_radius);
+    background-color: var(--background--base);
+    isolation: isolate;
+
+    @supports (corner-shape: scoop) {
+      &::before {
+        content: "";
+        position: absolute;
+        inset-inline: calc(var(--_radius) * -1);
+        inset-block-end: 0;
+        z-index: var(--z--backwards);
+        block-size: var(--_radius);
+        border-start-start-radius: var(--_radius);
+        border-start-end-radius: var(--_radius);
+        corner-shape: scoop;
+        background-color: inherit;
+      }
+    }
+  }
+}
+```
+
+この擬似要素は、`@supports` で囲みます。`corner-shape` に対応していない環境では、擬似要素の上の角が外側へふくらむ通常の角丸になり、タブの両脇にこぶのような出っ張りが出てしまうからです。`@supports` で囲めば、未対応の環境では、上だけが角丸のタブとして表示されます。タブには `isolation: isolate` を指定し、`z-index` を負にした擬似要素が、タブの外の背景より後ろへ回らないようにしておきます。
+
+すべての環境で反り返りを付けたい場合は、従来どおり、左右に1つずつ擬似要素を置き、`radial-gradient()` のマスクで角を削ります。マスクの値は `radial-gradient(circle farthest-side at 0 0, transparent 100%, #000 calc(100% + 1px))` のように書きます。透明から黒への境目を `calc(100% + 1px)` にして1px分ずらすのは、境目を一点で切り替えると、曲線の縁がギザギザに見えるためです。
+
+## 画面いっぱいのときだけ角丸を消す
+
+カードや画像を、広い画面では角丸で余白の中に置き、狭い画面では画面の端まで広げるデザインはよくあります。画面の端まで広がったときに角丸が残ると、画面の角だけが欠けて見えます。この切り替えをメディアクエリで書くと、角丸を消す幅を、要素の幅ではなくビューポートの幅で決めることになります。
+
+```css title="🙅‍♂ Not Recommended: ビューポートの幅で角丸を消す"
+/* 🙅‍♂ Not Recommended */
+.hero-card {
+  border-radius: 40px;
+}
+
+@media (width < 640px) {
+  .hero-card {
+    border-radius: 0;
+  }
+}
+```
+
+この書き方では、要素がいつ画面いっぱいになるかを、ブレイクポイントとして別に知っておく必要があります。余白や最大幅を変えると、画面いっぱいになる幅もずれ、角丸を消す幅と合わなくなります。
+
+```css title="🙆‍♂ Recommended: 要素の幅がビューポートの幅とほぼ等しいときだけ、角丸を0にする"
+@scope (.scoped.hero-card) to (.scoped) {
+  :scope {
+    --_radius: var(--hero-card--radius, 40px);
+    --_tolerance: 20px;
+
+    border-radius: calc(sign(100lvi - 100% - var(--_tolerance)) * var(--_radius)) / var(--_radius);
+  }
+}
+```
+
+`border-radius` の水平方向の半径に書いた `%` は、要素の幅を基準にします。`100lvi - 100%` は、ビューポートの幅と要素の幅の差です。要素が画面いっぱいなら差は0になり、そこから `--_tolerance` を引いた値は負になるので、`sign()` は-1を返します。負の半径は0として扱われるので、角丸が消えます。差が `--_tolerance` より大きいときは1を返し、`--_radius` の角丸になります（2026年10月、Chrome 152で確認）。
+
+`/` のあとの垂直方向の半径を、別に書いているのには理由があります。値を1つだけ書くと、垂直方向の半径にも同じ式が使われ、その `%` は要素の高さを基準にします。すると、高さがビューポートの幅を超える要素（スマートフォンで縦に長いカードなど）では、垂直方向の半径が0になり、画面いっぱいでなくても角丸が消えます（2026年10月、Chrome 152で確認）。角は、水平と垂直のどちらかの半径が0なら直角になるので、垂直方向は固定の半径にし、水平方向の式だけで角丸を切り替えます。
+
+`--_tolerance` を引くのは、スクロールバーの幅の分です。スクロールバーが幅を取る環境（WindowsやmacOSの「スクロールバーを常に表示」）では、`100lvi` はスクロールバーを含み、`100%` は含まないので、画面いっぱいでもスクロールバーの幅だけ差が残ります。ルートに `scrollbar-gutter: stable` を指定した場合も、`100lvi` はスクロールバーの幅を含んだままでした（2026年10月、Chrome 152で、スクロールバーに幅を持たせて確認）。{/* 要確認: 実際のWindowsのスクロールバーと、Chrome以外のブラウザ */} `--_tolerance` には、スクロールバーの幅より少し大きい値を入れておきます。
+
+元の書き方は `100vw` を使ったものですが、本書は `vw` を使わない方針なので、`100lvi` で書いています。`lvi` は、ブラウザのツールバーが縮んだときの、最も大きいビューポートのインライン方向の大きさです。
+
+<Baseline id="abs-sign" name="sign()" />
+
+## 未対応の環境での見え方
+
+`corner-shape` を使ったら、未対応の環境での見え方を、ブラウザを替えるか、開発者ツールで宣言を外して確かめます。錠剤型のボタンに足した `corner-shape: squircle` は、宣言が無視されても錠剤型のボタンのままなので、`@supports` は要りません。反り返るタブの擬似要素のように、未対応の環境で通常の角丸に戻ると形が崩れるものだけを、`@supports` で囲みます。
+
+`@supports` の条件には、実際に使う値の形を書きます。`@supports (corner-shape: scoop)` のようにキーワードまで書くと、プロパティにだけ対応していて値に対応していない環境も、未対応として扱えます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [corner-shape: squircle](https://codepen.io/tak-dcxi/pen/azmdqZb)（CodePen、2025年6月）
+- [Rounded Tab](https://codepen.io/tak-dcxi/pen/MYaaQwv)（CodePen、2025年7月。マスクと `corner-shape: scoop` の2つの方式）
+- [corner-shape - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/corner-shape)
+- [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)

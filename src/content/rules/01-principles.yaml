@@ -167,6 +167,15 @@
   page: principles/browser-support
   since: 0.1.0
 
+- id: fallback-method-by-invalidation
+  level: 推奨
+  rule: 'フォールバックは、新しいプロパティならそのまま書き、`var()` を含まない新しい値なら従来の宣言を前に書くか `@supports` の中に書き、`var()` を含む宣言と、ほかの宣言もまとめて切り替える宣言は必ず `@supports` の中に書く。'
+  reason: '`var()` を含む宣言は計算値の時点で無効になり、前に書いた宣言に戻らないため。まとめて切り替える宣言は、`@supports` の条件で意図が読め、不要になったときに検索して消せるため。'
+  note: 従来の宣言を前に書くときは、同じプロパティの重複が誤記に見えないように、未対応の環境で使う値であることをコメントで書きます。
+  aiProne: true
+  page: principles/browser-support
+  since: 0.5.0
+
 - id: scripting-for-js-dependent-styles
   level: 必須
   rule: 'JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。'

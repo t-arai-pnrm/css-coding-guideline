@@ -1,0 +1,225 @@
+---
+title: "11-6 CSSでカルーセルを作る"
+description: "カルーセルはスクロールスナップを土台にし、ページ送りのボタンとインジケーターを::scroll-button()と::scroll-markerで足します。止まっていないスライドはinteractivity: inertで読み上げとフォーカスから外し、未対応の環境ではスクロールバー付きの横スクロールとして読めるようにします。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import carouselHtml from '../../../demos/interaction/css-carousel/index.html?raw';
+import carouselCss from '../../../demos/interaction/css-carousel/style.css?raw';
+
+カルーセルは、スクロールスナップで作った横スクロールを土台にします。ページ送りのボタンは `::scroll-button()`、現在の位置を示すインジケーターは `::scroll-marker` と `::scroll-marker-group` で足し、JavaScriptは使いません。止まっていないスライドは、`scroll-state()` のコンテナクエリと `interactivity: inert` で、読み上げとフォーカスの対象から外します。
+
+2026年10月の時点で、これらの擬似要素に対応しているのはChrome系のブラウザだけです。そのため、ボタンとインジケーター、スクロールバーを消す指定は `@supports` の中に書き、未対応の環境ではスクロールバー付きの横スクロールとして読めるようにします。そのうえで、カルーセルにする必要があるのかを先に検討します。
+
+## カルーセルを使う前に考えること
+
+カルーセルは、限られた面積に多くの情報を詰め込める部品として、トップページのメインビジュアルや事例の紹介によく使われます。ただし、自動で再生しない限り、2枚目以降のスライドはユーザーが操作するまで表示されません。私の経験では、自動で切り替わるカルーセルでも、ユーザーが最後まで見ることはほとんどありません。
+
+自動再生には、アクセシビリティの面でも高い敷居があります。WCAGの達成基準2.2.2は、5秒を超えて自動で動く情報に、一時停止、停止、非表示のいずれかの手段を求めています。{/* 要確認: 出典なし */}停止ボタンを置いても、読み上げの途中でスライドが切り替わる、キーボードで操作している途中にフォーカスしていた要素が画面の外へ流れる、といった問題が残ります。本書では、カルーセルを自動で再生しません。動きを減らす設定への対応を整理した「[11-2 モーションを実装する](/interaction/motion/)」の表でも、自動で回るカルーセルは、設定があれば動きを止める側に分類しています。
+
+CSSだけでカルーセルを作れるようになっても、こうした問題は解決しません。変わるのは実装の手段だけです。2枚目以降が見られにくいことや、どこまで見たのか分かりにくいことは、カルーセルというUIそのものの性質です。カルーセルを選ぶ前に、カードを一覧で並べられないかを検討します。{/* 要確認: 出典なし */}4〜6件の事例なら、グリッドで並べれば一覧性が高く、すべてのカードが最初から目に入ります。
+
+それでもカルーセルを選ぶのは、セクションの中のちょっとしたエリアで、補足的な情報を横に流して見せたいような場面です。このとき、カルーセルの機能が動かなくても内容を読めることを前提にし、ボタンやインジケーターは対応した環境で足す、プログレッシブ・エンハンスメントとして作ります。
+
+## スクロールスナップを土台にする
+
+カルーセルの土台は、`overflow-x: auto` の横スクロールと、`scroll-snap-type` によるスクロールスナップです。スクロールスナップは、スクロールが終わったときに、スライドの端や中央が決まった位置で止まるようにする仕組みです。すべてのブラウザで使えるので、ボタンやインジケーターに対応していない環境でも、スワイプやスクロールバーでスライドを1枚ずつ送れます。
+
+<Baseline id="scroll-snap" />
+
+```css title="🙆‍♂ Recommended: 横スクロールとスクロールスナップでスライドを並べる"
+@scope (.scoped.css-carousel) to (.scoped) {
+  ._list {
+    display: block grid;
+    grid-auto-columns: 100%;
+    grid-auto-flow: column;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  ._item {
+    scroll-snap-align: center;
+  }
+}
+```
+
+スライドはグリッドの列として並べ、`grid-auto-columns` で1枚の幅を決めます。`100%` なら1枚ずつ、`calc((100% - 16px * 2) / 3)` なら3枚ずつ見える形になります。`scroll-snap-type: inline mandatory` は、インライン方向のスクロールが終わったとき、必ずどれかのスライドの位置で止める指定です。`overscroll-behavior-inline: contain` は、端までスクロールしたときに、横のスワイプがブラウザの「戻る」の操作として扱われるのを防ぎます。
+
+`scroll-behavior: smooth` は、後で足すボタンやインジケーターを押したときのスクロールを滑らかにします。`::scroll-marker` を押したときは、スクロールコンテナの `scroll-behavior` が `smooth` なら滑らかに、`auto` なら即座に移動しました（2026年10月、Chrome 152で確認）。動きを減らす設定のユーザーには移動を即座に済ませたいので、`prefers-reduced-motion: no-preference` の条件の中に書きます。ページ全体の `scroll-behavior` の扱いは「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+
+## `::scroll-button()` と `::scroll-marker` でボタンとインジケーターを作る
+
+`::scroll-button()` は、スクロールコンテナに生成される、ページ送りのボタンの擬似要素です。引数の `inline-start` や `inline-end` でスクロールする方向を指定し、`content` に `none` 以外の値を書くと生成されます。押すと、スクロールコンテナのおよそ1画面分だけスクロールし、スクロールスナップがあればその先のスライドで止まります。それ以上スクロールできない方向のボタンは自動で無効になるので、`:disabled` で見た目を変えます。
+
+<Baseline id="scroll-buttons" name="::scroll-button()" />
+
+`::scroll-marker` は、スクロールコンテナの中の要素（ここではスライド）に生成される、インジケーターの点の擬似要素です。スクロールコンテナに `scroll-marker-group: after`（または `before`）を指定すると、点をまとめる `::scroll-marker-group` が生成され、点を押すと対応するスライドまでスクロールします。表示しているスライドの点は、`:target-current` 擬似クラスで選べます。
+
+<Baseline id="scroll-markers" name="::scroll-marker と ::scroll-marker-group" />
+
+```css title="🙆‍♂ Recommended: ボタンとインジケーターを、対応した環境でだけ生成する"
+@scope (.scoped.css-carousel) to (.scoped) {
+  ._list {
+    anchor-name: --css-carousel;
+
+    /* ... */
+
+    @supports selector(::scroll-button(*)) {
+      scroll-marker-group: after;
+      scrollbar-width: none;
+
+      &::scroll-button(*) {
+        position: absolute;
+        inset-block-start: anchor(center);
+        position-anchor: --css-carousel;
+        inline-size: 40px;
+        block-size: 40px;
+        translate: 0 -50%;
+      }
+
+      &::scroll-button(*):disabled {
+        opacity: 0.3;
+      }
+
+      &::scroll-button(inline-start) {
+        content: "←" / "前の事例";
+        inset-inline-start: calc(anchor(start) + 8px);
+      }
+
+      &::scroll-button(inline-end) {
+        content: "→" / "次の事例";
+        inset-inline-end: calc(anchor(end) + 8px);
+      }
+    }
+  }
+
+  ._item {
+    @supports selector(::scroll-marker) {
+      &::scroll-marker {
+        content: "" / attr(data-label);
+        inline-size: 12px;
+        block-size: 12px;
+        border-radius: 50%;
+        background-color: var(--color--neutral--400);
+      }
+
+      &::scroll-marker:target-current {
+        background-color: var(--color--accent--600);
+      }
+    }
+  }
+}
+```
+
+ボタンは、アンカーポジショニングでスクロールコンテナの左右の中央に重ねています。`content` のスラッシュの後ろは代替テキストで、ボタンや点の名前として読み上げられます。MDNによれば、ブラウザはボタンに適切な名前を自動で付けることになっていますが、日本語のページでは「前の事例」のように内容に合った名前を明示します。点の `content` を `""` だけにすると、名前が空になります。そこで、スライドの `data-label` 属性に「1件目」のような名前を書き、`attr()` で代替テキストに渡しています。
+
+キーボードでの操作も、ブラウザが用意します。Chrome 152で確かめたところ、Tabキーの順番は、前後のボタン、表示しているスライドの中身、カルーセルの後ろの要素の順でした。最初のスライドでは「←」のボタンが無効なので、飛ばされます（2026年10月、Chrome 152で確認）。MDNは、点のグループがタブのリストとして扱われ、矢印キーでスライドを切り替えられると説明していますが、この確認ではTabキーで点のグループに移動しませんでした。キーボードで操作するユーザーには、前後のボタンを必ず用意します。
+
+## 隠れているスライドを読み上げとフォーカスから外す
+
+横スクロールで隠れているスライドも、DOMの中には残っています。何もしなければ、スクリーンリーダーは画面に見えていないスライドの中身まで読み上げ、Tabキーでは隠れているスライドのリンクにフォーカスが移ります。見えている1枚の後に、見えていない数枚分の読み上げとフォーカスが続くので、カルーセルの後ろにある内容までなかなかたどり着けません。
+
+そこで、スライドを `scroll-state` のコンテナにし、スナップして止まっていないスライドの中身を `interactivity: inert` にします。`interactivity: inert` は、HTMLの `inert` 属性と同じ不活性の状態を、CSSから指定するプロパティです。不活性になった要素は、クリックとフォーカスができなくなり、アクセシビリティツリーからも外れます。
+
+<Baseline id="container-scroll-state-queries" name="scroll-state() のコンテナクエリ" />
+
+<Baseline id="interactivity" name="interactivity" />
+
+```css title="🙆‍♂ Recommended: 止まっていないスライドの中身を不活性にする"
+@scope (.scoped.css-carousel) to (.scoped) {
+  ._item {
+    container: --css-carousel-item / scroll-state;
+    scroll-snap-align: center;
+  }
+
+  ._card {
+    @container --css-carousel-item not scroll-state(snapped: inline) {
+      interactivity: inert;
+    }
+  }
+}
+```
+
+`scroll-state(snapped: inline)` は、コンテナの要素が、インライン方向のスナップで止まっている位置にある間だけ成り立つ条件です。`not` で反転し、止まっていないスライドだけを対象にします。コンテナクエリで変えられるのはコンテナの子孫だけなので、`interactivity` はスライド（`._item`）ではなく、その中のカード（`._card`）に指定します。Chrome 152で確かめたところ、最初は1枚目のカードだけが `auto` で残りは `inert` でした。1枚分スクロールすると、2枚目だけが `auto` に変わりました（2026年10月、Chrome 152で確認）。
+
+この挙動は、JavaScriptのカルーセルのライブラリ（Splideなど）が、隠れているスライドに対して行っている処理と同じです。見えているスライドのリンクでTabキーを押すと、隠れているスライドのリンクを飛ばして、カルーセルの後ろの要素に移ります。読み上げも、見えている1枚だけで済みます。
+
+この方法は、スライドを1枚ずつ表示するカルーセルを前提にしています。「スナップして止まっている」と「画面に見えている」は、別の状態だからです。`grid-auto-columns` を3枚ずつ見える幅にすると、スナップの位置で止まっているのは先頭の1枚だけになり、隣に見えている2枚は `inert` になります。{/* 要確認: 出典なし */}見えているのに、クリックとフォーカスのできないスライドができてしまいます。複数枚を表示するときは、不活性にする条件を見直すか、`interactivity: inert` を使わずに、フォーカスが移ったスライドまで自動でスクロールする振る舞いに任せます。
+
+`interactivity` は継承するプロパティで、不活性にした要素の子孫は、`interactivity: auto` を指定しても操作できるようになりません。Chrome 152で、`inert` の要素の中にある `auto` のリンクにフォーカスできないことを確かめました（2026年10月、Chrome 152で確認）。不活性にするのは、操作させたくない範囲をちょうど包む要素だけにします。
+
+## コード例とデモ
+
+次のデモは、施工事例を1件ずつ見せるカルーセルです。左右のボタンで1件ずつ送り、下の点で任意の事例に移動できます。最初の事例では「←」のボタンが無効になり、薄く表示されます。
+
+<Demo title="::scroll-button() と ::scroll-marker で作った、JavaScriptを使わないカルーセル" html={carouselHtml} css={carouselCss} />
+
+Chrome系のブラウザでは、スクロールバーが消え、ボタンと点が表示されます。Tabキーで移動すると、表示している事例の「事例を見る」のリンクだけにフォーカスが止まり、隠れている事例のリンクは飛ばされます。SafariやFirefoxで開くと、ボタンと点は表示されず、スクロールバー付きの横スクロールになります。
+
+## 未対応の環境での見え方と `@supports`
+
+未対応の環境では、`::scroll-button()` と `::scroll-marker` のルールは無効になり、ボタンとインジケーターは表示されません。このとき、スクロールバーまで消していると、ユーザーは横にスクロールできると気付けません。マウスで操作する環境では、スクロールする手段もほとんどなくなります。そこで、`scrollbar-width: none` はボタンと同じ `@supports selector(::scroll-button(*))` の中に書き、ボタンが表示される環境だけでスクロールバーを消します。
+
+擬似要素のルールも、`@supports` の中に書きます。CSSの仕様では、ブラウザが知らない擬似要素を含むセレクタのルールは、そのルールだけが無効になります。しかし、Safariでは、ネストした `::scroll-button()` のルールがあると、それ以降にネストしたスタイルまで無効になることを、私は2025年5月に確認しています。`@supports` の中に入れておけば、未対応の環境はこのブロックごと読み飛ばすので、ほかのスタイルを巻き込みません。
+
+`container: --css-carousel-item / scroll-state` と、`scroll-state()` の条件、`interactivity: inert` は、未対応の環境では無視されます。隠れているスライドも読み上げとフォーカスの対象に残りますが、スクロールバーで表示でき、フォーカスが移れば、そのスライドまで自動でスクロールします。内容を読めなくなるわけではないので、`@supports` で囲む必要はありません。
+
+## ドロワーの背面を不活性にする方法
+
+`interactivity: inert` には、カルーセルのほかにも使い道があります。ヘッダーと一体になったドロワーメニューで、開いている間に背面のメインエリアとフッターを操作できなくする場面です。ドロワーを開閉するボタンをヘッダーに置いたまま操作させたい場合、ドロワーを `<dialog>` のモーダルにはできません。`showModal()` で開いたダイアログは、ダイアログの外をすべて不活性にするので、ヘッダーのボタンも押せなくなるからです（ダイアログについては「[11-3 開閉するUI](/interaction/disclosure/)」で説明しています）。
+
+2025年3月の時点で、私はこの場面を次のように書いていました。
+
+```css title="🙅‍♂ Not Recommended: ページ全体を起点にした :has() で、ヘッダー以外を不活性にする"
+/* 🙅‍♂ Not Recommended */
+body:has(.drawer-button[aria-expanded="true"]) {
+  & :not(.global-header, .global-header *) {
+    interactivity: inert;
+  }
+}
+```
+
+このコードには、本書の規約と合わない点が3つあります。1つ目は、`:has()` の起点が `body` で、引数も子孫全体を調べる形になっていることです。DOMが変わるたびに `body` の子孫全体を調べ直すので、要素の多いページではスタイルの再計算が重くなります（「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」）。2つ目は、ヘッダーが `<div>` などで包まれている場合に、その祖先も `:not()` に一致して不活性になることです。`interactivity` は継承し、子孫から打ち消せないので、ヘッダーごと操作できなくなります。
+
+3つ目は、未対応の環境で機能が損なわれることです。カルーセルと違い、ドロワーが開いている間に背面を操作できてしまうと、フォーカスがドロワーの外へ出て、見えないリンクを操作することになります。開閉のボタンの `aria-expanded` はJavaScriptで切り替えているので、本書では、同じ処理の中で背面の要素に `inert` 属性を付けることを基本にします。`inert` 属性は、主要なブラウザで使えます。
+
+<Baseline id="inert" name="inert 属性" />
+
+```js title="ドロワーの開閉に合わせて、背面の要素に inert 属性を付ける"
+const button = document.querySelector('.global-header ._drawer-button');
+const background = document.querySelectorAll('body > :not(.global-header)');
+
+button.addEventListener('click', () => {
+  const expanded = button.getAttribute('aria-expanded') !== 'true';
+  button.setAttribute('aria-expanded', String(expanded));
+  for (const element of background) element.inert = expanded;
+});
+```
+
+`body` の直下の要素のうち、ヘッダー以外に `inert` を付けています。ヘッダーが `body` の直下にある構造が前提で、ヘッダーを包む要素がある場合は、その要素の兄弟を対象にします。CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります。`.global-header:has(._drawer-button[aria-expanded="true"]) ~ *` のように後ろの兄弟を選べば、ページ全体を調べ直さずに済みます。Chrome 152では、この形で背面のリンクにフォーカスできなくなることを確かめました（2026年10月、Chrome 152で確認）。ただし、`interactivity` がBaselineになるまでは、`inert` 属性の代わりにはしません。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Creating CSS carousels - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Overflow/Carousels)
+- [::scroll-button() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-button)
+- [::scroll-marker - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-marker)
+- [::scroll-marker-group - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-marker-group)
+- [interactivity - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/interactivity)
+- [Using container scroll-state queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
+- [CSS Overflow Module Level 5](https://drafts.csswg.org/css-overflow-5/)（W3C）
+- [Understanding Success Criterion 2.2.2: Pause, Stop, Hide](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html)（W3C）
+- [inert - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Global_attributes/inert)

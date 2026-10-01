@@ -228,6 +228,14 @@
   page: responsive/media-queries
   since: 0.4.0
 
+- id: reduced-transparency-opaque-background
+  level: 推奨
+  rule: '半透明の背景や `backdrop-filter` の上に文字を置く部品は、`@media (prefers-reduced-transparency: reduce)` の中で背景を不透明にする。'
+  reason: OS で透明度を下げる設定にしているユーザーが、背景に左右されずに文字を読める状態を保つため。
+  note: 2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
+  page: responsive/media-queries
+  since: 0.5.0
+
 # 8-4 実践パターン：2サイズのデザインカンプを再現する
 - id: screen-mode-for-two-size-comps
   level: 推奨
@@ -261,6 +269,7 @@
   level: 必須
   rule: 比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。
   reason: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
+  note: '`--rem` が保証するのは、カンプ上の寸法に文字サイズの設定の倍率を掛けた下限です。文字が設定と同じ割合で大きくなるわけではなく、画面がカンプより広い区間では、設定を上げても文字の大きさが変わらないことがあります。'
   aiProne: true
   page: responsive/design-comp-pattern
   since: 0.1.0
@@ -271,3 +280,39 @@
   reason: スタイルクエリに対応していないブラウザでも、コンパクトな表示で内容を読めるようにするため。
   page: responsive/design-comp-pattern
   since: 0.1.0
+
+# 8-5 セーフエリアに対応する
+- id: safe-area-inset-with-viewport-fit-cover
+  level: 必須
+  rule: '`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。'
+  reason: '`cover` を指定するとブラウザはページをセーフエリアの内側に寄せなくなり、余白を書かないと、ノッチやホームインジケーターのある端末でだけ内容が隠れるため。'
+  note: 画面の端まで描画する必要がないページでは、`viewport-fit` をデフォルトの `auto` のままにします。パソコンのブラウザではセーフエリアがすべて0なので、実機か iOS シミュレーターで確かめます。
+  aiProne: true
+  page: responsive/safe-area
+  since: 0.5.0
+
+- id: safe-area-combine-with-max
+  level: 推奨
+  rule: 'セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。'
+  reason: セーフエリアの値は切り欠きやシステムの UI が占める幅そのもので、長方形の画面では0になるため。比べるか足すかは、余白の一部をセーフエリアで兼ねてよいかで決まる。
+  note: '`env()` の第2引数は、ブラウザがその名前の環境変数を知らないときだけ使われます。`env(safe-area-inset-bottom, 16px)` と書いても、セーフエリアのない画面では16pxではなく0になります。'
+  aiProne: true
+  page: responsive/safe-area
+  since: 0.5.0
+
+- id: safe-area-background-to-edge
+  level: 推奨
+  rule: セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。
+  reason: '`viewport-fit=cover` を指定する目的は背景を端まで描くことで、`margin` や外側の要素の `padding` で空けると、背景が途切れた帯ができるため。'
+  note: 'セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（7-13-10 `primary-layout` など）にセーフエリアを入れます。'
+  page: responsive/safe-area
+  since: 0.5.0
+
+- id: safe-area-fixed-bottom
+  level: 必須
+  rule: '画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。'
+  reason: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
+  note: 対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
+  aiProne: true
+  page: responsive/safe-area
+  since: 0.5.0

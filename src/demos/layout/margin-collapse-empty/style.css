@@ -1,0 +1,48 @@
+@layer components {
+  @scope (.scoped.margin-collapse-empty) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    ._label {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._body {
+      border: 1px dashed oklch(60% 0 0deg);
+    }
+
+    ._flow {
+      display: block flow-root;
+
+      & > * + * {
+        margin-block-start: 16px;
+      }
+    }
+
+    ._grid {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._text {
+      padding: 8px;
+      background-color: oklch(92% 0.04 250deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 区切り線は自分の上下に 24px の余白を持つ */
+    ._rule {
+      margin-block: 24px;
+      margin-inline: 0;
+    }
+  }
+}

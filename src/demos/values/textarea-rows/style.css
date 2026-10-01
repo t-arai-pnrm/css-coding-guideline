@@ -1,0 +1,51 @@
+@layer components {
+  @scope (.scoped.comment-form) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._field {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._textarea {
+      --_max-rows: 10;
+      --_padding: 0.5em;
+
+      inline-size: 100%;
+
+      /* 型付きの attr() に未対応の環境で使う、3行分の高さ */
+      min-block-size: calc(3 * 1lh + var(--_padding) * 2);
+      max-block-size: calc(var(--_max-rows) * 1lh + var(--_padding) * 2);
+      padding: var(--_padding);
+      field-sizing: content;
+
+      @supports (min-block-size: calc(attr(rows type(<number>), 3) * 1lh)) {
+        min-block-size: calc(attr(rows type(<number>), 3) * 1lh + var(--_padding) * 2);
+      }
+
+      @supports (field-sizing: content) {
+        resize: none;
+      }
+    }
+
+    ._supported,
+    ._unsupported {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._supported {
+      @supports not (min-block-size: calc(attr(rows type(<number>), 3) * 1lh)) {
+        display: none;
+      }
+    }
+
+    ._unsupported {
+      @supports (min-block-size: calc(attr(rows type(<number>), 3) * 1lh)) {
+        display: none;
+      }
+    }
+  }
+}

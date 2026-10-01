@@ -172,6 +172,7 @@
   level: 推奨
   rule: スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。
   reason: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
+  note: '1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。'
   aiProne: true
   page: interaction/motion
   since: 0.1.0
@@ -404,3 +405,39 @@
   aiProne: true
   page: interaction/view-transitions
   since: 0.3.0
+
+# 11-6 CSS でカルーセルを作る
+- id: no-autoplay-carousel
+  level: 禁止
+  rule: カルーセルを自動で再生しない。
+  reason: 読み上げや操作の途中で内容が切り替わり、一時停止の手段を用意しても問題が残るうえ、自動で切り替わるスライドをユーザーは最後まで見ないため。
+  note: カルーセルにする前に、カードを一覧で並べられないかを検討します。
+  aiProne: true
+  page: interaction/carousel
+  since: 0.5.0
+
+- id: carousel-controls-in-supports
+  level: 必須
+  rule: '`::scroll-button()`、`::scroll-marker`、`scroll-marker-group`、`scrollbar-width: none` は、`@supports selector(::scroll-button(*))` などの中に書く。'
+  reason: 未対応の環境ではボタンとインジケーターが表示されないので、スクロールバーを残して横スクロールとして読めるようにし、Safari でネストした以降のスタイルが無効になるのも防ぐため。
+  note: 土台はスクロールスナップの横スクロールにし、ボタンとインジケーターはプログレッシブ・エンハンスメントとして足します。
+  aiProne: true
+  page: interaction/carousel
+  since: 0.5.0
+
+- id: carousel-inert-unsnapped
+  level: 推奨
+  rule: 'カルーセルのスライドを `container: --<名前> / scroll-state` のコンテナにし、止まっていないスライドの中身を `@container --<名前> not scroll-state(snapped: inline)` で `interactivity: inert` にする。'
+  reason: 隠れているスライドが読み上げとフォーカスの対象から外れ、見えている1枚の後にカルーセルの後ろの要素へ移れるため。
+  note: '1枚ずつ表示するカルーセルが前提です。複数枚を表示すると、見えていてもスナップの位置にないスライドが不活性になるので、条件を見直すか、この指定を使いません。`interactivity` は継承し、子孫から `auto` で打ち消せません。コンテナクエリで変えられるのは子孫だけなので、スライドではなくその中の要素に指定します。'
+  page: interaction/carousel
+  since: 0.5.0
+
+- id: inert-attribute-for-background
+  level: 推奨
+  rule: '`<dialog>` のモーダルにできないドロワーで背面を操作できなくするときは、`interactivity: inert` ではなく、JavaScript で背面の要素に `inert` 属性を付ける。'
+  reason: '`interactivity` に対応していない環境では背面を操作できてしまい、見えないリンクにフォーカスが移るため。'
+  note: 'CSS で書く場合も、`body:has()` ではなく、`.global-header:has(…) ~ *` のように起点をヘッダーに絞ります。'
+  aiProne: true
+  page: interaction/carousel
+  since: 0.5.0

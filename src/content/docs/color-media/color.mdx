@@ -89,6 +89,12 @@ HSLで書けば明るさを数値で調整できるように見えますが、HS
 
 Safariが対応したのはバージョン18なので、本書の対象のブラウザ（Safari 18系の最終版以降）では問題なく使えます（2026年9月確認）。
 
+不透明度だけを変える場合は、`alpha()` 関数でも書けます。`alpha(from var(--color--accent--500) / 10%)` は `oklch(from var(--color--accent--500) l c h / 10%)` と同じ色です。成分をそのまま並べる `l c h` を省けます。相対カラー構文の結果は `oklch()` の色空間になりますが、`alpha()` の結果は元の色の色空間のままです（2026年10月、Chrome 152で確認）。
+
+`alpha()` が主要なブラウザで使えるようになったのは2026年9月で、Safariは27から対応しています。本書の対象のブラウザでは使えないので、当面は相対カラー構文で書きます（2026年10月確認）。
+
+<Baseline id="alpha" name="alpha()" />
+
 ### 背景の明るさから文字色を選ぶ
 
 相対カラー構文と `sign()` を組み合わせると、背景色の明度から、文字色を黒か白に自動で決められます。
@@ -282,6 +288,7 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 - [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。ホバーの色を `color-mix()` で作る例）
 - [スクロールバーにまつわるエトセトラ](https://www.tak-dcxi.com/article/scroll-bar-related-etcetera/)（TAKLOG、2024年3月。テーマの切り替えの方法が本書と異なります）
 - [oklch() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/oklch)
+- [alpha() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/alpha)
 - [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)
 - [color-mix() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color-mix)
 - [linear-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/linear-gradient)

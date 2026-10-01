@@ -12,12 +12,13 @@ sidebar:
 
 私自身、少し前まではモーダルの開閉や背景のクリックの判定をJavaScriptで書き、動きを減らす設定には全体の動きを止めるCSSで対応していました。入力エラーの表示も、`:invalid` ではページを開いた時点でエラーが出てしまうので、JavaScriptで管理していました。どれも、いまはブラウザの機能で置き換えられます。動きは、足せるから足すのではなく、必要かどうかを先に判断しています。
 
-この章は次の5つの節で構成しています。
+この章は次の6つの節で構成しています。
 
 - [11-1 状態とフォーカスを表す](/interaction/states-and-focus/)：`any-hover` によるホバーの書き方、`:focus-visible` との対応、ARIA属性による状態の表し方、カード全体をリンクにする方法
 - [11-2 モーションを実装する](/interaction/motion/)：動きの要否の判断、動きを減らす設定を前提にした書き方、`@keyframes` の設計、`@starting-style`、スクロール連動
 - [11-3 開閉するUI](/interaction/disclosure/)：`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` の使い分けと、開閉の動かし方
 - [11-4 フォーム部品](/interaction/forms/)：`accent-color`、`input` 自体に描くチェックボックス、`switch` 属性、`:user-invalid`、入力欄の文字サイズ
 - [11-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)：同じページの中とページ間の切り替え、`view-transition-name` と `view-transition-class` の付け方、名前の重複と切り替え中の操作の注意点
+- [11-6 CSSでカルーセルを作る](/interaction/carousel/)：スクロールスナップを土台にした `::scroll-button()` と `::scroll-marker`、隠れているスライドを外す `interactivity: inert`、自動再生をしない判断
 
 フォーカスリングの定義、スムーススクロール、モーダル表示中の背面の固定、`interpolate-size` の有効化は、ベーススタイルに書くものとして「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で扱います。イージングと再生時間のトークンは「[6-3 デザイントークン](/components/design-tokens/)」で、変形の個別プロパティは「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。強制カラーモードでの部品の見え方は「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。

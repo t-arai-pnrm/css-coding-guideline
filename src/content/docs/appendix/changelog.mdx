@@ -11,12 +11,144 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.5.0（2026年10月1日）
+
+著者のXのポスト（2019年12月〜2026年9月の本人の投稿約1,800件と、2024年4月以降のリポスト約680件）を読み、本書にまだない内容を加えました。仕様の挙動は、ブラウザで確かめてから書いています。一部のブラウザで出荷済みの新しい機能は、プログレッシブ・エンハンスメントとして、新しい節にまとめました。
+
+- 節を5つ追加しました。
+  - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」
+  - 「[7-12 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)」
+  - 「[10-4 角の形を変える](/color-media/shapes/)」：`corner-shape` と、画面いっぱいのときだけ角丸を消す方法
+  - 「[10-5 輪郭と枠線を描く](/color-media/outlines/)」：`shape()`、`border-shape`、`background-clip: border-area`。下書きの印刷の節は10-6に繰り下げました。
+  - 「[11-6 CSSでカルーセルを作る](/interaction/carousel/)」：`::scroll-button()`、`::scroll-marker`、`interactivity: inert`
+- 既存の節に内容を加えました。
+  - 「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」：`flex: 1` では列の幅がそろわない理由
+  - 「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」：`all` でまとめて戻すときのキーワード
+  - 「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」：`:is()` などの引数に擬似要素を書けないこと
+  - 「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」：壊れた既存のCSSから、`all: revert-layer !important` でコンポーネントを切り離す例外
+  - 「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」：カスタムプロパティを動かすときの負荷（例の `@property` を `inherits: false` に改めました）
+  - 「[7-8 変化に強いレイアウト](/layout/defensive/)」：スクロールする要素の中央寄せと `safe center`
+  - 「[7-11 sticky が動かないとき](/layout/sticky/)」：`scroll-state()` で留まっている間だけ見た目を変える方法
+  - 「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」：`prefers-reduced-transparency`
+  - 「[10-1 色とダークモード](/color-media/color/)」：`alpha()` 関数
+  - 「[11-2 モーションを実装する](/interaction/motion/)」：`timeline-trigger` と `animation-trigger` の位置づけ
+  - 「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」：AIのレイアウトの手法の偏りと、その指示の仕方
+- 第7章の先頭に「[7-1 レイアウトの基礎](/layout/fundamentals/)」を加え、既存の7-1〜7-11を7-6〜7-12に繰り下げました。通常フローの2つの方向、`display` の外側と内側、包含ブロック、インラインの行とベースライン、配置の方式、`align-items` と `align-content` の違いを説明しています。
+- 第7章に、基礎の節を4つと、スクロールの節を1つ加えました。第7章の節の番号は、これに合わせて繰り下げています。
+  - 「[7-2 ボックスモデルの基礎](/layout/box-model/)」：4つの領域、`box-sizing`、大きさの決まり方、`%` の基準
+  - 「[7-3 マージンの相殺](/layout/margin-collapse/)」：相殺が起きる条件と起きない条件、負のマージンを含む計算、相殺の止め方
+  - 「[7-4 Flexboxの基礎](/layout/flexbox-basics/)」：主軸と交差軸、`flex-grow`・`flex-shrink`・`flex-basis` による空間の配り方
+  - 「[7-5 Gridの基礎](/layout/grid-basics/)」：トラック・線・エリア、明示的なグリッドと暗黙のグリッド、配置のプロパティ
+  - 「[7-10 ページのスクロールとルートスクローラー](/layout/root-scroller/)」：ページのスクロールを入れ子のスクロールコンテナにしない
+- 「[8-5 セーフエリアに対応する](/responsive/safe-area/)」を加えました。
+- 次の節に、記事の内容を加えました。
+  - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」：`if()` の条件の書き方と評価のタイミング
+  - 「[7-6 Gridから考える](/layout/grid-first/)」：サブグリッドの線の名前と `padding` の扱い
+  - 「[7-9 重なりと配置](/layout/positioning/)」：`position-try-order` と `position-visibility`
+  - 「[11-3 開閉するUI](/interaction/disclosure/)」：`command` 属性の組み込みのコマンドとカスタムコマンド
+- 第7章の末尾に「[7-13 コンポジション集](/layout/compositions/)」を設け、11のコンポジションに1ページずつを充てました（7-13-1 stack〜7-13-11 prose）。各ページで、使う場面と使わない場面、公開プロパティ、内部の計算、使い分けを説明しています。6-2の一覧表は各ページへのリンクにし、`grid` には公開プロパティ `--grid--mode`（デフォルトは `auto-fill`）を加え、最大の列数のデフォルトを5にしました。
+- 「[6-1 コンポーネントの境界を守る](/components/boundaries/)」に、1つのコンポーネントのCSSを1つのファイルに書くことを加えました。
+- 「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」に、フォールバックの書き方を選ぶ基準をまとめました。宣言に `var()` を含むと計算値の時点で無効になり、前の宣言に戻らないためです。
+- レビューを受けて、次の記述を直しました。
+  - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」：型付きの `attr()` を使う宣言を `@supports` の中に移しました（デモとルール `typed-attr-fallback` も同じ）。`style` 属性で渡した値はCSSのメディアクエリや `:hover` で上書きできないことを明記しました。
+  - 「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」：`--rem` が保証するのは文字サイズの設定に応じた下限で、設定と同じ割合で大きくなるわけではないことを、計算の例で示しました。
+  - 「[本書の読み方](/introduction/how-to-read/)」、付録A、付録E、AI向けのルール集：「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて守る、と改めました。付録Dのモーションの項目にも例外を書きました。
+  - 付録B：`line-height` の置き換えを、ベースは1.5以上、見出しは用途に合わせる、と9-3にそろえました。
+  - 「[10-5 輪郭と枠線を描く](/color-media/outlines/)」：ドーナツグラフの `transition` をロングハンドにしました。
+  - 「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」：`all` による切り離しでは、カスタムプロパティと擬似要素が対象外であることを加えました。
+  - 「[11-6 CSSでカルーセルを作る](/interaction/carousel/)」：止まっていないスライドを不活性にする方法は、1枚ずつ表示するカルーセルが前提であることを加えました。
+  - コード例とデモの、kiso.cssで0になっているマージンの打ち消し（`margin: 0` など）を消し、片側だけのマージンはロングハンドにしました。
+- Stylelintの設定で、`border-shape`、`flow-tolerance`、`alpha()`、`:target-current` を既知のものとして扱うようにしました。
+- ルールを82件追加しました。
+  - [`no-all-unset`](/cascade/cascade-basics/#rule-no-all-unset)
+  - [`revert-layer-isolation-for-legacy`](/cascade/layers/#rule-revert-layer-isolation-for-legacy)
+  - [`attr-for-html-attributes`](/values/if-and-attr/#rule-attr-for-html-attributes)
+  - [`typed-attr-fallback`](/values/if-and-attr/#rule-typed-attr-fallback)
+  - [`if-for-own-custom-property`](/values/if-and-attr/#rule-if-for-own-custom-property)
+  - [`if-fallback-and-else`](/values/if-and-attr/#rule-if-fallback-and-else)
+  - [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit)
+  - [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable)
+  - [`scroll-state-for-sticky-styles`](/layout/sticky/#rule-scroll-state-for-sticky-styles)
+  - [`grid-lanes-inside-supports`](/layout/masonry/#rule-grid-lanes-inside-supports)
+  - [`grid-lanes-no-placement-for-ordered-items`](/layout/masonry/#rule-grid-lanes-no-placement-for-ordered-items)
+  - [`flow-tolerance-no-infinite`](/layout/masonry/#rule-flow-tolerance-no-infinite)
+  - [`columns-for-top-to-bottom-lists`](/layout/masonry/#rule-columns-for-top-to-bottom-lists)
+  - [`reduced-transparency-opaque-background`](/responsive/media-queries/#rule-reduced-transparency-opaque-background)
+  - [`corner-shape-guard-when-broken`](/color-media/shapes/#rule-corner-shape-guard-when-broken)
+  - [`full-bleed-radius-with-sign`](/color-media/shapes/#rule-full-bleed-radius-with-sign)
+  - [`guard-new-shapes-with-supports`](/color-media/outlines/#rule-guard-new-shapes-with-supports)
+  - [`shape-function-with-custom-properties`](/color-media/outlines/#rule-shape-function-with-custom-properties)
+  - [`no-autoplay-carousel`](/interaction/carousel/#rule-no-autoplay-carousel)
+  - [`carousel-controls-in-supports`](/interaction/carousel/#rule-carousel-controls-in-supports)
+  - [`carousel-inert-unsnapped`](/interaction/carousel/#rule-carousel-inert-unsnapped)
+  - [`inert-attribute-for-background`](/interaction/carousel/#rule-inert-attribute-for-background)
+  - [`ai-layout-with-grid-areas`](/operations/review-and-ai/#rule-ai-layout-with-grid-areas)
+  - [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)
+  - [`no-inline-block-for-rows`](/layout/fundamentals/#rule-no-inline-block-for-rows)
+  - [`fallback-method-by-invalidation`](/principles/browser-support/#rule-fallback-method-by-invalidation)
+  - [`one-component-per-file`](/components/boundaries/#rule-one-component-per-file)
+  - [`stack-vs-prose`](/layout/compositions/stack/#rule-stack-vs-prose)
+  - [`stack-uneven-gaps`](/layout/compositions/stack/#rule-stack-uneven-gaps)
+  - [`stack-nested-gap`](/layout/compositions/stack/#rule-stack-nested-gap)
+  - [`stack-align-self-start`](/layout/compositions/stack/#rule-stack-align-self-start)
+  - [`cluster-apart-for-two-ends`](/layout/compositions/cluster/#rule-cluster-apart-for-two-ends)
+  - [`cluster-balance-inside-supports`](/layout/compositions/cluster/#rule-cluster-balance-inside-supports)
+  - [`cluster-reset-inherited-gap`](/layout/compositions/cluster/#rule-cluster-reset-inherited-gap)
+  - [`apart-for-two-groups`](/layout/compositions/apart/#rule-apart-for-two-groups)
+  - [`apart-column-gap-as-minimum`](/layout/compositions/apart/#rule-apart-column-gap-as-minimum)
+  - [`apart-auto-margin-for-wrapped-end`](/layout/compositions/apart/#rule-apart-auto-margin-for-wrapped-end)
+  - [`switcher-for-all-or-nothing`](/layout/compositions/switcher/#rule-switcher-for-all-or-nothing)
+  - [`switcher-preferred-width-formula`](/layout/compositions/switcher/#rule-switcher-preferred-width-formula)
+  - [`switcher-gap-default-with-unit`](/layout/compositions/switcher/#rule-switcher-gap-default-with-unit)
+  - [`sidebar-before-queries`](/layout/compositions/sidebar/#rule-sidebar-before-queries)
+  - [`sidebar-two-direct-children`](/layout/compositions/sidebar/#rule-sidebar-two-direct-children)
+  - [`sidebar-side-position-by-source-order`](/layout/compositions/sidebar/#rule-sidebar-side-position-by-source-order)
+  - [`sidebar-widths-above-min-content`](/layout/compositions/sidebar/#rule-sidebar-widths-above-min-content)
+  - [`grid-max-count-over-queries`](/layout/compositions/grid/#rule-grid-max-count-over-queries)
+  - [`grid-mode-auto-fill-default`](/layout/compositions/grid/#rule-grid-mode-auto-fill-default)
+  - [`grid-gap-with-unit`](/layout/compositions/grid/#rule-grid-gap-with-unit)
+  - [`grid-switcher-for-fixed-sets`](/layout/compositions/grid/#rule-grid-switcher-for-fixed-sets)
+  - [`columns-single-list-child`](/layout/compositions/columns/#rule-columns-single-list-child)
+  - [`columns-not-for-tall-lists`](/layout/compositions/columns/#rule-columns-not-for-tall-lists)
+  - [`columns-negative-margin-in-flow-root`](/layout/compositions/columns/#rule-columns-negative-margin-in-flow-root)
+  - [`masonry-for-loose-order-lists`](/layout/compositions/masonry/#rule-masonry-for-loose-order-lists)
+  - [`masonry-tolerance-default-normal`](/layout/compositions/masonry/#rule-masonry-tolerance-default-normal)
+  - [`pile-placement-on-target-child`](/layout/compositions/pile/#rule-pile-placement-on-target-child)
+  - [`pile-no-grid-placement-on-children`](/layout/compositions/pile/#rule-pile-no-grid-placement-on-children)
+  - [`pile-scrim-for-text-on-image`](/layout/compositions/pile/#rule-pile-scrim-for-text-on-image)
+  - [`pile-not-for-overflowing-layers`](/layout/compositions/pile/#rule-pile-not-for-overflowing-layers)
+  - [`primary-layout-width-by-line-names`](/layout/compositions/primary-layout/#rule-primary-layout-width-by-line-names)
+  - [`primary-layout-center-column-subtract-both-sides`](/layout/compositions/primary-layout/#rule-primary-layout-center-column-subtract-both-sides)
+  - [`primary-layout-child-classes-unprefixed`](/layout/compositions/primary-layout/#rule-primary-layout-child-classes-unprefixed)
+  - [`prose-space-on-following-child`](/layout/compositions/prose/#rule-prose-space-on-following-child)
+  - [`prose-no-internal-property`](/layout/compositions/prose/#rule-prose-no-internal-property)
+  - [`prose-nested-inner-space`](/layout/compositions/prose/#rule-prose-nested-inner-space)
+  - [`prose-not-on-cms-body`](/layout/compositions/prose/#rule-prose-not-on-cms-body)
+  - [`box-sizing-border-box-base`](/layout/box-model/#rule-box-sizing-border-box-base)
+  - [`box-fit-content-over-display-change`](/layout/box-model/#rule-box-fit-content-over-display-change)
+  - [`box-state-border-without-shift`](/layout/box-model/#rule-box-state-border-without-shift)
+  - [`margin-collapse-padding-for-inner-space`](/layout/margin-collapse/#rule-margin-collapse-padding-for-inner-space)
+  - [`margin-collapse-no-empty-spacers`](/layout/margin-collapse/#rule-margin-collapse-no-empty-spacers)
+  - [`flexbox-basis-zero-for-ratio`](/layout/flexbox-basics/#rule-flexbox-basis-zero-for-ratio)
+  - [`flexbox-check-auto-min-size`](/layout/flexbox-basics/#rule-flexbox-check-auto-min-size)
+  - [`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)
+  - [`grid-auto-rows-for-item-count`](/layout/grid-basics/#rule-grid-auto-rows-for-item-count)
+  - [`grid-negative-lines-explicit-only`](/layout/grid-basics/#rule-grid-negative-lines-explicit-only)
+  - [`grid-named-lines-for-placement`](/layout/grid-basics/#rule-grid-named-lines-for-placement)
+  - [`root-scroller-for-page-scroll`](/layout/root-scroller/#rule-root-scroller-for-page-scroll)
+  - [`root-scroller-no-fixed-root-height`](/layout/root-scroller/#rule-root-scroller-no-fixed-root-height)
+  - [`root-scroller-sticky-instead-of-pane`](/layout/root-scroller/#rule-root-scroller-sticky-instead-of-pane)
+  - [`safe-area-inset-with-viewport-fit-cover`](/responsive/safe-area/#rule-safe-area-inset-with-viewport-fit-cover)
+  - [`safe-area-combine-with-max`](/responsive/safe-area/#rule-safe-area-combine-with-max)
+  - [`safe-area-background-to-edge`](/responsive/safe-area/#rule-safe-area-background-to-edge)
+  - [`safe-area-fixed-bottom`](/responsive/safe-area/#rule-safe-area-fixed-bottom)
+
 ## 0.4.0（2026年10月1日）
 
 外部の記事（DebugBear、Polypane、Geary、necomesiのブログ、Josh W. Comeauのブログ）から、取り入れる内容を洗い出し、各章に加えました。記事と本書が食い違うときは記事を優先し、記事が古いときや対応状況と合わないときは、一次情報を確かめ、今も正しい部分だけを取り入れています。
 
 - ネストの規約を改めました。「セレクタのネストは2層まで」とし、`@scope` や `@media` などの@ルールは層に数えません。@ルールまで数えると、ルールが分散して分かりにくくなるためです。Stylelintの `max-nesting-depth` は外しました。ルール `nesting-depth-one` のIDは変えていません。
-- 節を2つ追加しました：「[7-5 sticky が動かないとき](/layout/sticky/)」と「[12-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」。後者では、CMSの本文エリアに限り、`@scope` のネストと `to()` の省略を認めています。
+- 節を2つ追加しました：「[7-11 sticky が動かないとき](/layout/sticky/)」と「[12-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」。後者では、CMSの本文エリアに限り、`@scope` のネストと `to()` の省略を認めています。
 - 退場のアニメーションのイージングを `ease-out` から `ease-in` に改めました。デモとコード例も書き換えています。
 - ライトモードの影の色は、背景の色相へ寄せる方針にしました。ダークモードは、黒のまま不透明度で強さを変えます。
 - ルールを33件追加しました。

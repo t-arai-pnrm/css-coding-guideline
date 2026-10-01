@@ -1,0 +1,64 @@
+@layer components {
+  @scope (.scoped.flexbox-alignment) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._box {
+      display: block flex;
+      gap: 8px;
+
+      /* 交差軸に余りを作るため、高さを固定する */
+      block-size: 160px;
+      border: 1px dashed oklch(60% 0 0deg);
+      background-color: oklch(97% 0.01 250deg);
+    }
+
+    ._item {
+      padding-block: 4px;
+      padding-inline: 12px;
+      background-color: oklch(70% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+
+      /* 高さの違いを見せるため、2つ目だけ上下の余白を大きくする */
+      &:nth-child(2) {
+        padding-block: 24px;
+      }
+    }
+
+    [data-case="justify"] {
+      justify-content: space-between;
+    }
+
+    [data-case="items"] {
+      align-items: center;
+    }
+
+    [data-case="self"] {
+      align-items: start;
+
+      & > :last-child {
+        align-self: end;
+      }
+    }
+
+    [data-case="content"] {
+      flex-wrap: wrap;
+      align-content: end;
+
+      /* 2行に折り返すよう、幅を狭める */
+      max-inline-size: 160px;
+    }
+  }
+}

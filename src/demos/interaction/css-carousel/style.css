@@ -1,0 +1,119 @@
+@layer tokens {
+  :root {
+    --color--neutral--50: oklch(98.5% 0 0deg);
+    --color--neutral--400: oklch(70.8% 0 0deg);
+    --color--accent--600: oklch(54.6% 0.245 262.881deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.css-carousel) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+    }
+
+    ._heading {
+      font-size: calc(20 / 16 * 1rem);
+    }
+
+    ._list {
+      anchor-name: --css-carousel;
+      display: block grid;
+      grid-auto-columns: 100%;
+      grid-auto-flow: column;
+      gap: 16px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scroll-snap-type: inline mandatory;
+
+      /*
+       * 未対応の環境ではスクロールバーを残し、横スクロールで読めるようにする。
+       * 擬似要素も中に書くのは、Safari でネストした以降のスタイルが無効になるため。
+       */
+      @supports selector(::scroll-button(*)) {
+        scroll-marker-group: after;
+        scrollbar-width: none;
+
+        &::scroll-button(*) {
+          position: absolute;
+          inset-block-start: anchor(center);
+          position-anchor: --css-carousel;
+          inline-size: 40px;
+          block-size: 40px;
+          border: 1px solid currentColor;
+          border-radius: 50%;
+          background-color: var(--color--neutral--50);
+          translate: 0 -50%;
+        }
+
+        &::scroll-button(*):disabled {
+          opacity: 0.3;
+        }
+
+        &::scroll-button(inline-start) {
+          content: "←" / "前の事例";
+          inset-inline-start: calc(anchor(start) + 8px);
+        }
+
+        &::scroll-button(inline-end) {
+          content: "→" / "次の事例";
+          inset-inline-end: calc(anchor(end) + 8px);
+        }
+
+        &::scroll-marker-group {
+          display: block flex;
+          gap: 12px;
+          justify-content: center;
+          padding-block: 8px;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        scroll-behavior: smooth;
+      }
+    }
+
+    ._item {
+      container: --css-carousel-item / scroll-state;
+      scroll-snap-align: center;
+
+      @supports selector(::scroll-marker) {
+        &::scroll-marker {
+          content: "" / attr(data-label);
+          inline-size: 12px;
+          block-size: 12px;
+          border-radius: 50%;
+          background-color: var(--color--neutral--400);
+        }
+
+        &::scroll-marker:target-current {
+          background-color: var(--color--accent--600);
+        }
+      }
+    }
+
+    ._card {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      block-size: 100%;
+      padding-block: 24px;
+      padding-inline: 56px;
+      border: 1px solid var(--color--neutral--400);
+      border-radius: 8px;
+
+      /* 止まっていないスライドは、読み上げとフォーカスの対象から外す */
+      @container --css-carousel-item not scroll-state(snapped: inline) {
+        interactivity: inert;
+      }
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._text {
+    }
+  }
+}

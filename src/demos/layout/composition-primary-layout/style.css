@@ -1,0 +1,147 @@
+@layer tokens {
+  :root {
+    --spacing--sm: 16;
+    --spacing--lg: 32;
+    --screen: --compact;
+
+    @media (width >= calc(768 / 16 * 1rem)) {
+      --screen: --spacious;
+    }
+  }
+}
+
+@layer base {
+  /* デモの枠の左右の余白を外し、フル幅の列を枠の端まで届かせる */
+  :where(body) {
+    padding-inline: 0;
+  }
+}
+
+@layer compositions {
+  /**
+   * 左右のガターと5段階の幅の列を持つグリッド。子はデフォルトでコンテンツ幅に置き、クラスで幅を選ぶ。
+   *
+   * @prop {length} --primary-layout--content-max-width          [calc(1680 / 16 * 1rem)]    - コンテンツ幅の最大値
+   * @prop {length} --primary-layout--gutter--compact            [calc(20 * var(--px, 1px))] - 左右のガターの最小幅
+   * @prop {length} --primary-layout--gutter--spacious           [calc(40 * var(--px, 1px))] - 同（広い画面のモード）
+   * @prop {length} --primary-layout--narrow-reduction--compact  [calc(20 * var(--px, 1px))] - ナロー幅とコンテンツ幅の片側の差（上限）
+   * @prop {length} --primary-layout--narrow-reduction--spacious [calc(40 * var(--px, 1px))] - 同（広い画面のモード）
+   * @prop {length} --primary-layout--wide-increase--compact     [calc(60 * var(--px, 1px))] - コンテンツ幅とワイド幅の片側の差（上限）
+   * @prop {length} --primary-layout--wide-increase--spacious    [calc(120 * var(--px, 1px))] - 同（広い画面のモード）
+   * @prop {length} --primary-layout--ex-wide-increase--compact  [calc(40 * var(--px, 1px))] - ワイド幅と超ワイド幅の片側の差（上限）
+   * @prop {length} --primary-layout--ex-wide-increase--spacious [calc(80 * var(--px, 1px))] - 同（広い画面のモード）
+   * @prop {length} --primary-layout--row-gap--compact           [0px]                       - 行の間隔
+   * @prop {length} --primary-layout--row-gap--spacious          [0px]                       - 同（広い画面のモード）
+   *
+   * @example
+   * <div class="primary-layout">
+   *   <p>コンテンツ幅（デフォルト）</p>
+   *   <div class="narrow-column">ナロー幅</div>
+   *   <div class="wide-column">ワイド幅</div>
+   *   <div class="ex-wide-column">超ワイド幅</div>
+   *   <div class="full-column">フル幅</div>
+   * </div>
+   */
+  .primary-layout {
+    --_c--content-max-width: var(--primary-layout--content-max-width, calc(1680 / 16 * 1rem));
+    --_c--gutter: var(--primary-layout--gutter--compact, calc(20 * var(--px, 1px)));
+    --_c--narrow-reduction: var(--primary-layout--narrow-reduction--compact, calc(20 * var(--px, 1px)));
+    --_c--wide-increase: var(--primary-layout--wide-increase--compact, calc(60 * var(--px, 1px)));
+    --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase--compact, calc(40 * var(--px, 1px)));
+    --_c--row-gap: var(--primary-layout--row-gap--compact, 0px);
+
+    display: block grid;
+    grid-template-columns:
+      [--full-start]
+      minmax(var(--_c--gutter), 1fr)
+      [--ex-wide-start]
+      minmax(0, var(--_c--ex-wide-increase))
+      [--wide-start]
+      minmax(0, var(--_c--wide-increase))
+      [--content-start]
+      minmax(0, var(--_c--narrow-reduction))
+      [--narrow-start]
+      min(100% - var(--_c--gutter) * 2, var(--_c--content-max-width) - var(--_c--narrow-reduction) * 2)
+      [--narrow-end]
+      minmax(0, var(--_c--narrow-reduction))
+      [--content-end]
+      minmax(0, var(--_c--wide-increase))
+      [--wide-end]
+      minmax(0, var(--_c--ex-wide-increase))
+      [--ex-wide-end]
+      minmax(var(--_c--gutter), 1fr)
+      [--full-end];
+    row-gap: var(--_c--row-gap);
+
+    @container style(--screen: --spacious) {
+      --_c--gutter: var(--primary-layout--gutter--spacious, calc(40 * var(--px, 1px)));
+      --_c--narrow-reduction: var(--primary-layout--narrow-reduction--spacious, calc(40 * var(--px, 1px)));
+      --_c--wide-increase: var(--primary-layout--wide-increase--spacious, calc(120 * var(--px, 1px)));
+      --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase--spacious, calc(80 * var(--px, 1px)));
+      --_c--row-gap: var(--primary-layout--row-gap--spacious, 0px);
+    }
+
+    & > * {
+      grid-column: --content;
+    }
+
+    & > .full-column {
+      grid-column: --full;
+    }
+
+    & > .full-column-start-only {
+      grid-column: --full-start / --content-end;
+    }
+
+    & > .full-column-end-only {
+      grid-column: --content-start / --full-end;
+    }
+
+    & > .ex-wide-column {
+      grid-column: --ex-wide;
+    }
+
+    & > .ex-wide-column-start-only {
+      grid-column: --ex-wide-start / --content-end;
+    }
+
+    & > .ex-wide-column-end-only {
+      grid-column: --content-start / --ex-wide-end;
+    }
+
+    & > .wide-column {
+      grid-column: --wide;
+    }
+
+    & > .wide-column-start-only {
+      grid-column: --wide-start / --content-end;
+    }
+
+    & > .wide-column-end-only {
+      grid-column: --content-start / --wide-end;
+    }
+
+    & > .narrow-column {
+      grid-column: --narrow;
+    }
+
+    & > .narrow-column-start-only {
+      grid-column: --narrow-start / --content-end;
+    }
+
+    & > .narrow-column-end-only {
+      grid-column: --content-start / --narrow-end;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.layout-demo) to (.scoped) {
+    ._block {
+      padding-block: 12px;
+      padding-inline: 16px;
+      background-color: oklch(92% 0.03 250deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

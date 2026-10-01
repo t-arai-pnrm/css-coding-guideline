@@ -52,7 +52,7 @@
     --_c--threshold: calc(
       var(--_c--column-min-width) * var(--_c--column-count) + var(--_c--column-gap) * (var(--_c--column-count) - 1)
     );
-    --_c--column-preferred-width: calc(100% / var(--_c--column-count) - var(--_c--column-gap) * (var(--_c--column-count) - 1));
+    --_c--column-preferred-width: calc((100% - var(--_c--column-gap) * (var(--_c--column-count) - 1)) / var(--_c--column-count));
 
     display: block grid;
 

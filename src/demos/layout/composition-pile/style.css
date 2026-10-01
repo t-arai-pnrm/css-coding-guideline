@@ -1,0 +1,75 @@
+@layer tokens {
+  :root {
+    --spacing--xs: 12;
+    --spacing--lg: 32;
+    --z--backwards: -1;
+  }
+}
+
+@layer compositions {
+  /**
+   * すべての子要素を同じグリッドのセルに重ねる。
+   *
+   * @prop {keyword} --pile--placement     [normal] - 子のブロック方向とインライン方向の配置（一括。キーワードは1つ）
+   * @prop {keyword} --pile--alignment     [normal] - 子のブロック方向の配置
+   * @prop {keyword} --pile--justification [normal] - 子のインライン方向の配置
+   */
+  .pile {
+    display: block grid;
+    grid-template-areas: "--pile";
+    isolation: isolate;
+
+    & > * {
+      grid-area: --pile;
+      place-self: var(--pile--placement, var(--pile--alignment, normal)) var(--pile--placement, var(--pile--justification, normal));
+    }
+  }
+
+  /**
+   * 子要素を縦に積む。
+   *
+   * @prop {length} --stack--gap [0] - 子要素の間隔
+   */
+  .stack {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--stack--gap, 0);
+  }
+}
+
+@layer components {
+  @scope (.scoped.hero) to (.scoped) {
+    :scope {
+      /* 画像を読み込めなかったときも、白い文字が読めるようにする */
+      background-color: oklch(32% 0.03 250deg);
+      color: oklch(100% 0 0deg);
+
+      /*
+       * 擬似要素は `> *` で選ばれないので、自分で同じエリアに置く。
+       * 黒の不透明度が 55% 以上なら、真っ白な画像の上でも白い文字が 4.5:1 を超える
+       */
+      &::before {
+        content: "";
+        grid-area: --pile;
+        background-image: linear-gradient(oklch(0% 0 0deg / 55%), oklch(0% 0 0deg / 75%));
+      }
+    }
+
+    ._image {
+      z-index: var(--z--backwards);
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+    }
+
+    ._body {
+      max-inline-size: calc(560 / 16 * 1rem);
+      padding: calc(var(--spacing--lg) / 16 * 1rem);
+    }
+
+    ._title {
+      font-size: calc(24 / 16 * 1rem);
+      line-height: 1.4;
+    }
+  }
+}

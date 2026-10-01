@@ -88,22 +88,25 @@ import compositionsCss from '../../../demos/components/compositions/style.css?ra
 
 ## 主なコンポジション
 
-私が使っている主なコンポジションは次のとおりです。stack、cluster、switcher、sidebarといった名前は、Every Layoutなどで広まった配置パターンの名前にならっています。
+私が使っている主なコンポジションは次のとおりです。stack、cluster、switcher、sidebarといった名前は、Every Layoutなどで広まった配置パターンの名前にならっています。それぞれの使い方、公開プロパティの一覧、内部の計算、使い分けは、「[7-13 コンポジション集](/layout/compositions/)」の各ページで詳しく説明しています。
 
 | 名前 | 配置 | 主な公開プロパティ |
 |---|---|---|
-| `stack` | 子を縦に積む | `--stack--gap` |
-| `cluster` | 子を横に並べ、入りきらなければ折り返す | `--cluster--gap`、`--cluster--justification` |
-| `apart` | 子をインライン方向の両端に分け、入りきらなければ折り返す | `--apart--gap`、`--apart--alignment` |
-| `switcher` | 幅が閾値以上なら指定の列数で並べ、下回ったら1列にする | `--switcher--column-count`、`--switcher--column-min-width` |
-| `sidebar` | メインとサイドの2カラムにし、狭ければ縦に積む | `--sidebar--side-width`、`--sidebar--main-min-width` |
-| `grid` | 列の最小幅と最大数から、列数を自動で決める | `--grid--column-min-width`、`--grid--column-max-count` |
-| `pile` | すべての子を同じグリッドのセルに重ねる | なし |
-| `primary-layout` | コンテンツの最大幅とガターを決め、子ごとに全幅などの幅を選ばせる | `--primary-layout--content-max-width`、`--primary-layout--gutter` |
+| [`stack`](/layout/compositions/stack/) | 子を縦に積む | `--stack--gap` |
+| [`cluster`](/layout/compositions/cluster/) | 子を横に並べ、入りきらなければ折り返す | `--cluster--gap`、`--cluster--justification` |
+| [`apart`](/layout/compositions/apart/) | 子をインライン方向の両端に分け、入りきらなければ折り返す | `--apart--gap`、`--apart--column-gap`、`--apart--alignment` |
+| [`switcher`](/layout/compositions/switcher/) | 幅が閾値以上なら指定の列数で並べ、下回ったら1列にする | `--switcher--column-count`、`--switcher--column-min-width` |
+| [`sidebar`](/layout/compositions/sidebar/) | メインとサイドの2カラムにし、狭ければ縦に積む | `--sidebar--side-width`、`--sidebar--main-min-width` |
+| [`grid`](/layout/compositions/grid/) | 列の最小幅と最大数から、列数を自動で決める | `--grid--column-min-width`、`--grid--column-max-count`、`--grid--mode` |
+| [`columns`](/layout/compositions/columns/) | 上から下へ読むリストを段に分ける | `--columns--column-width`、`--columns--column-max-count` |
+| [`masonry`](/layout/compositions/masonry/) | 高さの違う子を、いちばん短い列へ順に詰める | `--masonry--column-min-width`、`--masonry--column-max-count` |
+| [`pile`](/layout/compositions/pile/) | すべての子を同じグリッドのセルに重ねる | `--pile--placement`、`--pile--alignment`、`--pile--justification` |
+| [`primary-layout`](/layout/compositions/primary-layout/) | コンテンツの最大幅とガターを決め、子ごとに全幅などの幅を選ばせる | `--primary-layout--content-max-width`、`--primary-layout--gutter--compact` |
+| [`prose`](/layout/compositions/prose/) | 本文の流れの間隔を作り、子ごとに間隔を変えられるようにする | `--prose--space` |
 
 幅によって列数や折り返しが変わるコンポジションも、メディアクエリは使いません。`flex-wrap: wrap` による折り返し、`auto-fit` と `minmax()` による列数の自動調整、`sign()` による閾値の判定で、幅の変化に対応します。「[8-1 検討する順番](/responsive/escalation/)」で説明した「イントリンシック」の段階を、部品として用意しておくわけです。子を重ねる `pile` は、ルートに `isolation: isolate` を指定して、重なりをコンポジションの中に閉じ込めています。
 
-本文の段落の間隔を作る `prose` もコンポジションの1つです。ただし、本文の余白の設計と切り離せないので、「[7-2 余白を設計する](/layout/spacing/)」で扱います。
+本文の段落の間隔を作る `prose` もコンポジションの1つです。`gap` ではなく2つ目以降の子の `margin-block-start` で間隔を作るので、子ごとに間隔を変えられます。本文の余白の設計とあわせて、「[7-7 余白を設計する](/layout/spacing/)」でも扱っています。
 
 ## コンポジションの間隔のデフォルト値
 
@@ -119,47 +122,49 @@ import compositionsCss from '../../../demos/components/compositions/style.css?ra
 grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr));
 ```
 
-`--_c--threshold` は、「列の最小幅×列数＋列の間隔×（列数−1）」で求めた閾値です。`sign()` は、引数が正なら1、負なら-1を返す関数です。要素の幅が閾値以上なら掛け算の結果は `-100%` になり、列の最小幅は1列あたりの幅の目安（`--_c--column-preferred-width`）のままです。閾値を下回ると `100%` になるので、列の最小幅が要素の幅いっぱいになり、1列に切り替わります。実際の列の幅は `1fr` で均等に広がります。
+`--_c--threshold` は、「列の最小幅×列数＋列の間隔×（列数−1）」で求めた閾値です。`sign()` は、引数が正なら1、負なら-1を返す関数です。要素の幅が閾値より広ければ掛け算の結果は `-100%`、ちょうど閾値なら `0%` になり、どちらでも列の最小幅は1列あたりの幅の目安（`--_c--column-preferred-width`）のままです。閾値を下回ると `100%` になるので、列の最小幅が要素の幅いっぱいになり、1列に切り替わります。実際の列の幅は `1fr` で均等に広がります。
 
 <Baseline id="abs-sign" name="abs() と sign()" />
 
 `sign()` は、2025年6月にすべての主要なブラウザで使えるようになった関数です（2026年9月確認）。本書の対象のブラウザ（Safari 18系の最終版以降）では動作します。内部プロパティの命名は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
 
-`grid` も、内部プロパティで列の幅を計算するコンポジションです。`auto-fill` と `minmax()` だけで列数をブラウザに任せると、広い画面では列がいくらでも増えます。「列の数は幅に合わせて変えたいが、4列より多くはしたくない」という要件に応えるのが `grid` です。
+`grid` も、内部プロパティで列の幅を計算するコンポジションです。`auto-fill` と `minmax()` だけで列数をブラウザに任せると、広い画面では列がいくらでも増えます。「列の数は幅に合わせて変えたいが、5列より多くはしたくない」という要件に応えるのが `grid` です。
 
 ```css title="🙆‍♂ Recommended: 列の最小幅と最大数から、列の幅を計算する"
 /**
- * 列の最小幅と最大数から、列数を自動で決める。
+ * 列の最小幅と最大数から、列の数を自動で決める。
  *
+ * @prop {keyword} --grid--mode             [auto-fill]             - repeat() のキーワード（auto-fill | auto-fit）
  * @prop {length}  --grid--column-min-width [calc(320 / 16 * 1rem)] - 列の最小幅（これより狭くなると列が減る）
- * @prop {integer} --grid--column-max-count [4]                     - 列の最大数
+ * @prop {integer} --grid--column-max-count [5]                     - 列の最大数
  * @prop {length}  --grid--gap              [0px]                   - 行と列の間隔（一括）
  * @prop {length}  --grid--row-gap          [0px]                   - 行の間隔
- * @prop {length}  --grid--column-gap       [0px]                   - 列の間隔
+ * @prop {length}  --grid--column-gap       [0px]                   - 列の間隔（単位を付けて渡す）
  */
 .grid {
+  --_c--mode: var(--grid--mode, auto-fill);
   --_c--row-gap: var(--grid--gap, var(--grid--row-gap, 0px));
   --_c--column-gap: var(--grid--gap, var(--grid--column-gap, 0px));
-  --_c--column-max-count: var(--grid--column-max-count, 4);
+  --_c--column-max-count: var(--grid--column-max-count, 5);
   --_c--column-min-width: var(--grid--column-min-width, calc(320 / 16 * 1rem));
 
   /* 要素の幅から列の間隔の合計を引き、最大の列数で割った幅 */
-  --_c--column-width-at-max: calc(
+  --_c--column-preferred-width: calc(
     (100% - var(--_c--column-gap) * (var(--_c--column-max-count) - 1)) / var(--_c--column-max-count)
   );
 
   /* 最小幅と、最大の列数で割った幅の大きいほう。ただし要素の幅は超えない */
-  --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-width-at-max)));
+  --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-preferred-width)));
 
   display: block grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--_c--column-width), 1fr));
+  grid-template-columns: repeat(var(--_c--mode), minmax(var(--_c--column-width), 1fr));
   gap: var(--_c--row-gap) var(--_c--column-gap);
 }
 ```
 
-`--_c--column-width-at-max` は、最大の列数で並べたときの1列の幅です。要素の幅から列の間隔の合計を引き、最大の列数で割って求めます。`minmax()` の最小値には、この幅と列の最小幅の大きいほうを使います。広い場所では最大の列数で割った幅のほうが大きくなるので、それより多くの列は入りません。狭い場所では列の最小幅のほうが大きくなり、入らなくなった列から順に次の行へ折り返されます。
+`--_c--column-preferred-width` は、最大の列数で並べたときの1列の幅です。要素の幅から列の間隔の合計を引き、最大の列数で割って求めます。`minmax()` の最小値には、この幅と列の最小幅の大きいほうを使います。広い場所では最大の列数で割った幅のほうが大きくなるので、それより多くの列は入りません。狭い場所では列の最小幅のほうが大きくなり、入らなくなった列から順に次の行へ折り返されます。
 
-全体を `min(100%, …)` で包んでいるのは、要素の幅が列の最小幅より狭いときに、列が要素からはみ出さないようにするためです。たとえば列の間隔を24px相当にすると、960pxの場所では列の最小幅の320px相当のほうが大きいので2列に、2400pxの場所では最大の列数で割った幅のほうが大きいので4列になります。列の数を決めるキーワードに `auto-fit` ではなく `auto-fill` を使っているので、アイテムが3つしかないときも、列の幅は4列のときのまま変わりません。2つのキーワードの違いは「[8-1 検討する順番](/responsive/escalation/)」で説明しています。
+全体を `min(100%, …)` で包んでいるのは、要素の幅が列の最小幅より狭いときに、列が要素からはみ出さないようにするためです。たとえば列の間隔を24px相当にすると、960pxの場所では列の最小幅の320px相当のほうが大きいので2列に、2400pxの場所では最大の列数で割った幅のほうが大きいので5列になります。列の数を決めるキーワードのデフォルトを `auto-fit` ではなく `auto-fill` にしているので、アイテムが3つしかないときも、列の幅は5列のときのまま変わりません。空いた列を詰めて広げたい場面では、`--grid--mode: auto-fit` を渡します。2つのキーワードの違いは「[8-1 検討する順番](/responsive/escalation/)」で説明しています。
 
 ## コード例とデモ
 

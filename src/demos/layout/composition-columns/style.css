@@ -1,0 +1,63 @@
+@layer tokens {
+  :root {
+    --spacing--sm: 16;
+    --spacing--lg: 32;
+  }
+}
+
+@layer compositions {
+  /**
+   * 直下のリストを、上から下へ読む順番のまま段に分ける。
+   * 構造は「.columns > リスト > 項目」で、段組みはリストに、項目の間隔は項目に付ける。
+   *
+   * @prop {length}  --columns--column-width     [calc(240 / 16 * 1rem)] - 段の最小幅（これより狭くなると段が減る）
+   * @prop {integer} --columns--column-max-count [5]                     - 段の最大数
+   * @prop {length}  --columns--row-gap          [0px]                   - 項目の間隔
+   * @prop {length}  --columns--column-gap       [0px]                   - 段の間隔
+   *
+   * @example
+   * <div class="columns" style="--columns--column-width: calc(320 / 16 * 1rem); --columns--column-max-count: 3">
+   *   <ul>
+   *     <li>Item 1</li>
+   *     <li>Item 2</li>
+   *   </ul>
+   * </div>
+   */
+  .columns {
+    --_c--column-width: var(--columns--column-width, calc(240 / 16 * 1rem));
+    --_c--column-max-count: var(--columns--column-max-count, 5);
+    --_c--row-gap: var(--columns--row-gap, 0px);
+    --_c--column-gap: var(--columns--column-gap, 0px);
+
+    /* リストの負のマージンを、外の要素のマージンと相殺させないため */
+    display: block flow-root;
+
+    & > * {
+      column-gap: var(--_c--column-gap);
+      columns: var(--_c--column-width) var(--_c--column-max-count);
+
+      /* 先頭と末尾の項目に付く半分の余白を打ち消す */
+      margin-block: calc(var(--_c--row-gap) / -2);
+    }
+
+    /* 段組みの中の項目はリストの直下の子なので、ユニバーサルセレクタが2つになる */
+    /* stylelint-disable-next-line selector-max-universal */
+    & > * > * {
+      /* 段の境目でマージンが切り取られ、Safari では段組みの中のマージンが正しく解決されないため、padding で空ける */
+      padding-block: calc(var(--_c--row-gap) / 2);
+      break-inside: avoid;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.glossary) to (.scoped) {
+    ._term {
+      font-weight: bold;
+    }
+
+    ._description {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

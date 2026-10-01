@@ -9,6 +9,15 @@
   page: components/boundaries
   since: 0.1.0
 
+- id: one-component-per-file
+  level: 必須
+  rule: コンポーネントの CSS は、コンポーネントごとに1つのファイルに書き、複数のコンポーネントの CSS を1つのファイルに混ぜない。
+  reason: 混ぜると、どこに何が書いてあるかがファイル名から分からなくなり、使わなくなったコンポーネントを安全に消せなくなるため。
+  note: ファイル名はルートの名前とそろえます。Astro のように CSS をコンポーネントのファイルに書く環境では、そのファイルが単位になります。小さな部品でも例外にしません。
+  aiProne: true
+  page: components/boundaries
+  since: 0.5.0
+
 - id: share-look-with-tokens
   level: 推奨
   rule: 別のコンポーネントの間で見た目をそろえたいときは、コンポーネントを統合せず、同じトークンを参照する。
@@ -118,7 +127,7 @@
   level: 推奨
   rule: コンポジションの間隔のデフォルト値は `0` にし、間隔は使う側で指定する。
   reason: 間隔は置く文脈で決まる値なので、指定し忘れた箇所に意図しない余白が付くのを防ぐため。
-  note: 行と列の間隔を持つコンポジションでは、`--cluster--gap` で一括に、`--cluster--row-gap` と `--cluster--column-gap` で個別に指定できるようにします。
+  note: '行と列の間隔を持つコンポジションでは、`--cluster--gap` で一括に、`--cluster--row-gap` と `--cluster--column-gap` で個別に指定できるようにします。`switcher` や `grid` のように間隔を `calc()` で長さと足し合わせるコンポジションでは、デフォルト値を `0px` にします（`switcher-gap-default-with-unit`）。'
   page: components/compositions-and-utilities
   since: 0.1.0
 
@@ -251,3 +260,10 @@
   reason: '`syntax` か `inherits` が欠けると、`@property` のルールごと無視されるため。'
   page: components/custom-properties
   since: 0.1.0
+
+- id: animated-property-no-inherit
+  level: 推奨
+  rule: 'トランジションやアニメーションで値を動かすカスタムプロパティは、`inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介さずに直接動かす。'
+  reason: 継承するカスタムプロパティを動かすと、子孫の要素すべてでスタイルの計算がフレームごとに繰り返され、カスタムプロパティを介すと合成処理だけで済まなくなるため。
+  page: components/custom-properties
+  since: 0.5.0

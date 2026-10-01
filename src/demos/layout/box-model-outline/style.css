@@ -1,0 +1,28 @@
+@layer components {
+  @scope (.scoped.box-model-outline) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+      padding: 24px;
+    }
+
+    ._row {
+      display: block flex;
+      gap: 8px;
+    }
+
+    ._item {
+      inline-size: calc(80 / 16 * 1rem);
+      padding: 16px;
+      background-color: oklch(90% 0.05 250deg);
+      text-align: center;
+
+      /* outline と box-shadow はボックスの大きさに含まれないので、隣の要素の位置は2行目と同じになる */
+      &[data-decorated] {
+        box-shadow: 0 0 0 16px oklch(70% 0.12 30deg / 50%);
+        outline: 4px solid oklch(45% 0.15 30deg);
+        outline-offset: 4px;
+      }
+    }
+  }
+}

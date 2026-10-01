@@ -1,8 +1,8 @@
 ---
-title: "7-5 sticky が動かないとき"
+title: "7-11 sticky が動かないとき"
 description: "position: sticky が効かない原因は、GridやFlexboxの align-self による伸長、inset の指定漏れ、祖先のスクロールコンテナ、画面より高い要素の4つです。それぞれの直し方と、DevToolsでの確かめ方をまとめます。"
 sidebar:
-  order: 5
+  order: 11
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -61,9 +61,9 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 `sticky` の要素は、`overflow` が `visible` 以外の祖先のうち、いちばん近いものを基準に留まります。その祖先が実際にはスクロールしなくても同じです。たとえば、祖先の `overflow: hidden` は、スクロールしない領域を作ります。`sticky` の要素はその領域を基準にしてしまい、ページのスクロールには反応しなくなります。
 
-原因がはっきりしないときは、DevToolsで `sticky` の要素から祖先へ順にたどり、`overflow` が `visible` 以外の要素を探します。見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[7-3 変化に強いレイアウト](/layout/defensive/)」）。
+原因がはっきりしないときは、DevToolsで `sticky` の要素から祖先へ順にたどり、`overflow` が `visible` 以外の要素を探します。見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[7-8 変化に強いレイアウト](/layout/defensive/)」）。
 
-親子のマージンの相殺を止めるために `overflow: auto` を使う書き方も、同じ理由で避けます。相殺を止めるなら `display: flow-root` を使います（「[7-2 余白を設計する](/layout/spacing/)」）。
+親子のマージンの相殺を止めるために `overflow: auto` を使う書き方も、同じ理由で避けます。相殺を止めるなら `display: flow-root` を使います（「[7-7 余白を設計する](/layout/spacing/)」）。
 
 スクロールコンテナが意図したものである場合は、別の話です。たとえば、高さを決めて `overflow: auto` にした領域の中で見出しを留めるなら、見出しはその領域の中で留まります。領域に高さがなければスクロールせず、何も起きません。この場合に必要なのは、その領域に高さの上限を決めて、スクロールが起きるようにすることです。ページ全体のスクロールで留める通常の `sticky` では、親に高さを指定する必要はありません。
 
@@ -85,6 +85,42 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 上限は、スクロールで値が変わらない `svb`（小さいほうのビューポートの高さ）から、上下の余白を引いた値にしています。本書は `dvb` を要素の大きさに使いません。スクロールのたびに値が変わり、レイアウトシフトの原因になるからです（「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。`overflow-y: auto` を指定した要素自身はスクロールコンテナになりますが、要素の中の話なので、留まる動きには影響しません。
 
+## 留まっている間だけ見た目を変える
+
+ヘッダーが上端に留まったら影を付ける、背景を不透明にする、といった演出は、以前は `scroll` イベントでスクロール量を調べて、JavaScriptでクラスを付け替えて作っていました。今は、コンテナクエリの `scroll-state()` で、`sticky` の要素が留まっているかどうかをCSSだけで判定できます。
+
+<Baseline id="container-scroll-state-queries" name="scroll-state() のコンテナクエリ" />
+
+`sticky` の要素に `container-type: scroll-state` を指定します。すると、その中の要素は `@container scroll-state(stuck: block-start)` の条件を使い、上端に留まっている間だけスタイルを変えられます。コンテナクエリなので、条件で変えられるのはコンテナの子孫だけです。ヘッダーそのものではなく、内側の要素に見た目を書きます。
+
+```css title="🙆‍♂ Recommended: 上端に留まっている間だけ、ヘッダーの内側に境界線を付ける"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: sticky;
+    inset-block-start: 0;
+    container: --site-header / scroll-state;
+  }
+
+  ._inner {
+    border-block-end: 1px solid transparent;
+    background-color: var(--color--neutral--50);
+
+    @container --site-header scroll-state(stuck: block-start) {
+      border-block-end-color: var(--color--neutral--400);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--fast);
+      transition-property: border-block-end-color;
+    }
+  }
+}
+```
+
+2026年10月の時点で、`scroll-state()` のクエリに対応しているのはChrome系のブラウザだけです。対応していない環境では条件が成り立たず、境界線がないまま留まります。ヘッダーの機能は損なわれないので、プログレッシブ・エンハンスメントとして使えます（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。反対に、留まったときにだけメニューを表示するような、見えないと操作できなくなる変化には使いません。
+
+同じ仕組みで、横にスクロールできる表へ「→」の案内を出し、端までスクロールしたら消す、という表示も作れます。表を包むスクロールコンテナに `container-type: scroll-state` を指定し、`scroll-state(scrollable: inline-end)` が成り立つ間だけ案内を表示します。
+
 ## ガイドライン
 
 <Guideline />
@@ -94,5 +130,6 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 - [position - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/position)
 - [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
 - [align-self - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/align-self)
+- [Using container scroll-state queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
 - [CSS Positioned Layout Module Level 3 - Sticky positioning](https://drafts.csswg.org/css-position-3/#sticky-pos)（W3C）
 - [Getting stuck: all the ways position: sticky can fail](https://polypane.app/blog/getting-stuck-all-the-ways-position-sticky-can-fail/)（Polypane）

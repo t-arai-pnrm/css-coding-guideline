@@ -152,6 +152,16 @@ a:link {}               /* 0.1.1 */
 
 ここで `revert-layer` を使うと、kiso.cssを入れた `reset` レイヤーの値（マーカーなし）に戻るので、マーカーは表示されません（2026年9月、Chrome 152で確認）。どちらのキーワードも「元に戻す」ものですが、戻る先が違います。
 
+これらのキーワードは、`all` プロパティと組み合わせると、`direction` と `unicode-bidi` を除くすべてのプロパティをまとめて戻せます。このとき `all: unset` は使いません。`unset` は、継承されないプロパティを初期値に戻すので、`display` は `inline` になり、ブラウザのデフォルトスタイルのうち必要なもの（`<ul>` の余白や `<button>` のフォーカスリングなど）まで消えます。どのプロパティの初期値が何かを覚えていないと、何が起きるのかを予測できません。まとめて戻すなら、レイヤーを使うプロジェクトでは `all: revert-layer`、使わないプロジェクトでは `all: revert` を指定します。戻る先がひとつ前のレイヤーやブラウザのデフォルトスタイルなので、要素が本来の表示を保ったまま、上書きだけが消えます。
+
+```css title="🙆‍♂ Recommended: まとめて戻すときは、戻る先が分かるキーワードを使う"
+@scope (.scoped.embed-frame) to (.scoped) {
+  ._content {
+    all: revert-layer;
+  }
+}
+```
+
 ## `!important` を使ってよい場面
 
 `!important` は、カスケードの最初の段階である「オリジンと重要度」の順位を変える指定です。`!important` が付いた宣言は、付いていない宣言に、レイヤーや詳細度に関係なく勝ちます。これを打ち消せるのは、同じように `!important` を付けた宣言だけです。
@@ -184,5 +194,6 @@ AIにスタイルの修正を頼むと、上書きが効かない原因を調べ
 - [詳細度 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Specificity)
 - [継承 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Inheritance)
 - [!important - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/important)
+- [all - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/all)
 - [CSS Cascading and Inheritance Level 6](https://drafts.csswg.org/css-cascade-6/)
 - [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）

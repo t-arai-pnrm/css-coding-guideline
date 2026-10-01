@@ -1,8 +1,8 @@
 ---
-title: "7-4 重なりと配置"
+title: "7-9 重なりと配置"
 description: "要素を重ねるときは、まずGridの同じエリアに置きます。絶対配置は包含ブロックを、重なり順はスタッキングコンテキストを意識して書き、アンカーポジショニングはレイアウトの要にしません。画面幅いっぱいに広げる手法も比べます。"
 sidebar:
-  order: 4
+  order: 9
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -38,11 +38,11 @@ Gridなら、すべての子要素を同じエリアに置くだけで重ねら�
 @scope (.scoped.hero) to (.scoped) {
   :scope {
     display: block grid;
-    grid-template-areas: "--stack";
+    grid-template-areas: "--pile";
     place-items: center;
 
     & > * {
-      grid-area: --stack;
+      grid-area: --pile;
     }
   }
 
@@ -58,7 +58,7 @@ Gridなら、すべての子要素を同じエリアに置くだけで重ねら�
 }
 ```
 
-重なり順は、HTMLの順番で決まります。画像を先に、見出しを後に書けば、見出しが手前に描かれるので、z-indexは要りません。HTMLの順番で足りないときだけ、相対的なz-indexを使います。この重ね方は、第6章のコンポジション `pile` として部品にしています（「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。
+重なり順は、HTMLの順番で決まります。画像を先に、見出しを後に書けば、見出しが手前に描かれるので、z-indexは要りません。HTMLの順番で足りないときだけ、相対的なz-indexを使います。この重ね方は、第6章のコンポジション `pile` として部品にしています（「[7-13-9 pile](/layout/compositions/pile/)」）。
 
 ## 絶対配置の基準になる包含ブロック
 
@@ -178,7 +178,7 @@ z-indexの値は、ページ全体で比べられるわけではありません�
       inset-block-start: anchor(--help-tip end);
       inset-inline-start: anchor(--help-tip start);
       position-try-fallbacks: flip-block;
-      margin: 4px 0 0;
+      margin-block-start: 4px;
     }
   }
 }
@@ -207,7 +207,7 @@ z-indexの値は、ページ全体で比べられるわけではありません�
     @supports (position-area: block-end span-inline-end) {
       position-area: block-end span-inline-end;
       position-try-fallbacks: flip-block;
-      margin: 4px 0 0;
+      margin-block-start: 4px;
     }
   }
 }
@@ -217,9 +217,27 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 
 値には、`bottom` や `right` のような物理キーワードと、`block-end` や `span-inline-end` のような論理キーワードがあります。本書では、プロパティと同じく論理キーワードで書きます（「[5-3 モダンな記法にそろえる](/notation/modern-syntax/)」）。縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示されるからです。
 
+はみ出したときの候補は、`position-try-fallbacks` にカンマ区切りで並べます。候補には、`flip-block flip-inline` のように組み合わせた反転のキーワードも、`position-area` の値も書けます。書いた順ではなく空きの大きさで選ばせたいときは、`position-try-order` を指定します。`most-block-size` なら、最初の位置と候補のうち、ブロック方向の空きが最も大きい位置を選びます。
+
+```css title="🙆‍♂ Recommended: 上下のうち、空きの大きいほうにメニューを開く"
+@scope (.scoped.site-menu) to (.scoped) {
+  ._list {
+    margin: auto;
+
+    @supports (position-area: block-end span-inline-end) {
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block;
+      position-try-order: most-block-size;
+    }
+  }
+}
+```
+
+`position-visibility` の初期値 `anchors-visible` では、アンカーがスクロールなどで完全に見えなくなると、配置した要素も見えなくなります。ボタンがスクロールで隠れたあとに、メニューだけが浮いて見えることを防げます。
+
 <Baseline id="anchor-positioning" compatKey="css.properties.position-area" name="position-area" />
 
-`position-area` は、Chrome 129、Firefox 147、Safari 26で対応しています。ボタンの暗黙のアンカーは、`popovertarget` ならChrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです（2026年9月確認）。`position-area` を指定すると、`auto` の `margin` と `inset` は0として扱われます。ポップオーバーのデフォルトの `margin: auto` も適用されなくなるので、`@supports` の中で指定し直しています。
+`position-area` は、Chrome 129、Firefox 147、Safari 26で対応しています。ボタンの暗黙のアンカーは、`popovertarget` ならChrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです。`position-try-order` はFirefoxでは148から、`position-visibility` はSafariでは26.2からです（2026年10月確認）。`position-area` を指定すると、`auto` の `margin` と `inset` は0として扱われます。未対応の環境のために書いた `margin: auto` も0になるので、`@supports` の中では、ボタンとの間隔を空ける `margin-block-start` だけを指定しています。
 
 暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。`position-anchor` の初期値 `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使うからです。初期値は2026年にChrome 151、Firefox 151、Safari 27で `normal` に変わり、それより前のChromeとSafari 26では、指定しなくても `anchor()` が暗黙のアンカーを使っていました。
 
@@ -235,7 +253,7 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 
 コンテンツの幅の中にある要素を、画面の幅いっぱいに広げたい場面はよくあります。かつては `margin-inline: calc(50% - 50vw)` のような指定が定番でしたが、本書では `vw` を使いません。スクロールバーの幅を含めて計算されるので、横スクロールの原因になるからです（「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。本書では、用途に合わせて3つの方法を使い分けます。
 
-1つ目は、レイアウトの側に画面の端までの列を用意しておく方法で、これを最初に検討します。「[7-2 余白を設計する](/layout/spacing/)」で説明したとおり、ページのレイアウトの左右に余白の列（ガター）を作っておけば、広げたい要素は `grid-column: --full` と書くだけで画面の端まで広がります。ビューポート単位を使わないので、スクロールバーの幅の違いにも影響されません。
+1つ目は、レイアウトの側に画面の端までの列を用意しておく方法で、これを最初に検討します。「[7-7 余白を設計する](/layout/spacing/)」で説明したとおり、ページのレイアウトの左右に余白の列（ガター）を作っておけば、広げたい要素は `grid-column: --full` と書くだけで画面の端まで広がります。ビューポート単位を使わないので、スクロールバーの幅の違いにも影響されません。
 
 2つ目は、コンテンツの幅の中にある要素の背景だけを、画面の端まで広げる方法です。擬似要素を絶対配置にして、`inset-inline` に画面の幅と親の幅の差の半分を負の値で指定します。
 
@@ -284,7 +302,7 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 
 ここで `100%` ではなく `100cqi` を使うのは、プロパティによって `%` の基準が変わるからです。`padding` の `%` は包含ブロックの幅を、`scroll-padding` の `%` はスクロールコンテナのスクロールポート（スクロールで表示される範囲）の大きさを基準にします。`100cqi` なら、どのプロパティに書いてもコンテナの幅を指すので、スクロールが止まる位置を、コンテンツの幅の左端にそろえられます。
 
-2つ目と3つ目の方法では、ビューポートの単位に `lvi` を使っています。横方向では、ブラウザのUIの出入りで幅が変わることはほとんどないので、`svi` と `lvi` は多くの場合同じ値です。私は、画面の端まで確実に広げたい場合には、最も大きい `lvi` を使っています。ただし、クラシックなスクロールバーが幅を取る環境では、`lvi` もスクロールバーの幅を含むので、わずかにはみ出します。ルートで横方向のはみ出しを `clip` で切り取っておきます（「[7-3 変化に強いレイアウト](/layout/defensive/)」）。
+2つ目と3つ目の方法では、ビューポートの単位に `lvi` を使っています。横方向では、ブラウザのUIの出入りで幅が変わることはほとんどないので、`svi` と `lvi` は多くの場合同じ値です。私は、画面の端まで確実に広げたい場合には、最も大きい `lvi` を使っています。ただし、クラシックなスクロールバーが幅を取る環境では、`lvi` もスクロールバーの幅を含むので、わずかにはみ出します。ルートで横方向のはみ出しを `clip` で切り取っておきます（「[7-8 変化に強いレイアウト](/layout/defensive/)」）。
 
 ## ガイドライン
 
@@ -305,6 +323,9 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 - [position-area - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area)
 - [position-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-anchor)
 - [anchor-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size)
+- [position-try-order - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-try-order)
+- [position-visibility - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-visibility)
+- [Cheatsheets for flex, grid, anchor positioning and invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
 - [CSS Anchor Positioning Module Level 1](https://drafts.csswg.org/css-anchor-position-1/)（W3C）
 - [CSS Anchor Positioning Module Level 2](https://drafts.csswg.org/css-anchor-position-2/)（W3C、エディターズドラフト）
 - [CSS Conditional Rules Module Level 5 - container-type](https://drafts.csswg.org/css-conditional-5/#container-type)（W3C）

@@ -40,6 +40,14 @@
   page: cascade/cascade-basics
   since: 0.1.0
 
+- id: no-all-unset
+  level: 非推奨
+  rule: 'プロパティをまとめて戻すときに `all: unset` を使わず、レイヤーを使うなら `all: revert-layer`、使わないなら `all: revert` を指定する。'
+  reason: '`unset` は継承されないプロパティを初期値に戻すので、`display` が `inline` になり、ブラウザのデフォルトスタイルのうち必要なものまで消えるため。'
+  aiProne: true
+  page: cascade/cascade-basics
+  since: 0.5.0
+
 # 2-2 セレクタで詳細度を設計する
 - id: no-id-selector
   level: 禁止
@@ -167,10 +175,18 @@
   level: 必須
   rule: CMS のように、レイヤーに入っていない外部のCSSと共存する環境では `@layer` を使わず、9つの分類はディレクトリ構成と `@import` の順番で保つ。
   reason: レイヤーの外のCSSは詳細度に関係なくレイヤーの中のCSSに勝つので、自分のCSSだけをレイヤーに入れると構造的に負けるため。
-  note: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。
+  note: 判断の基準は「外部のCSSを自分で読み込み、レイヤーに入れられるかどうか」です。壊れた既存のCSSから新しいコンポーネントを切り離すときに限り、`revert-layer-isolation-for-legacy` の書き方でレイヤーを使ってよいです。
   aiProne: true
   page: cascade/layers
   since: 0.1.0
+
+- id: revert-layer-isolation-for-legacy
+  level: 推奨
+  rule: '直せない既存のCSSがコンポーネントに流れ込むときは、レイヤーの中でコンポーネントの要素すべてに `all: revert-layer !important` を指定し、コンポーネント自身のスタイルは同じレイヤーの入れ子の無名レイヤーに書く。'
+  reason: '`!important` どうしではレイヤーの順番が逆になるので、レイヤーの外のスタイルを詳細度や `!important` に関係なく遮断でき、入れ子のレイヤーの値だけを戻せるため。'
+  note: 後ろのレイヤーやユーティリティクラスも遮断されます。`style` 属性に `!important` を付けた指定は防げません。`all` はカスタムプロパティを戻さず、`*` は擬似要素を選ばないので、継承する値に加え、書き換えられたトークンや擬似要素への指定は別に考えます。既存のCSSを直せるなら、そちらを先に検討します。
+  page: cascade/layers
+  since: 0.5.0
 
 # 2-4 @scope でスタイルを閉じ込める
 - id: scope-with-donut

@@ -159,7 +159,7 @@ AIが生成するコードには、クエリの条件を使い回そうとして
 
 ## ユーザーの環境を調べるメディア特性
 
-メディアクエリは、画面の幅のほかに、ユーザーの入力手段や設定も調べられます。`prefers-reduced-motion` と `any-hover` は、動きとホバーの扱いを決めるためのもので、[第11章「インタラクションとモーション」](/interaction/)で説明します。ここでは、幅の代わりに使うことが多い `pointer` と、見落としやすい `prefers-contrast` を取り上げます。
+メディアクエリは、画面の幅のほかに、ユーザーの入力手段や設定も調べられます。`prefers-reduced-motion` と `any-hover` は、動きとホバーの扱いを決めるためのもので、[第11章「インタラクションとモーション」](/interaction/)で説明します。ここでは、幅の代わりに使うことが多い `pointer` と、見落としやすい `prefers-contrast` と `prefers-reduced-transparency` を取り上げます。
 
 操作の手段に合わせて変えたい指定を、画面の幅で判定してはいけません。幅の狭いデスクトップのウィンドウはマウスで操作され、幅の広いタブレットは指で操作されるからです。入力の精度は `pointer` と `any-pointer` で調べます。値は `fine`（マウスやトラックパッドのように精度が高い）、`coarse`（タッチのように精度が低い）、`none` の3つです。
 
@@ -192,6 +192,24 @@ AIが生成するコードには、クエリの条件を使い回そうとして
 ```
 
 <Baseline id="prefers-contrast" name="prefers-contrast メディア特性" />
+
+透明度についても、同じ考え方の `prefers-reduced-transparency` があります。OSで透明度を下げる設定（macOSとiOSの「透明度を下げる」、Windowsの「透明効果」をオフにする設定）にしているかを調べ、値は `no-preference` と `reduce` の2つです。半透明の背景や `backdrop-filter` のすりガラスの上に文字を置いた部品は、背景の写真や色によって文字が読みにくくなります。`reduce` のときは、背景を不透明にします。
+
+```css title="🙆‍♂ Recommended: 透明度を下げる設定のときに背景を不透明にする"
+._overlay {
+  background-color: oklch(from var(--color--neutral--50) l c h / 70%);
+  backdrop-filter: blur(12px);
+
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--color--neutral--50);
+    backdrop-filter: none;
+  }
+}
+```
+
+<Baseline id="prefers-reduced-transparency" name="prefers-reduced-transparency メディア特性" />
+
+2026年10月の時点で、`prefers-reduced-transparency` に対応しているのはChrome系のブラウザだけです。対応していない環境では条件が成り立たず、半透明のまま表示されます。そのため、この指定に頼って読みやすさを確保するのではなく、半透明の状態でも文字と背景のコントラストが足りる色を選んだうえで、設定に応じてさらに読みやすくする指定として書きます。
 
 ## ガイドライン
 

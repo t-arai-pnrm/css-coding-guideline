@@ -1,0 +1,72 @@
+@layer tokens {
+  :root {
+    --spacing--xxs: 8;
+    --spacing--sm: 16;
+    --spacing--lg: 32;
+  }
+}
+
+@layer compositions {
+  /**
+   * 子要素を縦に積み、間隔をそろえる。
+   *
+   * @prop {length} --stack--gap [0] - 子要素の間隔
+   *
+   * @example
+   * <div class="stack" style="--stack--gap: calc(var(--spacing--md) / 16 * 1rem)">
+   *   <h2>…</h2>
+   *   <p>…</p>
+   * </div>
+   */
+  .stack {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--stack--gap, 0);
+  }
+}
+
+@layer components {
+  @scope (.scoped.stack-demo) to (.scoped) {
+    ._eyebrow {
+      color: oklch(50% 0.12 250deg);
+      font-size: calc(14 / 16 * 1rem);
+      font-weight: 700;
+    }
+
+    ._title {
+      font-size: calc(24 / 16 * 1rem);
+    }
+
+    ._cards {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: calc(var(--spacing--sm) / 16 * 1rem);
+    }
+
+    ._card {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._card-number {
+      color: oklch(50% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._card-title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    /* 中身の幅に戻し、余った高さを上に取ってカードの下端に寄せる */
+    ._card-link {
+      align-self: start;
+      margin-block-start: auto;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: calc(infinity * 1px);
+      background-color: oklch(45% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

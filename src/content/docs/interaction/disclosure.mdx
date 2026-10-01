@@ -57,13 +57,44 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 `command` 属性は `<button>` でしか使えません。そのため、`div` や `span` にクリックの処理を付けたボタンのような、マークアップの誤りも防げます。`closedby="any"` を指定すると、Escキーに加えて、背景（`::backdrop`）のクリックでも閉じます。これまでクリックの位置を調べていた処理は不要です。
 
+組み込みのコマンドは6つあり、それぞれ対象の要素のメソッドに対応します。`commandfor` 属性には、同じ文書（Shadow DOMの中なら同じシャドウルート）にある要素のIDを書きます。ダイアログを非モーダルで開くコマンドはないので、`show()` で開く場合はJavaScriptを使います。
+
+| `command` の値 | 対象 | 対応するメソッド |
+| --- | --- | --- |
+| `show-modal` | `<dialog>` | `showModal()` |
+| `close` | `<dialog>` | `close()` |
+| `request-close` | `<dialog>` | `requestClose()` |
+| `show-popover` | `popover` 属性の要素 | `showPopover()` |
+| `hide-popover` | `popover` 属性の要素 | `hidePopover()` |
+| `toggle-popover` | `popover` 属性の要素 | `togglePopover()` |
+
+`close` と `request-close` は、閉じる前に `cancel` イベントが発生するかどうかが違います。`close` はすぐに閉じます。`request-close` はEscキーで閉じるときと同じく先に `cancel` イベントを発生させるので、`preventDefault()` で閉じるのを止められます。入力中のフォームを含むダイアログでは、閉じるボタンに `request-close` を指定すると、破棄してよいかの確認を `cancel` イベントの処理1か所にまとめられます。どちらのコマンドでも、ボタンの `value` 属性の値はダイアログの `returnValue` に入ります。
+
 `showModal()` で開いたダイアログは、背面の要素を操作できない状態にし、閉じたときには開く前の要素へフォーカスを戻します。独自のフォーカストラップは作りません。ブラウザのアドレスバーやツールバーへの移動まで妨げてしまうからです。ダイアログの見出しは `<h1>` にして、`aria-labelledby` でダイアログの名前にします。背面の要素は操作できないだけでなくinertになり、アクセシビリティツリーからも外れるので、ほかの見出しはツリーに現れません。そのため、ダイアログの中の見出しレベルは、ページ本体と続けて数えず `<h1>` から始めます。背面がinertにならない`show()`の非モーダルなダイアログには、この理由は当てはまりません。
 
 <Baseline id="invoker-commands" name="command 属性と commandfor 属性" />
 
 <Baseline id="dialog-closedby" name="closedby 属性" />
 
-2026年9月の時点で、`command` 属性はSafari 26.2から対応していますが、`closedby` 属性はSafariが未対応です。`command` 属性に対応していないブラウザでは、ボタンを押してもダイアログが開きません。私は、Web標準で使えるようになる機能はポリフィルを入れてでも使う方針なので、`invokers-polyfill` と、私が作った `dialog-closedby-polyfill` を読み込んでいます。`closedby` 属性に対応していなくても、Escキーと閉じるボタンでは閉じられます。
+2026年10月の時点で、`command` 属性と `commandfor` 属性はChrome 135、Firefox 144、Safari 26.2から対応していますが、`closedby` 属性はSafariが未対応です。`command` 属性に対応していないブラウザでは、ボタンを押してもダイアログが開きません。私は、Web標準で使えるようになる機能はポリフィルを入れてでも使う方針なので、`invokers-polyfill` と、私が作った `dialog-closedby-polyfill` を読み込んでいます。`closedby` 属性に対応していなくても、Escキーと閉じるボタンでは閉じられます。
+
+`command` 属性には、`--` で始まる独自の値（カスタムコマンド）も書けます。カスタムコマンドのボタンを押すと、ブラウザは何も操作せず、対象の要素に `command` イベントを発生させます。イベントの `command` プロパティにはコマンドの値が、`source` プロパティには押されたボタンが入ります。処理は対象の要素の側に1つ書くだけで済み、ボタンごとにクリックの処理を付ける必要はありません。
+
+```html title="カスタムコマンドのボタン"
+<button type="button" commandfor="photo-viewer" command="--zoom-in">拡大</button>
+<button type="button" commandfor="photo-viewer" command="--zoom-out">縮小</button>
+<img id="photo-viewer" src="photo.jpg" alt="…">
+```
+
+```js title="対象の要素で command イベントを受け取る"
+const viewer = document.getElementById('photo-viewer');
+viewer.addEventListener('command', (event) => {
+  if (event.command === '--zoom-in') zoomBy(viewer, 1.25);
+  if (event.command === '--zoom-out') zoomBy(viewer, 0.8);
+});
+```
+
+`command` イベントは、組み込みのコマンドでも、操作の前に発生します。イベントは取り消し可能で、`preventDefault()` を呼ぶとダイアログやポップオーバーの開閉も行われません。
 
 ## ダイアログの開閉を動かす
 
@@ -133,13 +164,13 @@ import detailsCss from '../../../demos/interaction/details-accordion/style.css?r
 
 ## `popover` 属性による小さな表示
 
-メニュー、ツールチップ、通知のように、背面の操作を止めない小さな表示には、`popover` 属性を使います。ボタンの `popovertarget` 属性で対象を指定すれば、JavaScriptなしで開閉できます。`popover` 属性の要素はトップレイヤーに表示されるので、ほかの要素より手前に出すための `z-index` の調整も要りません。
+メニュー、ツールチップ、通知のように、背面の操作を止めない小さな表示には、`popover` 属性を使います。ボタンの `popovertarget` 属性で対象を指定すれば、JavaScriptなしで開閉できます。`commandfor` 属性と `command="toggle-popover"` でも同じ操作になるので、ダイアログと書き方をそろえることもできます。`popover` 属性の要素はトップレイヤーに表示されるので、ほかの要素より手前に出すための `z-index` の調整も要りません。
 
 `popover` 属性の値が `auto`（値を省略したとき）なら、外側をクリックするかEscキーを押すと閉じます。ほかの `auto` のポップオーバーを開くと、先に開いていたものは閉じます。自動で閉じてほしくない通知には、`popover="manual"` を指定します。開いている状態は `:popover-open` 擬似クラスで選べます。
 
 <Baseline id="popover" />
 
-注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[7-4 重なりと配置](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、11-2のデモにあります。
+注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[7-9 重なりと配置](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、11-2のデモにあります。
 
 ## `<details>` と `name` 属性によるアコーディオン
 
@@ -267,6 +298,10 @@ Safariは、2026年9月の時点で `hidden="until-found"` に対応していま
 - [アクセシビリティに配慮したタブメニューの実装例](https://www.tak-dcxi.com/article/accessibility-conscious-tab-menu/)（TAKLOG、2024年4月）
 - [dialog-closedby-polyfill](https://github.com/tak-dcxi/dialog-closedby-polyfill)（TAK）
 - [invokers-polyfill](https://github.com/keithamus/invokers-polyfill)
+- [button 要素の command 属性 - HTML | MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command)
+- [CommandEvent - Web API | MDN](https://developer.mozilla.org/en-US/docs/Web/API/CommandEvent)
+- [HTML Standard - The button element](https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element)（WHATWG。`command` 属性と `commandfor` 属性）
+- [Cheatsheets for flex, grid, anchor positioning and invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
 - [dialog 要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/dialog)
 - [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)
 - [overscroll-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior)

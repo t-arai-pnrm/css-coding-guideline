@@ -37,6 +37,7 @@ sidebar:
 | ベーススタイルの `a:link, a:visited` | `:where(a:any-link)` | [`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)、[`no-heavy-specificity-in-global`](/reset/global-pitfalls/#rule-no-heavy-specificity-in-global) | AI |
 | JavaScriptで親に `has-image` のようなクラスを付ける | `&:has(> ._image)` | [`has-over-state-class`](/cascade/selectors/#rule-has-over-state-class) | AI |
 | `body:has(.modal-open)` のように、ページ全体を起点にした `:has()` | コンポーネントのルートを起点にし、`&:has(> ._input:checked)` のように引数の範囲を絞る | [`has-narrow-anchor`](/cascade/selectors/#rule-has-narrow-anchor) | AI |
+| `all: unset` でまとめて戻す | `all: revert-layer`（レイヤーを使わないなら `all: revert`） | [`no-all-unset`](/cascade/cascade-basics/#rule-no-all-unset) | AI |
 | BEMの `.news-card__title` | `@scope (.scoped.news-card) to (.scoped)` の中の `._title` | [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)、[`child-class-underscore`](/notation/naming/#rule-child-class-underscore) | AI |
 
 ## リセットとベーススタイル
@@ -90,9 +91,11 @@ sidebar:
 | `grid-template-columns: repeat(3, 1fr)` | `repeat(3, minmax(0, 1fr))` | [`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr) | AI |
 | `minmax(360px, 1fr)` | `minmax(min(100%, 360px), 1fr)` | [`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent) | AI |
 | `overflow-x: hidden` | `overflow-x: clip` | [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden) | AI |
+| スクロールする要素の `align-content: center` | `align-content: safe center` | [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable) | AI |
 | `top: 50%; left: 50%; transform: translate(-50%, -50%);` | `inset: 0; margin: auto;`。Gridの中なら `place-items: center` | [`absolute-centering-with-margin-auto`](/layout/positioning/#rule-absolute-centering-with-margin-auto) | AI |
 | カードの見出しの高さを `min-height` やJavaScriptでそろえる | サブグリッド（`grid-template-rows: subgrid`） | [`subgrid-for-aligned-rows`](/layout/grid-first/#rule-subgrid-for-aligned-rows) | AI |
 | 条件なしの `position: sticky` のヘッダー | `@media (height >= calc(600 / 16 * 1rem))` の中で固定する | [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query) | AI |
+| `scroll` イベントで、ヘッダーが留まったときにクラスを付ける | `container-type: scroll-state` と `@container scroll-state(stuck: block-start)` | [`scroll-state-for-sticky-styles`](/layout/sticky/#rule-scroll-state-for-sticky-styles) | AI |
 | ポップオーバーとボタンに `anchor-name` を付け、`top: anchor(bottom)` で配置する | `popovertarget` や `commandfor` の暗黙のアンカーと `position-area` | [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first) | AI |
 | `position-area: bottom right` | `position-area: block-end span-inline-end` | [`position-area-logical-keywords`](/layout/positioning/#rule-position-area-logical-keywords) | AI |
 
@@ -116,7 +119,7 @@ sidebar:
 | 古い書き方 | 本書の書き方 | ルール | AI |
 | --- | --- | --- | --- |
 | OSごとの和文フォントを並べたスタックや、`system-ui` から始まるスタック | 特に指定がなければ `font-family: sans-serif` | [`font-family-sans-serif`](/typography/fonts/#rule-font-family-sans-serif)、[`no-system-ui-for-japanese`](/typography/fonts/#rule-no-system-ui-for-japanese) | AI |
-| `line-height: 1` | 1.5以上を保ち、上下の余白は `text-box-trim` で取り除く | [`no-line-height-one`](/typography/line-height/#rule-no-line-height-one)、[`text-box-trim-for-half-leading`](/typography/line-height/#rule-text-box-trim-for-half-leading) | AI |
+| `line-height: 1` | ベースは1.5以上を保ち、見出しは用途に合わせて狭める（和文で1.25〜1.5ほど）。上下の余白は `text-box-trim` で取り除く | [`no-line-height-one`](/typography/line-height/#rule-no-line-height-one)、[`text-box-trim-for-half-leading`](/typography/line-height/#rule-text-box-trim-for-half-leading) | AI |
 | 本文の `font-feature-settings: "palt"` | 本文はベタ組みにし、`palt` は見出しに限る | [`solid-setting-for-body-text`](/typography/japanese-typesetting/#rule-solid-setting-for-body-text)、[`palt-for-headings`](/typography/japanese-typesetting/#rule-palt-for-headings) | AI |
 | `word-break: break-all`、`overflow-wrap: break-word` | `word-break` は初期値のままにし、`overflow-wrap: anywhere` | [`overflow-wrap-over-word-break`](/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break) | AI |
 | 見た目を整えるための `<br>` | `.-br` と `.-wbr` のユーティリティ、見出しの `word-break: auto-phrase` | [`no-br-for-visual-breaks`](/typography/size-and-line-breaks/#rule-no-br-for-visual-breaks) | AI |

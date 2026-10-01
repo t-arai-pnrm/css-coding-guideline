@@ -1,0 +1,61 @@
+@layer components {
+  @scope (.scoped.box-model-areas) to (.scoped) {
+    :scope {
+      --_content: oklch(90% 0.08 150deg);
+      --_padding: oklch(85% 0.08 250deg);
+      --_margin: oklch(92% 0.06 80deg);
+
+      display: block grid;
+      gap: 16px;
+    }
+
+    /* マージンの領域を見せるために親に斜線を敷き、flow-root で子のマージンが親の外へ出ないようにする */
+    ._margin {
+      display: block flow-root;
+      background-image: repeating-linear-gradient(45deg, var(--_margin) 0 6px, oklch(98% 0.02 80deg) 6px 12px);
+    }
+
+    ._box {
+      margin: 24px;
+      padding: 24px;
+      border: 12px dashed oklch(45% 0.12 250deg);
+
+      /* 1枚目の層だけを内容の領域に切り抜き、背景色は初期値の border-box まで塗る */
+      background: linear-gradient(var(--_content), var(--_content)) content-box, var(--_padding);
+      text-align: center;
+    }
+
+    ._legend {
+      display: block grid;
+      gap: 4px;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._key {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+
+      &::before {
+        content: "";
+        flex-shrink: 0;
+        inline-size: 1em;
+        aspect-ratio: 1;
+        border: 1px solid oklch(60% 0 0deg);
+        background: var(--_swatch);
+      }
+
+      &[data-area="content"] {
+        --_swatch: var(--_content);
+      }
+
+      &[data-area="padding"] {
+        --_swatch: var(--_padding);
+      }
+
+      &[data-area="margin"] {
+        --_swatch: var(--_margin);
+      }
+    }
+  }
+}

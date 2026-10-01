@@ -1,0 +1,175 @@
+---
+title: 8-5 セーフエリアに対応する
+description: viewport-fit=coverで画面の端まで描画するときは、env(safe-area-inset-*)をmax()で通常の余白と組み合わせ、背景は端まで、文字とボタンはセーフエリアの内側に置きます。画面の下に固定する要素には、下端のセーフエリアを足します。
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import safeAreaHtml from '../../../demos/responsive/safe-area/index.html?raw';
+import safeAreaCss from '../../../demos/responsive/safe-area/style.css?raw';
+
+ページを画面の端まで描画するために `viewport-fit=cover` を指定したら、文字やボタンは `env(safe-area-inset-*)` で確保した範囲の内側に置きます。値は `max()` で通常の余白と比べ、セーフエリアがない画面でも余白が残るようにします。背景は画面の端まで塗り、余白で内側へ寄せるのは中身だけです。
+
+画面の下に固定するバーやボタンには、下端のセーフエリアを足します。セーフエリアの値は画面の物理的な上下左右を表すので、左右の余白は物理プロパティで書きます。
+
+## 画面の端に隠れる範囲
+
+最近のスマートフォンの画面は、長方形ではありません。上端にはカメラを収めるノッチやパンチホールがあり、四隅は丸く削られ、下端にはホーム画面へ戻るためのホームインジケーターが重なります。ページの内容がこれらの位置に描かれると、文字が欠けたり、ボタンを押そうとしてホームに戻ってしまったりします。
+
+セーフエリアは、こうした切り欠きやシステムのUIに隠されない、画面の内側の長方形です。ブラウザは、画面の各辺からセーフエリアまでの距離を環境変数で提供します。名前は `safe-area-inset-top`、`safe-area-inset-right`、`safe-area-inset-bottom`、`safe-area-inset-left` の4つです。仕様では、長方形の画面ではこの4つがすべて0になると定められています。
+
+ブラウザは、デフォルトではページがセーフエリアの外に出ないように表示します。`<meta name="viewport">` の `viewport-fit` のデフォルト値は `auto` で、ページ全体が見える状態で表示されます。横向きのiPhoneのSafariでは、ノッチのある側を避けてページが内側に寄り、左右に空いた部分はページの背景色で塗られます。{/* 要確認: 出典なし */}
+
+この表示は安全ですが、画面いっぱいの写真や、端まで色を塗った帯のようなデザインは、左右が途切れて見えます。端まで描画するには `viewport-fit=cover` を指定します。その代わり、ブラウザはページをセーフエリアの内側に寄せなくなるので、文字やボタンが切り欠きの下に入らないように、CSSで余白を確保する必要があります。
+
+```html title="🙆‍♂ Recommended: 端まで描画するときだけ viewport-fit=cover を指定する"
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+```
+
+`viewport-fit=cover` を指定しないページでは、`env(safe-area-inset-*)` を書いても値は0のままです（MDNの `env()` の解説より）。逆に、`cover` を指定したのにセーフエリアの余白を書かないと、ノッチのある端末でだけ内容が隠れます。
+
+## `env()` で値を読む
+
+環境変数は `env()` で読みます。`var()` に似た書き方ですが、値を決めるのはブラウザで、CSSから書き換えることはできません。名前は大文字と小文字を区別するので、`env(SAFE-AREA-INSET-TOP)` は別の名前として扱われます。次の2行は、第2引数のない形とある形です。
+
+```css
+env(safe-area-inset-bottom)
+env(safe-area-inset-bottom, 16px)
+```
+
+`env()` には、`var()` と同じく第2引数にフォールバックの値を書けます。ただし、第2引数が使われるのは、ブラウザがその名前の環境変数を知らない場合だけです。`env(safe-area-inset-bottom, 16px)` と書いても、パソコンのブラウザでは環境変数が0として存在するので、値は16pxではなく0になります。一方、`env(unknown-name, 16px)` のように知らない名前を書くと16pxになります（2026年10月、Chrome 152で確認）。
+
+セーフエリアがない画面でも余白を残したいときは、第2引数ではなく、次の節で説明する `max()` を使います。
+
+<Baseline id="safe-area-inset" name="セーフエリアの環境変数" />
+
+`env()` と `safe-area-inset-*` は、2020年1月にすべての主要なブラウザで使えるようになった機能です（2026年10月確認）。本書の対象のブラウザはすべて対応しているので、固定の値の宣言を前に書いておく二段構えのフォールバックも要りません。対象のブラウザが対応している機能のフォールバックは書かないという方針は、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/#rule-remove-unneeded-fallbacks)」で説明しています。
+
+## 通常の余白と組み合わせる
+
+セーフエリアの値は、システムのUIや切り欠きが占める幅そのものです。内容とUIの間のゆとりは含まれません。また、長方形の画面では0なので、`env()` だけを余白にすると、パソコンでは内容が画面の端に接してしまいます。
+
+左右の余白（ガター）のように、セーフエリアの外側にすでに十分な余白がある場合は、`max()` で通常の余白と比べます。セーフエリアが通常の余白より狭ければ通常の余白を、広ければセーフエリアの幅を使います。セーフエリアの外でも最低限の余白が確保され、余白が二重に足されることもありません。
+
+```css title="🙆‍♂ Recommended: 通常の余白とセーフエリアの大きいほうを使う"
+._section {
+  /* セーフエリアは画面の物理的な左右にあるので、物理プロパティで書く */
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-right: max(16px, env(safe-area-inset-right));
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-left: max(16px, env(safe-area-inset-left));
+}
+```
+
+一方、画面の端から少し離して浮かせるボタンのように、システムのUIとの間にも距離を空けたい場合は、`calc()` で足し合わせます。`max()` で比べると、セーフエリアが通常の距離より広い端末では、ボタンがホームインジケーターに接して見えるからです。2つの書き方は、「余白の一部をセーフエリアで兼ねるか」で選びます。
+
+通常の余白は、本書では `px` で書きます（「[3-1 pxとremを使い分ける](/values/px-and-rem/#rule-padding-and-decoration-in-px)」。左右の余白まで文字サイズに合わせて広がると、1行の文字数が減るため）。セーフエリアの値も長さなので、そのまま比べられます。
+
+### 論理プロパティにしない理由
+
+左右の余白を物理プロパティで書いているのは、`safe-area-inset-*` が画面の物理的な方向を表すからです。`safe-area-inset-left` は、書字方向に関係なく画面の左端からの距離です。論理プロパティの `padding-inline-start` に書くと、右から左へ書く言語のページでは右側の余白に使われ、ノッチのない側を空けてしまいます。
+
+端末を横向きにすると、ノッチとホームインジケーターの位置も物理的に回転します。縦向きでは上下にあったセーフエリアが、横向きでは左右と下に現れます。縦向きの画面だけを想定して `safe-area-inset-top` と `safe-area-inset-bottom` だけを書くと、横向きにしたとき、左右の内容が切り欠きの下に入ります。上下左右のどの辺にもセーフエリアが現れうるものとして書きます。
+
+本書は寸法や余白を論理プロパティで書きますが、物理的な方向に意味がある値はその例外です（「[5-3 モダンな記法にそろえる](/notation/modern-syntax/#rule-logical-properties)」）。Stylelintの警告は1行ずつ無効にし、理由をコメントに残します。
+
+## 背景は端まで、中身はセーフエリアの内側へ
+
+`viewport-fit=cover` を指定する目的は、背景を画面の端まで描くことです。そのため、セーフエリアの余白は、背景を持つ要素の外側（`margin`）ではなく、内側（`padding`）に入れます。
+
+最も簡単なのは、`body` の左右の `padding` にセーフエリアを入れる方法です。ルート要素や `body` の背景はキャンバス全体に描かれるので、ページの背景色は画面の端まで届きます。ただし、`body` の中にあるセクションの背景は、`body` の `padding` の内側までしか広がりません。セクションごとに背景色を変えるデザインでは、左右に背景の途切れた帯ができます。
+
+セクションの背景も端まで広げたいときは、`body` には余白を付けず、ページのレイアウトのガターにセーフエリアを入れます。「[7-13-10 primary-layout](/layout/compositions/primary-layout/)」のように、左右のガターの列を持つグリッドなら、ガターの最小幅を `max(ガター, env(safe-area-inset-left))` のように指定します。全幅の子は画面の端まで広がり、コンテンツ幅の子はセーフエリアの内側に収まります。{/* 要確認: 出典なし */}
+
+## 画面の下に固定するバーとボタン
+
+画面の下に固定する要素は、セーフエリアの影響をとくに受けます。「お問い合わせ」のような固定のバーや、ページの先頭へ戻るボタンを画面の下端に置くと、ホームインジケーターと重なります。ボタンを押すつもりで下端をスワイプすると、ホーム画面に戻ってしまいます。
+
+画面の下端に接するバーは、背景を端まで塗り、`padding-block-end` を `max()` で指定します。背景はホームインジケーターの後ろまで広がり、ボタンはセーフエリアの内側に収まります。左右の余白も、横向きの端末に備えて同じようにセーフエリアと比べます。
+
+```css title="🙆‍♂ Recommended: 下端に接するバーは、背景を端まで塗り、中身をセーフエリアの内側に置く"
+._bar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding-block: 12px max(12px, env(safe-area-inset-bottom));
+}
+```
+
+画面の端から離して浮かせるボタンは、`inset-block-end` に通常の距離とセーフエリアを `calc()` で足します。浮かせるボタンには、ボタンとホームインジケーターの間にも背景のない隙間が必要だからです。
+
+```css title="🙆‍♂ Recommended: 浮かせるボタンは、通常の距離にセーフエリアを足す"
+._back-to-top {
+  position: fixed;
+  inset-block-end: calc(16px + env(safe-area-inset-bottom));
+  inset-inline-end: 16px;
+}
+```
+
+```css title="🙅‍♂ Not Recommended: セーフエリアを考えずに下端に固定する"
+/* 🙅‍♂ Not Recommended */
+._back-to-top {
+  position: fixed;
+  inset-block-end: 16px;
+  inset-inline-end: 16px;
+}
+```
+
+固定するバーの高さの分だけ、ページの最後の内容は隠れます。ページの末尾には、バーの高さとセーフエリアを足した余白を空けておきます。また、`position: fixed` の要素は、祖先に `transform` や `filter` があると、ビューポートではなくその祖先に対して固定されます（「[7-9 重なりと配置](/layout/positioning/)」）。セーフエリアの値はビューポートの端からの距離なので、この場合は位置がずれます。
+
+## キーボードの表示と `interactive-widget`
+
+入力欄にフォーカスすると、画面の下からソフトウェアキーボードが現れます。キーボードが出たときにビューポートをどう縮めるかは、`<meta name="viewport">` の `interactive-widget` で指定します。値は `resizes-visual`、`resizes-content`、`overlays-content` の3つで、デフォルトは `resizes-visual` です。
+
+`resizes-visual` では、キーボードが出ても縮むのはビジュアルビューポート（実際に見えている範囲）だけです。レイアウトの基準になるビューポートと初期包含ブロックの大きさは変わらないので、`dvb` を含むビューポート単位の値も変わらず、`100dvb` の要素の下端はキーボードに隠れます。画面の下に `position: fixed` で固定したバーは、キーボードの後ろに隠れることがあります。Chromeは、Android版の108からこの動作をデフォルトにし、iOSのSafariの動作にそろえました。
+
+`resizes-content` を指定すると、キーボードの分だけビューポートそのものが縮み、ビューポート単位の値も小さくなります。下に固定したバーは、キーボードのすぐ上に移動します。`overlays-content` では、どちらのビューポートも縮まず、キーボードがページの上に重なります。
+
+```html title="🙆‍♂ Recommended: キーボードの分だけビューポートを縮めたいページでだけ指定する"
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+```
+
+ただし、`interactive-widget` に対応しているのは、Android版のChrome 108以降とFirefox 133以降です（2026年10月確認）。WebKitには実装されていますが、Safariではまだ出荷されていません。Safariではデフォルトの `resizes-visual` と同じ動作になるので、`resizes-content` だけを頼りにレイアウトを組むわけにはいきません。入力欄の少ないコーポレートサイトやメディアでは指定せず、チャットの入力欄のように、キーボードの上に常に見えている必要があるUIでだけ検討します。{/* 要確認: 出典なし */}
+
+キーボードの位置と大きさを `env(keyboard-inset-*)` で読む方法もあります。ただし、この環境変数が値を持つのは、キーボードをページの上に重ねる設定のときだけです。設定には、Virtual Keyboard APIの `overlaysContent` か、`interactive-widget=overlays-content` を使います。{/* 要確認: 出典なし */} Virtual Keyboard API自体も、Chromium系のブラウザでしか使えません（2026年10月確認）。
+
+## ビューポート単位との関係
+
+`svb` や `dvb` のビューポート単位は、アドレスバーのようなブラウザのUIの出入りに応じたビューポートの大きさです。セーフエリアは、そのビューポートの中で、切り欠きやシステムのUIに隠れる範囲です。3つのビューポートの違いと使い分けは、「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で説明しています（高さは `svb` を優先し、スクロールで値が変わる `dvb` を要素の大きさに使わない）。
+
+`viewport-fit=cover` を指定すると、ビューポートは切り欠きのある範囲まで広がります。たとえば `min-block-size: 100svb` の画面いっぱいのヒーローは、背景が画面の端まで届く一方で、上下の端の文字はノッチやホームインジケーターに重なることがあります。ヒーローの中身にも、上下のセーフエリアを `padding` で空けます。
+
+セーフエリアの値は、ブラウザのUIの出入りによって変わることがあります。ツールバーが引っ込むと、それまでツールバーが覆っていた下端にホームインジケーターが現れ、`safe-area-inset-bottom` が変わります。{/* 要確認: 出典なし */} 変化しない最大の値を表す `safe-area-max-inset-*` も仕様にありますが、2026年10月の時点で対応しているのはChromium系のブラウザだけです。{/* 要確認: 出典なし */}
+
+## コード例とデモ
+
+iframeの中では、実機のセーフエリアは再現できません。iframeを表示しているブラウザがパソコンかスマートフォンかに関係なく、`env(safe-area-inset-*)` は0になります。
+
+そこで、次のデモでは、セーフエリアの値を内部用のカスタムプロパティ（`--_inset-bottom` など）に入れ、ラジオボタンで差し替えています。差し替える値は、ブラウザが知らない名前の `env()` の第2引数です。「第2引数は名前を知らないときだけ使われる」という動作を利用した模擬で、実際のページでは `env(safe-area-inset-*)` を直接書きます。
+
+<Demo title="セーフエリアを模擬した全幅の帯と、下端に固定したバー" html={safeAreaHtml} css={safeAreaCss} height="480px" widths={[375, 812]} />
+
+縦向きの例では、下端の斜線の範囲（ホームインジケーター）にバーの背景が広がり、ボタンはその上に収まります。横向きの例では、全幅の帯の背景は左右の端まで届き、文字は左右の斜線の内側に寄ります。「なし」では、通常の余白（16px）が使われます。
+
+## 実機での確認と比例スケールとの組み合わせ
+
+セーフエリアの不具合は、パソコンのブラウザでは見つかりません。パソコンのブラウザではセーフエリアがすべて0で、Chromeの開発者ツールのデバイスモードも、切り欠きのある端末を選んでもセーフエリアを0として扱います。{/* 要確認: 出典なし */} 確認には、実機か、XcodeのiOSシミュレーターを使います。縦向きと横向きの両方で、文字とボタンが切り欠きやホームインジケーターに重ならないことを確かめます。
+
+「[8-4 実践パターン](/responsive/design-comp-pattern/)」の比例スケール（画面の幅に比例して寸法を拡大・縮小する `--px`）を使う案件でも、セーフエリアの値には比率を掛けません。切り欠きやホームインジケーターの大きさは、ページの寸法と関係なく端末で決まっているからです。`max(calc(20 * var(--px)), env(safe-area-inset-left))` のように、比例する余白とセーフエリアをそのまま比べます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [env() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/env)
+- [&lt;meta name="viewport"&gt; - HTML | MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/viewport)
+- [CSS Environment Variables Module Level 1](https://drafts.csswg.org/css-env-1/)
+- [CSS Viewport Module Level 1](https://drafts.csswg.org/css-viewport/)
+- [Prepare for viewport resize behavior changes coming to Chrome on Android | Chrome for Developers](https://developer.chrome.com/blog/viewport-resize-behavior)
+- [Using safe-area-inset to build mobile-safe layouts | Polypane](https://polypane.app/blog/using-safe-area-inset-to-build-mobile-safe-layouts/)
+- [少しの記述でユーザビリティやアクセシビリティを向上させるHTML/CSSテクニック集 | TAK](https://www.tak-dcxi.com/article/html-css-techniques-to-improve-usability-and-accessibility-with-minimal-code/)

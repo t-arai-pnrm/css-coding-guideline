@@ -1,0 +1,50 @@
+@layer components {
+  @scope (.scoped.alignment-grid-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._grid {
+      display: block grid;
+
+      /* トラックの合計（132px × 116px）をコンテナより小さくして、余りを作る */
+      grid-template-columns: repeat(2, 64px);
+      grid-template-rows: repeat(2, 56px);
+      gap: 4px;
+      block-size: 200px;
+      border: 1px dashed oklch(60% 0 0deg);
+      background-color: oklch(97% 0.01 250deg);
+
+      &[data-place="items"] {
+        place-items: center;
+      }
+
+      &[data-place="content"] {
+        place-content: center;
+      }
+
+      &[data-place="between"] {
+        place-content: space-between;
+      }
+    }
+
+    ._item {
+      padding-block: 2px;
+      padding-inline: 8px;
+      background-color: oklch(70% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

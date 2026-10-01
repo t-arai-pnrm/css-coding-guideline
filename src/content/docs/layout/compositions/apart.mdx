@@ -1,0 +1,184 @@
+---
+title: "7-13-3 apart：子要素を両端に分ける"
+description: "ヘッダーのロゴとナビゲーションのように、2つのまとまりをインライン方向の両端に分ける配置は apart で書きます。両端の最小の間隔を列の間隔で渡し、片側に複数の要素を置くときは1つの要素に包みます。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../../components/Baseline.astro';
+import Demo from '../../../../components/Demo.astro';
+import Guideline from '../../../../components/Guideline.astro';
+import apartHtml from '../../../../demos/layout/composition-apart/index.html?raw';
+import apartCss from '../../../../demos/layout/composition-apart/style.css?raw';
+import wrapHtml from '../../../../demos/layout/composition-apart-wrap/index.html?raw';
+import wrapCss from '../../../../demos/layout/composition-apart-wrap/style.css?raw';
+
+ヘッダーのロゴとナビゲーション、フッターの著作権表示とリンク集のように、2つのまとまりをインライン方向の両端に分ける配置は、コンポジション `apart` で書きます。`apart` は子要素を `justify-content: space-between` で両端に分け、入りきらなくなったら折り返します。両端の要素が接しないように、最小の間隔を `--apart--column-gap` で渡します。
+
+`apart` の直下に置く子は、両端に分ける2つのまとまりにします。片側に複数の要素を置くときは1つの要素に包み、その中を `cluster` などで並べます。折り返したときに2行目の要素が行頭に来ることも、`apart` の性質として理解しておきます。2行目も行末に寄せたいときは、`apart` ではなく `auto` の `margin` を使います。
+
+コンポジションの全体の考え方（配置だけを受け持つ、間隔は公開プロパティで受け取る、間隔のデフォルト値は0）は、「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。この節では、その考え方を前提に `apart` の使い方を説明します。
+
+## 両端に分ける配置をそのつど書くと起きること
+
+サイトのヘッダーでは、ロゴを左端に、ナビゲーションを右端に置く配置がよく使われます。これをコンポーネントのCSSで書くと、次のようになりがちです。
+
+```css title="🙅‍♂ Not Recommended: 折り返しと最小の間隔のない両端の配置"
+/* 🙅‍♂ Not Recommended */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+```
+
+広い画面では、この指定で意図どおりに表示されます。問題が出るのは、ナビゲーションの項目が増えたときや、画面が狭くなったときです。`flex-wrap` の指定がないので、ロゴとナビゲーションは1行に収まろうとして縮み、それでも入りきらなければはみ出します。間隔の指定もないので、縮んでいく途中でロゴとナビゲーションが接します。
+
+`justify-content: space-between` が作る余白は、行に余った空間を要素の間に配ったものです。余った空間がなくなれば、余白も0になります。両端の要素の間に必ず確保したい間隔は、`space-between` とは別に `gap` で指定しなければなりません。
+
+フッターの著作権表示とリンク集、記事の一覧の見出しと「すべて見る」のリンク、カードの下部の日付とタグのように、両端に分ける配置はヘッダー以外にもたくさんあります。そのたびに `flex-wrap` と `gap` を思い出して書くのは、人とAIのどちらにとっても負担です。両端に分ける配置をコンポジションにしておけば、守りの指定が1か所に集まり、HTMLの `class="apart"` を見るだけで、子が両端に分かれることが分かります。
+
+## apart の書き方
+
+`apart` は、`compositions` レイヤーに置く次のクラスです。ファイルの先頭には、公開プロパティの一覧をJSDocの形式で書きます。
+
+```css title="🙆‍♂ Recommended: 両端に分け、入りきらなければ折り返す"
+/**
+ * 子要素をインライン方向の両端に分けて配置し、入りきらなければ折り返す。
+ *
+ * @prop {length}  --apart--gap        [0]      - 行と列の間隔（一括）
+ * @prop {length}  --apart--row-gap    [0]      - 行の間隔
+ * @prop {length}  --apart--column-gap [0]      - 列の間隔（両端の要素の最小の間隔）
+ * @prop {keyword} --apart--alignment  [normal] - 交差軸の配置（align-items）
+ *
+ * @example
+ * <header class="apart" style="--apart--column-gap: calc(var(--spacing--lg) / 16 * 1rem); --apart--alignment: center">
+ *   <a href="/">ロゴ</a>
+ *   <nav>ナビゲーション</nav>
+ * </header>
+ */
+.apart {
+  display: block flex;
+  flex-wrap: wrap;
+  gap: var(--apart--gap, var(--apart--row-gap, 0)) var(--apart--gap, var(--apart--column-gap, 0));
+  justify-content: space-between;
+  align-items: var(--apart--alignment, normal);
+
+  @supports (flex-wrap: balance) {
+    flex-wrap: balance;
+  }
+}
+```
+
+公開プロパティは4つです。`--apart--gap` は行と列の間隔を一括で指定し、`--apart--row-gap` と `--apart--column-gap` は個別に指定します。`var(--apart--gap, var(--apart--row-gap, 0))` のようにフォールバックを連ねているので、一括の指定があればそれを、なければ個別の指定を、どちらもなければ `0` を使います。間隔のデフォルト値が `0` なのは、ほかのコンポジションと同じく、間隔は置く文脈で決まる値だからです。
+
+列の間隔（`column-gap`）は、`apart` では「両端の要素の最小の間隔」として働きます。幅に余裕のあるうちは、`space-between` の配る余白のほうが列の間隔より大きいので、列の間隔は見た目に表れません。幅が狭くなって余白が列の間隔まで減ると、それ以上は近づかずに折り返します。行の間隔（`row-gap`）は、折り返したあとの1行目と2行目の間隔です。
+
+`--apart--alignment` は、交差軸の配置（`align-items`）です。デフォルト値の `normal` は、Flexboxでは `stretch` として扱われ、子の高さが行の高さまで引き伸ばされます。ロゴとナビゲーションのように高さの違う要素を並べるなら、`center` を渡して中央にそろえます。`justify-content` は公開プロパティにしていません。両端に分けることが `apart` の役割そのものなので、変えたいときは別のコンポジションを選びます。
+
+使う側は、HTMLにクラス名を書き、値を `style` 属性で渡します。余白のトークンは単位なしの数値で持っているので、`calc(var(--spacing--lg) / 16 * 1rem)` の形でremに変換して渡します。トークンを単位なしの数値で持つ理由は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
+
+```html
+<header
+  class="scoped site-header apart"
+  style="--apart--row-gap: calc(var(--spacing--xs) / 16 * 1rem); --apart--column-gap: calc(var(--spacing--lg) / 16 * 1rem); --apart--alignment: center"
+>
+  <a class="_logo" href="/">Sample Studio</a>
+  <nav aria-label="グローバル">
+    <ul class="cluster" style="--cluster--gap: calc(var(--spacing--sm) / 16 * 1rem)">
+      <li><a href="/service/">事業内容</a></li>
+      <!-- ... -->
+    </ul>
+  </nav>
+</header>
+```
+
+## 折り返したときの並び方
+
+`apart` の子が1行に収まるかどうかは、子の幅と列の間隔の合計で決まります。たとえば、ロゴが160px相当、ナビゲーションが400px相当、列の間隔が32px相当なら、`apart` の幅が592px相当を下回ったときにナビゲーションが2行目へ折り返します。Flexboxは、子を縮める前に、子の本来の幅（`max-content`）で行に入るかどうかを判定するからです。
+
+折り返したナビゲーションは、2行目の行頭（左端）に置かれます。`justify-content: space-between` は、行に要素が1つしかないときは `flex-start` と同じ配置になるからです。「両端に分ける」という指定は、2つ以上の要素が同じ行にあるときにだけ意味を持ちます。狭い画面でロゴとナビゲーションが左端にそろうのは、多くのヘッダーで自然な見え方です。2行目も右端に寄せたいときの書き方は、この節の後半で説明します。
+
+折り返したあとの子は、行の幅まで縮むことができます。ナビゲーションの中を `cluster` で並べておけば、2行目の幅にも入りきらないときに、中のリンクが折り返されます。`apart` が決めるのは直下の子の配置だけで、子の中の並び方は子の側のコンポジションが受け持ちます。この分担があるので、`apart` と `cluster` を入れ子にするだけで、2段階の折り返しが作れます。
+
+子が3つ以上になると、見え方が変わります。`space-between` は、最初の子を行頭に、最後の子を行末に置き、残りの子をその間に余白が均等になるように並べます。3つの子なら、真ん中の子は「左右の子との余白が等しい位置」に置かれ、要素の幅が違えば、`apart` の中央からずれます。折り返すと、1行目は両端に分かれ、2行目に残った1つの子だけが行頭に寄ります。子の数と幅によって並び方が変わるので、片側に複数の要素を置くときは、`div` などで1つに包んで、子を2つに保ちます。
+
+`apart` の中の `@supports` で指定している `flex-wrap: balance` は、各行の長さがなるべくそろうように、子を行に振り分ける値です。`wrap` では、1行目に入るだけ詰めてから残りを次の行に送るので、4つの子のうち3つを1行目に、1つを2行目に置くことがあります。`balance` では、同じ条件で2つずつに分かれ、2行とも子が両端にそろいます。子が2つのときは、折り返せば1行に1つずつになるので、`wrap` と `balance` の違いは表れません。
+
+<Baseline id="flexbox-flex-wrap-balance" name="flex-wrap: balance" />
+
+2026年9月時点では、`flex-wrap: balance` に対応しているのはChromeとEdgeの150以降だけです。未対応のブラウザでは `@supports` の中が適用されず、外側の `flex-wrap: wrap` のまま折り返します。子を2つに保っていれば、どちらのブラウザでも同じ表示になるので、`balance` は子が多いときの見え方を整える段階的な強化として扱えます。同じブロックに `flex-wrap` を2回書いても未対応のブラウザは後者を捨てますが、`@supports` に分けておくと、対応状況がそろったときに消す範囲がはっきりします。
+
+## コード例とデモ
+
+次のデモでは、ヘッダーとフッターの2か所に `apart` を使っています。ヘッダーでは、ロゴとナビゲーションを両端に分け、ナビゲーションの中のリンクを `cluster` で並べています。フッターでは、著作権表示とリンク集を両端に分けています。幅のボタンで320px、480px、768pxを切り替えると、ナビゲーションが2行目に折り返し、さらに狭くなると中のリンクも折り返します。
+
+<Demo title="apart でヘッダーとフッターの要素を両端に分ける" html={apartHtml} css={apartCss} widths={[320, 480, 768]} />
+
+デモのCSSのうち、コンポーネント（`apart-demo`）が書いているのは、枠線、余白、ロゴの文字の大きさだけです。両端に分ける配置、折り返し、間隔は、すべてコンポジションと `style` 属性で決まっています。
+
+実際のサイトでは、ヘッダーのコンポーネントのルートに `apart` を付けることが多いでしょう。コンポーネントのCSSは、ルートの内側の余白や境界線、ロゴの見た目を受け持ち、子の配置には触れません。
+
+```css title="🙆‍♂ Recommended: 配置は apart に任せ、コンポーネントは見た目だけを持つ"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    padding-block: calc(16 / 16 * 1rem);
+    padding-inline: calc(24 / 16 * 1rem);
+    border-block-end: 1px solid oklch(85% 0 0deg);
+  }
+
+  ._logo {
+    font-size: calc(20 / 16 * 1rem);
+    font-weight: bold;
+  }
+}
+```
+
+`apart` を付けた要素に、コンポーネントのCSSで `display`、`flex-wrap`、`justify-content` を指定しないようにします。`components` レイヤーは `compositions` レイヤーより後にあるので、コンポーネントの指定がコンポジションの配置を上書きします。上書きすると、HTMLの `class="apart"` から読み取れる並び方と、実際の表示が食い違います。配置を変えたいなら、`apart` を外してコンポーネントのCSSで書きます。
+
+次のデモでは、折り返したときの並び方を4つの書き方で比べています。Aは子が2つの `apart`、Bは同じ2つの子を `auto` の `margin` で両端に分けたもの、Cは子が3つの `apart`、Dは子が4つの `apart` です。幅のボタンで320pxを選ぶと、どれも折り返します。
+
+<Demo title="折り返したときの並び方を、子の数と書き方で比べる" html={wrapHtml} css={wrapCss} widths={[320, 480]} />
+
+320pxでは、Aの2つ目の子は2行目の行頭に、Bの2つ目の子は2行目の行末に置かれます。Cでは、1行目の2つが両端に分かれ、3つ目の子だけが2行目の行頭に来ます。Dは、`flex-wrap: balance` に対応したブラウザでは2つずつの2行に分かれ、未対応のブラウザでは3つと1つに分かれます。
+
+## cluster と auto の margin との使い分け
+
+`apart` と `cluster` は、どちらも子を横に並べて折り返すコンポジションです。違いは、余った空間の扱いにあります。`cluster` は子を行頭から詰めて並べ、余った空間を行末に残します。`apart` は余った空間を子の間に配り、子を両端に押し分けます。
+
+使い分けの基準は、子が同じ種類の要素かどうかです。タグの一覧、ボタンの並び、ナビゲーションのリンクのように、同じ種類の要素を並べるなら `cluster` を使います。`apart` で同じ種類の要素を並べると、要素の数と幅によって間隔が変わり、折り返した最後の行だけが行頭に寄ります。ロゴとナビゲーションのように、役割の違う2つのまとまりを左右へ分けるときは `apart` を使います。
+
+`cluster` にも主軸の配置（`--cluster--justification`）の公開プロパティがあるので、`space-between` を渡せば `apart` と同じ指定になります。それでも `apart` を別に用意するのは、HTMLのクラス名だけで「両端に分ける」という意図が分かるからです。`--cluster--justification: space-between` が付いた `cluster` は、`style` 属性まで読まないと `apart` との違いが分かりません。{/* 要確認: 出典なし */}
+
+両端に分けるもう1つの書き方は、行末側の子に `margin-inline-start: auto` を指定するものです。Flexboxの `auto` の `margin` は、行に余った空間をすべて吸収するので、その子を行末へ押し出します。ナビゲーションの中で最後のアカウントのリンクだけを右端へ寄せるような、並びの一部だけを行末に寄せる場面では、この書き方を使います（「[7-6 Gridを先に検討する](/layout/grid-first/#rule-flex-auto-margin-for-end-items)」のルール）。
+
+```css title="🙆‍♂ Recommended: 折り返した2行目も、行末側の子を行末に寄せる"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: calc(12 / 16 * 1rem) calc(32 / 16 * 1rem);
+    align-items: center;
+  }
+
+  ._nav {
+    margin-inline-start: auto;
+  }
+}
+```
+
+2つの書き方は、折り返したときに違いが出ます。`space-between` の `apart` では、2行目の子は行頭に来ます。`auto` の `margin` では、2行目でも `margin` が余った空間を吸収するので、子は行末に残ります。狭い画面でもナビゲーションを右端に置くデザインなら、`apart` ではなく、コンポーネントのCSSで `auto` の `margin` を書きます。どの子を行末に寄せるかがコンポーネントのCSSに書かれるので、HTMLのクラス名からは配置が読み取れなくなる点は、`apart` に劣ります。
+
+最後に、読み上げの順番に注意します。`apart` は子の順番を変えないので、スクリーンリーダーやキーボードの移動は、HTMLの順番どおりに進みます。見た目の左右を入れ替えようとして `order` や `flex-direction: row-reverse` を使うと、見た目の順番と読み上げの順番が食い違います。両端の要素は、見た目の左から右と同じ順番でHTMLに書きます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [justify-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/justify-content)
+- [flex-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex-wrap)
+- [CSS Flexible Box Layout Module Level 2](https://drafts.csswg.org/css-flexbox-2/)（W3C Editor's Draft、`flex-wrap: balance` の定義）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [Every Layout](https://every-layout.dev/)

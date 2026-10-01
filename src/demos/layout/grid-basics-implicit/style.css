@@ -1,0 +1,50 @@
+@layer components {
+  @scope (.scoped.implicit-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 24px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._grid {
+      display: block grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      /* 明示的な行は2行だけ。3行目は暗黙の行になり、高さは grid-auto-rows（初期値 auto）で決まる */
+      &[data-rows="template"] {
+        grid-template-rows: repeat(2, 64px);
+      }
+
+      /* 明示的な行がないので、-1 は1本目の線と同じになり、1行分にしかまたがらない */
+      &[data-rows="auto"] {
+        grid-auto-rows: 64px;
+      }
+    }
+
+    ._item {
+      padding-block: 4px;
+      padding-inline: 8px;
+      background-color: oklch(70% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      &[data-side] {
+        grid-column: 1;
+        grid-row: 1 / -1;
+        background-color: oklch(55% 0.15 30deg);
+      }
+    }
+  }
+}
