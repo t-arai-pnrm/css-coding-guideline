@@ -1,0 +1,315 @@
+# 第8章 コンポーネントとカスタムプロパティ
+
+# 8-1 何をコンポーネントにするか
+- id: component-decision-tests
+  level: 推奨
+  rule: コンポーネントにするかは、繰り返し使うか、全インスタンスで HTML の構造・クラス・ARIA 属性・data 属性・条件分岐・JavaScript の振る舞いを制御したいか、既知の要件として構造の拡張があるか、の順に判定する。
+  reason: コンポーネントが役に立つのは、HTML の構造や振る舞いを1つの定義から管理したいときで、見た目の共通化だけなら CSS で足りるため。
+  note: '繰り返し使わないものは、親のスコープの中に書きます。繰り返し使っていても CSS だけで管理できるなら、コンポーネントにしません。全インスタンスで制御したいものがはっきりあれば、2つ目の問いでコンポーネントにすると決まります。制御したいものはあるが決め手に欠けるときは、既知の構造の拡張があればコンポーネントにし、なければまだコンポーネントにしません。「3回出てきた」はパターンへの昇格の目安で、コンポーネントにする目安ではありません。セクションの導入（小見出し、見出し、リード文の組）のように判定に迷うまとまりは、デフォルトでは親の子要素として書き、バリエーションや補助の要素の有無を入力点として管理したいときにコンポーネントにします。コンポーネントにしたものは、ルートに `scoped <名前>` を付けて `@scope (.scoped.<名前>) to (.scoped)` で書き、外から変えてよい値を公開プロパティにします。'
+  aiProne: true
+  page: components/what-is-a-component
+  since: 0.12.0
+
+- id: no-component-for-look-only
+  level: 非推奨
+  rule: 見た目が共通だという理由だけで、コンポーネントを作らない（段落、区切り線、単純な見出し、見た目だけをまとめた wrapper はコンポーネントにしない）。
+  reason: 管理したい構造や振る舞いを持たないものをコンポーネントにすると、ファイルとルートが増えるうえ、wrapper のルートの `.scoped` で親のスコープが打ち切られ、親の CSS から中身を選べなくなるため。
+  note: 段落と区切り線はベーススタイルとトークンで、役割のある見た目の断片はパターンで、配置はコンポジションで、単機能の補助はユーティリティで扱います。
+  aiProne: true
+  page: components/what-is-a-component
+  since: 0.12.0
+
+- id: no-component-for-future-guess
+  level: 非推奨
+  rule: 将来必要になりそう、ほかの案件でよくある、という予測だけでコンポーネントを作らない。
+  reason: 使われない入力点と分岐が定義に残り、読む人がそれを維持し続けることになるため。
+  note: 構造の拡張をコンポーネントにする根拠にできるのは、いまの要件、既存の実装、仕様書、既知の派生要件に書かれているときだけです。
+  page: components/what-is-a-component
+  since: 0.12.0
+
+- id: local-parts-stay-in-parent
+  level: 推奨
+  rule: 親の中でしか意味を持たない区画（カードの見出し、本文、フッター、内側を包む要素など）は、別のコンポーネントにせず、親の `@scope` の中でタイプセレクタか子クラスで選ぶ。
+  reason: 区画をコンポーネントに分けると、区画のルートの `.scoped` で親のスコープが打ち切られ、親の中の並びを親の CSS だけで決められなくなるため。
+  note: 親の外でも独立した責務と再利用の価値を持つ子要素（カードの中のボタンなど）は、別のコンポーネントにしてかまいません。
+  aiProne: true
+  page: components/what-is-a-component
+  since: 0.12.0
+
+- id: component-split-by-role
+  level: 推奨
+  rule: 見た目が似ていても、役割や中に入る内容が異なるものは、別のコンポーネントにする。
+  reason: 別物を1つにまとめると分岐が増えて肥大化し、後から不要になった部分も捨てられなくなるため。
+  note: 見た目の共通化だけを理由に、新しいコンポーネントを作ることもしません。
+  page: components/what-is-a-component
+  since: 0.1.0
+
+- id: share-look-with-tokens
+  level: 推奨
+  rule: 別のコンポーネントの間で見た目をそろえたいときは、コンポーネントを統合せず、同じトークンを参照する。
+  reason: 見た目の変更はトークンの値を変えるだけで済み、それぞれのコンポーネントは独立したまま保てるため。
+  page: components/what-is-a-component
+  since: 0.1.0
+
+# 8-2 コンポーネントの境界を守る
+- id: one-component-per-file
+  level: 必須
+  rule: コンポーネントの CSS は、コンポーネントごとに1つのファイルに書き、複数のコンポーネントの CSS を1つのファイルに混ぜない。
+  reason: 混ぜると、どこに何が書いてあるかがファイル名から分からなくなり、使わなくなったコンポーネントを安全に消せなくなるため。
+  note: ファイル名はルートの名前とそろえます。Astro のように CSS をコンポーネントのファイルに書く環境では、そのファイルが単位になります。小さな部品でも例外にしません。
+  aiProne: true
+  page: components/boundaries
+  since: 0.5.0
+
+- id: no-external-layout-on-root
+  level: 非推奨
+  rule: 'コンポーネントのルートに、外部関連型のレイアウト（`margin`、`position: absolute` と `inset`、`flex`、`grid-area`、`align-self`、`inline-size`、`block-size` など）を指定しない。'
+  reason: 置かれる場所を前提にしたコンポーネントになり、ほかの場所に置いたときに打ち消しや上書きが必要になるため。
+  note: '例外は、`position: fixed` で表示するモーダル、ビューポートに粘着するグローバルヘッダーの `position: sticky` と `inset`、`inline-size: 1em` などで文字サイズに追従させるアイコンのような小さな要素です。'
+  aiProne: true
+  page: components/boundaries
+  since: 0.1.0
+
+- id: parent-owns-child-placement
+  level: 推奨
+  rule: 子のコンポーネントの配置と外側の余白は、親の `gap` やグリッドか、親の子要素として置く Outer の要素で指定する。
+  reason: 配置を決める責任を置く側にまとめれば、子のコンポーネントはどこに置かれても同じように振る舞えるため。
+  note: Outer は親のコンポーネントの子要素として扱い、単独のコンポーネントにはしません。
+  page: components/boundaries
+  since: 0.1.0
+
+- id: no-class-to-child-component
+  level: 非推奨
+  rule: 子のコンポーネントに `class` 属性を渡して、親から見た目や配置を変えない。
+  reason: 親が子のルートに自由にスタイルを当てられるようになり、どこまでが子の責任なのかが曖昧になるため。
+  page: components/boundaries
+  since: 0.1.0
+
+- id: type-selector-in-scope
+  level: 推奨
+  rule: '`@scope` の中の要素はタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ付ける（`._list` や `._link` のように要素の種類と同じ意味のクラスを付けない）。'
+  reason: '`@scope` の中のタイプセレクタはそのコンポーネントの範囲にしか当たらず、要素の種類を繰り返すだけのクラス名は情報を増やさずに記述量を増やすため。`div` と `span` は要素そのものが意味を持たず、要素の種類から役割を読み取れないため、1つしかなくてもクラスで補う。'
+  note: '`div` と `span` に付けるクラスは、`._body` や `._badge` のように役割の名前にします。役割を区別するクラスは `._main-link` と `._sub-link` のように要素の役割の語まで含めて名付け、共通のスタイルはタイプセレクタに、固有のスタイルは子クラスに書きます。スコープの中のタイプセレクタは詳細度が 0.0.1 なので `:where()` で包みません（ベーススタイルの `:where()` は第2章のルール `where-for-base-selectors`）。`a:focus-visible` や `a:any-link:hover` のように擬似クラスを付けると 0.1.1 や 0.2.1 になり子クラスに勝つので、役割ごとに違う状態のスタイルは `._sub-link:focus-visible` や `._sub-link:any-link:hover` のように子クラスの側に書きます。同じコンポーネントの中で同じ種類の要素が入れ子になるときは役割が分かれるので子クラスを付け、任意の HTML が入る領域は別のコンポーネントにします。'
+  aiProne: true
+  page: components/boundaries
+  since: 0.7.0
+
+- id: no-other-component-internals
+  level: 禁止
+  rule: ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしない。
+  reason: 詳細度の競争が起き、子の構造を変えたときに親の CSS も直す必要が出るため。
+  note: 値を変えたいときは、子のコンポーネントが用意した公開プロパティに値を渡します。ページの CSS から子のルートを選ぶしかない場合も、指定するのは公開プロパティの値と配置だけにします。
+  aiProne: true
+  page: components/boundaries
+  since: 0.1.0
+
+- id: z-index-tokens-only
+  level: 必須
+  rule: z-index の値は、数値を直接書かずにトークンで指定する。
+  reason: 重なり順の関係が名前から読め、値の積み増しを防げるため。
+  note: 相対的な値の 1 と -1 も、`--z--forwards` と `--z--backwards` で指定します。
+  lint: 'Stylelint: `declaration-property-value-disallowed-list`（1 と -1 を含むすべての数値を警告）'
+  aiProne: true
+  page: components/boundaries
+  since: 0.1.0
+
+- id: z-index-absolute-root-relative-inside
+  level: 必須
+  rule: コンポーネントのルートには絶対的な z-index だけを、内部の要素には相対的な z-index（`--z--forwards` と `--z--backwards`）だけを指定する。
+  reason: ページ全体の重なり順と、コンポーネントの中の前後関係を分けて管理できるため。
+  note: 重なり順は、まず HTML の順番で解決し、足りないときだけ相対的な z-index を使います。子のコンポーネントどうしの前後は、ルートに相対的な z-index を持たせず、親のコンポーネントが子を包む Outer の要素で指定します。
+  page: components/boundaries
+  since: 0.1.0
+
+- id: isolation-for-relative-z-index
+  level: 必須
+  rule: '内部の要素で相対的な z-index を使うコンポーネントは、ルートに `isolation: isolate` を指定する。'
+  reason: 内部の z-index がほかのコンポーネントと干渉せず、-1 の要素がルートや親の背景の下に隠れることもなくなるため。
+  aiProne: true
+  page: components/boundaries
+  since: 0.1.0
+
+- id: top-layer-z-index-top
+  level: 推奨
+  rule: 'トップレイヤーに表示する `<dialog>` や `popover` 属性の要素にも、`z-index: var(--z--top)`（値は `calc(infinity)`）を指定する。'
+  reason: '`transition-property: overlay` に対応していないブラウザでは、閉じるアニメーションの途中で z-index の大きい要素の下に潜り込むことがあるため。'
+  note: 2026年9月の時点で、`overlay` に対応しているのは Chromium 系のブラウザだけです。
+  page: components/boundaries
+  since: 0.1.0
+
+# 8-3 コンポジションとユーティリティ
+- id: compositions-for-layout-patterns
+  level: 推奨
+  rule: 積む、並べて折り返す、列数を切り替えるといった、コンポーネントに依存しない配置は、コンポジション（`stack`、`cluster`、`switcher` など）で書く。
+  reason: 折り返しなどの守りの指定が1か所に集まり、HTML のクラス名から配置の意図が読めるため。
+  page: components/compositions-and-utilities
+  since: 0.1.0
+
+- id: composition-layout-only
+  level: 推奨
+  rule: コンポジションには配置に関わる指定だけを書き、色や文字の大きさなどの見た目を持たせない。
+  reason: どのコンポーネントの中でも、配置の部品として同じように使えるため。
+  page: components/compositions-and-utilities
+  since: 0.1.0
+
+- id: composition-configurable-via-props
+  level: 推奨
+  rule: コンポジションの間隔や列数は、修飾のクラスを増やさず、`--stack--gap` のような公開プロパティで受け取る。
+  reason: 使う側が `style` 属性で値を渡せ、1つのクラスでさまざまな間隔や列数に対応できるため。
+  note: 公開プロパティの一覧は、ファイルの先頭の説明ブロックに `@prop` で書きます（第7章のルール `prop-tag-for-public-properties`）。
+  page: components/compositions-and-utilities
+  since: 0.1.0
+
+- id: composition-default-gap-zero
+  level: 推奨
+  rule: コンポジションの間隔のデフォルト値は `0` にし、間隔は使う側で指定する。
+  reason: 間隔は置く文脈で決まる値なので、指定し忘れた箇所に意図しない余白が付くのを防ぐため。
+  note: '行と列の間隔を持つコンポジションでは、`--cluster--gap` で一括に、`--cluster--row-gap` と `--cluster--column-gap` で個別に指定できるようにします。`switcher` や `grid` のように間隔を `calc()` で長さと足し合わせるコンポジションでは、デフォルト値を `0px` にします（`switcher-gap-default-with-unit`）。'
+  page: components/compositions-and-utilities
+  since: 0.1.0
+
+- id: utility-single-purpose
+  level: 推奨
+  rule: ユーティリティは、`.-visually-hidden` のように、どこに付けても同じ意味を持つ単機能のクラスに限る。
+  reason: '`utilities` レイヤーはコンポーネントより優先されるので、どこで勝っても困らないものでなければならないため。'
+  page: components/compositions-and-utilities
+  since: 0.1.0
+
+- id: adjust-locally-first
+  level: 推奨
+  rule: 余白や配置の細かな調整は、まずコンポーネントの CSS で行い、次にコンポジションやユーティリティ、その次にパターンを検討する。
+  reason: その場の都合で共通の部品を増やすと、共通の部品が何のためにあるのかが分からなくなるため。
+  note: 「ここだけ影がほしい」のような都合だけで、パターンやコンポーネントを作りません。
+  page: components/compositions-and-utilities
+  since: 0.1.0
+
+- id: pattern-leaves-component-properties
+  level: 推奨
+  rule: パターンには、重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は `--<パターン>--<プロパティ>` の公開プロパティで受け取る。
+  reason: '`patterns` は `components` より後ろのレイヤーにあり、パターンを付けた要素では、コンポーネントの CSS（状態や `@container` の中の指定を含む）が同じプロパティに詳細度を上げても勝てないため。'
+  note: '公開プロパティは、パターンの中で宣言せず、`--_p--size: var(--icon--size, 1em);` のように `--_p--` で始まる内部プロパティに受けて、デフォルト値をフォールバックに書きます。`:hover` などの状態で見た目が変わるものは、パターンにせずコンポーネントにします。強さはレイヤーの順番で決まるので、パターンのセレクタを `:where()` で包んで詳細度を下げる必要はありません。'
+  aiProne: true
+  page: components/compositions-and-utilities
+  since: 0.11.0
+
+# 8-4 デザイントークン
+- id: token-naming-category-first
+  level: 必須
+  rule: トークンは `--<分類>--<名前>` の形で名付ける（例：`--color--neutral--500`、`--spacing--md`）。
+  reason: 先頭の分類で値の種類が分かり、コンポーネントの公開プロパティとも見分けられるため。
+  note: 色の役割を表すセマンティクスのトークンは、`--<役割>--<バリエーション>`（例：`--foreground--muted`）にします。
+  aiProne: true
+  page: components/design-tokens
+  since: 0.1.0
+
+- id: tokens-on-root
+  level: 推奨
+  rule: トークンは分類ごとのファイルに分けて `:root` に定義し、`tokens` レイヤーに入れる。
+  reason: サイト全体の値の一覧が1か所にまとまり、CSS から参照できるデザインガイドとして使えるため。
+  page: components/design-tokens
+  since: 0.1.0
+
+- id: color-token-two-layers
+  level: 推奨
+  rule: 色のトークンはプリミティブとセマンティクスの2層で定義し、デザインにない固有の色はグローバルなトークンにしない。
+  reason: 配色の変更やダークモードをセマンティクスの層で吸収でき、トークンの一覧もデザインの取り決めだけに保てるため。
+  note: 固有の色は、コンポーネントの内部プロパティか、直接書いた値で扱います。
+  page: components/design-tokens
+  since: 0.1.0
+
+- id: no-single-use-token
+  level: 禁止
+  rule: 1回しか使わない値や、特定のコンポーネントだけで使う値を、グローバルなトークンにしない。
+  reason: トークンがサイト全体の取り決めではなくなり、一覧から選ぶだけで取り決めに沿えるという利点が失われるため。
+  note: 1つのコンポーネントの中で意味を持つ値は、内部プロパティにして名前を付けます。
+  page: components/design-tokens
+  since: 0.1.0
+
+- id: use-defined-tokens
+  level: 推奨
+  rule: トークンとして定義されている値は、数値や色を直接書かずにトークンを参照する。
+  reason: デザインの変更をトークンの修正だけで反映でき、わずかに違う値が紛れ込むのを防げるため。
+  note: トークンに定義されていない特殊な値は、トークンを追加せずにその場に直接書きます。
+  aiProne: true
+  page: components/design-tokens
+  since: 0.1.0
+
+- id: motion-tokens
+  level: 推奨
+  rule: イージングと再生時間はトークンにし、イージングは `--ease--out-quint` のように強さと方向が分かる名前にする。
+  reason: サイトの中で動きの速さと質感がそろい、全体の調整もトークンの値を変えるだけで済むため。
+  page: components/design-tokens
+  since: 0.1.0
+
+- id: z-index-token-scale
+  level: 推奨
+  rule: z-index のトークンは、絶対的な値を100刻みで定義し、相対的な値は `--z--forwards`（1）と `--z--backwards`（-1）の2つだけにする。
+  reason: 後から新しい要素を間に差し込め、コンポーネントの中の重なりも2つの値で足りるため。
+  note: 'ヘッダーのすぐ手前に重ねるときは、`calc(var(--z--header) + 1)` のようにトークンを基準に計算します。'
+  page: components/design-tokens
+  since: 0.1.0
+
+# 8-5 公開プロパティと内部プロパティ
+- id: public-property-naming
+  level: 必須
+  rule: 外から変えてよい値は、`--<コンポーネント>--<プロパティ>` の公開プロパティにする（例：`--card--radius`）。
+  reason: ほかのコンポーネントとの名前の衝突を防ぎ、どのコンポーネントの値かが名前から分かるため。
+  aiProne: true
+  page: components/custom-properties
+  since: 0.1.0
+
+- id: internal-property-prefix
+  level: 必須
+  rule: コンポーネントの中だけで使う値は、`--_` で始まる内部プロパティにする。
+  reason: 外から変えてよい値と、内部の都合の値を名前で見分けられるため。
+  note: コンポジションは `--_c--`、パターンは `--_p--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
+  aiProne: true
+  page: components/custom-properties
+  since: 0.1.0
+
+- id: receive-public-property-with-fallback
+  level: 必須
+  rule: 公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書く。
+  reason: コンポーネント自身で宣言すると、親から継承した値がその宣言に負けて届かなくなるため。
+  note: '例：`--_radius: var(--card--radius, 8px);`'
+  aiProne: true
+  page: components/custom-properties
+  since: 0.1.0
+
+- id: state-suffix-for-custom-properties
+  level: 必須
+  rule: 状態やモードで変わる値は、`--_background--hocus` のように `--` で区切った接尾辞で表し、デフォルトの状態には接尾辞を付けない。
+  reason: 状態ごとの値を `:scope` の先頭に並べて見渡せ、状態のセレクタでは参照を切り替えるだけで済むため。
+  note: 画面モードごとの公開プロパティにも、`--page-hero--padding-block--spacious` のように同じ形の接尾辞を付けます。
+  page: components/custom-properties
+  since: 0.1.0
+
+- id: pass-values-via-style-attribute
+  level: 推奨
+  rule: 公開プロパティの値は、できるだけ呼び出し側の `style` 属性で渡す。
+  reason: 値が対象のタグと同じ場所に書かれ、セレクタや詳細度に依存せずに渡せるため。
+  note: 複数の子にまとめて渡すとき、クエリで値を切り替えるとき、`:hover` や `:has()` などの状態で値を変えるときは、CSS で渡してもかまいません。
+  aiProne: true
+  page: components/custom-properties
+  since: 0.1.0
+
+- id: at-property-only-when-needed
+  level: 推奨
+  rule: '`@property` は、型の指定やアニメーションが必要なカスタムプロパティにだけ使い、トークンの定義には使わない。'
+  reason: 登録すると値を定義した要素で計算されるなど振る舞いが変わり、不要な登録は予期しない結果を招くため。
+  page: components/custom-properties
+  since: 0.1.0
+
+- id: at-property-all-descriptors
+  level: 必須
+  rule: '`@property` では、`syntax`、`inherits`、`initial-value` の3つの記述子を省略しない。'
+  reason: '`syntax` か `inherits` が欠けると、`@property` のルールごと無視されるため。'
+  page: components/custom-properties
+  since: 0.1.0
+
+- id: animated-property-no-inherit
+  level: 推奨
+  rule: 'トランジションやアニメーションで値を動かすカスタムプロパティは、`inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介さずに直接動かす。'
+  reason: 継承するカスタムプロパティを動かすと、子孫の要素すべてでスタイルの計算がフレームごとに繰り返され、カスタムプロパティを介すと合成処理だけで済まなくなるため。
+  page: components/custom-properties
+  since: 0.5.0

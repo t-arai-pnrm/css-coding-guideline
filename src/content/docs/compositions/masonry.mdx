@@ -1,0 +1,212 @@
+---
+title: "11-8 masonry：高さの違う子を短い列へ詰めて並べる"
+description: "masonry は、高さの違う子を、そのときいちばん短い列へ順に詰めて並べるコンポジションです。列の数は grid と同じ式で決め、grid-lanes に対応していない環境では同じ列の通常の Grid に戻ります。新着順のように、おおよその順番が伝われば足りる一覧に使います。"
+sidebar:
+  order: 8
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import masonryHtml from '../../../demos/compositions/masonry/index.html?raw';
+import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
+
+`masonry` は、高さの違う子を、そのときいちばん短い列へ順に詰めて並べるコンポジションです。中身は `display: block grid-lanes` で、列の数は `grid` コンポジションと同じ式で、列の最小幅と最大数から決めます。外側に通常のGridを書き、`@supports (display: block grid-lanes)` の中で `grid-lanes` に切り替えるので、未対応の環境では同じ列の数のGridとして並びます。
+
+使う場面は、新着順の記事や写真の一覧のように、項目の高さがそろわず、おおよその順番が伝われば足りる並びです。高さのそろうカードの一覧や、順番そのものが内容になる一覧には使いません。間隔のデフォルト値は `0` で、配置の感度を決める `--masonry--tolerance` のデフォルト値はブラウザの初期値と同じ `normal` にします。
+
+<Baseline id="grid-lanes" name="grid-lanes（Masonry）" />
+
+## 高さの違う項目を grid コンポジションで並べたとき
+
+記事の一覧を、本文の長さが違うカードのまま並べる場面を考えます。「[11-6 grid](/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）を使うと、同じ行のカードは行の高さを共有します。行の高さはその行でいちばん高いカードに合わせて決まるので、短いカードの下には隙間ができます。
+
+この隙間を詰める仕組みが、`display: block grid-lanes` です。項目は、HTMLの順番に1つずつ、そのときいちばん短い列の下端へ置かれます。仕組みと、未対応の環境での振る舞い、並び順の注意は「[10-13 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)」で詳しく説明しています。
+
+ただし、`grid-lanes` を一覧のたびに書くと、書くべきことが多くなります。列の数を決める `grid-template-columns`、未対応の環境のための `@supports` の分岐、`flow-tolerance` の指定を、コンポーネントごとに毎回そろえる必要があります。どれか1つが抜けると、未対応の環境で1列に崩れたり、対応している環境と未対応の環境で列の数が変わったりします。
+
+`masonry` コンポジションは、この一式を1つのクラスにまとめたものです。使う側は、HTMLに `class="masonry"` と書き、列の最小幅や間隔を `style` 属性で渡すだけです。コンポジションの考え方そのものは「[8-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」（配置だけを受け持ち、値は公開プロパティで受け取るクラス）で説明しています。
+
+## `masonry` コンポジションの書き方
+
+次のコードが `masonry` の全体です。前半の内部プロパティは、`grid` コンポジションと同じ列の計算です。後半で、外側に `display: block grid` を書き、`@supports` の中で `grid-lanes` に切り替えています。
+
+```css title="🙆‍♂ Recommended: 外側に Grid を書き、対応している環境だけ grid-lanes にする"
+/**
+ * 高さの違う子要素を、いちばん短い列へ順に詰めて並べる（grid-lanes）。
+ * 列の数は grid と同じ式で、列の最小幅と最大数から決める。
+ * grid-lanes に対応していない環境では、同じ列の通常の Grid になる。
+ *
+ * @prop {keyword} --masonry--mode             [auto-fill]             - repeat() のキーワード（auto-fill | auto-fit）
+ * @prop {integer} --masonry--column-max-count [5]                     - 列の最大数
+ * @prop {length}  --masonry--column-min-width [calc(320 / 16 * 1rem)] - 列の最小幅（これより狭くなると列が減る）
+ * @prop {length}  --masonry--gap              [0px]                   - 行と列の間隔（一括）
+ * @prop {length}  --masonry--row-gap          [0px]                   - 行の間隔
+ * @prop {length}  --masonry--column-gap       [0px]                   - 列の間隔
+ * @prop {length}  --masonry--tolerance        [normal]                - 同じ高さとみなす列の高さの差（flow-tolerance）
+ *
+ * @example
+ * <ul class="masonry" style="--masonry--column-min-width: calc(240 / 16 * 1rem); --masonry--gap: calc(var(--spacing--sm) / 16 * 1rem)">
+ *   <li>…</li>
+ * </ul>
+ */
+.masonry {
+  --_c--mode: var(--masonry--mode, auto-fill);
+  --_c--row-gap: var(--masonry--gap, var(--masonry--row-gap, 0px));
+  --_c--column-gap: var(--masonry--gap, var(--masonry--column-gap, 0px));
+  --_c--column-max-count: var(--masonry--column-max-count, 5);
+  --_c--column-min-width: var(--masonry--column-min-width, calc(320 / 16 * 1rem));
+  --_c--tolerance: var(--masonry--tolerance, normal);
+
+  /* 要素の幅から列の間隔の合計を引き、最大の列数で割った幅 */
+  --_c--column-preferred-width: calc(
+    (100% - var(--_c--column-gap) * (var(--_c--column-max-count) - 1)) / var(--_c--column-max-count)
+  );
+
+  /* 最小幅と、最大の列数で割った幅の大きいほう。ただし要素の幅は超えない */
+  --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-preferred-width)));
+
+  display: block grid;
+  grid-template-columns: repeat(var(--_c--mode), minmax(var(--_c--column-width), 1fr));
+  gap: var(--_c--row-gap) var(--_c--column-gap);
+
+  @supports (display: block grid-lanes) {
+    display: block grid-lanes;
+    flow-tolerance: var(--_c--tolerance);
+  }
+}
+```
+
+`grid-template-columns` と `gap` は `@supports` の外に書いています。`grid-lanes` はGridを拡張した仕様なので、列の指定と間隔は、通常のGridと `grid-lanes` のどちらでも同じ意味で使えるからです。分岐の中で変わるのは `display` の値だけで、`flow-tolerance` は `grid-lanes` のコンテナだけに適用されるプロパティなので、同じブロックに置いています。この書き方は、10-13のルール「[`grid-lanes` は `@supports` の中に書く](/layout/masonry/#rule-grid-lanes-inside-supports)」に従ったものです。
+
+私が案件で使っているテンプレートの `masonry` は、これとは逆の形です。外側に `display: block grid-lanes` を書き、`@supports not (display: block grid-lanes)` の中でGridに戻しています。未対応の環境で通常のGridになる点は同じですが、本書はこの形を採りません。
+
+```css title="🙅‍♂ Not Recommended: 外側に grid-lanes を書き、@supports not で Grid に戻す"
+/* 🙅‍♂ Not Recommended */
+.masonry {
+  /* ... */
+  display: block grid-lanes;
+  grid-template-columns: repeat(var(--_c--mode), minmax(var(--_c--column-width), 1fr));
+
+  @supports not (display: block grid-lanes) {
+    display: block grid;
+  }
+}
+```
+
+この形では、外側の `display` が、2026年10月の時点ではSafari以外のすべてのブラウザで無効な宣言です。外側を読んでも、多くの環境で実際に効いている指定が分かりません。本書は、すべての対象のブラウザで効く指定を外側に書き、新しい機能を条件付きで重ねる順番にそろえます。条件式も10-13の例と同じ `@supports (display: block grid-lanes)` になるので、全ブラウザが対応した時点で、この文字列を検索すれば分岐をまとめて見つけられます。
+
+## 公開プロパティと渡し方
+
+`masonry` の公開プロパティは次の7つです。どれも省略でき、省略したときはデフォルト値が使われます。
+
+| 公開プロパティ | 意味 | デフォルト値 |
+|---|---|---|
+| `--masonry--column-min-width` | 列の最小幅。これより狭くなると列が減る | `calc(320 / 16 * 1rem)` |
+| `--masonry--column-max-count` | 列の最大数 | `5` |
+| `--masonry--gap` | 行と列の間隔（一括） | `0px` |
+| `--masonry--row-gap` | 行の間隔 | `0px` |
+| `--masonry--column-gap` | 列の間隔 | `0px` |
+| `--masonry--mode` | `repeat()` のキーワード（`auto-fill` か `auto-fit`） | `auto-fill` |
+| `--masonry--tolerance` | 同じ高さとみなす列の高さの差 | `normal` |
+
+間隔のデフォルト値を `0px` にしているのは、8-3のルール「[コンポジションの間隔のデフォルト値は0にする](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」に従ったものです。間隔はコンポジションを置く文脈で決まる値なので、使う側で必ず指定します。単位の付いた `0px` にしているのは、列の間隔を `calc()` の中で `100%` から引くためです。単位のない `0` を長さと引き算すると型が合わず、計算全体が無効になります。
+
+間隔は、`--masonry--gap` で一括に、`--masonry--row-gap` と `--masonry--column-gap` で個別に渡せます。`var(--masonry--gap, var(--masonry--row-gap, 0px))` は、「一括の指定があればそれを、なければ個別の指定を、どちらもなければ `0px` を使う」という意味です。`grid-lanes` の行の間隔は、同じ列の中で上下に積まれた項目の間隔になります。
+
+値は、HTMLの `style` 属性で渡します。余白のトークンは単位のない数値で持っているので、`calc(var(--spacing--sm) / 16 * 1rem)` でremに変換します。
+
+```html
+<ul
+  class="scoped post-list masonry"
+  style="--masonry--column-min-width: calc(240 / 16 * 1rem); --masonry--column-max-count: 4; --masonry--gap: calc(var(--spacing--sm) / 16 * 1rem)"
+>
+  <li>…</li>
+</ul>
+```
+
+`style` 属性に書けば、その一覧の列の最小幅と間隔が、HTMLを読むだけで分かります。同じ値を使う一覧が増えたら、コンポーネントのCSSで公開プロパティに値を入れてもかまいません。
+
+## 列の数を決める計算
+
+列の数の計算は、`grid` コンポジションと同じです。`--_c--column-preferred-width` は、最大の列数で並べたときの1列の幅で、要素の幅から列の間隔の合計を引き、最大の列数で割って求めます。`--_c--column-width` は、この幅と列の最小幅の大きいほうを、`min(100%, …)` で要素の幅に収めたものです。
+
+この幅を `minmax()` の最小値に渡すと、列の数は2つの場合に分かれます。広い場所では、最大の列数で割った幅のほうが大きくなるので、最大の列数より多くの列は入りません。狭い場所では列の最小幅のほうが大きくなり、入らなくなった列から減っていきます。実際の列の幅は、余った幅を `1fr` で分けたものになります。
+
+デフォルト値に、列の間隔24px相当を渡した場合で確かめます。要素の幅が1,200pxのとき、最大の列数で割った幅は（1,200−24×4）÷5で220.8pxなので、列の最小幅の320pxが使われます。320pxの列と24pxの間隔が入るのは、（1,200＋24）÷（320＋24）の整数部分で3列です。要素の幅が1,800pxなら、最大の列数で割った幅は340.8pxで最小幅を上回り、5列ちょうどで埋まります。2,400pxまで広げても列の最小幅が460.8pxに広がるので、6列目は入りません。
+
+`min(100%, …)` は、要素の幅が列の最小幅より狭いときのための指定です。要素の幅が280pxなら、列の最小幅は320pxではなく280pxになり、1列が要素からはみ出しません。この計算は要素自身の幅を基準にしているので、メインエリアとサイドバーのどちらに置いても、その場所の幅に応じて列の数が変わります。メディアクエリとコンテナクエリは要りません。
+
+`--masonry--mode` は、`repeat()` のキーワードを切り替える公開プロパティで、デフォルトは `grid` コンポジションと同じ `auto-fill` です。項目の数が入る列の数より少ないとき、`auto-fill` では空の列が残り、項目は1列分の幅のまま先頭に寄ります。件数が変わる一覧でも列の幅が変わらないので、項目が2件だけのときも、写真の大きさや1行の文字数は件数の多いときと同じです。
+
+`auto-fit` を渡すのは、件数が最大の列数に届かないとき、項目を行いっぱいまで広げたい一覧です。`auto-fit` では空の列が折りたたまれ、残った項目が `1fr` で行の幅を分け合います。2つのキーワードの違いと選び方は「[11-6 grid](/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）で、項目が2つのときのデモとともに説明しています。{/* 要確認: 出典なし（grid-lanes でも auto-fit の空の列が折りたたまれるかは、Safari で未確認） */}
+
+## `--masonry--tolerance` の扱い
+
+`--masonry--tolerance` は、`flow-tolerance` に渡す値です。`flow-tolerance` は、列の高さの差がどこまでなら「同じ高さ」とみなすかを決めるプロパティで、同じ高さとみなした列が複数あれば、直前の項目を置いた列より後ろの列が選ばれます。値を大きくすると、項目は前の項目の隣の列へ順に置かれやすくなり、並び順は読みやすくなる代わりに、列の下端のそろい方は粗くなります。
+
+デフォルト値は、`flow-tolerance` の初期値と同じ `normal`（`1em` として扱われる）にします。`0` にすると、1pxしか違わない列のどちらに置くかを厳密に決めることになり、見た目にはほぼ同じ高さなのに、項目が左右へ大きく飛ぶ配置が起きやすくなります。コンポジションのデフォルト値は、ブラウザの初期値から変える理由がない限り、初期値に合わせておきます。
+
+値を渡すのは、デモや実際のデータで並べてみて、項目が左右へ飛んで見えるときだけです。そのときは `style="--masonry--tolerance: 3em"` のように、初期値より大きい長さを渡します。`em` は `masonry` の要素の文字サイズを基準にするので、文字サイズを大きくした環境でも、行の高さに比例した差を同じ高さとみなせます。
+
+`infinite` は渡しません。`infinite` は列の高さを一切見ずに項目を1列ずつ順に置くので、隣り合う項目が、縦に大きく離れた位置へ置かれます。この点は10-13のルール「[`flow-tolerance` に `infinite` を指定しない](/layout/masonry/#rule-flow-tolerance-no-infinite)」で扱っています。並び順を厳密に保ちたい一覧は、`masonry` ではなく `grid` で並べます。
+
+## コード例とデモ
+
+`masonry` は、一覧のコンポーネントのルートか、その中の一覧の要素に付けます。次の例では、記事の一覧 `post-list` のルートに付けています。コンポーネントのCSSが受け持つのは、各項目の枠と文字の見た目だけです。
+
+```css title="🙆‍♂ Recommended: コンポーネントは項目の見た目だけを受け持つ"
+@scope (.scoped.post-list) to (.scoped) {
+  li {
+    padding: 16px;
+    border: 1px solid oklch(85% 0 0deg);
+    border-radius: 8px;
+  }
+
+  ._number {
+    color: oklch(45% 0.15 260deg);
+    font-size: calc(20 / 16 * 1rem);
+    font-weight: 700;
+  }
+}
+```
+
+項目の幅、位置、間隔は、どれもコンポーネントのCSSに書いていません。幅は列の計算で、位置は `grid-lanes` の配置で、間隔は `--masonry--gap` で決まります。項目の中の番号と本文の間隔は、項目に付けた `stack` コンポジションで作っています。`p` の `margin-block` はkiso.cssが既に `unset` しているので、打ち消しも書いていません。
+
+次のデモは、本文の長さが違う9つの項目を、列の最小幅160px相当、最大4列、間隔16px相当で並べたものです。番号はHTMLに書いた順番です。幅のボタンで切り替えると、320pxで1列、480pxで2列、640pxで3列、768px以上で4列になり、1,024pxにしても列は増えません。
+
+<Demo title="masonry コンポジションで、高さの違う項目を最大4列に詰めて並べる" html={masonryHtml} css={masonryCss} widths={[320, 480, 640, 768, 1024]} />
+
+デモの枠には左右16pxずつの余白があるので、要素の幅は枠の幅より32px狭くなります。768pxの枠では要素の幅が736pxで、最大の列数で割った幅は（736−16×3）÷4で172pxです。172pxの列と16pxの間隔は（736＋16）÷（172＋16）でちょうど4列入ります。`grid-lanes` に対応したSafariでは項目が短い列へ詰められ、対応していないブラウザでは、同じ4列の通常のGridとして、行ごとに高さのそろった状態で表示されます。
+
+## 使う場面と使わない場面
+
+`masonry` を使うのは、項目の高さがそろわず、横方向のおおよその順番が伝われば足りる一覧です。新着順の記事の一覧、縦横比の違う写真のギャラリー、長さの違う口コミの一覧が典型です。新着順の一覧では、最新の項目が左上の近くに並べば読み手には十分伝わり、3番目と4番目が入れ替わって見えても内容は変わりません。
+
+高さがそろうカードの一覧には、`grid` を使います。サムネイルの縦横比と本文の行数が決まっているカードを `masonry` で並べても、詰める隙間がないので、結果は `grid` とほぼ同じです。それなのに、`grid-lanes` の配置では見た目の順番とHTMLの順番がずれる可能性を抱えることになります。
+
+順番そのものが内容になる一覧にも、`masonry` は使いません。ランキングや手順、日付順に読ませる年表がそうです。`grid-lanes` では、項目がいちばん短い列へ置かれるので、4番目の項目が3番目より上に表示されることがあります。読み上げとキーボードのフォーカスはHTMLの順番で進むので、見た目で追う順番と食い違います。
+
+上から下へ読む1つのリストを段に分けたいときは、`masonry` ではなく「[11-7 columns](/compositions/columns/)」（CSSの段組みで、子を上から下へ流して段に分けるコンポジション）を使います。`columns` は並び順が縦なので、HTMLの順番と読む順番がそろいます。どちらを選ぶかは、項目を読む向きで決めます。横方向の順番で並べながら高さの違いを詰めるなら `masonry`、縦に読ませるなら `columns` です。
+
+## 補足と注意点
+
+`masonry` の子に `grid-column: span 2` や線の番号による配置を指定すると、見た目の順番とHTMLの順番のずれが大きくなります。複数の列にまたがる項目が空きに収まらず下へ回り、後の項目がその空きへ先に置かれるからです。この点は10-13のルール「[順序に意味のある項目に配置を指定しない](/layout/masonry/#rule-grid-lanes-no-placement-for-ordered-items)」で扱っています。`masonry` を使うときは、子の配置を指定せず、コンポジションの自動配置に任せます。
+
+写真を並べるときは、`<img>` に `width` と `height` の属性を書きます。属性があれば、ブラウザは画像を読み込む前から縦横比で高さを確保できます。高さが確保されていないと、画像を読み込むたびに列の高さが変わり、まだ置かれていない後続の項目の列が入れ替わって見える可能性があります。{/* 要確認: 出典なし（画像の読み込みで grid-lanes の配置がやり直されるかは、Safari で未確認） */}属性の書き方は「[15-1 画像と装飾](/decoration/images-and-decoration/#rule-img-width-height-attributes)」で説明しています。
+
+`masonry` を入れ子にする場面はほとんどありません。`grid-lanes` の列の中にさらに石積みを作っても、読み手には並び順がいっそう追いにくくなるだけだからです。項目の中の配置には、`stack` や `cluster` のような、子の並びが順番どおりになるコンポジションを使います。
+
+未対応の環境のフォールバックは、通常のGridです。2026年10月の時点で `grid-lanes` に対応しているのはSafari 26.4以降だけなので、ほとんどの読み手は、行ごとに高さのそろったGridで一覧を見ます。隙間は残りますが、すべての項目が読めて操作でき、列の数も対応している環境と同じなので、プログレッシブ・エンハンスメントとして使えます。対応状況が変わるまでは、Gridの見た目で問題がないことを確認してから `masonry` を選びます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS Grid Layout Module Level 3（Editor's Draft）](https://drafts.csswg.org/css-grid-3/)（CSSワーキンググループ、2026年10月確認）
+- [Introducing CSS Grid Lanes](https://webkit.org/blog/17660/introducing-css-grid-lanes/)（WebKit Blog、2025年12月）
+- [@supports - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@supports)
+- [repeat() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/repeat)
+- [Every Layout](https://every-layout.dev/)

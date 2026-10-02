@@ -1,0 +1,196 @@
+# 第18章 実務での運用
+
+# 18-1 Stylelintでルールを守る
+- id: run-stylelint-before-done
+  level: 必須
+  rule: CSS を変更したら Stylelint を実行し、エラーを残さない。
+  reason: 機械的に判断できる違反をレビューに持ち込まず、レビューを命名や設計の判断に集中させるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: no-disabling-to-silence
+  level: 禁止
+  rule: エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。
+  reason: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
+  aiProne: true
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: disable-one-line-with-reason
+  level: 必須
+  rule: ルールを無効にするときは、`stylelint-disable-next-line` とルール名で1行・1つのルールに絞り、直前のコメントに理由を書く。
+  reason: 範囲を広げると、同じ場所にある別の誤りまで見逃すうえ、なぜ無効にしたのかが後から分からなくなるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: autofix-mechanical-issues
+  level: 推奨
+  rule: プロパティの並び順のように自動で直せる違反は、手で直さず、`stylelint --fix` とエディタの保存時の自動修正に任せる。
+  reason: 整形はツールの仕事で、人が手作業でそろえると時間がかかるうえ、漏れが出るため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: disallowed-list-with-message
+  level: 推奨
+  rule: 禁止リストのルール（`unit-disallowed-list` など）には、`message` で代わりの書き方を示す。
+  reason: 何を書けばよいかがその場で分かり、ルールを無効にして済ませる動機を減らせるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: warning-for-judgement-rules
+  level: 推奨
+  rule: 置き換え先を人が選ぶ必要のあるルールは警告に、正解が1つに決まるルールはエラーにする。
+  reason: 機械的に直せる違反は確実に止め、判断の要る違反は人に判断を促せるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: resolve-warnings
+  level: 推奨
+  rule: 警告は放置せず、直すか、意図して使う場合は理由を添えてルールを1行だけ無効にする。
+  reason: 警告を放置すると、本当に直すべき警告が一覧に埋もれ、誰も警告を読まなくなるため。
+  note: 警告だけでは Stylelint の終了コードは失敗になりません。CI で警告も失敗にするときは、`--max-warnings 0` を付けて実行します。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: lint-config-matches-guideline
+  level: 必須
+  rule: ガイドラインのルールを変えたら、Stylelint の設定も合わせて変え、本文と設定を食い違わせない。
+  reason: 設定がガイドラインの意図とずれると、ツールが誤りを直すどころか、誤りを強制するため。
+  page: operations/stylelint
+  since: 0.1.0
+
+- id: lint-documented-examples
+  level: 推奨
+  rule: ガイドラインや設計のドキュメントに載せる推奨のコード例も、同じ Stylelint の設定で検証する。
+  reason: コード例が自分のルールに違反していると、ドキュメントが信用されず、AI にもそのまま手本として真似されるため。
+  page: operations/stylelint
+  since: 0.1.0
+
+# 18-2 レビューとAIとの協働
+- id: review-reason-and-solution
+  level: 必須
+  rule: レビューの指摘には、理由と解決策を必ずセットで書く。
+  reason: 何が問題で、どう直せばよいかが伝わらないと、書いた人が調べ直すことになり、同じ誤りを繰り返すため。
+  note: 本書のルールに当てはまる指摘には、ルールの ID を添えます。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-severity-labels
+  level: 推奨
+  rule: レビューの指摘には `MUST`、`IMO`、`Q` のラベルを付けて、深刻度を区別する。
+  reason: 直さなければならない指摘と、好みの提案と、質問が混ざらないようにするため。
+  note: '`MUST` は、仕様や規約への違反、バグ、将来の深刻な問題、使いやすさやアクセシビリティの阻害です。'
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-preferences-as-imo
+  level: 推奨
+  rule: 挙動に問題がなく、合意のない好みが入る指摘は `IMO` にとどめ、修正を強制しない。
+  reason: 教義的なレビューは、ユーザーやクライアントのメリットにならない修正を増やすため。
+  note: 規約として合意したルールへの違反は、`MUST` として指摘します。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-ask-unclear-intent
+  level: 推奨
+  rule: 意図が読み取れない記述は、誤りと決めつけずに `Q` で質問する。
+  reason: 書いた人にしか分からない事情がある場合があり、理由が分かればコメントとして残せるため。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: review-check-order
+  level: 推奨
+  rule: レビューは、規約、トークン、ブラウザ対応、不要な記述、グローバルの CSS、内容の変化への耐性、コンポーネントの境界、レスポンシブ、コメントの順に確認する。
+  reason: 影響の大きい問題から確かめ、細部の指摘に埋もれて重大な問題を見逃すのを防ぐため。
+  note: インデントや並び順のような整形は、ツールが機能していないときだけ指摘します。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: cite-rule-ids
+  level: 推奨
+  rule: レビューのコメントと AI への指示では、ルールを ID で引用する（例：`no-vw-vh`）。
+  reason: ID は章の構成が変わっても変わらず、どのルールのことかが正確に伝わるため。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: ai-read-rules-first
+  level: 推奨
+  rule: AI に CSS を書かせるときやレビューさせるときは、先に本書のルール集（またはスキル）を読ませる。
+  reason: AI が誤りやすいルールを、書く前に確認させられるため。
+  note: Claude Code では `skills/css-coding-guideline/` をスキルとして登録し、ほかのツールでは `AGENTS.md` や `CLAUDE.md` から `rules.md` を参照させます。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: verify-ai-output
+  level: 必須
+  rule: AI が生成した CSS は、Stylelint とレビューの両方で確かめてから採用する。
+  reason: Stylelint で検出できるのはルールの一部で、lint が通っても規約を守っているとは限らないため。
+  note: レビューでは、lint で検出できない「AI が誤りやすい」ルールを重点的に確かめます。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: record-ai-corrections
+  level: 推奨
+  rule: AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。
+  reason: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
+  page: operations/review-and-ai
+  since: 0.1.0
+
+- id: verify-support-claims
+  level: 推奨
+  rule: 「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。
+  reason: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
+  note: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
+  aiProne: true
+  page: operations/review-and-ai
+  since: 0.3.0
+
+- id: no-unrequested-css-framework
+  level: 推奨
+  rule: プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。
+  reason: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
+  note: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第8章のルール `utility-single-purpose`）。
+  aiProne: true
+  page: operations/review-and-ai
+  since: 0.3.0
+
+- id: ai-layout-with-grid-areas
+  level: 推奨
+  rule: AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。
+  reason: '指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。'
+  page: operations/review-and-ai
+  since: 0.5.0
+
+# 18-3 CMSのWYSIWYG本文にスタイルを当てる
+- id: wysiwyg-scope-root
+  level: 推奨
+  rule: CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中にタイプセレクタで書く。
+  reason: 編集者は要素にクラスを付けられず、子孫セレクタで書くと詳細度が上がり、独自ブロックの側に打ち消しが要るため。
+  note: 本文エリアは、`scoped <名前>` の規約（第2章）の例外です。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。
+  page: operations/wysiwyg
+  since: 0.4.0
+
+- id: wysiwyg-cms-prefix
+  level: 推奨
+  rule: 編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。
+  reason: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
+  note: '`[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。'
+  aiProne: true
+  page: operations/wysiwyg
+  since: 0.4.0
+
+- id: wysiwyg-scope-exception
+  level: 推奨
+  rule: CMS の本文エリアに限り、`@scope` のネストと、独自ブロックの `@scope` での `to()` の省略を認める。
+  reason: 本文エリアと独自ブロックの2段だけで、ブロックの中にコンポーネントを置かない前提が成り立てば、スタイルの漏れが起きにくいため。
+  note: ブロックの中にコンポーネントを入れるなら、通常の `@scope (.scoped.<名前>) to (.scoped)` に戻します。
+  page: operations/wysiwyg
+  since: 0.4.0
+
+- id: wysiwyg-flow-margin
+  level: 推奨
+  rule: 本文のブロック間の余白は、2つ目以降の直下の子に `margin-block-start` を `rlh` で付け、見出しと独自ブロックの前だけ広げる。
+  reason: 見出しや段落の行間が違っても、余白がルート要素の行の高さの倍数で揃うため。
+  note: 中にブロックを持つ `blockquote` などは、中の余白を `0.5rlh` に詰めます。
+  page: operations/wysiwyg
+  since: 0.4.0

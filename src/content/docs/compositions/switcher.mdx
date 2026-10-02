@@ -1,0 +1,248 @@
+---
+title: "11-4 switcher：n列と1列を幅で切り替える"
+description: "switcher は、要素の幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にするコンポジションです。閾値の判定は sign() で行い、メディアクエリもコンテナクエリも使いません。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import switcherHtml from '../../../demos/compositions/switcher/index.html?raw';
+import switcherCss from '../../../demos/compositions/switcher/style.css?raw';
+
+`switcher` は、要素の幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にするコンポジションです。閾値は「列の最小幅×列数＋列の間隔×（列数−1）」で求め、`sign()` で要素の幅と比べます。クエリを書かずに、置かれた場所の幅で並び方が切り替わります。
+
+途中の列数を挟まず、n列と1列のどちらかだけを選ぶのが、`switcher` の特徴です。列数が4、3、2と段階的に減ってよい並びには `grid` を、幅の違う2つの要素を並べるなら `sidebar` を使います。この節では、公開プロパティと内部の計算を1つずつ説明し、数値の例で列数が切り替わることを確かめます。
+
+## 列数が段階的に減ると困る並び
+
+サービスの特徴を3つ並べるブロックを考えます。Gridの `auto-fit` と `minmax()` を使えば、クエリを書かずに列数をブラウザに任せられます（「[12-1 検討する順番](/responsive/escalation/)」で説明した、イントリンシックな方法です）。
+
+```css title="🙅‍♂ Not Recommended: 3つの項目を auto-fit だけで並べる"
+/* 🙅‍♂ Not Recommended */
+._items {
+  display: block grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(320 / 16 * 1rem)), 1fr));
+  gap: 24px;
+}
+```
+
+この書き方では、ブロックの幅が664pxから1007pxまでのあいだ、列は2つになります。3つ目の項目は2行目の左の列に1つだけ置かれ、右には空いたセルが残ります。対等な3つの項目を見せたいブロックで、1つだけが別の扱いを受けたように見えます。
+
+この中途半端な状態を避けるために、メディアクエリで「768px以上なら3列」と書くこともよくあります。しかし、メディアクエリが判定するのはビューポートの幅です。同じブロックをサイドバーのような狭い場所に置くと、ビューポートが広くても3列のまま押し込まれ、各列が最小幅を割り込みます。
+
+求めているのは、「置かれた場所の幅で、3列が入るなら3列、入らないなら1列」という判定です。この判定を、クエリを使わずに1つのクラスにまとめたものが `switcher` です。
+
+## 閾値と sign() で列数を決める
+
+`switcher` の実装は次のとおりです。公開プロパティを内部プロパティで受け、閾値と列の幅の目安を計算してから、`grid-template-columns` の1行で列数を決めます。
+
+```css title="🙆‍♂ Recommended: 閾値を計算し、sign() で n 列と1列を切り替える"
+/**
+ * 幅が閾値以上なら指定の列数で並べ、閾値を下回ったら 1 列にする。
+ *
+ * @prop {integer} --switcher--column-count     [3]                     - 横に並べるときの列数
+ * @prop {length}  --switcher--column-min-width [calc(320 / 16 * 1rem)] - 列の最小幅（閾値の計算に使う）
+ * @prop {length}  --switcher--gap              [0px]                   - 行と列の間隔（一括）
+ * @prop {length}  --switcher--row-gap          [0px]                   - 行の間隔
+ * @prop {length}  --switcher--column-gap       [0px]                   - 列の間隔
+ *
+ * @example
+ * <div class="switcher" style="--switcher--column-count: 2; --switcher--column-min-width: calc(384 / 16 * 1rem)">
+ *   <div>Left</div>
+ *   <div>Right</div>
+ * </div>
+ */
+.switcher {
+  --_c--row-gap: var(--switcher--gap, var(--switcher--row-gap, 0px));
+  --_c--column-gap: var(--switcher--gap, var(--switcher--column-gap, 0px));
+  --_c--column-count: var(--switcher--column-count, 3);
+  --_c--column-min-width: var(--switcher--column-min-width, calc(320 / 16 * 1rem));
+
+  /* 列の最小幅で指定の列数を並べるのに必要な幅 */
+  --_c--threshold: calc(
+    var(--_c--column-min-width) * var(--_c--column-count) + var(--_c--column-gap) * (var(--_c--column-count) - 1)
+  );
+
+  /* 指定の列数でちょうど埋まる 1 列の幅。auto-fit がこれより多くの列を作らないようにする */
+  --_c--column-preferred-width: calc(
+    (100% - var(--_c--column-gap) * (var(--_c--column-count) - 1)) / var(--_c--column-count)
+  );
+
+  display: block grid;
+
+  /* 閾値より狭いと sign() が -1 になり、列の最小幅が 100%（1 列）になる */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr)
+  );
+  gap: var(--_c--row-gap) var(--_c--column-gap);
+}
+```
+
+### 公開プロパティ
+
+公開プロパティは次の5つです。列数と列の最小幅の2つで閾値が決まり、間隔の3つは見た目の隙間と閾値の両方に使われます。
+
+| プロパティ | 意味 | デフォルト値 |
+|---|---|---|
+| `--switcher--column-count` | 横に並べるときの列数（単位のない整数） | `3` |
+| `--switcher--column-min-width` | 列の最小幅。閾値の計算に使う | `calc(320 / 16 * 1rem)` |
+| `--switcher--gap` | 行と列の間隔（一括） | `0px` |
+| `--switcher--row-gap` | 行の間隔 | `0px` |
+| `--switcher--column-gap` | 列の間隔 | `0px` |
+
+値は、HTMLの `style` 属性で渡します。間隔には、単位のない数値で持っている余白のトークンを `calc(var(--spacing--md) / 16 * 1rem)` の形でremに変換して渡します。トークンを単位なしで持つ理由は「[8-4 デザイントークン](/components/design-tokens/)」で説明しています。
+
+```html
+<div
+  class="switcher"
+  style="--switcher--column-count: 3; --switcher--column-min-width: calc(200 / 16 * 1rem); --switcher--gap: calc(var(--spacing--md) / 16 * 1rem)"
+>
+  <section>…</section>
+  <section>…</section>
+  <section>…</section>
+</div>
+```
+
+間隔のデフォルト値は、ほかのコンポジションと同じく0です（「[8-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」のルール）。ただし、`switcher` では単位のない `0` ではなく `0px` と書きます。列の間隔は閾値の `calc()` で長さと足し合わされるので、単位のない `0` が入ると「長さ＋数値」の式になって無効になるからです。無効になった `grid-template-columns` は初期値の `none` に戻り、どの幅でも1列になります。
+
+### 閾値：`--_c--threshold`
+
+`--_c--threshold` は、列の最小幅で指定の列数を並べたときに必要な幅です。列が3つなら隙間は2つなので、「列の最小幅×列数＋列の間隔×（列数−1）」になります。デフォルトの3列・320px相当に、列の間隔として24px相当を渡すと、320×3＋24×2で1008px相当です。
+
+閾値に列の間隔を含めているので、間隔を変えると閾値も変わります。間隔を広げたのに切り替わる幅が変わらなければ、閾値ちょうどの幅で列が最小幅を割り込みます。閾値を式で書いておけば、値を変えても「列の最小幅が守られる」という条件が保たれます。クエリの閾値を式で書く考え方は「[12-3 メディアクエリとブレイクポイント](/responsive/media-queries/#rule-threshold-as-formula)」で説明しています。
+
+### 列の幅の目安：`--_c--column-preferred-width`
+
+`--_c--column-preferred-width` は、要素の幅を指定の列数でちょうど埋めたときの1列の幅です。式は「（100%−列の間隔×隙間の数）÷列数」で、要素の幅から隙間の合計を引き、列数で割っています。隙間の数は列数−1です。閾値以上の幅では、この値が列の最小幅以上になります。
+
+この値を `minmax()` の最小値に使うのは、`auto-fit` に指定の列数より多くの列を作らせないためです。`auto-fit` は、最小値を下回らない範囲で入るだけの列を作ります。最小値が「指定の列数でちょうど埋まる幅」なら、列数が1つ増えると幅が足りなくなります。列の最小幅（`--_c--column-min-width`）をそのまま最小値にすると、広い場所では4列、5列と増えてしまいます。
+
+### 1列への切り替え：sign()
+
+`sign()` は、引数が正なら1、0なら0、負なら-1を返す関数です。`sign(100% - var(--_c--threshold))` は、要素の幅が閾値より広ければ1、狭ければ-1になります。これに `-100%` を掛けると、閾値より広ければ `-100%`、閾値ちょうどなら `0%`、閾値未満では `100%` になります。
+
+この値と列の幅の目安を `max()` で比べ、大きいほうを `minmax()` の最小値にします。閾値以上では `-100%` や `0%` は選ばれないので、最小値は列の幅の目安になり、指定の列数で並びます。閾値未満では `100%` が選ばれ、1列が要素の幅いっぱいを占めるので、すべての子が縦に積まれます。
+
+<Baseline id="abs-sign" name="abs() と sign()" />
+
+`sign()` は、2025年6月にすべての主要なブラウザで使えるようになりました（2026年9月確認）。本書の対象のブラウザ（Safari 18系の最終版以降）では動作します。対応していないブラウザでは `grid-template-columns` の宣言全体が無効になり、`none` に戻って1列で表示されます。横に並ばないだけで内容は読めるので、`@supports` で分岐する必要はないと私は考えています。{/* 要確認: 出典なし */}
+
+### 数値で確かめる
+
+列数3、列の最小幅320px、列の間隔24pxで、閾値の前後を確かめます。閾値は1008pxです。
+
+要素の幅が1007pxなら `sign()` は-1になり、最小値は `100%` の1007pxになるので1列です。1008pxでは `sign(0)` が0になって最小値は列の幅の目安の（1008−48）÷3＝320pxになり、ちょうど320pxの列が3つ並びます。1400pxでは目安が（1400−48）÷3＝450.67pxになり、3列のまま各列が広がります。
+
+列の幅の目安の式は、括弧の位置を誤りやすい箇所です。「100%÷列数−列の間隔×（列数−1）」と書くと、1列の幅から隙間の合計全体を引くことになり、目安が小さくなりすぎます。列数4、列の最小幅200px、列の間隔24pxで、要素の幅を1000pxとします。閾値は200×4＋24×3＝872pxなので、ここは4列になるはずの幅です。
+
+正しい式では、目安は（1000−72）÷4＝232pxです。`auto-fit` が作る列の数は「（要素の幅＋間隔）÷（最小値＋間隔）」の整数部分なので、1024÷256＝4で4列になります。誤った式では、目安が1000÷4−72＝178pxになり、1024÷202≒5.07で5列になります。子が5つ以上あれば、4列を指定したのに5列で並びます。
+
+この誤りは、列数が2や3では表に出にくいものです。列数3では、誤った式で4列になるのは要素の幅が間隔の15倍以下のときに限られ、間隔24pxなら360px以下です。この幅は通常の閾値を下回るので、`sign()` によって1列になります。列が増えるのは列数を4以上にしたときなので、列数3のまま使っているうちは誤りに気付きにくいのです。
+
+この節の列数は、どれも実際のブラウザで要素の幅を変えて確かめた値です。式を変えたときも、閾値の前後と、閾値より十分に広い幅の3点で列数を確かめておくと、括弧の位置の誤りに気付けます。
+
+## コード例とデモ
+
+次のデモには、`switcher` を2つ置いています。上は列数3、列の最小幅200px相当、間隔24px相当で、閾値は648px相当です。下は列数4、列の最小幅140px相当、間隔12px相当で、閾値は596px相当です。幅のボタンで切り替えると、640pxでは下だけが4列になり、768px以上では両方が横に並びます（デモの本文には左右に16pxずつの余白があるので、要素の幅はボタンの値より32px狭くなります）。
+
+<Demo
+  title="閾値を境に、3列と1列、4列と1列が切り替わる switcher"
+  html={switcherHtml}
+  css={switcherCss}
+  widths={[320, 480, 640, 768, 1024]}
+/>
+
+2つの `switcher` は、それぞれ自分の幅だけで閾値を判定しています。ビューポートの幅を見ていないので、同じHTMLを狭いサイドバーに置けば、ビューポートが広くても1列になります。下の `switcher` は子が5つあるので、4列のときは2行目に1つだけが置かれます。この挙動は、次の節で説明します。
+
+デモのCSSのうち、コンポーネント（`feature-list`）が書いているのは、各項目の枠線、背景、見出しの文字サイズだけです。並び方と間隔は、すべてコンポジションと `style` 属性で決まっています。コンポーネント側では、項目に幅や `margin` を指定しません。
+
+```css title="🙆‍♂ Recommended: コンポーネントは項目の見た目だけを書く"
+@scope (.scoped.feature-list) to (.scoped) {
+  section,
+  li {
+    padding: 16px;
+    border: 1px solid oklch(85% 0 0deg);
+    border-radius: 8px;
+  }
+
+  h2 {
+    font-size: calc(18 / 16 * 1rem);
+  }
+}
+```
+
+コンポーネントの中で `switcher` を使うときは、`switcher` のクラスを付けた要素の直下に項目を置きます。`switcher` が決めるのは直下の子の並び方と間隔だけで、子の中身には関与しません。この役割分担は「[8-2 コンポーネントの境界を守る](/components/boundaries/)」で説明した「配置は置く側が持つ」という考え方にもとづいています。
+
+## 補足と注意点
+
+### 子の数が列数と違うとき
+
+子の数が列数より少ないときは、`auto-fit` が空の列を幅0に折りたたみます。列数3に子が2つなら、2つの子が `1fr` で行いっぱいに広がり、それぞれ要素の幅の半分ほどになります。子が1つなら、閾値以上でも1つの子が行いっぱいを占めます。
+
+子の数が列数より多いときは、指定の列数で行を折り返します。列数3に子が4つなら、2行目の左の列に4つ目の子が置かれ、右の2つは空いたセルになります。この場合は、どの行にも子のある列があるので、`auto-fit` は列を折りたたみません。
+
+`switcher` はn列と1列のどちらかを選ぶためのものなので、子の数は列数に合わせるのが基本です。子の数がCMSの入力などで変わるなら、余りの行ができることを前提に、`grid` を使うほうが見た目を予測しやすくなります。
+
+### grid、sidebar、cluster との使い分け
+
+[`grid`](/compositions/grid/)は、列の最小幅と最大数から、入るだけの列を並べます。幅に応じて4列、3列、2列と段階的に列が減るので、カードの一覧のように件数が多く、途中の列数でも見た目が成り立つ並びに向いています。`switcher` を選ぶのは、3つの特徴や2つのプランのように、項目どうしが対等で、途中の列数にしたくない並びです。
+
+[`sidebar`](/compositions/sidebar/)は、幅の決まったサイドと、残りを占めるメインの2つを並べます。`switcher` の列はすべて同じ幅なので、本文と補足のように役割と幅が違う2つの要素には `sidebar` を使います。
+
+[`cluster`](/compositions/cluster/)は、子の幅を中身の大きさで決めて、入りきらなければ折り返します。タグやボタンのように幅が中身で決まる要素は `cluster` に、列の幅をそろえたい要素は `switcher` か `grid` に任せます。
+
+### コンテナクエリで書く場合との比較
+
+同じ切り替えは、コンテナクエリでも書けます。ただし、要素は自分自身をコンテナにして判定できないので、親にコンテナを指定し、子の `grid-template-columns` を条件で切り替える形になります。
+
+```css title="🙅‍♂ Not Recommended: 列数の切り替えだけのためにコンテナクエリを書く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.feature-list) to (.scoped) {
+  :scope {
+    container: --feature-list / inline-size;
+  }
+
+  ._items {
+    display: block grid;
+    gap: 24px;
+
+    @container --feature-list (inline-size >= calc(1008 / 16 * 1rem)) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+```
+
+この書き方では、閾値を固定の値で書くしかありません。`@container` の条件の中では `var()` を使えないので（「[12-3 メディアクエリとブレイクポイント](/responsive/media-queries/#rule-no-var-in-query)」のルール）、列数や間隔を変えるたびに、閾値を計算し直して書き換えることになります。コンテナにした要素は幅を中身から決められなくなるという副作用もあり、コンポーネントごとにコンテナの名前を用意する手間もかかります。
+
+`switcher` は閾値をカスタムプロパティの式で持つので、`style` 属性で列数や間隔を変えると、閾値も計算し直されます。列数の切り替えだけならコンテナクエリは要りません。コンテナクエリは、画像と本文の位置関係まで組み替えたいときに検討します（「[12-2 コンテナクエリ](/responsive/container-queries/)」）。
+
+### はみ出しと置き場所
+
+`switcher` の `minmax()` の最小値は、列の幅の目安か `100%` のどちらかで、どちらも要素の幅を超えません。そのため、`min(100%, …)` で包まなくても、列が要素からはみ出すことはありません。
+
+ただし、列の幅は `minmax()` の最小値で決まり、中身の幅では広がりません。kiso.cssはルート要素に `overflow-wrap: anywhere` を指定しているので、長いURLは折り返されます。幅の決まった画像や表のように折り返せない中身は、列を押し広げずにセルの外へはみ出すので、コンポーネント側で `max-inline-size: 100%` などを指定して対処します。
+
+`switcher` は、幅が親から決まる場所に置きます。`display: flex` の親の中で、幅を指定していないflexアイテムにすると、`100%` が中身の幅から決まるので、閾値の判定が意図どおりになりません。実際に試すと、中身の幅の1列になりました。flexアイテムにするなら、`flex-grow` などで幅を親から与えます。
+
+### 読み上げ順
+
+`switcher` は、子の順番を入れ替えません。横に並んだときは左から右、1列のときは上から下の順で、どちらもHTMLの順番と一致します。スクリーンリーダーの読み上げ順やキーボードでの移動順と、見た目の順番がずれないので、`order` や `grid-row` で並べ替えないようにします。
+
+項目の並びに意味があるなら、`ul` や `ol` に `switcher` を付けると、リストであることと項目の数が支援技術に伝わります。デモの下の `switcher` は、`ul` に付けた例です。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [俺流レスポンシブコーディング 2025](https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025)（TAK、2025年11月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [Every Layout](https://every-layout.dev/)
+- [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)
+- [repeat() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/repeat)
+- [CSS Grid Layout Module Level 2 - Repeat-to-fill: auto-fill and auto-fit repetitions](https://www.w3.org/TR/css-grid-2/#auto-repeat)

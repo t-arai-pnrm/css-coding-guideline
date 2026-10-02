@@ -1,5 +1,5 @@
 ---
-title: "13-2 開閉するUI"
+title: "16-2 開閉するUI"
 description: "モーダルは<dialog>をcommand属性とclosedby属性で開閉し、小さな表示にはpopover属性を使います。アコーディオンは<details>とname属性で作り、見出しの構造が必要なパネルやタブはhidden=\"until-found\"で隠します。"
 sidebar:
   order: 2
@@ -93,7 +93,7 @@ viewer.addEventListener('command', (event) => {
 
 `command` イベントは、組み込みのコマンドでも、操作の前に発生します。イベントは取り消し可能で、`preventDefault()` を呼ぶとダイアログやポップオーバーの開閉も行われません。
 
-ダイアログと背景を `@starting-style` でフェードさせる方法は、「[14-5 出現と退場](/motion/entry-and-exit/)」で説明します。
+ダイアログと背景を `@starting-style` でフェードさせる方法は、「[17-5 出現と退場](/motion/entry-and-exit/)」で説明します。
 
 ## スクロールの連鎖を止める
 
@@ -114,7 +114,7 @@ viewer.addEventListener('command', (event) => {
 
 <Baseline id="overscroll-behavior" compatKey="css.properties.overscroll-behavior-block" name="overscroll-behavior-block" />
 
-上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
 ## `popover` 属性による小さな表示
 
@@ -124,7 +124,7 @@ viewer.addEventListener('command', (event) => {
 
 <Baseline id="popover" />
 
-注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[8-7 positionの基礎](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、「[14-5 出現と退場](/motion/entry-and-exit/)」のデモにあります。
+注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[10-7 positionの基礎](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、「[17-5 出現と退場](/motion/entry-and-exit/)」のデモにあります。
 
 ## `<details>` と `name` 属性によるアコーディオン
 
@@ -150,7 +150,7 @@ viewer.addEventListener('command', (event) => {
 
 開いているときのスタイルは、`[open]` 属性のセレクタで書きます。`:open` という擬似クラスもありますが、Safariは26.5から対応したので、2026年9月の時点では本書の対象のすべてでは使えません。
 
-開閉する部分を `::details-content` で選び、高さと不透明度を動かす方法は、「[14-5 出現と退場](/motion/entry-and-exit/)」で説明します。
+開閉する部分を `::details-content` で選び、高さと不透明度を動かす方法は、「[17-5 出現と退場](/motion/entry-and-exit/)」で説明します。
 
 ## `hidden="until-found"` で隠すタブとアコーディオン
 
@@ -183,7 +183,7 @@ const initializeDisclosure = (link) => {
 };
 ```
 
-ページ内検索などで自動で開いたときには `beforematch` イベントが発生するので、`aria-expanded` を更新します。見た目の状態は、「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
+ページ内検索などで自動で開いたときには `beforematch` イベントが発生するので、`aria-expanded` を更新します。見た目の状態は、「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
 
 `hidden="until-found"` に対応したブラウザは、要素を `display: none` ではなく `content-visibility: hidden` で隠します。中身だけが隠れて要素自体は描画されるので、その要素の余白、枠線、背景は、閉じていても表示されます。これらは内側の要素に指定します。
 
@@ -198,7 +198,7 @@ const initializeDisclosure = (link) => {
 
 <Baseline id="hidden-until-found" name='hidden="until-found"' />
 
-Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、閉じたパネルの中身はページ内検索で見つかりません。ただし、隠すのは初期化が成功した後なので、開閉の処理は動き、JavaScriptが動かない環境では最初から中身が表示されています。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[5-1 壊さないリセット](/reset/kiso/)」）。
+Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、閉じたパネルの中身はページ内検索で見つかりません。ただし、隠すのは初期化が成功した後なので、開閉の処理は動き、JavaScriptが動かない環境では最初から中身が表示されています。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[6-1 壊さないリセット](/reset/kiso/)」）。
 
 ## 開閉するUIで確かめる状態
 

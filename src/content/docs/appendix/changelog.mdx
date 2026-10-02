@@ -11,22 +11,34 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.17.0（2026年10月3日）
+
+本の構成を見直しました。「はじめに」にあった心構えのページを内容に合う部へ移し、レイアウトの章を2つに分けました。ルールの内容は変えていませんが、章と節の番号とURLが変わるため、マイナーバージョンを上げています。
+
+- 章を2つ加えました。
+  - 第5章「[CSS設計の考え方](/design-mindset/)」：「はじめに」の「CSS設計のマインドセット」を、「[5-1 CSS設計のマインドセット](/design-mindset/what-is-css-design/)」として移しました。
+  - 第9章「[デザインを再現する](/design-reproduction/)」：「はじめに」の「デザインを再現するうえで意識すること」の2ページを、「[9-1 ピクセルではなく意図を再現する](/design-reproduction/intent/)」と「[9-2 実装の前にデザイナーと確かめること](/design-reproduction/designer-questions/)」として移しました。
+- 「はじめに」の「CSSを学ぶうえで大切なこと」の4ページを、第1章の「[1-4 基礎を固める](/principles/fundamentals/)」「[1-5 解決策を丸暗記しない](/principles/no-memorizing/)」「[1-6 Tipsとの付き合い方](/principles/tips/)」「[1-7 選択肢を多く持つ](/principles/options/)」に移しました。
+- 旧第8章「レイアウト」を、第10章「[レイアウトの基礎と考え方](/layout/)」と第11章「[レイアウトコンポジション](/compositions/)」に分けました。旧8-14-1〜8-14-11は11-1〜11-11に、旧8-15は10-14になります。コンポジションのURLは `/layout/compositions/` から `/compositions/` に変わりました。
+- これに合わせて、旧第5〜7章は第6〜8章に、旧第9〜15章は第12〜18章になりました。本書は公開前なので、旧URLからの転送は置いていません。
+- 更新履歴の過去の項目は、記録した時点の章と節の番号のままにしています。リンクは新しいURLに直しました。
+
 ## 0.16.0（2026年10月3日）
 
 「はじめに」に心構えのページを加え、本書全体を通読したレビューにもとづいて、仕様の説明の誤りと推奨のコードを直しました。ルールを1件追加し、7件の内容を変えたため、マイナーバージョンを上げています。
 
 - 「はじめに」に、ルールの前提になる心構えのページを加えました。これらのページにはルールを置いていません。
   - 「[はじめに](/introduction/preface/)」を加えました。
-  - 「CSSを学ぶうえで大切なこと」として、「[基礎を固める](/introduction/learning/fundamentals/)」「[解決策を丸暗記しない](/introduction/learning/no-memorizing/)」「[Tipsとの付き合い方](/introduction/learning/tips/)」「[選択肢を多く持つ](/introduction/learning/options/)」を加えました。
-  - 「デザインを再現するうえで意識すること」として、「[ピクセルではなく意図を再現する](/introduction/design/intent/)」「[実装の前にデザイナーと確かめること](/introduction/design/designer-questions/)」を加えました。
-  - 「[CSS設計のマインドセット](/introduction/design-mindset/)」を加えました。
+  - 「CSSを学ぶうえで大切なこと」として、「[基礎を固める](/principles/fundamentals/)」「[解決策を丸暗記しない](/principles/no-memorizing/)」「[Tipsとの付き合い方](/principles/tips/)」「[選択肢を多く持つ](/principles/options/)」を加えました。
+  - 「デザインを再現するうえで意識すること」として、「[ピクセルではなく意図を再現する](/design-reproduction/intent/)」「[実装の前にデザイナーと確かめること](/design-reproduction/designer-questions/)」を加えました。
+  - 「[CSS設計のマインドセット](/design-mindset/what-is-css-design/)」を加えました。
 - 「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」に、ルート要素の背景色、文字色、行の高さの指定と、下線の位置の節を加えました。Webフォントを使うときの `font-family` と `font-weight`、`-webkit-font-smoothing` は、プロジェクトごとに検討するものとして紹介しています。
 - ルールを1件追加しました。
   - [`underline-offset-in-base`](/reset/base-styles/#rule-underline-offset-in-base)：ベーススタイルの `:root` に `text-underline-offset: 25%` を指定し、下線を文字から離します。パーセントは相対値のまま継承されるので、文字の大きさに比例します。
 - ルールの内容を変えました。
   - [`smooth-scroll-conditional`](/reset/base-styles/#rule-smooth-scroll-conditional)：ページの読み込みが終わってルート要素に `data-loaded` 属性が付くまで、スムーススクロールを無効にする条件を加えました。フラグメント付きのURLで表示した直後に、なめらかにスクロールしないようにするためです。
   - [`screen-mode-single-source`](/responsive/design-comp-pattern/#rule-screen-mode-single-source)：ビューポートの `@media` を `:root` の1か所にまとめ、`--screen` と比例スケールの比率をそこで一緒に切り替えます。
-  - [`stack-vs-prose`](/layout/compositions/stack/#rule-stack-vs-prose)：`stack` を使う条件を、同じ役割の要素から、構成が決まっていて間隔を一律にしてよい要素に改めました。
+  - [`stack-vs-prose`](/compositions/stack/#rule-stack-vs-prose)：`stack` を使う条件を、同じ役割の要素から、構成が決まっていて間隔を一律にしてよい要素に改めました。
   - [`no-lazy-loading-first-view`](/decoration/images-and-decoration/#rule-no-lazy-loading-first-view)：`fetchpriority="high"` を、ファーストビューの画像すべてではなく、LCPの候補になる画像にだけ指定するようにしました。
   - [`fit-content-over-flex-shrink-zero`](/layout/defensive/#rule-fit-content-over-flex-shrink-zero)：`fit-content` の上限は同じ並びのほかのアイテムや `gap` を差し引きません。アイコンと並ぶボタンの中のラベルには指定しない、と補足しました。
   - [`proportional-scale-comp-values`](/responsive/design-comp-pattern/#rule-proportional-scale-comp-values)：`--px` と `--rem` に比率1の値を先に入れ、長さどうしの割り算に対応していることを `@supports` で確かめられたときだけ比例の式に切り替える、と補足しました。割り算に対応していないブラウザでも、カンプどおりの寸法で表示されます。
@@ -134,7 +146,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`local-parts-stay-in-parent`](/components/what-is-a-component/#rule-local-parts-stay-in-parent)：親の中でしか意味を持たない区画は、別のコンポーネントにせず、親の `@scope` の中で選びます。
 - ルール [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) の条件を、`@media (any-hover: hover)` から `@media (any-hover)` に変えました。値なしの `(any-hover)` は同じ意味になるからです。本書のすべてのコード例とデモも書き換えています。
 - 文字色を背景の明度から選ぶ `sign()` の式を、`oklch(from var(--_foreground) sign(0.7 - l) 0 h)` にそろえました。
-- コンポジション「[8-14-10 primary-layout](/layout/compositions/primary-layout/)」から、画面モードのスタイルクエリによる分岐を外しました。公開プロパティは `--primary-layout--gutter` のように接尾辞のない1組になり、デフォルト値は旧 `--compact` の値です。
+- コンポジション「[8-14-10 primary-layout](/compositions/primary-layout/)」から、画面モードのスタイルクエリによる分岐を外しました。公開プロパティは `--primary-layout--gutter` のように接尾辞のない1組になり、デフォルト値は旧 `--compact` の値です。
 - 用語集に「通常フロー」と「ブロック整形コンテキスト」を加えました。
 
 ## 0.11.1（2026年10月2日）
@@ -214,7 +226,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - `@scope` の中で、`._list`、`._item`、`._link`、`._title` のように要素の種類を言い換えただけのクラスを外し、タイプセレクタで選ぶようにしました。同じ種類の要素を役割で区別しているクラスと、ルールや本文が名前を挙げて説明しているクラスは残しています。
 - 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」のドーナツスコープのデモを、タイプセレクタの `p` が下限で止まることを示す形に改めました。
 - `<a>` の `_button` は、`_contact-link` や `_cta-link` のように `link` の語を使う名前へ改めました（「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」「[7-7 余白を設計する](/layout/spacing/)」ほか）。
-- 「[7-13-5 sidebar](/layout/compositions/sidebar/)」では、子要素のクラスとコンポジションのクラスを並べる説明を、タイプセレクタを前提とする説明へ改めました。
+- 「[7-13-5 sidebar](/compositions/sidebar/)」では、子要素のクラスとコンポジションのクラスを並べる説明を、タイプセレクタを前提とする説明へ改めました。
 - 次の2件のルールは、意味を変えずに文言を直しました。
   - [`child-class-underscore`](/notation/naming/#rule-child-class-underscore)：例を `._title` から `._main-link` に改めました。
   - [`wysiwyg-scope-root`](/operations/wysiwyg/#rule-wysiwyg-scope-root)：「要素セレクタ」を、本書のほかの箇所と同じ「タイプセレクタ」にそろえました。
@@ -286,7 +298,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 「[8-5 セーフエリアに対応する](/responsive/safe-area/)」：固定するバーと浮かせるボタンに、左右のセーフエリアを加えました。
   - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」「[10-3 画像と装飾](/decoration/images-and-decoration/)」：寸法を持つ擬似要素に `display` を加え、単独で写しても描けるようにしました。
   - 「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」：`:focus-visible` はキーボードの操作に限らないことを説明しました。
-  - 「[7-13 コンポジション集](/layout/compositions/)」：CMSの本文の中では `stack` と `prose` を使わず、`wysiwyg` を使うことに統一しました。
+  - 「[7-13 コンポジション集](/compositions/)」：CMSの本文の中では `stack` と `prose` を使わず、`wysiwyg` を使うことに統一しました。
   - 「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」：スキルを登録する前に、自分の環境で `pnpm gen:ai` を実行する手順を加えました。
   - 第12章の概要に12-3を加え、サイドバーの順番を節の番号にそろえました。
   - 第2章のカスケードの説明（`all`、`!important` とトランジション、`revert` の戻り先）を、仕様に合わせて正確にしました。
@@ -329,7 +341,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 「[7-6 Gridから考える](/layout/grid-first/)」：サブグリッドの線の名前と `padding` の扱い
   - 「[7-9 重なりと配置](/layout/positioning/)」：`position-try-order` と `position-visibility`
   - 「[11-3 開閉するUI](/interaction/disclosure/)」：`command` 属性の組み込みのコマンドとカスタムコマンド
-- 第7章の末尾に「[7-13 コンポジション集](/layout/compositions/)」を設け、11のコンポジションに1ページずつを充てました（7-13-1 stack〜7-13-11 prose）。各ページで、使う場面と使わない場面、公開プロパティ、内部の計算、使い分けを説明しています。6-2の一覧表は各ページへのリンクにし、`grid` には公開プロパティ `--grid--mode`（デフォルトは `auto-fill`）を加え、最大の列数のデフォルトを5にしました。
+- 第7章の末尾に「[7-13 コンポジション集](/compositions/)」を設け、11のコンポジションに1ページずつを充てました（7-13-1 stack〜7-13-11 prose）。各ページで、使う場面と使わない場面、公開プロパティ、内部の計算、使い分けを説明しています。6-2の一覧表は各ページへのリンクにし、`grid` には公開プロパティ `--grid--mode`（デフォルトは `auto-fill`）を加え、最大の列数のデフォルトを5にしました。
 - 「[6-1 コンポーネントの境界を守る](/components/boundaries/)」に、1つのコンポーネントのCSSを1つのファイルに書くことを加えました。
 - 「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」に、フォールバックの書き方を選ぶ基準をまとめました。宣言に `var()` を含むと計算値の時点で無効になり、前の宣言に戻らないためです。
 - レビューを受けて、次の記述を直しました。
@@ -370,43 +382,43 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`no-inline-block-for-rows`](/layout/normal-flow/#rule-no-inline-block-for-rows)
   - [`fallback-method-by-invalidation`](/principles/browser-support/#rule-fallback-method-by-invalidation)
   - [`one-component-per-file`](/components/boundaries/#rule-one-component-per-file)
-  - [`stack-vs-prose`](/layout/compositions/stack/#rule-stack-vs-prose)
-  - [`stack-uneven-gaps`](/layout/compositions/stack/#rule-stack-uneven-gaps)
-  - [`stack-nested-gap`](/layout/compositions/stack/#rule-stack-nested-gap)
-  - [`stack-align-self-start`](/layout/compositions/stack/#rule-stack-align-self-start)
-  - [`cluster-apart-for-two-ends`](/layout/compositions/cluster/#rule-cluster-apart-for-two-ends)
-  - [`cluster-balance-inside-supports`](/layout/compositions/cluster/#rule-cluster-balance-inside-supports)
-  - [`cluster-reset-inherited-gap`](/layout/compositions/cluster/#rule-cluster-reset-inherited-gap)
-  - [`apart-for-two-groups`](/layout/compositions/apart/#rule-apart-for-two-groups)
-  - [`apart-column-gap-as-minimum`](/layout/compositions/apart/#rule-apart-column-gap-as-minimum)
-  - [`apart-auto-margin-for-wrapped-end`](/layout/compositions/apart/#rule-apart-auto-margin-for-wrapped-end)
-  - [`switcher-for-all-or-nothing`](/layout/compositions/switcher/#rule-switcher-for-all-or-nothing)
-  - [`switcher-preferred-width-formula`](/layout/compositions/switcher/#rule-switcher-preferred-width-formula)
-  - [`switcher-gap-default-with-unit`](/layout/compositions/switcher/#rule-switcher-gap-default-with-unit)
-  - [`sidebar-before-queries`](/layout/compositions/sidebar/#rule-sidebar-before-queries)
-  - [`sidebar-two-direct-children`](/layout/compositions/sidebar/#rule-sidebar-two-direct-children)
-  - [`sidebar-side-position-by-source-order`](/layout/compositions/sidebar/#rule-sidebar-side-position-by-source-order)
-  - [`sidebar-widths-above-min-content`](/layout/compositions/sidebar/#rule-sidebar-widths-above-min-content)
-  - [`grid-max-count-over-queries`](/layout/compositions/grid/#rule-grid-max-count-over-queries)
-  - [`grid-mode-auto-fill-default`](/layout/compositions/grid/#rule-grid-mode-auto-fill-default)
-  - [`grid-gap-with-unit`](/layout/compositions/grid/#rule-grid-gap-with-unit)
-  - [`grid-switcher-for-fixed-sets`](/layout/compositions/grid/#rule-grid-switcher-for-fixed-sets)
-  - [`columns-single-list-child`](/layout/compositions/columns/#rule-columns-single-list-child)
-  - [`columns-not-for-tall-lists`](/layout/compositions/columns/#rule-columns-not-for-tall-lists)
-  - [`columns-negative-margin-in-flow-root`](/layout/compositions/columns/#rule-columns-negative-margin-in-flow-root)
-  - [`masonry-for-loose-order-lists`](/layout/compositions/masonry/#rule-masonry-for-loose-order-lists)
-  - [`masonry-tolerance-default-normal`](/layout/compositions/masonry/#rule-masonry-tolerance-default-normal)
-  - [`pile-placement-on-target-child`](/layout/compositions/pile/#rule-pile-placement-on-target-child)
-  - [`pile-no-grid-placement-on-children`](/layout/compositions/pile/#rule-pile-no-grid-placement-on-children)
-  - [`pile-scrim-for-text-on-image`](/layout/compositions/pile/#rule-pile-scrim-for-text-on-image)
-  - [`pile-not-for-overflowing-layers`](/layout/compositions/pile/#rule-pile-not-for-overflowing-layers)
-  - [`primary-layout-width-by-line-names`](/layout/compositions/primary-layout/#rule-primary-layout-width-by-line-names)
-  - [`primary-layout-center-column-subtract-both-sides`](/layout/compositions/primary-layout/#rule-primary-layout-center-column-subtract-both-sides)
-  - [`primary-layout-child-classes-unprefixed`](/layout/compositions/primary-layout/#rule-primary-layout-child-classes-unprefixed)
-  - [`prose-space-on-following-child`](/layout/compositions/prose/#rule-prose-space-on-following-child)
-  - [`prose-no-internal-property`](/layout/compositions/prose/#rule-prose-no-internal-property)
-  - [`prose-nested-inner-space`](/layout/compositions/prose/#rule-prose-nested-inner-space)
-  - [`prose-not-on-cms-body`](/layout/compositions/prose/#rule-prose-not-on-cms-body)
+  - [`stack-vs-prose`](/compositions/stack/#rule-stack-vs-prose)
+  - [`stack-uneven-gaps`](/compositions/stack/#rule-stack-uneven-gaps)
+  - [`stack-nested-gap`](/compositions/stack/#rule-stack-nested-gap)
+  - [`stack-align-self-start`](/compositions/stack/#rule-stack-align-self-start)
+  - [`cluster-apart-for-two-ends`](/compositions/cluster/#rule-cluster-apart-for-two-ends)
+  - [`cluster-balance-inside-supports`](/compositions/cluster/#rule-cluster-balance-inside-supports)
+  - [`cluster-reset-inherited-gap`](/compositions/cluster/#rule-cluster-reset-inherited-gap)
+  - [`apart-for-two-groups`](/compositions/apart/#rule-apart-for-two-groups)
+  - [`apart-column-gap-as-minimum`](/compositions/apart/#rule-apart-column-gap-as-minimum)
+  - [`apart-auto-margin-for-wrapped-end`](/compositions/apart/#rule-apart-auto-margin-for-wrapped-end)
+  - [`switcher-for-all-or-nothing`](/compositions/switcher/#rule-switcher-for-all-or-nothing)
+  - [`switcher-preferred-width-formula`](/compositions/switcher/#rule-switcher-preferred-width-formula)
+  - [`switcher-gap-default-with-unit`](/compositions/switcher/#rule-switcher-gap-default-with-unit)
+  - [`sidebar-before-queries`](/compositions/sidebar/#rule-sidebar-before-queries)
+  - [`sidebar-two-direct-children`](/compositions/sidebar/#rule-sidebar-two-direct-children)
+  - [`sidebar-side-position-by-source-order`](/compositions/sidebar/#rule-sidebar-side-position-by-source-order)
+  - [`sidebar-widths-above-min-content`](/compositions/sidebar/#rule-sidebar-widths-above-min-content)
+  - [`grid-max-count-over-queries`](/compositions/grid/#rule-grid-max-count-over-queries)
+  - [`grid-mode-auto-fill-default`](/compositions/grid/#rule-grid-mode-auto-fill-default)
+  - [`grid-gap-with-unit`](/compositions/grid/#rule-grid-gap-with-unit)
+  - [`grid-switcher-for-fixed-sets`](/compositions/grid/#rule-grid-switcher-for-fixed-sets)
+  - [`columns-single-list-child`](/compositions/columns/#rule-columns-single-list-child)
+  - [`columns-not-for-tall-lists`](/compositions/columns/#rule-columns-not-for-tall-lists)
+  - [`columns-negative-margin-in-flow-root`](/compositions/columns/#rule-columns-negative-margin-in-flow-root)
+  - [`masonry-for-loose-order-lists`](/compositions/masonry/#rule-masonry-for-loose-order-lists)
+  - [`masonry-tolerance-default-normal`](/compositions/masonry/#rule-masonry-tolerance-default-normal)
+  - [`pile-placement-on-target-child`](/compositions/pile/#rule-pile-placement-on-target-child)
+  - [`pile-no-grid-placement-on-children`](/compositions/pile/#rule-pile-no-grid-placement-on-children)
+  - [`pile-scrim-for-text-on-image`](/compositions/pile/#rule-pile-scrim-for-text-on-image)
+  - [`pile-not-for-overflowing-layers`](/compositions/pile/#rule-pile-not-for-overflowing-layers)
+  - [`primary-layout-width-by-line-names`](/compositions/primary-layout/#rule-primary-layout-width-by-line-names)
+  - [`primary-layout-center-column-subtract-both-sides`](/compositions/primary-layout/#rule-primary-layout-center-column-subtract-both-sides)
+  - [`primary-layout-child-classes-unprefixed`](/compositions/primary-layout/#rule-primary-layout-child-classes-unprefixed)
+  - [`prose-space-on-following-child`](/compositions/prose/#rule-prose-space-on-following-child)
+  - [`prose-no-internal-property`](/compositions/prose/#rule-prose-no-internal-property)
+  - [`prose-nested-inner-space`](/compositions/prose/#rule-prose-nested-inner-space)
+  - [`prose-not-on-cms-body`](/compositions/prose/#rule-prose-not-on-cms-body)
   - [`box-sizing-border-box-base`](/layout/box-model/#rule-box-sizing-border-box-base)
   - [`box-fit-content-over-display-change`](/layout/box-model/#rule-box-fit-content-over-display-change)
   - [`box-state-border-without-shift`](/layout/box-model/#rule-box-state-border-without-shift)

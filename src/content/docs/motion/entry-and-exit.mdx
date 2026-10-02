@@ -1,5 +1,5 @@
 ---
-title: "14-5 出現と退場"
+title: "17-5 出現と退場"
 description: "display: noneから表示する要素の出現と退場は、@starting-styleとtransition-behavior: allow-discreteでCSSだけで動かします。退場を動かさないなら@keyframesのfromで足り、ツールチップは初回だけ表示を遅らせます。"
 sidebar:
   order: 5
@@ -63,9 +63,9 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 
 閉じた状態（`:not(:popover-open)`）の値は、退場の終了地点になります。開いた状態の `@starting-style` の値は出現の開始地点なので、2つを同じ値にすると、現れるときと消えるときが同じ経路をたどります。イージングは、開閉のどちらも `--ease--out-quint` です。退場でも、操作の直後に大きく変化してから落ち着くほうが、操作への反応が速く見えます。
 
-拡大の起点は、0.95〜0.98の範囲にします。`scale: 0` から広がる動きは、何もない点から要素が生まれるように見えて不自然です。`transform-origin` はトリガーのある側に向けます。この例のパネルは画面の下端に固定して表示するので、下端を起点にしています。起点の値と向きの決め方は、「[14-3 イージングと再生時間](/motion/easing-and-duration/)」で説明しています。
+拡大の起点は、0.95〜0.98の範囲にします。`scale: 0` から広がる動きは、何もない点から要素が生まれるように見えて不自然です。`transform-origin` はトリガーのある側に向けます。この例のパネルは画面の下端に固定して表示するので、下端を起点にしています。起点の値と向きの決め方は、「[17-3 イージングと再生時間](/motion/easing-and-duration/)」で説明しています。
 
-動きを減らす設定のときは、拡大の起点を1にして、フェードだけを残します。「[14-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の4段階のうちの「簡素化」です。ポップオーバーが一瞬で現れると何が起きたのか分かりにくいので、位置と大きさを変えないフェードは残します。次のデモで、ボタンを押して動きを確かめられます。
+動きを減らす設定のときは、拡大の起点を1にして、フェードだけを残します。「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の4段階のうちの「簡素化」です。ポップオーバーが一瞬で現れると何が起きたのか分かりにくいので、位置と大きさを変えないフェードは残します。次のデモで、ボタンを押して動きを確かめられます。
 
 <Demo title="@starting-style で出現と退場を動かし、動きを減らす設定ではフェードだけにする" html={popoverHtml} css={popoverCss} height="14rem" />
 
@@ -75,7 +75,7 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 
 <Baseline id="overlay" />
 
-2026年10月の時点で、Firefoxは `display: none` へのトランジションに対応していません。開くときは動きますが、閉じるときは一瞬で消えます。閉じる機能は損なわれないので、プログレッシブ・エンハンスメントとして許容します。`overlay` に対応しているのはChrome系のブラウザだけなので、閉じる途中でほかの要素の下に潜り込まないように、`z-index: var(--z--top)` も指定しておきます（「[7-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+2026年10月の時点で、Firefoxは `display: none` へのトランジションに対応していません。開くときは動きますが、閉じるときは一瞬で消えます。閉じる機能は損なわれないので、プログレッシブ・エンハンスメントとして許容します。`overlay` に対応しているのはChrome系のブラウザだけなので、閉じる途中でほかの要素の下に潜り込まないように、`z-index: var(--z--top)` も指定しておきます（「[8-2 コンポーネントの境界を守る](/components/boundaries/)」）。
 
 ## ダイアログの開閉を動かす
 
@@ -118,7 +118,7 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 
 この例では、ダイアログと背景を不透明度だけで変化させています。画面の大部分を覆うUIが一瞬で現れると、何が起きたのか分かりにくくなるからです。位置と大きさを変えないフェードなので、動きを減らす設定でも条件の外に置いて残します。大きなUIの出現を、動きを減らす設定でフェードだけにする「簡素化」を、最初からフェードだけで作った形です。拡大を加えるなら、ダイアログの起点は0.85〜0.92にし、ポップオーバーの例と同じく拡大の起点だけを `no-preference` の中で変えます。
 
-`position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合（2025年5月の時点で確認されていたもの）を避けるために明示しています。モーダルを開いている間の背面の固定は「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[7-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。ダイアログを開閉するHTMLは「[13-2 開閉するUI](/interaction/disclosure/)」にあります。
+`position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合（2025年5月の時点で確認されていたもの）を避けるために明示しています。モーダルを開いている間の背面の固定は「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[8-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。ダイアログを開閉するHTMLは「[16-2 開閉するUI](/interaction/disclosure/)」にあります。
 
 ## `<details>` の開閉を動かす
 
@@ -146,7 +146,7 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 
 高さと不透明度は閉じているとき（`:not([open])`）だけ0にするので、開いているときに初期値の `auto` と `1` を書き直す必要はありません。閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。
 
-`block-size: 0` から `auto` への変化は、`interpolate-size: allow-keywords` があるときに限って補間されます。本書ではこの指定を、動きを減らす設定がないときだけ、ベーススタイルで `:root` に書いています（「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。開閉を示す矢印の回転も、回転は「大きな変動」にあたるので `no-preference` の中に書きます。次のデモでは、`name` 属性で同時に1つだけを開くようにしています。
+`block-size: 0` から `auto` への変化は、`interpolate-size: allow-keywords` があるときに限って補間されます。本書ではこの指定を、動きを減らす設定がないときだけ、ベーススタイルで `:root` に書いています（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。開閉を示す矢印の回転も、回転は「大きな変動」にあたるので `no-preference` の中に書きます。次のデモでは、`name` 属性で同時に1つだけを開くようにしています。
 
 <Demo title="::details-content の高さと不透明度を動かし、name 属性で1つだけを開く" html={detailsHtml} css={detailsCss} />
 
@@ -154,7 +154,7 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 
 <Baseline id="interpolate-size" />
 
-`interpolate-size` に対応しているのは、2026年10月の時点でChrome系のブラウザだけです。ほかのブラウザでは高さが一瞬で切り替わり、不透明度だけが変化しますが、開閉の機能は損なわれません。高さを動かすとレイアウトの計算が毎フレーム起きますが、アコーディオンでは開閉の位置関係を伝えるために許容します。レイアウトを起こす動きの負荷は、「[14-7 動きの負荷を抑える](/motion/performance/)」で説明しています。
+`interpolate-size` に対応しているのは、2026年10月の時点でChrome系のブラウザだけです。ほかのブラウザでは高さが一瞬で切り替わり、不透明度だけが変化しますが、開閉の機能は損なわれません。高さを動かすとレイアウトの計算が毎フレーム起きますが、アコーディオンでは開閉の位置関係を伝えるために許容します。レイアウトを起こす動きの負荷は、「[17-7 動きの負荷を抑える](/motion/performance/)」で説明しています。
 
 SafariとFirefoxでも高さを動かすよう求められた場合に限り、`::details-content` をグリッドにして、`grid-template-rows` を `0fr` と `1fr` で切り替えます。`fr` の値は、`interpolate-size` がなくても補間されます。この方法では、行の高さを0まで縮めるために、中身を1つの要素で包みます。
 
@@ -228,7 +228,7 @@ CSSで書けるのは、初回の遅延だけです。表示した状態のル�
 }
 ```
 
-この例の `--fade-in` は、ベーススタイルに置いたグローバルな `@keyframes` です（「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。位置と大きさを変えないフェードなので、動きを減らす設定の条件の外に書いています。
+この例の `--fade-in` は、ベーススタイルに置いたグローバルな `@keyframes` です（「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。位置と大きさを変えないフェードなので、動きを減らす設定の条件の外に書いています。
 
 ## ガイドライン
 

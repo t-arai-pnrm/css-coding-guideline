@@ -15,32 +15,29 @@ export const PARTS = [
   {
     label: '第II部 設計編',
     chapters: [
-      { number: 5, dir: 'reset', title: 'リセットとベーススタイル' },
-      { number: 6, dir: 'notation', title: '記法の規約' },
-      { number: 7, dir: 'components', title: 'コンポーネントとカスタムプロパティ' },
+      { number: 5, dir: 'design-mindset', title: 'CSS設計の考え方' },
+      { number: 6, dir: 'reset', title: 'リセットとベーススタイル' },
+      { number: 7, dir: 'notation', title: '記法の規約' },
+      { number: 8, dir: 'components', title: 'コンポーネントとカスタムプロパティ' },
     ],
   },
   {
     label: '第III部 実装編',
     chapters: [
-      {
-        number: 8,
-        dir: 'layout',
-        title: 'レイアウト',
-        // 節の下にまとめるページ群。`after` の節の直後に、折りたたみのグループとして並べる
-        groups: [{ dir: 'compositions', label: '8-14 コンポジション集', after: 'masonry' }],
-      },
-      { number: 9, dir: 'responsive', title: 'レスポンシブデザイン' },
-      { number: 10, dir: 'typography', title: 'タイポグラフィと和文組版' },
-      { number: 11, dir: 'color-media', title: '色' },
-      { number: 12, dir: 'decoration', title: '画像・装飾' },
-      { number: 13, dir: 'interaction', title: 'インタラクション' },
-      { number: 14, dir: 'motion', title: 'モーション' },
+      { number: 9, dir: 'design-reproduction', title: 'デザインを再現する' },
+      { number: 10, dir: 'layout', title: 'レイアウトの基礎と考え方' },
+      { number: 11, dir: 'compositions', title: 'レイアウトコンポジション' },
+      { number: 12, dir: 'responsive', title: 'レスポンシブデザイン' },
+      { number: 13, dir: 'typography', title: 'タイポグラフィと和文組版' },
+      { number: 14, dir: 'color-media', title: '色' },
+      { number: 15, dir: 'decoration', title: '画像・装飾' },
+      { number: 16, dir: 'interaction', title: 'インタラクション' },
+      { number: 17, dir: 'motion', title: 'モーション' },
     ],
   },
   {
     label: '第IV部 運用編',
-    chapters: [{ number: 15, dir: 'operations', title: '実務での運用' }],
+    chapters: [{ number: 18, dir: 'operations', title: '実務での運用' }],
   },
 ];
 

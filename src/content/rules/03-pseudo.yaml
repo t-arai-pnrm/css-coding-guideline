@@ -76,7 +76,7 @@
   level: 推奨
   rule: '子要素を位置で選ぶのは、縞模様や先頭の数個のように順番そのものが条件になるときに限り、役割の決まった子はタイプセレクタか子クラスで選ぶ。'
   reason: '位置で選んだスタイルは、HTMLの順番を入れ替えたり要素を足したりすると別の子に当たり、役割とスタイルがずれるため。'
-  note: '子要素の間隔を作るために、`:last-child` や `:first-child` で余白を打ち消すことはしません。間隔は親の `gap`（第8章のルール `gap-over-child-margin`）か、コンポジション `prose` で作ります。'
+  note: '子要素の間隔を作るために、`:last-child` や `:first-child` で余白を打ち消すことはしません。間隔は親の `gap`（第10章のルール `gap-over-child-margin`）か、コンポジション `prose` で作ります。'
   aiProne: true
   page: pseudo/child-index
   since: 0.9.0
@@ -160,7 +160,7 @@
   level: 推奨
   rule: 'モーダルとして開いたダイアログだけに当てるスタイルは `:modal` で選び、`dialog[open]` で代用しない。'
   reason: '`open` 属性は `show()` で開いたモーダルでないダイアログにも付くので、`dialog[open]` では開き方を区別できないため。'
-  note: '`:modal` は `requestFullscreen()` で全画面表示にした要素にも当てはまります。背面のスクロールを止める `:root:has(:modal)` は、第5章のルール `modal-scroll-lock-root` で定めています。'
+  note: '`:modal` は `requestFullscreen()` で全画面表示にした要素にも当てはまります。背面のスクロールを止める `:root:has(:modal)` は、第6章のルール `modal-scroll-lock-root` で定めています。'
   aiProne: true
   page: pseudo/open-states
   since: 0.9.0
@@ -206,6 +206,6 @@
   level: 推奨
   rule: '`::selection` で選択範囲の色を変えるときは、`color` と `background-color` の両方を指定し、2つの色のコントラスト比を確かめる。'
   reason: 片方だけを変えると、もう片方にはブラウザやユーザーの設定の色が残り、選択した文字が背景に埋もれることがあるため。
-  note: '文字と背景のコントラスト比の基準は、第11章のルール `text-contrast-aa` と同じです。iOS の Safari は `::selection` に対応していないので、選択範囲はシステムの色のままになります。'
+  note: '文字と背景のコントラスト比の基準は、第14章のルール `text-contrast-aa` と同じです。iOS の Safari は `::selection` に対応していないので、選択範囲はシステムの色のままになります。'
   page: pseudo/generated-content
   since: 0.9.0

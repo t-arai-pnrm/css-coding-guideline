@@ -1,5 +1,5 @@
 ---
-title: "12-1 画像と装飾"
+title: "15-1 画像と装飾"
 description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選びます。すりガラスの背景、番号付きリストのマーカー、文字の縁取りも扱います。"
 sidebar:
   order: 1
@@ -91,7 +91,7 @@ import markerCss from '../../../demos/decoration/list-marker/style.css?raw';
 
 <Demo title="元の画像の比率が違っても、サムネイルは16:9に、アバターは正円にそろう" html={aspectRatioHtml} css={aspectRatioCss} />
 
-サムネイルの幅は、`100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書いて親の幅いっぱいに広げます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-width-100)」）。正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[9-1 検討する順番](/responsive/escalation/)」でも取り上げています。
+サムネイルの幅は、`100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書いて親の幅いっぱいに広げます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-width-100)」）。正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[12-1 検討する順番](/responsive/escalation/)」でも取り上げています。
 
 `<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。ブラウザは、この2つの属性から縦横比を計算し、画像を読み込む前から表示する場所を確保します。属性がないと、画像が読み込まれた瞬間に高さが決まり、下にある文章がずれて、読んでいた位置を見失います。
 
@@ -188,7 +188,7 @@ img {
 
 RespImageLintが提案する `sizes` の値は、`vw` を使って書かれています。`sizes` はCSSのプロパティではなくHTMLの属性で、画像を選ぶ時点のビューポートの幅を基準にします。本書では、`sizes` の中の `vw` を、`vw` を使わないという規約（「[4-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）の例外として扱います。
 
-`<picture>` の `<source>` にある `media` 属性は、ビューポートを基準にした条件しか書けません。コンテナクエリで配置を切り替えるコンポーネントでも、画像の切り替えはビューポートを基準にして書くしかありません。この制約は「[9-2 コンテナクエリ](/responsive/container-queries/)」でも取り上げています。
+`<picture>` の `<source>` にある `media` 属性は、ビューポートを基準にした条件しか書けません。コンテナクエリで配置を切り替えるコンポーネントでも、画像の切り替えはビューポートを基準にして書くしかありません。この制約は「[12-2 コンテナクエリ](/responsive/container-queries/)」でも取り上げています。
 
 ### 形式と読み込みの優先度
 
@@ -283,7 +283,7 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 `display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定がなくても描けます。
 
-`background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
+`background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
 
 <Baseline id="masks" name="マスク（mask-image など）" />
 
@@ -328,7 +328,7 @@ button {
 
 `border` の色を省略した場合も、初期値は `currentColor` です。文字と同じ色の枠線なら、`border: 1px solid` とだけ書けば足ります。色を2か所に書かなければ、片方だけ変え忘れることもありません。
 
-アイコンの大きさは、`inline-size: 1em` と `aspect-ratio: 1` で文字の大きさに合わせます。テンプレートでは `.icon` というクラスで、`--icon--size` を受け取れるようにしています。アイコンを画面の幅に合わせて変える必要がないことは、「[9-1 検討する順番](/responsive/escalation/)」で説明しています。
+アイコンの大きさは、`inline-size: 1em` と `aspect-ratio: 1` で文字の大きさに合わせます。テンプレートでは `.icon` というクラスで、`--icon--size` を受け取れるようにしています。アイコンを画面の幅に合わせて変える必要がないことは、「[12-1 検討する順番](/responsive/escalation/)」で説明しています。
 
 ### インラインSVGの代替テキスト
 
@@ -345,7 +345,7 @@ button {
 </a>
 ```
 
-SVGの中の `<title>` や `aria-label` で名前を付ける方法もありますが、これらは機械翻訳されず、ページ内検索の対象にもなりません。ふつうのテキストとして置けば、翻訳、検索、選択してのコピーのすべてに対応できます。視覚的に隠すユーティリティは「[7-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で扱います。
+SVGの中の `<title>` や `aria-label` で名前を付ける方法もありますが、これらは機械翻訳されず、ページ内検索の対象にもなりません。ふつうのテキストとして置けば、翻訳、検索、選択してのコピーのすべてに対応できます。視覚的に隠すユーティリティは「[8-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で扱います。
 
 ### 単色のアイコンの描き方を選ぶ
 
@@ -359,7 +359,7 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 {/* 要確認: 出典なし（「向く場面」の列と、<img> のSVGがページの文字色を受け取らないこと） */}
 
-文字色に合わせる必要があるアイコンは、`mask-image` かインラインSVGのどちらかになります。HTMLに手を入れずにCSSだけで足したい装飾なら `mask-image` を、HTMLの中で意味を持たせたいアイコンならインラインSVGを選びます。強制カラーモードの補正は、どちらも「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+文字色に合わせる必要があるアイコンは、`mask-image` かインラインSVGのどちらかになります。HTMLに手を入れずにCSSだけで足したい装飾なら `mask-image` を、HTMLの中で意味を持たせたいアイコンならインラインSVGを選びます。強制カラーモードの補正は、どちらも「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
 
 ## 影と角丸はトークンから選ぶ
 
@@ -387,7 +387,7 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 複数の影を重ねたトークンは、描画の計算量が影の数に比例して増えます。`transition` や `animation` で影そのものを動かすと、古い端末ではコマ落ちしやすくなります。影を動かしたいときは、影を付けた擬似要素の `opacity` だけを動かします。{/* 要確認: 出典なし */}透明な部分の輪郭に沿わせたいときは、`box-shadow` ではなく `filter: drop-shadow()` を使います。
 
-角丸も、`--rounded--sm` から `--rounded--xl` までの段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[12-2 角の形を変える](/decoration/shapes/)」で説明しています。
+角丸も、`--rounded--sm` から `--rounded--xl` までの段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[15-2 角の形を変える](/decoration/shapes/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする"
 @scope (.scoped.account-menu) to (.scoped) {
@@ -424,11 +424,11 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 <Demo title="スクロールすると、ヘッダーの真後ろにある色だけがぼかされて混ざる" html={frostedHtml} css={frostedCss} height="320px" />
 
-`-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[8-7 positionの基礎](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
+`-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[10-7 positionの基礎](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
 
 <Baseline id="backdrop-filter" />
 
-固定ヘッダーの背景色を、スクロール位置のセクションに合わせて切り替えたいときは、ヘッダーの背景を書き換える代わりに、ヘッダーの後ろに `position: sticky` の色付きの要素（ブロッカー）を置く方法があります。ブロッカーは、自分の入っているセクションの外へは追従しないので、セクションを抜けると次のセクションの色に入れ替わります。ただし、各セクションの先頭に、ヘッダーと同じ高さの余白が必要です。ヘッダーを高さのあるときだけ固定する場合（「[8-7 positionの基礎](/layout/positioning/)」）は、ブロッカーも同じ条件の中に書き、余白が取れない場面では別の方法を選びます。
+固定ヘッダーの背景色を、スクロール位置のセクションに合わせて切り替えたいときは、ヘッダーの背景を書き換える代わりに、ヘッダーの後ろに `position: sticky` の色付きの要素（ブロッカー）を置く方法があります。ブロッカーは、自分の入っているセクションの外へは追従しないので、セクションを抜けると次のセクションの色に入れ替わります。ただし、各セクションの先頭に、ヘッダーと同じ高さの余白が必要です。ヘッダーを高さのあるときだけ固定する場合（「[10-7 positionの基礎](/layout/positioning/)」）は、ブロッカーも同じ条件の中に書き、余白が取れない場面では別の方法を選びます。
 
 ## 番号付きリストのマーカーは ::marker で装飾する
 
@@ -441,7 +441,7 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 }
 ```
 
-`::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲むような装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
+`::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲むような装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[6-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
 
 <Demo title="::marker で番号の色と太さを変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
 

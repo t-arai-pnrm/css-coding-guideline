@@ -1,5 +1,5 @@
 ---
-title: "14-6 スクロールに合わせて動かす"
+title: "17-6 スクロールに合わせて動かす"
 description: "スクロール位置に合わせて連続して変わる動きはCSSのスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出はIntersectionObserverで属性を切り替えて作ります。scrollイベントで毎回位置を計算する方法は使いません。"
 sidebar:
   order: 6
@@ -44,7 +44,7 @@ window.addEventListener('scroll', () => {
 | 画面に入ったときに一度だけ変わる | `IntersectionObserver` とCSSのアニメーション | 見出しやカードが現れる演出 |
 | スクロール量に応じて複雑に分岐する | `requestAnimationFrame` で制御するJavaScript | 段落を入れ替えながら進む演出 |
 
-スクロール駆動アニメーションでは、ブラウザがスクロールの位置をそのままアニメーションの進み具合として使います。`opacity` や `translate` のような合成だけで済むプロパティなら、メインスレッドが忙しいときにもスクロールに追従しやすくなります（「[14-7 動きの負荷を抑える](/motion/performance/)」）。`IntersectionObserver` も、交差したときにだけコールバックが呼ばれるので、スクロールのたびに位置を読む必要がありません。
+スクロール駆動アニメーションでは、ブラウザがスクロールの位置をそのままアニメーションの進み具合として使います。`opacity` や `translate` のような合成だけで済むプロパティなら、メインスレッドが忙しいときにもスクロールに追従しやすくなります（「[17-7 動きの負荷を抑える](/motion/performance/)」）。`IntersectionObserver` も、交差したときにだけコールバックが呼ばれるので、スクロールのたびに位置を読む必要がありません。
 
 ## スクロール駆動アニメーションで値を連続して変える
 
@@ -114,7 +114,7 @@ window.addEventListener('scroll', () => {
 }
 ```
 
-2つの例で、動きを減らす設定への扱いが違います。ヘッダーの背景はフェードだけなので、条件の外に書いています。パララックスは、スクロールに合わせて要素を移動させる大きな変動にあたるので、`no-preference` の中でだけ指定し、設定があるときは無効化します。判断の4段階は「[14-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明しています。
+2つの例で、動きを減らす設定への扱いが違います。ヘッダーの背景はフェードだけなので、条件の外に書いています。パララックスは、スクロールに合わせて要素を移動させる大きな変動にあたるので、`no-preference` の中でだけ指定し、設定があるときは無効化します。判断の4段階は「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明しています。
 
 ## 画面に入ったら1回だけ再生する
 
@@ -142,7 +142,7 @@ window.addEventListener('scroll', () => {
 }
 ```
 
-待機中の見た目は、`@keyframes` の `from` が決めています。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは `@keyframes` に渡すカスタムプロパティだけを変えればすみます。`--fade-in` と `--translate-from` の定義は「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。
+待機中の見た目は、`@keyframes` の `from` が決めています。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは `@keyframes` に渡すカスタムプロパティだけを変えればすみます。`--fade-in` と `--translate-from` の定義は「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。
 
 属性はJavaScriptで付けます。`data-motion-mode` は、`IntersectionObserver` で監視を始めたあとに付けます。
 
@@ -258,7 +258,7 @@ window.addEventListener(
 
 動き始める前の要素を隠すのに、`visibility: hidden` や `display: none` を使わないでください。スクリーンリーダーで読めなくなったり、ページ内検索で見つからなくなったりします。`opacity` で透明にした要素は、見えなくても読み上げと検索の対象に残ります。
 
-アニメーションは、略記の `animation` ではなく、ロングハンドで書きます。略記は `animation-timeline` と `animation-range` もリセットするので、略記をあとに書くと、先に指定したスクロール駆動の設定が消えます（「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。
+アニメーションは、略記の `animation` ではなく、ロングハンドで書きます。略記は `animation-timeline` と `animation-range` もリセットするので、略記をあとに書くと、先に指定したスクロール駆動の設定が消えます（「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。
 
 ## ガイドライン
 

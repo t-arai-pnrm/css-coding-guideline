@@ -1,0 +1,161 @@
+---
+title: "1-6 Tipsとの付き合い方"
+description: SNSで流れてくるCSSのTipsは、知識を広げるきっかけになりますが、そのまま使わず、仕様とブラウザの対応状況を確かめてから使います。::first-line で見出しを装飾するTips、ルートの文字サイズを10pxにするTips、ブロックレイアウトの justify-self のTipsを例に、確かめ方を示します。
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+
+SNSや技術ブログで流れてくるCSSのTipsは、新しい書き方を知るきっかけになります。私自身もTipsを参考にし、発信もしています。ただし、Tipsはそのまま使わず、仕様とブラウザの対応状況を確かめ、自分で試してから使うことを勧めます。
+
+便利に見えるTipsにも、特定の条件でしか成り立たない前提や、一部のブラウザでしか動かない機能が含まれていることがあります。Tipsそのものに誤りが含まれていることもあります。このページでは、3つの例を使って、Tipsのどこを確かめるとよいかを説明します。
+
+## 例1：`::first-line` で見出しの1行目を装飾する
+
+次のコードは、見出しの日本語と英語を `<br>` で改行し、1行目と2行目で文字の大きさと色を変えるTipsです。`::first-line` は1行目だけを選ぶ擬似要素で、古くからすべての主要なブラウザが対応しています。
+
+```html
+<h2>私たちについて<br>About</h2>
+```
+
+```css title="🙅‍♂ Not Recommended: ::first-line で見出しの1行目と2行目を描き分ける"
+/* 🙅‍♂ Not Recommended */
+h2 {
+  color: var(--foreground--accent);
+  font-size: calc(32 / 16 * 1rem);
+  text-align: center;
+
+  &::first-line {
+    display: block;
+    margin-block-end: 0.5em;
+    color: var(--foreground--muted);
+    font-size: calc(16 / 16 * 1rem);
+  }
+}
+```
+
+このTipsには2つの問題があります。1つ目は、日本語の見出しが必ず1行に収まることを前提にしていることです。`::first-line` が選ぶのは、文字列の区切りではなく、表示されたときの1行目です。画面の幅が狭いときや、見出しの文言が長くなったとき、機械翻訳で別の言語に訳されたときには、日本語の部分が2行に折り返されます。すると、日本語の2行目には英語用のスタイルが当たり、デザインが崩れます。
+
+2つ目は、仕様上効かない宣言が含まれていることです。`::first-line` に指定できるのは、フォント、色、背景、文字の間隔、文字の装飾、行の高さといった、行の中の文字に関するプロパティに限られます。`display` や `margin` は効かないので、このコードの `display: block` と `margin-block-end: 0.5em` は無視されます。Tipsの書き手が、効かない宣言を書いたまま公開していることもあるということです。
+
+見出しと、それに添える副題や英語の表記は、HTMLの `<hgroup>` 要素でまとめられます。日本語と英語が別の要素になるので、それぞれに直接スタイルを指定でき、間隔も `gap` で決められます。
+
+```html
+<hgroup class="_section-heading">
+  <h2>私たちについて</h2>
+  <p lang="en">About</p>
+</hgroup>
+```
+
+```css title="🙆‍♂ Recommended: hgroup で見出しと英語の表記を別の要素にする"
+._section-heading {
+  display: block grid;
+  gap: 8px;
+  text-align: center;
+
+  & > h2 {
+    color: var(--foreground--accent);
+    font-size: calc(32 / 16 * 1rem);
+    text-wrap: balance;
+  }
+
+  & > p {
+    color: var(--foreground--muted);
+  }
+}
+```
+
+`<hgroup>` は、W3C版のHTMLの仕様から削除された時期があったので、使えない要素だと思われていることがあります。現在のHTMLの仕様（HTML Living Standard）では、2022年に、見出しと、その前後の段落（`<p>`）をまとめる要素として定義し直されています。CSSのTipsを確かめるときには、HTMLの仕様の変化も一緒に確かめる必要があります。
+
+## 例2：ルートの文字サイズを10pxにする
+
+文字サイズには `rem` を使う、というのはよく知られた助言です。ブラウザの設定で文字サイズを大きくしているユーザーがいて、ChromeやFirefoxでは、`px` で指定した文字はこの設定に追従しないからです（2026年10月確認）。`rem` はルート要素の文字サイズを基準にする単位なので、ルート要素の文字サイズがユーザーの設定に従っていれば、`rem` で指定した文字も設定に追従します。
+
+この助言の理由を確かめずに使うと、次のようなコードになることがあります。ルート要素の文字サイズを10pxにして、`1rem` を10pxにそろえ、デザインカンプの値を `rem` に換算しやすくするTipsです。
+
+```css title="🙅‍♂ Not Recommended: ルートの文字サイズを10pxに固定して、remの計算を簡単にする"
+/* 🙅‍♂ Not Recommended */
+:root {
+  font-size: 10px;
+}
+
+h2 {
+  font-size: 2.4rem; /* 24px */
+}
+```
+
+このコードでは、ルート要素の文字サイズを `px` で固定しているので、`rem` の基準も固定されます。ユーザーが設定で文字サイズを大きくしても、ルート要素は10pxのままで、`rem` で指定した文字も大きくなりません。`rem` を使っていても、`px` で書いた場合と同じく、文字は設定に追従しません。
+
+ルート要素の文字サイズを変えると、外部のCSSを読み込んだときにも問題が起きます。多くのCSSは、`1rem` がブラウザのデフォルトの16pxであることを前提に書かれているので、その部分の文字や余白が小さくなります。本書では、この書き方をルール「[ルートの文字サイズを変えない](/values/px-and-rem/#rule-no-root-font-size-change)」で禁止しています。
+
+「`rem` を使う」という結論だけを覚えて、`rem` が何を基準にしているのかを確かめなかったことが、この問題の原因です。ブラウザの文字サイズの設定を変えて表示を確かめれば、文字が大きくならないことにすぐ気づけます。結論だけを覚える危うさは「[1-5 解決策を丸暗記しない](/principles/no-memorizing/)」でも説明しています。
+
+## 例3：ブロックレイアウトの `justify-self`
+
+次のような2つのTipsがあったとします。1つは、要素の中身を上下左右の中央に置くのに、GridやFlexboxを使わず、ブロックレイアウトのまま `align-content` と `justify-items` を指定すればよいというものです。もう1つは、要素を中身の幅にして左右の中央に置くのは、`justify-self: center` の1行で済むというものです。
+
+```css
+._hero {
+  min-block-size: 100svb;
+  align-content: center;
+  justify-items: center;
+}
+
+._more-link {
+  justify-self: center;
+}
+```
+
+どちらも、仕様としては正しい内容です。CSSの仕様では、これらの配置のプロパティを、GridやFlexbox以外のブロックレイアウトでも使えるように広げています。ただし、ブラウザの対応状況は、プロパティによって違います。ブロックレイアウトの `align-content` はすべての主要なブラウザが対応していますが、`justify-items` と `justify-self` に対応しているのは、2026年10月時点でChromeとEdgeだけです。
+
+<Baseline id="align-content-block" name="ブロックレイアウトの align-content" />
+
+<Baseline id="justify-self-block" name="ブロックレイアウトの justify-self" />
+
+Chromeだけで確かめていると、このTipsはどちらも正しく動いているように見えます。SafariとFirefoxで確かめて初めて、2つ目のTipsでは要素が左へ寄ったままだと気づけます。対象のブラウザの決め方と、Chromeだけで確かめない理由は「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明しています。
+
+このTipsからは、対応状況のほかにも学べることがあります。これまで、`justify-items` はGridの中でしか効かなかったので、`display` をGridから通常のブロックに戻せば、指定が残っていても影響はありませんでした。ブロックレイアウトでも効くようになると、戻し忘れた指定が、ブロックに戻した後のレイアウトにも影響します。
+
+```css title="🙅‍♂ Not Recommended: display だけを戻し、Grid のための指定を残す"
+/* 🙅‍♂ Not Recommended */
+._layout {
+  display: block grid;
+  justify-items: center;
+
+  @media (width >= calc(640 / 16 * 1rem)) {
+    display: revert;
+  }
+}
+```
+
+このコードは、Gridのときだけ子要素を中央に寄せるつもりで書かれています。しかし、`justify-items` に対応したブラウザでは、640px以上でブロックに戻した後も、子要素が中央に寄ります。対応していないブラウザでは左に寄るので、ブラウザによって表示が変わります。
+
+```css title="🙆‍♂ Recommended: レイアウトの方式を切り替えるときは、その方式のための指定も戻す"
+._layout {
+  display: block grid;
+  justify-items: center;
+
+  @media (width >= calc(640 / 16 * 1rem)) {
+    display: revert;
+    justify-items: initial;
+  }
+}
+```
+
+新しい機能のTipsからは、その機能の使い方に加えて、既存のコードへの影響も読み取れます。この例から分かるのは、レイアウトの方式を切り替えるときは、元の方式のために書いた指定も一緒に戻す必要があるということです。
+
+## Tipsを確かめる手順
+
+Tipsは、発信する人が善意で共有しているものです。しかし、発信する人も、私を含めて、誤った内容や古くなった方法を発信してしまうことがあります。受け取る側は、内容をそのまま信じるのではなく、次の点を確かめてから使います。
+
+まず、そのTipsが前提にしている条件を確かめます。文字数、画面の幅、要素の数といった条件が変わっても成り立つかを考えます。次に、使われているプロパティの仕様をMDNや仕様書で確かめ、効かない宣言が含まれていないかを見ます。最後に、Baselineの表示やMDNの対応表で対象のブラウザが対応しているかを確かめ、実際に複数のブラウザで表示します。
+
+便利に見える書き方ほど、その便利さと引き換えにしている条件があります。Tipsの利点だけでなく、成り立たなくなる条件にも目を向けておくと、Tipsを自分のコードに取り入れるときの判断を誤りにくくなります。
+
+## 参考リンク
+
+- [::first-line - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::first-line)
+- [The hgroup element | HTML Standard](https://html.spec.whatwg.org/multipage/sections.html#the-hgroup-element)
+- [font-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-size)
+- [CSS Box Alignment Module Level 3](https://www.w3.org/TR/css-align-3/)

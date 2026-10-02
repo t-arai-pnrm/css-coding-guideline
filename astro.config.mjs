@@ -23,34 +23,6 @@ const isValidRuleLink = ({ link }) => {
   return Boolean(match && rulePages.get(match[2]) === match[1]);
 };
 
-/**
- * 章のサイドバーの項目。章にグループ（`groups`）があると、`autogenerate` はサブディレクトリを
- * ディレクトリ名のラベルで並べてしまうので、節を `sidebar.order` の順に並べ、グループを `after` の節の直後に挟む。
- */
-const DOCS_DIR = './src/content/docs';
-const chapterItems = (chapter) => {
-  if (!chapter.groups) return [{ autogenerate: { directory: chapter.dir } }];
-  const pages = readdirSync(`${DOCS_DIR}/${chapter.dir}`)
-    .filter((file) => file.endsWith('.mdx'))
-    .map((file) => {
-      const source = readFileSync(`${DOCS_DIR}/${chapter.dir}/${file}`, 'utf8');
-      const order = Number(source.match(/^\s+order:\s*(\d+)/m)?.[1] ?? Infinity);
-      const name = file.replace(/\.mdx$/, '');
-      return { name, order, slug: name === 'index' ? chapter.dir : `${chapter.dir}/${name}` };
-    })
-    .sort((a, b) => a.order - b.order);
-  return pages.flatMap((page) => [
-    page.slug,
-    ...chapter.groups
-      .filter((group) => group.after === page.name)
-      .map((group) => ({
-        label: group.label,
-        collapsed: group.collapsed ?? true,
-        items: [{ autogenerate: { directory: `${chapter.dir}/${group.dir}` } }],
-      })),
-  ]);
-};
-
 export default defineConfig({
   // 公開 URL が決まったら `site` を設定し、starlight-llms-txt を追加する。
   markdown: {
@@ -81,13 +53,7 @@ export default defineConfig({
       sidebar: [
         {
           label: 'はじめに',
-          items: chapterItems({
-            dir: 'introduction',
-            groups: [
-              { dir: 'learning', label: 'CSSを学ぶうえで大切なこと', after: 'how-to-read', collapsed: false },
-              { dir: 'design', label: 'デザインを再現するうえで意識すること', after: 'how-to-read', collapsed: false },
-            ],
-          }),
+          items: [{ autogenerate: { directory: 'introduction' } }],
         },
         // 章の中の節は、各ページの frontmatter の `sidebar.order` で並べる
         ...PARTS.map((part) => ({
@@ -95,7 +61,7 @@ export default defineConfig({
           items: part.chapters.map((chapter) => ({
             label: chapterLabel(chapter),
             collapsed: true,
-            items: chapterItems(chapter),
+            items: [{ autogenerate: { directory: chapter.dir } }],
           })),
         })),
         {

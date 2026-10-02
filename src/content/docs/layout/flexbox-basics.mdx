@@ -1,5 +1,5 @@
 ---
-title: "8-5 Flexboxの基礎"
+title: "10-5 Flexboxの基礎"
 description: "Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配る方式です。主軸と交差軸、配置のプロパティが動かす対象、flex-grow・flex-shrink・flex-basisの計算、自動の最小幅を押さえれば、効かない指定の原因を理由から説明できます。"
 sidebar:
   order: 5
@@ -15,7 +15,7 @@ import alignmentCss from '../../../demos/layout/flexbox-alignment/style.css?raw'
 
 Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配るレイアウトの方式です。アイテムを並べる向きを主軸、それに直交する向きを交差軸と呼び、`justify-content` は主軸の配置を、`align-items` は交差軸の配置を決めます。伸び縮みの量は、`flex-grow`、`flex-shrink`、`flex-basis` の3つから計算で決まります。
 
-この節では、その計算を数値で追い、`flex: 1` の意味やアイテムが縮まない原因を説明します。FlexboxとGridの選び方は「[8-8 Gridから考える](/layout/grid-first/)」で扱います。
+この節では、その計算を数値で追い、`flex: 1` の意味やアイテムが縮まない原因を説明します。FlexboxとGridの選び方は「[10-8 Gridから考える](/layout/grid-first/)」で扱います。
 
 <Baseline id="flexbox" />
 
@@ -31,7 +31,7 @@ Flexboxの不具合には、よく見かける型があります。2つのアイ
 
 主軸は `flex-direction` で決まります。初期値の `row` では、主軸はインライン方向（横書きでは左から右）です。`column` にすると、主軸はブロック方向（横書きでは上から下）になり、交差軸が横に変わります。
 
-`row` は「横」ではなく「インライン方向」を指し、向きはコンテナの `writing-mode` と `direction` で決まります。縦書きのコンテナでは、`row` のアイテムは上から下へ並びます。論理プロパティと同じく、Flexboxの指定も物理的な上下左右ではなく軸で読みます（「[8-1 レイアウトの基礎](/layout/fundamentals/)」）。
+`row` は「横」ではなく「インライン方向」を指し、向きはコンテナの `writing-mode` と `direction` で決まります。縦書きのコンテナでは、`row` のアイテムは上から下へ並びます。論理プロパティと同じく、Flexboxの指定も物理的な上下左右ではなく軸で読みます（「[10-1 レイアウトの基礎](/layout/fundamentals/)」）。
 
 `row-reverse` と `column-reverse` は、主軸の始点と終点を入れ替えます。`justify-content: flex-start` は主軸の始点に寄せるので、`row-reverse` では行末側に寄ります。書字方向の始点に寄せる `start` なら、行頭側に寄ります。
 
@@ -114,7 +114,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 `overflow` を `hidden` や `auto` にしてスクロールコンテナになったアイテムは、自動の最小幅が0になります。ただし、`overflow: hidden` で止めると中身が切り取られ、URLや入力欄の一部が見えなくなります。隠すのではなく、最小幅を0にして、中身を折り返させるかスクロールさせます。
 
-本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[8-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
+本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[10-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
 
 `flex-direction: column` では、同じことが高さで起き、`min-block-size: auto` が中身の高さとして扱われます。高さを決めた縦のFlexboxで、スクロールさせたいアイテムがはみ出すときは、そのアイテムに `overflow: auto` か `min-block-size: 0` を指定します。
 
@@ -128,7 +128,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 <Baseline id="flexbox-gap" name="Flexbox の gap" />
 
-フレックスアイテムの `auto` の `margin` は、`flex-grow` で配った後の余りを吸収し、`justify-content` より先に適用されます。最後のリンクだけを行末へ寄せる使い方は、8-8のルール [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items) で扱っています。
+フレックスアイテムの `auto` の `margin` は、`flex-grow` で配った後の余りを吸収し、`justify-content` より先に適用されます。最後のリンクだけを行末へ寄せる使い方は、10-8のルール [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items) で扱っています。
 
 ## 見た目の順番と読み上げの順番
 
@@ -136,7 +136,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（[`source-order-for-reading`](/layout/grid-first/#rule-source-order-for-reading)）。
 
-並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、2026年10月の時点でBaselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[8-15 表示順と読み上げ順を合わせる](/layout/reading-flow/)」）。
+並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、2026年10月の時点でBaselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[10-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」）。
 
 <Baseline id="reading-flow" />
 
@@ -174,7 +174,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 FlexboxとGridは、大きさを決める向きが違います。Flexboxはアイテムの中身の大きさから出発して余りや不足を配り、Gridは先に親で行と列を決めてアイテムをそのセルに置きます。タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すなら、Flexboxが向いています（[`flexbox-for-content-sized-items`](/layout/grid-first/#rule-flexbox-for-content-sized-items)）。
 
-一方、列の数と幅を親で決めたい並びや、行をまたいで位置をそろえたい並びは、Gridで組みます。使い分けの基準と例は「[8-8 Gridから考える](/layout/grid-first/)」に、Gridの仕組みは「[8-6 Gridの基礎](/layout/grid-basics/)」にまとめています。
+一方、列の数と幅を親で決めたい並びや、行をまたいで位置をそろえたい並びは、Gridで組みます。使い分けの基準と例は「[10-8 Gridから考える](/layout/grid-first/)」に、Gridの仕組みは「[10-6 Gridの基礎](/layout/grid-basics/)」にまとめています。
 
 ## ガイドライン
 

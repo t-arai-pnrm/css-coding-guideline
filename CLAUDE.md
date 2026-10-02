@@ -13,7 +13,8 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 
 ## ファイルの配置
 
-- `src/content/docs/<章のディレクトリ>/`: 原稿。章のディレクトリと節のファイル名は URL になるので、変えない。
+- `src/content/docs/<章のディレクトリ>/`: 原稿。章のディレクトリと節のファイル名は URL になるので、構成を見直すとき以外は変えない。変えるときは、本文、ルールの `page`、更新履歴のリンクをすべて新しい URL に直す（公開前なので転送は置かない）。
+  - 章の中にサブディレクトリを作らない。まとまりが大きくなったら、章を分ける。
   - `index.mdx` は章の概要ページ（`sidebar.order: 0`）。
   - 節は `sidebar.order` で並べる。
 - `src/content/rules/*.yaml`: ルールの定義。書式は同じディレクトリの `README.md` を見る。
@@ -47,7 +48,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   5. 補足と注意点
   6. `## ガイドライン`（直後に `<Guideline />`）
   7. `## 参考リンク`
-- 1ページは4,000〜6,000字で、各見出しに3〜5段落を書く。章の概要ページと「はじめに」のページ（`introduction/` 以下）は、字数の規定の対象外。
+- 1ページは4,000〜6,000字で、各見出しに3〜5段落を書く。章の概要ページ、「はじめに」のページ（`introduction/` 以下）、ルールを置かない考え方の節（1-4〜1-7、5-1、9-1、9-2）は、字数の規定の対象外。考え方の節には `## ガイドライン` を置かない。
 - 各ページが単体で意味が通るように書く。ほかのページに触れるときは、リンクと一言の要約を添える。
 - コード例のラベル
   - コードブロックのタイトルに `🙆‍♂ Recommended: …` と `🙅‍♂ Not Recommended: …` を付ける。
@@ -74,13 +75,13 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 
 ## 章を書く手順
 
-見本の章は第9章（`src/content/docs/responsive/`）。文体、節の構成、コード例とデモの見せ方、ルールの粒度は、これに合わせる。
+見本の章は第12章（`src/content/docs/responsive/`）。文体、節の構成、コード例とデモの見せ方、ルールの粒度は、これに合わせる。
 
 1. 骨組みのページ（`draft: true` と「執筆予定」のメモ）を本文で置き換える。frontmatter の `title` と `sidebar.order` は変えず、`draft: true` を消して `description` を書き直す。
-2. ルールを `src/content/rules/<章番号2桁>-<章のディレクトリ>.yaml` に書く（例：`06-notation.yaml`）。ID はほかの章と重複させない（`grep -rn "id: <ID>" src/content/rules` で確認する）。
+2. ルールを `src/content/rules/<章番号2桁>-<章のディレクトリ>.yaml` に書く（例：`07-notation.yaml`）。章の番号が変わったら、ファイル名も付け替える。ID はほかの章と重複させない（`grep -rn "id: <ID>" src/content/rules` で確認する）。
 3. デモは `src/demos/<章のディレクトリ>/<デモ名>/` に `index.html` と `style.css` で置く。
    - デモの CSS も本書の規約で書く。`@layer` と `@scope (.scoped.<名前>) to (.scoped)` は省略しない。
-     - 例外：CMS と共存する CSS のデモ（第15章）は `@layer` を使わない（ルール `no-layers-with-unlayered-css`）。
+     - 例外：CMS と共存する CSS のデモ（第18章）は `@layer` を使わない（ルール `no-layers-with-unlayered-css`）。
 4. 対応状況は `<Baseline id="…" />` で示す。ID が web-features にあるかは、次のコマンドで確認する。
 
    ```
