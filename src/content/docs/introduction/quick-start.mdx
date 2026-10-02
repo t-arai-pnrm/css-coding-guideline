@@ -39,7 +39,7 @@ css/
     └── news-card.css   … コンポーネント
 ```
 
-HTMLは、エントリーポイントの `style.css` だけを読み込みます。コンポーネントのルートの要素には `class="scoped news-card"` を付け、子要素は `h2` や `time` のようなタイプセレクタで選ぶので、クラスを付けていません。`_` で始まる子クラスを付けるのは、同じ種類の要素を役割で区別するときだけです（「[6-1 コンポーネントの境界を守る](/components/boundaries/)」）。
+HTMLは、エントリーポイントの `style.css` だけを読み込みます。コンポーネントのルートの要素には `class="scoped news-card"` を付け、子要素は `h2` や `time` のようなタイプセレクタで選ぶので、クラスを付けていません。`_` で始まる子クラスを付けるのは、同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけです（「[6-1 コンポーネントの境界を守る](/components/boundaries/)」）。
 
 ```html title="index.html"
 <!doctype html>
@@ -177,7 +177,7 @@ npmでインストールする場合（`npm install kiso.css`）は、CSSの `@i
 |---|---|---|---|
 | `scoped <名前>` | `class="scoped news-card"` | コンポーネントのルート。`scoped` は、外側のスコープの下限にもなる | [2-4](/cascade/scope/)、[5-1](/notation/naming/) |
 | `scoped page-<スラッグ>` | `class="scoped page-about"` | ページ固有のスタイルのルート | [2-4](/cascade/scope/) |
-| `._<名前>` | `._main-link`、`._sub-link` | コンポーネントの子要素のうち、同じ種類の要素を役割で区別するもの。スコープの中だけで意味を持つ | [5-1](/notation/naming/)、[6-1](/components/boundaries/) |
+| `._<名前>` | `._main-link`、`._sub-link` | コンポーネントの子要素のうち、同じ種類の要素を役割で区別するものと、`div` と `span` の役割を示すもの。スコープの中だけで意味を持つ | [5-1](/notation/naming/)、[6-1](/components/boundaries/) |
 | `.-<名前>` | `.-visually-hidden`、`.-fluid-text--md` | ユーティリティ。段階や種類は `--` で続ける | [5-1](/notation/naming/)、[6-2](/components/compositions-and-utilities/) |
 | 接頭辞なし | `.cluster`、`.switcher` | コンポジション（配置のパターン） | [6-2](/components/compositions-and-utilities/) |
 | `--<分類>--<名前>` | `--color--accent--600`、`--spacing--md` | デザイントークン | [6-3](/components/design-tokens/) |

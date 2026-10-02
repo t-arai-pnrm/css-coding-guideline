@@ -133,7 +133,7 @@ sidebar:
 - [ ] コンポーネントのルートに、`margin` や `grid-area` のような外部関連型のレイアウトを指定していないか（[`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)）
 - [ ] 子のコンポーネントの配置と外側の余白を、親の `gap` やOuterで決めているか（[`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)）
 - [ ] ほかのコンポーネントのルートや内部の要素を、セレクタで選んで上書きしていないか（[`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)）
-- [ ] コンポーネントの中の要素をタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときだけ付けているか。`a:hover` のような擬似クラス付きのタイプセレクタで、子クラスのスタイルを打ち消していないか（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）
+- [ ] コンポーネントの中の要素をタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ付けているか。`a:hover` のような擬似クラス付きのタイプセレクタで、子クラスのスタイルを打ち消していないか（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）
 - [ ] 外から変えてよい値を `--<コンポーネント>--<プロパティ>` の公開プロパティにし、内部で使う値を `--_` で始めているか（[`public-property-naming`](/components/custom-properties/#rule-public-property-naming)、[`internal-property-prefix`](/components/custom-properties/#rule-internal-property-prefix)）
 - [ ] 公開プロパティを自分で宣言せず、内部プロパティで受けてフォールバックにデフォルト値を書いているか（[`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)）
 - [ ] ルートには絶対的なz-indexだけを、内部には相対的なz-indexだけを指定しているか（[`z-index-absolute-root-relative-inside`](/components/boundaries/#rule-z-index-absolute-root-relative-inside)）
