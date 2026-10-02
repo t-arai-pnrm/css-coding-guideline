@@ -1,6 +1,6 @@
 ---
 title: "6-1 コンポーネントの境界を守る"
-description: "コンポーネントのルートには外部関連型のレイアウトを書かず、ほかのコンポーネントの内部をセレクタで選びません。z-index は、ルートに絶対的な値、内部の要素に相対的な値だけをトークンで指定します。"
+description: "コンポーネントのルートには外部関連型のレイアウトを書かず、ほかのコンポーネントの内部をセレクタで選びません。中の要素はタイプセレクタで選び、役割で区別するときだけ子クラスを付けます。z-index は、ルートに絶対的な値、内部の要素に相対的な値だけをトークンで指定します。"
 sidebar:
   order: 1
 ---
@@ -10,8 +10,11 @@ import Guideline from '../../../components/Guideline.astro';
 import zIndexHtml from '../../../demos/components/z-index-isolation/index.html?raw';
 import zIndexCss from '../../../demos/components/z-index-isolation/style.css?raw';
 import zIndexBadCss from '../../../demos/components/z-index-isolation/style.bad.css?raw';
+import typeSelectorHtml from '../../../demos/components/type-selectors-in-scope/index.html?raw';
+import typeSelectorCss from '../../../demos/components/type-selectors-in-scope/style.css?raw';
+import typeSelectorBadCss from '../../../demos/components/type-selectors-in-scope/style.bad.css?raw';
 
-コンポーネントは、自分以外のことを何も参照しない状態で書きます。ルートには `padding` や `gap` のような、自分の中で完結するレイアウトだけを書きます。`margin` や `grid-area` のように周りとの関係で決まるレイアウトは、コンポーネントを置く側に任せます。ほかのコンポーネントの内部の要素はセレクタで選ばず、そのコンポーネントが公開しているカスタムプロパティを通じて値を渡します。
+コンポーネントは、自分以外のことを何も参照しない状態で書きます。ルートには `padding` や `gap` のような、自分の中で完結するレイアウトだけを書きます。`margin` や `grid-area` のように周りとの関係で決まるレイアウトは、コンポーネントを置く側に任せます。ほかのコンポーネントの内部の要素はセレクタで選ばず、そのコンポーネントが公開しているカスタムプロパティを通じて値を渡します。自分の中の要素はタイプセレクタで選び、同じ種類の要素を役割で区別するときだけ子クラスを付けます。
 
 z-indexも同じ考え方で扱います。ルートにはページ全体の重なり順を決める絶対的な値だけを、内部の要素には1か-1の相対的な値だけを、どちらもトークンで指定します。内部で相対的な値を使うコンポーネントは、ルートに `isolation: isolate` を指定して、重なりをコンポーネントの中に閉じ込めます。
 
@@ -91,7 +94,7 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
     gap: calc(var(--spacing--lg) * 1px);
   }
 
-  ._list {
+  ul {
     display: block grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
     gap: calc(var(--spacing--md) * 1px);
@@ -116,9 +119,9 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 
 ```html
 <section class="scoped news-section">
-  <h2 class="_heading">お知らせ</h2>
-  <ul class="_list">
-    <li class="_item">
+  <h2>お知らせ</h2>
+  <ul>
+    <li>
       <article class="scoped news-card">…</article>
     </li>
   </ul>
@@ -136,42 +139,132 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 
 例外もあります。`position: fixed` で表示するモーダルは、ビューポートを基準に配置されることが明らかなので、ルートに外部関連型の指定を持たせてかまいません。ビューポートに粘着するグローバルヘッダーの `position: sticky` と `inset` も同じです。アイコンのような小さなグラフィックの要素は、自分で大きさを持つ必要があるので、`inline-size: 1em` のように親の文字サイズに追従する指定をルートに書きます。
 
-## コンポーネントの中の要素には子クラスを付ける
+## コンポーネントの中の要素はタイプセレクタで選ぶ
 
-コンポーネントの中でも、`li` や `p` のような要素型のセレクタで、まとめてスタイルを当てることはしません。要素型のセレクタは、コンポーネントの中にある同じ要素のすべてに当たります。入れ子になったリストや、CMSが出力した本文のように、後から中身が増える場所では、意図しない要素にまで効きます。
+コンポーネントの中の要素は、`ul` や `a` のようなタイプセレクタで選ぶことを基本にします。子クラスを付けるのは、メインのリンクとサブのリンクのように、同じ種類の要素を役割で区別するときだけです。`@scope (.scoped.<名前>) to (.scoped)` の中のタイプセレクタは、そのコンポーネントの範囲にしか当たりません。範囲を限るためだけに、すべての要素へクラスを付ける必要はなくなりました。
 
-```css title="🙅‍♂ Not Recommended: 要素型のセレクタでまとめてスタイルを当てる"
-/* 🙅‍♂ Not Recommended */
-@scope (.scoped.news-card) to (.scoped) {
-  li {
-    padding-block: calc(8 / 16 * 1rem);
+`@scope` がなかったころは、要素にはすべてクラスを付けるのが安全な書き方でした。`.global-nav a` のように親のクラスと組み合わせたタイプセレクタは、入れ子にした別のコンポーネントのリンクにも当たります。詳細度も0.1.1に上がり、クラス1つのセレクタでは上書きできなくなります。この習慣を `@scope` の中に持ち込むと、要素の種類と同じ意味のクラス名が並びます。
+
+```html title="🙅‍♂ Not Recommended: 要素の種類と同じ意味のクラスをすべての要素に付ける"
+<!-- 🙅‍♂ Not Recommended -->
+<nav class="scoped global-nav">
+  <ul class="_list">
+    <li class="_item"><a class="_link" href="/">ホーム</a></li>
+    <li class="_item"><a class="_link" href="/news/">お知らせ</a></li>
+  </ul>
+</nav>
+```
+
+`_list` は `ul` と、`_link` は `a` と同じことを言っているだけです。HTMLを読めば分かる情報をクラス名で繰り返しても、セレクタから読み取れることは増えません。名前を考える手間と、HTMLとCSSの記述量が増えるだけです。AIにコンポーネントを書かせると、BEMの習慣から、このようにすべての要素へクラスを付けたコードがよく出てきます。
+
+次の例では、ナビゲーションの中の `ul` と `li` を、タイプセレクタで選んでいます。どちらもコンポーネントの中で役割が1つしかないからです。`li` は複数ありますが、すべて同じ役割の項目なので、区別するクラスは要りません。「唯一」かどうかは、要素の数ではなく役割で判断します。
+
+```css title="🙆‍♂ Recommended: 共通のスタイルはタイプセレクタに、固有のスタイルは子クラスに書く"
+@scope (.scoped.global-nav) to (.scoped) {
+  :scope {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing--md) * 1px);
+    justify-content: space-between;
+    align-items: center;
   }
 
-  p {
+  ul {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing--xs) * 1px);
+  }
+
+  a {
+    display: block flow;
+    padding-block: calc(var(--spacing--xs) * 1px);
+    padding-inline: calc(var(--spacing--sm) * 1px);
+    border-radius: var(--rounded--md);
+    text-decoration-line: none;
+  }
+
+  ._main-link {
+    color: var(--foreground--base);
+    font-weight: bold;
+  }
+
+  ._sub-link {
+    background-color: var(--background--accent);
+    color: var(--foreground--on-accent);
     font-size: calc(14 / 16 * 1rem);
   }
 }
 ```
 
-要素型のセレクタは、名前が役割を表さないので、その `p` が何のための文章なのかをCSSから読み取れません。また、`.news-card li` のように親のクラスと組み合わせて書くと、詳細度が `0.1.1` になり、`._item` のようなクラス1つのセレクタより強くなります。詳細度の高いセレクタを後から上書きするには、さらに強いセレクタが必要になり、詳細度が逆転します。`@scope` の中では要素型のセレクタの詳細度は低いので、この逆転は起きにくくなりますが、前の2つの問題は残ります。
-
-```css title="🙆‍♂ Recommended: 子要素にクラスを付け、役割の名前で選ぶ"
-@scope (.scoped.news-card) to (.scoped) {
-  ._item {
-    padding-block: calc(8 / 16 * 1rem);
-  }
-
-  ._note {
-    font-size: calc(14 / 16 * 1rem);
-  }
-}
+```html
+<nav class="scoped global-nav" aria-label="メイン">
+  <ul>
+    <li><a class="_main-link" href="/">ホーム</a></li>
+    <li><a class="_main-link" href="/news/">お知らせ</a></li>
+  </ul>
+  <a class="_sub-link" href="/contact/">お問い合わせ</a>
+</nav>
 ```
 
-要素型のセレクタを使ってよいのは、コンポーネントの中に1つしかない要素を、その要素の種類で選ぶ場合です。リセットやベースのスタイルのように、要素そのもののデフォルトを決める場面は、「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で扱います。
+リンクには、メインとサブの2つの役割があります。役割を区別する必要があるので、それぞれに `._main-link` と `._sub-link` を付けます。余白や角丸のように両方に共通するスタイルは `a` に書き、子クラスにはそれぞれに固有のスタイルだけを書きます。クラスの名前は、`._main` のように役割だけにせず、`._main-link` のように要素の役割の語まで含めます。`._main` のような短い名前は、見出しや画像にも付けたくなり、同じ名前がどの要素を指すのかを決める取り決めが別に必要になるからです。CSSでは、`a._main-link` ではなく `._main-link` と書きます。タイプセレクタを足すと、詳細度を上げるだけのセレクタになります。
+
+`@scope` の括弧の中のセレクタは詳細度に加わらないので、`a` の詳細度は0.0.1、`._main-link` は0.1.0です。子クラスの指定は、書いた順番にかかわらず `a` の指定に勝ちます。そのため、スコープの中のタイプセレクタは、`:where()` で包む必要がありません。ベーススタイルのタイプセレクタを `:where()` で包むのは、クラスのないあらゆる要素に当たる指定だからで、スコープの中の指定とは事情が違います。ベーススタイルの書き方は、「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で扱います。
+
+タイプセレクタが当たるのは、ドーナツスコープの下限より手前の要素すべてです。同じコンポーネントの中で同じ種類の要素が入れ子になる場合、たとえば2階層のナビゲーションの中の `ul` には、外側の `ul` のスタイルも当たります。このとき `ul` はコンポーネントの中で2つの役割を持つので、リンクと同じように外側と内側の両方に `._main-list` と `._sub-list` のような子クラスを付けます。`ul` のタイプセレクタには、両方に共通するスタイルだけを書きます。CMSが出力する本文のように、任意のHTMLが入る領域は、別のコンポーネントにしてルートに `scoped` を付けます。下限で範囲が切れるので、外側のタイプセレクタは本文の `p` や `a` に届きません。
 
 繰り返して並べる要素は、`ul` のような囲む要素を必ず用意します。囲む要素があれば、間隔を `gap` で決められます。JavaScriptから要素の一覧を取り出すときも、テンプレートで繰り返しを書くときも、囲む要素が起点になります。`<ul>` の直下に置けるのは `<li>` だけなので、Outerが必要なときは `<li>` の中に置きます。
 
 囲みのためだけの `div` が増えることも、必要以上に恐れません。`div` を減らすために、詳細度やセレクタの組み合わせで無理に同じ見た目を作ると、CSSが不安定で読みにくくなります。ただし、リスト、見出し、ナビゲーションのように意味を持つ要素で足りる場面では、その要素を使います。`div` は、意味を持つ要素では表せない囲みにだけ使います。
+
+## タイプセレクタに状態を付けるときの注意
+
+タイプセレクタに擬似クラスを付けると、詳細度が逆転します。`a:hover` の詳細度は0.1.1で、`._sub-link` の0.1.0より高くなるからです。次の例では、ホバーしたときにリンクの文字色を変える指定を、共通のスタイルとして `a:hover` に書いています。サブのリンクは背景色と同じ色の文字になり、ホバーしている間だけ読めなくなります。
+
+```css title="🙅‍♂ Not Recommended: 共通の a:hover で、子クラスの色まで変える"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.global-nav) to (.scoped) {
+  a:hover {
+    @media (any-hover: hover) {
+      color: var(--foreground--accent);
+    }
+  }
+
+  ._sub-link {
+    background-color: var(--background--accent);
+    color: var(--foreground--on-accent);
+  }
+}
+```
+
+状態のスタイルも、共通の部分と固有の部分に分けます。共通の `a:hover` には、どちらのリンクにも同じ意味を持つ指定だけを書きます。色のように役割ごとに違う指定は、`._main-link:hover` と `._sub-link:hover` に書き、同じ状態どうしで詳細度をそろえます。`._sub-link:hover` の詳細度は0.2.0なので、`a:hover` に勝ちます。
+
+```css title="🙆‍♂ Recommended: 役割ごとに違う状態のスタイルは、子クラスの側に書く"
+@scope (.scoped.global-nav) to (.scoped) {
+  a:hover {
+    @media (any-hover: hover) {
+      text-decoration-line: underline;
+    }
+  }
+
+  ._main-link:hover {
+    @media (any-hover: hover) {
+      color: var(--foreground--accent);
+    }
+  }
+
+  ._sub-link:hover {
+    @media (any-hover: hover) {
+      background-color: oklch(from var(--background--accent) calc(l - 0.1) c h);
+    }
+  }
+}
+```
+
+次の2つのデモで、それぞれのリンクにポインターを重ねて比べてください。1つ目は共通の `a:hover` で文字色を変えているので、「お問い合わせ」の文字が背景に溶けます。2つ目は文字色の変更をメインのリンクだけに書いているので、サブのリンクは背景色だけが濃くなります。
+
+<Demo title="共通の a:hover で文字色を変えると、サブのリンクの文字が背景に溶ける" html={typeSelectorHtml} css={typeSelectorBadCss} variant="not-recommended" />
+
+<Demo title="文字色の変更をメインのリンクだけに書くと、サブのリンクは読めたまま" html={typeSelectorHtml} css={typeSelectorCss} />
 
 ## 親から子のコンポーネントの見た目を変える方法
 

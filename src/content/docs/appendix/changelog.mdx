@@ -11,6 +11,18 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.7.0（2026年10月2日）
+
+`@scope` の中ではタイプセレクタがコンポーネントの範囲にしか当たらないので、子クラスを付ける基準を見直しました。ルールの主張が反対になったため、旧ルールを削除して新しいルールに置き換えています。
+
+- ルールを1件削除しました。
+  - `no-bulk-element-selector`：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない
+- ルールを1件追加しました。
+  - [`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)：`@scope` の中の要素はタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときだけ付けます。
+- 「[6-1 コンポーネントの境界を守る](/components/boundaries/)」の節「コンポーネントの中の要素には子クラスを付ける」を、「コンポーネントの中の要素はタイプセレクタで選ぶ」に書き換えました。共通のスタイルをタイプセレクタに、固有のスタイルを子クラスに書く例と、擬似クラスを付けたタイプセレクタが子クラスに勝つ注意点を、デモとともに加えています。
+- 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」と「[5-1 命名規則](/notation/naming/)」の説明と例を、同じ基準に合わせました。
+- 「[付録D レビューのチェックリスト](/appendix/checklist/)」に、新しいルールの項目を加えました。
+
 ## 0.6.0（2026年10月2日）
 
 著者のネストの設計ガイドラインをもとに、何をネストするかの判断を、新しい節にまとめました。仕様の挙動は、ブラウザで確かめてから書いています。
@@ -219,7 +231,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`not-has-for-absence`](/cascade/selectors/#rule-not-has-for-absence)：「持たない」は `:not(:has())` で書く
   - [`no-abbreviation`](/notation/naming/#rule-no-abbreviation)：クラス名を省略しない
   - [`child-name-flat`](/notation/naming/#rule-child-name-flat)：子要素の名前にHTMLの階層を映さない
-  - [`no-bulk-element-selector`](/components/boundaries/#rule-no-bulk-element-selector)：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない
+  - `no-bulk-element-selector`：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない（0.7.0で削除）
   - [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
   - [`no-dense-for-ordered-items`](/layout/grid-first/#rule-no-dense-for-ordered-items)：順序に意味のある要素に `grid-auto-flow: dense` を使わない
   - [`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)：マージンの相殺は `display: flow-root` で止める
