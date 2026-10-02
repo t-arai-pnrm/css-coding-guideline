@@ -1,0 +1,40 @@
+@layer components {
+  @scope (.scoped.page-hero) to (.scoped) {
+    :scope {
+      container: --page-hero / inline-size;
+    }
+
+    ._inner {
+      display: block grid;
+      gap: clamp(16px, 3cqi, 32px);
+      justify-items: start;
+      padding-block: clamp(40px, 8cqi, 120px);
+      padding-inline: clamp(20px, 5cqi, 80px);
+      background-image: linear-gradient(135deg, oklch(32% 0.08 260deg), oklch(46% 0.12 300deg));
+      color: oklch(98% 0 0deg);
+    }
+
+    h1 {
+      margin-block: 0;
+
+      /* コンテナの幅 375px で 32px、1440px で 72px */
+      font-size: clamp(32 / 16 * 1rem, 3.756cqi + 17.92 / 16 * 1rem, 72 / 16 * 1rem);
+      line-height: 1.3;
+    }
+
+    p {
+      max-inline-size: 40em;
+    }
+
+    ._cta {
+      display: inline flex;
+      align-items: center;
+      min-block-size: 48px;
+      padding-inline: 24px;
+      border-radius: calc(infinity * 1px);
+      background-color: oklch(98% 0 0deg);
+      color: oklch(32% 0.08 260deg);
+      font-weight: bold;
+    }
+  }
+}

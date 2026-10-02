@@ -113,17 +113,23 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 
 状態ごとの値は、すべて `:scope` の先頭に並べます。状態のセレクタの中では、どの内部プロパティを使うかを切り替えるだけにします。こうしておくと、そのコンポーネントがどんな状態を持ち、それぞれで何色になるのかを、先頭の数行で確認できます。配色を変えるときも、直すのは先頭の値だけです。ホバーの書き方と状態の表し方は、「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明します。
 
-公開プロパティにも、同じ形の接尾辞を使います。たとえば「[12-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」の画面モードを使う場合は、モードの名前を接尾辞にします。`--page-hero--padding-block--compact` と `--page-hero--padding-block--spacious` のように、モードごとの値を別の公開プロパティとして受け取ります。
+公開プロパティにも、同じ形の接尾辞を使います。たとえば、置かれた場所の幅に応じてコンテナクエリで隙間を変えるコンポーネントなら、広いときの値を `--media-card--gap--wide` のように接尾辞を付けた別の公開プロパティとして受け取ります。デフォルトの値を受け取る `--media-card--gap` には、接尾辞を付けません。
 
-```css title="🙆‍♂ Recommended: モードごとの値を、接尾辞を付けた公開プロパティで受ける"
-@scope (.scoped.page-hero) to (.scoped) {
+```css title="🙆‍♂ Recommended: 幅による値の違いを、接尾辞を付けた公開プロパティで受ける"
+@scope (.scoped.media-card) to (.scoped) {
   :scope {
-    --_padding-block: var(--page-hero--padding-block--compact, calc(40 * var(--px, 1px)));
+    --_gap: var(--media-card--gap, 12px);
+    --_gap--wide: var(--media-card--gap--wide, 24px);
 
-    padding-block: var(--_padding-block);
+    container: --media-card / inline-size;
+  }
 
-    @container style(--screen: --spacious) {
-      --_padding-block: var(--page-hero--padding-block--spacious, calc(80 * var(--px, 1px)));
+  ._layout {
+    display: block grid;
+    gap: var(--_gap);
+
+    @container --media-card (inline-size >= calc(400 / 16 * 1rem)) {
+      gap: var(--_gap--wide);
     }
   }
 }
@@ -222,7 +228,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 
 型を登録しておくと、数値ではない値が渡されたときは無効になり、初期値の `0` が使われます（2026年10月、Chrome 152で確認）。公開プロパティの入り口で、型に合わない値を無効にできます。3つの記述子（`syntax`、`inherits`、`initial-value`）は省略しません。`syntax` と `inherits` のどちらかが欠けると、`@property` のルールごと無視されます。
 
-もう1つは、値を型に沿って計算させたい場合です。12-4の比例スケールが `--100svi` と `--1rem` を `<length>` 型で登録しているのは、`:root` の時点で絶対的な長さに変換し、その値を子孫に引き継ぐためです。また、`style` 属性で要素ごとに渡した値が、さらに内側の要素へ継承されては困るときは、`inherits: false` で登録すれば継承を止められます。
+もう1つは、値を型に沿って計算させたい場合です。`<length>` 型で登録したプロパティは、値を指定した要素の時点で絶対的な長さに計算され、子孫にはその長さが引き継がれます（あとで説明する `1em` の例を参照）。また、`style` 属性で要素ごとに渡した値が、さらに内側の要素へ継承されては困るときは、`inherits: false` で登録すれば継承を止められます。
 
 アニメーションさせるカスタムプロパティは、この例のように `inherits: false` で登録します。継承するカスタムプロパティの値が変わると、その値を受け継ぐ子孫の要素すべてでスタイルが計算し直されます。アニメーションでは、この計算がフレームごとに繰り返されるので、`:root` のように多くの要素の祖先で値を動かすと、ページ全体の処理が重くなり、スマートフォンでは発熱の原因にもなります。また、`opacity: var(--_opacity)` のようにカスタムプロパティを介して動かすと、`opacity` を直接動かす場合と違い、ブラウザの合成処理だけでは済まず、描画のやり直しが起きます。動かす値が `opacity` や `translate` だけなら、カスタムプロパティを介さずにそのプロパティを直接アニメーションさせます。
 

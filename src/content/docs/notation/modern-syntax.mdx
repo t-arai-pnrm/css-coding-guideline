@@ -48,37 +48,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 | `padding-left`、`padding-right` | `padding-inline`（まとめて指定） |
 | `top`、`right`、`bottom`、`left` | `inset` と `inset-block-start` など |
 
-私が論理プロパティを使う理由は、多言語への対応よりも、主要なレイアウトの仕組みとそろえたいからです。Flexboxの主軸もGridのトラックも、書字方向を基準に決まります。コンテナクエリの条件も `inline-size` で書きます。レイアウトの仕組みが論理的な方向で動いているのに、寸法や余白だけを物理的な方向で書くと、方向の基準が2種類になってしまいます。
-
-実用上の利点もあります。`margin-inline: auto` はインライン方向の余白だけを指定するので、`margin: 0 auto` のように、ブロック方向の余白を `0` で上書きしてしまうことがありません。
-
-```css title="🙆‍♂ Recommended: 寸法、余白、位置を論理プロパティで書く"
-._panel {
-  position: absolute;
-  inset: 0;
-  max-inline-size: calc(600 / 16 * 1rem);
-  margin-inline: auto;
-  padding-block: 24px;
-  padding-inline: 16px;
-  border-block-end: 1px solid oklch(85% 0 0deg);
-}
-```
-
-物理的な方向に意味がある値は、物理プロパティで書きます。代表的なのは、端末の画面の切り欠きを避ける `env(safe-area-inset-left)` です。切り欠きは画面の物理的な左右にあるので、書字方向によって左右が入れ替わる論理プロパティでは困ります。この場合は、Stylelintのルールを1行だけ無効にし、理由をコメントに残します。
-
-```css title="🙆‍♂ Recommended: 物理的な方向が必要なときは理由を残す"
-body {
-  /* 切り欠きは画面の物理的な左右にあるので、書字方向で入れ替わらないようにする */
-  /* stylelint-disable-next-line logical-css/require-logical-properties */
-  padding-right: env(safe-area-inset-right);
-  /* stylelint-disable-next-line logical-css/require-logical-properties */
-  padding-left: env(safe-area-inset-left);
-}
-```
-
-メディアクエリの `width` や、`background-position` のように、物理的な方向でしか書けないものもあります。本書のStylelintの設定は、物理プロパティを `logical-css/require-logical-properties` で警告します。なお、既存のプロジェクトが物理プロパティでそろっているなら、無理に混ぜず、統一を優先してかまいません。
-
-<Baseline id="logical-properties" name="論理プロパティ" />
+論理プロパティにそろえる理由は、多言語への対応よりも、FlexboxやGridのような主要なレイアウトの仕組みが書字方向を基準に動いているからです。理由の詳細と、物理でしか書けないものとの混在、`margin-inline` を左右の余白として扱ってよいか、右から左へ書く言語と縦書きでの振る舞いは、「[7-5 論理プロパティと論理値](/notation/logical-properties/)」で説明します。
 
 ## `display` の2値構文
 

@@ -50,10 +50,10 @@ import primaryLayoutCss from '../../../demos/compositions/primary-layout/style.c
 ```css title="🙆‍♂ Recommended: 線に名前を付けた9本の列で、5段階の幅を作る"
 .primary-layout {
   --_c--content-max-width: var(--primary-layout--content-max-width, calc(1680 / 16 * 1rem));
-  --_c--gutter: var(--primary-layout--gutter, calc(20 * var(--px, 1px)));
-  --_c--narrow-reduction: var(--primary-layout--narrow-reduction, calc(20 * var(--px, 1px)));
-  --_c--wide-increase: var(--primary-layout--wide-increase, calc(60 * var(--px, 1px)));
-  --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase, calc(40 * var(--px, 1px)));
+  --_c--gutter: var(--primary-layout--gutter, 20px);
+  --_c--narrow-reduction: var(--primary-layout--narrow-reduction, 20px);
+  --_c--wide-increase: var(--primary-layout--wide-increase, 60px);
+  --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase, 40px);
   --_c--row-gap: var(--primary-layout--row-gap, 0px);
 
   display: block grid;
@@ -114,7 +114,7 @@ import primaryLayoutCss from '../../../demos/compositions/primary-layout/style.c
 
 段階の差を作る6本の列は、すべて `minmax(0, 上限)` です。グリッドは、固定の幅の列とガターの最小値を確保したあと、残った幅をこれらの列へ均等に配ります。上限に達した列はそれ以上広がらず、残りはまだ広がれる列に配られます。6本がすべて上限に達しても幅が余れば、その分は `1fr` のガターが受け取ります。
 
-デフォルト値（最大幅1680px相当、ガター20px、ナローの差20px、ワイドの差60px、超ワイドの差40px）で、`--px` を定義していない（1pxとして計算する）場合を検算します。グリッドの幅が1920pxのとき、中央の列は `min(1920 - 40, 1680 - 40)` で1640pxです。残りは1920 − 1640 − 40（ガター2本の最小値）で240pxです。6本の列で均等に分けると40pxずつですが、ナローの差の列は20pxが上限です。余った40pxを残りの4本で分けると50pxずつですが、超ワイドの差の列は40pxが上限です。最後の20pxを受け取ったワイドの差の列も、ちょうど60pxの上限に達します。
+デフォルト値（最大幅1680px相当、ガター20px、ナローの差20px、ワイドの差60px、超ワイドの差40px）で検算します。グリッドの幅が1920pxのとき、中央の列は `min(1920 - 40, 1680 - 40)` で1640pxです。残りは1920 − 1640 − 40（ガター2本の最小値）で240pxです。6本の列で均等に分けると40pxずつですが、ナローの差の列は20pxが上限です。余った40pxを残りの4本で分けると50pxずつですが、超ワイドの差の列は40pxが上限です。最後の20pxを受け取ったワイドの差の列も、ちょうど60pxの上限に達します。
 
 | グリッドの幅 | ナロー | コンテンツ | ワイド | 超ワイド | フル |
 |---|---|---|---|---|---|
@@ -136,13 +136,13 @@ import primaryLayoutCss from '../../../demos/compositions/primary-layout/style.c
 | 公開プロパティ | 意味 | デフォルト値 |
 |---|---|---|
 | `--primary-layout--content-max-width` | コンテンツ幅の最大値 | `calc(1680 / 16 * 1rem)` |
-| `--primary-layout--gutter` | 左右のガターの最小幅 | 20px相当 |
-| `--primary-layout--narrow-reduction` | ナロー幅とコンテンツ幅の片側の差の上限 | 20px相当 |
-| `--primary-layout--wide-increase` | コンテンツ幅とワイド幅の片側の差の上限 | 60px相当 |
-| `--primary-layout--ex-wide-increase` | ワイド幅と超ワイド幅の片側の差の上限 | 40px相当 |
+| `--primary-layout--gutter` | 左右のガターの最小幅 | 20px |
+| `--primary-layout--narrow-reduction` | ナロー幅とコンテンツ幅の片側の差の上限 | 20px |
+| `--primary-layout--wide-increase` | コンテンツ幅とワイド幅の片側の差の上限 | 60px |
+| `--primary-layout--ex-wide-increase` | ワイド幅と超ワイド幅の片側の差の上限 | 40px |
 | `--primary-layout--row-gap` | 行の間隔 | `0px` |
 
-表の「20px相当」は、`calc(20 * var(--px, 1px))` のように比例スケールの `--px` を掛けた値です。`--px` が定義されていないページでは、フォールバックの1pxが使われます。行の間隔は、ほかのコンポジションと同じく、置く文脈で決まる値なのでデフォルト値を0にしています。
+行の間隔は、ほかのコンポジションと同じく、置く文脈で決まる値なのでデフォルト値を0にしています。
 
 `primary-layout` の中に、メディアクエリやスタイルクエリで値を切り替える分岐は書きません。画面が広がるにつれて段階の差が開くのは列の幅の計算の結果なので、多くのページはデフォルト値のままで足ります。分岐を部品の中に持つと、部品を使うたびにブレイクポイントの値と切り替えの仕組みを持ち込むことになり、置く場所を選ぶ部品になるからです。
 
@@ -180,7 +180,7 @@ import primaryLayoutCss from '../../../demos/compositions/primary-layout/style.c
 
 ## コード例とデモ
 
-次のデモでは、コンテンツ幅の最大値を640px相当にして、5段階の幅と片側だけのクラスを並べています。幅のボタンで480pxを選ぶと、フル幅以外はすべて同じ幅になり、1024pxや1280pxを選ぶと段階の差が開きます。デモでは `--px` を定義していないので、ガターなどの値は1pxとして計算されます。
+次のデモでは、コンテンツ幅の最大値を640px相当にして、5段階の幅と片側だけのクラスを並べています。幅のボタンで480pxを選ぶと、フル幅以外はすべて同じ幅になり、1024pxや1280pxを選ぶと段階の差が開きます。
 
 <Demo
   title="5段階の幅のクラスを付けた子を、primary-layout に並べる"

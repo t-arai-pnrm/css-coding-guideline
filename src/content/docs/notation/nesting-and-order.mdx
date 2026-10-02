@@ -163,15 +163,15 @@ Stylelintには、この数え方に合う設定がありません。標準の `
 ```css title="🙅‍♂ Not Recommended: 条件のブロックの中に宣言をじかに書く"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.hero-section) to (.scoped) {
-  @container style(--screen: --spacious) {
-    min-block-size: calc(800 * var(--px));
+  @container style(--hero-section--size: large) {
+    min-block-size: calc(800 / 16 * 1rem);
 
     & ._title {
-      font-size: calc(64 * var(--rem));
+      font-size: calc(64 / 16 * 1rem);
     }
 
     ._lead {
-      font-size: calc(20 * var(--rem));
+      font-size: calc(20 / 16 * 1rem);
     }
   }
 }

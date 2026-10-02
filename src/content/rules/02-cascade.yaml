@@ -183,11 +183,3 @@
   reason: ページのスタイルもほかのページやコンポーネントに漏れず、コンポーネントと同じ書き方で管理できるため。
   page: cascade/scope
   since: 0.1.0
-
-- id: astro-inline-scope
-  level: 推奨
-  rule: Astro では、コンポーネントのルート要素の中に `<style is:inline>` を置き、`@scope to (.scoped)` をレイヤーで包んで書く。
-  reason: '`<style>` の親要素がスコープのルートになるので、ルートのセレクタを書かずにコンポーネントのファイルの中でスタイルを完結できるため。'
-  note: '`is:inline` の CSS はビルドで変換されないので、`@scope` やネストはブラウザが直接解釈します。'
-  page: cascade/scope
-  since: 0.1.0

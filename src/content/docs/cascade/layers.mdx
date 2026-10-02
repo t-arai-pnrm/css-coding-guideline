@@ -69,7 +69,7 @@ import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?ra
 
 `@import` は、`@layer` 文を除くすべてのルールより前に書く必要があります。ほかのルールの後ろに書いた `@import` は無視されるので、エントリーポイントのファイルには、レイヤーの宣言と `@import` だけを置きます。
 
-コンポーネントのファイルのように `@import` で読み込まないCSSには、`@layer components { … }` の形でレイヤーを自分で書きます。Astroのコンポーネントの中に書くスタイルがその例で、書き方は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明します。
+`<head>` の中の `<style>` のように `@import` で読み込まないCSSには、`@layer components { … }` の形でレイヤーを自分で書きます。
 
 ## 宣言していないレイヤー名の扱い
 

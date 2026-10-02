@@ -141,7 +141,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
 }
 ```
 
-このファイルには `@layer components { … }` を書いていません。エントリーポイントの `@import` に `layer(components)` を付けているので、ファイルの中身がすべて `components` レイヤーに入ります。Astroのコンポーネントの中に書くスタイルのように、`@import` で読み込まないCSSでは、`@layer` を自分で書きます（「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」）。
+このファイルには `@layer components { … }` を書いていません。エントリーポイントの `@import` に `layer(components)` を付けているので、ファイルの中身がすべて `components` レイヤーに入ります。`<head>` の中の `<style>` のように、`@import` で読み込まないCSSでは、`@layer` を自分で書きます（「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
 
 ## kiso.cssを読み込む方法
 

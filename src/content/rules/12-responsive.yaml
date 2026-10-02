@@ -237,53 +237,36 @@
   page: responsive/media-queries
   since: 0.5.0
 
-# 12-4 実践パターン：2サイズのデザインカンプを再現する
-- id: screen-mode-for-two-size-comps
+# 12-4 375px未満の画面ではビューポートを固定する
+- id: fixed-viewport-below-min-width
   level: 推奨
-  rule: '`--screen` とスタイルクエリによる切り替えと、`--px`・`--rem` による比例スケールは、2サイズのデザインカンプを比率を保って再現する案件に限って使う。'
-  reason: どちらもビューポートを基準にする方法なので、置き場所に合わせて振る舞うべきコンポーネントには向かないため。
-  page: responsive/design-comp-pattern
-  since: 0.1.0
+  rule: '375px 未満の画面では、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。'
+  reason: 300px 前後の折りたたみ端末のような画面まで CSS で崩さずに組むのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、レイアウトは崩れないため。
+  note: '判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなり、ブラウザのズームでも小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。'
+  aiProne: true
+  page: responsive/min-viewport-width
+  since: 0.18.0
 
-- id: screen-mode-single-source
-  level: 必須
-  rule: '`--screen` を使う場合、ビューポートの `@media` は `:root` の1か所だけにして `--screen` と比例スケールの比率をそこでまとめて切り替え、各所の分岐は `@container style(--screen: …)` で書く。'
-  reason: ブレイクポイントの値が1か所にまとまり、変えたときの修正漏れがなくなるため。
-  page: responsive/design-comp-pattern
-  since: 0.1.0
-
-- id: screen-mode-state-names
-  level: 推奨
-  rule: モードの名前は `--compact` や `--spacious` のように、デバイスではなく状態を表す `--` で始まる名前にする。
-  reason: デバイス名は実態とずれやすく、`--` で始めれば自分で付けた名前だと分かるため。
-  page: responsive/design-comp-pattern
-  since: 0.1.0
-
-- id: proportional-scale-comp-values
-  level: 推奨
-  rule: 比例スケールの寸法は `calc(N * var(--px))` と `calc(N * var(--rem))` で書き、`N` にはカンプ上のピクセル値をそのまま書く。
-  reason: カンプとの対応がそのまま読め、`calc((60 + 72) * var(--px))` のように値の足し算も式で残せるため。
-  note: '`--px` と `--rem` には比率が1のときの値（`1px` と `calc(1 / 16 * 1rem)`）を先に入れ、長さどうしの割り算に対応していることを `@supports (line-height: calc(1px / 1px))` で確かめられたときだけ、比例の式に切り替えます。比例の式を直接入れると、割り算に対応していないブラウザでは、それを使った宣言がすべて計算値の時点で無効になります。'
-  page: responsive/design-comp-pattern
-  since: 0.1.0
-
-- id: proportional-scale-rem-for-text
-  level: 必須
-  rule: 比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。
-  reason: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。
-  note: '`--rem` が保証するのは、カンプ上の寸法に文字サイズの設定の倍率を掛けた下限です。文字が設定と同じ割合で大きくなるわけではなく、画面がカンプより広い区間では、設定を上げても文字の大きさが変わらないことがあります。'
+# 12-5 カンプの幅で全体を拡大・縮小しない
+- id: no-full-liquid-scaling
+  level: 禁止
+  rule: カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。
+  reason: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。
+  note: 'ブレイクポイントはデザインの段階で決めず、実装の段階でデザイナーと、保つもの（本文の読みやすさ、情報の量、画像の縦横比、CTA）と崩れとみなす基準（カラムの数を変える時点、余白を削る順番）をすり合わせて決めます（9-2）。コンポーネントの切り替えはコンテナクエリで、ビューポートに密着する要素とページ全体の段組みはメディアクエリで書き、幅で連続的に変えたい値は値ごとに `clamp()` で範囲を決めます（4-3）。'
   aiProne: true
   page: responsive/design-comp-pattern
-  since: 0.1.0
+  since: 0.18.0
 
-- id: screen-mode-compact-base
+- id: local-liquid-with-cqi
   level: 推奨
-  rule: '`--compact` の表示はクエリの外に基本のスタイルとして書き、`--spacious` の差分だけをスタイルクエリで書く。'
-  reason: スタイルクエリに対応していないブラウザでも、コンパクトな表示で内容を読めるようにするため。
+  rule: ヒーローのように幅に合わせて拡大・縮小させたい局所は、その部分を名前付きのコンテナにして `cqi` で組み、ビューポート単位を使わない。
+  reason: 置かれた場所の幅に合わせて振る舞い、ページのほかの部分の文字サイズや余白を巻き込まないため。
+  note: '文字サイズは、最小値と最大値を rem にし、推奨値を `cqi` と rem の和にした `clamp()` で書きます（`clamp-rem-bounds`）。`cqi` を使うのは、コンテナの子孫の要素だけです（`cqi-needs-named-container`）。'
+  aiProne: true
   page: responsive/design-comp-pattern
-  since: 0.1.0
+  since: 0.18.0
 
-# 12-5 セーフエリアに対応する
+# 12-6 セーフエリアに対応する
 - id: safe-area-inset-with-viewport-fit-cover
   level: 必須
   rule: '`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。'

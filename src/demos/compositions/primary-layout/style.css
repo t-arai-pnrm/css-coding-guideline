@@ -16,10 +16,10 @@
    * 左右のガターと5段階の幅の列を持つグリッド。子はデフォルトでコンテンツ幅に置き、クラスで幅を選ぶ。
    *
    * @prop {length} --primary-layout--content-max-width          [calc(1680 / 16 * 1rem)]    - コンテンツ幅の最大値
-   * @prop {length} --primary-layout--gutter                      [calc(20 * var(--px, 1px))] - 左右のガターの最小幅
-   * @prop {length} --primary-layout--narrow-reduction            [calc(20 * var(--px, 1px))] - ナロー幅とコンテンツ幅の片側の差（上限）
-   * @prop {length} --primary-layout--wide-increase               [calc(60 * var(--px, 1px))] - コンテンツ幅とワイド幅の片側の差（上限）
-   * @prop {length} --primary-layout--ex-wide-increase            [calc(40 * var(--px, 1px))] - ワイド幅と超ワイド幅の片側の差（上限）
+   * @prop {length} --primary-layout--gutter                      [20px]                      - 左右のガターの最小幅
+   * @prop {length} --primary-layout--narrow-reduction            [20px]                      - ナロー幅とコンテンツ幅の片側の差（上限）
+   * @prop {length} --primary-layout--wide-increase               [60px]                      - コンテンツ幅とワイド幅の片側の差（上限）
+   * @prop {length} --primary-layout--ex-wide-increase            [40px]                      - ワイド幅と超ワイド幅の片側の差（上限）
    * @prop {length} --primary-layout--row-gap                     [0px]                       - 行の間隔
    *
    * @example
@@ -33,10 +33,10 @@
    */
   .primary-layout {
     --_c--content-max-width: var(--primary-layout--content-max-width, calc(1680 / 16 * 1rem));
-    --_c--gutter: var(--primary-layout--gutter, calc(20 * var(--px, 1px)));
-    --_c--narrow-reduction: var(--primary-layout--narrow-reduction, calc(20 * var(--px, 1px)));
-    --_c--wide-increase: var(--primary-layout--wide-increase, calc(60 * var(--px, 1px)));
-    --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase, calc(40 * var(--px, 1px)));
+    --_c--gutter: var(--primary-layout--gutter, 20px);
+    --_c--narrow-reduction: var(--primary-layout--narrow-reduction, 20px);
+    --_c--wide-increase: var(--primary-layout--wide-increase, 60px);
+    --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase, 40px);
     --_c--row-gap: var(--primary-layout--row-gap, 0px);
 
     display: block grid;

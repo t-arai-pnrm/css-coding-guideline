@@ -5,7 +5,7 @@
   level: 推奨
   rule: コンポーネントのルートに付ける `scoped <名前>` の `<名前>` は、kebab-case にする（例：`class="scoped media-card"`）。
   reason: ルートの名前はコンポーネントの名前そのものなので、ブロック名やファイル名と対応させておくと、CSS から実装のファイルをたどりやすいため。
-  note: Astro のようにコンポーネント名が PascalCase の環境では、`scoped MediaCard` のようにコンポーネント名に合わせてもかまいません。`scoped` のクラスと `@scope` の書き方は第2章で扱います。
+  note: '`scoped` のクラスと `@scope` の書き方は第2章で扱います。'
   page: notation/naming
   since: 0.1.0
 
@@ -172,16 +172,6 @@
   since: 0.6.0
 
 # 7-4 モダンな記法にそろえる
-- id: logical-properties
-  level: 推奨
-  rule: 寸法、余白、位置、ボーダーは、物理プロパティではなく論理プロパティで書く（`width` ではなく `inline-size`、`top` ではなく `inset-block-start`）。
-  reason: Flexbox、Grid、コンテナクエリのような主要なレイアウトの仕組みが、書字方向を基準にした論理的な指定を前提にしているため。
-  note: 端末の切り欠きに合わせる `env(safe-area-inset-left)` のように、物理的な方向に意味がある値は物理プロパティで書き、Stylelint の無効化コメントと理由を添えます。
-  lint: 'Stylelint: `logical-css/require-logical-properties`（警告）'
-  aiProne: true
-  page: notation/modern-syntax
-  since: 0.1.0
-
 - id: display-two-value-syntax
   level: 必須
   rule: '`display` は、`block flex` や `inline flow-root` のような2値構文で書く。'
@@ -236,7 +226,34 @@
   page: notation/modern-syntax
   since: 0.1.0
 
-# 7-5 コメントの書き方
+# 7-5 論理プロパティと論理値
+- id: logical-properties
+  level: 推奨
+  rule: 寸法、余白、位置、ボーダーは、物理プロパティではなく論理プロパティで書く（`width` ではなく `inline-size`、`top` ではなく `inset-block-start`）。
+  reason: Flexbox、Grid、コンテナクエリのような主要なレイアウトの仕組みが、書字方向を基準にした論理的な指定を前提にしているため。
+  note: 端末の切り欠きに合わせる `env(safe-area-inset-left)` のように、物理的な方向に意味がある値は物理プロパティで書き、Stylelint の無効化コメントと理由を添えます。論理で書けないものの扱いはルール `physical-only-where-no-logical` に従います。横書きのサイトでは、`margin-inline` を左右の余白として扱ってかまいません。
+  lint: 'Stylelint: `logical-css/require-logical-properties`（警告）'
+  aiProne: true
+  page: notation/logical-properties
+  since: 0.1.0
+
+- id: physical-only-where-no-logical
+  level: 推奨
+  rule: 対応する論理的な書き方がないもの（メディアクエリの `width`、`translate` の値、`transform-origin`、`background-position`、`mask-position` など）は物理で書き、1つのルールの中で論理と物理が混ざることを許す。
+  reason: CSS の仕様そのものが論理と物理の両方を含んでおり、論理で書けないものまで論理に寄せようとすると、`direction` を配置に使うハックのような副作用のある回避策が増えるため。
+  note: 論理で書けるものは、ルール `logical-properties` に従って論理で書きます。`overflow-inline` と `overflow-block` は Safari 26 から対応したので、本書の対象のブラウザでは `overflow-x` と `overflow-y` を使います（2026年10月時点）。書字方向で値を変える必要があるときは、`:dir(rtl)` で分岐します。
+  page: notation/logical-properties
+  since: 0.18.0
+
+- id: no-logical-nitpicking
+  level: 推奨
+  rule: レビューでは、論理プロパティと物理プロパティが混ざっていること（`margin-inline` と `width` が同じルールにあるなど）だけを理由に指摘しない。
+  reason: '混在しても表示の結果は変わらず、指摘のやり取りが、`margin: 0 auto` の副作用や内容のあふれのような、先に直すべき問題から注意をそらすため。'
+  note: 本書の規約を採用したプロジェクトでは、物理プロパティは Stylelint の警告で見つけてそろえます。プロジェクトが物理プロパティで統一されているなら、その統一を優先します。
+  page: notation/logical-properties
+  since: 0.18.0
+
+# 7-6 コメントの書き方
 - id: file-header-doc-block
   level: 必須
   rule: CSS ファイルの先頭には、そのファイルの責務と使い方を `/** */` の説明ブロックで書く。
@@ -290,7 +307,7 @@
   page: notation/comments
   since: 0.1.0
 
-# 7-6 名前に使う語
+# 7-7 名前に使う語
 - id: one-term-one-meaning
   level: 必須
   rule: 名前に使う語は、プロジェクトの中で1つの意味だけで使い、コンポーネントの名前、子要素のクラス名、カスタムプロパティの名前のどこでも同じ意味にそろえる。

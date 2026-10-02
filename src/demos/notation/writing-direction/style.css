@@ -1,0 +1,56 @@
+@layer components {
+  @scope (.scoped.writing-modes) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h2 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    div {
+      padding: 16px;
+      border: 1px dashed oklch(70% 0 0deg);
+    }
+
+    div[data-writing-mode="vertical"] {
+      inline-size: calc(400 / 16 * 1rem);
+      writing-mode: vertical-rl;
+    }
+  }
+
+  @scope (.scoped.note) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      max-inline-size: calc(320 / 16 * 1rem);
+      margin-inline: auto;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-inline-start: 4px solid oklch(55% 0.15 250deg);
+      background-color: oklch(96% 0.02 250deg);
+    }
+
+    a {
+      display: inline flex;
+      gap: 4px;
+      align-items: center;
+      justify-self: start;
+
+      &::after {
+        content: "→" / "";
+        display: inline flow-root;
+      }
+    }
+
+    a:dir(rtl)::after {
+      scale: -1 1;
+    }
+  }
+}

@@ -32,6 +32,15 @@
   page: decoration/images-and-decoration
   since: 0.1.0
 
+- id: img-over-background-image
+  level: 推奨
+  rule: 背景に写真を敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置く。
+  reason: '`<picture>` や `srcset` と `sizes` で表示される幅に合った画像を読み込め、`opacity` やフィルターで画像だけを加工でき、`alt` で意味を伝えられるうえ、HTML を解析する段階でプリロードスキャナーに見つかり、LCP の候補でも表示が遅れないため。'
+  note: '`background-image` は、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に使います。単色やグラデーションだけの背景も `background-image` で足ります。装飾の写真なら `alt=""` にします。重ねるだけの入れ物には、コンポジションの `pile` を使えます。'
+  aiProne: true
+  page: decoration/images-and-decoration
+  since: 0.18.0
+
 - id: sizes-by-tool
   level: 推奨
   rule: '`srcset` と `sizes` の値は、手で計算せず、RespImageLint などのツールで確かめて決める。'
@@ -47,6 +56,14 @@
   aiProne: true
   page: decoration/images-and-decoration
   since: 0.1.0
+
+- id: no-decoding-async
+  level: 推奨
+  rule: '`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せる。'
+  reason: キャッシュのない通常の読み込みでは `sync` と `async` に目立った性能の差がなく、キャッシュがあるときに `async` だと、画像以外が先に表示されて画像があとから現れ、画面がちらつくため。
+  aiProne: true
+  page: decoration/images-and-decoration
+  since: 0.18.0
 
 - id: avif-for-photos
   level: 推奨

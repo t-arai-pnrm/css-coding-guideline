@@ -1,6 +1,6 @@
 ---
 title: "2-4 @scopeでスタイルを閉じ込める"
-description: "コンポーネントのスタイルは@scope (.scoped.<名前>) to (.scoped)の中に書きます。ドーナツスコープで入れ子のコンポーネントを範囲から外し、Astroではルート要素の中に置いたstyle要素でスコープを作ります。"
+description: "コンポーネントのスタイルは@scope (.scoped.<名前>) to (.scoped)の中に書きます。ドーナツスコープで入れ子のコンポーネントを範囲から外し、ページのルートにも同じ形でスコープを作ります。"
 sidebar:
   order: 4
 ---
@@ -110,48 +110,6 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 `@scope` の中で `@media` や `@container` を使うときは、各セレクタの中に書きます。`@scope` の直下に上書き用の条件のブロックを先に書くと、同じ詳細度の元のルールが後ろに来て、上書きが効かなくなるからです。この規約は、第7章「[7-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明します。
 
-## Astroでの書き方
-
-Astroでコンポーネントを作るときは、ルート要素の中に `<style is:inline>` を置き、その中に `@scope to (.scoped)` と書きます。`@scope` の後ろのルートのセレクタを省略すると、`<style>` 要素の親要素がスコープのルートになります。
-
-```astro title="🙆‍♂ Recommended: ルート要素の中に置いた style 要素でスコープを作る"
----
-const { title } = Astro.props;
----
-
-<article class="scoped NewsCard">
-  <style is:inline>
-    @layer components {
-      @scope to (.scoped) {
-        :scope {
-          display: block grid;
-          gap: 8px;
-        }
-
-        h2 {
-          font-size: calc(20 / 16 * 1rem);
-        }
-      }
-    }
-  </style>
-  <h2>{title}</h2>
-</article>
-```
-
-この書き方では、ルートのクラス名をCSSに書く必要がありません。コンポーネントのファイルの中で、マークアップとスタイルが完結します。ルートのクラスは、Astroのコンポーネント名に合わせてPascalCaseにしてもかまいません。
-
-`is:inline` を付けると、Astroはこの `<style>` を変換やバンドルをせずに、書いたとおりに出力します。Astroのスコープ付きCSSのように、要素に属性を自動で付ける処理も行いません。そのため、`@scope` やネストは、ビルドツールではなくブラウザが直接解釈します。
-
-`@import` で読み込まないスタイルなので、レイヤーはここで書きます。ページ固有のセクションなら `@layer pages` で、複数の場所で使うコンポーネントなら `@layer components` で包みます。レイヤーを書き忘れると、そのスタイルはすべてのレイヤーより強くなります（[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
-
-この方式には、いくつか注意点があります。`<style>` 要素はルート要素の最初の子になるので、`:first-child` や `* + *` のように、子要素の位置を数えるセレクタの対象に入ります。また、同じコンポーネントをページに何度も置くと、その回数だけ `<style>` も出力されます。
-
-また、`<body>` の中の `<style>` は、ブラウザでは動作しますが、HTML標準の配置条件からは外れます。HTML Living Standardは、`<style>` を置ける場所を、メタデータコンテンツが期待される場所（`<head>` の中など）と、`<head>` の子の `<noscript>` の中に限っています。HTMLの検証ツールがこの `<style>` を誤りとして報告するのは、標準に沿った判定です。本書はそれを承知でこの方式を採用し、私のテンプレートでは、markuplintの設定でこの項目を例外にしています。
-
-HTML標準への適合が必要なプロジェクトでは、`<style>` を `<head>` に置くか、外部のCSSファイルに書きます。どちらの場合も、スタイルはルート要素の中にないので、ルートを省略した `@scope to (.scoped)` は使えません。`@scope (.scoped.NewsCard) to (.scoped)` のように、ルートを明示して書きます。
-
-ルート要素の中に `<style>` を置く方法は、Astroに限りません。PHPのテンプレートの中に `<style>` を書く場合も、同じ形で使えます。
-
 ## 対応状況と注意点
 
 `@scope` の対応状況は、どの範囲を見るかで2通りに読めます。まず、基本の動作から確認します。
@@ -177,6 +135,4 @@ Safari 26.0から26.3を使い続けているユーザーには、スコープ�
 - [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
 - [:scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:scope)
 - [CSS Cascading and Inheritance Level 6: Scoping Styles](https://drafts.csswg.org/css-cascade-6/#scoped-styles)
-- [HTML Standard: The style element](https://html.spec.whatwg.org/multipage/semantics.html#the-style-element)
-- [スタイルとCSS | Astro Docs](https://docs.astro.build/ja/guides/styling/)
 - [browser-compat-data: css/at-rules/scope.json](https://github.com/mdn/browser-compat-data/blob/main/css/at-rules/scope.json)

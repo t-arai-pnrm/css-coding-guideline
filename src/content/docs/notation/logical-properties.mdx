@@ -1,0 +1,163 @@
+---
+title: "7-5 論理プロパティと論理値"
+description: 論理プロパティを使うのは、多言語への対応よりも、書字方向を前提にしたレイアウトの仕組みとそろえるためです。物理でしか書けないものは物理で書き、論理と物理の混在を許します。margin-inline は実務では左右のショートハンドとして扱ってかまいません。
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import writingHtml from '../../../demos/notation/writing-direction/index.html?raw';
+import writingCss from '../../../demos/notation/writing-direction/style.css?raw';
+
+論理プロパティは、上下左右ではなく、書字方向を基準に方向を表すプロパティです（`width` に対する `inline-size`、`margin-top` に対する `margin-block-start` など）。本書は、寸法、余白、位置を論理プロパティで書きます。理由は多言語への対応ではなく、Webのレイアウトの仕組みが書字方向を基準に動いているからです。そのうえで、物理でしか書けないものは物理で書き、1つのルールの中で論理と物理が混ざることを許します。
+
+`margin-inline` は、厳密には「左右」の余白ではありません。縦書きでは上下の余白になります。それでも、横書きのサイトを作る実務では、左右のショートハンドとして扱ってかまいません。私が論理プロパティを選ぶときに優先しているのは、仕様の上での正しさよりも、設計の整合性と副作用の少なさです。
+
+## 論理プロパティをめぐる2つの極端
+
+論理プロパティについては、2つの方向から厳しい意見を聞くことがあります。1つは、「`margin-inline` を左右のつもりで使うのは誤りで、左右なら `margin-left` と `margin-right` を書くべきだ」という意見です。もう1つは、「論理プロパティを使うなら、すべてを論理で書くべきで、`width` と `margin-inline` を同じルールに混ぜてはいけない」という意見です。
+
+前者の意見は、論理プロパティを多言語対応のための道具と見ています。縦書きや右から左へ書く言語に対応しないサイトなら、論理プロパティを使う理由がない、という考え方です。しかし、論理的な方向で動いているのは、論理プロパティだけではありません。後で見るように、Flexbox、Grid、配置のキーワードは、もともと書字方向を基準にしています。
+
+後者の意見は、方向の基準をそろえるという点では筋が通っています。ただ、CSSには論理的な書き方がまだないプロパティや、物理的な方向にしか意味のない値があります。すべてを論理で書こうとすると、そうした箇所で無理な回避策を書くことになります。
+
+どちらの意見も、論理か物理かを教義として扱っています。本書は、この問いを「どちらが正しいか」ではなく、「どちらがレイアウトの仕組みとそろい、副作用が少ないか」で判断します。
+
+## Webのレイアウトは書字方向を前提にしている
+
+通常フローは、書字方向を前提にした仕組みです。ブロックは行が積み重なる方向に並び、インライン要素は文字が並ぶ方向に流れます。この2つの方向は、`writing-mode` と `direction` で変わります（「[10-2 通常フローの基礎](/layout/normal-flow/)」）。横書きの文書では、たまたまインライン方向が左右、ブロック方向が上下にあたるだけです。
+
+FlexboxとGridも、同じ基準で動きます。`flex-direction: row` の主軸はインライン方向なので、縦書きのコンテナでは上から下に変わります。Gridの列の線はインライン方向の始まりの側から数えるので、`direction: rtl` の文書ではセルの並びが右から左になります。`justify-content` や `align-items` の `start`、`end`、`center` も、書字方向に対する位置を表すキーワードです。コンテナクエリの `container-type: inline-size` も、インライン方向の大きさを条件にします。
+
+この仕組みを利用して、Gridのセルの並びを逆転させる目的で `direction: rtl` を指定するハックがあります。見た目の順番は入れ替わりますが、フォーカスの移動と読み上げはHTMLの順番のままです。キーボードで操作すると、フォーカスが右から左へ飛ぶように見えます。文字の方向まで変わるので、子の中で `direction: ltr` に戻す指定も要ります。
+
+```css title="🙅‍♂ Not Recommended: Gridのセルの並びを direction で逆にする"
+/* 🙅‍♂ Not Recommended */
+._media {
+  display: block grid;
+  grid-template-columns: 1fr 1fr;
+  direction: rtl;
+}
+
+._media > * {
+  direction: ltr;
+}
+```
+
+見た目の順番を入れ替えたいときは、HTMLの順番を入れ替えるか、配置を変えたうえで読み上げの順番を合わせます（「[10-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」）。`direction` は書字方向を表すプロパティで、配置の道具ではありません。
+
+## 物理でしか書けないもの
+
+一方で、CSSには物理的な方向でしか書けないものも多く残っています。メディアクエリの条件はビューポートの `width` と `height` で書きます。`translate` の値は横と縦の順で、`transform-origin`、`background-position`、`mask-position` には書字方向を基準にしたキーワードがありません。現実のCSSは、論理と物理が混ざった状態にあります。
+
+`overflow-x` と `overflow-y` に対応する `overflow-inline` と `overflow-block` は、Safariが26から対応しました。本書が対象にするSafari 18系では使えないので、2026年10月の時点では物理プロパティで書きます。本書のStylelintの設定でも、この2つは警告の対象から外しています（「[18-1 Stylelintでルールを守る](/operations/stylelint/)」）。
+
+こうしたものは、物理で書きます。論理で書けるものは論理で書き、書けないものは物理で書くので、次の例のように、1つのルールの中に `overflow-x` と `padding-block-end` を並べる場合も出てきます。仕様に論理と物理の両方がある以上、コードでの混在は避けられません。書字方向で背景の位置を変える必要があるなら、後で説明する `:dir(rtl)` で分岐します。
+
+```css title="🙆‍♂ Recommended: 論理で書けないものは物理で書き、混在を許す"
+._table-scroller {
+  overflow-x: auto;
+  padding-block-end: 8px;
+  background-image: url("/images/scroll-hint.svg");
+  background-position: right top;
+  background-repeat: no-repeat;
+}
+```
+
+物理的な方向に意味がある値も、物理プロパティで書きます。代表的なのは、端末の切り欠きを避ける `env(safe-area-inset-left)` です。切り欠きは画面の物理的な左右にあるので、論理プロパティの `padding-inline-start` に書くと、右から左へ書く言語のページで反対側が空きます。この場合は、Stylelintのルールを1行だけ無効にし、理由をコメントに残します。
+
+```css title="🙆‍♂ Recommended: 物理的な方向が必要なときは理由を残す"
+body {
+  /* 切り欠きは画面の物理的な左右にあるので、書字方向で入れ替わらないようにする */
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-right: env(safe-area-inset-right);
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  padding-left: env(safe-area-inset-left);
+}
+```
+
+セーフエリアの扱いは「[12-6 セーフエリアに対応する](/responsive/safe-area/)」で詳しく説明しています。
+
+## 中央寄せに `margin-inline: auto` を選ぶ理由
+
+方向の呼び方についても、一貫した基準で判断します。`justify-content: flex-end` は厳密にはインライン方向の終わりへの配置ですが、これを「右揃え」と呼んで咎められることはまずありません。それなのに、`margin-inline` や `padding-inline` を「左右の余白」と呼ぶことだけを厳しく非難するのは、釣り合いがとれていません。横書きのサイトでは、どちらも左右を指すものとして読んでかまいません。
+
+私がブロックの中央寄せに `margin-inline: auto` を選ぶのは、短く書けるからではありません。`margin: 0 auto` や `margin: auto` は、左右のマージンと一緒に上下のマージンも上書きします。周りのレイアウトが `* + *` のセレクタ（フクロウセレクタ）で子の間に入れた余白も、`0` で消してしまいます。`margin-inline` はインライン方向のマージンだけを指定するので、この副作用がありません（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-margin-inline-auto-centering)」）。
+
+```css title="🙅‍♂ Not Recommended: 上下のマージンまで 0 にする"
+/* 🙅‍♂ Not Recommended */
+._figure {
+  max-width: 640px;
+  margin: 0 auto;
+}
+```
+
+```css title="🙆‍♂ Recommended: インライン方向のマージンだけを指定する"
+._figure {
+  max-inline-size: calc(640 / 16 * 1rem);
+  margin-inline: auto;
+}
+```
+
+この考え方は、ユーティリティファーストのフレームワークにも広がっています。Tailwind CSSはv4で、`mx` を `margin-inline` に、`py` を `padding-block` に置き換えました。クラス名は「x」と「y」のままでも、出力されるCSSは論理プロパティです。
+
+## RTLと縦書きで同じCSSがどう振る舞うか
+
+右から左へ書く言語（RTL）のページでは、論理プロパティで書いたコンポーネントがそのまま適応します。`padding-inline-start` は右側の余白になり、`border-inline-start` は右端の線になります。物理プロパティで書いていれば、RTL用に左右を入れ替えるCSSを別に書く必要がありました。
+
+縦書きは事情が違います。縦書きのレイアウトは、デザインの都合で一部に使うことがほとんどで、文書全体の書字方向から自然に生じるものではありません。行の長さや文字の向きも変わるので、論理プロパティで書いていても、縦書きの箇所には専用のCSSが要ります。
+
+書字方向で値を変える必要があるときは、論理プロパティに加えて `:dir(rtl)` で分岐します。たとえば「→」の矢印は、文字の向きが変わっても左右反転しません。RTLのページでは、`scale: -1 1` で矢印を反転させます。`:dir()` は、要素自身の `dir` 属性だけでなく、祖先から受け継いだ書字方向でも一致します。
+
+```css title="🙆‍♂ Recommended: 書字方向で変えるものは :dir(rtl) で分岐する"
+@scope (.scoped.note) to (.scoped) {
+  a {
+    display: inline flex;
+    gap: 4px;
+    align-items: center;
+
+    &::after {
+      content: "→" / "";
+      display: inline flow-root;
+    }
+  }
+
+  a:dir(rtl)::after {
+    scale: -1 1;
+  }
+}
+```
+
+次のデモでは、同じCSSで書いた注記を、左から右への横書き、`dir="rtl"`、`writing-mode: vertical-rl` の3つの中に置いています。RTLでは線と矢印が右から左に向き、縦書きでは線が上に移り、`margin-inline: auto` が上下の中央寄せとして働きます。
+
+<Demo title="同じCSSで書いた注記を、3つの書字方向に置く" html={writingHtml} css={writingCss} />
+
+<Baseline id="logical-properties" name="論理プロパティ" />
+
+<Baseline id="dir-pseudo" name=":dir()" />
+
+## 補足と注意点
+
+論理的な配置の書き方は、今後も増えていきます。ブロックレイアウトの `justify-self` が使えるようになれば、ブロックの中央寄せは `max-inline-size` と `justify-self: center` で書けます。2026年9月時点の対応データでは、対応しているのはChromeとEdgeだけなので、今は `margin-inline: auto` を使います（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
+
+<Baseline id="justify-self-block" name="ブロックレイアウトの justify-self" />
+
+絶対配置の要素にも、`justify-self` と `place-self` が使えるようになりました。Chromeは122、Firefoxは134、Safariは26から対応していますが、本書が対象にするSafari 18系では使えません（2026年10月時点）。対象のブラウザがそろえば、`left: 50%` と `translate: -50%` で中央に置く書き方は使われなくなっていくはずです。今は、「[10-7 positionの基礎](/layout/positioning/)」で説明している `inset: 0` と `margin: auto` で中央に置きます。
+
+本書は論理プロパティを優先しますが、ほかのプロジェクトにそれを強制するつもりはありません。既存のプロジェクトが物理プロパティでそろっているなら、無理に混ぜず、そのプロジェクトの統一を優先します。本書の規約を採用したプロジェクトなら、物理プロパティはStylelintの警告で見つかるので、レビューで人が指摘する必要もありません。
+
+レビューで、`margin-inline` と `width` が同じルールに混ざっていることだけを理由に指摘するのは、筋違いです。混在しても表示の結果は変わらず、書いた人が理解すべき問題もそこにはありません。特に初学者のコードなら、`margin: 0 auto` の副作用や、固定の幅で内容があふれる問題のように、先に学ぶことがあります。指摘は、表示や保守に影響するものから順に行います。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS 論理的プロパティと値 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_logical_properties_and_values)
+- [:dir() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:dir)
+- [CSS Logical Properties and Values Level 1 - W3C](https://www.w3.org/TR/css-logical-1/)
+- [Tailwind CSS v4.0 - Tailwind CSS](https://tailwindcss.com/blog/tailwindcss-v4)
+- [margin-inline: auto を「左右のショートハンド」のように扱って良いと思っている](https://x.com/tak_dcxi/status/2026608930244407404)（X、2026年2月25日）

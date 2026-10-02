@@ -86,7 +86,7 @@
   level: 推奨
   rule: '数量クエリは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で書き、`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように子の側で数える形は使わない。'
   reason: 条件が「親が何個の子を持つか」という形で読め、1つのセレクタで親自身のレイアウトも子のスタイルも切り替えられるため。
-  note: 'ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。ルート要素の中に `<style>` を置く場合は、`<style>` も子要素として数えるので、`&:has(> li:only-of-type)` や `:nth-child(N of li)` で項目だけを数えます。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。'
+  note: 'ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。'
   aiProne: true
   page: pseudo/quantity-queries
   since: 0.9.0

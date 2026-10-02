@@ -69,7 +69,7 @@ sidebar:
 | `display: flex`、`display: inline-block` | `display: block flex`、`display: inline flow-root` | 本書の方針 | [`display-two-value-syntax`](/notation/modern-syntax/#rule-display-two-value-syntax) | AI |
 | `transform: translateX(4px) rotate(45deg)` | `translate: 4px 0` と `rotate: 45deg` | 本書の方針 | [`individual-transform-properties`](/notation/modern-syntax/#rule-individual-transform-properties) | AI |
 | `rgba(0, 0, 0, 0.5)` | `rgb(0 0 0 / 50%)` | 本書の方針 | [`no-rgba-hsla`](/notation/modern-syntax/#rule-no-rgba-hsla)、[`color-space-separated`](/notation/modern-syntax/#rule-color-space-separated) | AI |
-| `width`、`height`、`margin-top`、`top` | `inline-size`、`block-size`、`margin-block-start`、`inset-block-start` | 本書の方針 | [`logical-properties`](/notation/modern-syntax/#rule-logical-properties) | AI |
+| `width`、`height`、`margin-top`、`top` | `inline-size`、`block-size`、`margin-block-start`、`inset-block-start` | 本書の方針 | [`logical-properties`](/notation/logical-properties/#rule-logical-properties) | AI |
 | `margin: 0 auto` | `margin-inline: auto` | 挙動：周りのレイアウトが入れた上下の余白を0で打ち消す | [`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering) | AI |
 | `&__title`、`&--large` | `h2` や `._main-link` を同じ階層に並べ、バリエーションは `[data-variant="…"]` で表す | 挙動：素のCSSでは無効なセレクタになり、ルールごと無視される（Sassでは動く） | [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation) | AI |
 | `@media` を `@scope` やファイルの直下にまとめる | `@media` と `@container` を各セレクタの中に書く | 本書の方針 | [`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules) | AI |
@@ -144,6 +144,8 @@ sidebar:
 | `--color-primary-rgb` や `--color-primary-dark` のような派生色のトークン | `oklch(from var(--color--accent--500) l c h / 10%)` のように元の色から作る | 本書の方針 | [`derive-colors-from-base`](/color-media/relative-color/#rule-derive-colors-from-base)、[`relative-color-for-single-color`](/color-media/relative-color/#rule-relative-color-for-single-color) | AI |
 | コンポーネントごとの `@media (prefers-color-scheme: dark)` | セマンティクスのトークンに `light-dark()` で持たせる | 本書の方針 | [`light-dark-in-semantic-tokens`](/color-media/dark-mode/#rule-light-dark-in-semantic-tokens) | AI |
 | `border: none` | `border-color: transparent` | 挙動：強制カラーモードで背景色が消えると、ボタンなどの範囲が分からない | [`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none) | AI |
+| 背景の写真を `background-image: url()` と `background-size: cover` で敷く | `object-fit: cover` の `<img>` を本文と同じグリッドのエリアに置く | 挙動：LCPの候補の写真が、スタイルシートを適用するまで見つからず表示が遅れる | [`img-over-background-image`](/decoration/images-and-decoration/#rule-img-over-background-image) | AI |
+| `<img>` に `decoding="async"` を付ける | `decoding` を書かず、デフォルトの `auto` に任せる | 挙動：キャッシュから読み込むと、画像だけがあとから現れて画面がちらつく | [`no-decoding-async`](/decoration/images-and-decoration/#rule-no-decoding-async) | AI |
 | `-webkit-text-stroke` だけで縁取り、文字が細くなる | `paint-order: stroke fill` で縁取りを塗りの下に置く | 挙動：線の内側の半分が塗りを覆い、文字が細くなる | [`text-stroke-paint-order`](/decoration/images-and-decoration/#rule-text-stroke-paint-order) |  |
 
 ## インタラクションとモーション

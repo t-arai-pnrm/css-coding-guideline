@@ -1,6 +1,6 @@
 ---
 title: "15-1 画像と装飾"
-description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選びます。すりガラスの背景、番号付きリストのマーカー、文字の縁取りも扱います。"
+description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。srcset と sizes はツールで確かめ、背景の写真も img で置きます。アイコンは currentColor で文字色に合わせます。図形は clip-path やマスクで描き、影と角丸はトークンから選びます。すりガラスの背景、番号付きリストのマーカー、文字の縁取りも扱います。"
 sidebar:
   order: 1
 ---
@@ -169,6 +169,52 @@ img {
 
 背景色は、画像の平均的な色ではなく、文字色とのコントラストが取れる色にします。このコード例では、白い文字に対して暗いグレーを敷いています。画像と本文は同じグリッドのエリアに重ね、画像の高さは前の項目と同じ方法で本文に合わせています。
 
+## 背景の写真も `<img>` で置く
+
+前の項目のヒーローのように写真を背景に敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を背景に置きます。`background-image` を使うのは、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に限ります。
+
+```css title="🙅‍♂ Not Recommended: 背景の写真を background-image で敷く"
+/* 🙅‍♂ Not Recommended */
+._hero {
+  background-image: url("hero.avif");
+  background-position: center;
+  background-size: cover;
+}
+```
+
+`<img>` にする理由は4つあります。1つ目は、`<picture>` や `srcset` と `sizes` で、画面の幅や解像度に合った画像を読み込めることです。`background-image` でも `image-set()` で解像度ごとの候補は書けますが、画像がレイアウトの中で表示される幅をブラウザに伝える手段はありません。2つ目は、画像だけを加工しやすいことです。背景画像の要素に指定した `opacity` や `filter` は中の文字にも及ぶので、画像だけを薄くするには擬似要素を足すことになります。`<img>` なら、画像に直接指定できます。
+
+3つ目は、`alt` 属性で画像の意味を伝えられることです。内容を伝える写真には代替テキストを書き、装飾なら `alt=""` にして読み上げから外します。背景画像には代替テキストを付ける手段がありません。4つ目は、読み込みの早さです。ブラウザのプリロードスキャナーは、HTMLを解析する段階で `<img>` を見つけて先に要求しますが、CSSの中の `background-image` は対象外で、スタイルシートを読み込んで適用するまで見つかりません。その画像がLCPの候補なら、見つかるまでの分だけ表示が遅れます。
+
+```html title="🙆‍♂ Recommended: 背景の写真を、本文と同じエリアに重ねる img で置く"
+<div class="scoped hero-header">
+  <img
+    src="hero-800.avif"
+    srcset="hero-800.avif 800w, hero-1600.avif 1600w"
+    sizes="100vw"
+    width="1600"
+    height="900"
+    alt=""
+    fetchpriority="high"
+  />
+  <div class="_body">
+    <!-- ... -->
+  </div>
+</div>
+```
+
+背景の `<img>` は絶対配置にせず、前の項目のコード例のように、本文と同じグリッドのエリアに置きます。重ねるだけの入れ物なら、コンポジションの「[11-9 pile](/compositions/pile/)」（すべての子を同じセルに重ねる）を使えます。どちらも、本文が増えれば枠が伸び、画像はその高さに合わせて `cover` で切り取られます。画像をHTMLで先に書けば、`z-index` を使わなくても本文が手前に描かれます。
+
+```css title="🙆‍♂ Recommended: 敷き詰めるパターンは background-image で描く"
+._section {
+  background-image: url("dots.svg");
+  background-size: 24px;
+  background-repeat: repeat;
+}
+```
+
+単色やグラデーションだけの背景は、画像のファイルを読み込まず、意味も持たないので、`background-image` で足ります。パターン画像も、内容を伝えず、表示される幅に合わせて出し分ける必要がないので、`<img>` にする利点がありません。やむを得ずLCPの候補の写真を `background-image` で敷く場合は、`<link rel="preload">` でその画像を先に読み込ませます。
+
 ## レスポンシブ画像
 
 画面の幅や解像度に合わせて、大きさの違う画像を出し分けるには、`srcset` と `sizes` の属性を使います。`srcset` には画像の候補とその幅を、`sizes` には画像がレイアウトの中で表示される幅を書きます。ブラウザは、表示される幅と画面の解像度から、ちょうどよい候補を選んで読み込みます。
@@ -205,6 +251,8 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 装飾のための画像や、隣の見出しと同じ内容を表すだけの画像には、`alt=""` を指定します。カードのサムネイルのように、見出しのリンクと同じ内容を繰り返す画像がその例です。意味のある画像には、内容が伝わる代替テキストを書きます。
 
 なお、遅延読み込みの画像で `sizes` を自動で決める `sizes="auto"` は、Safariが対応していません（2026年9月確認）。
+
+`<img>` には `decoding="async"` を指定せず、デフォルトの `auto` に任せます。`decoding` は、画像のデコードをほかの内容の表示とそろえるか（`sync`）、待たずにほかの内容を表示するか（`async`）を伝えるヒントで、`auto` ならブラウザが選びます。Kiteの検証（2023年7月、Chrome 115）では、キャッシュのない通常の読み込みで、`sync` と `async` に目立った性能の差はありませんでした。一方、キャッシュがある状態で `async` を指定すると、画像以外が先に表示され、画像があとから現れるので、画面がちらつきます。
 
 ## 図形は clip-path とマスクで描く
 
@@ -502,6 +550,10 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 - [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月）
 - [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
 - [RespImageLint](https://ausi.github.io/respimagelint/)
+- [背景に写真を敷くときは background-image ではなく img を使う、という投稿](https://x.com/tak_dcxi/status/1437975403746922497)（TAK、X、2021年9月）
+- [Don't fight the browser preload scanner](https://web.dev/articles/preload-scanner)（web.dev。プリロードスキャナーはCSSの `background-image` を見つけない）
+- [decoding="async" について詳しく調べてみる](https://zenn.dev/ixkaito/articles/deep-dive-into-decoding)（Kite、Zenn、2023年7月）
+- [HTML Standard: decoding 属性](https://html.spec.whatwg.org/multipage/images.html#decoding-images)（WHATWG）
 - [Lazy loading - Performance | MDN](https://developer.mozilla.org/ja/docs/Web/Performance/Guides/Lazy_loading)
 - [Designing Beautiful Shadows in CSS](https://www.joshwcomeau.com/css/designing-shadows/)（Josh W. Comeau。光源、高さと影の関係、背景の色相に寄せた影。記事のダークモードの扱いは本書と異なります）
 - [Next-level frosted glass with backdrop-filter](https://www.joshwcomeau.com/css/backdrop-filter/)（Josh W. Comeau。記事は `-webkit-` の併記を勧めますが、本書は接頭辞なしで書きます）
