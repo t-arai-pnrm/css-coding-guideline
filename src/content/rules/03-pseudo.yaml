@@ -150,7 +150,7 @@
 - id: popover-open-for-popover
   level: 必須
   rule: '`popover` 属性の要素の表示中の状態は `:popover-open` で選び、`[open]`、`:open`、`.is-open` のようなクラスで選ばない。'
-  reason: 'ポップオーバーには `open` 属性が付かず、`:open` も当てはまらないので、表示中かどうかをブラウザの状態のまま参照できるのは `:popover-open` だけだため。'
+  reason: 'ポップオーバーには `open` 属性が付かず、`:open` も当てはまらないので、表示中かどうかをブラウザの状態のまま参照できるのは `:popover-open` だけであるため。'
   note: '閉じた状態は `:not(:popover-open)` で選びます。開くボタンの見た目を変えるときは、`&:has(+ :popover-open)` のように、ボタンから見た位置を結合子で絞ります。'
   aiProne: true
   page: pseudo/open-states

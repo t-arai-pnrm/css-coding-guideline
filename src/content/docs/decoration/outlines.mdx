@@ -135,7 +135,7 @@ import Guideline from '../../../components/Guideline.astro';
     --_border-width: 16px;
     --_foreground: var(--donut-chart--foreground, var(--color--accent--500));
 
-    container-type: inline-size;
+    container: --donut-chart / inline-size;
     display: block grid;
     aspect-ratio: 1;
     color: var(--_foreground);
@@ -167,7 +167,7 @@ import Guideline from '../../../components/Guideline.astro';
     }
 
     &::after {
-      content: counter(--value) "%";
+      content: counter(--value) "%" / "";
       place-self: center;
       padding: var(--_border-width);
       counter-reset: --value calc(var(--count-up--value) / 1%);
@@ -179,7 +179,17 @@ import Guideline from '../../../components/Guideline.astro';
 }
 ```
 
-値は、HTMLの `style` 属性で `--donut-chart--value: 40%` のように渡します。`min()` で上限を100%にしているので、100%を超える値が渡っても、輪が1周を超えて塗られることはありません。グラフの色は `--donut-chart--foreground` で変えられ、輪と中心の数値が同じ色になります。
+値は、HTMLの `style` 属性で `--donut-chart--value: 40%` のように渡します。割合の数値そのものは、HTMLにも書きます。
+
+```html title="割合をHTMLに書き、CSSには描画用の値を渡す"
+<div class="scoped donut-chart" style="--donut-chart--value: 40%">
+  <span class="-visually-hidden">40%</span>
+</div>
+```
+
+割合は、読み手が知る必要のある情報です。生成コンテンツだけで表示すると、コピーやページ内検索、機械翻訳の対象にならず、CSSが読み込まれない環境では数値が消えます（「[3-7 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/#rule-no-meaningful-generated-content)」）。そこで、数値はHTMLの `span` に書いて `.-visually-hidden` で視覚的に隠し、中心で数え上げる `::after` の数値は、`content` の代替テキストを空にして装飾として扱います。読み上げではHTMLの「40%」だけが伝わり、数え上げの途中の値は読まれません。
+
+`min()` で上限を100%にしているので、100%を超える値が渡っても、輪が1周を超えて塗られることはありません。グラフの色は `--donut-chart--foreground` で変えられ、輪と中心の数値が同じ色になります。
 
 `::before` が輪です。透明な枠線を付け、`padding-box` と `border-box` に切り抜いた2枚のマスクを `exclude` で合成すると、2枚の重なる内側は消え、枠線の部分だけが残ります。そこに枠線の外側から（`background-origin: border-box`）`conic-gradient()` を敷くので、枠線の太さがそのまま輪の太さになります。マスクの画像は塗りつぶされていれば何でもよく、`conic-gradient(#000 0 0)` は単色の画像を短く書くための指定です。`#000` の色は表示されません。
 

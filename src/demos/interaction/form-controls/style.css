@@ -92,6 +92,13 @@
       flex-grow: 1;
     }
 
+    /* 強制カラーモードでは、背景色で描いたつまみが消えるので、システムカラーで描く */
+    ._switch::after {
+      @media (forced-colors: active) {
+        background-color: CanvasText;
+      }
+    }
+
     ._switch::before {
       @media (prefers-reduced-motion: no-preference) {
         transition-duration: var(--duration--fast);
