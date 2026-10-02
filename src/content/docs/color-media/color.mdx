@@ -1,6 +1,6 @@
 ---
-title: "11-1 色とダークモード"
-description: "色は oklch() で定義し、透過させた色や明度を変えた色は、元の色から相対カラー構文や color-mix() で作ります。ダークモードは light-dark() のトークンと、meta 要素の color-scheme で切り替えます。"
+title: "11-1 色の形式と色空間"
+description: "色は oklch() で定義します。16進数、rgb()、hsl() は sRGB の範囲に限られ、明度が見た目の明るさと一致しません。oklch() は明度が知覚に近く、広色域の画面の色も表せます。グラデーションには、補間の色空間を書きます。"
 sidebar:
   order: 1
 ---
@@ -8,43 +8,28 @@ sidebar:
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
-import themeHtml from '../../../demos/color-media/theme-tokens/index.html?raw';
-import themeCss from '../../../demos/color-media/theme-tokens/style.css?raw';
+import gradientHtml from '../../../demos/color-media/gradient-interpolation/index.html?raw';
+import gradientCss from '../../../demos/color-media/gradient-interpolation/style.css?raw';
 
-色は `oklch()` で定義し、透過させた色や明度を変えた色は、元の色から相対カラー構文や `color-mix()` で作ります。派生させた色のためにトークンやRGBの値を増やさないので、元の色を1か所直せば、そこから作った色もすべて追従します。
+色は `oklch()` で定義します。`oklch()` は明度、彩度、色相の3つの値で色を表し、明度が見た目の明るさに近くなるように作られています。値から色の性質を読み取れ、色相を変えても明度をそろえれば同じくらいの明るさに見えるので、段階的なパレットを組み立てやすくなります。
 
-ダークモードに対応するときは、セマンティクスのトークンの値を `light-dark()` で書き、`<meta name="color-scheme">` で両方の配色に対応することを宣言します。配色の切り替えはトークンの側で済ませ、コンポーネントには書きません。サイトの中でテーマを選べるようにする場合も、このメタ要素の `content` を書き換えるだけで済みます。
+16進数、`rgb()`、`hsl()` は、どれもsRGBという色空間の色を表す書き方です。sRGBの外にある、広色域の画面でしか表示できない鮮やかな色は表せません。グラデーションも、どの色空間で中間の色を作るかによって見え方が変わるので、補間の色空間を書きます。
 
 <Baseline id="oklab" name="oklch() と oklab()" />
 
-## 16進数の色で起きること
+## 16進数と hsl() で色を管理すると起きること
 
-色を16進数で指定してトークンにまとめたCSSを考えます。ボタンの背景を少し透過させたいときや、少し暗い色がほしいときに困ります。16進数のトークンからは不透明度を変えられないので、RGBの値を別のトークンとして用意することになります。
+16進数の `#e4a153` は、赤、緑、青の3つのチャンネルの強さを、それぞれ0から255までの値で書いたものです。`rgb(228 161 83)` と同じ色で、画面が発する光の量をそのまま指定しています。光の量としては正確ですが、値を見ても、どのくらい明るい色なのか、どの色相に近いのかは読み取れません。デザインの調整で「もう少し暗く」と頼まれても、3つの値をどう変えればよいかが分からず、カラーピッカーで選び直すことになります。
 
-```css title="🙅‍♂ Not Recommended: 透過させるためだけに RGB の値を別に持つ"
-/* 🙅‍♂ Not Recommended */
-:root {
-  --color-primary: #e4a153;
-  --color-primary-rgb: 228 161 83;
-  --color-primary-dark: #c9853a;
-}
+`hsl()` は、色相、彩度、明度で色を表します。色相を色相環の角度で、彩度と明度を割合で書くので、16進数より直感的に扱えます。しかし、HSLの明度は、人の目に見える明るさと一致しません。同じ明度50%でも、黄色は明るく、青は暗く見えます。色相だけを変えて段階をそろえたつもりでも、明るさがばらつきます。
 
-.button--ghost {
-  background-color: rgb(var(--color-primary-rgb) / 20%);
-}
+デザインツールから受け取る値にも注意が要ります。多くのデザインツールは、HSLではなくHSB（色相、彩度、明るさ）で色を表示します。HSBの明るさとHSLの明度は別の尺度なので、数値をそのまま `hsl()` に書き写すと、違う色になります。
 
-.button--strong {
-  background-color: var(--color-primary-dark);
-}
-```
-
-このコードでは、1つの色を表すトークンが3つあります。ブランドの色を変えるときは3つとも書き換える必要があり、1つでも直し忘れると、元の色と派生させた色がずれます。`--color-primary-dark` のような「少し暗い色」は誰かが目で見て選んだ値で、元の色との関係がコードに残っていません。
-
-HSLで書けば明るさを数値で調整できるように見えますが、HSLの明度は、人の目に見える明るさと一致しません。同じ明度50%でも、黄色は明るく、青は暗く見えます。色相を変えただけで明るさがそろわなくなるので、段階的なパレットを作るのには向きません。
+このほかに、`white` のような色の名前と、`#00000080` のような不透明度付きの16進数もあります。本書のStylelintの設定では、どちらも禁止しています（「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」）。
 
 ## oklch() で色を定義する
 
-色は `oklch()` で定義します。`oklch()` は、明度（L）、彩度（C）、色相（H）の3つの値で色を表します。明度は見た目の明るさに近くなるように設計されているので、色相が違っても、明度が同じならおおむね同じ明るさに見えます。
+`oklch()` は、明度（L）、彩度（C）、色相（H）の3つの値で色を表します。明度は0%から100%、彩度は0から始まる数値、色相は角度です。明度が見た目の明るさに近くなるように設計されているので、色相が違っても、明度が同じならおおむね同じ明るさに見えます。
 
 ```css title="🙆‍♂ Recommended: 明度の段階を oklch() でそろえる"
 :root {
@@ -61,100 +46,21 @@ HSLで書けば明るさを数値で調整できるように見えますが、HS
 
 `oklch()` を選ぶいちばんの理由は、値がそのまま色の性質を表していることです。`#c9853a` という値を見ても、元の色より暗いのかどうかは分かりません。`oklch(52% 0.16 250deg)` なら明度52%の青だと読み取れ、「もう少し明るく」という調整も明度の数値を上げるだけです。
 
-彩度の上限は色相と明度によって変わり、画面で表示できる範囲を超えた値も指定できます。範囲を超えた色は、ブラウザが表示できる色に置き換えて描画します。デザインツールから受け取った色を変換するときは、彩度が上がりすぎていないかを確かめてください。
+似た書き方に `lch()` があります。`lch()` はCIE Labという色空間をもとにしていますが、青の領域では、彩度や明度を変えると色相が紫の側にずれる問題が知られています。`oklch()` のもとになったOklabは、この問題を改善する目的で2020年に作られた色空間です。本書は `lch()` ではなく `oklch()` を使います。
 
-表示できる範囲は、画面によって違います。Display P3のような広色域のディスプレイは、sRGBより鮮やかな色を表示できます。`oklch()` は値にsRGBの上限がないので、同じ値でも、広色域の画面ではより鮮やかに、sRGBの画面では置き換えられた色で表示されます。`hsl()` や16進数はsRGBの範囲に限られ、広色域の画面でもその範囲を超えません。`color(display-p3 …)` でも広色域の色を指定できます。sRGBを超える彩度を使うかどうかは、デザイナーと合意して決めます。本書は、`hsl()` ではなく `oklch()` を使います。明度の知覚がそろうことに加えて、広色域の画面にも対応できるからです。
+色の関数をスペースで区切ることや、色相に `deg` を付けることは、「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。色のトークンをプリミティブとセマンティクスの2層で持つ設計は、「[7-4 デザイントークン](/components/design-tokens/)」で扱います。
 
-色の関数をスペースで区切ることや、色相に `deg` を付けることは、「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。色のトークンをプリミティブとセマンティクスの2層で持つ設計は、「[7-3 デザイントークン](/components/design-tokens/)」で扱います。
+## 色空間と広色域
 
-## 相対カラー構文で派生色を作る
+色空間は、画面で表せる色の範囲と、その中の色の表し方を決めたものです。ウェブで長く使われてきたsRGBは、人の目に見える色のうち、一部しか表せません。最近のスマートフォンやノートパソコンの多くは、Display P3という、sRGBより広い色空間の色を表示できます。
 
-透過させた色や明度を変えた色は、元の色から相対カラー構文で作ります。`oklch(from 元の色 l c h)` と書くと、元の色を分解した明度・彩度・色相の値が `l`、`c`、`h` に入ります。変えたい値だけを書き換えれば、ほかの値は元の色のままです。
+16進数、`rgb()`、`hsl()` は、sRGBの色しか表せません。値の上限がsRGBの範囲に合わせて決まっているからです。広色域の画面でも、これらで書いた色はsRGBの範囲を超えません。
 
-```css title="🙆‍♂ Recommended: 元の色から、不透明度や明度を変えた色を作る"
-._divider {
-  border-block-end: 1px solid oklch(from var(--color--accent--500) l c h / 10%);
-}
+`oklch()` の彩度には上限がないので、sRGBの外の色も書けます。同じ値でも、広色域の画面ではより鮮やかに表示され、sRGBの画面ではブラウザが表示できる色に置き換えて描画します。Display P3の色空間の値を直接書くときは、`color(display-p3 1 0.5 0)` のように `color()` 関数を使います。`color()` の各チャンネルは、0から255ではなく0から1の数値で書きます。
 
-._tag {
-  background-color: oklch(from var(--color--accent--500) calc(l - 0.15) c h);
-}
-```
+<Baseline id="color-function" name="color()" />
 
-1つ目は、アクセントカラーの不透明度を10%にした区切り線です。2つ目は、明度だけを0.15下げた、少し暗いアクセントカラーです。どちらも元の色のトークンを参照しているので、アクセントカラーを変えれば、区切り線とタグの色も一緒に変わります。
-
-相対カラー構文の中の `l` は、パーセントではなく0から1までの数値として扱われます。計算するときは、`calc(l - 0.15)` のように数値で書きます（2026年9月、Chrome 153で確認）。
-
-<Baseline id="relative-color" name="相対カラー構文" />
-
-Safariが対応したのはバージョン18なので、本書の対象のブラウザ（Safari 18系の最終版以降）では問題なく使えます（2026年9月確認）。
-
-不透明度だけを変える場合は、`alpha()` 関数でも書けます。`alpha(from var(--color--accent--500) / 10%)` は `oklch(from var(--color--accent--500) l c h / 10%)` と同じ色です。成分をそのまま並べる `l c h` を省けます。相対カラー構文の結果は `oklch()` の色空間になりますが、`alpha()` の結果は元の色の色空間のままです（2026年10月、Chrome 152で確認）。
-
-`alpha()` が主要なブラウザで使えるようになったのは2026年9月で、Safariは27から対応しています。本書の対象のブラウザでは使えないので、当面は相対カラー構文で書きます（2026年10月確認）。
-
-<Baseline id="alpha" name="alpha()" />
-
-### 1つの色から配色を組み立てる
-
-相対カラー構文と `sign()` を組み合わせると、ある色の明度から、その色と対比する黒か白を自動で選べます。これを使うと、トーストのように色のバリエーションを持つコンポーネントでも、バリエーションごとに書き換える色を1つにできます。
-
-```css title="🙆‍♂ Recommended: 文字色だけを受け取り、背景色は文字色から作る"
-@scope (.scoped.toast) to (.scoped) {
-  :scope {
-    --_foreground: var(--toast--foreground, var(--foreground--base));
-    --_contrast-color: oklch(from var(--_foreground) sign(0.6 - l) 0 0deg);
-
-    padding: 1em;
-    border: 1px solid;
-    border-radius: 4px;
-    background-color: color-mix(in oklab, var(--_foreground), var(--_contrast-color) 90%);
-    color: var(--_foreground);
-
-    &[data-variant="success"] {
-      --_foreground: var(--color--accent--600);
-    }
-
-    &[data-variant="error"] {
-      --_foreground: var(--color--error--600);
-    }
-  }
-}
-```
-
-`--_contrast-color` が、文字色と対比する黒か白です。`sign()` は、中の値が正なら1を、負なら-1を、0なら0を返す関数です。文字色の明度が0.6より低いと明度が1になり、白になります。0.6以上なら明度は0以下になり、0に切り詰められて黒になります。背景色は、その黒か白に文字色を10%だけ混ぜて作ります。枠線は `currentColor` なので文字色と同じです。
-
-バリエーションのルールでは、`--_foreground` だけを書き換えます。文字、枠線、背景の3色がすべて `--_foreground` から決まるので、色を1つ選べばバリエーションが1つ増えます。暗い文字色なら淡い背景に、明るい文字色なら暗い背景になるので、ダークモードで明るい段階の色を渡しても、文字と背景の明暗が逆転することはありません。同じ式は、背景色から文字色を選ぶときにも使えます。`color: oklch(from var(--_background) sign(0.6 - l) 0 0deg)` と書けば、背景の明度に合わせて文字が黒か白になります。
-
-閾値は、白と黒のうちコントラスト比の高いほうが選ばれる値にします。無彩色の場合、ある色と白、ある色と黒のコントラスト比が等しくなるのは、明度0.56あたりです。閾値を0.7にすると、明度0.6から0.7の色が白の側に振り分けられ、コントラスト比が通常の大きさの文字の基準（4.5:1）を下回ります（明度0.7では白に対して約2.7:1）。0.6でも境目のすぐ近くの色では基準にわずかに届かないことがあり、トーストのように背景に文字色を混ぜるとコントラスト比はさらに下がるので、最後は実際の組み合わせで確かめます。コントラストの確認は「[11-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で扱います。
-
-背景色から文字色を決める `contrast-color()` という関数もありますが、Safariが対応したのはバージョン26で、本書の対象のブラウザでは使えません（2026年9月確認）。`sign()` は、2025年6月にすべての主要なブラウザで使えるようになりました。なお、`sign()` を相対カラー構文の中で使う書き方は、Chrome 153でだけ確認しています。
-
-## color-mix() で2つの色を混ぜる
-
-`color-mix()` は、2つの色を指定した割合で混ぜる関数です。相対カラー構文が1つの色の成分を書き換えるのに対して、`color-mix()` は2つの色の間の色を作ります。背景色と文字色を少しだけ混ぜた枠線や、`currentColor` を半透明にした下線のように、2つの色の関係で決まる色に向いています。
-
-```css title="🙆‍♂ Recommended: 2つの色の間の色を作る"
-._card {
-  border: 1px solid color-mix(in oklab, var(--background--base), var(--foreground--base) 15%);
-}
-
-._link {
-  text-decoration-color: color-mix(in oklab, currentColor 60%, transparent);
-}
-```
-
-1つ目は、背景色に文字色を15%混ぜた枠線の色です。ライトモードでは背景より少し暗く、ダークモードでは少し明るい線になり、どちらの配色でも背景からわずかに浮きます。2つ目は、文字色に透明を混ぜて、不透明度を60%にした下線の色です。`currentColor` の不透明度を変えたいときも、`transparent` と混ぜれば簡単に書けます。
-
-補間の色空間には `oklab` を指定します。以前の私は `in srgb` と書いていましたが、いまのテンプレートでは `in oklab` にそろえています。`srgb` で混ぜると、中間の色がくすんで見えることがあります。
-
-ホバーのときに背景色を少し暗くしたい場合も、`opacity` を下げるのではなく、`color-mix()` で黒を混ぜます。`opacity` を下げると、文字まで一緒に透けてしまうからです。ホバーの表し方は「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明します。
-
-### 相対カラー構文と color-mix() の使い分け
-
-同じ色をどちらでも作れる場面は多くあります。不透明度が10%の色なら、`oklch(from X l c h / 10%)` と `color-mix(in oklab, X 10%, transparent)` のどちらの書き方でも作れます。
-
-私は、1つの色の成分を変えるときは相対カラー構文を、2つの色の間を取るときは `color-mix()` を使います。「アクセントカラーの薄い版」は元の色が1つなので相対カラー構文で、「背景と文字の中間」は2つの色が要るので `color-mix()` で書きます。使い分けを決めておくと、コードを読むときに、その色が1つの色から作ったものか、2つの色の間を取ったものかが書き方から分かります。
+表示できる範囲を超えた色は、ブラウザが近い色に置き換えます。この置き換えをガマットマッピングといいます。置き換えたあとの色はブラウザが決めるので、デザインツールで見た色と画面の色が違って見えることがあります。デザインツールから受け取った色を `oklch()` に変換したら、彩度が上がりすぎていないかを確かめます。sRGBを超える彩度を使うかどうかは、デザイナーと合意して決めます。
 
 ## グラデーションは補間の色空間を指定する
 
@@ -169,127 +75,29 @@ Safariが対応したのはバージョン18なので、本書の対象のブラ
 }
 ```
 
-`oklch` のような極座標の色空間では、色相の補間の経路が2通りあります。`shorter hue` が初期値で、色相環の短いほうを通ります。長いほうを通したいときは `in oklch longer hue` と書きます。`color-mix()` で使っている `oklab` は、色相ではなく明度と2つの色の軸で補間するので、色相の経路を選ぶ必要がありません。ただし、色相が離れた2色では、中間の彩度が下がることもあります。グラデーションには彩度を保ちやすい `oklch` を勧めます。中間のくすみを気にしない組み合わせなら、`oklab` でも構いません。
+`oklch` のような極座標の色空間では、色相の補間の経路が2通りあります。`shorter hue` が初期値で、色相環の短いほうを通ります。長いほうを通したいときは `in oklch longer hue` と書きます。`color-mix()` で使う `oklab` は、色相ではなく明度と2つの色の軸で補間するので、色相の経路を選ぶ必要がありません。ただし、色相が離れた2色では、中間の彩度が下がることもあります。グラデーションには彩度を保ちやすい `oklch` を勧めます。中間のくすみを気にしない組み合わせなら、`oklab` でも構いません。
 
 色空間の指定に対応していないブラウザは、この宣言を丸ごと無視します。上の例のように `background-color` を用意しておけば、背景が何も表示されない状態を避けられます。
 
 <Baseline id="gradient-interpolation" />
 
-## light-dark() でダークモードに対応する
-
-ダークモードの色は、セマンティクスのトークンに `light-dark()` で両方の値を持たせます。`light-dark(ライトの色, ダークの色)` と書くと、要素に適用されている配色に合わせて、どちらか一方の値になります。
-
-```css title="🙆‍♂ Recommended: セマンティクスのトークンに、両方の配色の値を持たせる"
-:root {
-  --background--base: light-dark(var(--color--neutral--100), var(--color--neutral--900));
-  --background--surface: light-dark(var(--color--neutral--200), var(--color--neutral--800));
-  --foreground--base: light-dark(var(--color--neutral--950), var(--color--neutral--50));
-  --foreground--muted: light-dark(var(--color--neutral--600), var(--color--neutral--400));
-  --border--base: light-dark(var(--color--neutral--300), var(--color--neutral--700));
-}
-```
-
-コンポーネントは、これらのセマンティクスのトークンを参照するだけです。配色による切り替えはトークンの側で済んでいるので、コンポーネントに `prefers-color-scheme` のメディアクエリを書く必要はありません。ダークモードの色を調整するときも、見直すのはトークンの定義だけです。
-
-```css title="🙅‍♂ Not Recommended: コンポーネントごとにダークモードの色を書く"
-/* 🙅‍♂ Not Recommended */
-._card {
-  background-color: var(--color--neutral--100);
-  color: var(--color--neutral--950);
-
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--color--neutral--900);
-    color: var(--color--neutral--50);
-  }
-}
-```
-
-コンポーネントごとにメディアクエリを書くと、ダークモードの色がサイトのあちこちに散らばります。ダーク用の値を書き忘れたコンポーネントだけが明るいまま残る、といった不具合も起きがちです。AIにダークモードへの対応を頼むと、この形のコードが出てくることが多いので注意してください。
-
-### meta 要素で配色を宣言する
-
-`light-dark()` を使うには、ページが両方の配色に対応していることを宣言する必要があります。宣言がないと、OSがダークモードでも `light-dark()` は常にライトの値になります（2026年9月、Chrome 153で確認）。私のテンプレートでは、CSSの `color-scheme` プロパティではなく、HTMLのメタ要素で宣言しています。
-
-```html
-<meta name="color-scheme" content="light dark" />
-```
-
-メタ要素で宣言すると、スクロールバーやフォームの部品といったブラウザの部品も、ページと同じ配色で描画されます。CSSを読み込む前から配色が決まるので、読み込みの途中で背景が白く光ることも防げます。
-
-反対に、ダークモードに対応していないサイトでは、この宣言を書きません。色を指定していない部分だけが暗い配色になり、文字を読めなくなることがあるからです。詳しくは「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
-
-<Baseline id="light-dark" />
-
-`light-dark()` が受け取れるのは色だけです。画像を配色で切り替える書き方がすべての主要なブラウザで使えるようになったのは、Safari 27が出た2026年9月です。本書の対象のブラウザではまだ使えません（2026年9月確認）。
-
 ## コード例とデモ
 
-次のデモでは、同じカードをライトとダークの2つの配色で並べています。比べやすいように要素ごとに `color-scheme` を指定していますが、実際のサイトではメタ要素が配色を決めます。
+次のデモでは、同じ黄色と青を、3つの色空間で補間しています。1本目の `in srgb` は、16進数や `rgb()` の色だけをつないだときの既定と同じ補間です。
 
-<Demo title="同じトークンから、ライトとダークの配色を作る" html={themeHtml} css={themeCss} />
+<Demo title="同じ2色を、sRGB、Oklab、Oklch で補間したグラデーション" html={gradientHtml} css={gradientCss} variant="neutral" />
 
-カードの側では、配色を一切切り替えていません。枠線は文字色から相対カラー構文で、背景は `color-mix()` で作っています。ボタンの文字色は、背景の明度から `sign()` で決めています。ダークの配色ではアクセントカラーが明るい段階に替わるので、ボタンの文字は黒になります。
+`in srgb` の帯は、中央が灰色に近くなります。sRGBでは赤、緑、青のチャンネルを別々に補間するので、黄色と青の中間で3つのチャンネルが近い値になり、彩度が失われるからです。`in oklab` では中央のくすみが和らぎ、`in oklch` では色相環を回るので、緑を通って彩度を保ったまま青に変わります。
 
-## テーマを手動で切り替える
+デモの3本は、どれも `oklch()` で書いた同じ2色をつないでいます。色の書き方は同じでも、補間の色空間を変えると中間の色も変わります。
 
-OSの設定とは別に、サイトの中でテーマを選べるようにする場合も、メタ要素の `content` を書き換えます。私のテンプレートでは「ライト」「ダーク」「OSの設定に合わせる」の3つを選べるようにし、それぞれ `light only`、`dark only`、`light dark` を設定しています。選んだ値はlocalStorageに保存し、次にページを開いたときに読み戻します。
+## 色の形式を選ぶときの注意
 
-```html
-<meta name="color-scheme" content="light dark" />
-<script>
-  (() => {
-    try {
-      const stored = localStorage.getItem('color-scheme');
-      const meta = document.querySelector('meta[name="color-scheme"]');
-      if (stored && meta) meta.content = stored;
-    } catch {
-      // Cookie を無効にしている環境では、localStorage にアクセスすると例外が発生する
-    }
-  })();
-</script>
-```
+`oklch()` の彩度の上限は、色相と明度によって変わります。明度が0%や100%に近い色は、彩度を上げても鮮やかになりません。範囲を超えた値を書いてもエラーにはならず、ブラウザが表示できる色に置き換えるだけなので、値が範囲内かどうかはコードからは分かりません。カラーピッカーなどのツールで、sRGBとDisplay P3の範囲を確かめながら値を決めます。
 
-このスクリプトは `<head>` の中に直接書き、ページの描画より前に実行します。外部のファイルにして後から読み込むと、保存したテーマに切り替わるまでの一瞬、OSの配色で表示されてしまいます。localStorageは、Cookieを無効にしている環境では例外を投げるので、必ず `try` で囲みます。
+既存のサイトで16進数の色を使っているなら、トークンの定義から `oklch()` に書き換えます。値の変換はツールで行い、変換した値の小数点以下は、見た目が変わらない範囲で丸めます。コンポーネントに直接書かれた16進数の色も、セマンティクスのトークンに置き換えます。{/* 要確認: 出典なし */}
 
-JavaScriptが無効な環境では、スクリプトが動かないので、メタ要素の元の値（`light dark`）のまま、OSの設定に従って表示されます。読み出しの失敗も同じ結果になります。
-
-`only` を付けた値は、ページがその配色にしか対応していないことを表します。ブラウザが独自にページを暗くする機能を持っていても、`only` があれば、ページの配色はそのまま保たれます。
-
-以前の私は、`<html>` の `data-theme` 属性とメタ要素の両方を書き換えていました。いまはメタ要素だけを書き換え、色はすべて `light-dark()` に任せています。CSSの側でテーマの属性を参照しないので、切り替えの仕組みが1か所にまとまります。
-
-### 色以外のスタイルを配色で変える
-
-画像の明るさや影の強さのように、色以外のスタイルを配色で変えたい場合もあります。テンプレートでは、メタ要素の値から `--color-scheme` というカスタムプロパティを決めておき、スタイルクエリで分岐できるようにしています。
-
-```css title="🙆‍♂ Recommended: meta 要素の値から、いまの配色をカスタムプロパティにする"
-:root {
-  &:has(meta[name="color-scheme"][content="light only"]) {
-    --color-scheme: --light;
-  }
-
-  &:has(meta[name="color-scheme"][content="dark only"]) {
-    --color-scheme: --dark;
-  }
-
-  &:has(meta[name="color-scheme"][content="light dark"]) {
-    --color-scheme: --light;
-
-    @media (prefers-color-scheme: dark) {
-      --color-scheme: --dark;
-    }
-  }
-}
-```
-
-使う側では、`@container style(--color-scheme: --dark)` のように条件を書きます。値を `--` で始めるのは、自分で付けた名前だと分かるようにするためです。スタイルクエリは2026年5月にすべての主要なブラウザで使えるようになったので、本書の対象のブラウザでは問題なく動作します（2026年9月確認）。ただし、色の切り替えは `light-dark()` で足りるので、このフラグを使う場面は多くありません。
-
-テーマを切り替える瞬間には、View Transitionで画面を上から塗り替えるアニメーションを付けています。切り替えの処理は、`types` に `theme-toggle` を指定して `document.startViewTransition()` に渡します。CSSの側では、`:active-view-transition-type(theme-toggle)` でアニメーションを定義します。動きを減らす設定をしているユーザーには、アニメーションを付けません。View Transitionsの書き方は「[12-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)」で扱います。
-
-## 案件でのダークモード
-
-私が担当する案件では、ダークモードに対応せず、ライトの配色だけで作ることがほとんどです。デザインがライトの配色しか用意していないなら、無理に対応する必要はありません。
-
-ダークモードに対応するなら、すべての色をセマンティクスのトークンで管理していることが前提になります。16進数の色がコンポーネントに直接書かれていると、その部分だけが切り替わりません。CMSで編集者が本文の文字に色を付けられる場合は、その色がダークモードの背景で読めるかどうかまでは保証できません。
+この節で扱ったのは、色そのものの書き方です。元の色から透過させた色や暗い色を作る方法は「[11-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」で、背景色から文字色を決める方法は「[11-3 背景から文字色を決める](/color-media/contrast-text/)」で、ダークモードの配色は「[11-4 ダークモード](/color-media/dark-mode/)」で説明します。
 
 ## ガイドライン
 
@@ -297,22 +105,11 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 
 ## 参考リンク
 
-{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
-{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
-
-- [えっ！？まだ色の指定でrgba()関数を使っているの！？](https://www.tak-dcxi.com/article/rgba-function-is-legacy-syntax/)（TAKLOG、2024年5月。`color-mix()` の補間の色空間などが本書と異なります）
-- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。ホバーの色を `color-mix()` で作る例）
-- [スクロールバーにまつわるエトセトラ](https://www.tak-dcxi.com/article/scroll-bar-related-etcetera/)（TAKLOG、2024年3月。テーマの切り替えの方法が本書と異なります）
+- [Color Formats in CSS](https://www.joshwcomeau.com/css/color-formats/)（Josh W. Comeau。色の形式と広色域。記事は当時の推奨として `hsl()` を挙げています）
+- [CSS Color 再入門](https://griponminds.jp/blog/relearn-css-color/)（Grip on Minds、2023年3月。色の形式の一覧と、OklabとOklchが作られた経緯）
 - [oklch() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/oklch)
-- [alpha() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/alpha)
-- [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)
-- [color-mix() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color-mix)
+- [color() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color)
 - [linear-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/linear-gradient)
 - [CSS Images Level 4: Coloring the Gradient Line](https://drafts.csswg.org/css-images-4/#coloring-gradient-line)（既定の補間の色空間はOklab）
 - [CSS Color Level 4: Color Space for Interpolation](https://drafts.csswg.org/css-color-4/#interpolation-space)（旧来のsRGBの書き方の色どうしはsRGBで補間する）
 - [Make Beautiful Gradients](https://www.joshwcomeau.com/css/make-beautiful-gradients/)（Josh W. Comeau。補間の色空間と灰色のくすみ。記事はHSLも勧めますが、本書は `oklch` を使います）
-- [Color Formats in CSS](https://www.joshwcomeau.com/css/color-formats/)（Josh W. Comeau。広色域と色の形式。記事は当時の推奨として `hsl()` を挙げています）
-- [light-dark() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark)
-- [color-scheme - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color-scheme)
-
-{/* textlint-enable ja-technical-writing/no-doubled-joshi */}

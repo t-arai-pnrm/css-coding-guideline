@@ -15,10 +15,20 @@
   reason: タグの間の改行や空白が匿名のインラインボックスになり、親の `font-size` で幅の変わる隙間が要素の間に入るため。
   note: '`inline flow-root` は、文中のインライン要素に上下の余白や幅を持たせたいときに使います。'
   aiProne: true
-  page: layout/fundamentals
+  page: layout/normal-flow
   since: 0.5.0
 
-# 8-2 ボックスモデルの基礎
+# 8-2 通常フローの基礎
+- id: no-flex-grid-props-in-flow
+  level: 非推奨
+  rule: '`gap`、`align-items`、`justify-content` のように Flexbox や Grid でだけ働くプロパティを、`display` が `flex` でも `grid` でもない通常フローの要素に書かない。'
+  reason: 通常フローのブロックコンテナではこれらのプロパティは何も変えず、書いてあると間隔や配置がそこで決まっていると読まれて、実際の指定（子の `margin` など）を見誤らせるため。
+  note: '`align-content` は、ブロックコンテナでも中身をブロック方向にそろえるので、この対象から外れます。`gap` は段組み（`column-count` など）でも働きます。'
+  aiProne: true
+  page: layout/normal-flow
+  since: 0.12.0
+
+# 8-3 ボックスモデルの基礎
 - id: box-sizing-border-box-base
   level: 推奨
   rule: '`box-sizing` はベーススタイル（kiso.css）の全称セレクタで `border-box` にそろえ、コンポーネントで `box-sizing: border-box` を書き足さない。'
@@ -46,7 +56,7 @@
   page: layout/box-model
   since: 0.5.0
 
-# 8-3 マージンの相殺
+# 8-4 マージンの相殺
 - id: margin-collapse-padding-for-inner-space
   level: 推奨
   rule: 親の背景や枠線の内側に余白を取るときは、最初の子の `margin-block-start` や最後の子の `margin-block-end` ではなく、親の `padding-block` で作る。
@@ -64,7 +74,7 @@
   page: layout/margin-collapse
   since: 0.5.0
 
-# 8-4 Flexboxの基礎
+# 8-5 Flexboxの基礎
 - id: flexbox-basis-zero-for-ratio
   level: 推奨
   rule: 'Flexbox のアイテムを中身にかかわらず比率で分けるときは `flex: 1` のように `flex-basis` も0にし、中身の大きさに余りを足して伸ばすときは `flex-grow` だけを指定して、2つを区別する。'
@@ -92,7 +102,7 @@
   page: layout/flexbox-basics
   since: 0.5.0
 
-# 8-5 Gridの基礎
+# 8-6 Gridの基礎
 - id: grid-auto-rows-for-item-count
   level: 推奨
   rule: アイテムの数で行数が変わるグリッドでは、`grid-template-rows` で行を決めず、`grid-auto-rows` で暗黙の行の大きさを決める。
@@ -119,7 +129,108 @@
   page: layout/grid-basics
   since: 0.5.0
 
-# 8-6 Gridから考える
+# 8-7 positionの基礎
+- id: containing-block-inside-component
+  level: 推奨
+  rule: '`position: absolute` の要素の基準にする祖先には、同じコンポーネントの中で `position: relative` を指定する。'
+  reason: 基準がコンポーネントの外の祖先に決まると、置く場所によって位置が変わるため。
+  page: layout/positioning
+  since: 0.1.0
+
+- id: absolute-centering-with-margin-auto
+  level: 推奨
+  rule: '絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。'
+  reason: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
+  note: '`inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.1.0
+
+- id: no-fixed-inside-transformed-ancestor
+  level: 非推奨
+  rule: '`position: fixed` の要素を、`transform`、`filter`、`contain` などを指定した祖先の中に置かない。'
+  reason: これらの祖先が包含ブロックになり、要素がビューポートではなくその祖先を基準に配置されるため。
+  note: '個別の変形プロパティ（`translate` など）、`backdrop-filter`、`perspective`、`content-visibility: auto` と、これらを書いた `will-change` も包含ブロックを作ります。モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第13章）。'
+  page: layout/positioning
+  since: 0.1.0
+
+- id: sticky-align-self-start
+  level: 必須
+  rule: 'Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。'
+  reason: '`align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。'
+  note: '親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.4.0
+
+- id: sticky-needs-inset
+  level: 必須
+  rule: '`position: sticky` には、留めたい軸の `inset-block-start` などの inset を、`auto` 以外の値で1つ以上指定する。'
+  reason: 指定がないと、その軸では留まる位置が決まらず、`relative` と同じ動きになるため。
+  page: layout/positioning
+  since: 0.4.0
+
+- id: sticky-cap-block-size
+  level: 推奨
+  rule: '画面より高くなりうる `sticky` の要素には、`max-block-size` と `overflow-y: auto` を指定する。'
+  reason: 要素が画面より高いと、下端が見えないまま上端で留まり、末尾に届かなくなるため。
+  note: '上限は、`calc(100svb - 16px * 2)` のように、スクロールで値が変わらない `svb` から余白を引いて決めます。'
+  page: layout/positioning
+  since: 0.4.0
+
+- id: scroll-state-for-sticky-styles
+  level: 推奨
+  rule: '`sticky` の要素が留まっている間だけ見た目を変えるときは、`scroll` イベントではなく `container-type: scroll-state` と `@container scroll-state(stuck: …)` を使い、変える内容は見えなくても操作に困らない装飾に限る。'
+  reason: スクロールのたびに JavaScript で位置を調べる処理が要らなくなり、クエリに対応していない環境でも装飾が付かないだけで済むため。
+  note: 'コンテナクエリなので、変えられるのはコンテナの子孫だけです。2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.5.0
+
+- id: sticky-header-height-query
+  level: 推奨
+  rule: 'ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。'
+  reason: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
+  note: 'ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.3.0
+
+- id: anchor-scope-for-repeated-components
+  level: 推奨
+  rule: 繰り返し置くコンポーネントの中でアンカーポジショニングを使うときは、ルートに `anchor-scope` を指定して、アンカーの名前が届く範囲をコンポーネントの中に限る。
+  reason: 同じ名前のアンカーが複数あると、別のコンポーネントのアンカーが基準に選ばれることがあるため。
+  note: アンカーポジショニングをレイアウトの要として使わない規則は、第1章のルール `no-unsupported-layout-features` で扱います。
+  page: layout/positioning
+  since: 0.1.0
+
+- id: implicit-anchor-first
+  level: 推奨
+  rule: ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。
+  reason: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
+  note: '暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.3.0
+
+- id: position-area-logical-keywords
+  level: 推奨
+  rule: '`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。'
+  reason: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
+  note: 論理プロパティを使う規則は、第6章のルール `logical-properties` で扱います。
+  aiProne: true
+  page: layout/positioning
+  since: 0.3.0
+
+- id: overlap-detection-for-decoration-only
+  level: 推奨
+  rule: 'アンカーポジショニングとスクロール駆動アニメーションで要素どうしの重なりを検出する技法は、隠れても内容と操作に影響しない装飾にだけ使い、指定はすべて `@supports` の中に書く。'
+  reason: 'Firefox などの未対応の環境では検出が働かないので、隠す対象が本文や操作の部品だと、環境によって読める内容が変わるため。'
+  note: '測る範囲に置く要素は、はみ出したときにスクロールコンテナになるので、`inert` 属性を付けてフォーカスと支援技術から外します。重ならないレイアウト（Grid の列に装飾を置くなど）を組めるなら、そちらを先に検討します。'
+  page: layout/positioning
+  since: 0.12.0
+
+# 8-8 Gridから考える
 - id: grid-template-first
   level: 推奨
   rule: レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討する。
@@ -215,7 +326,7 @@
   page: layout/grid-first
   since: 0.1.0
 
-# 8-7 余白を設計する
+# 8-9 余白を設計する
 - id: gap-over-child-margin
   level: 推奨
   rule: Flexbox や Grid の子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作る。
@@ -270,7 +381,7 @@
   page: layout/spacing
   since: 0.3.0
 
-# 8-8 変化に強いレイアウト
+# 8-10 変化に強いレイアウト
 - id: design-for-content-changes
   level: 推奨
   rule: CSS を書くときは、テキストが2倍の長さになったら、画像がなかったら、要素の数が変わったらと考え、そのパターンで表示を確かめる。
@@ -331,7 +442,7 @@
   level: 必須
   rule: 'はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。'
   reason: '`hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなるため。'
-  note: '`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、8-11 を参照してください。'
+  note: '`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、8-7 を参照してください。'
   aiProne: true
   page: layout/defensive
   since: 0.1.0
@@ -344,38 +455,14 @@
   page: layout/defensive
   since: 0.5.0
 
-# 8-9 重なりと配置
+# 8-11 重なりと全幅
 - id: grid-stack-before-absolute
   level: 推奨
   rule: '要素を重ねるときは、`position: absolute` の前に、Grid の同じエリアに置く方法を検討する。'
   reason: 重ねたどの要素の大きさも親の高さに反映されるので、文字が増えても画像からはみ出さないため。
-  note: 第7章のコンポジション `pile` は、この形を部品にしたものです。
+  note: 第8章のコンポジション `pile` は、この形を部品にしたものです。
   aiProne: true
-  page: layout/positioning
-  since: 0.1.0
-
-- id: containing-block-inside-component
-  level: 推奨
-  rule: '`position: absolute` の要素の基準にする祖先には、同じコンポーネントの中で `position: relative` を指定する。'
-  reason: 基準がコンポーネントの外の祖先に決まると、置く場所によって位置が変わるため。
-  page: layout/positioning
-  since: 0.1.0
-
-- id: absolute-centering-with-margin-auto
-  level: 推奨
-  rule: '絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。'
-  reason: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
-  note: '`inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。'
-  aiProne: true
-  page: layout/positioning
-  since: 0.1.0
-
-- id: no-fixed-inside-transformed-ancestor
-  level: 非推奨
-  rule: '`position: fixed` の要素を、`transform`、`filter`、`contain` などを指定した祖先の中に置かない。'
-  reason: これらの祖先が包含ブロックになり、要素がビューポートではなくその祖先を基準に配置されるため。
-  note: '個別の変形プロパティ（`translate` など）、`backdrop-filter`、`perspective`、`content-visibility: auto` と、これらを書いた `will-change` も包含ブロックを作ります。モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第12章）。'
-  page: layout/positioning
+  page: layout/layering
   since: 0.1.0
 
 - id: check-stacking-context-first
@@ -384,49 +471,23 @@
   reason: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
   note: '不要なコンテキストは指定を外して消し、必要なものは `isolation: isolate` で意図して作ります。`html` 要素は最初からコンテキストを作ります。z-index の値の決め方と `isolation` は、第7章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。'
   aiProne: true
-  page: layout/positioning
+  page: layout/layering
   since: 0.1.0
 
-- id: sticky-header-height-query
+- id: z-index-on-items-without-position
   level: 推奨
-  rule: 'ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。'
-  reason: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
-  note: 'ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。'
+  rule: 'Flexbox と Grid の子の重なり順を変えるだけなら、`position: relative` を足さずに z-index を指定する。'
+  reason: 'フレックスアイテムとグリッドアイテムには `position: static` のままでも z-index が効き、`position: relative` を足すと、子孫の絶対配置の要素の包含ブロックまで変わるため。'
+  note: '通常フローの要素では、z-index を効かせるのに `static` 以外の `position` が要ります。'
   aiProne: true
-  page: layout/positioning
-  since: 0.3.0
-
-- id: anchor-scope-for-repeated-components
-  level: 推奨
-  rule: 繰り返し置くコンポーネントの中でアンカーポジショニングを使うときは、ルートに `anchor-scope` を指定して、アンカーの名前が届く範囲をコンポーネントの中に限る。
-  reason: 同じ名前のアンカーが複数あると、別のコンポーネントのアンカーが基準に選ばれることがあるため。
-  note: アンカーポジショニングをレイアウトの要として使わない規則は、第1章のルール `no-unsupported-layout-features` で扱います。
-  page: layout/positioning
-  since: 0.1.0
-
-- id: implicit-anchor-first
-  level: 推奨
-  rule: ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。
-  reason: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
-  note: '暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。'
-  aiProne: true
-  page: layout/positioning
-  since: 0.3.0
-
-- id: position-area-logical-keywords
-  level: 推奨
-  rule: '`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。'
-  reason: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
-  note: 論理プロパティを使う規則は、第6章のルール `logical-properties` で扱います。
-  aiProne: true
-  page: layout/positioning
-  since: 0.3.0
+  page: layout/layering
+  since: 0.12.0
 
 - id: full-bleed-via-layout-first
   level: 推奨
   rule: 要素を画面幅いっぱいに広げるときは、まずレイアウトのガターの列まで広げる方法を使い、ビューポート単位で広げるのは、背景の装飾と横にスクロールする領域に限る。
   reason: ビューポート単位はスクロールバーの幅の扱いがブラウザによって異なり、横スクロールの原因になりやすいため。
-  page: layout/positioning
+  page: layout/layering
   since: 0.1.0
 
 - id: full-bleed-offset-formula
@@ -435,10 +496,10 @@
   reason: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
   note: '横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第4章のルール `no-vw-vh` を参照してください。'
   aiProne: true
-  page: layout/positioning
+  page: layout/layering
   since: 0.1.0
 
-# 8-10 ページのスクロールとルートスクローラー
+# 8-12 ページのスクロールとルートスクローラー
 - id: root-scroller-for-page-scroll
   level: 推奨
   rule: 'ページ全体のスクロールはビューポート（ルートスクローラー）に任せ、`html`、`body`、ページ全体を包むラッパーをスクロールコンテナにしない。'
@@ -461,45 +522,11 @@
   level: 推奨
   rule: '画面に残したいヘッダーやサイドバーは、本文だけをスクロールさせる構造ではなく、`position: sticky` で留める。'
   reason: 'ページ全体がビューポートでスクロールしたまま、留めたい要素だけが位置を保てるため。'
-  note: 'ヘッダーは、ビューポートの高さが十分なときだけ留めます（8-9）。'
+  note: 'ヘッダーは、ビューポートの高さが十分なときだけ留めます（8-7）。'
   page: layout/root-scroller
   since: 0.5.0
 
-# 8-11 sticky が動かないとき
-- id: sticky-align-self-start
-  level: 必須
-  rule: 'Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。'
-  reason: '`align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。'
-  note: '親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。'
-  aiProne: true
-  page: layout/sticky
-  since: 0.4.0
-
-- id: sticky-needs-inset
-  level: 必須
-  rule: '`position: sticky` には、留めたい軸の `inset-block-start` などの inset を、`auto` 以外の値で1つ以上指定する。'
-  reason: 指定がないと、その軸では留まる位置が決まらず、`relative` と同じ動きになるため。
-  page: layout/sticky
-  since: 0.4.0
-
-- id: sticky-cap-block-size
-  level: 推奨
-  rule: '画面より高くなりうる `sticky` の要素には、`max-block-size` と `overflow-y: auto` を指定する。'
-  reason: 要素が画面より高いと、下端が見えないまま上端で留まり、末尾に届かなくなるため。
-  note: '上限は、`calc(100svb - 16px * 2)` のように、スクロールで値が変わらない `svb` から余白を引いて決めます。'
-  page: layout/sticky
-  since: 0.4.0
-
-- id: scroll-state-for-sticky-styles
-  level: 推奨
-  rule: '`sticky` の要素が留まっている間だけ見た目を変えるときは、`scroll` イベントではなく `container-type: scroll-state` と `@container scroll-state(stuck: …)` を使い、変える内容は見えなくても操作に困らない装飾に限る。'
-  reason: スクロールのたびに JavaScript で位置を調べる処理が要らなくなり、クエリに対応していない環境でも装飾が付かないだけで済むため。
-  note: 'コンテナクエリなので、変えられるのはコンテナの子孫だけです。2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。'
-  aiProne: true
-  page: layout/sticky
-  since: 0.5.0
-
-# 8-12 grid-lanesで石積みのレイアウトを組む
+# 8-13 grid-lanesで石積みのレイアウトを組む
 - id: grid-lanes-inside-supports
   level: 推奨
   rule: '`display: block grid-lanes` は `@supports (display: block grid-lanes)` の中に書き、その外には通常の Grid（`display: block grid`）と同じ `grid-template-columns` を書く。'
@@ -534,7 +561,7 @@
   page: layout/masonry
   since: 0.5.0
 
-# 8-13-1 stack：子要素を縦に積み、間隔をそろえる
+# 8-14-1 stack：子要素を縦に積み、間隔をそろえる
 - id: stack-vs-prose
   level: 推奨
   rule: 同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。
@@ -568,7 +595,7 @@
   page: layout/compositions/stack
   since: 0.5.0
 
-# 8-13-2 cluster：子を横に並べ、入りきらなければ折り返す
+# 8-14-2 cluster：子を横に並べ、入りきらなければ折り返す
 - id: cluster-apart-for-two-ends
   level: 推奨
   rule: '子を両端に分けて置くときは、`cluster` に `--cluster--justification: space-between` を渡さず、`apart` を使う。'
@@ -594,7 +621,7 @@
   page: layout/compositions/cluster
   since: 0.5.0
 
-# 8-13-3 apart：子要素を両端に分ける
+# 8-14-3 apart：子要素を両端に分ける
 - id: apart-for-two-groups
   level: 推奨
   rule: '`apart` は役割の違う2つのまとまりを両端に分けるときに使い、片側に複数の要素を置くときは1つの要素に包む。'
@@ -618,7 +645,7 @@
   page: layout/compositions/apart
   since: 0.5.0
 
-# 8-13-4 switcher：n列と1列を幅で切り替える
+# 8-14-4 switcher：n列と1列を幅で切り替える
 - id: switcher-for-all-or-nothing
   level: 推奨
   rule: 対等な項目を「指定の列数か1列か」のどちらかで並べたいときは `switcher` を使い、列数が段階的に減ってよい一覧には `grid` を使う。
@@ -645,7 +672,7 @@
   page: layout/compositions/switcher
   since: 0.5.0
 
-# 8-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む
+# 8-14-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む
 - id: sidebar-before-queries
   level: 推奨
   rule: 幅の決まったサイドと伸び縮みするメインの2つを横に並べ、狭ければ縦に積む配置は、クエリで閾値を書かず、`sidebar` コンポジションで組む。
@@ -676,7 +703,7 @@
   page: layout/compositions/sidebar
   since: 0.5.0
 
-# 8-13-6 grid：列の最小幅と最大数から列数を決める
+# 8-14-6 grid：列の最小幅と最大数から列数を決める
 - id: grid-max-count-over-queries
   level: 推奨
   rule: 同じ形のアイテムを並べる一覧で列の数に上限があるときは、メディアクエリで列数を切り替えず、`grid` の `--grid--column-min-width` と `--grid--column-max-count` で列の最小幅と最大数を渡す。
@@ -707,7 +734,7 @@
   page: layout/compositions/grid
   since: 0.5.0
 
-# 8-13-7 columns：上から下へ読むリストを段に分ける
+# 8-14-7 columns：上から下へ読むリストを段に分ける
 - id: columns-single-list-child
   level: 推奨
   rule: '`columns` コンポジションの直下には段に分けるリストを1つだけ置き、見出しなどはその外に置く。'
@@ -733,7 +760,7 @@
   page: layout/compositions/columns
   since: 0.5.0
 
-# 8-13-8 masonry：高さの違う子を短い列へ詰めて並べる
+# 8-14-8 masonry：高さの違う子を短い列へ詰めて並べる
 - id: masonry-for-loose-order-lists
   level: 推奨
   rule: '`masonry` コンポジションは、新着順の一覧のように高さがそろわず、おおよその順番が伝われば足りる項目に使い、高さのそろう項目や順番が内容になる項目は `grid` コンポジションで並べる。'
@@ -751,7 +778,7 @@
   page: layout/compositions/masonry
   since: 0.5.0
 
-# 8-13-9 pile：子要素を同じセルに重ねる
+# 8-14-9 pile：子要素を同じセルに重ねる
 - id: pile-placement-on-target-child
   level: 推奨
   rule: '`pile` の子の位置を変えるときは、`--pile--placement` などの公開プロパティを、`.pile` ではなく動かしたい子の `style` 属性で渡す。'
@@ -785,7 +812,7 @@
   page: layout/compositions/pile
   since: 0.5.0
 
-# 8-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる
+# 8-14-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる
 - id: primary-layout-width-by-line-names
   level: 推奨
   rule: '`primary-layout` の子の幅は、子に最大幅や負の `margin` を書かず、`full-column` などのクラスか `grid-column: --wide` のような線の名前で選ぶ。'
@@ -810,7 +837,7 @@
   page: layout/compositions/primary-layout
   since: 0.5.0
 
-# 8-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る
+# 8-14-11 prose：子ごとに変えられる間隔で、本文の流れを作る
 - id: prose-space-on-following-child
   level: 推奨
   rule: '`prose` の中で特定の間だけ間隔を変えるときは、`margin` を足さず、その間の後ろにある子に `--prose--space` を渡す。'
@@ -844,7 +871,7 @@
   page: layout/compositions/prose
   since: 0.5.0
 
-# 8-14 表示順と読み上げ順を合わせる
+# 8-15 表示順と読み上げ順を合わせる
 - id: reading-flow-when-reordered
   level: 必須
   rule: '`grid-template-areas`、`flex-direction: row-reverse | column-reverse`、`flex-wrap: wrap-reverse`、`grid-auto-flow: dense` を書いたルールには、同じルールに `reading-flow` を指定する。'

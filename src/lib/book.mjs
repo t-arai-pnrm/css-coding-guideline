@@ -28,17 +28,18 @@ export const PARTS = [
         dir: 'layout',
         title: 'レイアウト',
         // 節の下にまとめるページ群。`after` の節の直後に、折りたたみのグループとして並べる
-        groups: [{ dir: 'compositions', label: '8-13 コンポジション集', after: 'masonry' }],
+        groups: [{ dir: 'compositions', label: '8-14 コンポジション集', after: 'masonry' }],
       },
       { number: 9, dir: 'responsive', title: 'レスポンシブデザイン' },
       { number: 10, dir: 'typography', title: 'タイポグラフィと和文組版' },
-      { number: 11, dir: 'color-media', title: '色・画像・装飾' },
-      { number: 12, dir: 'interaction', title: 'インタラクションとモーション' },
+      { number: 11, dir: 'color-media', title: '色' },
+      { number: 12, dir: 'decoration', title: '画像・装飾' },
+      { number: 13, dir: 'interaction', title: 'インタラクションとモーション' },
     ],
   },
   {
     label: '第IV部 運用編',
-    chapters: [{ number: 13, dir: 'operations', title: '実務での運用' }],
+    chapters: [{ number: 14, dir: 'operations', title: '実務での運用' }],
   },
 ];
 

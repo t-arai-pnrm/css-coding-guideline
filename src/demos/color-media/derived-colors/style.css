@@ -1,0 +1,72 @@
+@layer pages {
+  @scope (.scoped.derived-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    li {
+      display: block grid;
+    }
+  }
+}
+
+@layer components {
+  /**
+   * 元の色から背景、枠線、バッジ、ホバーの色を作るカード。
+   *
+   * @prop {color} --derived-card--accent [oklch(50% 0.16 250deg)] - 元の色
+   */
+  @scope (.scoped.derived-card) to (.scoped) {
+    :scope {
+      --_accent: var(--derived-card--accent, oklch(50% 0.16 250deg));
+      --_accent--hocus: oklch(from var(--_accent) calc(l - 0.1) c h);
+
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      justify-items: start;
+      padding: 16px;
+      border: 1px solid oklch(from var(--_accent) l c h / 30%);
+      border-radius: 8px;
+      background-color: oklch(from var(--_accent) l c h / 6%);
+    }
+
+    ._badge {
+      padding-inline: 8px;
+      border-radius: calc(infinity * 1px);
+      background-color: oklch(from var(--_accent) l c h / 15%);
+      color: var(--_accent--hocus);
+      font-size: calc(12 / 16 * 1rem);
+      font-weight: bolder;
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    button {
+      --_background: var(--_accent);
+
+      margin-block-start: 8px;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: var(--_background);
+      color: oklch(100% 0 0deg);
+
+      /* キーボードでフォーカスしたときも、ホバーと同じ見た目にする */
+      &:focus-visible {
+        --_background: var(--_accent--hocus);
+      }
+    }
+
+    button:enabled:hover {
+      @media (any-hover) {
+        --_background: var(--_accent--hocus);
+      }
+    }
+  }
+}

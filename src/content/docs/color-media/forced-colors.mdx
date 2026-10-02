@@ -1,8 +1,8 @@
 ---
-title: "11-2 強制カラーモードとコントラスト"
+title: "11-5 強制カラーモードとコントラスト"
 description: "強制カラーモードでは、ブラウザが色をシステムカラーに置き換えます。枠線は消さずに透明にし、背景色で描いた図形はシステムカラーにフォールバックさせます。色だけで情報を伝えていないかは、グレースケール表示で確かめます。"
 sidebar:
-  order: 2
+  order: 5
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -59,7 +59,7 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 
 システムカラーは、強制カラーモード以外でも使えます。「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」で紹介したフォーカスリングは、`Canvas` と `CanvasText` の2色を重ねているので、強制カラーモードでもそのまま見えます。
 
-要素ごとに強制カラーモードを無効にする、`forced-color-adjust: none` というプロパティもあります。ただし、ユーザーが自分で選んだ配色を打ち消す指定なので、本書では、システムカラーに置き換えると図として成り立たないグラフのような要素に限って使います（「[11-5 輪郭と枠線を描く](/color-media/outlines/)」のドーナツグラフ）。Safariも対応していません（2026年9月確認）。
+要素ごとに強制カラーモードを無効にする、`forced-color-adjust: none` というプロパティもあります。ただし、ユーザーが自分で選んだ配色を打ち消す指定なので、本書では、システムカラーに置き換えると図として成り立たないグラフのような要素に限って使います（「[12-3 輪郭と枠線を描く](/decoration/outlines/)」のドーナツグラフ）。Safariも対応していません（2026年9月確認）。
 
 ## 枠線は消さずに透明にする
 
@@ -135,7 +135,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 通常の文字の中では `CanvasText`、リンクの中では `LinkText`、有効なボタンの中では `ButtonText`、無効な要素の中では `GrayText` になります。アイコンは、周りの文字と同じシステムカラーで描かれます。セレクタは `:where()` で包み、詳細度を0にしています。コンポーネントの側で文脈を足したいときに、簡単に上書きできるようにするためです。
 
-アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[11-3 画像と装飾](/color-media/images-and-decoration/)」）。
+アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[12-1 画像と装飾](/decoration/images-and-decoration/)」）。
 
 ```css title="🙆‍♂ Recommended: アイコンの色を --background-current から受け取る"
 ._more::after {

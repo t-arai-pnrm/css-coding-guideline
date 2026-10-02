@@ -1,0 +1,35 @@
+@layer components {
+  @scope (.scoped.normal-flow-flow-root) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    h3 {
+      margin-block-end: 8px;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._parent {
+      border: 1px dashed oklch(60% 0 0deg);
+      background-color: oklch(92% 0.04 250deg);
+
+      &[data-mode="flow-root"] {
+        display: block flow-root;
+      }
+    }
+
+    ._float {
+      float: inline-start;
+      inline-size: 64px;
+      block-size: 64px;
+      margin-inline-end: 8px;
+      background-color: oklch(45% 0.15 260deg);
+    }
+
+    ._next {
+      background-color: oklch(95% 0.03 80deg);
+    }
+  }
+}

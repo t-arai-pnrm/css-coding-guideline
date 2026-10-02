@@ -11,6 +11,30 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.12.0（2026年10月2日）
+
+レイアウトと色の章の構成を見直し、コンポーネントの判定基準を加えました。ルールを追加し、ルール1件の内容を変えたため、マイナーバージョンを上げています。章と節の番号も一部変わりました。
+
+- 構成を次のように変えました。
+  - 第11章「色・画像・装飾」を、第11章「[色](/color-media/)」と第12章「[画像・装飾](/decoration/)」に分けました。旧第12章と旧第13章は、第13章と第14章になります。画像と装飾、角の形、輪郭と枠線、印刷の4ページはURLが `/decoration/` に変わりました。
+  - 第11章を、「[11-1 色の形式と色空間](/color-media/color/)」「[11-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」「[11-3 背景から文字色を決める](/color-media/contrast-text/)」「[11-4 ダークモード](/color-media/dark-mode/)」「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」の5節に組み直しました。
+  - 第8章に「[8-2 通常フローの基礎](/layout/normal-flow/)」を加え、「[8-1 レイアウトの基礎](/layout/fundamentals/)」をレイアウトの方式の全体像に絞りました。
+  - positionの説明を「[8-7 positionの基礎](/layout/positioning/)」の1ページにまとめ、包含ブロック、アンカーポジショニング、重なりの検出を扱いました。旧8-11「stickyが動かないとき」はこのページに統合しています。Gridでの重ね方、スタッキングコンテキスト、全幅の手法は「[8-11 重なりと全幅](/layout/layering/)」に分けました。
+  - 第7章に「[7-1 何をコンポーネントにするか](/components/what-is-a-component/)」を加え、旧7-1の「見た目が似ているコンポーネントを共通化してよいか」をこのページに移しました。
+- ルールを8件追加しました。
+  - [`no-flex-grid-props-in-flow`](/layout/normal-flow/#rule-no-flex-grid-props-in-flow)：`gap` や `align-items` のようにFlexboxやGridでだけ働くプロパティを、通常フローの要素に書きません。
+  - [`overlap-detection-for-decoration-only`](/layout/positioning/#rule-overlap-detection-for-decoration-only)：アンカーポジショニングとスクロール駆動アニメーションで重なりを検出する技法は、装飾にだけ使い、`@supports` の中に書きます。
+  - [`z-index-on-items-without-position`](/layout/layering/#rule-z-index-on-items-without-position)：FlexboxとGridの子の重なり順を変えるだけなら、`position: relative` を足さずにz-indexを指定します。
+  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-sign-over-contrast-color)：背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書きます。
+  - [`component-decision-tests`](/components/what-is-a-component/#rule-component-decision-tests)：コンポーネントにするかは、繰り返し使うか、全インスタンスで構造や振る舞いを制御したいか、既知の構造の拡張があるか、の順に判定します。
+  - [`no-component-for-look-only`](/components/what-is-a-component/#rule-no-component-for-look-only)：見た目が共通だという理由だけで、コンポーネントを作りません。
+  - [`no-component-for-future-guess`](/components/what-is-a-component/#rule-no-component-for-future-guess)：将来必要になりそうという予測だけで、コンポーネントを作りません。
+  - [`local-parts-stay-in-parent`](/components/what-is-a-component/#rule-local-parts-stay-in-parent)：親の中でしか意味を持たない区画は、別のコンポーネントにせず、親の `@scope` の中で選びます。
+- ルール [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) の条件を、`@media (any-hover: hover)` から `@media (any-hover)` に変えました。値なしの `(any-hover)` は同じ意味になるからです。本書のすべてのコード例とデモも書き換えています。
+- 文字色を背景の明度から選ぶ `sign()` の式を、`oklch(from var(--_foreground) sign(0.7 - l) 0 h)` にそろえました。
+- コンポジション「[8-14-10 primary-layout](/layout/compositions/primary-layout/)」から、画面モードのスタイルクエリによる分岐を外しました。公開プロパティは `--primary-layout--gutter` のように接尾辞のない1組になり、デフォルト値は旧 `--compact` の値です。
+- 用語集に「通常フロー」と「ブロック整形コンテキスト」を加えました。
+
 ## 0.11.1（2026年10月2日）
 
 本書のコード例とデモが本書のルールに従っていない箇所を、すべての章で直しました。ルールの追加や意味の変更はないため、パッチバージョンを上げています。
@@ -38,7 +62,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で、`:has()` と `:not()` を組み合わせたセレクタを読み解く手順を書き直しました。
 - 「[5-1 壊さないリセット](/reset/kiso/)」の冒頭に、初期値、ブラウザのデフォルトスタイル、作者のCSSの3層と、リセットCSSの変遷を説明する節を加えました。
 - 「[6-1 命名規則](/notation/naming/)」のクラス名の表にパターンを加え、4種類から5種類にしました。「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」に、節「パターンに書いてよいプロパティ」を加えています。パターンの内部プロパティは `--_p--` で始めることにし、[`internal-property-prefix`](/components/custom-properties/#rule-internal-property-prefix) の補足に加えました。
-- 「[11-5 輪郭と枠線を描く](/color-media/outlines/)」のドーナツグラフの式を、単位のついた値での割り算に書き換えました。
+- 「[11-5 輪郭と枠線を描く](/decoration/outlines/)」のドーナツグラフの式を、単位のついた値での割り算に書き換えました。
 - 「[付録B モダンな書き方への置き換え表](/appendix/modernize/)」、「[付録C Sassの機能を素のCSSで置き換える](/appendix/sass/)」、「[付録D レビューのチェックリスト](/appendix/checklist/)」を、新しいルールに合わせました。
 
 ## 0.10.0（2026年10月2日）
@@ -119,7 +143,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 著者の実装に合わせて、コード例と説明を書き換えました。ルールの追加や変更はありません。
 
-- 「[10-5 輪郭と枠線を描く](/color-media/outlines/)」：ドーナツグラフを、`border-area` ではなくマスクの合成で描く書き方に改めました。割合を中心に数値でも示し、表示したときに0%から数え上げます。
+- 「[10-5 輪郭と枠線を描く](/decoration/outlines/)」：ドーナツグラフを、`border-area` ではなくマスクの合成で描く書き方に改めました。割合を中心に数値でも示し、表示したときに0%から数え上げます。
 - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」：`forced-color-adjust: none` を、システムカラーに置き換えると図として成り立たないグラフに限って使うことにしました。
 - 「[10-1 色とダークモード](/color-media/color/)」：`sign()` の節を、トーストを例に、1つの文字色から背景色と枠線の色を作る書き方に改めました。
 - 「[11-4 フォーム部品](/interaction/forms/)」：`<textarea>` の推奨スタイルを加えました。`content-box` に戻して高さを行数で書き、最大の高さは `field-sizing` に対応した環境でだけ付けます。文字サイズは `max(16px, 1rem)` にしました。
@@ -134,8 +158,8 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 「[付録B モダンな書き方への置き換え表](/appendix/modernize/)」の表に「理由」の列を加えました。本書の方針、挙動、対応状況のどれによる置き換えかを示しています。「[本書について](/introduction/about/)」にも、規約と仕様上の制約の違いを書きました。
 - 各章の概要に「最初に押さえるルール」を加えました。
 - 「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」に3種類のビューポートの図を、「[7-1 レイアウトの基礎](/layout/fundamentals/)」に `align-items` と `align-content` の図を加えました。
-- 「[10-4 角の形を変える](/color-media/shapes/)」の角丸の式に、前提と数値の例を加えました。
-- 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」に、WCAGの大きな文字の定義と非テキストのコントラストを加えました。「[10-3 画像と装飾](/color-media/images-and-decoration/)」には、単色のアイコンの描き方を選ぶ表を加えました。
+- 「[10-4 角の形を変える](/decoration/shapes/)」の角丸の式に、前提と数値の例を加えました。
+- 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」に、WCAGの大きな文字の定義と非テキストのコントラストを加えました。「[10-3 画像と装飾](/decoration/images-and-decoration/)」には、単色のアイコンの描き方を選ぶ表を加えました。
 - 「[11-4 フォーム部品](/interaction/forms/)」「[11-3 開閉するUI](/interaction/disclosure/)」「[11-6 CSSでカルーセルを作る](/interaction/carousel/)」に、確かめる状態の一覧を加えました。
 
 ## 0.5.1（2026年10月1日）
@@ -155,10 +179,10 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 「[10-1 色とダークモード](/color-media/color/)」：グラデーションの既定の補間は、旧来の書き方の色だけならsRGB、それ以外はOklabだと直しました。
   - 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」「[5-4 コメントの書き方](/notation/comments/)」：1つのファイルに複数のコンポーネントを書く説明を、[`one-component-per-file`](/components/boundaries/#rule-one-component-per-file) に合わせました。2-4には、`<body>` の中の `<style>` がHTML標準の配置条件から外れることと、適合が必要な場合の書き方も加えました。
   - 「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」：接頭辞のない `vh` は、現在の仕様ではラージビューポートが基準だと直しました。
-  - 「[7-11 sticky が動かないとき](/layout/sticky/)」：基準を最寄りのスクロールコンテナとし、`overflow: clip` を区別しました。
+  - 「[7-11 sticky が動かないとき](/layout/positioning/)」：基準を最寄りのスクロールコンテナとし、`overflow: clip` を区別しました。
   - 「[7-4 Flexboxの基礎](/layout/flexbox-basics/)」：`flex: 1` の `flex-basis` が実装では `0%` になることと、縦のFlexboxでの違いを加えました。
   - 「[8-5 セーフエリアに対応する](/responsive/safe-area/)」：固定するバーと浮かせるボタンに、左右のセーフエリアを加えました。
-  - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」「[10-3 画像と装飾](/color-media/images-and-decoration/)」：寸法を持つ擬似要素に `display` を加え、単独で写しても描けるようにしました。
+  - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」「[10-3 画像と装飾](/decoration/images-and-decoration/)」：寸法を持つ擬似要素に `display` を加え、単独で写しても描けるようにしました。
   - 「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」：`:focus-visible` はキーボードの操作に限らないことを説明しました。
   - 「[7-13 コンポジション集](/layout/compositions/)」：CMSの本文の中では `stack` と `prose` を使わず、`wysiwyg` を使うことに統一しました。
   - 「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」：スキルを登録する前に、自分の環境で `pnpm gen:ai` を実行する手順を加えました。
@@ -175,8 +199,8 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 節を5つ追加しました。
   - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」
   - 「[7-12 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)」
-  - 「[10-4 角の形を変える](/color-media/shapes/)」：`corner-shape` と、画面いっぱいのときだけ角丸を消す方法
-  - 「[10-5 輪郭と枠線を描く](/color-media/outlines/)」：`shape()`、`border-shape`、`background-clip: border-area`。下書きの印刷の節は10-6に繰り下げました。
+  - 「[10-4 角の形を変える](/decoration/shapes/)」：`corner-shape` と、画面いっぱいのときだけ角丸を消す方法
+  - 「[10-5 輪郭と枠線を描く](/decoration/outlines/)」：`shape()`、`border-shape`、`background-clip: border-area`。下書きの印刷の節は10-6に繰り下げました。
   - 「[11-6 CSSでカルーセルを作る](/interaction/carousel/)」：`::scroll-button()`、`::scroll-marker`、`interactivity: inert`
 - 既存の節に内容を加えました。
   - 「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」：`flex: 1` では列の幅がそろわない理由
@@ -185,7 +209,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」：壊れた既存のCSSから、`all: revert-layer !important` でコンポーネントを切り離す例外
   - 「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」：カスタムプロパティを動かすときの負荷（例の `@property` を `inherits: false` に改めました）
   - 「[7-8 変化に強いレイアウト](/layout/defensive/)」：スクロールする要素の中央寄せと `safe center`
-  - 「[7-11 sticky が動かないとき](/layout/sticky/)」：`scroll-state()` で留まっている間だけ見た目を変える方法
+  - 「[7-11 sticky が動かないとき](/layout/positioning/)」：`scroll-state()` で留まっている間だけ見た目を変える方法
   - 「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」：`prefers-reduced-transparency`
   - 「[10-1 色とダークモード](/color-media/color/)」：`alpha()` 関数
   - 「[11-2 モーションを実装する](/interaction/motion/)」：`timeline-trigger` と `animation-trigger` の位置づけ
@@ -211,7 +235,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」：`--rem` が保証するのは文字サイズの設定に応じた下限で、設定と同じ割合で大きくなるわけではないことを、計算の例で示しました。
   - 「[本書の読み方](/introduction/how-to-read/)」、付録A、付録E、AI向けのルール集：「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて守る、と改めました。付録Dのモーションの項目にも例外を書きました。
   - 付録B：`line-height` の置き換えを、ベースは1.5以上、見出しは用途に合わせる、と9-3にそろえました。
-  - 「[10-5 輪郭と枠線を描く](/color-media/outlines/)」：ドーナツグラフの `transition` をロングハンドにしました。
+  - 「[10-5 輪郭と枠線を描く](/decoration/outlines/)」：ドーナツグラフの `transition` をロングハンドにしました。
   - 「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」：`all` による切り離しでは、カスタムプロパティと擬似要素が対象外であることを加えました。
   - 「[11-6 CSSでカルーセルを作る](/interaction/carousel/)」：止まっていないスライドを不活性にする方法は、1枚ずつ表示するカルーセルが前提であることを加えました。
   - コード例とデモの、kiso.cssで0になっているマージンの打ち消し（`margin: 0` など）を消し、片側だけのマージンはロングハンドにしました。
@@ -225,23 +249,23 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`if-fallback-and-else`](/values/if-and-attr/#rule-if-fallback-and-else)
   - [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit)
   - [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable)
-  - [`scroll-state-for-sticky-styles`](/layout/sticky/#rule-scroll-state-for-sticky-styles)
+  - [`scroll-state-for-sticky-styles`](/layout/positioning/#rule-scroll-state-for-sticky-styles)
   - [`grid-lanes-inside-supports`](/layout/masonry/#rule-grid-lanes-inside-supports)
   - [`grid-lanes-no-placement-for-ordered-items`](/layout/masonry/#rule-grid-lanes-no-placement-for-ordered-items)
   - [`flow-tolerance-no-infinite`](/layout/masonry/#rule-flow-tolerance-no-infinite)
   - [`columns-for-top-to-bottom-lists`](/layout/masonry/#rule-columns-for-top-to-bottom-lists)
   - [`reduced-transparency-opaque-background`](/responsive/media-queries/#rule-reduced-transparency-opaque-background)
-  - [`corner-shape-guard-when-broken`](/color-media/shapes/#rule-corner-shape-guard-when-broken)
-  - [`full-bleed-radius-with-sign`](/color-media/shapes/#rule-full-bleed-radius-with-sign)
-  - [`guard-new-shapes-with-supports`](/color-media/outlines/#rule-guard-new-shapes-with-supports)
-  - [`shape-function-with-custom-properties`](/color-media/outlines/#rule-shape-function-with-custom-properties)
+  - [`corner-shape-guard-when-broken`](/decoration/shapes/#rule-corner-shape-guard-when-broken)
+  - [`full-bleed-radius-with-sign`](/decoration/shapes/#rule-full-bleed-radius-with-sign)
+  - [`guard-new-shapes-with-supports`](/decoration/outlines/#rule-guard-new-shapes-with-supports)
+  - [`shape-function-with-custom-properties`](/decoration/outlines/#rule-shape-function-with-custom-properties)
   - [`no-autoplay-carousel`](/interaction/carousel/#rule-no-autoplay-carousel)
   - [`carousel-controls-in-supports`](/interaction/carousel/#rule-carousel-controls-in-supports)
   - [`carousel-inert-unsnapped`](/interaction/carousel/#rule-carousel-inert-unsnapped)
   - [`inert-attribute-for-background`](/interaction/carousel/#rule-inert-attribute-for-background)
   - [`ai-layout-with-grid-areas`](/operations/review-and-ai/#rule-ai-layout-with-grid-areas)
   - [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)
-  - [`no-inline-block-for-rows`](/layout/fundamentals/#rule-no-inline-block-for-rows)
+  - [`no-inline-block-for-rows`](/layout/normal-flow/#rule-no-inline-block-for-rows)
   - [`fallback-method-by-invalidation`](/principles/browser-support/#rule-fallback-method-by-invalidation)
   - [`one-component-per-file`](/components/boundaries/#rule-one-component-per-file)
   - [`stack-vs-prose`](/layout/compositions/stack/#rule-stack-vs-prose)
@@ -305,7 +329,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 外部の記事（DebugBear、Polypane、Geary、necomesiのブログ、Josh W. Comeauのブログ）から、取り入れる内容を洗い出し、各章に加えました。記事と本書が食い違うときは記事を優先し、記事が古いときや対応状況と合わないときは、一次情報を確かめ、今も正しい部分だけを取り入れています。
 
 - ネストの規約を改めました。「セレクタのネストは2層まで」とし、`@scope` や `@media` などの@ルールは層に数えません。@ルールまで数えると、ルールが分散して分かりにくくなるためです。Stylelintの `max-nesting-depth` は外しました。ルール `nesting-depth-one` のIDは変えていません。
-- 節を2つ追加しました：「[7-11 sticky が動かないとき](/layout/sticky/)」と「[12-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」。後者では、CMSの本文エリアに限り、`@scope` のネストと `to()` の省略を認めています。
+- 節を2つ追加しました：「[7-11 sticky が動かないとき](/layout/positioning/)」と「[12-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」。後者では、CMSの本文エリアに限り、`@scope` のネストと `to()` の省略を認めています。
 - 退場のアニメーションのイージングを `ease-out` から `ease-in` に改めました。デモとコード例も書き換えています。
 - ライトモードの影の色は、背景の色相へ寄せる方針にしました。ダークモードは、黒のまま不透明度で強さを変えます。
 - ルールを33件追加しました。
@@ -317,17 +341,17 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
   - [`no-dense-for-ordered-items`](/layout/grid-first/#rule-no-dense-for-ordered-items)：順序に意味のある要素に `grid-auto-flow: dense` を使わない
   - [`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)：マージンの相殺は `display: flow-root` で止める
-  - [`sticky-align-self-start`](/layout/sticky/#rule-sticky-align-self-start)：stickyな要素をGridやFlexboxの子にするときは `align-self: start`
-  - [`sticky-needs-inset`](/layout/sticky/#rule-sticky-needs-inset)：stickyにはinsetを指定する
-  - [`sticky-cap-block-size`](/layout/sticky/#rule-sticky-cap-block-size)：画面より高くなりうるstickyな要素の高さを制限する
+  - [`sticky-align-self-start`](/layout/positioning/#rule-sticky-align-self-start)：stickyな要素をGridやFlexboxの子にするときは `align-self: start`
+  - [`sticky-needs-inset`](/layout/positioning/#rule-sticky-needs-inset)：stickyにはinsetを指定する
+  - [`sticky-cap-block-size`](/layout/positioning/#rule-sticky-cap-block-size)：画面より高くなりうるstickyな要素の高さを制限する
   - [`no-device-width-feature`](/responsive/media-queries/#rule-no-device-width-feature)：`device-width` などをメディアクエリに使わない
   - [`any-pointer-not-width-for-input`](/responsive/media-queries/#rule-any-pointer-not-width-for-input)：操作の手段に合わせる指定は `any-pointer` で書く
   - [`prefers-contrast-more-for-faint-borders`](/responsive/media-queries/#rule-prefers-contrast-more-for-faint-borders)：薄い境界線は `prefers-contrast: more` で濃くする
   - [`gradient-interpolation-space`](/color-media/color/#rule-gradient-interpolation-space)：グラデーションには補間の色空間を書く
   - [`transparent-outline-for-custom-focus`](/color-media/forced-colors/#rule-transparent-outline-for-custom-focus)：フォーカスリングを描き直すときは透明な `outline` を残す
-  - [`shadow-tokens-light-source`](/color-media/images-and-decoration/#rule-shadow-tokens-light-source)：影のトークンは光源の向きをそろえる
-  - [`no-animate-layered-shadow`](/color-media/images-and-decoration/#rule-no-animate-layered-shadow)：重ねた影そのものを動かさない
-  - [`marker-for-list-number-style`](/color-media/images-and-decoration/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
+  - [`shadow-tokens-light-source`](/decoration/images-and-decoration/#rule-shadow-tokens-light-source)：影のトークンは光源の向きをそろえる
+  - [`no-animate-layered-shadow`](/decoration/images-and-decoration/#rule-no-animate-layered-shadow)：重ねた影そのものを動かさない
+  - [`marker-for-list-number-style`](/decoration/images-and-decoration/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
   - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：キーボードのフォーカスに限るときは `:has(:focus-visible)` を使う
   - [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーを受ける要素は動かさない
   - [`hit-area-min-size`](/interaction/states-and-focus/#rule-hit-area-min-size)：操作する要素の最小の大きさを確保する
@@ -361,7 +385,7 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
   - [`framework-breakpoint-variables`](/responsive/media-queries/#rule-framework-breakpoint-variables)：フレームワークを使うときは、その変数でブレイクポイントを書く
   - [`fallback-font-metric-overrides`](/typography/fonts/#rule-fallback-font-metric-overrides)：代わりのフォントの寸法を補正する
   - [`wbr-for-long-urls`](/typography/size-and-line-breaks/#rule-wbr-for-long-urls)：長いURLには `<wbr>` を入れる
-  - [`text-stroke-paint-order`](/color-media/images-and-decoration/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く
+  - [`text-stroke-paint-order`](/decoration/images-and-decoration/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く
   - [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：モーダルの中のスクロールの連鎖を止める
   - [`view-transition-name-unique`](/interaction/view-transitions/#rule-view-transition-name-unique)：同じ `view-transition-name` を複数の要素に付けない
   - [`view-transition-match-element`](/interaction/view-transitions/#rule-view-transition-match-element)：並んだ要素には `match-element` を使う

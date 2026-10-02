@@ -216,7 +216,7 @@
   level: 推奨
   rule: '操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。'
   reason: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
-  note: '`pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第12章）。'
+  note: '`pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第13章）。'
   aiProne: true
   page: responsive/media-queries
   since: 0.4.0
@@ -305,7 +305,7 @@
   level: 推奨
   rule: セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。
   reason: '`viewport-fit=cover` を指定する目的は背景を端まで描くことで、`margin` や外側の要素の `padding` で空けると、背景が途切れた帯ができるため。'
-  note: 'セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（8-13-10 `primary-layout` など）にセーフエリアを入れます。'
+  note: 'セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（8-14-10 `primary-layout` など）にセーフエリアを入れます。'
   page: responsive/safe-area
   since: 0.5.0
 

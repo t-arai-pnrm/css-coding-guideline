@@ -1,0 +1,33 @@
+---
+title: "第12章 画像・装飾"
+description: "画像の比率と出し分け、アイコンや影などの装飾、corner-shape による角の形、shape() と border-area による輪郭と枠線の書き方をまとめた章です。"
+sidebar:
+  label: "概要"
+  order: 0
+---
+
+画像と装飾は、比率やアイコンの色を指定するだけでは足りません。画像が表示されない場合や、強制カラーモードで色が置き換わる場合でも、内容を読めて部品の形が分かる書き方を選びます。新しい図形の機能は、未対応の環境で何が描かれるかを確かめてから取り入れます。
+
+画像の書き方は、表示を速くすることと、レイアウトをずらさないことに直結します。`<img>` に大きさの属性がないと、画像を読み込んだときに後ろの内容が押し下げられます。ファーストビューの画像を遅延読み込みにすると、ページでいちばん大きな要素の表示が遅れます。比率は `aspect-ratio` で決め、画像の出し分けは `srcset` と `sizes` をツールで確かめて決めます。
+
+装飾の書き方も変わりました。三角形は `border` の組み合わせではなく `clip-path` で、アイコンはマスクと `currentColor` で描けます。角の形は `corner-shape` で、タブや吹き出しの輪郭は `shape()` で書けるようになりました。ただし、対応しているブラウザがまだ限られる機能もあるので、未対応の環境で形が崩れる指定だけを `@supports` で切り替えます。
+
+この章は次の節で構成しています。
+
+- [12-1 画像と装飾](/decoration/images-and-decoration/)：`aspect-ratio` と `object-fit`、`srcset` と `sizes`、`clip-path` とマスク、`currentColor` のアイコン、影と角丸、文字の縁取り
+- [12-2 角の形を変える](/decoration/shapes/)：`corner-shape` によるスクワークルや反り返るタブと、画面いっぱいのときだけ角丸を消す `sign()`
+- [12-3 輪郭と枠線を描く](/decoration/outlines/)：`clip-path` の `shape()` によるタブと吹き出し、`border-shape`、`border-area` のグラデーションの枠線、マスクで描くドーナツグラフ
+{/* 12-4の執筆後に、一覧に加えてリンクする: [12-4 印刷のスタイル](/decoration/print/)：画面との差分だけを書く @media print、外部リンクのURL、改ページの制御 */}
+
+色の定義と派生色の作り方は第11章「[色](/color-media/)」で扱います。強制カラーモードで背景色の図形やアイコンが消えないようにする方法は「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で、擬似要素の作り方は[第3章「擬似クラスと擬似要素」](/pseudo/)で説明しています。この章のコード例では `@layer` の記述を省略していますが、デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`img-width-height-attributes`](/decoration/images-and-decoration/#rule-img-width-height-attributes)：`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。
+- [`no-lazy-loading-first-view`](/decoration/images-and-decoration/#rule-no-lazy-loading-first-view)：ファーストビューで表示される画像には、`loading="lazy"` を指定しません。
+- [`aspect-ratio-for-ratios`](/decoration/images-and-decoration/#rule-aspect-ratio-for-ratios)：要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作りません。
+- [`icon-current-color`](/decoration/images-and-decoration/#rule-icon-current-color)：単色のアイコンの色は `currentColor` で文字色に合わせます。

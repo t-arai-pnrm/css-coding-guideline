@@ -1,5 +1,5 @@
 ---
-title: "8-13-2 cluster：子を横に並べ、入りきらなければ折り返す"
+title: "8-14-2 cluster：子を横に並べ、入りきらなければ折り返す"
 description: "タグの一覧やボタンの並びのように、子を同じ側に寄せて横に並べ、入りきらなければ折り返す配置は cluster で書きます。間隔は一括と行・列別の公開プロパティで受け取り、デフォルト値は0にします。"
 sidebar:
   order: 2
@@ -23,7 +23,7 @@ import clusterCss from '../../../../demos/layout/composition-cluster/style.css?r
 
 本書は、似た記述の重複を急いで共通化しない立場です（「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」。共通化は同じものが3回現れてから考えます）。横並びと折り返しは、コンポーネントの見た目と違って、どのコンポーネントでも同じ理由でしか変わりません。共通化しても、片方の都合で分岐を足すことにならないので、早い段階でコンポジションにしてかまいません。
 
-コンポジションにしておくと、HTMLに `class="cluster"` とあるだけで、子が横に並んで折り返すことが読み取れます。コンポジション全般の考え方と、間隔のデフォルト値を `0` にする理由は「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
+コンポジションにしておくと、HTMLに `class="cluster"` とあるだけで、子が横に並んで折り返すことが読み取れます。コンポジション全般の考え方と、間隔のデフォルト値を `0` にする理由は「[7-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
 
 ## cluster の書き方
 
@@ -148,7 +148,7 @@ import clusterCss from '../../../../demos/layout/composition-cluster/style.css?r
 
 ### `apart` との使い分け
 
-`cluster` と `apart` は、どちらもFlexboxで子を横に並べ、入りきらなければ折り返します。違いは寄せ方で、`cluster` は子をまとめて同じ側に寄せ、`apart`（「[8-13-3 apart](/layout/compositions/apart/)」。子を両端に分ける）は `justify-content: space-between` で子を両端に分けます。ヘッダーのロゴとナビゲーション、フッターの著作権表記とリンク集のように、2つのまとまりを左右に分けるなら `apart` です。
+`cluster` と `apart` は、どちらもFlexboxで子を横に並べ、入りきらなければ折り返します。違いは寄せ方で、`cluster` は子をまとめて同じ側に寄せ、`apart`（「[8-14-3 apart](/layout/compositions/apart/)」。子を両端に分ける）は `justify-content: space-between` で子を両端に分けます。ヘッダーのロゴとナビゲーション、フッターの著作権表記とリンク集のように、2つのまとまりを左右に分けるなら `apart` です。
 
 `cluster` に `--cluster--justification: space-between` を渡しても、見た目の上では両端に分けられます。しかし、子が3つ以上ある `cluster` で `space-between` を使うと、行ごとに子の数が違うので間隔がばらつき、最後の行に子が2つ残れば左右の端に離れて置かれます。
 

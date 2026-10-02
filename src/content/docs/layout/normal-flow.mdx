@@ -1,0 +1,177 @@
+---
+title: "8-2 通常フローの基礎"
+description: "通常フローは、何も指定しない要素が従うレイアウトの方式です。ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスは行の中をインライン方向に流れます。行ボックスと匿名ボックス、幅と高さの決まり方、ブロック整形コンテキストと display: flow-root、通常フローで効かないプロパティを説明します。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import modesHtml from '../../../demos/layout/normal-flow-modes/index.html?raw';
+import modesCss from '../../../demos/layout/normal-flow-modes/style.css?raw';
+import flowRootHtml from '../../../demos/layout/normal-flow-flow-root/index.html?raw';
+import flowRootCss from '../../../demos/layout/normal-flow-flow-root/style.css?raw';
+
+通常フロー（フローレイアウト）は、`display` を変えていない要素が従うレイアウトの方式です。FlexboxやGridと同じく独自の規則を持ち、ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスと文字は行の中をインライン方向に流れます。ブロックの幅は包含ブロックの幅いっぱいに広がり、高さは中身から決まります。
+
+`gap` や `align-items` が効かない、インライン要素の上下の `margin` が空かない、`float` が親からはみ出すといった現象は、どれも通常フローの規則どおりの振る舞いです。この節では、その規則を、FlexboxやGridと同じ1つの方式として説明します。方式の全体像は「[8-1 レイアウトの基礎](/layout/fundamentals/)」で扱います。
+
+## 通常フローを「何もしていない状態」と考えたとき
+
+通常フローは、`display: flex` や `grid` を指定する前の、何も起きていない状態だと思われがちです。そう考えると、`gap: 16px` を書いたのに子の間が空かない、`align-items: center` で中央に寄らないといった場面で、指定の誤りではなくブラウザの不具合を疑うことになります。実際には、通常フローがこれらのプロパティを使わない方式だというだけです。
+
+インライン要素の上下の `margin` が空かない、画像の下に隙間ができる、親の背景が中の `float` を囲まない、といった現象も、通常フローの規則を知っていれば理由から説明できます。
+
+AIが生成するコードにも、この誤解が表れます。ブロックの親に `gap` を書き、効かなければ子に `margin` を足す、あるいは理由を確かめずに親を `display: flex` に変えるコードはよく見かけます。値を足す前に、その要素がどの方式の中にあるかを確かめます（ルール [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)）。
+
+## ブロック方向とインライン方向
+
+通常フローには2つの方向があります。ブロック方向は段落が積まれていく方向で、横書きでは上から下です。インライン方向は1行の中で文字が進む方向で、横書きでは左から右です。ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスはインライン方向に流れて、行の端で折り返します。
+
+この2つの方向は、物理的な上下左右ではなく、`writing-mode` で決まります。縦書きにすると、ブロック方向は右から左に、インライン方向は上から下に変わります。本書が `width` や `margin-top` ではなく、`inline-size` や `margin-block-start` のような論理プロパティを使うのは、書字方向が変わっても同じ意味で働くからです（「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」）。
+
+## ブロックレベルとインラインレベルのボックス
+
+`display` の値は、2つの役割を持っています。1つは、その要素が親の中でブロックとして積まれるか、インラインとして流れるかという外側の振る舞いです。もう1つは、その要素の子をどの方式で並べるかという内側の振る舞いです。`<p>` や `<div>` がブロックレベルに、`<span>` や `<a>` がインラインレベルになるのは、ブラウザのデフォルトスタイルが `display` を決めているからで、要素そのものの性質ではありません。
+
+本書は `display: block flex` のような2値構文で書きます（「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」）。`block` は外側がブロックで内側が通常フロー、`inline` は外側がインラインで内側も通常フローです。`inline-block` は、2値構文では `inline flow-root` になり、文字と同じ行に並びながら、中ではブロックの規則で大きさを持ちます。
+
+<Baseline id="two-value-display" name="display の2値構文" />
+
+内側の値が `flow` か `flow-root` の要素は、ブロックコンテナと呼ばれ、子を通常フローで並べます。外側の値は、親が通常フローのときだけ意味を持ちます。親がFlexboxやGridなら、`<span>` もブロックのように大きさを持つアイテムになり、外側の値は無視されます。
+
+## 行ボックスとベースライン
+
+インラインレベルのボックスは、行ボックスという横長の箱の中に並びます。行ボックスの高さは、中の文字とボックスの `line-height` から決まり、行の中の要素はデフォルトで文字のベースライン（アルファベットの下端の線）にそろいます。インライン要素の上下の `padding` は背景を広げて描かれますが、行ボックスの高さには加わらず、上下の `margin` は無視されます（「[8-3 ボックスモデルの基礎](/layout/box-model/)」）。
+
+画像の下にできる数ピクセルの隙間も、行ボックスの規則から生まれます。`<img>` はインラインレベルの要素なので、下端をベースラインにそろえ、その下に文字のディセンダー（「g」や「y」の下に出る部分）のための空きが残ります。kiso.cssは画像や動画に `vertical-align: bottom` を指定して、この隙間をなくしています。
+
+`vertical-align: middle` は、要素の中心を、親のベースラインからx-height（小文字の「x」の高さ）の半分だけ上の位置に合わせる指定です。フォントの寸法で位置が決まるので、行の見た目の中央と一致しないことがあります。アイコンと文字の中央をそろえたいときは、親をFlexboxにして `align-items: center` を使います。
+
+インライン要素が複数の行にまたがると、背景、`border`、`padding` は、各行の断片に分けて描かれます。デフォルトでは1つの帯を行の端で切ったように描かれ、行の端の `padding` と角丸は失われます。各行の断片を独立した箱として描きたいときは、`box-decoration-break: clone` を指定します。Safariは接頭辞付きの `-webkit-box-decoration-break` だけに対応しています（2026年10月確認）。{/* 要確認: 出典なし */}
+
+<Baseline id="box-decoration-break" />
+
+## 匿名ボックス
+
+ブラウザは、要素に包まれていない文字にも、目に見えない箱（匿名ボックス）を作ります。`<p>これは<em>強調</em>です</p>` なら、「これは」と「です」がそれぞれ匿名のインラインボックスになり、`<em>` と並んで1行に流れます。ブロックコンテナの中にブロックと文字が混ざると、文字の側は匿名のブロックボックスに包まれ、ブロックどうしとして積まれます。匿名ボックスにはクラスを付けられないので、スタイルは親から継承した値で決まります。
+
+匿名ボックスは、HTMLの改行や空白からも作られます。要素を `inline flow-root`（`inline-block`）にして横に並べると、タグの間の改行が1文字分の空白として行に入り、要素の間に意図しない隙間ができます。
+
+```css title="🙅‍♂ Not Recommended: inline flow-root（inline-block）で横に並べる"
+/* 🙅‍♂ Not Recommended */
+.tag-list {
+  & > li {
+    display: inline flow-root;
+    margin-inline-end: 8px;
+  }
+}
+```
+
+この隙間は親の `font-size` で幅が変わるので、`margin` の値を調整しても消えません。親の `font-size` を0にする、HTMLの空白を消すといった回避策も、別の副作用を生みます。要素を横に並べるときは、Flexboxにして `gap` で間隔を決めます（[`no-inline-block-for-rows`](/layout/normal-flow/#rule-no-inline-block-for-rows)）。Flexboxは空白だけの文字をアイテムにしないので、隙間は生まれません。
+
+```css title="🙆‍♂ Recommended: Flexbox にして gap で間隔を決める"
+.tag-list {
+  display: block flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+```
+
+## 幅と高さの決まり方
+
+通常フローのブロックは、`inline-size` が `auto` のとき、包含ブロック（多くは親の内容の領域）の幅から左右の `margin` を引いた残りいっぱいに広がります。`block-size` が `auto` のときは、中身を収める高さになります。幅は外から、高さは中から決まると覚えておくと、ブロックの振る舞いを予想できます。
+
+幅を指定すると、通常フローはその値を守ります。親より広い `inline-size` を指定したブロックは、縮まずに親からはみ出します。Flexboxでは同じ `inline-size` が `flex-basis` の出発点として扱われ、足りなければ縮むので、同じ指定でも結果が変わります。
+
+`block-size: 50%` のような高さの割合は、親の高さが中身で決まる（`auto` の）ときには解決できず、`auto` として扱われます。親の高さが子から決まり、子の高さが親から決まるという循環になるからです。{/* 要確認: 出典なし */}縦の大きさを親に合わせたいときは、親をGridにして行を決めるほうが確実です。
+
+インラインレベルのボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[8-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[8-7 positionの基礎](/layout/positioning/)」で説明しています。
+
+## ブロック整形コンテキストと `display: flow-root`
+
+通常フローのボックスは、整形コンテキストという範囲の中で並びます。ブロックレベルのボックスを積む範囲をブロック整形コンテキスト（BFC）、インラインレベルのボックスを行に並べる範囲をインライン整形コンテキストと呼びます。新しいBFCを作った要素の中は、外から独立して並べられます。
+
+独立していることは、3つの振る舞いに表れます。中の `float` は要素の外へはみ出さず、要素の高さに含まれます。中の子の `margin` は、要素の `margin` と相殺しません。要素自体も、隣の `float` と重ならず、その横に収まります。
+
+新しいBFCは、ルート要素、`float` した要素、絶対配置の要素、`inline flow-root` の要素、`overflow` が `visible` と `clip` 以外の要素などが作ります。このうち、BFCを作ることだけを目的にした値が `display: flow-root` です。`overflow: hidden` もBFCを作りますが、影や絶対配置の子を切り取り、中の `position: sticky` を妨げるので、BFCのために使うのは避けます（[`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)）。
+
+<Baseline id="display-flow-root" />
+
+以前は、`float` を囲むために、親の `::after` に `clear: both` を指定するclearfixを書いていました。`display: flow-root` なら擬似要素なしに同じことができます（[`float-for-text-wrap`](/layout/grid-first/#rule-float-for-text-wrap)）。親子や兄弟の `margin` が相殺する条件は「[8-4 マージンの相殺](/layout/margin-collapse/)」で説明しています。
+
+## 通常フローで効かないプロパティ
+
+`gap` は、通常フローのブロックコンテナには効きません。`gap` が働くのはFlexbox、Grid、段組みです。同じく、`align-items`、`justify-content`、`flex-grow`、`order` のようなFlexboxやGrid向けのプロパティも、ブロックコンテナや、その子に指定しても何も変えません。{/* 要確認: 出典なし */}
+
+効かない指定は、残しておくと読む人を誤らせます。`gap` が書いてあれば子の間隔はそこで決まっていると読まれますが、実際の間隔は子の `margin` です。FlexboxやGridでだけ働くプロパティは、`display` を `flex` か `grid` にした要素にだけ書きます（[`no-flex-grid-props-in-flow`](/layout/normal-flow/#rule-no-flex-grid-props-in-flow)）。
+
+例外が `align-content` です。2024年から、ブロックコンテナにも使えるようになりました（2026年10月確認）。親を `display: block grid` に変えなくても、`align-content: center` だけで、中身を上下の中央に置けます。ただし、`justify-content` はブロックコンテナでは効かないので、左右の中央寄せは `margin-inline: auto` で書きます。{/* 要確認: 出典なし */}
+
+<Baseline id="align-content-block" name="ブロックコンテナの align-content" />
+
+```css title="🙆‍♂ Recommended: ブロックのまま、中身を上下の中央に置く"
+._hero {
+  align-content: center;
+  min-block-size: calc(320 / 16 * 1rem);
+}
+```
+
+`z-index` も、通常フローの要素には効きません。`position` が `static` のブロックに `z-index` を指定しても、重なり順は変わりません。一方、フレックスアイテムとグリッドアイテムは、`position` を指定しなくても `z-index` が効きます。
+
+## 同じプロパティでも方式で意味が変わる
+
+ここまでの規則から分かるように、プロパティの意味は、要素がどの方式の中にあるかで変わります。`inline-size` は、通常フローでは守られる値で、Flexboxでは縮む出発点です。`margin-block: auto` は、通常フローでは0として扱われ、FlexboxやGridでは余った空間を吸収して要素を寄せます。
+
+`min-inline-size: auto` も、通常フローのブロックでは0ですが、フレックスアイテムでは中身の最小幅として扱われ、アイテムが縮まない原因になります（「[8-5 Flexboxの基礎](/layout/flexbox-basics/)」）。マージンの相殺は通常フローでだけ起き、フレックスアイテムとグリッドアイテムの間では起きません。
+
+方式を決めるのは、要素自身ではなく親の `display` の内側の値です。親を `flex` に変えると、子のすべてが通常フローの規則の代わりにFlexboxの規則で並び、子の指定の意味がまとめて変わります。
+
+## コード例とデモ
+
+次のデモでは、文字、`<span>`、`<p>` が混ざった同じHTMLを、通常フロー、Flexbox、Gridの親に入れています。通常フローでは、`<p>` が幅いっぱいに広がり、その前後の文字は匿名のブロックボックスに包まれて別の行になります。`<span>` には上下の `margin` を付けていますが、通常フローでは無視されます。Flexboxでは、文字と要素が中身の幅のアイテムとして横に並び、`<span>` の上下の `margin` も効きます。Gridでは、それぞれが1行ずつのアイテムになり、幅いっぱいに伸びます。
+
+<Demo title="同じ HTML でも、通常フロー、Flexbox、Grid で並び方が変わる" html={modesHtml} css={modesCss} variant="neutral" />
+
+次のデモは、`float` した四角と短い本文を入れた親を2つ並べたものです。通常のブロックの親は `float` を高さに含まないので、四角が親の下へはみ出し、次の要素まで回り込みます。親に `display: block flow-root` を指定すると、親が新しいBFCを作り、四角を内側に収めます。
+
+<Demo title="display: flow-root で、float を親の内側に収める" html={flowRootHtml} css={flowRootCss} variant="neutral" />
+
+画像に文字を回り込ませる部品は、次のように書けます。`float` の値は、書字方向に合わせて `inline-start` のような論理値で書きます。
+
+```css title="🙆‍♂ Recommended: 回り込みを親の内側に収める"
+._media {
+  display: block flow-root;
+}
+
+._image {
+  float: inline-start;
+  max-inline-size: 40%;
+  margin-inline-end: 16px;
+}
+```
+
+## 補足と注意点
+
+通常フローは、FlexboxやGridの代わりが見つかるまでの仮の状態ではありません。見出し、段落、リスト、画像が続く本文は、通常フローのまま `margin` で間隔を作るほうが、`float` による回り込みや `margin` の相殺が働きます（[`prose-in-normal-flow`](/layout/spacing/#rule-prose-in-normal-flow)）。部品の中で間隔を一定にしたい並びは、FlexboxかGridにして `gap` で間隔を決めます（「[8-9 余白を設計する](/layout/spacing/)」）。
+
+親をFlexboxやGridにしても、変わるのは子の並べ方だけです。親自身は、外側の値に従って、祖先の通常フローの中にブロックとして積まれます。`display: block flex` の `block` は、この外側の振る舞いを表しています。
+
+`position: absolute` と `fixed` の要素、`float` した要素は、通常フローから外れます。`float` の要素は、後に続く行ボックスを横へ押しやります。位置指定の規則は「[8-7 positionの基礎](/layout/positioning/)」で説明しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Understanding the fundamentals of CSS layout](https://polypane.app/blog/understanding-the-fundamentals-of-css-layout/)（Polypane、2026年1月）
+- [Understanding Layout Algorithms](https://www.joshwcomeau.com/css/understanding-layout-algorithms/)（Josh W. Comeau）
+- [通常フロー](https://zenn.dev/ojk/books/intro-to-html-css/viewer/css-normalflow)（OJK、Zenn）
+- [CSS Display Module Level 3](https://drafts.csswg.org/css-display-3/)（W3C）
+- [CSS Box Alignment Module Level 3](https://drafts.csswg.org/css-align-3/)（W3C）
+- [通常フローでのブロックおよびインラインレイアウト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Block_and_inline_layout_in_normal_flow)
+- [ブロック整形コンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Block_formatting_context)
+- [vertical-align - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/vertical-align)
+- [box-decoration-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/box-decoration-break)

@@ -1,0 +1,154 @@
+---
+title: "11-3 背景から文字色を決める"
+description: "背景色から文字色を黒か白に決めるときは、相対カラー構文と sign() で oklch(from var(--_background) sign(0.7 - l) 0 h) と書きます。contrast-color() は WCAG 2.x のコントラスト比で選ぶため、中間の明度の色で読みにくいほうを選ぶことがあり、APCA に変わるまでは使うのを控えます。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import contrastHtml from '../../../demos/color-media/contrast-text/index.html?raw';
+import contrastCss from '../../../demos/color-media/contrast-text/style.css?raw';
+
+背景色から文字色を黒か白に決めるときは、相対カラー構文と `sign()` を組み合わせ、`color: oklch(from var(--_background) sign(0.7 - l) 0 h);` と書きます。背景の明度が0.7より低ければ白に、0.7以上なら黒になります。背景色を差し替えても、文字色を選び直す必要はありません。
+
+同じことをする `contrast-color()` という関数もあります。しかし、いまの `contrast-color()` は、WCAG 2.xのコントラスト比のアルゴリズムで黒か白を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあります。知覚にもとづくAPCAのようなアルゴリズムに変わるまでは、`contrast-color()` は使わず、`sign()` で書きます。
+
+<Baseline id="abs-sign" name="sign()" />
+
+## 背景色ごとに文字色を指定すると起きること
+
+ボタンやバッジのように、色のバリエーションを持つ部品を考えます。バリエーションを足すたびに、背景色と文字色の組み合わせを1つずつ決めることになります。
+
+```css title="🙅‍♂ Not Recommended: バリエーションごとに文字色を指定する"
+/* 🙅‍♂ Not Recommended */
+._badge {
+  &[data-variant="info"] {
+    background-color: var(--color--accent--600);
+    color: oklch(100% 0 0deg);
+  }
+
+  &[data-variant="warning"] {
+    background-color: var(--color--warning--400);
+    color: oklch(0% 0 0deg);
+  }
+}
+```
+
+このコードでは、背景色を変えるたびに文字色も見直す必要があります。`--color--warning--400` を少し暗い段階に替えたら、黒い文字のままでよいのか、白にすべきかを、誰かが判断しなければなりません。ダークモードで背景色の段階が替わる場合も同じで、配色ごとに文字色の組み合わせが増えます。
+
+背景色がCSSの外から来る場合は、さらに困ります。CMSで編集者がラベルの色を選べる場合や、ユーザーがテーマの色を選べる場合は、どの色が来るかを前もって知ることができません。どの背景色が来ても、それに合わせて文字色を決められる書き方が必要です。
+
+## sign() で黒か白を選ぶ
+
+`sign()` は、中の値が正なら1を、負なら-1を、0なら0を返す関数です。これを相対カラー構文の明度の位置に書くと、元の色の明度によって、明度が1か、0以下の色を作れます。
+
+```css title="🙆‍♂ Recommended: 背景色の明度から、文字色を黒か白に決める"
+@scope (.scoped.badge) to (.scoped) {
+  :scope {
+    --_background: var(--badge--background, var(--color--accent--600));
+
+    background-color: var(--_background);
+    color: oklch(from var(--_background) sign(0.7 - l) 0 h);
+  }
+}
+```
+
+背景の明度が0.7より低いと、`0.7 - l` が正になり、明度は1、つまり白になります。0.7以上なら明度は0か-1になります。`oklch()` の明度は0より小さくならないので、-1は0に切り詰められ、どちらも黒になります。彩度を0にしているので色相は見た目に影響せず、元の色の `h` をそのまま渡しています。
+
+バリエーションの側では、`--badge--background` に背景色を渡すだけです。文字色は背景色から決まるので、色を1つ選べばバリエーションが1つ増えます。CMSから来る色を `style` 属性で渡す場合も、同じ式で文字色が決まります。
+
+`sign()` は、2025年6月にすべての主要なブラウザで使えるようになりました（2026年10月確認）。なお、`sign()` を相対カラー構文の中で使う書き方は、Chrome 153でだけ確認しています。
+
+## 閾値を0.7にする理由
+
+閾値は、どの明度から黒い文字にするかの境目です。WCAG 2.xのコントラスト比で計算すると、無彩色の場合、白とのコントラスト比と黒とのコントラスト比が等しくなるのは、明度0.56あたりです。コントラスト比の高いほうを選ぶなら、閾値は0.56になります。
+
+本書では、閾値を0.7にし、中間の明度の色では白を選びます。明度0.57の青（`oklch(57% 0.16 255deg)`）では、WCAG 2.xのコントラスト比は白が約4.5:1、黒が約4.7:1で、比の高い黒が選ばれます。しかし、MDNは、この明度に近い青の背景に黒い文字を置くと、小さな文字では読みにくいと注意しています。比の数値と、実際の読みやすさが一致しない例です。中間の明度の色では白い文字のほうを読みやすく感じることが多いので、閾値を0.56より上に置いています。{/* 要確認: 出典なし（閾値を0.7にする根拠。APCA の計算との比較は未確認） */}
+
+ただし、0.7は、WCAG 2.xのコントラスト比を満たす値ではありません。明度0.6の灰色に白い文字を置くとコントラスト比は約3.9:1、明度0.7では約2.7:1で、通常の大きさの文字の基準（4.5:1）を下回ります。本書のルールでは、文字と背景のコントラスト比はWCAG 2.1のAAを満たす必要があります。そのため、文字を載せる背景のトークンには、明度がおよそ0.57から0.7までの色を使いません。この範囲の色は、黒と白のどちらを選んでも読みにくくなりやすい色です。
+
+`sign()` は、黒と白のうちどちらかを選ぶだけで、選んだ色が基準を満たすことまでは保証しません。最後は、実際の背景色と文字色の組み合わせでコントラスト比を確かめます。コントラストの基準と確かめ方は「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+
+## contrast-color() を使わない理由
+
+`contrast-color()` は、背景色を渡すと、白か黒のうちコントラストの高いほうを返す関数です。`color: contrast-color(var(--_background));` と書けば、上の `sign()` の式と同じように、背景色から文字色が決まります。
+
+```css title="🙅‍♂ Not Recommended: contrast-color() で文字色を決める"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.badge) to (.scoped) {
+  :scope {
+    --_background: var(--badge--background, var(--color--accent--600));
+
+    background-color: var(--_background);
+    color: contrast-color(var(--_background));
+  }
+}
+```
+
+この書き方を勧めない理由は2つあります。1つ目は、`sign()` でも1行で書けることです。`oklch(from var(--_background) sign(0.7 - l) 0 h)` は `contrast-color()` より少し長いだけで、閾値を自分で決められます。
+
+2つ目は、いまの `contrast-color()` の計算方法です。主要なブラウザは、WCAG 2.xのコントラスト比で黒か白を選んでいます。上で見た明度0.57の青のように、中間の明度の色では比の差がわずかで、読みにくいほうの黒を選ぶことがあります。閾値を変える手段もありません。知覚にもとづくAPCAのようなアルゴリズムに変わるまでは、`contrast-color()` を使うのを控えます。
+
+`contrast-color()` は、2026年4月にすべての主要なブラウザで使えるようになりました。ただし、Safariが対応したのはバージョン26からで、本書の対象のブラウザ（Safari 18系の最終版以降）には未対応の環境が残ります（2026年10月確認）。
+
+<Baseline id="contrast-color" />
+
+## 1つの色から配色を組み立てる
+
+同じ式を使うと、文字色から背景色を作ることもできます。トーストのように色のバリエーションを持つ部品では、バリエーションごとに書き換える色を1つにできます。
+
+```css title="🙆‍♂ Recommended: 文字色だけを受け取り、背景色は文字色から作る"
+@scope (.scoped.toast) to (.scoped) {
+  :scope {
+    --_foreground: var(--toast--foreground, var(--foreground--base));
+    --_contrast-color: oklch(from var(--_foreground) sign(0.7 - l) 0 h);
+
+    padding: 1em;
+    border: 1px solid;
+    border-radius: 4px;
+    background-color: color-mix(in oklab, var(--_foreground), var(--_contrast-color) 90%);
+    color: var(--_foreground);
+
+    &[data-variant="success"] {
+      --_foreground: var(--color--accent--600);
+    }
+
+    &[data-variant="error"] {
+      --_foreground: var(--color--error--600);
+    }
+  }
+}
+```
+
+`--_contrast-color` が、文字色と対比する黒か白です。背景色は、その黒か白に文字色を10%だけ混ぜて作ります。枠線は `currentColor` なので文字色と同じです。バリエーションのルールでは、`--_foreground` だけを書き換えます。
+
+文字、枠線、背景の3色がすべて `--_foreground` から決まるので、色を1つ選べばバリエーションが1つ増えます。暗い文字色なら淡い背景に、明るい文字色なら暗い背景になるので、ダークモードで明るい段階の色を渡しても、文字と背景の明暗が逆転することはありません。ただし、背景に文字色を混ぜるとコントラスト比は下がるので、バリエーションの色ごとに確かめます。
+
+## コード例とデモ
+
+次のデモでは、明度の違う7つの背景色に、同じ式で文字色を決めています。
+
+<Demo title="背景色の明度から、文字色が黒か白に決まる" html={contrastHtml} css={contrastCss} />
+
+明度0.57の青までは白い文字に、0.75から先は黒い文字になります。どの色見本でも、CSSの側で指定しているのは背景色だけです。デモの色は、選ばれた文字色とのコントラスト比が4.5:1以上になるものを選んでいます。明度0.6から0.7の色を加えると白い文字が選ばれますが、WCAG 2.xのコントラスト比では基準に届きません。
+
+## sign() で書くときの注意
+
+この式は、背景色が不透明であることを前提にしています。半透明の背景色では、下にある色と重なった色が実際の背景になり、元の色の明度とは違う明るさに見えます。半透明の背景に文字を載せるときは、重なったあとの色で確かめます。
+
+選べるのは、黒と白の2色だけです。ブランドの濃い色や、少しだけ色味のある白を文字色にしたい場合は、`sign()` の結果を明度の段階に置き換える必要があります。たとえば `calc(0.2 + 0.75 * max(sign(0.7 - l), 0))` のように書けば、明度0.2と0.95の間で切り替えられます。{/* 要確認: 出典なし */}ただし、式が長くなるので、決まった組み合わせが少ないなら、トークンで組み合わせを決めたほうが読みやすくなります。
+
+文字以外の要素にも、同じ式を使えます。アイコンや枠線のように、背景の上に描く部品の色を決めるときも、背景色から黒か白を選べます。非テキストのコントラスト比の基準は、文字とは異なり3:1です。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)
+- [contrast-color() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/contrast-color)（中間の明度の背景では、黒と白のどちらも十分なコントラストにならないという注意）
+- [CSS Color Module Level 5: contrast-color()](https://drafts.csswg.org/css-color-5/#contrast-color)
+- [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)

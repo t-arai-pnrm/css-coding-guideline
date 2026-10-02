@@ -1,11 +1,11 @@
 ---
 title: "付録D レビューのチェックリスト"
-description: "CSSをレビューするときの確認項目を、13-2で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
+description: "CSSをレビューするときの確認項目を、14-2で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
 sidebar:
   order: 4
 ---
 
-この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[13-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
+この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[14-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
 
 各項目には、関係するルールのIDを添えています。指摘するときは、IDを引用すると、理由と詳しい説明をすぐに示せます。項目に当てはまらない記述でも、意図が読み取れないものは誤りと決めつけずに `Q` で質問します。反対に、プロジェクトで合意していない規約を求める指摘は `IMO` にとどめます。
 
@@ -72,7 +72,7 @@ sidebar:
 - [ ] トランジションの再生時間とイージングに、トークンを使っているか（[`transition-longhand-with-tokens`](/interaction/motion/#rule-transition-longhand-with-tokens)）
 - [ ] 新しいトークンが `--<分類>--<名前>` の形になっているか（[`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first)）
 - [ ] 1回しか使わない値や、特定のコンポーネント専用の値をトークンにしていないか（[`no-single-use-token`](/components/design-tokens/#rule-no-single-use-token)）
-- [ ] 派生させた色のために、トークンやRGBの値を別に用意していないか（[`derive-colors-from-base`](/color-media/color/#rule-derive-colors-from-base)）
+- [ ] 派生させた色のために、トークンやRGBの値を別に用意していないか（[`derive-colors-from-base`](/color-media/relative-color/#rule-derive-colors-from-base)）
 
 余白のトークンは、レスポンシブの環境では `%` や `cqi` が絡み、二者択一で片付かないことが多いので、使っていなくてもあまり細かく指摘しません。
 
@@ -127,12 +127,12 @@ sidebar:
 - [ ] 理由のない `white-space: nowrap` がないか（[`no-nowrap-without-reason`](/layout/defensive/#rule-no-nowrap-without-reason)）
 - [ ] はみ出しを切り取るのに、`hidden` ではなく `clip` を使っているか（[`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)）
 - [ ] 横スクロールを隠す前に、はみ出している要素を特定して直したか（[`find-overflow-source-first`](/layout/defensive/#rule-find-overflow-source-first)）
-- [ ] 画像の上の文字に、画像が表示されなくても読める背景色があるか（[`text-on-image-fallback-background`](/color-media/images-and-decoration/#rule-text-on-image-fallback-background)）
+- [ ] 画像の上の文字に、画像が表示されなくても読める背景色があるか（[`text-on-image-fallback-background`](/decoration/images-and-decoration/#rule-text-on-image-fallback-background)）
 - [ ] ブラウザの文字サイズの設定を大きくして、表示を確かめたか（[`verify-with-text-scaling`](/values/px-and-rem/#rule-verify-with-text-scaling)）
 
 ## 7. コンポーネントの境界
 
-- [ ] 見た目が似ているだけのものを、1つのコンポーネントにまとめていないか（[`component-split-by-role`](/components/boundaries/#rule-component-split-by-role)、[`rule-of-three`](/principles/maintainability/#rule-rule-of-three)）
+- [ ] 見た目が似ているだけのものを、1つのコンポーネントにまとめていないか（[`component-split-by-role`](/components/what-is-a-component/#rule-component-split-by-role)、[`rule-of-three`](/principles/maintainability/#rule-rule-of-three)）
 - [ ] コンポーネントごとにCSSのファイルを分け、複数のコンポーネントのCSSを1つのファイルに混ぜていないか（[`one-component-per-file`](/components/boundaries/#rule-one-component-per-file)）
 - [ ] コンポーネントのルートに、`margin` や `grid-area` のような外部関連型のレイアウトを指定していないか（[`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)）
 - [ ] 子のコンポーネントの配置と外側の余白を、親の `gap` やOuterで決めているか（[`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)）
@@ -167,7 +167,7 @@ sidebar:
 
 次の項目は、確認の順番の9つには含まれていません。しかし、使いやすさやアクセシビリティを損なうものは `MUST` の対象です。関係するスタイルがあれば、あわせて確かめます。
 
-- [ ] ホバーを `@media (any-hover: hover)` の中に書き、`:focus-visible` にも同じ見た目を指定しているか（[`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover)、[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
+- [ ] ホバーを `@media (any-hover)` の中に書き、`:focus-visible` にも同じ見た目を指定しているか（[`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover)、[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
 - [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
 - [ ] トランジションとアニメーションを `@media (prefers-reduced-motion: no-preference)` の中で指定しているか。動きそのものが情報を伝えるスピナーと、ポップオーバーやダイアログの出現に使う、位置や大きさを変えないフェードは、条件の外にあっても違反ではない（[`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference)）
 - [ ] 出ていく動きに `ease-in` 系、現れる動きに `ease-out` 系を使っているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして、動きが減ることを確かめたか（[`ease-in-for-exit`](/interaction/motion/#rule-ease-in-for-exit)）
@@ -180,7 +180,7 @@ sidebar:
 - [ ] 必須の印や単位のように読み手が知る必要のある文字を、`content` で入れていないか（[`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)）
 - [ ] `::placeholder` の文字と背景のコントラスト比が4.5:1以上か（[`placeholder-color-contrast`](/pseudo/form-states/#rule-placeholder-color-contrast)）
 - [ ] 入力欄の文字サイズが1rem以上で、ズームを止める指定がないか（[`input-font-size-min-1rem`](/interaction/forms/#rule-input-font-size-min-1rem)、[`no-maximum-scale`](/interaction/forms/#rule-no-maximum-scale)）
-- [ ] `<img>` に `width` と `height` の属性があり、ファーストビューの画像を遅延読み込みにしていないか（[`img-width-height-attributes`](/color-media/images-and-decoration/#rule-img-width-height-attributes)、[`no-lazy-loading-first-view`](/color-media/images-and-decoration/#rule-no-lazy-loading-first-view)）
+- [ ] `<img>` に `width` と `height` の属性があり、ファーストビューの画像を遅延読み込みにしていないか（[`img-width-height-attributes`](/decoration/images-and-decoration/#rule-img-width-height-attributes)、[`no-lazy-loading-first-view`](/decoration/images-and-decoration/#rule-no-lazy-loading-first-view)）
 
 ## AIが生成したコードを見るとき
 

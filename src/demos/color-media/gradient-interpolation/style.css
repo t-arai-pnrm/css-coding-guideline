@@ -1,0 +1,41 @@
+@layer components {
+  @scope (.scoped.gradient-demo) to (.scoped) {
+    :scope {
+      --_from: oklch(85% 0.17 95deg);
+      --_to: oklch(55% 0.2 260deg);
+
+      display: block grid;
+      gap: 16px;
+    }
+
+    figure {
+      display: block grid;
+      gap: 4px;
+    }
+
+    ._bar {
+      block-size: calc(48 / 16 * 1rem);
+      border-radius: 8px;
+
+      /* 色空間の指定に対応していない環境でも、帯が消えないようにする */
+      background-color: var(--_from);
+
+      &[data-space="srgb"] {
+        /* stylelint-disable-next-line value-keyword-case -- 色空間の名前は、仕様と同じ小文字で書く */
+        background-image: linear-gradient(in srgb 90deg, var(--_from), var(--_to));
+      }
+
+      &[data-space="oklab"] {
+        background-image: linear-gradient(in oklab 90deg, var(--_from), var(--_to));
+      }
+
+      &[data-space="oklch"] {
+        background-image: linear-gradient(in oklch 90deg, var(--_from), var(--_to));
+      }
+    }
+
+    figcaption {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

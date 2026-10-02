@@ -1,0 +1,47 @@
+@layer components {
+  @scope (.scoped.normal-flow-modes) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._parent {
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+      background-color: oklch(97% 0.01 250deg);
+
+      &[data-mode="flex"] {
+        display: block flex;
+        flex-wrap: wrap;
+      }
+
+      &[data-mode="grid"] {
+        display: block grid;
+      }
+    }
+
+    /* 上下の margin が、方式によって無視されるか効くかを見せる */
+    ._inline {
+      margin-block: 8px;
+      padding-inline: 4px;
+      background-color: oklch(85% 0.1 250deg);
+    }
+
+    ._block {
+      padding-inline: 4px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

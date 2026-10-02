@@ -1,8 +1,8 @@
 ---
-title: "8-10 ページのスクロールとルートスクローラー"
+title: "8-12 ページのスクロールとルートスクローラー"
 description: "ページ全体のスクロールは、ビューポートのスクロール（ルートスクローラー）に任せます。html や body の高さを固定して内側の要素をスクロールさせると、戻ったときの位置の復元やキーボードでの操作など、ブラウザがページのスクロールに用意した機能が使えなくなります。入れ子になる書き方と、その確かめ方、用途ごとの直し方をまとめます。"
 sidebar:
-  order: 10
+  order: 12
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -63,7 +63,7 @@ body {
 }
 ```
 
-ルート要素の `overflow` が `visible` ではないので、伝わるのはルート要素の値だけで、`body` の `overflow-x: hidden` は `body` 自身に残ります。さらに、片方の軸が `hidden` のとき、もう片方の軸の `visible` は `auto` として計算されます。そのため、`body` は縦方向のスクロールコンテナになります。高さが `100%` に固定されているので、内容は `body` の中でスクロールし、ビューポートはスクロールしなくなります。`height: 100%` がなければ、`body` は内容の高さまで伸びるのでスクロールはしません。それでも `body` はスクロールコンテナのままなので、中の `position: sticky` が留まらなくなります（「[8-11 sticky が動かないとき](/layout/sticky/)」）。
+ルート要素の `overflow` が `visible` ではないので、伝わるのはルート要素の値だけで、`body` の `overflow-x: hidden` は `body` 自身に残ります。さらに、片方の軸が `hidden` のとき、もう片方の軸の `visible` は `auto` として計算されます。そのため、`body` は縦方向のスクロールコンテナになります。高さが `100%` に固定されているので、内容は `body` の中でスクロールし、ビューポートはスクロールしなくなります。`height: 100%` がなければ、`body` は内容の高さまで伸びるのでスクロールはしません。それでも `body` はスクロールコンテナのままなので、中の `position: sticky` が留まらなくなります（「[8-7 positionの基礎](/layout/positioning/)」）。
 
 ## ページがどこでスクロールしているかを確かめる
 
@@ -119,11 +119,11 @@ kiso.cssは、`body` に `min-block-size: 100dvb` を指定しています（kis
 }
 ```
 
-サイドバーに指定した `overflow-y: auto` は、サイドバーの中身が画面より長いときのためのもので、ページのスクロールには関わりません。`align-self: start` と高さの上限が必要な理由は「[8-11 sticky が動かないとき](/layout/sticky/)」で説明しています。ヘッダーを留めるなら、ビューポートの高さが十分なときだけにします（「[8-9 重なりと配置](/layout/positioning/)」）。
+サイドバーに指定した `overflow-y: auto` は、サイドバーの中身が画面より長いときのためのもので、ページのスクロールには関わりません。`align-self: start` と高さの上限が必要な理由は「[8-7 positionの基礎](/layout/positioning/)」で説明しています。ヘッダーを留めるなら、ビューポートの高さが十分なときだけにします（「[8-7 positionの基礎](/layout/positioning/)」）。
 
 ## はみ出しの切り取りとモーダルの背面
 
-横のはみ出しを隠したいなら、`hidden` ではなく `clip` を使います。`clip` ははみ出した部分を切り取るだけで、スクロールコンテナを作りません。`html` と `body` の両方に `overflow-x: clip` を指定しても、ルート要素の値はビューポートに伝わり、ビューポートでは `hidden` として扱われます。`body` に残った `clip` はスクロールコンテナを作らないので、ページは引き続きビューポートでスクロールします。書き方は「[8-8 変化に強いレイアウト](/layout/defensive/)」のルール[`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)のとおりです。
+横のはみ出しを隠したいなら、`hidden` ではなく `clip` を使います。`clip` ははみ出した部分を切り取るだけで、スクロールコンテナを作りません。`html` と `body` の両方に `overflow-x: clip` を指定しても、ルート要素の値はビューポートに伝わり、ビューポートでは `hidden` として扱われます。`body` に残った `clip` はスクロールコンテナを作らないので、ページは引き続きビューポートでスクロールします。書き方は「[8-10 変化に強いレイアウト](/layout/defensive/)」のルール[`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)のとおりです。
 
 <Baseline id="overflow-clip" />
 
@@ -135,7 +135,7 @@ kiso.cssは、`body` に `min-block-size: 100dvb` を指定しています（kis
 
 ページのスクロールに関わるプロパティには、ルート要素に指定するとビューポートに適用されるものがあります。`scroll-behavior` は、CSSOM Viewで、ルート要素の値がビューポートに適用されると定められています。`scroll-padding` と `scroll-snap-type` も、CSS Scroll Snapで同じ扱いです。どれも、`overflow` と違い、`body` の値はビューポートに伝わりません。
 
-本書のほかの節の指定も、この仕組みを前提にしています。「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」では、スムーススクロールを `:root` に指定しています。「[8-9 重なりと配置](/layout/positioning/)」では、固定ヘッダーの高さを `:root` の `scroll-padding-block-start` で除いています。ページを入れ子のスクロールコンテナでスクロールさせると、これらの指定も効かなくなります。
+本書のほかの節の指定も、この仕組みを前提にしています。「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」では、スムーススクロールを `:root` に指定しています。「[8-7 positionの基礎](/layout/positioning/)」では、固定ヘッダーの高さを `:root` の `scroll-padding-block-start` で除いています。ページを入れ子のスクロールコンテナでスクロールさせると、これらの指定も効かなくなります。
 
 文書の先頭の `<!doctype html>` も確かめます。これがない文書は互換モードで描画され、`document.scrollingElement` が `body` を返すなど、スクロールの扱いが標準モードと変わります。HTMLの構文解析の規則では、doctypeより前に空白以外の文字があっても互換モードになります。
 

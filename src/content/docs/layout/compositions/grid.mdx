@@ -1,5 +1,5 @@
 ---
-title: "8-13-6 grid：列の最小幅と最大数から列数を決める"
+title: "8-14-6 grid：列の最小幅と最大数から列数を決める"
 description: "grid は、列の最小幅と最大数を受け取り、置かれた場所の幅から列の数を自動で決めるコンポジションです。メディアクエリを使わずに、カードの一覧の列を1列から最大数まで1つずつ増減させます。"
 sidebar:
   order: 6
@@ -82,7 +82,7 @@ import switcherCss from '../../../../demos/layout/composition-grid-switcher/styl
 }
 ```
 
-公開プロパティは6つです。`--grid--column-min-width` は列の最小幅で、デフォルトは320px相当です。列の幅がこれを下回りそうになると、列が1つ減ります。`--grid--column-max-count` は列の最大数で、デフォルトは5です。間隔は `--grid--gap` で一括に、`--grid--row-gap` と `--grid--column-gap` で個別に指定でき、どれもデフォルトは `0px` です。間隔のデフォルトを0にする理由は、「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」のとおり、間隔はコンポジションを置く文脈で決まる値だからです。
+公開プロパティは6つです。`--grid--column-min-width` は列の最小幅で、デフォルトは320px相当です。列の幅がこれを下回りそうになると、列が1つ減ります。`--grid--column-max-count` は列の最大数で、デフォルトは5です。間隔は `--grid--gap` で一括に、`--grid--row-gap` と `--grid--column-gap` で個別に指定でき、どれもデフォルトは `0px` です。間隔のデフォルトを0にする理由は、「[7-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」のとおり、間隔はコンポジションを置く文脈で決まる値だからです。
 
 残る `--grid--mode` は、`repeat()` に渡すキーワードで、`auto-fill` か `auto-fit` を受け取ります。2つの違いが出るのは、アイテムの数が入る列の数より少ないときです。`auto-fill` は、アイテムのない列を空のまま残すので、アイテムは1列分の幅で行の先頭に寄ります。`auto-fit` は空の列を幅0に折りたたむので、残ったアイテムが `1fr` で行いっぱいに広がります。
 
@@ -141,7 +141,7 @@ import switcherCss from '../../../../demos/layout/composition-grid-switcher/styl
 }
 ```
 
-`li` を `display: block grid` にしているのは、同じ行のカードの高さをそろえるためです。`grid` の子である `li` は、行の高さいっぱいに伸びます。その `li` をグリッドにすると、中の `article` もデフォルトの `stretch` で `li` の高さまで伸び、隣のカードと下端がそろいます。カードの中の見出しや本文の位置まで行ごとにそろえたいときは、サブグリッドを使います（「[8-6 Gridから考える](/layout/grid-first/#rule-subgrid-for-aligned-rows)」）。
+`li` を `display: block grid` にしているのは、同じ行のカードの高さをそろえるためです。`grid` の子である `li` は、行の高さいっぱいに伸びます。その `li` をグリッドにすると、中の `article` もデフォルトの `stretch` で `li` の高さまで伸び、隣のカードと下端がそろいます。カードの中の見出しや本文の位置まで行ごとにそろえたいときは、サブグリッドを使います（「[8-8 Gridから考える](/layout/grid-first/#rule-subgrid-for-aligned-rows)」）。
 
 次のデモは、最小幅200px相当、最大4列、間隔16px相当でカードを6枚並べています。デモの本体には左右に16pxの余白があるので、一覧の幅は表示の幅より32px狭くなります。幅を320px、480px、768px、1024pxと切り替えると、列は1列、2列、3列、4列と1つずつ増えます。1280pxでは、最小幅だけで並べれば5列入りますが、最大数の4列で止まります。
 
@@ -153,7 +153,7 @@ import switcherCss from '../../../../demos/layout/composition-grid-switcher/styl
 
 ## `switcher` との使い分け
 
-`grid` とよく似たコンポジションに、`switcher` があります。どちらも列の最小幅を受け取り、幅が足りなくなると列を減らします。違うのは減り方で、`grid` は最大数から1列ずつ減り、`switcher` は指定の列数から一気に1列になります（`switcher` の仕組みは「[8-13-4 switcher](/layout/compositions/switcher/)」で説明しています）。
+`grid` とよく似たコンポジションに、`switcher` があります。どちらも列の最小幅を受け取り、幅が足りなくなると列を減らします。違うのは減り方で、`grid` は最大数から1列ずつ減り、`switcher` は指定の列数から一気に1列になります（`switcher` の仕組みは「[8-14-4 switcher](/layout/compositions/switcher/)」で説明しています）。
 
 次のデモでは、3つのアイテムを、最小幅200px相当、最大3列の `grid` と、同じ値の `switcher` で並べています。768pxではどちらも3列です。480pxでは、`grid` は2列になって3つ目のアイテムが2行目に1つだけ残り、`switcher` は3つとも縦に積まれます。
 
@@ -161,7 +161,7 @@ import switcherCss from '../../../../demos/layout/composition-grid-switcher/styl
 
 使い分けの基準は、アイテムの数が決まっているかどうかです。サービスの特徴を3つ並べる、料金プランを3つ並べるといった、数が決まっていて揃いで見せたいアイテムには `switcher` を使います。3つのうち1つだけが2行目に回ると、揃いの印象が崩れるからです。件数が変わり、どこで折り返しても意味が変わらない一覧には `grid` を使います。
 
-アイテムの高さがばらばらで、行をそろえずに隙間を詰めたいときは、`grid` ではなく `masonry` を使います（「[8-13-8 masonry](/layout/compositions/masonry/)」）。メインとサイドのように、幅の違う2つの領域を並べるときは `sidebar` です（「[8-13-5 sidebar](/layout/compositions/sidebar/)」）。`grid` の列はすべて同じ幅になるので、幅の違う領域には向きません。
+アイテムの高さがばらばらで、行をそろえずに隙間を詰めたいときは、`grid` ではなく `masonry` を使います（「[8-14-8 masonry](/layout/compositions/masonry/)」）。メインとサイドのように、幅の違う2つの領域を並べるときは `sidebar` です（「[8-14-5 sidebar](/layout/compositions/sidebar/)」）。`grid` の列はすべて同じ幅になるので、幅の違う領域には向きません。
 
 ## 補足と注意点
 
@@ -171,7 +171,7 @@ import switcherCss from '../../../../demos/layout/composition-grid-switcher/styl
 
 `grid` はアイテムの順番を入れ替えません。アイテムはHTMLの順に左上から右へ並び、行の終わりで次の行へ回るので、スクリーンリーダーの読み上げ順と見た目の順が一致します。この一致を保つため、`order` や `grid-auto-flow: dense` による並べ替えはしません。並べ替えると、見た目の順と、キーボードのフォーカスの移る順がずれるからです。
 
-列の幅は `minmax()` の最小値で守られていますが、カードの中に長いURLや英単語があると、カードの中身が列からはみ出すことがあります。グリッドのアイテムは、既定では中身の最小幅より狭くならないからです。単語の折り返しとアイテムの最小幅の扱いは、「[8-8 変化に強いレイアウト](/layout/defensive/)」で扱っています。
+列の幅は `minmax()` の最小値で守られていますが、カードの中に長いURLや英単語があると、カードの中身が列からはみ出すことがあります。グリッドのアイテムは、既定では中身の最小幅より狭くならないからです。単語の折り返しとアイテムの最小幅の扱いは、「[8-10 変化に強いレイアウト](/layout/defensive/)」で扱っています。
 
 列の幅は計算で求めるので、小数になります。表の1800pxの行では、1列は340.8pxです。ブラウザは端数を丸めて配置するので、最大数の列でちょうど埋まる幅のとき、丸めの誤差によって列が1つ減ることも考えられます。Chromeでは、1696pxから2403pxまでの数か所を確かめ、どこも5列になりました（2026年10月確認）。{/* 要確認: 出典なし */}SafariとFirefoxでの丸めの結果は確認していません。
 

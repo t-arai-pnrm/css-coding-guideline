@@ -1,0 +1,213 @@
+---
+title: "8-11 重なりと全幅"
+description: "要素を重ねるときは、まずGridの同じエリアに置きます。重なり順がおかしいときは、z-indexを大きくする前にスタッキングコンテキストを確かめます。画面幅いっぱいに広げるときは、まずレイアウトのガターの列まで広げます。"
+sidebar:
+  order: 11
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import stackingHtml from '../../../demos/layout/stacking-context/index.html?raw';
+import stackingCss from '../../../demos/layout/stacking-context/style.css?raw';
+import stackingBadCss from '../../../demos/layout/stacking-context/style.bad.css?raw';
+
+要素を重ねるときは、`position: absolute` の前に、Gridの同じエリアに置く方法を検討します。重なり順がおかしいときは、z-indexの値を大きくする前に、どの「スタッキングコンテキスト」の中で比べられているかを確かめます。FlexboxとGridの子の重なり順を変えるだけなら、`position: relative` を足さずにz-indexを指定します。
+
+要素を画面幅いっぱいに広げるときは、まずレイアウトの余白の列まで広げる方法を使います。ビューポート単位で広げるのは、背景の装飾と横スクロールの領域だけにします。この節では、どれも「要素が親の箱からはみ出して見える」場面を扱います。`position` の各値と、絶対配置の基準になる包含ブロックの仕組みは、「[8-7 positionの基礎](/layout/positioning/)」で説明しています。
+
+## 要素を重ねる方法
+
+画像の上に見出しを重ねるヒーローを考えます。よくあるのは、見出しを絶対配置にして、`translate` で中央に寄せる書き方です。
+
+```css title="🙅‍♂ Not Recommended: 絶対配置と translate で見出しを重ねる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    position: relative;
+  }
+
+  h2 {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    translate: -50% -50%;
+  }
+}
+```
+
+絶対配置にした要素は、通常のレイアウトの流れから外れます。ヒーローの高さは画像だけで決まり、見出しの大きさは反映されません。見出しが長くなったり、画面が狭くて行数が増えたりすると、見出しは画像の外へはみ出し、下にある内容と重なります。
+
+Gridなら、すべての子要素を同じエリアに置くだけで重ねられます。重ねた要素はどれもレイアウトの流れに残るので、エリアの高さは、画像と見出しのうち高いほうに合わせて決まります。見出しが長くなれば、ヒーロー全体が伸びます。
+
+```css title="🙆‍♂ Recommended: すべての子要素を同じエリアに置いて重ねる"
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-areas: "--pile";
+    place-items: center;
+
+    & > * {
+      grid-area: --pile;
+    }
+  }
+
+  img {
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  h2 {
+    padding: 24px;
+  }
+}
+```
+
+重なり順は、HTMLの順番で決まります。画像を先に、見出しを後に書けば、見出しが手前に描かれるので、z-indexは要りません。HTMLの順番で足りないときだけ、相対的なz-indexを使います。この重ね方は、第8章のコンポジション `pile` として部品にしています（「[8-14-9 pile](/layout/compositions/pile/)」）。
+
+## 重なり順とスタッキングコンテキスト
+
+z-indexの値は、ページ全体で比べられるわけではありません。比べられるのは、同じ「スタッキングコンテキスト」の中にある要素どうしだけです。スタッキングコンテキストは、重なり順を決める単位です。その中の要素は、外の要素と比べるときに1つのまとまりとして扱われます。
+
+```css title="🙅‍♂ Not Recommended: 子要素の z-index を大きくして、祖先の順位を超えようとする"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: relative;
+    z-index: 1;
+  }
+
+  ul {
+    position: absolute;
+    z-index: 9999;
+  }
+}
+
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    position: relative;
+    z-index: 2;
+  }
+}
+```
+
+この例では、ヘッダーのドロップダウンメニューが、下のヒーローの後ろに隠れます。ヘッダーは `z-index: 1` でスタッキングコンテキストを作っていて、ドロップダウンの9999は、ヘッダーの中の要素とだけ比べられるからです。ヘッダーのまとまりは、`z-index: 2` のヒーローより奥にあります。ドロップダウンの値をいくら大きくしても、この順位は変わりません。
+
+<Demo title="ヘッダーが z-index: 1 のコンテキストを作るので、9999 のメニューもヒーローの後ろに隠れる" html={stackingHtml} css={stackingBadCss} variant="not-recommended" />
+
+直すべきなのは、ヘッダーとヒーローの間の順位です。次のデモでは、ヘッダーのルートにトークンで絶対的なz-indexを指定し、ヒーローからは位置指定とz-indexを外しています。メニューにはz-indexを指定していませんが、ヘッダーのまとまりごと手前に描かれるので、ヒーローに隠れません。
+
+<Demo title="ヘッダーのルートで順位を決めると、メニューは z-index なしでヒーローの手前に出る" html={stackingHtml} css={stackingCss} />
+
+最初のスタッキングコンテキストは、`body` ではなく、`html` 要素が作ります。ほかのコンテキストは、すべてその内側で入れ子の関係になります。z-indexの値をトークンで管理する方法と、`isolation: isolate` でコンポーネントの中の重なりを閉じ込める方法は、「[7-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+
+## スタッキングコンテキストを作る指定
+
+スタッキングコンテキストは、z-indexを指定した位置指定の要素のほかにも、さまざまな指定で作られます。たとえば、`position: fixed` と `position: sticky` の要素や、z-indexを指定したフレックスアイテムとグリッドアイテム、`isolation: isolate` を指定した要素です。`opacity` が1未満の要素、`mix-blend-mode` が `normal` 以外の要素、`transform`、`filter`、`perspective`、`clip-path`、`mask` に `none` 以外を指定した要素も、コンテキストを作ります。`contain: layout` と `contain: paint` も同じです。アニメーションのために `opacity` や `transform` を指定しただけで、知らないうちにコンテキストができていることもあります。
+
+重なり順がおかしいときは、値を大きくする前に、DevToolsで祖先の要素をたどり、どの要素がコンテキストを作っているかを確かめます。`calc(infinity)` のような大きな値でも、祖先のコンテキストの順位は超えられません。
+
+直し方は2通りあります。1つ目は、不要なコンテキストを消すことです。中間の祖先がz-indexだけでコンテキストを作っていたなら、その指定を外すと、子孫は外側の要素と同じコンテキストの中で比べられます。2つ目は、反対にコンテキストを意図して作ることです。コンポーネントのルートに `isolation: isolate` を指定すると、中の重なり順はそのコンポーネントの中で閉じ、外のz-indexと干渉しません。外す前に、その指定がほかの要素の重なり順を支えていないかを確かめます。
+
+## z-indexが効く要素と効かない要素
+
+z-indexは、どの要素にも効くわけではありません。効くのは、`position` が `static` 以外の要素と、FlexboxとGridの子だけです。通常フローのブロックや、`position: static` のインラインの要素に指定しても、何も起きません。z-indexを解釈するかどうかは、その要素を配置しているレイアウトの方式で決まるからです。
+
+この違いを知らないと、z-indexを効かせるために `position: relative` を足す書き方が習慣になります。FlexboxやGridの子なら、`position` は `static` のままでz-indexが効きます。`position: relative` を足すと、その要素は子孫の絶対配置の要素の包含ブロックにもなり、z-indexとは関係のない基準まで変わります。
+
+```css title="🙆‍♂ Recommended: Flexbox の子の重なり順は、position を足さずに z-index で変える"
+@scope (.scoped.avatar-group) to (.scoped) {
+  :scope {
+    display: block flex;
+    isolation: isolate;
+  }
+
+  li {
+    &:not(:first-child) {
+      margin-inline-start: -8px;
+    }
+
+    &:hover {
+      z-index: var(--z--forwards);
+    }
+  }
+}
+```
+
+アバターの画像を少しずつ重ねて並べ、ホバーした画像を手前に出す例です。`li` はフレックスアイテムなので、`position` を指定しなくても `z-index` で前後を変えられます。ルートの `isolation: isolate` は、この相対的なz-indexをコンポーネントの中に閉じ込める指定です。
+
+一方、z-indexを指定していなくても、位置指定の要素は、位置指定していない通常フローの要素より手前に描かれます。描く順番は、まず通常フローのブロック、次にフロート、インラインの内容、最後に位置指定の要素という段階に分かれているからです。`position: relative` を指定しただけで要素が前に出るのはこのためで、z-indexの値とは関係がありません。重ねた要素の前後が意図と違うときは、z-indexより先に、どちらが位置指定の要素かを確かめます。
+
+## 画面幅いっぱいに広げる
+
+コンテンツの幅の中にある要素を、画面の幅いっぱいに広げたい場面はよくあります。かつては `margin-inline: calc(50% - 50vw)` のような指定が定番でしたが、本書では `vw` を使いません。スクロールバーの幅を含めて計算されるので、横スクロールの原因になるからです（「[4-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。本書では、用途に合わせて3つの方法を使い分けます。
+
+1つ目は、レイアウトの側に画面の端までの列を用意しておく方法で、これを最初に検討します。「[8-9 余白を設計する](/layout/spacing/)」で説明したとおり、ページのレイアウトの左右に余白の列（ガター）を作っておけば、広げたい要素は `grid-column: --full` と書くだけで画面の端まで広がります。ビューポート単位を使わないので、スクロールバーの幅の違いにも影響されません。
+
+2つ目は、コンテンツの幅の中にある要素の背景だけを、画面の端まで広げる方法です。擬似要素を絶対配置にして、`inset-inline` に画面の幅と親の幅の差の半分を負の値で指定します。
+
+```css title="🙆‍♂ Recommended: 擬似要素の背景を、画面の端まで広げる"
+._band {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline: calc((100lvi - 100%) / -2);
+    z-index: var(--z--backwards);
+    background-color: oklch(96% 0.01 250deg);
+  }
+}
+```
+
+`inset-inline` の `100%` は、包含ブロック（`._band`）の幅です。`100lvi` との差の半分だけ左右へ広げるので、`._band` が画面の中央にあれば、擬似要素はちょうど画面の端まで届きます。背景を文字の後ろに置くため、`z-index: var(--z--backwards)` を使い、`._band` には `isolation: isolate` を指定しています。単色やグラデーションの背景なら、`border-image: linear-gradient(色 0 0) fill 0 / / 0 100lvi` のように `border-image` で広げる方法もあります。`border-image` のはみ出しはスクロールの範囲に含まれないので、横スクロールも起きません。
+
+3つ目は、横にスクロールするカルーセルを、画面の端まで広げる方法です。コンポーネントのルートを名前付きのコンテナにして、`100lvi` と `100cqi` の差の半分を、負の `margin` と `padding` に指定します。
+
+```css title="🙆‍♂ Recommended: スクロールする領域を画面の端まで広げ、止まる位置を内側にそろえる"
+@scope (.scoped.carousel) to (.scoped) {
+  :scope {
+    container: --carousel / inline-size;
+  }
+
+  ._scroller {
+    --_gutter: calc((100lvi - 100cqi) / 2);
+
+    display: block grid;
+    grid-auto-columns: calc((100cqi - 16px * 2) / 3);
+    grid-auto-flow: column;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    margin-inline: calc(var(--_gutter) * -1);
+    padding-inline: var(--_gutter);
+    scroll-snap-type: inline mandatory;
+    scroll-padding-inline: var(--_gutter);
+  }
+}
+```
+
+ここで `100%` ではなく `100cqi` を使うのは、プロパティによって `%` の基準が変わるからです。`padding` の `%` は包含ブロックの幅を、`scroll-padding` の `%` はスクロールコンテナのスクロールポート（スクロールで表示される範囲）の大きさを基準にします。`100cqi` なら、どのプロパティに書いてもコンテナの幅を指すので、スクロールが止まる位置を、コンテンツの幅の左端にそろえられます。
+
+2つ目と3つ目の方法では、ビューポートの単位に `lvi` を使っています。横方向では、ブラウザのUIの出入りで幅が変わることはほとんどないので、`svi` と `lvi` は多くの場合同じ値です。私は、画面の端まで確実に広げたい場合には、最も大きい `lvi` を使っています。ただし、クラシックなスクロールバーが幅を取る環境では、`lvi` もスクロールバーの幅を含むので、わずかにはみ出します。ルートで横方向のはみ出しを `clip` で切り取っておきます（「[8-10 変化に強いレイアウト](/layout/defensive/)」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。`border-image` で背景を広げる例）
+- [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月）
+- [2025年のz-index設計を考える](https://speakerdeck.com/tak_dcxi/2025nian-noz-indexshe-ji-wokao-eru)（TAK）
+- [Understanding Layout Algorithms](https://www.joshwcomeau.com/css/understanding-layout-algorithms/)（Josh W. Comeau。z-indexが効くかどうかはレイアウトの方式で決まる）
+- [重ね合わせコンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_positioned_layout/Stacking_context)
+- [Appendix E. Elaborate description of Stacking Contexts](https://www.w3.org/TR/CSS22/zindex.html)（W3C、CSS 2.2）
+- [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)（W3C）

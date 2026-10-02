@@ -1,5 +1,5 @@
 ---
-title: "8-13-4 switcher：n列と1列を幅で切り替える"
+title: "8-14-4 switcher：n列と1列を幅で切り替える"
 description: "switcher は、要素の幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にするコンポジションです。閾値の判定は sign() で行い、メディアクエリもコンテナクエリも使いません。"
 sidebar:
   order: 4
@@ -93,7 +93,7 @@ import switcherCss from '../../../../demos/layout/composition-switcher/style.css
 | `--switcher--row-gap` | 行の間隔 | `0px` |
 | `--switcher--column-gap` | 列の間隔 | `0px` |
 
-値は、HTMLの `style` 属性で渡します。間隔には、単位のない数値で持っている余白のトークンを `calc(var(--spacing--md) / 16 * 1rem)` の形でremに変換して渡します。トークンを単位なしで持つ理由は「[7-3 デザイントークン](/components/design-tokens/)」で説明しています。
+値は、HTMLの `style` 属性で渡します。間隔には、単位のない数値で持っている余白のトークンを `calc(var(--spacing--md) / 16 * 1rem)` の形でremに変換して渡します。トークンを単位なしで持つ理由は「[7-4 デザイントークン](/components/design-tokens/)」で説明しています。
 
 ```html
 <div
@@ -106,7 +106,7 @@ import switcherCss from '../../../../demos/layout/composition-switcher/style.css
 </div>
 ```
 
-間隔のデフォルト値は、ほかのコンポジションと同じく0です（「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」のルール）。ただし、`switcher` では単位のない `0` ではなく `0px` と書きます。列の間隔は閾値の `calc()` で長さと足し合わされるので、単位のない `0` が入ると「長さ＋数値」の式になって無効になるからです。無効になった `grid-template-columns` は初期値の `none` に戻り、どの幅でも1列になります。
+間隔のデフォルト値は、ほかのコンポジションと同じく0です（「[7-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」のルール）。ただし、`switcher` では単位のない `0` ではなく `0px` と書きます。列の間隔は閾値の `calc()` で長さと足し合わされるので、単位のない `0` が入ると「長さ＋数値」の式になって無効になるからです。無効になった `grid-template-columns` は初期値の `none` に戻り、どの幅でも1列になります。
 
 ### 閾値：`--_c--threshold`
 
@@ -174,7 +174,7 @@ import switcherCss from '../../../../demos/layout/composition-switcher/style.css
 }
 ```
 
-コンポーネントの中で `switcher` を使うときは、`switcher` のクラスを付けた要素の直下に項目を置きます。`switcher` が決めるのは直下の子の並び方と間隔だけで、子の中身には関与しません。この役割分担は「[7-1 コンポーネントの境界を守る](/components/boundaries/)」で説明した「配置は置く側が持つ」という考え方にもとづいています。
+コンポーネントの中で `switcher` を使うときは、`switcher` のクラスを付けた要素の直下に項目を置きます。`switcher` が決めるのは直下の子の並び方と間隔だけで、子の中身には関与しません。この役割分担は「[7-2 コンポーネントの境界を守る](/components/boundaries/)」で説明した「配置は置く側が持つ」という考え方にもとづいています。
 
 ## 補足と注意点
 

@@ -1,8 +1,8 @@
 ---
-title: 11-4 角の形を変える
+title: 12-2 角の形を変える
 description: 角丸だけでは作れない角の形は corner-shape で書きます。錠剤型のボタンをスクワークルにする、タブの下の端を反り返らせるといった形を、未対応の環境での見え方を確かめて取り入れます。要素が画面いっぱいに広がったときだけ角丸を消す sign() の書き方も扱います。
 sidebar:
-  order: 4
+  order: 2
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -10,7 +10,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 角の形は、`border-radius` で角丸の大きさを決め、`corner-shape` でその角をどんな曲線で結ぶかを決めます。Appleの画面にあるようななめらかな角や、タブの下の端が外側へ反り返る形は、以前は画像や複数の擬似要素、マスクの重ね合わせで作っていました。`corner-shape` なら、1つの宣言で書けます。
 
-ただし、`corner-shape` に対応しているブラウザは、まだ限られています。未対応の環境で「形が少し素朴になるだけ」で済むなら、そのまま書きます。「部品が崩れて見える」なら、`@supports` で従来の書き方に切り替えます。この節では、そのうえで、要素が画面いっぱいに広がったときだけ角丸を消す `sign()` の書き方も説明します。輪郭そのものを描く `shape()` と、枠線を塗る `border-area` は「[11-5 輪郭と枠線を描く](/color-media/outlines/)」で扱います。
+ただし、`corner-shape` に対応しているブラウザは、まだ限られています。未対応の環境で「形が少し素朴になるだけ」で済むなら、そのまま書きます。「部品が崩れて見える」なら、`@supports` で従来の書き方に切り替えます。この節では、そのうえで、要素が画面いっぱいに広がったときだけ角丸を消す `sign()` の書き方も説明します。輪郭そのものを描く `shape()` と、枠線を塗る `border-area` は「[12-3 輪郭と枠線を描く](/decoration/outlines/)」で扱います。
 
 ## 角丸だけでは作れない形
 
@@ -37,7 +37,7 @@ import Guideline from '../../../components/Guideline.astro';
 }
 ```
 
-私は、スクワークルのボタンを作るときに、錠剤型のボタンへ `corner-shape: squircle` を1行足すだけにしています。対応していない環境では、この宣言が無視され、錠剤型のボタンとして表示されます。形は少し変わりますが、ボタンとしての見え方は崩れないので、`@supports` で囲む必要はありません。`border-radius` の値に `calc(infinity * 1px)` を使う理由は、「[11-3 画像と装飾](/color-media/images-and-decoration/)」で説明しています。
+私は、スクワークルのボタンを作るときに、錠剤型のボタンへ `corner-shape: squircle` を1行足すだけにしています。対応していない環境では、この宣言が無視され、錠剤型のボタンとして表示されます。形は少し変わりますが、ボタンとしての見え方は崩れないので、`@supports` で囲む必要はありません。`border-radius` の値に `calc(infinity * 1px)` を使う理由は、「[12-1 画像と装飾](/decoration/images-and-decoration/)」で説明しています。
 
 `corner-shape` は、`border-radius` が0の角には効きません。描くのは `border-radius` で決めた領域の中の曲線だけなので、角丸の大きさは必ず `border-radius` で指定します。枠線、影、`outline` も、`corner-shape` で変えた輪郭に沿って描かれます（2026年10月、Chrome 152で確認）。
 

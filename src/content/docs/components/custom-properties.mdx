@@ -1,8 +1,8 @@
 ---
-title: "7-4 公開プロパティと内部プロパティ"
+title: "7-5 公開プロパティと内部プロパティ"
 description: "外から変えてよい値は --<コンポーネント>--<プロパティ> の公開プロパティ、コンポーネントの中だけで使う値は --_ で始まる内部プロパティにします。値はできるだけ style 属性で渡し、@property は型やアニメーションが必要なときだけ使います。"
 sidebar:
-  order: 4
+  order: 5
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -27,7 +27,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 | 内部プロパティ | `--_<プロパティ>` | `--_background--hocus` | コンポーネントの `:scope` |
 | コンポジションなどの内部プロパティ | `--_c--`、`--_p--`、`--_u--`、`--_b--` で始める | `--_c--threshold` | コンポジション、パターン、ユーティリティ、ベースのスタイル |
 
-公開プロパティの名前には、必ずコンポーネントの名前を付けます。`--foreground` のような汎用的な名前にすると、ほかのコンポーネントの公開プロパティと衝突します。1つの要素に複数のコンポーネントの公開プロパティが渡されたとき、どれがどのコンポーネントのものかも分からなくなります。トークンの命名は「[7-3 デザイントークン](/components/design-tokens/)」で説明しています。
+公開プロパティの名前には、必ずコンポーネントの名前を付けます。`--foreground` のような汎用的な名前にすると、ほかのコンポーネントの公開プロパティと衝突します。1つの要素に複数のコンポーネントの公開プロパティが渡されたとき、どれがどのコンポーネントのものかも分からなくなります。トークンの命名は「[7-4 デザイントークン](/components/design-tokens/)」で説明しています。
 
 内部プロパティの `_` は、子要素のクラス名 `._title` の `_` と同じく、「そのコンポーネントの中だけで使う」という印です。コンポジション、パターン、ユーティリティ、ベースのスタイルでは、内部プロパティをそれぞれ `--_c--`、`--_p--`、`--_u--`、`--_b--` で始めます。コンポジションやパターンのクラスは、コンポーネントのルートや子要素と同じ要素に付くことがあります。接頭辞を分けておけば、コンポーネントの `--_gap` とコンポジションの `--_c--gap` が衝突しません。
 
@@ -95,7 +95,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
     color: var(--_foreground);
 
     &:enabled:hover {
-      @media (any-hover: hover) {
+      @media (any-hover) {
         background-color: var(--_background--hocus);
       }
     }
@@ -111,16 +111,20 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 }
 ```
 
-状態ごとの値は、すべて `:scope` の先頭に並べます。状態のセレクタの中では、どの内部プロパティを使うかを切り替えるだけにします。こうしておくと、そのコンポーネントがどんな状態を持ち、それぞれで何色になるのかを、先頭の数行で確認できます。配色を変えるときも、直すのは先頭の値だけです。ホバーの書き方と状態の表し方は、「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明します。
+状態ごとの値は、すべて `:scope` の先頭に並べます。状態のセレクタの中では、どの内部プロパティを使うかを切り替えるだけにします。こうしておくと、そのコンポーネントがどんな状態を持ち、それぞれで何色になるのかを、先頭の数行で確認できます。配色を変えるときも、直すのは先頭の値だけです。ホバーの書き方と状態の表し方は、「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明します。
 
-公開プロパティにも、同じ形の接尾辞を使います。たとえば「[9-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」の画面モードを使う場合は、モードの名前を接尾辞にします。`--primary-layout--gutter--compact` と `--primary-layout--gutter--spacious` のように、モードごとの値を別の公開プロパティとして受け取ります。
+公開プロパティにも、同じ形の接尾辞を使います。たとえば「[9-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」の画面モードを使う場合は、モードの名前を接尾辞にします。`--page-hero--padding-block--compact` と `--page-hero--padding-block--spacious` のように、モードごとの値を別の公開プロパティとして受け取ります。
 
 ```css title="🙆‍♂ Recommended: モードごとの値を、接尾辞を付けた公開プロパティで受ける"
-.primary-layout {
-  --_c--gutter: var(--primary-layout--gutter--compact, calc(20 * var(--px, 1px)));
+@scope (.scoped.page-hero) to (.scoped) {
+  :scope {
+    --_padding-block: var(--page-hero--padding-block--compact, calc(40 * var(--px, 1px)));
 
-  @container style(--screen: --spacious) {
-    --_c--gutter: var(--primary-layout--gutter--spacious, calc(40 * var(--px, 1px)));
+    padding-block: var(--_padding-block);
+
+    @container style(--screen: --spacious) {
+      --_padding-block: var(--page-hero--padding-block--spacious, calc(80 * var(--px, 1px)));
+    }
   }
 }
 ```

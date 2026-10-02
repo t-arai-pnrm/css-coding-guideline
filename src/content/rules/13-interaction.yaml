@@ -1,11 +1,11 @@
-# 第12章 インタラクションとモーション
+# 第13章 インタラクションとモーション
 
-# 12-1 状態とフォーカスを表す
+# 13-1 状態とフォーカスを表す
 - id: hover-inside-any-hover
   level: 必須
-  rule: '`:hover` のスタイルは `@media (any-hover: hover)` の中に書き、`(hover: hover)` や画面の幅で判定しない。'
+  rule: '`:hover` のスタイルは `@media (any-hover)` の中に書き、`(hover: hover)` や画面の幅で判定しない。'
   reason: タッチ操作の端末でホバーの状態が残り続けるのを防ぎつつ、タブレットにマウスをつないだ場合のように、ホバーできる入力がひとつでもあればホバーを有効にできるため。
-  note: '条件は `(any-hover)` と省略せず、`(any-hover: hover)` と値まで書きます。'
+  note: '条件は `(any-hover: hover)` と値まで書かず、`(any-hover)` と書きます。値なしの `(any-hover)` は、値が `none` のときだけ偽になるので、`(any-hover: hover)` と同じ意味です。'
   aiProne: true
   page: interaction/states-and-focus
   since: 0.1.0
@@ -89,7 +89,7 @@
   page: interaction/states-and-focus
   since: 0.4.0
 
-# 12-2 モーションを実装する
+# 13-2 モーションを実装する
 - id: motion-needs-purpose
   level: 推奨
   rule: アニメーションを足す前に、状態の変化や操作の結果を伝えるという目的があるかを確かめ、目的のない動きは入れない。
@@ -240,7 +240,7 @@
   page: interaction/motion
   since: 0.4.0
 
-# 12-3 開閉する UI
+# 13-3 開閉する UI
 - id: native-disclosure-elements
   level: 推奨
   rule: 開閉する UI は、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のような HTML の機能で作り、`div` とクラスの付け外しで作らない。
@@ -325,7 +325,7 @@
   page: interaction/disclosure
   since: 0.1.0
 
-# 12-4 フォーム部品
+# 13-4 フォーム部品
 - id: accent-color-for-color-only
   level: 推奨
   rule: チェックボックス、ラジオボタン、スライダーの色を変えるだけなら、`accent-color` を使う。
@@ -388,7 +388,7 @@
   page: interaction/forms
   since: 0.1.0
 
-# 12-5 View Transitions で画面の切り替えをつなぐ
+# 13-5 View Transitions で画面の切り替えをつなぐ
 - id: view-transition-name-unique
   level: 禁止
   rule: 同時に表示される複数の要素に、同じ `view-transition-name` を付けない。
@@ -407,7 +407,7 @@
   page: interaction/view-transitions
   since: 0.3.0
 
-# 12-6 CSS でカルーセルを作る
+# 13-6 CSS でカルーセルを作る
 - id: no-autoplay-carousel
   level: 禁止
   rule: カルーセルを自動で再生しない。

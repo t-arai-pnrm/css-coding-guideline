@@ -1,8 +1,8 @@
 ---
-title: "8-2 ボックスモデルの基礎"
+title: "8-3 ボックスモデルの基礎"
 description: "要素は、内容、padding、border、margin の4つの領域を持つ箱として描かれます。box-sizing、auto と中身に合わせた大きさ、% の基準、margin の負の値と auto、ボックスの大きさに含まれない outline と box-shadow、インライン要素での余白の効き方を説明します。"
 sidebar:
-  order: 2
+  order: 3
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -43,7 +43,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 ボックスのいちばん内側は、文字や子要素が置かれる内容の領域です。その外側に、内容と枠の間を空ける `padding`、枠線を描く `border`、ほかのボックスとの間を空ける `margin` の領域が順に重なります。`background-clip` の初期値は `border-box` なので、背景色は `border` の下まで塗られ、破線の枠線の隙間からも見えます。
 
-`margin` の領域には、要素自身の背景は描かれず、クリックの対象にもなりません。ボタンの押せる範囲を広げるときに `margin` ではなく `padding` を使うのは、このためです。縦に並んだブロックの間では、上下の `margin` が足されずに大きいほうだけが残ることがあり、この現象は「[8-3 マージンの相殺](/layout/margin-collapse/)」で説明しています。
+`margin` の領域には、要素自身の背景は描かれず、クリックの対象にもなりません。ボタンの押せる範囲を広げるときに `margin` ではなく `padding` を使うのは、このためです。縦に並んだブロックの間では、上下の `margin` が足されずに大きいほうだけが残ることがあり、この現象は「[8-4 マージンの相殺](/layout/margin-collapse/)」で説明しています。
 
 `box-sizing` は、`inline-size` と `block-size` がどの領域の大きさを指すかを決めます。初期値の `content-box` では内容の領域を指し、`border-box` では `border` の外周までを指します。kiso.cssは、全称セレクタと `::before`、`::after` を `border-box` にしています（「[5-1 壊さないリセット](/reset/kiso/)」）。そのため、`inline-size: 50%` の要素は、`padding` をいくつにしても親の半分に収まります。
 
@@ -55,7 +55,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
-`content-box` に戻すのは、内容の幅を固定したい要素だけです。本文の幅を `max-inline-size` で決め、左右の `padding` を画面幅で変えたい場合がその例で、`content-box` なら `padding` が変わっても本文の幅は変わりません（「[8-7 余白を設計する](/layout/spacing/)」）。
+`content-box` に戻すのは、内容の幅を固定したい要素だけです。本文の幅を `max-inline-size` で決め、左右の `padding` を画面幅で変えたい場合がその例で、`content-box` なら `padding` が変わっても本文の幅は変わりません（「[8-9 余白を設計する](/layout/spacing/)」）。
 
 ## `auto` と中身に合わせた大きさ
 
@@ -95,23 +95,23 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
-`min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[8-8 変化に強いレイアウト](/layout/defensive/#rule-minmax-min-capped-at-100-percent)」）。
+`min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[8-10 変化に強いレイアウト](/layout/defensive/#rule-minmax-min-capped-at-100-percent)」）。
 
 ## `%` の基準
 
-`inline-size` の `%` は、包含ブロックの幅に対する割合です。包含ブロックは、通常フローの要素ならいちばん近いブロックの祖先の内容の領域で、絶対配置の要素なら `position` が `static` 以外のいちばん近い祖先の `padding` の領域です（「[8-9 重なりと配置](/layout/positioning/)」）。
+`inline-size` の `%` は、包含ブロックの幅に対する割合です。包含ブロックは、通常フローの要素ならいちばん近いブロックの祖先の内容の領域で、絶対配置の要素なら `position` が `static` 以外のいちばん近い祖先の `padding` の領域です（「[8-7 positionの基礎](/layout/positioning/)」）。
 
 `block-size` の `%` は、包含ブロックの高さが決まっているときだけ計算されます。親の高さが中身から決まる場合、子の高さと親の高さが互いに依存して循環するので、`%` は `auto` として扱われます。子の高さを親にそろえるときは、`height: 100%` ではなく、親をGridにして伸ばします（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-height-100)」）。
 
-`padding` と `margin` の `%` は、上下と左右のどちらでも、包含ブロックのインライン方向の大きさ（横書きなら幅）に対する割合です。上下の余白の基準を高さにすると、`block-size` と同じ循環が起きるからです。かつてはこの性質を使い、`padding-top: 56.25%` で16:9の箱を作っていましたが、今は `aspect-ratio` で書きます（「[11-3 画像と装飾](/color-media/images-and-decoration/#rule-aspect-ratio-for-ratios)」）。
+`padding` と `margin` の `%` は、上下と左右のどちらでも、包含ブロックのインライン方向の大きさ（横書きなら幅）に対する割合です。上下の余白の基準を高さにすると、`block-size` と同じ循環が起きるからです。かつてはこの性質を使い、`padding-top: 56.25%` で16:9の箱を作っていましたが、今は `aspect-ratio` で書きます（「[12-1 画像と装飾](/decoration/images-and-decoration/#rule-aspect-ratio-for-ratios)」）。
 
 ## `margin` の負の値と `auto`
 
-`margin` には負の値を指定できます。`margin-block-start` を負にすると要素は前の要素に重なるように引き上げられ、幅が `auto` のブロックの `margin-inline` を負にすると、その分だけ横に広がります。負のマージンは、コンポジションの子に付いた余白を親の端で打ち消すといった、余白の調整に使います。要素を重ねる目的なら、Gridの同じエリアに置くほうが、重ねたどちらの大きさも親の高さに反映されます（「[8-9 重なりと配置](/layout/positioning/#rule-grid-stack-before-absolute)」）。
+`margin` には負の値を指定できます。`margin-block-start` を負にすると要素は前の要素に重なるように引き上げられ、幅が `auto` のブロックの `margin-inline` を負にすると、その分だけ横に広がります。負のマージンは、コンポジションの子に付いた余白を親の端で打ち消すといった、余白の調整に使います。要素を重ねる目的なら、Gridの同じエリアに置くほうが、重ねたどちらの大きさも親の高さに反映されます（「[8-11 重なりと全幅](/layout/layering/#rule-grid-stack-before-absolute)」）。
 
 `margin` の `auto` は、余った空間を受け取る値です。通常フローのブロックでは、`inline-size`、左右の `margin`、`padding`、`border` の合計が包含ブロックの幅と等しくなるように決まります。左右を `auto` にすると、余りが等分されて中央に寄ります（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-margin-inline-auto-centering)」）。通常フローでは上下の `auto` は0として扱われ、上下の中央寄せには使えません。
 
-フレックスアイテムとグリッドアイテムでは、上下の `auto` も余った空間を受け取ります。フレックスアイテムの1つに `margin-inline-start: auto` を付ければ、その要素から後ろが行の末尾に寄ります（「[8-6 Gridから考える](/layout/grid-first/#rule-flex-auto-margin-for-end-items)」）。
+フレックスアイテムとグリッドアイテムでは、上下の `auto` も余った空間を受け取ります。フレックスアイテムの1つに `margin-inline-start: auto` を付ければ、その要素から後ろが行の末尾に寄ります（「[8-8 Gridから考える](/layout/grid-first/#rule-flex-auto-margin-for-end-items)」）。
 
 ## ボックスの大きさに含まれない `outline` と `box-shadow`
 

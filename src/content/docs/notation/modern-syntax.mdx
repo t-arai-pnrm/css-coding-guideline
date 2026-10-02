@@ -133,7 +133,7 @@ body {
 }
 
 ._link:any-link:hover::after {
-  @media (any-hover: hover) {
+  @media (any-hover) {
     transform: translateX(4px) rotate(45deg);
   }
 }
@@ -158,13 +158,13 @@ body {
 }
 
 ._link:any-link:hover::after {
-  @media (any-hover: hover) {
+  @media (any-hover) {
     translate: 4px 0;
   }
 }
 ```
 
-個別のプロパティなら、ホバーとフォーカスで書くのは移動の値だけです。トランジションの対象も `translate` に絞れます。値の書き方は、`translate: 4px 0`（横と縦）、`rotate: 45deg`、`scale: 1.1` のようにシンプルです。なお、どちらの例も、キーボードでフォーカスしたときは一度で動かすために、トランジションを `:not(:focus-visible)` の中に書いています（「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+個別のプロパティなら、ホバーとフォーカスで書くのは移動の値だけです。トランジションの対象も `translate` に絞れます。値の書き方は、`translate: 4px 0`（横と縦）、`rotate: 45deg`、`scale: 1.1` のようにシンプルです。なお、どちらの例も、キーボードでフォーカスしたときは一度で動かすために、トランジションを `:not(:focus-visible)` の中に書いています（「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
 
 `transform` を使うのは、個別のプロパティがない `skewX()` などの変形と、変形の順番を変える必要がある場合だけです。個別のプロパティは、常に `transform: translate() rotate() scale()` と書いたときと同じ順番で組み合わされます。「回転してから、回転した向きに移動する」ように順番を変えたいときは、`transform` に関数を並べて書きます。
 
@@ -197,7 +197,7 @@ body {
 
 `rgba()` は、仕様上は `rgb()` の別名で、古い書き方として廃止されたわけではありません。ただ、`rgb()` でも不透明度を指定できるので、同じ意味の関数を2つ使い分ける理由がありません。不透明度はパーセントで書き、色相の `deg` も省略しません。数値が角度だとはっきりし、明度や彩度の値と見分けやすくなるからです。
 
-本書のStylelintの設定では、これらを4つのルールで検出し、自動修正もできます。対象のルールは、`color-function-notation`、`color-function-alias-notation`、`alpha-value-notation`、`hue-degree-notation` です。`white` のような色の名前（`color-named`）と、`#00000080` のような不透明度付きの16進数（`color-hex-alpha`）も禁止しています。どの色の関数を選ぶかは、「[11-1 色とダークモード](/color-media/color/)」で扱います。
+本書のStylelintの設定では、これらを4つのルールで検出し、自動修正もできます。対象のルールは、`color-function-notation`、`color-function-alias-notation`、`alpha-value-notation`、`hue-degree-notation` です。`white` のような色の名前（`color-named`）と、`#00000080` のような不透明度付きの16進数（`color-hex-alpha`）も禁止しています。どの色の関数を選ぶかは、「[11-1 色の形式と色空間](/color-media/color/)」で扱います。
 
 ## ベンダープレフィックス
 

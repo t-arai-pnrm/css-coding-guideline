@@ -1,5 +1,5 @@
 ---
-title: "8-13-8 masonry：高さの違う子を短い列へ詰めて並べる"
+title: "8-14-8 masonry：高さの違う子を短い列へ詰めて並べる"
 description: "masonry は、高さの違う子を、そのときいちばん短い列へ順に詰めて並べるコンポジションです。列の数は grid と同じ式で決め、grid-lanes に対応していない環境では同じ列の通常の Grid に戻ります。新着順のように、おおよその順番が伝われば足りる一覧に使います。"
 sidebar:
   order: 8
@@ -19,13 +19,13 @@ import masonryCss from '../../../../demos/layout/composition-masonry/style.css?r
 
 ## 高さの違う項目を grid コンポジションで並べたとき
 
-記事の一覧を、本文の長さが違うカードのまま並べる場面を考えます。「[8-13-6 grid](/layout/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）を使うと、同じ行のカードは行の高さを共有します。行の高さはその行でいちばん高いカードに合わせて決まるので、短いカードの下には隙間ができます。
+記事の一覧を、本文の長さが違うカードのまま並べる場面を考えます。「[8-14-6 grid](/layout/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）を使うと、同じ行のカードは行の高さを共有します。行の高さはその行でいちばん高いカードに合わせて決まるので、短いカードの下には隙間ができます。
 
-この隙間を詰める仕組みが、`display: block grid-lanes` です。項目は、HTMLの順番に1つずつ、そのときいちばん短い列の下端へ置かれます。仕組みと、未対応の環境での振る舞い、並び順の注意は「[8-12 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)」で詳しく説明しています。
+この隙間を詰める仕組みが、`display: block grid-lanes` です。項目は、HTMLの順番に1つずつ、そのときいちばん短い列の下端へ置かれます。仕組みと、未対応の環境での振る舞い、並び順の注意は「[8-13 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)」で詳しく説明しています。
 
 ただし、`grid-lanes` を一覧のたびに書くと、書くべきことが多くなります。列の数を決める `grid-template-columns`、未対応の環境のための `@supports` の分岐、`flow-tolerance` の指定を、コンポーネントごとに毎回そろえる必要があります。どれか1つが抜けると、未対応の環境で1列に崩れたり、対応している環境と未対応の環境で列の数が変わったりします。
 
-`masonry` コンポジションは、この一式を1つのクラスにまとめたものです。使う側は、HTMLに `class="masonry"` と書き、列の最小幅や間隔を `style` 属性で渡すだけです。コンポジションの考え方そのものは「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」（配置だけを受け持ち、値は公開プロパティで受け取るクラス）で説明しています。
+`masonry` コンポジションは、この一式を1つのクラスにまとめたものです。使う側は、HTMLに `class="masonry"` と書き、列の最小幅や間隔を `style` 属性で渡すだけです。コンポジションの考え方そのものは「[7-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」（配置だけを受け持ち、値は公開プロパティで受け取るクラス）で説明しています。
 
 ## `masonry` コンポジションの書き方
 
@@ -77,7 +77,7 @@ import masonryCss from '../../../../demos/layout/composition-masonry/style.css?r
 }
 ```
 
-`grid-template-columns` と `gap` は `@supports` の外に書いています。`grid-lanes` はGridを拡張した仕様なので、列の指定と間隔は、通常のGridと `grid-lanes` のどちらでも同じ意味で使えるからです。分岐の中で変わるのは `display` の値だけで、`flow-tolerance` は `grid-lanes` のコンテナだけに適用されるプロパティなので、同じブロックに置いています。この書き方は、8-12のルール「[`grid-lanes` は `@supports` の中に書く](/layout/masonry/#rule-grid-lanes-inside-supports)」に従ったものです。
+`grid-template-columns` と `gap` は `@supports` の外に書いています。`grid-lanes` はGridを拡張した仕様なので、列の指定と間隔は、通常のGridと `grid-lanes` のどちらでも同じ意味で使えるからです。分岐の中で変わるのは `display` の値だけで、`flow-tolerance` は `grid-lanes` のコンテナだけに適用されるプロパティなので、同じブロックに置いています。この書き方は、8-13のルール「[`grid-lanes` は `@supports` の中に書く](/layout/masonry/#rule-grid-lanes-inside-supports)」に従ったものです。
 
 私が案件で使っているテンプレートの `masonry` は、これとは逆の形です。外側に `display: block grid-lanes` を書き、`@supports not (display: block grid-lanes)` の中でGridに戻しています。未対応の環境で通常のGridになる点は同じですが、本書はこの形を採りません。
 
@@ -94,7 +94,7 @@ import masonryCss from '../../../../demos/layout/composition-masonry/style.css?r
 }
 ```
 
-この形では、外側の `display` が、2026年10月の時点ではSafari以外のすべてのブラウザで無効な宣言です。外側を読んでも、多くの環境で実際に効いている指定が分かりません。本書は、すべての対象のブラウザで効く指定を外側に書き、新しい機能を条件付きで重ねる順番にそろえます。条件式も8-12の例と同じ `@supports (display: block grid-lanes)` になるので、全ブラウザが対応した時点で、この文字列を検索すれば分岐をまとめて見つけられます。
+この形では、外側の `display` が、2026年10月の時点ではSafari以外のすべてのブラウザで無効な宣言です。外側を読んでも、多くの環境で実際に効いている指定が分かりません。本書は、すべての対象のブラウザで効く指定を外側に書き、新しい機能を条件付きで重ねる順番にそろえます。条件式も8-13の例と同じ `@supports (display: block grid-lanes)` になるので、全ブラウザが対応した時点で、この文字列を検索すれば分岐をまとめて見つけられます。
 
 ## 公開プロパティと渡し方
 
@@ -110,7 +110,7 @@ import masonryCss from '../../../../demos/layout/composition-masonry/style.css?r
 | `--masonry--mode` | `repeat()` のキーワード（`auto-fill` か `auto-fit`） | `auto-fill` |
 | `--masonry--tolerance` | 同じ高さとみなす列の高さの差 | `normal` |
 
-間隔のデフォルト値を `0px` にしているのは、7-2のルール「[コンポジションの間隔のデフォルト値は0にする](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」に従ったものです。間隔はコンポジションを置く文脈で決まる値なので、使う側で必ず指定します。単位の付いた `0px` にしているのは、列の間隔を `calc()` の中で `100%` から引くためです。単位のない `0` を長さと引き算すると型が合わず、計算全体が無効になります。
+間隔のデフォルト値を `0px` にしているのは、7-3のルール「[コンポジションの間隔のデフォルト値は0にする](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」に従ったものです。間隔はコンポジションを置く文脈で決まる値なので、使う側で必ず指定します。単位の付いた `0px` にしているのは、列の間隔を `calc()` の中で `100%` から引くためです。単位のない `0` を長さと引き算すると型が合わず、計算全体が無効になります。
 
 間隔は、`--masonry--gap` で一括に、`--masonry--row-gap` と `--masonry--column-gap` で個別に渡せます。`var(--masonry--gap, var(--masonry--row-gap, 0px))` は、「一括の指定があればそれを、なければ個別の指定を、どちらもなければ `0px` を使う」という意味です。`grid-lanes` の行の間隔は、同じ列の中で上下に積まれた項目の間隔になります。
 
@@ -139,7 +139,7 @@ import masonryCss from '../../../../demos/layout/composition-masonry/style.css?r
 
 `--masonry--mode` は、`repeat()` のキーワードを切り替える公開プロパティで、デフォルトは `grid` コンポジションと同じ `auto-fill` です。項目の数が入る列の数より少ないとき、`auto-fill` では空の列が残り、項目は1列分の幅のまま先頭に寄ります。件数が変わる一覧でも列の幅が変わらないので、項目が2件だけのときも、写真の大きさや1行の文字数は件数の多いときと同じです。
 
-`auto-fit` を渡すのは、件数が最大の列数に届かないとき、項目を行いっぱいまで広げたい一覧です。`auto-fit` では空の列が折りたたまれ、残った項目が `1fr` で行の幅を分け合います。2つのキーワードの違いと選び方は「[8-13-6 grid](/layout/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）で、項目が2つのときのデモとともに説明しています。{/* 要確認: 出典なし（grid-lanes でも auto-fit の空の列が折りたたまれるかは、Safari で未確認） */}
+`auto-fit` を渡すのは、件数が最大の列数に届かないとき、項目を行いっぱいまで広げたい一覧です。`auto-fit` では空の列が折りたたまれ、残った項目が `1fr` で行の幅を分け合います。2つのキーワードの違いと選び方は「[8-14-6 grid](/layout/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）で、項目が2つのときのデモとともに説明しています。{/* 要確認: 出典なし（grid-lanes でも auto-fit の空の列が折りたたまれるかは、Safari で未確認） */}
 
 ## `--masonry--tolerance` の扱い
 
@@ -149,7 +149,7 @@ import masonryCss from '../../../../demos/layout/composition-masonry/style.css?r
 
 値を渡すのは、デモや実際のデータで並べてみて、項目が左右へ飛んで見えるときだけです。そのときは `style="--masonry--tolerance: 3em"` のように、初期値より大きい長さを渡します。`em` は `masonry` の要素の文字サイズを基準にするので、文字サイズを大きくした環境でも、行の高さに比例した差を同じ高さとみなせます。
 
-`infinite` は渡しません。`infinite` は列の高さを一切見ずに項目を1列ずつ順に置くので、隣り合う項目が、縦に大きく離れた位置へ置かれます。この点は8-12のルール「[`flow-tolerance` に `infinite` を指定しない](/layout/masonry/#rule-flow-tolerance-no-infinite)」で扱っています。並び順を厳密に保ちたい一覧は、`masonry` ではなく `grid` で並べます。
+`infinite` は渡しません。`infinite` は列の高さを一切見ずに項目を1列ずつ順に置くので、隣り合う項目が、縦に大きく離れた位置へ置かれます。この点は8-13のルール「[`flow-tolerance` に `infinite` を指定しない](/layout/masonry/#rule-flow-tolerance-no-infinite)」で扱っています。並び順を厳密に保ちたい一覧は、`masonry` ではなく `grid` で並べます。
 
 ## コード例とデモ
 
@@ -187,13 +187,13 @@ import masonryCss from '../../../../demos/layout/composition-masonry/style.css?r
 
 順番そのものが内容になる一覧にも、`masonry` は使いません。ランキングや手順、日付順に読ませる年表がそうです。`grid-lanes` では、項目がいちばん短い列へ置かれるので、4番目の項目が3番目より上に表示されることがあります。読み上げとキーボードのフォーカスはHTMLの順番で進むので、見た目で追う順番と食い違います。
 
-上から下へ読む1つのリストを段に分けたいときは、`masonry` ではなく「[8-13-7 columns](/layout/compositions/columns/)」（CSSの段組みで、子を上から下へ流して段に分けるコンポジション）を使います。`columns` は並び順が縦なので、HTMLの順番と読む順番がそろいます。どちらを選ぶかは、項目を読む向きで決めます。横方向の順番で並べながら高さの違いを詰めるなら `masonry`、縦に読ませるなら `columns` です。
+上から下へ読む1つのリストを段に分けたいときは、`masonry` ではなく「[8-14-7 columns](/layout/compositions/columns/)」（CSSの段組みで、子を上から下へ流して段に分けるコンポジション）を使います。`columns` は並び順が縦なので、HTMLの順番と読む順番がそろいます。どちらを選ぶかは、項目を読む向きで決めます。横方向の順番で並べながら高さの違いを詰めるなら `masonry`、縦に読ませるなら `columns` です。
 
 ## 補足と注意点
 
-`masonry` の子に `grid-column: span 2` や線の番号による配置を指定すると、見た目の順番とHTMLの順番のずれが大きくなります。複数の列にまたがる項目が空きに収まらず下へ回り、後の項目がその空きへ先に置かれるからです。この点は8-12のルール「[順序に意味のある項目に配置を指定しない](/layout/masonry/#rule-grid-lanes-no-placement-for-ordered-items)」で扱っています。`masonry` を使うときは、子の配置を指定せず、コンポジションの自動配置に任せます。
+`masonry` の子に `grid-column: span 2` や線の番号による配置を指定すると、見た目の順番とHTMLの順番のずれが大きくなります。複数の列にまたがる項目が空きに収まらず下へ回り、後の項目がその空きへ先に置かれるからです。この点は8-13のルール「[順序に意味のある項目に配置を指定しない](/layout/masonry/#rule-grid-lanes-no-placement-for-ordered-items)」で扱っています。`masonry` を使うときは、子の配置を指定せず、コンポジションの自動配置に任せます。
 
-写真を並べるときは、`<img>` に `width` と `height` の属性を書きます。属性があれば、ブラウザは画像を読み込む前から縦横比で高さを確保できます。高さが確保されていないと、画像を読み込むたびに列の高さが変わり、まだ置かれていない後続の項目の列が入れ替わって見える可能性があります。{/* 要確認: 出典なし（画像の読み込みで grid-lanes の配置がやり直されるかは、Safari で未確認） */}属性の書き方は「[11-3 画像と装飾](/color-media/images-and-decoration/#rule-img-width-height-attributes)」で説明しています。
+写真を並べるときは、`<img>` に `width` と `height` の属性を書きます。属性があれば、ブラウザは画像を読み込む前から縦横比で高さを確保できます。高さが確保されていないと、画像を読み込むたびに列の高さが変わり、まだ置かれていない後続の項目の列が入れ替わって見える可能性があります。{/* 要確認: 出典なし（画像の読み込みで grid-lanes の配置がやり直されるかは、Safari で未確認） */}属性の書き方は「[12-1 画像と装飾](/decoration/images-and-decoration/#rule-img-width-height-attributes)」で説明しています。
 
 `masonry` を入れ子にする場面はほとんどありません。`grid-lanes` の列の中にさらに石積みを作っても、読み手には並び順がいっそう追いにくくなるだけだからです。項目の中の配置には、`stack` や `cluster` のような、子の並びが順番どおりになるコンポジションを使います。
 

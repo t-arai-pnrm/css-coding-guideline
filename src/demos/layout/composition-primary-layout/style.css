@@ -1,12 +1,6 @@
 @layer tokens {
   :root {
     --spacing--sm: 16;
-    --spacing--lg: 32;
-    --screen: --compact;
-
-    @media (width >= calc(768 / 16 * 1rem)) {
-      --screen: --spacious;
-    }
   }
 }
 
@@ -22,16 +16,11 @@
    * 左右のガターと5段階の幅の列を持つグリッド。子はデフォルトでコンテンツ幅に置き、クラスで幅を選ぶ。
    *
    * @prop {length} --primary-layout--content-max-width          [calc(1680 / 16 * 1rem)]    - コンテンツ幅の最大値
-   * @prop {length} --primary-layout--gutter--compact            [calc(20 * var(--px, 1px))] - 左右のガターの最小幅
-   * @prop {length} --primary-layout--gutter--spacious           [calc(40 * var(--px, 1px))] - 同（広い画面のモード）
-   * @prop {length} --primary-layout--narrow-reduction--compact  [calc(20 * var(--px, 1px))] - ナロー幅とコンテンツ幅の片側の差（上限）
-   * @prop {length} --primary-layout--narrow-reduction--spacious [calc(40 * var(--px, 1px))] - 同（広い画面のモード）
-   * @prop {length} --primary-layout--wide-increase--compact     [calc(60 * var(--px, 1px))] - コンテンツ幅とワイド幅の片側の差（上限）
-   * @prop {length} --primary-layout--wide-increase--spacious    [calc(120 * var(--px, 1px))] - 同（広い画面のモード）
-   * @prop {length} --primary-layout--ex-wide-increase--compact  [calc(40 * var(--px, 1px))] - ワイド幅と超ワイド幅の片側の差（上限）
-   * @prop {length} --primary-layout--ex-wide-increase--spacious [calc(80 * var(--px, 1px))] - 同（広い画面のモード）
-   * @prop {length} --primary-layout--row-gap--compact           [0px]                       - 行の間隔
-   * @prop {length} --primary-layout--row-gap--spacious          [0px]                       - 同（広い画面のモード）
+   * @prop {length} --primary-layout--gutter                      [calc(20 * var(--px, 1px))] - 左右のガターの最小幅
+   * @prop {length} --primary-layout--narrow-reduction            [calc(20 * var(--px, 1px))] - ナロー幅とコンテンツ幅の片側の差（上限）
+   * @prop {length} --primary-layout--wide-increase               [calc(60 * var(--px, 1px))] - コンテンツ幅とワイド幅の片側の差（上限）
+   * @prop {length} --primary-layout--ex-wide-increase            [calc(40 * var(--px, 1px))] - ワイド幅と超ワイド幅の片側の差（上限）
+   * @prop {length} --primary-layout--row-gap                     [0px]                       - 行の間隔
    *
    * @example
    * <div class="primary-layout">
@@ -44,11 +33,11 @@
    */
   .primary-layout {
     --_c--content-max-width: var(--primary-layout--content-max-width, calc(1680 / 16 * 1rem));
-    --_c--gutter: var(--primary-layout--gutter--compact, calc(20 * var(--px, 1px)));
-    --_c--narrow-reduction: var(--primary-layout--narrow-reduction--compact, calc(20 * var(--px, 1px)));
-    --_c--wide-increase: var(--primary-layout--wide-increase--compact, calc(60 * var(--px, 1px)));
-    --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase--compact, calc(40 * var(--px, 1px)));
-    --_c--row-gap: var(--primary-layout--row-gap--compact, 0px);
+    --_c--gutter: var(--primary-layout--gutter, calc(20 * var(--px, 1px)));
+    --_c--narrow-reduction: var(--primary-layout--narrow-reduction, calc(20 * var(--px, 1px)));
+    --_c--wide-increase: var(--primary-layout--wide-increase, calc(60 * var(--px, 1px)));
+    --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase, calc(40 * var(--px, 1px)));
+    --_c--row-gap: var(--primary-layout--row-gap, 0px);
 
     display: block grid;
     grid-template-columns:
@@ -73,13 +62,6 @@
       [--full-end];
     row-gap: var(--_c--row-gap);
 
-    @container style(--screen: --spacious) {
-      --_c--gutter: var(--primary-layout--gutter--spacious, calc(40 * var(--px, 1px)));
-      --_c--narrow-reduction: var(--primary-layout--narrow-reduction--spacious, calc(40 * var(--px, 1px)));
-      --_c--wide-increase: var(--primary-layout--wide-increase--spacious, calc(120 * var(--px, 1px)));
-      --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase--spacious, calc(80 * var(--px, 1px)));
-      --_c--row-gap: var(--primary-layout--row-gap--spacious, 0px);
-    }
 
     & > * {
       grid-column: --content;

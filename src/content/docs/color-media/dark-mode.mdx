@@ -1,0 +1,154 @@
+---
+title: "11-4 ダークモード"
+description: "ダークモードの色は、セマンティクスのトークンに light-dark() で持たせ、meta 要素の color-scheme で両方の配色に対応することを宣言します。テーマを手動で切り替えるときも、この meta 要素の content を書き換えます。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import themeHtml from '../../../demos/color-media/theme-tokens/index.html?raw';
+import themeCss from '../../../demos/color-media/theme-tokens/style.css?raw';
+
+ダークモードに対応するときは、セマンティクスのトークンの値を `light-dark()` で書き、`<meta name="color-scheme" content="light dark">` で両方の配色に対応することを宣言します。配色の切り替えはトークンの側で済ませ、コンポーネントには `prefers-color-scheme` のメディアクエリを書きません。
+
+サイトの中でテーマを選べるようにする場合も、このメタ要素の `content` を書き換えるだけで済みます。色の切り替えはすべて `light-dark()` に任せ、CSSの側でテーマの属性を参照しないので、切り替えの仕組みが1か所にまとまります。
+
+<Baseline id="light-dark" />
+
+## コンポーネントごとにダークモードの色を書くと起きること
+
+ダークモードへの対応でよく見るのは、コンポーネントごとに `prefers-color-scheme` のメディアクエリを書き、ダーク用の色を指定し直す書き方です。
+
+```css title="🙅‍♂ Not Recommended: コンポーネントごとにダークモードの色を書く"
+/* 🙅‍♂ Not Recommended */
+._card {
+  background-color: var(--color--neutral--100);
+  color: var(--color--neutral--950);
+
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--color--neutral--900);
+    color: var(--color--neutral--50);
+  }
+}
+```
+
+この書き方では、ダークモードの色がサイトのあちこちに散らばります。ダーク用の値を書き忘れたコンポーネントだけが明るいまま残る、といった不具合も起きがちです。ダークモードの色を調整したくなったときは、すべてのコンポーネントのメディアクエリを探して直すことになります。AIにダークモードへの対応を頼むと、この形のコードが出てくることが多いので注意してください。
+
+テーマを手動で切り替えられるようにすると、問題はさらに増えます。メディアクエリはOSの設定しか見ないので、サイトの中で選んだテーマに合わせるには、`[data-theme="dark"]` のようなセレクタでも同じ色を書くことになります。ダーク用の色がメディアクエリと属性セレクタの2か所に分かれ、どちらかを直し忘れると、切り替えの方法によって色が変わります。
+
+## light-dark() でトークンに両方の値を持たせる
+
+ダークモードの色は、セマンティクスのトークンに `light-dark()` で両方の値を持たせます。`light-dark(ライトの色, ダークの色)` と書くと、要素に適用されている配色に合わせて、どちらか一方の値になります。
+
+```css title="🙆‍♂ Recommended: セマンティクスのトークンに、両方の配色の値を持たせる"
+:root {
+  --background--base: light-dark(var(--color--neutral--100), var(--color--neutral--900));
+  --background--surface: light-dark(var(--color--neutral--200), var(--color--neutral--800));
+  --foreground--base: light-dark(var(--color--neutral--950), var(--color--neutral--50));
+  --foreground--muted: light-dark(var(--color--neutral--600), var(--color--neutral--400));
+  --border--base: light-dark(var(--color--neutral--300), var(--color--neutral--700));
+}
+```
+
+コンポーネントは、これらのセマンティクスのトークンを参照するだけです。配色による切り替えはトークンの側で済んでいるので、コンポーネントに `prefers-color-scheme` のメディアクエリを書く必要はありません。ダークモードの色を調整するときも、見直すのはトークンの定義だけです。
+
+プリミティブのトークン（`--color--neutral--100` など）には、`light-dark()` を使いません。プリミティブは「明度97%のグレー」のような色そのものを表し、どの配色で使うかはセマンティクスの層で決めるからです。トークンの2層の設計は「[7-4 デザイントークン](/components/design-tokens/)」で扱います。
+
+`light-dark()` が受け取れるのは色だけです。画像を配色で切り替える書き方がすべての主要なブラウザで使えるようになったのは、Safari 27が出た2026年9月です。本書の対象のブラウザではまだ使えません（2026年9月確認）。
+
+## meta 要素で配色を宣言する
+
+`light-dark()` を使うには、ページが両方の配色に対応していることを宣言する必要があります。宣言がないと、OSがダークモードでも `light-dark()` は常にライトの値になります（2026年9月、Chrome 153で確認）。私のテンプレートでは、CSSの `color-scheme` プロパティではなく、HTMLのメタ要素で宣言しています。
+
+```html
+<meta name="color-scheme" content="light dark" />
+```
+
+メタ要素で宣言すると、スクロールバーやフォームの部品といったブラウザの部品も、ページと同じ配色で描画されます。CSSを読み込む前から配色が決まるので、読み込みの途中で背景が白く光ることも防げます。
+
+反対に、ダークモードに対応していないサイトでは、この宣言を書きません。色を指定していない部分だけが暗い配色になり、文字を読めなくなることがあるからです。詳しくは「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
+
+<Baseline id="color-scheme" />
+
+## コード例とデモ
+
+次のデモでは、同じカードをライトとダークの2つの配色で並べています。比べやすいように要素ごとに `color-scheme` を指定していますが、実際のサイトではメタ要素が配色を決めます。
+
+<Demo title="同じトークンから、ライトとダークの配色を作る" html={themeHtml} css={themeCss} />
+
+カードの側では、配色を一切切り替えていません。枠線は文字色から相対カラー構文で、背景は `color-mix()` で作っています。ボタンの文字色は、背景の明度から `sign()` で決めています。ダークの配色ではアクセントカラーが明るい段階に替わるので、ボタンの文字は黒になります。派生色の作り方は「[11-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」で、文字色の決め方は「[11-3 背景から文字色を決める](/color-media/contrast-text/)」で説明しています。
+
+## テーマを手動で切り替える
+
+OSの設定とは別に、サイトの中でテーマを選べるようにする場合も、メタ要素の `content` を書き換えます。私のテンプレートでは「ライト」「ダーク」「OSの設定に合わせる」の3つを選べるようにし、それぞれ `light only`、`dark only`、`light dark` を設定しています。選んだ値はlocalStorageに保存し、次にページを開いたときに読み戻します。
+
+```html
+<meta name="color-scheme" content="light dark" />
+<script>
+  (() => {
+    try {
+      const stored = localStorage.getItem('color-scheme');
+      const meta = document.querySelector('meta[name="color-scheme"]');
+      if (stored && meta) meta.content = stored;
+    } catch {
+      // Cookie を無効にしている環境では、localStorage にアクセスすると例外が発生する
+    }
+  })();
+</script>
+```
+
+このスクリプトは `<head>` の中に直接書き、ページの描画より前に実行します。外部のファイルにして後から読み込むと、保存したテーマに切り替わるまでの一瞬、OSの配色で表示されてしまいます。localStorageは、Cookieを無効にしている環境では例外を投げるので、必ず `try` で囲みます。
+
+JavaScriptが無効な環境では、スクリプトが動かないので、メタ要素の元の値（`light dark`）のまま、OSの設定に従って表示されます。読み出しの失敗も同じ結果になります。
+
+`only` を付けた値は、ページがその配色にしか対応していないことを表します。ブラウザが独自にページを暗くする機能を持っていても、`only` があれば、ページの配色はそのまま保たれます。
+
+以前の私は、`<html>` の `data-theme` 属性とメタ要素の両方を書き換えていました。いまはメタ要素だけを書き換え、色はすべて `light-dark()` に任せています。CSSの側でテーマの属性を参照しないので、切り替えの仕組みが1か所にまとまります。
+
+### 色以外のスタイルを配色で変える
+
+画像の明るさや影の強さのように、色以外のスタイルを配色で変えたい場合もあります。テンプレートでは、メタ要素の値から `--color-scheme` というカスタムプロパティを決めておき、スタイルクエリで分岐できるようにしています。
+
+```css title="🙆‍♂ Recommended: meta 要素の値から、いまの配色をカスタムプロパティにする"
+:root {
+  &:has(meta[name="color-scheme"][content="light only"]) {
+    --color-scheme: --light;
+  }
+
+  &:has(meta[name="color-scheme"][content="dark only"]) {
+    --color-scheme: --dark;
+  }
+
+  &:has(meta[name="color-scheme"][content="light dark"]) {
+    --color-scheme: --light;
+
+    @media (prefers-color-scheme: dark) {
+      --color-scheme: --dark;
+    }
+  }
+}
+```
+
+使う側では、`@container style(--color-scheme: --dark)` のように条件を書きます。値を `--` で始めるのは、自分で付けた名前だと分かるようにするためです。スタイルクエリは2026年5月にすべての主要なブラウザで使えるようになったので、本書の対象のブラウザでは問題なく動作します（2026年9月確認）。ただし、色の切り替えは `light-dark()` で足りるので、このフラグを使う場面は多くありません。
+
+テーマを切り替える瞬間には、View Transitionで画面を上から塗り替えるアニメーションを付けています。切り替えの処理は、`types` に `theme-toggle` を指定して `document.startViewTransition()` に渡します。CSSの側では、`:active-view-transition-type(theme-toggle)` でアニメーションを定義します。動きを減らす設定をしているユーザーには、アニメーションを付けません。View Transitionsの書き方は「[13-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)」で扱います。
+
+## 案件でのダークモード
+
+私が担当する案件では、ダークモードに対応せず、ライトの配色だけで作ることがほとんどです。デザインがライトの配色しか用意していないなら、無理に対応する必要はありません。
+
+ダークモードに対応するなら、すべての色をセマンティクスのトークンで管理していることが前提になります。16進数の色がコンポーネントに直接書かれていると、その部分だけが切り替わりません。CMSで編集者が本文の文字に色を付けられる場合は、その色がダークモードの背景で読めるかどうかまでは保証できません。
+
+影の色も、配色によって変えます。暗い背景に白い影を付けると、影ではなく光って見えるので、ダークモードでは影を黒のままにし、不透明度を上げて奥行きを表します。影のトークンの作り方は「[12-1 画像と装飾](/decoration/images-and-decoration/)」で説明しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [スクロールバーにまつわるエトセトラ](https://www.tak-dcxi.com/article/scroll-bar-related-etcetera/)（TAKLOG、2024年3月。テーマの切り替えの方法が本書と異なります）
+- [light-dark() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark)
+- [color-scheme - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color-scheme)

@@ -1,14 +1,57 @@
 # 第7章 コンポーネントとカスタムプロパティ
 
-# 7-1 コンポーネントの境界を守る
+# 7-1 何をコンポーネントにするか
+- id: component-decision-tests
+  level: 推奨
+  rule: コンポーネントにするかは、繰り返し使うか、全インスタンスで HTML の構造・クラス・ARIA 属性・data 属性・条件分岐・JavaScript の振る舞いを制御したいか、既知の要件として構造の拡張があるか、の順に判定する。
+  reason: コンポーネントが役に立つのは、HTML の構造や振る舞いを1つの定義から管理したいときで、見た目の共通化だけなら CSS で足りるため。
+  note: '繰り返し使っていても CSS だけで管理できるなら、コンポーネントにしません。「3回出てきた」はパターンへの昇格の目安で、コンポーネントにする目安ではありません。セクションの導入（小見出し、見出し、リード文の組）のように判定に迷うまとまりは、デフォルトでは親の子要素として書き、バリエーションや補助の要素の有無を入力点として管理したいときにコンポーネントにします。コンポーネントにしたものは、ルートに `scoped <名前>` を付けて `@scope (.scoped.<名前>) to (.scoped)` で書き、外から変えてよい値を公開プロパティにします。'
+  aiProne: true
+  page: components/what-is-a-component
+  since: 0.12.0
+
+- id: no-component-for-look-only
+  level: 非推奨
+  rule: 見た目が共通だという理由だけで、コンポーネントを作らない（段落、区切り線、単純な見出し、見た目だけをまとめた wrapper はコンポーネントにしない）。
+  reason: 管理したい構造や振る舞いを持たないものをコンポーネントにすると、ファイルとルートが増えるうえ、wrapper のルートの `.scoped` で親のスコープが打ち切られ、親の CSS から中身を選べなくなるため。
+  note: 段落と区切り線はベーススタイルとトークンで、役割のある見た目の断片はパターンで、配置はコンポジションで、単機能の補助はユーティリティで扱います。
+  aiProne: true
+  page: components/what-is-a-component
+  since: 0.12.0
+
+- id: no-component-for-future-guess
+  level: 非推奨
+  rule: 将来必要になりそう、ほかの案件でよくある、という予測だけでコンポーネントを作らない。
+  reason: 使われない入力点と分岐が定義に残り、読む人がそれを維持し続けることになるため。
+  note: 構造の拡張をコンポーネントにする根拠にできるのは、いまの要件、既存の実装、仕様書、既知の派生要件に書かれているときだけです。
+  page: components/what-is-a-component
+  since: 0.12.0
+
+- id: local-parts-stay-in-parent
+  level: 推奨
+  rule: 親の中でしか意味を持たない区画（カードの見出し、本文、フッター、内側を包む要素など）は、別のコンポーネントにせず、親の `@scope` の中でタイプセレクタか子クラスで選ぶ。
+  reason: 区画をコンポーネントに分けると、区画のルートの `.scoped` で親のスコープが打ち切られ、親の中の並びを親の CSS だけで決められなくなるため。
+  note: 親の外でも独立した責務と再利用の価値を持つ子要素（カードの中のボタンなど）は、別のコンポーネントにしてかまいません。
+  aiProne: true
+  page: components/what-is-a-component
+  since: 0.12.0
+
 - id: component-split-by-role
   level: 推奨
   rule: 見た目が似ていても、役割や中に入る内容が異なるものは、別のコンポーネントにする。
   reason: 別物を1つにまとめると分岐が増えて肥大化し、後から不要になった部分も捨てられなくなるため。
   note: 見た目の共通化だけを理由に、新しいコンポーネントを作ることもしません。
-  page: components/boundaries
+  page: components/what-is-a-component
   since: 0.1.0
 
+- id: share-look-with-tokens
+  level: 推奨
+  rule: 別のコンポーネントの間で見た目をそろえたいときは、コンポーネントを統合せず、同じトークンを参照する。
+  reason: 見た目の変更はトークンの値を変えるだけで済み、それぞれのコンポーネントは独立したまま保てるため。
+  page: components/what-is-a-component
+  since: 0.1.0
+
+# 7-2 コンポーネントの境界を守る
 - id: one-component-per-file
   level: 必須
   rule: コンポーネントの CSS は、コンポーネントごとに1つのファイルに書き、複数のコンポーネントの CSS を1つのファイルに混ぜない。
@@ -17,13 +60,6 @@
   aiProne: true
   page: components/boundaries
   since: 0.5.0
-
-- id: share-look-with-tokens
-  level: 推奨
-  rule: 別のコンポーネントの間で見た目をそろえたいときは、コンポーネントを統合せず、同じトークンを参照する。
-  reason: 見た目の変更はトークンの値を変えるだけで済み、それぞれのコンポーネントは独立したまま保てるため。
-  page: components/boundaries
-  since: 0.1.0
 
 - id: no-external-layout-on-root
   level: 非推奨
@@ -101,7 +137,7 @@
   page: components/boundaries
   since: 0.1.0
 
-# 7-2 コンポジションとユーティリティ
+# 7-3 コンポジションとユーティリティ
 - id: compositions-for-layout-patterns
   level: 推奨
   rule: 積む、並べて折り返す、列数を切り替えるといった、コンポーネントに依存しない配置は、コンポジション（`stack`、`cluster`、`switcher` など）で書く。
@@ -156,7 +192,7 @@
   page: components/compositions-and-utilities
   since: 0.11.0
 
-# 7-3 デザイントークン
+# 7-4 デザイントークン
 - id: token-naming-category-first
   level: 必須
   rule: トークンは `--<分類>--<名前>` の形で名付ける（例：`--color--neutral--500`、`--spacing--md`）。
@@ -213,7 +249,7 @@
   page: components/design-tokens
   since: 0.1.0
 
-# 7-4 公開プロパティと内部プロパティ
+# 7-5 公開プロパティと内部プロパティ
 - id: public-property-naming
   level: 必須
   rule: 外から変えてよい値は、`--<コンポーネント>--<プロパティ>` の公開プロパティにする（例：`--card--radius`）。
@@ -244,7 +280,7 @@
   level: 必須
   rule: 状態やモードで変わる値は、`--_background--hocus` のように `--` で区切った接尾辞で表し、デフォルトの状態には接尾辞を付けない。
   reason: 状態ごとの値を `:scope` の先頭に並べて見渡せ、状態のセレクタでは参照を切り替えるだけで済むため。
-  note: 画面モードごとの公開プロパティにも、`--primary-layout--gutter--spacious` のように同じ形の接尾辞を付けます。
+  note: 画面モードごとの公開プロパティにも、`--page-hero--padding-block--spacious` のように同じ形の接尾辞を付けます。
   page: components/custom-properties
   since: 0.1.0
 

@@ -1,0 +1,158 @@
+# 第12章 画像・装飾
+
+# 12-1 画像と装飾
+- id: aspect-ratio-for-ratios
+  level: 必須
+  rule: 要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作らない。
+  reason: 比率のための擬似要素や絶対配置が要らず、比率の指定だとコードから読み取れるため。
+  note: '正方形や正円は `aspect-ratio: 1` で作ります。'
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: object-fit-cover-or-contain
+  level: 推奨
+  rule: 大きさを決めた画像や動画には `object-fit` の `cover` か `contain` を指定し、初期値の `fill` で引き伸ばさない。
+  reason: 比率の違う画像が入っても歪まないようにするため。
+  note: '写真のように枠を埋めたい画像は `cover`、ロゴのように切り取られると困る画像は `contain` にします。ベーススタイルで `img` と `video` を `cover` にしておく方法もあります。'
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: img-width-height-attributes
+  level: 必須
+  rule: '`<img>` には、画像の実際の大きさを `width` と `height` の属性で書く。'
+  reason: ブラウザが読み込む前から縦横比を計算して場所を確保し、読み込んだときにレイアウトがずれるのを防ぐため。
+  aiProne: true
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: text-on-image-fallback-background
+  level: 必須
+  rule: 画像や動画の上に文字を載せるときは、画像が表示されなくても文字を読める背景色を指定する。
+  reason: 画像を読み込めないと、文字と背景の色が近くなり、文字を読めなくなることがあるため。
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: sizes-by-tool
+  level: 推奨
+  rule: '`srcset` と `sizes` の値は、手で計算せず、RespImageLint などのツールで確かめて決める。'
+  reason: 表示される幅は余白や段組みの切り替えによって変わり、手で計算すると誤りやすいため。
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: no-lazy-loading-first-view
+  level: 禁止
+  rule: 'ファーストビューに表示される画像に、`loading="lazy"` を指定しない。'
+  reason: ページでいちばん大きな要素の表示が遅れるため。
+  note: 'ファーストビューの画像には `fetchpriority="high"` を指定し、`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。'
+  aiProne: true
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: avif-for-photos
+  level: 推奨
+  rule: 写真のような画像は、AVIF で書き出す。
+  reason: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
+  note: AVIF への変換は WebP より時間がかかるので、画像の多いサイトではビルドの時間を見積もります。
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: clip-path-shape-tokens
+  level: 推奨
+  rule: 三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。
+  reason: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
+  aiProne: true
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: icon-current-color
+  level: 推奨
+  rule: 単色のアイコンの色は `currentColor` で文字色に合わせ、状態ごとにアイコンの色を指定し直さない。
+  reason: 文字色を切り替えるだけでアイコンも追従し、色を2か所に書く必要がなくなるため。
+  note: '`border` の色も、省略すれば `currentColor` になります。'
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: inline-svg-hidden-with-text
+  level: 推奨
+  rule: '意味を持つインライン SVG のアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。'
+  reason: '`<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。'
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: shadow-black-in-dark-mode
+  level: 推奨
+  rule: 影の色は、ライトモードでは背景の色相に寄せた色にし、ダークモードでは黒にして不透明度を上げて奥行きを表す。
+  reason: 黒に近い影は色のある背景をくすませ、暗い背景に白い影を付けると、影ではなく光って見えるため。
+  note: '`--shadow--color: light-dark(oklch(30% 0.05 250deg / 14%), oklch(0% 0 0deg / 30%))` のように、影の色のトークンに `light-dark()` を使います。背景が無彩色のサイトでは、ライトモードも黒で構いません。'
+  page: decoration/images-and-decoration
+  since: 0.1.0
+
+- id: shadow-tokens-light-source
+  level: 推奨
+  rule: 影のトークンは光源の向きをそろえ、段階が上がるほどオフセットとぼかしを大きくし、不透明度を下げる。
+  reason: 影の向きや強さがばらつくと、要素の高さの関係が読み取れず、画面に光源が複数あるように見えるため。
+  page: decoration/images-and-decoration
+  since: 0.4.0
+
+- id: no-animate-layered-shadow
+  level: 非推奨
+  rule: 重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。
+  reason: 描画の計算量が影の数に比例して増え、古い端末ではコマ落ちしやすいため。
+  note: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
+  page: decoration/images-and-decoration
+  since: 0.4.0
+
+- id: marker-for-list-number-style
+  level: 推奨
+  rule: '番号付きリストの番号を装飾するときは、`list-style: none` と `::before` ではなく、`::marker` で色やフォントを指定する。'
+  reason: 'リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。'
+  note: '`::marker` には `background` や `border` を指定できません。円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。'
+  page: decoration/images-and-decoration
+  since: 0.4.0
+
+- id: text-stroke-paint-order
+  level: 推奨
+  rule: '文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。'
+  reason: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
+  note: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
+  page: decoration/images-and-decoration
+  since: 0.3.0
+
+# 12-2 角の形を変える
+- id: corner-shape-guard-when-broken
+  level: 推奨
+  rule: '`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。'
+  reason: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
+  note: '錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。'
+  aiProne: true
+  page: decoration/shapes
+  since: 0.5.0
+
+- id: full-bleed-radius-with-sign
+  level: 推奨
+  rule: '画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。'
+  reason: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
+  note: '`/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。'
+  aiProne: true
+  page: decoration/shapes
+  since: 0.5.0
+
+# 12-3 輪郭と枠線を描く
+- id: guard-new-shapes-with-supports
+  level: 推奨
+  rule: '`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。'
+  reason: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
+  note: '未対応の環境では、単色の枠線や中心まで塗った円グラフのように、意味の読み取れる形に縮退させます。'
+  aiProne: true
+  page: decoration/outlines
+  since: 0.5.0
+
+- id: shape-function-with-custom-properties
+  level: 推奨
+  rule: '`clip-path: shape()` の座標は、半径などをカスタムプロパティに入れて、そこから計算する。'
+  reason: '`shape()` の値は長く、数値を直接並べると形が読み取れず、大きさを変えるたびにすべての座標を書き直すことになるため。'
+  note: '`shape()` に対応していない環境には、`@supports not` で `border-radius` の形に戻します。'
+  page: decoration/outlines
+  since: 0.5.0
+
+# 12-4 印刷のスタイル

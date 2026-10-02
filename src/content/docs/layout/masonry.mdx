@@ -1,8 +1,8 @@
 ---
-title: "8-12 grid-lanesで石積みのレイアウトを組む"
+title: "8-13 grid-lanesで石積みのレイアウトを組む"
 description: "高さの違う項目を、横方向の順番を保ったまま隙間なく詰めるレイアウト（Masonry）は display: block grid-lanes で書き、未対応の環境には @supports で通常のGridを残します。上から下へ読むリストを段に分けるときは columns を使います。"
 sidebar:
-  order: 12
+  order: 13
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -154,7 +154,7 @@ import masonryCss from '../../../demos/layout/masonry-cards/style.css?raw';
 
 そのため、順序に意味のある項目には `grid-lanes` で `span` や線の番号による配置を使いません。ランキングや手順のように順番そのものが内容になる一覧は、`grid-lanes` に向いていません。新着順の一覧のように、おおよその順番が伝われば足りる並びに使います。
 
-仕様は、項目に固有の順番がない場合には、`reading-flow` プロパティで読み上げとフォーカスの順番を見た目に合わせる方法も挙げています。ただし、2026年10月の時点で `reading-flow` に対応しているのはChrome系のブラウザだけで、`grid-lanes` に対応しているのはSafariだけです。両方を同時に使える環境はまだありません。`reading-flow` については「[8-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」で説明しています。
+仕様は、項目に固有の順番がない場合には、`reading-flow` プロパティで読み上げとフォーカスの順番を見た目に合わせる方法も挙げています。ただし、2026年10月の時点で `reading-flow` に対応しているのはChrome系のブラウザだけで、`grid-lanes` に対応しているのはSafariだけです。両方を同時に使える環境はまだありません。`reading-flow` については「[8-15 表示順と読み上げ順を合わせる](/layout/reading-flow/)」で説明しています。
 
 ## `columns` との使い分け
 

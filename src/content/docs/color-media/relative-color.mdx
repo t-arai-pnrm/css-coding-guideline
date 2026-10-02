@@ -1,0 +1,164 @@
+---
+title: "11-2 相対カラー構文で派生色を作る"
+description: "透過させた色や明度を変えた色は、元の色から作ります。1つの色の成分を変えるときは相対カラー構文で、2つの色の間の色は color-mix() で書きます。派生させた色のためにトークンや RGB の値を増やさないので、元の色を1か所直せば、そこから作った色もすべて追従します。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import derivedHtml from '../../../demos/color-media/derived-colors/index.html?raw';
+import derivedCss from '../../../demos/color-media/derived-colors/style.css?raw';
+
+透過させた色や明度を変えた色は、元の色から作ります。1つの色の不透明度や明度だけを変えるときは、`oklch(from var(--color) l c h / 10%)` のような相対カラー構文で書きます。背景色と文字色の中間のように、2つの色の間の色は `color-mix()` で作ります。
+
+派生させた色のために、トークンやRGBの値を別に用意する必要はありません。元の色を1か所直せば、そこから作った色もすべて追従し、元の色との関係もコードに残ります。
+
+<Baseline id="relative-color" name="相対カラー構文" />
+
+## 派生させた色をトークンで持つと起きること
+
+色を16進数で指定してトークンにまとめたCSSを考えます。ボタンの背景を少し透過させたいときや、少し暗い色がほしいときに困ります。16進数のトークンからは不透明度を変えられないので、RGBの値を別のトークンとして用意することになります。
+
+```css title="🙅‍♂ Not Recommended: 透過させるためだけに RGB の値を別に持つ"
+/* 🙅‍♂ Not Recommended */
+:root {
+  --color-primary: #e4a153;
+  --color-primary-rgb: 228 161 83;
+  --color-primary-dark: #c9853a;
+}
+
+.button--ghost {
+  background-color: rgb(var(--color-primary-rgb) / 20%);
+}
+
+.button--strong {
+  background-color: var(--color-primary-dark);
+}
+```
+
+このコードでは、1つの色を表すトークンが3つあります。ブランドの色を変えるときは3つとも書き換える必要があり、1つでも直し忘れると、元の色と派生させた色がずれます。`--color-primary-dark` のような「少し暗い色」は誰かが目で見て選んだ値で、元の色との関係がコードに残っていません。
+
+ホバー、無効、選択中のように状態が増えるたびに、同じことが起きます。状態ごとに「少し暗い色」「少し薄い色」を足していくと、トークンの数は元の色の数の何倍にもなります。かつてはSassの `darken()` や `rgba()` で作っていた色ですが、いまはCSSだけで、元の色から作れます。
+
+## 相対カラー構文で1つの色を変える
+
+相対カラー構文は、元の色を成分に分け、一部だけを書き換えた色を作る構文です。`oklch(from 元の色 l c h)` と書くと、元の色を分解した明度・彩度・色相の値が `l`、`c`、`h` に入ります。変えたい値だけを書き換えれば、ほかの値は元の色のままです。
+
+```css title="🙆‍♂ Recommended: 元の色から、不透明度や明度を変えた色を作る"
+._divider {
+  border-block-end: 1px solid oklch(from var(--color--accent--500) l c h / 10%);
+}
+
+._tag {
+  background-color: oklch(from var(--color--accent--500) calc(l - 0.15) c h);
+}
+```
+
+1つ目は、アクセントカラーの不透明度を10%にした区切り線です。2つ目は、明度だけを0.15下げた、少し暗いアクセントカラーです。どちらも元の色のトークンを参照しているので、アクセントカラーを変えれば、区切り線とタグの色も一緒に変わります。
+
+元の色の書き方は問いません。16進数のトークンでも、`oklch(from #e4a153 l c h / 20%)` と書けば、ブラウザが `oklch()` の成分に変換してから書き換えます。相対カラー構文は `rgb()` や `hsl()` でも使えますが、本書では `oklch()` にそろえます。HSLの明度は見た目の明るさと一致しないので、`calc(l - 10)` で暗くしても、色相によって暗くなり方が変わるからです。
+
+相対カラー構文の中の `l` は、パーセントではなく0から1までの数値として扱われます。計算するときは、`calc(l - 0.15)` のように数値で書きます（2026年9月、Chrome 153で確認）。Safariが対応したのはバージョン18なので、本書の対象のブラウザ（Safari 18系の最終版以降）では問題なく使えます（2026年9月確認）。
+
+### 状態ごとの色を元の色から作る
+
+相対カラー構文を使うと、ホバーや無効の状態の色も、元の色から作れます。成分の書き換え方は、変えたい性質で決まります。暗くするなら `l` を下げ、くすませるなら `c` を下げ、半透明にするなら不透明度を指定します。
+
+```css title="🙆‍♂ Recommended: 状態ごとの色を、元の色の成分を書き換えて作る"
+@scope (.scoped.button) to (.scoped) {
+  :scope {
+    --_accent: var(--button--accent, var(--color--accent--600));
+    --_background: var(--_accent);
+
+    border-color: transparent;
+    background-color: var(--_background);
+    color: oklch(100% 0 0deg);
+
+    &:focus-visible {
+      --_background: oklch(from var(--_accent) calc(l - 0.1) c h);
+    }
+
+    &:disabled {
+      --_background: oklch(from var(--_accent) calc(l + 0.2) 0 h);
+    }
+  }
+}
+```
+
+フォーカスしたときは明度だけを0.1下げ、無効のときは明度を上げて彩度を0にしています。どの状態も `--_accent` から作っているので、公開プロパティの `--button--accent` で元の色を変えれば、状態ごとの色も一緒に変わります。ホバーとフォーカスを同じ見た目にする書き方は「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明しています。
+
+相対カラー構文は、元の色の色相を回すこともできます。`oklch(from var(--color--accent--500) l c calc(h + 180))` は、明度と彩度を保ったまま、色相環の反対側の色を作ります。ただし、こうして作った色がデザインで使えるかどうかは別の問題です。配色のための色は、デザインで決めたトークンから選びます。{/* 要確認: 出典なし */}
+
+### alpha() 関数
+
+不透明度だけを変える場合は、`alpha()` 関数でも書けます。`alpha(from var(--color--accent--500) / 10%)` は `oklch(from var(--color--accent--500) l c h / 10%)` と同じ色です。成分をそのまま並べる `l c h` を省けます。相対カラー構文の結果は `oklch()` の色空間になりますが、`alpha()` の結果は元の色の色空間のままです（2026年10月、Chrome 152で確認）。
+
+`alpha()` が主要なブラウザで使えるようになったのは2026年9月で、Safariは27から対応しています。本書の対象のブラウザでは使えないので、当面は相対カラー構文で書きます（2026年10月確認）。
+
+<Baseline id="alpha" name="alpha()" />
+
+## color-mix() で2つの色を混ぜる
+
+`color-mix()` は、2つの色を指定した割合で混ぜる関数です。相対カラー構文が1つの色の成分を書き換えるのに対して、`color-mix()` は2つの色の間の色を作ります。背景色と文字色を少しだけ混ぜた枠線や、`currentColor` を半透明にした下線のように、2つの色の関係で決まる色に向いています。
+
+```css title="🙆‍♂ Recommended: 2つの色の間の色を作る"
+._card {
+  border: 1px solid color-mix(in oklab, var(--background--base), var(--foreground--base) 15%);
+}
+
+._link {
+  text-decoration-color: color-mix(in oklab, currentColor 60%, transparent);
+}
+```
+
+1つ目は、背景色に文字色を15%混ぜた枠線の色です。ライトモードでは背景より少し暗く、ダークモードでは少し明るい線になり、どちらの配色でも背景からわずかに浮きます。2つ目は、文字色に透明を混ぜて、不透明度を60%にした下線の色です。`currentColor` の不透明度を変えたいときも、`transparent` と混ぜれば簡単に書けます。
+
+補間の色空間には `oklab` を指定します。以前の私は `in srgb` と書いていましたが、いまのテンプレートでは `in oklab` にそろえています。`srgb` で混ぜると、中間の色がくすんで見えることがあります。補間の色空間による違いは「[11-1 色の形式と色空間](/color-media/color/)」のグラデーションの例で確かめられます。
+
+ホバーのときに背景色を少し暗くしたい場合も、`opacity` を下げるのではなく、色そのものを変えます。`opacity` を下げると、文字まで一緒に透けてしまうからです。
+
+<Baseline id="color-mix" />
+
+## 相対カラー構文と color-mix() の使い分け
+
+同じ色をどちらでも作れる場面は多くあります。不透明度が10%の色なら、`oklch(from X l c h / 10%)` と `color-mix(in oklab, X 10%, transparent)` のどちらの書き方でも作れます。黒を10%混ぜて暗くする書き方と、明度を下げる書き方も、近い色になります。
+
+私は、1つの色の成分を変えるときは相対カラー構文を、2つの色の間を取るときは `color-mix()` を使います。「アクセントカラーの薄い版」は元の色が1つなので相対カラー構文で、「背景と文字の中間」は2つの色が要るので `color-mix()` で書きます。使い分けを決めておくと、コードを読むときに、その色が1つの色から作ったものか、2つの色の間を取ったものかが書き方から分かります。
+
+相対カラー構文は、変える成分を名前で書けることも利点です。`calc(l - 0.1)` なら明度を下げたことが、`/ 10%` なら不透明度を変えたことが読み取れます。`color-mix()` で黒を混ぜると、明度と一緒に彩度も下がるので、意図が「暗くする」なのか「くすませる」なのかが書き方から分かりません。
+
+## コード例とデモ
+
+次のデモでは、3枚のカードの元の色だけを変えています。背景、枠線、バッジの色は、それぞれのカードの元の色から相対カラー構文で作っています。
+
+<Demo title="元の色を1つ変えるだけで、背景、枠線、バッジ、ホバーの色が変わる" html={derivedHtml} css={derivedCss} />
+
+カードの背景は元の色の不透明度を6%に、枠線は30%に、バッジの背景は15%にしています。ボタンにマウスを重ねるか、Tabキーでフォーカスを移すと、明度を0.1下げた色に変わります。2枚目と3枚目は、`style` 属性で `--derived-card--accent` を渡しているだけで、CSSの側には色ごとのルールがありません。
+
+## 派生させた色の注意点
+
+明度を上げ下げした色は、元の色によっては画面で表示できる範囲を外れます。彩度の高い色の明度を大きく上げると、その明度では表せない彩度になり、ブラウザが近い色に置き換えます。明度を大きく変えるときは、元の色の段階のトークン（`--color--accent--300` など）を使うほうが、デザインどおりの色になります。
+
+半透明の色は、下にある色と重なって見えます。背景が白なら淡い色に見えますが、画像や別の色の上では違う色に見えます。文字の背景に半透明の色を使うときは、重ねる背景ごとにコントラスト比を確かめます。基準は「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+
+相対カラー構文とカスタムプロパティを組み合わせると、どの色から作ったのかが変数の名前からしか分からなくなります。私は、状態ごとの色を `--_accent--hocus` のような名前の内部プロパティにまとめ、元の色と同じ場所に書いています。名前の付け方は「[7-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で扱います。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [CSS Relative Colors](https://ishadeed.com/article/css-relative-colors/)（Ahmad Shadeed。相対カラー構文の使い道。記事は `hsl()` と `rgb()` の例も挙げていますが、本書は `oklch()` で書きます）
+- [えっ！？まだ色の指定でrgba()関数を使っているの！？](https://www.tak-dcxi.com/article/rgba-function-is-legacy-syntax/)（TAKLOG、2024年5月。`color-mix()` の補間の色空間などが本書と異なります）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。ホバーの色を `color-mix()` で作る例）
+- [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)
+- [alpha() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/alpha)
+- [color-mix() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color-mix)
+
+{/* textlint-enable ja-technical-writing/no-doubled-joshi */}

@@ -1,0 +1,98 @@
+@layer tokens {
+  :root {
+    --spacing--xs: 8;
+    --spacing--sm: 12;
+    --spacing--md: 16;
+    --spacing--lg: 24;
+    --rounded--md: 4px;
+    --rounded--lg: 12px;
+    --foreground--base: oklch(25% 0 0deg);
+    --foreground--muted: oklch(45% 0 0deg);
+    --foreground--on-accent: oklch(100% 0 0deg);
+    --background--surface: oklch(96% 0.01 250deg);
+    --background--accent: oklch(48% 0.17 260deg);
+  }
+}
+
+@layer compositions {
+  .stack {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--stack--gap, 0);
+  }
+}
+
+@layer components {
+  /* 商品カード。見出し、本文、フッターは親の中でしか意味を持たないので、別のコンポーネントにしない */
+  @scope (.scoped.product-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: calc(var(--spacing--sm) * 1px);
+      padding: calc(var(--spacing--md) * 1px);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+    }
+
+    header {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: calc(var(--spacing--xs) * 1px);
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    ._price {
+      font-weight: 700;
+    }
+
+    ._body {
+      color: var(--foreground--muted);
+    }
+
+    footer {
+      display: block flex;
+      justify-content: end;
+    }
+  }
+
+  /* 記事カード。見た目のトークンは商品カードと共有するが、構造が違うので別のコンポーネントにする */
+  @scope (.scoped.article-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: calc(var(--spacing--xs) * 1px);
+      padding: calc(var(--spacing--md) * 1px);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+    }
+
+    time {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    a {
+      &:any-link:hover {
+        @media (any-hover) {
+          text-decoration-line: revert;
+        }
+      }
+
+      &:focus-visible {
+        text-decoration-line: revert;
+      }
+    }
+  }
+
+  /* ボタン。カードの外でも使い、type 属性や ARIA 属性を1つの定義から管理するので、別のコンポーネントにする */
+  @scope (.scoped.button) to (.scoped) {
+    :scope {
+      padding-block: calc(var(--spacing--xs) * 1px);
+      padding-inline: calc(var(--spacing--md) * 1px);
+      border-color: transparent;
+      border-radius: var(--rounded--md);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-weight: 700;
+    }
+  }
+}
