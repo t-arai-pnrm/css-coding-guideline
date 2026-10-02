@@ -33,7 +33,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 ```css title="🙆‍♂ Recommended: 横スクロールとスクロールスナップでスライドを並べる"
 @scope (.scoped.css-carousel) to (.scoped) {
-  ._list {
+  ul {
     display: block grid;
     grid-auto-columns: 100%;
     grid-auto-flow: column;
@@ -47,7 +47,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
     }
   }
 
-  ._item {
+  li {
     scroll-snap-align: center;
   }
 }
@@ -69,7 +69,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 ```css title="🙆‍♂ Recommended: ボタンとインジケーターを、対応した環境でだけ生成する"
 @scope (.scoped.css-carousel) to (.scoped) {
-  ._list {
+  ul {
     anchor-name: --css-carousel;
 
     /* ... */
@@ -103,7 +103,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
     }
   }
 
-  ._item {
+  li {
     @supports selector(::scroll-marker) {
       &::scroll-marker {
         content: "" / attr(data-label);
@@ -137,12 +137,12 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 ```css title="🙆‍♂ Recommended: 止まっていないスライドの中身を不活性にする"
 @scope (.scoped.css-carousel) to (.scoped) {
-  ._item {
+  li {
     container: --css-carousel-item / scroll-state;
     scroll-snap-align: center;
   }
 
-  ._card {
+  article {
     @container --css-carousel-item not scroll-state(snapped: inline) {
       interactivity: inert;
     }
@@ -150,7 +150,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 }
 ```
 
-`scroll-state(snapped: inline)` は、コンテナの要素が、インライン方向のスナップで止まっている位置にある間だけ成り立つ条件です。`not` で反転し、止まっていないスライドだけを対象にします。コンテナクエリで変えられるのはコンテナの子孫だけなので、`interactivity` はスライド（`._item`）ではなく、その中のカード（`._card`）に指定します。Chrome 152で確かめたところ、最初は1枚目のカードだけが `auto` で残りは `inert` でした。1枚分スクロールすると、2枚目だけが `auto` に変わりました（2026年10月、Chrome 152で確認）。
+`scroll-state(snapped: inline)` は、コンテナの要素が、インライン方向のスナップで止まっている位置にある間だけ成り立つ条件です。`not` で反転し、止まっていないスライドだけを対象にします。コンテナクエリで変えられるのはコンテナの子孫だけなので、`interactivity` はスライド（`li`）ではなく、その中のカード（`article`）に指定します。Chrome 152で確かめたところ、最初は1枚目のカードだけが `auto` で残りは `inert` でした。1枚分スクロールすると、2枚目だけが `auto` に変わりました（2026年10月、Chrome 152で確認）。
 
 この挙動は、JavaScriptのカルーセルのライブラリ（Splideなど）が、隠れているスライドに対して行っている処理と同じです。見えているスライドのリンクでTabキーを押すと、隠れているスライドのリンクを飛ばして、カルーセルの後ろの要素に移ります。読み上げも、見えている1枚だけで済みます。
 

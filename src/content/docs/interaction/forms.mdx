@@ -71,7 +71,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ```css title="🙆‍♂ Recommended: input 自体に appearance: none を指定して描く"
 @scope (.scoped.check-field) to (.scoped) {
-  ._checkbox {
+  input {
     display: inline grid;
     place-content: center;
     inline-size: 1lh;
@@ -116,7 +116,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ```css title="🙆‍♂ Recommended: つまみの手前の余白を伸ばして、つまみを動かす"
 @scope (.scoped.setting-switch) to (.scoped) {
-  ._switch {
+  input {
     display: inline flex;
     inline-size: calc(1lh * 2);
     block-size: 1lh;
@@ -171,7 +171,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ```css title="🙆‍♂ Recommended: 入力した後にだけ、エラーの見た目にする"
 @scope (.scoped.contact-form) to (.scoped) {
-  ._input {
+  ._email-input {
     border-color: var(--color--neutral--400);
 
     &:user-invalid {
@@ -179,7 +179,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
     }
   }
 
-  ._hint {
+  p {
     &:is(._field:has(:user-invalid) *) {
       color: var(--color--error--600);
       font-weight: bold;

@@ -15,7 +15,7 @@ import quickStartCss from '../../../demos/introduction/quick-start/style.css?raw
 
 ## 本文のコード例だけでは動かない理由
 
-本文のコード例は、説明に必要な部分だけを抜き出したものです。「[本書の読み方](/introduction/how-to-read/)」で説明しているとおり、ほとんどのコード例ではカスケードレイヤー（`@layer`）の記述を省略しています。`._title` のように `_` で始まるクラスのルールは、`@scope` の中に書く前提で、`@scope` の記述も省略していることがあります。
+本文のコード例は、説明に必要な部分だけを抜き出したものです。「[本書の読み方](/introduction/how-to-read/)」で説明しているとおり、ほとんどのコード例ではカスケードレイヤー（`@layer`）の記述を省略しています。`._main-link` のように `_` で始まるクラスのルールは、`@scope` の中に書く前提で、`@scope` の記述も省略していることがあります。
 
 コード例が参照しているトークンも、別のファイルで定義されている前提です。たとえば `color: var(--foreground--muted);` だけを貼り付けると、`--foreground--muted` がどこにも定義されていないので、`var()` の参照が無効になります。このとき `color` はエラーにならず、親から継承した色のまま表示されます。説明している機能が動かないように見えても、原因はトークンがないことかもしれません。
 
@@ -39,7 +39,7 @@ css/
     └── news-card.css   … コンポーネント
 ```
 
-HTMLは、エントリーポイントの `style.css` だけを読み込みます。コンポーネントのルートの要素には `class="scoped news-card"` を付け、子要素には `_` で始まるクラスを付けます。`time` のように、スコープの中に1つしかない要素にはクラスを付けていません。
+HTMLは、エントリーポイントの `style.css` だけを読み込みます。コンポーネントのルートの要素には `class="scoped news-card"` を付け、子要素は `h2` や `time` のようなタイプセレクタで選ぶので、クラスを付けていません。`_` で始まる子クラスを付けるのは、同じ種類の要素を役割で区別するときだけです（「[6-1 コンポーネントの境界を守る](/components/boundaries/)」）。
 
 ```html title="index.html"
 <!doctype html>
@@ -52,7 +52,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
   </head>
   <body>
     <article class="scoped news-card">
-      <h2 class="_title">サイトを公開しました</h2>
+      <h2>サイトを公開しました</h2>
       <time datetime="2026-10-01">2026年10月1日</time>
       <p>最初のお知らせです。</p>
     </article>
@@ -130,7 +130,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
     background-color: var(--background--surface);
   }
 
-  ._title {
+  h2 {
     color: var(--_accent);
     font-size: calc(20 / 16 * 1rem);
   }
@@ -177,7 +177,7 @@ npmでインストールする場合（`npm install kiso.css`）は、CSSの `@i
 |---|---|---|---|
 | `scoped <名前>` | `class="scoped news-card"` | コンポーネントのルート。`scoped` は、外側のスコープの下限にもなる | [2-4](/cascade/scope/)、[5-1](/notation/naming/) |
 | `scoped page-<スラッグ>` | `class="scoped page-about"` | ページ固有のスタイルのルート | [2-4](/cascade/scope/) |
-| `._<名前>` | `._title`、`._nav-links` | コンポーネントの子要素。スコープの中だけで意味を持つ | [5-1](/notation/naming/) |
+| `._<名前>` | `._main-link`、`._sub-link` | コンポーネントの子要素のうち、同じ種類の要素を役割で区別するもの。スコープの中だけで意味を持つ | [5-1](/notation/naming/)、[6-1](/components/boundaries/) |
 | `.-<名前>` | `.-visually-hidden`、`.-fluid-text--md` | ユーティリティ。段階や種類は `--` で続ける | [5-1](/notation/naming/)、[6-2](/components/compositions-and-utilities/) |
 | 接頭辞なし | `.cluster`、`.switcher` | コンポジション（配置のパターン） | [6-2](/components/compositions-and-utilities/) |
 | `--<分類>--<名前>` | `--color--accent--600`、`--spacing--md` | デザイントークン | [6-3](/components/design-tokens/) |

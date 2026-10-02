@@ -96,20 +96,22 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 `<textarea>` に `field-sizing: content` を指定すると、入力した量に合わせて入力欄が伸び縮みします。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（`resize`）は不要です。ただし、`resize` を無条件に止めると、未対応の環境では入力欄の高さが固定され、手で広げることもできなくなります。最大の高さも同じです。無条件に付けると、未対応の環境では、ユーザーの広げられる範囲が狭まります。そこで、手動のリサイズを止める指定と最大の高さを、`field-sizing: content` と一緒に `@supports` の中に書きます。
 
 ```css title="🙆‍♂ Recommended: 自動で伸び縮みする環境でだけ、手動のリサイズを止め、最大の高さを付ける"
-._textarea {
-  --_rows: 3lh;
-  --_max-rows: 8lh;
+@scope (.scoped.inquiry-form) to (.scoped) {
+  textarea {
+    --_rows: 3lh;
+    --_max-rows: 8lh;
 
-  box-sizing: unset;
-  inline-size: -webkit-fill-available;
-  inline-size: stretch;
-  min-block-size: var(--_rows);
-  padding: 1em;
+    box-sizing: unset;
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
+    min-block-size: var(--_rows);
+    padding: 1em;
 
-  @supports (field-sizing: content) {
-    max-block-size: var(--_max-rows);
-    resize: unset;
-    field-sizing: content;
+    @supports (field-sizing: content) {
+      max-block-size: var(--_max-rows);
+      resize: unset;
+      field-sizing: content;
+    }
   }
 }
 ```

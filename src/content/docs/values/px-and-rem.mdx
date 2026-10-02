@@ -72,7 +72,7 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
     border-radius: 8px;
   }
 
-  ._title {
+  h2 {
     display: block flex;
     gap: 0.5em;
     align-items: center;
@@ -84,7 +84,7 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
     block-size: 1em;
   }
 
-  ._text {
+  p {
     margin-block-start: calc(12 / 16 * 1rem);
   }
 }
@@ -123,12 +123,14 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
   --spacing--md: 24;
 }
 
-._body {
-  padding-inline: calc(var(--spacing--md) * 1px);
-}
+@scope (.scoped.notice-card) to (.scoped) {
+  :scope {
+    padding-inline: calc(var(--spacing--md) * 1px);
+  }
 
-._paragraph {
-  margin-block-start: calc(var(--spacing--sm) / 16 * 1rem);
+  p {
+    margin-block-start: calc(var(--spacing--sm) / 16 * 1rem);
+  }
 }
 ```
 
@@ -153,13 +155,15 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
 ```
 
 ```css title="🙆‍♂ Recommended: 単位のない数値で、比率として継承させる"
-._article {
-  line-height: 1.75;
-}
+@scope (.scoped.article-body) to (.scoped) {
+  :scope {
+    line-height: 1.75;
+  }
 
-._heading {
-  font-size: calc(32 / 16 * 1rem);
-  line-height: 1.4;
+  h2 {
+    font-size: calc(32 / 16 * 1rem);
+    line-height: 1.4;
+  }
 }
 ```
 

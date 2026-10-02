@@ -18,7 +18,7 @@ sidebar:
 | `$変数` | サイト全体の値は `:root` のトークン、コンポーネントの中の値は `--_` で始まる内部プロパティ | [6-3](/components/design-tokens/)、[6-4](/components/custom-properties/) |
 | `!default` | 公開プロパティを内部プロパティで受け、デフォルト値を `var()` のフォールバックに書く | [6-4](/components/custom-properties/) |
 | ネスト、`&:hover` | ネイティブのネスト。セレクタは2層までにし、`&` で始める | [5-2](/notation/nesting-and-order/) |
-| `&__title`、`&--modifier` | `@scope` の中の `._title`、`data-*` 属性や公開プロパティ | [2-4](/cascade/scope/)、[5-1](/notation/naming/) |
+| `&__title`、`&--modifier` | `@scope` の中のタイプセレクタ（`h2`）と子クラス（`._main-link`）、`data-*` 属性や公開プロパティ | [2-4](/cascade/scope/)、[5-1](/notation/naming/)、[6-1](/components/boundaries/) |
 | `@mixin` と `@include` | コンポジション、ユーティリティ、ベーススタイル | [6-2](/components/compositions-and-utilities/) |
 | `@function`、`math.div()` | `calc()`、`min()`、`max()`、`clamp()` の式 | [3-3](/values/math-functions/) |
 | `@extend` とプレースホルダ | トークンの共有、HTMLに付けるコンポジションとユーティリティのクラス | [6-1](/components/boundaries/)、[6-2](/components/compositions-and-utilities/) |
@@ -67,7 +67,7 @@ Sassの変数はビルドの時点で値に置き換わりますが、カスタ�
 
 `&:hover` のような擬似クラスのネストや、セレクタの中の `@media` は、素のCSSのネストでもそのまま書けます。本書では、セレクタを2層（親と、その中の1段）までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書きます。規約は「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明しています。
 
-Sassと大きく違うのは、`&__title` のように `&` に文字をつなげてクラス名を作れないことです。素のCSSではこれが無効なセレクタになり、ルールごと無視されます。子要素は、`@scope` の中で `._title` のような短いクラス名で選びます。BEMの修飾子で表していたバリエーションは、`data-variant` のような属性か、公開プロパティで表します。
+Sassと大きく違うのは、`&__title` のように `&` に文字をつなげてクラス名を作れないことです。素のCSSではこれが無効なセレクタになり、ルールごと無視されます。子要素は、`@scope` の中で `h2` のようなタイプセレクタで選びます。同じ種類の要素を役割で区別するときだけ、`._main-link` のような短いクラス名を付けます。BEMの修飾子で表していたバリエーションは、`data-variant` のような属性か、公開プロパティで表します。
 
 ```scss title="Sass：&__ と &-- で名前を作る"
 .media-card {
@@ -93,7 +93,7 @@ Sassと大きく違うのは、`&__title` のように `&` に文字をつなげ
     }
   }
 
-  ._title {
+  h2 {
     font-weight: var(--font-weight--bold);
   }
 }
@@ -141,9 +141,11 @@ mixinは、置き換え先が用途によって分かれます。要素を積む
 pxをremに変換する関数は、`calc(24 / 16 * 1rem)` の式に置き換えます。式にしておけば、デザインカンプの「24px」がコードからそのまま読み取れます。`clamp()`、`min()`、`max()` の中では、`calc()` を省いて `24 / 16 * 1rem` と書けます。変換の考え方は「[3-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 変換の関数の代わりに、式を書く"
-._heading {
-  margin-block-end: calc(24 / 16 * 1rem);
-  font-size: calc(32 / 16 * 1rem);
+@scope (.scoped.article-body) to (.scoped) {
+  h2 {
+    margin-block-end: calc(24 / 16 * 1rem);
+    font-size: calc(32 / 16 * 1rem);
+  }
 }
 ```
 
@@ -162,7 +164,7 @@ pxをremに変換する関数は、`calc(24 / 16 * 1rem)` の式に置き換え�
 `@each` や `@for` で、`.gap-sm` や `.gap-lg` のような段階ごとのクラスを量産するのはやめます。本書では、コンポジションの間隔や列数を修飾のクラスで増やさず、公開プロパティで受け取ります。値は、呼び出し側の `style` 属性で渡します。
 
 ```html title="🙆‍♂ Recommended: 段階ごとのクラスを作らず、style 属性で値を渡す"
-<ul class="_tags cluster" style="--cluster--gap: calc(var(--spacing--xxs) / 16 * 1rem)">
+<ul class="cluster" style="--cluster--gap: calc(var(--spacing--xxs) / 16 * 1rem)">
   <li>…</li>
 </ul>
 ```

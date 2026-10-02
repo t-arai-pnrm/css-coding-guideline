@@ -6,16 +6,16 @@
       overflow-x: auto;
     }
 
-    ._case {
+    section {
       display: block grid;
       gap: 8px;
     }
 
-    ._label {
+    h3 {
       font-size: calc(14 / 16 * 1rem);
     }
 
-    ._row {
+    div {
       display: block flex;
 
       /* 計算を追いやすいよう、コンテナの幅を 480px に固定する */
@@ -23,7 +23,7 @@
       border: 1px dashed oklch(60% 0 0deg);
     }
 
-    ._item {
+    span {
       /* 縮む量の計算に影響しないよう、インライン方向の padding と border は付けない */
       padding-block: 8px;
       background-color: oklch(70% 0.12 250deg);
@@ -35,7 +35,7 @@
       }
     }
 
-    [data-case="grow"] > ._item {
+    [data-case="grow"] > * {
       flex-grow: 1;
       flex-basis: 80px;
 
@@ -45,7 +45,7 @@
       }
     }
 
-    [data-case="shrink"] > ._item {
+    [data-case="shrink"] > * {
       flex-basis: 400px;
 
       &:last-child {
@@ -53,11 +53,11 @@
       }
     }
 
-    [data-case="grow-only"] > ._item {
+    [data-case="grow-only"] > * {
       flex-grow: 1;
     }
 
-    [data-case="flex-one"] > ._item {
+    [data-case="flex-one"] > * {
       flex: 1;
     }
   }

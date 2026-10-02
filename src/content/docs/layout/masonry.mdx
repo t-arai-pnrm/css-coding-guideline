@@ -118,7 +118,7 @@ import masonryCss from '../../../demos/layout/masonry-cards/style.css?raw';
     }
   }
 
-  ._image {
+  img {
     inline-size: 100%;
     aspect-ratio: 1;
     object-fit: cover;
@@ -156,12 +156,12 @@ import masonryCss from '../../../demos/layout/masonry-cards/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: 縦に並べたリンクの一覧を、幅に応じて段に分ける"
 @scope (.scoped.footer-links) to (.scoped) {
-  ._list {
+  ul {
     column-gap: 32px;
     columns: calc(200 / 16 * 1rem) 4;
   }
 
-  ._item {
+  li {
     padding-block: 4px;
     break-inside: avoid;
   }

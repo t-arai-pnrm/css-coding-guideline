@@ -11,6 +11,18 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.7.1（2026年10月2日）
+
+0.7.0で変えた子クラスの基準（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）に合わせて、すべての章のコード例とデモを見直しました。ルールの追加や意味の変更はありません。
+
+- `@scope` の中で、`._list`、`._item`、`._link`、`._title` のように要素の種類を言い換えただけのクラスを外し、タイプセレクタで選ぶようにしました。同じ種類の要素を役割で区別しているクラスと、ルールや本文が名前を挙げて説明しているクラスは残しています。
+- 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」のドーナツスコープのデモを、タイプセレクタの `p` が下限で止まることを示す形に改めました。
+- `<a>` の `_button` は、`_contact-link` や `_cta-link` のように `link` の語を使う名前へ改めました（「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」「[7-7 余白を設計する](/layout/spacing/)」ほか）。
+- 「[7-13-5 sidebar](/layout/compositions/sidebar/)」では、子要素のクラスとコンポジションのクラスを並べる説明を、タイプセレクタを前提とする説明へ改めました。
+- 次の2件のルールは、意味を変えずに文言を直しました。
+  - [`child-class-underscore`](/notation/naming/#rule-child-class-underscore)：例を `._title` から `._main-link` に改めました。
+  - [`wysiwyg-scope-root`](/operations/wysiwyg/#rule-wysiwyg-scope-root)：「要素セレクタ」を、本書のほかの箇所と同じ「タイプセレクタ」にそろえました。
+
 ## 0.7.0（2026年10月2日）
 
 `@scope` の中ではタイプセレクタがコンポーネントの範囲にしか当たらないので、子クラスを付ける基準を見直しました。ルールの主張が反対になったため、旧ルールを削除して新しいルールに置き換えています。
@@ -258,7 +270,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`css-before-js-animation`](/interaction/motion/#rule-css-before-js-animation)：動きはまずCSSで作る
   - [`wysiwyg-scope-root`](/operations/wysiwyg/#rule-wysiwyg-scope-root)：WYSIWYGの本文エリアは `@scope (.wysiwyg)` で書く
   - [`wysiwyg-cms-prefix`](/operations/wysiwyg/#rule-wysiwyg-cms-prefix)：独自ブロックは `cms-` のクラスで切り離す
-  - [`wysiwyg-scope-exception`](/operations/wysiwyg/#rule-wysiwyg-scope-exception)：本文エリアに限り、`@scope` のネストと `to()` の省略を認める
+  - [`wysiwyg-scope-root`](/operations/wysiwyg/#rule-wysiwyg-scope-root)：本文エリアに限り、`@scope` のネストと `to()` の省略を認める
   - [`wysiwyg-flow-margin`](/operations/wysiwyg/#rule-wysiwyg-flow-margin)：本文のブロック間の余白は `rlh` で決める
 
 ## 0.3.0（2026年9月30日）

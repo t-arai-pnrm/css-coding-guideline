@@ -50,12 +50,14 @@ CSSの行は、`line-height` の高さを持つ箱として並びます。行の
   line-height: var(--leading--normal);
 }
 
-._article {
-  line-height: var(--leading--relaxed);
-}
+@scope (.scoped.article-body) to (.scoped) {
+  :scope {
+    line-height: var(--leading--relaxed);
+  }
 
-._heading {
-  line-height: var(--leading--snug);
+  h2 {
+    line-height: var(--leading--snug);
+  }
 }
 ```
 
@@ -137,9 +139,11 @@ Adobe製のツールで作ったデザインカンプを再現する案件では
 Adobe製のツールで作ったデザインカンプの余白を再現するときにも、この値が使えます。カンプで測った余白に `--leading-trim` を足せば、ハーフレディングのぶんだけ余白が差し引かれ、カンプの見た目に近づきます。
 
 ```css title="🙆‍♂ Recommended: カンプで測った余白からハーフレディングを差し引く"
-._heading {
-  /* カンプで測った見出しの上の余白は 32px */
-  margin-block-start: calc(32px + var(--leading-trim));
+@scope (.scoped.article-body) to (.scoped) {
+  h2 {
+    /* カンプで測った見出しの上の余白は 32px */
+    margin-block-start: calc(32px + var(--leading-trim));
+  }
 }
 ```
 

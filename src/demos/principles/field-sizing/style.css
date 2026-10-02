@@ -5,7 +5,7 @@
       gap: 8px;
     }
 
-    ._textarea {
+    textarea {
       --_rows: 3lh;
       --_max-rows: 8lh;
 
@@ -25,18 +25,18 @@
       }
     }
 
-    ._supported,
-    ._unsupported {
+    ._supported-note,
+    ._unsupported-note {
       font-size: calc(14 / 16 * 1rem);
     }
 
-    ._supported {
+    ._supported-note {
       @supports not (field-sizing: content) {
         display: none;
       }
     }
 
-    ._unsupported {
+    ._unsupported-note {
       @supports (field-sizing: content) {
         display: none;
       }

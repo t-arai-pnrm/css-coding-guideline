@@ -5,12 +5,12 @@
       gap: 16px;
     }
 
-    ._field {
+    div {
       display: block grid;
       gap: 8px;
     }
 
-    ._textarea {
+    textarea {
       --_max-rows: 10lh;
 
       /* content-box に戻し、高さを行数だけで書けるようにする */
@@ -35,18 +35,18 @@
       }
     }
 
-    ._supported,
-    ._unsupported {
+    ._supported-note,
+    ._unsupported-note {
       font-size: calc(14 / 16 * 1rem);
     }
 
-    ._supported {
+    ._supported-note {
       @supports not (min-block-size: calc(attr(rows type(<number>), 3) * 1lh)) {
         display: none;
       }
     }
 
-    ._unsupported {
+    ._unsupported-note {
       @supports (min-block-size: calc(attr(rows type(<number>), 3) * 1lh)) {
         display: none;
       }

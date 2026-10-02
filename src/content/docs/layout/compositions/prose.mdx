@@ -93,7 +93,7 @@ import proseCss from '../../../../demos/layout/composition-prose/style.css?raw';
 ```html
 <article class="scoped news-single">
   <div class="_layout prose">
-    <header class="_header">…</header>
+    <header>…</header>
     <div class="_body wysiwyg">…</div>
     <p class="_back"><a href="/news/">一覧へ戻る</a></p>
   </div>
@@ -130,7 +130,7 @@ import proseCss from '../../../../demos/layout/composition-prose/style.css?raw';
 
 小見出しの前が広く、直後が狭いので、小見出しは後ろの段落とひとまとまりに見えます。余白の大小でまとまりを伝える考え方は、「[7-7 余白を設計する](/layout/spacing/)」で説明しています。デモのCSSのうち、コンポーネント（`prose-demo`）が書いているのは見出しや囲みの見た目と、囲みの中の間隔だけです。
 
-囲み（`._note`）にも `prose` を付けて、入れ子にしています。囲みの前の32px相当は `style` 属性で、囲みの中の8px相当はコンポーネントのCSSで内側の子に渡しています。こう分ける理由は、後の「補足と注意点」で説明します。
+囲み（`aside`）にも `prose` を付けて、入れ子にしています。囲みの前の32px相当は `style` 属性で、囲みの中の8px相当はコンポーネントのCSSで内側の子に渡しています。こう分ける理由は、後の「補足と注意点」で説明します。
 
 ## `stack`、空のグリッドセル、CMS の本文エリアとの使い分け
 

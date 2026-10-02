@@ -4,7 +4,7 @@
       container: --news-list / inline-size;
     }
 
-    ._list {
+    ul {
       display: block grid;
 
       /* 日付は改行しない（不変）、カテゴリは 160px 相当まで（可変）、タイトルは残りすべて（可変） */
@@ -13,7 +13,7 @@
       padding-inline: 24px;
     }
 
-    ._item {
+    li {
       display: block grid;
 
       /* 列は親のグリッドに参加させ、どの行でも日付・カテゴリ・タイトルの位置をそろえる */
@@ -25,7 +25,7 @@
       border-block-end: 1px solid oklch(85% 0 0deg);
     }
 
-    ._category {
+    span {
       justify-self: start;
       padding-block: 2px;
       padding-inline: 8px;
@@ -34,7 +34,7 @@
       font-size: calc(12 / 16 * 1rem);
     }
 
-    ._title {
+    a {
       /* 日付 96px・カテゴリ 160px・タイトル 160px と、列の隙間 2 つ、左右の余白が並ぶ幅 */
       @container --news-list (inline-size < calc((96 + 160 + 160 + 24 * 2 + 24 * 2) / 16 * 1rem)) {
         grid-column: 1 / -1;

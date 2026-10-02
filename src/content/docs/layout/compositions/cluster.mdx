@@ -109,24 +109,24 @@ import clusterCss from '../../../../demos/layout/composition-cluster/style.css?r
 
 ```html title="🙆‍♂ Recommended: 配置は cluster に、見た目はコンポーネントに任せる"
 <article class="scoped article-card stack" style="--stack--gap: calc(var(--spacing--sm) / 16 * 1rem)">
-  <h2 class="_title">…</h2>
-  <ul class="_tags cluster" style="--cluster--gap: calc(var(--spacing--xxs) / 16 * 1rem)">
-    <li class="_tag">CSS</li>
-    <li class="_tag">Flexbox</li>
+  <h2>…</h2>
+  <ul class="cluster" style="--cluster--gap: calc(var(--spacing--xxs) / 16 * 1rem)">
+    <li>CSS</li>
+    <li>Flexbox</li>
   </ul>
   <div
-    class="_actions cluster"
+    class="cluster"
     style="--cluster--gap: calc(var(--spacing--sm) / 16 * 1rem); --cluster--justification: end"
   >
-    <button class="_button" type="button">プレビュー</button>
-    <button class="_button" type="button">公開する</button>
+    <button type="button">プレビュー</button>
+    <button type="button">公開する</button>
   </div>
 </article>
 ```
 
 ```css title="🙆‍♂ Recommended: コンポーネントはタグの見た目だけを書く"
 @scope (.scoped.article-card) to (.scoped) {
-  ._tag {
+  li {
     padding-block: 4px;
     padding-inline: 12px;
     border-radius: calc(infinity * 1px);
@@ -136,7 +136,7 @@ import clusterCss from '../../../../demos/layout/composition-cluster/style.css?r
 }
 ```
 
-コンポーネントのCSSが書いているのは、タグの余白、角丸、背景色、文字の大きさだけです。`._tags` に `display` や `gap` を書かず、`._tag` に `margin` も書きません。並び方と間隔は `cluster` とHTMLの `style` 属性が決め、コンポーネントはその中の子の見た目を決める、という分担になります。
+コンポーネントのCSSが書いているのは、タグの余白、角丸、背景色、文字の大きさだけです。`ul` に `display` や `gap` を書かず、`li` に `margin` も書きません。並び方と間隔は `cluster` とHTMLの `style` 属性が決め、コンポーネントはその中の子の見た目を決める、という分担になります。
 
 次のデモでは、タグの一覧は一括の間隔で並べ、価格と注記は列の間隔だけを渡して `baseline` でそろえ、ボタンの並びは `end` で行末に寄せています。幅のボタンで320pxに切り替えると、タグとボタンが折り返します。`flex-wrap: balance` に対応したブラウザでは、タグの各行の長さがそろいます。
 

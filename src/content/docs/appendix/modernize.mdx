@@ -42,7 +42,7 @@ sidebar:
 | JavaScriptで親に `has-image` のようなクラスを付ける | `&:has(> ._image)` | 本書の方針 | [`has-over-state-class`](/cascade/selectors/#rule-has-over-state-class) | AI |
 | `body:has(.modal-open)` のように、ページ全体を起点にした `:has()` | コンポーネントのルートを起点にし、`&:has(> ._input:checked)` のように引数の範囲を絞る | 挙動 | [`has-narrow-anchor`](/cascade/selectors/#rule-has-narrow-anchor) | AI |
 | `all: unset` でまとめて戻す | `all: revert-layer`（レイヤーを使わないなら `all: revert`） | 挙動 | [`no-all-unset`](/cascade/cascade-basics/#rule-no-all-unset) | AI |
-| BEMの `.news-card__title` | `@scope (.scoped.news-card) to (.scoped)` の中の `._title` | 本書の方針 | [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)、[`child-class-underscore`](/notation/naming/#rule-child-class-underscore) | AI |
+| BEMの `.news-card__title` | `@scope (.scoped.news-card) to (.scoped)` の中の `h2`。同じ種類の要素を役割で区別するときだけ `._main-link` のような子クラスを付ける | 本書の方針 | [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)、[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)、[`child-class-underscore`](/notation/naming/#rule-child-class-underscore) | AI |
 
 ## リセットとベーススタイル
 
@@ -67,7 +67,7 @@ sidebar:
 | `rgba(0, 0, 0, 0.5)` | `rgb(0 0 0 / 50%)` | 本書の方針 | [`no-rgba-hsla`](/notation/modern-syntax/#rule-no-rgba-hsla)、[`color-space-separated`](/notation/modern-syntax/#rule-color-space-separated) | AI |
 | `width`、`height`、`margin-top`、`top` | `inline-size`、`block-size`、`margin-block-start`、`inset-block-start` | 本書の方針 | [`logical-properties`](/notation/modern-syntax/#rule-logical-properties) | AI |
 | `margin: 0 auto` | `margin-inline: auto` | 挙動 | [`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering) | AI |
-| `&__title`、`&--large` | `._title` を同じ階層に並べ、バリエーションは `[data-variant="…"]` で表す | 挙動 | [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation) | AI |
+| `&__title`、`&--large` | `h2` や `._main-link` を同じ階層に並べ、バリエーションは `[data-variant="…"]` で表す | 挙動 | [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation) | AI |
 | `@media` を `@scope` やファイルの直下にまとめる | `@media` と `@container` を各セレクタの中に書く | 本書の方針 | [`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules) | AI |
 | `@keyframes fadeIn`、`grid-area: image` | `@keyframes --fade-in`、`grid-area: --image` | 本書の方針 | [`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names) | AI |
 

@@ -140,13 +140,13 @@ import sidebarCss from '../../../../demos/layout/composition-sidebar/style.css?r
     class="_layout sidebar"
     style="--sidebar--side-width: calc(240 / 16 * 1rem); --sidebar--gap: calc(var(--spacing--md) / 16 * 1rem)"
   >
-    <article class="_body main-column">…</article>
-    <aside class="_related side-column" aria-labelledby="related-heading">…</aside>
+    <article class="main-column">…</article>
+    <aside class="side-column" aria-labelledby="related-heading">…</aside>
   </div>
 </div>
 ```
 
-1つの要素に、コンポーネントの子要素のクラス（`_body`）と、コンポジションのクラス（`main-column`）を並べて付けています。並び方と幅は `sidebar` が、見た目はコンポーネントが受け持ちます。コンポーネントのCSSには、`._related` の背景や `padding` は書きますが、`inline-size` や `flex` は書きません。幅を書くと `sidebar` の計算と食い違い、折り返す幅が読めなくなるからです。
+並び方と幅は `sidebar` と2つの列のクラスが、見た目はコンポーネントが受け持ちます。コンポーネントのCSSでは `article` と `aside` をタイプセレクタで選び、子要素のクラスは付けません。役割を区別する必要があれば、`_` で始まる子要素のクラスを列のクラスと並べて付けます。コンポーネントのCSSには、`aside` の背景や `padding` は書きますが、`inline-size` や `flex` は書きません。幅を書くと `sidebar` の計算と食い違い、折り返す幅が読めなくなるからです。
 
 次のデモには、2つの `sidebar` を縦に積んでいます。1つ目は、本文を先に、関連記事を後に書いた例です。折り返す幅は744px相当で、幅のボタンで768pxを選ぶと縦に積まれ、1024pxを選ぶと横に並びます。2つ目は、章の目次を先に、本文を後に書いた例で、メインの最小幅を400px相当、サイドの幅を200px相当にしています。折り返す幅は624px相当なので、768pxでも横に並び、480pxで縦に積まれます。
 

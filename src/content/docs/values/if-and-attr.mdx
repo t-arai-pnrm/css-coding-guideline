@@ -27,7 +27,7 @@ import rowsCss from '../../../demos/values/textarea-rows/style.css?raw';
 
 ```html title="🙅‍♂ Not Recommended: rows と同じ値を style 属性でも渡す"
 <!-- 🙅‍♂ Not Recommended -->
-<textarea class="_textarea" rows="6" style="--comment-form--min-rows: 6"></textarea>
+<textarea rows="6" style="--comment-form--min-rows: 6"></textarea>
 ```
 
 最小の高さを残そうとして、`rows` と同じ値を `style` 属性でも渡すと、1つの値を2か所で管理することになります。片方だけを書き換えると、`field-sizing` に対応した環境と未対応の環境で、入力欄の高さが食い違います。CSSが `rows` 属性を直接読めれば、値は1か所で済みます。
@@ -38,7 +38,7 @@ import rowsCss from '../../../demos/values/textarea-rows/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: rows 属性の行数を、入力欄の最小の高さにする"
 @scope (.scoped.comment-form) to (.scoped) {
-  ._textarea {
+  textarea {
     --_max-rows: 10lh;
 
     box-sizing: unset;

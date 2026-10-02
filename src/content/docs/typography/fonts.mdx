@@ -189,8 +189,10 @@ kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体�
   --font-weight--bold: 700;
 }
 
-._title {
-  font-weight: var(--font-weight--bold);
+@scope (.scoped.news-card) to (.scoped) {
+  h2 {
+    font-weight: var(--font-weight--bold);
+  }
 }
 ```
 

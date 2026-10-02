@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.7.0
+- バージョン: 0.7.1
 - 生成日: 2026-10-02
 - ルールの数: 455
 
@@ -182,7 +182,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: Safari の VoiceOver は、`list-style: none` を指定したリストをリストとして読み上げないため。
   - 補足: kiso.css を使えば、`ul`、`ol`、`menu` のマーカーは消えています。
   - 詳細: 4-3 グローバルに書いてはいけないもの（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/global-pitfalls.mdx）
-- 【必須】コンポーネントの子要素のクラス名は、`_` で始まる kebab-case にする（例：`._title`、`._nav-links`）。（`child-class-underscore`）
+- 【必須】コンポーネントの子要素のクラス名は、`_` で始まる kebab-case にする（例：`._main-link`、`._nav-links`）。（`child-class-underscore`）
   - 理由: HTML を見ただけで、そのコンポーネントの中だけで意味を持つ名前だと分かるため。`@scope` で範囲を閉じているので、短い名前でもほかのコンポーネントと衝突しない。
   - 補足: BEM の `block__element` や `block--modifier` の形にはしません。バリエーションや状態は、クラス名ではなく属性で表します。
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
@@ -1106,7 +1106,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: ルートの名前はコンポーネントの名前そのものなので、ブロック名やファイル名と対応させておくと、CSS から実装のファイルをたどりやすいため。
   - 補足: Astro のようにコンポーネント名が PascalCase の環境では、`scoped MediaCard` のようにコンポーネント名に合わせてもかまいません。`scoped` のクラスと `@scope` の書き方は第2章で扱います。
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
-- 【必須】コンポーネントの子要素のクラス名は、`_` で始まる kebab-case にする（例：`._title`、`._nav-links`）。（`child-class-underscore`）
+- 【必須】コンポーネントの子要素のクラス名は、`_` で始まる kebab-case にする（例：`._main-link`、`._nav-links`）。（`child-class-underscore`）
   - 理由: HTML を見ただけで、そのコンポーネントの中だけで意味を持つ名前だと分かるため。`@scope` で範囲を閉じているので、短い名前でもほかのコンポーネントと衝突しない。
   - 補足: BEM の `block__element` や `block--modifier` の形にはしません。バリエーションや状態は、クラス名ではなく属性で表します。
   - 詳細: 5-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
@@ -2402,7 +2402,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。（`ai-layout-with-grid-areas`）
   - 理由: 指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。
   - 詳細: 12-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
-- 【推奨】CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中に要素セレクタで書く。（`wysiwyg-scope-root`）
+- 【推奨】CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中にタイプセレクタで書く。（`wysiwyg-scope-root`）
   - 理由: 編集者は要素にクラスを付けられず、子孫セレクタで書くと詳細度が上がり、独自ブロックの側に打ち消しが要るため。
   - 補足: 本文エリアは、`scoped <名前>` の規約（第2章）の例外です。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。
   - 詳細: 12-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）

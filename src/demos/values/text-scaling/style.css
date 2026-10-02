@@ -18,7 +18,7 @@
       gap: 16px;
     }
 
-    ._controls {
+    fieldset {
       display: block flex;
       flex-wrap: wrap;
       gap: 8px 16px;
@@ -27,19 +27,19 @@
       border-radius: 8px;
     }
 
-    ._legend {
+    legend {
       padding-inline: 4px;
       font-size: calc(14 / 16 * 1rem);
     }
 
     /* 比べやすいよう、列の幅は文字サイズの設定で変えない */
-    ._samples {
+    div {
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
       gap: 16px;
     }
 
-    ._card {
+    article {
       padding-block: var(--_padding-block);
       padding-inline: var(--_padding-inline);
       border-inline-start: var(--_border-width) solid oklch(60% 0.15 250deg);
@@ -78,11 +78,11 @@
       }
     }
 
-    ._title {
+    h2 {
       font-size: var(--_title-size);
     }
 
-    ._text {
+    p {
       margin-block-start: var(--_text-gap);
     }
   }

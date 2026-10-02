@@ -56,7 +56,7 @@ AIが生成するコードにも、同じ傾向があります。流体的な文
     border-radius: var(--_outer-radius);
   }
 
-  ._image {
+  img {
     border-radius: var(--_inner-radius);
   }
 }
@@ -110,9 +110,11 @@ AIが生成するコードにも、同じ傾向があります。流体的な文
 傾きは、画面の幅が1px増えたときの値の増え方です。`100svi` を掛ければ、画面の幅に比例する値が得られます。0.01768に `100svi` を掛けた値は、`1.768svi` と同じです。切片は幅が0のときの値で、これをremに変換して足します。
 
 ```css title="🙆‍♂ Recommended: 最小値と最大値は rem、推奨値は rem と svi の和"
-._title {
-  /* 画面の幅 375px で 24px、1280px で 40px */
-  font-size: clamp(24 / 16 * 1rem, 1.768svi + 17.37 / 16 * 1rem, 40 / 16 * 1rem);
+@scope (.scoped.fluid-heading) to (.scoped) {
+  h2 {
+    /* 画面の幅 375px で 24px、1280px で 40px */
+    font-size: clamp(24 / 16 * 1rem, 1.768svi + 17.37 / 16 * 1rem, 40 / 16 * 1rem);
+  }
 }
 ```
 
@@ -127,19 +129,21 @@ AIが生成するコードにも、同じ傾向があります。流体的な文
 上の例では傾きと切片を手で計算しましたが、計算の結果を書けば、それ自体がマジックナンバーになります。基準の幅や値を変えるたびに、計算をやり直す必要もあります。そこで、基準の値を単位のない数値のカスタムプロパティで持ち、傾きと切片の計算もCSSに任せます。
 
 ```css title="🙆‍♂ Recommended: 基準の値から、傾きと切片を CSS で計算する"
-._title {
-  --_min-width: 375;
-  --_max-width: 1280;
-  --_min-size: 24;
-  --_max-size: 40;
-  --_slope: calc((var(--_max-size) - var(--_min-size)) / (var(--_max-width) - var(--_min-width)));
-  --_intercept: calc(var(--_min-size) - var(--_slope) * var(--_min-width));
+@scope (.scoped.fluid-heading) to (.scoped) {
+  h2 {
+    --_min-width: 375;
+    --_max-width: 1280;
+    --_min-size: 24;
+    --_max-size: 40;
+    --_slope: calc((var(--_max-size) - var(--_min-size)) / (var(--_max-width) - var(--_min-width)));
+    --_intercept: calc(var(--_min-size) - var(--_slope) * var(--_min-width));
 
-  font-size: clamp(
-    var(--_min-size) / 16 * 1rem,
-    var(--_slope) * 100svi + var(--_intercept) / 16 * 1rem,
-    var(--_max-size) / 16 * 1rem
-  );
+    font-size: clamp(
+      var(--_min-size) / 16 * 1rem,
+      var(--_slope) * 100svi + var(--_intercept) / 16 * 1rem,
+      var(--_max-size) / 16 * 1rem
+    );
+  }
 }
 ```
 

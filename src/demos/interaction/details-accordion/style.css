@@ -21,16 +21,16 @@
       display: block grid;
     }
 
-    ._heading {
+    h2 {
       margin-block-end: 12px;
       font-size: calc(20 / 16 * 1rem);
     }
 
-    ._item {
+    details {
       border-block-end: 1px solid oklch(80% 0 0deg);
     }
 
-    ._summary {
+    summary {
       display: block grid;
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 16px;
@@ -40,7 +40,7 @@
     }
 
     /* 開閉を示す矢印 */
-    ._summary::after {
+    summary::after {
       content: "";
       inline-size: 0.5em;
       block-size: 0.5em;
@@ -55,12 +55,12 @@
       }
     }
 
-    ._item[open] > ._summary::after {
+    details[open] > summary::after {
       rotate: 225deg;
     }
 
     /* 開閉する部分。包む要素を足さずに、高さと不透明度を動かす */
-    ._item::details-content {
+    details::details-content {
       overflow: clip;
       block-size: 0;
       opacity: 0;
@@ -73,7 +73,7 @@
       }
     }
 
-    ._item[open]::details-content {
+    details[open]::details-content {
       block-size: auto;
       opacity: 1;
 
@@ -82,7 +82,7 @@
       }
     }
 
-    ._answer {
+    p {
       padding-block-end: 16px;
     }
   }

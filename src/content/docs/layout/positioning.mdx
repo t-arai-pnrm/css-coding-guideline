@@ -46,13 +46,13 @@ Gridなら、すべての子要素を同じエリアに置くだけで重ねら�
     }
   }
 
-  ._image {
+  img {
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
   }
 
-  ._title {
+  h2 {
     padding: 24px;
   }
 }
@@ -166,11 +166,11 @@ z-indexの値は、ページ全体で比べられるわけではありません�
     anchor-scope: --help-tip;
   }
 
-  ._button {
+  button {
     anchor-name: --help-tip;
   }
 
-  ._tip {
+  [popover] {
     margin: auto;
 
     @supports (anchor-name: --help-tip) {
@@ -186,8 +186,8 @@ z-indexの値は、ページ全体で比べられるわけではありません�
 
 ```html
 <span class="scoped help-tip">
-  <button class="_button" type="button" popovertarget="help-tip-1">入力のヒント</button>
-  <span class="_tip" id="help-tip-1" popover>半角の数字で入力してください。</span>
+  <button type="button" popovertarget="help-tip-1">入力のヒント</button>
+  <span id="help-tip-1" popover>半角の数字で入力してください。</span>
 </span>
 ```
 
@@ -201,7 +201,7 @@ z-indexの値は、ページ全体で比べられるわけではありません�
 
 ```css title="🙆‍♂ Recommended: 暗黙のアンカーを基準に、position-area で表示する位置を決める"
 @scope (.scoped.help-tip) to (.scoped) {
-  ._tip {
+  [popover] {
     margin: auto;
 
     @supports (position-area: block-end span-inline-end) {
@@ -221,7 +221,7 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 
 ```css title="🙆‍♂ Recommended: 上下のうち、空きの大きいほうにメニューを開く"
 @scope (.scoped.site-menu) to (.scoped) {
-  ._list {
+  ul {
     margin: auto;
 
     @supports (position-area: block-end span-inline-end) {

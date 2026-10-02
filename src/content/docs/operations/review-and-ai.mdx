@@ -157,7 +157,7 @@ AIが生成したCSSは、必ずStylelintを実行してから、レビューで
     container: --card-list / inline-size;
   }
 
-  ._list {
+  ul {
     display: block grid;
     gap: 24px;
 
@@ -170,15 +170,15 @@ AIが生成したCSSは、必ずStylelintを実行してから、レビューで
 
 ```html title="🙆‍♂ Recommended: 書き直したカードの一覧のHTML"
 <div class="scoped card-list">
-  <ul class="_list">
-    <li class="_item"><!-- ... --></li>
+  <ul>
+    <li><!-- ... --></li>
   </ul>
 </div>
 ```
 
-書き直したコードでは、ルートをコンテナにし、グリッドにする要素を1段内側の `._list` に分けています。コンテナにした要素は、自分の幅を条件にしたスタイルを受け取れないからです。コンテナには名前を付け、`container` ショートハンドで指定します。条件は `inline-size` とremの式で書きます（`container-name-required`、`container-shorthand`、`container-query-inline-size`）。条件が意図どおりに適用されるので、`!important` も要りません（`no-important-for-specificity`）。
+書き直したコードでは、ルートをコンテナにし、グリッドにする要素を1段内側の `ul` に分けています。コンテナにした要素は、自分の幅を条件にしたスタイルを受け取れないからです。コンテナには名前を付け、`container` ショートハンドで指定します。条件は `inline-size` とremの式で書きます（`container-name-required`、`container-shorthand`、`container-query-inline-size`）。条件が意図どおりに適用されるので、`!important` も要りません（`no-important-for-specificity`）。
 
-`width: 100%`、`margin: 0 auto`、`padding: 0`、`list-style: none` は、どれも不要なので消しました。ブロックレベルの要素は幅いっぱいに広がり、リストの字下げとマーカーはリセットCSSが消しているからです（`no-redundant-width-100`、`no-redundant-defaults`）。意味のない `translateY(0)` と、フォーカスリングを消す `outline: none` も消しています（`no-outline-none`）。`&__item` のような連結は素のCSSのネストでは意図どおりに動かないので、子要素は `._item` のようなクラスで書きます（`no-nesting-concatenation`）。
+`width: 100%`、`margin: 0 auto`、`padding: 0`、`list-style: none` は、どれも不要なので消しました。ブロックレベルの要素は幅いっぱいに広がり、リストの字下げとマーカーはリセットCSSが消しているからです（`no-redundant-width-100`、`no-redundant-defaults`）。意味のない `translateY(0)` と、フォーカスリングを消す `outline: none` も消しています（`no-outline-none`）。`&__item` のような連結は、素のCSSのネストでは意図どおりに動きません（`no-nesting-concatenation`）。子要素は、`@scope` の中で `li` のようなタイプセレクタで選びます（`type-selector-in-scope`）。
 
 AIと一緒に作業するとき、私は次の流れを守っています。AIには、書く前にルール集を読ませ、書いた後にはlintとビルドを実行させます。エラーを隠すためにルールを無効にしたり、失敗を飛ばしたりすることは禁じています。人のレビューでは、lintで検出できないルール、とくに「AIが誤りやすい」の印が付いたルールを重点的に見ます。
 

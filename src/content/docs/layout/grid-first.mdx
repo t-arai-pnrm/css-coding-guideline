@@ -202,7 +202,7 @@ Flexboxでは、一部の要素だけを行末側へ寄せる場面でも、子�
     gap: 24px 16px;
   }
 
-  ._card {
+  article {
     display: block grid;
     grid-template-rows: subgrid;
     grid-row: span 3;
@@ -231,14 +231,14 @@ Flexboxでは、一部の要素だけを行末側へ寄せる場面でも、子�
 
 ```css title="🙆‍♂ Recommended: 列ごとに可変か不変かを決め、項目の列をサブグリッドでそろえる"
 @scope (.scoped.news-list) to (.scoped) {
-  ._list {
+  ul {
     display: block grid;
     grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) minmax(0, 1fr);
     column-gap: 24px;
     padding-inline: 24px;
   }
 
-  ._item {
+  li {
     display: block grid;
     grid-template-columns: subgrid;
     grid-column: 1 / -1;
@@ -250,7 +250,7 @@ Flexboxでは、一部の要素だけを行末側へ寄せる場面でも、子�
 
 1列目の `max-content` は、日付の幅そのものです。日付の列は、中身より狭くならず、改行もされません。2列目の `fit-content()` は、中身の幅に合わせつつ、括弧の中の値を上限にする指定です。カテゴリが短ければ短いなりの幅になり、長ければ160px相当で折り返します。3列目の `minmax(0, 1fr)` は、残りの幅をすべて受け取ります。
 
-`<li>` にあたる `._item` は、`grid-column: 1 / -1` で親の3列すべてにまたがり、`grid-template-columns: subgrid` で親の列をそのまま使います。どの項目のカテゴリが長くても、列の幅は一覧全体で1つに決まるので、日付、カテゴリ、タイトルの開始位置がすべての行でそろいます。`align-items: baseline` は、文字の大きさが違うカテゴリとタイトルを、文字のベースラインでそろえる指定です。項目の上下の余白には、ルート要素の行の高さを単位にした `1rlh` を使っています。
+項目の `li` は、`grid-column: 1 / -1` で親の3列すべてにまたがり、`grid-template-columns: subgrid` で親の列をそのまま使います。どの項目のカテゴリが長くても、列の幅は一覧全体で1つに決まるので、日付、カテゴリ、タイトルの開始位置がすべての行でそろいます。`align-items: baseline` は、文字の大きさが違うカテゴリとタイトルを、文字のベースラインでそろえる指定です。項目の上下の余白には、ルート要素の行の高さを単位にした `1rlh` を使っています。
 
 {/* 要確認: 出典なし */}ただし、一覧を狭い場所に置くと、日付とカテゴリの列に幅を取られて、タイトルの列が極端に細くなります。次のデモでは、一覧のルートをコンテナにして、タイトルが160px相当を確保できない幅ではタイトルを次の行へ移しています。
 

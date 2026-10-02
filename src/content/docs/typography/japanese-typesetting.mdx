@@ -149,8 +149,10 @@ body {
 行末のがたつきには、段落の幅を全角1文字の倍数に丸める方法もあります。`ic` は全角の「水」1文字の幅を表す単位で、`round()` で幅を `1ic` の倍数に切り下げると、ベタ組みの行の右端に半端なすき間が残りにくくなります。英数字が混ざるとそろわない行も出ますが、多少は改善します。
 
 ```css title="🙆‍♂ Recommended: 段落の幅を全角1文字の倍数に丸める"
-._paragraph {
-  inline-size: round(down, 100%, 1ic);
+@scope (.scoped.article-body) to (.scoped) {
+  p {
+    inline-size: round(down, 100%, 1ic);
+  }
 }
 ```
 

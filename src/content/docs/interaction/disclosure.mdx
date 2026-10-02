@@ -179,11 +179,11 @@ viewer.addEventListener('command', (event) => {
 ```html title="name 属性で1つだけ開くアコーディオン"
 <section class="scoped faq-list" aria-labelledby="faq-list-heading">
   <h2 id="faq-list-heading">よくある質問</h2>
-  <details class="_item" name="faq-list" open>
+  <details name="faq-list" open>
     <summary>送料はかかりますか？</summary>
     <p>…</p>
   </details>
-  <details class="_item" name="faq-list">
+  <details name="faq-list">
     <summary>注文をキャンセルできますか？</summary>
     <p>…</p>
   </details>
@@ -202,7 +202,7 @@ viewer.addEventListener('command', (event) => {
 
 ```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす"
 @scope (.scoped.faq-list) to (.scoped) {
-  ._item::details-content {
+  details::details-content {
     overflow: clip;
     block-size: 0;
     opacity: 0;
@@ -215,7 +215,7 @@ viewer.addEventListener('command', (event) => {
     }
   }
 
-  ._item[open]::details-content {
+  details[open]::details-content {
     block-size: auto;
     opacity: 1;
 

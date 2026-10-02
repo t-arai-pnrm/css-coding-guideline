@@ -83,7 +83,7 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 値は、デザインカンプのピクセル値を単位のない数値で受け取ります。画面の幅が375pxのとき最小値、1280pxのとき最大値となり、その間の幅では値が連続して変わります。使う側は、`.-fluid-text--lg` のように段階のクラスを付けるか、`style` 属性で最小値と最大値を渡します。セレクタを `[class*="-fluid-text"]` としたのは、段階のクラスを1つ付けるだけで、計算のルールも当たるからです。
 
 ```html title="段階のクラスを付けるか、style 属性で値を渡す"
-<h2 class="_heading -fluid-text--lg">お知らせ</h2>
+<h2 class="-fluid-text--lg">お知らせ</h2>
 <p class="_lead -fluid-text" style="--fluid-text--min-font-size: 18; --fluid-text--max-font-size: 22">…</p>
 ```
 
@@ -186,7 +186,7 @@ p {
 `.-br` を付けた `span` は、ブロックになって前後で改行します。`.-wbr` を付けた `span` はインラインブロックになり、幅が足りる限り、その中では改行されません。見出しを `.-wbr` の `span` で区切れば、幅が足りないときに、`span` の境目でだけ折り返します。`span` を並べた親に `display: block flex` と `flex-wrap: wrap` を指定する方法もあります。
 
 ```html title="区切りたい位置で span を分ける"
-<h2 class="_heading">
+<h2>
   <span class="-wbr">和文の見出しは、</span><span class="-wbr">文節で折り返すと</span><span class="-wbr">読みやすくなります</span>
 </h2>
 ```

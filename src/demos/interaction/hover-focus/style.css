@@ -16,14 +16,14 @@
     }
 
     ._actions,
-    ._links {
+    ul {
       display: block flex;
       flex-wrap: wrap;
       gap: 16px;
       align-items: center;
     }
 
-    ._button {
+    button {
       --_background: var(--_accent);
 
       padding-block: 8px;
@@ -44,14 +44,14 @@
     }
 
     /* 無効にしたボタンは、ホバーしても反応させない */
-    ._button:enabled:hover {
+    button:enabled:hover {
       @media (any-hover: hover) {
         --_background: var(--_accent--hocus);
       }
     }
 
     /* キーボードでフォーカスを移したときは、一度で切り替える */
-    ._button:not(:focus-visible) {
+    button:not(:focus-visible) {
       @media (prefers-reduced-motion: no-preference) {
         transition-duration: var(--duration--fast);
         transition-property: background-color;
@@ -59,7 +59,7 @@
       }
     }
 
-    ._link {
+    a {
       --_color: var(--_accent);
 
       color: var(--_color);
@@ -82,7 +82,7 @@
     }
 
     /* href のないカレントのリンクは、ホバーしても反応させない */
-    ._link:any-link:hover {
+    a:any-link:hover {
       @media (any-hover: hover) {
         --_color: var(--_accent--hocus);
 
@@ -90,7 +90,7 @@
       }
     }
 
-    ._link:not(:focus-visible) {
+    a:not(:focus-visible) {
       @media (prefers-reduced-motion: no-preference) {
         transition-duration: var(--duration--fast);
         transition-property: color, text-decoration-thickness;
