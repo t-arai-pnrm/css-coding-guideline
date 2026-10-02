@@ -11,6 +11,14 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.14.0（2026年10月2日）
+
+名前に使う略語と数字の扱いを決めました。ルールを1件追加し、1件の内容を変えたため、マイナーバージョンを上げています。
+
+- 「[6-6 名前に使う語](/notation/terminology/)」に、省略語と数字の扱いを加えました。クラス名に数字を使わないことと、概念がはっきりしてから名前を付けることは、ECSSのルールにもとづいています。
+- ルール [`no-numbers-in-class-names`](/notation/terminology/#rule-no-numbers-in-class-names) を追加しました。クラス名に番号を使わず、役割の名前、属性、`:nth-child()` で区別します。
+- ルール [`no-abbreviation`](/notation/terminology/#rule-no-abbreviation) の内容を変えました。対象にカスタムプロパティの名前を加え、省略してよい略語を、`img` のようにWeb標準で使われている略語と、`cta` のようにプロジェクトの中で浸透している略語に限りました。このルールの掲載先は、6-1から6-6に移しています。
+
 ## 0.13.0（2026年10月2日）
 
 名前に使う語の節を加え、本書全体のクラス名を命名のルールに合わせて直しました。ルールを追加し、ルール1件の補足を変えたため、マイナーバージョンを上げています。
@@ -357,7 +365,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - ルールを33件追加しました。
   - [`verify-fallback-by-removal`](/principles/browser-support/#rule-verify-fallback-by-removal)：宣言を外した表示を確かめてから、新しい機能を使う
   - [`not-has-for-absence`](/pseudo/has/#rule-not-has-for-absence)：「持たない」は `:not(:has())` で書く
-  - [`no-abbreviation`](/notation/naming/#rule-no-abbreviation)：クラス名を省略しない
+  - [`no-abbreviation`](/notation/terminology/#rule-no-abbreviation)：クラス名を省略しない
   - [`child-name-flat`](/notation/naming/#rule-child-name-flat)：子要素の名前にHTMLの階層を映さない
   - `no-bulk-element-selector`：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない（0.7.0で削除）
   - [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う

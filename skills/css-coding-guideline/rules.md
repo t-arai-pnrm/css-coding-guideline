@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.13.0
+- バージョン: 0.14.0
 - 生成日: 2026-10-02
-- ルールの数: 495
+- ルールの数: 496
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -259,6 +259,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: HTML を見ただけで、そのコンポーネントの中だけで意味を持つ名前だと分かるため。`@scope` で範囲を閉じているので、短い名前でもほかのコンポーネントと衝突しない。
   - 補足: BEM の `block__element` や `block--modifier` の形にはしません。バリエーションや状態は、クラス名ではなく属性で表します。
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
+- 【推奨】クラス名とカスタムプロパティの名前は、単語を省略せずに書く（`._btn` ではなく `._button`、`._ttl` ではなく `._title`）。省略してよいのは、`img` や `nav` のように Web 標準で使われている略語と、`cta` のようにプロジェクトの中で浸透している略語だけにする。（`no-abbreviation`）
+  - 理由: 文字数を削っても節約できるのはわずかなバイト数で、読む人には略語を元の語に戻す負担が残り、略し方が揺れると名前で検索しても見つからなくなるため。
+  - 補足: プロジェクトで使う略語は、元の語とともに用語集に書いておきます。本書のトークンの段階（`sm`、`md`、`lg`）や、内部プロパティの接頭辞（`--_c--` など）は、本書で定めた略語として扱います。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
 - 【必須】自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。（`dashed-ident-names`）
   - 理由: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
   - 補足: `view-transition-name` の名前にも付けます。コンテナの名前は、第9章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
@@ -312,6 +316,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】サイトの中を移動する導線は `navigation`（または `nav`）、操作を実行したり選んだりする選択肢の一覧は `menu` と呼ぶ。（`navigation-not-menu`）
   - 理由: HTML の `<menu>` 要素と ARIA の `menu` ロールは操作の一覧を表すので、導線を `menu` と呼ぶと、メニューの振る舞いを実装すべきだと誤解させるため。
   - 補足: 導線が複数あるときは、`global-navigation` や `footer-navigation` のように、どの導線かを語で示します。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【推奨】クラス名に番号を使わない（`._card-1` と `._card-2` ではなく、役割の名前、`data-variant` のような属性、`:nth-child()` で区別する）。（`no-numbers-in-class-names`）
+  - 理由: 番号は要素が何なのかを表さず並び順を表すだけなので、要素を足したり並べ替えたりすると番号と実体がずれるため。
+  - 補足: 番号を付けたくなるのは、要素の違いがまだ言葉になっていないときです。役割がはっきりするまでは、タイプセレクタや `:nth-child()` で選び、名前を付けるのは役割を説明できるようになってからにします。段階を表すときは `--md` のような段階の名前を使います。
   - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
 - 【推奨】コンポーネントにするかは、繰り返し使うか、全インスタンスで HTML の構造・クラス・ARIA 属性・data 属性・条件分岐・JavaScript の振る舞いを制御したいか、既知の要件として構造の拡張があるか、の順に判定する。（`component-decision-tests`）
   - 理由: コンポーネントが役に立つのは、HTML の構造や振る舞いを1つの定義から管理したいときで、見た目の共通化だけなら CSS で足りるため。
@@ -1337,9 +1345,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 何のための要素なのかが名前から分からず、責務の境界もあいまいになるため。
   - 補足: 内容の幅を制限する要素は `._section-inner`、外側との余白や配置を調整する要素は `._card-outer` のように、「何の」を併記して責務を表す名前を付けます（ルール `inner-outer-names`）。名前に迷ったら、その要素が何なのかを日本語で1文に書き、特徴的な語を名前にします（`text-box` や `center-box` のような見た目や配置だけの名前は避けます）。
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
-- 【推奨】クラス名は単語を省略せずに書く（`._desc` ではなく `._description`）。HTML の要素名として広く通じている `nav` などは、そのまま使ってよい。（`no-abbreviation`）
-  - 理由: 文字数を削っても節約できるのはわずかなバイト数で、読む人には意味を推測する負担が残るため。
-  - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
+- 【推奨】クラス名とカスタムプロパティの名前は、単語を省略せずに書く（`._btn` ではなく `._button`、`._ttl` ではなく `._title`）。省略してよいのは、`img` や `nav` のように Web 標準で使われている略語と、`cta` のようにプロジェクトの中で浸透している略語だけにする。（`no-abbreviation`）
+  - 理由: 文字数を削っても節約できるのはわずかなバイト数で、読む人には略語を元の語に戻す負担が残り、略し方が揺れると名前で検索しても見つからなくなるため。
+  - 補足: プロジェクトで使う略語は、元の語とともに用語集に書いておきます。本書のトークンの段階（`sm`、`md`、`lg`）や、内部プロパティの接頭辞（`--_c--` など）は、本書で定めた略語として扱います。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
 - 【推奨】子要素のクラス名に HTML の階層を映さない。孫にあたる要素にも、親の名前をつなげず、役割の名前を `._kebab` で付ける（`._tags-item-link` ではなく `._tag-link`）。（`child-name-flat`）
   - 理由: 階層を名前に写すと名前が要素の位置を表し、HTML の構造を変えるたびにクラス名とセレクタも変えなければならなくなるため。
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
@@ -1473,6 +1482,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
 - 【推奨】公開プロパティやコンポーネントの名前に使った語を変えるときは、互換性のない変更として扱い、使っている箇所をすべて同時に直す。（`renaming-terms-is-breaking`）
   - 理由: 公開プロパティの名前が変わると、古い名前で値を渡している呼び出し側が、エラーを出さずにデフォルト値に戻るため。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【推奨】クラス名に番号を使わない（`._card-1` と `._card-2` ではなく、役割の名前、`data-variant` のような属性、`:nth-child()` で区別する）。（`no-numbers-in-class-names`）
+  - 理由: 番号は要素が何なのかを表さず並び順を表すだけなので、要素を足したり並べ替えたりすると番号と実体がずれるため。
+  - 補足: 番号を付けたくなるのは、要素の違いがまだ言葉になっていないときです。役割がはっきりするまでは、タイプセレクタや `:nth-child()` で選び、名前を付けるのは役割を説明できるようになってからにします。段階を表すときは `--md` のような段階の名前を使います。
   - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
 
 ### 第7章 コンポーネントとカスタムプロパティ
