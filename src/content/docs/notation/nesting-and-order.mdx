@@ -29,14 +29,19 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 /* 🙅‍♂ Not Recommended */
 .site-nav {
   ul {
-    display: flex;
+    display: block flex;
+    flex-wrap: wrap;
+    gap: 16px;
 
     li {
-      a {
-        color: #333;
+      flex-grow: 1;
 
-        &:hover {
-          color: #000;
+      a {
+        display: block flow;
+        padding-block: 8px;
+
+        &[aria-current="page"] {
+          font-weight: 700;
         }
       }
     }
@@ -44,7 +49,7 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 }
 ```
 
-詳細度も知らないうちに上がります。最も内側のルールは `.site-nav ul li a:hover` と同じ意味になり、詳細度は `0.2.3` です。この色を別の場所で変えたくなると、さらに詳細度の高いセレクタが必要になり、上書きのための上書きが積み重なっていきます。
+詳細度も知らないうちに上がります。最も内側のルールは `.site-nav ul li a[aria-current="page"]` と同じ意味になり、詳細度は `0.2.3` です。この太さを別の場所で変えたくなると、さらに詳細度の高いセレクタが必要になり、上書きのための上書きが積み重なっていきます。
 
 また、ネイティブのCSSのネストはSassと同じではありません。Sassでは `&__title` のように `&` に文字をつなげてクラス名を作れますが、素のCSSではこれが無効なセレクタになり、ルールごと無視されます（2026年9月、Chrome 153で確認）。Stylelintの `selector-nested-pattern` は `&` で始まるかどうかしか見ないので、この誤りは検出できません。
 
@@ -72,10 +77,11 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
   }
 
   a {
+    display: block flow;
     padding-block: 8px;
 
     &[aria-current="page"] {
-      font-weight: bold;
+      font-weight: 700;
     }
   }
 }

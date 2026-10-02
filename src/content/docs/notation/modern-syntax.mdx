@@ -113,17 +113,29 @@ body {
 
 ## 個別の変形プロパティ
 
-移動、回転、拡大・縮小には、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティを使います。いちばんの利点は、変形ごとに値を変えられることです。矢印を45度回転させておき、ホバーで右に少し動かす例で比べます。
+移動、回転、拡大・縮小には、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティを使います。いちばんの利点は、変形ごとに値を変えられることです。矢印を45度回転させておき、ホバーとフォーカスで右に少し動かす例で比べます。
 
 ```css title="🙅‍♂ Not Recommended: 動かすたびに回転も書き直す"
 /* 🙅‍♂ Not Recommended */
 ._link::after {
   transform: rotate(45deg);
-  transition: transform 200ms;
+}
+
+._link:not(:focus-visible)::after {
+  @media (prefers-reduced-motion: no-preference) {
+    transition-duration: var(--duration--fast);
+    transition-property: transform;
+  }
+}
+
+._link:focus-visible::after {
+  transform: translateX(4px) rotate(45deg);
 }
 
 ._link:any-link:hover::after {
-  transform: translateX(4px) rotate(45deg);
+  @media (any-hover: hover) {
+    transform: translateX(4px) rotate(45deg);
+  }
 }
 ```
 
@@ -132,11 +144,17 @@ body {
 ```css title="🙆‍♂ Recommended: 回転はそのままに、移動だけを変える"
 ._link::after {
   rotate: 45deg;
+}
 
+._link:not(:focus-visible)::after {
   @media (prefers-reduced-motion: no-preference) {
-    transition-duration: 200ms;
+    transition-duration: var(--duration--fast);
     transition-property: translate;
   }
+}
+
+._link:focus-visible::after {
+  translate: 4px 0;
 }
 
 ._link:any-link:hover::after {
@@ -146,7 +164,7 @@ body {
 }
 ```
 
-個別のプロパティなら、ホバーで書くのは移動の値だけです。トランジションの対象も `translate` に絞れます。値の書き方は、`translate: 4px 0`（横と縦）、`rotate: 45deg`、`scale: 1.1` のようにシンプルです。
+個別のプロパティなら、ホバーとフォーカスで書くのは移動の値だけです。トランジションの対象も `translate` に絞れます。値の書き方は、`translate: 4px 0`（横と縦）、`rotate: 45deg`、`scale: 1.1` のようにシンプルです。なお、どちらの例も、キーボードでフォーカスしたときは一度で動かすために、トランジションを `:not(:focus-visible)` の中に書いています（「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
 
 `transform` を使うのは、個別のプロパティがない `skewX()` などの変形と、変形の順番を変える必要がある場合だけです。個別のプロパティは、常に `transform: translate() rotate() scale()` と書いたときと同じ順番で組み合わされます。「回転してから、回転した向きに移動する」ように順番を変えたいときは、`transform` に関数を並べて書きます。
 

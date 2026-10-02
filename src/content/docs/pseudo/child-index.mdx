@@ -67,11 +67,11 @@ tbody tr:nth-child(even) {
 
 ```css title="🙆‍♂ Recommended: 新着の先頭3件の日付を強調する"
 @scope (.scoped.news-list) to (.scoped) {
-  li {
-    /* 先頭から3件 */
-    &:nth-child(-n+3) time {
+  time {
+    /* 先頭から3件の項目の中 */
+    &:is(li:nth-child(-n+3) *) {
       color: oklch(48% 0.17 260deg);
-      font-weight: bold;
+      font-weight: 700;
     }
   }
 }

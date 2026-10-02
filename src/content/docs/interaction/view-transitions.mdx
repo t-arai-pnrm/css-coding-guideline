@@ -71,7 +71,7 @@ if (document.startViewTransition) {
 
 :active-view-transition-type(theme-toggle) {
   &::view-transition-old(root) {
-    animation: none;
+    animation-name: none;
   }
 
   &::view-transition-new(root) {
@@ -83,7 +83,7 @@ if (document.startViewTransition) {
     }
 
     @media (prefers-reduced-motion: reduce) {
-      animation: none;
+      animation-name: none;
     }
   }
 }
@@ -99,19 +99,28 @@ if (document.startViewTransition) {
 
 ```css title="🙅‍♂ Not Recommended: 並んだ要素に、連番の名前を手で振る"
 /* 🙅‍♂ Not Recommended */
-.product-card:nth-child(1) {
-  view-transition-name: --card-1;
-}
+@scope (.scoped.product-list) to (.scoped) {
+  li:nth-child(1) {
+    @media (prefers-reduced-motion: no-preference) {
+      view-transition-name: --card-1;
+    }
+  }
 
-.product-card:nth-child(2) {
-  view-transition-name: --card-2;
-}
+  li:nth-child(2) {
+    @media (prefers-reduced-motion: no-preference) {
+      view-transition-name: --card-2;
+    }
+  }
 
-/* ... */
+  /* ... */
+}
 
 ::view-transition-group(--card-1),
 ::view-transition-group(--card-2) {
-  animation-duration: 0.3s;
+  @media (prefers-reduced-motion: no-preference) {
+    animation-duration: var(--duration--base);
+    animation-timing-function: var(--ease--quint-in-out);
+  }
 }
 ```
 

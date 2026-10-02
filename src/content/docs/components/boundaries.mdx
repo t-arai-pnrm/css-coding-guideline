@@ -75,15 +75,20 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 
 ```css title="🙅‍♂ Not Recommended: ルートに幅と外側の余白を持たせる"
 /* 🙅‍♂ Not Recommended */
-.news-card {
-  width: calc(50% - 12px);
-  margin-top: 40px;
-  padding: 24px;
-  border: 1px solid #ddd;
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: calc(var(--spacing--xs) * 1px);
+    inline-size: calc(50% - 12px);
+    margin-block-start: 40px;
+    padding: calc(var(--spacing--md) * 1px);
+    border: 1px solid var(--border--base);
+    border-radius: var(--rounded--md);
+  }
 }
 ```
 
-このカードは、2列のグリッドの中で、前の要素から40px離れて置かれることを前提にしています。サイドバーに置けば半分の幅では狭すぎ、ページの先頭に置けば上に余計な余白ができます。置き場所ごとに `margin-top: 0` のような打ち消しを書くことになり、やがて打ち消しのための詳細度の競争が始まります。
+このカードは、2列のグリッドの中で、前の要素から40px離れて置かれることを前提にしています。サイドバーに置けば半分の幅では狭すぎ、ページの先頭に置けば上に余計な余白ができます。置き場所ごとに `margin-block-start: 0` のような打ち消しを書くことになり、やがて打ち消しのための詳細度の競争が始まります。
 
 外部関連型のレイアウトは、コンポーネントを置く側が持ちます。並べるときの間隔は親の `gap` で、特定の場所への配置や特別な余白は、親が子のコンポーネントを包む要素で指定します。この包む要素を、本書では「Outer」と呼びます。Outerは親のコンポーネントの子要素であり、単独のコンポーネントにはしません。
 
@@ -182,12 +187,11 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
     padding-block: calc(var(--spacing--xs) * 1px);
     padding-inline: calc(var(--spacing--sm) * 1px);
     border-radius: var(--rounded--md);
-    text-decoration-line: none;
   }
 
   ._main-link {
     color: var(--foreground--base);
-    font-weight: bold;
+    font-weight: 700;
   }
 
   ._sub-link {
@@ -220,14 +224,20 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 
 ## タイプセレクタに状態を付けるときの注意
 
-タイプセレクタに擬似クラスを付けると、詳細度が逆転します。`a:hover` の詳細度は0.1.1で、`._sub-link` の0.1.0より高くなるからです。次の例では、ホバーしたときにリンクの文字色を変える指定を、共通のスタイルとして `a:hover` に書いています。サブのリンクは背景色と同じ色の文字になり、ホバーしている間だけ読めなくなります。
+タイプセレクタに擬似クラスを付けると、詳細度が逆転します。`a:focus-visible` の詳細度は0.1.1、`a:any-link:hover` は0.2.1で、どちらも `._sub-link` の0.1.0より高くなるからです。次の例では、ホバーしたときとキーボードでフォーカスしたときにリンクの文字色を変える指定を、共通のスタイルとして `a` の状態に書いています。サブのリンクは背景色と同じ色の文字になり、ホバーやフォーカスをしている間だけ読めなくなります。
 
-```css title="🙅‍♂ Not Recommended: 共通の a:hover で、子クラスの色まで変える"
+```css title="🙅‍♂ Not Recommended: 共通の a の状態で、子クラスの色まで変える"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.global-nav) to (.scoped) {
-  a:hover {
-    @media (any-hover: hover) {
+  a {
+    &:focus-visible {
       color: var(--foreground--accent);
+    }
+
+    &:any-link:hover {
+      @media (any-hover: hover) {
+        color: var(--foreground--accent);
+      }
     }
   }
 
@@ -238,33 +248,53 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 }
 ```
 
-状態のスタイルも、共通の部分と固有の部分に分けます。共通の `a:hover` には、どちらのリンクにも同じ意味を持つ指定だけを書きます。色のように役割ごとに違う指定は、`._main-link:hover` と `._sub-link:hover` に書き、同じ状態どうしで詳細度をそろえます。`._sub-link:hover` の詳細度は0.2.0なので、`a:hover` に勝ちます。
+状態のスタイルも、共通の部分と固有の部分に分けます。`a` の状態には、どちらのリンクにも同じ意味を持つ指定だけを書きます。次の例では、kiso.cssが消した下線を `revert` で戻しています。
+
+色のように役割ごとに違う指定は、`._main-link` と `._sub-link` の状態に書き、同じ状態どうしで詳細度をそろえます。`._sub-link:focus-visible` の詳細度は0.2.0で、`a:focus-visible` の0.1.1に勝ちます。`._sub-link:any-link:hover` も0.3.0で、`a:any-link:hover` の0.2.1に勝ちます。
 
 ```css title="🙆‍♂ Recommended: 役割ごとに違う状態のスタイルは、子クラスの側に書く"
 @scope (.scoped.global-nav) to (.scoped) {
-  a:hover {
-    @media (any-hover: hover) {
-      text-decoration-line: underline;
+  a {
+    &:focus-visible {
+      text-decoration-line: revert;
+    }
+
+    &:any-link:hover {
+      @media (any-hover: hover) {
+        text-decoration-line: revert;
+      }
     }
   }
 
-  ._main-link:hover {
-    @media (any-hover: hover) {
+  ._main-link {
+    &:focus-visible {
       color: var(--foreground--accent);
     }
+
+    &:any-link:hover {
+      @media (any-hover: hover) {
+        color: var(--foreground--accent);
+      }
+    }
   }
 
-  ._sub-link:hover {
-    @media (any-hover: hover) {
+  ._sub-link {
+    &:focus-visible {
       background-color: oklch(from var(--background--accent) calc(l - 0.1) c h);
+    }
+
+    &:any-link:hover {
+      @media (any-hover: hover) {
+        background-color: oklch(from var(--background--accent) calc(l - 0.1) c h);
+      }
     }
   }
 }
 ```
 
-次の2つのデモで、それぞれのリンクにポインターを重ねて比べてください。1つ目は共通の `a:hover` で文字色を変えているので、「お問い合わせ」の文字が背景に溶けます。2つ目は文字色の変更をメインのリンクだけに書いているので、サブのリンクは背景色だけが濃くなります。
+次の2つのデモで、それぞれのリンクにポインターを重ねるか、Tabキーでフォーカスを移して比べてください。1つ目は共通の `a` の状態で文字色を変えているので、「お問い合わせ」の文字が背景に溶けます。2つ目は文字色の変更をメインのリンクだけに書いているので、サブのリンクは背景色だけが濃くなります。
 
-<Demo title="共通の a:hover で文字色を変えると、サブのリンクの文字が背景に溶ける" html={typeSelectorHtml} css={typeSelectorBadCss} variant="not-recommended" />
+<Demo title="共通の a の状態で文字色を変えると、サブのリンクの文字が背景に溶ける" html={typeSelectorHtml} css={typeSelectorBadCss} variant="not-recommended" />
 
 <Demo title="文字色の変更をメインのリンクだけに書くと、サブのリンクは読めたまま" html={typeSelectorHtml} css={typeSelectorCss} />
 
@@ -279,7 +309,7 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 }
 
 .hero .news-card ._title {
-  font-size: 24px;
+  font-size: calc(24 / 16 * 1rem);
 }
 ```
 
@@ -359,9 +389,11 @@ z-indexは、コンポーネントのルートと内部の要素で、指定し�
 
 ```css title="🙅‍♂ Not Recommended: コンポーネントのルートに相対的な z-index を持たせる"
 /* 🙅‍♂ Not Recommended */
-.promo-card {
-  position: relative;
-  z-index: 1;
+@scope (.scoped.promo-card) to (.scoped) {
+  :scope {
+    position: relative;
+    z-index: var(--z--forwards);
+  }
 }
 ```
 

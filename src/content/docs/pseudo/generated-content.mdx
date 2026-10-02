@@ -98,7 +98,7 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 
 <Demo title="見出しの線、リストのチェック、リンクの矢印を擬似要素で描く" html={sectionHtml} css={sectionCss} />
 
-見出しの線は、`content: ""` で作った文字のない箱です。見出しを `display: block flex` にしているので、擬似要素はフレックスアイテムになり、`inline-size` と `block-size` が効きます。高さの `1lh` は1行の高さなので、見出しの文字の大きさを変えても、線の長さが行に合います。線は背景色ではなく `border-inline-start` で描いています。強制カラーモードでは背景色が消えますが、枠線は残るからです（第11章「[11-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
+見出しの線は、`content: ""` で作った文字のない箱です。見出しを `display: block flex` にしているので、擬似要素はフレックスアイテムになり、`block-size` が効きます。幅は指定せず、`border-inline-start` の太さに任せています。高さの `1lh` は1行の高さなので、見出しの文字の大きさを変えても、線の長さが行に合います。線は背景色ではなく `border-inline-start` で描いています。強制カラーモードでは背景色が消えますが、枠線は残るからです（第11章「[11-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
 
 チェックの記号と矢印は文字なので、代替テキストを空にしています。リストの項目は `display: block grid` にして、記号を1列目に、本文を2列目に置いています。本文が2行に折り返しても、2行目が記号の下に回り込みません。リストの印を消すのに `list-style: none` を使わない理由は、次の見出しで説明します。
 

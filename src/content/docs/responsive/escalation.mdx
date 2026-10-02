@@ -20,24 +20,18 @@ import gridCss from '../../../demos/responsive/intrinsic-grid/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: デバイスの幅を基準に列数を切り替える"
 /* 🙅‍♂ Not Recommended */
-.card-list {
-  display: flex;
-  flex-wrap: wrap;
-}
+@scope (.scoped.card-list) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 16px;
 
-.card-list__item {
-  width: 33.333%;
-}
+    @media (width >= calc(768 / 16 * 1rem)) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-@media (max-width: 1023px) {
-  .card-list__item {
-    width: 50%;
-  }
-}
-
-@media (max-width: 767px) {
-  .card-list__item {
-    width: 100%;
+    @media (width >= calc(1024 / 16 * 1rem)) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 }
 ```

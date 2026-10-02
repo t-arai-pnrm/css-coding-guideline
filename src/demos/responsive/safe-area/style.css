@@ -1,7 +1,7 @@
 @layer base {
   :where(body) {
-    /* デモの枠の余白を外し、ページと同じく画面の端から使う */
-    padding: 0;
+    /* デモの枠が base レイヤーで付けた余白を取り除き、ページと同じく画面の端から使う */
+    padding: revert-layer;
   }
 }
 
@@ -50,7 +50,7 @@
 
     ._title {
       font-size: calc(20 / 16 * 1rem);
-      font-weight: bold;
+      font-weight: 700;
     }
 
     ._body {
@@ -62,13 +62,14 @@
     fieldset {
       display: block grid;
       gap: 4px;
-      padding: 12px 16px;
+      padding-block: 12px;
+      padding-inline: 16px;
       border: 1px solid oklch(80% 0 0deg);
       border-radius: 8px;
     }
 
     legend {
-      font-weight: bold;
+      font-weight: 700;
     }
 
     ._bar {
@@ -86,13 +87,13 @@
       display: block flex;
       justify-content: center;
       align-items: center;
-      inline-size: 100%;
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
       min-block-size: calc(48 / 16 * 1rem);
       max-inline-size: calc(400 / 16 * 1rem);
       border-radius: 9999px;
       background-color: oklch(45% 0.12 250deg);
       color: oklch(100% 0 0deg);
-      text-decoration: none;
     }
 
     ._unsafe {

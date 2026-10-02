@@ -56,7 +56,7 @@ import rowsCss from '../../../demos/values/textarea-rows/style.css?raw';
 
     @supports (field-sizing: content) {
       max-block-size: var(--_max-rows);
-      resize: unset;
+      resize: none;
       field-sizing: content;
     }
   }
@@ -141,8 +141,8 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
     --_density: --compact;
 
     /* if() に未対応の環境で使う値 */
-    border-block-end: 1px solid currentColor;
-    border-block-end: if(style(--_density: --spacious): 2px; else: 1px) solid currentColor;
+    border-block-end: 1px solid;
+    border-block-end: if(style(--_density: --spacious): 2px; else: 1px) solid;
   }
 }
 ```
@@ -156,7 +156,7 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 ```css title="🙅‍♂ Not Recommended: クエリと状態の分岐を値の中に詰め込む"
 /* 🙅‍♂ Not Recommended */
 ._button {
-  padding-inline: if(media(width >= 768px): 24px; else: 16px);
+  padding-inline: if(media(width >= calc(768 / 16 * 1rem)): 24px; else: 16px);
   background-color: if(
     style(--_variant: --primary): if(style(--_hover: 1): var(--color--accent--700); else: var(--color--accent--600));
     style(--_variant: --danger): var(--color--error--600);

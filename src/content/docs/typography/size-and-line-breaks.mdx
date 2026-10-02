@@ -21,18 +21,14 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 
 ```css title="🙅‍♂ Not Recommended: 文字サイズをブレイクポイントごとに切り替える"
 /* 🙅‍♂ Not Recommended */
-.heading {
+._heading {
   font-size: 24px;
-}
 
-@media (min-width: 768px) {
-  .heading {
+  @media (width >= calc(768 / 16 * 1rem)) {
     font-size: 32px;
   }
-}
 
-@media (min-width: 1024px) {
-  .heading {
+  @media (width >= calc(1024 / 16 * 1rem)) {
     font-size: 40px;
   }
 }
@@ -138,7 +134,7 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 
 ```css title="🙅‍♂ Not Recommended: はみ出しを防ぐために、どこでも折り返す"
 /* 🙅‍♂ Not Recommended */
-p {
+:where(p) {
   word-break: break-all;
 }
 ```

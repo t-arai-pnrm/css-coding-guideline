@@ -274,9 +274,9 @@ HTMLの属性とARIA属性のどちらでも表せない状態だけを、`data-
       inset: 0;
     }
 
-    /* フォーカスリングはカードの外周に出すので、色だけを透明にする */
+    /* フォーカスリングはカードの外周に出すので、ベーススタイルの box-shadow を初期値に戻し、outline は色だけを透明にする */
     &:focus-visible {
-      box-shadow: none;
+      box-shadow: initial;
       outline-color: transparent;
     }
   }
@@ -290,7 +290,7 @@ HTMLの属性とARIA属性のどちらでも表せない状態だけを、`data-
 
 カードに `position: relative` を指定し、`::after` の配置の基準にします。フォーカスリングは、リンクの周りではなく `:has(._heading-link:focus-visible)` でカードの外周に出します。見出しのリンクにフォーカスしたとき、押せる範囲（カード全体）とリングの範囲が一致するからです。カードの中にほかのリンクを置くときは、`position: relative` と `z-index: var(--z--forwards)` で `::after` より手前に重ねます。
 
-リンク自身のリングは `outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります。私の案件のコードでは `outline: none` で消していましたが、本書のルール（「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」の `no-outline-none`）に合わせて、この書き方にしました。
+リンク自身のリングのうち、ベーススタイルで内側に描いた `box-shadow` は、`initial` で初期値の `none` に戻します。`outline` は `outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります。私の案件のコードでは `outline: none` で消していましたが、本書のルール（「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」の `no-outline-none`）に合わせて、この書き方にしました。
 
 この方法にも弱点があります。`::after` がカードの上に重なるので、カードの中の文章をドラッグして選択できません。以前の私は、この問題を避けるためにJavaScriptでカードのクリックを拾っていました。現在は、実装の手軽さとJavaScriptのない環境でも動くことを優先して、`::after` を広げる方法を使っています。
 

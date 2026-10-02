@@ -20,22 +20,24 @@ import pileCss from '../../../../demos/layout/composition-pile/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: 文字を絶対配置にして画像に重ねる"
 /* 🙅‍♂ Not Recommended */
-.hero {
-  position: relative;
-}
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    position: relative;
+  }
 
-.hero-body {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  max-width: 560px;
-  padding: 32px;
+  ._body {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    max-inline-size: calc(560 / 16 * 1rem);
+    padding: calc(var(--spacing--lg) / 16 * 1rem);
+  }
 }
 ```
 
 絶対配置にした要素は、通常のレイアウトの流れから外れます。ヒーローの高さは画像だけで決まり、文字の量は反映されません。幅の広い画面では画像に十分な高さがあるので問題は見えませんが、画面が狭くなると画像は低くなり、文字は折り返して高くなります。その結果、文字は画像の上端を越えてはみ出し、上にある要素と重なります。
 
-この不具合は、デザインカンプどおりの文字量では起きず、CMSで長い見出しが入ったときや、ユーザーが文字を拡大したときに起きます。`min-height` を足す、画面幅ごとに文字を小さくするといった対処は、文字量の想定を値として埋め込むだけなので、別の文字量でまた崩れます。原因は、文字の高さが親の高さに反映されない構造そのものです。
+この不具合は、デザインカンプどおりの文字量では起きず、CMSで長い見出しが入ったときや、ユーザーが文字を拡大したときに起きます。`min-block-size` を足す、画面幅ごとに文字を小さくするといった対処は、文字量の想定を値として埋め込むだけなので、別の文字量でまた崩れます。原因は、文字の高さが親の高さに反映されない構造そのものです。
 
 ## `pile` の仕組み
 
@@ -81,7 +83,7 @@ import pileCss from '../../../../demos/layout/composition-pile/style.css?raw';
 
 ```html
 <section class="scoped hero pile">
-  <img src="…" alt="" />
+  <img src="…" alt="" width="1280" height="720">
   <div class="_body" style="--pile--placement: end">…</div>
 </section>
 ```
@@ -94,7 +96,7 @@ import pileCss from '../../../../demos/layout/composition-pile/style.css?raw';
 
 <Demo title="pile で画像と文字を重ね、文字を右下に寄せたヒーロー" html={pileHtml} css={pileCss} widths={[320, 768, 1024]} />
 
-`pile` が受け持つのは、子を同じセルに重ねることと、`style` 属性で受け取った配置だけです。画像をセルいっぱいに広げる `inline-size: 100%` と `block-size: 100%`、文字の色、余白、行の長さの上限は、コンポーネント（`hero`）のCSSが受け持ちます。`block-size: 100%` は、行の高さを求める段階では `auto` として扱われるので、文字が低いあいだは画像の縦横比で、文字が高くなれば文字の高さで、行の高さが決まります。
+`pile` が受け持つのは、子を同じセルに重ねることと、`style` 属性で受け取った配置だけです。画像をセルいっぱいに広げる `inline-size: stretch` と `block-size: 100%`、文字の色、余白、行の長さの上限は、コンポーネント（`hero`）のCSSが受け持ちます。`block-size: 100%` は、行の高さを求める段階では `auto` として扱われるので、文字が低いあいだは画像の縦横比で、文字が高くなれば文字の高さで、行の高さが決まります。
 
 文字を読みやすくする暗い層は、ルートの `::before` で作っています。擬似要素もグリッドのアイテムになりますが、`.pile > *` では選ばれないので、`grid-area: --pile` をコンポーネントの側で指定しないと、別の行に置かれてしまいます。`::before` は画像より前のアイテムなので、そのままでは画像の下に描かれます。そこで、画像に `z-index: var(--z--backwards)`（値は-1）を指定し、暗い層より奥に回しています。この-1が `hero` の背景より奥に回らないのは、`pile` のルートがスタッキングコンテキストを作っているからです。
 

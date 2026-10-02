@@ -24,16 +24,14 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 ```css title="🙅‍♂ Not Recommended: デバイスの分類と min-width で書く"
 /* 🙅‍♂ Not Recommended */
 .sp-only {
-  display: block;
-}
-
-@media screen and (min-width: 768px) {
-  .sp-only {
+  @media screen and (min-width: 768px) {
     display: none;
   }
+}
 
-  .l-main {
-    width: 70%;
+._main {
+  @media screen and (min-width: 768px) {
+    inline-size: 70%;
   }
 }
 ```
@@ -206,7 +204,7 @@ AIが生成するコードには、クエリの条件を使い回そうとして
 
   @media (prefers-reduced-transparency: reduce) {
     background-color: var(--color--neutral--50);
-    backdrop-filter: none;
+    backdrop-filter: initial;
   }
 }
 ```

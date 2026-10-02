@@ -38,19 +38,19 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 .card {
   padding: 16px;
   border-radius: 8px;
-  background-color: #f5f5f5;
+  background-color: oklch(97% 0 0deg);
 }
 
 .card--product .card__price {
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .card--article .card__date {
-  font-size: 14px;
+  font-size: calc(14 / 16 * 1rem);
 }
 
 .card--article.card--featured .card__title {
-  font-size: 24px;
+  font-size: calc(24 / 16 * 1rem);
 }
 ```
 
@@ -65,7 +65,7 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
   }
 
   ._price {
-    font-weight: bold;
+    font-weight: 700;
   }
 }
 
@@ -161,9 +161,9 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 ```css title="🙅‍♂ Not Recommended: デフォルト値を書き写して戻す"
 /* 🙅‍♂ Not Recommended */
-.prose ul {
-  padding-left: 40px;
-  list-style: disc;
+._prose :where(ul) {
+  padding-inline-start: 40px;
+  list-style-type: disc;
 }
 ```
 
@@ -186,14 +186,14 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 ```css title="🙅‍♂ Not Recommended: 一部だけ変えたいのにショートハンドを使う"
 /* 🙅‍♂ Not Recommended */
-.figure {
-  max-width: 480px;
+._figure {
+  max-inline-size: calc(480 / 16 * 1rem);
   margin: 0 auto;
-  background: white;
+  background: oklch(100% 0 0deg);
 }
 ```
 
-`background: white` は、`background-color` だけでなく、`background-image` や `background-size` などもまとめて初期値に戻します。別の場所で設定した背景画像があれば、それも消えます。`margin: 0 auto` は、左右の中央寄せのために、本来触る必要のない上下のマージンまで `0` にします。子要素の間にマージンで余白を入れるレイアウトの中に置くと、その余白を打ち消してしまいます。
+`background: oklch(100% 0 0deg)` は、`background-color` だけでなく、`background-image` や `background-size` などもまとめて初期値に戻します。別の場所で設定した背景画像があれば、それも消えます。`margin: 0 auto` は、左右の中央寄せのために、本来触る必要のない上下のマージンまで `0` にします。子要素の間にマージンで余白を入れるレイアウトの中に置くと、その余白を打ち消してしまいます。
 
 ```css title="🙆‍♂ Recommended: 変えたいサブプロパティだけをロングハンドで指定する"
 ._figure {

@@ -32,26 +32,26 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 
 1つ目は、要素自身の状態と擬似要素です。`&:hover` や `&[aria-current="page"]` は親の要素そのものを状態によって絞り込むルールです。`&::before` は親の要素がなければ存在しない擬似要素です。基本のスタイルのすぐ後ろに書けば、その要素がどの状態でどう見えるかを1か所で読み取れます。
 
-2つ目は、条件付きのアットルールです。`@media`、`@container`、`@supports` は、セレクタの階層を増やさずに、その要素のスタイルに条件を付けます。状態の中に条件を書くこともあります。ホバーの見た目は、ホバーのできる入力装置があるときに限るので、`&:hover` の中に `@media (any-hover: hover)` を書きます。`@starting-style` も、開いた状態のアニメーションの始まりを表すので、`&:popover-open` の中に書きます。
+2つ目は、条件付きのアットルールです。`@media`、`@container`、`@supports` は、セレクタの階層を増やさずに、その要素のスタイルに条件を付けます。状態の中に条件を書くこともあります。ホバーの見た目は、ホバーのできる入力装置があるときに限るので、`&:any-link:hover` のような状態の中に `@media (any-hover: hover)` を書きます。`@starting-style` も、開いた状態のアニメーションの始まりを表すので、`&:popover-open` の中に書きます。
 
 ```css title="🙆‍♂ Recommended: 状態の中に、その状態が成り立つ条件を書く"
 @scope (.scoped.share-menu) to (.scoped) {
   a {
-    text-decoration-line: underline;
+    text-decoration-line: revert;
 
-    &:hover {
+    &:any-link:hover {
       @media (any-hover: hover) {
-        text-decoration-line: none;
+        text-decoration-line: initial;
       }
     }
 
     &:focus-visible {
-      text-decoration-line: none;
+      text-decoration-line: initial;
     }
   }
 
   ._panel {
-    transition-duration: 200ms;
+    transition-duration: var(--duration--fast);
     transition-property: opacity;
 
     &:popover-open {
@@ -128,13 +128,19 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 ```css title="🙅‍♂ Not Recommended: & を省いた擬似クラス"
 /* 🙅‍♂ Not Recommended */
 ._button {
+  :focus-visible {
+    background-color: var(--_background--hocus);
+  }
+
   :hover {
-    text-decoration-line: none;
+    @media (any-hover: hover) {
+      background-color: var(--_background--hocus);
+    }
   }
 }
 ```
 
-この `:hover` は `._button :hover` と同じ意味になり、ボタンの中でホバーされている要素に一致します。ボタン自身には当たらず、エラーにもなりません。本書でネストしたセレクタを必ず `&` で始めるのは、このような取り違えを防ぎ、自身の状態か、直下の子か、子孫かを先頭で読み分けるためです。子孫を選ぶことがその要素の前提なら、`& ._title` と明示します。
+この `:hover` は `._button :hover` と同じ意味になり、ボタンの中でホバーされている要素に一致します。`:focus-visible` も同じで、ボタンの中でフォーカスされている要素に一致します。ボタン自身には当たらず、エラーにもなりません。本書でネストしたセレクタを必ず `&` で始めるのは、このような取り違えを防ぎ、自身の状態か、直下の子か、子孫かを先頭で読み分けるためです。子孫を選ぶことがその要素の前提なら、`& ._title` と明示します。
 
 `&` の詳細度は、親のセレクタリストを `:is()` で包んだものと同じです。`:is()` の詳細度は、引数の中でいちばん高いセレクタの詳細度になります（「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」）。親が1つのセレクタなら、ネストした結果は親とネストしたセレクタをつないだものと変わりません。親が詳細度の違うセレクタのリストだと、どのセレクタで一致した要素にも、いちばん高い詳細度が付きます。
 

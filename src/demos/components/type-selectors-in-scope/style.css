@@ -25,8 +25,6 @@
       display: block flex;
       flex-wrap: wrap;
       gap: 8px;
-      padding: 0;
-      list-style-type: "";
     }
 
     /* 2種類のリンクに共通するスタイル */
@@ -35,24 +33,31 @@
       padding-block: 8px;
       padding-inline: 16px;
       border-radius: 4px;
-      text-decoration-line: none;
-    }
 
-    /* 共通のホバーには、どちらのリンクにも同じ意味を持つ指定だけを書く */
-    a:hover {
-      @media (any-hover: hover) {
-        text-decoration-line: underline;
+      /* 共通の状態には、どちらのリンクにも同じ意味を持つ指定だけを書く。下線は kiso.css が消したものを戻す */
+      &:focus-visible {
+        text-decoration-line: revert;
+      }
+
+      &:any-link:hover {
+        @media (any-hover: hover) {
+          text-decoration-line: revert;
+        }
       }
     }
 
     ._main-link {
       color: var(--foreground--base);
-      font-weight: bold;
-    }
+      font-weight: 700;
 
-    ._main-link:hover {
-      @media (any-hover: hover) {
+      &:focus-visible {
         color: var(--foreground--accent);
+      }
+
+      &:any-link:hover {
+        @media (any-hover: hover) {
+          color: var(--foreground--accent);
+        }
       }
     }
 
@@ -60,12 +65,16 @@
       background-color: var(--background--accent);
       color: var(--foreground--on-accent);
       font-size: calc(14 / 16 * 1rem);
-    }
 
-    /* 詳細度は 0.2.0 なので、a:hover（0.1.1）に勝つ */
-    ._sub-link:hover {
-      @media (any-hover: hover) {
+      /* 詳細度は 0.2.0 と 0.3.0 なので、a:focus-visible（0.1.1）と a:any-link:hover（0.2.1）に勝つ */
+      &:focus-visible {
         background-color: oklch(from var(--background--accent) calc(l - 0.1) c h);
+      }
+
+      &:any-link:hover {
+        @media (any-hover: hover) {
+          background-color: oklch(from var(--background--accent) calc(l - 0.1) c h);
+        }
       }
     }
   }

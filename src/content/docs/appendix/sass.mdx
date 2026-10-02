@@ -87,6 +87,7 @@ Sassと大きく違うのは、`&__title` のように `&` に文字をつなげ
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
     padding: 16px;
+    border: 1px solid transparent;
 
     &[data-variant="featured"] {
       border-color: var(--color--accent--500);
@@ -94,10 +95,12 @@ Sassと大きく違うのは、`&__title` のように `&` に文字をつなげ
   }
 
   h2 {
-    font-weight: var(--font-weight--bold);
+    font-size: calc(20 / 16 * 1rem);
   }
 }
 ```
+
+Sassの例の `font-weight: 700` は書き写さず、この例では文字の大きさだけを指定しています。`h2` はブラウザのデフォルトスタイルで太字になるので、同じ値を指定し直す必要がないからです（[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults)）。バリエーションで色だけを変えられるように、ルートには透明な枠線を置いています。
 
 HTMLの階層をそのままネストで写す書き方も、Sassからよく持ち込まれます。ネストが深くなるほど詳細度が上がり、HTMLの構造を変えただけでスタイルが当たらなくなります。独自のスタイルを持つ子要素は、親のルールに入れず、同じ階層に並べます。スコープの考え方は「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、子要素の命名は「[6-1 命名規則](/notation/naming/)」で説明しています。
 

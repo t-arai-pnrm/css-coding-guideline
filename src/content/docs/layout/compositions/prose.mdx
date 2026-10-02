@@ -25,18 +25,18 @@ import proseCss from '../../../../demos/layout/composition-prose/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: Flexbox の gap に、見出しの margin を足す"
 /* 🙅‍♂ Not Recommended */
-.article-body {
-  display: flex;
+._body {
+  display: block flex;
   flex-direction: column;
   gap: 16px;
-}
 
-.article-body > h3 {
-  margin-top: 32px;
+  & > h3 {
+    margin-block-start: 32px;
+  }
 }
 ```
 
-この書き方では、見出しの前の間隔は32pxではなく48pxになります。フレックスアイテムの `margin` は相殺されず、`gap` に足されるからです。デザインカンプの「見出しの前は48px」を再現するには、`gap` の値を引いた32pxを書くことになり、後から `gap` を変えると見出しの前の間隔も一緒に変わります。さらに、`> h3` は先頭の見出しにも一致するので、見出しから始まる本文では、先頭に余計な余白が付きます。
+この書き方では、見出しの前の間隔は32pxではなく48pxになります。フレックスアイテムの `margin` は相殺されず、`gap` に足されるからです。デザインカンプの「見出しの前は48px」を再現するには、`gap` の値を引いた32pxを書くことになり、後から `gap` を変えると見出しの前の間隔も一緒に変わります。さらに、`& > h3` は先頭の見出しにも一致するので、見出しから始まる本文では、先頭に余計な余白が付きます。
 
 問題は、`gap` が親の1つの値で、すべての間に同じ大きさで入ることです。間ごとに違う余白を作るには、親の値を打ち消すか、差分を子に足すしかありません。`prose` は、間隔そのものを子要素の側に持たせて、この打ち消しと差分の計算をなくします。
 

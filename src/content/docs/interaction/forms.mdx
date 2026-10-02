@@ -54,9 +54,9 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 }
 
 ._checkbox + ._icon {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
+  display: inline flow-root;
+  inline-size: 1lh;
+  block-size: 1lh;
   border: 1px solid;
 }
 
@@ -128,7 +128,6 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
     &::before {
       content: "";
-      flex-grow: 0;
 
       @media (prefers-reduced-motion: no-preference) {
         transition-duration: var(--duration--fast);
@@ -182,7 +181,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
   p {
     &:is(._field:has(:user-invalid) *) {
       color: var(--color--error--600);
-      font-weight: bold;
+      font-weight: 700;
     }
   }
 }
@@ -218,7 +217,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
   /* ③ 最小の高さを --_rows 行分にする（行数は rows 属性ではなくここで決める） */
   min-block-size: var(--_rows);
   padding: 1em;
-  border: 1px solid var(--_border-color);
+  border-color: var(--_border-color);
   background-color: var(--_background);
   color: var(--_foreground);
 
@@ -230,7 +229,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
     max-block-size: var(--_max-rows);
 
     /* ⑥ ユーザーによるサイズの変更を無効にする */
-    resize: unset;
+    resize: none;
 
     /* ⑦ 内容に合わせて高さが変わるようにする */
     field-sizing: content;

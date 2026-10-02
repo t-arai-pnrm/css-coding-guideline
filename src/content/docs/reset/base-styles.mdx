@@ -59,11 +59,11 @@ kiso.cssは `outline-offset: 3px` を指定しているだけで、リングの�
 
 ## スムーススクロールの有効化
 
-ページ内リンクで移動するときのスムーススクロールは、`html` に `scroll-behavior: smooth` を1行書けば実現できます。手軽なので広く使われていますが、この書き方には副作用があります。
+ページ内リンクで移動するときのスムーススクロールは、ルート要素に `scroll-behavior: smooth` を1行書けば実現できます。手軽なので広く使われていますが、この書き方には副作用があります。
 
 ```css title="🙅‍♂ Not Recommended: スムーススクロールを一律に有効にする"
 /* 🙅‍♂ Not Recommended */
-html {
+:where(:root) {
   scroll-behavior: smooth;
 }
 ```
@@ -104,7 +104,7 @@ html {
 
 ```css title="🙅‍♂ Not Recommended: open 属性を持つ dialog で、背面のスクロールを止める"
 /* 🙅‍♂ Not Recommended */
-body:has(dialog[open]) {
+:where(body:has(dialog[open])) {
   overflow: hidden;
 }
 ```

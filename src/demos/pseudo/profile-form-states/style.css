@@ -9,14 +9,14 @@
       justify-items: start;
     }
 
-    div {
+    ._field {
       display: block grid;
       gap: 4px;
       justify-self: stretch;
     }
 
     label {
-      font-weight: bold;
+      font-weight: 700;
     }
 
     input {
@@ -42,8 +42,9 @@
         background-color: oklch(95% 0.02 260deg);
       }
 
+      /* 未入力の破線を、前のレイヤー（kiso.css）の実線に戻す */
       &:disabled {
-        border-style: solid;
+        border-style: revert-layer;
         border-color: oklch(80% 0 0deg);
         background-color: oklch(93% 0 0deg);
         color: oklch(48% 0 0deg);
@@ -51,15 +52,15 @@
 
       /* 入力して離れた後や、送信しようとした後にだけエラーの見た目にする */
       &:user-invalid {
-        border-style: solid;
+        border-style: revert-layer;
         border-color: var(--_error);
         background-color: oklch(97% 0.02 25deg);
       }
 
+      /* ファイルの入力欄は、文字の入力欄に付けた余白と背景を外し、ボタンだけを見せる */
       &[type="file"] {
-        padding: 0;
-        border-color: transparent;
-        background-color: transparent;
+        padding: initial;
+        background-color: initial;
       }
 
       &::file-selector-button {

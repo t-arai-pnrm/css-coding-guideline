@@ -63,15 +63,16 @@
       --_color: var(--_accent);
 
       color: var(--_color);
-      text-decoration-line: underline;
+
+      /* kiso.css が消した下線を戻す。href のないカレントのリンクには、もともと下線がない */
+      text-decoration-line: revert;
       text-decoration-thickness: 1px;
       text-underline-offset: 0.25em;
 
       &[aria-current="page"] {
         --_color: currentColor;
 
-        font-weight: bold;
-        text-decoration-line: none;
+        font-weight: 700;
       }
 
       &:focus-visible {

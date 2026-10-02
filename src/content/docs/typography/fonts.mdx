@@ -18,7 +18,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 ```css title="🙅‍♂ Not Recommended: OSごとのフォントを並べる"
 /* 🙅‍♂ Not Recommended */
-body {
+:where(:root) {
   font-family: "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
 }
 ```
@@ -59,7 +59,7 @@ OSのアップデートで表示されるフォントが変わる可能性はあ
 
 ```css title="🙅‍♂ Not Recommended: 日本語のサイトで system-ui を使う"
 /* 🙅‍♂ Not Recommended */
-body {
+:where(:root) {
   font-family: system-ui, sans-serif;
 }
 ```
@@ -102,7 +102,6 @@ Webフォントを自分のサーバーから配信するときは、`@font-face
   font-family: Inter;
   src: url("/fonts/inter-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+2000-206F;
-  font-style: normal;
   font-weight: 100 900;
   font-display: swap;
 }
@@ -191,7 +190,7 @@ kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体�
 
 @scope (.scoped.news-card) to (.scoped) {
   h2 {
-    font-weight: var(--font-weight--bold);
+    font-weight: var(--font-weight--medium);
   }
 }
 ```

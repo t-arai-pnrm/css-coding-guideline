@@ -27,12 +27,12 @@ input[type="submit"] {
 }
 
 #news h2 {
-  font-size: 1.5rem;
+  font-size: calc(24 / 16 * 1rem);
 }
 
 /* 0.2.0 なので、上の 1.0.1 に負ける */
 .news-list .title {
-  font-size: 1.25rem;
+  font-size: calc(20 / 16 * 1rem);
 }
 ```
 
@@ -51,15 +51,15 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 ```css title="🙅‍♂ Not Recommended: 詳細度を上げるためだけのセレクタ"
 /* 🙅‍♂ Not Recommended */
 .large-text.large-text {
-  font-size: 1.5rem;
+  font-size: calc(24 / 16 * 1rem);
 }
 
 .large-text[class] {
-  font-size: 1.5rem;
+  font-size: calc(24 / 16 * 1rem);
 }
 
 .large-text:not(#_) {
-  font-size: 1.5rem;
+  font-size: calc(24 / 16 * 1rem);
 }
 ```
 

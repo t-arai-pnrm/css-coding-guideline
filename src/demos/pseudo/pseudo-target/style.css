@@ -15,24 +15,19 @@
     }
 
     h3 {
-      margin: 0;
       font-size: calc(16 / 16 * 1rem);
     }
 
     p {
-      margin-block: 8px 0;
-    }
+      margin-block-start: 8px;
 
-    ._class-example {
       /* 条件に当てはまる段落の箱全体に当たる */
-      & p:first-of-type {
+      &:first-of-type:is(._class-example *) {
         background-color: var(--_highlight);
       }
-    }
 
-    ._element-example {
       /* すべての段落の1行目だけに当たる */
-      & p::first-line {
+      &:is(._element-example *)::first-line {
         background-color: var(--_highlight);
       }
     }

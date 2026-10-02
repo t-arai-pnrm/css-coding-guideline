@@ -12,14 +12,11 @@
     }
 
     img {
-      inline-size: 100%;
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
       aspect-ratio: 1;
       border-radius: 8px;
       background-color: oklch(92% 0 0deg);
-
-      &[data-fit="fill"] {
-        object-fit: fill;
-      }
 
       &[data-fit="cover"] {
         object-fit: cover;

@@ -6,13 +6,17 @@
       gap: 12px;
       align-items: start;
     }
+
+    /* 絞り込みの欄だけを、残りの幅いっぱいまで伸ばす */
+    ._filter-outer {
+      flex: 1 calc(240 / 16 * 1rem);
+    }
   }
 
   @scope (.scoped.filter-details) to (.scoped) {
     :scope {
       --_accent: oklch(48% 0.17 260deg);
 
-      flex: 1 1 calc(240 / 16 * 1rem);
       border: 1px solid oklch(80% 0 0deg);
       border-radius: 8px;
 
@@ -25,7 +29,7 @@
     summary {
       padding-block: 8px;
       padding-inline: 16px;
-      font-weight: bold;
+      font-weight: 700;
 
       /* ルートの details が開いている間だけ、見出しの部分に背景を付ける */
       &:is(:scope[open] *) {
@@ -36,10 +40,8 @@
     ul {
       display: block grid;
       gap: 4px;
-      margin: 0;
       padding-block: 12px;
       padding-inline: 16px;
-      list-style-type: "";
     }
   }
 
@@ -51,9 +53,9 @@
     button {
       padding-block: 8px;
       padding-inline: 16px;
-      border: 1px solid oklch(80% 0 0deg);
+      border-color: oklch(80% 0 0deg);
       border-radius: 8px;
-      font-weight: bold;
+      font-weight: 700;
 
       /* 直後のポップオーバーを表示している間は、押された見た目にする */
       &:has(+ :popover-open) {
@@ -62,13 +64,12 @@
       }
     }
 
+    /* kiso.css が消したデフォルトスタイルの margin: auto に戻し、画面の中央に置く */
     [popover] {
-      margin: auto;
+      margin: revert;
       padding: 16px;
       border: 1px solid var(--_accent);
       border-radius: 8px;
-      background-color: Canvas;
-      color: CanvasText;
 
       /* popover="auto" のポップオーバーにも ::backdrop が生成される */
       &::backdrop {
@@ -79,15 +80,11 @@
     fieldset {
       display: block grid;
       gap: 4px;
-      margin: 0;
-      padding: 0;
-      border: 0;
     }
 
     legend {
       margin-block-end: 8px;
-      padding: 0;
-      font-weight: bold;
+      font-weight: 700;
     }
   }
 }

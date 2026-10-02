@@ -21,9 +21,9 @@ import switcherCss from '../../../../demos/layout/composition-switcher/style.css
 
 ```css title="🙅‍♂ Not Recommended: 3つの項目を auto-fit だけで並べる"
 /* 🙅‍♂ Not Recommended */
-.feature-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+._items {
+  display: block grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(320 / 16 * 1rem)), 1fr));
   gap: 24px;
 }
 ```

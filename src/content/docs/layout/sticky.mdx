@@ -20,14 +20,17 @@ import Guideline from '../../../components/Guideline.astro';
 
 ```css title="🙅‍♂ Not Recommended: Grid の子に sticky だけを指定する"
 /* 🙅‍♂ Not Recommended */
-.layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 240px;
-}
+@scope (.scoped.article-layout) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-columns: minmax(0, 1fr) calc(240 / 16 * 1rem);
+    gap: 32px;
+  }
 
-.toc {
-  position: sticky;
-  inset-block-start: 16px;
+  ._toc {
+    position: sticky;
+    inset-block-start: 16px;
+  }
 }
 ```
 

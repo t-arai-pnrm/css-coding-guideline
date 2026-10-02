@@ -123,8 +123,12 @@ env(safe-area-inset-bottom, 16px)
 /* 🙅‍♂ Not Recommended */
 ._back-to-top {
   position: fixed;
-  inset-block-end: 16px;
-  inset-inline-end: 16px;
+
+  /* 画面の物理的な右下に置く */
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  right: 16px;
+  /* stylelint-disable-next-line logical-css/require-logical-properties */
+  bottom: 16px;
 }
 ```
 

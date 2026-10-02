@@ -54,7 +54,8 @@ import strokeCss from '../../../demos/color-media/text-stroke/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: aspect-ratio で比率を決め、object-fit で収める"
 ._thumbnail {
-  inline-size: 100%;
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
   aspect-ratio: 16 / 9;
   object-fit: cover;
 }
@@ -67,7 +68,7 @@ import strokeCss from '../../../demos/color-media/text-stroke/style.css?raw';
 }
 ```
 
-正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[9-1 検討する順番](/responsive/escalation/)」でも取り上げています。
+サムネイルの幅は、`100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書いて親の幅いっぱいに広げます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-width-100)」）。正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[9-1 検討する順番](/responsive/escalation/)」でも取り上げています。
 
 `<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。ブラウザは、この2つの属性から縦横比を計算し、画像を読み込む前から表示する場所を確保します。属性がないと、画像が読み込まれた瞬間に高さが決まり、下にある文章がずれて、読んでいた位置を見失います。
 
@@ -99,7 +100,8 @@ import strokeCss from '../../../demos/color-media/text-stroke/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: 画像の高さを、同じ行の本文の高さに合わせる"
 ._image {
-  inline-size: 100%;
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
   block-size: 0;
   min-block-size: 100%;
   object-fit: cover;
@@ -127,7 +129,8 @@ import strokeCss from '../../../demos/color-media/text-stroke/style.css?raw';
   }
 
   img {
-    inline-size: 100%;
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
     block-size: 0;
     min-block-size: 100%;
     object-fit: cover;
@@ -178,12 +181,15 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 ```css title="🙅‍♂ Not Recommended: border を組み合わせて三角形を作る"
 /* 🙅‍♂ Not Recommended */
-.tooltip::after {
-  --size: 16px;
+._tooltip::after {
+  --_size: 16px;
 
-  border-left: calc(var(--size) / 2) solid transparent;
-  border-right: calc(var(--size) / 2) solid transparent;
-  border-top: calc(tan(60deg) * calc(var(--size) / 2)) solid;
+  content: "";
+
+  /* ... */
+  border-block-start: calc(var(--_size) / 2 * tan(60deg)) solid;
+  border-inline-start: calc(var(--_size) / 2) solid transparent;
+  border-inline-end: calc(var(--_size) / 2) solid transparent;
 }
 ```
 
@@ -252,20 +258,20 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 ```css title="🙅‍♂ Not Recommended: 状態ごとにアイコンの色を指定し直す"
 /* 🙅‍♂ Not Recommended */
-.button--primary {
-  color: var(--color-primary);
+._button {
+  color: var(--foreground--base);
+
+  &:disabled {
+    color: var(--foreground--muted);
+  }
 }
 
-.button--primary svg {
-  fill: var(--color-primary);
-}
+._icon {
+  fill: var(--foreground--base);
 
-.button:disabled {
-  color: var(--color-disabled);
-}
-
-.button:disabled svg {
-  fill: var(--color-disabled);
+  &:is(._button:disabled *) {
+    fill: var(--foreground--muted);
+  }
 }
 ```
 
@@ -406,8 +412,11 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 ```css title="🙅‍♂ Not Recommended: 太い縁取りを塗りの上に重ねる"
 /* 🙅‍♂ Not Recommended */
-.title {
+._title {
   color: oklch(100% 0 0deg);
+
+  /* 文字の縁取りは、接頭辞付きの指定でしか書けない（2026年9月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-text-stroke: 8px oklch(25% 0 0deg);
 }
 ```

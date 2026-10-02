@@ -88,15 +88,13 @@ import Guideline from '../../../components/Guideline.astro';
 
 カードや画像を、広い画面では角丸で余白の中に置き、狭い画面では画面の端まで広げるデザインはよくあります。画面の端まで広がったときに角丸が残ると、画面の角だけが欠けて見えます。この切り替えをメディアクエリで書くと、角丸を消す幅を、要素の幅ではなくビューポートの幅で決めることになります。
 
-```css title="🙅‍♂ Not Recommended: ビューポートの幅で角丸を消す"
+```css title="🙅‍♂ Not Recommended: ビューポートの幅で角丸を付け外しする"
 /* 🙅‍♂ Not Recommended */
-.hero-card {
-  border-radius: 40px;
-}
-
-@media (width < 640px) {
-  .hero-card {
-    border-radius: 0;
+@scope (.scoped.hero-card) to (.scoped) {
+  :scope {
+    @media (width >= calc(640 / 16 * 1rem)) {
+      border-radius: 40px;
+    }
   }
 }
 ```

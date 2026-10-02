@@ -18,15 +18,17 @@ import Guideline from '../../../components/Guideline.astro';
 
 ```css title="🙅‍♂ Not Recommended: 絶対配置と translate で見出しを重ねる"
 /* 🙅‍♂ Not Recommended */
-.hero {
-  position: relative;
-}
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    position: relative;
+  }
 
-.hero-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  h2 {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    translate: -50% -50%;
+  }
 }
 ```
 
@@ -47,7 +49,8 @@ Gridなら、すべての子要素を同じエリアに置くだけで重ねら�
   }
 
   img {
-    inline-size: 100%;
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
     block-size: 100%;
     object-fit: cover;
   }
@@ -92,19 +95,23 @@ z-indexの値は、ページ全体で比べられるわけではありません�
 
 ```css title="🙅‍♂ Not Recommended: 子要素の z-index を大きくして、祖先の順位を超えようとする"
 /* 🙅‍♂ Not Recommended */
-.site-header {
-  position: relative;
-  z-index: 1;
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: relative;
+    z-index: 1;
+  }
+
+  ._dropdown {
+    position: absolute;
+    z-index: 9999;
+  }
 }
 
-.site-header .dropdown {
-  position: absolute;
-  z-index: 9999;
-}
-
-.hero {
-  position: relative;
-  z-index: 2;
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    position: relative;
+    z-index: 2;
+  }
 }
 ```
 
@@ -174,7 +181,7 @@ z-indexの値は、ページ全体で比べられるわけではありません�
     margin: auto;
 
     @supports (anchor-name: --help-tip) {
-      inset: auto;
+      inset: unset;
       inset-block-start: anchor(--help-tip end);
       inset-inline-start: anchor(--help-tip start);
       position-try-fallbacks: flip-block;
@@ -191,7 +198,7 @@ z-indexの値は、ページ全体で比べられるわけではありません�
 </span>
 ```
 
-ヒントは `popover` 属性でトップレイヤーに表示しています。未対応の環境では、`margin: auto` によって画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。アンカーの名前は、ほかの名前と同じく `--` で始めます（「[6-1 命名規則](/notation/naming/)」）。
+ヒントは `popover` 属性でトップレイヤーに表示しています。未対応の環境では、`margin: auto` によって画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。対応した環境では、ブラウザのデフォルトスタイルが `[popover]` に指定している `inset: 0` を `unset` で初期値の `auto` に戻し、`anchor()` で決めた2辺だけで位置を決めます。アンカーの名前は、ほかの名前と同じく `--` で始めます（「[6-1 命名規則](/notation/naming/)」）。
 
 ルートの `anchor-scope` は、アンカーの名前が有効な範囲を、このコンポーネントの中に限る指定です。同じコンポーネントがページに複数あると、同じ名前のアンカーも複数できます。トップレイヤーの要素のように、ページ全体を包含ブロックにする要素からは、どのアンカーも見えるので、最後のアンカーが基準に選ばれ、別のコンポーネントのボタンの下に表示されてしまいます。繰り返し置くコンポーネントでアンカーを使うときは、ルートで範囲を限ります。
 

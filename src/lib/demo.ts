@@ -19,7 +19,7 @@ const LAYER_ORDER =
  */
 const DEMO_BASE = `@layer base {
   :where(body) {
-    min-block-size: auto;
+    min-block-size: initial;
     padding: 16px;
   }
 }`;

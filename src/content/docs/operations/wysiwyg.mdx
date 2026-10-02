@@ -26,6 +26,7 @@ CMSのWYSIWYGエディタが出力する本文は、`wysiwyg` クラスを付け
 ```css title="🙅‍♂ Not Recommended: 子孫セレクタで本文の要素にスタイルを当てる"
 /* 🙅‍♂ Not Recommended */
 .wysiwyg h2 {
+  padding-block: 8px;
   padding-inline-start: 16px;
   border-inline-start: 4px solid;
 }
@@ -44,18 +45,16 @@ CMSのWYSIWYGエディタが出力する本文は、`wysiwyg` クラスを付け
 独自ブロックは、スコープの下限で切り離します。`@scope (:scope) to ([class|="cms"])` のように、`to()` にブロックの目印を指定すると、そのブロックの中にはスタイルが届きません。内側の `@scope` の `:scope` は、外側のスコープのルート、つまり `.wysiwyg` を指します。
 
 ```css title="🙆‍♂ Recommended: 本文エリアの @scope から、独自ブロックを切り離す"
-@layer components {
-  @scope (.wysiwyg) {
-    @scope (:scope) to ([class|="cms"]) {
-      h2 {
-        padding-block: 8px;
-        padding-inline-start: 16px;
-        border-inline-start: 4px solid;
-      }
+@scope (.wysiwyg) {
+  @scope (:scope) to ([class|="cms"]) {
+    h2 {
+      padding-block: 8px;
+      padding-inline-start: 16px;
+      border-inline-start: 4px solid;
+    }
 
-      p {
-        line-height: 1.8;
-      }
+    p {
+      line-height: 1.8;
     }
   }
 }
@@ -63,22 +62,22 @@ CMSのWYSIWYGエディタが出力する本文は、`wysiwyg` クラスを付け
 
 通常の規約では、`@scope` は `@scope (.scoped.<名前>) to (.scoped)` の形で書き、ネストはしません。本文エリアは、中に入る要素を自分で決められないので、この形を使えません。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。代わりに、`cms-` で始まるクラスを、独自ブロックの目印にします。
 
+この節の例は、`@layer` で包まずに書いています。CMSでは、レイヤーに入っていないCMS自身のCSSと共存するので、レイヤーを使わず、9つの分類はディレクトリ構成と `@import` の順番で保つからです（「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
+
 ## 独自ブロックは下限で切り離す
 
 独自ブロックのスタイルは、ブロックのクラスを起点とする `@scope` で書きます。このスコープは、本文エリアの中で使う前提なので、`to()` を省略します。ブロックの内側に、別のブロックを入れないからです。入れ子にするブロックを作るときは、通常の規約どおり `to (.scoped)` を付けた形で書きます。
 
 ```css title="🙆‍♂ Recommended: 独自ブロックのスタイルは、ブロック自身の @scope に書く"
-@layer components {
-  @scope (.cms-custom-section) {
-    :scope {
-      padding: max(5%, 24px);
-      background-color: var(--color-darkest);
-      color: var(--color-lightest);
-    }
+@scope (.cms-custom-section) {
+  :scope {
+    padding: max(5%, 24px);
+    background-color: var(--color--darkest);
+    color: var(--color--lightest);
+  }
 
-    :where(h2, h3, h4) {
-      font-size: calc(20 / 16 * 1rem);
-    }
+  :where(h2, h3, h4) {
+    font-size: calc(20 / 16 * 1rem);
   }
 }
 ```
@@ -92,15 +91,13 @@ CMSのWYSIWYGエディタが出力する本文は、`wysiwyg` クラスを付け
 本文のブロックの間隔は、2つ目以降の直下の子に付けます。`& > * + *` に `margin-block-start: 1rlh` を指定し、見出しと独自ブロックの前だけ `2rlh` に広げます。`rlh` は、ルート要素の行の高さを単位にした長さです。本文の `p` の `line-height` が `1.8` でも、見出しが別の行間でも、余白はルート要素の行の高さの倍数で揃います。
 
 ```css title="🙆‍♂ Recommended: 余白は rlh で、見出しと独自ブロックの前だけ広げる"
-@layer components {
-  @scope (.wysiwyg) {
-    & > * + * {
-      margin-block-start: 1rlh;
-    }
+@scope (.wysiwyg) {
+  & > * + * {
+    margin-block-start: 1rlh;
+  }
 
-    & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
-      margin-block-start: 2rlh;
-    }
+  & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
+    margin-block-start: 2rlh;
   }
 }
 ```

@@ -1,6 +1,15 @@
+@layer tokens {
+  :root {
+    --duration--fast: 200ms;
+    --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
 @layer components {
   @scope (.scoped.hover-demo) to (.scoped) {
     :scope {
+      --_accent: oklch(48% 0.17 260deg);
+
       display: block grid;
       gap: 24px;
     }
@@ -14,16 +23,23 @@
     }
 
     button {
+      --_background: var(--_accent);
+
       padding-block: 8px;
       padding-inline: 20px;
       border-color: transparent;
       border-radius: 4px;
-      background-color: oklch(48% 0.17 260deg);
+      background-color: var(--_background);
       color: oklch(100% 0 0deg);
-      transition: all 0.3s;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+        transition-property: opacity;
+        transition-timing-function: var(--ease--quint-out);
+      }
 
       &:disabled {
-        background-color: oklch(60% 0 0deg);
+        --_background: oklch(60% 0 0deg);
       }
 
       /* ホバーを透明度で表し、フォーカスには何も指定していない */
@@ -33,15 +49,25 @@
     }
 
     a {
-      color: oklch(48% 0.17 260deg);
-      text-decoration-line: underline;
+      --_color: var(--_accent);
+
+      color: var(--_color);
+
+      /* kiso.css が消した下線を戻す。href のないカレントのリンクには、もともと下線がない */
+      text-decoration-line: revert;
+      text-decoration-thickness: 1px;
       text-underline-offset: 0.25em;
-      transition: all 0.3s;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+        transition-property: opacity;
+        transition-timing-function: var(--ease--quint-out);
+      }
 
       &[aria-current="page"] {
-        color: currentColor;
-        font-weight: bold;
-        text-decoration-line: none;
+        --_color: currentColor;
+
+        font-weight: 700;
       }
 
       &:hover {

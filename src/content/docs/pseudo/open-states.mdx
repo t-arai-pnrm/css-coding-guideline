@@ -97,18 +97,18 @@ details[open] {
 
     &:modal {
       max-inline-size: calc(560 / 16 * 1rem);
-      margin: auto;
     }
 
     &[open]:not(:modal) {
       position: fixed;
-      inset: auto 16px 16px auto;
+      inset-inline: auto 16px;
+      inset-block-end: 16px;
     }
   }
 }
 ```
 
-この例では、`showModal()` で開いたときは画面の中央に、`show()` で開いたときは右下に置きます。`dialog[open]` だけで書くと、2つの開き方に同じスタイルが当たり、背面を操作できるはずのダイアログまで中央に重なります。モーダルの間に背面のスクロールを止める `:root:has(:modal)` も、同じ理由で `dialog[open]` ではなく `:modal` を使っています（第5章「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+この例では、`showModal()` で開いたときは幅の上限だけを決め、画面の中央に置く配置はブラウザのデフォルトスタイル（`margin: auto`）に任せます。`show()` で開いたときは右下に置きます。`dialog[open]` だけで書くと、2つの開き方に同じスタイルが当たり、背面を操作できるはずのダイアログまで中央に重なります。モーダルの間に背面のスクロールを止める `:root:has(:modal)` も、同じ理由で `dialog[open]` ではなく `:modal` を使っています（第5章「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
 `:modal` は、ダイアログ以外にも当てはまります。`requestFullscreen()` で全画面表示にした要素も、ほかの要素を操作できない状態にするので `:modal` になります。そのため、動画のプレーヤーを全画面にしている間も `:root:has(:modal)` が当てはまり、ルート要素のスクロールが止まります。
 

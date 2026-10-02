@@ -22,17 +22,17 @@ import compositionsCss from '../../../demos/components/compositions/style.css?ra
 ```css title="🙅‍♂ Not Recommended: 同じ配置をコンポーネントごとに書く"
 /* 🙅‍♂ Not Recommended */
 .tag-list {
-  display: flex;
+  display: block flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
 .button-group {
-  display: flex;
+  display: block flex;
 }
 
 .button-group > * + * {
-  margin-left: 10px;
+  margin-inline-start: 10px;
 }
 ```
 
@@ -210,6 +210,7 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
     font-size: calc(24 / 16 * 1rem);
     font-weight: 700;
     color: var(--foreground--base);
+    text-wrap: balance;
   }
 }
 

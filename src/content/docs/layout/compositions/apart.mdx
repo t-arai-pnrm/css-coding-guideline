@@ -25,10 +25,12 @@ import wrapCss from '../../../../demos/layout/composition-apart-wrap/style.css?r
 
 ```css title="🙅‍♂ Not Recommended: 折り返しと最小の間隔のない両端の配置"
 /* 🙅‍♂ Not Recommended */
-.site-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    display: block flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 ```
 
@@ -129,7 +131,7 @@ import wrapCss from '../../../../demos/layout/composition-apart-wrap/style.css?r
 
   ._logo {
     font-size: calc(20 / 16 * 1rem);
-    font-weight: bold;
+    font-weight: 700;
   }
 }
 ```

@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.11.0
+- バージョン: 0.11.1
 - 生成日: 2026-10-02
 - ルールの数: 478
 
@@ -307,7 +307,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【推奨】`@scope` の中の要素はタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ付ける（`._list` や `._link` のように要素の種類と同じ意味のクラスを付けない）。（`type-selector-in-scope`）
   - 理由: `@scope` の中のタイプセレクタはそのコンポーネントの範囲にしか当たらず、要素の種類を繰り返すだけのクラス名は情報を増やさずに記述量を増やすため。`div` と `span` は要素そのものが意味を持たず、要素の種類から役割を読み取れないため、1つしかなくてもクラスで補う。
-  - 補足: `div` と `span` に付けるクラスは、`._body` や `._badge` のように役割の名前にします。役割を区別するクラスは `._main-link` と `._sub-link` のように要素の役割の語まで含めて名付け、共通のスタイルはタイプセレクタに、固有のスタイルは子クラスに書きます。スコープの中のタイプセレクタは詳細度が 0.0.1 なので `:where()` で包みません（ベーススタイルの `:where()` は第2章のルール `where-for-base-selectors`）。`a:hover` のように擬似クラスを付けると 0.1.1 になり子クラスに勝つので、役割ごとに違う状態のスタイルは `._sub-link:hover` のように子クラスの側に書きます。同じコンポーネントの中で同じ種類の要素が入れ子になるときは役割が分かれるので子クラスを付け、任意の HTML が入る領域は別のコンポーネントにします。
+  - 補足: `div` と `span` に付けるクラスは、`._body` や `._badge` のように役割の名前にします。役割を区別するクラスは `._main-link` と `._sub-link` のように要素の役割の語まで含めて名付け、共通のスタイルはタイプセレクタに、固有のスタイルは子クラスに書きます。スコープの中のタイプセレクタは詳細度が 0.0.1 なので `:where()` で包みません（ベーススタイルの `:where()` は第2章のルール `where-for-base-selectors`）。`a:focus-visible` や `a:any-link:hover` のように擬似クラスを付けると 0.1.1 や 0.2.1 になり子クラスに勝つので、役割ごとに違う状態のスタイルは `._sub-link:focus-visible` や `._sub-link:any-link:hover` のように子クラスの側に書きます。同じコンポーネントの中で同じ種類の要素が入れ子になるときは役割が分かれるので子クラスを付け、任意の HTML が入る領域は別のコンポーネントにします。
   - 詳細: 7-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【禁止】ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしない。（`no-other-component-internals`）
   - 理由: 詳細度の競争が起き、子の構造を変えたときに親の CSS も直す必要が出るため。
@@ -873,7 +873,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【推奨】新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。（`supports-for-dependent-declarations`）
   - 理由: 未対応の環境で、従来の手段まで取り上げてしまうのを防ぐため。
-  - 補足: 例：`field-sizing: content` を使うときの `resize: unset` と `max-block-size`。新しいプロパティそのものは、未対応の環境で無視されるので `@supports` で囲む必要はありません。
+  - 補足: 例：`field-sizing: content` を使うときの `resize: none` と `max-block-size`。新しいプロパティそのものは、未対応の環境で無視されるので `@supports` で囲む必要はありません。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【推奨】対象のブラウザがすべて対応している機能には、フォールバックや `@supports` の分岐を書かず、残っていれば消す。（`remove-unneeded-fallbacks`）
   - 理由: 使われないコードが残り、読む人に「まだ対応していないブラウザがある」と誤解させるため。
@@ -1434,7 +1434,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【推奨】`@scope` の中の要素はタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ付ける（`._list` や `._link` のように要素の種類と同じ意味のクラスを付けない）。（`type-selector-in-scope`）
   - 理由: `@scope` の中のタイプセレクタはそのコンポーネントの範囲にしか当たらず、要素の種類を繰り返すだけのクラス名は情報を増やさずに記述量を増やすため。`div` と `span` は要素そのものが意味を持たず、要素の種類から役割を読み取れないため、1つしかなくてもクラスで補う。
-  - 補足: `div` と `span` に付けるクラスは、`._body` や `._badge` のように役割の名前にします。役割を区別するクラスは `._main-link` と `._sub-link` のように要素の役割の語まで含めて名付け、共通のスタイルはタイプセレクタに、固有のスタイルは子クラスに書きます。スコープの中のタイプセレクタは詳細度が 0.0.1 なので `:where()` で包みません（ベーススタイルの `:where()` は第2章のルール `where-for-base-selectors`）。`a:hover` のように擬似クラスを付けると 0.1.1 になり子クラスに勝つので、役割ごとに違う状態のスタイルは `._sub-link:hover` のように子クラスの側に書きます。同じコンポーネントの中で同じ種類の要素が入れ子になるときは役割が分かれるので子クラスを付け、任意の HTML が入る領域は別のコンポーネントにします。
+  - 補足: `div` と `span` に付けるクラスは、`._body` や `._badge` のように役割の名前にします。役割を区別するクラスは `._main-link` と `._sub-link` のように要素の役割の語まで含めて名付け、共通のスタイルはタイプセレクタに、固有のスタイルは子クラスに書きます。スコープの中のタイプセレクタは詳細度が 0.0.1 なので `:where()` で包みません（ベーススタイルの `:where()` は第2章のルール `where-for-base-selectors`）。`a:focus-visible` や `a:any-link:hover` のように擬似クラスを付けると 0.1.1 や 0.2.1 になり子クラスに勝つので、役割ごとに違う状態のスタイルは `._sub-link:focus-visible` や `._sub-link:any-link:hover` のように子クラスの側に書きます。同じコンポーネントの中で同じ種類の要素が入れ子になるときは役割が分かれるので子クラスを付け、任意の HTML が入る領域は別のコンポーネントにします。
   - 詳細: 7-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
 - 【禁止】ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしない。（`no-other-component-internals`）
   - 理由: 詳細度の競争が起き、子の構造を変えたときに親の CSS も直す必要が出るため。

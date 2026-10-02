@@ -33,11 +33,13 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 匿名ボックスは、HTMLの改行や空白からも作られます。要素を `inline flow-root`（`inline-block`）にして横に並べると、タグの間の改行が1文字分の空白として行に入り、要素の間に意図しない隙間ができます。
 
-```css title="🙅‍♂ Not Recommended: inline-block で横に並べる"
+```css title="🙅‍♂ Not Recommended: inline flow-root（inline-block）で横に並べる"
 /* 🙅‍♂ Not Recommended */
-.tag-list > li {
-  display: inline-block;
-  margin-right: 8px;
+.tag-list {
+  & > li {
+    display: inline flow-root;
+    margin-inline-end: 8px;
+  }
 }
 ```
 

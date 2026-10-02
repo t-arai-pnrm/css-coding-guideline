@@ -13,10 +13,9 @@
       align-items: center;
       font-size: calc(20 / 16 * 1rem);
 
-      /* 見出しの前の縦線。空の擬似要素はフレックスアイテムになり、幅と高さが効く */
+      /* 見出しの前の縦線。空の擬似要素はフレックスアイテムになり、高さが効く。幅は線の太さで決まる */
       &::before {
         content: "";
-        inline-size: 4px;
         block-size: 1lh;
         border-inline-start: 4px solid var(--_accent);
       }
@@ -25,8 +24,6 @@
     ul {
       display: block grid;
       gap: 8px;
-      padding-inline-start: 0;
-      list-style-type: "";
     }
 
     li {
@@ -38,7 +35,7 @@
       &::before {
         content: "✓" / "";
         color: var(--_accent);
-        font-weight: bold;
+        font-weight: 700;
       }
     }
 

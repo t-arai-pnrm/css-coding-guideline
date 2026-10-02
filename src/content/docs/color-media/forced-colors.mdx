@@ -67,7 +67,7 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 
 ```css title="🙅‍♂ Not Recommended: 枠線を消す"
 /* 🙅‍♂ Not Recommended */
-.button {
+._button {
   border: none;
   background-color: oklch(52% 0.16 250deg);
   color: oklch(100% 0 0deg);
@@ -76,7 +76,7 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 
 ```css title="🙆‍♂ Recommended: 枠線を透明にして残す"
 ._button {
-  border: 1px solid transparent;
+  border-color: transparent;
   background-color: oklch(52% 0.16 250deg);
   color: oklch(100% 0 0deg);
 }
@@ -92,8 +92,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 ._field {
   &:focus-visible {
     box-shadow: 0 0 0 4px oklch(60% 0.16 250deg / 40%);
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+    outline-color: transparent;
   }
 }
 ```

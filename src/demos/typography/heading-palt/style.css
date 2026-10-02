@@ -29,10 +29,10 @@
       font-size: calc(28 / 16 * 1rem);
       line-height: 1.4;
 
-      /* 比較のために、見出しの詰めを打ち消す */
+      /* 比較のために、見出しの詰めを取り除き、本文と同じく親の値を継承させる */
       &[data-palt="off"] {
-        font-feature-settings: normal;
-        font-kerning: none;
+        font-feature-settings: unset;
+        font-kerning: unset;
       }
     }
 

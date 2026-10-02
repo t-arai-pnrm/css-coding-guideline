@@ -1,80 +1,74 @@
-@layer tokens {
-  :root {
-    --foreground--base: oklch(25% 0 0deg);
-    --foreground--muted: oklch(45% 0 0deg);
-    --background--surface: oklch(97% 0.01 250deg);
+:root {
+  --foreground--base: oklch(25% 0 0deg);
+  --foreground--muted: oklch(45% 0 0deg);
+  --background--surface: oklch(97% 0.01 250deg);
+}
+
+@scope (.scoped.demo-page) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(280 / 16 * 1rem)), 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+
+  ._column {
+    display: block grid;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: var(--background--surface);
+  }
+
+  p {
+    color: var(--foreground--muted);
+    font-size: calc(14 / 16 * 1rem);
+    font-weight: 700;
   }
 }
 
-@layer pages {
-  @scope (.scoped.demo-page) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(280 / 16 * 1rem)), 1fr));
-      gap: 24px;
-      align-items: start;
-    }
+/**
+ * CMS で入力した本文のエリア。ブロック間の余白を決める。
+ *
+ * @prop {length} --content-area--flow-space [calc(20 / 16 * 1rem)] - ブロック間の余白
+ * @prop {length} --content-area--space-before-heading [calc(48 / 16 * 1rem)] - 見出しの前の余白
+ * @prop {length} --content-area--space-after-heading [calc(16 / 16 * 1rem)] - 見出しの後ろの余白
+ */
+@scope (.scoped.content-area) to (.scoped) {
+  :scope {
+    --_flow-space: var(--content-area--flow-space, calc(20 / 16 * 1rem));
+    --_space-before-heading: var(--content-area--space-before-heading, calc(48 / 16 * 1rem));
+    --_space-after-heading: var(--content-area--space-after-heading, calc(16 / 16 * 1rem));
 
-    ._column {
-      display: block grid;
-      gap: 16px;
-      padding: 20px;
-      border-radius: 8px;
-      background-color: var(--background--surface);
-    }
-
-    p {
-      color: var(--foreground--muted);
-      font-size: calc(14 / 16 * 1rem);
-      font-weight: bold;
-    }
+    color: var(--foreground--base);
+    line-height: 1.8;
   }
-}
 
-@layer components {
-  /**
-   * CMS で入力した本文のエリア。ブロック間の余白を決める。
-   *
-   * @prop {length} --content-area--flow-space [calc(20 / 16 * 1rem)] - ブロック間の余白
-   * @prop {length} --content-area--space-before-heading [calc(40 / 16 * 1rem)] - 見出しの前の余白
-   * @prop {length} --content-area--space-after-heading [calc(12 / 16 * 1rem)] - 見出しの後ろの余白
-   */
-  @scope (.scoped.content-area) to (.scoped) {
-    :scope {
-      --_flow-space: var(--content-area--flow-space, calc(20 / 16 * 1rem));
-      --_space-before-heading: var(--content-area--space-before-heading, calc(40 / 16 * 1rem));
-      --_space-after-heading: var(--content-area--space-after-heading, calc(12 / 16 * 1rem));
+  :scope > * + * {
+    margin-block-start: var(--_flow-space);
+  }
 
-      color: var(--foreground--base);
-      line-height: 1.8;
-    }
+  :scope > * + :is(h2, h3) {
+    margin-block-start: var(--_space-before-heading);
+  }
 
-    :scope > * + * {
-      margin-block-start: var(--_flow-space);
-    }
+  :scope > :is(h2, h3) + * {
+    margin-block-start: var(--_space-after-heading);
+  }
 
-    :scope > * + :is(h2, h3) {
-      margin-block-start: var(--_space-before-heading);
-    }
+  h2 {
+    font-size: calc(22 / 16 * 1rem);
+    line-height: 1.4;
+  }
 
-    :scope > :is(h2, h3) + * {
-      margin-block-start: var(--_space-after-heading);
-    }
+  h3 {
+    font-size: calc(18 / 16 * 1rem);
+    line-height: 1.4;
+  }
 
-    h2 {
-      font-size: calc(22 / 16 * 1rem);
-      line-height: 1.4;
-    }
-
-    h3 {
-      font-size: calc(18 / 16 * 1rem);
-      line-height: 1.4;
-    }
-
-    /* 本文では、リセットで消したリストのマーカーと字下げをブラウザのデフォルトに戻す */
-    :is(ul, ol) {
-      padding-inline-start: revert;
-      list-style-type: revert;
-    }
+  /* 本文では、リセットで消したリストのマーカーと字下げをブラウザのデフォルトに戻す */
+  :is(ul, ol) {
+    padding-inline-start: revert;
+    list-style-type: revert;
   }
 }

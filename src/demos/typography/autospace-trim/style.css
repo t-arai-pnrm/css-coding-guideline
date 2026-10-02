@@ -12,19 +12,18 @@
     }
 
     h2 {
-      margin-block: 0 8px;
+      margin-block-end: 8px;
       color: oklch(45% 0 0deg);
       font-size: calc(14 / 16 * 1rem);
     }
 
     p {
-      margin: 0;
       padding-inline-start: 12px;
       border-inline-start: 2px solid oklch(70% 0.1 250deg);
       font-size: calc(18 / 16 * 1rem);
       line-height: 1.75;
 
-      /* 比較のために、kiso.css が :root に指定した初期値を打ち消す */
+      /* 比較のために、アキを入れず約物も詰めない値を指定する（CSS の初期値の normal に戻すと、ブラウザによってはアキが入る） */
       &[data-typesetting="off"] {
         text-spacing-trim: space-all;
         text-autospace: no-autospace;

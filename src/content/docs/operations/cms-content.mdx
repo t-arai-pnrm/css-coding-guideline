@@ -31,7 +31,7 @@ CMSで入力する本文のエリア（本文エリア）のスタイルは、�
 
 /* editor.css */
 .editor-styles-wrapper .is-root-container > * + * {
-  margin-top: 24px;
+  margin-block-start: 24px;
 }
 ```
 
@@ -121,7 +121,7 @@ WordPressにも、ブロック間の余白を出力する仕組み（`blockGap`�
 ```css title="🙆‍♂ Recommended: コアブロックの内部は、ブロックのクラスから始まるセレクタで選ぶ"
 :is(.content-area, .editor-styles-wrapper .is-root-container) {
   & .wp-block-media-text > .wp-block-media-text__content {
-    padding: 0;
+    padding: revert;
   }
 
   & .wp-block-media-text .wp-block-media-text__content > * + * {
@@ -191,7 +191,6 @@ register_block_style(
   background-color: var(--wp--preset--color--accent);
   color: var(--wp--preset--color--white);
   font-weight: var(--wp--custom--font-weight--bold);
-  text-decoration: none;
 }
 ```
 

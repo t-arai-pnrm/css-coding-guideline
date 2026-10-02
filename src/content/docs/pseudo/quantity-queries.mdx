@@ -107,15 +107,15 @@ li:nth-last-child(n + 3) ~ li {
 ```css title="🙅‍♂ Not Recommended: 件数で列数を決める"
 /* 🙅‍♂ Not Recommended */
 .pickup-list {
-  display: grid;
+  display: block grid;
 }
 
 .pickup-list:has(> :nth-child(2)) {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .pickup-list:has(> :nth-child(3)) {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 ```
 

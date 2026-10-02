@@ -116,13 +116,15 @@ Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方�
 
 ```css title="🙅‍♂ Not Recommended: reading-order で子の読む順番を個別に上書きする"
 /* 🙅‍♂ Not Recommended */
-.plan-card {
-  display: grid;
-  reading-flow: source-order;
-}
+@scope (.scoped.plan-card) to (.scoped) {
+  ._layout {
+    display: block grid;
+    reading-flow: source-order;
 
-.plan-card__apply {
-  reading-order: -1;
+    & > a {
+      reading-order: -1;
+    }
+  }
 }
 ```
 

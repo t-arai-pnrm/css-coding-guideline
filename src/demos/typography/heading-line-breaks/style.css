@@ -33,10 +33,10 @@
       font-size: calc(26 / 16 * 1rem);
       line-height: 1.4;
 
-      /* 比較のために、文節での折り返しと行の長さの調整を打ち消す */
+      /* 比較のために、文節での折り返しと行の長さの調整を取り除き、親の値を継承させる */
       &[data-phrase="off"] {
-        text-wrap: wrap;
-        word-break: normal;
+        text-wrap: unset;
+        word-break: unset;
       }
     }
   }

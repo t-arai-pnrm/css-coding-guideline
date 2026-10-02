@@ -80,6 +80,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 2. ルールを `src/content/rules/<章番号2桁>-<章のディレクトリ>.yaml` に書く（例：`06-notation.yaml`）。ID はほかの章と重複させない（`grep -rn "id: <ID>" src/content/rules` で確認する）。
 3. デモは `src/demos/<章のディレクトリ>/<デモ名>/` に `index.html` と `style.css` で置く。
    - デモの CSS も本書の規約で書く。`@layer` と `@scope (.scoped.<名前>) to (.scoped)` は省略しない。
+     - 例外：CMS と共存する CSS のデモ（第13章）は `@layer` を使わない（ルール `no-layers-with-unlayered-css`）。
 4. 対応状況は `<Baseline id="…" />` で示す。ID が web-features にあるかは、次のコマンドで確認する。
 
    ```

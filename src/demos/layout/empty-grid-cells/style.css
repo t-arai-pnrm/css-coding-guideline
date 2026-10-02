@@ -17,7 +17,8 @@
         "--text"
         "." 16px
         "--contact-link";
-      padding: 40px 16px;
+      padding-block: 40px;
+      padding-inline: 16px;
 
       /* 広い場所では、余白の行の高さだけを変える */
       @container --contact-section (inline-size >= calc(560 / 16 * 1rem)) {
@@ -27,7 +28,8 @@
           "--text"
           "." 32px
           "--contact-link";
-        padding: 64px 40px;
+        padding-block: 64px;
+        padding-inline: 40px;
       }
 
       & > ._heading {
@@ -58,11 +60,11 @@
     }
 
     ._contact-link {
-      padding: 12px 32px;
+      padding-block: 12px;
+      padding-inline: 32px;
       border-radius: 4px;
       background-color: oklch(45% 0.15 260deg);
       color: oklch(100% 0 0deg);
-      text-decoration: none;
     }
   }
 }

@@ -27,7 +27,7 @@ html {
 
 .card {
   padding: 1.6rem 2.4rem;
-  border: 0.1rem solid #ddd;
+  border: 0.1rem solid oklch(85% 0 0deg);
   border-radius: 0.8rem;
   font-size: 1.6rem;
 }
@@ -145,12 +145,11 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
 ```css title="🙅‍♂ Not Recommended: 単位のある line-height"
 /* 🙅‍♂ Not Recommended */
 .article {
-  font-size: 16px;
   line-height: 24px;
 }
 
 .article h2 {
-  font-size: 32px;
+  font-size: calc(32 / 16 * 1rem);
 }
 ```
 

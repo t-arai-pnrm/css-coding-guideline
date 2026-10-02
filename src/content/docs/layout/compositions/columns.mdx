@@ -23,12 +23,12 @@ import columnsCss from '../../../../demos/layout/composition-columns/style.css?r
 
 ```css title="🙅‍♂ Not Recommended: リストに段組みを書き、項目の間隔を margin で空ける"
 /* 🙅‍♂ Not Recommended */
-.footer-links {
-  columns: 200px 4;
-}
+._links {
+  columns: calc(200 / 16 * 1rem) 4;
 
-.footer-links > li + li {
-  margin-block-start: 16px;
+  & > li + li {
+    margin-block-start: 16px;
+  }
 }
 ```
 
@@ -122,7 +122,7 @@ import columnsCss from '../../../../demos/layout/composition-columns/style.css?r
 
 デモの枠には左右16pxずつの余白があるので、要素の幅は枠の幅から32pxを引いた値です。段の数は「（要素の幅＋32）÷（200＋32）」を切り捨てた値なので、枠の幅を232で割った値になります。320pxでは1段、480pxでは2段、768pxでは3段、1024pxでは4段です。1280pxでは5段分の幅がありますが、最大数の4段に抑えられます。
 
-デモのCSSのうち、コンポーネント（`glossary`）が書いているのは、用語の太さと説明の文字の大きさだけです。段の数、段の間隔、項目の間隔、分割の禁止は、すべてコンポジションと `style` 属性で決まっています。フッターのサイトマップに使う場合も同じで、コンポーネントのCSSはリンクの色や下線のような見た目だけを受け持ちます。
+デモのCSSのうち、コンポーネント（`glossary`）が書いているのは、説明の文字の大きさだけです。用語の `dt` は、kiso.cssが太字にしています。段の数、段の間隔、項目の間隔、分割の禁止は、すべてコンポジションと `style` 属性で決まっています。フッターのサイトマップに使う場合も同じで、コンポーネントのCSSはリンクの色や下線のような見た目だけを受け持ちます。
 
 ## `grid`・`masonry` との使い分け
 

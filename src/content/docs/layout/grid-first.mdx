@@ -23,14 +23,14 @@ import newsCss from '../../../demos/layout/news-list/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: 格子状の並びを、子要素の幅の計算で作る"
 /* 🙅‍♂ Not Recommended */
-.card-list {
-  display: flex;
+._card-list {
+  display: block flex;
   flex-wrap: wrap;
   gap: 16px;
-}
 
-.card-list > * {
-  flex-basis: calc((100% - 16px * 2) / 3);
+  & > * {
+    flex-basis: calc((100% - 16px * 2) / 3);
+  }
 }
 ```
 
@@ -147,7 +147,7 @@ Flexboxでは、一部の要素だけを行末側へ寄せる場面でも、子�
 
     @container --feature-card (inline-size >= calc(560 / 16 * 1rem)) {
       grid-template:
-        "--image --heading" auto
+        "--image --heading"
         "--image --body" 1fr
         / minmax(0, 1fr) minmax(0, 1fr);
     }

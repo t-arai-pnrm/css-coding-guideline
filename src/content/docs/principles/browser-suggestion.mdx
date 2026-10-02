@@ -27,9 +27,9 @@ Webページの表示は、実装者には決められない多くの変数に�
 ```css title="🙅‍♂ Not Recommended: カンプの寸法を固定値で書き写す"
 /* 🙅‍♂ Not Recommended */
 ._cta-link {
-  display: inline-block;
-  width: 240px;
-  height: 56px;
+  display: inline flow-root;
+  inline-size: 240px;
+  block-size: 56px;
   line-height: 56px;
   text-align: center;
   white-space: nowrap;
@@ -91,12 +91,12 @@ AIにデザインカンプからコードを書かせると、カンプに書か
 
 ```css title="🙅‍♂ Not Recommended: ブラウザが決める値を指定し直す"
 /* 🙅‍♂ Not Recommended */
-.notice {
-  width: 100%;
-  height: 120px;
+._notice {
+  inline-size: 100%;
+  block-size: 120px;
   padding: 16px;
-  border: 1px solid #333;
-  color: #333;
+  border: 1px solid oklch(30% 0 0deg);
+  color: oklch(30% 0 0deg);
 }
 ```
 

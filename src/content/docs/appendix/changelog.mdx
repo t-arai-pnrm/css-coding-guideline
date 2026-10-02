@@ -11,6 +11,17 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.11.1（2026年10月2日）
+
+本書のコード例とデモが本書のルールに従っていない箇所を、すべての章で直しました。ルールの追加や意味の変更はないため、パッチバージョンを上げています。
+
+- 初期値、ブラウザのデフォルトスタイル、kiso.css、継承で決まる値を指定し直している宣言を消しました（[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults)）。主な対象は、`border` の `currentColor` や `1px solid`、リストの `padding` と `list-style-type`、見出しの `margin` です。リンクの `text-decoration` や、`fieldset` と `legend` の余白も消しています。
+- 値を戻す宣言を、`0` や `none` ではなく、戻したい先に合うキーワード（`initial`、`unset`、`revert`、`revert-layer`）で書くようにしました（[`explicit-rollback-keyword`](/cascade/cascade-basics/#rule-explicit-rollback-keyword)）。
+- Not Recommendedの例を、教えたい点のほかは本書の書き方に揃えました。例の主題が古いコード全体のものは、そのままにしています。
+- このほか、`font-weight: bold` を `700` に、幅いっぱいに広げる `inline-size: 100%` を `stretch` に、物理プロパティを論理プロパティに直しました。`div` には役割のクラスを付け、`img` には `width` と `height` の属性を加えています。
+- 「[7-1 コンポーネントの境界を守る](/components/boundaries/)」と「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」のホバーの例に `:focus-visible` を加え、7-1の詳細度の説明を直しました。ルール [`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope) の補足の例も合わせています。
+- 「[13-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」のコード例とデモから、`@layer` を外しました（[`no-layers-with-unlayered-css`](/cascade/layers/#rule-no-layers-with-unlayered-css)）。
+
 ## 0.11.0（2026年10月2日）
 
 単位のついた値での割り算を使うことにし、`stretch` とパターンについてのルールを追加しました。ルールの主張が反対になったものがあるため、旧ルールを削除して新しいルールに置き換えています。

@@ -20,21 +20,19 @@ import sidebarCss from '../../../../demos/layout/composition-sidebar/style.css?r
 
 ```css title="🙅‍♂ Not Recommended: ビューポートの幅で2カラムに切り替える"
 /* 🙅‍♂ Not Recommended */
-.article-layout {
-  display: grid;
+._layout {
+  display: block grid;
   gap: 32px;
-}
 
-@media (min-width: 768px) {
-  .article-layout {
-    grid-template-columns: 1fr 240px;
+  @media (width >= calc(768 / 16 * 1rem)) {
+    grid-template-columns: minmax(0, 1fr) calc(240 / 16 * 1rem);
   }
 }
 ```
 
-この書き方の問題は、2カラムにしてよいかどうかを決める値が、本当に必要な幅と結び付いていないことです。メインに必要なのが480px相当なら、2カラムに必要な幅は480＋240＋32で752pxです。768pxという値は、この合計とは無関係に、カンプの幅から選ばれています。サイドの幅や間隔を変えるたびに、ブレイクポイントも計算し直さなければなりません。
+この書き方の問題は、2カラムにしてよいかどうかを決める値が、本当に必要な幅と結び付いていないことです。メインに必要なのが480px相当なら、2カラムに必要な幅は480＋240＋32で752px相当です。768px相当という閾値は、この合計とは無関係に、カンプの幅から選ばれています。サイドの幅や間隔を変えるたびに、ブレイクポイントも計算し直さなければなりません。
 
-もう1つの問題は、判定の基準がビューポートであることです。同じ配置を幅の狭いメインエリアの中に置くと、ビューポートが768px以上でも2カラムに切り替わり、メインが極端に細くなります。コンテナクエリにすれば置き場所の幅で判定できますが、閾値を手で計算する手間は残ります。並べてよい条件は子の幅の指定にすでに含まれているので、そこから折り返しを導けば、閾値を別に書く必要はありません。
+もう1つの問題は、判定の基準がビューポートであることです。同じ配置を幅の狭いメインエリアの中に置くと、ビューポートが768px相当以上なら2カラムに切り替わり、メインが極端に細くなります。コンテナクエリにすれば置き場所の幅で判定できますが、閾値を手で計算する手間は残ります。並べてよい条件は子の幅の指定にすでに含まれているので、そこから折り返しを導けば、閾値を別に書く必要はありません。
 
 ## flex-grow の差で折り返す仕組み
 
@@ -206,7 +204,7 @@ import sidebarCss from '../../../../demos/layout/composition-sidebar/style.css?r
 
     @container --article-page (inline-size >= calc(800 / 16 * 1rem)) {
       grid-template:
-        "--header --related" auto
+        "--header --related"
         "--body --related" 1fr
         / minmax(0, 1fr) calc(240 / 16 * 1rem);
     }

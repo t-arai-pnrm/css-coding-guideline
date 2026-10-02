@@ -25,12 +25,14 @@ import masonryCss from '../../../demos/layout/masonry-cards/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: 新着順の一覧を columns で詰める"
 /* 🙅‍♂ Not Recommended */
-.post-list {
-  columns: 240px;
-}
+@scope (.scoped.post-list) to (.scoped) {
+  :scope {
+    columns: calc(240 / 16 * 1rem);
 
-.post-list > li {
-  break-inside: avoid;
+    & > li {
+      break-inside: avoid;
+    }
+  }
 }
 ```
 
@@ -95,10 +97,13 @@ import masonryCss from '../../../demos/layout/masonry-cards/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: display を2つ並べてフォールバックする"
 /* 🙅‍♂ Not Recommended */
-.post-list {
-  display: block grid;
-  display: block grid-lanes;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+@scope (.scoped.post-list) to (.scoped) {
+  :scope {
+    display: block grid;
+    display: block grid-lanes;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+    gap: 24px 16px;
+  }
 }
 ```
 
@@ -119,18 +124,19 @@ import masonryCss from '../../../demos/layout/masonry-cards/style.css?raw';
   }
 
   img {
-    inline-size: 100%;
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
     aspect-ratio: 1;
     object-fit: cover;
 
     @supports (display: block grid-lanes) {
-      aspect-ratio: auto;
+      aspect-ratio: unset;
     }
   }
 }
 ```
 
-`aspect-ratio: auto` は、画像の本来の縦横比に戻す指定です。宣言を2つ並べる書き方では、このように子要素の宣言を切り替えられません。新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書きます。この考え方は「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明しています。
+`aspect-ratio: unset` は、フォールバックで指定した `1` を初期値の `auto` に戻し、画像の本来の縦横比で表示する指定です。宣言を2つ並べる書き方では、このように子要素の宣言を切り替えられません。新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書きます。この考え方は「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明しています。
 
 ## コード例とデモ
 

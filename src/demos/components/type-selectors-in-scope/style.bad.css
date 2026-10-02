@@ -25,8 +25,6 @@
       display: block flex;
       flex-wrap: wrap;
       gap: 8px;
-      padding: 0;
-      list-style-type: "";
     }
 
     /* 2種類のリンクに共通するスタイル */
@@ -35,26 +33,40 @@
       padding-block: 8px;
       padding-inline: 16px;
       border-radius: 4px;
-      text-decoration-line: none;
-    }
 
-    /* 🙅‍♂ 共通のホバーで文字色を変えると、a:hover（0.1.1）が ._sub-link（0.1.0）の色に勝つ */
-    a:hover {
-      @media (any-hover: hover) {
+      /* 🙅‍♂ 共通の状態で文字色を変えると、a:focus-visible（0.1.1）と a:any-link:hover（0.2.1）が ._sub-link（0.1.0）の色に勝つ */
+      &:focus-visible {
         color: var(--foreground--accent);
-        text-decoration-line: underline;
+        text-decoration-line: revert;
+      }
+
+      &:any-link:hover {
+        @media (any-hover: hover) {
+          color: var(--foreground--accent);
+          text-decoration-line: revert;
+        }
       }
     }
 
     ._main-link {
       color: var(--foreground--base);
-      font-weight: bold;
+      font-weight: 700;
     }
 
     ._sub-link {
       background-color: var(--background--accent);
       color: var(--foreground--on-accent);
       font-size: calc(14 / 16 * 1rem);
+
+      &:focus-visible {
+        background-color: oklch(from var(--background--accent) calc(l - 0.1) c h);
+      }
+
+      &:any-link:hover {
+        @media (any-hover: hover) {
+          background-color: oklch(from var(--background--accent) calc(l - 0.1) c h);
+        }
+      }
     }
   }
 }

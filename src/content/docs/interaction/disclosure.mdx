@@ -204,8 +204,6 @@ viewer.addEventListener('command', (event) => {
 @scope (.scoped.faq-list) to (.scoped) {
   details::details-content {
     overflow: clip;
-    block-size: 0;
-    opacity: 0;
 
     @media (prefers-reduced-motion: no-preference) {
       transition-duration: var(--duration--slow);
@@ -215,10 +213,12 @@ viewer.addEventListener('command', (event) => {
     }
   }
 
-  details[open]::details-content {
-    block-size: auto;
-    opacity: 1;
+  details:not([open])::details-content {
+    block-size: 0;
+    opacity: 0;
+  }
 
+  details[open]::details-content {
     @media (prefers-reduced-motion: no-preference) {
       transition-timing-function: var(--ease--quint-out);
     }
@@ -226,7 +226,7 @@ viewer.addEventListener('command', (event) => {
 }
 ```
 
-閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。`block-size: 0` から `auto` への変化は、ベーススタイルの `interpolate-size: allow-keywords` があるときに限って補間されます（「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+高さと不透明度は閉じているとき（`:not([open])`）だけ0にするので、開いているときに初期値の `auto` と `1` を書き直す必要はありません。閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。`block-size: 0` から `auto` への変化は、ベーススタイルの `interpolate-size: allow-keywords` があるときに限って補間されます（「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
 <Demo title="::details-content の高さと不透明度を動かし、name 属性で1つだけを開く" html={detailsHtml} css={detailsCss} />
 
