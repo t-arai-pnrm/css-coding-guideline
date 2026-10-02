@@ -1,6 +1,6 @@
 ---
 title: "12-1 状態とフォーカスを表す"
-description: "ホバーのスタイルは@media (any-hover: hover)の中に書き、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態は擬似クラスとARIA属性で表します。"
+description: "ホバーのスタイルは@media (any-hover: hover)の中に書き、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。"
 sidebar:
   order: 1
 ---
@@ -14,7 +14,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ホバーのスタイルは `@media (any-hover: hover)` の中に書き、同じ見た目を `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
 
-選択中や展開中といった状態は、`:checked` などの擬似クラスか、`aria-selected` などのARIA属性をセレクタにして表します。`.is-active` のような状態クラスは使いません。
+選択中や展開中といった状態は、`.is-active` のような状態クラスを使わず、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に検討して、セレクタにします。
 
 ## タッチ操作の端末でのホバー
 
@@ -185,7 +185,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ## 状態を表すセレクタ
 
-選択中のタブ、開いているメニュー、現在のページのリンクのような状態は、JavaScriptでクラスを付け外しして表すことがよくあります。しかし、こうした状態の多くは、アクセシビリティのためにARIA属性でも表す必要があります。クラスと属性の両方を切り替えると、同じ状態を2か所で管理することになります。
+選択中のタブ、開いているメニュー、現在のページのリンクのような状態は、BEMのModifierのように、JavaScriptでクラスを付け外しして表すことがよくあります。しかし、こうした状態の多くは、アクセシビリティのためにARIA属性でも表す必要があります。クラスと属性の両方を切り替えると、同じ状態を2か所で管理することになります。
 
 ```css title="🙅‍♂ Not Recommended: ARIA属性と別に、状態のクラスを付ける"
 /* 🙅‍♂ Not Recommended */
@@ -194,7 +194,18 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 }
 ```
 
-状態のスタイルは、ブラウザが持っている擬似クラスを最初に検討します。`:checked`、`:disabled`、`:popover-open`、`:modal`、`:user-invalid` などです。擬似クラスで表せない状態は、`aria-selected`、`aria-expanded`、`aria-current`、`aria-pressed` のようなARIA属性をセレクタにします。
+本書では、状態を表すのに原則としてクラスを使いません。次の優先順位で、状態を表すセレクタを選びます。
+
+1. 擬似クラス（`:disabled`、`:any-link`、`:checked` など）
+2. HTML要素の属性（`target` 属性、`<details>` の `open` 属性など）
+3. ARIA属性（`aria-expanded`、`aria-readonly`、`aria-selected` など）
+4. `data-*` 属性
+
+最初に検討するのは、擬似クラスです。`:checked`、`:disabled`、`:popover-open`、`:modal`、`:user-invalid` などは、ブラウザが状態を判定して付け外しするので、JavaScriptで管理する必要がありません。`required` 属性と `:required` のように、属性と擬似クラスのどちらでも選べる状態は、擬似クラスで選びます。
+
+擬似クラスがない状態は、HTML要素の属性をセレクタにします。新しいタブで開くリンクを示す `[target="_blank"]` や、開いた `<details>` を示す `[open]` がこれにあたります。これらの属性は、ブラウザの動作を決めるためにHTMLへ書くものです。見た目も同じ属性から決めれば、動作と見た目が食い違いません。
+
+HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`aria-current`、`aria-pressed` のようなARIA属性をセレクタにします。タブの選択やメニューの展開は、HTMLの要素だけでは表せず、ARIA属性で支援技術に伝える状態です。
 
 ```css title="🙆‍♂ Recommended: ARIA属性をそのままセレクタにする"
 @scope (.scoped.tab-list) to (.scoped) {
@@ -222,7 +233,21 @@ ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た�
 
 ただし、`:focus-visible` は入力の手段を判定する擬似クラスではありません。仕様が示す目安では、ボタンをマウスでクリックしたときには当てはまりませんが、テキストの入力欄はクリックやタッチでフォーカスしたときにも当てはまります（Selectors Level 4）。入力欄の多いグループでは、`:has(:focus-visible)` と `:focus-within` の差はほとんどありません。ユーザーがフォーカスの常時表示を選んでいる場合は、クリックでフォーカスした要素も `:focus-visible` に当てはまるとされています。
 
-擬似クラスでもARIA属性でも表せない状態だけを、data属性で表します。たとえば、画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` のように、見た目のためだけにある状態です。支援技術に伝える意味のない値を、ARIA属性にするわけにはいきません。
+HTMLの属性とARIA属性のどちらでも表せない状態だけを、`data-*` 属性で表します。たとえば、ページをスクロールしたらヘッダーの高さを縮める場合、縮んでいるかどうかは見た目のためだけにある状態で、支援技術に伝える意味はありません。こうした状態は `data-compact-mode` のような属性で定義し、JavaScriptで付け外しします。支援技術に伝える意味のない値を、ARIA属性にするわけにはいきません。
+
+```css title="🙆‍♂ Recommended: HTMLの属性とARIA属性のどちらでも表せない状態は、data-* 属性で表す"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    block-size: 80px;
+
+    &[data-compact-mode] {
+      block-size: 56px;
+    }
+  }
+}
+```
+
+画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` も、同じく見た目のためだけにある状態です。一方、コンポーネントのバリエーションを表す `data-variant` は、状態ではありません。HTMLを書いた時点で決まり、操作によって変わらない値です。BEMのModifierは状態とバリエーションの両方を表していましたが、本書では、状態はこの節の優先順位で、バリエーションは `data-variant` で表します。バリエーションの書き方は、第6章「[6-1 命名規則](/notation/naming/)」で説明しています。
 
 ## カード全体をリンクにする
 

@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.9.0
+- バージョン: 0.10.0
 - 生成日: 2026-10-02
 - ルールの数: 476
 
@@ -702,8 +702,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
   - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。
   - 詳細: 12-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
-- 【推奨】状態のスタイルは、`:checked` などの擬似クラスか `aria-selected` などの ARIA 属性をセレクタにし、`.is-active` のような状態クラスを使わない。（`state-by-pseudo-class-or-aria`）
-  - 理由: 支援技術に伝わる状態と見た目の状態が必ず一致し、クラスと属性を二重に管理せずに済むため。
+- 【推奨】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
+  - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
+  - 補足: `:required` と `required` 属性のように、擬似クラスと属性のどちらでも選べる状態は、擬似クラスで選びます。
   - 詳細: 12-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【必須】トランジションとアニメーションは、`@media (prefers-reduced-motion: no-preference)` の中で指定する。（`motion-only-with-no-preference`）
   - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せないため。
@@ -2320,10 +2321,11 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
   - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。
   - 詳細: 12-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
-- 【推奨】状態のスタイルは、`:checked` などの擬似クラスか `aria-selected` などの ARIA 属性をセレクタにし、`.is-active` のような状態クラスを使わない。（`state-by-pseudo-class-or-aria`）
-  - 理由: 支援技術に伝わる状態と見た目の状態が必ず一致し、クラスと属性を二重に管理せずに済むため。
+- 【推奨】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
+  - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
+  - 補足: `:required` と `required` 属性のように、擬似クラスと属性のどちらでも選べる状態は、擬似クラスで選びます。
   - 詳細: 12-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
-- 【推奨】擬似クラスでも ARIA 属性でも表せない状態（演出の進み具合や配置の向きなど）だけを、data 属性で表す。（`data-attribute-for-other-states`）
+- 【推奨】HTML の属性にも ARIA 属性にもない状態（スクロールで縮んだヘッダーや演出の進み具合など）だけを、`data-compact-mode` のような `data-*` 属性で表す。（`data-attribute-for-other-states`）
   - 理由: 見た目のためだけの状態を、支援技術に伝わる意味と混ぜずに済むため。
   - 詳細: 12-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨】カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げ、フォーカスリングはカードの `:has(:focus-visible)` に出す。（`stretched-link-for-card`）
