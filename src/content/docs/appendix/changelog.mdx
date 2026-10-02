@@ -11,6 +11,30 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
 
+## 0.9.0（2026年10月2日）
+
+擬似クラスと擬似要素を扱う章を、第2章の直後に第3章として加えました。これに伴い、それまでの第3〜12章を第4〜13章に繰り下げています。この更新履歴の0.8.0以前の項目の章番号と節番号は、当時のままです。ルールを追加したため、マイナーバージョンを上げています。
+
+- 第3章「[擬似クラスと擬似要素](/pseudo/)」を加えました。3-1〜3-7の7つの節で、擬似クラスと擬似要素の基本、`:has()`、子要素の位置、数量クエリ、フォームの状態、開閉と表示の状態、生成コンテンツを扱います。
+- 「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」の `:has()` と `:heading` の解説を、「[3-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」と「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」へ移しました。ルールの内容とIDは変えず、掲載するページだけを移しています。
+  - [`heading-with-fallback`](/pseudo/basics/#rule-heading-with-fallback)
+  - [`has-over-state-class`](/pseudo/has/#rule-has-over-state-class)、[`not-has-for-absence`](/pseudo/has/#rule-not-has-for-absence)、[`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)
+- 第3章に、次のルールを追加しました。起点のない `:has()` は、Stylelintの独自ルール `book/no-unanchored-has` で検出します。
+  - 3-1：[`pseudo-element-double-colon`](/pseudo/basics/#rule-pseudo-element-double-colon)、[`forgiving-list-for-partial-support`](/pseudo/basics/#rule-forgiving-list-for-partial-support)
+  - 3-2：[`no-unanchored-has`](/pseudo/has/#rule-no-unanchored-has)
+  - 3-3：[`nth-child-of-over-nth-of-type`](/pseudo/child-index/#rule-nth-child-of-over-nth-of-type)、[`select-roles-not-positions`](/pseudo/child-index/#rule-select-roles-not-positions)
+  - 3-4：[`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)、[`quantity-query-for-count-conditions`](/pseudo/quantity-queries/#rule-quantity-query-for-count-conditions)
+  - 3-5：[`placeholder-shown-with-hint`](/pseudo/form-states/#rule-placeholder-shown-with-hint)、[`native-and-aria-state-together`](/pseudo/form-states/#rule-native-and-aria-state-together)
+  - 3-5：[`readonly-attribute-for-text-field`](/pseudo/form-states/#rule-readonly-attribute-for-text-field)、[`placeholder-color-contrast`](/pseudo/form-states/#rule-placeholder-color-contrast)
+  - 3-6：[`open-attribute-for-details-dialog`](/pseudo/open-states/#rule-open-attribute-for-details-dialog)、[`popover-open-for-popover`](/pseudo/open-states/#rule-popover-open-for-popover)、[`modal-pseudo-for-modal-styles`](/pseudo/open-states/#rule-modal-pseudo-for-modal-styles)、[`empty-without-whitespace`](/pseudo/open-states/#rule-empty-without-whitespace)
+  - 3-7：[`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)、[`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)
+  - 3-7：[`marker-color-and-font-size-only`](/pseudo/generated-content/#rule-marker-color-and-font-size-only)、[`selection-color-and-background`](/pseudo/generated-content/#rule-selection-color-and-background)
+- 「[8-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」を加え、次のルールを追加しました。`grid-template-areas` や `*-reverse` を書いたルールに `reading-flow` がないことは、Stylelintの独自ルール `book/reading-flow-when-reordered` で検出します。
+  - [`reading-flow-when-reordered`](/layout/reading-flow/#rule-reading-flow-when-reordered)、[`no-reading-order`](/layout/reading-flow/#rule-no-reading-order)
+- 次のルールの補足に、`reading-flow` を指定する場面を加えました。
+  - [`source-order-for-reading`](/layout/grid-first/#rule-source-order-for-reading)、[`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)
+- 2-2、6-1、8-6、8-7、8-8、8-13-5のコード例と、8-7のデモの `grid-template` に、`reading-flow: grid-rows` を加えました。
+
 ## 0.8.0（2026年10月2日）
 
 `div` と `span` は要素そのものが意味を持たないので、1つしかなくても子クラスで役割を示すことにしました。ルールの内容が変わったため、マイナーバージョンを上げています。
@@ -249,7 +273,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - ライトモードの影の色は、背景の色相へ寄せる方針にしました。ダークモードは、黒のまま不透明度で強さを変えます。
 - ルールを33件追加しました。
   - [`verify-fallback-by-removal`](/principles/browser-support/#rule-verify-fallback-by-removal)：宣言を外した表示を確かめてから、新しい機能を使う
-  - [`not-has-for-absence`](/cascade/selectors/#rule-not-has-for-absence)：「持たない」は `:not(:has())` で書く
+  - [`not-has-for-absence`](/pseudo/has/#rule-not-has-for-absence)：「持たない」は `:not(:has())` で書く
   - [`no-abbreviation`](/notation/naming/#rule-no-abbreviation)：クラス名を省略しない
   - [`child-name-flat`](/notation/naming/#rule-child-name-flat)：子要素の名前にHTMLの階層を映さない
   - `no-bulk-element-selector`：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない（0.7.0で削除）
@@ -289,7 +313,7 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
 - 節を1つ追加しました：「[11-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)」。View Transitionsの説明は、11-2から11-5に移しました。
 - WordPressに関する内容は、再考の余地があるので一旦外しました。「CMSと共存する」と「CMSの本文エリアをスタイリングする」の2節を公開から外し、第12章の残りの節を12-1と12-2に振り直しました（URLは変わりません）。ほかの章のWordPressの事例は、論点が一般的なものは「CMS」として残しています。
 - ルールを17件追加しました。
-  - [`has-narrow-anchor`](/cascade/selectors/#rule-has-narrow-anchor)：`:has()` の起点と引数の範囲を絞る
+  - [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)：`:has()` の起点と引数の範囲を絞る
   - [`declared-layer-names-only`](/cascade/layers/#rule-declared-layer-names-only)：宣言したレイヤー名だけを使う
   - [`column-width-by-variability`](/layout/grid-first/#rule-column-width-by-variability)：列ごとに、内容で伸び縮みさせるか固定するかを決める
   - [`spacing-proximity`](/layout/spacing/#rule-spacing-proximity)：グループの間の余白を、グループの中の余白より大きくする

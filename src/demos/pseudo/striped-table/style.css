@@ -1,0 +1,36 @@
+@layer components {
+  @scope (.scoped.stock-table) to (.scoped) {
+    :scope {
+      overflow-x: auto;
+    }
+
+    table {
+      inline-size: 100%;
+      border-collapse: collapse;
+    }
+
+    caption {
+      margin-block-end: 8px;
+      font-size: calc(14 / 16 * 1rem);
+      text-align: start;
+    }
+
+    th,
+    td {
+      padding: 8px 12px;
+      border-block-end: 1px solid oklch(85% 0 0deg);
+      text-align: start;
+    }
+
+    thead th {
+      border-block-end-width: 2px;
+    }
+
+    tbody tr {
+      /* hidden 属性の付いていない行だけを数え、その中の偶数番目に背景を付ける */
+      &:nth-child(even of :not([hidden])) {
+        background-color: oklch(96% 0.02 260deg);
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
-# 第5章 記法の規約
+# 第6章 記法の規約
 
-# 5-1 命名規則
+# 6-1 命名規則
 - id: root-name-kebab-case
   level: 推奨
   rule: コンポーネントのルートに付ける `scoped <名前>` の `<名前>` は、kebab-case にする（例：`class="scoped media-card"`）。
@@ -44,7 +44,7 @@
   level: 禁止
   rule: '`container`、`button`、`columns` のように HTML や CSS で意味が決まっている語を、別の意味の名前に使わない。'
   reason: 名前から CSS の機能や HTML の要素を連想させ、読む人の誤解を招くため。
-  note: '`<a>` の要素は、見た目がボタンでも `link` と呼びます。`.container` のクラスについては、第8章のルール `no-container-utility-class` も参照してください。'
+  note: '`<a>` の要素は、見た目がボタンでも `link` と呼びます。`.container` のクラスについては、第9章のルール `no-container-utility-class` も参照してください。'
   page: notation/naming
   since: 0.1.0
 
@@ -74,13 +74,13 @@
   level: 必須
   rule: 自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。
   reason: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
-  note: '`view-transition-name` の名前にも付けます。コンテナの名前は、第8章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。'
+  note: '`view-transition-name` の名前にも付けます。コンテナの名前は、第9章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。'
   lint: 'Stylelint: `keyframes-name-pattern`（`@keyframes` のみ）'
   aiProne: true
   page: notation/naming
   since: 0.1.0
 
-# 5-2 ネストとプロパティの並び順
+# 6-2 ネストとプロパティの並び順
 - id: nesting-depth-one
   level: 推奨
   rule: セレクタのネストは2層（親と、その中の1段）までにする。
@@ -142,12 +142,12 @@
   page: notation/nesting-and-order
   since: 0.1.0
 
-# 5-3 ネストの判断基準
+# 6-3 ネストの判断基準
 - id: nest-child-placement-only
   level: 推奨
   rule: 直下の子へネストしたルール（`& > ._icon`）には、`flex-shrink`、`grid-area`、`align-self` のように親のレイアウトによって意味が決まる宣言だけを書き、子自身の大きさや見た目は子のルールに書く。
   reason: 親のレイアウトを変えるときに一緒に見直す宣言が親のルールの中にまとまり、子を別の親に移しても子自身の見た目が失われないため。
-  note: 子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第6章のルール `parent-owns-child-placement` で扱います。
+  note: 子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第7章のルール `parent-owns-child-placement` で扱います。
   page: notation/nesting-criteria
   since: 0.6.0
 
@@ -160,7 +160,7 @@
   page: notation/nesting-criteria
   since: 0.6.0
 
-# 5-4 モダンな記法にそろえる
+# 6-4 モダンな記法にそろえる
 - id: logical-properties
   level: 推奨
   rule: 寸法、余白、位置、ボーダーは、物理プロパティではなく論理プロパティで書く（`width` ではなく `inline-size`、`top` ではなく `inset-block-start`）。
@@ -225,7 +225,7 @@
   page: notation/modern-syntax
   since: 0.1.0
 
-# 5-5 コメントの書き方
+# 6-5 コメントの書き方
 - id: file-header-doc-block
   level: 必須
   rule: CSS ファイルの先頭には、そのファイルの責務と使い方を `/** */` の説明ブロックで書く。

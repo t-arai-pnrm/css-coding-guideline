@@ -74,10 +74,10 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 
 ## 章を書く手順
 
-見本の章は第8章（`src/content/docs/responsive/`）。文体、節の構成、コード例とデモの見せ方、ルールの粒度は、これに合わせる。
+見本の章は第9章（`src/content/docs/responsive/`）。文体、節の構成、コード例とデモの見せ方、ルールの粒度は、これに合わせる。
 
 1. 骨組みのページ（`draft: true` と「執筆予定」のメモ）を本文で置き換える。frontmatter の `title` と `sidebar.order` は変えず、`draft: true` を消して `description` を書き直す。
-2. ルールを `src/content/rules/<章番号2桁>-<章のディレクトリ>.yaml` に書く（例：`05-notation.yaml`）。ID はほかの章と重複させない（`grep -rn "id: <ID>" src/content/rules` で確認する）。
+2. ルールを `src/content/rules/<章番号2桁>-<章のディレクトリ>.yaml` に書く（例：`06-notation.yaml`）。ID はほかの章と重複させない（`grep -rn "id: <ID>" src/content/rules` で確認する）。
 3. デモは `src/demos/<章のディレクトリ>/<デモ名>/` に `index.html` と `style.css` で置く。
    - デモの CSS も本書の規約で書く。`@layer` と `@scope (.scoped.<名前>) to (.scoped)` は省略しない。
 4. 対応状況は `<Baseline id="…" />` で示す。ID が web-features にあるかは、次のコマンドで確認する。

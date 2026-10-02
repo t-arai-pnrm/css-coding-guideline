@@ -1,0 +1,211 @@
+# 3-1 擬似クラスと擬似要素の基本
+- id: pseudo-element-double-colon
+  level: 禁止
+  rule: '擬似要素を、`:before` や `:after` のような1コロンの旧記法で書かない（`::before` や `::after` と書く）。'
+  reason: 1コロンでは擬似クラスと見分けがつかず、要素の状態を選んでいるのか要素の一部を選んでいるのかをセレクタから読み取れなくなるため。
+  note: '1コロンの記法は、CSS2との互換のために `::before`、`::after`、`::first-line`、`::first-letter` の4つにだけ残されています。`::marker` や `::placeholder` のようなあとから加わった擬似要素は、1コロンでは無効なセレクタになります。'
+  lint: 'Stylelint: `selector-pseudo-element-colon-notation`'
+  page: pseudo/basics
+  since: 0.9.0
+
+- id: forgiving-list-for-partial-support
+  level: 必須
+  rule: 'ブラウザの対応が分かれる擬似クラスをほかのセレクタと並べるときは、カンマで区切った普通のセレクタリストではなく、`:is()` か `:where()` の引数に書く（`:not()` と `:has()` の引数の中では、さらに `:is()` で包む）。'
+  reason: 'セレクタリストと `:not()`・`:has()` の引数は、解釈できないセレクタが1つでもあるとルール全体が無効になり、`:is()` と `:where()` の引数は、解釈できないセレクタだけを無視するため。'
+  note: '`:heading` の具体的な書き方は、ルール `heading-with-fallback` に従います。擬似要素は `:is()` と `:where()` の引数に書けないので、対応が分かれる擬似要素は、ほかのセレクタと並べず別のルールに分けます。'
+  aiProne: true
+  page: pseudo/basics
+  since: 0.9.0
+
+- id: heading-with-fallback
+  level: 必須
+  rule: '`:heading` を使うときは、`:where(:heading, h1, h2, h3, h4, h5, h6)` のように従来のタイプセレクタと並べ、`:where()` か `:is()` の中に書く。'
+  reason: 対応していないブラウザでは、普通のセレクタリストに書いた `:heading` がルール全体を無効にするため。
+  note: '`:where()` と `:is()` の引数では、解釈できないセレクタだけが無視され、残りは有効になります。'
+  page: pseudo/basics
+  since: 0.1.0
+
+# 3-2 :has() で祖先と前の兄弟を選ぶ
+- id: has-over-state-class
+  level: 推奨
+  rule: 子孫の状態や有無によって祖先のスタイルを変えるときは、JavaScript で状態のクラスを付けずに `:has()` を使う。
+  reason: 状態をHTMLとCSSだけで表せ、クラスの付け外しと実際の状態がずれることがないため。
+  aiProne: true
+  page: pseudo/has
+  since: 0.1.0
+
+- id: not-has-for-absence
+  level: 推奨
+  rule: '「X を持たない要素」は `:not(:has(X))` で書き、`:has(:not(X))` は使わない。'
+  reason: '`:has(:not(X))` は「X 以外の要素を子孫に持つ要素」を選ぶので、X 以外の子孫が1つでもあれば、X を持つ要素にも当てはまるため。'
+  note: '2つの詳細度は同じなので、入れ子の順序を取り違えても、見た目の差から気づけません。'
+  aiProne: true
+  page: pseudo/has
+  since: 0.4.0
+
+- id: no-unanchored-has
+  level: 禁止
+  rule: '`:has()` を、起点のセレクタなしで書かない（`:has(.foo)` や `*:has(.foo)` は使わず、`&:has(> .foo)` や `.card:has(> img)` のように直前に起点を書く）。'
+  reason: 起点がないと、ページのすべての要素が照合の対象になり、DOM が変わるたびにブラウザが調べ直す範囲がページ全体に広がって、スタイルの再計算が重くなるため。
+  note: 'ネストしたルールの中で `&` を省いて `:has(> img)` と書くと、`& :has(> img)` と解釈され、親の子孫のすべての要素が起点になります。`@scope` の直下に書いた `:has()` も、`:scope :has()` と同じく、スコープの中のすべての要素が起点になります。`&:not(:has(> img))` のように擬似クラスの引数の中に書くときは、外側の擬似クラスの直前に起点を書きます。'
+  lint: 'Stylelint: `book/no-unanchored-has`（本書の独自ルール）'
+  aiProne: true
+  page: pseudo/has
+  since: 0.9.0
+
+- id: has-narrow-anchor
+  level: 推奨
+  rule: '`:has()` の起点は `:root` や `body` ではなくコンポーネントのルートのような狭い要素にし、引数は `>` や `+` で範囲を絞る（例：`&:has(> ._input:checked)`）。'
+  reason: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
+  note: '`:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。'
+  aiProne: true
+  page: pseudo/has
+  since: 0.3.0
+
+# 3-3 子要素の位置で選ぶ
+- id: nth-child-of-over-nth-of-type
+  level: 推奨
+  rule: 'クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._item:nth-of-type(2)` ではなく `:nth-child(2 of ._item)`）。'
+  reason: '`:nth-of-type()` は要素の種類（タグ名）ごとにしか数えず、`._item:nth-of-type(2)` は「2番目の `._item`」ではなく「同じ種類の兄弟の中で2番目にあり、かつ `._item` でもある要素」を選ぶため。'
+  note: '絞り込みで `hidden` 属性を付けた行を除いて縞模様を付けるときは、`&:nth-child(even of :not([hidden]))` と書きます。`of S` の詳細度は、擬似クラス1つ分に S の中でいちばん高いセレクタの詳細度を足したものになります。'
+  aiProne: true
+  page: pseudo/child-index
+  since: 0.9.0
+
+- id: select-roles-not-positions
+  level: 推奨
+  rule: '子要素を位置で選ぶのは、縞模様や先頭の数個のように順番そのものが条件になるときに限り、役割の決まった子はタイプセレクタか子クラスで選ぶ。'
+  reason: '位置で選んだスタイルは、HTMLの順番を入れ替えたり要素を足したりすると別の子に当たり、役割とスタイルがずれるため。'
+  note: '子要素の間隔を作るために、`:last-child` や `:first-child` で余白を打ち消すことはしません。間隔は親の `gap`（第8章のルール `gap-over-child-margin`）か、コンポジション `prose` で作ります。'
+  aiProne: true
+  page: pseudo/child-index
+  since: 0.9.0
+
+# 3-4 数量クエリ
+- id: quantity-query-with-has
+  level: 推奨
+  rule: '数量クエリは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で書き、`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように子の側で数える形は使わない。'
+  reason: 条件が「親が何個の子を持つか」という形で読め、1つのセレクタで親自身のレイアウトも子のスタイルも切り替えられるため。
+  note: 'ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。'
+  aiProne: true
+  page: pseudo/quantity-queries
+  since: 0.9.0
+
+- id: quantity-query-for-count-conditions
+  level: 推奨
+  rule: 列数のようなレイアウトの切り替えは `auto-fit` やコンテナクエリで行い、数量クエリは「1件だけなら中央に置く」のように、子要素の数そのものが条件のときに限って使う。
+  reason: 列数を決める本当の条件は、項目の数よりも、その一覧が使える幅であることが多いため。
+  note: '「3件以上なら3列」のように数で列数を決めると、狭い場所に置いたときに列が細くなりすぎます。項目が少ないときに列を行いっぱいに広げるだけなら、`auto-fit` が空の列を畳むので、数量クエリは要りません。'
+  aiProne: true
+  page: pseudo/quantity-queries
+  since: 0.9.0
+
+# 3-5 フォームの状態を表す擬似クラス
+- id: placeholder-shown-with-hint
+  level: 推奨
+  rule: '入力の有無で見た目を変えるときは、入力例を書いた `placeholder` 属性のある入力欄に `:placeholder-shown` を使い、`placeholder` 属性のない入力欄を `:not(:placeholder-shown)` で「入力済み」と判定しない。'
+  reason: '`:placeholder-shown` は `placeholder` 属性のない入力欄には当てはまらないので、`:not(:placeholder-shown)` は空の入力欄にも当てはまってしまうため。'
+  note: '未入力の状態を `&:placeholder-shown` の側に書けば、`placeholder` 属性のない入力欄では何も起きません。`:not()` で書く必要があるときは、`&[placeholder]:not(:placeholder-shown)` のように属性の有無も条件にします。判定のためだけに空白1文字の `placeholder` を付ける書き方は使いません。'
+  aiProne: true
+  page: pseudo/form-states
+  since: 0.9.0
+
+- id: native-and-aria-state-together
+  level: 推奨
+  rule: '同じ状態をネイティブの属性と ARIA 属性の両方で表すことがあるときは、`&:is(:disabled, [aria-disabled="true"])` や `&:is(:user-invalid, [aria-invalid="true"])` のように、擬似クラスと属性セレクタをまとめて指定する。'
+  reason: '`aria-disabled="true"` を付けた要素は `:disabled` に、JavaScript で `aria-invalid="true"` を付けた要素は `:user-invalid` に当てはまらず、片方だけに指定すると、同じ状態なのに見た目が変わらない要素が出るため。'
+  note: '`disabled` 属性で表せる状態は `disabled` 属性を優先します。`aria-disabled="true"` は、フォーカスを残したまま無効であることを伝えたい場合に使い、操作を止める処理は JavaScript で書きます。'
+  aiProne: true
+  page: pseudo/form-states
+  since: 0.9.0
+
+- id: readonly-attribute-for-text-field
+  level: 推奨
+  rule: '読み取り専用の入力欄の見た目は `&[readonly]` に指定し、`input:read-only` のように、要素の種類を限らずに `:read-only` を使わない。'
+  reason: '`:read-only` は「編集できない要素」すべてに当てはまり、`input` に限っても、チェックボックス、ボタン、ファイルの選択、無効にした入力欄まで選ぶため。'
+  note: '`:read-write` は、`contenteditable` を付けた要素にも当てはまります。'
+  aiProne: true
+  page: pseudo/form-states
+  since: 0.9.0
+
+- id: placeholder-color-contrast
+  level: 必須
+  rule: '`::placeholder` の文字は `color` で色を指定し、背景とのコントラスト比を 4.5:1 以上にする。`opacity` で薄くしない。'
+  reason: 'ブラウザの既定のプレースホルダーは薄い色で表示されることが多く、入力例を読めないユーザーが出るため。'
+  note: 'Firefox は既定でプレースホルダーを半透明にするので、kiso.css は `::placeholder` の `opacity` を初期値に戻しています。'
+  aiProne: true
+  page: pseudo/form-states
+  since: 0.9.0
+
+# 3-6 開閉と表示の状態を表す擬似クラス
+- id: open-attribute-for-details-dialog
+  level: 推奨
+  rule: '`<details>` と `<dialog>` の開いた状態は `[open]` 属性セレクタで選び、対象のすべてのブラウザが対応するまで `:open` を使わない。'
+  reason: '`<details>` と `<dialog>` では `[open]` と `:open` の当てはまる条件が同じで、`:open` に対応していないブラウザ（Safari 26.4 以前）では、`:open` を含むルールがセレクタリストごと無効になるため。'
+  note: '`<select>` や `<input>` のピッカーを開いている状態は `:open` でしか選べないので、対応していない環境で見た目が変わらなくても困らない装飾に限り、ほかのセレクタと分けたルールに書きます。詳細度は `[open]` も `:open` も 0.1.0 です。'
+  aiProne: true
+  page: pseudo/open-states
+  since: 0.9.0
+
+- id: popover-open-for-popover
+  level: 必須
+  rule: '`popover` 属性の要素の表示中の状態は `:popover-open` で選び、`[open]`、`:open`、`.is-open` のようなクラスで選ばない。'
+  reason: 'ポップオーバーには `open` 属性が付かず、`:open` も当てはまらないので、表示中かどうかをブラウザの状態のまま参照できるのは `:popover-open` だけだため。'
+  note: '閉じた状態は `:not(:popover-open)` で選びます。開くボタンの見た目を変えるときは、`&:has(+ :popover-open)` のように、ボタンから見た位置を結合子で絞ります。'
+  aiProne: true
+  page: pseudo/open-states
+  since: 0.9.0
+
+- id: modal-pseudo-for-modal-styles
+  level: 推奨
+  rule: 'モーダルとして開いたダイアログだけに当てるスタイルは `:modal` で選び、`dialog[open]` で代用しない。'
+  reason: '`open` 属性は `show()` で開いたモーダルでないダイアログにも付くので、`dialog[open]` では開き方を区別できないため。'
+  note: '`:modal` は `requestFullscreen()` で全画面表示にした要素にも当てはまります。背面のスクロールを止める `:root:has(:modal)` は、第5章のルール `modal-scroll-lock-root` で定めています。'
+  aiProne: true
+  page: pseudo/open-states
+  since: 0.9.0
+
+- id: empty-without-whitespace
+  level: 推奨
+  rule: '`:empty` は、空白や改行が入らないことを確かめた要素にだけ使い、テンプレートや CMS が改行を出力しうる要素の判定に使わない。'
+  reason: '2026年10月の時点のブラウザでは、空白や改行だけを含む要素にも `:empty` が当てはまらず、見た目では空の要素が空として扱われないため。'
+  note: 'コメントだけを含む要素には `:empty` が当てはまります。Selectors Level 4 の草案は空白だけの要素も空とみなす定義に変わりましたが、その定義どおりに実装したブラウザはありません。'
+  aiProne: true
+  page: pseudo/open-states
+  since: 0.9.0
+
+# 3-7 生成コンテンツと装飾の擬似要素
+- id: no-meaningful-generated-content
+  level: 禁止
+  rule: '必須の印、単位、注意書き、副題のように、読み手が知る必要のある文字を、`::before` や `::after` の `content` で入れない（HTML に書く）。'
+  reason: 生成コンテンツは DOM に含まれず、機械翻訳、選択してのコピー、ページ内検索の対象にならないうえ、支援技術とブラウザの組み合わせによっては読み上げられず、スタイルを無効にした環境では表示もされないため。
+  note: '生成コンテンツに入れてよいのは、ほかの手段で意味が伝わっている装飾（リンクの文字の後ろの矢印、見出しの前の線など）だけです。印刷のときに外部リンクの URL を添えるような、HTML にある情報を紙の上で補う指定は例外です。'
+  aiProne: true
+  page: pseudo/generated-content
+  since: 0.9.0
+
+- id: empty-alt-for-decorative-content
+  level: 推奨
+  rule: '装飾として文字や記号を生成コンテンツで入れるときは、`content: "→" / ""` のように代替テキストを空にする。'
+  reason: 代替テキストがないと、装飾の記号の名前がスクリーンリーダーで読み上げられ、本文の読み上げを妨げるため。
+  note: '`content: ""` で作る文字のない箱には、代替テキストは要りません。擬似要素そのものが操作の対象になる `::scroll-button()` のような場合は、空にせず、`content: "←" / "前の事例"` のように名前を書きます。'
+  aiProne: true
+  page: pseudo/generated-content
+  since: 0.9.0
+
+- id: marker-color-and-font-size-only
+  level: 推奨
+  rule: '`::marker` に指定するのは `color` と `font-size` だけにし、記号を変える、太くする、アイコンにするといった装飾は、`list-style-type: ""` でマーカーを空にして `::before` で描く。'
+  reason: 'Safari の `::marker` は `color` と `font-size` しか反映せず、ほかのプロパティや `content` を指定しても、Safari だけ見た目が変わらないため。'
+  note: '`list-style: none` でマーカーを消すと、Safari の VoiceOver がリストとして読み上げなくなるので、`list-style-type: ""` を使います。'
+  aiProne: true
+  page: pseudo/generated-content
+  since: 0.9.0
+
+- id: selection-color-and-background
+  level: 推奨
+  rule: '`::selection` で選択範囲の色を変えるときは、`color` と `background-color` の両方を指定し、2つの色のコントラスト比を確かめる。'
+  reason: 片方だけを変えると、もう片方にはブラウザやユーザーの設定の色が残り、選択した文字が背景に埋もれることがあるため。
+  note: '文字と背景のコントラスト比の基準は、第11章のルール `text-contrast-aa` と同じです。iOS の Safari は `::selection` に対応していないので、選択範囲はシステムの色のままになります。'
+  page: pseudo/generated-content
+  since: 0.9.0

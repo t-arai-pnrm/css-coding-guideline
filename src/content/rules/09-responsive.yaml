@@ -1,6 +1,6 @@
-# 第8章 レスポンシブデザイン
+# 第9章 レスポンシブデザイン
 
-# 8-1 検討する順番
+# 9-1 検討する順番
 - id: responsive-escalation-order
   level: 必須
   rule: レスポンシブ対応は「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わない。
@@ -41,7 +41,7 @@
   page: responsive/escalation
   since: 0.1.0
 
-# 8-2 コンテナクエリ
+# 9-2 コンテナクエリ
 - id: container-name-required
   level: 必須
   rule: コンテナには必ず名前を付け、`@container` の条件でもその名前を指定する。
@@ -133,7 +133,7 @@
   page: responsive/container-queries
   since: 0.1.0
 
-# 8-3 メディアクエリとブレイクポイント
+# 9-3 メディアクエリとブレイクポイント
 - id: media-query-for-macro-layout
   level: 推奨
   rule: メディアクエリは、ページ全体の段組み、ビューポートに固定された要素、常に画面幅いっぱいに表示されるブロックに限って使う。
@@ -216,7 +216,7 @@
   level: 推奨
   rule: '操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。'
   reason: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
-  note: '`pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第11章）。'
+  note: '`pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第12章）。'
   aiProne: true
   page: responsive/media-queries
   since: 0.4.0
@@ -225,7 +225,7 @@
   level: 推奨
   rule: '薄い境界線や補助テキストの色で区別や意味を伝えている部品は、`@media (prefers-contrast: more)` の中で色を濃くする。'
   reason: OS でコントラストを上げる設定にしているユーザーが、薄い区切りや補助テキストを読み取れる状態を保つため。
-  note: '`prefers-contrast: custom` は強制カラーモードの配色に対応する値で、色は上書きされるため指定しない。強制カラーモードの扱いは第10章で説明する。'
+  note: '`prefers-contrast: custom` は強制カラーモードの配色に対応する値で、色は上書きされるため指定しない。強制カラーモードの扱いは第11章で説明する。'
   page: responsive/media-queries
   since: 0.4.0
 
@@ -237,7 +237,7 @@
   page: responsive/media-queries
   since: 0.5.0
 
-# 8-4 実践パターン：2サイズのデザインカンプを再現する
+# 9-4 実践パターン：2サイズのデザインカンプを再現する
 - id: screen-mode-for-two-size-comps
   level: 推奨
   rule: '`--screen` とスタイルクエリによる切り替えと、`--px`・`--rem` による比例スケールは、2サイズのデザインカンプを比率を保って再現する案件に限って使う。'
@@ -282,7 +282,7 @@
   page: responsive/design-comp-pattern
   since: 0.1.0
 
-# 8-5 セーフエリアに対応する
+# 9-5 セーフエリアに対応する
 - id: safe-area-inset-with-viewport-fit-cover
   level: 必須
   rule: '`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。'
@@ -305,7 +305,7 @@
   level: 推奨
   rule: セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。
   reason: '`viewport-fit=cover` を指定する目的は背景を端まで描くことで、`margin` や外側の要素の `padding` で空けると、背景が途切れた帯ができるため。'
-  note: 'セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（7-13-10 `primary-layout` など）にセーフエリアを入れます。'
+  note: 'セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（8-13-10 `primary-layout` など）にセーフエリアを入れます。'
   page: responsive/safe-area
   since: 0.5.0
 

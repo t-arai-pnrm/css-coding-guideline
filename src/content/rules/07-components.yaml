@@ -1,6 +1,6 @@
-# 第6章 コンポーネントとカスタムプロパティ
+# 第7章 コンポーネントとカスタムプロパティ
 
-# 6-1 コンポーネントの境界を守る
+# 7-1 コンポーネントの境界を守る
 - id: component-split-by-role
   level: 推奨
   rule: 見た目が似ていても、役割や中に入る内容が異なるものは、別のコンポーネントにする。
@@ -101,7 +101,7 @@
   page: components/boundaries
   since: 0.1.0
 
-# 6-2 コンポジションとユーティリティ
+# 7-2 コンポジションとユーティリティ
 - id: compositions-for-layout-patterns
   level: 推奨
   rule: 積む、並べて折り返す、列数を切り替えるといった、コンポーネントに依存しない配置は、コンポジション（`stack`、`cluster`、`switcher` など）で書く。
@@ -120,7 +120,7 @@
   level: 推奨
   rule: コンポジションの間隔や列数は、修飾のクラスを増やさず、`--stack--gap` のような公開プロパティで受け取る。
   reason: 使う側が `style` 属性で値を渡せ、1つのクラスでさまざまな間隔や列数に対応できるため。
-  note: 公開プロパティの一覧は、ファイルの先頭の説明ブロックに `@prop` で書きます（第5章のルール `prop-tag-for-public-properties`）。
+  note: 公開プロパティの一覧は、ファイルの先頭の説明ブロックに `@prop` で書きます（第6章のルール `prop-tag-for-public-properties`）。
   page: components/compositions-and-utilities
   since: 0.1.0
 
@@ -147,7 +147,7 @@
   page: components/compositions-and-utilities
   since: 0.1.0
 
-# 6-3 デザイントークン
+# 7-3 デザイントークン
 - id: token-naming-category-first
   level: 必須
   rule: トークンは `--<分類>--<名前>` の形で名付ける（例：`--color--neutral--500`、`--spacing--md`）。
@@ -204,7 +204,7 @@
   page: components/design-tokens
   since: 0.1.0
 
-# 6-4 公開プロパティと内部プロパティ
+# 7-4 公開プロパティと内部プロパティ
 - id: public-property-naming
   level: 必須
   rule: 外から変えてよい値は、`--<コンポーネント>--<プロパティ>` の公開プロパティにする（例：`--card--radius`）。

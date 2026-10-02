@@ -1,0 +1,189 @@
+---
+title: "3-5 フォームの状態を表す擬似クラス"
+description: "フォームの状態を表す擬似クラスは、それぞれ当てはまる条件が違います。:invalidは操作の前から、:read-onlyは編集できないすべての要素に、:placeholder-shownはplaceholder属性のある入力欄にだけ当てはまります。条件を確かめてから使い分け、ARIAでしか表せない状態は属性セレクタで補います。"
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import profileHtml from '../../../demos/pseudo/profile-form-states/index.html?raw';
+import profileCss from '../../../demos/pseudo/profile-form-states/style.css?raw';
+
+フォームの状態は、`:user-invalid`、`:checked`、`:disabled`、`:placeholder-shown` のような擬似クラスで選びます。ブラウザが管理する状態をそのまま参照するので、JavaScriptで状態のクラスを付け外しする必要はありません。ただし、どの擬似クラスも、名前から想像する範囲と、実際に当てはまる範囲が少しずつ違います。
+
+`:invalid` は操作する前から当てはまり、`:read-only` は編集できないすべての要素に当てはまり、`:placeholder-shown` は `placeholder` 属性のある入力欄にしか当てはまりません。この節では、仕様（HTML Living Standardの「Pseudo-classes」の節と、Selectors Level 4）が定める条件を擬似クラスごとに確かめ、取り違えやすいものの書き方をルールにします。ARIA属性でしか表せない状態は、属性セレクタで補います。
+
+## 名前どおりに当てはまらない擬似クラス
+
+フォームの状態を表す擬似クラスは、名前が状態そのものを表しているので、条件を確かめずに使われがちです。しかし、`:invalid` は「ユーザーが誤った値を入力した」ときではなく、「値が制約を満たしていない」ときに当てはまります。`required` を付けた空の入力欄は、ページを開いた時点で `:invalid` です。
+
+`:read-only` も同じです。名前からは `readonly` 属性を付けた入力欄を選ぶように見えますが、仕様では「`:read-write` に当てはまらない、すべての要素」に当てはまります。段落も、チェックボックスも、ボタンも `:read-only` です。
+
+こうした違いは、見た目の不具合として表に出ます。ページを開いた直後にエラーの赤い枠が出る、読み取り専用の灰色の背景がチェックボックスにまで付く、といった不具合です。どれも、擬似クラスの書き方ではなく、当てはまる条件の理解の不足から起きます。以下では、検証、選択、操作の可否、入力の有無の順に、条件を確かめます。
+
+## 検証の結果を表す擬似クラス
+
+`:valid` と `:invalid` は、制約の検証（constraint validation）の結果を表します。`required`、`type="email"`、`pattern`、`min` などの制約を満たしていれば `:valid`、満たしていなければ `:invalid` です。判定は値が変わるたびに行われ、ユーザーが操作したかどうかは問いません。
+
+検証の対象にならない要素は、どちらにも当てはまりません。無効にした入力欄、`readonly` を付けた入力欄、`type="hidden"` の入力欄は、検証の対象から外れます。`required` と `readonly` を両方付けた空の入力欄は、`:invalid` になりません（Chrome 152で確認、2026年10月）。一方、`<form>` と `<fieldset>` は、中に `:invalid` の要素が1つでもあれば `:invalid` です。
+
+`:user-valid` と `:user-invalid` は、ユーザーが値を変えて入力欄を離れた後か、送信しようとした後にだけ当てはまります。エラーの見た目を `:invalid` ではなく `:user-invalid` に指定する理由と書き方は、第12章「[12-4 フォーム部品](/interaction/forms/)」のルール `user-invalid-for-errors` で説明しています。正しく入力できたことを示す見た目も、同じ理由で `:valid` ではなく `:user-valid` に指定します。
+
+<Baseline id="user-pseudos" name=":user-valid と :user-invalid" />
+
+`:required` と `:optional` は、`required` 属性の有無だけで決まります。値が入っているかどうかは関係しません。値によらない見た目、たとえばラベルの横の「必須」の印に使います。`:valid` と `:invalid`、`:required` と `:optional` は、どちらも以前からすべての主要なブラウザで使えます。
+
+<Baseline id="form-validity-pseudos" />
+
+## 選択とデフォルト値を表す擬似クラス
+
+`:checked` は、チェックされたチェックボックスとラジオボタン、選ばれた `<option>` に当てはまります。参照するのは `checked` 属性ではなく、現在の状態です。ユーザーがチェックを外せば、HTMLに `checked` 属性が残っていても当てはまらなくなります。
+
+`:default` は、反対に初期値を表します。HTMLに `checked` 属性を書いたチェックボックスとラジオボタン、`selected` 属性を書いた `<option>`、フォームの既定の送信ボタンに当てはまります。ユーザーが別の選択肢を選んでも、`:default` は初期値の選択肢に残ります。おすすめの選択肢に印を付けておき、ほかを選んだ後も、どれがおすすめだったかを示したい場合に使えます。
+
+`:indeterminate` は、どちらとも決まっていない状態です。対象は3つあり、JavaScriptで `indeterminate` プロパティを `true` にしたチェックボックス、同じ `name` のどれもチェックされていないラジオボタン、`value` 属性のない `<progress>` に当てはまります。チェックボックスの中間の状態はHTMLの属性では書けないので、JavaScriptで設定します。
+
+```css title="🙆‍♂ Recommended: 中間の状態はチェックボックスに限って指定する"
+@scope (.scoped.check-field) to (.scoped) {
+  input {
+    &:checked,
+    &[type="checkbox"]:indeterminate {
+      border-color: var(--color--accent--600);
+      background-color: var(--color--accent--600);
+    }
+  }
+}
+```
+
+上の例で `&:indeterminate` と書かずに `[type="checkbox"]` を加えているのは、ラジオボタンを除くためです。スコープの中にラジオボタンがあると、まだ何も選んでいないグループのラジオボタンが、すべて `:indeterminate` に当てはまります。中間の状態の印は、未選択のラジオボタンに付けるものではありません。
+
+<Baseline id="indeterminate" />
+
+## 操作できるかを表す擬似クラス
+
+`:disabled` は、無効になっている要素に当てはまります。`disabled` 属性を付けた要素だけでなく、`disabled` を付けた `<fieldset>` の中のフォーム部品も無効です。`:enabled` は、ボタン、入力欄、`<select>`、`<textarea>`、`<option>`、`<fieldset>` などのうち、無効でないものに当てはまります。リンクや `div` は、`:enabled` と `:disabled` のどちらにも当てはまりません。
+
+`:read-write` は、ユーザーが編集できる要素に当てはまります。`readonly` を付けておらず、無効でもないテキストの入力欄と `<textarea>` に加えて、`contenteditable` を付けた要素も対象です。`:read-only` はそれ以外のすべての要素で、編集を前提としない要素はすべて含まれます。
+
+```css title="🙅‍♂ Not Recommended: input:read-only で読み取り専用の入力欄を選ぶ"
+/* 🙅‍♂ Not Recommended */
+input:read-only {
+  background-color: oklch(95% 0 0deg);
+}
+```
+
+上の指定は、`readonly` を付けたテキストの入力欄だけでなく、チェックボックス、ラジオボタン、ファイルの選択、ボタンの `input` にも当たります。`readonly` 属性は、これらの部品には適用されないからです。無効にしたテキストの入力欄も、編集できないので `:read-only` です（Chrome 152で確認、2026年10月）。
+
+読み取り専用の入力欄を選びたいときは、属性セレクタで `&[readonly]` と書きます。`readonly` と `disabled` は、意味が違います。`readonly` の入力欄はフォーカスでき、値もフォームと一緒に送信されます。`disabled` の入力欄はフォーカスできず、値も送信されません。見た目も分けて指定します。
+
+```css title="🙆‍♂ Recommended: 読み取り専用と無効を分けて指定する"
+@scope (.scoped.account-form) to (.scoped) {
+  input {
+    &[readonly] {
+      border-color: transparent;
+      background-color: var(--color--neutral--100);
+    }
+
+    &:disabled {
+      color: var(--color--neutral--600);
+    }
+  }
+}
+```
+
+<Baseline id="read-write-pseudos" />
+
+## 入力の有無を表す `:placeholder-shown`
+
+`:placeholder-shown` は、プレースホルダーが表示されている入力欄と `<textarea>` に当てはまります。プレースホルダーは値が空のときに表示されるので、「まだ何も入力していない」ことの判定に使えます。CSSには値の有無そのものを表す擬似クラスがないので、入力済みかどうかで見た目を変えるときに使われます。
+
+注意したいのは、`placeholder` 属性のない入力欄には、値が空でも当てはまらないことです。そのため、`:not(:placeholder-shown)` で「入力済み」を判定すると、`placeholder` 属性のない入力欄は、空のままでも入力済みとして扱われます。
+
+```css title="🙅‍♂ Not Recommended: :not(:placeholder-shown) を「入力済み」の意味で使う"
+/* 🙅‍♂ Not Recommended */
+input:not(:placeholder-shown) {
+  border-color: var(--color--accent--600);
+}
+```
+
+未入力の状態は、`&:placeholder-shown` の側に書きます。`placeholder` 属性のない入力欄では何も起きないので、誤って入力済みの見た目になることはありません。どうしても `:not()` で書く必要があるときは、`&[placeholder]:not(:placeholder-shown)` のように属性の有無も条件にします。
+
+```css title="🙆‍♂ Recommended: 未入力の状態を :placeholder-shown の側に書く"
+@scope (.scoped.profile-form) to (.scoped) {
+  input {
+    &:placeholder-shown {
+      border-style: dashed;
+    }
+  }
+}
+```
+
+ラベルを入力欄の中に重ね、入力すると上に移動させる「フローティングラベル」では、判定のためだけに `placeholder=" "` と空白1文字を書く方法が知られています。本書では、この方法を使いません。`placeholder` 属性は入力の手がかりを示すためのもので、見た目の判定のために値を入れると、入力例という本来の役割と混ざるからです。{/* 要確認: 出典なし */}ラベルは入力欄の外に置き、入力例を `placeholder` に書きます。
+
+<Baseline id="placeholder-shown" />
+
+`:autofill` は、ブラウザの自動入力で値が入った入力欄に当てはまります。ただし、ChromeのUAスタイルシートは自動入力した入力欄の背景色と文字色を `!important` で指定しているので、それらは上書きできません（MDN、2026年10月確認）。枠線のように、UAスタイルシートが固定していないプロパティだけを変えられます。仕様は `:-webkit-autofill` も同じ意味の別名として定めています。
+
+<Baseline id="autofill" />
+
+## フォーム部品の一部を選ぶ擬似要素
+
+`::placeholder` は、プレースホルダーの文字を選ぶ擬似要素です。ブラウザの既定のプレースホルダーは薄い色で、Chromeは `darkgray`、Firefoxは入力欄の文字色を54%の不透明度にした色を使います（MDN）。どちらも、白い背景とのコントラスト比が、WCAGが本文の文字に求める4.5:1に届かないことがあります。
+
+プレースホルダーの色は、`color` で背景とのコントラスト比が4.5:1以上になる色を指定します。`opacity` で薄くすると、背景の色が透けて見え、背景が変わるたびにコントラスト比も変わります。本書が推奨するkiso.cssは、`::placeholder` の `opacity` を初期値に戻して、ブラウザの差をなくしています（「[5-1 壊さないリセット](/reset/kiso/)」）。
+
+<Baseline id="placeholder" />
+
+`::file-selector-button` は、`<input type="file">` の「ファイルを選択」のボタンを選ぶ擬似要素です。入力欄全体ではなく、ボタンの部分だけに枠線や背景色を指定できます。kiso.cssは、このボタンにもほかのボタンと同じ枠線とフォントの初期値を指定しています。
+
+<Baseline id="file-selector-button" />
+
+次のデモは、ここまでの擬似クラスと擬似要素を組み合わせたフォームです。未入力の欄は点線の枠になり、表示名を入力すると実線に変わります。会員番号は `readonly` なので青みのある背景、紹介コードは `disabled` なので灰色です。メールアドレスを空のまま「保存する」を押すか、不正な値を入れて欄を離れると、エラーの見た目になります。
+
+<Demo title="未入力、入力済み、読み取り専用、無効、エラーで見た目が変わる入力欄" html={profileHtml} css={profileCss} />
+
+## ネイティブの状態とARIA属性の使い分け
+
+状態のスタイルは、まずネイティブの擬似クラスで書きます。`disabled` 属性や `required` 属性で表せる状態は、ブラウザが操作の可否や検証の結果まで管理し、支援技術にも伝えるからです。状態のクラスを使わず、擬似クラスかARIA属性をセレクタにする方針は、第12章「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」のルール `state-by-pseudo-class-or-aria` で定めています。
+
+ただし、同じ状態を、ネイティブの属性ではなくARIA属性で表す場面があります。送信ボタンを `disabled` にすると、フォーカスの順序から外れ、Tabキーでボタンにたどり着けなくなります（MDN）。そこで、フォーカスを残したまま `aria-disabled="true"` で無効を伝えることがあります。サーバーで検証した結果のエラーも、ブラウザの制約の検証では表せないので、JavaScriptで `aria-invalid="true"` を付けます。
+
+`aria-disabled="true"` を付けた要素は `:disabled` に、`aria-invalid="true"` を付けた要素は `:user-invalid` に当てはまりません。ARIA属性は支援技術に状態を伝えるだけで、ブラウザの状態は変えないからです（MDN）。片方にだけ見た目を指定すると、同じ「無効」や「エラー」の状態でも、見た目の変わらない要素が出ます。
+
+```css title="🙆‍♂ Recommended: 擬似クラスと属性セレクタをまとめて指定する"
+@scope (.scoped.profile-form) to (.scoped) {
+  input {
+    &:is(:user-invalid, [aria-invalid="true"]) {
+      border-color: var(--color--error--600);
+    }
+  }
+
+  button {
+    &:is(:disabled, [aria-disabled="true"]) {
+      background-color: var(--color--neutral--400);
+    }
+  }
+}
+```
+
+kiso.cssも、`:where(:disabled, [aria-disabled="true" i])` に `cursor: default` を指定して、両方を同じ状態として扱っています。なお、`aria-disabled="true"` はクリックやキー操作を止めません。操作を止める処理は、JavaScriptで別に書きます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [HTML Living Standard: Pseudo-classes](https://html.spec.whatwg.org/multipage/semantics-other.html#pseudo-classes)（WHATWG）
+- [Selectors Level 4: The Input Pseudo-classes](https://drafts.csswg.org/selectors-4/#input-pseudos)（W3C）
+- [:user-invalid - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:user-invalid)
+- [:indeterminate - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:indeterminate)
+- [:read-only - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:read-only)
+- [:placeholder-shown - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:placeholder-shown)
+- [:autofill - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:autofill)
+- [::placeholder - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::placeholder)
+- [::file-selector-button - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::file-selector-button)
+- [aria-disabled - ARIA | MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-disabled)
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）

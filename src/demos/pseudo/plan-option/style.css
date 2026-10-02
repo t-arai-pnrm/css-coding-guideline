@@ -1,0 +1,59 @@
+@layer components {
+  @scope (.scoped.plan-picker) to (.scoped) {
+    :scope {
+      min-inline-size: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    legend {
+      padding: 0;
+      font-weight: bold;
+    }
+
+    div {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+      gap: 12px;
+      margin-block-start: 8px;
+    }
+  }
+
+  @scope (.scoped.plan-option) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+
+      display: block grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 4px 8px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+      background-color: oklch(100% 0 0deg);
+      cursor: pointer;
+      accent-color: var(--_accent);
+
+      /* 直下のラジオボタンがチェックされたら、カード全体を選んだ見た目にする */
+      &:has(> input:checked) {
+        border-color: var(--_accent);
+        background-color: oklch(96% 0.03 260deg);
+      }
+    }
+
+    input {
+      margin: 0;
+    }
+
+    ._name {
+      font-weight: bold;
+    }
+
+    ._price {
+      grid-column: 2;
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

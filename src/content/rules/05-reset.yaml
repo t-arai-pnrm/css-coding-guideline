@@ -1,6 +1,6 @@
-# 第4章 リセットとベーススタイル
+# 第5章 リセットとベーススタイル
 
-# 4-1 壊さないリセット
+# 5-1 壊さないリセット
 - id: reset-kiso-css
   level: 推奨
   rule: リセット CSS には kiso.css を使う。
@@ -37,7 +37,7 @@
   level: 推奨
   rule: 和文向けの組版の初期値（`text-spacing-trim`、`text-autospace`、`line-break`、`overflow-wrap`）は、`:root` に指定して継承させる。
   reason: 要素ごとに指定し直す必要がなく、`pre` や入力欄のような例外だけを個別に打ち消せば済むため。
-  note: kiso.css を使えば指定済みです。値の選び方は第9章「タイポグラフィと和文組版」で扱います。
+  note: kiso.css を使えば指定済みです。値の選び方は第10章「タイポグラフィと和文組版」で扱います。
   page: reset/kiso
   since: 0.1.0
 
@@ -55,7 +55,7 @@
   page: reset/kiso
   since: 0.1.0
 
-# 4-2 ベーススタイルに書くもの
+# 5-2 ベーススタイルに書くもの
 - id: focus-ring-double
   level: 推奨
   rule: ベーススタイルのフォーカスリングは、`:focus-visible` に `CanvasText` の `outline` と `Canvas` の `box-shadow` を重ねた二重リングで定義する。
@@ -137,7 +137,7 @@
   page: reset/base-styles
   since: 0.1.0
 
-# 4-3 グローバルに書いてはいけないもの
+# 5-3 グローバルに書いてはいけないもの
 - id: no-heavy-specificity-in-global
   level: 禁止
   rule: リセットやベーススタイルに、クラス1つで上書きできない詳細度のセレクタ（`a:link, a:visited` など）を書かない。
@@ -151,7 +151,7 @@
   level: 禁止
   rule: 'ベーススタイルで、要素全体に `display`、`position`、`max-inline-size` のようなレイアウトのプロパティを指定しない（例：`div { display: flex; }`、`* { position: relative; }`）。'
   reason: レイアウトは文脈によって必要なものが変わるので、ほかの文脈で打ち消しの指定が増え、打ち消し忘れによる不具合も起きやすいため。
-  note: '全称セレクタの `min-inline-size: 0`（4-2）は、フレックスアイテムとグリッドアイテムの最小幅だけを変える例外です。'
+  note: '全称セレクタの `min-inline-size: 0`（5-2）は、フレックスアイテムとグリッドアイテムの最小幅だけを変える例外です。'
   page: reset/global-pitfalls
   since: 0.1.0
 

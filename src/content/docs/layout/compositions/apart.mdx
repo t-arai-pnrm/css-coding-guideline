@@ -1,5 +1,5 @@
 ---
-title: "7-13-3 apart：子要素を両端に分ける"
+title: "8-13-3 apart：子要素を両端に分ける"
 description: "ヘッダーのロゴとナビゲーションのように、2つのまとまりをインライン方向の両端に分ける配置は apart で書きます。両端の最小の間隔を列の間隔で渡し、片側に複数の要素を置くときは1つの要素に包みます。"
 sidebar:
   order: 3
@@ -17,7 +17,7 @@ import wrapCss from '../../../../demos/layout/composition-apart-wrap/style.css?r
 
 `apart` の直下に置く子は、両端に分ける2つのまとまりにします。片側に複数の要素を置くときは1つの要素に包み、その中を `cluster` などで並べます。折り返したときに2行目の要素が行頭に来ることも、`apart` の性質として理解しておきます。2行目も行末に寄せたいときは、`apart` ではなく `auto` の `margin` を使います。
 
-コンポジションの全体の考え方（配置だけを受け持つ、間隔は公開プロパティで受け取る、間隔のデフォルト値は0）は、「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。この節では、その考え方を前提に `apart` の使い方を説明します。
+コンポジションの全体の考え方（配置だけを受け持つ、間隔は公開プロパティで受け取る、間隔のデフォルト値は0）は、「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。この節では、その考え方を前提に `apart` の使い方を説明します。
 
 ## 両端に分ける配置をそのつど書くと起きること
 
@@ -76,7 +76,7 @@ import wrapCss from '../../../../demos/layout/composition-apart-wrap/style.css?r
 
 `--apart--alignment` は、交差軸の配置（`align-items`）です。デフォルト値の `normal` は、Flexboxでは `stretch` として扱われ、子の高さが行の高さまで引き伸ばされます。ロゴとナビゲーションのように高さの違う要素を並べるなら、`center` を渡して中央にそろえます。`justify-content` は公開プロパティにしていません。両端に分けることが `apart` の役割そのものなので、変えたいときは別のコンポジションを選びます。
 
-使う側は、HTMLにクラス名を書き、値を `style` 属性で渡します。余白のトークンは単位なしの数値で持っているので、`calc(var(--spacing--lg) / 16 * 1rem)` の形でremに変換して渡します。トークンを単位なしの数値で持つ理由は「[6-3 デザイントークン](/components/design-tokens/)」で説明しています。
+使う側は、HTMLにクラス名を書き、値を `style` 属性で渡します。余白のトークンは単位なしの数値で持っているので、`calc(var(--spacing--lg) / 16 * 1rem)` の形でremに変換して渡します。トークンを単位なしの数値で持つ理由は「[7-3 デザイントークン](/components/design-tokens/)」で説明しています。
 
 ```html
 <header
@@ -150,7 +150,7 @@ import wrapCss from '../../../../demos/layout/composition-apart-wrap/style.css?r
 
 `cluster` にも主軸の配置（`--cluster--justification`）の公開プロパティがあるので、`space-between` を渡せば `apart` と同じ指定になります。それでも `apart` を別に用意するのは、HTMLのクラス名だけで「両端に分ける」という意図が分かるからです。`--cluster--justification: space-between` が付いた `cluster` は、`style` 属性まで読まないと `apart` との違いが分かりません。{/* 要確認: 出典なし */}
 
-両端に分けるもう1つの書き方は、行末側の子に `margin-inline-start: auto` を指定するものです。Flexboxの `auto` の `margin` は、行に余った空間をすべて吸収するので、その子を行末へ押し出します。ナビゲーションの中で最後のアカウントのリンクだけを右端へ寄せるような、並びの一部だけを行末に寄せる場面では、この書き方を使います（「[7-6 Gridを先に検討する](/layout/grid-first/#rule-flex-auto-margin-for-end-items)」のルール）。
+両端に分けるもう1つの書き方は、行末側の子に `margin-inline-start: auto` を指定するものです。Flexboxの `auto` の `margin` は、行に余った空間をすべて吸収するので、その子を行末へ押し出します。ナビゲーションの中で最後のアカウントのリンクだけを右端へ寄せるような、並びの一部だけを行末に寄せる場面では、この書き方を使います（「[8-6 Gridを先に検討する](/layout/grid-first/#rule-flex-auto-margin-for-end-items)」のルール）。
 
 ```css title="🙆‍♂ Recommended: 折り返した2行目も、行末側の子を行末に寄せる"
 @scope (.scoped.site-header) to (.scoped) {

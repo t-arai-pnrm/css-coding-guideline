@@ -1,6 +1,6 @@
-# 第10章 色・画像・装飾
+# 第11章 色・画像・装飾
 
-# 10-1 色とダークモード
+# 11-1 色とダークモード
 - id: oklch-for-colors
   level: 推奨
   rule: 色のトークンと色の値は、`oklch()` で定義する。
@@ -55,7 +55,7 @@
   level: 必須
   rule: '`light-dark()` を使うページでは、`<meta name="color-scheme" content="light dark">` で両方の配色に対応していることを宣言する。'
   reason: 宣言がないと、OS がダークモードでも `light-dark()` は常にライトの値になり、ブラウザの部品の配色も切り替わらないため。
-  note: ダークモードに対応しないサイトでは、この宣言を書きません（第4章の `no-color-scheme-without-dark-mode`）。
+  note: ダークモードに対応しないサイトでは、この宣言を書きません（第5章の `no-color-scheme-without-dark-mode`）。
   page: color-media/color
   since: 0.1.0
 
@@ -67,7 +67,7 @@
   page: color-media/color
   since: 0.1.0
 
-# 10-2 強制カラーモードとコントラスト
+# 11-2 強制カラーモードとコントラスト
 - id: forced-colors-system-colors
   level: 推奨
   rule: 強制カラーモードに合わせて色を指定し直すときは、`CanvasText`、`LinkText`、`ButtonText`、`GrayText` などのシステムカラーを使う。
@@ -87,7 +87,7 @@
   level: 推奨
   rule: 'フォーカスリングを `box-shadow` などで描き直すときは、`outline` を消さずに `outline-color: transparent` で透明にして残す。'
   reason: 通常の表示では独自の表現だけが見え、強制カラーモードでは `outline` がシステムカラーに置き換わって、キーボードで操作している位置が見えるため。
-  note: '`outline: none` や `outline: 0` で消さない理由は、第4章の `no-outline-none` を参照してください。'
+  note: '`outline: none` や `outline: 0` で消さない理由は、第5章の `no-outline-none` を参照してください。'
   page: color-media/forced-colors
   since: 0.4.0
 
@@ -95,7 +95,7 @@
   level: 禁止
   rule: 要素の境界や区切りを、`box-shadow` だけで描かない。
   reason: 強制カラーモードでは `box-shadow` が `none` になり、境界が消えるため。
-  note: フォーカスリングについては、第4章の `focus-ring-not-box-shadow-only` を参照してください。
+  note: フォーカスリングについては、第5章の `focus-ring-not-box-shadow-only` を参照してください。
   page: color-media/forced-colors
   since: 0.1.0
 
@@ -158,7 +158,7 @@
   page: color-media/forced-colors
   since: 0.1.0
 
-# 10-3 画像と装飾
+# 11-3 画像と装飾
 - id: aspect-ratio-for-ratios
   level: 必須
   rule: 要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作らない。
@@ -276,7 +276,7 @@
   page: color-media/images-and-decoration
   since: 0.3.0
 
-# 10-4 角の形を変える
+# 11-4 角の形を変える
 - id: corner-shape-guard-when-broken
   level: 推奨
   rule: '`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。'
@@ -295,7 +295,7 @@
   page: color-media/shapes
   since: 0.5.0
 
-# 10-5 輪郭と枠線を描く
+# 11-5 輪郭と枠線を描く
 - id: guard-new-shapes-with-supports
   level: 推奨
   rule: '`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。'
@@ -313,4 +313,4 @@
   page: color-media/outlines
   since: 0.5.0
 
-# 10-6 印刷のスタイル
+# 11-6 印刷のスタイル

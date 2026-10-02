@@ -1,0 +1,40 @@
+@layer components {
+  @scope (.scoped.pseudo-target) to (.scoped) {
+    :scope {
+      --_highlight: oklch(93% 0.08 95deg);
+
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      padding: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: calc(16 / 16 * 1rem);
+    }
+
+    p {
+      margin-block: 8px 0;
+    }
+
+    ._class-example {
+      /* 条件に当てはまる段落の箱全体に当たる */
+      & p:first-of-type {
+        background-color: var(--_highlight);
+      }
+    }
+
+    ._element-example {
+      /* すべての段落の1行目だけに当たる */
+      & p::first-line {
+        background-color: var(--_highlight);
+      }
+    }
+  }
+}

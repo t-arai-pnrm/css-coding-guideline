@@ -1,5 +1,5 @@
 ---
-title: "7-3 マージンの相殺"
+title: "8-3 マージンの相殺"
 description: "通常フローでは、ブロック方向に隣り合う margin は足し算にならず、大きいほうだけが残ります。相殺が起きる条件と起きない条件、負の値を含む計算を説明し、本書が子の margin より親の gap を選び、相殺を止めるときに display: flow-root を使う理由を述べます。"
 sidebar:
   order: 3
@@ -40,7 +40,7 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 ## 相殺が起きる場面
 
-相殺するのは、ブロック方向の `margin` だけです。横書きでは上下の `margin` が相殺し、左右の `margin` は隣り合っても足し算になります。縦書きではブロック方向が横になるので、左右の `margin` が相殺します。物理的な上下ではなく、`writing-mode` が決めるブロック方向を基準にします（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
+相殺するのは、ブロック方向の `margin` だけです。横書きでは上下の `margin` が相殺し、左右の `margin` は隣り合っても足し算になります。縦書きではブロック方向が横になるので、左右の `margin` が相殺します。物理的な上下ではなく、`writing-mode` が決めるブロック方向を基準にします（「[8-1 レイアウトの基礎](/layout/fundamentals/)」）。
 
 1つ目の場面は、通常フローで隣り合う兄弟です。上の要素の `margin-block-end` と、すぐ下の要素の `margin-block-start` が相殺します。「隣り合う」は、2つの `margin` の間に、行（文字やインラインの要素が並んだ行ボックス）、`padding`、`border` のどれもないことを指します。HTMLのタグの間の改行や空白は、それだけでは行を作らないので、相殺を妨げません。
 
@@ -74,7 +74,7 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 ## 本書の書き方：親の `gap` と `display: flow-root`
 
-本書は、FlexboxやGridの子要素の間隔を、子の `margin` ではなく親の `gap` で作ります（「[7-7 余白を設計する](/layout/spacing/)」）。`gap` は要素と要素の間にだけ空き、相殺も起きないので、`gap` の値がそのまま間隔になります。相殺の規則を思い出さなくても、コードを読めば間隔が分かります。
+本書は、FlexboxやGridの子要素の間隔を、子の `margin` ではなく親の `gap` で作ります（「[8-7 余白を設計する](/layout/spacing/)」）。`gap` は要素と要素の間にだけ空き、相殺も起きないので、`gap` の値がそのまま間隔になります。相殺の規則を思い出さなくても、コードを読めば間隔が分かります。
 
 ```css title="🙆‍♂ Recommended: 間隔は親の gap で作る"
 ._news-list {
@@ -83,7 +83,7 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 }
 ```
 
-親の背景の内側に余白を取りたいだけなら、子の `margin` ではなく親の `padding-block` で作ります。子の `margin` は、親に `padding` や `border` がないと親の外へ出るからです。コンポーネントのルートに外側の `margin` を持たせない方針（「[6-1 コンポーネントの境界を守る](/components/boundaries/)」）も、子の `margin` が外へ出ると守れなくなります。
+親の背景の内側に余白を取りたいだけなら、子の `margin` ではなく親の `padding-block` で作ります。子の `margin` は、親に `padding` や `border` がないと親の外へ出るからです。コンポーネントのルートに外側の `margin` を持たせない方針（「[7-1 コンポーネントの境界を守る](/components/boundaries/)」）も、子の `margin` が外へ出ると守れなくなります。
 
 ```css title="🙆‍♂ Recommended: 背景の内側の余白は親の padding で作る"
 ._section {
@@ -110,7 +110,7 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 }
 ```
 
-`overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が効かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が効かなくなる理由は「[7-11 sticky が動かないとき](/layout/sticky/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
+`overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が効かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が効かなくなる理由は「[8-11 sticky が動かないとき](/layout/sticky/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
 
 ## コード例とデモ
 
@@ -128,7 +128,7 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 ## 補足と注意点
 
-本文のように種類の違う要素が続く領域では、相殺がむしろ役に立ちます。図や区切り線のように自分で余白を持つ要素と、流れの間隔が隣り合っても、大きいほうだけが効くからです。本書が本文の領域を通常フローのまま `margin` で組むのは、この性質を使うためです（「[7-7 余白を設計する](/layout/spacing/)」の「本文の流れの間隔」）。
+本文のように種類の違う要素が続く領域では、相殺がむしろ役に立ちます。図や区切り線のように自分で余白を持つ要素と、流れの間隔が隣り合っても、大きいほうだけが効くからです。本書が本文の領域を通常フローのまま `margin` で組むのは、この性質を使うためです（「[8-7 余白を設計する](/layout/spacing/)」の「本文の流れの間隔」）。
 
 余白を作るために、空の要素や `<p>&nbsp;</p>` を置くのは避けます。空の要素は、上のデモのとおり通常フローでは相殺で消え、`gap` で並べた領域では `gap` の2つ分の間隔になり、置き場所の親によって結果が変わります。`&nbsp;` だけの段落や `<br>` は1行を作るので、余白の大きさが行の高さで決まり、文字の大きさを変えると一緒に変わります。
 

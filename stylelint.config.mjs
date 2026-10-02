@@ -5,6 +5,8 @@
  * - `@media` と `@container` をセレクタの中に書くことを求める独自ルールを追加
  * - z-index の数値の禁止パターンを、1 と -1 も含むすべての整数に広げた（10〜19 などを通していた問題も解消）
  * - レイヤー名を、宣言した名前だけに限定（第2章 2-3）
+ * - 起点のない `:has()` を禁止する独自ルールを追加（第3章 3-2）
+ * - 見た目の順番を変えうる配置に `reading-flow` を求める独自ルールを追加（第8章 8-14）
  *
  * @type {import('stylelint').Config}
  */
@@ -23,6 +25,8 @@ export default {
     'stylelint-order',
     'stylelint-plugin-display-multi-keyword-syntax',
     './stylelint/conditions-inside-rules.mjs',
+    './stylelint/no-unanchored-has.mjs',
+    './stylelint/reading-flow-when-reordered.mjs',
   ],
   rules: {
     'at-rule-empty-line-before': [
@@ -37,6 +41,8 @@ export default {
       'font-face': ['font-family', 'src'],
     },
     'book/conditions-inside-rules': true,
+    'book/no-unanchored-has': true,
+    'book/reading-flow-when-reordered': true,
     'container-name-pattern': [
       '^--[a-z][a-z0-9]*(-[a-z0-9]+)*$',
       {
@@ -86,7 +92,7 @@ export default {
       {
         // 1 と -1 を含むすべての整数を禁止する（相対的な値も --z--forwards と --z--backwards で書く）
         'z-index': ['/^[+-]?\\d+$/'],
-        // 改行したときに行が詰まりすぎるため（第9章 9-3）
+        // 改行したときに行が詰まりすぎるため（第10章 10-3）
         'line-height': ['/^1$/'],
       },
       {
@@ -114,7 +120,7 @@ export default {
       },
     ],
     'function-url-no-scheme-relative': true,
-    // セレクタのネストは 2 層までだが、@ルールを数えない設定が Stylelint にないので、検査しない（第5章 5-2）。
+    // セレクタのネストは 2 層までだが、@ルールを数えない設定が Stylelint にないので、検査しない（第6章 6-2）。
     'media-feature-name-value-no-unknown': true,
     'no-descending-specificity': null,
     'order/order': [
@@ -172,7 +178,7 @@ export default {
         ],
       },
     ],
-    // 例外は設けない。必要なプレフィックスは、理由のコメントと無効化のコメントを添えて書く（第5章 5-3）。
+    // 例外は設けない。必要なプレフィックスは、理由のコメントと無効化のコメントを添えて書く（第6章 6-3）。
     'property-no-vendor-prefix': true,
     'keyframes-name-pattern': /^--[\w][\w-]*$/,
     // 打ち間違えたレイヤー名は、エラーにならず新しいレイヤーになる（第2章 2-3）。

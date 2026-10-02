@@ -1,6 +1,6 @@
-# 第12章 実務での運用
+# 第13章 実務での運用
 
-# 12-1 Stylelintでルールを守る
+# 13-1 Stylelintでルールを守る
 - id: run-stylelint-before-done
   level: 必須
   rule: CSS を変更したら Stylelint を実行し、エラーを残さない。
@@ -66,7 +66,7 @@
   page: operations/stylelint
   since: 0.1.0
 
-# 12-2 レビューとAIとの協働
+# 13-2 レビューとAIとの協働
 - id: review-reason-and-solution
   level: 必須
   rule: レビューの指摘には、理由と解決策を必ずセットで書く。
@@ -149,7 +149,7 @@
   level: 推奨
   rule: プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。
   reason: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
-  note: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第6章のルール `utility-single-purpose`）。
+  note: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第7章のルール `utility-single-purpose`）。
   aiProne: true
   page: operations/review-and-ai
   since: 0.3.0
@@ -161,7 +161,7 @@
   page: operations/review-and-ai
   since: 0.5.0
 
-# 12-3 CMSのWYSIWYG本文にスタイルを当てる
+# 13-3 CMSのWYSIWYG本文にスタイルを当てる
 - id: wysiwyg-scope-root
   level: 推奨
   rule: CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中にタイプセレクタで書く。

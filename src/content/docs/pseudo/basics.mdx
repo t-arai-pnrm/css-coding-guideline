@@ -1,0 +1,138 @@
+---
+title: "3-1 擬似クラスと擬似要素の基本"
+description: "擬似クラスは1コロンで書いて要素そのものを選び、擬似要素は2コロンで書いて要素の一部や生成した箱を選びます。擬似要素の1コロンの旧記法は使わず、対応の分かれる擬似クラスは:is()か:where()の引数に書きます。"
+sidebar:
+  order: 1
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import targetHtml from '../../../demos/pseudo/pseudo-target/index.html?raw';
+import targetCss from '../../../demos/pseudo/pseudo-target/style.css?raw';
+
+擬似クラスと擬似要素は、どちらもHTMLのクラスや属性に書かれていない条件で選ぶセレクタですが、選ぶ対象が違います。擬似クラスは `:first-child` や `:checked` のように1つのコロンで書き、要素の状態や位置を条件に、要素そのものを選びます。擬似要素は `::first-line` や `::before` のように2つのコロンで書き、要素の一部や、CSSで生成した箱を選びます。本書では、擬似要素を `:before` のような1コロンの旧記法で書くことを禁止します。
+
+ブラウザの対応が分かれる擬似クラスは、カンマで区切ったセレクタリストに並べず、`:is()` か `:where()` の引数に書きます。セレクタリストは、解釈できないセレクタが1つあるだけで、ルール全体が無効になるからです。この節では、擬似クラスと擬似要素の違い、擬似要素を書ける位置、詳細度、セレクタリストの解釈の違いを順に説明し、最後に見出しをまとめて選ぶ `:heading` の書き方を示します。
+
+## 1コロンの擬似要素と擬似クラスが混ざる問題
+
+古いCSSでは、`a:hover` と `a:before` が同じ書き方で並んでいることがあります。どちらも1コロンですが、`:hover` は擬似クラスで、`:before` は擬似要素です。CSS2では両方を1コロンで書いており、擬似要素を2コロンで書いて区別する記法は、CSS3のセレクタの仕様で導入されました。
+
+ブラウザは、互換性のために `::before`、`::after`、`::first-line`、`::first-letter` の4つだけ、いまも1コロンの記法を受け付けます。そのため、1コロンで書いても表示は変わらず、古い記法が残り続けます。
+
+1コロンの記法が残っていると、読み手はセレクタの形から対象を判断できません。`p:first-line` と `p:first-child` は1文字違いの似た名前ですが、前者は段落の1行目を、後者は親の最初の子である段落を選びます。どちらが要素の一部を選ぶのかは、名前を覚えているかどうかでしか判断できなくなります。
+
+1コロンの習慣は、あとから加わった擬似要素で誤りを生みます。旧記法が認められているのは上の4つだけなので、`li:marker` や `input:placeholder` は無効なセレクタになり、ルール全体が無視されます（2026年10月、Chrome 152で確認）。すべての擬似要素を2コロンで書くと決めておけば、こうした誤りは起きません。本書のStylelintの設定では、`selector-pseudo-element-colon-notation` で1コロンの擬似要素を検出しています。
+
+## 擬似クラスは要素を、擬似要素は要素の一部を選ぶ
+
+擬似クラスが選ぶのは、DOMにある要素そのものです。条件には、兄弟の中の位置（`:first-child`）、フォーム部品の状態（`:checked`）、ユーザーの操作（`:hover`）、子孫の有無（`:has()`）などがあります。条件はHTMLのクラスとして書かれていませんが、当てはまったときにスタイルが当たるのは、クラスで選んだときと同じ要素の箱です。
+
+擬似要素が選ぶのは、要素の一部か、CSSで生成した箱です。`::first-line` は段落の1行目を、`::placeholder` は入力欄のプレースホルダーを、`::marker` はリストの項目のマーカーを選びます。`::before` と `::after` は、要素の内容の前と後ろに、`content` プロパティで箱を生成します。どれもHTMLに要素として存在しないので、擬似要素の子を選ぶことはできません。
+
+次のデモで、2つの違いを比べます。左は `p:first-of-type` で、親の中で最初の段落を選んでいます。右は `p::first-line` で、すべての段落の1行目を選んでいます。左は条件に当てはまる段落の箱全体に背景色が付き、右は2つの段落のどちらも、1行目だけに背景色が付きます。
+
+<Demo title="擬似クラスは段落の箱全体に、擬似要素は段落の1行目だけに当たる" html={targetHtml} css={targetCss} />
+
+デモの幅を変えると、右で背景色の付く範囲が変わります。`::first-line` の範囲は、HTMLではなく、描画したときの行の折り返しで決まるからです。左の背景色は、幅を変えても段落の箱全体に付いたままです。
+
+この章のほかの節では、擬似クラスと擬似要素を、選ぶ条件の種類ごとに説明します。`::before` と `::after` の使いどころは「[3-7 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」で説明します。`:hover` と `:focus-visible` による状態の表し方は、第12章「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で扱います。
+
+## 擬似要素を書ける位置
+
+擬似要素は、セレクタの最後に1つだけ書きます。擬似要素は要素の一部を指すので、その後ろに子孫を選ぶ結合子を続けることも、別の条件を付けることもできません。`p::first-line > *` や `p::before.note` は無効なセレクタです。
+
+元の要素の状態によって擬似要素のスタイルを変えるときは、擬似クラスを擬似要素の前に書きます。`a:hover::after` は「ホバーしているリンクの `::after`」を選びます。順序を逆にした `a::after:hover` は、`::after` そのものがホバーされているという意味になりますが、Chrome 152では無効なセレクタとして扱われ、ルール全体が無視されます（2026年10月確認）。
+
+```css title="🙆‍♂ Recommended: 元の要素の状態は、擬似要素の前に書く"
+@scope (.scoped.external-link) to (.scoped) {
+  :scope {
+    &::after {
+      content: "↗" / "";
+      opacity: 0.6;
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+}
+```
+
+```css title="🙅‍♂ Not Recommended: 擬似要素の後ろに擬似クラスを書く"
+/* 🙅‍♂ Not Recommended */
+.external-link::after:hover {
+  opacity: 1;
+}
+```
+
+擬似要素の後ろに擬似クラスを続けられるかどうかは、擬似要素ごとに決まっています。たとえば、ページ内検索で一致した文字列を選ぶ `::search-text` には、いま選択中の一致を表す `:current` を続けられます。`::before`、`::after`、`::first-line`、`::marker` の後ろに `:hover` を書くと、Chrome 152ではどれも無効になりました（2026年10月確認）。擬似要素の後ろに擬似クラスを書くのは、その擬似要素の説明で認められているときに限ります。
+
+## 擬似クラスと擬似要素の詳細度
+
+擬似クラスの詳細度は、クラスや属性セレクタと同じ0.1.0です。擬似要素の詳細度は、タイプセレクタと同じ0.0.1です。`li::marker` は0.0.2、`._item::marker` は0.1.1になります。1コロンで書いた `:before` も擬似要素として数えるので、0.0.1です。
+
+擬似クラスの0.1.0は、`@scope` の中のタイプセレクタと組み合わせたときに影響します。`a:hover` の詳細度は0.1.1で、子クラス `._sub-link` の0.1.0より高くなります。共通の `a:hover` に書いた文字色が、子クラスで指定した文字色を上書きしてしまうので、役割ごとに違う状態のスタイルは `._sub-link:hover` のように子クラスの側に書きます。この書き分けは、第7章「[7-1 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+
+引数を取る擬似クラスのうち、`:is()`、`:not()`、`:has()` は、自身の0.1.0を持たず、引数でいちばん詳細度の高いセレクタの詳細度になります。`:where()` は、引数にかかわらず0です。`:nth-child(2n of .item)` のように `of` で絞る形は、`:nth-child()` の0.1.0に、`of` の後ろでいちばん高いセレクタの詳細度が加わります。`of` で絞る書き方は「[3-3 子要素の位置で選ぶ](/pseudo/child-index/)」で説明します。
+
+詳細度の数え方そのものは、第2章「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明しています。`:where()` で詳細度を0にする書き方と、`:is()` の引数に詳細度の高いセレクタを混ぜない理由は、「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+
+## 未対応のセレクタ1つでルール全体が無効になる
+
+カンマで区切ったセレクタリストは、解釈できないセレクタが1つでも含まれると、ルール全体が無効になります。無効になるのはそのセレクタだけではなく、同じリストに並べたほかのセレクタも、宣言ブロックの指定もすべてです。仕様が、セレクタリストを1つのまとまりとして解釈し、一部でも解釈できなければ全体を無効にすると定めているためです。
+
+解釈できないセレクタには、書き間違いのほかに、ブラウザがまだ対応していない擬似クラスが含まれます。たとえば、見出しをまとめて選ぶ `:heading` に対応しているのは、2026年10月の時点でSafari 27だけです。次の例は、Safari 27では見出しと `caption` の両方に当たりますが、対応していないChromeやFirefoxではルールごと無視され、`caption` にもスタイルが当たりません。Chrome 152では、このルールがスタイルシートから取り除かれることを確かめました（2026年10月確認）。
+
+```css title="🙅‍♂ Not Recommended: 対応の分かれる擬似クラスを、セレクタリストに並べる"
+/* 🙅‍♂ Not Recommended */
+:heading,
+caption {
+  font-kerning: normal;
+}
+```
+
+この誤りは、開発に使うブラウザだけでは見つかりません。対応しているブラウザで確認すると期待どおりに表示されるので、対応していないブラウザで、関係のない `caption` まで崩れていることに気づきにくくなります。
+
+`:is()` と `:where()` の引数は、「寛容なセレクタリスト」として解釈されます。解釈できないセレクタは、その1つだけが無視され、残りは有効なままです。Chrome 152で `:is(:heading, h2)` と書くと、`:heading` が除かれた `:is(h2)` として扱われました（2026年10月確認）。対応の分かれる擬似クラスをほかのセレクタと並べるときは、このどちらかで包みます。詳細度を加えたくないなら `:where()` を、引数の詳細度を残したいなら `:is()` を選びます。
+
+`:not()` と `:has()` の引数は、寛容なセレクタリストではありません。Chrome 152では、`p:not(:heading, .note)` と `p:has(:heading, span)` のどちらも、ルール全体が無効になりました（2026年10月確認）。これらの引数に対応の分かれる擬似クラスを書くときは、`:not(:is(:heading, h2))` のように、引数の中でさらに `:is()` で包みます。`:has()` の引数の扱いは、仕様の変更の経緯とあわせて「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
+
+擬似要素には、この方法が使えません。`:is()` と `:where()` の引数に擬似要素は書けないので、`:where(::before)` は何も選びません。対応の分かれる擬似要素は、ほかのセレクタとカンマで並べず、別のルールに分けて書きます。
+
+<Baseline id="is" name=":is()" />
+
+## `:heading` で見出しをまとめて選ぶ
+
+`:heading` は、`h1` から `h6` までの見出しをまとめて選ぶ擬似クラスです。見出しのスタイルを `h1, h2, h3, h4, h5, h6` と並べて書く代わりに使えます。
+
+<Baseline id="heading-selectors" compatKey="css.selectors.heading" name=":heading" />
+
+web-featuresのデータでは、2026年10月の時点で `:heading` に対応しているのはSafari 27だけです。そのため、`:heading` を単独では使いません。従来のタイプセレクタと並べて、`:where()` の中に書きます。
+
+```css title="🙆‍♂ Recommended: 従来のセレクタと並べて :where() の中に書く"
+:where(:heading, h1, h2, h3, h4, h5, h6, caption) {
+  font-kerning: normal;
+}
+```
+
+このルールは、`:heading` に対応していないブラウザでも、`h1` から `h6` と `caption` に当たります（2026年10月、Chrome 152で確認）。ベーススタイルのように、どこからでも上書きされる前提のスタイルなので、詳細度が0になる `:where()` を選んでいます。コンポーネントの中で使い、タイプセレクタと同じ詳細度を残したいときは、`:is()` で包みます。
+
+対象のブラウザがすべて `:heading` に対応したら、`h1` から `h6` を消して `:where(:heading, caption)` と書けるようになります。それまでは、`h1` から `h6` を並べた形がフォールバックを兼ねます。見出しのレベルを引数で指定する関数形の `:heading()` は、web-featuresのデータで対応しているブラウザがまだないので使いません（2026年10月確認）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [擬似クラス - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Pseudo-classes)
+- [擬似要素 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Pseudo-elements)
+- [セレクターリスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Selector_list)
+- [詳細度 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Specificity)
+- [Selectors Level 4: Pseudo-elements](https://drafts.csswg.org/selectors-4/#pseudo-elements)
+- [Selectors Level 4: Calculating a selector's specificity](https://drafts.csswg.org/selectors-4/#specificity-rules)
+- [Selectors Level 4: The Matches-Any Pseudo-class: :is()](https://drafts.csswg.org/selectors-4/#matches)
+- [Selectors Level 3: Pseudo-elements](https://www.w3.org/TR/selectors-3/#pseudo-elements)
+- [Selectors Level 5: Heading Pseudo-classes](https://drafts.csswg.org/selectors-5/#headings)

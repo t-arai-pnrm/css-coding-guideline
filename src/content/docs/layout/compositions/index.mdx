@@ -1,14 +1,14 @@
 ---
-title: "7-13 コンポジション集"
+title: "8-13 コンポジション集"
 description: "stack、cluster、switcher、gridなど、よく使う配置のパターンを部品にしたコンポジションを、1つずつ説明するページ群です。目的から使うコンポジションを選べるように、使い分けをまとめています。"
 sidebar:
   label: "概要"
   order: 0
 ---
 
-コンポジションは、縦に積む、横に並べて折り返す、幅に応じて列数を変えるといった配置のパターンを、コンポーネントから切り離して部品にしたクラスです。配置だけを受け持ち、間隔や列数は公開プロパティで受け取ります。考え方と書き方の規約は「[6-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
+コンポジションは、縦に積む、横に並べて折り返す、幅に応じて列数を変えるといった配置のパターンを、コンポーネントから切り離して部品にしたクラスです。配置だけを受け持ち、間隔や列数は公開プロパティで受け取ります。考え方と書き方の規約は「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
 
-この「コンポジション集」では、私が使っている11のコンポジションに1ページずつを充て、使う場面と使わない場面、公開プロパティ、内部の計算、似たコンポジションとの使い分けを説明します。どのコンポジションも、FlexboxやGridの規則の上に成り立っているので、通常フローとの違いや `align-items` と `align-content` の違いは「[7-1 レイアウトの基礎](/layout/fundamentals/)」で確かめてください。
+この「コンポジション集」では、私が使っている11のコンポジションに1ページずつを充て、使う場面と使わない場面、公開プロパティ、内部の計算、似たコンポジションとの使い分けを説明します。どのコンポジションも、FlexboxやGridの規則の上に成り立っているので、通常フローとの違いや `align-items` と `align-content` の違いは「[8-1 レイアウトの基礎](/layout/fundamentals/)」で確かめてください。
 
 ## 目的から選ぶ
 
@@ -16,17 +16,17 @@ sidebar:
 
 | したいこと | コンポジション |
 |---|---|
-| 同じ役割の要素を、同じ間隔で縦に積む | [7-13-1 stack](/layout/compositions/stack/) |
-| 中身の量で幅が決まる要素を横に並べ、入りきらなければ折り返す | [7-13-2 cluster](/layout/compositions/cluster/) |
-| 2つのまとまりを、インライン方向の両端に分ける | [7-13-3 apart](/layout/compositions/apart/) |
-| 決まった数の項目を、指定の列数か1列のどちらかで並べる | [7-13-4 switcher](/layout/compositions/switcher/) |
-| 幅の決まったサイドと、伸び縮みするメインを並べる | [7-13-5 sidebar](/layout/compositions/sidebar/) |
-| 件数の変わる一覧を、列の最小幅と最大数から列数を決めて並べる | [7-13-6 grid](/layout/compositions/grid/) |
-| 上から下へ読むリストを、段に分ける | [7-13-7 columns](/layout/compositions/columns/) |
-| 高さの違う項目を、隙間なく詰めて並べる | [7-13-8 masonry](/layout/compositions/masonry/) |
-| 画像と文字のように、子を同じ場所に重ねる | [7-13-9 pile](/layout/compositions/pile/) |
-| ページのコンテンツ幅とガターを決め、子ごとに全幅などの幅を選ばせる | [7-13-10 primary-layout](/layout/compositions/primary-layout/) |
-| 見出しや段落の続く本文の流れに、子ごとに変えられる間隔を付ける | [7-13-11 prose](/layout/compositions/prose/) |
+| 同じ役割の要素を、同じ間隔で縦に積む | [8-13-1 stack](/layout/compositions/stack/) |
+| 中身の量で幅が決まる要素を横に並べ、入りきらなければ折り返す | [8-13-2 cluster](/layout/compositions/cluster/) |
+| 2つのまとまりを、インライン方向の両端に分ける | [8-13-3 apart](/layout/compositions/apart/) |
+| 決まった数の項目を、指定の列数か1列のどちらかで並べる | [8-13-4 switcher](/layout/compositions/switcher/) |
+| 幅の決まったサイドと、伸び縮みするメインを並べる | [8-13-5 sidebar](/layout/compositions/sidebar/) |
+| 件数の変わる一覧を、列の最小幅と最大数から列数を決めて並べる | [8-13-6 grid](/layout/compositions/grid/) |
+| 上から下へ読むリストを、段に分ける | [8-13-7 columns](/layout/compositions/columns/) |
+| 高さの違う項目を、隙間なく詰めて並べる | [8-13-8 masonry](/layout/compositions/masonry/) |
+| 画像と文字のように、子を同じ場所に重ねる | [8-13-9 pile](/layout/compositions/pile/) |
+| ページのコンテンツ幅とガターを決め、子ごとに全幅などの幅を選ばせる | [8-13-10 primary-layout](/layout/compositions/primary-layout/) |
+| 見出しや段落の続く本文の流れに、子ごとに変えられる間隔を付ける | [8-13-11 prose](/layout/compositions/prose/) |
 
 迷いやすいのは、列に並べる3つのコンポジションです。`switcher` は列数か1列かの二択で、途中の列数を作りません。`grid` は、幅が狭くなるにつれて列数を1つずつ減らします。`sidebar` は、2つの子の役割が違い、サイドの幅を決めておきたいときに使います。
 

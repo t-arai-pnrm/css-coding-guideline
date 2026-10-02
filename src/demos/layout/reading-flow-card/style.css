@@ -1,0 +1,56 @@
+@layer components {
+  @scope (.scoped.plan-card) to (.scoped) {
+    :scope {
+      container: --plan-card / inline-size;
+    }
+
+    div {
+      display: block grid;
+      reading-flow: grid-rows;
+      grid-template:
+        "--heading"
+        "--body"
+        "--apply";
+      gap: 12px;
+      align-items: center;
+      padding: 24px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+
+      /* 広いときは「申し込む」を見出しの行へ上げる。読み上げとフォーカスも、この見た目の順に進む */
+      @container --plan-card (inline-size >= calc(480 / 16 * 1rem)) {
+        grid-template:
+          "--heading --apply"
+          "--body --body"
+          / minmax(0, 1fr) auto;
+      }
+
+      & > h2 {
+        grid-area: --heading;
+      }
+
+      & > p {
+        grid-area: --body;
+      }
+
+      & > ._apply-link {
+        grid-area: --apply;
+      }
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+    }
+
+    ._apply-link {
+      justify-self: start;
+      padding-block: 8px;
+      padding-inline: 20px;
+      border-radius: 4px;
+      background-color: oklch(48% 0.17 260deg);
+      color: oklch(100% 0 0deg);
+      font-weight: bold;
+      text-decoration: none;
+    }
+  }
+}

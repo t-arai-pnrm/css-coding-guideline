@@ -1,0 +1,24 @@
+<!-- デモの中で送信しても画面が切り替わらないように、method="dialog" にしている -->
+<form class="scoped profile-form" method="dialog">
+  <div>
+    <label for="profile-form-name">表示名</label>
+    <input id="profile-form-name" type="text" name="nickname" autocomplete="nickname" placeholder="例：たろう">
+  </div>
+  <div>
+    <label for="profile-form-email">メールアドレス（必須）</label>
+    <input id="profile-form-email" type="email" name="email" autocomplete="email" placeholder="例：name@example.com" required>
+  </div>
+  <div>
+    <label for="profile-form-id">会員番号（変更できません）</label>
+    <input id="profile-form-id" type="text" name="member-id" value="A-012345" readonly>
+  </div>
+  <div>
+    <label for="profile-form-code">紹介コード（受付を終了しました）</label>
+    <input id="profile-form-code" type="text" name="code" placeholder="例：FRIEND2026" disabled>
+  </div>
+  <div>
+    <label for="profile-form-avatar">プロフィール画像</label>
+    <input id="profile-form-avatar" type="file" name="avatar" accept="image/*">
+  </div>
+  <button type="submit">保存する</button>
+</form>

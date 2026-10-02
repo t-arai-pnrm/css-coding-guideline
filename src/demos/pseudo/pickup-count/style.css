@@ -1,0 +1,56 @@
+@layer components {
+  @scope (.scoped.pickup-count-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    h2 {
+      margin-block-end: 8px;
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+
+  @scope (.scoped.pickup-list) to (.scoped) {
+    :scope {
+      --_gap: 16px;
+      --_column-min-width: calc(200 / 16 * 1rem);
+      --_column-max-count: 3;
+
+      display: block grid;
+
+      /* 列の数は幅で決まる。最小幅を下回らず、多くても3列まで並べ、項目のない列は auto-fit で畳む */
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(
+          min(100%, max(var(--_column-min-width), (100% - var(--_gap) * (var(--_column-max-count) - 1)) / var(--_column-max-count))),
+          1fr
+        )
+      );
+      gap: var(--_gap);
+      padding: 0;
+      list-style-type: "";
+
+      /* 1件だけのときは、行いっぱいに広げず、1列分の幅で中央に置く */
+      &:has(> :only-child) {
+        grid-template-columns: minmax(0, calc(400 / 16 * 1rem));
+        justify-content: center;
+      }
+    }
+
+    li {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    h3 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    p {
+      margin-block-start: 8px;
+    }
+  }
+}

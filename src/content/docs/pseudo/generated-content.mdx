@@ -1,0 +1,158 @@
+---
+title: "3-7 生成コンテンツと装飾の擬似要素"
+description: "::beforeと::afterには装飾だけを入れ、必須の印や単位のように意味のある文字はHTMLに書きます。装飾の記号は代替テキストを空にし、::markerにはcolorとfont-sizeだけを、::selectionには文字と背景の両方の色を指定します。"
+sidebar:
+  order: 7
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import sectionHtml from '../../../demos/pseudo/decorated-section/index.html?raw';
+import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
+
+`::before` と `::after` は、要素の内容の前と後ろに、CSSで箱を足す擬似要素です。この箱に入る内容を生成コンテンツと呼びます。本書では、生成コンテンツに入れるのは装飾だけにします。必須の印、単位、注意書きのように、読み手が知る必要のある文字はHTMLに書きます。
+
+装飾として文字や記号を入れるときは、`content: "→" / ""` のように、スラッシュの後ろの代替テキストを空にします。記号の名前が読み上げられないようにするためです。この節では、擬似要素が作られる条件、読み上げとの関係、`::marker`、`::selection`、`::first-letter`、`::first-line` の制約を順に説明します。擬似要素の書き方そのものは「[3-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」で説明しています。
+
+<Baseline id="before-after" name="::before と ::after" />
+
+## 生成コンテンツの文字が届かない場面
+
+生成コンテンツは、DOMに含まれません。画面には表示されても、HTMLに書いた文字と同じようには扱われません。私は見出しの副題を `content: attr(data-subtitle)` で表示する書き方について、機械翻訳されず、選択してコピーできず、ページ内検索の対象にもならないことを記事に書きました。
+
+読み上げも当てになりません。MDNは、生成コンテンツはDOMに含まれないので、支援技術とブラウザの組み合わせによっては読み上げられないと説明しています。WCAGの達成方法の文書にも、装飾でない内容を `::before` と `::after` で挿入することを、達成基準1.3.1の失敗例として挙げたもの（F87）があります。ユーザーがスタイルを無効にしたり、自分のスタイルに置き換えたりすると、その内容が失われるからです。
+
+この性質は、次のような指定で問題になります。入力欄のラベルに「必須」を、価格に「円（税込）」を、CSSで足す書き方です。見た目は整いますが、読み上げで「必須」が伝わらなければ、ユーザーは入力が必須の項目を知らないまま送信します。翻訳した画面では、金額の数字だけが訳され、単位だけが日本語のまま残ります。
+
+```css title="🙅‍♂ Not Recommended: 意味のある文字を生成コンテンツで入れる"
+/* 🙅‍♂ Not Recommended */
+.label--required::after {
+  content: "必須";
+}
+
+.price::after {
+  content: "円（税込）";
+}
+```
+
+意味のある文字は、HTMLに書きます。見た目を変えたいときは、その文字を `span` で包んでスタイルを当てます。CSSでできるのは、すでにHTMLにある文字の見た目を変えることまでです。
+
+```html
+<label for="email">メールアドレス<span class="_required">必須</span></label>
+<p class="_price">1,000円（税込）</p>
+```
+
+```css title="🙆‍♂ Recommended: HTMLに書いた文字に見た目を当てる"
+@scope (.scoped.form-field) to (.scoped) {
+  ._required {
+    margin-inline-start: 8px;
+    padding-inline: 4px;
+    border: 1px solid;
+    border-radius: 2px;
+    font-size: calc(12 / 16 * 1rem);
+  }
+}
+```
+
+印刷のときにだけ、外部リンクの後ろへ `attr(href)` でURLを添える指定は例外です。URLは `href` 属性としてHTMLにあり、画面では読み上げもリンクの操作もできます。紙の上で行き先が分からなくなる分だけを、生成コンテンツで補っています。この書き方は第11章「[11-6 印刷のスタイル](/color-media/print/)」で説明しています。
+
+## `::before` と `::after` が作られる条件
+
+`::before` と `::after` は、`content` に `none` 以外の値を指定したときだけ作られます。`content` の初期値は `normal` で、`::before` と `::after` では `none` として計算されるからです。MDNによれば、`content` の値が無効な場合も、擬似要素は作られません。図形だけを描くときも、`content: ""` で中身が空の箱を作る必要があります。
+
+作られた箱は、`display` を指定しなければインラインです。空のインラインの箱には `inline-size` と `block-size` が効かないので、線や図形を描くときは箱の種類を変えます。親がフレックスコンテナかグリッドコンテナなら、擬似要素はそのアイテムになり、`display` を指定しなくても大きさが効きます。絶対配置した擬似要素も、ブロックの箱になります。空の擬似要素に `display: inline flow-root` を指定してアイコンを描く例は、第11章「[11-3 画像と装飾](/color-media/images-and-decoration/)」にあります。
+
+擬似要素は、要素の子として内容の前後に作られます。そのため、子を持てない要素には作られません。MDNは、`img` のように中身が外部の資源で決まる置換要素には、`::before` を適用できないと説明しています。`video` や `iframe` も置換要素です。`img` に `::after` でキャプションや枠を足そうとしても表示されないので、`figure` や `div` で包み、包んだ要素の擬似要素で描きます。
+
+`input` も、テキストの入力欄などでは擬似要素が表示されません。{/* 要確認: 出典なし（テキストの入力欄で擬似要素が表示されないこと） */}例外は、`appearance: none` を指定したチェックボックスとラジオボタンです。第12章「[12-4 フォーム部品](/interaction/forms/)」では、`input` 自体に `appearance: none` を指定し、`::before` でチェックマークを描いています。
+
+## 装飾の記号は代替テキストを空にする
+
+生成コンテンツが読み上げられる環境では、装飾の記号も読み上げられます。リンクの後ろに `content: "→"` で矢印を足すと、リンクの名前の後ろに記号の名前も読まれることがあります。「料金プランを見る」の後ろに矢印の名前が続いても、ユーザーが得る情報は増えません。{/* 要確認: 出典なし（読み上げの具体的な文言は環境で異なる） */}
+
+`content` には、スラッシュの後ろに代替テキストを書けます。`content: "→" / ""` のように代替テキストを空にすると、矢印は画面に表示され、読み上げからは外れます。CSS Generated Content Module Level 3でも、装飾の擬似要素の代替テキストを空にすると読み上げを避けられる、と説明しています。
+
+```css title="🙆‍♂ Recommended: 装飾の記号は代替テキストを空にする"
+@scope (.scoped.more-link) to (.scoped) {
+  :scope {
+    &::after {
+      content: "→" / "";
+      margin-inline-start: 4px;
+    }
+  }
+}
+```
+
+<Baseline id="alt-text-generated-content" name="content の代替テキスト" />
+
+代替テキストの構文には、2024年7月にFirefox 128が対応し、主要なブラウザがそろいました。Safariは17.4から対応しているので、本書の対象のブラウザはすべて対応しています（2026年10月確認）。対応していないブラウザでは、`content` の宣言全体が無効になり、擬似要素は作られません。装飾が消えるだけなので、内容と操作は損なわれません。
+
+`content: ""` で作る文字のない箱には、代替テキストは要りません。読み上げる文字がもともとないからです。反対に、擬似要素そのものが操作の対象になる場合は、代替テキストを空にせず、名前を書きます。カルーセルの前後のボタンを `::scroll-button()` で作るときは、`content: "←" / "前の事例"` のように、ボタンの名前を代替テキストで渡します。この例は第12章「[12-6 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。
+
+代替テキストを書いても、「意味のある文字を生成コンテンツで入れてよい」ことにはなりません。代替テキストは画面に表示されず、表示される側の文字は、翻訳、コピー、ページ内検索の対象にならないままです。読み手に伝えたい内容はHTMLに書き、代替テキストは装飾を読み上げから外すためと、擬似要素の部品に名前を付けるために使います。{/* 要確認: 出典なし */}
+
+## コード例とデモ
+
+次のデモでは、見出しの前の線、リストの項目の前のチェックの記号、リンクの後ろの矢印を、すべて擬似要素で描いています。どれも、見出し、リスト、リンクの文字で意味が伝わっている部分への装飾です。
+
+<Demo title="見出しの線、リストのチェック、リンクの矢印を擬似要素で描く" html={sectionHtml} css={sectionCss} />
+
+見出しの線は、`content: ""` で作った文字のない箱です。見出しを `display: block flex` にしているので、擬似要素はフレックスアイテムになり、`inline-size` と `block-size` が効きます。高さの `1lh` は1行の高さなので、見出しの文字の大きさを変えても、線の長さが行に合います。線は背景色ではなく `border-inline-start` で描いています。強制カラーモードでは背景色が消えますが、枠線は残るからです（第11章「[11-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
+
+チェックの記号と矢印は文字なので、代替テキストを空にしています。リストの項目は `display: block grid` にして、記号を1列目に、本文を2列目に置いています。本文が2行に折り返しても、2行目が記号の下に回り込みません。リストの印を消すのに `list-style: none` を使わない理由は、次の見出しで説明します。
+
+## `::marker` と `::selection` の制約
+
+`::marker` は、リストの項目の印（マーカー）を選ぶ擬似要素です。指定できるのは、`color`、`font-*`、`content` など、文字に関わる一部のプロパティだけです。さらに、Safariが反映するのは `color` と `font-size` の2つに限られます（2026年10月確認）。web-featuresでも、`::marker` はSafariの対応が不十分なため、Baselineに入っていません。
+
+<Baseline id="marker" />
+
+そのため、`::marker` に指定するのは `color` と `font-size` だけにします。印の記号を変える、番号を太くする、印をアイコンにするといった装飾は、Safariだけ元の見た目のまま残ります。こうした装飾が必要なときは、`list-style-type: ""` でマーカーを空にし、`::before` で描きます。`list-style: none` で消すと、SafariのVoiceOverがリストとして読み上げなくなるからです（第5章「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。番号を円で囲む例は第11章「[11-3 画像と装飾](/color-media/images-and-decoration/)」にあります。
+
+`::selection` は、ユーザーが選択した範囲を選ぶ擬似要素です。指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` など、ごく一部です。`background-image` は無視されます。iOSのSafariは `::selection` に対応していないので、選択範囲はシステムの色のままになります（2026年10月確認）。
+
+<Baseline id="selection" />
+
+選択範囲の色を変えるときは、`color` と `background-color` の両方を指定し、2つの色のコントラスト比を確かめます。片方だけを変えると、もう片方にはブラウザやユーザーの設定の色が残り、組み合わせによっては選択した文字が読めなくなります。{/* 要確認: 出典なし */}MDNも、選択範囲の見た目を好みだけで変えないこと、変えるなら文字と背景のコントラスト比を確保することを勧めています。基準は第11章「[11-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」の、通常の文字で4.5:1以上です。
+
+```css title="🙆‍♂ Recommended: 文字と背景の色を組にして指定する"
+::selection {
+  background-color: oklch(30% 0.1 260deg);
+  color: oklch(100% 0 0deg);
+}
+```
+
+## `::first-letter` と `::first-line` を和文に使うとき
+
+`::first-letter` はブロックコンテナの最初の1文字を、`::first-line` は最初の1行を選ぶ擬似要素です。どちらも、指定できるプロパティは文字、背景、余白などの一部に限られます。和文では、1文字は仮名か漢字の1字です。MDNによれば、最初の文字の前後にある括弧や引用符のような約物も、`::first-letter` に含まれます。段落が開き括弧で始まれば、括弧と次の1字が一緒に大きくなります。
+
+<Baseline id="first-letter" />
+
+`::first-letter` は、`::before` で生成した文字があれば、その最初の文字を選びます。生成コンテンツに装飾の記号を入れた要素では、本文の最初の文字ではなく、記号が大きくなります。2つを同じ要素に指定するときは、表示を確かめます。
+
+`::first-line` が選ぶ範囲は、要素の幅と文字の大きさで決まります。幅の狭い画面では、同じ段落でも1行に入る文字が減り、太字になる範囲も短くなります。1行目だけを要約として目立たせるような、範囲に意味を持たせる使い方はできません。使うとしても、どこで区切れても意味が変わらない装飾にとどめます。{/* 要確認: 出典なし */}最初の文字を数行分の高さに沈める `initial-letter` は、2026年10月の時点でChrome系のブラウザだけが対応しているので、本書では扱いません。
+
+フォームの部品に付いた擬似要素のうち、入力欄の例文を選ぶ `::placeholder` と、ファイルの選択ボタンを選ぶ `::file-selector-button` は、「[3-5 フォームの状態を表す擬似クラス](/pseudo/form-states/)」で扱います。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [::before - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::before)
+- [content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/content)
+- [CSS Generated Content Module Level 3: Alternative Text for Accessibility](https://drafts.csswg.org/css-content-3/#alt)
+- [Failure F87](https://www.w3.org/WAI/WCAG21/Techniques/failures/F87)（W3C。装飾でない内容を `::before` と `::after` で挿入する失敗例）
+- [主題と副題のマークアップにはhgroupを使用する](https://www.tak-dcxi.com/article/use-hgroup-for-marking-up-the-main-heading-and-subheading/)（TAKLOG、2024年5月。副題を生成コンテンツで表示しない理由）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。アイコン付きのリストを `::marker` なしで描く例）
+- [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)
+- [::selection - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::selection)
+- [::first-letter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::first-letter)
+- [::first-line - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::first-line)
+
+{/* textlint-enable ja-technical-writing/no-doubled-joshi */}

@@ -1,5 +1,5 @@
 ---
-title: "7-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる"
+title: "8-13-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる"
 description: "primary-layout は、左右のガターと5段階の幅（フル、超ワイド、ワイド、コンテンツ、ナロー）の列を持つグリッドです。子はデフォルトでコンテンツ幅に置かれ、full-column などのクラスで幅を選びます。"
 sidebar:
   order: 10
@@ -42,7 +42,7 @@ import primaryLayoutCss from '../../../../demos/layout/composition-primary-layou
 
 この書き方には3つの問題があります。1つ目は、ガターの `padding-inline` が要素ごとに書かれるので、画面幅でガターを変えるときにすべての箇所を直す必要があることです。2つ目は、`box-sizing: border-box` の環境では最大幅から `padding` の分だけ中身が狭くなり、「最大幅にガターを足す」という計算が要素ごとに入り込むことです。3つ目は、`vw` がスクロールバーの幅を含むので、フル幅の要素が横スクロールの原因になることです。
 
-左右に余白の列を持つグリッドでこれらを解決する方法は「[7-7 余白を設計する](/layout/spacing/)」で、`grid-column: --full` で画面の端まで広げる方法は「[7-9 重なりと配置](/layout/positioning/)」で説明しています。`primary-layout` は、7-7の形を5段階の幅に広げて部品にしたものです。
+左右に余白の列を持つグリッドでこれらを解決する方法は「[8-7 余白を設計する](/layout/spacing/)」で、`grid-column: --full` で画面の端まで広げる方法は「[8-9 重なりと配置](/layout/positioning/)」で説明しています。`primary-layout` は、8-7の形を5段階の幅に広げて部品にしたものです。
 
 ## 線名で5段階の幅を表すグリッド
 
@@ -112,7 +112,7 @@ import primaryLayoutCss from '../../../../demos/layout/composition-primary-layou
 
 子の側では、`grid-column: --full` のように、`-start` と `-end` を外した名前だけを書きます。グリッドでは、`--full-start` と `--full-end` のように「名前-start」と「名前-end」の組になった線があると、その名前の暗黙の領域ができるからです。`grid-column: --full` は、`grid-column: --full-start / --full-end` と同じ意味になります。
 
-線の名前を `--` で始めるのは、`@keyframes` やコンテナの名前と同じく、自分で付けて値として使う名前だからです。CSSのキーワードは `--` で始まらないので、将来キーワードが増えても衝突せず、読む側も自分で付けた名前だと分かります（「[5-1 命名規則](/notation/naming/)」）。
+線の名前を `--` で始めるのは、`@keyframes` やコンテナの名前と同じく、自分で付けて値として使う名前だからです。CSSのキーワードは `--` で始まらないので、将来キーワードが増えても衝突せず、読む側も自分で付けた名前だと分かります（「[6-1 命名規則](/notation/naming/)」）。
 
 ## 列の幅の計算
 
@@ -152,9 +152,9 @@ import primaryLayoutCss from '../../../../demos/layout/composition-primary-layou
 
 表の「20px相当」は、`calc(20 * var(--px, 1px))` のように比例スケールの `--px` を掛けた値です。`--px` が定義されていないページでは、フォールバックの1pxが使われます。行の間隔は、ほかのコンポジションと同じく、置く文脈で決まる値なのでデフォルト値を0にしています。
 
-モードの切り替えには、「[8-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」の画面モードを使います。画面モードは、`:root` のメディアクエリだけで `--screen` の値を `--compact` か `--spacious` に決め、各所はその値をスタイルクエリで見て分岐する書き方です。ただし8-4は、2サイズのデザインカンプを比率を保って再現する案件に限って使う、条件付きのパターンです。
+モードの切り替えには、「[9-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)」の画面モードを使います。画面モードは、`:root` のメディアクエリだけで `--screen` の値を `--compact` か `--spacious` に決め、各所はその値をスタイルクエリで見て分岐する書き方です。ただし9-4は、2サイズのデザインカンプを比率を保って再現する案件に限って使う、条件付きのパターンです。
 
-`primary-layout` では、`--compact` の値をクエリの外に基本の値として書き、`@container style(--screen: --spacious)` の中で `--spacious` の値に置き換えています。`--screen` を定義していないページでは、スタイルクエリの条件が成り立たないので、常に `--compact` の値が使われます。モードごとの値を接尾辞で表す書き方は「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/#rule-state-suffix-for-custom-properties)」に、`--compact` を基本にする理由は8-4の[ルール](/responsive/design-comp-pattern/#rule-screen-mode-compact-base)にあります。
+`primary-layout` では、`--compact` の値をクエリの外に基本の値として書き、`@container style(--screen: --spacious)` の中で `--spacious` の値に置き換えています。`--screen` を定義していないページでは、スタイルクエリの条件が成り立たないので、常に `--compact` の値が使われます。モードごとの値を接尾辞で表す書き方は「[7-4 公開プロパティと内部プロパティ](/components/custom-properties/#rule-state-suffix-for-custom-properties)」に、`--compact` を基本にする理由は9-4の[ルール](/responsive/design-comp-pattern/#rule-screen-mode-compact-base)にあります。
 
 <Baseline id="container-style-queries" name="コンテナスタイルクエリ" />
 
@@ -169,7 +169,7 @@ import primaryLayoutCss from '../../../../demos/layout/composition-primary-layou
 </div>
 ```
 
-8-4の画面モードを使わない案件では、ガターに `max(calc(20 / 16 * 1rem), 5%)` のような、グリッドの幅に応じて広がる値を `--compact` のプロパティで渡す方法があります。`%` はグリッドの幅を基準にするので、画面が広いほどガターも広がります。
+9-4の画面モードを使わない案件では、ガターに `max(calc(20 / 16 * 1rem), 5%)` のような、グリッドの幅に応じて広がる値を `--compact` のプロパティで渡す方法があります。`%` はグリッドの幅を基準にするので、画面が広いほどガターも広がります。
 
 ## 子のクラスで幅を選ぶ
 
@@ -218,11 +218,11 @@ import primaryLayoutCss from '../../../../demos/layout/composition-primary-layou
 </article>
 ```
 
-このHTMLは、クラスを見るだけで各要素の幅が分かります。`primary-layout` の行の間隔はタイトルや図版のようなブロックの間の余白で、本文の段落の間隔は `_body` に付けた `prose` が受け持ちます（「[7-13-11 prose](/layout/compositions/prose/)」）。
+このHTMLは、クラスを見るだけで各要素の幅が分かります。`primary-layout` の行の間隔はタイトルや図版のようなブロックの間の余白で、本文の段落の間隔は `_body` に付けた `prose` が受け持ちます（「[8-13-11 prose](/layout/compositions/prose/)」）。
 
 ## 補足と注意点
 
-`primary-layout` は、ページやセクションのように、画面の幅を基準に左右の余白と最大幅を決めたい場所で使います。カードの中やサイドバーの中のように、置かれた場所の幅に合わせて列を組む配置には使いません。そうした配置には、列の数を幅から決める「[7-13-6 grid](/layout/compositions/grid/)」や、メインとサイドの2カラムにする「[7-13-5 sidebar](/layout/compositions/sidebar/)」が向いています。
+`primary-layout` は、ページやセクションのように、画面の幅を基準に左右の余白と最大幅を決めたい場所で使います。カードの中やサイドバーの中のように、置かれた場所の幅に合わせて列を組む配置には使いません。そうした配置には、列の数を幅から決める「[8-13-6 grid](/layout/compositions/grid/)」や、メインとサイドの2カラムにする「[8-13-5 sidebar](/layout/compositions/sidebar/)」が向いています。
 
 `100%` はグリッド自身の幅を指すので、フル幅はビューポートの幅ではなく、`primary-layout` を付けた要素の幅です。サイドバーのあるページのメインエリアに置けば、フル幅はメインエリアの端までになります。画面の端まで広げたいなら、`primary-layout` を画面の幅いっぱいの要素に付けます。
 

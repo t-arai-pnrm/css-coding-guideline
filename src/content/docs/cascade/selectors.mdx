@@ -5,7 +5,6 @@ sidebar:
   order: 2
 ---
 
-import Baseline from '../../../components/Baseline.astro';
 import Guideline from '../../../components/Guideline.astro';
 
 セレクタは、要素を選ぶと同時に、そのルールの詳細度を決めます。本書では、ベーススタイルのタイプセレクタを `:where()` で包んで詳細度を0にし、コンポーネントの中はクラス1つ分（0.1.0）を基本にそろえます。IDセレクタと、詳細度を上げるためだけのセレクタは使いません。
@@ -66,7 +65,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 いまは、こうした技を使いません。セレクタから意図が読み取れないうえ、次に上書きする人はさらに詳細度を上げる必要があるからです。祖先のクラスを足す書き方（`.top-page .large-text`）や、タイプセレクタを足す書き方（`p.large-text`）も同様です。どちらもHTMLの構造に依存するので、コンポーネントを別の場所で使いにくくなります。
 
-上書きが必要になったら、先に次の手段を検討します。優先順位の問題なら、レイヤーの順番で解決します（[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。上書きされる側の詳細度が高すぎるなら、`:where()` で下げます。親のコンポーネントから子のコンポーネントの見た目を変えたいなら、子が公開しているカスタムプロパティに値を渡します（[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)）。
+上書きが必要になったら、先に次の手段を検討します。優先順位の問題なら、レイヤーの順番で解決します（[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。上書きされる側の詳細度が高すぎるなら、`:where()` で下げます。親のコンポーネントから子のコンポーネントの見た目を変えたいなら、子が公開しているカスタムプロパティに値を渡します（[7-4 公開プロパティと内部プロパティ](/components/custom-properties/)）。
 
 ## `:where()` による詳細度0の指定
 
@@ -84,7 +83,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 リンクの色を `a:link, a:visited` ではなく `:where(a:any-link)` と書けば、詳細度は0.1.1から0になります。リンクで作ったボタンにクラスを付ければ、それだけで文字色を上書きできます。`:any-link` は `href` 属性を持つリンクすべてに当てはまる擬似クラスで、`:link` と `:visited` をまとめて書くのと同じ意味です。
 
-私が作ったリセットCSSのkiso.cssも、すべてのセレクタを `:where()` で書いています。カスケードレイヤーを使えない環境でも、どのクラスやタイプセレクタからでも上書きできるようにするためです。反対に、`:where()` を使っていないリセットCSSと組み合わせると、リセットCSSのタイプセレクタの詳細度が上回り、ベーススタイルの指定を打ち消すことがあります。リセットCSSを選ぶときも、詳細度が下げられているかを確認します。kiso.cssの設計は、第4章「[4-1 壊さないリセット](/reset/kiso/)」で説明します。
+私が作ったリセットCSSのkiso.cssも、すべてのセレクタを `:where()` で書いています。カスケードレイヤーを使えない環境でも、どのクラスやタイプセレクタからでも上書きできるようにするためです。反対に、`:where()` を使っていないリセットCSSと組み合わせると、リセットCSSのタイプセレクタの詳細度が上回り、ベーススタイルの指定を打ち消すことがあります。リセットCSSを選ぶときも、詳細度が下げられているかを確認します。kiso.cssの設計は、第5章「[5-1 壊さないリセット](/reset/kiso/)」で説明します。
 
 `:where()` は、コンポーネントの中でも使えます。親のルールの中にネストして直下の子を選ぶと、詳細度は0.2.0に上がります。`& > :where(._heading)` と書けば、子を選ぶ部分の詳細度が0になり、全体は0.1.0のままです。子の要素のルールと詳細度がそろうので、書いた順番どおりに上書きが効きます。
 
@@ -92,6 +91,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 @scope (.scoped.contact-section) to (.scoped) {
   ._layout {
     display: block grid;
+    reading-flow: grid-rows;
     grid-template-areas:
       "--heading"
       "--body";
@@ -139,138 +139,15 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 `&:is(:scope[open] *)` は、「開いているスコープのルートの子孫である、この要素」という意味です。スコープのルートは `<details class="scoped faq-item">` で、開いているときだけ `open` 属性を持ちます（2026年9月、Chrome 152で確認）。アイコンのスタイルが `._icon` のルールにまとまるので、状態による変化を探しやすくなります。
 
-同じ指定は、`:scope[open] ._icon` という別のルールとしても書けます。しかし、`._icon` のルールの中にネストして書くなら、ネストしたセレクタを `&` で始めるという本書の規約から、この形になります。ネストの規約は第5章「[5-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明します。
+同じ指定は、`:scope[open] ._icon` という別のルールとしても書けます。しかし、`._icon` のルールの中にネストして書くなら、ネストしたセレクタを `&` で始めるという本書の規約から、この形になります。ネストの規約は第6章「[6-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」で説明します。
 
-## `:has()` で子孫の状態から祖先を変える
+## `:has()` の詳細度
 
-`:has()` は、引数のセレクタに当てはまる子孫や後続の兄弟を持つ要素を選ぶ擬似クラスです。これまでJavaScriptで親にクラスを付けていた多くの場面を、CSSだけで書けるようになりました。
+`:has()` の詳細度も、`:is()` と同じく、引数でいちばん高いセレクタの詳細度になります。画像があるときだけ2列にするカードの `&:has(> img)` は、`:scope` の0.1.0に `img` の0.0.1が加わり、0.1.1です。状態のスタイルは元のスタイルより詳細度が高くなるので、書く位置に関係なく元のスタイルを上書きできます。引数にIDセレクタや長いセレクタを入れないのは、`:is()` と同じです。
 
-<Baseline id="has" name=":has()" />
+`:not()` も、引数でいちばん高いセレクタの詳細度になります。そのため、`.card:has(:not(img))` と `.card:not(:has(img))` は、意味が逆なのに詳細度はどちらも0.1.1です。詳細度の差から誤りに気づくことはできないので、入れ子の順序は意味から確かめます。
 
-たとえば、画像があるときだけ2列にするカードは、次のように書けます。画像の有無をJavaScriptで調べて、`has-image` のようなクラスを付ける必要はありません。
-
-```css title="🙆‍♂ Recommended: 子の有無でレイアウトを切り替える"
-@scope (.scoped.media-object) to (.scoped) {
-  :scope {
-    display: block grid;
-    gap: 16px;
-
-    &:has(> img) {
-      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
-    }
-  }
-}
-```
-
-状態の表し方にも使えます。チェックされた入力欄を含むラベルの背景色を変える `label:has(:checked)` や、中の要素にキーボードでフォーカスしたときにカード全体を強調する `:has(:focus-visible)` がその例です。状態をHTMLとCSSだけで表せるので、クラスの付け外しと実際の状態のずれを心配せずに済みます。
-
-ページ全体の状態にも使えます。モーダルを開いている間は背面のスクロールを止める `:root:has(:modal)` がその例で、第4章「[4-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明します。
-
-`:has()` の詳細度も、引数でいちばん高いセレクタの詳細度になります。上の例の `&:has(> img)` は、`:scope` の0.1.0に `img` の0.0.1が加わり、0.1.1になります。状態のスタイルは元のスタイルより詳細度が高くなるので、書く位置に関係なく元のスタイルを上書きできます。引数にIDセレクタや長いセレクタを入れないのは、`:is()` と同じです。
-
-`:has()` は、2023年12月にすべての主要なブラウザで使えるようになり、2026年6月に「広く利用可能」になりました（2026年9月確認）。本書の対象のブラウザでは、問題なく使えます。
-
-## `:has()` と `:not()` を組み合わせる
-
-「画像を持たないカード」を選びたいとき、`:has()` と `:not()` を入れ子にします。そのとき、入れ子の順序で意味が逆になります。次の3枚のカードで考えます。1枚目は画像と説明文を、2枚目は説明文だけを、3枚目は画像だけを持っています。
-
-```html
-<article class="card"><img src="…" alt=""><span>説明文</span></article>
-<article class="card"><span>説明文</span></article>
-<article class="card"><img src="…" alt=""></article>
-```
-
-`.card:has(:not(img))` は、「`img` 以外の子孫を1つでも持つカード」を選びます。1枚目と2枚目には、`img` 以外の要素（`span`）があるので、どちらも当てはまります。画像を持たないカードだけを選んだことにはなりません。一方、`.card:not(:has(img))` は、「`img` の子孫を持たないカード」を選ぶので、当てはまるのは2枚目だけです。
-
-```css title="🙅‍♂ Not Recommended: 「画像を持たない」のつもりで :has() の中に :not() を入れる"
-/* 🙅‍♂ Not Recommended */
-.card:has(:not(img)) {
-  /* 1枚目と2枚目に当てはまる */
-  padding-inline: 24px;
-}
-```
-
-```css title="🙆‍♂ Recommended: 「持たない」は :not() の中に :has() を入れる"
-@scope (.scoped.card) to (.scoped) {
-  :scope {
-    &:not(:has(> img)) {
-      padding-inline: 24px;
-    }
-  }
-}
-```
-
-入れ子のセレクタは、次の順に読むと取り違えません。まず、`:not(img)` のような引数を、暗黙の `*` を補って `*:not(img)` と読みます。「`img` ではない任意の要素」です。次に、その部品を外側の関数に渡します。`:has(*:not(img))` は、「そういう要素を子孫に持つ」という意味です。内側から外へ評価すれば、`:not(:has(img))` は「`img` を持つ」の否定、`:has(:not(img))` は「`img` ではない要素を持つ」になり、意味の違いが式の形に現れます。
-
-2つのセレクタの詳細度は、どちらも0.1.1です。`:not()` と `:has()` の詳細度は、引数のうち最も高いセレクタの詳細度になります。順序を入れ替えると、詳細度は変わらずに意味だけが変わるので、誤りに気づきにくくなります。
-
-<Baseline id="not" name=":not()" />
-
-引数を `> img` のように直接の子に絞ると、何を探しているのかが読み取りやすくなり、調べる範囲も狭くなります。{/* 要確認: 出典なし */}上の例の `:not(:has(> img))` は、`img` が直接の子でなければ、孫の位置にあっても当てはまる点に注意します。画像が別の要素に包まれることがあるなら、`>` を付けず、子孫全体を探す形にします。
-
-## `:has()` の起点と引数の範囲
-
-`:has()` は、起点の要素（`A:has(B)` の `A`）と、引数で探す範囲（`B`）を狭くして使います。祖先のスタイルが子孫によって決まるので、DOMが変わるたびに、ブラウザは起点の要素がまだ条件を満たすかを調べ直すからです。起点の子孫が多く、引数の範囲が広いほど、この調べ直しは重くなります。
-
-次の例は、どちらもページ全体を起点にしています。ページのどこかで要素が追加されたり、属性が変わったりするたびに、`body` や `:root` の子孫全体から `._image` や `[aria-invalid="true"]` を探し直す可能性があります。要素の多いページで、DOMを頻繁に書き換える処理と組み合わせると、スタイルの再計算に時間がかかります。
-
-```css title="🙅‍♂ Not Recommended: ページ全体を起点に、子孫を広く探す"
-/* 🙅‍♂ Not Recommended */
-body:has(._image) {
-  /* ... */
-}
-
-:root:has([aria-invalid="true"]) {
-  /* ... */
-}
-```
-
-起点はコンポーネントのルートのような狭い要素にし、引数は `>` や `+` の結合子で範囲を絞ります。次の例では、選択肢のカードが、直下の入力欄がチェックされたときだけ背景色を変えます。ブラウザが調べるのはカードの直下の子だけなので、ページの大きさには左右されません。
-
-```css title="🙆‍♂ Recommended: コンポーネントのルートを起点にし、直下の子だけを調べる"
-@scope (.scoped.plan-option) to (.scoped) {
-  :scope {
-    background-color: var(--background--base);
-
-    &:has(> ._input:checked) {
-      background-color: var(--background--muted);
-    }
-  }
-}
-```
-
-前の見出しで触れた `:root:has(:modal)` は、ページ全体を起点にしています。ページのスクロールという、ページ全体の状態を変えるスタイルで、ほかの要素を起点にできないので、例外として使います。こうした `:root` や `body` を起点にするルールは、ページ全体の状態を表すものに限り、数を少なく保ちます。{/* 要確認: 出典なし */}
-
-重さが気になったときは、推測せずに測ります。Chromeの開発者ツールでは、パフォーマンスパネルの記録の設定（Capture settings）で「Enable CSS selector stats」を有効にすると、スタイルの再計算の内訳がセレクタごとに表示されます。かかった時間（Elapsed）の長いセレクタのうち、照合を試みた数（Match Attempts）に比べて一致した数（Match Count）の少ないものを見直します（2026年9月確認）。
-
-## `:heading` で見出しをまとめて選ぶ
-
-`:heading` は、`h1` から `h6` までの見出しをまとめて選ぶ擬似クラスです。見出しのスタイルを `h1, h2, h3, h4, h5, h6` と並べて書く代わりに使えます。
-
-<Baseline id="heading-selectors" compatKey="css.selectors.heading" name=":heading" />
-
-web-featuresのデータでは、2026年9月の時点で `:heading` に対応しているのはSafari 27だけです。そのため、`:heading` を単独では使いません。従来のタイプセレクタと並べて、`:where()` の中に書きます。
-
-```css title="🙆‍♂ Recommended: 従来のセレクタと並べて :where() の中に書く"
-:where(:heading, h1, h2, h3, h4, h5, h6, caption) {
-  font-kerning: normal;
-}
-```
-
-`:where()` と `:is()` の引数は、「寛容なセレクタリスト」として解釈されます。解釈できないセレクタがあっても、それだけが無視され、残りのセレクタは有効です。`:heading` に対応していないブラウザでも、このルールは `h1` から `h6` と `caption` に当てはまります（2026年9月、Chrome 152で確認）。
-
-普通のセレクタリストでは、そうはいきません。カンマで区切ったセレクタのうち1つでも解釈できないと、ルール全体が無効になります。次の書き方では、`:heading` に対応していないブラウザで、`caption` にもスタイルが当たりません。
-
-```css title="🙅‍♂ Not Recommended: 対応していないブラウザでルール全体が無効になる"
-/* 🙅‍♂ Not Recommended */
-:heading,
-caption {
-  font-kerning: normal;
-}
-```
-
-対象のブラウザがすべて対応すれば、`h1` から `h6` を消して `:where(:heading, caption)` と書けるようになります。
-見出しのレベルを引数で指定する関数形の `:heading()` は、web-featuresのデータで対応しているブラウザがまだないので使いません（2026年9月確認）。
+`:has()` の使いどころ、`:not()` との組み合わせ方、起点と引数の範囲の絞り方は、第3章「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。`:heading` のように対応が分かれる擬似クラスを、`:where()` の中で従来のセレクタと並べる書き方は、「[3-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」で説明しています。
 
 ## ガイドライン
 
@@ -281,11 +158,6 @@ caption {
 - [詳細度 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Specificity)
 - [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)
 - [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)
-- [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
 - [:not() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:not)
-- [Decoding CSS selectors: :has(:not()) vs :not(:has())](https://polypane.app/blog/decoding-css-selectors-has-not-vs-not-has/)（Polypane）
-- [:has() - CSS | MDN: Performance considerations](https://developer.mozilla.org/en-US/docs/Web/CSS/:has#performance_considerations)
-- [Analyze CSS selector performance during Recalculate Style events | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/selector-stats)
-- [Selectors Level 5: Heading Pseudo-classes](https://drafts.csswg.org/selectors-5/#headings)
 - [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
 - [【脱!important】保守性を意識したスタイルを確実に上書きするためのテクニック](https://zenn.dev/tak_dcxi/articles/f464f90a24f754b15dd9)（Zenn、2020年10月。本書と方針が異なります）

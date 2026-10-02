@@ -84,45 +84,11 @@
   page: cascade/selectors
   since: 0.1.0
 
-- id: has-over-state-class
-  level: 推奨
-  rule: 子孫の状態や有無によって祖先のスタイルを変えるときは、JavaScript で状態のクラスを付けずに `:has()` を使う。
-  reason: 状態をHTMLとCSSだけで表せ、クラスの付け外しと実際の状態がずれることがないため。
-  aiProne: true
-  page: cascade/selectors
-  since: 0.1.0
-
-- id: has-narrow-anchor
-  level: 推奨
-  rule: '`:has()` の起点は `:root` や `body` ではなくコンポーネントのルートのような狭い要素にし、引数は `>` や `+` で範囲を絞る（例：`&:has(> ._input:checked)`）。'
-  reason: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
-  note: '`:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。'
-  aiProne: true
-  page: cascade/selectors
-  since: 0.3.0
-
-- id: not-has-for-absence
-  level: 推奨
-  rule: '「X を持たない要素」は `:not(:has(X))` で書き、`:has(:not(X))` は使わない。'
-  reason: '`:has(:not(X))` は「X 以外の要素を子孫に持つ要素」を選ぶので、X 以外の子孫が1つでもあれば、X を持つ要素にも当てはまるため。'
-  note: '2つの詳細度は同じなので、入れ子の順序を取り違えても、見た目の差から気づけません。'
-  aiProne: true
-  page: cascade/selectors
-  since: 0.4.0
-
 - id: is-for-ancestor-context
   level: 推奨
   rule: '祖先の状態によって変わるスタイルは、子のルールの中に `&:is(<祖先のセレクタ> *)` の形で書く。'
   reason: ひとつの要素のスタイルがひとつのルールにまとまり、ネストのセレクタを `&` で始める規約とも両立するため。
   note: '例：`&:is(:scope[open] *)` は、スコープのルートの `<details>` が開いているときだけ当てはまります。'
-  page: cascade/selectors
-  since: 0.1.0
-
-- id: heading-with-fallback
-  level: 必須
-  rule: '`:heading` を使うときは、`:where(:heading, h1, h2, h3, h4, h5, h6)` のように従来のタイプセレクタと並べ、`:where()` か `:is()` の中に書く。'
-  reason: 対応していないブラウザでは、普通のセレクタリストに書いた `:heading` がルール全体を無効にするため。
-  note: '`:where()` と `:is()` の引数では、解釈できないセレクタだけが無視され、残りは有効になります。'
   page: cascade/selectors
   since: 0.1.0
 

@@ -1,0 +1,55 @@
+@layer components {
+  @scope (.scoped.feature-section) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+
+      display: block grid;
+      gap: 16px;
+    }
+
+    h2 {
+      display: block flex;
+      gap: 12px;
+      align-items: center;
+      font-size: calc(20 / 16 * 1rem);
+
+      /* 見出しの前の縦線。空の擬似要素はフレックスアイテムになり、幅と高さが効く */
+      &::before {
+        content: "";
+        inline-size: 4px;
+        block-size: 1lh;
+        border-inline-start: 4px solid var(--_accent);
+      }
+    }
+
+    ul {
+      display: block grid;
+      gap: 8px;
+      padding-inline-start: 0;
+      list-style-type: "";
+    }
+
+    li {
+      display: block grid;
+      grid-template-columns: 1em minmax(0, 1fr);
+      gap: 8px;
+
+      /* チェックの記号は装飾なので、代替テキストを空にして読み上げない */
+      &::before {
+        content: "✓" / "";
+        color: var(--_accent);
+        font-weight: bold;
+      }
+    }
+
+    a {
+      color: var(--_accent);
+
+      /* 行き先はリンクの文字で伝わるので、矢印は読み上げない */
+      &::after {
+        content: "→" / "";
+        margin-inline-start: 4px;
+      }
+    }
+  }
+}

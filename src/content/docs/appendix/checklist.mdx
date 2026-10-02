@@ -1,11 +1,11 @@
 ---
 title: "付録D レビューのチェックリスト"
-description: "CSSをレビューするときの確認項目を、12-2で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
+description: "CSSをレビューするときの確認項目を、13-2で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
 sidebar:
   order: 4
 ---
 
-この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
+この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[13-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
 
 各項目には、関係するルールのIDを添えています。指摘するときは、IDを引用すると、理由と詳しい説明をすぐに示せます。項目に当てはまらない記述でも、意図が読み取れないものは誤りと決めつけずに `Q` で質問します。反対に、プロジェクトで合意していない規約を求める指摘は `IMO` にとどめます。
 
@@ -50,6 +50,8 @@ sidebar:
 - [ ] レイヤーを使うプロジェクトで、`@layer` の外にスタイルを書いていないか（[`no-unlayered-styles`](/cascade/layers/#rule-no-unlayered-styles)）
 - [ ] ページ固有のセクションを `pages` に、使い回すコンポーネントを `components` に書いているか（[`layer-by-role`](/cascade/layers/#rule-layer-by-role)）
 - [ ] CMSのように外部のCSSと共存する環境で、`@layer` を使っていないか（[`no-layers-with-unlayered-css`](/cascade/layers/#rule-no-layers-with-unlayered-css)）
+- [ ] `:has()` の直前に起点を書き、引数を `>` や `+` で絞っているか（[`no-unanchored-has`](/pseudo/has/#rule-no-unanchored-has)、[`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)）
+- [ ] 対応が分かれる擬似クラスを、`:is()` か `:where()` の中でほかのセレクタと並べているか（[`forgiving-list-for-partial-support`](/pseudo/basics/#rule-forgiving-list-for-partial-support)）
 
 ### ネストと記法
 
@@ -120,6 +122,7 @@ sidebar:
 - [ ] `minmax()` や `min-inline-size` の固定の最小値を、`min(100%, …)` で包んでいるか（[`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent)）
 - [ ] 列を `1fr` ではなく `minmax(0, 1fr)` で分けているか（[`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr)）
 - [ ] 要素の数が変わるFlexboxに `flex-wrap: wrap` を指定しているか（[`flex-wrap-for-variable-items`](/layout/defensive/#rule-flex-wrap-for-variable-items)）
+- [ ] 列数を子要素の数ではなく、`auto-fit` やコンテナクエリで切り替えているか（[`quantity-query-for-count-conditions`](/pseudo/quantity-queries/#rule-quantity-query-for-count-conditions)）
 - [ ] 理由のない `white-space: nowrap` がないか（[`no-nowrap-without-reason`](/layout/defensive/#rule-no-nowrap-without-reason)）
 - [ ] はみ出しを切り取るのに、`hidden` ではなく `clip` を使っているか（[`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)）
 - [ ] 横スクロールを隠す前に、はみ出している要素を特定して直したか（[`find-overflow-source-first`](/layout/defensive/#rule-find-overflow-source-first)）
@@ -171,6 +174,9 @@ sidebar:
 - [ ] リンクや入力エラーのような情報を、色の違いだけで伝えていないか（[`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)、[`grayscale-check`](/color-media/forced-colors/#rule-grayscale-check)）
 - [ ] 文字と背景のコントラスト比が、WCAG 2.1のAAを満たしているか（[`text-contrast-aa`](/color-media/forced-colors/#rule-text-contrast-aa)）
 - [ ] 枠線を `border: none` ではなく `border-color: transparent` で消しているか（[`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none)）
+- [ ] `grid-template-areas` や `*-reverse` で並べ替えたルールに、`reading-flow` を指定しているか（[`reading-flow-when-reordered`](/layout/reading-flow/#rule-reading-flow-when-reordered)）
+- [ ] 必須の印や単位のように読み手が知る必要のある文字を、`content` で入れていないか（[`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)）
+- [ ] `::placeholder` の文字と背景のコントラスト比が4.5:1以上か（[`placeholder-color-contrast`](/pseudo/form-states/#rule-placeholder-color-contrast)）
 - [ ] 入力欄の文字サイズが1rem以上で、ズームを止める指定がないか（[`input-font-size-min-1rem`](/interaction/forms/#rule-input-font-size-min-1rem)、[`no-maximum-scale`](/interaction/forms/#rule-no-maximum-scale)）
 - [ ] `<img>` に `width` と `height` の属性があり、ファーストビューの画像を遅延読み込みにしていないか（[`img-width-height-attributes`](/color-media/images-and-decoration/#rule-img-width-height-attributes)、[`no-lazy-loading-first-view`](/color-media/images-and-decoration/#rule-no-lazy-loading-first-view)）
 

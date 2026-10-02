@@ -1,0 +1,83 @@
+@layer components {
+  @scope (.scoped.profile-form) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+      --_error: oklch(50% 0.2 25deg);
+
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+    }
+
+    div {
+      display: block grid;
+      gap: 4px;
+      justify-self: stretch;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input {
+      padding: 8px;
+      border-color: oklch(45% 0 0deg);
+      border-radius: 4px;
+      background-color: oklch(100% 0 0deg);
+
+      /* 白の背景に対して、コントラスト比が 4.5:1 を超える灰色にする */
+      &::placeholder {
+        color: oklch(48% 0 0deg);
+      }
+
+      /* 未入力の状態は placeholder 属性のある入力欄にだけ当たる */
+      &:placeholder-shown {
+        border-style: dashed;
+        background-color: oklch(97% 0 0deg);
+      }
+
+      /* readonly は値を送信するので、無効とは別の見た目にする */
+      &[readonly] {
+        border-color: transparent;
+        background-color: oklch(95% 0.02 260deg);
+      }
+
+      &:disabled {
+        border-style: solid;
+        border-color: oklch(80% 0 0deg);
+        background-color: oklch(93% 0 0deg);
+        color: oklch(48% 0 0deg);
+      }
+
+      /* 入力して離れた後や、送信しようとした後にだけエラーの見た目にする */
+      &:user-invalid {
+        border-style: solid;
+        border-color: var(--_error);
+        background-color: oklch(97% 0.02 25deg);
+      }
+
+      &[type="file"] {
+        padding: 0;
+        border-color: transparent;
+        background-color: transparent;
+      }
+
+      &::file-selector-button {
+        margin-inline-end: 12px;
+        padding: 6px 12px;
+        border-color: var(--_accent);
+        border-radius: 4px;
+        background-color: oklch(100% 0 0deg);
+        color: var(--_accent);
+      }
+    }
+
+    button {
+      padding: 8px 24px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: var(--_accent);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

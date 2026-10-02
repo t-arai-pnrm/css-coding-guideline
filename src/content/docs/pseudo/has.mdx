@@ -1,0 +1,184 @@
+---
+title: "3-2 :has() で祖先と前の兄弟を選ぶ"
+description: ":has()は、引数に当てはまる子孫や後ろの兄弟を持つ要素を選ぶ擬似クラスです。起点のない:has()は書かず、起点はコンポーネントのルートのような狭い要素に、引数は結合子で範囲を絞ります。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import planHtml from '../../../demos/pseudo/plan-option/index.html?raw';
+import planCss from '../../../demos/pseudo/plan-option/style.css?raw';
+
+`:has()` は、引数のセレクタに当てはまる子孫や後ろの兄弟を持つ要素を選ぶ擬似クラスです。子の有無や状態によって祖先のスタイルを変える処理を、JavaScriptでクラスを付けずに書けます。本書では、`:has()` の直前に必ず起点のセレクタを書き、起点のない `:has()` は禁止します。
+
+起点は、コンポーネントのルートのような狭い要素にします。引数は、`>` や `+` の結合子で探す範囲を絞ります。祖先のスタイルが子孫によって決まるので、DOMが変わるたびに、ブラウザは起点の要素が条件を満たすかを調べ直すからです。この節では、`:has()` の仕組み、使いどころ、範囲の絞り方を順に説明します。
+
+<Baseline id="has" name=":has()" />
+
+## 祖先や前の兄弟を選べなかった問題
+
+CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟から後ろの兄弟へという一方向にしか要素を選べませんでした。`.card img` はカードの中の画像を選べますが、「画像を持つカード」は選べません。`h2 + p` は見出しの直後の段落を選べますが、「段落が直後に続く見出し」は選べません。
+
+そのため、子の有無や状態によって親の見た目を変えたいときは、JavaScriptで親にクラスを付けていました。画像を持つカードに `has-image` を付ける、チェックされたラジオボタンを含むラベルに `is-checked` を付ける、といった処理です。
+
+この方法では、クラスと実際の状態がずれかねません。キーボードでラジオボタンの選択を変えたときや、CMSの編集で画像を消したときに、クラスを付け外す処理を書き漏らすと、見た目と中身が食い違います。状態を表す情報が、HTMLの状態とクラスの2か所に分かれているからです。
+
+`:has()` を使うと、状態をHTMLの状態だけで表せます。ラジオボタンがチェックされているかどうかは `:checked` が、画像があるかどうかは要素そのものが表しているので、それを親から直接参照します。クラスを付け外す処理がなくなるので、ずれる原因もなくなります。
+
+## `:has()` の仕組み
+
+`:has()` の引数は、起点の要素から見た相対的なセレクタです。結合子を書かなければ子孫を探し、`>` なら直接の子、`+` なら直後の兄弟、`~` なら後ろのすべての兄弟を探します。`.card:has(img)` は「`img` を子孫に持つ `.card`」、`.card:has(> img)` は「`img` を直接の子に持つ `.card`」、`h2:has(+ p)` は「直後に `p` が続く `h2`」を選びます。
+
+スタイルが当たるのは、起点の要素です。`.card:has(> img)` のスタイルは `.card` に当たり、`img` には当たりません。引数は条件を表すだけで、選ぶ対象を変えないので、「`:has()` の前に書いたものが選ばれる」と読みます。
+
+詳細度は、`:is()` と同じく、引数でいちばん高いセレクタの詳細度になります。`.card:has(> img)` は、`.card` の0.1.0に `img` の0.0.1が加わり、0.1.1です。詳細度の数え方は「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で、`:is()` との共通点は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+
+引数の解釈には、`:is()` や `:where()` と違う点があります。`:has()` の引数は、解釈できないセレクタが1つでもあると全体が無効になります。初期の仕様では無視される扱いでしたが、2022年末に変わりました。対応が分かれるセレクタを引数に入れるときは、`:has(:is(:heading, h2))` のように `:is()` で包むと、解釈できないものだけが無視されます。また、引数の中に `:has()` を入れ子にすることと、`::before` のような擬似要素を書くことは、仕様で認められていません。
+
+## 子の有無と状態で祖先を変える
+
+もっともよく使うのは、子の有無によってレイアウトを変える場面です。次の例のカードは、直接の子に画像があるときだけ2列になります。CMSで画像が登録されなかった記事でも、HTMLのクラスを変えずに1列の表示になります。
+
+```css title="🙆‍♂ Recommended: 子の有無でレイアウトを切り替える"
+@scope (.scoped.media-object) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 16px;
+
+    &:has(> img) {
+      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+    }
+  }
+}
+```
+
+フォーム部品の状態を親に伝える場面にも使えます。次のデモは、ラジオボタンを含むカードの一覧です。`&:has(> input:checked)` で、直下のラジオボタンがチェックされたカードだけ、枠線と背景の色を変えています。ラジオボタンの選択はブラウザが管理するので、マウスで選んでも、矢印キーで選んでも、見た目が状態とずれません。
+
+<Demo title="直下のラジオボタンがチェックされたカードだけ、選んだ見た目にする" html={planHtml} css={planCss} />
+
+入力欄の検証の結果を、ラベルや説明文に伝えることもできます。入力欄を包む要素に `&:has(:user-invalid)` を書けば、入力して離れたあとで値が不正なときだけ、説明文の色を変えられます。`:user-invalid` が当てはまる条件と、フォーム部品の実装は第12章「[12-4 フォーム部品](/interaction/forms/)」で説明しています。
+
+キーボードの操作にも応じられます。カードの中のリンクにキーボードでフォーカスしたとき、カード全体に枠線を付けたいなら、カードのルートに `&:has(:focus-visible)` を書きます。フォーカスの表し方は第12章「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明しています。
+
+## 後ろの兄弟によって前の要素を変える
+
+`:has()` の引数に `+` や `~` を書くと、後ろに続く兄弟を条件にして、前の要素を選べます。従来のセレクタでは、後ろの要素の状態は前の要素から参照できませんでした。
+
+次の例は、星の数で評価を入力する部品です。ラジオボタンを包む `label` を5つ並べ、選んだ星と、それより前の星を塗ります。選んだ星は `&:has(> input:checked)` で、前の星は「後ろの兄弟に、チェックされたラジオボタンを持つ `label` がある」という条件の `&:has(~ label > input:checked)` で選びます。
+
+```css title="🙆‍♂ Recommended: 選んだ星と、それより前の星を塗る"
+@scope (.scoped.star-rating) to (.scoped) {
+  label {
+    color: oklch(80% 0 0deg);
+
+    &:has(> input:checked),
+    &:has(~ label > input:checked) {
+      color: oklch(70% 0.15 85deg);
+    }
+  }
+}
+```
+
+前の兄弟を選ぶセレクタは、読み手が意味を取り違えやすい書き方です。`&:has(~ label > input:checked)` の `~` は `label` から見た後ろの兄弟を、`>` はその兄弟の直接の子を指します。結合子が2つ続くときは、上の段落のように条件を文章にしたコメントを添えると、あとから読む人が式を追わずに済みます。
+
+## `:has()` と `:not()` を組み合わせる
+
+「画像を持たないカード」を選びたいとき、`:has()` と `:not()` を入れ子にします。そのとき、入れ子の順序で意味が逆になります。次の3枚のカードで考えます。1枚目は画像と説明文を、2枚目は説明文だけを、3枚目は画像だけを持っています。
+
+```html
+<article class="card"><img src="…" alt=""><span>説明文</span></article>
+<article class="card"><span>説明文</span></article>
+<article class="card"><img src="…" alt=""></article>
+```
+
+`.card:has(:not(img))` は、「`img` 以外の子孫を1つでも持つカード」を選びます。1枚目と2枚目には、`img` 以外の要素（`span`）があるので、どちらも当てはまります。画像を持たないカードだけを選んだことにはなりません。一方、`.card:not(:has(img))` は、「`img` の子孫を持たないカード」を選ぶので、当てはまるのは2枚目だけです。
+
+```css title="🙅‍♂ Not Recommended: 「画像を持たない」のつもりで :has() の中に :not() を入れる"
+/* 🙅‍♂ Not Recommended */
+.card:has(:not(img)) {
+  /* 1枚目と2枚目に当てはまる */
+  padding-inline: 24px;
+}
+```
+
+```css title="🙆‍♂ Recommended: 「持たない」は :not() の中に :has() を入れる"
+@scope (.scoped.card) to (.scoped) {
+  :scope {
+    &:not(:has(> img)) {
+      padding-inline: 24px;
+    }
+  }
+}
+```
+
+入れ子のセレクタは、内側から外へ読むと取り違えません。まず、`:not(img)` のような引数を、暗黙の `*` を補って `*:not(img)` と読みます。「`img` ではない任意の要素」です。次に、その部品を外側の関数に渡します。`:not(:has(img))` は「`img` を持つ」の否定、`:has(:not(img))` は「`img` ではない要素を持つ」になり、意味の違いが式の形に現れます。
+
+2つのセレクタの詳細度は、どちらも0.1.1です。順序を入れ替えても、詳細度は変わらずに意味だけが変わるので、見た目の差から誤りに気づきにくくなります。なお、上の例の `:not(:has(> img))` は、`img` が直接の子でなければ、孫の位置にあっても当てはまります。画像が別の要素に包まれることがあるなら、`>` を付けず、子孫全体を探す形にします。
+
+## 起点のない `:has()` を書かない
+
+`:has()` の直前に何も書かないと、すべての要素が起点になります。`:has(.foo)` は `*:has(.foo)` と同じで、「`.foo` を子孫に持つ、ページのすべての要素」を選ぶ指定です。ブラウザは、DOMが変わるたびに、ページのすべての要素について条件を調べ直す可能性があります。
+
+```css title="🙅‍♂ Not Recommended: 起点のない :has()"
+/* 🙅‍♂ Not Recommended */
+:has(> .entry-link) {
+  position: relative;
+}
+
+*:has(> img) {
+  display: block grid;
+}
+```
+
+この重さは、実際に測れる大きさになります。w0s.jpの記事では、Chromeの開発者ツールでブログのトップページを測り、起点のない `:has(> .c-entry-link)` の照合に0.751秒かかったと報告しています。2番目に重いセレクタの3倍以上でした（2024年8月の記事）。起点に要素名を加えて `article:has(> .entry-link)` のように書けば、照合の対象は `article` だけになります。同じ記事は、`.bar:has(*)` のように引数が何にでも当てはまる形も、範囲を限定していない例に挙げています。引数の絞り方は、最後の見出しで説明します。
+
+ネストと `@scope` の中では、起点を書き忘れやすくなります。ネストしたルールの中で `&` を省いて `:has(> img)` と書くと、`& :has(> img)` と解釈され、親の子孫のすべての要素が起点になります。`@scope` の直下に書いた `:has()` も、スコープの中のすべての要素が起点です。本書の規約どおり、ネストしたセレクタを `&` で始めていれば、この誤りは起きません。
+
+```css title="🙆‍♂ Recommended: & やスコープのルートを起点にする"
+@scope (.scoped.entry-card) to (.scoped) {
+  :scope {
+    &:has(> a) {
+      position: relative;
+    }
+  }
+}
+```
+
+本書のStylelintの設定には、起点のない `:has()` を検出する独自ルール `book/no-unanchored-has` を入れています。起点として認めるのは、`*` 以外のタイプセレクタ、クラス、ID、属性、`&`、`:scope`、`:root` です。`&:not(:has(> img))` のように擬似クラスの引数の中に書いた `:has()` は、外側の `:not()` の直前に起点があれば通ります。
+
+## 起点と引数の範囲を絞る
+
+起点があっても、それが広すぎれば同じ問題が起きます。次の例は、どちらもページ全体を起点にしています。ページのどこかで要素が追加されたり、属性が変わったりするたびに、`body` や `:root` の子孫全体から `img` や `[aria-invalid="true"]` を探し直す可能性があります。
+
+```css title="🙅‍♂ Not Recommended: ページ全体を起点に、子孫を広く探す"
+/* 🙅‍♂ Not Recommended */
+body:has(img) {
+  /* ... */
+}
+
+:root:has([aria-invalid="true"]) {
+  /* ... */
+}
+```
+
+起点はコンポーネントのルートのような狭い要素にし、引数は `>` や `+` の結合子で範囲を絞ります。デモの選択肢のカードは、`&:has(> input:checked)` でカードの直下の子だけを調べていました。調べる範囲はカード1枚の中に収まるので、ページの大きさには左右されません。
+
+例外は、モーダルを開いている間に背面のスクロールを止める `:root:has(:modal)` のように、ページ全体の状態を表すスタイルです。ほかの要素を起点にできないので、`:root` を起点にします。こうしたルールは数を少なく保ちます。{/* 要確認: 出典なし */}`:root:has(:modal)` の書き方は第5章「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+
+重さが気になったときは、推測せずに測ります。Chromeの開発者ツールでは、パフォーマンスパネルの記録の設定（Capture settings）で「Enable CSS selector stats」を有効にすると、スタイルの再計算の内訳がセレクタごとに表示されます。かかった時間（Elapsed）の長いセレクタのうち、照合を試みた数（Match Attempts）に比べて一致した数（Match Count）の少ないものを見直します（2026年9月確認）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
+- [:has() - CSS | MDN: Performance considerations](https://developer.mozilla.org/en-US/docs/Web/CSS/:has#performance_considerations)
+- [Selectors Level 4: The Relational Pseudo-class](https://drafts.csswg.org/selectors-4/#relational)
+- [CSS セレクタのレシピ - :has() 擬似クラス編](https://griponminds.jp/blog/css-selectors-has-pseudo-class/)（grip on minds）
+- [制約のない :has() のパフォーマンス計測](https://blog.w0s.jp/entry/719)（w0s.jp、2024年8月）
+- [Decoding CSS selectors: :has(:not()) vs :not(:has())](https://polypane.app/blog/decoding-css-selectors-has-not-vs-not-has/)（Polypane）
+- [Analyze CSS selector performance during Recalculate Style events | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/selector-stats)

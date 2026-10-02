@@ -1,0 +1,162 @@
+---
+title: "3-3 子要素の位置で選ぶ"
+description: ":nth-child() は兄弟の中の位置で要素を選ぶ擬似クラスです。クラスや状態で絞った中での順番は :nth-child(N of S) で書き、タグ名でしか数えない :nth-of-type() を代わりに使いません。位置で選ぶのは、順番そのものが条件になるときに限ります。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import tableHtml from '../../../demos/pseudo/striped-table/index.html?raw';
+import tableCss from '../../../demos/pseudo/striped-table/style.css?raw';
+import tableBadCss from '../../../demos/pseudo/striped-table/style.bad.css?raw';
+
+`:first-child` や `:nth-child()` は、兄弟の中で何番目にあるかによって要素を選ぶ擬似クラスです。表の縞模様や、一覧の先頭の数件だけを目立たせる処理を、HTMLにクラスを足さずに書けます。本書では、クラスや状態で絞った中での順番を `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使いません。
+
+位置で選ぶのは、縞模様のように順番そのものが条件になる場面だけです。役割の決まった子は、タイプセレクタか子クラスで選びます。この節では、位置で選ぶ擬似クラスが何を数えるのか、`An+B` の式の読み方、`of S` で数える対象を絞る方法を順に説明します。
+
+<Baseline id="nth-child-of" name=":nth-child(An+B of S)" />
+
+## 何を数えるかで結果が変わる
+
+位置で選ぶセレクタの誤りは、たいてい「何を数えているか」の取り違えから生まれます。たとえば、商品の表を絞り込み、在庫のない行に `hidden` 属性を付けて隠したとします。行に `:nth-child(even)` で背景を付けていると、隠した行も兄弟として数えられるので、見えている行の縞が崩れます。
+
+```css title="🙅‍♂ Not Recommended: 隠した行も数えて、縞が崩れる"
+/* 🙅‍♂ Not Recommended */
+tbody tr:nth-child(even) {
+  background-color: oklch(96% 0.02 260deg);
+}
+```
+
+次のデモでは、7行のうち2行目と5行目に `hidden` 属性を付けています。見えている行は1、3、4、6、7行目で、背景が付くのは4行目と6行目です。見えている順に数えると、1つ目と2つ目が続けて白くなり、3つ目と4つ目が続けて色付きになります。
+
+<Demo title="隠した行も数えるので、見えている行の縞が崩れる" html={tableHtml} css={tableBadCss} variant="not-recommended" />
+
+クラスで絞った中での順番を選ぼうとして、`:nth-of-type()` を使う誤りもよく見かけます。`._item:nth-of-type(2)` は「2番目の `._item`」を選ぶように見えますが、`:nth-of-type()` が数えるのはタグ名だけです。この書き方の意味は、後ろの見出しで説明します。
+
+数える対象には、目に見えない要素も入ります。「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」の方式でコンポーネントのルートの中に `<style>` を置くと、その `<style>` が最初の子になり、`:first-child` は見出しや画像に当たらなくなります。どの擬似クラスも、ブラウザが表示しているかどうかではなく、DOMの兄弟の並びで数えます。
+
+## 先頭、末尾、ひとりだけの子
+
+もっとも単純な擬似クラスは、`:first-child`、`:last-child`、`:only-child` の3つです。`:first-child` は兄弟の中で最初の要素、`:last-child` は最後の要素、`:only-child` は兄弟を持たない要素に当たります。`:only-child` は、`:first-child:last-child` と同じ要素を選びます。
+
+```css title="🙆‍♂ Recommended: カードが1枚だけのときは、すべての列にまたがらせる"
+@scope (.scoped.card-grid) to (.scoped) {
+  li {
+    &:only-child {
+      grid-column: 1 / -1;
+    }
+  }
+}
+```
+
+この3つには、`:first-of-type`、`:last-of-type`、`:only-of-type` という対になる擬似クラスがあります。こちらは、同じタグ名の兄弟だけを数えます。`p:first-of-type` は、前に見出しや画像があっても、兄弟の中で最初の `p` に当たります。
+
+詳細度は、どれも擬似クラス1つ分の0.1.0です。`li:first-child` なら、`li` の0.0.1を足して0.1.1になります。`@scope` の中でタイプセレクタに付けると、子クラスの0.1.0より高くなるので、子クラスで上書きするつもりの宣言が負けないかに気を付けます。詳細度の数え方は「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明しています。
+
+## `An+B` の式の読み方
+
+`:nth-child()` の引数には、`An+B` の形の式を書きます。`n` に0、1、2…と0以上の整数を順に入れ、計算した値が1以上になる位置の要素が選ばれます。位置は1から数えます。`:nth-child(3n+1)` なら、`n` が0、1、2のときに1、4、7となり、1番目、4番目、7番目の子が選ばれます。
+
+`2n+1` と `2n` には、それぞれ `odd`（奇数番目）と `even`（偶数番目）というキーワードがあります。縞模様のように意味がそのまま伝わる場面では、キーワードで書きます。`A` を省いて `:nth-child(3)` と書けば、3番目の子だけに当たります。
+
+`A` を負の数にすると、先頭から数個を選べます。`:nth-child(-n+3)` は、`n` が0、1、2のときに3、2、1となり、`n` が3以上では0以下になるので、先頭の3個に当たります。反対に、`:nth-child(n+4)` は4、5、6…となり、4番目以降のすべてに当たります。式の `B` は境界の位置を、`n` の符号はその先と手前のどちらへ伸びるかを表します。こう読めば取り違えません。
+
+範囲を選ぶときは、2つの `:nth-child()` を連結します。`:nth-child(n+4):nth-child(-n+6)` は「4番目以降」と「6番目まで」の両方を満たす要素なので、4番目から6番目に当たります。セレクタを連結すると、それぞれの条件のAND（両方を満たす）になるからです。
+
+```css title="🙆‍♂ Recommended: 新着の先頭3件の日付を強調する"
+@scope (.scoped.news-list) to (.scoped) {
+  li {
+    /* 先頭から3件 */
+    &:nth-child(-n+3) time {
+      color: oklch(48% 0.17 260deg);
+      font-weight: bold;
+    }
+  }
+}
+```
+
+`:nth-last-child()` は、同じ式で末尾から数えます。`:nth-last-child(-n+2)` は最後の2個、`:nth-last-child(n+3)` は最後の2個を除いたすべてです。`:nth-child(-n+3)` のような式は、書いた本人でも数か月後には読み直すのに時間がかかります。上の例のように、選ぶ範囲を文章にしたコメントを添えます。
+
+## `of S` で数える対象を絞る
+
+Selectors Level 4では、`:nth-child()` と `:nth-last-child()` の引数に `of S` を続けられます。`:nth-child(even of :not([hidden]))` は、兄弟のうち `:not([hidden])` に当てはまる要素だけを数え、その中で偶数番目のものを選びます。Sに当てはまらない兄弟は、数える対象から外れます。
+
+この書き方で、最初の見出しの表を直します。`hidden` 属性の付いていない行だけを数えるので、隠した行がいくつあっても、見えている行は1行おきに色が付きます。HTMLは前のデモと同じで、CSSの `:nth-child()` の引数だけを変えています。
+
+```css title="🙆‍♂ Recommended: 隠した行を除いて数え、縞を付ける"
+@scope (.scoped.stock-table) to (.scoped) {
+  tbody tr {
+    &:nth-child(even of :not([hidden])) {
+      background-color: oklch(96% 0.02 260deg);
+    }
+  }
+}
+```
+
+<Demo title="hidden 属性の付いていない行だけを数え、縞を付ける" html={tableHtml} css={tableCss} />
+
+Sには、クラス、属性、擬似クラスを含むセレクタのリストを書けます。`:nth-child(-n+3 of ._pickup)` は「`._pickup` の中で先頭から3個」、`:nth-child(1 of :checked)` は「チェックされたものの中で最初の1個」です。詳細度は、擬似クラス1つ分にSの中でいちばん高いセレクタの詳細度を足した値です。`:nth-child(even of :not([hidden]))` は、0.1.0に `[hidden]` の0.1.0を足して0.2.0になります。
+
+Sが判定するのは、セレクタに当てはまるかどうかだけです。メディアクエリやクラスで `display: none` にした要素は、Sで除かない限り数えられます。{/* 要確認: 出典なし */}表示を切り替える手段を `hidden` 属性にそろえておけば、`:not([hidden])` の1つで、隠した要素を数えずに済みます。
+
+`of S` は、Chrome 111、Safari 9、Firefox 113から使え、2023年5月から主要なブラウザで使えます（2026年10月確認）。Safariは長く先行して対応しており、Firefoxの対応が最後でした。
+
+## `:nth-of-type()` との違い
+
+`:nth-of-type()` は、同じタグ名の兄弟だけを数える擬似クラスです。式の書き方は `:nth-child()` と同じで、`p:nth-of-type(2)` は兄弟の中で2番目の `p` に当たります。数える単位はタグ名に限られ、クラスや属性では数えません。
+
+そのため、`._item:nth-of-type(2)` は「2番目の `._item`」を選びません。この式は「同じタグ名の兄弟の中で2番目にあり、かつ `._item` でもある要素」を選びます。次のHTMLでは、2つ目の `li` が `._ad` なので、`._item:nth-of-type(2)` に当たる要素はありません。
+
+```html
+<ul>
+  <li class="_item">…</li>
+  <li class="_ad">…</li>
+  <li class="_item">…</li>
+</ul>
+```
+
+```css title="🙅‍♂ Not Recommended: 「2番目の ._item」のつもりで :nth-of-type() を使う"
+/* 🙅‍♂ Not Recommended */
+._item:nth-of-type(2) {
+  /* 2つ目の li は ._ad なので、どの要素にも当たらない */
+  border-block-start: 1px solid;
+}
+```
+
+「2番目の `._item`」を選ぶなら、`:nth-child(2 of ._item)` と書きます。`._item` だけを数えるので、間に広告の `li` が入っても、3つ目の `li` が選ばれます。クラス、属性、状態のどれで絞るときも同じ形で書けるので、本書では、絞った中での順番はすべて `of S` で書きます。
+
+```css title="🙆‍♂ Recommended: 2番目の ._item を選ぶ"
+@scope (.scoped.item-list) to (.scoped) {
+  li {
+    &:nth-child(2 of ._item) {
+      border-block-start: 1px solid;
+    }
+  }
+}
+```
+
+`:nth-of-type()` が適しているのは、種類の違う要素が混ざった並びで、ある種類の何番目かを選ぶときです。記事の本文で最初の `p` だけ文字を大きくする、といった場面では、`p:first-of-type` のほうが意図をそのまま表します。ただし、本書の規約ではタイプセレクタの順番に頼る場面自体が多くありません。
+
+## 位置で選ばないほうがよい場面
+
+位置で選ぶのは、順番そのものが条件になる場面だけです。縞模様、先頭の数件の強調、最後の要素の後ろに区切りを付けない処理などです。役割の決まった子を `:first-child` や `:last-child` で選ぶと、HTMLの順番を入れ替えたり要素を足したりしたとき、スタイルが別の子に当たります。
+
+「[8-13-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/layout/compositions/sidebar/)」も、同じ理由で、メインとサイドを `& > :first-child` ではなく専用のクラスで選びます。サイドを先に書く場合があり、位置で選ぶとメインとサイドが入れ替わるからです。役割で区別する子には、`@scope` の中のタイプセレクタか、役割の名前の子クラスを使います。
+
+子要素の間隔も、位置で選んで作りません。すべての子に `margin-bottom` を付けて `:last-child` で打ち消す書き方は、要素の順番を変えるたびに打ち消しの対象を確かめ直すことになります。間隔は親の `gap` で作ります（「[8-7 余白を設計する](/layout/spacing/)」）。見出しや段落が続く本文では、2つ目以降の子に `margin-block-start` を付けるコンポジション `prose` を使います（「[8-13-11 prose：子ごとに変えられる間隔で、本文の流れを作る](/layout/compositions/prose/)」）。
+
+子の数によってレイアウトを切り替える処理も、`:nth-child()` と `:nth-last-child()` の組み合わせで書けます。`:first-child:nth-last-child(3)` は、兄弟がちょうど3つのときの最初の子です。この書き方は数量クエリと呼ばれ、「[3-4 数量クエリ](/pseudo/quantity-queries/)」で説明します。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [:nth-child() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:nth-child)
+- [:nth-of-type() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:nth-of-type)
+- [Selectors Level 4: Child-indexed Pseudo-classes](https://drafts.csswg.org/selectors-4/#child-index)
+- [CSS Syntax Module Level 3: The An+B microsyntax](https://drafts.csswg.org/css-syntax-3/#anb-microsyntax)
+- [CSS セレクタのレシピ - 子要素インデックス編](https://griponminds.jp/blog/css-selectors-child-index/)（grip on minds、2023年5月）

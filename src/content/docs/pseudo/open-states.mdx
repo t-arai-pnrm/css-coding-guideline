@@ -1,0 +1,197 @@
+---
+title: "3-6 開閉と表示の状態を表す擬似クラス"
+description: "開閉の状態は、クラスを付け外しせず、要素自身の状態で選びます。<details>と<dialog>は[open]、ポップオーバーは:popover-open、モーダルかどうかは:modalで選び、:openは対象のすべてのブラウザが対応するまで使いません。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import openStateHtml from '../../../demos/pseudo/open-state-controls/index.html?raw';
+import openStateCss from '../../../demos/pseudo/open-state-controls/style.css?raw';
+
+開閉の状態は、JavaScriptで付け外しするクラスではなく、要素自身の状態をセレクタにして選びます。`<details>` と `<dialog>` は `[open]` 属性セレクタで、`popover` 属性の要素は `:popover-open` で、モーダルとして開いたダイアログは `:modal` で選びます。2026年5月にすべての主要なブラウザが対応した `:open` は、本書の対象のSafariが対応するまで使いません（2026年10月確認）。
+
+開いた状態をどこに持つかは、要素によって違います。`open` 属性で表す要素、属性を持たず擬似クラスでしか表せない要素、開き方によって当てはまる擬似クラスの変わる要素があります。この節では、それぞれのセレクタが当てはまる条件を比べます。あわせて、ページ内リンクの移動先を表す `:target` と、中身の有無を表す `:empty` を説明します。開閉するUIの作り方は、第12章「[12-3 開閉するUI](/interaction/disclosure/)」で扱います。
+
+## 開閉の状態をクラスで表す問題
+
+開いたメニューやアコーディオンには、JavaScriptで `.is-open` のようなクラスを付けて、スタイルを切り替えることがよくあります。しかし、`<details>` や `popover` 属性の要素は、ブラウザが自分で開閉し、開いているかどうかを要素の状態として持っています。そこにクラスを足すと、同じ状態を要素の状態とクラスの2か所で持つことになります。
+
+```css title="🙅‍♂ Not Recommended: 開閉の状態をクラスで表す"
+/* 🙅‍♂ Not Recommended */
+.filter-details.is-open {
+  border-color: oklch(48% 0.17 260deg);
+}
+```
+
+2か所の状態は、ずれることがあります。`<details>` は、`<summary>` のクリックやキー操作のほか、対応したブラウザではページ内検索で中身が見つかったときにも開きます。`popover="auto"` のポップオーバーは、外側のクリックやEscキーで閉じます。こうした開閉はボタンのクリックの処理を通らないので、クラスを付け外しする処理から漏れやすくなります。状態のスタイルを擬似クラスとARIA属性で表す方針は、第12章「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」のルールで定めています。
+
+ただし、要素自身の状態を使う場合も、選ぶセレクタは要素によって違います。次の表は、この節で扱う要素と、開いた状態を選ぶセレクタの対応です。
+
+| 要素 | 開いた状態に当てはまるセレクタ | 本書で使うもの |
+| --- | --- | --- |
+| `<details>` | `[open]`、`:open` | `[open]` |
+| `show()` で開いた `<dialog>` | `[open]`、`:open` | `[open]:not(:modal)` |
+| `showModal()` で開いた `<dialog>` | `[open]`、`:open`、`:modal` | `:modal` |
+| `popover` 属性の要素 | `:popover-open` | `:popover-open` |
+| `<select>`、ピッカーを持つ `<input>` | `:open` | `:open`（装飾に限る） |
+
+## `[open]` 属性と `:open` 擬似クラス
+
+`<details>` と `<dialog>` は、開いている間 `open` 属性を持ちます。`<summary>` をクリックして開くとブラウザが `open` 属性を付け、閉じると外します。`name` 属性で1つだけを開くアコーディオンにした場合も、ほかの項目を開いたときに、ブラウザが元の項目の `open` 属性を外します。属性が状態をそのまま表しているので、`[open]` 属性セレクタで開いた状態を選べます。
+
+`:open` は、開いた状態を表す擬似クラスです。`<details>` と `<dialog>` では、`open` 属性を持つときに当てはまり、`[open]` と同じ要素を選びます。違うのは、属性を持たない状態にも当てはまる点です。`<select>` のドロップダウンや、`<input type="color">` のような入力欄のピッカーを表示している間も `:open` になります。一方、`popover` 属性の要素には当てはまりません。詳細度は、どちらも0.1.0です。
+
+<Baseline id="open-pseudo" name=":open" />
+
+`:open` には2026年5月にすべての主要なブラウザが対応しましたが、Safariが対応したのは26.5からです。本書の対象はSafari 18.6以降なので（第1章「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）、対象のすべてでは使えません。`<details>` と `<dialog>` は `[open]` で同じ要素を選べるので、対応がそろうまでは `[open]` を使います。
+
+`[open]` と `:open` を並べて書く必要もありません。セレクタリストの中に解釈できないセレクタが1つでもあると、ルール全体が無効になるからです。次の例は、`:open` に対応していないSafariでは、`[open]` の側も含めて当たりません。`:is()` で包めば無効にはなりません。しかし、`<details>` では2つが同じ要素を選ぶので、並べても選べる要素は増えません。
+
+```css title="🙅‍♂ Not Recommended: [open] と :open をセレクタリストに並べる"
+/* 🙅‍♂ Not Recommended */
+details:open,
+details[open] {
+  border-color: oklch(48% 0.17 260deg);
+}
+```
+
+```css title="🙆‍♂ Recommended: details の開いた状態を [open] で選ぶ"
+@scope (.scoped.filter-details) to (.scoped) {
+  :scope {
+    border: 1px solid oklch(80% 0 0deg);
+
+    &[open] {
+      border-color: oklch(48% 0.17 260deg);
+    }
+  }
+}
+```
+
+`<select>` のドロップダウンを開いている間は、`:open` でしか選べません。使うなら、未対応の環境で見た目が変わらなくても困らない装飾に限ります。ほかのセレクタとリストにせず、`&:open` だけのルールに書けば、解釈できないブラウザではそのルールだけが無効になります。`<details>` の開閉する部分を選ぶ `::details-content` と、それを使った開閉の動きは、第12章「[12-3 開閉するUI](/interaction/disclosure/)」で説明しています。
+
+## `:popover-open` とポップオーバーの状態
+
+`popover` 属性の要素は、表示しているかどうかを属性では表しません。`popover` 属性は閉じている間も付いたままで、開いても `open` 属性は付きません。そのため、`[popover]` は開閉に関係なく当てはまり、`[popover][open]` は開いていても当てはまりません。表示している状態を選べるのは、`:popover-open` だけです。
+
+<Baseline id="popover" compatKey="css.selectors.popover-open" name=":popover-open" />
+
+ポップオーバーの状態は、ほかの要素のスタイルの条件にも使えます。次のデモでは、左の `<details>` が開いている間、`[open]` で枠線の色を変えています。右のボタンは、直後のポップオーバーを表示している間だけ、`&:has(+ :popover-open)` で押された見た目になります。外側のクリックやEscキーでブラウザがポップオーバーを閉じたときも、ボタンの見た目は一緒に戻ります。
+
+<Demo title="[open] と :popover-open で、開いている間だけ開閉のボタンの見た目を変える" html={openStateHtml} css={openStateCss} height="16rem" />
+
+ボタンの見た目は、`:has()` の起点をボタンにし、`+` の結合子で直後の兄弟だけを調べて決めています。ナビゲーション全体を起点にして `nav:has(:popover-open)` と書くこともできますが、引数で探す範囲が広いほど、DOMが変わったときに調べ直す範囲も広がります。起点と引数の絞り方は「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
+
+閉じたポップオーバーは、ブラウザのデフォルトスタイルの `display: none` で隠れています。ポップオーバーのルールに `display: block grid` のような値を書くと、この指定を上書きして、閉じていても表示されます。閉じた `<dialog>` も同じです。kiso.cssは、閉じた `<dialog>` と、`:popover-open` でないポップオーバーに `display: none !important` を指定して、これを防いでいます。kiso.cssを使わない場合は、`display` を `&:popover-open` のルールに書きます。
+
+## `:modal` と `dialog[open]` の違い
+
+`<dialog>` の `open` 属性は、開き方を区別しません。`show()` でモーダルでないダイアログとして開いても、`showModal()` や `command="show-modal"` でモーダルとして開いても、`open` 属性が付きます。`:modal` は、そのうちモーダルとして開いたものだけに当てはまる擬似クラスです。モーダルのダイアログは背面の操作を止めてトップレイヤーに表示されるので、画面の中央に置く、背面を暗くするといった見た目は、この状態に結び付けます。
+
+```css title="🙆‍♂ Recommended: 開き方によって、ダイアログの置き方を変える"
+@scope (.scoped.help-dialog) to (.scoped) {
+  :scope {
+    padding: 24px;
+
+    &:modal {
+      max-inline-size: calc(560 / 16 * 1rem);
+      margin: auto;
+    }
+
+    &[open]:not(:modal) {
+      position: fixed;
+      inset: auto 16px 16px auto;
+    }
+  }
+}
+```
+
+この例では、`showModal()` で開いたときは画面の中央に、`show()` で開いたときは右下に置きます。`dialog[open]` だけで書くと、2つの開き方に同じスタイルが当たり、背面を操作できるはずのダイアログまで中央に重なります。モーダルの間に背面のスクロールを止める `:root:has(:modal)` も、同じ理由で `dialog[open]` ではなく `:modal` を使っています（第5章「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+
+`:modal` は、ダイアログ以外にも当てはまります。`requestFullscreen()` で全画面表示にした要素も、ほかの要素を操作できない状態にするので `:modal` になります。そのため、動画のプレーヤーを全画面にしている間も `:root:has(:modal)` が当てはまり、ルート要素のスクロールが止まります。
+
+<Baseline id="modal" name=":modal" />
+
+`::backdrop` は、トップレイヤーに表示した要素のすぐ後ろに、ビューポートを覆う大きさで生成される擬似要素です。モーダルのダイアログ、表示中のポップオーバー、全画面表示の要素に生成され、`show()` で開いたダイアログには生成されません。デモのポップオーバーでは、`&::backdrop` で背面を薄く暗くしています。ダイアログと `::backdrop` を一緒に動かす方法は、第12章「[12-3 開閉するUI](/interaction/disclosure/)」で説明しています。
+
+<Baseline id="backdrop" name="::backdrop" />
+
+## `:target` とページ内リンクの移動先
+
+`:target` は、URLのフラグメント（`#` の後ろ）と同じ `id` を持つ要素に当てはまる擬似クラスです。ページ内リンクで移動すると、移動先の要素が `:target` になり、別のフラグメントに移るか、フラグメントのないURLに戻るまで当てはまり続けます。FAQの項目へのリンクで移動したとき、その項目に線を引いて、どこへ移動したかを示す用途に使えます。
+
+```css title="🙆‍♂ Recommended: ページ内リンクの移動先になった項目に線を引く"
+@scope (.scoped.faq-item) to (.scoped) {
+  :scope {
+    border-inline-start: 4px solid transparent;
+
+    &:target {
+      border-inline-start-color: oklch(48% 0.17 260deg);
+    }
+  }
+}
+```
+
+<Baseline id="target" name=":target" />
+
+移動先の要素そのものではなく、それを含む祖先を選びたいこともあります。Selectors Level 4の草案には、そのための `:target-within` がありました。しかし、`:has(:target)` で同じことが書けるとして2023年に仕様から削除され、対応したブラウザもありません。祖先は、`&:has(:target)` のように起点を付けた `:has()` で選びます。ページに移動先があるときだけスムーススクロールを有効にする `:root:has(:target)` の指定は、第5章「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+
+`::target-text` は、URLのテキストフラグメント（`#:~:text=` の後ろに書いた語句）で移動したとき、ページの中の該当する語句を選ぶ擬似要素です。検索結果から語句の位置へ移動したときに、ブラウザが強調して表示する部分の色を変えられます。対象のブラウザでは、Safari 18.2以降が対応しています（2026年10月確認）。
+
+<Baseline id="target-text" name="::target-text" />
+
+## `:empty` と `:defined`
+
+`:empty` は、子を持たない要素に当てはまる擬似クラスです。子には要素だけでなく文字（テキストノード）も含まれ、空白1つや改行1つでも子があるとみなされます。コメントは子に数えません。次の3つの `p` のうち、`:empty` が当てはまるのは1つ目と2つ目だけです。
+
+```html
+<p class="_error"></p>
+<p class="_error"><!-- 入力の誤りを示す文言 --></p>
+<p class="_error">
+</p>
+```
+
+Selectors Level 4の草案では、空白だけを含む要素も空とみなす定義に変わりました。空白や改行が入ると当てはまらず、見た目では空の要素を選べないという問題を受けた変更です。しかし、2026年10月の時点で、この定義どおりに実装したブラウザはなく、改行だけを含む3つ目の `p` には当てはまりません。Firefoxには空白だけの要素に当てはまる独自の `:-moz-only-whitespace` がありますが、ほかのブラウザでは使えません。
+
+<Baseline id="empty" name=":empty" />
+
+そのため、`:empty` は、中身がないときの出力を制御できる要素にだけ使います。次の例は、入力欄のエラーの文言をJavaScriptで入れる領域を、文言がないときだけ隠します。HTMLでは、開始タグと終了タグの間に改行を入れないことが前提です。テンプレートやCMSが改行を出力しうる要素では、`:empty` で判定せず、中身がないときは要素そのものを出力しないようにします。
+
+```css title="🙆‍♂ Recommended: 文言がないときだけ、エラーの領域を隠す"
+@scope (.scoped.text-field) to (.scoped) {
+  ._error {
+    margin-block-start: 4px;
+    color: oklch(50% 0.2 25deg);
+
+    &:empty {
+      display: none;
+    }
+  }
+}
+```
+
+`:defined` は、定義済みの要素に当てはまる擬似クラスです。HTMLの標準の要素は常にこの状態で、カスタム要素は `customElements.define()` で定義されてから当てはまります。スクリプトの読み込みを待つ間、`:not(:defined)` で定義前のカスタム要素の表示を変えられます。ただし、定義を待つ間は要素を隠さず、定義後と同じ大きさの領域を確保する程度にとどめます。隠してしまうと、スクリプトの読み込みが失敗したとき、中身が表示されないままになるからです。{/* 要確認: 出典なし */}
+
+<Baseline id="autonomous-custom-elements" compatKey="css.selectors.defined" name=":defined" />
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [:open - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+- [:popover-open - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:popover-open)
+- [:modal - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:modal)
+- [::backdrop - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop)
+- [:target - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:target)
+- [::target-text - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::target-text)
+- [:empty - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:empty)
+- [:defined - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:defined)
+- [Selectors Level 4](https://drafts.csswg.org/selectors-4/)（W3C。`:open`、`:popover-open`、`:modal`、`:target`、`:empty`）
+- [HTML Standard - The popover attribute](https://html.spec.whatwg.org/multipage/popover.html)（WHATWG）
+- [`:empty` pseudo-selector (spec updated) · Issue #180 · web-platform-tests/interop](https://github.com/web-platform-tests/interop/issues/180)（2022年10月）
+- [JavaScriptを書かない2025年のモーダルの実装方法](https://www.tak-dcxi.com/article/modal-implementation-in-2025/)（TAKLOG、2025年5月）
+- [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）

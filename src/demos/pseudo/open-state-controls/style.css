@@ -1,0 +1,93 @@
+@layer components {
+  @scope (.scoped.search-tools) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: start;
+    }
+  }
+
+  @scope (.scoped.filter-details) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+
+      flex: 1 1 calc(240 / 16 * 1rem);
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+
+      /* 開いている間は、枠線をアクセントの色にする */
+      &[open] {
+        border-color: var(--_accent);
+      }
+    }
+
+    summary {
+      padding-block: 8px;
+      padding-inline: 16px;
+      font-weight: bold;
+
+      /* ルートの details が開いている間だけ、見出しの部分に背景を付ける */
+      &:is(:scope[open] *) {
+        background-color: oklch(96% 0.03 260deg);
+      }
+    }
+
+    ul {
+      display: block grid;
+      gap: 4px;
+      margin: 0;
+      padding-block: 12px;
+      padding-inline: 16px;
+      list-style-type: "";
+    }
+  }
+
+  @scope (.scoped.sort-menu) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+      font-weight: bold;
+
+      /* 直後のポップオーバーを表示している間は、押された見た目にする */
+      &:has(+ :popover-open) {
+        border-color: var(--_accent);
+        background-color: oklch(96% 0.03 260deg);
+      }
+    }
+
+    [popover] {
+      margin: auto;
+      padding: 16px;
+      border: 1px solid var(--_accent);
+      border-radius: 8px;
+      background-color: Canvas;
+      color: CanvasText;
+
+      /* popover="auto" のポップオーバーにも ::backdrop が生成される */
+      &::backdrop {
+        background-color: oklch(0% 0 0deg / 16%);
+      }
+    }
+
+    fieldset {
+      display: block grid;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    legend {
+      margin-block-end: 8px;
+      padding: 0;
+      font-weight: bold;
+    }
+  }
+}

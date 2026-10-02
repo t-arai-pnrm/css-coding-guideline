@@ -8,36 +8,37 @@ export const PARTS = [
     chapters: [
       { number: 1, dir: 'principles', title: '本書の前提となる考え方' },
       { number: 2, dir: 'cascade', title: 'カスケードを制御する' },
-      { number: 3, dir: 'values', title: '値と単位' },
+      { number: 3, dir: 'pseudo', title: '擬似クラスと擬似要素' },
+      { number: 4, dir: 'values', title: '値と単位' },
     ],
   },
   {
     label: '第II部 設計編',
     chapters: [
-      { number: 4, dir: 'reset', title: 'リセットとベーススタイル' },
-      { number: 5, dir: 'notation', title: '記法の規約' },
-      { number: 6, dir: 'components', title: 'コンポーネントとカスタムプロパティ' },
+      { number: 5, dir: 'reset', title: 'リセットとベーススタイル' },
+      { number: 6, dir: 'notation', title: '記法の規約' },
+      { number: 7, dir: 'components', title: 'コンポーネントとカスタムプロパティ' },
     ],
   },
   {
     label: '第III部 実装編',
     chapters: [
       {
-        number: 7,
+        number: 8,
         dir: 'layout',
         title: 'レイアウト',
         // 節の下にまとめるページ群。`after` の節の直後に、折りたたみのグループとして並べる
-        groups: [{ dir: 'compositions', label: '7-13 コンポジション集', after: 'masonry' }],
+        groups: [{ dir: 'compositions', label: '8-13 コンポジション集', after: 'masonry' }],
       },
-      { number: 8, dir: 'responsive', title: 'レスポンシブデザイン' },
-      { number: 9, dir: 'typography', title: 'タイポグラフィと和文組版' },
-      { number: 10, dir: 'color-media', title: '色・画像・装飾' },
-      { number: 11, dir: 'interaction', title: 'インタラクションとモーション' },
+      { number: 9, dir: 'responsive', title: 'レスポンシブデザイン' },
+      { number: 10, dir: 'typography', title: 'タイポグラフィと和文組版' },
+      { number: 11, dir: 'color-media', title: '色・画像・装飾' },
+      { number: 12, dir: 'interaction', title: 'インタラクションとモーション' },
     ],
   },
   {
     label: '第IV部 運用編',
-    chapters: [{ number: 12, dir: 'operations', title: '実務での運用' }],
+    chapters: [{ number: 13, dir: 'operations', title: '実務での運用' }],
   },
 ];
 
