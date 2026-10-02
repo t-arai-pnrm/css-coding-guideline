@@ -1,6 +1,6 @@
 ---
 title: "8-14-1 stack：子要素を縦に積み、間隔をそろえる"
-description: "同じ役割の要素を縦に積むときは stack を使い、間隔は親の gap で作って子に margin を書きません。本文のように種類の違う要素が続く領域には prose を使い、間隔を子ごとに変えたいときは stack を入れ子にするか、空のグリッドセルに切り替えます。"
+description: "構成が決まっていて、間隔を一律にしてよい要素を縦に積むときは stack を使い、間隔は親の gap で作って子に margin を書きません。本文のように種類の違う要素が続く領域には prose を使い、間隔を子ごとに変えたいときは stack を入れ子にするか、空のグリッドセルに切り替えます。"
 sidebar:
   order: 1
 ---
@@ -11,7 +11,7 @@ import Guideline from '../../../../components/Guideline.astro';
 import stackHtml from '../../../../demos/layout/composition-stack/index.html?raw';
 import stackCss from '../../../../demos/layout/composition-stack/style.css?raw';
 
-同じ役割の要素を縦に積み、すべての間を同じ大きさで空けるときは、コンポジション `stack` を使います。`stack` は `display: block flex` と `flex-direction: column` で子を縦に並べ、公開プロパティ `--stack--gap` で受け取った値を `gap` に渡して間隔を作ります。子の側には `margin` を書きません。
+構成が決まっていて、すべての間を同じ大きさで空けてよい要素を縦に積むときは、コンポジション `stack` を使います。`stack` は `display: block flex` と `flex-direction: column` で子を縦に並べ、公開プロパティ `--stack--gap` で受け取った値を `gap` に渡して間隔を作ります。子の側には `margin` を書きません。
 
 見出し、段落、図が続く記事の本文には、`stack` ではなく `prose` を使います。`stack` の中で一部の間隔だけを変えたいときは、子に `margin` を足さず、まとまりごとに `stack` を入れ子にするか、`grid-template` の空のセルに切り替えます。コンポジション全体の考え方（配置だけを受け持つクラスにまとめ、間隔は公開プロパティで受け取り、デフォルト値は0にする）は「[7-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
 
@@ -107,7 +107,7 @@ import stackCss from '../../../../demos/layout/composition-stack/style.css?raw';
 
 ## stackを使う場面とproseとの使い分け
 
-`stack` が向いているのは、同じ役割の要素が並び、間隔をすべて同じにしてよい場面です。カードの中の要素、フォームの項目、お知らせの一覧、セクションの中の見出しと本文と一覧の並びが、これに当たります。CMSの入力によって子の数が変わっても、`gap` は存在する子の間にだけ空くので、間隔の指定を変える必要がありません。
+`stack` が向いているのは、部品としてHTMLの構成が決まっていて、間隔をすべて同じにしてよい場面です。並ぶ要素の種類がそろっている必要はありません。カードの中の要素、フォームの項目、お知らせの一覧、セクションの中の見出しと本文と一覧の並びが、これに当たります。CMSの入力によって子の数が変わっても、`gap` は存在する子の間にだけ空くので、間隔の指定を変える必要がありません。
 
 記事の本文のように、見出し、段落、リスト、図が続く領域を自分でHTMLに書くときは `prose` を使います。`prose` は、`& > * + *` で2つ目以降の子に `margin-block-start` を付けるコンポジションで、子は通常フローのまま並びます。通常フローなので、`float` で画像のまわりに文字を回り込ませられます。要素が自分で持っている `margin` と流れの間隔が隣り合えば、相殺して大きいほうだけが効きます。`stack` の子はフレックスアイテムなので、`float` は無視され、`margin` は相殺されず `gap` に加算されます。本文の余白の設計は「[8-9 余白を設計する](/layout/spacing/)」で扱っています。
 

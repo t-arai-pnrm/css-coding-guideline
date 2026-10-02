@@ -56,6 +56,13 @@
   since: 0.1.0
 
 # 5-2 ベーススタイルに書くもの
+- id: underline-offset-in-base
+  level: 推奨
+  rule: 'ベーススタイルの `:root` に `text-underline-offset: 25%` を指定し、下線を文字から離す。'
+  reason: 文字と下線の間が詰まっていると文字が判読しにくくなるため。継承されるプロパティなのでルート要素に1回書けば全体に適用でき、パーセントは相対値のまま継承されるので、見出しのような大きな文字でも比率が保たれる（`em` はルート要素で固定の長さに計算されてから継承される）。
+  page: reset/base-styles
+  since: 0.16.0
+
 - id: focus-ring-double
   level: 推奨
   rule: ベーススタイルのフォーカスリングは、`:focus-visible` に `CanvasText` の `outline` と `Canvas` の `box-shadow` を重ねた二重リングで定義する。
@@ -83,8 +90,9 @@
 
 - id: smooth-scroll-conditional
   level: 推奨
-  rule: 'スムーススクロールは、`prefers-reduced-motion: no-preference` の中で、`:root:has(:target):not(:has(:focus-visible))` のときだけ有効にする。'
-  reason: ページ内リンクで移動するときだけなめらかにし、キーボードでフォーカスを移すときや、動きを減らす設定をしているときは即座にスクロールさせるため。
+  rule: 'スムーススクロールは、`prefers-reduced-motion: no-preference` の中で、`:root[data-loaded="true"]:has(:target):not(:has(:focus-visible))` のときだけ有効にする。'
+  reason: ページ内リンクで移動するときだけなめらかにし、フラグメント付きの URL で表示した直後や、キーボードでフォーカスを移すとき、動きを減らす設定をしているときは即座にスクロールさせるため。
+  note: '`data-loaded` 属性は、JavaScript で `load` イベントのときにルート要素に付けます。'
   page: reset/base-styles
   since: 0.1.0
 

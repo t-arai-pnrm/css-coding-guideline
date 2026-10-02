@@ -116,10 +116,14 @@ HTMLの入れ子が深くなっても、子要素のクラス名は平らなま�
 ```css title="🙆‍♂ Recommended: 子要素は短い名前で、スコープの中に書く"
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
+    --_title-font-size: calc(18 / 16 * 1rem);
+
     display: block grid;
     gap: 12px;
 
     &[data-variant="featured"] {
+      --_title-font-size: calc(24 / 16 * 1rem);
+
       padding: 16px;
       border: 1px solid oklch(85% 0 0deg);
     }
@@ -131,12 +135,14 @@ HTMLの入れ子が深くなっても、子要素のクラス名は平らなま�
   }
 
   h2 {
-    font-size: calc(18 / 16 * 1rem);
+    font-size: var(--_title-font-size);
   }
 }
 ```
 
-`._image` と `h2` のスタイルは `media-card` のスコープの中にしか当たらないので、ほかのコンポーネントに同じ名前の子要素や同じ種類の要素があっても問題ありません。`@scope` の括弧の中のセレクタは詳細度に加わらないので、`._image` は `0.1.0`、`h2` は `0.0.1` です。`:scope` も擬似クラスと同じ `0.1.0` で、その中の `&[data-variant="featured"]` は、`&` が `:scope` を指すため、属性セレクタの分を足した `0.2.0` になります。バリエーションや状態を属性で表す書き方は、「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で扱います。
+`._image` と `h2` のスタイルは `media-card` のスコープの中にしか当たらないので、ほかのコンポーネントに同じ名前の子要素や同じ種類の要素があっても問題ありません。featuredの見出しを大きくする指定は、ルートで内部用のカスタムプロパティ（`--_title-font-size`）の値を切り替えて表しています。見出しを選ぶセレクタにルートの条件を足さずに済むので、BEMの例のように詳細度が上がることはありません。バリエーションや状態を属性で表す書き方は、「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で扱います。
+
+`@scope` の括弧の中のセレクタは詳細度に加わらないので、`._image` は `0.1.0`、`h2` は `0.0.1` です。`:scope` も擬似クラスと同じ `0.1.0` です。その中の `&[data-variant="featured"]` は、`&` が `:scope` を指すため、属性セレクタの分を足した `0.2.0` になります。
 
 AIに名前を付けさせると、`.media-card__title` のようなBEMの名前や、`.card-title` のようにコンポーネント名を繰り返した名前が出てくることがよくあります。`@scope` の中に書くコードでは、子要素の名前からコンポーネント名を取り除き、`_` で始まる短い名前に直してください。`.media-card__title` のように1つしかない見出しに付いた名前は、クラスごと外してタイプセレクタで選びます。
 

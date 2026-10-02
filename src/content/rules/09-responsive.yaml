@@ -247,7 +247,7 @@
 
 - id: screen-mode-single-source
   level: 必須
-  rule: '`--screen` を使う場合、ビューポートの `@media` は `--screen` を決める1か所だけにし、各所の分岐は `@container style(--screen: …)` で書く。'
+  rule: '`--screen` を使う場合、ビューポートの `@media` は `:root` の1か所だけにして `--screen` と比例スケールの比率をそこでまとめて切り替え、各所の分岐は `@container style(--screen: …)` で書く。'
   reason: ブレイクポイントの値が1か所にまとまり、変えたときの修正漏れがなくなるため。
   page: responsive/design-comp-pattern
   since: 0.1.0

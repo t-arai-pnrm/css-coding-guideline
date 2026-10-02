@@ -7,7 +7,7 @@ sidebar:
 
 import Guideline from '../../../components/Guideline.astro';
 
-規約のうち、機械的に判断できるものはStylelintに任せます。本書の設定は、Stylelintの標準の設定（stylelint-config-standard）と、著者が公開しているプロパティの並び順の設定（taks-stylelint-order）を土台にしています。そこに3つのプラグインと、本書の独自ルールを1つ加えています。
+規約のうち、機械的に判断できるものはStylelintに任せます。本書の設定は、Stylelintの標準の設定（stylelint-config-standard）と、著者が公開しているプロパティの並び順の設定（taks-stylelint-order）を土台にしています。そこに3つのプラグインと、本書の独自ルールを3つ加えています。
 
 禁止リストのルールには、違反したときに代わりの書き方を示すメッセージを付けます。置き換え先を人が選ぶ必要のあるルールは警告に、機械的に直せるルールはエラーにして、警告も放置しません。本書の推奨のコード例とデモも、同じ設定で検証しています。
 
@@ -35,6 +35,8 @@ export default {
     'stylelint-order',
     'stylelint-plugin-display-multi-keyword-syntax',
     './stylelint/conditions-inside-rules.mjs',
+    './stylelint/no-unanchored-has.mjs',
+    './stylelint/reading-flow-when-reordered.mjs',
   ],
   rules: {
     /* ... */
@@ -60,7 +62,7 @@ stylelint-plugin-logical-cssは、論理プロパティと論理的な単位を�
 
 ## 条件付きアットルールの位置を検査する独自ルール
 
-本書の設定には、独自ルールの `book/conditions-inside-rules` を1つ加えています。`@media` と `@container` がセレクタの中に書かれていないと、エラーにするルールです。
+本書の設定には、独自ルールを3つ加えています。この節で取り上げる `book/conditions-inside-rules` は、`@media` と `@container` がセレクタの中に書かれていないと、エラーにするルールです。起点のない `:has()` を報告する `book/no-unanchored-has` は「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。見た目の順番を変えうる配置に `reading-flow` を求める `book/reading-flow-when-reordered` は「[8-15 表示順と読み上げ順を合わせる](/layout/reading-flow/)」で説明しています。
 
 ```css title="🙅‍♂ Not Recommended: @scope の直下に条件のブロックを置く"
 /* 🙅‍♂ Not Recommended */

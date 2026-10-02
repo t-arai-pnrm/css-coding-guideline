@@ -21,7 +21,7 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 
 生成コンテンツは、DOMに含まれません。画面には表示されても、HTMLに書いた文字と同じようには扱われません。私は見出しの副題を `content: attr(data-subtitle)` で表示する書き方について、機械翻訳されず、選択してコピーできず、ページ内検索の対象にもならないことを記事に書きました。
 
-読み上げも当てになりません。MDNは、生成コンテンツはDOMに含まれないので、支援技術とブラウザの組み合わせによっては読み上げられないと説明しています。WCAGの達成方法の文書にも、装飾でない内容を `::before` と `::after` で挿入することを、達成基準1.3.1の失敗例として挙げたもの（F87）があります。ユーザーがスタイルを無効にしたり、自分のスタイルに置き換えたりすると、その内容が失われるからです。
+読み上げも当てになりません。MDNは、生成コンテンツはDOMに含まれないので、支援技術とブラウザの組み合わせによっては読み上げられないと説明しています。WCAGの達成方法の文書には、装飾でない内容を `::before` と `::after` で挿入することを、達成基準1.3.1の失敗例として挙げたもの（F87）がありました。現在は、ブラウザとスクリーンリーダーの対応が進んだことを理由として廃止扱いです。ただし、文字を選択できないといった使い勝手の問題は残るとされています（2026年10月確認）。読み上げられる環境が増えても、翻訳、コピー、検索の対象にならないことと、ユーザーがスタイルを無効にすると内容が失われることは変わりません。
 
 この性質は、次のような指定で問題になります。入力欄のラベルに「必須」を、価格に「円（税込）」を、CSSで足す書き方です。見た目は整いますが、読み上げで「必須」が伝わらなければ、ユーザーは入力が必須の項目を知らないまま送信します。翻訳した画面では、金額の数字だけが訳され、単位だけが日本語のまま残ります。
 
@@ -131,7 +131,7 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 
 `::first-letter` は、`::before` で生成した文字があれば、その最初の文字を選びます。生成コンテンツに装飾の記号を入れた要素では、本文の最初の文字ではなく、記号が大きくなります。2つを同じ要素に指定するときは、表示を確かめます。
 
-`::first-line` が選ぶ範囲は、要素の幅と文字の大きさで決まります。幅の狭い画面では、同じ段落でも1行に入る文字が減り、太字になる範囲も短くなります。1行目だけを要約として目立たせるような、範囲に意味を持たせる使い方はできません。使うとしても、どこで区切れても意味が変わらない装飾にとどめます。{/* 要確認: 出典なし */}最初の文字を数行分の高さに沈める `initial-letter` は、2026年10月の時点でChrome系のブラウザだけが対応しているので、本書では扱いません。
+`::first-line` が選ぶ範囲は、要素の幅と文字の大きさで決まります。幅の狭い画面では、同じ段落でも1行に入る文字が減り、太字になる範囲も短くなります。1行目だけを要約として目立たせるような、範囲に意味を持たせる使い方はできません。使うとしても、どこで区切れても意味が変わらない装飾にとどめます。{/* 要確認: 出典なし */}最初の文字を数行分の高さに沈める `initial-letter` は、本書では扱いません。2026年10月の時点で接頭辞なしの `initial-letter` に対応しているのはChrome系のブラウザだけで、Safariは接頭辞付きの `-webkit-initial-letter` だけに対応しています。
 
 フォームの部品に付いた擬似要素のうち、入力欄の例文を選ぶ `::placeholder` と、ファイルの選択ボタンを選ぶ `::file-selector-button` は、「[3-5 フォームの状態を表す擬似クラス](/pseudo/form-states/)」で扱います。
 
@@ -147,7 +147,7 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 - [::before - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::before)
 - [content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/content)
 - [CSS Generated Content Module Level 3: Alternative Text for Accessibility](https://drafts.csswg.org/css-content-3/#alt)
-- [Failure F87](https://www.w3.org/WAI/WCAG21/Techniques/failures/F87)（W3C。装飾でない内容を `::before` と `::after` で挿入する失敗例）
+- [Failure F87](https://www.w3.org/WAI/WCAG22/Techniques/failures/F87)（W3C。装飾でない内容を `::before` と `::after` で挿入する失敗例。現在は廃止扱い）
 - [主題と副題のマークアップにはhgroupを使用する](https://www.tak-dcxi.com/article/use-hgroup-for-marking-up-the-main-heading-and-subheading/)（TAKLOG、2024年5月。副題を生成コンテンツで表示しない理由）
 - [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。アイコン付きのリストを `::marker` なしで描く例）
 - [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)

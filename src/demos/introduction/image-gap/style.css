@@ -1,0 +1,39 @@
+@layer components {
+  /**
+   * 画像の下の隙間と、それを消す3つの書き方を並べる。
+   * 隙間が見えるように、画像を囲む枠に背景色を付けている。
+   */
+  @scope (.scoped.image-gap) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+      gap: 16px;
+    }
+
+    figure {
+      margin: 0;
+    }
+
+    ._frame {
+      inline-size: fit-content;
+      background-color: oklch(70% 0.2 25deg);
+
+      &[data-fix="vertical-align"] img {
+        vertical-align: bottom;
+      }
+
+      &[data-fix="display"] img {
+        display: block flow;
+      }
+
+      &[data-fix="parent-grid"] {
+        display: block grid;
+      }
+    }
+
+    figcaption {
+      margin-block-start: 8px;
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

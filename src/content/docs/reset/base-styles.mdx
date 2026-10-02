@@ -12,7 +12,7 @@ import ringHtml from '../../../demos/reset/focus-ring/index.html?raw';
 import ringCss from '../../../demos/reset/focus-ring/style.css?raw';
 import ringBadCss from '../../../demos/reset/focus-ring/style.bad.css?raw';
 
-ベーススタイルには、リセットの上に、プロジェクト全体で共通にしたい既定を書きます。本書でベーススタイルに書くのは、二重のフォーカスリング、スクロールの挙動、モーダル表示中の背面固定、`interpolate-size`、フレックスアイテムとグリッドアイテムの最小幅です。ベーススタイルは `base` レイヤーに置き、セレクタは `:where()` で包んで詳細度を0にします。詳細度を上げてはいけない理由は、「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明します。
+ベーススタイルには、リセットの上に、プロジェクト全体で共通にしたい既定を書きます。本書でベーススタイルに書くのは、ルート要素の色と行の高さ、下線の位置、二重のフォーカスリング、スクロールの挙動、モーダル表示中の背面固定、`interpolate-size`、フレックスアイテムとグリッドアイテムの最小幅です。ベーススタイルは `base` レイヤーに置き、セレクタは `:where()` で包んで詳細度を0にします。詳細度を上げてはいけない理由は、「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明します。
 
 どれも、コンポーネントごとに書くと抜け漏れが出やすく、しかもリセットCSSには入れにくい指定です。
 
@@ -22,7 +22,45 @@ import ringBadCss from '../../../demos/reset/focus-ring/style.bad.css?raw';
 
 本書が推奨するリセットCSSのkiso.css（「[5-1 壊さないリセット](/reset/kiso/)」）には、あえて入れていない指定があります。モーダル表示中に背面のスクロールを止める指定は、リセットCSSの範囲かどうかで判断が分かれるので入れていません。`interpolate-size` も、既存のサイトで意図しないアニメーションを起こすおそれがあるので見送っています。どちらも、各プロジェクトのベーススタイルで指定します。
 
-ルート要素の文字色や背景色、フォント、グローバルな `@keyframes` などもベーススタイルに置きますが、これらは「[10-1 フォントを指定する](/typography/fonts/)」「[11-4 ダークモード](/color-media/dark-mode/)」「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で扱います。
+反対に、kiso.cssがすでに指定しているものは、ベーススタイルに書き足しません。このページでは、kiso.cssを読み込んだうえで、さらにベーススタイルに書くものと、プロジェクトごとに検討するものを挙げます。グローバルな `@keyframes` もベーススタイルに置きますが、これは「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で扱います。
+
+## ルート要素の色と文字
+
+ルート要素には、ページ全体の背景色、文字色、行の高さを指定します。値はどれもトークンで持ち、ベーススタイルではそれを参照するだけにします。
+
+```css title="🙆‍♂ Recommended: ルート要素に背景色、文字色、行の高さを指定する"
+:where(:root) {
+  background-color: var(--background--base);
+  color: var(--foreground--base);
+  line-height: var(--leading--normal);
+}
+```
+
+色は、`--color--neutral--50` のような色そのものを表すトークン（プリミティブ）ではなく、`--background--base` のような役割を表すトークン（セマンティクス）で指定します。ダークモードの値は役割のトークンの側で `light-dark()` を使って切り替えるので、ベーススタイルの指定は配色にかかわらず同じです。トークンの2層の設計は「[7-4 デザイントークン](/components/design-tokens/)」、配色の切り替えは「[11-4 ダークモード](/color-media/dark-mode/)」で説明します。
+
+`body` ではなく `:root` に指定するのは、行の高さを `rlh` 単位の基準にするためです。`rlh` はルート要素の行の高さを表す単位なので、`body` に `line-height` を指定しても `rlh` の値は変わりません。このページで後に出てくる `scroll-margin-block-start: 4rlh` も、ルート要素の行の高さを前提にしています。また、ルート要素の背景色は、ページの領域の外側（スクロールしすぎたときに見える部分など）にも描かれます。
+
+行の高さは1.5以上にします。kiso.cssも `:root` に `line-height: 1.5` を指定していますが、本文の読みやすさに合わせて、プロジェクトの値で上書きします。値の決め方は「[10-3 行の高さとハーフレディング](/typography/line-height/)」で説明します。
+
+`font-family` と `font-weight` は、Webフォントを使うときだけ指定します。使わない場合は、kiso.cssの `sans-serif` とデフォルトの太さで足ります。Webフォントを使う場合は、`font-family: var(--font-family--inter)` のようにフォントスタックのトークンを参照し、デザインに合わせて `font-weight` も決めます。フォントの選び方は「[10-1 フォントを指定する](/typography/fonts/)」で扱います。
+
+`-webkit-font-smoothing: antialiased` も、プロジェクトごとに検討するものです。macOSのブラウザで、文字の描画をグレースケールのアンチエイリアシングに切り替えるプロパティで、標準のプロパティはありません。「サブピクセルアンチエイリアシングを有効にする」という説明を見かけますが、実際は逆で、サブピクセルを使わない描画にする指定です。macOS 10.14以降はOSがサブピクセルアンチエイリアシングを使わなくなったので、今の効果は、文字が少し細く描かれることです。{/* 要確認: 出典なし */}フォントによっては細くかすれて見えるので、一律には指定しません。デフォルトの描画では太字が太りすぎて見える場合は、太字の要素にだけ指定する方法もあります。
+
+## リンクの下線の位置
+
+下線は、`text-underline-offset` で文字から少し離します。文字と下線の間が詰まっていると、ディスレクシアのある人などにとって、文字が判読しにくくなるという指摘があります。
+
+```css title="🙆‍♂ Recommended: 下線を文字の大きさの25%離す"
+:where(:root) {
+  text-underline-offset: 25%;
+}
+```
+
+`text-underline-offset` は継承されるので、ルート要素に1回書けば、リンクにも `u` 要素や `ins` 要素にも適用されます。値はパーセントで指定します。パーセントはその要素の `1em` に対する割合で、相対値のまま継承されるので、見出しのような大きな文字でも下線までの距離が文字の大きさに比例します。
+
+同じ距離を `0.25em` と書くと、比率は保たれません。`em` の値は指定した要素で絶対的な長さに計算されてから継承されるので、ルート要素の文字の大きさが16pxなら、32pxの見出しでも下線までの距離は4pxのままです。パーセントの値はSafari 18.2から使えるので、本書の対象のブラウザ（Safari 18系の最終版以降）で動作します（2026年10月確認）。
+
+kiso.cssは、リンクの下線をデフォルトで消し、下線の太さをフォントの指定に合わせています（`text-decoration-thickness: from-font`）。下線の位置は指定していないので、ベーススタイルで決めます。リンクに下線を戻すときは、`text-decoration-line: revert` を使います（「[5-1 壊さないリセット](/reset/kiso/)」）。
 
 ## フォーカスリングの色と形
 
@@ -70,19 +108,29 @@ kiso.cssは `outline-offset: 3px` を指定しているだけで、リングの�
 
 まず、Tabキーでフォーカスを移したときのスクロールまでなめらかになり、キーを続けて押すと動きが追いつかず、もたつきます。JavaScriptの `scrollTo()` も、デフォルトの動きがなめらかなスクロールに変わるので、サードパーティのスクリプトにも影響します。さらに、動きを減らす設定をしているユーザーにも、アニメーションが適用されます。
 
-```css title="🙆‍♂ Recommended: ページ内リンクの移動先があり、キーボード操作中でないときだけ有効にする"
-:where(:root:has(:target):not(:has(:focus-visible))) {
+```css title="🙆‍♂ Recommended: 読み込みが終わった後、ページ内リンクの移動先があり、キーボード操作中でないときだけ有効にする"
+:where(:root[data-loaded="true"]:has(:target):not(:has(:focus-visible))) {
   @media (prefers-reduced-motion: no-preference) {
     scroll-behavior: smooth;
   }
 }
 ```
 
-この指定は、3つの条件がそろったときだけスムーススクロールを有効にします。1つ目は、動きを減らす設定がないこと（`prefers-reduced-motion: no-preference`）です。2つ目は、ページ内リンクの移動先（URLのフラグメントが指す要素）があること（`:has(:target)`）です。3つ目は、キーボード操作などでフォーカスリングを表示している要素がないこと（`:not(:has(:focus-visible))`）です。
+この指定は、4つの条件がそろったときだけスムーススクロールを有効にします。1つ目は、動きを減らす設定がないこと（`prefers-reduced-motion: no-preference`）です。2つ目は、ページの読み込みが終わっていること（`[data-loaded="true"]`）です。3つ目は、ページ内リンクの移動先（URLのフラグメントが指す要素）があること（`:has(:target)`）です。4つ目は、キーボード操作などでフォーカスリングを表示している要素がないこと（`:not(:has(:focus-visible))`）です。
 
 ページ内リンクをクリックすると、移動先が `:target` になってからスクロールが始まるので、このときはなめらかに動きます。一方、Tabキーでフォーカスを移しているときは `:focus-visible` の要素があるので、アニメーションせずに一度でスクロールします。キーボード操作のもたつきは起きません。
 
-以前の私は、同じ理由から、CSSではなくJavaScriptの `scrollIntoView()` でスムーススクロールを実装していました。現在はこの条件付きの指定で、JavaScriptを使わずに済ませています。ただし、特定のリンクだけスムーススクロールを無効にするような細かい制御には、今でもJavaScriptが必要です。
+`data-loaded` 属性は、ページの読み込みが終わったときに、JavaScriptでルート要素へ付けます。
+
+```js title="🙆‍♂ Recommended: 読み込みが終わったら、ルート要素に data-loaded 属性を付ける"
+window.addEventListener("load", () => {
+  document.documentElement.dataset.loaded = "true";
+});
+```
+
+この条件がないと、ほかのページから `#section` のようなフラグメント付きのURLで来たときや、そのURLで再読み込みしたときに、表示した直後のページがなめらかにスクロールします。ユーザーはページ内リンクを操作していないので、この動きは不自然です。読み込みが終わるまではスムーススクロールを無効にしておけば、移動先へは一度でスクロールします。`DOMContentLoaded` ではなく `load` イベントを使うのは、画像などの読み込みが続いている間は、移動先へのスクロールが終わっていないことがあるからです。JavaScriptが動かない環境では、スムーススクロールが無効になるだけで、ページ内リンクは使えます。
+
+以前の私は、CSSではなくJavaScriptの `scrollIntoView()` でスムーススクロールを実装していました。現在は、スクロールそのものはこの条件付きの指定に任せ、JavaScriptでは属性を付けるだけにしています。ただし、特定のリンクだけスムーススクロールを無効にするような細かい制御には、今でもJavaScriptが必要です。
 
 ## 固定ヘッダーに隠れる移動先
 
@@ -184,13 +232,15 @@ Safariは18.2で対応したので、本書が対象とするブラウザ（Safa
 
 文字列の折り返しは、kiso.cssの `overflow-wrap: anywhere` で解決できます。しかし、入力欄や表のはみ出しは残ります。全称セレクタで最小幅を0にすると、こうした要素も親の幅まで縮みます。
 
-副作用がまったくないわけではありません。縮ませたくない要素まで縮むことがあるので、アイコンのような要素には、個別に `flex-shrink: 0` などを指定します。それでも私は、原因の分かりにくいはみ出しを調べるより、「縮みすぎる」という目に見える問題を直すほうが簡単で合理的だと考えています。はみ出しを防ぐほかの書き方は、「[8-10 変化に強いレイアウト](/layout/defensive/)」で説明します。
+副作用がまったくないわけではありません。縮ませたくない要素まで縮むことがあるので、アイコンのような要素には、個別に `flex-shrink: 0` などを指定します。それでも私は、原因の分かりにくいはみ出しを調べるより、「縮みすぎる」という目に見える問題を直すほうが簡単で合理的だと考えています。
+
+既存のサイトの修正では、この `min-content` によるはみ出しを直す依頼が繰り返しあります。そのため、新しく作るサイトでは既定で防いでおきます。Tailwind CSSの作者のAdam Wathan氏も、同じ指定を勧めています。はみ出しを防ぐほかの書き方は、「[8-10 変化に強いレイアウト](/layout/defensive/)」で説明します。
 
 ## ベーススタイルのまとめ
 
-ここまでの指定をまとめると、次のとおりです。これを `base` レイヤーに読み込み、プロジェクトの色やフォントの指定を足します。
+ここまでの指定をまとめると、次のとおりです。これを `base` レイヤーに読み込みます。Webフォントを使う場合は、`font-family` と `font-weight` の指定を足します。
 
-```css title="🙆‍♂ Recommended: この節で説明したベーススタイルのまとめ"
+```css title="🙆‍♂ Recommended: このページで説明したベーススタイルのまとめ"
 *,
 ::before,
 ::after {
@@ -198,12 +248,17 @@ Safariは18.2で対応したので、本書が対象とするブラウザ（Safa
 }
 
 :where(:root) {
+  background-color: var(--background--base);
+  color: var(--foreground--base);
+  line-height: var(--leading--normal);
+  text-underline-offset: 25%;
+
   @media (prefers-reduced-motion: no-preference) {
     interpolate-size: allow-keywords;
   }
 }
 
-:where(:root:has(:target):not(:has(:focus-visible))) {
+:where(:root[data-loaded="true"]:has(:target):not(:has(:focus-visible))) {
   @media (prefers-reduced-motion: no-preference) {
     scroll-behavior: smooth;
   }
@@ -227,7 +282,7 @@ Safariは18.2で対応したので、本書が対象とするブラウザ（Safa
 }
 ```
 
-`scrollbar-gutter: stable` は、kiso.cssが指定しているので、ここには含めていません。kiso.cssを使わない場合は、`:root` に書き足します。
+`scrollbar-gutter: stable` は、kiso.cssが指定しているので、ここには含めていません。`data-loaded` 属性を付けるJavaScriptは、スムーススクロールの節のものを使います。kiso.cssを使わない場合は、`:root` に書き足します。
 
 ## ガイドライン
 
@@ -243,3 +298,6 @@ Safariは18.2で対応したので、本書が対象とするブラウザ（Safa
 - [:modal - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:modal)
 - [scrollbar-gutter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/scrollbar-gutter)
 - [interpolate-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/interpolate-size)
+- [text-underline-offset - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-underline-offset)
+- [Improving hyperlink accessibility and readability](https://uxdesign.cc/improving-hyperlink-accessibility-and-readability-7f14ba4cb6c2)（UX Collective）
+- [全称セレクタで最小幅を0にすることについての Adam Wathan 氏の投稿](https://x.com/adamwathan/status/1734696245015494711)（X、2023年12月）

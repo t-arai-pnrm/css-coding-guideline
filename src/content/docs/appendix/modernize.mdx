@@ -1,77 +1,77 @@
 ---
 title: "付録B モダンな書き方への置き換え表"
-description: "昔の記事や既存のコード、AIの出力でよく見かける古い書き方と、本書の書き方を対にした早見表です。各行に根拠のルールのIDと掲載ページへのリンクを付け、AIが誤りやすいものには印を付けています。"
+description: "昔の記事や既存のコード、AIの出力でよく見かける書き方と、本書の書き方を対にした早見表です。各行に根拠のルールのIDと掲載ページへのリンクを付け、AIが誤りやすいものには印を付けています。"
 sidebar:
   order: 2
 ---
 
-この付録は、古い書き方と本書の書き方を対にした早見表です。昔の記事や既存のコード、AIが生成したコードでよく見かける書き方を左の列に、本書が勧める書き方を右の列に置いています。レビューで古い書き方を見つけたときや、AIの出力を直すときに、置き換え先をすばやく確かめるために使ってください。
+この付録は、よく見かける書き方と本書の書き方を対にした早見表です。昔の記事や既存のコード、AIが生成したコードでよく見かける書き方を左の列に、本書が勧める書き方を右の列に置いています。レビューで左の列の書き方を見つけたときや、AIの出力を直すときに、置き換え先をすばやく確かめるために使ってください。
 
 各行には、根拠になるルールのIDを付けています。IDのリンクから、そのルールを説明しているページの「ガイドライン」に移動できます。「AI」の列に印がある行は、AIが生成するコードで誤りやすいルールに対応するものです。AIの出力を確かめるときは、印のある行を重点的に見るとよいでしょう。
 
 表は要点だけを短く書いているので、コードは完全なCSSになっていません。例外や理由、未対応のブラウザの扱いは、リンク先の本文で確かめてください。すべてのルールの一覧は、付録A「[ルール一覧](/appendix/rules/)」にあります。
 
-「理由」の列は、古い書き方を置き換える理由が、本書の規約にあるのか、仕様やブラウザの側にあるのかを示します。「本書の方針」は、古い書き方も正しく動くCSSで、保守のしやすさや書き方の統一のために本書が選んだ行です。「挙動」は、表示の崩れやアクセシビリティの問題が実際に起きる行で、「対応状況」は、本書の対象のブラウザで動かない行です。理由が複数ある行には、主なものを1つだけ書いています。
+「理由」の列は、左の列の書き方を置き換える理由が、本書の規約にあるのか、特定の条件で起きる問題にあるのかを示します。「本書の方針」は、左の列の書き方も正しく動くCSSで、保守のしやすさや書き方の統一のために本書が選んだ行です。「挙動」は、表示の崩れ、アクセシビリティ、描画の負荷の問題が起きる行で、問題が起きる条件や症状を「：」の後に書いています。理由が複数ある行には、主なものを1つだけ書いています。
 
-「本書の方針」の行は、ほかのプロジェクトのコードにあっても誤りではありません。そのプロジェクトの規約に従っているなら、レビューで指摘する必要はありません。一方、「挙動」と「対応状況」の行は、本書の規約を採らないプロジェクトでも、直す理由になります。
+「本書の方針」の行は、ほかのプロジェクトのコードにあっても誤りではありません。そのプロジェクトの規約に従っているなら、レビューで指摘する必要はありません。一方、「挙動」の行は、書いてある条件がそのプロジェクトに当てはまるなら、本書の規約を採らないプロジェクトでも直す理由になります。
 
 ## 値と単位
 
 単位の選び方と、値を式で書く方法は、第4章「[値と単位](/values/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
-| `height: 100vh` | `min-block-size: 100svb` | 挙動 | [`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)、[`prefer-svi-svb`](/values/viewport-and-container-units/#rule-prefer-svi-svb) | AI |
-| `width: 100vw` や `margin-inline: calc(50% - 50vw)` で画面の端まで広げる | レイアウトのガターの列まで広げる（`grid-column: --full`）。背景だけなら `calc((100lvi - 100%) / -2)` | 挙動 | [`full-bleed-via-layout-first`](/layout/layering/#rule-full-bleed-via-layout-first)、[`full-bleed-offset-formula`](/layout/layering/#rule-full-bleed-offset-formula) | AI |
-| `font-size: 5vw` | `clamp()` の最小値と最大値をremにし、推奨値をremと `svi` の和にする | 挙動 | [`no-viewport-only-font-size`](/values/viewport-and-container-units/#rule-no-viewport-only-font-size)、[`clamp-rem-bounds`](/values/math-functions/#rule-clamp-rem-bounds) | AI |
-| `font-size: 14px` | `font-size: calc(14 / 16 * 1rem)` | 挙動 | [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)、[`px-to-rem-formula`](/values/px-and-rem/#rule-px-to-rem-formula) | AI |
-| `html { font-size: 62.5% }` | ルートの文字サイズはブラウザの設定のままにし、`calc(24 / 16 * 1rem)` の式で変換する | 挙動 | [`no-root-font-size-change`](/values/px-and-rem/#rule-no-root-font-size-change) | AI |
-| `line-height: 24px`、`line-height: 1.5em` | `line-height: 1.5` | 挙動 | [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height) | AI |
+| `height: 100vh` | `min-block-size: 100svb` | 挙動：モバイルでブラウザのUIが表示されていると、要素が見切れる | [`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)、[`prefer-svi-svb`](/values/viewport-and-container-units/#rule-prefer-svi-svb) | AI |
+| `width: 100vw` や `margin-inline: calc(50% - 50vw)` で画面の端まで広げる | レイアウトのガターの列まで広げる（`grid-column: --full`）。背景だけなら `calc((100lvi - 100%) / -2)` | 挙動：スクロールバーが幅を取る環境で、横スクロールが起きる | [`full-bleed-via-layout-first`](/layout/layering/#rule-full-bleed-via-layout-first)、[`full-bleed-offset-formula`](/layout/layering/#rule-full-bleed-offset-formula) | AI |
+| `font-size: 5vw` | `clamp()` の最小値と最大値をremにし、推奨値をremと `svi` の和にする | 挙動：文字サイズの設定が無視され、ズームしても大きくならないことがある | [`no-viewport-only-font-size`](/values/viewport-and-container-units/#rule-no-viewport-only-font-size)、[`clamp-rem-bounds`](/values/math-functions/#rule-clamp-rem-bounds) | AI |
+| `font-size: 14px` | `font-size: calc(14 / 16 * 1rem)` | 挙動：ブラウザの文字サイズの設定が効かない | [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)、[`px-to-rem-formula`](/values/px-and-rem/#rule-px-to-rem-formula) | AI |
+| `html { font-size: 62.5% }` | ルートの文字サイズはブラウザの設定のままにし、`calc(24 / 16 * 1rem)` の式で変換する | 挙動：16pxを前提にremで書かれた外部のCSSが崩れる | [`no-root-font-size-change`](/values/px-and-rem/#rule-no-root-font-size-change) | AI |
+| `line-height: 24px`、`line-height: 1.5em` | `line-height: 1.5` | 挙動：文字サイズの違う子要素で、行が重なったり空きすぎたりする | [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height) | AI |
 | `tan(atan2(100svi, 1px))` | `calc(100svi / 1px)` | 本書の方針 | [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless) | AI |
 
 ## カスケードとセレクタ
 
 優先順位の決め方とセレクタの書き方は、第2章「[カスケードを制御する](/cascade/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | 上書きに勝つための `!important` | レイヤーの順番で決め、上書きされる側を `:where()` で詳細度0にする | 本書の方針 | [`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity) | AI |
 | `.a.a`、`.a[class]`、`.a:not(#_)`、`.top-page .large-text` | レイヤーの順番、`:where()`、子の公開プロパティで解決する | 本書の方針 | [`no-specificity-hacks`](/cascade/selectors/#rule-no-specificity-hacks) | AI |
 | `#news h2` | クラスで指定し、`id` 属性はJavaScriptやページ内リンクのために残す | 本書の方針 | [`no-id-selector`](/cascade/selectors/#rule-no-id-selector) | AI |
 | ベーススタイルの `a:link, a:visited` | `:where(a:any-link)` | 本書の方針 | [`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)、[`no-heavy-specificity-in-global`](/reset/global-pitfalls/#rule-no-heavy-specificity-in-global) | AI |
 | JavaScriptで親に `has-image` のようなクラスを付ける | `&:has(> ._image)` | 本書の方針 | [`has-over-state-class`](/pseudo/has/#rule-has-over-state-class) | AI |
-| `body:has(.modal-open)` のように、ページ全体を起点にした `:has()` | コンポーネントのルートを起点にし、`&:has(> ._input:checked)` のように引数の範囲を絞る | 挙動 | [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor) | AI |
-| `:has(.foo)`、`*:has(.foo)` | `&:has(> .foo)` のように、直前に起点を書く | 挙動 | [`no-unanchored-has`](/pseudo/has/#rule-no-unanchored-has) | AI |
+| `body:has(.modal-open)` のように、ページ全体を起点にした `:has()` | コンポーネントのルートを起点にし、`&:has(> ._input:checked)` のように引数の範囲を絞る | 挙動：要素の多いページで、スタイルの再計算が重くなる | [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor) | AI |
+| `:has(.foo)`、`*:has(.foo)` | `&:has(> .foo)` のように、直前に起点を書く | 挙動：DOMが変わるたびにページ全体を調べ直し、再計算が重くなる | [`no-unanchored-has`](/pseudo/has/#rule-no-unanchored-has) | AI |
 | `:before`、`:after` | `::before`、`::after` | 本書の方針 | [`pseudo-element-double-colon`](/pseudo/basics/#rule-pseudo-element-double-colon) | |
 | `li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` | 親を起点にした `&:has(> :nth-child(3))` | 本書の方針 | [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has) | AI |
-| `._post:nth-of-type(2)` | `:nth-child(2 of ._post)` | 挙動 | [`nth-child-of-over-nth-of-type`](/pseudo/child-index/#rule-nth-child-of-over-nth-of-type) | AI |
-| `all: unset` でまとめて戻す | `all: revert-layer`（レイヤーを使わないなら `all: revert`） | 挙動 | [`no-all-unset`](/cascade/cascade-basics/#rule-no-all-unset) | AI |
+| `._post:nth-of-type(2)` | `:nth-child(2 of ._post)` | 挙動：同じ種類の兄弟にクラスの違う要素が混ざると、数え方がずれる | [`nth-child-of-over-nth-of-type`](/pseudo/child-index/#rule-nth-child-of-over-nth-of-type) | AI |
+| `all: unset` でまとめて戻す | `all: revert-layer`（レイヤーを使わないなら `all: revert`） | 挙動：`display` も初期値に戻り、`div` がインラインになる | [`no-all-unset`](/cascade/cascade-basics/#rule-no-all-unset) | AI |
 | BEMの `.news-card__title` | `@scope (.scoped.news-card) to (.scoped)` の中の `h2`。同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ `._main-link` のような子クラスを付ける | 本書の方針 | [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)、[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)、[`child-class-underscore`](/notation/naming/#rule-child-class-underscore) | AI |
 
 ## リセットとベーススタイル
 
 土台のCSSに書くものと書かないものは、第5章「[リセットとベーススタイル](/reset/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
-| `* { margin: 0; padding: 0; }`、`input { appearance: none; }` | 便利なデフォルトを残すkiso.cssを `reset` レイヤーに読み込む | 挙動 | [`reset-no-destructive-reset`](/reset/kiso/#rule-reset-no-destructive-reset) | AI |
-| `outline: none`、`outline: 0` | 消さずに、`:focus-visible` の二重のリングとして定義し直す | 挙動 | [`no-outline-none`](/reset/global-pitfalls/#rule-no-outline-none)、[`focus-ring-double`](/reset/base-styles/#rule-focus-ring-double) | AI |
-| `box-shadow` だけで描いたフォーカスリング | `CanvasText` の `outline` と `Canvas` の `box-shadow` を重ねる | 挙動 | [`focus-ring-not-box-shadow-only`](/reset/base-styles/#rule-focus-ring-not-box-shadow-only) | AI |
-| `list-style: none` | `list-style-type: ""` | 挙動 | [`list-style-type-empty-string`](/reset/global-pitfalls/#rule-list-style-type-empty-string) | AI |
-| `html { scroll-behavior: smooth; }` | 動きを減らす設定がなく、`:target` があり、`:focus-visible` がないときだけ有効にする | 挙動 | [`no-global-smooth-scroll`](/reset/base-styles/#rule-no-global-smooth-scroll)、[`smooth-scroll-conditional`](/reset/base-styles/#rule-smooth-scroll-conditional) | AI |
+| `* { margin: 0; padding: 0; }`、`input { appearance: none; }` | 便利なデフォルトを残すkiso.cssを `reset` レイヤーに読み込む | 挙動：`appearance: none` でチェックボックスが見えなくなる | [`reset-no-destructive-reset`](/reset/kiso/#rule-reset-no-destructive-reset) | AI |
+| `outline: none`、`outline: 0` | 消さずに、`:focus-visible` の二重のリングとして定義し直す | 挙動：キーボードで操作すると、フォーカスの位置が見えない | [`no-outline-none`](/reset/global-pitfalls/#rule-no-outline-none)、[`focus-ring-double`](/reset/base-styles/#rule-focus-ring-double) | AI |
+| `box-shadow` だけで描いたフォーカスリング | `CanvasText` の `outline` と `Canvas` の `box-shadow` を重ねる | 挙動：強制カラーモードでリングが消える | [`focus-ring-not-box-shadow-only`](/reset/base-styles/#rule-focus-ring-not-box-shadow-only) | AI |
+| `list-style: none` | `list-style-type: ""` | 挙動：SafariのVoiceOverがリストとして読み上げない | [`list-style-type-empty-string`](/reset/global-pitfalls/#rule-list-style-type-empty-string) | AI |
+| `html { scroll-behavior: smooth; }` | 動きを減らす設定がなく、`:target` があり、`:focus-visible` がないときだけ有効にする | 挙動：動きを減らす設定をしたユーザーにもアニメーションが適用される | [`no-global-smooth-scroll`](/reset/base-styles/#rule-no-global-smooth-scroll)、[`smooth-scroll-conditional`](/reset/base-styles/#rule-smooth-scroll-conditional) | AI |
 
 ## 記法
 
 記法の規約は、第6章「[記法の規約](/notation/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | `display: flex`、`display: inline-block` | `display: block flex`、`display: inline flow-root` | 本書の方針 | [`display-two-value-syntax`](/notation/modern-syntax/#rule-display-two-value-syntax) | AI |
 | `transform: translateX(4px) rotate(45deg)` | `translate: 4px 0` と `rotate: 45deg` | 本書の方針 | [`individual-transform-properties`](/notation/modern-syntax/#rule-individual-transform-properties) | AI |
 | `rgba(0, 0, 0, 0.5)` | `rgb(0 0 0 / 50%)` | 本書の方針 | [`no-rgba-hsla`](/notation/modern-syntax/#rule-no-rgba-hsla)、[`color-space-separated`](/notation/modern-syntax/#rule-color-space-separated) | AI |
 | `width`、`height`、`margin-top`、`top` | `inline-size`、`block-size`、`margin-block-start`、`inset-block-start` | 本書の方針 | [`logical-properties`](/notation/modern-syntax/#rule-logical-properties) | AI |
-| `margin: 0 auto` | `margin-inline: auto` | 挙動 | [`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering) | AI |
-| `&__title`、`&--large` | `h2` や `._main-link` を同じ階層に並べ、バリエーションは `[data-variant="…"]` で表す | 挙動 | [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation) | AI |
+| `margin: 0 auto` | `margin-inline: auto` | 挙動：周りのレイアウトが入れた上下の余白を0で打ち消す | [`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering) | AI |
+| `&__title`、`&--large` | `h2` や `._main-link` を同じ階層に並べ、バリエーションは `[data-variant="…"]` で表す | 挙動：素のCSSでは無効なセレクタになり、ルールごと無視される（Sassでは動く） | [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation) | AI |
 | `@media` を `@scope` やファイルの直下にまとめる | `@media` と `@container` を各セレクタの中に書く | 本書の方針 | [`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules) | AI |
 | `@keyframes fadeIn`、`grid-area: image` | `@keyframes --fade-in`、`grid-area: --image` | 本書の方針 | [`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names) | AI |
 
@@ -79,10 +79,10 @@ sidebar:
 
 コンポーネントの境界とカスタムプロパティは、第7章「[コンポーネントとカスタムプロパティ](/components/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | `z-index: 9999` | `z-index: var(--z--header)` のようなトークン | 本書の方針 | [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only) | AI |
-| ルートに何も指定せず、内部の要素に `z-index: -1` | ルートに `isolation: isolate` を指定し、内部は `var(--z--backwards)` | 挙動 | [`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index) | AI |
+| ルートに何も指定せず、内部の要素に `z-index: -1` | ルートに `isolation: isolate` を指定し、内部は `var(--z--backwards)` | 挙動：`-1` の要素が、ルートや親の背景の下に隠れる | [`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index) | AI |
 | コンポーネントのルートに `margin-top: 40px` | 親の `gap` か、親の子要素として置くOuterで間隔を作る | 本書の方針 | [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root) | AI |
 | 親のCSSで `.news-card ._title` を選んで上書きする | 子の公開プロパティ（`--news-card--radius` など）に値を渡す | 本書の方針 | [`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals) | AI |
 | `--space-lg`、`--primary-color` | `--spacing--lg`、`--color--neutral--500` | 本書の方針 | [`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first) | AI |
@@ -91,19 +91,19 @@ sidebar:
 
 配置と余白、変化に強い書き方は、第8章「[レイアウト](/layout/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
-| `grid-template-areas` や `flex-direction: row-reverse` だけで並べ替える | 同じルールに `reading-flow` を指定する。まずHTMLの順番を読む順に合わせる | 挙動 | [`reading-flow-when-reordered`](/layout/reading-flow/#rule-reading-flow-when-reordered) | AI |
-| 何にでも `width: 100%` | 書かない。ブロックレベルの要素は親の幅いっぱいに広がる | 挙動 | [`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100) | AI |
-| 子要素に `height: 100%` | 親を `display: block grid` にして `stretch` に任せる | 挙動 | [`stretch-over-height-100`](/principles/maintainability/#rule-stretch-over-height-100) | AI |
+| `grid-template-areas` や `flex-direction: row-reverse` だけで並べ替える | 同じルールに `reading-flow` を指定する。まずHTMLの順番を読む順に合わせる | 挙動：キーボードと読み上げの順が、見た目の順とずれる | [`reading-flow-when-reordered`](/layout/reading-flow/#rule-reading-flow-when-reordered) | AI |
+| 何にでも `width: 100%` | 書かない。ブロックレベルの要素は親の幅いっぱいに広がる | 挙動：左右のマージンや `box-sizing: content-box` と組み合わさると、親からはみ出す | [`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100) | AI |
+| 子要素に `height: 100%` | 親を `display: block grid` にして `stretch` に任せる | 挙動：親の高さが明示されていないと効かない | [`stretch-over-height-100`](/principles/maintainability/#rule-stretch-over-height-100) | AI |
 | 子要素の `margin-bottom` と `:last-child { margin-bottom: 0; }` | 親の `gap` | 本書の方針 | [`gap-over-child-margin`](/layout/spacing/#rule-gap-over-child-margin) | AI |
-| `grid-template-columns: repeat(3, 1fr)` | `repeat(3, minmax(0, 1fr))` | 挙動 | [`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr) | AI |
-| `minmax(360px, 1fr)` | `minmax(min(100%, 360px), 1fr)` | 挙動 | [`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent) | AI |
-| `overflow-x: hidden` | `overflow-x: clip` | 挙動 | [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden) | AI |
-| スクロールする要素の `align-content: center` | `align-content: safe center` | 挙動 | [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable) | AI |
+| `grid-template-columns: repeat(3, 1fr)` | `repeat(3, minmax(0, 1fr))` | 挙動：長いURLや入力欄があると、列が押し広げられる | [`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr) | AI |
+| `minmax(360px, 1fr)` | `minmax(min(100%, 360px), 1fr)` | 挙動：コンテナが360pxより狭いと、はみ出す | [`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent) | AI |
+| `overflow-x: hidden` | `overflow-x: clip` | 挙動：中の `position: sticky` が効かなくなる | [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden) | AI |
+| スクロールする要素の `align-content: center` | `align-content: safe center` | 挙動：中身がはみ出すと、先頭側がスクロールで戻れない位置に置かれる | [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable) | AI |
 | `top: 50%; left: 50%; transform: translate(-50%, -50%);` | `inset: 0; margin: auto;`。Gridの中なら `place-items: center` | 本書の方針 | [`absolute-centering-with-margin-auto`](/layout/positioning/#rule-absolute-centering-with-margin-auto) | AI |
 | カードの見出しの高さを `min-height` やJavaScriptでそろえる | サブグリッド（`grid-template-rows: subgrid`） | 本書の方針 | [`subgrid-for-aligned-rows`](/layout/grid-first/#rule-subgrid-for-aligned-rows) | AI |
-| 条件なしの `position: sticky` のヘッダー | `@media (height >= calc(600 / 16 * 1rem))` の中で固定する | 挙動 | [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query) | AI |
+| 条件なしの `position: sticky` のヘッダー | `@media (height >= calc(600 / 16 * 1rem))` の中で固定する | 挙動：高さの低い画面や拡大した画面で、ヘッダーが画面の多くを覆う | [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query) | AI |
 | `scroll` イベントで、ヘッダーが留まったときにクラスを付ける | `container-type: scroll-state` と `@container scroll-state(stuck: block-start)` | 本書の方針 | [`scroll-state-for-sticky-styles`](/layout/positioning/#rule-scroll-state-for-sticky-styles) | AI |
 | ポップオーバーとボタンに `anchor-name` を付け、`top: anchor(bottom)` で配置する | `popovertarget` や `commandfor` の暗黙のアンカーと `position-area` | 本書の方針 | [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first) | AI |
 | `position-area: bottom right` | `position-area: block-end span-inline-end` | 本書の方針 | [`position-area-logical-keywords`](/layout/positioning/#rule-position-area-logical-keywords) | AI |
@@ -112,53 +112,54 @@ sidebar:
 
 レスポンシブ対応の手段の選び方は、第9章「[レスポンシブデザイン](/responsive/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
-| `@media (min-width: 768px)` | `@media (width >= calc(768 / 16 * 1rem))` | 挙動 | [`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)、[`breakpoint-in-rem`](/responsive/media-queries/#rule-breakpoint-in-rem) | AI |
+| `@media (min-width: 48rem)` | `@media (width >= calc(768 / 16 * 1rem))` | 本書の方針 | [`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax) | AI |
+| `@media (width >= 768px)` のようにpxで書いた条件 | `@media (width >= calc(768 / 16 * 1rem))` | 挙動：ブラウザの文字サイズを大きくしても、切り替わる幅が変わらない | [`breakpoint-in-rem`](/responsive/media-queries/#rule-breakpoint-in-rem) | AI |
 | `sp`、`pc` のブレイクポイント名、`.sp-only` | デバイスの名前を使わず、表示を変える条件をセレクタの中に書く | 本書の方針 | [`no-device-names`](/responsive/media-queries/#rule-no-device-names) | AI |
-| `@media (width >= var(--bp-md))` | 条件にはリテラルの値を書く | 挙動 | [`no-var-in-query`](/responsive/media-queries/#rule-no-var-in-query) | AI |
+| `@media (width >= var(--bp-md))` | 条件にはリテラルの値を書く | 挙動：メディアクエリでは `var()` を参照できず、条件が無効になる | [`no-var-in-query`](/responsive/media-queries/#rule-no-var-in-query) | AI |
 | `container-type: inline-size` と `@container (width >= 600px)` | `container: --card / inline-size` と `@container --card (inline-size >= …)` | 本書の方針 | [`container-name-required`](/responsive/container-queries/#rule-container-name-required)、[`container-query-inline-size`](/responsive/container-queries/#rule-container-query-inline-size) | AI |
-| `width: 600px` | `max-inline-size`。固定するなら `min(100%, …)` | 挙動 | [`max-inline-size-over-fixed-width`](/responsive/escalation/#rule-max-inline-size-over-fixed-width) | AI |
-| `height: 400px` | `min-block-size` か `aspect-ratio` | 挙動 | [`min-block-size-over-fixed-height`](/responsive/escalation/#rule-min-block-size-over-fixed-height) | AI |
+| `width: 600px` | `max-inline-size`。固定するなら `min(100%, …)` | 挙動：画面やコンテナが600pxより狭いと、はみ出す | [`max-inline-size-over-fixed-width`](/responsive/escalation/#rule-max-inline-size-over-fixed-width) | AI |
+| `height: 400px` | `min-block-size` か `aspect-ratio` | 挙動：文字が増えたり大きくなったりすると、中身があふれる | [`min-block-size-over-fixed-height`](/responsive/escalation/#rule-min-block-size-over-fixed-height) | AI |
 
 ## タイポグラフィ
 
 フォントと和文組版は、第10章「[タイポグラフィと和文組版](/typography/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | OSごとの和文フォントを並べたスタックや、`system-ui` から始まるスタック | 特に指定がなければ `font-family: sans-serif` | 本書の方針 | [`font-family-sans-serif`](/typography/fonts/#rule-font-family-sans-serif)、[`no-system-ui-for-japanese`](/typography/fonts/#rule-no-system-ui-for-japanese) | AI |
-| `line-height: 1` | ベースは1.5以上を保ち、見出しは用途に合わせて狭める（和文で1.25〜1.5ほど）。上下の余白は `text-box-trim` で取り除く | 挙動 | [`no-line-height-one`](/typography/line-height/#rule-no-line-height-one)、[`text-box-trim-for-half-leading`](/typography/line-height/#rule-text-box-trim-for-half-leading) | AI |
+| `line-height: 1` | ベースは1.5以上を保ち、見出しは用途に合わせて狭める（和文で1.25〜1.5ほど）。上下の余白は `text-box-trim` で取り除く | 挙動：改行が起きたとき、行が重なって読めなくなることがある | [`no-line-height-one`](/typography/line-height/#rule-no-line-height-one)、[`text-box-trim-for-half-leading`](/typography/line-height/#rule-text-box-trim-for-half-leading) | AI |
 | 本文の `font-feature-settings: "palt"` | 本文はベタ組みにし、`palt` は見出しに限る | 本書の方針 | [`solid-setting-for-body-text`](/typography/japanese-typesetting/#rule-solid-setting-for-body-text)、[`palt-for-headings`](/typography/japanese-typesetting/#rule-palt-for-headings) | AI |
-| `word-break: break-all`、`overflow-wrap: break-word` | `word-break` は初期値のままにし、`overflow-wrap: anywhere` | 挙動 | [`overflow-wrap-over-word-break`](/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break) | AI |
-| 見た目を整えるための `<br>` | `.-br` と `.-wbr` のユーティリティ、見出しの `word-break: auto-phrase` | 挙動 | [`no-br-for-visual-breaks`](/typography/size-and-line-breaks/#rule-no-br-for-visual-breaks) | AI |
+| `word-break: break-all`、`overflow-wrap: break-word` | `word-break` は初期値のままにし、`overflow-wrap: anywhere` | 挙動：`break-all` は、次の行に移せば収まる英単語まで途中で分ける | [`overflow-wrap-over-word-break`](/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break) | AI |
+| 見た目を整えるための `<br>` | `.-br` と `.-wbr` のユーティリティ、見出しの `word-break: auto-phrase` | 挙動：狭い画面で自然な折り返しと重なり、短い行が生まれる | [`no-br-for-visual-breaks`](/typography/size-and-line-breaks/#rule-no-br-for-visual-breaks) | AI |
 
 ## 色と装飾
 
 色の書き方は第11章「[色](/color-media/)」で、画像と装飾の書き方は第12章「[画像・装飾](/decoration/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | 16進数の色のトークン | `oklch()` | 本書の方針 | [`oklch-for-colors`](/color-media/color/#rule-oklch-for-colors) | AI |
 | `--color-primary-rgb` や `--color-primary-dark` のような派生色のトークン | `oklch(from var(--color--accent--500) l c h / 10%)` のように元の色から作る | 本書の方針 | [`derive-colors-from-base`](/color-media/relative-color/#rule-derive-colors-from-base)、[`relative-color-for-single-color`](/color-media/relative-color/#rule-relative-color-for-single-color) | AI |
 | コンポーネントごとの `@media (prefers-color-scheme: dark)` | セマンティクスのトークンに `light-dark()` で持たせる | 本書の方針 | [`light-dark-in-semantic-tokens`](/color-media/dark-mode/#rule-light-dark-in-semantic-tokens) | AI |
-| `border: none` | `border-color: transparent` | 挙動 | [`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none) | AI |
-| `-webkit-text-stroke` だけで縁取り、文字が細くなる | `paint-order: stroke fill` で縁取りを塗りの下に置く | 挙動 | [`text-stroke-paint-order`](/decoration/images-and-decoration/#rule-text-stroke-paint-order) |  |
+| `border: none` | `border-color: transparent` | 挙動：強制カラーモードで背景色が消えると、ボタンなどの範囲が分からない | [`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none) | AI |
+| `-webkit-text-stroke` だけで縁取り、文字が細くなる | `paint-order: stroke fill` で縁取りを塗りの下に置く | 挙動：線の内側の半分が塗りを覆い、文字が細くなる | [`text-stroke-paint-order`](/decoration/images-and-decoration/#rule-text-stroke-paint-order) |  |
 
 ## インタラクションとモーション
 
 状態の表し方は第13章「[インタラクション](/interaction/)」で、動きの付け方は第14章「[モーション](/motion/)」で説明しています。
 
-| 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
+| よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
-| 条件なしの `:hover`、`@media (hover: hover)`、画面の幅での判定 | `@media (any-hover)` の中に書く | 挙動 | [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) | AI |
-| `:hover` だけに見た目の変化を指定する | `:focus-visible` にも同じ見た目を指定する | 挙動 | [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible) | AI |
-| ホバーで `opacity: 0.7` | 背景色や文字色を別の色に変える | 挙動 | [`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover) | AI |
+| 条件なしの `:hover`、`@media (hover: hover)`、画面の幅での判定 | `@media (any-hover)` の中に書く | 挙動：タッチ操作の端末で、ホバーの状態が残り続ける | [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) | AI |
+| `:hover` だけに見た目の変化を指定する | `:focus-visible` にも同じ見た目を指定する | 挙動：キーボードで操作すると、変化が見えない | [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible) | AI |
+| ホバーで `opacity: 0.7` | 背景色や文字色を別の色に変える | 挙動：文字まで透けて、コントラストが下がる | [`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover) | AI |
 | `.is-active`、`.is-open` の状態クラス | `:checked` などの擬似クラスや `[aria-selected="true"]` | 本書の方針 | [`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria) | AI |
-| `transition: all 0.3s` | `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドとトークン | 挙動 | [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)、[`transition-longhand-with-tokens`](/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens) | AI |
+| `transition: all 0.3s` | `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドとトークン | 挙動：関係のないプロパティまで動き、描画の負荷も増える | [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)、[`transition-longhand-with-tokens`](/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens) | AI |
 | `prefers-reduced-motion: reduce` のときに全称セレクタと `!important` で動きを止める | `@media (prefers-reduced-motion: no-preference)` の中で動きを付ける | 本書の方針 | [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference) | AI |
 | 並んだ要素に `view-transition-name: card-1`、`card-2` と連番を振る | `view-transition-name: match-element` と `view-transition-class` | 本書の方針 | [`view-transition-match-element`](/motion/view-transitions/#rule-view-transition-match-element) | AI |
-| 入力エラーの見た目を `:invalid` に指定する | `:user-invalid` に指定する | 挙動 | [`user-invalid-for-errors`](/interaction/forms/#rule-user-invalid-for-errors) | AI |
+| 入力エラーの見た目を `:invalid` に指定する | `:user-invalid` に指定する | 挙動：入力する前から、エラーの見た目が表示される | [`user-invalid-for-errors`](/interaction/forms/#rule-user-invalid-for-errors) | AI |
 
 ## 関連する付録
 

@@ -182,24 +182,41 @@ const removeWillChange = (event) => {
 panel.addEventListener('transitionend', removeWillChange);
 panel.addEventListener('transitioncancel', removeWillChange);
 
+// 要求された状態はクリックのたびに同期的に更新し、描画への反映だけを遅らせる
+let isOpen = panel.dataset.open === 'true';
+let frame = 0;
+
+const applyState = () => {
+  frame = 0;
+  const next = String(isOpen);
+  // 状態が変わらなければトランジションが起きないので、ここで外す
+  if (panel.dataset.open === next) panel.style.removeProperty('will-change');
+  panel.dataset.open = next;
+};
+
 button.addEventListener('click', () => {
-  const isOpen = panel.dataset.open === 'true';
-  const toggle = () => {
-    panel.dataset.open = String(!isOpen);
-    button.setAttribute('aria-expanded', String(!isOpen));
-  };
+  isOpen = !isOpen;
+  button.setAttribute('aria-expanded', String(isOpen));
 
   // トランジションが起きない設定では、will-change を付けない
   if (!motionQuery.matches) {
-    toggle();
+    cancelAnimationFrame(frame);
+    applyState();
     return;
   }
 
+  // 予約が残っていれば、その予約が最新の状態を反映する
+  if (frame) return;
+
   panel.style.setProperty('will-change', 'translate');
   // レイヤーが用意されたフレームの次で、動きを始める
-  requestAnimationFrame(() => requestAnimationFrame(toggle));
+  frame = requestAnimationFrame(() => {
+    frame = requestAnimationFrame(applyState);
+  });
 });
 ```
+
+開閉の状態は、クリックした時点で変数と `aria-expanded` に反映し、パネルの `data-open` への反映だけを2フレーム後に遅らせます。クリックのたびに `data-open` を読んで反映まで待つと、描画の前に2回クリックしたとき、どちらも閉じた状態を読んで両方が開く処理になります。反映の予約は1つだけにし、実行する時点の最新の状態を書き込みます。
 
 外す処理は、`transitionend` だけでなく `transitioncancel` にも登録します。途中で逆向きに操作されるなどしてトランジションが中断されると、`transitionend` は発生しないからです。動きを減らす設定でトランジションを指定していない場合も、どちらのイベントも発生しないので、最初から `will-change` を付けません。`@keyframes` のアニメーションなら、`animationend` と `animationcancel` で外します。
 
@@ -207,7 +224,7 @@ button.addEventListener('click', () => {
 
 ## `contain: content` で影響の範囲を区切る
 
-`contain` は、要素の中で起きた変化が外に影響しないことをブラウザに約束する指定です。`contain: content` は、レイアウト、ペイント、スタイルの3つの封じ込めをまとめた値です。中身が頻繁に変わる独立した領域へ指定すると、内側でレイアウトやペイントが起きても、ブラウザは要素の外まで計算し直さずに済みます。
+`contain` は、要素の中で起きた変化が外に影響しないことをブラウザに約束する指定です。`contain: content` は、レイアウト、ペイント、スタイルの3つの封じ込めをまとめた値です。中身が頻繁に変わる独立した領域へ指定すると、内側でレイアウトやペイントが起きても、ブラウザは要素の外まで計算し直さずに済みます。ただし、サイズの封じ込め（`size`）は含まないので、中身の変化で要素自体の高さや幅が変われば、その変化は外のレイアウトに伝わります。
 
 ```css title="🙆‍♂ Recommended: 中身が頻繁に変わる独立した領域に contain: content を指定する"
 @scope (.scoped.live-score) to (.scoped) {

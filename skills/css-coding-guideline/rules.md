@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.15.0
+- バージョン: 0.16.0
 - 生成日: 2026-10-02
-- ルールの数: 500
+- ルールの数: 501
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -118,7 +118,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 3-3 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
 - 【推奨】数量クエリは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で書き、`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように子の側で数える形は使わない。（`quantity-query-with-has`）
   - 理由: 条件が「親が何個の子を持つか」という形で読め、1つのセレクタで親自身のレイアウトも子のスタイルも切り替えられるため。
-  - 補足: ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。
+  - 補足: ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。ルート要素の中に `<style>` を置く場合は、`<style>` も子要素として数えるので、`&:has(> li:only-of-type)` や `:nth-child(N of li)` で項目だけを数えます。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。
   - 詳細: 3-4 数量クエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/quantity-queries.mdx）
 - 【推奨】列数のようなレイアウトの切り替えは `auto-fit` やコンテナクエリで行い、数量クエリは「1件だけなら中央に置く」のように、子要素の数そのものが条件のときに限って使う。（`quantity-query-for-count-conditions`）
   - 理由: 列数を決める本当の条件は、項目の数よりも、その一覧が使える幅であることが多いため。
@@ -523,7 +523,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 段組みは並び順が縦なので HTML の順番と読む順番がそろい、2段目以降の先頭の `margin` は段の境目で切り取られて上端がそろわないため。
   - 補足: `column-width` は `%` を受け付けず、`min(100%, …)` と書くと宣言ごと無効になります。段の幅をコンテナに比例させるときは `cqi` を使います。横方向の順番で並べながら高さの違いを詰めるなら `grid-lanes` を使います。
   - 詳細: 8-13 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
-- 【推奨】同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。（`stack-vs-prose`）
+- 【推奨】構成が決まっていて、間隔を一律にしてよい要素を縦に積むときは `stack` を、見出しや段落、図が続き、子ごとに間隔を変えたい本文の流れには `prose` を使う。（`stack-vs-prose`）
   - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
   - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。CMS で編集者が入力する本文エリアの中には、どちらも使わず `.wysiwyg` で余白を決めます（`prose-not-on-cms-body`）。
   - 詳細: 8-14-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
@@ -726,7 +726,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 12-1 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images-and-decoration.mdx）
 - 【禁止】ファーストビューに表示される画像に、`loading="lazy"` を指定しない。（`no-lazy-loading-first-view`）
   - 理由: ページでいちばん大きな要素の表示が遅れるため。
-  - 補足: ファーストビューの画像には `fetchpriority="high"` を指定し、`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。
+  - 補足: `fetchpriority="high"` は、LCP の候補になる画像（ファーストビューでいちばん大きく表示される画像）にだけ指定します。ファーストビューの画像すべてに指定すると、優先する画像どうしで帯域を奪い合うためです。`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。
   - 詳細: 12-1 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images-and-decoration.mdx）
 - 【推奨】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
   - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
@@ -1073,7 +1073,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 3-3 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
 - 【推奨】数量クエリは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で書き、`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように子の側で数える形は使わない。（`quantity-query-with-has`）
   - 理由: 条件が「親が何個の子を持つか」という形で読め、1つのセレクタで親自身のレイアウトも子のスタイルも切り替えられるため。
-  - 補足: ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。
+  - 補足: ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。ルート要素の中に `<style>` を置く場合は、`<style>` も子要素として数えるので、`&:has(> li:only-of-type)` や `:nth-child(N of li)` で項目だけを数えます。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。
   - 詳細: 3-4 数量クエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/quantity-queries.mdx）
 - 【推奨】列数のようなレイアウトの切り替えは `auto-fit` やコンテナクエリで行い、数量クエリは「1件だけなら中央に置く」のように、子要素の数そのものが条件のときに限って使う。（`quantity-query-for-count-conditions`）
   - 理由: 列数を決める本当の条件は、項目の数よりも、その一覧が使える幅であることが多いため。
@@ -1264,6 +1264,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】kiso.css の値を変えたいときは、kiso.css 本体を書き換えず、`base` レイヤーで上書きする。（`reset-override-in-base`）
   - 理由: リセットを新しいバージョンに更新しやすく、プロジェクトで変えた箇所がベーススタイルにまとまるため。
   - 詳細: 5-1 壊さないリセット（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/kiso.mdx）
+- 【推奨】ベーススタイルの `:root` に `text-underline-offset: 25%` を指定し、下線を文字から離す。（`underline-offset-in-base`）
+  - 理由: 文字と下線の間が詰まっていると文字が判読しにくくなるため。継承されるプロパティなのでルート要素に1回書けば全体に適用でき、パーセントは相対値のまま継承されるので、見出しのような大きな文字でも比率が保たれる（`em` はルート要素で固定の長さに計算されてから継承される）。
+  - 詳細: 5-2 ベーススタイルに書くもの（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/base-styles.mdx）
 - 【推奨】ベーススタイルのフォーカスリングは、`:focus-visible` に `CanvasText` の `outline` と `Canvas` の `box-shadow` を重ねた二重リングで定義する。（`focus-ring-double`）
   - 理由: 背景が明るくても暗くても2色のどちらかが背景と区別でき、システムカラーなのでダークモードや強制カラーモードにも追従するため。
   - 詳細: 5-2 ベーススタイルに書くもの（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/base-styles.mdx）
@@ -1275,8 +1278,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: キーボードでのフォーカス移動や `scrollTo()` のスクロールまでなめらかになり、動きを減らす設定をしているユーザーにもアニメーションが適用されるため。
   - 補足: カルーセルのような個別のスクロールコンテナに指定するのは問題ありません。
   - 詳細: 5-2 ベーススタイルに書くもの（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/base-styles.mdx）
-- 【推奨】スムーススクロールは、`prefers-reduced-motion: no-preference` の中で、`:root:has(:target):not(:has(:focus-visible))` のときだけ有効にする。（`smooth-scroll-conditional`）
-  - 理由: ページ内リンクで移動するときだけなめらかにし、キーボードでフォーカスを移すときや、動きを減らす設定をしているときは即座にスクロールさせるため。
+- 【推奨】スムーススクロールは、`prefers-reduced-motion: no-preference` の中で、`:root[data-loaded="true"]:has(:target):not(:has(:focus-visible))` のときだけ有効にする。（`smooth-scroll-conditional`）
+  - 理由: ページ内リンクで移動するときだけなめらかにし、フラグメント付きの URL で表示した直後や、キーボードでフォーカスを移すとき、動きを減らす設定をしているときは即座にスクロールさせるため。
+  - 補足: `data-loaded` 属性は、JavaScript で `load` イベントのときにルート要素に付けます。
   - 詳細: 5-2 ベーススタイルに書くもの（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/reset/base-styles.mdx）
 - 【推奨】`[id]` と `:focus` に `scroll-margin-block-start` を指定し、ページ内リンクの移動先やフォーカスした要素が固定ヘッダーに隠れないようにする。（`scroll-margin-for-targets`）
   - 理由: 移動先の見出しやフォーカスした要素が、固定ヘッダーの下に隠れて見えなくなるのを防ぐため。
@@ -1831,7 +1835,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 8-10 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】文字を含む flex アイテムが縮みすぎないようにするときは、`flex-shrink: 0` ではなく `min-inline-size: fit-content` を使う。（`fit-content-over-flex-shrink-zero`）
   - 理由: `flex-shrink: 0` の要素は親より長くても縮まずにはみ出すが、`fit-content` なら親の幅を超えるときだけ折り返すため。
-  - 補足: アイコンのように、大きさを変えたくない要素には `flex-shrink: 0` を指定します。
+  - 補足: アイコンのように、大きさを変えたくない要素には `flex-shrink: 0` を指定します。`fit-content` の上限はフレックスコンテナの中身の幅全体で、ほかのアイテムや `gap` の分を差し引かないので、ボタンの中でアイコンと並ぶラベルには指定しません。ボタン全体を外側の並びのアイテムとして守り、ラベルは最小幅を0のままにして、残りの幅で折り返させます。
   - 詳細: 8-10 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【非推奨】明確な理由がない限り、`white-space: nowrap` を指定しない。（`no-nowrap-without-reason`）
   - 理由: 内容が長くなったときや画面が狭いときに、折り返せずにはみ出すため。
@@ -1893,7 +1897,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 段組みは並び順が縦なので HTML の順番と読む順番がそろい、2段目以降の先頭の `margin` は段の境目で切り取られて上端がそろわないため。
   - 補足: `column-width` は `%` を受け付けず、`min(100%, …)` と書くと宣言ごと無効になります。段の幅をコンテナに比例させるときは `cqi` を使います。横方向の順番で並べながら高さの違いを詰めるなら `grid-lanes` を使います。
   - 詳細: 8-13 grid-lanesで石積みのレイアウトを組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/masonry.mdx）
-- 【推奨】同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。（`stack-vs-prose`）
+- 【推奨】構成が決まっていて、間隔を一律にしてよい要素を縦に積むときは `stack` を、見出しや段落、図が続き、子ごとに間隔を変えたい本文の流れには `prose` を使う。（`stack-vs-prose`）
   - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
   - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。CMS で編集者が入力する本文エリアの中には、どちらも使わず `.wysiwyg` で余白を決めます（`prose-not-on-cms-body`）。
   - 詳細: 8-14-1 stack：子要素を縦に積み、間隔をそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/compositions/stack.mdx）
@@ -2144,7 +2148,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`--screen` とスタイルクエリによる切り替えと、`--px`・`--rem` による比例スケールは、2サイズのデザインカンプを比率を保って再現する案件に限って使う。（`screen-mode-for-two-size-comps`）
   - 理由: どちらもビューポートを基準にする方法なので、置き場所に合わせて振る舞うべきコンポーネントには向かないため。
   - 詳細: 9-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
-- 【必須】`--screen` を使う場合、ビューポートの `@media` は `--screen` を決める1か所だけにし、各所の分岐は `@container style(--screen: …)` で書く。（`screen-mode-single-source`）
+- 【必須】`--screen` を使う場合、ビューポートの `@media` は `:root` の1か所だけにして `--screen` と比例スケールの比率をそこでまとめて切り替え、各所の分岐は `@container style(--screen: …)` で書く。（`screen-mode-single-source`）
   - 理由: ブレイクポイントの値が1か所にまとまり、変えたときの修正漏れがなくなるため。
   - 詳細: 9-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【推奨】モードの名前は `--compact` や `--spacious` のように、デバイスではなく状態を表す `--` で始まる名前にする。（`screen-mode-state-names`）
@@ -2392,7 +2396,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 12-1 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images-and-decoration.mdx）
 - 【禁止】ファーストビューに表示される画像に、`loading="lazy"` を指定しない。（`no-lazy-loading-first-view`）
   - 理由: ページでいちばん大きな要素の表示が遅れるため。
-  - 補足: ファーストビューの画像には `fetchpriority="high"` を指定し、`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。
+  - 補足: `fetchpriority="high"` は、LCP の候補になる画像（ファーストビューでいちばん大きく表示される画像）にだけ指定します。ファーストビューの画像すべてに指定すると、優先する画像どうしで帯域を奪い合うためです。`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。
   - 詳細: 12-1 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images-and-decoration.mdx）
 - 【推奨】写真のような画像は、AVIF で書き出す。（`avif-for-photos`）
   - 理由: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。

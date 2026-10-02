@@ -427,7 +427,7 @@
   level: 推奨
   rule: '文字を含む flex アイテムが縮みすぎないようにするときは、`flex-shrink: 0` ではなく `min-inline-size: fit-content` を使う。'
   reason: '`flex-shrink: 0` の要素は親より長くても縮まずにはみ出すが、`fit-content` なら親の幅を超えるときだけ折り返すため。'
-  note: 'アイコンのように、大きさを変えたくない要素には `flex-shrink: 0` を指定します。'
+  note: 'アイコンのように、大きさを変えたくない要素には `flex-shrink: 0` を指定します。`fit-content` の上限はフレックスコンテナの中身の幅全体で、ほかのアイテムや `gap` の分を差し引かないので、ボタンの中でアイコンと並ぶラベルには指定しません。ボタン全体を外側の並びのアイテムとして守り、ラベルは最小幅を0のままにして、残りの幅で折り返させます。'
   page: layout/defensive
   since: 0.1.0
 
@@ -572,7 +572,7 @@
 # 8-14-1 stack：子要素を縦に積み、間隔をそろえる
 - id: stack-vs-prose
   level: 推奨
-  rule: 同じ役割の要素を同じ間隔で縦に積むときは `stack` を、見出しや段落、図が続く本文の流れには `prose` を使う。
+  rule: 構成が決まっていて、間隔を一律にしてよい要素を縦に積むときは `stack` を、見出しや段落、図が続き、子ごとに間隔を変えたい本文の流れには `prose` を使う。
   reason: '`stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。'
   note: "横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。CMS で編集者が入力する本文エリアの中には、どちらも使わず `.wysiwyg` で余白を決めます（`prose-not-on-cms-body`）。"
   aiProne: true

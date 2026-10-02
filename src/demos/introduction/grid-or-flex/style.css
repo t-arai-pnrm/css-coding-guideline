@@ -1,0 +1,39 @@
+@layer components {
+  /**
+   * 同じ5枚のカードを、Grid と Flexbox で並べて比べる。
+   * 幅を変えると、最後の行の振る舞いの違いが分かる。
+   */
+  @scope (.scoped.grid-or-flex) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._label {
+      font-weight: bold;
+    }
+
+    ._grid {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+      gap: 16px;
+    }
+
+    ._flex {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+
+      & > ._card {
+        flex-grow: 1;
+        flex-basis: 200px;
+      }
+    }
+
+    ._card {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(92% 0.04 250deg);
+    }
+  }
+}

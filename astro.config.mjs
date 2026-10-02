@@ -45,7 +45,7 @@ const chapterItems = (chapter) => {
       .filter((group) => group.after === page.name)
       .map((group) => ({
         label: group.label,
-        collapsed: true,
+        collapsed: group.collapsed ?? true,
         items: [{ autogenerate: { directory: `${chapter.dir}/${group.dir}` } }],
       })),
   ]);
@@ -81,7 +81,13 @@ export default defineConfig({
       sidebar: [
         {
           label: 'はじめに',
-          items: [{ autogenerate: { directory: 'introduction' } }],
+          items: chapterItems({
+            dir: 'introduction',
+            groups: [
+              { dir: 'learning', label: 'CSSを学ぶうえで大切なこと', after: 'how-to-read', collapsed: false },
+              { dir: 'design', label: 'デザインを再現するうえで意識すること', after: 'how-to-read', collapsed: false },
+            ],
+          }),
         },
         // 章の中の節は、各ページの frontmatter の `sidebar.order` で並べる
         ...PARTS.map((part) => ({

@@ -1,6 +1,6 @@
 ---
 title: "8-7 positionの基礎"
-description: "position は、要素を通常フロー、Flexbox、Gridと並ぶ「位置指定レイアウト」に切り替えるプロパティです。static、relative、absolute、fixed、sticky の違い、包含ブロックの決まり方、sticky が留まらない原因、アンカーポジショニング、要素どうしの重なりの検出を説明します。"
+description: "position は、親の方式で置かれた位置を補正するか（relative、sticky）、要素を親の流れから外して置き直すか（absolute、fixed）を決めるプロパティです。static、relative、absolute、fixed、sticky の違い、包含ブロックの決まり方、sticky が留まらない原因、アンカーポジショニング、要素どうしの重なりの検出を説明します。"
 sidebar:
   order: 7
 ---
@@ -14,7 +14,7 @@ import stickyBadCss from '../../../demos/layout/sticky-toc/style.bad.css?raw';
 import overlapHtml from '../../../demos/layout/overlap-detection/index.html?raw';
 import overlapCss from '../../../demos/layout/overlap-detection/style.css?raw';
 
-`position` は、位置を少しずらすためのプロパティではなく、要素を「位置指定レイアウト」という別のレイアウトの方式に移すプロパティです。`static` 以外の値を指定すると、`inset` で位置を決められるようになり、`absolute` と `fixed` では要素が通常フローから外れます。位置の基準になる「包含ブロック」は、値によって、また祖先の `transform` などの指定によって変わります。
+`position` の `static` 以外の値は、働き方で2つに分かれます。`relative` と `sticky` は、親が決めた方式（通常フロー、Flexbox、Grid）に参加したまま、配置された後の位置を `inset` の分だけ補正します。`absolute` と `fixed` は、要素を親の流れから外し、絶対配置という別のレイアウトの方式で置き直します。位置の基準になる「包含ブロック」は、値によって、また祖先の `transform` などの指定によって変わります。
 
 本書では、絶対配置の要素の包含ブロックを、同じコンポーネントの中に `position: relative` ではっきり作ります。`position: sticky` を指定するときは、`inset` を指定し、GridとFlexboxの子なら `align-self: start` も指定します。アンカーポジショニングは、未対応の環境でも内容を読める形を先に書いたうえで使います。要素どうしの重なりを検出して装飾を隠す技法は、装飾に限って、対応した環境での上乗せとして使います。
 
@@ -22,7 +22,7 @@ import overlapCss from '../../../demos/layout/overlap-detection/style.css?raw';
 
 CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと位置を決める方式が複数あります。同じプロパティでも、どの方式で配置されるかによって働き方が変わります。`width` は、通常フローでは決まった幅になり、Flexboxの子では縮むことのある仮の幅として扱われます。`z-index` は、通常フローの要素に指定しても何も起きませんが、FlexboxとGridの子なら `position` を指定しなくても効きます。
 
-`position` も、この方式の1つです。`top` や `left` を書くための前提の指定と覚えていると、`absolute` を指定した要素がFlexboxの子として並ばなくなる理由や、`relative` を指定しただけで重なり順が変わる理由を説明できません。どれも、要素が位置指定レイアウトに移ったことで起きる変化です。
+`position` も、この方式に関わるプロパティです。`top` や `left` を書くための前提の指定と覚えていると、`absolute` を指定した要素がFlexboxの子として並ばなくなる理由や、`relative` を指定しただけで重なり順が変わる理由を説明できません。前者は、要素が絶対配置に移って親の流れから外れたことで起きる変化です。後者は、`static` 以外の要素（位置指定された要素）が、`static` の要素より後に描かれることで起きる変化です。
 
 この節では、まず5つの値がそれぞれ何を変えるかを説明し、次に位置の基準になる包含ブロックを扱います。そのあとで、つまずきやすい `sticky`、新しいアンカーポジショニング、アンカーポジショニングを使って要素どうしの重なりを検出する技法を順に説明します。重なり順（z-index）と、要素を画面幅いっぱいに広げる方法は、「[8-11 重なりと全幅](/layout/layering/)」で扱います。
 
@@ -34,7 +34,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 ### relative
 
-`relative` の要素は、通常フローの中で元の場所を占めたまま、`inset` の分だけ描かれる位置がずれます。周囲の要素は元の位置を基準に並ぶので、ずらした分だけ隣と重なったり、元の場所に隙間が残ったりします。
+`relative` の要素は、親が決めた方式で置かれた元の場所を占めたまま、`inset` の分だけ描かれる位置がずれます。周囲の要素は元の位置を基準に並ぶので、ずらした分だけ隣と重なったり、元の場所に隙間が残ったりします。
 
 本書では、`relative` を位置の調整には使いません。用途は、子孫の絶対配置の要素のために包含ブロックを作ることです。見た目を少し動かしたいだけなら、`translate` で足ります。{/* 要確認: 出典なし */}
 
