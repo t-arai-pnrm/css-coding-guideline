@@ -1,0 +1,56 @@
+@layer pages {
+  @scope (.scoped.hero-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    figure {
+      display: block grid;
+      gap: 8px;
+    }
+
+    figcaption {
+      font-size: calc(14 / 16 * 1rem);
+      text-align: center;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.hero-header) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-areas: "--stack";
+      overflow: clip;
+      border-radius: 8px;
+      background-color: oklch(20% 0 0deg);
+      color: oklch(100% 0 0deg);
+    }
+
+    img,
+    ._body {
+      grid-area: --stack;
+    }
+
+    img {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      block-size: 0;
+      min-block-size: 100%;
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 4px;
+      padding-block: 64px 24px;
+      padding-inline: 24px;
+    }
+
+    ._title {
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+}

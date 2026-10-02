@@ -22,12 +22,12 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ```css title="🙅‍♂ Not Recommended: 条件なしのホバーと、画面の幅によるホバーの判定"
 /* 🙅‍♂ Not Recommended */
-._button:hover {
+._submit-button:hover {
   background-color: var(--_background--hocus);
 }
 
 @media (width >= 768px) {
-  ._link:hover {
+  ._more-link:hover {
     color: var(--_color--hocus);
   }
 }
@@ -83,7 +83,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 ホバーの変化にトランジションを掛けるときは、キーボードでフォーカスを移したときの変化には掛けないようにします。Tabキーで次々とフォーカスを移しているのに、背景色が遅れて変わると、入力と表示がずれて反応が遅く感じられるからです。
 
 ```css title="🙆‍♂ Recommended: トランジションを :not(:focus-visible) の中に書く"
-._button {
+._submit-button {
   &:not(:focus-visible) {
     @media (prefers-reduced-motion: no-preference) {
       transition-duration: var(--duration--fast);
@@ -102,7 +102,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ```css title="🙅‍♂ Not Recommended: ホバーを受ける要素自身を動かす"
 /* 🙅‍♂ Not Recommended */
-._button:hover {
+._submit-button:hover {
   translate: 0 -4px;
 }
 ```
@@ -166,7 +166,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ```css title="🙅‍♂ Not Recommended: ホバーを透明度で表す"
 /* 🙅‍♂ Not Recommended */
-._button:hover {
+._submit-button:hover {
   opacity: 0.7;
 }
 ```

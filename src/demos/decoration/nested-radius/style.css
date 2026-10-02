@@ -1,0 +1,51 @@
+@layer pages {
+  @scope (.scoped.radius-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    figure {
+      display: block grid;
+      gap: 8px;
+    }
+
+    figcaption {
+      font-size: calc(14 / 16 * 1rem);
+      text-align: center;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.account-menu) to (.scoped) {
+    :scope {
+      --_radius: 16px;
+      --_padding: 8px;
+      --_inner-radius: calc(var(--_radius) - var(--_padding));
+
+      display: block grid;
+      gap: 4px;
+      padding: var(--_padding);
+      border-radius: var(--_radius);
+      background-color: oklch(30% 0.02 250deg);
+      color: oklch(100% 0 0deg);
+
+      /* 比べるための指定。内側にも外側と同じ値を使う */
+      &[data-radius="same"] {
+        --_inner-radius: var(--_radius);
+      }
+    }
+
+    li {
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-radius: var(--_inner-radius);
+
+      &[data-current] {
+        background-color: oklch(52% 0.16 250deg);
+      }
+    }
+  }
+}

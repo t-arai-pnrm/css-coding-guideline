@@ -56,10 +56,12 @@ AIに書かせたコードには、宣言を1つずつ言い換えたコメン�
   list-style-type: "";
 }
 
-._item {
-  /* Safari は段組みの中のマージンを正しく計算しないので、padding で間隔を空ける */
-  padding-block: 8px;
-  break-inside: avoid;
+._sitemap-list {
+  & > li {
+    /* Safari は段組みの中のマージンを正しく計算しないので、padding で間隔を空ける */
+    padding-block: 8px;
+    break-inside: avoid;
+  }
 }
 ```
 

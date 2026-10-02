@@ -1,0 +1,64 @@
+@layer tokens {
+  :root {
+    --shadow--hue: 250deg;
+    --shadow--color: light-dark(oklch(30% 0.05 var(--shadow--hue) / 14%), oklch(0% 0 0deg / 30%));
+    --shadow--sm: 0 2px 4px -1px var(--shadow--color);
+    --shadow--md:
+      0 4px 8px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent),
+      0 2px 4px -2px var(--shadow--color);
+    --shadow--lg:
+      0 8px 16px -4px color-mix(in oklab, var(--shadow--color) 60%, transparent),
+      0 4px 6px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent);
+  }
+}
+
+@layer components {
+  @scope (.scoped.shadow-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 24px;
+      padding: 24px;
+      border-radius: 8px;
+      background-color: light-dark(oklch(94% 0.03 var(--shadow--hue)), oklch(24% 0.02 var(--shadow--hue)));
+      color: light-dark(oklch(25% 0.02 var(--shadow--hue)), oklch(95% 0.01 var(--shadow--hue)));
+
+      /* 実際のサイトでは meta 要素が配色を決める。デモでは2つの配色を並べるために要素ごとに指定する */
+      &[data-scheme="light"] {
+        color-scheme: light;
+      }
+
+      &[data-scheme="dark"] {
+        color-scheme: dark;
+      }
+    }
+
+    ._heading {
+      font-size: calc(16 / 16 * 1rem);
+    }
+
+    ._card {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: light-dark(oklch(100% 0 0deg), oklch(30% 0.02 var(--shadow--hue)));
+      font-size: calc(14 / 16 * 1rem);
+
+      &[data-elevation="sm"] {
+        box-shadow: var(--shadow--sm);
+      }
+
+      &[data-elevation="md"] {
+        box-shadow: var(--shadow--md);
+      }
+
+      &[data-elevation="lg"] {
+        box-shadow: var(--shadow--lg);
+      }
+    }
+  }
+}

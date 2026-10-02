@@ -1,0 +1,66 @@
+@layer pages {
+  @scope (.scoped.steps-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    ._heading {
+      font-size: calc(16 / 16 * 1rem);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.steps) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-inline-start: 1.5em;
+
+      /* kiso.css がマーカーを空にしているので、番号に戻す */
+      list-style-type: decimal;
+    }
+
+    ._step::marker {
+      color: oklch(52% 0.16 250deg);
+      font-weight: 700;
+    }
+  }
+
+  @scope (.scoped.circled-steps) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      counter-reset: --step;
+    }
+
+    ._step {
+      display: block grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      counter-increment: --step;
+
+      &::before {
+        content: counter(--step);
+        display: block grid;
+        place-items: center;
+        inline-size: 1.75em;
+        aspect-ratio: 1;
+        border-radius: calc(infinity * 1px);
+        background-color: oklch(52% 0.16 250deg);
+        color: oklch(100% 0 0deg);
+        font-size: calc(14 / 16 * 1rem);
+        font-weight: 700;
+      }
+    }
+  }
+}

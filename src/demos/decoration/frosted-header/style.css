@@ -1,0 +1,50 @@
+@layer tokens {
+  :root {
+    --background--base: oklch(100% 0 0deg);
+  }
+}
+
+@layer base {
+  :where(body) {
+    /* デモの枠が base レイヤーで付けた余白を取り除き、ヘッダーを枠の上端に付ける */
+    padding: revert-layer;
+  }
+}
+
+@layer components {
+  @scope (.scoped.frosted-demo) to (.scoped) {
+    header {
+      position: sticky;
+      inset-block-start: 0;
+      padding-block: 16px;
+      padding-inline: 16px;
+      border-block-end: 1px solid oklch(0% 0 0deg / 10%);
+      background-color: oklch(from var(--background--base) l c h / 70%);
+      font-weight: 700;
+      backdrop-filter: blur(12px);
+    }
+
+    ._body {
+      display: block grid;
+      gap: 24px;
+      padding: 16px;
+    }
+
+    ._swatch {
+      block-size: 120px;
+      border-radius: 8px;
+
+      &[data-tone="1"] {
+        background-color: oklch(70% 0.18 30deg);
+      }
+
+      &[data-tone="2"] {
+        background-color: oklch(75% 0.15 150deg);
+      }
+
+      &[data-tone="3"] {
+        background-color: oklch(60% 0.18 270deg);
+      }
+    }
+  }
+}

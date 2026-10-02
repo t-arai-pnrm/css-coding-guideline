@@ -1,0 +1,39 @@
+@layer components {
+  @scope (.scoped.corner-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(96 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    li {
+      display: block grid;
+      gap: 8px;
+      justify-items: center;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._box {
+      inline-size: 72px;
+      aspect-ratio: 1;
+      border-radius: 24px;
+      background-color: oklch(52% 0.16 250deg);
+
+      &[data-shape="squircle"] {
+        corner-shape: squircle;
+      }
+
+      &[data-shape="bevel"] {
+        corner-shape: bevel;
+      }
+
+      &[data-shape="scoop"] {
+        corner-shape: scoop;
+      }
+
+      &[data-shape="notch"] {
+        corner-shape: notch;
+      }
+    }
+  }
+}

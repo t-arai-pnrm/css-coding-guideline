@@ -127,7 +127,7 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: & を省いた擬似クラス"
 /* 🙅‍♂ Not Recommended */
-._button {
+._submit-button {
   :focus-visible {
     background-color: var(--_background--hocus);
   }
@@ -140,14 +140,14 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 }
 ```
 
-この `:hover` は `._button :hover` と同じ意味になり、ボタンの中でホバーされている要素に一致します。`:focus-visible` も同じで、ボタンの中でフォーカスされている要素に一致します。ボタン自身には当たらず、エラーにもなりません。本書でネストしたセレクタを必ず `&` で始めるのは、このような取り違えを防ぎ、自身の状態か、直下の子か、子孫かを先頭で読み分けるためです。子孫を選ぶことがその要素の前提なら、`& ._title` と明示します。
+この `:hover` は `._submit-button :hover` と同じ意味になり、ボタンの中でホバーされている要素に一致します。`:focus-visible` も同じで、ボタンの中でフォーカスされている要素に一致します。ボタン自身には当たらず、エラーにもなりません。本書でネストしたセレクタを必ず `&` で始めるのは、このような取り違えを防ぎ、自身の状態か、直下の子か、子孫かを先頭で読み分けるためです。子孫を選ぶことがその要素の前提なら、`& ._title` と明示します。
 
 `&` の詳細度は、親のセレクタリストを `:is()` で包んだものと同じです。`:is()` の詳細度は、引数の中でいちばん高いセレクタの詳細度になります（「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」）。親が1つのセレクタなら、ネストした結果は親とネストしたセレクタをつないだものと変わりません。親が詳細度の違うセレクタのリストだと、どのセレクタで一致した要素にも、いちばん高い詳細度が付きます。
 
 ```css title="🙅‍♂ Not Recommended: 詳細度の違うセレクタリストの中でネストする"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.action-bar) to (.scoped) {
-  ._button,
+  ._command-button,
   ._toggle[aria-pressed="true"] {
     background-color: oklch(70% 0 0deg);
 
@@ -156,7 +156,7 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
     }
   }
 
-  ._button {
+  ._command-button {
     &[data-variant="danger"] {
       background-color: oklch(55% 0.2 25deg);
     }
@@ -164,16 +164,16 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 }
 ```
 
-`&:enabled` は `:is(._button, ._toggle[aria-pressed="true"]):enabled` と同じ意味になり、詳細度は `0.3.0` です。`._button` で一致した要素にも、`._toggle[aria-pressed="true"]` の `0.2.0` が使われます。後ろにある `._button[data-variant="danger"]` は `0.2.0` なので負け、削除のボタンは赤になりません。親が `._button` だけなら、どちらも `0.2.0` になり、後ろに書いた赤が勝ちます。
+`&:enabled` は `:is(._command-button, ._toggle[aria-pressed="true"]):enabled` と同じ意味になり、詳細度は `0.3.0` です。`._command-button` で一致した要素にも、`._toggle[aria-pressed="true"]` の `0.2.0` が使われます。後ろにある `._command-button[data-variant="danger"]` は `0.2.0` なので負け、削除のボタンは赤になりません。親が `._command-button` だけなら、どちらも `0.2.0` になり、後ろに書いた赤が勝ちます。
 
 ```css title="🙆‍♂ Recommended: ネストするルールはセレクタごとに分ける"
 @scope (.scoped.action-bar) to (.scoped) {
-  ._button,
+  ._command-button,
   ._toggle[aria-pressed="true"] {
     background-color: oklch(70% 0 0deg);
   }
 
-  ._button {
+  ._command-button {
     &:enabled {
       background-color: oklch(50% 0.15 250deg);
     }
@@ -201,7 +201,7 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 
 <Demo title="詳細度の違うセレクタリストの中でネストしたボタン" html={listHtml} css={listCss} variant="not-recommended" />
 
-下のデモでも、`._button[data-variant="danger"]` のルールそのものは有効で、開発者ツールにも表示されます。打ち消し線が引かれ、勝っているのが `:enabled` のルールだと分かっても、ネストを展開して `:is()` の詳細度を計算しなければ、理由は読み取れません。リストに `._toggle[aria-pressed="true"]` を足した人と、赤が効かないことに気付く人が別の人だと、原因を探すのはさらに難しくなります。
+下のデモでも、`._command-button[data-variant="danger"]` のルールそのものは有効で、開発者ツールにも表示されます。打ち消し線が引かれ、勝っているのが `:enabled` のルールだと分かっても、ネストを展開して `:is()` の詳細度を計算しなければ、理由は読み取れません。リストに `._toggle[aria-pressed="true"]` を足した人と、赤が効かないことに気付く人が別の人だと、原因を探すのはさらに難しくなります。
 
 ## セレクタの深さとブロックの深さ
 
@@ -246,7 +246,7 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 レビューでは、問題の深刻さで指摘を分けます（「[14-2 レビューとAIとの協働](/operations/review-and-ai/)」）。セレクタリストの中のネストで上書きが効かないなら、不具合なので `MUST` です。子自身の見た目を親のネストに書いているだけで、今は正しく表示されているなら、本書の規約を採用したプロジェクトでは `MUST`、そうでなければ `IMO` として伝えます。直下の子の `& >` がマークアップの都合なのか意図した制約なのかがコードから読み取れないときは、`Q` で尋ねます。
 
 ```text title="レビューの指摘の例"
-[MUST] `._button, ._toggle[aria-pressed="true"]` の中の `&:enabled` は、詳細度が 0.3.0 になり、後ろの `._button[data-variant="danger"]`（0.2.0）に勝ってしまいます。削除のボタンが赤くなりません。`&:enabled` を `._button` と `._toggle` のルールに分けてください（`no-nesting-under-selector-list`）。
+[MUST] `._command-button, ._toggle[aria-pressed="true"]` の中の `&:enabled` は、詳細度が 0.3.0 になり、後ろの `._command-button[data-variant="danger"]`（0.2.0）に勝ってしまいます。削除のボタンが赤くなりません。`&:enabled` を `._command-button` と `._toggle` のルールに分けてください（`no-nesting-under-selector-list`）。
 ```
 
 ネストの深さ、詳細度、宣言の順番はツールで検査できますが、ネストしたルールの持ち主が正しいかどうかは、ツールでは判断できません。本書の設定で機械的に検査しているのは、`&` で始まるかどうかと、条件付きのアットルールの位置と、ルールの中の並び順です。この節の判断は、レビューで確かめます。

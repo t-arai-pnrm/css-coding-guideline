@@ -1,0 +1,85 @@
+@layer tokens {
+  :root {
+    --shape--triangle-top: polygon(50% 0, 100% 100%, 0 100%);
+    --shape--triangle-bottom: polygon(0 0, 100% 0, 50% 100%);
+    --shape--triangle-right: polygon(0 0, 100% 50%, 0 100%);
+    --shape--triangle-left: polygon(0 50%, 100% 0, 100% 100%);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.shape-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 40px;
+      justify-items: center;
+      padding-block-start: 8px;
+    }
+
+    ._shapes {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 16px;
+      justify-self: stretch;
+    }
+
+    li {
+      display: block grid;
+      gap: 8px;
+      justify-items: center;
+      font-size: calc(12 / 16 * 1rem);
+    }
+
+    ._shape {
+      inline-size: 40px;
+      aspect-ratio: 1;
+      background-color: oklch(52% 0.16 250deg);
+
+      &[data-shape="top"] {
+        clip-path: var(--shape--triangle-top);
+      }
+
+      &[data-shape="bottom"] {
+        clip-path: var(--shape--triangle-bottom);
+      }
+
+      &[data-shape="right"] {
+        clip-path: var(--shape--triangle-right);
+      }
+
+      &[data-shape="left"] {
+        clip-path: var(--shape--triangle-left);
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.tooltip) to (.scoped) {
+    :scope {
+      position: relative;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+      background-color: oklch(30% 0.02 250deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      &::after {
+        --_size: 16px;
+
+        content: "";
+
+        /* ツールチップの下端の中央から、下へ突き出す */
+        position: absolute;
+        inset-block-start: 100%;
+        inset-inline-start: 50%;
+        clip-path: var(--shape--triangle-bottom);
+        inline-size: var(--_size);
+        block-size: calc(var(--_size) / 2 * tan(60deg));
+        background-color: inherit;
+        translate: -50% 0;
+      }
+    }
+  }
+}

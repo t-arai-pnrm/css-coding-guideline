@@ -156,7 +156,7 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 JavaScriptで表示を切り替える前提のスタイルは、`@media (scripting: enabled)` の中に書きます。典型的なのが、画面に入ったらふわっと表示するアニメーションです。表示する前の状態として要素を透明にしておき、画面に入ったらJavaScriptが元に戻します。
 
 ```css title="🙆‍♂ Recommended: JavaScriptが使える環境でだけ、表示する前の状態にする"
-._item {
+._card {
   @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
     transition-duration: 0.6s;
     transition-property: opacity, translate;

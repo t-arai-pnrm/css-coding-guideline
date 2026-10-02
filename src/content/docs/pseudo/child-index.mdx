@@ -33,7 +33,7 @@ tbody tr:nth-child(even) {
 
 <Demo title="隠した行も数えるので、見えている行の縞が崩れる" html={tableHtml} css={tableBadCss} variant="not-recommended" />
 
-クラスで絞った中での順番を選ぼうとして、`:nth-of-type()` を使う誤りもよく見かけます。`._item:nth-of-type(2)` は「2番目の `._item`」を選ぶように見えますが、`:nth-of-type()` が数えるのはタグ名だけです。この書き方の意味は、後ろの見出しで説明します。
+クラスで絞った中での順番を選ぼうとして、`:nth-of-type()` を使う誤りもよく見かけます。`._post:nth-of-type(2)` は「2番目の `._post`」を選ぶように見えますが、`:nth-of-type()` が数えるのはタグ名だけです。この書き方の意味は、後ろの見出しで説明します。
 
 数える対象には、目に見えない要素も入ります。「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」の方式でコンポーネントのルートの中に `<style>` を置くと、その `<style>` が最初の子になり、`:first-child` は見出しや画像に当たらなくなります。どの擬似クラスも、ブラウザが表示しているかどうかではなく、DOMの兄弟の並びで数えます。
 
@@ -107,30 +107,30 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 
 `:nth-of-type()` は、同じタグ名の兄弟だけを数える擬似クラスです。式の書き方は `:nth-child()` と同じで、`p:nth-of-type(2)` は兄弟の中で2番目の `p` に当たります。数える単位はタグ名に限られ、クラスや属性では数えません。
 
-そのため、`._item:nth-of-type(2)` は「2番目の `._item`」を選びません。この式は「同じタグ名の兄弟の中で2番目にあり、かつ `._item` でもある要素」を選びます。次のHTMLでは、2つ目の `li` が `._ad` なので、`._item:nth-of-type(2)` に当たる要素はありません。
+そのため、`._post:nth-of-type(2)` は「2番目の `._post`」を選びません。この式は「同じタグ名の兄弟の中で2番目にあり、かつ `._post` でもある要素」を選びます。次のHTMLでは、2つ目の `li` が `._ad` なので、`._post:nth-of-type(2)` に当たる要素はありません。
 
 ```html
 <ul>
-  <li class="_item">…</li>
+  <li class="_post">…</li>
   <li class="_ad">…</li>
-  <li class="_item">…</li>
+  <li class="_post">…</li>
 </ul>
 ```
 
-```css title="🙅‍♂ Not Recommended: 「2番目の ._item」のつもりで :nth-of-type() を使う"
+```css title="🙅‍♂ Not Recommended: 「2番目の ._post」のつもりで :nth-of-type() を使う"
 /* 🙅‍♂ Not Recommended */
-._item:nth-of-type(2) {
+._post:nth-of-type(2) {
   /* 2つ目の li は ._ad なので、どの要素にも当たらない */
   border-block-start: 1px solid;
 }
 ```
 
-「2番目の `._item`」を選ぶなら、`:nth-child(2 of ._item)` と書きます。`._item` だけを数えるので、間に広告の `li` が入っても、3つ目の `li` が選ばれます。クラス、属性、状態のどれで絞るときも同じ形で書けるので、本書では、絞った中での順番はすべて `of S` で書きます。
+「2番目の `._post`」を選ぶなら、`:nth-child(2 of ._post)` と書きます。`._post` だけを数えるので、間に広告の `li` が入っても、3つ目の `li` が選ばれます。クラス、属性、状態のどれで絞るときも同じ形で書けるので、本書では、絞った中での順番はすべて `of S` で書きます。
 
-```css title="🙆‍♂ Recommended: 2番目の ._item を選ぶ"
-@scope (.scoped.item-list) to (.scoped) {
+```css title="🙆‍♂ Recommended: 2番目の ._post を選ぶ"
+@scope (.scoped.post-list) to (.scoped) {
   li {
-    &:nth-child(2 of ._item) {
+    &:nth-child(2 of ._post) {
       border-block-start: 1px solid;
     }
   }

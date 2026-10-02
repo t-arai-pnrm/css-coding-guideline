@@ -75,7 +75,7 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 これを防ぐには、列の最小値を0にした `minmax(0, 1fr)` と書きます。最小値が0なので、中身の大きさにかかわらず、列は親の幅を均等に分けます。
 
 ```css title="🙆‍♂ Recommended: 列の最小値を0にして、中身に押し広げられないようにする"
-._columns {
+._cards {
   display: block grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
@@ -109,7 +109,7 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 文字を含む要素には、まず `min-inline-size: fit-content` を検討します。`fit-content` を最小幅にすると、親に余裕があるうちは中身の幅を保って折り返さず、親より長くなったときだけ親の幅で折り返します。縮まない指定に、はみ出しを防ぐ上限を加えた形です。
 
 ```css title="🙆‍♂ Recommended: 文字は fit-content で守り、アイコンだけ縮ませない"
-._button {
+._submit-button {
   display: inline flex;
   gap: 8px;
   align-items: center;

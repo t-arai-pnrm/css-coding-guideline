@@ -1,0 +1,32 @@
+@layer tokens {
+  :root {
+    --color--accent--500: oklch(62% 0.19 250deg);
+    --color--accent--700: oklch(55% 0.22 300deg);
+    --rounded--lg: 16px;
+    --background--base: oklch(100% 0 0deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.feature-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding: 24px;
+      border: 2px solid var(--color--accent--500);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--base);
+
+      @supports (background-clip: border-area) {
+        border-color: transparent;
+        background:
+          linear-gradient(in oklch 90deg, var(--color--accent--500), var(--color--accent--700)) border-area,
+          var(--background--base);
+      }
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+  }
+}

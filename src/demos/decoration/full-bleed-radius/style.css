@@ -1,0 +1,29 @@
+@layer base {
+  :where(body) {
+    /* デモの枠が base レイヤーで付けた余白を取り除き、カードが画面の端まで広がれるようにする */
+    padding-inline: revert-layer;
+  }
+}
+
+@layer components {
+  @scope (.scoped.hero-card) to (.scoped) {
+    :scope {
+      --_radius: var(--hero-card--radius, 40px);
+      --_tolerance: 20px;
+
+      display: block grid;
+      gap: 8px;
+      inline-size: min(100%, calc(720 / 16 * 1rem));
+      margin-inline: auto;
+      padding-block: 64px;
+      padding-inline: 24px;
+      border-radius: calc(sign(100lvi - 100% - var(--_tolerance)) * var(--_radius)) / var(--_radius);
+      background-color: oklch(52% 0.16 250deg);
+      color: oklch(100% 0 0deg);
+    }
+
+    ._title {
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+}

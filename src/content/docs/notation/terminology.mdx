@@ -1,0 +1,175 @@
+---
+title: "6-6 名前に使う語"
+description: コンポーネント、子要素のクラス、カスタムプロパティの名前に使う語は、HTMLとCSSで決まっている意味と要素の責務で選び、1つの語に1つの意味だけを持たせます。内容の幅を制限する要素は section-inner、子のコンポーネントを配置する要素は card-outer のように「何の」を併記した inner と outer、画面の端との余白は gutter、子要素の間隔は gap、a 要素は link、サイトの導線は navigation と呼びます。
+sidebar:
+  order: 6
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+名前に使う語は、HTMLとCSSで決まっている意味と、その要素の責務で選びます。そのうえで、1つの語には1つの意味だけを持たせ、コンポーネントの名前、子要素のクラス名、カスタムプロパティの名前のどこに現れても、同じ意味で使います。内容の幅を制限する要素は `inner`、親が子のコンポーネントを配置する要素は `outer` と呼び、`._section-inner` や `._card-outer` のように必ず「何の」を併記します。画面の端とコンテンツのあいだの余白は `gutter`、子要素どうしの間隔は `gap` と呼びます。`<a>` は見た目がボタンでも `link`、サイトの中を移動する導線は `menu` ではなく `navigation` です。
+
+「[6-1 命名規則](/notation/naming/)」は、`scoped <名前>`、`._kebab`、`.-kebab` のような名前の形を決めた節です。この節は、その形の中に入れる語を扱います。語の定義は、著者がデザインシステムのために書いた用語の指針にもとづきます。この指針は、デザイン、実装、ドキュメントのあいだで用語の意味をそろえるためのもので、この節ではそのうちCSSの名前に関わる語を取り上げます。
+
+## 同じ語が別の意味で使われる問題
+
+名前の形がそろっていても、語の意味がそろっていなければ、名前から役割を読み取れません。次のヘッダーは、名前の形は6-1の規約どおりですが、語の選び方に問題があります。
+
+```html title="🙅‍♂ Not Recommended: Web標準と違う意味で語を使う"
+<!-- 🙅‍♂ Not Recommended -->
+<header class="scoped site-header">
+  <div class="_container">
+    <nav class="_menu" aria-label="メイン">
+      <ul class="_columns">
+        <li><a href="/service/">サービス</a></li>
+        <li><a href="/company/">会社概要</a></li>
+      </ul>
+    </nav>
+    <a class="_button" href="/contact/">お問い合わせ</a>
+  </div>
+</header>
+```
+
+```css title="🙅‍♂ Not Recommended: 1つの語を2つの意味で使う"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.site-header) to (.scoped) {
+  ._container {
+    --_gutter: 24px;
+
+    display: block flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: content-box;
+    max-inline-size: calc(1140 / 16 * 1rem);
+    margin-inline: auto;
+    padding-inline: var(--_gutter);
+  }
+
+  ._columns {
+    display: block flex;
+    gap: var(--_gutter);
+  }
+}
+```
+
+`._container` には `container` プロパティがなく、幅を制限しているだけです。CSSでは、`container` プロパティを指定した要素がコンテナです。この名前を見た人は、コンテナクエリがこの要素の幅を参照していると考えます。`._columns` も同じで、CSSの `columns` は段組み（マルチカラム）のプロパティですが、この要素はFlexboxで横に並べているだけです。
+
+`--_gutter` は、画面の端との余白と、リンクどうしの間隔の2つの意味で使われています。2つの値が同じだったので1つの変数にまとめたのでしょうが、デザインの変更で「ガターを広げる」と決まったとき、この値を変えるとリンクの間隔まで広がります。値を変えてよいかを判断するには、変数を使っている箇所をすべて読む必要があります。
+
+HTMLの要素とも食い違っています。`menu` は、HTMLの `<menu>` 要素やARIAの `menu` ロールで、操作の選択肢の一覧を指す語です。サイトの導線を `_menu` と呼ぶと、矢印キーで項目を移動するようなメニューの振る舞いを実装すべきだと誤解されます。`._button` を付けた `<a>` には、`:disabled` のようなボタン用の指定を書いても当たりません。`<a>` には `disabled` 属性がないからです。
+
+こうした食い違いは、人だけでなくAIにも誤読を招きます。AIはクラス名とカスタムプロパティ名から要素の役割を推測してコードを書き足すので、名前と実体がずれていると、そのずれに沿ったコードが増えていきます。
+
+## 語の意味を1つに決める
+
+語を選ぶときは、4つの基準を順に確かめます。1つ目は、HTML、CSS、ARIAで意味が決まっている語を、その意味でだけ使うことです。2つ目は、見た目ではなく責務で選ぶことです。3つ目は、1つの語を複数の意味で使わず、異なる概念を1つの語でまとめないことです。4つ目は、`wrapper`、`block`、`module`、`widget` のような総称を避けることです。
+
+基準を満たす語を、あらかじめ用意しておきます。本書で使う語の意味は、次の表のとおりです。
+
+| 語 | 本書での意味 | 名前の例 | この意味では使わない |
+|---|---|---|---|
+| section | ページの中の意味のある区画 | `scoped news-section` | 幅を制限するだけの要素 |
+| inner | 区画の中で、内容の幅を制限して中央に寄せる要素 | `._section-inner` | `container`、`wrapper` |
+| outer | 親が子のコンポーネントの配置と外側の余白を決める要素 | `._card-outer` | `wrapper` |
+| container | `container` プロパティを指定した要素 | `._list-container`、`--site-header` | 幅を制限するだけの要素 |
+| gutter | コンテンツの外縁と画面の端のあいだの、インライン方向の余白 | `--_gutter`、`--primary-layout--gutter` | 子要素どうしの間隔 |
+| gap | FlexboxやGridなどの、子要素どうしの間隔 | `--stack--gap`、`--grid--row-gap` | 画面の端との余白、通常フローのマージン |
+| columns | 段組み（マルチカラム）の配置 | `.columns` | FlexboxやGridの列 |
+| link | `<a>` の要素 | `._contact-link` | `<button>` の要素 |
+| button | `<button>` の要素 | `._close-button` | `<a>` の要素 |
+| navigation | サイトの中を移動する導線 | `._nav-links`、`scoped footer-navigation` | 操作の選択肢 |
+| menu | 操作を実行したり選んだりする選択肢の一覧 | `scoped share-menu` | サイトの導線 |
+
+表に `section` があるのは、`inner` と区別するためです。`section` は意味のある区画を表す語で、幅の制限という責務は `inner` が持ちます。
+
+この表の語の多くは、すでに本書のほかの節で使っています。`outer` は「[7-2 コンポーネントの境界を守る](/components/boundaries/)」で、親が子のコンポーネントを包んで配置を決める要素として定めました。`gutter` は、コンポジション「[8-14-10 primary-layout](/layout/compositions/primary-layout/)」の公開プロパティの名前です。この節は、それらの語の意味を1か所にまとめ、名前を付けるときの基準にします。
+
+## 構造と余白の語
+
+`inner`、`outer`、`container` は、`._section-inner`、`._card-outer`、`._list-container` のように、必ず「何の」を併記します。`._inner` だけでは、何の内側なのかをクラス名から読み取れないからです。スコープの中なら対象は1つに決まると考えがちですが、HTMLやブラウザの開発者ツールで `class="_inner"` を見た人は、ルートの `scoped` までたどらないと、どの要素の内側なのかが分かりません。内側を包む要素が1つのコンポーネントに2つ以上できたときにも、名前を付け直さずに済みます。
+
+「何の」には、包む対象を表す語を書きます。コンポーネントの名前をそのまま繰り返す必要はなく、`site-header` の中なら `._header-inner`、カードを包む要素なら `._card-outer` です。どれもコンポーネントの子要素として扱い、`outer` を単独のコンポーネントにはしません。`wrapper` は責務を表さない語なので使いませんが、既存のコードにあってすぐに直せないときも、`._card-wrapper` のように何を包むのかを併記します。
+
+`container` は、`container` プロパティを持つ要素にだけ使います。コンポーネントのルートをコンテナにするなら、クラス名は要らず、コンテナの名前を `--site-header` のように付けます。ルートの中の要素をコンテナにするなら、`inner` と同じく、`._list-container` のように何のコンテナかを併記します。コンテナの名前の付け方は「[9-2 コンテナクエリ](/responsive/container-queries/)」で説明しています。
+
+`gutter` と `gap` は、余白のある位置で使い分けます。`gutter` は、コンテンツが画面の端に付かないように確保する、インライン方向の余白です。`gap` は、FlexboxやGridの子要素どうしの間隔です。CSSフレームワークには列の間隔を「ガター」と呼ぶものもありますが、本書ではその用法を採りません。CSSのプロパティ名が `gap` なので、列の間隔も `gap` と呼べば、名前とプロパティが一致するからです。
+
+ガターの値は、区画ごとに決めず、サイト全体で同じトークンを参照します。区画ごとに `padding-inline` を調整すると、画面の端の余白が区画によって少しずつずれ、ガターを変えるときにすべての区画を直すことになるからです。トークンの設計は「[7-4 デザイントークン](/components/design-tokens/)」で説明しています。
+
+## 要素と配置の語
+
+`link` と `button` は、要素で決めます。`<a>` はページを移動するための要素なので `link`、`<button>` はページの中で操作するための要素なので `button` です。見た目がボタンのリンクも `link` と呼びます。`<input type="submit">` のように、振る舞いがボタンと同じ要素は `button` と呼びます。
+
+`navigation` と `menu` は、項目を選んだ結果で決めます。選ぶとほかのページへ移動するなら `navigation`、選ぶと操作が実行されるなら `menu` です。HTMLの要素名として広く通じている `nav` は、`._nav-links` のように省略形で使ってかまいません。導線が複数あるときは、`global-navigation` や `footer-navigation` のように、どの導線かを語で示します。
+
+配置の語は、CSSの配置の方式に合わせます。`columns` は段組み、`grid` はGridの配置に使います。Flexboxで列を並べる要素に名前が必要なら、`columns` とは呼ばず、`flex-columns` のように方式を含めて呼びます。`row` は、配置の結果として横に並んでいる状態を表す語なので、要素の名前にはしません。
+
+文章の語は、`text` だけの名前にしません。`text` では、1つの段落なのか、CMSの本文のように見出し、段落、リストを含む編集領域なのかを区別できないからです。子要素の名前は役割で付けるので、段落は `._lead` や `._note`、記事の本文は `._body` のような名前になります。役割よりも種類を示したいときは、1つの段落を `paragraph`、編集領域を `rich-text` と呼び分けます。編集領域の中の間隔は、コンポジション「[8-14-11 prose](/layout/compositions/prose/)」で作ります。
+
+## 語をそろえて書き直す
+
+冒頭のヘッダーを、この節の語で書き直します。幅を制限する要素はヘッダーの内側なので `._header-inner` にし、`gutter` は画面の端との余白にだけ使います。導線は `<nav>` が1つしかないので、クラスを付けずにタイプセレクタで選びます。
+
+```html title="🙆‍♂ Recommended: 責務とHTMLの要素に合わせて語を選ぶ"
+<header class="scoped site-header">
+  <div class="_header-inner">
+    <nav aria-label="メイン">
+      <ul>
+        <li><a href="/service/">サービス</a></li>
+        <li><a href="/company/">会社概要</a></li>
+      </ul>
+    </nav>
+    <a class="_contact-link" href="/contact/">お問い合わせ</a>
+  </div>
+</header>
+```
+
+```css title="🙆‍♂ Recommended: gutter と gap を別の値にする"
+@scope (.scoped.site-header) to (.scoped) {
+  ._header-inner {
+    --_gutter: calc(var(--spacing--md) * 1px);
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing--sm) / 16 * 1rem);
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: content-box;
+    max-inline-size: calc(1140 / 16 * 1rem);
+    margin-inline: auto;
+    padding-inline: var(--_gutter);
+  }
+
+  ul {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing--sm) / 16 * 1rem);
+  }
+}
+```
+
+`--_gutter` は画面の端との余白だけを表し、リンクの間隔は `gap` に別の値で書いています。ガターを広げても、リンクの間隔は変わりません。お問い合わせのリンクは、見た目がボタンでも `<a>` なので `_contact-link` です。
+
+## 語を足すときと変えるとき
+
+表にない語を新しく使うときは、Web標準で意味が決まっていないかを先に調べます。決まっていれば、その意味と一致する場合だけ使い、一致しなければ別の語を選びます。次に、その語が見た目ではなく責務を表しているかを確かめます。新しい語は、何を指すか、何を指さないかを、表と同じ形でプロジェクトの用語集に書き足します。
+
+語の意味は、コンポーネントやパターンの分類にも関わります。本書では、静的で再利用できる見た目の断片をパターン、1つの定義から管理され入力点と契約を持つ再利用の単位をコンポーネントと呼び、取り違えません。分類の定義は「[7-1 何をコンポーネントにするか](/components/what-is-a-component/)」と「[7-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
+
+公開プロパティやコンポーネントの名前に使った語を変えるのは、表記の修正ではなく、互換性のない変更です。`--primary-layout--gutter` の名前を `--primary-layout--padding` へ変えると、`style` 属性でガターを渡しているすべての呼び出し側で、ガターがデフォルト値へ戻ります。エラーは出ないので、表示を確かめるまで気付けません。語を変えるときは、使っている箇所を検索してから、すべてを同時に直します。
+
+AIに名前を付けさせると、`.container`、`.wrapper`、`.row` のようなCSSフレームワークの慣習の名前や、見た目がボタンの `<a>` に付けた `.btn` がよく出てきます。列の間隔を表すカスタムプロパティに `gutter` を使う例も見られます。生成されたコードでは、名前と実体の食い違いを、この節の表と照らして直してください。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Design System Terminology Guideline - GitHub Gist](https://gist.github.com/tak-dcxi/6608f35343e2b411d591dc28795ebae0)（著者。デザインシステムの用語の定義と判定の手順）
+- [container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/container)
+- [gap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gap)
+- [段組みレイアウト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_multicol_layout)
+- [&lt;nav&gt;: ナビゲーション セクション要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/nav)
+- [&lt;menu&gt;: メニュー要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/menu)
+- [ARIA: menu ロール - Accessibility | MDN](https://developer.mozilla.org/ja/docs/Web/Accessibility/ARIA/Roles/menu_role)

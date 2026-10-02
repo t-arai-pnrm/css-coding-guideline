@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.12.0
+- バージョン: 0.13.0
 - 生成日: 2026-10-02
-- ルールの数: 486
+- ルールの数: 495
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -108,7 +108,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
   - 補足: `:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。
   - 詳細: 3-2 :has() で祖先と前の兄弟を選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/has.mdx）
-- 【推奨】クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._item:nth-of-type(2)` ではなく `:nth-child(2 of ._item)`）。（`nth-child-of-over-nth-of-type`）
+- 【推奨】クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._post:nth-of-type(2)` ではなく `:nth-child(2 of ._post)`）。（`nth-child-of-over-nth-of-type`）
   - 理由: `:nth-of-type()` は要素の種類（タグ名）ごとにしか数えず、`._item:nth-of-type(2)` は「2番目の `._item`」ではなく「同じ種類の兄弟の中で2番目にあり、かつ `._item` でもある要素」を選ぶため。
   - 補足: 絞り込みで `hidden` 属性を付けた行を除いて縞模様を付けるときは、`&:nth-child(even of :not([hidden]))` と書きます。`of S` の詳細度は、擬似クラス1つ分に S の中でいちばん高いセレクタの詳細度を足したものになります。
   - 詳細: 3-3 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
@@ -297,6 +297,22 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】コードの途中のコメントには「なぜそう書くのか」と「なぜ別の書き方をしないのか」だけを書き、コードが何をしているかは書かない。（`comments-why-only`）
   - 理由: 何をしているかはコードを読めば分かり、コードと食い違ったコメントは誤解のもとになるため。
   - 詳細: 6-5 コメントの書き方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/comments.mdx）
+- 【必須】`inner`、`outer`、`container` を名前に使うときは、`._section-inner`、`._card-outer`、`._list-container` のように、必ず「何の」を併記する（`._inner` だけにしない）。（`inner-outer-names`）
+  - 理由: `._inner` だけでは何の内側なのかをクラス名から読み取れず、HTML や開発者ツールで見た人がルートまでたどらないと対象が分からないため。
+  - 補足: 内容の幅を制限する要素は `inner`、親が子のコンポーネントの配置と外側の余白を決める要素は `outer` と呼び、どちらもコンポーネントの子要素にします（`outer` を単独のコンポーネントにしない）。「何の」には包む対象の語を書き、コンポーネント名を繰り返す必要はありません（`site-header` の中なら `._header-inner`）。`wrapper` は使いませんが、既存のコードで使われているときも同じく何を包むのかを併記します。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【必須】コンテンツの外縁と画面の端のあいだのインライン方向の余白は `gutter`、子要素どうしの間隔は `gap` と呼び、取り違えない（列の間隔を `gutter` と呼ばない）。（`gutter-vs-gap`）
+  - 理由: 名前と CSS のプロパティの意味が一致し、ガターを変えたときに要素の間隔まで変わるといった取り違えを防げるため。
+  - 補足: ガターの値は区画ごとに決めず、サイト全体で同じトークンを参照します。通常フローのマージンは `gap` と呼びません。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【必須】`columns` の語は段組み（マルチカラム）の配置にだけ使い、Flexbox や Grid の列には使わない。（`columns-for-multicol`）
+  - 理由: CSS の `columns` プロパティを連想させ、配置の方式を誤解させるため。
+  - 補足: Grid の配置には `grid` を使い、Flexbox で列を並べる要素に名前が必要なら `flex-columns` のように方式を含めます。`row` は配置の結果を表す語なので、要素の名前にしません。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【推奨】サイトの中を移動する導線は `navigation`（または `nav`）、操作を実行したり選んだりする選択肢の一覧は `menu` と呼ぶ。（`navigation-not-menu`）
+  - 理由: HTML の `<menu>` 要素と ARIA の `menu` ロールは操作の一覧を表すので、導線を `menu` と呼ぶと、メニューの振る舞いを実装すべきだと誤解させるため。
+  - 補足: 導線が複数あるときは、`global-navigation` や `footer-navigation` のように、どの導線かを語で示します。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
 - 【推奨】コンポーネントにするかは、繰り返し使うか、全インスタンスで HTML の構造・クラス・ARIA 属性・data 属性・条件分岐・JavaScript の振る舞いを制御したいか、既知の要件として構造の拡張があるか、の順に判定する。（`component-decision-tests`）
   - 理由: コンポーネントが役に立つのは、HTML の構造や振る舞いを1つの定義から管理したいときで、見た目の共通化だけなら CSS で足りるため。
   - 補足: 繰り返し使わないものは、親のスコープの中に書きます。繰り返し使っていても CSS だけで管理できるなら、コンポーネントにしません。全インスタンスで制御したいものがはっきりあれば、2つ目の問いでコンポーネントにすると決まります。制御したいものはあるが決め手に欠けるときは、既知の構造の拡張があればコンポーネントにし、なければまだコンポーネントにしません。「3回出てきた」はパターンへの昇格の目安で、コンポーネントにする目安ではありません。セクションの導入（小見出し、見出し、リード文の組）のように判定に迷うまとまりは、デフォルトでは親の子要素として書き、バリエーションや補助の要素の有無を入力点として管理したいときにコンポーネントにします。コンポーネントにしたものは、ルートに `scoped <名前>` を付けて `@scope (.scoped.<名前>) to (.scoped)` で書き、外から変えてよい値を公開プロパティにします。
@@ -1032,7 +1048,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: DOM が変わるたびに、ブラウザは起点の子孫を調べ直すので、起点と引数の範囲が広いと、要素の多いページでスタイルの再計算が重くなるため。
   - 補足: `:root:has(:modal)` のように、ページ全体の状態を表すもので、ほかに起点がないものは例外です。重さは Chrome の開発者ツールの「CSS selector stats」で測ります。
   - 詳細: 3-2 :has() で祖先と前の兄弟を選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/has.mdx）
-- 【推奨】クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._item:nth-of-type(2)` ではなく `:nth-child(2 of ._item)`）。（`nth-child-of-over-nth-of-type`）
+- 【推奨】クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._post:nth-of-type(2)` ではなく `:nth-child(2 of ._post)`）。（`nth-child-of-over-nth-of-type`）
   - 理由: `:nth-of-type()` は要素の種類（タグ名）ごとにしか数えず、`._item:nth-of-type(2)` は「2番目の `._item`」ではなく「同じ種類の兄弟の中で2番目にあり、かつ `._item` でもある要素」を選ぶため。
   - 補足: 絞り込みで `hidden` 属性を付けた行を除いて縞模様を付けるときは、`&:nth-child(even of :not([hidden]))` と書きます。`of S` の詳細度は、擬似クラス1つ分に S の中でいちばん高いセレクタの詳細度を足したものになります。
   - 詳細: 3-3 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
@@ -1319,13 +1335,17 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【非推奨】`wrapper`、`block`、`module`、`widget` のように、責務を表さない総称を名前に使わない。（`no-vague-names`）
   - 理由: 何のための要素なのかが名前から分からず、責務の境界もあいまいになるため。
-  - 補足: 内容の幅を制限する要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。名前に迷ったら、その要素が何なのかを日本語で1文に書き、特徴的な語を名前にします（`text-box` や `center-box` のような見た目や配置だけの名前は避けます）。
+  - 補足: 内容の幅を制限する要素は `._section-inner`、外側との余白や配置を調整する要素は `._card-outer` のように、「何の」を併記して責務を表す名前を付けます（ルール `inner-outer-names`）。名前に迷ったら、その要素が何なのかを日本語で1文に書き、特徴的な語を名前にします（`text-box` や `center-box` のような見た目や配置だけの名前は避けます）。
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【推奨】クラス名は単語を省略せずに書く（`._desc` ではなく `._description`）。HTML の要素名として広く通じている `nav` などは、そのまま使ってよい。（`no-abbreviation`）
   - 理由: 文字数を削っても節約できるのはわずかなバイト数で、読む人には意味を推測する負担が残るため。
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【推奨】子要素のクラス名に HTML の階層を映さない。孫にあたる要素にも、親の名前をつなげず、役割の名前を `._kebab` で付ける（`._tags-item-link` ではなく `._tag-link`）。（`child-name-flat`）
   - 理由: 階層を名前に写すと名前が要素の位置を表し、HTML の構造を変えるたびにクラス名とセレクタも変えなければならなくなるため。
+  - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
+- 【推奨】互いに独立して選ばれるバリエーションの軸は、軸ごとに別の属性で表し、1つの属性には1つの値だけを書く（`data-variant="warning" data-size="small"`）。（`variant-attribute-per-axis`）
+  - 理由: 属性名から軸が分かり、セレクタを完全一致で書けるため。値を空白で区切って1つの属性に詰めると、`~=` のセレクタが必要になり、どの値がどの軸に属し、同時に指定できるのかが読み取れなくなる。
+  - 補足: 見た目の種類を表す軸には `data-variant` を、それと組み合わせる軸には `data-size` のように軸の名前を属性名に使います。2つの軸のセレクタは詳細度が同じなので、軸ごとに変えるプロパティを分けます。
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【必須】自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。（`dashed-ident-names`）
   - 理由: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
@@ -1427,6 +1447,33 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】TODO、FIXME、HACK は、`/* TODO: … */` のように、コメントの先頭に大文字で書く。（`todo-comment-format`）
   - 理由: 未完了の作業や一時的な対処を、検索でまとめて見つけられるようにするため。
   - 詳細: 6-5 コメントの書き方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/comments.mdx）
+- 【必須】名前に使う語は、プロジェクトの中で1つの意味だけで使い、コンポーネントの名前、子要素のクラス名、カスタムプロパティの名前のどこでも同じ意味にそろえる。（`one-term-one-meaning`）
+  - 理由: 1つの語が2つの意味を持つと、名前から役割を読み取れず、値を変えてよいかを判断するために使っている箇所をすべて読むことになるため。
+  - 補足: 値がたまたま同じでも、意味の違う値を1つのカスタムプロパティにまとめません。新しい語は、何を指すかと何を指さないかを、プロジェクトの用語集に書き足します。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【必須】`inner`、`outer`、`container` を名前に使うときは、`._section-inner`、`._card-outer`、`._list-container` のように、必ず「何の」を併記する（`._inner` だけにしない）。（`inner-outer-names`）
+  - 理由: `._inner` だけでは何の内側なのかをクラス名から読み取れず、HTML や開発者ツールで見た人がルートまでたどらないと対象が分からないため。
+  - 補足: 内容の幅を制限する要素は `inner`、親が子のコンポーネントの配置と外側の余白を決める要素は `outer` と呼び、どちらもコンポーネントの子要素にします（`outer` を単独のコンポーネントにしない）。「何の」には包む対象の語を書き、コンポーネント名を繰り返す必要はありません（`site-header` の中なら `._header-inner`）。`wrapper` は使いませんが、既存のコードで使われているときも同じく何を包むのかを併記します。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【必須】コンテンツの外縁と画面の端のあいだのインライン方向の余白は `gutter`、子要素どうしの間隔は `gap` と呼び、取り違えない（列の間隔を `gutter` と呼ばない）。（`gutter-vs-gap`）
+  - 理由: 名前と CSS のプロパティの意味が一致し、ガターを変えたときに要素の間隔まで変わるといった取り違えを防げるため。
+  - 補足: ガターの値は区画ごとに決めず、サイト全体で同じトークンを参照します。通常フローのマージンは `gap` と呼びません。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【必須】`columns` の語は段組み（マルチカラム）の配置にだけ使い、Flexbox や Grid の列には使わない。（`columns-for-multicol`）
+  - 理由: CSS の `columns` プロパティを連想させ、配置の方式を誤解させるため。
+  - 補足: Grid の配置には `grid` を使い、Flexbox で列を並べる要素に名前が必要なら `flex-columns` のように方式を含めます。`row` は配置の結果を表す語なので、要素の名前にしません。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【推奨】サイトの中を移動する導線は `navigation`（または `nav`）、操作を実行したり選んだりする選択肢の一覧は `menu` と呼ぶ。（`navigation-not-menu`）
+  - 理由: HTML の `<menu>` 要素と ARIA の `menu` ロールは操作の一覧を表すので、導線を `menu` と呼ぶと、メニューの振る舞いを実装すべきだと誤解させるため。
+  - 補足: 導線が複数あるときは、`global-navigation` や `footer-navigation` のように、どの導線かを語で示します。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【推奨】`text` だけの名前を付けず、1つの段落と、見出しや段落やリストを含む編集領域を呼び分ける。（`no-text-only-name`）
+  - 理由: `text` では、段落なのか CMS の本文のような編集領域なのかを区別できないため。
+  - 補足: 子要素の名前は役割で付けるので、多くは `._lead` や `._body` のような役割の名前になります。種類を示したいときは、段落を `paragraph`、編集領域を `rich-text` と呼びます。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
+- 【推奨】公開プロパティやコンポーネントの名前に使った語を変えるときは、互換性のない変更として扱い、使っている箇所をすべて同時に直す。（`renaming-terms-is-breaking`）
+  - 理由: 公開プロパティの名前が変わると、古い名前で値を渡している呼び出し側が、エラーを出さずにデフォルト値に戻るため。
+  - 詳細: 6-6 名前に使う語（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/terminology.mdx）
 
 ### 第7章 コンポーネントとカスタムプロパティ
 
@@ -1739,6 +1786,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】ページのコンテンツの最大幅と画面の端の余白は、グリッドの左右に余白の列（ガター）を作って決める。（`gutter-columns-for-content-width`）
   - 理由: 画面幅いっぱいに広げたい要素を、ガターの列まで広げるだけで作れるため。
   - 補足: 第7章のコンポジション `primary-layout` は、この形を部品にしたものです。
+  - 詳細: 8-9 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
+- 【推奨】ページに縦に並べるセクションの上下の余白は、親の `gap` やセクションの外側の `margin` ではなく、各セクションのルートの `padding-block` で作る。（`section-padding-block`）
+  - 理由: 背景は `margin` の領域や親の `gap` の部分には描かれないため、`gap` や `margin` で空けるとセクションの間に親の背景が帯のように見えるため。`padding-block` なら背景が途切れず、中身と背景の端の間にも余白が確保される。
+  - 補足: 背景が同じセクションが続く箇所では、`padding` は相殺しないので、上下のセクションの値が足し合わされます。
   - 詳細: 8-9 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
 - 【推奨】余白の大きさは、グループの間の余白をグループの中の余白より大きくして、要素のまとまりが見て分かるようにする。（`spacing-proximity`）
   - 理由: 人は近くにあるものを同じまとまりとして読み取るので、余白の差が小さいと、どの要素がどのグループに属するのかが分からなくなるため。

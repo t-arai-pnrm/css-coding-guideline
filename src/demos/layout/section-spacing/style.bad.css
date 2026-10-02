@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.news-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-inline: 16px;
+      background-color: oklch(95% 0.02 250deg);
+    }
+  }
+
+  @scope (.scoped.service-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-inline: 16px;
+      background-color: oklch(30% 0.05 260deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+
+  @scope (.scoped.contact-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-inline: 16px;
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-home) to (.scoped) {
+    /* セクションの間をページの gap で空けると、その部分にはページの背景が見える */
+    main {
+      display: block grid;
+      gap: 48px;
+    }
+  }
+}

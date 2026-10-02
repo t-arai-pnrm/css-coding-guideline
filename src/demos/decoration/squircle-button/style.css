@@ -1,0 +1,39 @@
+@layer pages {
+  @scope (.scoped.button-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    figure {
+      display: block grid;
+      gap: 8px;
+      justify-items: center;
+    }
+
+    figcaption {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.button) to (.scoped) {
+    :scope {
+      padding-block: 16px;
+      padding-inline: 48px;
+      border-color: transparent;
+      border-radius: calc(infinity * 1px);
+      corner-shape: squircle;
+      background-color: oklch(52% 0.16 250deg);
+      color: oklch(100% 0 0deg);
+      font-weight: 700;
+
+      /* 比べるための指定。corner-shape を初期値に戻す */
+      &[data-shape="round"] {
+        corner-shape: round;
+      }
+    }
+  }
+}

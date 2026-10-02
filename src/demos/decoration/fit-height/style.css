@@ -1,0 +1,31 @@
+@layer components {
+  @scope (.scoped.media-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: calc(120 / 16 * 1rem) minmax(0, 1fr);
+      gap: 16px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    img {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      block-size: 0;
+      min-block-size: 100%;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+  }
+}

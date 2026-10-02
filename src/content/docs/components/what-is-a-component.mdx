@@ -80,7 +80,7 @@ CSSの側では、コンポーネントの契約を3つの仕組みで表しま�
 
 ## コンポーネントにするかを決める3つの問い
 
-コンポーネントにするかは、3つの問いを順にたどって判定します。この問いの立て方は、Kevin Gearyの記事の3つのテストを参考に、私がテンプレートの規約にまとめたものです。
+コンポーネントにするかは、3つの問いを順にたどって判定します。
 
 1つ目は「繰り返し使うか」です。同じものを何度も使うなら、コンポーネントの候補に強く傾きます。HTMLを複製して使うと、変更のたびにすべての箇所を手で直すことになり、直し漏れが起きやすいからです。ただし、繰り返し使っていても、CSSだけで十分に管理できるならコンポーネントにしません。段落はサイト中に100回以上出てきますが、`p` のスタイルで足ります。「3回出てきた」は、パターンへの昇格を検討する目安であって、コンポーネントにする目安ではありません。
 
@@ -88,7 +88,7 @@ CSSの側では、コンポーネントの契約を3つの仕組みで表しま�
 
 3つ目は「既知の要件として構造の拡張があるか」です。子要素の追加や構造の変更を根拠にできるのは、それがいまの要件、既存の実装、仕様書、既知の派生要件のどれかに書かれているときだけです。デザインカンプにアイコン付きのボタンがあるなら、ボタンの構造が拡張されることは既知の要件です。2つ目の問いで決めきれなかったものは、既知の構造の拡張があればコンポーネントにし、なければまだコンポーネントにしません。
 
-3つの問いの答えと結論の関係は、次の表のとおりです。「—」は、その問いを考える必要がないことを表します。
+3つの問いの答えと結論の関係は、次の表のとおりです。
 
 | 繰り返し使うか | 全インスタンスで制御したいものがあるか | 既知の構造の拡張があるか | 結論 |
 | --- | --- | --- | --- |
@@ -210,6 +210,6 @@ Atomic Designの用語で言えば、atomは最小の単位であって、コン
 
 ## 参考リンク
 
-- [Understanding Components in Web Design From an Atomic Design Perspective](https://geary.co/understanding-components-in-web-design/)（Kevin Geary、2024年12月。判定の3つのテストとカードの区画）
+- [Understanding Components in Web Design From an Atomic Design Perspective](https://geary.co/understanding-components-in-web-design/)（Kevin Geary、2024年12月）
 - [Atomic Design Methodology](https://atomicdesign.bradfrost.com/chapter-2/)（Brad Frost）
 - [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)

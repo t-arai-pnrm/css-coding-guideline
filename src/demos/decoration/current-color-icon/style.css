@@ -1,0 +1,36 @@
+@layer tokens {
+  :root {
+    --foreground--base: oklch(25% 0.02 250deg);
+    --foreground--muted: oklch(65% 0.01 250deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.icon-button-demo) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    button {
+      display: inline flex;
+      gap: 8px;
+      align-items: center;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+      color: var(--foreground--base);
+
+      &:disabled {
+        color: var(--foreground--muted);
+      }
+    }
+
+    ._icon {
+      inline-size: 1.25em;
+      aspect-ratio: 1;
+      fill: currentColor;
+    }
+  }
+}

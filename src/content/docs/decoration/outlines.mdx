@@ -6,7 +6,14 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import shapeTabHtml from '../../../demos/decoration/shape-tab/index.html?raw';
+import shapeTabCss from '../../../demos/decoration/shape-tab/style.css?raw';
+import gradientBorderHtml from '../../../demos/decoration/gradient-border/index.html?raw';
+import gradientBorderCss from '../../../demos/decoration/gradient-border/style.css?raw';
+import donutHtml from '../../../demos/decoration/donut-chart/index.html?raw';
+import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 
 要素の輪郭は `clip-path` の `shape()` で、枠線の塗りは `background-clip: border-area` で描きます。どちらも、以前は複数の擬似要素やマスクの重ね合わせで作っていた形を、1つか2つの宣言で書けるようにする機能です。`shape()` はすべての主要なブラウザが対応していますが、`border-area` は対応が分かれています。
 
@@ -35,39 +42,41 @@ import Guideline from '../../../components/Guideline.astro';
     isolation: isolate;
 
     &::before {
-      --_r: var(--_radius);
-
       content: "";
       position: absolute;
       inset-block: 0;
-      inset-inline: calc(var(--_r) * -1);
+      inset-inline: calc(var(--_radius) * -1);
       z-index: var(--z--backwards);
       clip-path: shape(
         from 0 100%,
-        curve to var(--_r) calc(100% - var(--_r)) with var(--_r) 100%,
-        vline to var(--_r),
-        curve to calc(var(--_r) * 2) 0 with var(--_r) 0,
-        hline to calc(100% - var(--_r) * 2),
-        curve to calc(100% - var(--_r)) var(--_r) with calc(100% - var(--_r)) 0,
-        vline to calc(100% - var(--_r)),
-        curve to 100% 100% with calc(100% - var(--_r)) 100%,
+        curve to var(--_radius) calc(100% - var(--_radius)) with var(--_radius) 100%,
+        vline to var(--_radius),
+        curve to calc(var(--_radius) * 2) 0 with var(--_radius) 0,
+        hline to calc(100% - var(--_radius) * 2),
+        curve to calc(100% - var(--_radius)) var(--_radius) with calc(100% - var(--_radius)) 0,
+        vline to calc(100% - var(--_radius)),
+        curve to 100% 100% with calc(100% - var(--_radius)) 100%,
         close
       );
       background-color: var(--background--base);
 
       @supports not (clip-path: shape(from 0 0, hline to 0)) {
         inset-inline: 0;
-        border-start-start-radius: var(--_r);
-        border-start-end-radius: var(--_r);
+        border-start-start-radius: var(--_radius);
+        border-start-end-radius: var(--_radius);
       }
     }
   }
 }
 ```
 
+<Demo title="選んでいるタブの輪郭を、shape() で反り返らせて描く" html={shapeTabHtml} css={shapeTabCss} />
+
+このデモでは、選んでいるタブにだけ背景色を付けるため、擬似要素の背景色を `--_background` から受け取っています。選んでいないタブでは透明なので、輪郭は描かれていても見えません。
+
 擬似要素をタブより左右に半径の分だけ広げ、その輪郭を `shape()` で切り抜いています。左下から始めて、外側へ反った曲線、左上の角丸、上の辺、右上の角丸、右下の反った曲線の順に、輪郭を一周します。`curve to 終点 with 制御点` は2次ベジェ曲線なので、正確な四分円ではありませんが、この大きさの角では見分けがつきません。{/* 要確認: 出典なし */}
 
-`shape()` の値は長く、そのままでは何を描いているのか読み取れません。そこで、半径を `--_r` に入れ、すべての座標をその半径から計算します。角の大きさを変えるときは、公開用の `--tab-list--radius` を変えるだけで済み、座標を書き直す必要がありません。輪郭の高さは半径の2倍以上必要なので、タブの高さに対して半径を大きくしすぎないようにします。
+`shape()` の値は長く、そのままでは何を描いているのか読み取れません。そこで、半径を `--_radius` に入れ、すべての座標をその半径から計算します。角の大きさを変えるときは、公開用の `--tab-list--radius` を変えるだけで済み、座標を書き直す必要がありません。輪郭の高さは半径の2倍以上必要なので、タブの高さに対して半径を大きくしすぎないようにします。
 
 `shape()` は、2026年2月にすべての主要なブラウザで使えるようになりました。Safariは18.4から対応しているので、本書の対象（Safari 18系の最終版以降）では使えます。それより古い環境で `clip-path` が無効になると、背面の擬似要素が切り抜かれずに左右へはみ出すので、`@supports not` の中で幅を戻し、上だけを `border-radius` で丸めます（2026年10月確認）。
 
@@ -102,6 +111,8 @@ import Guideline from '../../../components/Guideline.astro';
   }
 }
 ```
+
+<Demo title="対応している環境では、枠線がグラデーションになる" html={gradientBorderHtml} css={gradientBorderCss} />
 
 `border-color: transparent` は、`@supports` の中に書きます。外に書くと、未対応の環境では背景の切り抜きが効かないまま枠線だけが透明になり、枠線が消えるからです。`@supports` で分けておけば、未対応の環境では単色の枠線として表示されます。グラデーションの枠線は装飾なので、多くの場合は単色の枠線で足ります。
 
@@ -186,6 +197,8 @@ import Guideline from '../../../components/Guideline.astro';
   <span class="-visually-hidden">40%</span>
 </div>
 ```
+
+<Demo title="割合に合わせて輪が伸び、中心の数値が数え上がるドーナツグラフ" html={donutHtml} css={donutCss} />
 
 割合は、読み手が知る必要のある情報です。生成コンテンツだけで表示すると、コピーやページ内検索、機械翻訳の対象にならず、CSSが読み込まれない環境では数値が消えます（「[3-7 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/#rule-no-meaningful-generated-content)」）。そこで、数値はHTMLの `span` に書いて `.-visually-hidden` で視覚的に隠し、中心で数え上げる `::after` の数値は、`content` の代替テキストを空にして装飾として扱います。読み上げではHTMLの「40%」だけが伝わり、数え上げの途中の値は読まれません。
 

@@ -6,7 +6,16 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import keywordsHtml from '../../../demos/decoration/corner-shape-keywords/index.html?raw';
+import keywordsCss from '../../../demos/decoration/corner-shape-keywords/style.css?raw';
+import squircleHtml from '../../../demos/decoration/squircle-button/index.html?raw';
+import squircleCss from '../../../demos/decoration/squircle-button/style.css?raw';
+import scoopTabHtml from '../../../demos/decoration/scoop-tab/index.html?raw';
+import scoopTabCss from '../../../demos/decoration/scoop-tab/style.css?raw';
+import fullBleedHtml from '../../../demos/decoration/full-bleed-radius/index.html?raw';
+import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?raw';
 
 角の形は、`border-radius` で角丸の大きさを決め、`corner-shape` でその角をどんな曲線で結ぶかを決めます。Appleの画面にあるようななめらかな角や、タブの下の端が外側へ反り返る形は、以前は画像や複数の擬似要素、マスクの重ね合わせで作っていました。`corner-shape` なら、1つの宣言で書けます。
 
@@ -24,6 +33,10 @@ import Guideline from '../../../components/Guideline.astro';
 
 `corner-shape` は、`border-radius` で決めた角の領域を、どんな曲線で結ぶかを指定するプロパティです。初期値の `round` が従来の角丸で、`squircle` にするとスクワークルになります。ほかに、外側から内側へえぐる `scoop`、角を直線で切り落とす `bevel`、角を四角く切り欠く `notch` があります。キーワードは `superellipse()` の値の別名です。計算された値は、`squircle` が `superellipse(2)`、`round` が `superellipse(1)` です。`bevel` は `superellipse(0)`、`scoop` は `superellipse(-1)` になります（2026年10月、Chrome 152で確認）。
 
+<Demo title="border-radius: 24px の正方形に、corner-shape のキーワードを指定したとき" html={keywordsHtml} css={keywordsCss} variant="neutral" />
+
+このデモは、`corner-shape` に対応していない環境では、5つとも同じ角丸で表示されます。`notch` のように角丸から最も離れた形でも、未対応の環境では角丸に戻るだけです。
+
 ```css title="🙆‍♂ Recommended: 錠剤型のボタンに corner-shape を1行足す"
 @scope (.scoped.button) to (.scoped) {
   :scope {
@@ -36,6 +49,8 @@ import Guideline from '../../../components/Guideline.astro';
   }
 }
 ```
+
+<Demo title="錠剤型のボタンと、corner-shape: squircle を足したボタン" html={squircleHtml} css={squircleCss} variant="neutral" />
 
 私は、スクワークルのボタンを作るときに、錠剤型のボタンへ `corner-shape: squircle` を1行足すだけにしています。対応していない環境では、この宣言が無視され、錠剤型のボタンとして表示されます。形は少し変わりますが、ボタンとしての見え方は崩れないので、`@supports` で囲む必要はありません。`border-radius` の値に `calc(infinity * 1px)` を使う理由は、「[12-1 画像と装飾](/decoration/images-and-decoration/)」で説明しています。
 
@@ -80,6 +95,10 @@ import Guideline from '../../../components/Guideline.astro';
 }
 ```
 
+<Demo title="選んでいるタブの下の端が、scoop で外側へ反り返る" html={scoopTabHtml} css={scoopTabCss} />
+
+このデモでは、選んでいるタブにだけ背景色を付けています。擬似要素は `background-color: inherit` でタブの背景色を受け取るので、選んでいないタブには反り返りも描かれません。
+
 この擬似要素は、`@supports` で囲みます。`corner-shape` に対応していない環境では、擬似要素の上の角が外側へふくらむ通常の角丸になり、タブの両脇にこぶのような出っ張りが出てしまうからです。`@supports` で囲めば、未対応の環境では、上だけが角丸のタブとして表示されます。タブには `isolation: isolate` を指定し、`z-index` を負にした擬似要素が、タブの外の背景より後ろへ回らないようにしておきます。
 
 すべての環境で反り返りを付けたい場合は、従来どおり、左右に1つずつ擬似要素を置き、`radial-gradient()` のマスクで角を削ります。マスクの値は `radial-gradient(circle farthest-side at 0 0, transparent 100%, #000 calc(100% + 1px))` のように書きます。透明から黒への境目を `calc(100% + 1px)` にして1px分ずらすのは、境目を一点で切り替えると、曲線の縁がギザギザに見えるためです。
@@ -122,6 +141,10 @@ import Guideline from '../../../components/Guideline.astro';
   }
 }
 ```
+
+<Demo title="カードが画面いっぱいに広がったときだけ、角丸が消える" html={fullBleedHtml} css={fullBleedCss} />
+
+このデモのカードは、最大幅を720pxにして中央に置いています。幅を768px以上にすると左右に余白ができて角丸が付き、それより狭くすると、カードが画面の端まで広がって角丸が消えます。
 
 `border-radius` の水平方向の半径に書いた `%` は、要素の幅を基準にします。`100lvi - 100%` は、ビューポートの幅と要素の幅の差です。要素が画面いっぱいなら差は0になり、そこから `--_tolerance` を引いた値は負になるので、`sign()` は-1を返します。負の半径は0として扱われるので、角丸が消えます。差が `--_tolerance` より大きいときは1を返し、`--_radius` の角丸になります（2026年10月、Chrome 152で確認）。
 

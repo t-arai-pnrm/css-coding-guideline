@@ -1,0 +1,36 @@
+@layer components {
+  @scope (.scoped.media-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    li {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._thumbnail {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    ._caption {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._avatar {
+      inline-size: 32px;
+      aspect-ratio: 1;
+      border-radius: calc(infinity * 1px);
+      object-fit: cover;
+    }
+  }
+}

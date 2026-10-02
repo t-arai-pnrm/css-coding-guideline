@@ -11,6 +11,28 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.13.0（2026年10月2日）
+
+名前に使う語の節を加え、本書全体のクラス名を命名のルールに合わせて直しました。ルールを追加し、ルール1件の補足を変えたため、マイナーバージョンを上げています。
+
+- 第6章に「[6-6 名前に使う語](/notation/terminology/)」を加えました。著者のデザインシステムの用語の指針をもとに、`inner` と `outer`、`container`、`gutter` と `gap`、`columns`、`link` と `button`、`navigation` と `menu` の意味と使い分けをまとめています。
+- 「[6-1 命名規則](/notation/naming/)」に、バリエーションの軸が2つ以上あるときの属性の分け方を加えました。
+- 「[8-9 余白を設計する](/layout/spacing/)」に、ページに並べるセクションの上下の余白の作り方を加えました。
+- 第12章「[画像・装飾](/decoration/)」の3ページに、デモを加えました。
+- 第7章の[概要](/components/)に、OOCSS、BEM、SMACSS、FLOCSSとの対応を加えました。
+- ルールを9件追加しました。
+  - [`one-term-one-meaning`](/notation/terminology/#rule-one-term-one-meaning)：名前に使う語は、プロジェクトの中で1つの意味だけで使います。
+  - [`inner-outer-names`](/notation/terminology/#rule-inner-outer-names)：`inner`、`outer`、`container` には、`._section-inner` のように必ず「何の」を併記します。
+  - [`gutter-vs-gap`](/notation/terminology/#rule-gutter-vs-gap)：画面の端との余白は `gutter`、子要素どうしの間隔は `gap` と呼び、取り違えません。
+  - [`columns-for-multicol`](/notation/terminology/#rule-columns-for-multicol)：`columns` の語は段組みにだけ使い、`row` を要素の名前にしません。
+  - [`navigation-not-menu`](/notation/terminology/#rule-navigation-not-menu)：サイトの導線は `navigation`、操作の選択肢の一覧は `menu` と呼びます。
+  - [`no-text-only-name`](/notation/terminology/#rule-no-text-only-name)：`text` だけの名前を付けません。
+  - [`renaming-terms-is-breaking`](/notation/terminology/#rule-renaming-terms-is-breaking)：公開プロパティやコンポーネントの名前に使った語の変更は、互換性のない変更として扱います。
+  - [`variant-attribute-per-axis`](/notation/naming/#rule-variant-attribute-per-axis)：独立したバリエーションの軸は、軸ごとに別の属性で表します。
+  - [`section-padding-block`](/layout/spacing/#rule-section-padding-block)：ページに並べるセクションの上下の余白は、各セクションのルートの `padding-block` で作ります。
+- ルール [`no-vague-names`](/notation/naming/#rule-no-vague-names) の補足の例を、`_inner` から `_section-inner` に変えました。
+- 本書のコード例とデモのクラス名を、命名のルールに合わせて直しました。`._inner` には「何の」を併記し、`._columns`、`._row`、`._text` のような名前を役割の名前に変えています。`._list`、`._link`、`._button`、`li` の `._item` のように要素の種類を言い換えただけのクラスは、タイプセレクタか役割の名前に変えました。
+
 ## 0.12.0（2026年10月2日）
 
 レイアウトと色の章の構成を見直し、コンポーネントの判定基準を加えました。ルールを追加し、ルール1件の内容を変えたため、マイナーバージョンを上げています。章と節の番号も一部変わりました。

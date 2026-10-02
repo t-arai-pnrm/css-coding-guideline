@@ -1,0 +1,93 @@
+@layer tokens {
+  :root {
+    --color--neutral--200: oklch(92.2% 0 0deg);
+    --color--accent--500: oklch(62% 0.19 250deg);
+  }
+}
+
+@property --count-up--value {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+@keyframes --count-up {
+  from {
+    --count-up--value: 0%;
+  }
+}
+
+@layer components {
+  @scope (.scoped.donut-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(120 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+  }
+
+  @scope (.scoped.donut-chart) to (.scoped) {
+    :scope {
+      --_value: min(var(--donut-chart--value, 0%), 100%);
+      --_basis-width: 200px;
+      --_border-width: 16px;
+      --_foreground: var(--donut-chart--foreground, var(--color--accent--500));
+
+      container: --donut-chart / inline-size;
+      display: block grid;
+      aspect-ratio: 1;
+      color: var(--_foreground);
+
+      &::before,
+      &::after {
+        --count-up--value: var(--_value);
+
+        content: "";
+        grid-area: 1 / 1;
+
+        @media (prefers-reduced-motion: no-preference) {
+          animation-name: --count-up;
+          animation-duration: 1s;
+          animation-timing-function: linear;
+          animation-fill-mode: both;
+        }
+      }
+
+      &::before {
+        mask-image: conic-gradient(#000 0 0), conic-gradient(#000 0 0);
+        mask-clip: padding-box, border-box;
+        mask-composite: exclude;
+        border: var(--_border-width) solid transparent;
+        border-radius: calc(infinity * 1px);
+        forced-color-adjust: none; /* 強制カラーモードでもグラデーションを画像として表示する */
+        background-image: conic-gradient(currentColor var(--count-up--value), var(--color--neutral--200) 0);
+        background-origin: border-box;
+      }
+
+      &::after {
+        content: counter(--value) "%" / "";
+        place-self: center;
+        padding: var(--_border-width);
+        counter-reset: --value calc(var(--count-up--value) / 1%);
+        font-size: calc(32px / var(--_basis-width) * 100cqi);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+}
+
+@layer utilities {
+  .-visually-hidden {
+    position: fixed;
+    inset: 0;
+    contain: strict;
+    inline-size: 4px;
+    block-size: 4px;
+    margin: unset;
+    padding: unset;
+    border: unset;
+    opacity: 0;
+    pointer-events: none;
+  }
+}

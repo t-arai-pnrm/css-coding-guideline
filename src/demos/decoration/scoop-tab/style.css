@@ -1,0 +1,67 @@
+@layer tokens {
+  :root {
+    --background--base: oklch(100% 0 0deg);
+    --z--backwards: -1;
+  }
+}
+
+@layer pages {
+  @scope (.scoped.tab-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(88% 0.05 250deg);
+    }
+
+    ._panel {
+      padding: 24px;
+      border-radius: 8px;
+      background-color: var(--background--base);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.tab-list) to (.scoped) {
+    ul {
+      display: block flex;
+      gap: 8px;
+      padding-inline: 24px;
+    }
+
+    ._tab {
+      --_radius: var(--tab-list--radius, 12px);
+
+      position: relative;
+      display: block flow-root;
+      padding-block: 8px;
+      padding-inline: 24px;
+      border-start-start-radius: var(--_radius);
+      border-start-end-radius: var(--_radius);
+      color: oklch(35% 0.05 250deg);
+      isolation: isolate;
+
+      @supports (corner-shape: scoop) {
+        &::before {
+          content: "";
+          position: absolute;
+          inset-inline: calc(var(--_radius) * -1);
+          inset-block-end: 0;
+          z-index: var(--z--backwards);
+          block-size: var(--_radius);
+          border-start-start-radius: var(--_radius);
+          border-start-end-radius: var(--_radius);
+          corner-shape: scoop;
+          background-color: inherit;
+        }
+      }
+
+      &[aria-current="page"] {
+        background-color: var(--background--base);
+        color: oklch(20% 0.02 250deg);
+        font-weight: 700;
+      }
+    }
+  }
+}

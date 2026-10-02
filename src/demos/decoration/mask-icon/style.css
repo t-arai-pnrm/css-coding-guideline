@@ -1,0 +1,73 @@
+@layer tokens {
+  :root {
+    --chevron--rightward: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4L16 12L8 20" /></svg>');
+  }
+}
+
+@layer base {
+  :root {
+    --background-current: currentColor;
+
+    @media (forced-colors: active) {
+      --background-current: CanvasText;
+    }
+  }
+
+  :where(:any-link) {
+    @media (forced-colors: active) {
+      --background-current: LinkText;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.more-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 12px;
+      justify-items: start;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+      color: oklch(25% 0.02 250deg);
+
+      &[data-tone="inverse"] {
+        background-color: oklch(30% 0.02 250deg);
+        color: oklch(100% 0 0deg);
+      }
+    }
+
+    ._heading {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._more {
+      display: inline flex;
+      gap: 4px;
+      align-items: center;
+
+      &:any-link:hover {
+        @media (any-hover) {
+          text-decoration-line: underline;
+        }
+      }
+
+      &::after {
+        content: "";
+        mask-image: var(--chevron--rightward);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: 1em;
+        aspect-ratio: 1;
+        background-color: var(--background-current);
+      }
+    }
+  }
+}

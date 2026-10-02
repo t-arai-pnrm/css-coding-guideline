@@ -12,6 +12,27 @@ import objectFitHtml from '../../../demos/decoration/object-fit/index.html?raw';
 import objectFitCss from '../../../demos/decoration/object-fit/style.css?raw';
 import strokeHtml from '../../../demos/decoration/text-stroke/index.html?raw';
 import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
+import aspectRatioHtml from '../../../demos/decoration/aspect-ratio/index.html?raw';
+import aspectRatioCss from '../../../demos/decoration/aspect-ratio/style.css?raw';
+import fitHeightHtml from '../../../demos/decoration/fit-height/index.html?raw';
+import fitHeightBadCss from '../../../demos/decoration/fit-height/style.bad.css?raw';
+import fitHeightCss from '../../../demos/decoration/fit-height/style.css?raw';
+import heroHeaderHtml from '../../../demos/decoration/hero-header/index.html?raw';
+import heroHeaderCss from '../../../demos/decoration/hero-header/style.css?raw';
+import triangleHtml from '../../../demos/decoration/clip-path-triangle/index.html?raw';
+import triangleCss from '../../../demos/decoration/clip-path-triangle/style.css?raw';
+import maskIconHtml from '../../../demos/decoration/mask-icon/index.html?raw';
+import maskIconCss from '../../../demos/decoration/mask-icon/style.css?raw';
+import currentColorHtml from '../../../demos/decoration/current-color-icon/index.html?raw';
+import currentColorCss from '../../../demos/decoration/current-color-icon/style.css?raw';
+import shadowHtml from '../../../demos/decoration/shadow-tokens/index.html?raw';
+import shadowCss from '../../../demos/decoration/shadow-tokens/style.css?raw';
+import nestedRadiusHtml from '../../../demos/decoration/nested-radius/index.html?raw';
+import nestedRadiusCss from '../../../demos/decoration/nested-radius/style.css?raw';
+import frostedHtml from '../../../demos/decoration/frosted-header/index.html?raw';
+import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
+import markerHtml from '../../../demos/decoration/list-marker/index.html?raw';
+import markerCss from '../../../demos/decoration/list-marker/style.css?raw';
 
 画像の縦横比は `aspect-ratio` で決め、中身は `object-fit` の `cover` か `contain` で収めます。初期値の `fill` のまま、画像を引き伸ばさないようにします。`<img>` には `width` と `height` の属性を書き、`srcset` と `sizes` の値は、手で計算せずにツールで確かめて決めます。
 
@@ -68,6 +89,8 @@ import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
 }
 ```
 
+<Demo title="元の画像の比率が違っても、サムネイルは16:9に、アバターは正円にそろう" html={aspectRatioHtml} css={aspectRatioCss} />
+
 サムネイルの幅は、`100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書いて親の幅いっぱいに広げます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-width-100)」）。正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[9-1 検討する順番](/responsive/escalation/)」でも取り上げています。
 
 `<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。ブラウザは、この2つの属性から縦横比を計算し、画像を読み込む前から表示する場所を確保します。属性がないと、画像が読み込まれた瞬間に高さが決まり、下にある文章がずれて、読んでいた位置を見失います。
@@ -98,8 +121,10 @@ import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
 
 グリッドの中で、画像の高さを隣の本文の高さに合わせたい場合があります。画像に `block-size: 100%` を指定すると、画像の元の高さで行が押し広げられ、本文の下に余白ができて間延びします。この場合は、`block-size: 0` と `min-block-size: 100%` を組み合わせます（2026年9月、Chrome 153で確認）。
 
+<Demo title="block-size: 100% では、画像の元の高さで行が伸び、本文の下が空く" html={fitHeightHtml} css={fitHeightBadCss} variant="not-recommended" />
+
 ```css title="🙆‍♂ Recommended: 画像の高さを、同じ行の本文の高さに合わせる"
-._image {
+img {
   inline-size: -webkit-fill-available;
   inline-size: stretch;
   block-size: 0;
@@ -107,6 +132,8 @@ import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
   object-fit: cover;
 }
 ```
+
+<Demo title="画像の高さが本文の高さに合い、はみ出した部分は切り取られる" html={fitHeightHtml} css={fitHeightCss} />
 
 `block-size: 0` で画像が行の高さを押し広げないようにし、`min-block-size: 100%` でセルの高さまで広げています。行の高さは本文だけで決まり、画像はその高さに合わせて `cover` で切り取られます。
 
@@ -137,6 +164,8 @@ import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
   }
 }
 ```
+
+<Demo title="画像を表示できなくても、背景色の上で白い文字が読める" html={heroHeaderHtml} css={heroHeaderCss} />
 
 背景色は、画像の平均的な色ではなく、文字色とのコントラストが取れる色にします。このコード例では、白い文字に対して暗いグレーを敷いています。画像と本文は同じグリッドのエリアに重ね、画像の高さは前の項目と同じ方法で本文に合わせています。
 
@@ -224,6 +253,8 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 }
 ```
 
+<Demo title="形のトークンで切り抜いた三角形と、下向きの三角形を付けたツールチップ" html={triangleHtml} css={triangleCss} />
+
 三角形は、ツールチップの本体を基準に絶対配置します。絶対配置した擬似要素はブロックの箱になるので、`display` を指定しなくても、`inline-size` と `block-size` が効きます。`translate: -50% 0` で三角形の幅の半分だけ戻し、本体の中央にそろえます。
 
 `polygon()` の値は直接書かず、トークンとして定義します。`polygon(0 0, 100% 0, 50% 100%)` という値を見て、下向きの三角形だとすぐに気づく人は多くないでしょう。`--shape--triangle-bottom` という名前なら、形がすぐに分かります。高さを `tan(60deg)` で計算すると、正三角形になります。
@@ -246,6 +277,8 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 }
 ```
 
+<Demo title="マスクで描いた矢印が、背景色に合わせた文字色で塗られる" html={maskIconHtml} css={maskIconCss} />
+
 `display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定がなくても描けます。
 
 `background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
@@ -258,7 +291,7 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 ```css title="🙅‍♂ Not Recommended: 状態ごとにアイコンの色を指定し直す"
 /* 🙅‍♂ Not Recommended */
-._button {
+button {
   color: var(--foreground--base);
 
   &:disabled {
@@ -269,14 +302,14 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 ._icon {
   fill: var(--foreground--base);
 
-  &:is(._button:disabled *) {
+  &:is(button:disabled *) {
     fill: var(--foreground--muted);
   }
 }
 ```
 
 ```css title="🙆‍♂ Recommended: アイコンは文字色に合わせ、文字色だけを切り替える"
-._button {
+button {
   color: var(--foreground--base);
 
   &:disabled {
@@ -288,6 +321,8 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
   fill: currentColor;
 }
 ```
+
+<Demo title="無効なボタンでは、文字色だけを変えると、アイコンと枠線も同じ色になる" html={currentColorHtml} css={currentColorCss} />
 
 `border` の色を省略した場合も、初期値は `currentColor` です。文字と同じ色の枠線なら、`border: 1px solid` とだけ書けば足ります。色を2か所に書かなければ、片方だけ変え忘れることもありません。
 
@@ -342,6 +377,8 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 }
 ```
 
+<Demo title="同じ影のトークンを、ライトモードとダークモードの背景に置いたとき" html={shadowHtml} css={shadowCss} />
+
 ライトモードの影は、背景の色相に寄せます。灰色がかった黒の影を色のある背景に重ねると、背景がくすんで見えるからです。背景の色相に合わせ、明度と彩度を下げた色にすると、背景と自然になじみます。上の例では、背景のアクセントカラーの色相を `--shadow--hue` に持たせています。背景が無彩色のサイトでは、彩度が0の黒のままでも構いません。
 
 影の色は、ダークモードでは黒のままにします。暗い背景で白い影を付けると、影ではなく光って見えてしまうからです。代わりに、ダークモードでは黒の不透明度を上げて、暗い背景の上でも奥行きが分かるようにします。影は強制カラーモードでは消えるので、要素の境界は影だけで表しません。
@@ -351,7 +388,7 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 角丸も、`--rounded--sm` から `--rounded--xl` までの段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[12-2 角の形を変える](/decoration/shapes/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする"
-@scope (.scoped.menu) to (.scoped) {
+@scope (.scoped.account-menu) to (.scoped) {
   :scope {
     --_radius: var(--rounded--md);
     --_padding: 4px;
@@ -360,11 +397,13 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
     border-radius: var(--_radius);
   }
 
-  ._item {
+  li {
     border-radius: calc(var(--_radius) - var(--_padding));
   }
 }
 ```
+
+<Demo title="内側の角丸を外側と同じにすると、角の部分だけ余白が広く見える" html={nestedRadiusHtml} css={nestedRadiusCss} variant="neutral" />
 
 角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。影や角丸の値をpxで指定する理由は、「[4-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
 
@@ -380,6 +419,8 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
   backdrop-filter: blur(12px);
 }
 ```
+
+<Demo title="スクロールすると、ヘッダーの真後ろにある色だけがぼかされて混ざる" html={frostedHtml} css={frostedCss} height="320px" />
 
 `-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[8-7 positionの基礎](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
 
@@ -399,6 +440,10 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 ```
 
 `::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲むような装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[5-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
+
+<Demo title="::marker で番号の色と太さを変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
+
+kiso.cssは、リストのマーカーを `list-style-type: ""` で空にしています。`::marker` で装飾するリストでは、`list-style-type: decimal` で番号に戻し、マーカーを置く余白を `padding-inline-start` で確保します。円で囲むリストでは、空のマーカーをそのまま使い、`counter-reset` と `counter-increment` で数えた番号を描きます。
 
 <Baseline id="marker" />
 

@@ -1,6 +1,6 @@
 ---
 title: "8-9 余白を設計する"
-description: "並んだ要素の間隔は親の gap で作り、間ごとに違う余白は grid-template の空のセルで作ります。要素の有無が変わる場所と本文の流れには、* + * の margin を使います。"
+description: "並んだ要素の間隔は親の gap で作り、間ごとに違う余白は grid-template の空のセルで作ります。ページに並べるセクションの上下の余白は、各セクションの padding-block で作ります。要素の有無が変わる場所と本文の流れには、* + * の margin を使います。"
 sidebar:
   order: 9
 ---
@@ -10,6 +10,9 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import emptyCellsHtml from '../../../demos/layout/empty-grid-cells/index.html?raw';
 import emptyCellsCss from '../../../demos/layout/empty-grid-cells/style.css?raw';
+import sectionSpacingHtml from '../../../demos/layout/section-spacing/index.html?raw';
+import sectionSpacingBadCss from '../../../demos/layout/section-spacing/style.bad.css?raw';
+import sectionSpacingCss from '../../../demos/layout/section-spacing/style.css?raw';
 
 並んだ要素の間隔は、子要素の `margin` ではなく、親の `gap` で作ります。見出しの下は24px、本文の下は16pxのように、間ごとに大きさの違う余白は、`grid-template` に空のセルの行を置いて作ります。こうすると、余白の指定が `grid-template` の1か所にまとまります。
 
@@ -88,7 +91,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
     grid-template:
       "--heading"
       "." 24px
-      "--text"
+      "--lead"
       "." 16px
       "--contact-link";
 
@@ -96,7 +99,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
       grid-template:
         "--heading"
         "." 48px
-        "--text"
+        "--lead"
         "." 32px
         "--contact-link";
     }
@@ -105,8 +108,8 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
       grid-area: --heading;
     }
 
-    & > ._text {
-      grid-area: --text;
+    & > ._lead {
+      grid-area: --lead;
     }
 
     & > ._contact-link {
@@ -179,6 +182,49 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 最大幅と左右の `padding` で同じことをしようとすると、`box-sizing: border-box` の環境では、最大幅から `padding` の分だけコンテンツが狭くなります。そこで「最大幅に左右の `padding` を足す」という計算をしがちですが、余白の列を使えば、中央の列の最大幅がそのままコンテンツの幅になります。どうしても `padding` で書くなら、その要素だけ `box-sizing: revert` で `content-box` に戻せば、足し算は要りません。
 
 1つのセクションだけなら、`margin-inline: auto` のほうが簡潔かもしれません。この方法が有効なのは、コンテンツの幅に収まる要素と、画面幅いっぱいに広げたい要素が混在する場合です。ビューポートの単位を使った負の `margin` で要素を広げる必要がなくなります。画面幅いっぱいに広げるほかの方法は「[8-11 重なりと全幅](/layout/layering/)」で比べます。第7章のコンポジション `primary-layout` は、この形に「少し狭い」「少し広い」などの列を加えて部品にしたものです。
+
+## ページに並べるセクションの上下の余白
+
+ページは、背景色の違うセクションを縦に並べて作ることがよくあります。このとき、セクションの間を親の `gap` や、セクションの外側の `margin` で空けると、背景が途切れます。セクションの背景は、`margin` の領域には描かれず、親の `gap` の部分にも描かれないからです。`gap` や `margin` で空けた部分には親の背景が見え、色の付いたセクションの間に、ページの背景の帯が挟まります。
+
+```css title="🙅‍♂ Not Recommended: セクションの間を、ページの gap で空ける"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.page-home) to (.scoped) {
+  main {
+    display: block grid;
+    gap: 80px;
+  }
+}
+
+@scope (.scoped.news-section) to (.scoped) {
+  :scope {
+    background-color: var(--background--muted);
+  }
+}
+```
+
+この例では、お知らせのセクションの上下に、ページの背景が80pxずつ見えます。さらに、セクションの中に `padding` がないので、見出しは色の付いた領域の上端に接します。背景の上端から見出しまでの余白と、セクションどうしの間隔は、どちらもセクションの上下の余白です。それを親とセクションのどちらに書くかで迷うと、この例のように、片方に足りない余白が生まれます。
+
+そこで、セクションの上下の余白は、各セクションのルートの `padding-block` で作ります。ページの側は、セクションを間隔なしで縦に積むだけにします。`padding` の領域には背景が描かれるので、背景はセクションの端から端まで途切れず、中身と背景の端の間にも余白が確保されます。
+
+```css title="🙆‍♂ Recommended: 上下の余白を、セクション自身の padding-block で作る"
+@scope (.scoped.news-section) to (.scoped) {
+  :scope {
+    padding-block: calc(var(--spacing--xxl) * 1px);
+    background-color: var(--background--muted);
+  }
+}
+```
+
+次の2つのデモは、同じHTMLに2通りのCSSを当てたものです。1つ目では、色の付いた2つのセクションの間と上下に、ページの白い背景が帯になって見え、見出しも背景の上端に接しています。2つ目では、各セクションが自分の `padding-block` で上下の余白を持つので、背景が隙間なく続き、中身の上下にも余白が空いています。
+
+<Demo title="セクションの間をページの gap で空けると、間にページの背景が帯になって見える" html={sectionSpacingHtml} css={sectionSpacingBadCss} variant="not-recommended" />
+
+<Demo title="上下の余白を各セクションの padding-block で持つと、背景が途切れない" html={sectionSpacingHtml} css={sectionSpacingCss} />
+
+コンポーネントのルートに外側の `margin` を持たせないという「[7-2 コンポーネントの境界を守る](/components/boundaries/)」の原則とも矛盾しません。`margin` は周りの要素との距離なので、置かれる場所によって必要な値が変わります。一方、`padding-block` は背景の端から中身までの距離で、セクション自身の見た目として完結しています。背景のないセクションも、同じく `padding-block` で上下の余白を持たせます。あとで背景色を付けることになっても、余白の作り方を変えずに済むからです。
+
+同じ背景のセクションが続く箇所では、上のセクションの下の `padding` と、下のセクションの上の `padding` が足し合わされます。`padding` は、`margin` と違って相殺しないからです。デザインカンプでセクションの間隔を測るときは、この足し算を前提にして、各セクションの上下の値を読み取ります。{/* 要確認: 出典なし */}
 
 ## 要素の有無が変わる場所の余白
 

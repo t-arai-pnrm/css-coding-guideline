@@ -373,6 +373,14 @@
   page: layout/spacing
   since: 0.1.0
 
+- id: section-padding-block
+  level: 推奨
+  rule: ページに縦に並べるセクションの上下の余白は、親の `gap` やセクションの外側の `margin` ではなく、各セクションのルートの `padding-block` で作る。
+  reason: 背景は `margin` の領域や親の `gap` の部分には描かれないため、`gap` や `margin` で空けるとセクションの間に親の背景が帯のように見えるため。`padding-block` なら背景が途切れず、中身と背景の端の間にも余白が確保される。
+  note: 背景が同じセクションが続く箇所では、`padding` は相殺しないので、上下のセクションの値が足し合わされます。
+  page: layout/spacing
+  since: 0.13.0
+
 - id: spacing-proximity
   level: 推奨
   rule: 余白の大きさは、グループの間の余白をグループの中の余白より大きくして、要素のまとまりが見て分かるようにする。

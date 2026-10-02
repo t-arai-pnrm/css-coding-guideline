@@ -41,21 +41,21 @@
       &:focus-visible {
         --_background: var(--_accent--hocus);
       }
-    }
 
-    /* 無効にしたボタンは、ホバーしても反応させない */
-    button:enabled:hover {
-      @media (any-hover) {
-        --_background: var(--_accent--hocus);
+      /* キーボードでフォーカスを移したときは、一度で切り替える */
+      &:not(:focus-visible) {
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--fast);
+          transition-property: background-color;
+          transition-timing-function: var(--ease--quint-out);
+        }
       }
-    }
 
-    /* キーボードでフォーカスを移したときは、一度で切り替える */
-    button:not(:focus-visible) {
-      @media (prefers-reduced-motion: no-preference) {
-        transition-duration: var(--duration--fast);
-        transition-property: background-color;
-        transition-timing-function: var(--ease--quint-out);
+      /* 無効にしたボタンは、ホバーしても反応させない */
+      &:enabled:hover {
+        @media (any-hover) {
+          --_background: var(--_accent--hocus);
+        }
       }
     }
 

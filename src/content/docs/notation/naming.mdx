@@ -11,7 +11,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 どの種類でも、名前は見た目ではなく役割で付けます。`container` や `button` のように、HTMLやCSSで意味が決まっている語は、別の意味で使いません。また、`@keyframes` の名前やグリッドのエリア名のように、自分で付けて値として使う名前は `--` で始めます。
 
-カスタムプロパティの名前の付け方は、第7章の「[7-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で扱います。
+カスタムプロパティの名前の付け方は、第7章の「[7-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で扱います。`inner` と `container`、`gutter` と `gap` のように、名前の中に入れる語の意味と使い分けは、「[6-6 名前に使う語](/notation/terminology/)」でまとめています。
 
 ## ページ全体で共有される名前の問題
 
@@ -144,6 +144,63 @@ BEMなどの命名規則と、本書の命名が分かれるところもあり�
 
 本書では、配置のパターンを `.cluster` のようなコンポジションとして分けます。コンポジションは配置だけを書くと決めているので、線引きは「見た目を持つか」で判断でき、接頭辞は付けません。また、単独でスタイルを持つクラスは、どこに付けても同じ意味を持つユーティリティと、静的な見た目だけを持つパターンに限ります。コンポーネントのバリエーションは、クラスの修飾子ではなく属性で表します。この対比は、命名の規則が違うだけで、名前から役割と影響範囲を読み取れるようにするという目的は同じです。
 
+## バリエーションの軸が2つ以上あるとき
+
+1つのコンポーネントが、互いに関係のない2つの観点で変わることがあります。状態を示すバッジなら、「注意」や「完了」のような種類と、本文の中に置くための小さいサイズは、別々に選ばれます。本書では、この独立して選ばれる観点を、バリエーションの軸と呼びます。`data-variant` に書ける値は1つなので、軸が2つになると書き方を決めておく必要があります。
+
+2つの軸の値を、空白で区切って `data-variant` に詰める書き方は勧めません。`[data-variant="warning"]` は値の完全一致なので、`data-variant="warning small"` の要素には当たりません。そのため、`[data-variant~="warning"]` のように、空白で区切った単語の1つに一致するセレクタを使うことになります。
+
+```css title="🙅‍♂ Not Recommended: 2つの軸の値を data-variant に詰める"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.status-badge) to (.scoped) {
+  :scope {
+    &[data-variant~="warning"] {
+      color: var(--color--warning--700);
+    }
+
+    &[data-variant~="small"] {
+      font-size: calc(12 / 16 * 1rem);
+    }
+  }
+}
+```
+
+この書き方では、HTMLの `data-variant="warning small"` を読んでも、2つの値が別々の軸なのか、1組で意味を持つ値なのかが分かりません。新しい値を足すときも、その値がどちらの軸に属し、どの値と同時に指定できるのかを、CSSを読んで確かめることになります。値の並び順も決まらないので、`"small warning"` と書かれた要素が混ざっても気付きにくくなります。
+
+軸ごとに属性を分ければ、この問題は起きません。見た目の種類を表す軸には `data-variant` を使い、それと組み合わせる軸には、`data-size` のように軸の名前を属性名にします。1つの属性には1つの値だけを書くので、セレクタは完全一致で書けます。属性名を見れば軸が分かり、同じ属性に2つの値を書けないことが、同じ軸の値は同時に選べないことをそのまま表します。
+
+```html title="🙆‍♂ Recommended: 軸ごとに別の属性で値を渡す"
+<span class="scoped status-badge" data-variant="warning" data-size="small">要確認</span>
+```
+
+```css title="🙆‍♂ Recommended: 軸ごとに、別のプロパティを変える"
+@scope (.scoped.status-badge) to (.scoped) {
+  :scope {
+    display: inline flow-root;
+    padding-block: 4px;
+    padding-inline: 12px;
+    border: 1px solid;
+    border-radius: var(--rounded--full);
+    color: var(--foreground--base);
+    font-size: calc(14 / 16 * 1rem);
+
+    &[data-variant="warning"] {
+      color: var(--color--warning--700);
+    }
+
+    &[data-size="small"] {
+      padding-block: 2px;
+      padding-inline: 8px;
+      font-size: calc(12 / 16 * 1rem);
+    }
+  }
+}
+```
+
+軸ごとのスタイルを独立に書いておけば、「注意で、しかも小さい」のような組み合わせのためのセレクタは要りません。種類が3つ、大きさが2つなら組み合わせは6通りですが、CSSに書くのは軸ごとの値の数だけです。ただし、`&[data-variant="warning"]` と `&[data-size="small"]` の詳細度はどちらも `0.2.0` なので、2つの軸が同じプロパティを変えると、後に書いたほうが勝ちます。そこで、軸ごとに変えるプロパティを分けます。この例では、種類の軸は `color` だけを、大きさの軸は余白と文字の大きさだけを変えています。
+
+種類の軸が `color` だけで済んでいるのは、`border` の色を省略しているからです。`border-color` の初期値は文字色（`currentColor`）なので、文字色を変えれば枠線の色も変わります。アイコンを文字色に合わせる書き方は、「[12-1 画像と装飾](/decoration/images-and-decoration/)」で説明しています。なお、選択中や展開中のような状態は、バリエーションではありません。状態は、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に検討して表します（「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+
 ## 見た目の名前と役割の名前
 
 名前は、見た目ではなく役割で付けます。`._red-text` や `._big-title` のような見た目の名前は、デザインが変わった時点で実態とずれます。赤かった文字が青になれば、`._red-text` という名前は実態と食い違います。`._notice` や `._heading` のように役割で名前を付けておけば、見た目を変えても名前を変えずに済みます。
@@ -160,11 +217,11 @@ BEMなどの命名規則と、本書の命名が分かれるところもあり�
 
 同じ理由で、HTMLやCSSで意味が決まっている語を、別の意味で使いません。上の例の `<a>` は見た目がボタンでも、役割はページを移動するリンクなので、名前には `_contact-link` のように `link` の語を使います。`button` は `<button>` 要素のための名前です。`container` はCSSの `container` プロパティを持つ要素に、`columns` は段組み（マルチカラム）のレイアウトに使う語なので、ただの入れ物やFlexboxの横並びには使いません。`.container` のクラスについては、「[9-2 コンテナクエリ](/responsive/container-queries/)」でも説明しています。
 
-`wrapper`、`block`、`module`、`widget` のような総称も避けます。何のための要素なのかが名前から分からず、責務の境界もあいまいになるからです。内容の幅を制限して中央に寄せる要素は `_inner`、外側との余白や配置を調整する要素は `_outer` のように、責務を表す名前を付けます。
+`wrapper`、`block`、`module`、`widget` のような総称も避けます。何のための要素なのかが名前から分からず、責務の境界もあいまいになるからです。内容の幅を制限して中央に寄せる要素は `_section-inner`、外側との余白や配置を調整する要素は `_card-outer` のように、責務を表す名前を付けます。`_inner` だけでは何の内側なのかが分からないので、`inner`、`outer`、`container` には必ず「何の」を併記します（「[6-6 名前に使う語](/notation/terminology/)」）。
 
 ```html title="🙆‍♂ Recommended: 役割と責務で名前を付ける"
 <div class="scoped contact-section">
-  <div class="_inner">
+  <div class="_section-inner">
     <p class="_notice">受付は平日のみです。</p>
     <a class="_contact-link" href="/contact/">お問い合わせ</a>
   </div>

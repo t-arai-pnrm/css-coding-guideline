@@ -65,7 +65,7 @@
 # 3-3 子要素の位置で選ぶ
 - id: nth-child-of-over-nth-of-type
   level: 推奨
-  rule: 'クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._item:nth-of-type(2)` ではなく `:nth-child(2 of ._item)`）。'
+  rule: 'クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._post:nth-of-type(2)` ではなく `:nth-child(2 of ._post)`）。'
   reason: '`:nth-of-type()` は要素の種類（タグ名）ごとにしか数えず、`._item:nth-of-type(2)` は「2番目の `._item`」ではなく「同じ種類の兄弟の中で2番目にあり、かつ `._item` でもある要素」を選ぶため。'
   note: '絞り込みで `hidden` 属性を付けた行を除いて縞模様を付けるときは、`&:nth-child(even of :not([hidden]))` と書きます。`of S` の詳細度は、擬似クラス1つ分に S の中でいちばん高いセレクタの詳細度を足したものになります。'
   aiProne: true

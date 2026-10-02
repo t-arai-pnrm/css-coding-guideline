@@ -33,3 +33,28 @@ sidebar:
 - [`public-property-naming`](/components/custom-properties/#rule-public-property-naming)：外から変えてよい値は、`--card--radius` のような `--<コンポーネント>--<プロパティ>` の公開プロパティにします。
 - [`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)：公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書きます。
 - [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：z-indexの値は、数値を直接書かずにトークンで指定します。
+
+## 従来の設計手法との対応
+
+{/* 要確認: 出典なし */}
+
+この章の考え方は、[OOCSS](https://github.com/stubbornella/oocss/wiki)、[BEM](https://en.bem.info/methodology/)、[SMACSS](https://smacss.com/ja)、[FLOCSS](https://github.com/hiloki/flocss)といった従来のCSS設計の手法と、目指すところの多くが重なります。どの手法も、部品の責任の範囲を決め、ほかの場所へスタイルが影響しないようにしてきました。違うのは、その範囲を守る手段です。従来の手法は、命名の規則とファイルの分け方を人が守ることで範囲を保ち、本書は同じ役目の多くを `@scope` やカスケードレイヤーといったCSSの仕組みに任せています。
+
+OOCSSは、Nicole Sullivanが提唱した手法で、構造と見た目の分離と、コンテナとコンテンツの分離を原則にしています。コンテナとコンテンツの分離は、部品の見た目を置き場所に依存させず、どこでも同じにする考え方です。これは、外部関連型のレイアウトをルートに書かず、関係のない場所へ移しても崩れないコンポーネントを目指す、「[7-2 コンポーネントの境界を守る](/components/boundaries/)」の考え方とほぼ同じです。
+
+従来の手法が名前と読み込みの順番で範囲を管理していたのは、CSSにスコープとレイヤーの仕組みがなかったからです。BEMの `.block__element` という名前は、ページ全体で1つの名前空間の中で衝突を避けるためのものです。FLOCSSのレイヤーと `l-` や `c-` の接頭辞は、どのスタイルを優先するかを、ファイルの読み込み順と詳細度で管理するためのものです。どちらも、全員が規則を守っている間は機能しますが、誰かが名前を取り違えたり、詳細度の高いセレクタを書いたりすると崩れます。`@scope` はスタイルの届く範囲を、`@layer` は優先の順番をCSSの仕組みとして決めるので、名前は短くてよく、詳細度で上書きし合う必要もありません。CSS ModulesやVueのscoped CSSのように、ビルドの段階でクラス名を書き換えてスコープを作る方法も、名前の衝突を人の注意ではなく仕組みで防ぐという点で、同じ方向を向いています。
+
+従来の手法に慣れている場合は、次の表で本書の書き方との対応を確かめてください。
+
+| 従来の手法での書き方 | 本書での書き方 |
+|---|---|
+| BEMの `.block__element` | `@scope` の中の `._main-link` のような子要素のクラスか、タイプセレクタ（[6-1](/notation/naming/)） |
+| BEMの修飾子 `.block--modifier` | `data-variant` などの属性（[6-1](/notation/naming/)） |
+| SMACSSとFLOCSSの状態クラス `.is-active` | 擬似クラス、HTML要素の属性、ARIA属性（[13-1](/interaction/states-and-focus/)） |
+| FLOCSSのレイヤーと、ファイルの読み込み順 | `@layer` の順番（[2-3](/cascade/layers/)） |
+| FLOCSSのComponentとProject（`c-`、`p-`） | `scoped <名前>` のコンポーネント（[7-1](/components/what-is-a-component/)） |
+| SMACSSとFLOCSSのLayout（`l-`） | ヘッダーやフッターはコンポーネント、子の並べ方はコンポジション（[7-3](/components/compositions-and-utilities/)） |
+| FLOCSSのUtility（`u-`） | `-` で始まるユーティリティ（[7-3](/components/compositions-and-utilities/)） |
+| OOCSSのコンテナとコンテンツの分離 | 外部関連型のレイアウトをルートに書かない（[7-2](/components/boundaries/)） |
+
+手段が仕様の側に移っても、何を1つの部品とみなし、その責任をどこまでとするかは、人が決めなければなりません。この判断を誤れば、名前の規則で範囲を守っていた頃と同じく、部品は置き場所に依存し、上書きが重なっていきます。この判断の基準は「[7-1 何をコンポーネントにするか](/components/what-is-a-component/)」で扱います。

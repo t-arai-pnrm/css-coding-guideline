@@ -44,7 +44,7 @@ sidebar:
 | `:has(.foo)`、`*:has(.foo)` | `&:has(> .foo)` のように、直前に起点を書く | 挙動 | [`no-unanchored-has`](/pseudo/has/#rule-no-unanchored-has) | AI |
 | `:before`、`:after` | `::before`、`::after` | 本書の方針 | [`pseudo-element-double-colon`](/pseudo/basics/#rule-pseudo-element-double-colon) | |
 | `li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` | 親を起点にした `&:has(> :nth-child(3))` | 本書の方針 | [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has) | AI |
-| `._item:nth-of-type(2)` | `:nth-child(2 of ._item)` | 挙動 | [`nth-child-of-over-nth-of-type`](/pseudo/child-index/#rule-nth-child-of-over-nth-of-type) | AI |
+| `._post:nth-of-type(2)` | `:nth-child(2 of ._post)` | 挙動 | [`nth-child-of-over-nth-of-type`](/pseudo/child-index/#rule-nth-child-of-over-nth-of-type) | AI |
 | `all: unset` でまとめて戻す | `all: revert-layer`（レイヤーを使わないなら `all: revert`） | 挙動 | [`no-all-unset`](/cascade/cascade-basics/#rule-no-all-unset) | AI |
 | BEMの `.news-card__title` | `@scope (.scoped.news-card) to (.scoped)` の中の `h2`。同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ `._main-link` のような子クラスを付ける | 本書の方針 | [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)、[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)、[`child-class-underscore`](/notation/naming/#rule-child-class-underscore) | AI |
 
