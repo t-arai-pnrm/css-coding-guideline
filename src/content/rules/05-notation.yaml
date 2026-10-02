@@ -142,7 +142,25 @@
   page: notation/nesting-and-order
   since: 0.1.0
 
-# 5-3 モダンな記法にそろえる
+# 5-3 ネストの判断基準
+- id: nest-child-placement-only
+  level: 推奨
+  rule: 直下の子へネストしたルール（`& > ._icon`）には、`flex-shrink`、`grid-area`、`align-self` のように親のレイアウトによって意味が決まる宣言だけを書き、子自身の大きさや見た目は子のルールに書く。
+  reason: 親のレイアウトを変えるときに一緒に見直す宣言が親のルールの中にまとまり、子を別の親に移しても子自身の見た目が失われないため。
+  note: 子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第6章のルール `parent-owns-child-placement` で扱います。
+  page: notation/nesting-criteria
+  since: 0.6.0
+
+- id: no-nesting-under-selector-list
+  level: 推奨
+  rule: 詳細度の違うセレクタを並べたセレクタリスト（`._button, ._toggle[aria-pressed="true"]`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。
+  reason: '`&` の詳細度は親のセレクタリストを `:is()` で包んだものと同じになり、詳細度の低いほうのセレクタで一致した要素にも、リストの中でいちばん高い詳細度が付くため。'
+  note: 宣言だけのセレクタリストと、条件付きのアットルールのネストは、詳細度を変えないので対象にしません。
+  lint: Stylelint に対応する設定がないため、レビューで確認する
+  page: notation/nesting-criteria
+  since: 0.6.0
+
+# 5-4 モダンな記法にそろえる
 - id: logical-properties
   level: 推奨
   rule: 寸法、余白、位置、ボーダーは、物理プロパティではなく論理プロパティで書く（`width` ではなく `inline-size`、`top` ではなく `inset-block-start`）。
@@ -207,7 +225,7 @@
   page: notation/modern-syntax
   since: 0.1.0
 
-# 5-4 コメントの書き方
+# 5-5 コメントの書き方
 - id: file-header-doc-block
   level: 必須
   rule: CSS ファイルの先頭には、そのファイルの責務と使い方を `/** */` の説明ブロックで書く。

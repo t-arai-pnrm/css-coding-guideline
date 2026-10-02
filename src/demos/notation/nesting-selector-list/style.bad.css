@@ -1,0 +1,30 @@
+/* 🙅‍♂ Not Recommended */
+@layer components {
+  @scope (.scoped.action-bar) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    ._button,
+    ._toggle[aria-pressed="true"] {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border: 0;
+      border-radius: 4px;
+      background-color: oklch(70% 0 0deg);
+      color: oklch(100% 0 0deg);
+
+      &:enabled {
+        background-color: oklch(50% 0.15 250deg);
+      }
+    }
+
+    ._button {
+      &[data-variant="danger"] {
+        background-color: oklch(55% 0.2 25deg);
+      }
+    }
+  }
+}
