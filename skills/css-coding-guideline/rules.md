@@ -2156,6 +2156,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 9-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【推奨】比例スケールの寸法は `calc(N * var(--px))` と `calc(N * var(--rem))` で書き、`N` にはカンプ上のピクセル値をそのまま書く。（`proportional-scale-comp-values`）
   - 理由: カンプとの対応がそのまま読め、`calc((60 + 72) * var(--px))` のように値の足し算も式で残せるため。
+  - 補足: `--px` と `--rem` には比率が1のときの値（`1px` と `calc(1 / 16 * 1rem)`）を先に入れ、長さどうしの割り算に対応していることを `@supports (line-height: calc(1px / 1px))` で確かめられたときだけ、比例の式に切り替えます。比例の式を直接入れると、割り算に対応していないブラウザでは、それを使った宣言がすべて計算値の時点で無効になります。
   - 詳細: 9-4 実践パターン：2サイズのデザインカンプを再現する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【必須】比例スケールでは、文字サイズに `--px` ではなく、カンプ上の寸法をremで表した値を下限にした `--rem`（`max(1 / 16 * 1rem, …)`）を使う。（`proportional-scale-rem-for-text`）
   - 理由: 下限がないと、文字サイズを大きくしているユーザーへの補正と打ち消し合い、文字サイズの設定やズームで文字が拡大されなくなるため。

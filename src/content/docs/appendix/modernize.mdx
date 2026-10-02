@@ -148,11 +148,12 @@ sidebar:
 
 ## インタラクションとモーション
 
-状態の表し方は第13章「[インタラクション](/interaction/)」で、動きの付け方は第14章「[モーション](/motion/)」で説明しています。
+状態の表し方は第13章「[インタラクション](/interaction/)」で、動きの付け方は第14章「[モーション](/motion/)」で説明しています。なお、`(any-hover)` も操作ごとに入力の方法を見分けるわけではないので、マウスとタッチの両方を持つ端末では、タップのあとにホバーの状態が残ります（「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
 
 | よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
-| 条件なしの `:hover`、`@media (hover: hover)`、画面の幅での判定 | `@media (any-hover)` の中に書く | 挙動：タッチ操作の端末で、ホバーの状態が残り続ける | [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) | AI |
+| 条件なしの `:hover`、画面の幅での判定 | `@media (any-hover)` の中に書く | 挙動：タッチ操作の端末で、タップしたあとにホバーの状態が残る | [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) | AI |
+| `@media (hover: hover)` | `@media (any-hover)` の中に書く | 挙動：主な入力がタッチの端末では、トラックパッドなどをつないでもホバーが効かない | [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) | AI |
 | `:hover` だけに見た目の変化を指定する | `:focus-visible` にも同じ見た目を指定する | 挙動：キーボードで操作すると、変化が見えない | [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible) | AI |
 | ホバーで `opacity: 0.7` | 背景色や文字色を別の色に変える | 挙動：文字まで透けて、コントラストが下がる | [`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover) | AI |
 | `.is-active`、`.is-open` の状態クラス | `:checked` などの擬似クラスや `[aria-selected="true"]` | 本書の方針 | [`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria) | AI |

@@ -13,7 +13,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 ## 0.16.0（2026年10月3日）
 
-「はじめに」に心構えのページを加え、本書全体を通読したレビューにもとづいて、仕様の説明の誤りと推奨のコードを直しました。ルールを1件追加し、6件の内容を変えたため、マイナーバージョンを上げています。
+「はじめに」に心構えのページを加え、本書全体を通読したレビューにもとづいて、仕様の説明の誤りと推奨のコードを直しました。ルールを1件追加し、7件の内容を変えたため、マイナーバージョンを上げています。
 
 - 「はじめに」に、ルールの前提になる心構えのページを加えました。これらのページにはルールを置いていません。
   - 「[はじめに](/introduction/preface/)」を加えました。
@@ -29,6 +29,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`stack-vs-prose`](/layout/compositions/stack/#rule-stack-vs-prose)：`stack` を使う条件を、同じ役割の要素から、構成が決まっていて間隔を一律にしてよい要素に改めました。
   - [`no-lazy-loading-first-view`](/decoration/images-and-decoration/#rule-no-lazy-loading-first-view)：`fetchpriority="high"` を、ファーストビューの画像すべてではなく、LCPの候補になる画像にだけ指定するようにしました。
   - [`fit-content-over-flex-shrink-zero`](/layout/defensive/#rule-fit-content-over-flex-shrink-zero)：`fit-content` の上限は同じ並びのほかのアイテムや `gap` を差し引きません。アイコンと並ぶボタンの中のラベルには指定しない、と補足しました。
+  - [`proportional-scale-comp-values`](/responsive/design-comp-pattern/#rule-proportional-scale-comp-values)：`--px` と `--rem` に比率1の値を先に入れ、長さどうしの割り算に対応していることを `@supports` で確かめられたときだけ比例の式に切り替える、と補足しました。割り算に対応していないブラウザでも、カンプどおりの寸法で表示されます。
   - [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)：ルート要素の中に `<style>` を置く場合は、項目だけを数える書き方にする、と補足しました。
 - 本文の説明の誤りを直しました。
   - 「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」：`animation-fill-mode: both` では、終わったあとも最終フレームの値が保たれます。
@@ -39,7 +40,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」：IDのスタイルを上書きする方法の説明に、オリジン、重要度、レイヤーが同じという条件を加えました。
   - 「[8-1 レイアウトの基礎](/layout/fundamentals/)」「[8-7 positionの基礎](/layout/positioning/)」：`position: sticky` の主体と、`relative`、`sticky` と `absolute`、`fixed` の違いを正しく説明しました。
   - 「[6-6 名前に使う語](/notation/terminology/)」：ECSSの名称とリンクを直しました。
-- このほか、3列の中央を保つ条件、BEMの書き換え例、擬似要素の連結、押下のトークン、付録B「[モダンな書き方への置き換え表](/appendix/modernize/)」の分類、Stylelintの独自ルールの数、更新履歴と用語集の節番号とリンクを直しました。
+- このほか、3列の中央を保つ条件、BEMの書き換え例、擬似要素の連結、押下のトークン、Stylelintの独自ルールの数、ポインターの位置を測り直す時機、`fit-content` の下限を直しました。付録B「[モダンな書き方への置き換え表](/appendix/modernize/)」の分類とホバーの行、更新履歴と用語集の節番号とリンクも直しています。
 
 ## 0.15.0（2026年10月3日）
 

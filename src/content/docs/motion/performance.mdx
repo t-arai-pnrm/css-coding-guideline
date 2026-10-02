@@ -143,19 +143,27 @@ document.addEventListener('pointermove', (event) => {
 
 ```js title="ポインターの位置を、使う要素だけに書き込む JavaScript の例"
 const spotlight = document.querySelector('.scoped.spotlight');
-let rect = spotlight.getBoundingClientRect();
+let rect = null;
 
-spotlight.addEventListener('pointerenter', () => {
-  rect = spotlight.getBoundingClientRect();
-});
+// スクロールやリサイズで位置が変わったら、測った値を捨てる
+const clearRect = () => {
+  rect = null;
+};
+document.addEventListener('scroll', clearRect, { capture: true, passive: true });
+window.addEventListener('resize', clearRect);
 
 spotlight.addEventListener('pointermove', (event) => {
+  rect ??= spotlight.getBoundingClientRect();
   spotlight.style.setProperty('--spotlight--x', `${event.clientX - rect.left}px`);
   spotlight.style.setProperty('--spotlight--y', `${event.clientY - rect.top}px`);
 });
 ```
 
-要素の位置は `pointerenter` のときに一度だけ測り、`pointermove` の中では測りません。スタイルを書き換えた直後に位置を測ると、そのたびにレイアウトが強制的に行われるからです。なお、この効果は背景のグラデーションを描き直すので、ペイントは毎回起きます。面積の大きい要素に使うと負荷が増えるので、カードのような小さい要素に限ります。
+要素の位置は一度測ったら使い回し、`pointermove` のたびには測りません。`getBoundingClientRect()` は、まだレイアウトに反映されていない変更があると、その場でレイアウトを計算させます。ポインターの動きのたびに測ると、ページのほかの処理で寸法が変わっていた場合に、この計算を何度も強制することになります。
+
+`getBoundingClientRect()` が返すのはビューポートを基準にした位置なので、スクロールやリサイズのあとは測った値が古くなります。そのため、`scroll` と `resize` で測った値を捨て、次の `pointermove` で測り直します。スクロールする祖先の要素が `window` 以外のこともあるので、`scroll` はキャプチャで `document` に登録します。上にある内容が増えて位置がずれる場合は、この方法でも追従できないので、位置の変わらない要素に使います。
+
+なお、この効果は背景のグラデーションを描き直すので、ペイントは毎回起きます。面積の大きい要素に使うと負荷が増えるので、カードのような小さい要素に限ります。
 
 動かすカスタムプロパティは `inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介しません。この2点は、ルール [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit) で定めています。理由は「[7-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
@@ -224,7 +232,7 @@ button.addEventListener('click', () => {
 
 ## `contain: content` で影響の範囲を区切る
 
-`contain` は、要素の中で起きた変化が外に影響しないことをブラウザに約束する指定です。`contain: content` は、レイアウト、ペイント、スタイルの3つの封じ込めをまとめた値です。中身が頻繁に変わる独立した領域へ指定すると、内側でレイアウトやペイントが起きても、ブラウザは要素の外まで計算し直さずに済みます。ただし、サイズの封じ込め（`size`）は含まないので、中身の変化で要素自体の高さや幅が変われば、その変化は外のレイアウトに伝わります。
+`contain` は、要素の中のレイアウトやペイントを外から切り離すことをブラウザに約束する指定です。`contain: content` は、レイアウト、ペイント、スタイルの3つの封じ込めをまとめた値で、サイズの封じ込め（`size`）は含みません。中身が頻繁に変わる独立した領域へ指定すると、内側の変化で要素自体の大きさが変わらない限り、ブラウザは要素の外まで計算し直さずに済みます。中身の変化で要素の高さや幅が変われば、その変化は外のレイアウトに伝わります。
 
 ```css title="🙆‍♂ Recommended: 中身が頻繁に変わる独立した領域に contain: content を指定する"
 @scope (.scoped.live-score) to (.scoped) {
