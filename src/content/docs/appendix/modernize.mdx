@@ -27,7 +27,7 @@ sidebar:
 | `font-size: 14px` | `font-size: calc(14 / 16 * 1rem)` | 挙動 | [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)、[`px-to-rem-formula`](/values/px-and-rem/#rule-px-to-rem-formula) | AI |
 | `html { font-size: 62.5% }` | ルートの文字サイズはブラウザの設定のままにし、`calc(24 / 16 * 1rem)` の式で変換する | 挙動 | [`no-root-font-size-change`](/values/px-and-rem/#rule-no-root-font-size-change) | AI |
 | `line-height: 24px`、`line-height: 1.5em` | `line-height: 1.5` | 挙動 | [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height) | AI |
-| `calc(40px / 1280px * 100svi)` | `calc(40 / 1280 * 100svi)` | 対応状況 | [`no-typed-arithmetic`](/values/math-functions/#rule-no-typed-arithmetic) | AI |
+| `tan(atan2(100svi, 1px))` | `calc(100svi / 1px)` | 本書の方針 | [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless) | AI |
 
 ## カスケードとセレクタ
 

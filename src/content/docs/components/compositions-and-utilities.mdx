@@ -13,7 +13,7 @@ import compositionsCss from '../../../demos/components/compositions/style.css?ra
 
 要素を縦に積む、横に並べて折り返す、幅に応じて列数を切り替えるといった配置は、多くのコンポーネントに共通します。こうした配置は、コンポーネントから切り離した「コンポジション」（`stack`、`cluster`、`switcher` など）で扱います。コンポジションは配置だけを受け持ち、間隔や列数は公開プロパティで受け取ります。間隔のデフォルト値は0にして、使う側で指定します。
 
-ユーティリティは、視覚的に隠す、数字の幅をそろえるといった、どこに付けても同じ意味を持つ単機能のクラスに限ります。余白や配置の調整は、まずコンポーネントのCSSで行い、それで足りなければコンポジションやユーティリティを検討します。この節の最後には、Tailwind CSSのようなユーティリティファーストの手法との付き合い方をコラムとしてまとめました。
+ユーティリティは、視覚的に隠す、数字の幅をそろえるといった、どこに付けても同じ意味を持つ単機能のクラスに限ります。余白や配置の調整は、まずコンポーネントのCSSで行い、それで足りなければコンポジションやユーティリティを検討します。見た目の断片をまとめるパターンには、コンポーネントが変えないプロパティだけを書きます。この節の最後には、Tailwind CSSのようなユーティリティファーストの手法との付き合い方をコラムとしてまとめました。
 
 ## 配置をコンポーネントごとに書くと起きること
 
@@ -196,6 +196,87 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
 余白や配置の細かな調整は、まずコンポーネントのCSSで行います。そこで閉じられなければコンポジションかユーティリティを検討し、それでも静的な見た目の断片として残るなら、次に説明するパターンを考えます。
 
 コンポジションとユーティリティの間には、もう1つ「パターン」という分類があります。パターンは、アイコンの大きさを決める `.icon` のような、静的で再利用できる見た目の断片で、`patterns` レイヤーに置きます。名前は `big-title` のような見た目ではなく、`section-heading` のような役割から付けます。同じ見た目が3回出てきたらパターンへの昇格を検討してよいという目安がありますが、回数だけで機械的に昇格させることはしません。「少しだけ角丸がほしい」「ここだけ影がほしい」といった都合だけで、パターンやコンポーネントを作らないようにします。
+
+## パターンに書いてよいプロパティ
+
+パターンには、重ねるコンポーネントが指定しないプロパティだけを書きます。`patterns` は `components` より後ろのレイヤーにあるので、パターンを付けた要素では、同じプロパティについてパターンの指定が勝ちます。カスケードは、詳細度より先にレイヤーの順番を比べるからです。コンポーネントの側でセレクタを子クラスに変えたり、属性セレクタを重ねたりして詳細度を上げても、結果は変わりません。
+
+この強さの差は、バリエーションのスタイルや `@container` の中の指定にも及びます。次の例では、`feature-section` が見出しに、広い場所での大きな文字サイズと、`featured` のバリエーションの色を指定しています。しかし、見出しには `section-heading` のパターンが付いていて、パターンが `font-size` と `color` を持っています。コンポーネントの指定はどちらも反映されず、見出しはパターンの大きさと色のままです。
+
+```css title="🙅‍♂ Not Recommended: コンポーネントが変えたいプロパティをパターンに書く"
+/* 🙅‍♂ Not Recommended */
+@layer patterns {
+  .section-heading {
+    font-size: calc(24 / 16 * 1rem);
+    font-weight: 700;
+    color: var(--foreground--base);
+  }
+}
+
+@layer components {
+  @scope (.scoped.feature-section) to (.scoped) {
+    :scope {
+      container: --feature-section / inline-size;
+    }
+
+    /* h2 には class="section-heading" が付いている。どちらの指定も反映されない */
+    h2 {
+      @container --feature-section (inline-size >= calc(640 / 16 * 1rem)) {
+        font-size: calc(32 / 16 * 1rem);
+      }
+    }
+
+    :scope[data-variant="featured"] h2 {
+      color: var(--foreground--accent);
+    }
+  }
+}
+```
+
+コンポーネントの側で変える値は、パターンが公開プロパティとして受け取ります。名前は、コンポーネントの公開プロパティと同じ `--<パターン>--<プロパティ>` の形にします（「[7-4 公開プロパティと内部プロパティ](/components/custom-properties/)」）。パターンの中では、公開プロパティを `--_p--` で始まる内部プロパティに受け、デフォルト値を `var()` のフォールバックに書きます。公開プロパティそのものは宣言しません。パターンの中で宣言すると、その宣言も `patterns` レイヤーにあるので、コンポーネントから渡した値に勝ってしまいます。色のように置く場所ごとに決まる値は、パターンに書かず、コンポーネントに任せます。
+
+```css title="🙆‍♂ Recommended: 変える値は公開プロパティで受け取り、色はコンポーネントに任せる"
+/**
+ * セクションの見出し。
+ *
+ * @prop {length} --section-heading--font-size [calc(24 / 16 * 1rem)] - 文字の大きさ
+ */
+@layer patterns {
+  .section-heading {
+    --_p--font-size: var(--section-heading--font-size, calc(24 / 16 * 1rem));
+
+    font-size: var(--_p--font-size);
+    font-weight: 700;
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  @scope (.scoped.feature-section) to (.scoped) {
+    :scope {
+      --_heading-color: var(--foreground--base);
+
+      container: --feature-section / inline-size;
+
+      &[data-variant="featured"] {
+        --_heading-color: var(--foreground--accent);
+      }
+    }
+
+    h2 {
+      color: var(--_heading-color);
+
+      @container --feature-section (inline-size >= calc(640 / 16 * 1rem)) {
+        --section-heading--font-size: calc(32 / 16 * 1rem);
+      }
+    }
+  }
+}
+```
+
+`feature-section` は、`h2` に `font-size` を直接書く代わりに、`--section-heading--font-size` に値を渡しています。パターンは、この公開プロパティを内部プロパティ `--_p--font-size` に受けて `font-size` に使うので、`@container` の条件を満たしたときだけ大きな文字になります。`color` はパターンが持たないので、コンポーネントの指定がそのまま反映されます。アイコンのパターン `.icon` なら、`--icon--size` を `--_p--size` に受けて `inline-size` に使い、`aspect-ratio: 1` と合わせてこの2つだけを持ちます。色は指定しません。SVGの側で `stroke="currentColor"` のように文字色を参照しておけば、アイコンの色は置かれたコンポーネントの文字色に従います。
+
+`:hover` やフォーカスで色や背景が変わる見た目は、パターンにせず、コンポーネントにします。パターンに状態のスタイルを書くと、状態ごとの値もコンポーネントから変えられなくなるからです。状態を持つ時点で、静的な見た目の断片というパターンの定義からも外れます。また、パターンのセレクタを `:where()` で包んで詳細度を0にする必要はありません。強弱はレイヤーの順番で決まるので、詳細度を下げてもコンポーネントに対する強さは変わりません。
 
 ## コラム：ユーティリティファーストとの付き合い方
 

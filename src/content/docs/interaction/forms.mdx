@@ -240,7 +240,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ①で `box-sizing` を `content-box` に戻すのは、高さを行数だけで書くためです。kiso.cssはすべての要素を `border-box` にしています。そのままでは `min-block-size` に `padding` と `border` が含まれるので、3行分の高さを `calc(3lh + 2em + 2px)` のような足し算で求めることになります。`content-box` なら `min-block-size` は内容の領域の高さなので、`3lh` がそのまま3行分になります。`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。
 
-②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。{/* 要確認: stretch と -webkit-fill-available の各ブラウザの対応状況 */}
+②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。2026年10月の時点で `stretch` に対応していないFirefoxも、`-webkit-fill-available` で同じように広がります（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-width-100)」）。
 
 ③の `min-block-size` で、行数は `rows` 属性ではなく `--_rows` で決まります。`field-sizing: content` に対応した環境では、`rows` 属性はもともと高さに使われません（「[4-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」）。
 

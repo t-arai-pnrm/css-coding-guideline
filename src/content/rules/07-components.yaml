@@ -147,6 +147,15 @@
   page: components/compositions-and-utilities
   since: 0.1.0
 
+- id: pattern-leaves-component-properties
+  level: 推奨
+  rule: パターンには、重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は `--<パターン>--<プロパティ>` の公開プロパティで受け取る。
+  reason: '`patterns` は `components` より後ろのレイヤーにあり、パターンを付けた要素では、コンポーネントの CSS（状態や `@container` の中の指定を含む）が同じプロパティに詳細度を上げても勝てないため。'
+  note: '公開プロパティは、パターンの中で宣言せず、`--_p--size: var(--icon--size, 1em);` のように `--_p--` で始まる内部プロパティに受けて、デフォルト値をフォールバックに書きます。`:hover` などの状態で見た目が変わるものは、パターンにせずコンポーネントにします。強さはレイヤーの順番で決まるので、パターンのセレクタを `:where()` で包んで詳細度を下げる必要はありません。'
+  aiProne: true
+  page: components/compositions-and-utilities
+  since: 0.11.0
+
 # 7-3 デザイントークン
 - id: token-naming-category-first
   level: 必須
@@ -217,7 +226,7 @@
   level: 必須
   rule: コンポーネントの中だけで使う値は、`--_` で始まる内部プロパティにする。
   reason: 外から変えてよい値と、内部の都合の値を名前で見分けられるため。
-  note: コンポジションは `--_c--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
+  note: コンポジションは `--_c--`、パターンは `--_p--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
   aiProne: true
   page: components/custom-properties
   since: 0.1.0

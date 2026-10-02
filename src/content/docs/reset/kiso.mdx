@@ -15,9 +15,17 @@ import sampleCss from '../../../demos/reset/ua-vs-kiso/style.css?raw';
 
 ほかのリセットCSSを使う場合も、以下は選ぶときの基準になります。
 
+## リセットCSSは何を上書きするのか
+
+作者がCSSを書いていない要素の見た目は、CSSの初期値とブラウザのデフォルトスタイル（UAスタイルシート）の2層で決まります。初期値は、仕様がプロパティごとに定めた値で、`display` なら `inline` です。それでも `div` がブロックとして並ぶのは、UAスタイルシートが `div { display: block; }` を指定しているからです。作者のCSSは、この2層の上にもう1層を重ねて値を変えます。リセットCSSは作者のCSSの最初の1枚で、UAスタイルシートの値のうち、ブラウザごとに異なるものや毎回変えるものを上書きします。
+
+リセットCSSの考え方は、どこまで上書きするかをめぐって変わってきました。2000年代半ばには、`*` ですべての要素の `margin` と `padding` を0にする書き方が広まりました。2006年のYUI Resetと2008年のEric MeyerのReset CSSは、`*` を使わずに要素を列挙し、消す範囲を絞っています。2010年代はじめのNormalize.cssは、役に立つデフォルトスタイルは残し、ブラウザ間の差と不具合だけを直す方針に転じました。kiso.cssは、この残す方針を引き継いでいます。
+
+本書では、初期値、ブラウザのデフォルトスタイル、リセットCSSの値、ベーススタイルの値をまとめて「デフォルト値」と呼んでいます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」）。リセットCSSの値は、このうち作者のCSSの側で最初に決まるデフォルト値で、ベーススタイルやコンポーネントはその上に書きます。
+
 ## リセットCSSが土台を壊すとき
 
-リセットCSSは、ブラウザごとに異なるデフォルトスタイルをそろえるためのCSSです。すべての要素に適用されるので、その性質はサイト全体に及びます。よくある問題は、消しすぎること、詳細度が高いこと、欧文を前提にしていることの3つです。
+リセットCSSはすべての要素に適用されるので、その性質はサイト全体に及びます。よくある問題は、消しすぎること、詳細度が高いこと、欧文を前提にしていることの3つです。
 
 ```css title="🙅‍♂ Not Recommended: 便利なデフォルトまで一律に消すリセット"
 /* 🙅‍♂ Not Recommended */
@@ -167,3 +175,4 @@ kiso.cssの初期値がプロジェクトに合わないときは、kiso.cssの�
 - [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)
 - [revert - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert)
 - [text-autospace - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-autospace)
+- [UAスタイルシートとリセットCSSとは - 2023](https://kojika17.com/2023/02/inital-value-and-UA-of-style-sheet.html)（kojika17）

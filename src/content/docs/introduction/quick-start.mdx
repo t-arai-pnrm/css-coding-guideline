@@ -171,7 +171,7 @@ npmでインストールする場合（`npm install kiso.css`）は、CSSの `@i
 
 ## 命名の早見表
 
-本書のコード例には、CSSの構文ではなく、本書の規約で決めている名前が多く出てきます。どれも先頭の記号で種類を見分けられるようにしています。各行の詳しい説明は、右の列のページにあります。
+本書のコード例には、CSSの構文ではなく、本書の規約で決めている名前が多く出てきます。どれも先頭の記号で種類を見分けられるようにしています。接頭辞のないコンポジションとパターンは、配置の名前か役割の名前かで見分けます。各行の詳しい説明は、右の列のページにあります。
 
 | 記法 | 例 | 意味 | 詳しい節 |
 |---|---|---|---|
@@ -179,7 +179,8 @@ npmでインストールする場合（`npm install kiso.css`）は、CSSの `@i
 | `scoped page-<スラッグ>` | `class="scoped page-about"` | ページ固有のスタイルのルート | [2-4](/cascade/scope/) |
 | `._<名前>` | `._main-link`、`._sub-link` | コンポーネントの子要素のうち、同じ種類の要素を役割で区別するものと、`div` と `span` の役割を示すもの。スコープの中だけで意味を持つ | [6-1](/notation/naming/)、[7-1](/components/boundaries/) |
 | `.-<名前>` | `.-visually-hidden`、`.-fluid-text--md` | ユーティリティ。段階や種類は `--` で続ける | [6-1](/notation/naming/)、[7-2](/components/compositions-and-utilities/) |
-| 接頭辞なし | `.cluster`、`.switcher` | コンポジション（配置のパターン） | [7-2](/components/compositions-and-utilities/) |
+| 接頭辞なし（配置の名前） | `.cluster`、`.switcher` | コンポジション（配置のパターン） | [6-1](/notation/naming/)、[7-2](/components/compositions-and-utilities/) |
+| 接頭辞なし（役割の名前） | `.section-heading`、`.icon` | パターン（静的な見た目の断片）。コンポーネントが変える値は `--<パターン>--<プロパティ>` で受け取る | [6-1](/notation/naming/)、[7-2](/components/compositions-and-utilities/) |
 | `--<分類>--<名前>` | `--color--accent--600`、`--spacing--md` | デザイントークン | [7-3](/components/design-tokens/) |
 | `--<役割>--<バリエーション>` | `--foreground--muted` | 役割を表す色のトークン | [7-3](/components/design-tokens/) |
 | `--<コンポーネント>--<プロパティ>` | `--news-card--accent` | 公開プロパティ。外から値を渡してよい | [7-4](/components/custom-properties/) |
@@ -190,7 +191,7 @@ npmでインストールする場合（`npm install kiso.css`）は、CSSの `@i
 | 擬似クラス、ARIA属性 | `:checked`、`[aria-selected="true"]` | 状態。`.is-active` のような状態クラスは使わない | [12-1](/interaction/states-and-focus/) |
 | 9つのレイヤー名 | `tokens`、`components` | レイヤー名。値として使わないので `--` を付けない | [2-3](/cascade/layers/) |
 
-内部プロパティの `--_` には、種類ごとの接頭辞もあります。コンポジションは `--_c--`、ユーティリティは `--_u--`、ベーススタイルは `--_b--` で始めます。コンポーネントの内部プロパティと名前がぶつからないようにするためです。
+内部プロパティの `--_` には、種類ごとの接頭辞もあります。コンポジションは `--_c--`、パターンは `--_p--`、ユーティリティは `--_u--`、ベーススタイルは `--_b--` で始めます。コンポーネントの内部プロパティと名前がぶつからないようにするためです。
 
 ## 本書の規約と仕様上の制約
 

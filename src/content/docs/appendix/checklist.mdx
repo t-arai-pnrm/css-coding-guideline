@@ -36,8 +36,8 @@ sidebar:
 ### 命名とスコープ
 
 - [ ] コンポーネントのルートに `scoped` クラスを付け、スタイルを `@scope (.scoped.<名前>) to (.scoped)` の中に書いているか（[`scoped-class-on-root`](/cascade/scope/#rule-scoped-class-on-root)、[`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)）
-- [ ] 子要素は `._`、ユーティリティは `.-` で始め、コンポジションは接頭辞なしか（[`child-class-underscore`](/notation/naming/#rule-child-class-underscore)、[`utility-class-hyphen`](/notation/naming/#rule-utility-class-hyphen)、[`composition-class-plain`](/notation/naming/#rule-composition-class-plain)）
-- [ ] 名前が、見た目ではなく役割を表しているか（[`name-by-role`](/notation/naming/#rule-name-by-role)）
+- [ ] 子要素は `._`、ユーティリティは `.-` で始め、コンポジションとパターンは接頭辞なしにしているか（[`child-class-underscore`](/notation/naming/#rule-child-class-underscore)、[`utility-class-hyphen`](/notation/naming/#rule-utility-class-hyphen)、[`composition-class-plain`](/notation/naming/#rule-composition-class-plain)）
+- [ ] 名前が、見た目ではなく役割を表しているか。コンポジションは配置の名前、パターンは役割の名前にしているか（[`name-by-role`](/notation/naming/#rule-name-by-role)）
 - [ ] `container` や `button` のような語を、別の意味の名前に使っていないか（[`no-redefining-web-terms`](/notation/naming/#rule-no-redefining-web-terms)）
 - [ ] `wrapper` や `module` のように、責務を表さない名前を使っていないか（[`no-vague-names`](/notation/naming/#rule-no-vague-names)）
 - [ ] `@keyframes`、グリッドのエリア、アンカー、コンテナの名前を `--` で始めているか（[`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names)、[`container-name-dashed-ident`](/responsive/container-queries/#rule-container-name-dashed-ident)）
@@ -85,13 +85,14 @@ sidebar:
 - [ ] 対象のすべてが対応した機能のフォールバックが、残っていないか（[`remove-unneeded-fallbacks`](/principles/browser-support/#rule-remove-unneeded-fallbacks)）
 - [ ] JavaScriptで表示を切り替える前提のスタイルを、`@media (scripting: enabled)` の中に書いているか（[`scripting-for-js-dependent-styles`](/principles/browser-support/#rule-scripting-for-js-dependent-styles)）
 - [ ] ブロックレイアウトの要素に `justify-self` を指定していないか（[`no-justify-self-in-block-layout`](/principles/browser-support/#rule-no-justify-self-in-block-layout)）
-- [ ] 単位のついた値どうしの割り算を使っていないか（[`no-typed-arithmetic`](/values/math-functions/#rule-no-typed-arithmetic)）
+- [ ] 単位のついた値での割り算を、Firefoxの安定版で宣言が無効になっても内容を読める場面で使っているか（[`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)）
 - [ ] Chromeだけでなく、Safari（iOSを含む）とFirefoxでも表示を確かめたか（[`no-chrome-only-check`](/principles/browser-support/#rule-no-chrome-only-check)）
 
 ## 4. 不要な記述と副作用のある上書き
 
 - [ ] どの宣言も、なぜ必要かを説明できるか（[`explainable-declarations`](/principles/maintainability/#rule-explainable-declarations)）
 - [ ] 何にでも `width: 100%` や `height: 100%` を指定していないか（[`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100)、[`stretch-over-height-100`](/principles/maintainability/#rule-stretch-over-height-100)）
+- [ ] 幅いっぱいに広げる指定が要る要素に、`100%` ではなく `-webkit-fill-available` と `stretch` をこの順に書いているか（[`stretch-over-width-100`](/principles/maintainability/#rule-stretch-over-width-100)）
 - [ ] 初期値、デフォルトスタイル、リセットやベーススタイルで決まっている値を、指定し直していないか（[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults)）
 - [ ] 中央寄せに `margin: 0 auto` ではなく `margin-inline: auto` を使っているか（[`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering)）
 - [ ] 一部だけを変えるのに、`background` のような影響範囲の広いショートハンドを使っていないか（[`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change)）
@@ -136,6 +137,7 @@ sidebar:
 - [ ] コンポーネントのルートに、`margin` や `grid-area` のような外部関連型のレイアウトを指定していないか（[`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)）
 - [ ] 子のコンポーネントの配置と外側の余白を、親の `gap` やOuterで決めているか（[`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)）
 - [ ] ほかのコンポーネントのルートや内部の要素を、セレクタで選んで上書きしていないか（[`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)）
+- [ ] パターンに、重ねるコンポーネントが指定するプロパティを書いていないか。コンポーネントの側で変える値を公開プロパティで受け取っているか（[`pattern-leaves-component-properties`](/components/compositions-and-utilities/#rule-pattern-leaves-component-properties)）
 - [ ] コンポーネントの中の要素をタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ付けているか。`a:hover` のような擬似クラス付きのタイプセレクタで、子クラスのスタイルを打ち消していないか（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）
 - [ ] 外から変えてよい値を `--<コンポーネント>--<プロパティ>` の公開プロパティにし、内部で使う値を `--_` で始めているか（[`public-property-naming`](/components/custom-properties/#rule-public-property-naming)、[`internal-property-prefix`](/components/custom-properties/#rule-internal-property-prefix)）
 - [ ] 公開プロパティを自分で宣言せず、内部プロパティで受けてフォールバックにデフォルト値を書いているか（[`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)）

@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.10.0
+- バージョン: 0.11.0
 - 生成日: 2026-10-02
-- ルールの数: 476
+- ルールの数: 478
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -23,12 +23,16 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 指定しなくても利用できる幅いっぱいに広がり、左右のマージンや `box-sizing` の変更と組み合わさると、はみ出しの原因になるため。
   - 補足: `<img>` のような置換要素や、`<button>` のようなフォーム部品には必要なことがあります。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` は対象外です。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
+- 【推奨】利用できる幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`inline-size: -webkit-fill-available` と `inline-size: stretch` をこの順に書く。（`stretch-over-width-100`）
+  - 理由: `100%` は `margin` を含めずに包含ブロックの幅をそのまま当てはめるので、`margin` や `box-sizing: content-box` と組み合わさると親からはみ出すためです。`stretch` は `margin` を含めた箱を包含ブロックの幅に収めます。
+  - 補足: フォーム部品、行方向のフレックスアイテム、左右の位置を片方しか決めていない絶対配置の要素などが対象です。揃えを変えていないグリッドアイテムは、指定しなくても広がります。子の周りの余白は、子の `margin` ではなく親の `padding` や `gap` で取ることを優先します（ルール `parent-owns-child-placement`）。`-moz-available` は書きません。
+  - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
   - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
-  - 補足: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「2-1 カスケード・詳細度・継承」のルールに従います。
+  - 補足: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「2-1 カスケード・詳細度・継承」のルールに従います。ブロックレベルの要素に付けた `vertical-align` や、フレックスアイテムに付けた `float` のように、その文脈でブラウザが無視するプロパティも消します。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【必須】ブロックの左右の中央寄せには、`margin: 0 auto` や `margin: auto` ではなく `margin-inline: auto` を使う。（`margin-inline-auto-centering`）
   - 理由: `margin: 0 auto` は上下のマージンまで上書きし、周りのレイアウトが子要素の間に入れた余白を消してしまうため。
@@ -207,9 +211,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 数値だけでは、どの幅でどの値になるのかを読み取れず、値を変えるときに計算をやり直せないため。
   - 補足: 基準の幅と値は、カスタムプロパティを使った式にするか、少なくともコメントに残します。
   - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
-- 【非推奨】`calc(40px / 1280px * 100svi)` のような、単位つきの値どうしの割り算（typed arithmetic）を使わない。（`no-typed-arithmetic`）
-  - 理由: 対応していないブラウザがあり（2026年9月確認）、その環境では宣言ごと無効になるため。
-  - 補足: デザインカンプの値は `calc(40 / 1280 * 100svi)` のように単位のない数値で割ります。長さどうしの比がどうしても必要なら、`tan(atan2(長さ, 1px))` で単位を外します（9-4）。
+- 【推奨】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
+  - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
+  - 補足: デザインカンプの値は、これまでどおり `calc(40 / 1280 * 100svi)` のように単位のない数値で割り、`40px / 1280px` とは書きません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していない（158で対応する予定）ので、宣言が無効になっても内容を読める場面で使います。Chromeでは、この割り算で定義した長さがブラウザのズームで拡大縮小されないので、文字サイズにはremの下限を付けます（9-4）。
   - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【必須】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）
   - 理由: 宣言に `var()` が含まれると、未対応の環境でも宣言は計算値の時点で無効になって前の宣言に戻らず、対応した環境でも属性がないか型として読めないと、宣言がプロパティの初期値に戻るため。
@@ -317,6 +321,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】内部の要素で相対的な z-index を使うコンポーネントは、ルートに `isolation: isolate` を指定する。（`isolation-for-relative-z-index`）
   - 理由: 内部の z-index がほかのコンポーネントと干渉せず、-1 の要素がルートや親の背景の下に隠れることもなくなるため。
   - 詳細: 7-1 コンポーネントの境界を守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/boundaries.mdx）
+- 【推奨】パターンには、重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は `--<パターン>--<プロパティ>` の公開プロパティで受け取る。（`pattern-leaves-component-properties`）
+  - 理由: `patterns` は `components` より後ろのレイヤーにあり、パターンを付けた要素では、コンポーネントの CSS（状態や `@container` の中の指定を含む）が同じプロパティに詳細度を上げても勝てないため。
+  - 補足: 公開プロパティは、パターンの中で宣言せず、`--_p--size: var(--icon--size, 1em);` のように `--_p--` で始まる内部プロパティに受けて、デフォルト値をフォールバックに書きます。`:hover` などの状態で見た目が変わるものは、パターンにせずコンポーネントにします。強さはレイヤーの順番で決まるので、パターンのセレクタを `:where()` で包んで詳細度を下げる必要はありません。
+  - 詳細: 7-2 コンポジションとユーティリティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/compositions-and-utilities.mdx）
 - 【必須】トークンは `--<分類>--<名前>` の形で名付ける（例：`--color--neutral--500`、`--spacing--md`）。（`token-naming-category-first`）
   - 理由: 先頭の分類で値の種類が分かり、コンポーネントの公開プロパティとも見分けられるため。
   - 補足: 色の役割を表すセマンティクスのトークンは、`--<役割>--<バリエーション>`（例：`--foreground--muted`）にします。
@@ -330,7 +338,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-4 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
 - 【必須】コンポーネントの中だけで使う値は、`--_` で始まる内部プロパティにする。（`internal-property-prefix`）
   - 理由: 外から変えてよい値と、内部の都合の値を名前で見分けられるため。
-  - 補足: コンポジションは `--_c--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
+  - 補足: コンポジションは `--_c--`、パターンは `--_p--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
   - 詳細: 7-4 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
 - 【必須】公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書く。（`receive-public-property-with-fallback`）
   - 理由: コンポーネント自身で宣言すると、親から継承した値がその宣言に負けて届かなくなるため。
@@ -822,12 +830,16 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 指定しなくても利用できる幅いっぱいに広がり、左右のマージンや `box-sizing` の変更と組み合わさると、はみ出しの原因になるため。
   - 補足: `<img>` のような置換要素や、`<button>` のようなフォーム部品には必要なことがあります。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` は対象外です。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
+- 【推奨】利用できる幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`inline-size: -webkit-fill-available` と `inline-size: stretch` をこの順に書く。（`stretch-over-width-100`）
+  - 理由: `100%` は `margin` を含めずに包含ブロックの幅をそのまま当てはめるので、`margin` や `box-sizing: content-box` と組み合わさると親からはみ出すためです。`stretch` は `margin` を含めた箱を包含ブロックの幅に収めます。
+  - 補足: フォーム部品、行方向のフレックスアイテム、左右の位置を片方しか決めていない絶対配置の要素などが対象です。揃えを変えていないグリッドアイテムは、指定しなくても広がります。子の周りの余白は、子の `margin` ではなく親の `padding` や `gap` で取ることを優先します（ルール `parent-owns-child-placement`）。`-moz-available` は書きません。
+  - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
   - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
-  - 補足: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「2-1 カスケード・詳細度・継承」のルールに従います。
+  - 補足: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「2-1 カスケード・詳細度・継承」のルールに従います。ブロックレベルの要素に付けた `vertical-align` や、フレックスアイテムに付けた `float` のように、その文脈でブラウザが無視するプロパティも消します。
   - 詳細: 1-2 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/maintainability.mdx）
 - 【必須】ブロックの左右の中央寄せには、`margin: 0 auto` や `margin: auto` ではなく `margin-inline: auto` を使う。（`margin-inline-auto-centering`）
   - 理由: `margin: 0 auto` は上下のマージンまで上書きし、周りのレイアウトが子要素の間に入れた余白を消してしまうため。
@@ -1153,9 +1165,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 数値だけでは、どの幅でどの値になるのかを読み取れず、値を変えるときに計算をやり直せないため。
   - 補足: 基準の幅と値は、カスタムプロパティを使った式にするか、少なくともコメントに残します。
   - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
-- 【非推奨】`calc(40px / 1280px * 100svi)` のような、単位つきの値どうしの割り算（typed arithmetic）を使わない。（`no-typed-arithmetic`）
-  - 理由: 対応していないブラウザがあり（2026年9月確認）、その環境では宣言ごと無効になるため。
-  - 補足: デザインカンプの値は `calc(40 / 1280 * 100svi)` のように単位のない数値で割ります。長さどうしの比がどうしても必要なら、`tan(atan2(長さ, 1px))` で単位を外します（9-4）。
+- 【推奨】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
+  - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
+  - 補足: デザインカンプの値は、これまでどおり `calc(40 / 1280 * 100svi)` のように単位のない数値で割り、`40px / 1280px` とは書きません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していない（158で対応する予定）ので、宣言が無効になっても内容を読める場面で使います。Chromeでは、この割り算で定義した長さがブラウザのズームで拡大縮小されないので、文字サイズにはremの下限を付けます（9-4）。
   - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【推奨】型付きの `attr()` は、`<textarea>` の `rows` のように HTML がすでに持っている属性の値を CSS でも使うときに限り、コンポーネントに値を渡す手段は `style` 属性の公開プロパティのままにする。（`attr-for-html-attributes`）
   - 理由: 型付きの `attr()` に未対応のブラウザがあり（2026年10月確認）、同じ値を属性と `style` 属性の2か所に書くことも避けられるため。
@@ -1275,6 +1287,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【必須】コンポジションのクラス名は、接頭辞を付けない kebab-case にする（例：`.cluster`、`.switcher`）。（`composition-class-plain`）
   - 理由: 配置のパターンの名前をそのまま使え、接頭辞の付いたほかの種類のクラスと並べたときに役割の違いが分かるため。
+  - 補足: パターンにも接頭辞を付けません。コンポジションは `stack` や `sidebar` のような配置の名前に、パターンは `section-heading` や `icon` のような役割の名前（`name-by-role`）にして、名前の種類で区別します。
   - 詳細: 6-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
 - 【必須】コンポーネント、子要素、パターンの名前は、見た目ではなく役割で付ける（`._big-title` ではなく `._heading`）。（`name-by-role`）
   - 理由: 見た目の名前はデザインが変わると実態とずれるが、役割の名前なら見た目を変えても名前を変えずに済むため。
@@ -1464,6 +1477,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: その場の都合で共通の部品を増やすと、共通の部品が何のためにあるのかが分からなくなるため。
   - 補足: 「ここだけ影がほしい」のような都合だけで、パターンやコンポーネントを作りません。
   - 詳細: 7-2 コンポジションとユーティリティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/compositions-and-utilities.mdx）
+- 【推奨】パターンには、重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は `--<パターン>--<プロパティ>` の公開プロパティで受け取る。（`pattern-leaves-component-properties`）
+  - 理由: `patterns` は `components` より後ろのレイヤーにあり、パターンを付けた要素では、コンポーネントの CSS（状態や `@container` の中の指定を含む）が同じプロパティに詳細度を上げても勝てないため。
+  - 補足: 公開プロパティは、パターンの中で宣言せず、`--_p--size: var(--icon--size, 1em);` のように `--_p--` で始まる内部プロパティに受けて、デフォルト値をフォールバックに書きます。`:hover` などの状態で見た目が変わるものは、パターンにせずコンポーネントにします。強さはレイヤーの順番で決まるので、パターンのセレクタを `:where()` で包んで詳細度を下げる必要はありません。
+  - 詳細: 7-2 コンポジションとユーティリティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/compositions-and-utilities.mdx）
 - 【必須】トークンは `--<分類>--<名前>` の形で名付ける（例：`--color--neutral--500`、`--spacing--md`）。（`token-naming-category-first`）
   - 理由: 先頭の分類で値の種類が分かり、コンポーネントの公開プロパティとも見分けられるため。
   - 補足: 色の役割を表すセマンティクスのトークンは、`--<役割>--<バリエーション>`（例：`--foreground--muted`）にします。
@@ -1495,7 +1512,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-4 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
 - 【必須】コンポーネントの中だけで使う値は、`--_` で始まる内部プロパティにする。（`internal-property-prefix`）
   - 理由: 外から変えてよい値と、内部の都合の値を名前で見分けられるため。
-  - 補足: コンポジションは `--_c--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
+  - 補足: コンポジションは `--_c--`、パターンは `--_p--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
   - 詳細: 7-4 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
 - 【必須】公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書く。（`receive-public-property-with-fallback`）
   - 理由: コンポーネント自身で宣言すると、親から継承した値がその宣言に負けて届かなくなるため。

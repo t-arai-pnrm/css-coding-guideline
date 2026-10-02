@@ -9,7 +9,26 @@ sidebar:
 
 AI向けのルール集やスキルには、生成したときのバージョンと日付が入っています。手元にコピーしたルール集が古くなっていないかは、このページの最新のバージョンと見比べて確かめてください。
 
-執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。
+執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
+
+## 0.11.0（2026年10月2日）
+
+単位のついた値での割り算を使うことにし、`stretch` とパターンについてのルールを追加しました。ルールの主張が反対になったものがあるため、旧ルールを削除して新しいルールに置き換えています。
+
+- ルールを1件削除しました。
+  - `no-typed-arithmetic`：単位のついた値どうしの割り算（typed arithmetic）を使わない
+- ルールを3件追加しました。
+  - [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)：長さを単位のない数値に変えるときは、`tan(atan2(長さ, 1px))` ではなく、`calc(100svi / 1px)` のように単位のついた値で割ります。
+  - [`stretch-over-width-100`](/principles/maintainability/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書きます。
+  - [`pattern-leaves-component-properties`](/components/compositions-and-utilities/#rule-pattern-leaves-component-properties)：パターンには重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は公開プロパティで受け取ります。
+- ルールの補足を3件更新しました。[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults) には、その文脈でブラウザが無視するプロパティも消すことを加えました。[`composition-class-plain`](/notation/naming/#rule-composition-class-plain) には、パターンにも接頭辞を付けず、コンポジションは配置の名前、パターンは役割の名前で区別することを加えました。
+- 「[4-3 計算関数で根拠を式に残す](/values/math-functions/)」で、typed arithmeticの対応状況を「Safari 26以降」から「Safari 18.2以降」に正しました。あわせて、Chromeでは割り算で定義した長さがブラウザのズームで拡大縮小されない注意を加えました。9-4の式とデモも、単位のついた値での割り算に書き換えています（[9-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)）。
+- 「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」に、`div` が親の幅に広がる仕組みの説明を加えました。「[8-2 ボックスモデルの基礎](/layout/box-model/)」と「[12-4 フォーム部品](/interaction/forms/)」の `stretch` の対応状況を改め、1-2にリンクしています。
+- 「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で、`:has()` と `:not()` を組み合わせたセレクタを読み解く手順を書き直しました。
+- 「[5-1 壊さないリセット](/reset/kiso/)」の冒頭に、初期値、ブラウザのデフォルトスタイル、作者のCSSの3層と、リセットCSSの変遷を説明する節を加えました。
+- 「[6-1 命名規則](/notation/naming/)」のクラス名の表にパターンを加え、4種類から5種類にしました。「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」に、節「パターンに書いてよいプロパティ」を加えています。パターンの内部プロパティは `--_p--` で始めることにし、[`internal-property-prefix`](/components/custom-properties/#rule-internal-property-prefix) の補足に加えました。
+- 「[11-5 輪郭と枠線を描く](/color-media/outlines/)」のドーナツグラフの式を、単位のついた値での割り算に書き換えました。
+- 「[付録B モダンな書き方への置き換え表](/appendix/modernize/)」、「[付録C Sassの機能を素のCSSで置き換える](/appendix/sass/)」、「[付録D レビューのチェックリスト](/appendix/checklist/)」を、新しいルールに合わせました。
 
 ## 0.10.0（2026年10月2日）
 

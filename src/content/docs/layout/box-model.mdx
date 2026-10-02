@@ -166,7 +166,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 `flex: 1` で余りを分けるとき、分けられるのは `padding` と `border` を除いた部分です。アイテムごとに `padding` が違えば、`border-box` でも幅はそろいません。列の幅をそろえるなら、親のGridで列を決めます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」）。
 
-`inline-size: stretch` は、`margin` を除いた使える幅いっぱいに広げる値で、フレックスアイテムや絶対配置の要素をブロックと同じように横いっぱいにできます。2026年10月の時点ではFirefoxが対応していないので、`auto` のままでも崩れない場所に限って、プログレッシブ・エンハンスメントとして使います。
+`inline-size: stretch` は、`margin` を除いた使える幅いっぱいに広げる値で、フレックスアイテムや絶対配置の要素をブロックと同じように横いっぱいにできます。2026年10月の時点でFirefoxは `stretch` に対応していませんが、先に `-webkit-fill-available` を書いておけば、Firefoxを含む主要なブラウザで同じ結果になります。書き方と各ブラウザの対応状況は、「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-width-100)」で説明します。
 
 <Baseline id="stretch" />
 

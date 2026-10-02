@@ -171,8 +171,8 @@ import Guideline from '../../../components/Guideline.astro';
       content: counter(--value) "%";
       place-self: center;
       padding: var(--_border-width);
-      counter-reset: --value calc(tan(atan2(var(--count-up--value), 1%)));
-      font-size: calc(tan(atan2(32px, var(--_basis-width))) * 100cqi);
+      counter-reset: --value calc(var(--count-up--value) / 1%);
+      font-size: calc(32px / var(--_basis-width) * 100cqi);
       font-weight: 700;
       font-variant-numeric: tabular-nums;
     }
@@ -184,7 +184,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 `::before` が輪です。透明な枠線を付け、`padding-box` と `border-box` に切り抜いた2枚のマスクを `exclude` で合成すると、2枚の重なる内側は消え、枠線の部分だけが残ります。そこに枠線の外側から（`background-origin: border-box`）`conic-gradient()` を敷くので、枠線の太さがそのまま輪の太さになります。マスクの画像は塗りつぶされていれば何でもよく、`conic-gradient(#000 0 0)` は単色の画像を短く書くための指定です。`#000` の色は表示されません。
 
-`::after` が中心の数値です。`tan(atan2(var(--count-up--value), 1%))` は、割合を1%で割った単位のない数値を返し（「[4-3 数学関数](/values/math-functions/)」）、`counter()` がその数値を文字にします。`counter-reset` は整数を受け取るので、`calc()` の結果は整数に丸められます。{/* 要確認: counter-reset に @property で登録した値の calc() を渡す書き方の対応状況 */}文字の大きさは、コンテナの幅（`100cqi`）に、グラフの幅が `--_basis-width`（200px）のとき32pxとなる比を掛けて決めています。グラフをどの大きさで置いても、輪と数値の大きさの比が変わりません。`tabular-nums` で数字の幅をそろえるのは、数値が増える間も文字の位置を左右に揺らさないためです。
+`::after` が中心の数値です。`calc(var(--count-up--value) / 1%)` は、割合を1%で割った単位のない数値を返し（「[4-3 計算関数で根拠を式に残す](/values/math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` がその数値を文字にします。`counter-reset` は整数を受け取るので、`calc()` の結果は整数に丸められます。{/* 要確認: counter-reset に @property で登録した値の calc() を渡す書き方の対応状況 */}文字の大きさは、コンテナの幅（`100cqi`）に、グラフの幅が `--_basis-width`（200px）のとき32pxとなる比を掛けて決めています。グラフをどの大きさで置いても、輪と数値の大きさの比が変わりません。`tabular-nums` で数字の幅をそろえるのは、数値が増える間も文字の位置を左右に揺らさないためです。
 
 割合は、0%から数え上げて表示します。`--count-up--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。`@keyframes` には `from` だけを書き、終わりの値は擬似要素で指定した値を使います（「[12-2 モーションを実装する](/interaction/motion/)」）。輪と数値は同じ `@keyframes` で動くので、輪が伸びるのに合わせて数値も増えます。トランジションではなく `@keyframes` を使うのは、トランジションは値が変わったときにしか動かず、ページを開いたときの表示では何も起きないからです。数値が一定の速さで増えるように、イージングは `linear` にしています。動かすのは、`prefers-reduced-motion: no-preference` のときだけです。
 

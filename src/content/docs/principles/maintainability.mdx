@@ -7,6 +7,7 @@ sidebar:
 
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import Baseline from '../../../components/Baseline.astro';
 import centeringHtml from '../../../demos/principles/centering-shorthand/index.html?raw';
 import centeringCss from '../../../demos/principles/centering-shorthand/style.css?raw';
 
@@ -97,6 +98,8 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 最もよく見かけるのが、とりあえず `width: 100%` を指定するものです。`div` や `p` のように、ブラウザのデフォルトスタイルで `display: block` になる要素は、`width` が初期値の `auto` のままで親の幅に合わせて広がります。`position: absolute` と `inset: 0` を指定した要素も、その時点で利用できる幅いっぱいに広がります。
 
+つまり、`div` が親の幅いっぱいになるのは、`width: 100%` と同じ指定が働いているからではありません。ブロックレベルの要素の `auto` は、包含ブロックの幅から自分の `margin`、`border`、`padding` を差し引いた残りを内容の幅にします。一方の `100%` は、包含ブロックの幅をそのまま内容（`border-box` なら枠線まで）の幅にするので、`margin` があればその分だけはみ出します。見た目が同じでも、2つは別の計算です。
+
 `height: 100%` は、親の高さが明示的に指定されているときにしか期待どおりに動きません。親が `min-height` のように最小値だけを決めている場合には成り立たず、flexやgridのアイテムであれば、指定しなくても `stretch` で高さいっぱいに広がります。
 
 ```css title="🙅‍♂ Not Recommended: 何にでも width: 100% と height: 100% を指定する"
@@ -120,7 +123,24 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 これらは無意味なだけでなく、ブラウザ間の挙動の違いによる不具合の原因にもなります。過去には、Safariで `<summary>` の子要素に `width: 100%` を指定すると不自然な改行が起きたり、Firefoxで `height: 100%` を指定したサブグリッドの要素が不自然に詰まったりする事例がありました。`box-sizing` を初期値に戻したときや、左右のマージンが加わったときには、はみ出しの原因にもなります。
 
-`width: 100%` が必要なのは、`display: block` にしても自然には広がらない `<img>` のような置換要素や、`<button>` のようなフォーム部品です。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` も問題ありません。`inline-block` の要素を幅いっぱいに広げたいなら、`width: 100%` を足す前に、外側の表示形式を `block` に変えられないかを検討します。そうすれば、`vertical-align` によって下にできる隙間もなくなります。
+幅を広げる指定が要るのは、`display: block` にしても自然には広がらない `<img>` のような置換要素や、`<textarea>` や `<button>` のようなフォーム部品です。行方向のフレックスアイテムと、左右の位置を片方しか決めていない絶対配置の要素も、中身の幅に縮みます。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` は問題ありません。`inline-block` の要素を幅いっぱいに広げたいなら、`width: 100%` を足す前に、外側の表示形式を `block` に変えられないかを検討します。そうすれば、`vertical-align` によって下にできる隙間もなくなります。
+
+幅を広げる指定が本当に要る場面では、`100%` ではなく `stretch` を使います。`stretch` は、ブロックレベルの要素の `auto` と同じように、`margin` を含めた箱を利用できる幅にちょうど収めます。`100%` と違い、`margin` や `box-sizing: content-box` と組み合わせても親からはみ出しません。
+
+```css title="🙆‍♂ Recommended: 幅いっぱいに広げるなら stretch を使う"
+._input {
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
+}
+```
+
+`stretch` は比較的新しい値で、Chrome 138とSafari 27から使えます。それより前のバージョンでも、同じ働きの値を `-webkit-fill-available` という名前で使えます。Firefoxは2026年10月の時点で `stretch` に対応していませんが、`-webkit-fill-available` には対応しています。公開されている資料では、Firefoxの対応は `width` と `height` に限られていますが、2026年10月に最新版のFirefoxで確かめたところ、`inline-size` にも効きました。
+
+<Baseline id="stretch" />
+
+そのため、先に `-webkit-fill-available` を、後に `stretch` を書きます。`stretch` に対応したブラウザは後の宣言を使い、対応していないブラウザは理解できない後の宣言を捨てて、前の宣言を使います。Firefoxが以前に実装していた `-moz-available` は、いまのFirefoxが `-webkit-fill-available` を理解するので書きません。
+
+`stretch` と `100%` の結果が違うのは、子が `margin` を持つときと、`content-box` の要素を広げるときです。ただし、子の周りの余白は、子の `margin` ではなく、親の `padding` や `gap` で取ることを優先します。親が余白を持てば、子は `margin` を持たずに済みます。それでも、幅を広げる指定が要る要素は `stretch` で書いておきます。あとから子に `margin` が加わっても、はみ出さないからです。配置を親に任せる理由は、「[7-1 コンポーネントの境界を守る](/components/boundaries/)」で説明します。
 
 子要素を親の高さにそろえたいだけなら、親に `display: block grid` を指定すれば、`stretch` によって子要素が高さいっぱいに広がります。
 
@@ -155,6 +175,8 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 ```
 
 `revert` はサイトのCSSの指定を取り除いた値（ユーザーのスタイルがなければブラウザのデフォルトスタイル）に、`revert-layer` は1つ前のカスケードレイヤーの値に戻します。`unset` は継承するプロパティなら親の値を、しないプロパティなら初期値を使い、`initial` は常にCSSの初期値を使います。キーワードで書けば「戻した」という意図が読み取れ、どの段階の値に戻るのかも明確です。ただし、`display` の初期値は要素によらず `inline` なので、`div` に `display: initial` を指定するとインライン要素になります。戻り先の違いは「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明します。
+
+その文脈でブラウザが無視するプロパティも、デフォルト値の指定し直しと同じく消します。たとえば、`vertical-align` はインラインレベルの要素とテーブルのセルにしか効かないので、ブロックレベルの要素に付けても何も起きません。フレックスアイテムやグリッドアイテムに付けた `float` も、同じく無視されます。こうした宣言は、ほかの人が読んだときに「何かのために必要なのだろう」と残され続けます。レイアウトの方法を変えたときに残りやすいので、表示形式を変えたら、効かなくなった宣言がないかを確かめます。
 
 文字の色やフォント、行の高さのように `:root` や `body` で決めた値も、コンポーネントで指定し直さずに継承させます。指定し直すのは、そのコンポーネントで本当に変えたいときだけです。
 
@@ -200,6 +222,10 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 - [CSS設計において特に大切にしている思想をまとめてみた](https://zenn.dev/tak_dcxi/articles/65629b78ee3bf7f82c4a)（Zenn、2020年10月。本書と一部の方針が異なります）
 - [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月）
 - [細かすぎるけど伝わってほしい私的BEMプラクティス30（ぐらい）](https://necomesi.jp/blog/tsmd/posts/152)（necomesi、共通化の粒度と、重複を許容する考え方）
+- [宣言ブロックのCSS設計](https://kojika17.com/2017/07/css-architecture.html)（kojika17、2017年7月）
+- [脳内フィルターで見るCSSレイアウト](https://kojika17.com/2022/11/world-of-css.html)（kojika17、2022年11月。`display: block` の要素が親の幅に広がる仕組み）
+- [width:100%の代わりにwidth:stretchを使う](https://bcrikko.github.io/til/posts/2025-06-25/width-stretch/)（bcrikko、2025年6月）
+- [ECSS — Simple Rules for efficient CSS](https://ecss.info/en/)（Efficient CSS。Authoring Rulesの、ブラウザが無視するプロパティを消すルール）
 - [ショートハンドプロパティ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Shorthand_properties)
 - [revert - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert)
 - [revert-layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/revert-layer)

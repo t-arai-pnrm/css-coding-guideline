@@ -67,6 +67,15 @@
   page: principles/maintainability
   since: 0.1.0
 
+- id: stretch-over-width-100
+  level: 推奨
+  rule: '利用できる幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`inline-size: -webkit-fill-available` と `inline-size: stretch` をこの順に書く。'
+  reason: '`100%` は `margin` を含めずに包含ブロックの幅をそのまま当てはめるので、`margin` や `box-sizing: content-box` と組み合わさると親からはみ出すためです。`stretch` は `margin` を含めた箱を包含ブロックの幅に収めます。'
+  note: 'フォーム部品、行方向のフレックスアイテム、左右の位置を片方しか決めていない絶対配置の要素などが対象です。揃えを変えていないグリッドアイテムは、指定しなくても広がります。子の周りの余白は、子の `margin` ではなく親の `padding` や `gap` で取ることを優先します（ルール `parent-owns-child-placement`）。`-moz-available` は書きません。'
+  aiProne: true
+  page: principles/maintainability
+  since: 0.11.0
+
 - id: stretch-over-height-100
   level: 推奨
   rule: '子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。'
@@ -79,7 +88,7 @@
   level: 非推奨
   rule: CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。
   reason: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
-  note: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「2-1 カスケード・詳細度・継承」のルールに従います。
+  note: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「2-1 カスケード・詳細度・継承」のルールに従います。ブロックレベルの要素に付けた `vertical-align` や、フレックスアイテムに付けた `float` のように、その文脈でブラウザが無視するプロパティも消します。
   aiProne: true
   page: principles/maintainability
   since: 0.1.0

@@ -17,7 +17,7 @@
     --1rem: 1rem;
 
     /* 単位を外した画面幅。文字サイズを大きくしているユーザーには、狭い画面として扱う */
-    --window-width: calc(tan(atan2(var(--100svi), 1px)) * min(1, 16 / tan(atan2(var(--1rem), 1px))));
+    --window-width: calc(var(--100svi) / 1px * min(1, 16px / var(--1rem)));
     --screen: --compact;
     --zoom-scale: calc(var(--window-width) / 375);
     --px: calc(1px * var(--zoom-scale));
