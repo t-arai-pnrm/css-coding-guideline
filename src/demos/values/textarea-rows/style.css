@@ -11,23 +11,27 @@
     }
 
     ._textarea {
-      --_max-rows: 10;
-      --_padding: 0.5em;
+      --_max-rows: 10lh;
 
-      inline-size: 100%;
+      /* content-box に戻し、高さを行数だけで書けるようにする */
+      box-sizing: unset;
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
 
       /* 型付きの attr() に未対応の環境で使う、3行分の高さ */
-      min-block-size: calc(3 * 1lh + var(--_padding) * 2);
-      max-block-size: calc(var(--_max-rows) * 1lh + var(--_padding) * 2);
-      padding: var(--_padding);
-      field-sizing: content;
+      min-block-size: 3lh;
+      padding: 1em;
+      font-size: max(16px, 1rem);
 
       @supports (min-block-size: calc(attr(rows type(<number>), 3) * 1lh)) {
-        min-block-size: calc(attr(rows type(<number>), 3) * 1lh + var(--_padding) * 2);
+        min-block-size: calc(attr(rows type(<number>), 3) * 1lh);
       }
 
+      /* 自動で伸び縮みする環境でだけ、最大の高さを付けて手動のリサイズを止める */
       @supports (field-sizing: content) {
-        resize: none;
+        max-block-size: var(--_max-rows);
+        resize: unset;
+        field-sizing: content;
       }
     }
 
