@@ -1,11 +1,11 @@
 ---
 title: "付録D レビューのチェックリスト"
-description: "CSSをレビューするときの確認項目を、14-2で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
+description: "CSSをレビューするときの確認項目を、15-2で定めた確認の順番に並べたチェックリストです。各項目には関係するルールのIDを添え、指摘の書き方（MUST・IMO・Q）と、AIが生成したコードで重点的に見る項目もまとめています。"
 sidebar:
   order: 4
 ---
 
-この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[14-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
+この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[15-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
 
 各項目には、関係するルールのIDを添えています。指摘するときは、IDを引用すると、理由と詳しい説明をすぐに示せます。項目に当てはまらない記述でも、意図が読み取れないものは誤りと決めつけずに `Q` で質問します。反対に、プロジェクトで合意していない規約を求める指摘は `IMO` にとどめます。
 
@@ -69,7 +69,7 @@ sidebar:
 
 - [ ] トークンとして定義されている値を、数値や色で直接書いていないか（[`use-defined-tokens`](/components/design-tokens/#rule-use-defined-tokens)）
 - [ ] z-indexを数値ではなくトークンで指定しているか（[`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)）
-- [ ] トランジションの再生時間とイージングに、トークンを使っているか（[`transition-longhand-with-tokens`](/interaction/motion/#rule-transition-longhand-with-tokens)）
+- [ ] トランジションの再生時間とイージングに、トークンを使っているか（[`transition-longhand-with-tokens`](/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens)）
 - [ ] 新しいトークンが `--<分類>--<名前>` の形になっているか（[`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first)）
 - [ ] 1回しか使わない値や、特定のコンポーネント専用の値をトークンにしていないか（[`no-single-use-token`](/components/design-tokens/#rule-no-single-use-token)）
 - [ ] 派生させた色のために、トークンやRGBの値を別に用意していないか（[`derive-colors-from-base`](/color-media/relative-color/#rule-derive-colors-from-base)）
@@ -169,9 +169,15 @@ sidebar:
 
 - [ ] ホバーを `@media (any-hover)` の中に書き、`:focus-visible` にも同じ見た目を指定しているか（[`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover)、[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
 - [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
-- [ ] トランジションとアニメーションを `@media (prefers-reduced-motion: no-preference)` の中で指定しているか。動きそのものが情報を伝えるスピナーと、ポップオーバーやダイアログの出現に使う、位置や大きさを変えないフェードは、条件の外にあっても違反ではない（[`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference)）
-- [ ] 出ていく動きに `ease-in` 系、現れる動きに `ease-out` 系を使っているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして、動きが減ることを確かめたか（[`ease-in-for-exit`](/interaction/motion/#rule-ease-in-for-exit)）
-- [ ] `transition: all` を使っていないか（[`no-transition-all`](/interaction/motion/#rule-no-transition-all)）
+- [ ] 動きに目的があり、高い頻度で触るUIに装飾的な動きを足していないか（[`motion-needs-purpose`](/motion/purpose/#rule-motion-needs-purpose)）
+- [ ] 装飾的な動きのうちフェード以外を `@media (prefers-reduced-motion: no-preference)` の中で指定し、大きな変動を動きを減らす設定で簡素化しているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして確かめたか（[`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)）
+- [ ] 機能的な動きの再生時間が300ms以下（大きなUIでも500ms以下）か。イージングは標準のキーワードではなくトークンで、現れる動きと出ていく動きは `ease-out` 系、画面の上にあるものの移動は `ease-in-out` 系か（[`transition-longhand-with-tokens`](/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens)）
+- [ ] 拡大して現れる動きを `scale: 0` から始めず、`transform-origin` をトリガーのある側に向けているか（[`scale-in-from-near-one`](/motion/easing-and-duration/#rule-scale-in-from-near-one)）
+- [ ] キーボードのフォーカスの移動に動きを付けていないか（[`no-motion-on-focus-visible`](/interaction/states-and-focus/#rule-no-motion-on-focus-visible)）
+- [ ] 途中で取り消される動きをトランジションで書き、続けて押されるUIの動きを短くするか省いているか（[`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition)）
+- [ ] レイアウトの変わるプロパティを動かしていないか。`will-change` をCSSに書いたままの状態にしていないか（[`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)、[`will-change-temporarily`](/motion/performance/#rule-will-change-temporarily)）
+- [ ] `@keyframes` の名前が `--` で始まり、中間のフレームを持つものをコンポーネントのCSSに置いているか。一度だけ再生する演出で、`@keyframes` の外に `opacity: 0` などを重ねて書いていないか（[`keyframes-local-naming`](/motion/transitions-and-keyframes/#rule-keyframes-local-naming)、[`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)）
+- [ ] `transition: all` を使っていないか（[`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)）
 - [ ] 開閉するUIを、`<dialog>`、`popover` 属性、`<details>` のようなHTMLの機能で作っているか（[`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)）
 - [ ] リンクや入力エラーのような情報を、色の違いだけで伝えていないか（[`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)、[`grayscale-check`](/color-media/forced-colors/#rule-grayscale-check)）
 - [ ] 文字と背景のコントラスト比が、WCAG 2.1のAAを満たしているか（[`text-contrast-aa`](/color-media/forced-colors/#rule-text-contrast-aa)）

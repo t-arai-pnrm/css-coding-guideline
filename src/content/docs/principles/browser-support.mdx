@@ -153,24 +153,29 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 
 ## `scripting` メディア特性でJavaScriptのない環境に備える
 
-JavaScriptで表示を切り替える前提のスタイルは、`@media (scripting: enabled)` の中に書きます。典型的なのが、画面に入ったらふわっと表示するアニメーションです。表示する前の状態として要素を透明にしておき、画面に入ったらJavaScriptが元に戻します。
+JavaScriptで表示を切り替える前提のスタイルは、`@media (scripting: enabled)` の中に書きます。典型的なのが、画面に入ったらふわっと表示するアニメーションです。表示する前の状態で要素を待たせておき、画面に入ったらJavaScriptが再生を始めます。
 
-```css title="🙆‍♂ Recommended: JavaScriptが使える環境でだけ、表示する前の状態にする"
-._card {
-  @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-    transition-duration: 0.6s;
-    transition-property: opacity, translate;
+```css title="🙆‍♂ Recommended: JavaScriptが使える環境でだけ、表示する前の状態で待たせる"
+@scope (.scoped.feature-list) to (.scoped) {
+  li {
+    /* 監視を始めた JavaScript がルートに付ける属性があるときだけ待たせる */
+    &:is(:scope[data-motion-mode="motion"] *) {
+      @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+        animation-name: --fade-in, --translate-from;
+        animation-duration: var(--duration--reveal);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+      }
+    }
 
-    /* 初期化に成功した JavaScript が付ける属性でだけ隠す */
-    &[data-reveal="pending"] {
-      opacity: 0;
-      translate: 0 40px;
+    &[data-revealed]:is(:scope[data-motion-mode="motion"] *) {
+      animation-play-state: initial;
     }
   }
 }
 ```
 
-この条件がないと、JavaScriptが無効な環境では、透明を元に戻す処理が動かず、要素がいつまでも透明なままになります。ただし、`scripting: enabled` はJavaScriptが有効なことしか表しません。スクリプトの読み込みに失敗したり、実行の途中でエラーが起きたりしても、条件は当てはまります。そこで、隠す条件には、JavaScriptが初期化に成功した時点で付ける属性（ここでは `data-reveal="pending"`）も加えます。画面に入ったら、JavaScriptがこの属性を外して表示します。属性が付く前に処理が止まれば、要素は最初から表示されたままです。動きを減らす設定との組み合わせは、「[13-2 モーションを実装する](/interaction/motion/)」で説明します。
+この条件がないと、JavaScriptが無効な環境では再生を始める処理が動かず、要素がいつまでも透明なままになります。ただし、`scripting: enabled` はJavaScriptが有効なことしか表しません。スクリプトの読み込みに失敗したり、実行の途中でエラーが起きたりしても、条件は当てはまります。そこで、待たせる条件には、JavaScriptが初期化に成功した時点で付ける属性（ここでは `data-motion-mode="motion"`）も加えます。画面に入ったら、JavaScriptが `data-revealed` を付けて再生します。属性が付く前に処理が止まれば、要素は最初から表示されたままです。待機中の見た目を `@keyframes` に任せる書き方と、動きを減らす設定との組み合わせは、「[14-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で説明します。
 
 <Baseline id="scripting" name="scripting メディア特性" />
 

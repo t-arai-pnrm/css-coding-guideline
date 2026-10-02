@@ -1,0 +1,248 @@
+---
+title: "14-7 動きの負荷を抑える"
+description: "動かすプロパティは、合成だけで処理できるopacity、translate、scale、rotateを優先し、レイアウトが変わるプロパティはほかに方法がない場合に限ります。will-changeはCSSに書いたままにせず、どうしても必要なときだけJavaScriptで付けて、動きが終わったら外します。"
+sidebar:
+  order: 7
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+動きの負荷は、変えたプロパティのせいでブラウザがレイアウト、ペイント、合成のどこから処理をやり直すかで決まります。動かすプロパティは、合成だけで処理できる `opacity`、`translate`、`scale`、`rotate` を優先します。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、ほかに方法がない場合（アコーディオンの高さなど）に限ります。
+
+`will-change` はCSSへ書いたまま残さず、どうしても必要なときだけ、動きの直前からJavaScriptで付けて、終わったら外します。`backdrop-filter` の大きなぼかしや、継承するカスタムプロパティの毎フレームの更新のように、指定の仕方によって負荷が大きく増えるものもあります。`contain: content` のような負荷を抑える指定にも副作用があるので、効果をDevToolsで確かめてから使います。
+
+## 同じ見た目の動きでも負荷が違う理由
+
+ブラウザは、スタイルが変わると、レイアウト、ペイント、合成の順に処理をやり直します。レイアウトは要素の位置と大きさを計算する処理、ペイントは文字や背景や影を画素に描く処理、合成は描いた層を重ねて画面に出す処理です。どこからやり直すかは、変えたプロパティで決まります。`inline-size` を変えると、その要素と周りの要素の位置を計算し直し、描き直し、重ね直します。`background-color` はペイントから、`opacity` と `translate` は、条件が合えば合成だけで済みます。
+
+処理を担うスレッドも違います。レイアウトとペイントは、JavaScriptと同じメインスレッドで行われます。合成はコンポジタのスレッドで行われるので、合成だけで済む動きは、メインスレッドがJavaScriptの処理で埋まっているときにも止まりにくくなります。たとえば、ページの読み込み中にスクリプトの実行が長引いても、`rotate` で回しているスピナーは動き続けることが多く、`inline-size` で伸びるバーは止まります。
+
+動きを滑らかに見せるには、画面を書き換えるたびに、この処理を時間内に終える必要があります。1秒に60回書き換える画面では、1フレームに使える時間は約16ミリ秒で、120Hzの画面ではその半分です。レイアウトからやり直す動きは、要素の数が多いページや性能の低いスマートフォンでこの時間を超え、フレームが落ちてかくつきます。開発に使うパソコンでは滑らかに見えても、利用者の端末で同じとは限りません。そのため、動かすプロパティは見た目ではなく、起きる処理で選びます。
+
+## 動かすプロパティの優先度
+
+私は、動かす方法を次の表の優先度で選んでいます。上の段ほど負荷が小さく、下の段ほど、使う前に別の方法がないかを検討します。
+
+| 優先度 | 方法 | 起きる処理 |
+| --- | --- | --- |
+| 高 | `opacity`、`translate`、`scale`、`rotate`、一部の `filter`、スクロール駆動アニメーション | 合成だけ |
+| 中 | JavaScriptから変形や不透明度を更新する方法、FLIP | メインスレッドで値を計算するが、レイアウトとペイントは最小限 |
+| 低 | `background-color`、`box-shadow` など、ペイントが起きるプロパティ | ペイントと合成。負荷は描く面積による |
+| 避ける | `inline-size`、`block-size`、`padding`、`inset` など、レイアウトが起きるプロパティ | レイアウトから全部 |
+| リスク大 | 大きな `blur()` や `backdrop-filter`、巨大な合成レイヤー、グローバルなカスタムプロパティの毎フレームの更新、`scrollTop` を毎フレーム読む実装 | 条件しだいで大きく重くなる |
+
+優先度が高いのは、合成だけで動くものです。スクロール駆動アニメーションも、動かすのが `opacity` や変形なら、スクロールの位置に合わせてコンポジタのスレッドで処理できます。`filter` を「一部」としたのは、合成だけで処理できるかが、ブラウザと値によって変わるからです。`clip-path` は、本書ではペイントが起きるものとして扱います。切り抜きを動かすと、多くの環境でペイントが毎フレーム起き、面積が大きいとかくつきます。
+
+中の段は、JavaScriptで値を計算し、変形や不透明度として反映する方法です。値の計算はメインスレッドで行われますが、レイアウトとペイントは起きません。FLIPは、変化の前後で要素の位置を測り、その差を `translate` と `scale` で打ち消してから、打ち消しを解いて動かす方法です。位置を測るときに一度だけレイアウトが起きますが、動いている間は変形しか変わりません。
+
+ペイントが起きるプロパティは、負荷が描く面積で決まります。ボタンのホバーで背景色を変えるような、小さい要素の短い変化なら問題になりません。避けたいのは、大きくぼかした `box-shadow` をループするアニメーションで動かし続けるような使い方です。ぼかしを含む影は描くのに時間がかかり、動いている間は描き直しが続きます。この場合は、影を擬似要素に描いておき、その擬似要素の `opacity` を動かすなど、合成だけで表せないかを考えます。
+
+レイアウトが起きるプロパティは避けますが、アコーディオンの高さのように、ほかに方法のない場合は例外です。開閉の動きは「[14-5 出現と退場](/motion/entry-and-exit/)」で扱います。`scrollTop` を毎フレーム読む実装を避ける方法は「[14-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で扱います。
+
+## 位置を変形で動かす
+
+下へスクロールしたとき、固定ヘッダーを隠す動きで比べます。次の例は、ヘッダーの `inset-block-start` を動かして画面の外に出しています。見た目は意図どおりに動きますが、`inset-block-start` を変えるとレイアウトが起きるので、毎フレーム位置の計算と描き直しが行われます。隠す量にヘッダーの高さを書く必要もあり、高さが変わるたびに値を直さなければなりません。
+
+```css title="🙅‍♂ Not Recommended: inset-block-start を動かして隠す"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: sticky;
+    inset-block-start: 0;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--base);
+      transition-property: inset-block-start;
+      transition-timing-function: var(--ease--in-out-quint);
+    }
+
+    &[data-hidden="true"] {
+      inset-block-start: -4rem;
+    }
+  }
+}
+```
+
+同じ動きは `translate` で作れます。`translate` の割合は要素自身の大きさが基準なので、`-100%` と書けば、ヘッダーの高さが変わっても全体を隠せます。トランジションの間は変形しか変わらないので、合成だけで動きます。すでに画面にあるものを動かすので、イージングはease-in-out系にしています（「[14-3 イージングと再生時間](/motion/easing-and-duration/)」）。
+
+```css title="🙆‍♂ Recommended: translate を動かして隠す"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: sticky;
+    inset-block-start: 0;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--base);
+      transition-property: translate;
+      transition-timing-function: var(--ease--in-out-quint);
+    }
+
+    &[data-hidden="true"] {
+      translate: 0 -100%;
+    }
+  }
+}
+```
+
+変形は、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティで書きます。変形ごとに値を変えられ、トランジションの対象も `transition-property: translate` のように動かす変形だけに絞れるからです。理由の詳細は「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。合成で処理されるのは、`transform` でも個別のプロパティでも同じです。
+
+<Baseline id="individual-transforms" name="個別の変形プロパティ" />
+
+ただし、次の場合は `transform` を使ってかまいません。個別のプロパティは常に移動、回転、拡大・縮小の順に適用されるので、「回転してから、回転した向きに移動する」ように順番を変えたい場合です。`skewX()` のように個別のプロパティがない変形と、X軸とY軸の回転を重ねるような3Dの複合指定も、`transform` で書きます。`rotate` プロパティは1つの軸の回転しか表せないので、2つの軸の回転を重ねるには `transform` に関数を並べるしかありません。
+
+```css title="🙆‍♂ Recommended: 2つの軸の回転を重ねるときは transform で書く"
+@scope (.scoped.flip-card) to (.scoped) {
+  :scope {
+    transform: perspective(800px) rotateX(8deg) rotateY(-16deg);
+  }
+}
+```
+
+## `filter` と `backdrop-filter` のコスト
+
+`filter` は、ハードウェアで高速化される場合があっても、負荷が低いわけではありません。`blur()` は、ぼかしの半径が大きいほど、1つの画素を求めるために参照する周りの画素が増えます。`filter` を動かすと、この計算が毎フレーム行われます。半径の小さい `blur()` で短く動かす程度なら許容できますが、ぼかしの半径そのものを大きく変化させるアニメーションは避けます。
+
+`backdrop-filter` は、さらに負荷が大きくなりがちです。要素の背後に描かれているものを毎回取り込んでからぼかすので、背面の面積全体を描き直すことになります。背後の内容がスクロールで動くだけでも、ぼかしの計算はやり直されます。大きな要素やモーダルの背景で画面全体をぼかすと、性能の低い端末ではスクロールが滑らかでなくなることもあります。
+
+そのため、次の条件が重なる使い方を避けます。ぼかしの半径が大きい、ぼかす面積が広い、ぼかしを掛けた要素そのものが動いている、複数のエフェクトが重なっている、の4つです。たとえば、すりガラスのパネルをスライドさせながら表示したい場合は、ぼかしを掛けたまま動かさず、背景を不透明な色にして動かし、止まってからぼかしに切り替える方法があります。{/* 要確認: 出典なし（止まってからぼかしに切り替える方法） */}すりガラスの背景の作り方と、ぼかしに混ざる範囲の注意点は「[12-1 画像と装飾](/decoration/images-and-decoration/)」で説明しています。
+
+## カスタムプロパティを毎フレーム更新するとき
+
+ポインターに追従する光の効果のように、JavaScriptからカスタムプロパティを毎フレーム書き換える実装があります。このとき、値を `:root` のようなグローバルな場所に書き込むと、ページ全体のスタイルが毎回計算し直されます。登録していないカスタムプロパティは継承するので、ルートの値が変わると、その値を受け継ぐすべての子孫の要素が、計算のやり直しの対象になるからです。
+
+```js title="🙅‍♂ Not Recommended: ポインターの位置をルートのカスタムプロパティに書き込む"
+/* 🙅‍♂ Not Recommended */
+document.addEventListener('pointermove', (event) => {
+  document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
+  document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
+});
+```
+
+値は、それを使う要素だけに書き込みます。さらに、`@property` で `inherits: false` を指定して登録し、子孫に値を受け継がせないようにします。こうすると、値が変わっても計算し直すのはその要素だけです。名前は、`style` 属性で外から渡す値なので、公開プロパティの形にしています。
+
+```css title="🙆‍♂ Recommended: ポインターの位置を、継承しないカスタムプロパティで受ける"
+@property --spotlight--x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --spotlight--y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@scope (.scoped.spotlight) to (.scoped) {
+  :scope {
+    background-image: radial-gradient(circle 160px at var(--spotlight--x) var(--spotlight--y), var(--background--muted), transparent);
+  }
+}
+```
+
+```js title="ポインターの位置を、使う要素だけに書き込む JavaScript の例"
+const spotlight = document.querySelector('.scoped.spotlight');
+let rect = spotlight.getBoundingClientRect();
+
+spotlight.addEventListener('pointerenter', () => {
+  rect = spotlight.getBoundingClientRect();
+});
+
+spotlight.addEventListener('pointermove', (event) => {
+  spotlight.style.setProperty('--spotlight--x', `${event.clientX - rect.left}px`);
+  spotlight.style.setProperty('--spotlight--y', `${event.clientY - rect.top}px`);
+});
+```
+
+要素の位置は `pointerenter` のときに一度だけ測り、`pointermove` の中では測りません。スタイルを書き換えた直後に位置を測ると、そのたびにレイアウトが強制的に行われるからです。なお、この効果は背景のグラデーションを描き直すので、ペイントは毎回起きます。面積の大きい要素に使うと負荷が増えるので、カードのような小さい要素に限ります。
+
+動かすカスタムプロパティは `inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介しません。この2点は、ルール [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit) で定めています。理由は「[7-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
+
+<Baseline id="registered-custom-properties" name="@property" />
+
+## `will-change` は動いている間だけ付ける
+
+`will-change` は、これから変わるプロパティをブラウザに予告する指定です。`will-change: translate` と書くと、ブラウザは動き出す前にその要素を合成レイヤーに分けて準備します。動き出す瞬間にレイヤーを作る処理が間に合わず、最初の数フレームがかくつく場合に、この準備が役に立ちます。
+
+しかし、CSSへ書いたまま残すと逆効果になります。合成レイヤーは、要素ごとに描いた画像をGPUのメモリで保持するので、動いていない間もメモリを使い続けます。カードの一覧のように多くの要素に指定すると、不要なレイヤーが大量に作られ、かえって描画が遅くなったり、スマートフォンでメモリが不足したりします。また、`will-change: translate` のように書いただけで、その要素は固定配置の子孫の包含ブロックになり、スタッキングコンテキストも作ります（「[8-7 positionの基礎](/layout/positioning/)」）。
+
+そのため、`will-change` は原則として使いません。個別の変形や `opacity` のトランジションは、指定しなくても動き出すときに合成レイヤーが作られます。かくつきをDevToolsで確かめ、どうしても必要な場合だけ、動きの直前にJavaScriptで付け、終わったら外します。次の例は、パネルを開閉する直前に `will-change` を付け、トランジションが終わったら外しています。
+
+```js title="動きの直前に will-change を付け、終わったら外す JavaScript の例"
+const panel = document.querySelector('.scoped.side-panel');
+const button = document.querySelector('[aria-controls="side-panel"]');
+const motionQuery = window.matchMedia('(prefers-reduced-motion: no-preference)');
+
+const removeWillChange = (event) => {
+  if (event.target !== panel || event.propertyName !== 'translate') return;
+  panel.style.removeProperty('will-change');
+};
+
+panel.addEventListener('transitionend', removeWillChange);
+panel.addEventListener('transitioncancel', removeWillChange);
+
+button.addEventListener('click', () => {
+  const isOpen = panel.dataset.open === 'true';
+  const toggle = () => {
+    panel.dataset.open = String(!isOpen);
+    button.setAttribute('aria-expanded', String(!isOpen));
+  };
+
+  // トランジションが起きない設定では、will-change を付けない
+  if (!motionQuery.matches) {
+    toggle();
+    return;
+  }
+
+  panel.style.setProperty('will-change', 'translate');
+  // レイヤーが用意されたフレームの次で、動きを始める
+  requestAnimationFrame(() => requestAnimationFrame(toggle));
+});
+```
+
+外す処理は、`transitionend` だけでなく `transitioncancel` にも登録します。途中で逆向きに操作されるなどしてトランジションが中断されると、`transitionend` は発生しないからです。動きを減らす設定でトランジションを指定していない場合も、どちらのイベントも発生しないので、最初から `will-change` を付けません。`@keyframes` のアニメーションなら、`animationend` と `animationcancel` で外します。
+
+<Baseline id="will-change" />
+
+## `contain: content` で影響の範囲を区切る
+
+`contain` は、要素の中で起きた変化が外に影響しないことをブラウザに約束する指定です。`contain: content` は、レイアウト、ペイント、スタイルの3つの封じ込めをまとめた値です。中身が頻繁に変わる独立した領域へ指定すると、内側でレイアウトやペイントが起きても、ブラウザは要素の外まで計算し直さずに済みます。
+
+```css title="🙆‍♂ Recommended: 中身が頻繁に変わる独立した領域に contain: content を指定する"
+@scope (.scoped.live-score) to (.scoped) {
+  :scope {
+    contain: content;
+  }
+}
+```
+
+ただし、次の副作用があるので、機械的に指定しません。1つ目に、中にある `position: fixed` の要素は、トップレイヤーに表示されるものを除き、ビューポートではなくこの要素を基準にするので、`absolute` のように振る舞います（「[8-7 positionの基礎](/layout/positioning/)」）。はみ出しの対策に `contain: paint` を使わない理由も、これと同じです（「[8-10 変化に強いレイアウト](/layout/defensive/)」）。2つ目に、ペイントの封じ込めによって、要素からはみ出した影やポップアップが切り取られます。3つ目に、スタッキングコンテキストが作られるので、中の要素の `z-index` は外の要素と比べられなくなります（「[8-11 重なりと全幅](/layout/layering/)」）。
+
+また、合成だけで動く動きには、`contain` を指定しても効果がありません。封じ込めが減らすのはレイアウトとペイントの範囲で、合成だけの動きはもともとその処理を起こさないからです。指定するのは、DevToolsでレイアウトやペイントが要素の外まで広がっていることを確かめた場合に限ります。
+
+<Baseline id="contain" />
+
+## 負荷をDevToolsで確かめる
+
+動きの負荷は、コードを読むだけでは判断しきれません。同じプロパティでも、ブラウザや値によって合成で処理されるかどうかが変わるからです。ここではChromeのDevToolsの機能を紹介します（2026年10月確認）。
+
+Performanceパネルでは、動きを再生している間の処理を記録できます。記録した結果には、フレームごとにかかった時間と、Layout、Paint、Compositeといった処理が時系列で並ぶので、どの処理がフレームの時間を超えているかが分かります。CPUの速度を落とす設定を使うと、性能の低いスマートフォンに近い条件で確かめられます。
+
+Renderingパネルでは、描き直しと合成レイヤーを画面の上で確かめられます。Paint flashingを有効にすると、描き直された領域が緑色で示されます。合成だけで動いているはずの要素が動くたび緑色になるなら、どこかでペイントが起きています。Layer bordersを有効にすると、合成レイヤーの境界が枠で示されるので、`will-change` を外し忘れたレイヤーや、意図しない巨大なレイヤーを見つけられます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)
+- [Rendering performance | web.dev](https://web.dev/articles/rendering-performance)
+- [will-change - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/will-change)
+- [contain - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/contain)
+- [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)
+- [Analyze runtime performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance)
+- [Discover issues with rendering performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/rendering/performance)
+- [スクロール連動アニメーションの実装例](https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
+- [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）

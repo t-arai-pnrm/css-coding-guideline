@@ -1,0 +1,120 @@
+@layer tokens {
+  :root {
+    --duration--fast: 200ms;
+    --duration--base: 240ms;
+    --duration--slow: 300ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@layer components {
+  @scope (.scoped.scale-in-demo) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      padding-block: 64px;
+    }
+
+    :scope > button,
+    ._dialog button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+
+    [popover] {
+      /* 動きを減らす設定のときは拡大と縮小をやめ、フェードだけを残す */
+      --_scale-from: 1;
+      --_duration: var(--duration--base);
+
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px oklch(0% 0 0deg / 16%);
+      transition-duration: var(--_duration);
+      transition-property: opacity, scale, display, overlay;
+
+      /* 現れるときも消えるときも、減速しながら動かす */
+      transition-timing-function: var(--ease--out-quint);
+      transition-behavior: allow-discrete;
+    }
+
+    /* 表示されたときの、トランジションの開始地点 */
+    [popover]:popover-open {
+      @starting-style {
+        opacity: 0;
+        scale: var(--_scale-from);
+      }
+    }
+
+    /* 閉じるときの、トランジションの終了地点 */
+    [popover]:not(:popover-open) {
+      opacity: 0;
+      scale: var(--_scale-from);
+    }
+
+    /* ボタンの上に出し、下端の中央（ボタンのある側）から広げる */
+    ._tooltip {
+      --_duration: var(--duration--fast);
+
+      margin: auto;
+      padding-block: 4px;
+      padding-inline: 8px;
+      font-size: calc(14 / 16 * 1rem);
+      transform-origin: 50% 100%;
+
+      @supports (position-area: block-start) {
+        position-area: block-start;
+        margin-block: 8px;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        --_scale-from: 0.96;
+      }
+    }
+
+    /* ボタンの下に出し、左上の角（ボタンのある側）から広げる */
+    ._menu {
+      margin: auto;
+      padding-block: 4px;
+      transform-origin: 0% 0%;
+
+      @supports (position-area: block-end span-inline-end) {
+        position-area: block-end span-inline-end;
+        margin-block: 8px;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        --_scale-from: 0.94;
+      }
+
+      & button {
+        inline-size: 100%;
+        padding-block: 8px;
+        padding-inline: 16px;
+        border-color: transparent;
+      }
+    }
+
+    /* 画面の中央に出すので、起点も中央（デフォルトの transform-origin）のままにする */
+    ._dialog {
+      --_duration: var(--duration--slow);
+
+      display: block grid;
+      gap: 16px;
+      justify-items: end;
+      max-inline-size: calc(360 / 16 * 1rem);
+      margin: auto;
+      padding: 24px;
+
+      @media (prefers-reduced-motion: no-preference) {
+        --_scale-from: 0.9;
+      }
+
+      & p {
+        justify-self: stretch;
+      }
+    }
+  }
+}

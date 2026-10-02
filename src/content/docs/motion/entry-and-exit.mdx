@@ -1,0 +1,246 @@
+---
+title: "14-5 出現と退場"
+description: "display: noneから表示する要素の出現と退場は、@starting-styleとtransition-behavior: allow-discreteでCSSだけで動かします。退場を動かさないなら@keyframesのfromで足り、ツールチップは初回だけ表示を遅らせます。"
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import popoverHtml from '../../../demos/motion/popover-entry/index.html?raw';
+import popoverCss from '../../../demos/motion/popover-entry/style.css?raw';
+import detailsHtml from '../../../demos/motion/details-accordion/index.html?raw';
+import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
+
+`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。表示された瞬間の見た目を `@starting-style` で指定し、`display` と `overlay` をトランジションの対象に加えれば、ポップオーバーやダイアログの開閉の両方をCSSだけで動かせます。退場を動かす必要がなければ、`@keyframes` の `from` で出現だけを動かすほうが壊れにくくなります。
+
+`<details>` の開閉は、`::details-content` の高さと不透明度をトランジションで動かします。ツールチップは、初回の表示だけを300〜500ms遅らせ、続けて操作している間はすぐに表示します。
+
+## `display: none` の要素は現れる瞬間を動かせない
+
+`display: none` の要素には、ボックスがありません。表示に切り替わった瞬間、ブラウザは最終的なスタイルでボックスを作るので、トランジションの開始値になる「直前の見た目」が存在しません。`opacity` を0から1へ動かすつもりで書いても、要素は最初から `opacity: 1` で現れます。
+
+退場にも別の問題があります。`display` は途中の値を持たないプロパティなので、閉じた瞬間に `none` へ切り替わり、`opacity` を下げるトランジションが始まる前に要素が消えます。ポップオーバーやモーダルのダイアログはトップレイヤーに表示されますが、閉じた瞬間にトップレイヤーからも外れるので、消えていく途中の姿をほかの要素の上に残せません。
+
+これまでは、JavaScriptでクラスを付けるタイミングを調整していました。表示したあとに1フレーム待ってから「開いた」クラスを付け、閉じるときは `transitionend` イベントを待ってから `display: none` に戻す、といった方法です。開閉を素早く繰り返すと、クラスの状態とアニメーションがずれやすい方法でした。
+
+## `@starting-style` で表示された瞬間の見た目を決める
+
+`@starting-style` は、要素が表示された最初のフレームで使う、トランジションの開始値を指定する規則です。この値から通常のスタイルの値へトランジションが起きるので、出現を動かせます。`@starting-style` は、開いた状態のセレクタの中に書きます。
+
+退場は、`transition-behavior: allow-discrete` で動かします。この指定は、`display` のように途中の値がないプロパティもトランジションの対象にするものです。`transition-property` に `display` を加えると、閉じるときは `opacity` と `scale` の変化が終わるまで `display: none` への切り替えが待たされます。`overlay` も加えると、閉じる途中の要素がトップレイヤーに残ります。
+
+```css title="🙆‍♂ Recommended: 開いた瞬間の見た目を @starting-style で指定する"
+@scope (.scoped.notice) to (.scoped) {
+  :scope {
+    --_scale-from: 1;
+
+    transform-origin: 50% 100%;
+    transition-duration: var(--duration--base);
+    transition-property: opacity, scale, display, overlay;
+    transition-timing-function: var(--ease--out-quint);
+    transition-behavior: allow-discrete;
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_scale-from: 0.96;
+    }
+  }
+
+  :scope:popover-open {
+    @starting-style {
+      opacity: 0;
+      scale: var(--_scale-from);
+    }
+  }
+
+  :scope:not(:popover-open) {
+    opacity: 0;
+    scale: var(--_scale-from);
+  }
+}
+```
+
+閉じた状態（`:not(:popover-open)`）の値は、退場の終了地点になります。開いた状態の `@starting-style` の値は出現の開始地点なので、2つを同じ値にすると、現れるときと消えるときが同じ経路をたどります。イージングは、開閉のどちらも `--ease--out-quint` です。退場でも、操作の直後に大きく変化してから落ち着くほうが、操作への反応が速く見えます。
+
+拡大の起点は、0.95〜0.98の範囲にします。`scale: 0` から広がる動きは、何もない点から要素が生まれるように見えて不自然です。`transform-origin` はトリガーのある側に向けます。この例のパネルは画面の下端に固定して表示するので、下端を起点にしています。起点の値と向きの決め方は、「[14-3 イージングと再生時間](/motion/easing-and-duration/)」で説明しています。
+
+動きを減らす設定のときは、拡大の起点を1にして、フェードだけを残します。「[14-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の4段階のうちの「簡素化」です。ポップオーバーが一瞬で現れると何が起きたのか分かりにくいので、位置と大きさを変えないフェードは残します。次のデモで、ボタンを押して動きを確かめられます。
+
+<Demo title="@starting-style で出現と退場を動かし、動きを減らす設定ではフェードだけにする" html={popoverHtml} css={popoverCss} height="14rem" />
+
+<Baseline id="starting-style" name="@starting-style" />
+
+<Baseline id="display-animation" name="display と content-visibility のトランジション" />
+
+<Baseline id="overlay" />
+
+2026年10月の時点で、Firefoxは `display: none` へのトランジションに対応していません。開くときは動きますが、閉じるときは一瞬で消えます。閉じる機能は損なわれないので、プログレッシブ・エンハンスメントとして許容します。`overlay` に対応しているのはChrome系のブラウザだけなので、閉じる途中でほかの要素の下に潜り込まないように、`z-index: var(--z--top)` も指定しておきます（「[7-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+## ダイアログの開閉を動かす
+
+ダイアログも、ポップオーバーと同じ方法で動かします。`display` と `overlay` を `transition-behavior: allow-discrete` でトランジションの対象にし、開いたときの開始地点を `@starting-style` で指定します。背景の `::backdrop` にも同じ開始地点と終了地点を指定します。
+
+```css title="🙆‍♂ Recommended: ダイアログと背景をフェードさせる"
+@scope (.scoped.site-dialog) to (.scoped) {
+  :scope {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z--top);
+    transition-duration: var(--duration--slow);
+    transition-property: display, overlay, opacity;
+    transition-timing-function: var(--ease--out-quint);
+    transition-behavior: allow-discrete;
+
+    &::backdrop {
+      background-color: oklch(0% 0 0deg / 50%);
+      transition-duration: inherit;
+      transition-property: opacity;
+      transition-timing-function: inherit;
+    }
+  }
+
+  :scope:modal,
+  :scope:modal::backdrop {
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  :scope:not(:modal),
+  :scope:not(:modal)::backdrop {
+    opacity: 0;
+  }
+}
+```
+
+開くときと閉じるときのイージングが同じなので、基本のルールに1回だけ書けば足ります。トランジションは変化したあとの状態のルールの値で動くので、方向ごとに変える場合だけ、開いた状態のルールにも書きます。背景は、ダイアログの再生時間とイージングを `inherit` で受け取るので、ダイアログと同じ動きになります。
+
+この例では、ダイアログと背景を不透明度だけで変化させています。画面の大部分を覆うUIが一瞬で現れると、何が起きたのか分かりにくくなるからです。位置と大きさを変えないフェードなので、動きを減らす設定でも条件の外に置いて残します。大きなUIの出現を、動きを減らす設定でフェードだけにする「簡素化」を、最初からフェードだけで作った形です。拡大を加えるなら、ダイアログの起点は0.85〜0.92にし、ポップオーバーの例と同じく拡大の起点だけを `no-preference` の中で変えます。
+
+`position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合（2025年5月の時点で確認されていたもの）を避けるために明示しています。モーダルを開いている間の背面の固定は「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[7-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。ダイアログを開閉するHTMLは「[13-2 開閉するUI](/interaction/disclosure/)」にあります。
+
+## `<details>` の開閉を動かす
+
+`<details>` の開閉する部分は、`::details-content` 擬似要素で選べます。以前は、余白を付けたり高さを動かしたりするために、中身を `div` で包む必要がありました。`::details-content` を使えば包む要素は要らず、閉じる動きまでCSSだけで書けます。
+
+```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす"
+@scope (.scoped.faq-list) to (.scoped) {
+  details::details-content {
+    overflow: clip;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: content-visibility, block-size, opacity;
+      transition-timing-function: var(--ease--out-quint);
+      transition-behavior: allow-discrete;
+    }
+  }
+
+  details:not([open])::details-content {
+    block-size: 0;
+    opacity: 0;
+  }
+}
+```
+
+高さと不透明度は閉じているとき（`:not([open])`）だけ0にするので、開いているときに初期値の `auto` と `1` を書き直す必要はありません。閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。
+
+`block-size: 0` から `auto` への変化は、`interpolate-size: allow-keywords` があるときに限って補間されます。本書ではこの指定を、動きを減らす設定がないときだけ、ベーススタイルで `:root` に書いています（「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。開閉を示す矢印の回転も、回転は「大きな変動」にあたるので `no-preference` の中に書きます。次のデモでは、`name` 属性で同時に1つだけを開くようにしています。
+
+<Demo title="::details-content の高さと不透明度を動かし、name 属性で1つだけを開く" html={detailsHtml} css={detailsCss} />
+
+<Baseline id="details-content" name="::details-content" />
+
+<Baseline id="interpolate-size" />
+
+`interpolate-size` に対応しているのは、2026年10月の時点でChrome系のブラウザだけです。ほかのブラウザでは高さが一瞬で切り替わり、不透明度だけが変化しますが、開閉の機能は損なわれません。高さを動かすとレイアウトの計算が毎フレーム起きますが、アコーディオンでは開閉の位置関係を伝えるために許容します。レイアウトを起こす動きの負荷は、「[14-7 動きの負荷を抑える](/motion/performance/)」で説明しています。
+
+SafariとFirefoxでも高さを動かすよう求められた場合に限り、`::details-content` をグリッドにして、`grid-template-rows` を `0fr` と `1fr` で切り替えます。`fr` の値は、`interpolate-size` がなくても補間されます。この方法では、行の高さを0まで縮めるために、中身を1つの要素で包みます。
+
+```html title="中身を1つの要素で包む HTML の例"
+<details name="faq-list">
+  <summary>注文をキャンセルできますか？</summary>
+  <div class="_answer">
+    <p>発送の準備が始まる前であれば、マイページの注文履歴からキャンセルできます。</p>
+  </div>
+</details>
+```
+
+```css title="🙆‍♂ Recommended: grid-template-rows で高さを動かす"
+@scope (.scoped.faq-list) to (.scoped) {
+  details::details-content {
+    display: block grid;
+    grid-template-rows: 1fr;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: content-visibility, grid-template-rows, opacity;
+      transition-timing-function: var(--ease--out-quint);
+      transition-behavior: allow-discrete;
+    }
+  }
+
+  details:not([open])::details-content {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  ._answer {
+    overflow: clip;
+    min-block-size: 0;
+  }
+}
+```
+
+グリッドアイテムの最小の高さは、デフォルトでは中身の高さになるので、`._answer` の `min-block-size` を0にして、行の高さと一緒に縮めます。はみ出した中身は `overflow: clip` で切り取ります。Firefoxは、2026年10月の時点で `content-visibility` のトランジションにも対応していないので、閉じる動きは一瞬です。包む要素が増えるので、私はこの方法を、すべてのブラウザで高さを動かす必要があるときだけ使っています。
+
+## ツールチップの表示を遅らせる
+
+ツールチップは、出現の動きよりも、表示を始めるまでの時間が使い心地を左右します。ポインターが通り過ぎただけでツールチップが次々に現れると、意図しない表示が画面を覆います。そこで、初回の表示は300〜500ms遅らせ、ポインターが留まったときだけ表示します。
+
+一方で、ツールバーのボタンを順になぞるように、続けて操作している間（ウォームアップ）にも毎回待たせると、操作が遅く感じられます。1つ目のツールチップが表示されたあとは、0〜50msですぐに表示します。トリガーから離れたあとも300〜500msのクールダウンを設け、その間に別のトリガーに触れたら、遅延なしで表示を続けます。
+
+CSSで書けるのは、初回の遅延だけです。表示した状態のルールに `transition-delay` を書くと、表示するときだけ遅れ、非表示に戻るときは基本のルールの値ですぐに消えます。トランジションは変化したあとの状態のルールの値で動くからです。遅延は動きではないので、動きを減らす設定の条件の外に書きます。{/* 要確認: 出典なし */}
+
+ウォームアップとクールダウンは、JavaScriptが必要です。どのトリガーにも属さない「直前までツールチップを表示していたか」という状態を、時間とともに覚えておく必要があるからです。JavaScriptでタイマーを管理し、ウォームアップ中だけルートなどに属性を付けて、CSSではその属性があるときに `transition-delay` を0にします。
+
+ツールチップをホバーで表示するHTMLの仕組みには `interestfor` 属性がありますが、2026年10月の時点でChrome系のブラウザだけが対応しているので、本書では扱っていません（「[第3章 擬似クラスと擬似要素](/pseudo/)」）。そのため、この節では数値の目安だけを示し、デモは用意していません。
+
+## `@starting-style` とカスケード
+
+`@starting-style` の中の宣言は、特別に優先されるわけではありません。通常のカスケードでほかの規則と競い合い、同じ要素の同じプロパティに詳細度の高い規則やインラインスタイルが値を指定していると、そちらが勝って開始値になりません。開始値と最終的な値が同じになるので、トランジションは起きません。
+
+`@starting-style` そのものは詳細度を持たず、中の宣言は、囲んでいるセレクタの詳細度で比べられます。開いた状態のセレクタの中に書けば元の規則と同じ詳細度になり、後に書いた `@starting-style` がソース順で優先されます。元の規則から離して別のセレクタで書くと、そのセレクタの詳細度で比べられるので、より詳細度の高い規則に開始値を上書きされることがあります。
+
+開始値が効かないときに、`!important` や詳細度を上げるセレクタで解決しようとすると、ほかの状態のスタイルまで上書きしてしまいます。競合している規則を見つけ、`@starting-style` を元の規則の中に移すほうが確実です。詳細度の設計は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+
+出現だけを動かせば足りるなら、`@keyframes` の `from` を使うほうが壊れにくくなります。アニメーションの値は、通常の宣言よりカスケードで優先されるので、ほかの規則に開始値を上書きされません。退場も動かしたいとき、つまり `display: none` へ戻る動きまで扱うときに、`@starting-style` を使います。
+
+```css title="🙆‍♂ Recommended: 出現だけを @keyframes で動かす"
+@scope (.scoped.toast) to (.scoped) {
+  :scope {
+    animation-name: --fade-in;
+    animation-duration: var(--duration--base);
+    animation-timing-function: var(--ease--out-quint);
+    animation-fill-mode: both;
+  }
+}
+```
+
+この例の `--fade-in` は、ベーススタイルに置いたグローバルな `@keyframes` です（「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。位置と大きさを変えないフェードなので、動きを減らす設定の条件の外に書いています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [JavaScriptを書かない2025年のモーダルの実装方法](https://www.tak-dcxi.com/article/modal-implementation-in-2025/)（TAKLOG、2025年5月）
+- [CSSのみでdetails要素のアニメーションを実装する方法](https://www.tak-dcxi.com/article/css-only-details-animation-2025/)（TAKLOG、2025年5月）
+- [@starting-style - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@starting-style)
+- [transition-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/transition-behavior)
+- [overlay - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overlay)
+- [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)
+- [interpolate-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/interpolate-size)
+- [The Big Gotcha With @starting-style | Josh W. Comeau](https://www.joshwcomeau.com/css/starting-style/)（2025年）

@@ -34,12 +34,13 @@ export const PARTS = [
       { number: 10, dir: 'typography', title: 'タイポグラフィと和文組版' },
       { number: 11, dir: 'color-media', title: '色' },
       { number: 12, dir: 'decoration', title: '画像・装飾' },
-      { number: 13, dir: 'interaction', title: 'インタラクションとモーション' },
+      { number: 13, dir: 'interaction', title: 'インタラクション' },
+      { number: 14, dir: 'motion', title: 'モーション' },
     ],
   },
   {
     label: '第IV部 運用編',
-    chapters: [{ number: 14, dir: 'operations', title: '実務での運用' }],
+    chapters: [{ number: 15, dir: 'operations', title: '実務での運用' }],
   },
 ];
 

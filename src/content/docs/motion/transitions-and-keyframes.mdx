@@ -1,0 +1,278 @@
+---
+title: "14-4 トランジションと@keyframes"
+description: "トランジションはallを使わず、動かすプロパティをロングハンドとトークンで書きます。@keyframesは1つにつき1つのプロパティだけを変え、自明なfromとtoを省き、起点はカスタムプロパティで受け取ります。途中で取り消される動きにはトランジションを使います。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+トランジションは `transition: all` を使わず、動かすプロパティだけをロングハンドで書き、再生時間とイージングにはトークンを使います。途中で取り消されることがある動きは、`@keyframes` ではなくトランジションで作ります。トランジションは、取り消された時点の状態から逆向きに戻るからです。
+
+`@keyframes` は、ユーティリティクラスのように設計します。サイト全体で使う `@keyframes` は `base/keyframes.css` にまとめ、1つにつき1つのプロパティだけを変えます。自明な `from` と `to` は省略し、動きの起点は `--scale-from--x-value` のようなカスタムプロパティで使う側から受け取ります。特定のUIに結びついた動きは、`--<コンポーネント>--<動きの名前>` の名前でコンポーネントのCSSに置きます。
+
+## まとめて書いたトランジションとアニメーションの問題
+
+`transition: all` は手軽ですが、関係のないプロパティまでアニメーションします。たとえば、ブレイクポイントをまたいで余白が変わったときや、ダークモードに切り替えたときにも、要素がゆっくりと変化します。動かす必要のないプロパティまで毎フレーム補間するので、描画の負荷も増えます。
+
+```css title="🙅‍♂ Not Recommended: すべてのプロパティを対象にし、値を直接書く"
+/* 🙅‍♂ Not Recommended */
+._card {
+  transition: all 0.3s ease;
+}
+```
+
+この書き方には、再生時間とイージングを直接書いている問題もあります。`0.3s` や `ease` がコンポーネントごとに散らばると、サイトの中で動きの速さと質感がそろいません。「全体をもう少し速くしたい」と思っても、すべてのファイルを探して書き換えることになります。
+
+`@keyframes` にも、似た問題があります。よく見かけるのは、`fadeInUp` のような名前で、不透明度と移動を1つにまとめ、始まりと終わりの値を両方書き込んだものです。この形では、フェードだけが欲しい場面で使い回せず、終わりの値が要素の本来の値と食い違うと、動きの最後で値が飛びます。
+
+```css title="🙅‍♂ Not Recommended: 複数のプロパティを持ち、終わりの値を書き込んだ @keyframes"
+/* 🙅‍♂ Not Recommended */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    translate: 0 20px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+```
+
+名前が `--` で始まっていないので、CSSのキーワードと見分けにくい点も問題です（「[6-1 命名規則](/notation/naming/)」）。`@keyframes` の名前はグローバルなので、置き場所と命名に決まりがないと、コンポーネントごとに似た動きが少しずつ違う名前で増えていきます。
+
+## トランジションをロングハンドとトークンで書く
+
+トランジションは、`transition-duration`、`transition-property`、`transition-timing-function` のロングハンドで書きます。動かすプロパティが一目で分かり、再生時間とイージングにはトークンを渡せます。複数のプロパティを動かすときは、カンマ区切りで、プロパティごとにイージングを選び分けられます。
+
+```css title="🙆‍♂ Recommended: 動かすプロパティを絞り、トークンで書く"
+@scope (.scoped.menu-button) to (.scoped) {
+  ._icon {
+    color: var(--color--neutral--500);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--base);
+      transition-property: rotate, color;
+      transition-timing-function: var(--ease--in-out-quint), var(--ease--out-quad);
+    }
+  }
+
+  :scope[aria-expanded="true"] ._icon {
+    color: var(--color--accent--600);
+    rotate: 0.5turn;
+  }
+}
+```
+
+この例では、メニューを開いたボタンのアイコンを半回転させ、色も変えています。回転は画面の上にあるものの動きなので `in-out` 系、色の変化は `out` 系のイージングを選んでいます。トランジションのプロパティを `prefers-reduced-motion: no-preference` の中に書いているのは、回転が動きを減らす設定で避けたい動きだからです。動きを減らす設定のときは、状態は変わっても、その途中は見せません（「[14-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。トークンの値と、イージングの選び方は「[14-3 イージングと再生時間](/motion/easing-and-duration/)」で説明しています。
+
+動かすプロパティは、`opacity` と、`translate`、`scale`、`rotate` を優先します。これらは描画をやり直さずに合成だけで動かせるので、滑らかに動きます。`color` や `background-color` は描画のやり直しが必要ですが、小さな部品の状態の変化なら許容できます。どのプロパティがどの処理を起こすかは「[14-7 動きの負荷を抑える](/motion/performance/)」で説明しています。
+
+### 入るときと外れるときで再生時間を変える
+
+トランジションは、変化したあとの状態に指定された再生時間とイージングで動きます。そのため、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書けば、入るときは素早く、戻るときはゆっくり動きます。押した反応の速さと、戻るときの自然さの両方を取れます。どちらの値もトークンから選びます。
+
+```css title="🙆‍♂ Recommended: 押したときは素早く、戻るときはゆっくり変える"
+@scope (.scoped.like-button) to (.scoped) {
+  :scope {
+    --_background: var(--color--accent--600);
+    --_background--pressed: var(--color--accent--700);
+
+    background-color: var(--_background);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: background-color;
+      transition-timing-function: var(--ease--out-quint);
+    }
+
+    &[aria-pressed="true"] {
+      --_background: var(--_background--pressed);
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+      }
+    }
+  }
+}
+```
+
+入る側の `transition-duration` も、動きを減らす設定の条件の中に書きます。`transition-property` の初期値は `all` なので、条件の外に再生時間だけを書くと、動きを減らす設定のときにも、すべてのプロパティがその再生時間で動いてしまいます。
+
+## 途中で取り消される動き
+
+UIの動きは、最後まで再生されるとは限りません。ホバーした直後にポインターが離れる、開いたダイアログをすぐに閉じる、といった操作は日常的に起こります。動きの手段によって、取り消されたときの振る舞いが違うので、次の表のように、起こりうる操作から手段を選びます。
+
+| 操作 | 望ましい振る舞い | 手段 |
+| --- | --- | --- |
+| ホバーしてすぐに外す | 途中の状態から逆向きに戻る | トランジションなら自動 |
+| ダイアログを開いてすぐに閉じる | 途中の状態から閉じる動きに移る | `@starting-style` とトランジションなら自動。`@keyframes` ではJavaScriptでの制御が必要 |
+| タブを続けて押す | すぐに切り替え、動きを省く | `animation-name: none` で外すか、View Transitionsの `skipTransition()` |
+| スクロールの方向が急に変わる | 今の位置から新しい方向に追従する | スクロール駆動アニメーションなら自動 |
+
+トランジションは、値が変わった時点の状態を起点に、新しい値へ向かって動きます。途中で元の状態に戻されれば、その位置から逆向きに戻るので、値は飛びません。一方、`@keyframes` のアニメーションは、適用が外れた瞬間に要素本来の値へ切り替わり、逆向きの動きもありません。そのため、取り消されることがある動きはトランジションで作ります。
+
+`@keyframes` を使う場面で取り消しに対応するときは、Web Animations APIを使います。CSSで定義したアニメーションも、`element.getAnimations()` で `Animation` オブジェクトとして取り出せます。`reverse()` は今の位置から逆向きに再生し、`cancel()` はアニメーションを外して要素本来の値に戻します。次の例は、出現の途中でも、出現し終えたあとでも、同じ動きを逆向きに再生してから閉じるものです。
+
+```js title="再生中の @keyframes を逆向きに戻してから閉じる JavaScript の例"
+const close = async (dialog) => {
+  const animations = dialog.getAnimations();
+  animations.forEach((animation) => animation.reverse());
+  await Promise.all(animations.map((animation) => animation.finished));
+  dialog.close();
+};
+```
+
+<Baseline id="web-animations" />
+
+動きを減らす設定でアニメーションを指定していなければ、`getAnimations()` は空の配列を返すので、すぐに閉じます。ただし、この制御は `@starting-style` とトランジションならCSSだけで済みます。退場も動かすダイアログやポップオーバーは、「[14-5 出現と退場](/motion/entry-and-exit/)」の方法で作ります。
+
+タブやセグメンテッドコントロールのように続けて押されるUIでは、動きが操作に追いつかないことがあります。こうしたUIでは、再生時間を100〜150msに短くするか、動きを省きます。ページの中の切り替えにView Transitionsを使っている場合は、新しい切り替えを始める前に `skipTransition()` で前の切り替えを終わらせます（「[14-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」）。
+
+## `@keyframes` をユーティリティのように設計する
+
+サイト全体で使う `@keyframes` は、`base` レイヤーの `base/keyframes.css` にまとめ、ユーティリティクラスと同じ考え方で設計します。1つの `@keyframes` は1つのプロパティだけを変え、`--fade-in` は `opacity` だけを、`--scale-from` は `scale` だけを動かします。名前は、ほかの自分で付ける名前と同じく `--` で始めます。
+
+```css title="🙆‍♂ Recommended: base/keyframes.css に1つのプロパティだけを変える @keyframes を置く"
+@keyframes --fade-in {
+  from {
+    opacity: var(--fade-in--from-value, 0);
+  }
+}
+
+@keyframes --fade-out {
+  to {
+    opacity: var(--fade-out--to-value, 0);
+  }
+}
+
+@keyframes --scale-from {
+  from {
+    scale: var(--scale-from--x-value, 1) var(--scale-from--y-value, 1);
+  }
+}
+
+@keyframes --translate-from {
+  from {
+    translate: var(--translate-from--x-value, 0) var(--translate-from--y-value, 0);
+  }
+}
+```
+
+複数のプロパティを同時に動かしたいときは、`animation-name` にカンマ区切りで並べます。再生時間とイージングも同じ順に並べられるので、不透明度は早めに終え、移動はゆっくり止める、といった調整がプロパティごとにできます。値の数が名前より少ないときは、値のリストが繰り返して使われます。
+
+```css title="🙆‍♂ Recommended: 必要な動きを組み合わせ、起点だけを指定する"
+@scope (.scoped.toast) to (.scoped) {
+  :scope {
+    --translate-from--y-value: 100%;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: --fade-in, --translate-from;
+      animation-duration: var(--duration--base), var(--duration--slow);
+      animation-timing-function: var(--ease--out-quint);
+      animation-fill-mode: both;
+    }
+
+    &[data-position="top"] {
+      --translate-from--y-value: -100%;
+    }
+  }
+}
+```
+
+起点や方向は、`@keyframes` の中で参照しているカスタムプロパティに、使う側から値を渡して変えます。このカスタムプロパティは `@keyframes` の引数のようなものなので、本書では「API的なカスタムプロパティ」と呼びます。名前は `--<keyframes の名前>--<値の名前>` の形にします。先頭に `@keyframes` の名前が入っていて、コンポーネントの公開用や内部用のカスタムプロパティとは区別できるので、内部用の `--_` は付けません。
+
+`@keyframes` が `from` と `to` の2つのフレームで完結していれば、渡す値は開始値か終了値のどちらかだけです。中間のフレームが加わると、渡す値がフレームの数だけ増え、引数として扱える範囲を超えます。そのため、グローバルに置くのは2つのフレームで完結するものに限ります。
+
+## 自明な `from` と `to` を省略する
+
+`@keyframes` の `from` か `to` を省略すると、そのフレームには要素がその時点で持っている値が使われます。`--fade-in` に `to` を書いていないのは、要素がもともと持っている不透明度に向かって動かすためです。`opacity: 0.8` の要素に使えば0から0.8まで、`opacity: 1` の要素なら0から1まで変化します。
+
+`to { opacity: 1; }` と書き込むと、`animation-fill-mode: both` の要素は、終わった瞬間に1から0.8へ戻ってちらつきます。退場の動きでは、同じ理由で `from` を省略します。半透明の要素に `from { opacity: 1; }` の退場を使うと、一瞬不透明になってから消えるからです。どちらを省略するかは、次の表で判断します。
+
+| 動き | 書くフレーム |
+| --- | --- |
+| 何もない状態からの出現（`--fade-in`、`--scale-from` など） | `from` だけ |
+| 何もない状態への退場（`--fade-out` など） | `to` だけ |
+| 無限に繰り返す回転 | `to` だけ（`to { rotate: 1turn; }`） |
+| 開始値と終了値の両方を決める必要がある | 両方（コンポーネントに置くことが多い） |
+
+開始値と終了値の両方を書くのは、要素本来の値がどちらの端とも一致しない場合です。たとえば、`clip-path` で隠した状態から全体を見せるとき、要素本来の値は `none` なので、`inset()` との間は補間できません。こうした動きは特定のUIに結びついていることが多いので、次の見出しのようにコンポーネントに置きます。
+
+## グローバルとローカルの使い分け
+
+中間のフレームを持つ動きや、複数のプロパティを同時に動かす動きは、グローバルに置きません。そのコンポーネントのCSSに、`--<コンポーネント>--<動きの名前>` の名前で定義します。名前の先頭にコンポーネントの名前が入るので、ほかのコンポーネントの `@keyframes` と衝突しません。
+
+```css title="🙆‍♂ Recommended: 中間のフレームを持つ動きをコンポーネントに置く"
+@keyframes --skeleton--pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@scope (.scoped.skeleton) to (.scoped) {
+  :scope {
+    background-color: var(--color--neutral--100);
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: --skeleton--pulse;
+      animation-duration: 1.5s;
+      animation-timing-function: var(--ease--in-out-quint);
+      animation-iteration-count: infinite;
+    }
+  }
+}
+```
+
+この例では、`from` と `to` の両方を省略しています。始まりと終わりは要素本来の不透明度になり、`50%` のフレームだけで点滅を表せます。1.5秒は、トークンの段階にない再生時間です。読み込み中であることを伝えるループの周期で、UIの状態の変化の速さとは目的が違うので、ここでは値を直接書いています。{/* 要確認: 出典なし */}
+
+グローバルとローカルのどちらに置くかは、次の表で判断します。迷ったらコンポーネントに置き、3か所で使われるようになった時点でグローバルに移します。最初からグローバルに置くと、一度しか使わない動きが `base/keyframes.css` に溜まっていきます。
+
+| 状況 | 置き場所 |
+| --- | --- |
+| フェード、拡大縮小、移動のような汎用の動きで、起点だけを変えたい | グローバル（API的なカスタムプロパティで起点を渡す） |
+| そのコンポーネントで、複数のプロパティを同時に動かす | ローカル |
+| 中間のフレーム（`50%` など）が要る | ローカル |
+| 背景（`::backdrop`）や特殊な擬似要素の動き | ローカル |
+
+## `animation` の略記と `animation-fill-mode`
+
+アニメーションも、略記の `animation` ではなく、ここまでの例のようにロングハンドで書きます。略記の `animation` は、`animation-timeline` と `animation-range` もリセットします。略記をあとに書くと、先に指定したスクロール駆動アニメーションの設定が消えます。ロングハンドなら、指定していないプロパティに影響しません。
+
+`animation-fill-mode` は、`both` を第一候補にします。指定しない（`none`）と、遅延の間は開始前の見た目のままで、終わった瞬間に最後のフレームが外れます。`backwards` は遅延の間にも最初のフレームの値を当て、`forwards` は終わったあとも最後のフレームの値を保ち、`both` はその両方を行います。
+
+`both` は、自明なフレームを省略した `@keyframes` と組み合わせると安全です。`to` を省いた出現の動きでは、最後のフレームが要素本来の値なので、終わったあとに保っても見た目は変わりません。`forwards` で、書き込んだ終了値を保つと、要素本来の値が上書きされたままになり、あとから状態を変えても反映されません。
+
+`both` には、`animation-play-state: paused` の間も最初のフレームを当てる働きがあります。画面に入るまで止めておき、入ったら再生する演出では、この働きで初期の見えない状態を `@keyframes` の `from` だけで表せます。この使い方は「[14-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で説明しています。
+
+## `@keyframes`、トランジション、`@starting-style` の使い分け
+
+手段は次の表のように選びます。基本はトランジションです。状態に入るときと外れるときの両方が動き、途中で取り消されても自然に戻ります。`@keyframes` は、出現だけを動かす場合、中間のフレームが要る場合、再生を止めておく場合に使います。
+
+| 要件 | 手段 |
+| --- | --- |
+| `display: none` から現れ、消えるときも動かしたい | トランジションと `@starting-style`、`transition-behavior: allow-discrete` |
+| 現れるときだけ動かし、消えるときはすぐでよい | `@keyframes` |
+| 中間のフレーム（`25%`、`50%` など）が要る | `@keyframes` |
+| JavaScriptから一時停止、逆再生、取り消しをしたい | Web Animations API |
+| 途中で取り消されることが多い | トランジション |
+| 複数のプロパティを時間をずらして動かしたい | `@keyframes`、または `transition-delay` の組み合わせ |
+| 画面に入るまで止めておき、入ったら一度だけ再生する | `@keyframes` と `animation-play-state` |
+
+`@starting-style` は、要素が表示されたときの開始値を指定する規則で、`display: none` から表示された要素もトランジションで動かせます。出現と退場の書き方と、`@starting-style` が効かなくなる条件は「[14-5 出現と退場](/motion/entry-and-exit/)」で説明しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Animations Skill](https://gist.github.com/tak-dcxi/b1870cfe73e3089a1e4aa7da19c3374a)（TAK、`@keyframes` の命名と設計の規約）
+- [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）
+- [animation-fill-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-fill-mode)
+- [Element.getAnimations() - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Element/getAnimations)
+- [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)
+- [An Interactive Guide to CSS Transitions | Josh W. Comeau](https://www.joshwcomeau.com/animation/css-transitions/)（2021年）

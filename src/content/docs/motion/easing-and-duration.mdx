@@ -1,0 +1,248 @@
+---
+title: "14-3 イージングと再生時間"
+description: "イージングはCSSのキーワードではなくquint系やexpo系のトークンから、動きの種類とプロパティごとに選び、機能的な動きは原則300ms以下にします。拡大して現れる動きはscale: 0からではなく1に近い値から始め、transform-originをトリガーのある側に向けます。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import originHtml from '../../../demos/motion/scale-in-origin/index.html?raw';
+import originCss from '../../../demos/motion/scale-in-origin/style.css?raw';
+import pressHtml from '../../../demos/motion/press-feedback/index.html?raw';
+import pressCss from '../../../demos/motion/press-feedback/style.css?raw';
+import springHtml from '../../../demos/motion/spring-easing/index.html?raw';
+import springCss from '../../../demos/motion/spring-easing/style.css?raw';
+
+イージングは、CSSの `ease` のようなキーワードではなく、quint系やexpo系のトークンから選びます。現れる動きと消える動きには `out` 系を、画面の上にあるものの移動には `in-out` 系を使い、`linear` は一定の速さで続く動きだけに使います。複数のプロパティを動かすときは、プロパティごとに選び分けます。
+
+再生時間は、機能的な動きなら原則300ms以下にし、ダイアログのような大きなUIでも500ms以下にします。拡大して現れる動きは `scale: 0` から始めず、要素の大きさに応じて0.85〜0.98から始めて、`transform-origin` をトリガーのある側に向けます。
+
+## 同じ再生時間でも速さの感じ方が変わる
+
+イージングは、動きの途中の進み具合を決める関数です。再生時間が同じ240msでも、動き始めで大きく進み、終わりぎわでゆっくり止まる動きは、反応が速いと感じられます。反対に、ゆっくり動き出す動きは、最初の数フレームで見た目がほとんど変わらないので、操作してから反応するまでが遅く感じられます。動きの体感の速さは、再生時間と同じくらい、イージングで決まります。
+
+CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるやかで、動きにメリハリがありません。最初の変化が小さいので、再生時間を短くしても機敏には見えにくくなります。トランジションのイージングを指定しないと `ease` になるので、何も考えずに書いた動きは、たいていこの弱いカーブで動いています。
+
+拡大して現れるメニューでよく見かけるのが、次の書き方です。`scale: 0` の点から、要素の中央を起点に、500msかけて `ease` で広がります。
+
+```css title="🙅‍♂ Not Recommended: 中央の点から、弱いイージングでゆっくり広げる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.action-menu) to (.scoped) {
+  ._list {
+    transition-duration: 500ms;
+    transition-property: opacity, scale, display, overlay;
+    transition-timing-function: ease;
+    transition-behavior: allow-discrete;
+  }
+
+  ._list:popover-open {
+    @starting-style {
+      opacity: 0;
+      scale: 0;
+    }
+  }
+
+  /* ... */
+}
+```
+
+この例には、問題が3つ重なっています。1つめは、再生時間が長いうえに、弱いイージングで最初の反応が遅れることです。2つめは、何もない点から膨らむ動きが、物理的に不自然なことです。3つめは、メニューが中央から広がるので、どのボタンから出てきたのかが伝わらないことです。この節では、この3つを順に直します。
+
+## イージングを動きの種類で選ぶ
+
+イージングは、トークンから選びます。名前は `--ease--<方向>-<種類>` の形で、方向は `in`（だんだん速く）、`out`（だんだん遅く）、`in-out`（両方）を表します。種類は動きの強さを表し、本書ではメリハリの強いquint系とexpo系を中心に使います。トークンの定義は「[7-4 デザイントークン](/components/design-tokens/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: イージングをトークンにする"
+:root {
+  --ease--out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease--out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease--in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  --ease--in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+}
+```
+
+現れる動きには、`out` 系を使います。動き始めにほとんどの距離を進むので、操作した直後に変化が見え、最後は減速して目的の位置に収まります。消える動きにも、同じ `out` 系を使います。閉じる操作も、ユーザーの操作への応答だからです。`in` 系で消すと、動き始めの変化が小さく、閉じるボタンを押してから反応するまでが遅れて見えます。
+
+画面の上にすでにあるものを別の位置へ動かすときは、`in-out` 系を使います。止まっていたものが動き出し、また止まる動きなので、両端をなめらかにすると、目で追いやすくなります。スイッチのつまみや、アコーディオンの矢印の回転がこれにあたります。
+
+`linear` は、マーキーやプログレスバーのように、一定の速さで続く動きにだけ使います。速さが変わらない動きは機械的に見え、UIの状態の変化に使うと、始まりと終わりが唐突に感じられます。
+
+イージングは、要素ごとではなく、プロパティごとに選びます。次の例は、アコーディオンの矢印のアイコンです。回転は画面の上にあるものの動きなので `in-out` 系を、色の変化は状態の変化なので `out` 系を、カンマ区切りで指定しています。トランジションをロングハンドで書く理由は、「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 回転と色の変化で、イージングと再生時間を選び分ける"
+@scope (.scoped.faq-item) to (.scoped) {
+  ._icon {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--base), var(--duration--fast);
+      transition-property: rotate, color;
+      transition-timing-function: var(--ease--in-out-quint), var(--ease--out-quint);
+    }
+  }
+}
+```
+
+## 再生時間の目安
+
+機能的な動きの再生時間は、原則として300ms以下にします。ダイアログ、ドロワー、シートのように画面の大きな面積を占めるUIは、移動する距離も長いので、300〜500msまで延ばします。ホバーと押したときの反応は、さらに短くします。
+
+| 動き | 再生時間の目安 | 指定する値 |
+| --- | --- | --- |
+| ホバーによる色の変化 | 150〜200ms | `--duration--fast`（200ms） |
+| ボタンを押したときの縮小 | 100〜150ms | `--duration--press`（120ms） |
+| ツールチップ、メニューの出現 | 300ms以下 | `--duration--fast`、`--duration--base`（240ms） |
+| ダイアログ、ドロワー、シートの出現 | 300〜500ms | `--duration--slow`（300ms） |
+
+頻繁に触るUIでは、100msの差でも負担になります。1回の操作では気にならない待ち時間も、管理画面のメニューのように1日に何度も開くものでは、開くたびに積み重なるからです。頻度の高いUIほど再生時間を短くし、動きそのものが要らないかも検討します（「[14-1 動かすかどうかを決める](/motion/purpose/)」）。
+
+上限を超える例外は2つだけです。1つは、スクロールで画面に入ったとき一度だけ再生する演出の `--duration--reveal`（600ms）です。この演出は頻度が低く、操作への応答でもないからです（「[14-6 スクロールに合わせて動かす](/motion/scroll-driven/)」）。もう1つは、後で説明するばねの動きの `--duration--spring`（700ms）です。
+
+再生時間とイージングは、組み合わせで調整します。`out-expo` のように最初に大きく進むカーブなら、再生時間を少し長くしても反応は速く感じられ、収まる様子をゆっくり見せられます。反対に、再生時間だけを短くして機敏に見せようとすると、動きが目で追えなくなり、何が起きたかが伝わりにくくなります。{/* 要確認: 出典なし */}
+
+## 拡大の起点と開始値
+
+拡大して現れる要素は、`transform-origin` をトリガーのある側に向けます。`transform-origin` のデフォルトは `center` なので、何も指定しないと要素の中央から広がります。ボタンの下に開くメニューが中央から広がると、ボタンとの位置関係が動きから読み取れません。左上にボタンがあるなら左上の角から、上にボタンがあるなら上端から広げます。
+
+拡大の開始値は `scale: 0` にせず、1に近い値から始めます。何もない点から要素が膨らむ動きは、現実の物の振る舞いとかけ離れていて不自然です。少し小さい状態から立ち上がる動きのほうが、その場にあったものが手前に出てきたように見えます。開始値は、要素が大きいほど小さくします。大きな要素は、同じ比率でも縮む量が大きいからです。
+
+| 要素 | 拡大の開始値 |
+| --- | --- |
+| ツールチップ、ポップオーバー | 0.95〜0.98 |
+| ドロップダウンメニュー | 0.92〜0.96 |
+| ダイアログ、ドロワー、シート | 0.85〜0.92 |
+
+先ほどのメニューを直すと、次のようになります。ボタンの下に行頭側をそろえて開くので、`transform-origin` を左上の角にし、開始値を0.94にしています。消えるときも同じ値まで縮めます。
+
+```css title="🙆‍♂ Recommended: ボタンのある角から、1に近い値で広げる"
+@scope (.scoped.action-menu) to (.scoped) {
+  ._list {
+    --_scale-from: 1;
+
+    transform-origin: 0% 0%;
+    transition-duration: var(--duration--base);
+    transition-property: opacity, scale, display, overlay;
+    transition-timing-function: var(--ease--out-quint);
+    transition-behavior: allow-discrete;
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_scale-from: 0.94;
+    }
+  }
+
+  ._list:popover-open {
+    @starting-style {
+      opacity: 0;
+      scale: var(--_scale-from);
+    }
+  }
+
+  ._list:not(:popover-open) {
+    opacity: 0;
+    scale: var(--_scale-from);
+  }
+}
+```
+
+開始値を `no-preference` の中で変えているので、動きを減らす設定のときは拡大と縮小をやめ、フェードだけが残ります（「[14-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。`@starting-style` と `transition-behavior` の仕組みは、「[14-5 出現と退場](/motion/entry-and-exit/)」で説明しています。次のデモでは、3種類の要素を、それぞれの開始値と起点で表示できます。ダイアログはトリガーの近くではなく画面の中央に出るので、起点も中央のままにしています。
+
+<Demo title="ツールチップ、ドロップダウン、ダイアログを、それぞれの開始値と起点で拡大して表示する" html={originHtml} css={originCss} height="20rem" />
+
+## 配置の向きに合わせて起点を切り替える
+
+アンカーポジショニングで表示する位置を切り替えるときは、`transform-origin` も一緒に切り替えます。ツールチップを上に出すなら下端から、下に出すなら上端から広げないと、トリガーと反対の側から現れてしまいます。ふだんはボタンの上に出すツールチップを、画面の上端に近い場所でだけ下に出すなら、配置を表す属性を用意し、位置と起点を同じセレクタで変えます。
+
+```css title="🙆‍♂ Recommended: 配置の向きに合わせて、拡大の起点を切り替える"
+@scope (.scoped.help-tip) to (.scoped) {
+  ._tip {
+    --_scale-from: 1;
+
+    margin: auto;
+    transform-origin: 50% 100%;
+
+    @supports (position-area: block-start) {
+      position-area: block-start;
+      margin-block: 8px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_scale-from: 0.96;
+    }
+
+    &[data-placement="block-end"] {
+      transform-origin: 50% 0%;
+
+      @supports (position-area: block-end) {
+        position-area: block-end;
+      }
+    }
+  }
+}
+```
+
+`data-placement` は、置く場所が決まっているならHTMLに直接書き、空きに応じて決めるならJavaScriptで付けます。どちらの場合も、位置と起点が同じ属性で決まるので、片方だけを変え忘れることがありません。アンカーポジショニングそのものは「[8-7 positionの基礎](/layout/positioning/)」で説明しています。
+
+`position-try-fallbacks` でブラウザに反転させる方法もあります。ただし、反転したかどうかをCSSで調べるコンテナクエリ（`@container anchored(fallback: flip-block)`）は、2026年10月の時点でChrome 143以降だけが対応しています。この問い合わせで変えられるのは子孫のスタイルなので、起点の切り替えに使うなら、拡大する要素を内側に1つ増やす必要があります。対応が広がるまでは、属性で切り替える方法を基本にします。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.position-area" name="position-area" />
+
+## `:active` の縮小で押したことを伝える
+
+ボタンを押した瞬間に少し縮めると、押したことが手応えとして伝わります。`:active` で `scale` を0.96〜0.98にし、再生時間を100〜150msにします。縮む量が小さく、再生時間が短いので、続けて押す操作の妨げになりません。
+
+次のデモのボタンは、ホバーで背景色を200msで変え、押したときに120msで縮みます。`transition-duration` にカンマ区切りで2つの値を書き、プロパティごとに再生時間を分けています。無効にしたボタンは `:enabled:hover` と `:enabled:active` で除いているので、ホバーと押下のどちらにも反応しません。
+
+<Demo title="ホバーで色を変え、押したときに短く縮める" html={pressHtml} css={pressCss} />
+
+トランジションは `:not(:focus-visible)` の中に書き、キーボードでフォーカスを移したときの色の変化は一度で切り替えます。ホバーの見た目を `:focus-visible` にも指定する理由と合わせて、「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明しています。押したときの縮小の再生時間に合うトークンはないので、`--duration--fast` の半分として計算しています。
+
+押したときの縮小は、押したことを伝える必要があるUIにだけ使います。送信や保存のボタン、トグルのように、押した結果がすぐには見えにくいものが対象です。本文中のリンクや、押すとすぐに画面が切り替わるナビゲーションには付けません。押した直後に画面が変わるなら、その変化が手応えになるからです。{/* 要確認: 出典なし */}
+
+## ばねとバウンスを `linear()` で作る
+
+`cubic-bezier()` でも、制御点のy座標を1より大きくすれば、終わりの値を1回行き過ぎてから戻る動きは表せます。しかし、1本の3次ベジェ曲線では、何度か揺れながら収まるばねの動きは表せません。`linear()` は、進み具合を点の列で与え、点の間を直線でつなぐイージング関数です。値は0から1の範囲を超えてよいので、点を多く並べれば、ばねやバウンスの曲線を近似できます。
+
+点の列は手で書けないので、ジェネレーターで作ります（[MDNが紹介しているジェネレーター](https://linear-easing-generator.netlify.app/)があります）。揺れが収まるまでの時間はイージングの作り方で決まるので、コンポーネントに値を直接書かず、再生時間とセットでトークンにします。
+
+```css title="🙆‍♂ Recommended: ばねのイージングを、再生時間とセットでトークンにする"
+:root {
+  --duration--spring: 700ms;
+  --ease--spring: linear(
+    0, 0.094, 0.315, 0.581, 0.829, 1.022, 1.144, 1.199, 1.2, 1.166, 1.114,
+    1.06, 1.014, 0.981, 0.963, 0.958, 0.962, 0.971, 0.982, 0.993, 1.001, 1.006,
+    1.008, 1.008, 1.007, 1.005, 1.003, 1.001, 0.999, 0.998, 0.998, 0.998, 1
+  );
+}
+```
+
+次のデモでは、同じ距離を動くスイッチのつまみを、`in-out-quint` とばねで比べられます。
+
+<Demo title="スイッチのつまみを、cubic-bezier() のイージングとばねで動かして比べる" html={springHtml} css={springCss} height="8rem" />
+
+<Baseline id="linear-easing" />
+
+ばねの700msは、機能的な動きの上限（300ms）にも、大きなUIの上限（500ms）にも収まらない例外です。揺れが収まるまでの時間を短くすると、揺れが細かくなって震えているように見えるからです。{/* 要確認: 出典なし */}そのため、頻繁に触るUIには使わず、数回しか触らない操作や、ブランドの個性を出したい場面に限ります。行き過ぎて揺れる動きは「大きな変動」にあたるので、`prefers-reduced-motion: no-preference` の中でだけ指定します。
+
+## イージングと再生時間を確かめるときの注意
+
+イージングと再生時間は、一度動かしただけでは良し悪しが分かりにくいものです。1回だけ見ると、長めの再生時間でもなめらかで心地よく感じられます。実際にそのUIを使う頻度で、10回、20回と続けて操作し、待たされる感じがないかを確かめます。
+
+動きの途中を細かく確かめたいときは、ブラウザの開発者ツールで再生速度を落とします。ChromeのDevToolsの「Animations」パネルでは、ページのアニメーションを25%や10%の速さで再生でき、起点の位置や、イージングで行き過ぎる量を目で追えます。
+
+`transform-origin` には、`block-start` のような論理キーワードがありません。`0% 0%` は、書字方向にかかわらず左上を指します。右から左へ書く言語にも対応するなら、`:dir(rtl)` で起点を左右反転させます。{/* 要確認: 出典なし */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）
+- [transition-timing-function - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/transition-timing-function)
+- [linear() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/easing-function/linear)
+- [transform-origin - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/transform-origin)
+- [Linear easing generator](https://linear-easing-generator.netlify.app/)
+- [Springs and Bounces in Native CSS | Josh W. Comeau](https://www.joshwcomeau.com/animation/linear-timing-function/)（2025年）
+- [An Interactive Guide to CSS Transitions | Josh W. Comeau](https://www.joshwcomeau.com/animation/css-transitions/)（2021年）
+- [Inspect animations | Chrome DevTools](https://developer.chrome.com/docs/devtools/css/animations)

@@ -22,7 +22,7 @@ import ringBadCss from '../../../demos/reset/focus-ring/style.bad.css?raw';
 
 本書が推奨するリセットCSSのkiso.css（「[5-1 壊さないリセット](/reset/kiso/)」）には、あえて入れていない指定があります。モーダル表示中に背面のスクロールを止める指定は、リセットCSSの範囲かどうかで判断が分かれるので入れていません。`interpolate-size` も、既存のサイトで意図しないアニメーションを起こすおそれがあるので見送っています。どちらも、各プロジェクトのベーススタイルで指定します。
 
-ルート要素の文字色や背景色、フォント、グローバルな `@keyframes` などもベーススタイルに置きますが、これらは「[10-1 フォントを指定する](/typography/fonts/)」「[11-4 ダークモード](/color-media/dark-mode/)」「[13-2 モーションを実装する](/interaction/motion/)」で扱います。
+ルート要素の文字色や背景色、フォント、グローバルな `@keyframes` などもベーススタイルに置きますが、これらは「[10-1 フォントを指定する](/typography/fonts/)」「[11-4 ダークモード](/color-media/dark-mode/)」「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で扱います。
 
 ## フォーカスリングの色と形
 
@@ -121,7 +121,7 @@ kiso.cssは `outline-offset: 3px` を指定しているだけで、リングの�
 
 スクロールを止めるとスクロールバーが消え、その幅の分だけコンテンツが横にずれます。kiso.cssが `:root` に指定している `scrollbar-gutter: stable` は、スクロールバーの有無にかかわらずその幅の領域を確保するので、ダイアログを開閉してもレイアウトはずれません。
 
-`overflow: hidden` の代わりに `overflow: clip` を使う方法もありますが、2025年5月の時点ではFirefoxで背面を固定できなかったので使いません。また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[13-3 開閉するUI](/interaction/disclosure/)」で扱います。
+`overflow: hidden` の代わりに `overflow: clip` を使う方法もありますが、2025年5月の時点ではFirefoxで背面を固定できなかったので使いません。また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[13-2 開閉するUI](/interaction/disclosure/)」で扱います。
 
 ## スクロールバーの領域と見た目
 
@@ -162,7 +162,7 @@ Safariは18.2で対応したので、本書が対象とするブラウザ（Safa
 
 便利な機能ですが、kiso.cssには入れていません。`transition: all` のように対象を限定しないトランジションを書いた既存のコードでは、これまで一瞬で切り替わっていた大きさの変化までアニメーションするからです。`interpolate-size` の初期値が数値だけを補間する `numeric-only` になっているのも、既存のサイトとの互換性のためです。影響を判断できるのはプロジェクトの側なので、ベーススタイルで有効にします。
 
-本書では `transition: all` を使わないので、この問題は起きません（「[13-2 モーションを実装する](/interaction/motion/)」）。
+本書では `transition: all` を使わないので、この問題は起きません（「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。
 
 <Baseline id="interpolate-size" />
 

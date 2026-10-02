@@ -147,7 +147,7 @@ sidebar:
 
 ## インタラクションとモーション
 
-状態の表し方と動きの付け方は、第13章「[インタラクションとモーション](/interaction/)」で説明しています。
+状態の表し方は第13章「[インタラクション](/interaction/)」で、動きの付け方は第14章「[モーション](/motion/)」で説明しています。
 
 | 古い書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
@@ -155,9 +155,9 @@ sidebar:
 | `:hover` だけに見た目の変化を指定する | `:focus-visible` にも同じ見た目を指定する | 挙動 | [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible) | AI |
 | ホバーで `opacity: 0.7` | 背景色や文字色を別の色に変える | 挙動 | [`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover) | AI |
 | `.is-active`、`.is-open` の状態クラス | `:checked` などの擬似クラスや `[aria-selected="true"]` | 本書の方針 | [`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria) | AI |
-| `transition: all 0.3s` | `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドとトークン | 挙動 | [`no-transition-all`](/interaction/motion/#rule-no-transition-all)、[`transition-longhand-with-tokens`](/interaction/motion/#rule-transition-longhand-with-tokens) | AI |
-| `prefers-reduced-motion: reduce` のときに全称セレクタと `!important` で動きを止める | `@media (prefers-reduced-motion: no-preference)` の中で動きを付ける | 本書の方針 | [`motion-only-with-no-preference`](/interaction/motion/#rule-motion-only-with-no-preference) | AI |
-| 並んだ要素に `view-transition-name: card-1`、`card-2` と連番を振る | `view-transition-name: match-element` と `view-transition-class` | 本書の方針 | [`view-transition-match-element`](/interaction/view-transitions/#rule-view-transition-match-element) | AI |
+| `transition: all 0.3s` | `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドとトークン | 挙動 | [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)、[`transition-longhand-with-tokens`](/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens) | AI |
+| `prefers-reduced-motion: reduce` のときに全称セレクタと `!important` で動きを止める | `@media (prefers-reduced-motion: no-preference)` の中で動きを付ける | 本書の方針 | [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference) | AI |
+| 並んだ要素に `view-transition-name: card-1`、`card-2` と連番を振る | `view-transition-name: match-element` と `view-transition-class` | 本書の方針 | [`view-transition-match-element`](/motion/view-transitions/#rule-view-transition-match-element) | AI |
 | 入力エラーの見た目を `:invalid` に指定する | `:user-invalid` に指定する | 挙動 | [`user-invalid-for-errors`](/interaction/forms/#rule-user-invalid-for-errors) | AI |
 
 ## 関連する付録

@@ -1,8 +1,7 @@
 @layer tokens {
   :root {
     --duration--slow: 300ms;
-    --ease--quint-in: cubic-bezier(0.64, 0, 0.78, 0);
-    --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
@@ -47,7 +46,7 @@
       @media (prefers-reduced-motion: no-preference) {
         transition-duration: var(--duration--slow);
         transition-property: rotate;
-        transition-timing-function: var(--ease--quint-out);
+        transition-timing-function: var(--ease--out-quint);
       }
     }
 
@@ -62,7 +61,7 @@
       @media (prefers-reduced-motion: no-preference) {
         transition-duration: var(--duration--slow);
         transition-property: content-visibility, block-size, opacity;
-        transition-timing-function: var(--ease--quint-in);
+        transition-timing-function: var(--ease--out-quint);
         transition-behavior: allow-discrete;
       }
     }
@@ -70,12 +69,6 @@
     details:not([open])::details-content {
       block-size: 0;
       opacity: 0;
-    }
-
-    details[open]::details-content {
-      @media (prefers-reduced-motion: no-preference) {
-        transition-timing-function: var(--ease--quint-out);
-      }
     }
 
     p {

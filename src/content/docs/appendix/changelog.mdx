@@ -11,6 +11,47 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.15.0（2026年10月3日）
+
+第13章を「インタラクション」と「モーション」に分け、著者のアニメーションのスキルにもとづいてモーションの章を書き直しました。ルールを追加し、変更し、1件を削除したため、マイナーバージョンを上げています。章と節の番号も一部変わりました。
+
+- 構成を次のように変えました。
+  - 第13章「インタラクションとモーション」を、第13章「[インタラクション](/interaction/)」と第14章「[モーション](/motion/)」に分けました。旧第14章は第15章「[実務での運用](/operations/)」になります。
+  - 第13章は、「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」「[13-2 開閉するUI](/interaction/disclosure/)」「[13-3 フォーム部品](/interaction/forms/)」「[13-4 CSSでカルーセルを作る](/interaction/carousel/)」の4節にしました。
+  - 旧13-2「モーションを実装する」を、次の7節に分けました。
+    - [14-1 動かすかどうかを決める](/motion/purpose/)
+    - [14-2 動きを減らす設定に対応する](/motion/reduced-motion/)
+    - [14-3 イージングと再生時間](/motion/easing-and-duration/)
+    - [14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)
+    - [14-5 出現と退場](/motion/entry-and-exit/)
+    - [14-6 スクロールに合わせて動かす](/motion/scroll-driven/)
+    - [14-7 動きの負荷を抑える](/motion/performance/)
+  - 旧13-5は「[14-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」になりました。URLは `/motion/` の下に変わります。
+  - 旧13-3にあったダイアログと `<details>` の開閉の動きは、14-5に移しました。
+- 方針を次のように変えました。
+  - 画面から出ていく動きにも `ease-out` 系のイージングを使います。画面の上にあるものの移動には `ease-in-out` 系を、`linear` は一定の速さで続く動きにだけ使います。
+  - イージングのトークンの名前を `--ease--<方向>-<種類>`（`--ease--out-quint` など）に改め、`--ease--out-quint` の値を `cubic-bezier(0.22, 1, 0.36, 1)` にしました。expo系のトークンと、`--duration--instant`、`--duration--press`、`--duration--reveal` を「[7-4 デザイントークン](/components/design-tokens/)」に加えました。
+  - グローバルな `@keyframes` を `--fade-in`、`--fade-out`、`--scale-from`、`--translate-from` の名前にそろえ、`base/keyframes.css` に置きます。
+  - 一度だけ再生する演出は、`animation-play-state: initial` で再生します。
+- ルールを5件追加しました。
+  - [`scale-in-from-near-one`](/motion/easing-and-duration/#rule-scale-in-from-near-one)：拡大して現れる動きは、`scale: 0` ではなく要素の種類ごとの開始値から始めます。`transform-origin` はトリガーのある側に向けます。
+  - [`linear-only-for-constant-motion`](/motion/easing-and-duration/#rule-linear-only-for-constant-motion)：`linear` のイージングは、一定の速さで続く動きにだけ使います。
+  - [`press-feedback-short`](/motion/easing-and-duration/#rule-press-feedback-short)：押したことを動きで返すときは、`:active` で0.96〜0.98に縮め、再生時間を100〜150msにします。
+  - [`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition)：途中で取り消されることがある動きはトランジションで書き、続けて押されるUIでは動きを短くするか省きます。
+  - [`will-change-temporarily`](/motion/performance/#rule-will-change-temporarily)：`will-change` を常に指定せず、必要なときだけJavaScriptで付け外しします。
+- ルールの内容を変えました。
+  - [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)：すべての動きを条件の中に書く形から、段階的な対応に変えました。装飾的な動きのうちフェード以外を `no-preference` の中に書き、大きな変動は簡素化します。
+  - [`animation-longhand-fill-mode`](/motion/transitions-and-keyframes/#rule-animation-longhand-fill-mode)：`animation-fill-mode` は `both` を第一候補にします。
+  - [`hover-only-when-operable`](/interaction/states-and-focus/#rule-hover-only-when-operable)：推奨から必須に上げました。
+  - 次の4件は、文言と補足を補いました。
+    - [`motion-mode-attribute`](/motion/scroll-driven/#rule-motion-mode-attribute)
+    - [`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)
+    - [`starting-style-not-overridden`](/motion/entry-and-exit/#rule-starting-style-not-overridden)
+    - [`individual-transform-properties`](/notation/modern-syntax/#rule-individual-transform-properties)
+- ルール `ease-in-for-exit` を削除しました。退場にも `ease-out` 系を使う方針に変えたためです。
+- 14-3に、ボタンの押下とホバーのデモ、要素ごとの拡大の起点を比べるデモを加えました。
+- 付録D「[レビューのチェックリスト](/appendix/checklist/)」のモーションの項目を、新しいルールに合わせて書き直しました。
+
 ## 0.14.0（2026年10月2日）
 
 名前に使う略語と数字の扱いを決めました。ルールを1件追加し、1件の内容を変えたため、マイナーバージョンを上げています。

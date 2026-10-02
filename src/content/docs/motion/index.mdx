@@ -1,0 +1,38 @@
+---
+title: "第14章 モーション"
+description: "動きの要否の判断、動きを減らす設定への段階的な対応、イージングと再生時間、トランジションと@keyframesの設計、出現と退場、スクロールに合わせた動き、描画の負荷、View Transitionsを扱う章です。"
+sidebar:
+  label: "概要"
+  order: 0
+---
+
+この章では、UIの動きをCSSで書く方法を扱います。動かすかどうかの判断から始め、動きを減らす設定への対応、イージングと再生時間の選び方、トランジションと `@keyframes` の書き分けを説明します。そのあと、要素の出現と退場、スクロールに合わせた動き、描画の負荷、View Transitionsによる画面の切り替えを扱います。
+
+動きは、状態の変化や操作の結果を伝える手段です。うまく使えば、何が起きたのかが分かりやすくなります。一方で、毎日のように繰り返し触るUIに装飾的な動きを足すと、待ち時間が増えるだけです。動きを減らす設定をしているユーザーにとっては、めまいや吐き気の原因にもなります。そのため本書では、動きを足す前に目的を確かめ、動かすと決めたものだけを、決まった手順で実装します。
+
+この章の節は、動きを足すときに確かめる順番で並べています。まず目的があるかを判断し（14-1）、動きを減らす設定でどう見せるかを決め（14-2）、イージングと再生時間を選びます（14-3）。そのうえで実装の手段を選び（14-4〜14-6、14-8）、最後に描画の負荷を確かめます（14-7）。レビューで動きを確かめるときも、この順番で見ていきます。
+
+私自身、以前は動きを減らす設定に、全称セレクタと `!important` で全体の動きを止めるCSSで対応していました。これでは、状態の変化を伝えるフェードまで消えてしまいます。いまは動きを種類ごとに分け、止めるもの、フェードにするもの、短くするもの、そのまま残すものを選んでいます。
+
+この章は次の8つの節で構成しています。
+
+- [14-1 動かすかどうかを決める](/motion/purpose/)：動きの目的の判断表、機能的な動きと装飾的な動き、見る頻度、CSSを先に検討すること
+- [14-2 動きを減らす設定に対応する](/motion/reduced-motion/)：無効化、簡素化、短縮、維持の4段階と、大きな変動の基準
+- [14-3 イージングと再生時間](/motion/easing-and-duration/)：イージングのトークン、再生時間の目安、`transform-origin` と拡大の起点、押したときの縮小、ばねの `linear()`
+- [14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)：トランジションの書き方、入るときと外れるときの再生時間、`@keyframes` の命名と設計、動きの中断
+- [14-5 出現と退場](/motion/entry-and-exit/)：`@starting-style` と `transition-behavior`、ダイアログ、ポップオーバー、`<details>` の開閉、ツールチップの遅延
+- [14-6 スクロールに合わせて動かす](/motion/scroll-driven/)：スクロール駆動アニメーション、`IntersectionObserver` で一度だけ再生する演出、`data-motion-mode`
+- [14-7 動きの負荷を抑える](/motion/performance/)：レイアウト、ペイント、合成のどれが起きるか、`will-change`、`contain`、`filter` と `backdrop-filter`
+- [14-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)：同じページの中とページ間の切り替え、`view-transition-name` と `view-transition-class` の付け方、名前の重複の注意点
+
+キーボード操作のフォーカスに動きを付けない書き方は、状態の表し方とあわせて「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で扱います。`interpolate-size` の有効化とスムーススクロールは「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。イージングと再生時間のトークンの定義は「[7-4 デザイントークン](/components/design-tokens/)」で、変形の個別プロパティは「[6-4 モダンな記法にそろえる](/notation/modern-syntax/)」で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`motion-needs-purpose`](/motion/purpose/#rule-motion-needs-purpose)：アニメーションを足す前に目的があるかを確かめ、目的のない動きは入れません。
+- [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)：装飾的な動きのうちフェード以外は、`@media (prefers-reduced-motion: no-preference)` の中で指定します。大きな変動は、動きを減らす設定で簡素化します。
+- [`scale-in-from-near-one`](/motion/easing-and-duration/#rule-scale-in-from-near-one)：拡大して現れる動きは `scale: 0` から始めず、`transform-origin` をトリガーのある側に向けます。
+- [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)：`transition: all` や `transition-property: all` を使いません。
+- [`starting-style-for-entry`](/motion/entry-and-exit/#rule-starting-style-for-entry)：`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。

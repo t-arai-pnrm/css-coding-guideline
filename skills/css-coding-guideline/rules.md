@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.14.0
+- バージョン: 0.15.0
 - 生成日: 2026-10-02
-- ルールの数: 496
+- ルールの数: 500
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -288,7 +288,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-4 モダンな記法にそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/modern-syntax.mdx）
 - 【推奨】移動、回転、拡大・縮小は、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティで書く。（`individual-transform-properties`）
   - 理由: 変形ごとに値を変えたりトランジションを掛けたりでき、ほかの変形の値を書き直さずに済むため。
-  - 補足: `skew()` のように個別のプロパティがない変形と、変形を適用する順番を変える必要がある場合に限り、`transform` を使います。
+  - 補足: `skew()` のように個別のプロパティがない変形、変形を適用する順番を変える必要がある場合、X軸とY軸の回転を重ねるような3Dの複合指定（`rotate` は1つの軸しか表せないため）に限り、`transform` を使います。
   - 詳細: 6-4 モダンな記法にそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/modern-syntax.mdx）
 - 【必須】色の関数の値はカンマではなくスペースで区切り、不透明度は `/` の後ろにパーセントで書く（`rgb(0 0 0 / 80%)`）。（`color-space-separated`）
   - 理由: `oklch()` などの新しい色の関数はスペース区切りしか受け付けないので、すべての色の関数を同じ書き方にそろえられるため。
@@ -758,87 +758,94 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
   - 補足: `:required` と `required` 属性のように、擬似クラスと属性のどちらでも選べる状態は、擬似クラスで選びます。
   - 詳細: 13-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
-- 【必須】トランジションとアニメーションは、`@media (prefers-reduced-motion: no-preference)` の中で指定する。（`motion-only-with-no-preference`）
-  - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せないため。
-  - 補足: スピナーのように動きそのものが情報を伝えるものと、ポップオーバーやダイアログの出現のように一瞬の切り替えがかえって分かりにくい場合の、位置や大きさを変えないフェードは、条件の外に書いてかまいません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【禁止】`transition: all` や `transition-property: all` を使わない。（`no-transition-all`）
-  - 理由: 関係のないプロパティまで動き、意図しないアニメーションや無駄な描画の負荷を生むため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】グローバルな `@keyframes` は1つにつき1つのプロパティだけを変え、複数の動きは `animation-name` のカンマ区切りで組み合わせる。（`keyframes-single-property`）
-  - 理由: プロパティごとに再生時間とイージングを選び分けられ、単体でも再利用できるため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】`@keyframes` の自明な `from` や `to` は省略し、要素がもともと持っている値に向けて（または、その値から）動かす。（`keyframes-omit-obvious-frame`）
-  - 理由: 値を書き込むと、要素の実際の値と食い違ったときに、動きの始めや終わりで値が飛ぶため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かす。（`starting-style-for-entry`）
-  - 理由: JavaScript でクラスを付け外しするタイミングを調整しなくても、CSS だけで出現と退場の両方を動かせるため。
-  - 補足: `@starting-style` は、開いた状態のセレクタの中に書きます。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
-  - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
-  - 補足: 1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
-  - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
-  - 補足: `!important` や詳細度を上げるセレクタでは解決しません。`@keyframes` の値は通常の宣言より優先されます。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】開閉する UI は、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のような HTML の機能で作り、`div` とクラスの付け外しで作らない。（`native-disclosure-elements`）
   - 理由: フォーカスの移動、Esc キーでの閉じる操作、トップレイヤーへの表示、ページ内検索での展開を、ブラウザが引き受けてくれるため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】タブやアコーディオンの閉じたパネルは `hidden="until-found"` で隠し、`display: none` で隠さない。（`hidden-until-found-for-panels`）
   - 理由: ページ内検索やページ内リンクで中身が見つかったとき、ブラウザが自動でパネルを開くため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【必須】開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してから JavaScript で隠す。（`hide-panels-after-init`）
   - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境でも、中身を読めるようにするため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】チェックボックスやラジオボタンの見た目を作り直すときは、`input` 自体に `appearance: none` を指定して描き、`input` を隠して別の要素で描かない。（`style-input-directly`）
   - 理由: キーボードで操作できなくなる事故を防げ、フォーカスリングもそのまま表示されるため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】入力エラーの見た目は、`:invalid` ではなく `:user-invalid` に指定する。（`user-invalid-for-errors`）
   - 理由: `:invalid` は入力する前から当てはまり、ページを開いた時点でエラーが表示されてしまうため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】入力欄の文字サイズは `1rem`（16px 相当）以上にする。（`input-font-size-min-1rem`）
   - 理由: iOS の Safari は、文字サイズが16px 未満の入力欄にフォーカスすると画面を拡大し、ページの見え方が変わってしまうため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【禁止】入力欄での拡大を防ぐために、`<meta name="viewport">` の `maximum-scale` や `user-scalable=no` でズームを止めない。（`no-maximum-scale`）
   - 理由: 拡大して読む必要のあるユーザーが、ページを拡大できなくなるため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
-- 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
-  - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
-  - 補足: 固定の名前は、ページに1つしかない要素にだけ付けます。
-  - 詳細: 13-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
-- 【推奨】同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。（`view-transition-match-element`）
-  - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
-  - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
-  - 詳細: 13-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【禁止】カルーセルを自動で再生しない。（`no-autoplay-carousel`）
   - 理由: 読み上げや操作の途中で内容が切り替わり、一時停止の手段を用意しても問題が残るうえ、自動で切り替わるスライドをユーザーは最後まで見ないため。
   - 補足: カルーセルにする前に、カードを一覧で並べられないかを検討します。
-  - 詳細: 13-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+  - 詳細: 13-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 - 【必須】`::scroll-button()`、`::scroll-marker`、`scroll-marker-group`、`scrollbar-width: none` は、`@supports selector(::scroll-button(*))` などの中に書く。（`carousel-controls-in-supports`）
   - 理由: 未対応の環境ではボタンとインジケーターが表示されないので、スクロールバーを残して横スクロールとして読めるようにし、Safari でネストした以降のスタイルが無効になるのも防ぐため。
   - 補足: 土台はスクロールスナップの横スクロールにし、ボタンとインジケーターはプログレッシブ・エンハンスメントとして足します。
-  - 詳細: 13-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+  - 詳細: 13-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 - 【推奨】`<dialog>` のモーダルにできないドロワーで背面を操作できなくするときは、`interactivity: inert` ではなく、JavaScript で背面の要素に `inert` 属性を付ける。（`inert-attribute-for-background`）
   - 理由: `interactivity` に対応していない環境では背面を操作できてしまい、見えないリンクにフォーカスが移るため。
   - 補足: CSS で書く場合も、`body:has()` ではなく、`.global-header:has(…) ~ *` のように起点をヘッダーに絞ります。
-  - 詳細: 13-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+  - 詳細: 13-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+- 【必須】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定し、機能的な動きでも大きな変動は、動きを減らす設定ではフェードに簡素化するか短くする。（`motion-only-with-no-preference`）
+  - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せず、状態の変化は伝え続けるため。
+  - 補足: 大きな変動とは、画面の3分の1以上を占める要素の移動、回転、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときは50ms以下にします。スピナー、プログレスバー、フォーカスリングの表示は変えません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。
+  - 詳細: 14-2 動きを減らす設定に対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/reduced-motion.mdx）
+- 【必須】拡大して現れる動きは `scale: 0` から始めず、ツールチップとポップオーバーは0.95〜0.98、ドロップダウンメニューは0.92〜0.96、ダイアログやドロワーは0.85〜0.92から始め、`transform-origin` をトリガーのある側に向ける。（`scale-in-from-near-one`）
+  - 理由: 何もないところから膨らむ動きは物理的に不自然で、起点が中央のままだと、どこから現れたのかが伝わらないため。
+  - 詳細: 14-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【禁止】`transition: all` や `transition-property: all` を使わない。（`no-transition-all`）
+  - 理由: 関係のないプロパティまで動き、意図しないアニメーションや無駄な描画の負荷を生むため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】グローバルな `@keyframes` は1つにつき1つのプロパティだけを変え、複数の動きは `animation-name` のカンマ区切りで組み合わせる。（`keyframes-single-property`）
+  - 理由: プロパティごとに再生時間とイージングを選び分けられ、単体でも再利用できるため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】`@keyframes` の自明な `from` や `to` は省略し、要素がもともと持っている値に向けて（または、その値から）動かす。（`keyframes-omit-obvious-frame`）
+  - 理由: 値を書き込むと、要素の実際の値と食い違ったときに、動きの始めや終わりで値が飛ぶため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かす。（`starting-style-for-entry`）
+  - 理由: JavaScript でクラスを付け外しするタイミングを調整しなくても、CSS だけで出現と退場の両方を動かせるため。
+  - 補足: `@starting-style` は、開いた状態のセレクタの中に書きます。
+  - 詳細: 14-5 出現と退場（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/entry-and-exit.mdx）
+- 【推奨】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
+  - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
+  - 補足: `!important` や詳細度を上げるセレクタで解決しようとしません。ほかの状態のスタイルまで上書きしてしまうためです。`@keyframes` の値は通常の宣言より優先されます。
+  - 詳細: 14-5 出現と退場（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/entry-and-exit.mdx）
+- 【推奨】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
+  - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
+  - 補足: 1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。
+  - 詳細: 14-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
+- 【必須】`will-change` は CSS に書いたままにせず、どうしても必要なときだけ、動きの直前に JavaScript で付けて、終わったら外す。（`will-change-temporarily`）
+  - 理由: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。
+  - 補足: 外す処理は `transitionend` だけでなく `transitioncancel` にも登録します。動きを減らす設定などでトランジションが起きないときは付けません。
+  - 詳細: 14-7 動きの負荷を抑える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/performance.mdx）
+- 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
+  - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
+  - 補足: 固定の名前は、ページに1つしかない要素にだけ付けます。
+  - 詳細: 14-8 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/view-transitions.mdx）
+- 【推奨】同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。（`view-transition-match-element`）
+  - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
+  - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
+  - 詳細: 14-8 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/view-transitions.mdx）
 - 【禁止】エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。（`no-disabling-to-silence`）
   - 理由: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。（`verify-support-claims`）
   - 理由: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
   - 補足: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第7章のルール `utility-single-purpose`）。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。（`wysiwyg-cms-prefix`）
   - 理由: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
   - 補足: `[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。
-  - 詳細: 14-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 15-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 
 ## すべてのルール
 
@@ -1413,7 +1420,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-4 モダンな記法にそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/modern-syntax.mdx）
 - 【推奨】移動、回転、拡大・縮小は、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティで書く。（`individual-transform-properties`）
   - 理由: 変形ごとに値を変えたりトランジションを掛けたりでき、ほかの変形の値を書き直さずに済むため。
-  - 補足: `skew()` のように個別のプロパティがない変形と、変形を適用する順番を変える必要がある場合に限り、`transform` を使います。
+  - 補足: `skew()` のように個別のプロパティがない変形、変形を適用する順番を変える必要がある場合、X軸とY軸の回転を重ねるような3Dの複合指定（`rotate` は1つの軸しか表せないため）に限り、`transform` を使います。
   - 詳細: 6-4 モダンな記法にそろえる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/modern-syntax.mdx）
 - 【必須】色の関数の値はカンマではなくスペースで区切り、不透明度は `/` の後ろにパーセントで書く（`rgb(0 0 0 / 80%)`）。（`color-space-separated`）
   - 理由: `oklch()` などの新しい色の関数はスペース区切りしか受け付けないので、すべての色の関数を同じ書き方にそろえられるため。
@@ -1596,7 +1603,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: デザインの変更をトークンの修正だけで反映でき、わずかに違う値が紛れ込むのを防げるため。
   - 補足: トークンに定義されていない特殊な値は、トークンを追加せずにその場に直接書きます。
   - 詳細: 7-4 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
-- 【推奨】イージングと再生時間はトークンにし、イージングは `--ease--quint-out` のように強さと方向が分かる名前にする。（`motion-tokens`）
+- 【推奨】イージングと再生時間はトークンにし、イージングは `--ease--out-quint` のように強さと方向が分かる名前にする。（`motion-tokens`）
   - 理由: サイトの中で動きの速さと質感がそろい、全体の調整もトークンの値を変えるだけで済むため。
   - 詳細: 7-4 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
 - 【推奨】z-index のトークンは、絶対的な値を100刻みで定義し、相対的な値は `--z--forwards`（1）と `--z--backwards`（-1）の2つだけにする。（`z-index-token-scale`）
@@ -2437,7 +2444,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: `shape()` に対応していない環境には、`@supports not` で `border-radius` の形に戻します。
   - 詳細: 12-3 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 
-### 第13章 インタラクションとモーション
+### 第13章 インタラクション
 
 - 【必須】`:hover` のスタイルは `@media (any-hover)` の中に書き、`(hover: hover)` や画面の幅で判定しない。（`hover-inside-any-hover`）
   - 理由: タッチ操作の端末でホバーの状態が残り続けるのを防ぎつつ、タブレットにマウスをつないだ場合のように、ホバーできる入力がひとつでもあればホバーを有効にできるため。
@@ -2446,7 +2453,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】ホバーで変える見た目は、`:focus-visible` にも同じように指定する。（`hover-with-focus-visible`）
   - 理由: キーボードで操作するユーザーにも同じ手がかりを示せ、フォーカスリングが見えにくい場面の補いにもなるため。
   - 詳細: 13-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
-- 【推奨】ホバーのスタイルは、`:any-link:hover` や `:enabled:hover` のように、操作できる状態に限定して書く。（`hover-only-when-operable`）
+- 【必須】ホバーのスタイルは、`:any-link:hover` や `:enabled:hover` のように、操作できる状態に限定して書く。（`hover-only-when-operable`）
   - 理由: `href` のないカレントのリンクや、無効にしたボタンが、押せるかのように反応するのを防ぐため。
   - 詳細: 13-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【禁止】キーボード操作によるフォーカスの移動にトランジションやアニメーションを掛けない。（`no-motion-on-focus-visible`）
@@ -2479,248 +2486,265 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
   - 補足: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。`rem` で書きます。
   - 詳細: 13-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
-- 【推奨】アニメーションを足す前に、状態の変化や操作の結果を伝えるという目的があるかを確かめ、目的のない動きは入れない。（`motion-needs-purpose`）
-  - 理由: 何度も触る UI の装飾的な動きは、待ち時間と操作の負担を増やすだけになるため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【必須】トランジションとアニメーションは、`@media (prefers-reduced-motion: no-preference)` の中で指定する。（`motion-only-with-no-preference`）
-  - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せないため。
-  - 補足: スピナーのように動きそのものが情報を伝えるものと、ポップオーバーやダイアログの出現のように一瞬の切り替えがかえって分かりにくい場合の、位置や大きさを変えないフェードは、条件の外に書いてかまいません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【禁止】`transition: all` や `transition-property: all` を使わない。（`no-transition-all`）
-  - 理由: 関係のないプロパティまで動き、意図しないアニメーションや無駄な描画の負荷を生むため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】トランジションは `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドで書き、再生時間とイージングにはトークンを使う。（`transition-longhand-with-tokens`）
-  - 理由: 動かすプロパティが一目で分かり、サイトの中で動きの速さと質感がそろうため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】動かすプロパティは `opacity`、`translate`、`scale`、`rotate` を優先し、`inline-size` や `inset` のようにレイアウトが変わるプロパティは避ける。（`animate-composite-properties`）
-  - 理由: レイアウトと描画をやり直さずに済み、動きが滑らかになるため。
-  - 補足: アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は常に指定しません。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】グローバルな `@keyframes` は1つにつき1つのプロパティだけを変え、複数の動きは `animation-name` のカンマ区切りで組み合わせる。（`keyframes-single-property`）
-  - 理由: プロパティごとに再生時間とイージングを選び分けられ、単体でも再利用できるため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】`@keyframes` の自明な `from` や `to` は省略し、要素がもともと持っている値に向けて（または、その値から）動かす。（`keyframes-omit-obvious-frame`）
-  - 理由: 値を書き込むと、要素の実際の値と食い違ったときに、動きの始めや終わりで値が飛ぶため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】動きの起点や方向を変えたいときは、`@keyframes` の中で `--<keyframes の名前>--<値の名前>` のカスタムプロパティを参照し、使う側から値を渡す。（`keyframes-api-properties`）
-  - 理由: 同じ `@keyframes` を、起点や方向だけを変えて使い回せるため。
-  - 補足: 例：`--translate-from` の中で `var(--translate-from--y-value, 0)` を参照し、使う側で `--translate-from--y-value: 24px` を指定します。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】中間のフレームを持つものや、複数のプロパティを同時に動かす `@keyframes` は、コンポーネントの CSS に `--<コンポーネント>--<動きの名前>` の名前で定義する。（`keyframes-local-naming`）
-  - 理由: 特定の UI に結びついた動きをグローバルに置かず、名前の衝突も防げるため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かす。（`starting-style-for-entry`）
-  - 理由: JavaScript でクラスを付け外しするタイミングを調整しなくても、CSS だけで出現と退場の両方を動かせるため。
-  - 補足: `@starting-style` は、開いた状態のセレクタの中に書きます。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
-  - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
-  - 補足: 1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】JavaScript で動かす演出の準備のスタイルは、JavaScript がルートに `data-motion-mode="motion"` を付けたときだけ当て、基本のスタイルは動かないときの最終状態として書く。（`motion-mode-attribute`）
-  - 理由: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】現れる動きには `ease-out` 系、画面から出ていく動きには `ease-in` 系のトークンを使い、開いた状態と閉じた状態のルールに分けて指定する。（`ease-in-for-exit`）
-  - 理由: トランジションは変化したあとの状態の値で動くので、状態ごとに書き分けられ、出ていく動きは加速しながら見えなくなるほうが自然なため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
-  - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
-  - 補足: どちらの再生時間もトークンから選びます。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
-  - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
-  - 補足: `!important` や詳細度を上げるセレクタでは解決しません。`@keyframes` の値は通常の宣言より優先されます。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書く。遅延を付けるときや、開始値を待機中にも見せたいときは `animation-fill-mode: both` を指定する。（`animation-longhand-fill-mode`）
-  - 理由: 略記は `animation-timeline` と `animation-range` もリセットするため。また、指定しないと遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
-  - 補足: `transition-longhand-with-tokens` と対になるルールです。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】スクロール駆動アニメーションは、`animation-range` で範囲を明示する。（`scroll-animation-explicit-range`）
-  - 理由: 指定しないと `view()` では `cover`（画面に入り始めてから出終わるまで）の全体になり、見せたいタイミングとずれやすいため。
-  - 補足: `entry`、`exit`、`contain` で範囲を絞るときは、範囲の前後の見た目のために `animation-fill-mode: both` も指定します。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】ばねやバウンスの動きは、`linear()` をジェネレーターで作り、再生時間とセットでトークンにして、コンポーネントに値を直接書かない。（`spring-easing-token`）
-  - 理由: 点の数が多く手で保守できず、トークンにすれば、揺れが収まるまでの時間とイージングを対で使い回せるため。
-  - 補足: 揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
-- 【推奨】動きは CSS のトランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作り、JavaScript のアニメーションライブラリは、CSS だけでは作れない動きにだけ使う。（`css-before-js-animation`）
-  - 理由: 合成だけで動かせる CSS の動きはメインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担も要らないため。
-  - 詳細: 13-2 モーションを実装する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/motion.mdx）
 - 【推奨】開閉する UI は、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のような HTML の機能で作り、`div` とクラスの付け外しで作らない。（`native-disclosure-elements`）
   - 理由: フォーカスの移動、Esc キーでの閉じる操作、トップレイヤーへの表示、ページ内検索での展開を、ブラウザが引き受けてくれるため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】モーダルの開閉は `command` 属性と `commandfor` 属性で行い、対応していないブラウザのためにポリフィルを読み込む。（`dialog-command-attributes`）
   - 理由: `showModal()` を呼ぶ JavaScript を書かずに済み、開閉のボタンが `<button>` に限られるので、マークアップの誤りも防げるため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】背景のクリックで閉じるモーダルは `closedby="any"` で作り、クリックの位置を判定する処理を自作しない。（`dialog-closedby-any`）
   - 理由: Esc キーと背景のクリックによる閉じる操作を、ブラウザの標準の振る舞いにそろえられるため。
   - 補足: 対応していないブラウザでも、Esc キーと閉じるボタンでは閉じられます。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【禁止】モーダルに、独自のフォーカストラップを実装しない。（`no-custom-focus-trap`）
   - 理由: `showModal()` で開いたダイアログは背面を操作できない状態にするので不要であり、ブラウザのツールバーへの移動まで妨げてしまうため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】モーダルやドロワーの中でスクロールする要素には、`overscroll-behavior-block: contain` のように、スクロールする方向の軸だけにスクロールの連鎖を止める指定をする。（`overscroll-contain-in-overlay`）
   - 理由: 中の要素を端までスクロールしたときに、背面のページが続けてスクロールするのを防ぐため。
   - 補足: `dialog` と `[popover]` 自体には kiso.css が指定しています。軸を付けない `overscroll-behavior` は、横のスワイプで前のページに戻る操作まで止めてしまいます。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】1つだけを開くアコーディオンは、同じ `name` 属性を付けた `<details>` で作る。（`details-name-for-exclusive`）
   - 理由: JavaScript を書かずに、ほかの項目を閉じる動作をブラウザに任せられるため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【禁止】`<summary>` の中に見出しの要素を入れない。（`no-heading-in-summary`）
   - 理由: `<summary>` の中では見出しの役割が失われ、見出しで移動するユーザーが項目にたどり着けなくなるため。
   - 補足: 見出しの構造が必要なら、`hidden="until-found"` を使ったアコーディオンにします。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】`<details>` の開閉する部分の余白や開閉の動きは、`::details-content` に指定する。（`details-content-for-panel`）
   - 理由: 中身を包む要素を足さずに済み、閉じる動きまで CSS だけで書けるため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】タブやアコーディオンの閉じたパネルは `hidden="until-found"` で隠し、`display: none` で隠さない。（`hidden-until-found-for-panels`）
   - 理由: ページ内検索やページ内リンクで中身が見つかったとき、ブラウザが自動でパネルを開くため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【必須】開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してから JavaScript で隠す。（`hide-panels-after-init`）
   - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境でも、中身を読めるようにするため。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【非推奨】`hidden="until-found"` を付ける要素自体には、余白、枠線、背景を指定しない。（`no-box-style-on-until-found`）
   - 理由: 対応したブラウザは `content-visibility: hidden` で中身だけを隠すので、要素自体の余白や枠線は閉じていても表示されるため。
   - 補足: 余白や背景は、内側の要素に指定します。
-  - 詳細: 13-3 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
+  - 詳細: 13-2 開閉するUI（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/disclosure.mdx）
 - 【推奨】チェックボックス、ラジオボタン、スライダーの色を変えるだけなら、`accent-color` を使う。（`accent-color-for-color-only`）
   - 理由: ブラウザの部品の操作性やアクセシビリティをそのまま保てるため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】チェックボックスやラジオボタンの見た目を作り直すときは、`input` 自体に `appearance: none` を指定して描き、`input` を隠して別の要素で描かない。（`style-input-directly`）
   - 理由: キーボードで操作できなくなる事故を防げ、フォーカスリングもそのまま表示されるため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【非推奨】`input` 要素の大きさを `aspect-ratio` で決めない。（`no-aspect-ratio-on-input`）
   - 理由: Safari で縦横の比率が保たれず、部品が潰れることがあるため。
   - 補足: `inline-size` と `block-size` の両方を指定します。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】スイッチは `<input type="checkbox" switch>` で作り、`switch` 属性に対応していない環境でチェックボックスとして扱われることを許容する。（`switch-attribute-progressive`）
   - 理由: 対応した環境ではスクリーンリーダーがオンとオフで読み上げ、未対応の環境でも操作は損なわれないため。
   - 補足: すべての環境でスイッチとして読み上げる必要がある場合は、`role="switch"` を加えます。`<button>` と `aria-pressed` はトグルボタンを表し、オンとオフの意味にならないので使いません。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】入力エラーの見た目は、`:invalid` ではなく `:user-invalid` に指定する。（`user-invalid-for-errors`）
   - 理由: `:invalid` は入力する前から当てはまり、ページを開いた時点でエラーが表示されてしまうため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】`<textarea>` には `field-sizing: content` を指定し、最小と最大の高さを `lh` 単位で決める。（`field-sizing-for-textarea`）
   - 理由: 入力した量に合わせて入力欄が伸び縮みし、未対応の環境では従来どおりの入力欄になるだけなため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】入力欄の文字サイズは `1rem`（16px 相当）以上にする。（`input-font-size-min-1rem`）
   - 理由: iOS の Safari は、文字サイズが16px 未満の入力欄にフォーカスすると画面を拡大し、ページの見え方が変わってしまうため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【禁止】入力欄での拡大を防ぐために、`<meta name="viewport">` の `maximum-scale` や `user-scalable=no` でズームを止めない。（`no-maximum-scale`）
   - 理由: 拡大して読む必要のあるユーザーが、ページを拡大できなくなるため。
-  - 詳細: 13-4 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
-- 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
-  - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
-  - 補足: 固定の名前は、ページに1つしかない要素にだけ付けます。
-  - 詳細: 13-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
-- 【推奨】同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。（`view-transition-match-element`）
-  - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
-  - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
-  - 詳細: 13-5 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/view-transitions.mdx）
+  - 詳細: 13-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【禁止】カルーセルを自動で再生しない。（`no-autoplay-carousel`）
   - 理由: 読み上げや操作の途中で内容が切り替わり、一時停止の手段を用意しても問題が残るうえ、自動で切り替わるスライドをユーザーは最後まで見ないため。
   - 補足: カルーセルにする前に、カードを一覧で並べられないかを検討します。
-  - 詳細: 13-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+  - 詳細: 13-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 - 【必須】`::scroll-button()`、`::scroll-marker`、`scroll-marker-group`、`scrollbar-width: none` は、`@supports selector(::scroll-button(*))` などの中に書く。（`carousel-controls-in-supports`）
   - 理由: 未対応の環境ではボタンとインジケーターが表示されないので、スクロールバーを残して横スクロールとして読めるようにし、Safari でネストした以降のスタイルが無効になるのも防ぐため。
   - 補足: 土台はスクロールスナップの横スクロールにし、ボタンとインジケーターはプログレッシブ・エンハンスメントとして足します。
-  - 詳細: 13-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+  - 詳細: 13-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 - 【推奨】カルーセルのスライドを `container: --<名前> / scroll-state` のコンテナにし、止まっていないスライドの中身を `@container --<名前> not scroll-state(snapped: inline)` で `interactivity: inert` にする。（`carousel-inert-unsnapped`）
   - 理由: 隠れているスライドが読み上げとフォーカスの対象から外れ、見えている1枚の後にカルーセルの後ろの要素へ移れるため。
   - 補足: 1枚ずつ表示するカルーセルが前提です。複数枚を表示すると、見えていてもスナップの位置にないスライドが不活性になるので、条件を見直すか、この指定を使いません。`interactivity` は継承し、子孫から `auto` で打ち消せません。コンテナクエリで変えられるのは子孫だけなので、スライドではなくその中の要素に指定します。
-  - 詳細: 13-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+  - 詳細: 13-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 - 【推奨】`<dialog>` のモーダルにできないドロワーで背面を操作できなくするときは、`interactivity: inert` ではなく、JavaScript で背面の要素に `inert` 属性を付ける。（`inert-attribute-for-background`）
   - 理由: `interactivity` に対応していない環境では背面を操作できてしまい、見えないリンクにフォーカスが移るため。
   - 補足: CSS で書く場合も、`body:has()` ではなく、`.global-header:has(…) ~ *` のように起点をヘッダーに絞ります。
-  - 詳細: 13-6 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+  - 詳細: 13-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
 
-### 第14章 実務での運用
+### 第14章 モーション
+
+- 【推奨】アニメーションを足す前に、状態の変化や操作の結果を伝えるという目的があるかを確かめ、目的のない動きは入れない。（`motion-needs-purpose`）
+  - 理由: 何度も触る UI の装飾的な動きは、待ち時間と操作の負担を増やすだけになるため。
+  - 詳細: 14-1 動かすかどうかを決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/purpose.mdx）
+- 【推奨】動きは CSS のトランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作り、JavaScript のアニメーションライブラリは、CSS だけでは作れない動きにだけ使う。（`css-before-js-animation`）
+  - 理由: 合成だけで動かせる CSS の動きはメインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担も要らないため。
+  - 詳細: 14-1 動かすかどうかを決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/purpose.mdx）
+- 【必須】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定し、機能的な動きでも大きな変動は、動きを減らす設定ではフェードに簡素化するか短くする。（`motion-only-with-no-preference`）
+  - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せず、状態の変化は伝え続けるため。
+  - 補足: 大きな変動とは、画面の3分の1以上を占める要素の移動、回転、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときは50ms以下にします。スピナー、プログレスバー、フォーカスリングの表示は変えません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。
+  - 詳細: 14-2 動きを減らす設定に対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/reduced-motion.mdx）
+- 【必須】拡大して現れる動きは `scale: 0` から始めず、ツールチップとポップオーバーは0.95〜0.98、ドロップダウンメニューは0.92〜0.96、ダイアログやドロワーは0.85〜0.92から始め、`transform-origin` をトリガーのある側に向ける。（`scale-in-from-near-one`）
+  - 理由: 何もないところから膨らむ動きは物理的に不自然で、起点が中央のままだと、どこから現れたのかが伝わらないため。
+  - 詳細: 14-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【推奨】`linear` のイージングは、マーキーやプログレスバーのように一定の速さで続く動きにだけ使い、UI の状態の変化には使わない。（`linear-only-for-constant-motion`）
+  - 理由: 速さが変わらない動きは機械的に見え、始まりと終わりが唐突に感じられるため。
+  - 詳細: 14-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【推奨】ボタンを押したことを動きで返すときは、`:active` で `scale` を0.96〜0.98に縮め、再生時間を100〜150msにする。（`press-feedback-short`）
+  - 理由: 押したことがすぐに伝わり、短い動きなら続けて押す操作の妨げにならないため。
+  - 補足: 押したことを伝える必要がある UI にだけ使います。
+  - 詳細: 14-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【推奨】ばねやバウンスの動きは、`linear()` をジェネレーターで作り、再生時間とセットでトークンにして、コンポーネントに値を直接書かない。（`spring-easing-token`）
+  - 理由: 点の数が多く手で保守できず、トークンにすれば、揺れが収まるまでの時間とイージングを対で使い回せるため。
+  - 補足: 揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。
+  - 詳細: 14-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【禁止】`transition: all` や `transition-property: all` を使わない。（`no-transition-all`）
+  - 理由: 関係のないプロパティまで動き、意図しないアニメーションや無駄な描画の負荷を生むため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】トランジションは `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドで書き、再生時間とイージングにはトークンを使う。（`transition-longhand-with-tokens`）
+  - 理由: 動かすプロパティが一目で分かり、サイトの中で動きの速さと質感がそろうため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
+  - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
+  - 補足: どちらの再生時間もトークンから選びます。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】操作の途中で取り消されることがある動きは `@keyframes` ではなくトランジションで書き、タブやセグメンテッドコントロールのように続けて押される UI では、再生時間を100〜150msにするか、動きを省く。（`interruptible-with-transition`）
+  - 理由: トランジションは途中の状態から逆向きに戻るが、`@keyframes` のアニメーションは途中で止めると値が飛び、続けて押すと動きが操作に追いつかないため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書き、`animation-fill-mode` は `both` を第一候補にする。（`animation-longhand-fill-mode`）
+  - 理由: 略記は `animation-timeline` と `animation-range` もリセットするため。また、`both` にしないと、遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
+  - 補足: `transition-longhand-with-tokens` と対になるルールです。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】グローバルな `@keyframes` は1つにつき1つのプロパティだけを変え、複数の動きは `animation-name` のカンマ区切りで組み合わせる。（`keyframes-single-property`）
+  - 理由: プロパティごとに再生時間とイージングを選び分けられ、単体でも再利用できるため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】`@keyframes` の自明な `from` や `to` は省略し、要素がもともと持っている値に向けて（または、その値から）動かす。（`keyframes-omit-obvious-frame`）
+  - 理由: 値を書き込むと、要素の実際の値と食い違ったときに、動きの始めや終わりで値が飛ぶため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】動きの起点や方向を変えたいときは、`@keyframes` の中で `--<keyframes の名前>--<値の名前>` のカスタムプロパティを参照し、使う側から値を渡す。（`keyframes-api-properties`）
+  - 理由: 同じ `@keyframes` を、起点や方向だけを変えて使い回せるため。
+  - 補足: 例：`--translate-from` の中で `var(--translate-from--y-value, 0)` を参照し、使う側で `--translate-from--y-value: 24px` を指定します。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】中間のフレームを持つものや、複数のプロパティを同時に動かす `@keyframes` は、コンポーネントの CSS に `--<コンポーネント>--<動きの名前>` の名前で定義する。（`keyframes-local-naming`）
+  - 理由: 特定の UI に結びついた動きをグローバルに置かず、名前の衝突も防げるため。
+  - 詳細: 14-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
+- 【推奨】`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かす。（`starting-style-for-entry`）
+  - 理由: JavaScript でクラスを付け外しするタイミングを調整しなくても、CSS だけで出現と退場の両方を動かせるため。
+  - 補足: `@starting-style` は、開いた状態のセレクタの中に書きます。
+  - 詳細: 14-5 出現と退場（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/entry-and-exit.mdx）
+- 【推奨】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
+  - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
+  - 補足: `!important` や詳細度を上げるセレクタで解決しようとしません。ほかの状態のスタイルまで上書きしてしまうためです。`@keyframes` の値は通常の宣言より優先されます。
+  - 詳細: 14-5 出現と退場（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/entry-and-exit.mdx）
+- 【推奨】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
+  - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
+  - 補足: 1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。
+  - 詳細: 14-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
+- 【推奨】スクロール駆動アニメーションは、`animation-range` で範囲を明示する。（`scroll-animation-explicit-range`）
+  - 理由: 指定しないと `view()` では `cover`（画面に入り始めてから出終わるまで）の全体になり、見せたいタイミングとずれやすいため。
+  - 補足: `entry`、`exit`、`contain` で範囲を絞るときは、範囲の前後の見た目のために `animation-fill-mode: both` も指定します。
+  - 詳細: 14-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
+- 【推奨】JavaScript で動かす演出の準備のスタイルは、JavaScript が準備（監視の開始やライブラリの読み込み）を終えてルートに `data-motion-mode="motion"` を付けたときだけ当て、基本のスタイルは動かないときの最終状態として書く。（`motion-mode-attribute`）
+  - 理由: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
+  - 詳細: 14-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
+- 【推奨】動かすプロパティは `opacity`、`translate`、`scale`、`rotate` を優先し、`inline-size` や `inset` のようにレイアウトが変わるプロパティは避ける。（`animate-composite-properties`）
+  - 理由: レイアウトと描画をやり直さずに済み、動きが滑らかになるため。
+  - 補足: 一部の `filter` も、ブラウザによっては合成だけで処理されます。`clip-path` はペイントが起きるものとして扱います。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。
+  - 詳細: 14-7 動きの負荷を抑える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/performance.mdx）
+- 【必須】`will-change` は CSS に書いたままにせず、どうしても必要なときだけ、動きの直前に JavaScript で付けて、終わったら外す。（`will-change-temporarily`）
+  - 理由: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。
+  - 補足: 外す処理は `transitionend` だけでなく `transitioncancel` にも登録します。動きを減らす設定などでトランジションが起きないときは付けません。
+  - 詳細: 14-7 動きの負荷を抑える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/performance.mdx）
+- 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
+  - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
+  - 補足: 固定の名前は、ページに1つしかない要素にだけ付けます。
+  - 詳細: 14-8 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/view-transitions.mdx）
+- 【推奨】同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。（`view-transition-match-element`）
+  - 理由: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
+  - 補足: `match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。
+  - 詳細: 14-8 View Transitionsで画面の切り替えをつなぐ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/view-transitions.mdx）
+
+### 第15章 実務での運用
 
 - 【必須】CSS を変更したら Stylelint を実行し、エラーを残さない。（`run-stylelint-before-done`）
   - 理由: 機械的に判断できる違反をレビューに持ち込まず、レビューを命名や設計の判断に集中させるため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【禁止】エラーや警告を消すことだけを目的に、ルールを無効にしたり検査を飛ばしたりしない。（`no-disabling-to-silence`）
   - 理由: 違反がなくなるのではなく見えなくなるだけで、同じ誤りが残り続けるため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【必須】ルールを無効にするときは、`stylelint-disable-next-line` とルール名で1行・1つのルールに絞り、直前のコメントに理由を書く。（`disable-one-line-with-reason`）
   - 理由: 範囲を広げると、同じ場所にある別の誤りまで見逃すうえ、なぜ無効にしたのかが後から分からなくなるため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】プロパティの並び順のように自動で直せる違反は、手で直さず、`stylelint --fix` とエディタの保存時の自動修正に任せる。（`autofix-mechanical-issues`）
   - 理由: 整形はツールの仕事で、人が手作業でそろえると時間がかかるうえ、漏れが出るため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】禁止リストのルール（`unit-disallowed-list` など）には、`message` で代わりの書き方を示す。（`disallowed-list-with-message`）
   - 理由: 何を書けばよいかがその場で分かり、ルールを無効にして済ませる動機を減らせるため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】置き換え先を人が選ぶ必要のあるルールは警告に、正解が1つに決まるルールはエラーにする。（`warning-for-judgement-rules`）
   - 理由: 機械的に直せる違反は確実に止め、判断の要る違反は人に判断を促せるため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】警告は放置せず、直すか、意図して使う場合は理由を添えてルールを1行だけ無効にする。（`resolve-warnings`）
   - 理由: 警告を放置すると、本当に直すべき警告が一覧に埋もれ、誰も警告を読まなくなるため。
   - 補足: 警告だけでは Stylelint の終了コードは失敗になりません。CI で警告も失敗にするときは、`--max-warnings 0` を付けて実行します。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【必須】ガイドラインのルールを変えたら、Stylelint の設定も合わせて変え、本文と設定を食い違わせない。（`lint-config-matches-guideline`）
   - 理由: 設定がガイドラインの意図とずれると、ツールが誤りを直すどころか、誤りを強制するため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【推奨】ガイドラインや設計のドキュメントに載せる推奨のコード例も、同じ Stylelint の設定で検証する。（`lint-documented-examples`）
   - 理由: コード例が自分のルールに違反していると、ドキュメントが信用されず、AI にもそのまま手本として真似されるため。
-  - 詳細: 14-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
+  - 詳細: 15-1 Stylelintでルールを守る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/stylelint.mdx）
 - 【必須】レビューの指摘には、理由と解決策を必ずセットで書く。（`review-reason-and-solution`）
   - 理由: 何が問題で、どう直せばよいかが伝わらないと、書いた人が調べ直すことになり、同じ誤りを繰り返すため。
   - 補足: 本書のルールに当てはまる指摘には、ルールの ID を添えます。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】レビューの指摘には `MUST`、`IMO`、`Q` のラベルを付けて、深刻度を区別する。（`review-severity-labels`）
   - 理由: 直さなければならない指摘と、好みの提案と、質問が混ざらないようにするため。
   - 補足: `MUST` は、仕様や規約への違反、バグ、将来の深刻な問題、使いやすさやアクセシビリティの阻害です。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】挙動に問題がなく、合意のない好みが入る指摘は `IMO` にとどめ、修正を強制しない。（`review-preferences-as-imo`）
   - 理由: 教義的なレビューは、ユーザーやクライアントのメリットにならない修正を増やすため。
   - 補足: 規約として合意したルールへの違反は、`MUST` として指摘します。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】意図が読み取れない記述は、誤りと決めつけずに `Q` で質問する。（`review-ask-unclear-intent`）
   - 理由: 書いた人にしか分からない事情がある場合があり、理由が分かればコメントとして残せるため。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】レビューは、規約、トークン、ブラウザ対応、不要な記述、グローバルの CSS、内容の変化への耐性、コンポーネントの境界、レスポンシブ、コメントの順に確認する。（`review-check-order`）
   - 理由: 影響の大きい問題から確かめ、細部の指摘に埋もれて重大な問題を見逃すのを防ぐため。
   - 補足: インデントや並び順のような整形は、ツールが機能していないときだけ指摘します。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】レビューのコメントと AI への指示では、ルールを ID で引用する（例：`no-vw-vh`）。（`cite-rule-ids`）
   - 理由: ID は章の構成が変わっても変わらず、どのルールのことかが正確に伝わるため。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】AI に CSS を書かせるときやレビューさせるときは、先に本書のルール集（またはスキル）を読ませる。（`ai-read-rules-first`）
   - 理由: AI が誤りやすいルールを、書く前に確認させられるため。
   - 補足: Claude Code では `skills/css-coding-guideline/` をスキルとして登録し、ほかのツールでは `AGENTS.md` や `CLAUDE.md` から `rules.md` を参照させます。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【必須】AI が生成した CSS は、Stylelint とレビューの両方で確かめてから採用する。（`verify-ai-output`）
   - 理由: Stylelint で検出できるのはルールの一部で、lint が通っても規約を守っているとは限らないため。
   - 補足: レビューでは、lint で検出できない「AI が誤りやすい」ルールを重点的に確かめます。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。（`record-ai-corrections`）
   - 理由: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。（`verify-support-claims`）
   - 理由: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
   - 補足: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第7章のルール `utility-single-purpose`）。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。（`ai-layout-with-grid-areas`）
   - 理由: 指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。
-  - 詳細: 14-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+  - 詳細: 15-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
 - 【推奨】CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中にタイプセレクタで書く。（`wysiwyg-scope-root`）
   - 理由: 編集者は要素にクラスを付けられず、子孫セレクタで書くと詳細度が上がり、独自ブロックの側に打ち消しが要るため。
   - 補足: 本文エリアは、`scoped <名前>` の規約（第2章）の例外です。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。
-  - 詳細: 14-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 15-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 - 【推奨】編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。（`wysiwyg-cms-prefix`）
   - 理由: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
   - 補足: `[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。
-  - 詳細: 14-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 15-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 - 【推奨】CMS の本文エリアに限り、`@scope` のネストと、独自ブロックの `@scope` での `to()` の省略を認める。（`wysiwyg-scope-exception`）
   - 理由: 本文エリアと独自ブロックの2段だけで、ブロックの中にコンポーネントを置かない前提が成り立てば、スタイルの漏れが起きにくいため。
   - 補足: ブロックの中にコンポーネントを入れるなら、通常の `@scope (.scoped.<名前>) to (.scoped)` に戻します。
-  - 詳細: 14-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 15-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 - 【推奨】本文のブロック間の余白は、2つ目以降の直下の子に `margin-block-start` を `rlh` で付け、見出しと独自ブロックの前だけ広げる。（`wysiwyg-flow-margin`）
   - 理由: 見出しや段落の行間が違っても、余白がルート要素の行の高さの倍数で揃うため。
   - 補足: 中にブロックを持つ `blockquote` などは、中の余白を `0.5rlh` に詰めます。
-  - 詳細: 14-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 15-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）

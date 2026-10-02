@@ -196,7 +196,7 @@
   level: 推奨
   rule: 移動、回転、拡大・縮小は、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティで書く。
   reason: 変形ごとに値を変えたりトランジションを掛けたりでき、ほかの変形の値を書き直さずに済むため。
-  note: '`skew()` のように個別のプロパティがない変形と、変形を適用する順番を変える必要がある場合に限り、`transform` を使います。'
+  note: '`skew()` のように個別のプロパティがない変形、変形を適用する順番を変える必要がある場合、X軸とY軸の回転を重ねるような3Dの複合指定（`rotate` は1つの軸しか表せないため）に限り、`transform` を使います。'
   aiProne: true
   page: notation/modern-syntax
   since: 0.1.0

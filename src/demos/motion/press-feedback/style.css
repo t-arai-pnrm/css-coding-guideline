@@ -1,0 +1,61 @@
+@layer tokens {
+  :root {
+    --duration--press: 120ms;
+    --duration--fast: 200ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@layer components {
+  @scope (.scoped.press-demo) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+      --_accent--hocus: oklch(from var(--_accent) calc(l - 0.14) c h);
+
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    button {
+      --_background: var(--_accent);
+
+      padding-block: 12px;
+      padding-inline: 24px;
+      border-color: transparent;
+      border-radius: 4px;
+      background-color: var(--_background);
+      color: oklch(100% 0 0deg);
+
+      &:disabled {
+        --_background: oklch(60% 0 0deg);
+      }
+
+      /* キーボードでフォーカスしたときも、ホバーと同じ見た目にする */
+      &:focus-visible {
+        --_background: var(--_accent--hocus);
+      }
+
+      /* 色はホバーの目安（150〜200ms）、縮小は押下の目安（100〜150ms）で動かす */
+      &:not(:focus-visible) {
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--fast), var(--duration--press);
+          transition-property: background-color, scale;
+          transition-timing-function: var(--ease--out-quint);
+        }
+      }
+
+      /* 無効にしたボタンは、ホバーしても押しても反応させない */
+      &:enabled:hover {
+        @media (any-hover) {
+          --_background: var(--_accent--hocus);
+        }
+      }
+
+      &:enabled:active {
+        scale: 0.97;
+      }
+    }
+  }
+}

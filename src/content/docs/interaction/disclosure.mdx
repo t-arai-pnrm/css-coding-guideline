@@ -1,15 +1,12 @@
 ---
-title: "13-3 開閉するUI"
+title: "13-2 開閉するUI"
 description: "モーダルは<dialog>をcommand属性とclosedby属性で開閉し、小さな表示にはpopover属性を使います。アコーディオンは<details>とname属性で作り、見出しの構造が必要なパネルやタブはhidden=\"until-found\"で隠します。"
 sidebar:
-  order: 3
+  order: 2
 ---
 
 import Baseline from '../../../components/Baseline.astro';
-import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
-import detailsHtml from '../../../demos/interaction/details-accordion/index.html?raw';
-import detailsCss from '../../../demos/interaction/details-accordion/style.css?raw';
 
 開閉するUIは、HTMLの機能で作ります。モーダルは `<dialog>` を `command` 属性で開き、`closedby="any"` で背景のクリックでも閉じられるようにします。メニューのような小さな表示には `popover` 属性を、その場で開閉する項目には `<details>` を使います。
 
@@ -96,50 +93,7 @@ viewer.addEventListener('command', (event) => {
 
 `command` イベントは、組み込みのコマンドでも、操作の前に発生します。イベントは取り消し可能で、`preventDefault()` を呼ぶとダイアログやポップオーバーの開閉も行われません。
 
-## ダイアログの開閉を動かす
-
-ダイアログの開閉は、「[13-2 モーションを実装する](/interaction/motion/)」で説明した `@starting-style` で動かします。`display` と `overlay` を `transition-behavior: allow-discrete` でトランジションの対象にし、開いたときの開始地点を `@starting-style` で指定します。
-
-```css title="🙆‍♂ Recommended: ダイアログと背景をフェードさせる"
-@scope (.scoped.site-dialog) to (.scoped) {
-  :scope {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z--top);
-    transition-duration: var(--duration--slow);
-    transition-property: display, overlay, opacity;
-    transition-timing-function: var(--ease--quint-in);
-    transition-behavior: allow-discrete;
-
-    &::backdrop {
-      background-color: oklch(0% 0 0deg / 50%);
-      transition-duration: inherit;
-      transition-property: opacity;
-      transition-timing-function: inherit;
-    }
-  }
-
-  :scope:modal {
-    transition-timing-function: var(--ease--quint-out);
-  }
-
-  :scope:modal,
-  :scope:modal::backdrop {
-    @starting-style {
-      opacity: 0;
-    }
-  }
-
-  :scope:not(:modal),
-  :scope:not(:modal)::backdrop {
-    opacity: 0;
-  }
-}
-```
-
-この例では、ダイアログと背景を不透明度だけで変化させています。イージングは、開くときに `--ease--quint-out`、閉じるときに `--ease--quint-in` を使います（理由は「[13-2 モーションを実装する](/interaction/motion/)」で説明しています）。背景は、ダイアログの値を `inherit` で受け取るので、同じイージングになります。画面の大部分を覆うUIが一瞬で現れると、何が起きたのか分かりにくくなります。位置と大きさを変えないフェードなので、動きを減らす設定でも残しています。
-
-`position: fixed` と `inset: 0` は、Safariで表示が崩れる不具合（2025年5月時点で確認されていたもの）を避けるために明示しています。モーダルを開いている間の背面の固定は「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」で、`z-index` のトークンは「[7-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+ダイアログと背景を `@starting-style` でフェードさせる方法は、「[14-5 出現と退場](/motion/entry-and-exit/)」で説明します。
 
 ## スクロールの連鎖を止める
 
@@ -196,45 +150,7 @@ viewer.addEventListener('command', (event) => {
 
 開いているときのスタイルは、`[open]` 属性のセレクタで書きます。`:open` という擬似クラスもありますが、Safariは26.5から対応したので、2026年9月の時点では本書の対象のすべてでは使えません。
 
-## `<details>` の開閉を動かす
-
-`<details>` の開閉する部分は、`::details-content` 擬似要素で選べます。以前は、余白を付けたり高さを動かしたりするために、中身を `div` で包む必要がありました。`::details-content` を使えば包む要素は要らず、閉じる動きまでCSSだけで書けます。
-
-```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす"
-@scope (.scoped.faq-list) to (.scoped) {
-  details::details-content {
-    overflow: clip;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--slow);
-      transition-property: content-visibility, block-size, opacity;
-      transition-timing-function: var(--ease--quint-in);
-      transition-behavior: allow-discrete;
-    }
-  }
-
-  details:not([open])::details-content {
-    block-size: 0;
-    opacity: 0;
-  }
-
-  details[open]::details-content {
-    @media (prefers-reduced-motion: no-preference) {
-      transition-timing-function: var(--ease--quint-out);
-    }
-  }
-}
-```
-
-高さと不透明度は閉じているとき（`:not([open])`）だけ0にするので、開いているときに初期値の `auto` と `1` を書き直す必要はありません。閉じた `<details>` の中身は、`content-visibility: hidden` で隠されます。`content-visibility` を `allow-discrete` でトランジションの対象にすると、閉じるときも、高さと不透明度が変わり終わるまで中身が表示されたままになります。`block-size: 0` から `auto` への変化は、ベーススタイルの `interpolate-size: allow-keywords` があるときに限って補間されます（「[5-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
-
-<Demo title="::details-content の高さと不透明度を動かし、name 属性で1つだけを開く" html={detailsHtml} css={detailsCss} />
-
-<Baseline id="details-content" name="::details-content" />
-
-<Baseline id="interpolate-size" />
-
-`interpolate-size` に対応しているのは、2026年9月の時点でChrome系のブラウザだけです。ほかのブラウザでは高さが一瞬で切り替わり、開くときにフェードするだけですが、開閉の機能は損なわれません。SafariとFirefoxでも高さを動かすよう求められた場合に限り、`::details-content` をグリッドにして `grid-template-rows` を `0fr` と `1fr` で切り替える方法を使います。この方法は中身を包む要素が必要になるので、私は必要なときだけ使っています。
+開閉する部分を `::details-content` で選び、高さと不透明度を動かす方法は、「[14-5 出現と退場](/motion/entry-and-exit/)」で説明します。
 
 ## `hidden="until-found"` で隠すタブとアコーディオン
 

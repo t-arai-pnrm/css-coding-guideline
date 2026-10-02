@@ -88,13 +88,13 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
     @media (prefers-reduced-motion: no-preference) {
       transition-duration: var(--duration--fast);
       transition-property: background-color;
-      transition-timing-function: var(--ease--quint-out);
+      transition-timing-function: var(--ease--out-quint);
     }
   }
 }
 ```
 
-`:focus-visible` が当てはまっている間は、トランジションの指定がありません。そのため、フォーカスが来た瞬間に一度で色が変わります。フォーカスが離れるときとホバーのときは、`:not(:focus-visible)` が当てはまるので、なめらかに色が戻ります。トランジションを動きを減らす設定の条件で囲む理由は、「[13-2 モーションを実装する](/interaction/motion/)」で説明します。
+`:focus-visible` が当てはまっている間は、トランジションの指定がありません。そのため、フォーカスが来た瞬間に一度で色が変わります。フォーカスが離れるときとホバーのときは、`:not(:focus-visible)` が当てはまるので、なめらかに色が戻ります。トランジションを動きを減らす設定の条件で囲む理由は、「[14-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明します。
 
 ## ホバーで動く要素の当たり判定
 
@@ -127,7 +127,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
     @media (prefers-reduced-motion: no-preference) {
       transition-duration: var(--duration--fast);
       transition-property: translate;
-      transition-timing-function: var(--ease--quint-out);
+      transition-timing-function: var(--ease--out-quint);
     }
   }
 }

@@ -1,0 +1,209 @@
+# 第14章 モーション
+
+# 14-1 動かすかどうかを決める
+- id: motion-needs-purpose
+  level: 推奨
+  rule: アニメーションを足す前に、状態の変化や操作の結果を伝えるという目的があるかを確かめ、目的のない動きは入れない。
+  reason: 何度も触る UI の装飾的な動きは、待ち時間と操作の負担を増やすだけになるため。
+  page: motion/purpose
+  since: 0.1.0
+
+- id: css-before-js-animation
+  level: 推奨
+  rule: 動きは CSS のトランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作り、JavaScript のアニメーションライブラリは、CSS だけでは作れない動きにだけ使う。
+  reason: 合成だけで動かせる CSS の動きはメインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担も要らないため。
+  page: motion/purpose
+  since: 0.4.0
+
+# 14-2 動きを減らす設定に対応する
+- id: motion-only-with-no-preference
+  level: 必須
+  rule: '装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定し、機能的な動きでも大きな変動は、動きを減らす設定ではフェードに簡素化するか短くする。'
+  reason: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せず、状態の変化は伝え続けるため。
+  note: '大きな変動とは、画面の3分の1以上を占める要素の移動、回転、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときは50ms以下にします。スピナー、プログレスバー、フォーカスリングの表示は変えません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。'
+  aiProne: true
+  page: motion/reduced-motion
+  since: 0.1.0
+
+# 14-3 イージングと再生時間
+- id: scale-in-from-near-one
+  level: 必須
+  rule: '拡大して現れる動きは `scale: 0` から始めず、ツールチップとポップオーバーは0.95〜0.98、ドロップダウンメニューは0.92〜0.96、ダイアログやドロワーは0.85〜0.92から始め、`transform-origin` をトリガーのある側に向ける。'
+  reason: 何もないところから膨らむ動きは物理的に不自然で、起点が中央のままだと、どこから現れたのかが伝わらないため。
+  aiProne: true
+  page: motion/easing-and-duration
+  since: 0.15.0
+
+- id: linear-only-for-constant-motion
+  level: 推奨
+  rule: '`linear` のイージングは、マーキーやプログレスバーのように一定の速さで続く動きにだけ使い、UI の状態の変化には使わない。'
+  reason: 速さが変わらない動きは機械的に見え、始まりと終わりが唐突に感じられるため。
+  page: motion/easing-and-duration
+  since: 0.15.0
+
+- id: press-feedback-short
+  level: 推奨
+  rule: 'ボタンを押したことを動きで返すときは、`:active` で `scale` を0.96〜0.98に縮め、再生時間を100〜150msにする。'
+  reason: 押したことがすぐに伝わり、短い動きなら続けて押す操作の妨げにならないため。
+  note: 押したことを伝える必要がある UI にだけ使います。
+  page: motion/easing-and-duration
+  since: 0.15.0
+
+- id: spring-easing-token
+  level: 推奨
+  rule: ばねやバウンスの動きは、`linear()` をジェネレーターで作り、再生時間とセットでトークンにして、コンポーネントに値を直接書かない。
+  reason: 点の数が多く手で保守できず、トークンにすれば、揺れが収まるまでの時間とイージングを対で使い回せるため。
+  note: '揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。'
+  page: motion/easing-and-duration
+  since: 0.4.0
+
+# 14-4 トランジションと @keyframes
+- id: no-transition-all
+  level: 禁止
+  rule: '`transition: all` や `transition-property: all` を使わない。'
+  reason: 関係のないプロパティまで動き、意図しないアニメーションや無駄な描画の負荷を生むため。
+  aiProne: true
+  page: motion/transitions-and-keyframes
+  since: 0.1.0
+
+- id: transition-longhand-with-tokens
+  level: 推奨
+  rule: トランジションは `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドで書き、再生時間とイージングにはトークンを使う。
+  reason: 動かすプロパティが一目で分かり、サイトの中で動きの速さと質感がそろうため。
+  page: motion/transitions-and-keyframes
+  since: 0.1.0
+
+- id: transition-duration-per-direction
+  level: 推奨
+  rule: '状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。'
+  reason: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
+  note: どちらの再生時間もトークンから選びます。
+  page: motion/transitions-and-keyframes
+  since: 0.4.0
+
+- id: interruptible-with-transition
+  level: 推奨
+  rule: 操作の途中で取り消されることがある動きは `@keyframes` ではなくトランジションで書き、タブやセグメンテッドコントロールのように続けて押される UI では、再生時間を100〜150msにするか、動きを省く。
+  reason: トランジションは途中の状態から逆向きに戻るが、`@keyframes` のアニメーションは途中で止めると値が飛び、続けて押すと動きが操作に追いつかないため。
+  page: motion/transitions-and-keyframes
+  since: 0.15.0
+
+- id: animation-longhand-fill-mode
+  level: 推奨
+  rule: 'アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書き、`animation-fill-mode` は `both` を第一候補にする。'
+  reason: 略記は `animation-timeline` と `animation-range` もリセットするため。また、`both` にしないと、遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
+  note: '`transition-longhand-with-tokens` と対になるルールです。'
+  page: motion/transitions-and-keyframes
+  since: 0.4.0
+
+- id: keyframes-single-property
+  level: 推奨
+  rule: グローバルな `@keyframes` は1つにつき1つのプロパティだけを変え、複数の動きは `animation-name` のカンマ区切りで組み合わせる。
+  reason: プロパティごとに再生時間とイージングを選び分けられ、単体でも再利用できるため。
+  aiProne: true
+  page: motion/transitions-and-keyframes
+  since: 0.1.0
+
+- id: keyframes-omit-obvious-frame
+  level: 推奨
+  rule: '`@keyframes` の自明な `from` や `to` は省略し、要素がもともと持っている値に向けて（または、その値から）動かす。'
+  reason: 値を書き込むと、要素の実際の値と食い違ったときに、動きの始めや終わりで値が飛ぶため。
+  aiProne: true
+  page: motion/transitions-and-keyframes
+  since: 0.1.0
+
+- id: keyframes-api-properties
+  level: 推奨
+  rule: 動きの起点や方向を変えたいときは、`@keyframes` の中で `--<keyframes の名前>--<値の名前>` のカスタムプロパティを参照し、使う側から値を渡す。
+  reason: 同じ `@keyframes` を、起点や方向だけを変えて使い回せるため。
+  note: '例：`--translate-from` の中で `var(--translate-from--y-value, 0)` を参照し、使う側で `--translate-from--y-value: 24px` を指定します。'
+  page: motion/transitions-and-keyframes
+  since: 0.1.0
+
+- id: keyframes-local-naming
+  level: 推奨
+  rule: 中間のフレームを持つものや、複数のプロパティを同時に動かす `@keyframes` は、コンポーネントの CSS に `--<コンポーネント>--<動きの名前>` の名前で定義する。
+  reason: 特定の UI に結びついた動きをグローバルに置かず、名前の衝突も防げるため。
+  page: motion/transitions-and-keyframes
+  since: 0.1.0
+
+# 14-5 出現と退場
+- id: starting-style-for-entry
+  level: 推奨
+  rule: '`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かす。'
+  reason: JavaScript でクラスを付け外しするタイミングを調整しなくても、CSS だけで出現と退場の両方を動かせるため。
+  note: '`@starting-style` は、開いた状態のセレクタの中に書きます。'
+  aiProne: true
+  page: motion/entry-and-exit
+  since: 0.1.0
+
+- id: starting-style-not-overridden
+  level: 推奨
+  rule: '`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。'
+  reason: '`@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。'
+  note: '`!important` や詳細度を上げるセレクタで解決しようとしません。ほかの状態のスタイルまで上書きしてしまうためです。`@keyframes` の値は通常の宣言より優先されます。'
+  aiProne: true
+  page: motion/entry-and-exit
+  since: 0.4.0
+
+# 14-6 スクロールに合わせて動かす
+- id: scroll-linked-method
+  level: 推奨
+  rule: スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。
+  reason: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
+  note: '1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。'
+  aiProne: true
+  page: motion/scroll-driven
+  since: 0.1.0
+
+- id: scroll-animation-explicit-range
+  level: 推奨
+  rule: スクロール駆動アニメーションは、`animation-range` で範囲を明示する。
+  reason: 指定しないと `view()` では `cover`（画面に入り始めてから出終わるまで）の全体になり、見せたいタイミングとずれやすいため。
+  note: '`entry`、`exit`、`contain` で範囲を絞るときは、範囲の前後の見た目のために `animation-fill-mode: both` も指定します。'
+  page: motion/scroll-driven
+  since: 0.4.0
+
+- id: motion-mode-attribute
+  level: 推奨
+  rule: JavaScript で動かす演出の準備のスタイルは、JavaScript が準備（監視の開始やライブラリの読み込み）を終えてルートに `data-motion-mode="motion"` を付けたときだけ当て、基本のスタイルは動かないときの最終状態として書く。
+  reason: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
+  page: motion/scroll-driven
+  since: 0.1.0
+
+# 14-7 動きの負荷を抑える
+- id: animate-composite-properties
+  level: 推奨
+  rule: 動かすプロパティは `opacity`、`translate`、`scale`、`rotate` を優先し、`inline-size` や `inset` のようにレイアウトが変わるプロパティは避ける。
+  reason: レイアウトと描画をやり直さずに済み、動きが滑らかになるため。
+  note: 一部の `filter` も、ブラウザによっては合成だけで処理されます。`clip-path` はペイントが起きるものとして扱います。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。
+  page: motion/performance
+  since: 0.1.0
+
+- id: will-change-temporarily
+  level: 必須
+  rule: '`will-change` は CSS に書いたままにせず、どうしても必要なときだけ、動きの直前に JavaScript で付けて、終わったら外す。'
+  reason: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。
+  note: 外す処理は `transitionend` だけでなく `transitioncancel` にも登録します。動きを減らす設定などでトランジションが起きないときは付けません。
+  aiProne: true
+  page: motion/performance
+  since: 0.15.0
+
+# 14-8 View Transitions で画面の切り替えをつなぐ
+- id: view-transition-name-unique
+  level: 禁止
+  rule: 同時に表示される複数の要素に、同じ `view-transition-name` を付けない。
+  reason: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
+  note: 固定の名前は、ページに1つしかない要素にだけ付けます。
+  aiProne: true
+  page: motion/view-transitions
+  since: 0.3.0
+
+- id: view-transition-match-element
+  level: 推奨
+  rule: '同じページの中の切り替えで、並んだ要素を1つずつ動かすときは、連番の名前を振らず、`view-transition-name: match-element` と `view-transition-class` を組み合わせる。'
+  reason: 名前の管理をブラウザに任せられ、動きの指定も `::view-transition-group(.<クラス>)` の1か所にまとめられるため。
+  note: '`match-element` はページ間の遷移では使えないので、ページ間でつなぐ要素には、前後のページで同じ名前を明示的に付けます。`view-transition-class` だけでは要素は個別に撮影されません。'
+  aiProne: true
+  page: motion/view-transitions
+  since: 0.3.0

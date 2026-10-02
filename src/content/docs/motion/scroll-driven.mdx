@@ -1,0 +1,271 @@
+---
+title: "14-6 スクロールに合わせて動かす"
+description: "スクロール位置に合わせて連続して変わる動きはCSSのスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出はIntersectionObserverで属性を切り替えて作ります。scrollイベントで毎回位置を計算する方法は使いません。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+スクロールに合わせた動きは、値の変わり方で作り方を選びます。スクロール位置に合わせて連続して変わる値には、CSSのスクロール駆動アニメーションを使い、`animation-range` で範囲を明示します。画面に入った時点で1回だけ変わる演出は、`IntersectionObserver` で属性を付け、CSSのアニメーションを再生して作ります。JavaScriptで毎フレーム同期するのは、それでも作れない複雑な分岐が必要なときだけです。
+
+1回だけ再生する演出は、JavaScriptが準備を終えてルートに `data-motion-mode="motion"` を付けたときだけ、要素を動き始める前の見た目で待たせます。待機中の見た目は `@keyframes` の `from` に任せ、`opacity: 0` を別に書きません。JavaScriptが動かない環境でも、動きを減らす設定の環境でも、すべての内容を読めるようにするためです。
+
+## スクロールのたびに位置を計算する問題
+
+以前は、スクロールに合わせた動きを `scroll` イベントで作るのが一般的でした。スクロールのたびに `scrollTop` や `getBoundingClientRect()` で位置を読み、その値からスタイルを書き換えます。
+
+```js title="🙅‍♂ Not Recommended: scroll イベントのたびに位置を読み、スタイルを書き換える"
+/* 🙅‍♂ Not Recommended */
+window.addEventListener('scroll', () => {
+  for (const item of document.querySelectorAll('.feature-list li')) {
+    const { top } = item.getBoundingClientRect();
+    item.style.opacity = top < window.innerHeight * 0.8 ? '1' : '0';
+  }
+});
+```
+
+この処理は、すべてメインスレッドで動きます。`scroll` イベントは1フレームの間に何度も発火することがあり、そのたびに位置を読むとブラウザはレイアウトを計算し直します。読んだ直後にスタイルを書き換えるので、次の要素の位置を読むときにも計算がやり直しになります。メインスレッドがほかの処理で忙しいと、スクロールの位置と見た目がずれ、動きがかくつきます。
+
+もう1つの問題は、JavaScriptが動かなかったときの見た目です。透明にする処理だけが動き、戻す処理が動かなければ、要素は見えないままになります。上の例はスクリプトが読み込まれなければ何もしませんが、透明にする指定をCSSに常に書いておく作り方では、内容がまるごと読めなくなります。
+
+## 連続した変化か、1回の変化か
+
+スクロールに合わせた動きを作る手段には、優先順位があります。最初に選ぶのは、CSSのスクロール駆動アニメーションです。次が、`IntersectionObserver` で状態を切り替え、CSSのトランジションやアニメーションで動かす方法です。JavaScriptで毎フレーム同期する方法は、本当に必要な場合に限ります。
+
+どれを選ぶかは、スクロール位置と値の関係で決まります。パララックスや読んだ量の表示のように、スクロール位置に合わせて値が連続して変わるなら、スクロール駆動アニメーションです。要素が画面に入った時点で一度だけ見た目が変わるなら、`IntersectionObserver` です。スクロール量に応じて表示する内容を入れ替えるような、複雑な分岐が必要な場合は、JavaScriptで `requestAnimationFrame` を使って制御します。
+
+| 値の変わり方 | 手段 | 例 |
+| --- | --- | --- |
+| スクロール位置に合わせて連続して変わる | スクロール駆動アニメーション | パララックス、スクロールした量に応じたヘッダーの背景 |
+| 画面に入ったときに一度だけ変わる | `IntersectionObserver` とCSSのアニメーション | 見出しやカードが現れる演出 |
+| スクロール量に応じて複雑に分岐する | `requestAnimationFrame` で制御するJavaScript | 段落を入れ替えながら進む演出 |
+
+スクロール駆動アニメーションでは、ブラウザがスクロールの位置をそのままアニメーションの進み具合として使います。`opacity` や `translate` のような合成だけで済むプロパティなら、メインスレッドが忙しいときにもスクロールに追従しやすくなります（「[14-7 動きの負荷を抑える](/motion/performance/)」）。`IntersectionObserver` も、交差したときにだけコールバックが呼ばれるので、スクロールのたびに位置を読む必要がありません。
+
+## スクロール駆動アニメーションで値を連続して変える
+
+スクロール駆動アニメーションは、`animation-timeline` に時間の代わりのタイムラインを指定する仕組みです。`scroll()` はスクロールコンテナのスクロール量を、`view()` は要素がスクロールポートのどこにあるかを、進み具合として使います。時間で進まないので、`animation-duration` は指定しません。進み具合とスクロール位置を比例させるために、`animation-timing-function` には `linear` を指定します。
+
+<Baseline id="scroll-driven-animations" />
+
+2026年10月の時点で、Firefoxはスクロール駆動アニメーションに対応していません。対応していない環境では `animation-timeline` が無視され、時間で進む普通のアニメーションとして扱われます。再生時間が0なので、一瞬で終わった状態になります。そこで、`@supports` で対応している環境に限って指定します。
+
+次の例は、ページを80pxスクロールするまでの間に、ヘッダーの背景をフェードインさせます。背景は擬似要素に描き、その `opacity` をスクロール量に合わせて変えます。
+
+```css title="🙆‍♂ Recommended: スクロールした量に合わせて、ヘッダーの背景を表示する"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z--forwards);
+  }
+
+  :scope::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: var(--z--backwards);
+    background-color: var(--color--neutral--50);
+
+    @supports (animation-timeline: scroll()) {
+      animation-name: --fade-in;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll();
+      animation-range: 0 80px;
+    }
+  }
+}
+```
+
+`animation-range` を指定しない（`normal`）と、範囲はタイムラインの全体になります。`scroll()` ではページの先頭から末尾まで、`view()` では要素が画面に入り始めてから出終わるまで（`cover`）です。見せたいタイミングとずれやすいので、範囲は明示します。上の例では長さで範囲を指定し、80pxスクロールしたところで背景が表示されきります。範囲を過ぎたあとも背景を残すために、`animation-fill-mode: both` を指定しています。指定しないと、範囲の外ではアニメーションが当たらず、もとの見た目に戻ります。
+
+`view()` では、範囲を名前で指定できます。`entry` は要素が画面に入る間、`exit` は出ていく間、`contain` は要素の全体が画面に収まっている間です。`animation-range: entry 0% entry 100%` のように、名前と割合を組み合わせて細かく絞ることもできます。範囲を絞ると、その前後にアニメーションの当たらない区間が生まれるので、ここでも `animation-fill-mode: both` を指定します。
+
+次の例は、ヒーローの背景をパララックスで動かします。要素が画面に入り始めてから出終わるまでの全体を使うので、範囲は `cover` です。既定の範囲と同じでも、意図を示すために書いておきます。
+
+```css title="🙆‍♂ Recommended: スクロール駆動アニメーションを、対応した環境でだけ動かす"
+@keyframes --hero--parallax {
+  from {
+    translate: 0 -80px;
+  }
+
+  to {
+    translate: 0 80px;
+  }
+}
+
+@scope (.scoped.hero) to (.scoped) {
+  ._background {
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        animation-name: --hero--parallax;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: cover;
+      }
+    }
+  }
+}
+```
+
+2つの例で、動きを減らす設定への扱いが違います。ヘッダーの背景はフェードだけなので、条件の外に書いています。パララックスは、スクロールに合わせて要素を移動させる大きな変動にあたるので、`no-preference` の中でだけ指定し、設定があるときは無効化します。判断の4段階は「[14-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明しています。
+
+## 画面に入ったら1回だけ再生する
+
+画面に入った時点で1回だけ再生する演出では、`animation-play-state: paused` と `animation-fill-mode: both` を組み合わせます。一時停止していても、`both` によって `from` のキーフレームが描画されるので、要素は動き始める前の見た目で待機します。要素が画面に入り、JavaScriptが `data-revealed` を付けたら、`animation-play-state: initial` で一時停止を取り消して再生します。
+
+```css title="🙆‍♂ Recommended: 一時停止したアニメーションを、画面に入ったら再生する"
+@scope (.scoped.feature-list) to (.scoped) {
+  li {
+    --translate-from--y-value: 24px;
+
+    &:is(:scope[data-motion-mode="motion"] *) {
+      @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+        animation-name: --fade-in, --translate-from;
+        animation-duration: var(--duration--reveal);
+        animation-timing-function: var(--ease--out-quint);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+      }
+    }
+
+    &[data-revealed]:is(:scope[data-motion-mode="motion"] *) {
+      animation-play-state: initial;
+    }
+  }
+}
+```
+
+待機中の見た目は、`@keyframes` の `from` が決めています。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは `@keyframes` に渡すカスタムプロパティだけを変えればすみます。`--fade-in` と `--translate-from` の定義は「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。
+
+属性はJavaScriptで付けます。`data-motion-mode` は、`IntersectionObserver` で監視を始めたあとに付けます。
+
+```js title="画面に入った要素に data-revealed を付ける JavaScript の例"
+const root = document.querySelector('.feature-list');
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (root && !reduced) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.setAttribute('data-revealed', '');
+        observer.unobserve(entry.target);
+      }
+    },
+    { rootMargin: '0px 0px -10% 0px' },
+  );
+  for (const item of root.querySelectorAll('li')) observer.observe(item);
+}
+
+// 監視を始めたあとで付ける。途中で処理が止まれば属性は付かず、内容は見えたまま
+root?.setAttribute('data-motion-mode', reduced ? 'reduced' : 'motion');
+```
+
+待機の条件を `@media (scripting: enabled)` だけにすると、スクリプトの読み込みや初期化に失敗した環境で、要素が透明のまま止まります。この条件はJavaScriptが有効なことしか表さないからです。`data-motion-mode="motion"` は監視を始めたあとにしか付かないので、処理が途中で止まれば待機のスタイルは当たらず、内容はそのまま読めます。`scripting` メディア特性と、透明を戻す処理が動かないときの問題は、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明しています。再生のセレクタにも同じ属性の条件を書くのは、待機の宣言より詳細度を高くして、確実に上書きするためです。
+
+動きを減らす設定のときは、JavaScriptが `reduced` を付けて監視をしないので、要素は最初から表示されます。CSSの側も `no-preference` の条件で囲んでいるので、ページを開いたあとに設定を変えた場合も、待機のスタイルは外れます。演出を無効化せず、フェードだけに簡素化するなら、JavaScriptは設定にかかわらず監視して `motion` を付けます。CSSでは、移動の `--translate-from` だけを `no-preference` の中で追加します。
+
+```css title="🙆‍♂ Recommended: 動きを減らす設定のときは、フェードだけで表示する"
+@scope (.scoped.feature-list) to (.scoped) {
+  li {
+    --translate-from--y-value: 24px;
+
+    &:is(:scope[data-motion-mode="motion"] *) {
+      @media (scripting: enabled) {
+        animation-name: --fade-in;
+        animation-duration: var(--duration--reveal);
+        animation-timing-function: var(--ease--out-quint);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+      }
+
+      @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+        animation-name: --fade-in, --translate-from;
+      }
+    }
+
+    &[data-revealed]:is(:scope[data-motion-mode="motion"] *) {
+      animation-play-state: initial;
+    }
+  }
+}
+```
+
+## JavaScriptで毎フレーム同期する場合
+
+スクロールに合わせて段落を入れ替えながら進むような凝った演出は、CSSだけでは作れず、JavaScriptで制御することがあります。このときも、`scroll` イベントのたびにスタイルを書き換えません。イベントでは「位置が変わった」ことだけを記録し、`requestAnimationFrame` で1フレームに1回だけ位置を読んで、スタイルを書き換えます。位置を読む処理をまとめ、書き換える処理をそのあとにまとめれば、レイアウトの計算は1フレームに1回で済みます。
+
+```js title="requestAnimationFrame で1フレームに1回だけ更新する JavaScript の例"
+let ticking = false;
+
+const update = () => {
+  ticking = false;
+  /* 位置を読む処理をまとめてから、スタイルを書き換える処理をまとめる */
+};
+
+window.addEventListener(
+  'scroll',
+  () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  },
+  { passive: true },
+);
+```
+
+演出のためのスタイル（要素を重ねる、最初は隠しておくなど）を常に当てておくと、JavaScriptが動かない環境で内容が読めなくなります。そこで、1回だけ再生する演出と同じく、演出のためのスタイルは `data-motion-mode="motion"` のときだけ当てます。基本のスタイルは、JavaScriptがないときと動きを減らす設定のときの、最終的な状態として書きます。
+
+```css title="🙆‍♂ Recommended: 演出のためのスタイルを、motion のときだけ当てる"
+@scope (.scoped.story-section) to (.scoped) {
+  ._steps {
+    display: block grid;
+    gap: 48px;
+
+    &:is(:scope[data-motion-mode="motion"] *) {
+      @media (scripting: enabled) {
+        grid-template-areas: "--step";
+        gap: initial;
+      }
+    }
+  }
+
+  ._step {
+    &:is(:scope[data-motion-mode="motion"] *) {
+      @media (scripting: enabled) {
+        grid-area: --step;
+        opacity: 0;
+      }
+    }
+  }
+}
+```
+
+この例では、JavaScriptが動かなければ、段落は縦に並んで、すべて読めます。JavaScriptが準備を終えて `motion` を付けると、段落が同じ場所で重なり、スクロールに合わせて1つずつ表示されます。動きを減らす設定のときは `reduced` を付け、段落を重ねず、並べたままにします。どちらの状態でも、伝える情報は同じです。
+
+## 補足と注意点
+
+画面に入ったら1回だけ動かす演出も、CSSだけで書ける仕様が出てきています。`timeline-trigger` で「ビュー進行タイムラインのどの範囲に入ったか」を引き金として定義し、`animation-trigger` で、その引き金が引かれたときにアニメーションを再生します。スクロール駆動アニメーションと違い、再生はスクロール量に連動しないので、スクロールを戻しても逆再生されません。ただし、2026年10月の時点で対応しているのはChrome系のブラウザ（Chrome 146以降）だけです。対応していない環境では `animation-trigger` が無視され、アニメーションは読み込んだ直後に画面の外で再生を終えます。そのため本書では、`IntersectionObserver` で属性を付ける方法を基本とします。
+
+動き始める前の要素を隠すのに、`visibility: hidden` や `display: none` を使わないでください。スクリーンリーダーで読めなくなったり、ページ内検索で見つからなくなったりします。`opacity` で透明にした要素は、見えなくても読み上げと検索の対象に残ります。
+
+アニメーションは、略記の `animation` ではなく、ロングハンドで書きます。略記は `animation-timeline` と `animation-range` もリセットするので、略記をあとに書くと、先に指定したスクロール駆動の設定が消えます（「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [スクロール連動アニメーションの実装例](https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
+- [CSS スクロール駆動アニメーション - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations)
+- [animation-range - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-range)
+- [animation-fill-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-fill-mode)
+- [交差オブザーバー API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Intersection_Observer_API)
+- [scripting - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/scripting)
+- [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)

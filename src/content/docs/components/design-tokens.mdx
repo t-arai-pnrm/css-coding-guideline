@@ -22,7 +22,7 @@ import Guideline from '../../../components/Guideline.astro';
   background-color: #f5f5f5;
   transition-duration: 300ms;
   transition-property: background-color;
-  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .site-footer {
@@ -52,7 +52,7 @@ import Guideline from '../../../components/Guideline.astro';
   --rounded--md: 8px;
   --rounded--full: calc(infinity * 1px);
   --font-weight--semibold: 600;
-  --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   --duration--base: 240ms;
   --z--header: 200;
 }
@@ -104,23 +104,27 @@ import Guideline from '../../../components/Guideline.astro';
 
 ## イージングと再生時間
 
-トランジションやアニメーションのイージングも、トークンにします。名前は `--ease--<種類>-<方向>` の形で、種類は動きの強さを表します。弱いものから順に `sine`、`quad`、`cubic`、`quart`、`quint`、`expo` と並び、ほかに加速と減速がゆるやかな `circ` や、少し行き過ぎてから戻る `back` があります。方向は、`in`（だんだん速く）、`out`（だんだん遅く）、`in-out`（両方）です。
+トランジションやアニメーションのイージングも、トークンにします。名前は `--ease--<方向>-<種類>` の形で、種類は動きの強さを表します。弱いものから順に `sine`、`quad`、`cubic`、`quart`、`quint`、`expo` と並び、ほかに加速と減速がゆるやかな `circ` や、少し行き過ぎてから戻る `back` があります。方向は、`in`（だんだん速く）、`out`（だんだん遅く）、`in-out`（両方）です。
 
 ```css title="🙆‍♂ Recommended: 動きの強さと方向が分かる名前を付ける"
 :root {
-  --ease--quad-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease--quint-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease--quint-in: cubic-bezier(0.64, 0, 0.78, 0);
-  --ease--quint-in-out: cubic-bezier(0.86, 0, 0.07, 1);
+  --ease--out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease--out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease--in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  --ease--in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+  --duration--instant: 50ms;
+  --duration--press: 120ms;
   --duration--fast: 200ms;
   --duration--base: 240ms;
   --duration--slow: 300ms;
+  --duration--reveal: 600ms;
 }
 ```
 
-再生時間も、`--duration--fast`、`--duration--base`、`--duration--slow` のような段階のトークンにします。サイトの中で動きの速さがそろい、「全体的にもう少しゆっくりにしたい」という調整もトークンの値を変えるだけで済みます。画面に現れる動きには `out` 系、画面から出ていく動きには `in` 系を使います（「[13-2 モーションを実装する](/interaction/motion/)」）。弾むような動きのように `cubic-bezier()` で表せないイージングは、`linear()` 関数で定義し、再生時間とセットでトークンにします。
+再生時間も、`--duration--fast`、`--duration--base`、`--duration--slow` のような段階のトークンにします。サイトの中で動きの速さがそろい、「全体的にもう少しゆっくりにしたい」という調整もトークンの値を変えるだけで済みます。画面に現れる動きと出ていく動きには `out` 系、画面の上にあるものの移動には `in-out` 系を使います（「[14-3 イージングと再生時間](/motion/easing-and-duration/)」）。`--duration--instant` は動きを減らす設定で再生時間を短くするとき、`--duration--press` はボタンを押したときの縮小に使います。`--duration--reveal` は、要素が画面に入った時点で一度だけ再生する演出のための、長めの値です。弾むような動きのように `cubic-bezier()` で表せないイージングは、`linear()` 関数で定義し、再生時間とセットでトークンにします。
 
-トランジションを書くときは、`transition-duration: var(--duration--base)` のように、個別のプロパティにトークンを渡します。動きを減らす設定への対応を含めたモーションの書き方は、「[13-2 モーションを実装する](/interaction/motion/)」で説明します。
+トランジションを書くときは、`transition-duration: var(--duration--base)` のように、個別のプロパティにトークンを渡します。動きを減らす設定への対応を含めたモーションの書き方は、第14章「[モーション](/motion/)」で説明します。
 
 ## z-indexのトークン
 

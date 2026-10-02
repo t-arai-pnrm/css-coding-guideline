@@ -1,0 +1,211 @@
+---
+title: "14-2 動きを減らす設定に対応する"
+description: "装飾的な動きのうちフェード以外はprefers-reduced-motion: no-preferenceの中で指定し、機能的な動きでも大きな変動は、動きを減らす設定ではフェードに簡素化するか50ms以下に短くします。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+装飾的な動きのうちフェード以外は、`@media (prefers-reduced-motion: no-preference)` の中で指定します。動きを「減らす設定のときに止める」のではなく、「設定がないときにだけ付ける」書き方です。機能的な動きでも、画面の3分の1以上を占める要素の移動や回転のような大きな変動は、動きを減らす設定のときにフェードへ簡素化するか、50ms以下に短くします。
+
+対応は、無効化、簡素化、短縮、維持の4段階から、動きごとに選びます。全称セレクタと `!important` で全体の動きを一律に止める書き方には頼りません。状態の変化を伝えるフェードや、処理中を示すスピナーまで止まってしまうからです。
+
+<Baseline id="prefers-reduced-motion" name="prefers-reduced-motion" />
+
+## 動きを減らす設定とは
+
+OSには、画面の動きを減らす設定があります。macOSとiOSでは「視差効果を減らす」、Windowsでは「アニメーション効果」のオフがこれにあたります（2026年10月確認）。{/* 要確認: 出典なし */} CSSでは、この設定を `prefers-reduced-motion` メディア特性で調べられます。設定をしていなければ `no-preference`、設定をしていれば `reduce` に当てはまります。
+
+この設定が必要なのは、画面の大きな動きが一部のユーザーの体調に直接影響するからです。内耳の平衡感覚に関わる前庭障害のあるユーザーは、画面の中の大きな移動や拡大を見ると、実際には体が動いていないのに動いたように感じます。目からの情報と体の感覚が食い違うことで、めまいや吐き気、頭痛が起き、その後しばらく画面を見られなくなる場合もあります。乗り物酔いをしやすい人や、片頭痛のある人にも同じことが起こりえます。{/* 要確認: 出典なし */}
+
+WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーション」（レベルAAA）も、操作をきっかけに起きる動きを止められるようにすることを求めています。サイトの中に動きを止めるスイッチを置く方法もありますが、ユーザーがすでにOSで表明している設定に従うほうが、ユーザーの手間はかかりません。本書では、この設定への対応を、動きを足すときに必ず考える項目として扱います。
+
+一方で、設定をしているユーザーが、すべての動きを嫌っているわけではありません。問題になるのは大きな変動で、位置や大きさの変わらないフェードは、多くの場合は問題になりません。むしろ、ダイアログが一瞬で現れると、何が起きたのか分かりにくくなります。動きを減らす設定への対応は、動きを「なくす」ことではなく、体調に影響する動きを取り除きながら、状態の変化は伝え続けることです。
+
+## 全称セレクタで全体の動きを止める書き方の問題
+
+動きを減らす設定への対応として、全称セレクタと `!important` で、すべての要素の動きを止める書き方がよく使われています。以前の私も、この書き方をしていました。再生時間を0ではなく `1ms` にするのは、JavaScriptの `transitionend` や `animationend` のイベントを発火させるための工夫です。
+
+```css title="🙅‍♂ Not Recommended: 全称セレクタと !important で、すべての動きを止める"
+/* 🙅‍♂ Not Recommended */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+```
+
+この書き方の1つ目の問題は、止めてはいけない動きまで止めることです。読み込み中を示すスピナーは1回転もせずに止まり、処理が続いているのか固まったのかが分からなくなります。状態の変化を伝えるフェードも消えるので、ダイアログやトーストは一瞬で現れ、ユーザーは何が起きたのかを見落としやすくなります。サードパーティのスクリプトが作る動きも、意図を確かめないまま一律に止まります。
+
+2つ目の問題は、`transition-property` の初期値が `all` であることに関わります。トランジションを指定していない要素でも、`transition-property` は `all` なので、この書き方で再生時間だけを与えると、すべての要素のすべてのプロパティが1msのトランジションの対象になります。もともと動かない設計だった要素でもトランジションが起き、`transitionend` イベントが発火します。イベントは親要素へ伝わるので、親要素でこのイベントを待っているJavaScriptが、想定していない要素のイベントで動いてしまう可能性があります。{/* 要確認: 出典なし */}
+
+3つ目の問題は、`!important` がカスケードの設計を崩すことです。動きを残したい要素があっても、さらに `!important` を重ねなければ上書きできません。動きを1つずつ条件の中に書けば、何を止めて何を残すかを、動きごとに判断できます。
+
+## 動きごとに4段階で対応を決める
+
+動きを減らす設定のときの対応は、次の4段階から選びます。選ぶ基準は、その動きが機能的なものと装飾的なもののどちらなのかと、大きな変動にあたるかどうかの2つです。機能的な動きと装飾的な動きの区別は、「[14-1 動かすかどうかを決める](/motion/purpose/)」で説明しています。
+
+| 対応 | 内容 | 対象の例 |
+| --- | --- | --- |
+| 無効化 | `no-preference` の中でだけ指定する | パララックス、自動で回るカルーセル、マーキー、スクロールに合わせた変形 |
+| 簡素化 | 移動や拡大をやめ、フェードだけにする | ページ遷移のView Transitions、ダイアログやドロワーのような大きなUIの出現と退場 |
+| 短縮 | 再生時間を50ms以下にする | ツールチップやポップオーバーのフェードイン |
+| 維持 | 変えない | スピナー、プログレスバー、フォーカスリングの表示 |
+
+大きな変動とは、次のどれかにあたる動きです。画面の3分の1以上を占める要素の移動、回転を伴う動き、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れや振動です。たとえば、ポップオーバーを `scale: 0.95` から拡大する動きは変化量が0.05なので大きな変動にはあたりませんが、画面の端から全幅のドロワーを滑り込ませる動きは大きな変動にあたります。
+
+装飾的な動きは、フェード以外をすべて `no-preference` の中に書きます。装飾的な動きは、なくても情報が欠けないので、体調に影響するおそれのある動きを残す理由がありません。位置と大きさの変わらないフェードだけは、条件の外に書いてかまいません。
+
+機能的な動きは、状態の変化を伝えているので、なくすと情報が欠けます。それでも大きな変動にあたるなら、動きを減らす設定のときは移動をやめてフェードに簡素化するか、50ms以下に短くします。スピナーのように、動きそのものが「処理中」という情報を伝えているものは、回転を伴っていても維持します。
+
+## 段階ごとの書き方
+
+ここからは、4段階のそれぞれをコード例で示します。どの例も、動きを減らす設定のときに何が残るかを、コードを読むだけで分かるように書いています。トランジションと `@keyframes` の書き方そのものは「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で、トークンの値は「[14-3 イージングと再生時間](/motion/easing-and-duration/)」で説明しています。
+
+### 無効化：no-preferenceの中だけで定義する
+
+ヒーローの背景画像をゆっくり拡大し続ける演出は、装飾的で、画面の大部分を占める要素の大きさが変わります。こうした動きは、アニメーションの指定をすべて `no-preference` の中に書きます。
+
+```css title="🙆‍♂ Recommended: 装飾的な動きは、no-preference の中だけで定義する"
+@keyframes --hero--zoom {
+  to {
+    scale: 1.1;
+  }
+}
+
+@scope (.scoped.hero) to (.scoped) {
+  ._image {
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: --hero--zoom;
+      animation-duration: 12s;
+      animation-timing-function: var(--ease--out-quad);
+      animation-fill-mode: both;
+    }
+  }
+}
+```
+
+条件の外には動きに関わる指定が何もないので、動きを減らす設定のときは、画像は最初から最後まで静止したままです。止めるための指定を別に書く必要がなく、条件を書き忘れたときに動きが漏れることもありません。パララックスやスクロールに合わせた変形も同じ考え方で書きます。スクロールに合わせた動きの作り方は「[14-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で説明しています。
+
+### 簡素化：移動をやめ、フェードだけにする
+
+画面の端から滑り込むドロワーは、開いたことを伝える機能的な動きですが、画面の3分の1以上を占める要素が移動します。動きを減らす設定のときは移動をやめ、フェードだけを残します。
+
+```css title="🙆‍♂ Recommended: 動きを減らす設定のときは、移動をやめてフェードだけにする"
+@scope (.scoped.site-drawer) to (.scoped) {
+  :scope {
+    --_translate-from: 0;
+
+    transition-duration: var(--duration--slow);
+    transition-property: display, overlay, opacity, translate;
+    transition-timing-function: var(--ease--out-quint);
+    transition-behavior: allow-discrete;
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_translate-from: 100% 0;
+    }
+  }
+
+  :scope:modal {
+    @starting-style {
+      opacity: 0;
+      translate: var(--_translate-from);
+    }
+  }
+
+  :scope:not(:modal) {
+    opacity: 0;
+    translate: var(--_translate-from);
+  }
+}
+```
+
+この例では、移動の起点だけを内部用のカスタムプロパティにし、`no-preference` の中で値を変えています。動きを減らす設定のときは、起点が `0` のままなので位置は変わらず、`opacity` のトランジションだけが残ります。トランジションの指定を1つにまとめたまま、残す動きと止める動きを分けられます。`@starting-style` を使った出現と退場の書き方は「[14-5 出現と退場](/motion/entry-and-exit/)」で説明しています。
+
+ページ遷移のView Transitionsも、簡素化にあたります。デフォルトの動きは画面全体のクロスフェードで、位置や大きさが変わらないので、動きを減らす設定でもそのまま残せます。要素に名前を付けて移動させる独自の動きだけを `no-preference` の中に書く方法は、「[14-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」で説明しています。
+
+### 短縮：再生時間を50ms以下にする
+
+ツールチップのフェードインは、位置と大きさが変わらないので、大きな変動にはあたりません。ただし、ポインターを動かすたびに何度も現れるので、動きを減らす設定のときは再生時間を50ms以下に短くし、ほぼ即座に表示します。
+
+```css title="🙆‍♂ Recommended: 動きを減らす設定のときは、フェードの再生時間を短くする"
+@scope (.scoped.tooltip) to (.scoped) {
+  :scope {
+    transition-duration: var(--duration--fast);
+    transition-property: display, overlay, opacity;
+    transition-timing-function: var(--ease--out-quad);
+    transition-behavior: allow-discrete;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: var(--duration--instant);
+    }
+  }
+
+  :scope:popover-open {
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  :scope:not(:popover-open) {
+    opacity: 0;
+  }
+}
+```
+
+短縮は、動きを止めずに目立たなくする方法です。50msのフェードは、ほとんど一瞬の表示に見えますが、表示と非表示の切り替わりは急に見えにくくなります。値は、50msの `--duration--instant` のトークンで指定します（「[7-4 デザイントークン](/components/design-tokens/)」）。
+
+### 維持：スピナー、プログレスバー、フォーカスリング
+
+読み込み中を示すスピナーは回転を伴いますが、回っていること自体が「処理が続いている」という情報です。止めると、画面が固まったのか処理中なのかを区別できなくなるので、条件の外に書きます。
+
+```css title="🙆‍♂ Recommended: 動きそのものが情報を伝えるスピナーは、条件の外に書く"
+@keyframes --loading-spinner--rotate {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@scope (.scoped.loading-spinner) to (.scoped) {
+  :scope {
+    animation-name: --loading-spinner--rotate;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+}
+```
+
+プログレスバーの伸びも、進み具合という情報そのものなので維持します。フォーカスリングは、そもそもトランジションで動かさず、フォーカスが移った瞬間に表示します。キーボードで操作するユーザーは、フォーカスリングの位置で現在地を把握しているので、表示が遅れると操作の対象を見失います。フォーカスリングの書き方は「[13-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明しています。
+
+## 設定を再現して確かめる
+
+動きを減らす設定は、OSの設定を切り替えなくても、開発者ツールで再現できます。ChromeのDevToolsでは、コマンドメニューから「Rendering」パネルを開き、「Emulate CSS media feature prefers-reduced-motion」で `reduce` を選びます。
+
+確かめるのは、無効化した動きが止まっているか、簡素化した動きでフェードが残っているか、維持すべき動きが動き続けているかの3点です。特に、簡素化と短縮では、動きがすべて消えていないことを確かめます。ダイアログが一瞬で現れるなら、フェードまで条件の中に入れてしまっている可能性があります。
+
+`no-preference` の状態に戻し、動きが戻ることも確かめます。設定の切り替えはページを読み込み直さなくても反映されるので、2つの状態を交互に切り替えながら比べられます。
+
+## CSSの外の動きにも設定を反映する
+
+動きを減らす設定は、CSSのトランジションとアニメーションだけでなく、JavaScriptで作る演出にも関わります。JavaScriptでは `matchMedia('(prefers-reduced-motion: reduce)')` で設定を調べられます。スクロールに合わせて段落を入れ替えるような演出では、JavaScriptがルートに `data-motion-mode` を付け、設定がないときは `motion`、設定があるときは `reduced` にします。演出のためのスタイルは `motion` のときだけ当てるので、動きを減らす設定のときは要素がすぐに表示されます。この書き方は「[14-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で説明しています。
+
+スクロールで画面に入った時点で一度だけ再生する演出も、動きを減らす設定では無効化するか、フェードに簡素化します。動きを無効化するときは、要素を隠すための指定も `no-preference` の中に書き、要素が最初から表示されるようにします。
+
+View Transitionsでも、独自の動きと要素ごとの名前は `no-preference` の中で指定し、デフォルトのクロスフェードだけを残します。どの仕組みで動かす場合でも、動きを減らす設定のときに伝える情報と操作の結果が、設定がないときと同じになることを確かめます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [prefers-reduced-motion - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/prefers-reduced-motion)
+- [Understanding Success Criterion 2.3.3: Animation from Interactions | W3C](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html)
+- [Emulate CSS media features | Chrome DevTools](https://developer.chrome.com/docs/devtools/rendering/emulate-css)

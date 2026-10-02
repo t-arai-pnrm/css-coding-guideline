@@ -133,7 +133,7 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 
 使う側では、`@container style(--color-scheme: --dark)` のように条件を書きます。値を `--` で始めるのは、自分で付けた名前だと分かるようにするためです。スタイルクエリは2026年5月にすべての主要なブラウザで使えるようになったので、本書の対象のブラウザでは問題なく動作します（2026年9月確認）。ただし、色の切り替えは `light-dark()` で足りるので、このフラグを使う場面は多くありません。
 
-テーマを切り替える瞬間には、View Transitionで画面を上から塗り替えるアニメーションを付けています。切り替えの処理は、`types` に `theme-toggle` を指定して `document.startViewTransition()` に渡します。CSSの側では、`:active-view-transition-type(theme-toggle)` でアニメーションを定義します。動きを減らす設定をしているユーザーには、アニメーションを付けません。View Transitionsの書き方は「[13-5 View Transitionsで画面の切り替えをつなぐ](/interaction/view-transitions/)」で扱います。
+テーマを切り替える瞬間には、View Transitionで画面を上から塗り替えるアニメーションを付けています。切り替えの処理は、`types` に `theme-toggle` を指定して `document.startViewTransition()` に渡します。CSSの側では、`:active-view-transition-type(theme-toggle)` でアニメーションを定義します。動きを減らす設定をしているユーザーには、アニメーションを付けません。View Transitionsの書き方は「[14-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」で扱います。
 
 ## 案件でのダークモード
 

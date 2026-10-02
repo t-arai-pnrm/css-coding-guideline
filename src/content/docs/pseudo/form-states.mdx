@@ -29,7 +29,7 @@ import profileCss from '../../../demos/pseudo/profile-form-states/style.css?raw'
 
 検証の対象にならない要素は、どちらにも当てはまりません。無効にした入力欄、`readonly` を付けた入力欄、`type="hidden"` の入力欄は、検証の対象から外れます。`required` と `readonly` を両方付けた空の入力欄は、`:invalid` になりません（Chrome 152で確認、2026年10月）。一方、`<form>` と `<fieldset>` は、中に `:invalid` の要素が1つでもあれば `:invalid` です。
 
-`:user-valid` と `:user-invalid` は、ユーザーが値を変えて入力欄を離れた後か、送信しようとした後にだけ当てはまります。エラーの見た目を `:invalid` ではなく `:user-invalid` に指定する理由と書き方は、第13章「[13-4 フォーム部品](/interaction/forms/)」のルール `user-invalid-for-errors` で説明しています。正しく入力できたことを示す見た目も、同じ理由で `:valid` ではなく `:user-valid` に指定します。
+`:user-valid` と `:user-invalid` は、ユーザーが値を変えて入力欄を離れた後か、送信しようとした後にだけ当てはまります。エラーの見た目を `:invalid` ではなく `:user-invalid` に指定する理由と書き方は、第13章「[13-3 フォーム部品](/interaction/forms/)」のルール `user-invalid-for-errors` で説明しています。正しく入力できたことを示す見た目も、同じ理由で `:valid` ではなく `:user-valid` に指定します。
 
 <Baseline id="user-pseudos" name=":user-valid と :user-invalid" />
 
