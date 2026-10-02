@@ -103,7 +103,7 @@ export default {
         ignoreProperties: {
           'word-break': 'auto-phrase',
           display: '/grid-lanes$/',
-          'inline-size': ['/^round\\(/', '/^calc-size\\(/'],
+          'inline-size': ['/^round\\(/', '/^calc-size\\(/', '-webkit-fill-available'],
         },
       },
     ],

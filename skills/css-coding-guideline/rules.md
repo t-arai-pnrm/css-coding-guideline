@@ -1,7 +1,7 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.5.2
-- 生成日: 2026-10-01
+- バージョン: 0.5.3
+- 生成日: 2026-10-02
 - ルールの数: 453
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -778,7 +778,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【推奨】新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。（`supports-for-dependent-declarations`）
   - 理由: 未対応の環境で、従来の手段まで取り上げてしまうのを防ぐため。
-  - 補足: 例：`field-sizing: content` を使うときの `resize: none`。新しいプロパティそのものは、未対応の環境で無視されるので `@supports` で囲む必要はありません。
+  - 補足: 例：`field-sizing: content` を使うときの `resize: unset` と `max-block-size`。新しいプロパティそのものは、未対応の環境で無視されるので `@supports` で囲む必要はありません。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【推奨】対象のブラウザがすべて対応している機能には、フォールバックや `@supports` の分岐を書かず、残っていれば消す。（`remove-unneeded-fallbacks`）
   - 理由: 使われないコードが残り、読む人に「まだ対応していないブラウザがある」と誤解させるため。

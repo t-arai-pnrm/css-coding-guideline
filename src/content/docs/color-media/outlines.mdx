@@ -1,6 +1,6 @@
 ---
 title: 10-5 輪郭と枠線を描く
-description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で、グラデーションの枠線やドーナツグラフは background-clip の border-area で描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
+description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で、グラデーションの枠線は background-clip の border-area で、ドーナツグラフはマスクで描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
 sidebar:
   order: 5
 ---
@@ -114,41 +114,81 @@ import Guideline from '../../../components/Guideline.astro';
 
 ### ドーナツグラフ
 
-`conic-gradient()` の円グラフも、`border-area` で切り抜けばドーナツグラフになります。以前は、円グラフの中心を `radial-gradient()` のマスクでくり抜いていました。`border-area` なら、枠線の太さがそのままドーナツの太さになります。
+ドーナツグラフは、`border-area` ではなく、擬似要素の内側をマスクでくり抜いて描きます。グラデーションの枠線は装飾なので単色に縮退させれば済みますが、グラフは割合という情報を表しているので、環境によって形を変えるわけにはいかないからです。`border-area` で描くと、未対応のFirefoxでは中心まで塗った円グラフになり、中心に置いた数値が塗りの上に重なります。マスクの合成（`mask-composite`）なら、本書の対象のブラウザのすべてで同じドーナツの形になります。
 
-```css title="🙆‍♂ Recommended: 未対応の環境では円グラフ、対応している環境ではドーナツグラフにする"
-@property --donut-chart--value {
+```css title="🙆‍♂ Recommended: マスクで輪を作り、割合を中心に数値でも示す"
+@property --count-up--value {
   syntax: "<percentage>";
   inherits: false;
   initial-value: 0%;
 }
 
+@keyframes --count-up {
+  from {
+    --count-up--value: 0%;
+  }
+}
+
 @scope (.scoped.donut-chart) to (.scoped) {
   :scope {
-    --_fill: conic-gradient(var(--color--accent--500) var(--donut-chart--value), var(--color--neutral--200) 0);
+    --_value: min(var(--donut-chart--value, 0%), 100%);
+    --_basis-width: 200px;
+    --_border-width: 16px;
+    --_foreground: var(--donut-chart--foreground, var(--color--accent--500));
 
-    inline-size: 160px;
+    container-type: inline-size;
+    display: block grid;
     aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--_fill);
+    color: var(--_foreground);
 
-    @supports (background-clip: border-area) {
-      border: 24px solid transparent;
-      background: var(--_fill) border-area;
+    &::before,
+    &::after {
+      --count-up--value: var(--_value);
+
+      content: "";
+      grid-area: 1 / 1;
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation-name: --count-up;
+        animation-duration: 1s;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+      }
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--slow);
-      transition-property: --donut-chart--value;
-      transition-timing-function: var(--ease--quint-out);
+    &::before {
+      mask-image: conic-gradient(#000 0 0), conic-gradient(#000 0 0);
+      mask-clip: padding-box, border-box;
+      mask-composite: exclude;
+      border: var(--_border-width) solid transparent;
+      border-radius: calc(infinity * 1px);
+      forced-color-adjust: none; /* 強制カラーモードでもグラデーションを画像として表示する */
+      background-image: conic-gradient(currentColor var(--count-up--value), var(--color--neutral--200) 0);
+      background-origin: border-box;
+    }
+
+    &::after {
+      content: counter(--value) "%";
+      place-self: center;
+      padding: var(--_border-width);
+      counter-reset: --value calc(tan(atan2(var(--count-up--value), 1%)));
+      font-size: calc(tan(atan2(32px, var(--_basis-width))) * 100cqi);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
     }
   }
 }
 ```
 
-値は、HTMLの `style` 属性で `--donut-chart--value: 40%` のように渡します。枠線は `@supports` の中でだけ付けます。未対応の環境で透明な枠線を付けると、`border-area` を含む `background` の宣言が無効になり、グラフが何も描かれないからです。分岐しておけば、未対応の環境では中心まで塗った円グラフとして表示され、割合は読み取れます。
+値は、HTMLの `style` 属性で `--donut-chart--value: 40%` のように渡します。`min()` で上限を100%にしているので、100%を超える値が渡っても、輪が1周を超えて塗られることはありません。グラフの色は `--donut-chart--foreground` で変えられ、輪と中心の数値が同じ色になります。
 
-`--donut-chart--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。型を登録すると、`transition` で割合をなめらかに変えられます（2026年10月、Chrome 152で確認）。グラフを動かすのは、`prefers-reduced-motion: no-preference` のときだけにします。
+`::before` が輪です。透明な枠線を付け、`padding-box` と `border-box` に切り抜いた2枚のマスクを `exclude` で合成すると、2枚の重なる内側は消え、枠線の部分だけが残ります。そこに枠線の外側から（`background-origin: border-box`）`conic-gradient()` を敷くので、枠線の太さがそのまま輪の太さになります。マスクの画像は塗りつぶされていれば何でもよく、`conic-gradient(#000 0 0)` は単色の画像を短く書くための指定です。`#000` の色は表示されません。
+
+`::after` が中心の数値です。`tan(atan2(var(--count-up--value), 1%))` は、割合を1%で割った単位のない数値を返し（「[3-3 数学関数](/values/math-functions/)」）、`counter()` がその数値を文字にします。`counter-reset` は整数を受け取るので、`calc()` の結果は整数に丸められます。{/* 要確認: counter-reset に @property で登録した値の calc() を渡す書き方の対応状況 */}文字の大きさは、コンテナの幅（`100cqi`）に、グラフの幅が `--_basis-width`（200px）のとき32pxとなる比を掛けて決めています。グラフをどの大きさで置いても、輪と数値の大きさの比が変わりません。`tabular-nums` で数字の幅をそろえるのは、数値が増える間も文字の位置を左右に揺らさないためです。
+
+割合は、0%から数え上げて表示します。`--count-up--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。`@keyframes` には `from` だけを書き、終わりの値は擬似要素で指定した値を使います（「[11-2 モーションを実装する](/interaction/motion/)」）。輪と数値は同じ `@keyframes` で動くので、輪が伸びるのに合わせて数値も増えます。トランジションではなく `@keyframes` を使うのは、トランジションは値が変わったときにしか動かず、ページを開いたときの表示では何も起きないからです。数値が一定の速さで増えるように、イージングは `linear` にしています。動かすのは、`prefers-reduced-motion: no-preference` のときだけです。
+
+<Baseline id="masks" />
 
 <Baseline id="registered-custom-properties" name="@property" />
 
@@ -158,7 +198,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 `@supports` の条件には、実際に使う値の形を書きます。`@supports (background-clip: border-area)` のように値まで書くと、プロパティにだけ対応していて値に対応していない環境も、未対応として扱えます。`shape()` の条件は、`shape(from 0 0, hline to 0)` のように、構文として成り立つ最も短い形にしておくと読みやすくなります。
 
-強制カラーモードでは、グラデーションの `background-image` が表示されなくなり、`border-color` はシステムカラーに置き換わります。そのため、グラデーションの枠線は、透明にした枠線がシステムカラーで描かれ、境界は残ります。一方、ドーナツグラフはグラデーションごと消えるので、割合は数値のテキストでも示しておきます。強制カラーモードで置き換わる色の一覧は、「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+強制カラーモードでは、グラデーションの `background-image` が表示されなくなり、`border-color` はシステムカラーに置き換わります。そのため、グラデーションの枠線は、透明にした枠線がシステムカラーで描かれ、境界は残ります。一方、何も指定しないとドーナツグラフはグラデーションごと消えてしまうので、輪の擬似要素にだけ `forced-color-adjust: none` を指定し、グラフを画像として表示させます。グラフは色の組み合わせで割合を表す図なので、システムカラーに置き換えると図として成り立たないからです。中心の数値には指定しないので、文字はユーザーの選んだ配色で表示されます。{/* 要確認: 強制カラーモードでの輪の表示をブラウザで確認していない */}強制カラーモードで置き換わる色の一覧は、「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
 
 `clip-path` で作った形は、要素の当たり判定も切り抜きます。切り抜いた外側はクリックできないので、タブの反り返りのような装飾は、この節の例のように背面の擬似要素に描き、タブ本体の当たり判定を変えないようにします（2026年10月、Chrome 152で確認）。
 

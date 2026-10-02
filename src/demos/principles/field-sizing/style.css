@@ -6,19 +6,22 @@
     }
 
     ._textarea {
-      --_min-rows: 3;
-      --_max-rows: 8;
-      --_padding: 0.5em;
+      --_rows: 3lh;
+      --_max-rows: 8lh;
 
-      inline-size: 100%;
-      min-block-size: calc(var(--_min-rows) * 1lh + var(--_padding) * 2);
-      max-block-size: calc(var(--_max-rows) * 1lh + var(--_padding) * 2);
-      padding: var(--_padding);
-      field-sizing: content;
+      /* content-box に戻し、高さを行数だけで書けるようにする */
+      box-sizing: unset;
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      min-block-size: var(--_rows);
+      padding: 1em;
+      font-size: max(16px, 1rem);
 
-      /* 自動で伸び縮みする環境でだけ、手動のリサイズを止める */
+      /* 自動で伸び縮みする環境でだけ、最大の高さを付けて手動のリサイズを止める */
       @supports (field-sizing: content) {
-        resize: none;
+        max-block-size: var(--_max-rows);
+        resize: unset;
+        field-sizing: content;
       }
     }
 

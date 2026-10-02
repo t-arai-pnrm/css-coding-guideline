@@ -198,11 +198,57 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ## 入力欄の大きさと文字サイズ
 
-`<textarea>` には `field-sizing: content` を指定します。入力した量に合わせて入力欄が伸び縮みし、最小と最大の高さは `lh` 単位で行数として決められます。対応していない環境では従来どおりの入力欄になるだけなので、プログレッシブ・エンハンスメントとして使えます。対応した環境でだけ手動のリサイズを止める書き方とデモは、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」にあります。
+`<textarea>` には、次のスタイルを定義します。`field-sizing: content` で入力した量に合わせて入力欄を伸び縮みさせ、最小と最大の高さは `lh` 単位で行数として決めます。
+
+```css title="🙆‍♂ Recommended: 行数で高さを決め、対応した環境では内容に合わせて伸び縮みさせる"
+._textarea {
+  --_rows: 3lh;
+  --_max-rows: 8lh;
+  --_border-color: var(--color--neutral--400);
+  --_foreground: var(--foreground--base);
+  --_background: var(--background--base);
+
+  /* ① box-sizing を初期値（content-box）に戻す */
+  box-sizing: unset;
+
+  /* ② 横幅をいっぱいにする。content-box なので 100% は使わない */
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
+
+  /* ③ 最小の高さを --_rows 行分にする（行数は rows 属性ではなくここで決める） */
+  min-block-size: var(--_rows);
+  padding: 1em;
+  border: 1px solid var(--_border-color);
+  background-color: var(--_background);
+  color: var(--_foreground);
+
+  /* ④ iOS の拡大を防ぐため 16px を下限にし、それ以上なら 1rem に追従する */
+  font-size: max(16px, 1rem);
+
+  @supports (field-sizing: content) {
+    /* ⑤ 最大の高さを --_max-rows 行分に制限する */
+    max-block-size: var(--_max-rows);
+
+    /* ⑥ ユーザーによるサイズの変更を無効にする */
+    resize: unset;
+
+    /* ⑦ 内容に合わせて高さが変わるようにする */
+    field-sizing: content;
+  }
+}
+```
+
+①で `box-sizing` を `content-box` に戻すのは、高さを行数だけで書くためです。kiso.cssはすべての要素を `border-box` にしています。そのままでは `min-block-size` に `padding` と `border` が含まれるので、3行分の高さを `calc(3lh + 2em + 2px)` のような足し算で求めることになります。`content-box` なら `min-block-size` は内容の領域の高さなので、`3lh` がそのまま3行分になります。`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。
+
+②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。{/* 要確認: stretch と -webkit-fill-available の各ブラウザの対応状況 */}
+
+③の `min-block-size` で、行数は `rows` 属性ではなく `--_rows` で決まります。`field-sizing: content` に対応した環境では、`rows` 属性はもともと高さに使われません（「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」）。
+
+⑤から⑦は、`field-sizing` に対応した環境でだけ指定します。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（`resize`）は要りません。`resize` の初期値は `none` なので、`unset` でブラウザの既定の `resize` を打ち消せます。最大の高さも、自動で伸びる上限としてここでだけ指定します。未対応の環境では入力欄の右下のつまみで高さを変えられるので、最大の高さを付けると、手で広げられる範囲まで狭まるからです。`@supports` を使う理由とデモは、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」にあります。
 
 <Baseline id="field-sizing" />
 
-入力欄の文字サイズは、1rem（16px相当）以上にします。iOSのSafariは、文字サイズが16px未満の入力欄にフォーカスすると、ページを拡大します。拡大されたページは、ユーザーが自分で縮小するまでそのままです。kiso.cssは入力欄の文字サイズを親から継承させているので、フォームの周りで文字サイズを小さくしていないかを確かめます。
+④のように、入力欄の文字サイズは、1rem（16px相当）以上にします。iOSのSafariは、文字サイズが16px未満の入力欄にフォーカスすると、ページを拡大します。拡大されたページは、ユーザーが自分で縮小するまでそのままです。`1rem` だけでなく `max()` で16pxを下限にしているのは、ブラウザの設定で基準の文字サイズを16px未満にしている環境でも、拡大が起きないようにするためです。kiso.cssは入力欄の文字サイズを親から継承させているので、ほかの入力欄でも、フォームの周りで文字サイズを小さくしていないかを確かめます。
 
 この拡大を防ぐために、`<meta name="viewport">` に `maximum-scale=1` や `user-scalable=no` を指定する方法が知られています。しかし、この指定はページ全体の拡大を止めてしまい、拡大して読む必要のあるユーザーが、読めなくなります。デザインでどうしても小さな文字にしたい場合は、フォーカスしている間だけ1remにする方法もありますが、まずは1remで成り立つデザインにできないかを相談します。
 

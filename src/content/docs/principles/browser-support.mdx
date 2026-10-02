@@ -93,22 +93,23 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 
 `@supports` は、ブラウザが宣言を理解できるかどうかで分岐します。未対応の宣言はもともと無視されるので、新しいプロパティそのものを `@supports` で囲む必要はありません。`@supports` が必要になるのは、新しい機能に合わせて、既存の宣言も一緒に変えるときです。
 
-`<textarea>` に `field-sizing: content` を指定すると、入力した量に合わせて入力欄が伸び縮みします。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（`resize`）は不要です。ただし、`resize: none` を無条件に書くと、未対応の環境では入力欄の高さが固定され、手で広げることもできなくなります。
+`<textarea>` に `field-sizing: content` を指定すると、入力した量に合わせて入力欄が伸び縮みします。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（`resize`）は不要です。ただし、`resize` を無条件に止めると、未対応の環境では入力欄の高さが固定され、手で広げることもできなくなります。最大の高さも同じです。無条件に付けると、未対応の環境では、ユーザーの広げられる範囲が狭まります。そこで、手動のリサイズを止める指定と最大の高さを、`field-sizing: content` と一緒に `@supports` の中に書きます。
 
-```css title="🙆‍♂ Recommended: 自動で伸び縮みする環境でだけ、手動のリサイズを止める"
+```css title="🙆‍♂ Recommended: 自動で伸び縮みする環境でだけ、手動のリサイズを止め、最大の高さを付ける"
 ._textarea {
-  --_min-rows: 3;
-  --_max-rows: 8;
-  --_padding: 0.5em;
+  --_rows: 3lh;
+  --_max-rows: 8lh;
 
-  inline-size: 100%;
-  min-block-size: calc(var(--_min-rows) * 1lh + var(--_padding) * 2);
-  max-block-size: calc(var(--_max-rows) * 1lh + var(--_padding) * 2);
-  padding: var(--_padding);
-  field-sizing: content;
+  box-sizing: unset;
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
+  min-block-size: var(--_rows);
+  padding: 1em;
 
   @supports (field-sizing: content) {
-    resize: none;
+    max-block-size: var(--_max-rows);
+    resize: unset;
+    field-sizing: content;
   }
 }
 ```
@@ -140,7 +141,7 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 
 未対応の環境のための書き方には、新しい宣言をそのまま書く、従来の宣言を前に書く、`@supports` の中に書く、の3つがあります。どれを選ぶかは、未対応の環境で新しい宣言がいつ無効になるかと、一緒に変える宣言があるかで決まります。判断を誤ると、未対応の環境で従来の値まで失われます。
 
-新しいプロパティそのものは、そのまま書きます。未対応のブラウザは、知らないプロパティの宣言を構文の段階で捨てるだけで、ほかの宣言には影響しません。前の節の `field-sizing` や、`text-wrap: pretty` がこれに当たります。
+新しいプロパティそのものは、そのまま書きます。未対応のブラウザは、知らないプロパティの宣言を構文の段階で捨てるだけで、ほかの宣言には影響しません。`text-wrap: pretty` がこれに当たります。前の節の例で `field-sizing` を `@supports` の中に書いているのは、一緒に変える宣言とまとめて読めるようにするためです。外に書いても、未対応の環境では同じように捨てられるので、結果は変わりません。
 
 既存のプロパティに新しい値や関数を使い、宣言に `var()` を含まない場合は、従来の宣言を前に書くか、新しい宣言を `@supports` の中に書きます。未対応のブラウザは、新しい値を含む宣言を構文の段階で無効とみなして捨て、前の宣言を使うので、どちらでも結果は同じです。「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」の `if()` の例は前者、「[7-13-2 cluster](/layout/compositions/cluster/)」の `flex-wrap: balance` は後者で書いています。前者で書くなら、同じプロパティが2回並ぶと誤記に見えるので、前の宣言には「未対応の環境で使う値」であることをコメントで書きます。
 
