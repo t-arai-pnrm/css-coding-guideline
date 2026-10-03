@@ -3,7 +3,7 @@
 # 12-1 検討する順番
 - id: responsive-escalation-order
   level: 必須
-  rule: レスポンシブ対応は「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わない。
+  rule: レスポンシブ対応は「静的 → イントリンシック → コンテナサイズクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わない。
   reason: 条件分岐が減り、想定していない幅や置き場所でも崩れにくくなるため。
   aiProne: true
   page: responsive/escalation
@@ -35,72 +35,148 @@
 
 - id: query-choice-by-layer
   level: 推奨
-  rule: '`pages` レイヤーのスタイルではメディアクエリを、`components` レイヤーのスタイルではコンテナクエリを優先する。'
+  rule: '`pages` レイヤーのスタイルではメディアクエリを、`components` レイヤーのスタイルではコンテナサイズクエリを優先する。'
   reason: ページ全体の段組みはビューポートに依存するが、コンポーネントはどこに置かれるかを自分では知らないため。
   note: モーダルやトーストのように、ビューポートに固定されるコンポーネントはメディアクエリを使います。
   page: responsive/escalation
   since: 0.1.0
 
-# 12-2 コンテナクエリ
+# 12-2 ブレイクポイントの決め方
+- id: breakpoint-from-content
+  level: 必須
+  rule: ブレイクポイントはデバイスの幅ではなく、レイアウトが崩れる幅から決める。
+  reason: 画面幅の種類は無数にあり、特定の端末の幅に合わせても、その間の幅で崩れるため。
+  page: responsive/breakpoints
+  since: 0.1.0
+
+- id: no-device-names
+  level: 禁止
+  rule: '`sp`、`tablet`、`pc` のようにデバイスを連想させる名前を、ブレイクポイントやクラス名（`.sp-only` など）に使わない。'
+  reason: 画面の幅とデバイスの種類は一致せず、名前と実態がずれていくため。
+  aiProne: true
+  page: responsive/breakpoints
+  since: 0.1.0
+
+- id: framework-breakpoint-variables
+  level: 推奨
+  rule: ブレイクポイントを変数として持つフレームワークを使う案件では、独自の値を足さず、フレームワークの変数を使う。
+  reason: 案件の中でブレイクポイントの値がばらばらになるのを防ぐため。
+  note: 'Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティは、メディアクエリの条件では使えません（`no-var-in-query`）。'
+  page: responsive/breakpoints
+  since: 0.3.0
+
+- id: breakpoint-in-rem
+  level: 必須
+  rule: ブレイクポイントは rem で指定し、`calc(640 / 16 * 1rem)` のようにピクセル値からの変換を式で書く。
+  reason: 文字サイズを大きくしているユーザーは実質的に使える幅が狭くなるので、rem で指定すれば切り替えもそれに追従するため。式にすれば、元のピクセル値も読み取れる。
+  aiProne: true
+  page: responsive/breakpoints
+  since: 0.1.0
+
+- id: threshold-as-formula
+  level: 推奨
+  rule: クエリの閾値は、「列の最小幅×列数＋隙間×隙間の数」や「中身の幅＋`padding`＋`border`」のように、レイアウトが成り立つ条件を `calc()` の式で書く。
+  reason: 数値の根拠がコードに残り、列数や隙間を変えたときにも直しやすいため。
+  note: '根拠を式にしたほうが意図が明確になるときと、列数、個数、隙間、最小幅を後で変える可能性があるときに式にします。分解しても意味が増えない固定の値は、そのまま書いてかまいません。根拠のない値を `calc(48rem)` のように包むだけにはしません。一度しか使わない長い式には、何列・何個分なのかをコメントで補います。'
+  aiProne: true
+  page: responsive/breakpoints
+  since: 0.1.0
+
+- id: threshold-includes-gap-and-padding
+  level: 必須
+  rule: 閾値の式には、レイアウトが成り立つ条件に関わる `gap`、`padding`、`border` を省かずに含める。
+  reason: 省くと閾値が実際に並べられる幅より狭くなり、切り替わった直後の幅で中身がはみ出したり詰まったりするため。
+  aiProne: true
+  page: responsive/breakpoints
+  since: 0.20.0
+
+- id: no-var-in-query
+  level: 禁止
+  rule: '`@media` の条件と、コンテナサイズクエリの条件の中で `var()` を使わない。'
+  reason: メディアクエリの条件ではカスタムプロパティを参照できず、コンテナサイズクエリの条件では仕様で認められていても対象のブラウザでそろって動かず、値が問い合わせるコンテナで解決されて意図とずれやすいため。
+  note: 'スタイルクエリで `style(--a: var(--b))` のようにカスタムプロパティどうしを比べる条件は、対象にしません。'
+  aiProne: true
+  page: responsive/breakpoints
+  since: 0.1.0
+
+# 12-3 コンテナサイズクエリ
 - id: container-name-required
   level: 必須
-  rule: コンテナには必ず名前を付け、`@container` の条件でもその名前を指定する。
-  reason: コンテナが入れ子になったとき、どのコンテナを参照しているのかが曖昧になるのを防ぐため。
+  rule: 'コンポーネントのルートをコンテナにするときは `container: --scoped / inline-size` と書いて `@container --scoped (…)` で問い合わせ、ルート以外の子要素をコンテナにするときはクラス名から下線を除いた名前（`._body` なら `--body`）を付ける。外側のコンポーネントのコンテナは問い合わせない。'
+  reason: 名前のない `@container` はいちばん近い祖先のコンテナを参照するので、コンテナが入れ子になると参照先がコードから読み取れないため。ルートの名前をそろえておけば、`@scope` の下限で閉じた範囲の中では `--scoped` が常にそのコンポーネントのルートを指す。外側のコンポーネントのコンテナを問い合わせると、外のコンポーネントの定義に依存し、別の場所に置いたときに条件が成り立たなくなる。
+  note: '外側から変えたい値は、公開用のカスタムプロパティで渡します。`:scope` のルールに `@container --scoped (…)` を書くと、ルートは自分自身を問い合わせられないので、外側のコンポーネントのルートを参照してしまいます。サイズの条件を持たない `@container style(…)` のスタイルクエリには、名前を求めません。'
   aiProne: true
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: container-name-dashed-ident
   level: 必須
-  rule: コンテナの名前は `--` で始める（例：`--card-list`）。
+  rule: コンテナの名前は `--` で始める（例：`--scoped`、`--body`）。
   reason: 自分で付けた名前だとすぐに分かり、将来 CSS に追加されるキーワードとも衝突しないため。
   lint: 'Stylelint: `container-name-pattern`'
   aiProne: true
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: container-shorthand
   level: 必須
   rule: コンテナは `container` ショートハンドで、名前と種類をまとめて指定する（`container-type` を単体で書かない）。
   reason: 名前の付け忘れを防ぐため。
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: container-query-inline-size
   level: 必須
-  rule: コンテナクエリの条件では、`width` ではなく `inline-size` を使う。
+  rule: コンテナサイズクエリの条件では、`width` ではなく `inline-size` を使う。
   reason: 書字方向に依存しない、論理的な指定にそろえるため。
   aiProne: true
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
+
+- id: no-container-just-in-case
+  level: 非推奨
+  rule: '`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。'
+  reason: 'コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。'
+  aiProne: true
+  page: responsive/container-size-queries
+  since: 0.20.0
+
+- id: density-via-style-query
+  level: 推奨
+  rule: 'コンポーネントの中で同じ閾値のコンテナサイズクエリを何度も書くときは、ルートの直下の要素が `@container --scoped (…)` の中で `--_density: --compact` のような `--` で始まる識別子を宣言し、その子孫の要素は `@container style(--_density: --compact)` で切り替える。'
+  reason: 閾値が1か所にまとまり、変えるときに直す場所が1つで済むため。ルートは自分のサイズを問い合わせられないので、宣言はルートの直下の要素に置く。
+  note: 'クエリの外にもデフォルトの値（`--_density: --spacious` など）を宣言し、外側のコンポーネントの値が継承されないようにします。スタイルクエリは親の要素の値を調べるので、宣言した要素自身は、このスタイルクエリでは切り替わりません。'
+  aiProne: true
+  page: responsive/container-size-queries
+  since: 0.20.0
 
 - id: hide-label-visually-in-container-query
   level: 推奨
-  rule: 'アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナクエリの中で `display: none` ではなく視覚的に隠す指定を書く。'
+  rule: 'アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナサイズクエリの中で `display: none` ではなく視覚的に隠す指定を書く。'
   reason: 'アイコンを `aria-hidden="true"` にしている場合、ラベルまで消すとリンクやボタンの名前がなくなるため。幅の違う複数の場所に置いても、修飾クラスなしで切り替えられる。'
   note: 隠し方は `.-visually-hidden` と同じ考え方です。ユーティリティのクラスはクエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書きます。
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.3.0
 
 - id: no-container-on-page-root
   level: 禁止
   rule: '`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。'
   reason: 'ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。'
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: no-container-on-intrinsic-size
   level: 禁止
   rule: 幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。
   reason: インライン方向のサイズの封じ込めが働き、幅が極端に小さく計算されるため。
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: no-padding-on-container
   level: 非推奨
   rule: コンテナにする要素には `padding` や `border` を指定せず、レイアウトは子要素で行う。
   reason: コンテナの幅の計算がずれ、クエリの閾値や `cqi` の値が意図とずれるため。
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: cqi-needs-named-container
@@ -108,42 +184,43 @@
   rule: '`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。'
   reason: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
   aiProne: true
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: no-container-type-size
   level: 非推奨
   rule: '`container-type: size` と、それを前提にした `cqb`、`cqh`、`cqmin`、`cqmax` は使わない。'
   reason: コンテナの高さが確定していないと効かず、使える場面がほとんどないため。
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: no-container-utility-class
   level: 禁止
   rule: '`.container` のような汎用のクラスを作らない。`container` プロパティを持つ要素にだけ、`.sidebar-container` のように何のコンテナかが分かる名前を付ける。'
   reason: '`container` が CSS で意味を持つ語になったので、ただのラッパーに使うと誤解を招くため。'
-  page: responsive/container-queries
+  page: responsive/container-size-queries
   since: 0.1.0
 
 - id: zoom-as-last-resort
   level: 非推奨
-  rule: '`zoom` をレスポンシブ対応の手段として使わない。'
-  reason: 文字も含めてすべてが縮小され、レイアウトの問題を解決せずに隠してしまうため。
-  note: 想定の最小幅を下回ると破綻するコンポーネントのルートに限り、`1` を上限とする最後の保険として使えます。
-  page: responsive/container-queries
+  rule: '`zoom` による縮小は最後の手段にとどめ、使うときは、ルートの直下で中身を包む要素に `@container --scoped (inline-size < 最小幅)` の条件を付けて、`zoom: min(progress(100cqi, 0px, 最小幅), 1)` と書く。'
+  reason: 文字も含めてすべてが縮小され、レイアウトの問題を解決せずに隠してしまうため。先にイントリンシックなレイアウトとコンテナサイズクエリで組み替え、それでも想定の最小幅を下回ると破綻するコンポーネントに限る。
+  note: '`1` を上限にして、拡大には使いません。`progress()` に未対応の環境では縮小されないので、縮小しなくても読めて操作できる状態を保ちます（プログレッシブ・エンハンスメント）。文字サイズを縮める代わりにも使いません。'
+  aiProne: true
+  page: responsive/container-size-queries
   since: 0.1.0
 
-# 12-3 メディアクエリとブレイクポイント
+# 12-4 メディアクエリ
 - id: media-query-for-macro-layout
   level: 推奨
   rule: メディアクエリは、ページ全体の段組み、ビューポートに固定された要素、常に画面幅いっぱいに表示されるブロックに限って使う。
-  reason: それ以外の要素は、イントリンシックな手法やコンテナクエリのほうが置き場所の変化に強いため。
+  reason: それ以外の要素は、イントリンシックな手法やコンテナサイズクエリのほうが置き場所の変化に強いため。
   page: responsive/media-queries
   since: 0.1.0
 
 - id: query-range-syntax
   level: 必須
-  rule: メディアクエリとコンテナクエリの条件は範囲構文（`>=` や `<`）で書き、`min-width` や `max-width` の書き方は使わない。
+  rule: メディアクエリとコンテナサイズクエリの条件は範囲構文（`>=` や `<`）で書き、`min-width` や `max-width` の書き方は使わない。
   reason: 条件を不等式として読め、境界の値を含むかどうかも明確になるため。
   lint: 'Stylelint: `media-feature-range-notation`（メディアクエリのみ）'
   aiProne: true
@@ -157,53 +234,6 @@
   page: responsive/media-queries
   since: 0.1.0
 
-- id: breakpoint-in-rem
-  level: 必須
-  rule: ブレイクポイントは rem で指定し、`calc(640 / 16 * 1rem)` のようにピクセル値からの変換を式で書く。
-  reason: 文字サイズを大きくしているユーザーは実質的に使える幅が狭くなるので、rem で指定すれば切り替えもそれに追従するため。式にすれば、元のピクセル値も読み取れる。
-  aiProne: true
-  page: responsive/media-queries
-  since: 0.1.0
-
-- id: breakpoint-from-content
-  level: 必須
-  rule: ブレイクポイントはデバイスの幅ではなく、レイアウトが崩れる幅から決める。
-  reason: 画面幅の種類は無数にあり、特定の端末の幅に合わせても、その間の幅で崩れるため。
-  page: responsive/media-queries
-  since: 0.1.0
-
-- id: framework-breakpoint-variables
-  level: 推奨
-  rule: ブレイクポイントを変数として持つフレームワークを使う案件では、独自の値を足さず、フレームワークの変数を使う。
-  reason: 案件の中でブレイクポイントの値がばらばらになるのを防ぐため。
-  note: 'Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティは、メディアクエリの条件では使えません（`no-var-in-query`）。'
-  page: responsive/media-queries
-  since: 0.3.0
-
-- id: no-device-names
-  level: 禁止
-  rule: '`sp`、`tablet`、`pc` のようにデバイスを連想させる名前を、ブレイクポイントやクラス名（`.sp-only` など）に使わない。'
-  reason: 画面の幅とデバイスの種類は一致せず、名前と実態がずれていくため。
-  aiProne: true
-  page: responsive/media-queries
-  since: 0.1.0
-
-- id: threshold-as-formula
-  level: 推奨
-  rule: クエリの閾値は、「列の最小幅×列数＋隙間×隙間の数」のように、レイアウトが成り立つ条件を `calc()` の式で書く。
-  reason: 数値の根拠がコードに残り、列数や隙間を変えたときにも直しやすいため。
-  page: responsive/media-queries
-  since: 0.1.0
-
-- id: no-var-in-query
-  level: 禁止
-  rule: '`@media` の条件と、`@container` のサイズの条件の中で `var()` を使わない。'
-  reason: メディアクエリの条件ではカスタムプロパティを参照できず、コンテナのサイズの条件では仕様で認められていても対象のブラウザでそろって動かず、値が問い合わせるコンテナで解決されて意図とずれやすいため。
-  note: 'スタイルクエリで `style(--a: var(--b))` のようにカスタムプロパティどうしを比べる条件は、対象にしません。'
-  aiProne: true
-  page: responsive/media-queries
-  since: 0.1.0
-
 - id: no-device-width-feature
   level: 禁止
   rule: '`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。'
@@ -211,6 +241,13 @@
   aiProne: true
   page: responsive/media-queries
   since: 0.4.0
+
+- id: no-orientation-for-layout
+  level: 非推奨
+  rule: 'レイアウトの切り替えを `orientation` で判定しない。使える幅は `width` で判定する。'
+  reason: '`orientation` が比べるのはビューポートの幅と高さで、端末の向きではないため。縦向きの端末でもソフトウェアキーボードが出るとビューポートが横長になり、`landscape` と判定されることがある。'
+  page: responsive/media-queries
+  since: 0.20.0
 
 - id: any-pointer-not-width-for-input
   level: 推奨
@@ -237,7 +274,7 @@
   page: responsive/media-queries
   since: 0.5.0
 
-# 12-4 375px未満の画面ではビューポートを固定する
+# 12-5 375px未満の画面ではビューポートを固定する
 - id: fixed-viewport-below-min-width
   level: 推奨
   rule: '375px 未満の画面では、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。'
@@ -247,12 +284,12 @@
   page: responsive/min-viewport-width
   since: 0.18.0
 
-# 12-5 カンプの幅で全体を拡大・縮小しない
+# 12-6 カンプの幅で全体を拡大・縮小しない
 - id: no-full-liquid-scaling
   level: 禁止
   rule: カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。
   reason: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。
-  note: 'ブレイクポイントはデザインの段階で決めず、実装の段階でデザイナーと、保つもの（本文の読みやすさ、情報の量、画像の縦横比、CTA）と崩れとみなす基準（カラムの数を変える時点、余白を削る順番）をすり合わせて決めます（9-2）。コンポーネントの切り替えはコンテナクエリで、ビューポートに密着する要素とページ全体の段組みはメディアクエリで書き、幅で連続的に変えたい値は値ごとに `clamp()` で範囲を決めます（4-3）。'
+  note: 'ブレイクポイントはデザインの段階で決めず、実装の段階でデザイナーと、保つもの（本文の読みやすさ、情報の量、画像の縦横比、CTA）と崩れとみなす基準（カラムの数を変える時点、余白を削る順番）をすり合わせて決めます（9-2）。コンポーネントの切り替えはコンテナサイズクエリで、ビューポートに密着する要素とページ全体の段組みはメディアクエリで書き、幅で連続的に変えたい値は値ごとに `clamp()` で範囲を決めます（4-3）。'
   aiProne: true
   page: responsive/design-comp-pattern
   since: 0.18.0
@@ -266,7 +303,7 @@
   page: responsive/design-comp-pattern
   since: 0.18.0
 
-# 12-6 セーフエリアに対応する
+# 12-7 セーフエリアに対応する
 - id: safe-area-inset-with-viewport-fit-cover
   level: 必須
   rule: '`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。'

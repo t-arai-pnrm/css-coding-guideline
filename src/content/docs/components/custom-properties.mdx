@@ -113,7 +113,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 
 状態ごとの値は、すべて `:scope` の先頭に並べます。状態のセレクタの中では、どの内部プロパティを使うかを切り替えるだけにします。こうしておくと、そのコンポーネントがどんな状態を持ち、それぞれで何色になるのかを、先頭の数行で確認できます。配色を変えるときも、直すのは先頭の値だけです。ホバーの書き方と状態の表し方は、「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明します。
 
-公開プロパティにも、同じ形の接尾辞を使います。たとえば、置かれた場所の幅に応じてコンテナクエリで隙間を変えるコンポーネントなら、広いときの値を `--media-card--gap--wide` のように接尾辞を付けた別の公開プロパティとして受け取ります。デフォルトの値を受け取る `--media-card--gap` には、接尾辞を付けません。
+公開プロパティにも、同じ形の接尾辞を使います。たとえば、置かれた場所の幅に応じてコンテナサイズクエリで隙間を変えるコンポーネントなら、広いときの値を `--media-card--gap--wide` のように接尾辞を付けた別の公開プロパティとして受け取ります。デフォルトの値を受け取る `--media-card--gap` には、接尾辞を付けません。
 
 ```css title="🙆‍♂ Recommended: 幅による値の違いを、接尾辞を付けた公開プロパティで受ける"
 @scope (.scoped.media-card) to (.scoped) {
@@ -121,14 +121,14 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
     --_gap: var(--media-card--gap, 12px);
     --_gap--wide: var(--media-card--gap--wide, 24px);
 
-    container: --media-card / inline-size;
+    container: --scoped / inline-size;
   }
 
   ._layout {
     display: block grid;
     gap: var(--_gap);
 
-    @container --media-card (inline-size >= calc(400 / 16 * 1rem)) {
+    @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
       gap: var(--_gap--wide);
     }
   }
@@ -150,7 +150,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 ただし、次のような場合は、CSSの側で公開プロパティに値を渡してかまいません。
 
 - 同じ値を、複数の子のコンポーネントにまとめて渡したい場合（親の要素に定義して、継承させる）
-- メディアクエリやコンテナクエリで、値を切り替えたい場合
+- メディアクエリやコンテナサイズクエリで、値を切り替えたい場合
 - `:hover` や `:has()` のように、状態によって値を変えたい場合
 
 最後の場合の例として、親のヘッダーが、自分の状態に合わせて子のナビゲーションの色を変えるコードを示します。親は自分の内部プロパティを、子の公開プロパティにつないでいるだけで、子のナビゲーションはヘッダーの中に置かれていることに依存しません。

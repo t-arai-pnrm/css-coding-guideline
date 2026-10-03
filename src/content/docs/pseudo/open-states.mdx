@@ -1,8 +1,8 @@
 ---
-title: "3-6 開閉と表示の状態を表す擬似クラス"
+title: "3-7 開閉と表示の状態を表す擬似クラス"
 description: "開閉の状態は、クラスを付け外しせず、要素自身の状態で選びます。<details>と<dialog>は[open]、ポップオーバーは:popover-open、モーダルかどうかは:modalで選び、:openは対象のすべてのブラウザが対応するまで使いません。"
 sidebar:
-  order: 6
+  order: 7
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -84,7 +84,7 @@ details {
 
 <Demo title="[open] と :popover-open で、開いている間だけ開閉のボタンの見た目を変える" html={openStateHtml} css={openStateCss} height="16rem" />
 
-ボタンの見た目は、`:has()` の起点をボタンにし、`+` の結合子で直後の兄弟だけを調べて決めています。ナビゲーション全体を起点にして `nav:has(:popover-open)` と書くこともできますが、引数で探す範囲が広いほど、DOMが変わったときに調べ直す範囲も広がります。起点と引数の絞り方は「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
+ボタンの見た目は、`:has()` の起点をボタンにし、`+` の結合子で直後の兄弟だけを調べて決めています。ナビゲーション全体を起点にして `nav:has(:popover-open)` と書くこともできますが、引数で探す範囲が広いほど、DOMが変わったときに調べ直す範囲も広がります。起点と引数の絞り方は「[3-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
 
 閉じたポップオーバーは、ブラウザのデフォルトスタイルの `display: none` で隠れています。ポップオーバーのルールに `display: block grid` のような値を書くと、この指定を上書きして、閉じていても表示されます。閉じた `<dialog>` も同じです。kiso.cssは、閉じた `<dialog>` と、`:popover-open` でないポップオーバーに `display: none !important` を指定して、これを防いでいます。kiso.cssを使わない場合は、`display` を `&:popover-open` のルールに書きます。
 

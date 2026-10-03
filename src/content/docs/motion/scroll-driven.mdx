@@ -1,16 +1,19 @@
 ---
 title: "17-6 スクロールに合わせて動かす"
-description: "スクロール位置に合わせて連続して変わる動きはCSSのスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出はIntersectionObserverで属性を切り替えて作ります。scrollイベントで毎回位置を計算する方法は使いません。"
+description: "スクロール位置に合わせて連続して変わる動きはCSSのスクロール駆動アニメーションで作ります。画面に入ったときに1回だけ動かす演出は、view()のタイムラインで切り替えたカスタムプロパティをスタイルクエリで問い合わせて再生し、Firefoxでも演出が必要なときはIntersectionObserverを使います。scrollイベントで毎回位置を計算する方法は使いません。"
 sidebar:
   order: 6
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import revealHtml from '../../../demos/motion/reveal-on-view/index.html?raw';
+import revealCss from '../../../demos/motion/reveal-on-view/style.css?raw';
 
-スクロールに合わせた動きは、値の変わり方で作り方を選びます。スクロール位置に合わせて連続して変わる値には、CSSのスクロール駆動アニメーションを使い、`animation-range` で範囲を明示します。画面に入った時点で1回だけ変わる演出は、`IntersectionObserver` で属性を付け、CSSのアニメーションを再生して作ります。JavaScriptで毎フレーム同期するのは、それでも作れない複雑な分岐が必要なときだけです。
+スクロールに合わせた動きは、値の変わり方で作り方を選びます。スクロール位置に合わせて連続して変わる値には、CSSのスクロール駆動アニメーションを使い、`animation-range` で範囲を明示します。画面に入った時点で1回だけ変わる演出は、`view()` のタイムラインでカスタムプロパティを切り替え、`@container style()` で時間で進むアニメーションを再生して作ります。Firefoxでも演出を出したいときと、スクロールを戻しても再生を止めたくないときは、`IntersectionObserver` で属性を付けます。JavaScriptで毎フレーム同期するのは、それでも作れない複雑な分岐が必要なときだけです。
 
-1回だけ再生する演出は、JavaScriptが準備を終えてルートに `data-motion-mode="motion"` を付けたときだけ、要素を動き始める前の見た目で待たせます。待機中の見た目は `@keyframes` の `from` に任せ、`opacity: 0` を別に書きません。JavaScriptが動かない環境でも、動きを減らす設定の環境でも、すべての内容を読めるようにするためです。
+どの方法でも、演出に対応していない環境では、要素を動き始める前の見た目で待たせません。CSSだけの方法は、`@supports (animation-timeline: view())` で囲みます。JavaScriptを使う方法は、準備を終えてルートに `data-motion-mode="motion"` を付けたときだけ待たせます。待機中の見た目は `@keyframes` の `from` に任せ、`opacity: 0` を別に書きません。演出が動かない環境でも、動きを減らす設定の環境でも、すべての内容を読めるようにするためです。
 
 ## スクロールのたびに位置を計算する問題
 
@@ -34,14 +37,14 @@ window.addEventListener('scroll', () => {
 
 ## 連続した変化か、1回の変化か
 
-スクロールに合わせた動きを作る手段には、優先順位があります。最初に選ぶのは、CSSのスクロール駆動アニメーションです。次が、`IntersectionObserver` で状態を切り替え、CSSのトランジションやアニメーションで動かす方法です。JavaScriptで毎フレーム同期する方法は、本当に必要な場合に限ります。
+スクロールに合わせた動きを作る手段には、優先順位があります。最初に選ぶのは、CSSだけで作る方法です。次が、`IntersectionObserver` で状態を切り替え、CSSのトランジションやアニメーションで動かす方法です。JavaScriptで毎フレーム同期する方法は、本当に必要な場合に限ります。
 
-どれを選ぶかは、スクロール位置と値の関係で決まります。パララックスや読んだ量の表示のように、スクロール位置に合わせて値が連続して変わるなら、スクロール駆動アニメーションです。要素が画面に入った時点で一度だけ見た目が変わるなら、`IntersectionObserver` です。スクロール量に応じて表示する内容を入れ替えるような、複雑な分岐が必要な場合は、JavaScriptで `requestAnimationFrame` を使って制御します。
+どれを選ぶかは、スクロール位置と値の関係で決まります。パララックスや読んだ量の表示のように、スクロール位置に合わせて値が連続して変わるなら、スクロール駆動アニメーションです。要素が画面に入った時点で一度だけ見た目が変わるなら、スクロール駆動アニメーションは再生のきっかけにだけ使い、見た目の変化は時間で進むアニメーションに任せます。Firefoxでも演出が必要なら、きっかけを `IntersectionObserver` で作ります。スクロール量に応じて表示する内容を入れ替えるような、複雑な分岐が必要な場合は、JavaScriptで `requestAnimationFrame` を使って制御します。
 
 | 値の変わり方 | 手段 | 例 |
 | --- | --- | --- |
 | スクロール位置に合わせて連続して変わる | スクロール駆動アニメーション | パララックス、スクロールした量に応じたヘッダーの背景 |
-| 画面に入ったときに一度だけ変わる | `IntersectionObserver` とCSSのアニメーション | 見出しやカードが現れる演出 |
+| 画面に入ったときに一度だけ変わる | `view()` のタイムラインとスタイルクエリ（Firefoxでも出すなら `IntersectionObserver`）で、CSSのアニメーションを再生する | 見出しやカードが現れる演出 |
 | スクロール量に応じて複雑に分岐する | `requestAnimationFrame` で制御するJavaScript | 段落を入れ替えながら進む演出 |
 
 スクロール駆動アニメーションでは、ブラウザがスクロールの位置をそのままアニメーションの進み具合として使います。`opacity` や `translate` のような合成だけで済むプロパティなら、メインスレッドが忙しいときにもスクロールに追従しやすくなります（「[17-7 動きの負荷を抑える](/motion/performance/)」）。`IntersectionObserver` も、交差したときにだけコールバックが呼ばれるので、スクロールのたびに位置を読む必要がありません。
@@ -118,7 +121,79 @@ window.addEventListener('scroll', () => {
 
 ## 画面に入ったら1回だけ再生する
 
-画面に入った時点で1回だけ再生する演出では、`animation-play-state: paused` と `animation-fill-mode: both` を組み合わせます。一時停止していても、`both` によって `from` のキーフレームが描画されるので、要素は動き始める前の見た目で待機します。要素が画面に入り、JavaScriptが `data-revealed` を付けたら、`animation-play-state: initial` で一時停止を取り消して再生します。
+画面に入った時点で1回だけ再生する演出は、CSSだけで作れます。スクロール駆動アニメーションは「画面に入った」ことを知らせるきっかけにだけ使い、見た目の変化は時間で進む普通のアニメーションで再生します。スクロール駆動アニメーションで `opacity` を直接動かすと、進み具合がスクロールの位置で決まるので、スクロールを止めた位置で表示が途中のまま残り、スクロールの速さで動きの速さも変わるからです。
+
+きっかけには、カスタムプロパティを使います。ルートの `view()` のタイムラインで `--_in-view` を `false` から `true` に切り替え、子は一時停止したアニメーションを `@container style(--_in-view: true)` の中で再生します。
+
+```css title="🙆‍♂ Recommended: view() のタイムラインで切り替えた値を、スタイルクエリで問い合わせて再生する"
+@keyframes --reveal-card--in-view {
+  from {
+    --_in-view: false;
+  }
+
+  to {
+    --_in-view: true;
+  }
+}
+
+@scope (.scoped.reveal-card) to (.scoped) {
+  :scope {
+    --_in-view: false;
+
+    @supports (animation-timeline: view()) {
+      animation-name: --reveal-card--in-view;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+
+  ._body {
+    --translate-from--y-value: 24px;
+
+    @supports (animation-timeline: view()) {
+      animation-name: --fade-in;
+      animation-duration: var(--duration--reveal);
+      animation-timing-function: var(--ease--out-quint);
+      animation-fill-mode: both;
+      animation-play-state: paused;
+
+      @container style(--_in-view: true) {
+        animation-play-state: running;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation-name: --fade-in, --translate-from;
+      }
+    }
+  }
+}
+```
+
+<Demo title="画面に入ったカードが、1回だけフェードインする" html={revealHtml} css={revealCss} height="360px" />
+
+ルートは、`view()` のタイムラインで自分の位置を測るだけで、自分は動きません。`--_in-view` は `@property` で登録していないので、キーフレームの間を補間できず、進み具合の50%の時点で `false` から `true` に切り替わります（CSS Custom Properties Level 1）。`linear` を指定しているので、切り替わるのは範囲のちょうど中間です。この例の範囲は `entry 0%` から `entry 60%` なので、要素の30%が画面に入った位置で `true` になります（2026年10月、Chrome 152で確認）。`animation-fill-mode: both` を指定しているので、範囲を過ぎたあとも `true` のまま残ります。
+
+子の `._body` は、`animation-play-state: paused` と `animation-fill-mode: both` で、`@keyframes` の `from` の見た目のまま待機します。`--_in-view` が `true` になると、`@container style()` の中の `running` が当てはまり、アニメーションが最後まで再生されます。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは、`@keyframes` に渡すカスタムプロパティだけを変えればすみます。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。
+
+`@container style()` は、名前を指定しなければ、いちばん近い祖先の要素の値を問い合わせます。要素は自分自身の値を問い合わせられないので、値を切り替える要素（ルート）と、再生する要素（`._body`）を分けています。`--fade-in` と `--translate-from` はサイト全体で使う `@keyframes` で、定義は「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。一方、`--_in-view` はコンポーネントの内部用のカスタムプロパティなので、それを切り替える `@keyframes` には、コンポーネントの名前を付けます。
+
+<Baseline id="container-style-queries" name="@container style()" />
+
+### スクロールを戻したときと、対応していない環境
+
+範囲より手前までスクロールを戻すと、`--_in-view` は `false` に戻り、`._body` のアニメーションは再び一時停止します。再生を終えていれば、見た目は終わった状態のまま変わりません。しかし、再生の途中で戻すと、その位置で止まり、巻き戻りません。次に範囲に入ると、止まった位置から再生を続けます（2026年10月、Chrome 152で確認）。半透明のまま止まるのを避けたい場合は、次の `IntersectionObserver` の方法を使います。
+
+2026年10月の時点で、スクロール駆動アニメーションはChrome 115以降とSafari 26以降が対応し、Firefoxは対応していません。スタイルクエリは、Firefoxも151から使えます。`@supports (animation-timeline: view())` で囲まないと、Firefoxでは `animation-timeline` が無視され、ルートのアニメーションは再生時間が0の普通のアニメーションになります。読み込んだ直後から `--_in-view` が `true` なので、`._body` のアニメーションは画面の外で再生を終えます。`@supports` で囲めば、Firefoxでは演出なしで最初から表示されます。
+
+動きを減らす設定には、フェードだけで表示して対応しています。`--fade-in` は条件の外に書き、移動の `--translate-from` だけを `prefers-reduced-motion: no-preference` の中で加えます。フェードは、動きを減らす設定でも残してよい動きだからです（「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。
+
+### IntersectionObserver で属性を切り替える
+
+Firefoxでも演出を出したいときと、スクロールを戻しても再生を途中で止めたくないときは、`IntersectionObserver` で属性を付けます。属性は、JavaScriptが外さない限り残るので、一度再生を始めたアニメーションは、スクロールの位置にかかわらず最後まで再生されます。
+
+この方法でも、`animation-play-state: paused` と `animation-fill-mode: both` を組み合わせます。一時停止していても、`both` によって `from` のキーフレームが描画されるので、要素は動き始める前の見た目で待機します。要素が画面に入り、JavaScriptが `data-revealed` を付けたら、`animation-play-state: initial` で一時停止を取り消して再生します。
 
 ```css title="🙆‍♂ Recommended: 一時停止したアニメーションを、画面に入ったら再生する"
 @scope (.scoped.feature-list) to (.scoped) {
@@ -142,7 +217,7 @@ window.addEventListener('scroll', () => {
 }
 ```
 
-待機中の見た目は、`@keyframes` の `from` が決めています。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは `@keyframes` に渡すカスタムプロパティだけを変えればすみます。`--fade-in` と `--translate-from` の定義は「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。
+待機中の見た目は、CSSだけの方法と同じく `@keyframes` の `from` が決めています。
 
 属性はJavaScriptで付けます。`data-motion-mode` は、`IntersectionObserver` で監視を始めたあとに付けます。
 
@@ -223,7 +298,7 @@ window.addEventListener(
 );
 ```
 
-演出のためのスタイル（要素を重ねる、最初は隠しておくなど）を常に当てておくと、JavaScriptが動かない環境で内容が読めなくなります。そこで、1回だけ再生する演出と同じく、演出のためのスタイルは `data-motion-mode="motion"` のときだけ当てます。基本のスタイルは、JavaScriptがないときと動きを減らす設定のときの、最終的な状態として書きます。
+演出のためのスタイル（要素を重ねる、最初は隠しておくなど）を常に当てておくと、JavaScriptが動かない環境で内容が読めなくなります。そこで、`IntersectionObserver` で1回だけ再生する演出と同じく、演出のためのスタイルは `data-motion-mode="motion"` のときだけ当てます。基本のスタイルは、JavaScriptがないときと動きを減らす設定のときの、最終的な状態として書きます。
 
 ```css title="🙆‍♂ Recommended: 演出のためのスタイルを、motion のときだけ当てる"
 @scope (.scoped.story-section) to (.scoped) {
@@ -254,7 +329,7 @@ window.addEventListener(
 
 ## 補足と注意点
 
-画面に入ったら1回だけ動かす演出も、CSSだけで書ける仕様が出てきています。`timeline-trigger` で「ビュー進行タイムラインのどの範囲に入ったか」を引き金として定義し、`animation-trigger` で、その引き金が引かれたときにアニメーションを再生します。スクロール駆動アニメーションと違い、再生はスクロール量に連動しないので、スクロールを戻しても逆再生されません。ただし、2026年10月の時点で対応しているのはChrome系のブラウザ（Chrome 146以降）だけです。対応していない環境では `animation-trigger` が無視され、アニメーションは読み込んだ直後に画面の外で再生を終えます。そのため本書では、`IntersectionObserver` で属性を付ける方法を基本とします。
+画面に入ったら1回だけ動かす演出も、CSSだけで書ける仕様が出てきています。`timeline-trigger` で「ビュー進行タイムラインのどの範囲に入ったか」を引き金として定義し、`animation-trigger` で、その引き金が引かれたときにアニメーションを再生します。スクロール駆動アニメーションと違い、再生はスクロール量に連動しないので、スクロールを戻しても逆再生されません。ただし、2026年10月の時点で対応しているのはChrome系のブラウザ（Chrome 146以降）だけです。対応していない環境では `animation-trigger` が無視され、アニメーションは読み込んだ直後に画面の外で再生を終えます。そのため本書では、`view()` のタイムラインとスタイルクエリで再生を切り替える方法を基本とします。
 
 動き始める前の要素を隠すのに、`visibility: hidden` や `display: none` を使わないでください。スクリーンリーダーで読めなくなったり、ページ内検索で見つからなくなったりします。`opacity` で透明にした要素は、見えなくても読み上げと検索の対象に残ります。
 
@@ -267,9 +342,11 @@ window.addEventListener(
 ## 参考リンク
 
 - [スクロール連動アニメーションの実装例](https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
+- [Scroll-driven animation & container style query](https://codepen.io/editor/tak-dcxi/pen/01a04777-8c8e-722c-87de-1cf4dd564270)（CodePen）
 - [CSS スクロール駆動アニメーション - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations)
 - [animation-range - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-range)
 - [animation-fill-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-fill-mode)
+- [CSS Custom Properties for Cascading Variables Module Level 1](https://drafts.csswg.org/css-variables-1/#defining-variables)（W3C、カスタムプロパティは値が50%の時点で切り替わる）
 - [交差オブザーバー API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Intersection_Observer_API)
 - [scripting - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@media/scripting)
 - [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)

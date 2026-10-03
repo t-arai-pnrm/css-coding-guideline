@@ -1,6 +1,6 @@
 ---
 title: 第12章 レスポンシブデザイン
-description: レスポンシブ対応を検討する順番、コンテナクエリとメディアクエリの書き方、375px未満の画面の扱い、カンプの幅で全体を拡大・縮小しない理由を示す。
+description: レスポンシブ対応を検討する順番、ブレイクポイントの決め方、コンテナサイズクエリとメディアクエリの書き方、375px未満の画面の扱い、カンプの幅で全体を拡大・縮小しない理由を示す。
 sidebar:
   label: 概要
   order: 0
@@ -12,14 +12,17 @@ sidebar:
 
 もうひとつの前提は、コンポーネントの置き場所が決まっていないことです。同じカードをメインエリアとサイドバーの両方に置くと、ビューポートの幅が同じでもカードの幅は異なるため、ビューポートの幅だけではカード内の配置を決められません。そこで、ページ全体の段組みはビューポートの幅で、コンポーネント内の配置は置かれた場所の幅で決めます。この役割分担が、章全体に共通する考え方です。
 
-節は次の6つです。
+置かれた場所の幅を調べる仕組みを、本書ではコンテナサイズクエリと呼びます。`@container` には、カスタムプロパティの値を調べるスタイルクエリと、スクロールの状態を調べるスクロール状態クエリもあり、この3つをまとめてコンテナクエリと呼びます。
 
-- [12-1 検討する順番](/responsive/escalation/)：静的、イントリンシック、コンテナクエリ、メディアクエリの順に検討する理由
-- [12-2 コンテナクエリ](/responsive/container-queries/)：置き場所の幅に合わせて振る舞うコンポーネントの書き方と、コンテナの副作用
-- [12-3 メディアクエリとブレイクポイント](/responsive/media-queries/)：ページ全体の段組みの切り替えと、ブレイクポイントの決め方
-- [12-4 375px未満の画面ではビューポートを固定する](/responsive/min-viewport-width/)：狭い端末だけビューポートの幅を375pxに固定するスクリプトと、判定に `outerWidth` を使う理由
-- [12-5 カンプの幅で全体を拡大・縮小しない](/responsive/design-comp-pattern/)：カンプの比率を保つ要望にフルリキッドで応えない理由と、デザイナーとブレイクポイントを決める方法、局所だけを `cqi` で拡大・縮小する書き方
-- [12-6 セーフエリアに対応する](/responsive/safe-area/)：ノッチやホームインジケーターを避ける余白と、画面の下に固定する要素の書き方
+節は次の7つです。
+
+- [12-1 検討する順番](/responsive/escalation/)：静的、イントリンシック、コンテナサイズクエリ、メディアクエリの順に検討する理由
+- [12-2 ブレイクポイントの決め方](/responsive/breakpoints/)：内容が成り立たなくなる幅から閾値を決め、remと `calc()` の式で根拠を残す書き方
+- [12-3 コンテナサイズクエリ](/responsive/container-size-queries/)：置き場所の幅に合わせて振る舞うコンポーネントの書き方、`--scoped` のコンテナ、閾値をスタイルクエリで使い回す方法、コンテナの副作用
+- [12-4 メディアクエリ](/responsive/media-queries/)：ページ全体の段組みの切り替えと、使うメディア特性、使わないメディア特性
+- [12-5 375px未満の画面ではビューポートを固定する](/responsive/min-viewport-width/)：狭い端末だけビューポートの幅を375pxに固定するスクリプトと、判定に `outerWidth` を使う理由
+- [12-6 カンプの幅で全体を拡大・縮小しない](/responsive/design-comp-pattern/)：カンプの比率を保つ要望にフルリキッドで応えない理由と、デザイナーとブレイクポイントを決める方法、局所だけを `cqi` で拡大・縮小する書き方
+- [12-7 セーフエリアに対応する](/responsive/safe-area/)：ノッチやホームインジケーターを避ける余白と、画面の下に固定する要素の書き方
 
 単位の選び方（pxとrem、ビューポート単位とコンテナ単位）は[第4章「値と単位」](/values/)で、コード例で使っている `@scope` とカスケードレイヤーは[第2章「カスケードを制御する」](/cascade/)で説明しています。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSでは省略していません。
 
@@ -29,8 +32,9 @@ sidebar:
 
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
-- [`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)：「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使いません。
-- [`container-name-required`](/responsive/container-queries/#rule-container-name-required)：コンテナには必ず名前を付け、`@container` の条件でもその名前を指定します。
-- [`no-container-on-intrinsic-size`](/responsive/container-queries/#rule-no-container-on-intrinsic-size)：インライン要素や `fit-content` の要素のように、幅が中身で決まる要素をコンテナにしません。
+- [`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)：「静的 → イントリンシック → コンテナサイズクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使いません。
+- [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)：ルートのコンテナは `container: --scoped / inline-size` と書きます。外側のコンポーネントのコンテナは問い合わせません。
+- [`no-container-on-intrinsic-size`](/responsive/container-size-queries/#rule-no-container-on-intrinsic-size)：インライン要素や `fit-content` の要素のように、幅が中身で決まる要素をコンテナにしません。
 - [`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)：クエリの条件は範囲構文で書き、`min-width` や `max-width` の書き方は使いません。
-- [`breakpoint-in-rem`](/responsive/media-queries/#rule-breakpoint-in-rem)：ブレイクポイントはremで指定し、`calc(640 / 16 * 1rem)` のように変換を式で書きます。
+- [`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem)：ブレイクポイントはremで指定し、`calc(640 / 16 * 1rem)` のように変換を式で書きます。
+- [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：閾値は「列の最小幅×列数＋隙間×隙間の数」のように、レイアウトが成り立つ条件を `calc()` の式で書きます。

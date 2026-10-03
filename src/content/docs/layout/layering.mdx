@@ -124,18 +124,20 @@ z-indexは、どの要素にも効くわけではありません。効くのは�
   }
 
   li {
-    &:not(:first-child) {
-      margin-inline-start: -8px;
+    @media (any-hover) {
+      &:has(> :any-link:hover) {
+        z-index: var(--z--forwards);
+      }
     }
 
-    &:hover {
-      z-index: var(--z--forwards);
+    &:not(:first-child) {
+      margin-inline-start: -8px;
     }
   }
 }
 ```
 
-アバターの画像を少しずつ重ねて並べ、ホバーした画像を手前に出す例です。`li` はフレックスアイテムなので、`position` を指定しなくても `z-index` で前後を変えられます。ルートの `isolation: isolate` は、この相対的なz-indexをコンポーネントの中に閉じ込める指定です。
+アバターの画像を少しずつ重ねて並べ、ホバーしたリンクの画像を手前に出す例です。`li` はフレックスアイテムなので、`position` を指定しなくても `z-index` で前後を変えられます。ルートの `isolation: isolate` は、この相対的なz-indexをコンポーネントの中に閉じ込める指定です。
 
 一方、z-indexを指定していなくても、位置指定の要素は、位置指定していない通常フローの要素より手前に描かれます。描く順番は、まず通常フローのブロック、次にフロート、インラインの内容、最後に位置指定の要素という段階に分かれているからです。`position: relative` を指定しただけで要素が前に出るのはこのためで、z-indexの値とは関係がありません。重ねた要素の前後が意図と違うときは、z-indexより先に、どちらが位置指定の要素かを確かめます。
 
@@ -170,7 +172,7 @@ z-indexは、どの要素にも効くわけではありません。効くのは�
 ```css title="🙆‍♂ Recommended: スクロールする領域を画面の端まで広げ、止まる位置を内側にそろえる"
 @scope (.scoped.carousel) to (.scoped) {
   :scope {
-    container: --carousel / inline-size;
+    container: --scoped / inline-size;
   }
 
   ._scroller {

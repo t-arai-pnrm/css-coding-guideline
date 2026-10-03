@@ -25,7 +25,26 @@
   page: pseudo/basics
   since: 0.1.0
 
-# 3-2 :has() で祖先と前の兄弟を選ぶ
+# 3-2 :is()・:where()・:not()
+- id: not-selector-list
+  level: 推奨
+  rule: '複数の条件を除くときは、`:not(.a):not(.b)` と重ねず、`:not(.a, .b)` のように1つの `:not()` の引数に並べる。'
+  reason: '当てはまる要素は同じで、詳細度が引数の最大の1つ分にとどまり、除く条件が1か所にまとまるため。重ねた `:not()` は、条件を1つ足すたびに詳細度が上がる。'
+  note: '`:not()` の引数は寛容なセレクタリストではないので、対応が分かれる擬似クラスを並べるときは、`:not(:is(…))` のように引数の中で `:is()` に包みます（ルール `forgiving-list-for-partial-support`）。'
+  aiProne: true
+  page: pseudo/is-where-not
+  since: 0.20.0
+
+- id: not-ancestor-in-argument
+  level: 推奨
+  rule: '「X の中にない要素」は、`&:not(X *)` や `a:not(nav a)` のように祖先を `:not()` の引数の中に書き、`:not(X) a` のように祖先の側を否定しない。'
+  reason: '`:not(X) a` は「X ではない祖先を1つでも持つ `a`」を選ぶので、`html` や `body` が常に当てはまり、X の中の要素も除けないため。'
+  note: '「X を持たない要素」を `:not(:has(X))` と書くルール `not-has-for-absence` と同じく、否定の範囲をセレクタの形と一致させます。'
+  aiProne: true
+  page: pseudo/is-where-not
+  since: 0.20.0
+
+# 3-3 :has() で祖先と前の兄弟を選ぶ
 - id: has-over-state-class
   level: 推奨
   rule: 子孫の状態や有無によって祖先のスタイルを変えるときは、JavaScript で状態のクラスを付けずに `:has()` を使う。
@@ -62,7 +81,7 @@
   page: pseudo/has
   since: 0.3.0
 
-# 3-3 子要素の位置で選ぶ
+# 3-4 子要素の位置で選ぶ
 - id: nth-child-of-over-nth-of-type
   level: 推奨
   rule: 'クラスや状態で絞った中での順番は `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使わない（`._post:nth-of-type(2)` ではなく `:nth-child(2 of ._post)`）。'
@@ -81,26 +100,26 @@
   page: pseudo/child-index
   since: 0.9.0
 
-# 3-4 数量クエリ
+# 3-5 数量クエリ
 - id: quantity-query-with-has
   level: 推奨
-  rule: '数量クエリは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で書き、`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように子の側で数える形は使わない。'
-  reason: 条件が「親が何個の子を持つか」という形で読め、1つのセレクタで親自身のレイアウトも子のスタイルも切り替えられるため。
-  note: 'ちょうどN個は `&:has(> :nth-child(N):last-child)`、N個以上は `&:has(> :nth-child(N))`、N個以下は `&:has(> :last-child:nth-child(-n + N))`、N〜M個は `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` と書きます。1個だけなら `&:has(> :only-child)` で足ります。引数は `>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。'
+  rule: '子要素の数で親や兄弟の見た目を変えるときは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で数え、数えた子要素そのものの見た目を変えるときは、`& > :nth-child(2n + 1):nth-last-child(1)` のように子の側で `:nth-child()` と `:nth-last-child()` を組み合わせる。'
+  reason: スタイルを当てる要素をセレクタの主語にすれば、条件と対象が1つのセレクタで読めるため。子の側で数えると親のプロパティは切り替えられず、兄弟を変えるには `~` で後ろの兄弟を拾う組が要る。反対に、数えた子を `:has()` で変えると、同じ条件が親と子の2か所に現れる。
+  note: '親を起点にする形は、ちょうどN個が `&:has(> :nth-child(N):last-child)`、N個以上が `&:has(> :nth-child(N))`、N個以下が `&:has(> :last-child:nth-child(-n + N))`、N〜M個が `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` です。1個だけなら `&:has(> :only-child)` で足ります。`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように、兄弟を変えるために子の側で数える形は使いません。どちらの形でも、`>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。'
   aiProne: true
   page: pseudo/quantity-queries
   since: 0.9.0
 
 - id: quantity-query-for-count-conditions
   level: 推奨
-  rule: 列数のようなレイアウトの切り替えは `auto-fit` やコンテナクエリで行い、数量クエリは「1件だけなら中央に置く」のように、子要素の数そのものが条件のときに限って使う。
+  rule: 列数のようなレイアウトの切り替えは `auto-fit` やコンテナサイズクエリで行い、数量クエリは「1件だけなら中央に置く」「最終行の端数を中央に寄せる」のように、子要素の数そのものが条件のときに限って使う。
   reason: 列数を決める本当の条件は、項目の数よりも、その一覧が使える幅であることが多いため。
   note: '「3件以上なら3列」のように数で列数を決めると、狭い場所に置いたときに列が細くなりすぎます。項目が少ないときに列を行いっぱいに広げるだけなら、`auto-fit` が空の列を畳むので、数量クエリは要りません。'
   aiProne: true
   page: pseudo/quantity-queries
   since: 0.9.0
 
-# 3-5 フォームの状態を表す擬似クラス
+# 3-6 フォームの状態を表す擬似クラス
 - id: placeholder-shown-with-hint
   level: 推奨
   rule: '入力の有無で見た目を変えるときは、入力例を書いた `placeholder` 属性のある入力欄に `:placeholder-shown` を使い、`placeholder` 属性のない入力欄を `:not(:placeholder-shown)` で「入力済み」と判定しない。'
@@ -137,7 +156,7 @@
   page: pseudo/form-states
   since: 0.9.0
 
-# 3-6 開閉と表示の状態を表す擬似クラス
+# 3-7 開閉と表示の状態を表す擬似クラス
 - id: open-attribute-for-details-dialog
   level: 推奨
   rule: '`<details>` と `<dialog>` の開いた状態は `[open]` 属性セレクタで選び、対象のすべてのブラウザが対応するまで `:open` を使わない。'
@@ -174,7 +193,7 @@
   page: pseudo/open-states
   since: 0.9.0
 
-# 3-7 生成コンテンツと装飾の擬似要素
+# 3-8 生成コンテンツと装飾の擬似要素
 - id: no-meaningful-generated-content
   level: 禁止
   rule: '必須の印、単位、注意書き、副題のように、読み手が知る必要のある文字を、`::before` や `::after` の `content` で入れない（HTML に書く）。'

@@ -1,7 +1,7 @@
 @layer components {
   @scope (.scoped.plan-card) to (.scoped) {
     :scope {
-      container: --plan-card / inline-size;
+      container: --scoped / inline-size;
     }
 
     ._layout {
@@ -18,7 +18,7 @@
       border-radius: 8px;
 
       /* 広いときは「申し込む」を見出しの行へ上げる。読み上げとフォーカスも、この見た目の順に進む */
-      @container --plan-card (inline-size >= calc(480 / 16 * 1rem)) {
+      @container --scoped (inline-size >= calc(480 / 16 * 1rem)) {
         grid-template:
           "--heading --apply"
           "--body --body"

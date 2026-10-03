@@ -15,7 +15,7 @@
 @layer components {
   @scope (.scoped.media-card) to (.scoped) {
     :scope {
-      container: --media-card / inline-size;
+      container: --scoped / inline-size;
     }
 
     ._layout {
@@ -23,7 +23,7 @@
       gap: 12px;
 
       /* コンポーネントの中の配置は、置かれた場所の幅で切り替える */
-      @container --media-card (inline-size >= calc(400 / 16 * 1rem)) {
+      @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
         grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
         align-items: start;
       }

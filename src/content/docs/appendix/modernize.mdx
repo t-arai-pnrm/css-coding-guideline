@@ -71,8 +71,8 @@ sidebar:
 | `rgba(0, 0, 0, 0.5)` | `rgb(0 0 0 / 50%)` | 本書の方針 | [`no-rgba-hsla`](/notation/modern-syntax/#rule-no-rgba-hsla)、[`color-space-separated`](/notation/modern-syntax/#rule-color-space-separated) | AI |
 | `width`、`height`、`margin-top`、`top` | `inline-size`、`block-size`、`margin-block-start`、`inset-block-start` | 本書の方針 | [`logical-properties`](/notation/logical-properties/#rule-logical-properties) | AI |
 | `margin: 0 auto` | `margin-inline: auto` | 挙動：周りのレイアウトが入れた上下の余白を0で打ち消す | [`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering) | AI |
-| `&__title`、`&--large` | `h2` や `._main-link` を同じ階層に並べ、バリエーションは `[data-variant="…"]` で表す | 挙動：素のCSSでは無効なセレクタになり、ルールごと無視される（Sassでは動く） | [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation) | AI |
-| `@media` を `@scope` やファイルの直下にまとめる | `@media` と `@container` を各セレクタの中に書く | 本書の方針 | [`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules) | AI |
+| `&__title`、`&--large` | `h2` や `._main-link` を同じ階層に並べ、バリエーションは `[data-variant="…"]` で表す | 挙動：素のCSSでは無効なセレクタになり、ルールごと無視される（Sassでは動く） | [`no-nesting-concatenation`](/notation/nesting/#rule-no-nesting-concatenation) | AI |
+| `@media` を `@scope` やファイルの直下にまとめる | `@media` と `@container` を各セレクタの中に書く | 本書の方針 | [`conditions-inside-rules`](/notation/nesting/#rule-conditions-inside-rules) | AI |
 | `@keyframes fadeIn`、`grid-area: image` | `@keyframes --fade-in`、`grid-area: --image` | 本書の方針 | [`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names) | AI |
 
 ## コンポーネントとトークン
@@ -115,10 +115,10 @@ sidebar:
 | よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | `@media (min-width: 48rem)` | `@media (width >= calc(768 / 16 * 1rem))` | 本書の方針 | [`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax) | AI |
-| `@media (width >= 768px)` のようにpxで書いた条件 | `@media (width >= calc(768 / 16 * 1rem))` | 挙動：ブラウザの文字サイズを大きくしても、切り替わる幅が変わらない | [`breakpoint-in-rem`](/responsive/media-queries/#rule-breakpoint-in-rem) | AI |
-| `sp`、`pc` のブレイクポイント名、`.sp-only` | デバイスの名前を使わず、表示を変える条件をセレクタの中に書く | 本書の方針 | [`no-device-names`](/responsive/media-queries/#rule-no-device-names) | AI |
-| `@media (width >= var(--bp-md))` | 条件にはリテラルの値を書く | 挙動：メディアクエリでは `var()` を参照できず、条件が無効になる | [`no-var-in-query`](/responsive/media-queries/#rule-no-var-in-query) | AI |
-| `container-type: inline-size` と `@container (width >= 600px)` | `container: --card / inline-size` と `@container --card (inline-size >= …)` | 本書の方針 | [`container-name-required`](/responsive/container-queries/#rule-container-name-required)、[`container-query-inline-size`](/responsive/container-queries/#rule-container-query-inline-size) | AI |
+| `@media (width >= 768px)` のようにpxで書いた条件 | `@media (width >= calc(768 / 16 * 1rem))` | 挙動：ブラウザの文字サイズを大きくしても、切り替わる幅が変わらない | [`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem) | AI |
+| `sp`、`pc` のブレイクポイント名、`.sp-only` | デバイスの名前を使わず、表示を変える条件をセレクタの中に書く | 本書の方針 | [`no-device-names`](/responsive/breakpoints/#rule-no-device-names) | AI |
+| `@media (width >= var(--bp-md))` | 条件にはリテラルの値を書く | 挙動：メディアクエリでは `var()` を参照できず、条件が無効になる | [`no-var-in-query`](/responsive/breakpoints/#rule-no-var-in-query) | AI |
+| `container-type: inline-size` と `@container (width >= 600px)` | `container: --scoped / inline-size` と `@container --scoped (inline-size >= …)` | 本書の方針 | [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)、[`container-query-inline-size`](/responsive/container-size-queries/#rule-container-query-inline-size) | AI |
 | `width: 600px` | `max-inline-size`。固定するなら `min(100%, …)` | 挙動：画面やコンテナが600pxより狭いと、はみ出す | [`max-inline-size-over-fixed-width`](/responsive/escalation/#rule-max-inline-size-over-fixed-width) | AI |
 | `height: 400px` | `min-block-size` か `aspect-ratio` | 挙動：文字が増えたり大きくなったりすると、中身があふれる | [`min-block-size-over-fixed-height`](/responsive/escalation/#rule-min-block-size-over-fixed-height) | AI |
 
@@ -154,8 +154,8 @@ sidebar:
 
 | よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
-| 条件なしの `:hover`、画面の幅での判定 | `@media (any-hover)` の中に書く | 挙動：タッチ操作の端末で、タップしたあとにホバーの状態が残る | [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) | AI |
-| `@media (hover: hover)` | `@media (any-hover)` の中に書く | 挙動：主な入力がタッチの端末では、トラックパッドなどをつないでもホバーが効かない | [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) | AI |
+| 条件なしの `:hover`、画面の幅での判定 | `@media (any-hover)` の中に書く | 挙動：タッチ操作の端末で、タップしたあとにホバーの状態が残る | [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover) | AI |
+| `@media (hover: hover)` | `@media (any-hover)` の中に書く | 挙動：主な入力がタッチの端末では、トラックパッドなどをつないでもホバーが効かない | [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover) | AI |
 | `:hover` だけに見た目の変化を指定する | `:focus-visible` にも同じ見た目を指定する | 挙動：キーボードで操作すると、変化が見えない | [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible) | AI |
 | ホバーで `opacity: 0.7` | 背景色や文字色を別の色に変える | 挙動：文字まで透けて、コントラストが下がる | [`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover) | AI |
 | `.is-active`、`.is-open` の状態クラス | `:checked` などの擬似クラスや `[aria-selected="true"]` | 本書の方針 | [`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria) | AI |

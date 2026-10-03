@@ -1,0 +1,65 @@
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+
+      /* ページ全体の段組みはビューポートで切り替える */
+      @media (width >= calc(720 / 16 * 1rem)) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.news-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._body {
+      /* 外側のコンポーネントの値を継承しないよう、クエリの外にもデフォルトの値を書く */
+      --_density: --compact;
+
+      display: block grid;
+      gap: 12px;
+
+      /* 画像 160px・隙間 16px・本文の最小幅 240px が並ぶ幅 */
+      @container --scoped (inline-size >= calc((160 + 16 + 240) / 16 * 1rem)) {
+        --_density: --spacious;
+
+        grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+    }
+
+    ._thumbnail {
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+
+      @container style(--_density: --spacious) {
+        aspect-ratio: 1;
+      }
+    }
+
+    ._title {
+      font-size: calc(16 / 16 * 1rem);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(20 / 16 * 1rem);
+      }
+    }
+
+    ._lead {
+      margin-block-start: 8px;
+      font-size: calc(14 / 16 * 1rem);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(16 / 16 * 1rem);
+      }
+    }
+  }
+}

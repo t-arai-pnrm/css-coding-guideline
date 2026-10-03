@@ -84,7 +84,7 @@ import compositionsCss from '../../../demos/components/compositions/style.css?ra
 
 コンポジションは、コンポーネントの中の要素に付けても、コンポーネントのルートに付けてもかまいません。コンポジションが決めるのは直下の子の並び方と間隔だけで、子の内部を指定しないからです。「[8-2 コンポーネントの境界を守る](/components/boundaries/)」で説明した「配置は置く側が持つ」という考え方を、再利用できる形にしたものです。
 
-ファイルの先頭には、JSDocの形式で公開プロパティの一覧を書きます。`@prop {型} --名前 [デフォルト値] - 説明` の形で書いておけば、使う人は実装を読まずに、変えられる値とデフォルト値を確認できます。コメント全般の書き方は「[7-6 コメントの書き方](/notation/comments/)」で扱います。
+ファイルの先頭には、JSDocの形式で公開プロパティの一覧を書きます。`@prop {型} --名前 [デフォルト値] - 説明` の形で書いておけば、使う人は実装を読まずに、変えられる値とデフォルト値を確認できます。コメント全般の書き方は「[7-9 コメントの書き方](/notation/comments/)」で扱います。
 
 ## 主なコンポジション
 
@@ -217,12 +217,12 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
 @layer components {
   @scope (.scoped.feature-section) to (.scoped) {
     :scope {
-      container: --feature-section / inline-size;
+      container: --scoped / inline-size;
     }
 
     /* h2 には class="section-heading" が付いている。どちらの指定も反映されない */
     h2 {
-      @container --feature-section (inline-size >= calc(640 / 16 * 1rem)) {
+      @container --scoped (inline-size >= calc(640 / 16 * 1rem)) {
         font-size: calc(32 / 16 * 1rem);
       }
 
@@ -257,7 +257,7 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
     :scope {
       --_heading-color: var(--foreground--base);
 
-      container: --feature-section / inline-size;
+      container: --scoped / inline-size;
 
       &[data-variant="featured"] {
         --_heading-color: var(--foreground--accent);
@@ -267,7 +267,7 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
     h2 {
       color: var(--_heading-color);
 
-      @container --feature-section (inline-size >= calc(640 / 16 * 1rem)) {
+      @container --scoped (inline-size >= calc(640 / 16 * 1rem)) {
         --section-heading--font-size: calc(32 / 16 * 1rem);
       }
     }

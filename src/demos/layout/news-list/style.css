@@ -1,7 +1,7 @@
 @layer components {
   @scope (.scoped.news-list) to (.scoped) {
     :scope {
-      container: --news-list / inline-size;
+      container: --scoped / inline-size;
     }
 
     ul {
@@ -36,7 +36,7 @@
 
     a {
       /* 日付 96px・カテゴリ 160px・タイトル 160px と、列の隙間 2 つ、左右の余白が並ぶ幅 */
-      @container --news-list (inline-size < calc((96 + 160 + 160 + 24 * 2 + 24 * 2) / 16 * 1rem)) {
+      @container --scoped (inline-size < calc((96 + 160 + 160 + 24 * 2 + 24 * 2) / 16 * 1rem)) {
         grid-column: 1 / -1;
       }
     }

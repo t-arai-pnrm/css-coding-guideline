@@ -32,7 +32,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
 
 この書き方の問題は、2カラムにしてよいかどうかを決める値が、本当に必要な幅と結び付いていないことです。メインに必要なのが480px相当なら、2カラムに必要な幅は480＋240＋32で752px相当です。768px相当という閾値は、この合計とは無関係に、カンプの幅から選ばれています。サイドの幅や間隔を変えるたびに、ブレイクポイントも計算し直さなければなりません。
 
-もう1つの問題は、判定の基準がビューポートであることです。同じ配置を幅の狭いメインエリアの中に置くと、ビューポートが768px相当以上なら2カラムに切り替わり、メインが極端に細くなります。コンテナクエリにすれば置き場所の幅で判定できますが、閾値を手で計算する手間は残ります。並べてよい条件は子の幅の指定にすでに含まれているので、そこから折り返しを導けば、閾値を別に書く必要はありません。
+もう1つの問題は、判定の基準がビューポートであることです。同じ配置を幅の狭いメインエリアの中に置くと、ビューポートが768px相当以上なら2カラムに切り替わり、メインが極端に細くなります。コンテナサイズクエリにすれば置き場所の幅で判定できますが、閾値を手で計算する手間は残ります。並べてよい条件は子の幅の指定にすでに含まれているので、そこから折り返しを導けば、閾値を別に書く必要はありません。
 
 ## flex-grow の差で折り返す仕組み
 
@@ -190,7 +190,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
 ```css title="🙆‍♂ Recommended: サイドを見出しと本文の2行にまたがらせる"
 @scope (.scoped.article-page) to (.scoped) {
   :scope {
-    container: --article-page / inline-size;
+    container: --scoped / inline-size;
   }
 
   ._layout {
@@ -202,7 +202,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
       "--related";
     gap: 32px;
 
-    @container --article-page (inline-size >= calc(800 / 16 * 1rem)) {
+    @container --scoped (inline-size >= calc(800 / 16 * 1rem)) {
       grid-template:
         "--header --related"
         "--body --related" 1fr
@@ -224,7 +224,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
 }
 ```
 
-この書き方では、閾値の `800 / 16 * 1rem` を手で決めます。サイドの幅や間隔を変えたら、閾値も見直す必要があります。`sidebar` で済む配置をGridとコンテナクエリで書くと、この手間が増えるだけなので、まず `sidebar` で足りるかを考えます。クエリを使う前にイントリンシックな方法を検討する順番は、「[12-1 検討する順番](/responsive/escalation/)」で説明しています。
+この書き方では、閾値の `800 / 16 * 1rem` を手で決めます。サイドの幅や間隔を変えたら、閾値も見直す必要があります。`sidebar` で済む配置をGridとコンテナサイズクエリで書くと、この手間が増えるだけなので、まず `sidebar` で足りるかを考えます。クエリを使う前にイントリンシックな方法を検討する順番は、「[12-1 検討する順番](/responsive/escalation/)」で説明しています。
 
 似たコンポジションとの使い分けも、子の幅の決まり方で考えます。同じ幅の列を指定の数だけ並べ、閾値を下回ったらすべてを1列にするなら [`switcher`](/compositions/switcher/) を、同じ形のカードを最小幅に合わせて何列でも並べるなら [`grid`](/compositions/grid/) を使います。幅の違う2つの子を、片方の幅を固定して並べるのが `sidebar` です。
 

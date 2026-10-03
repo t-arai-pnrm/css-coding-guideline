@@ -43,7 +43,7 @@ import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?ra
 
 `vendors` は、スライダーのようなサードパーティのCSSを入れるレイヤーです。自分たちのコンポジションやコンポーネントより前に置くので、サードパーティのCSSの見た目を、自分たちのCSSから上書きできます。
 
-`compositions`、`pages`、`components` は、ページを組み立てるためのレイヤーです。ページ固有のセクションは `pages` に、複数の場所で使うコンポーネントは `components` に書きます。この区別は、レスポンシブ対応の手段の選び方とも対応しています。`pages` ではメディアクエリを、`components` ではコンテナクエリを優先します（[12-1 検討する順番](/responsive/escalation/)）。コンポジションとユーティリティの中身は、第8章「[8-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明します。
+`compositions`、`pages`、`components` は、ページを組み立てるためのレイヤーです。ページ固有のセクションは `pages` に、複数の場所で使うコンポーネントは `components` に書きます。この区別は、レスポンシブ対応の手段の選び方とも対応しています。`pages` ではメディアクエリを、`components` ではコンテナサイズクエリを優先します（[12-1 検討する順番](/responsive/escalation/)）。コンポジションとユーティリティの中身は、第8章「[8-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明します。
 
 `components` は、自分の構造とスコープと状態を持つ部品で、`patterns` は、それらを持たない静的な見た目の断片です。`patterns` は、コンポーネントの要素に重ねて使います。`components` より後ろにあるので、`class="status-badge _label"` のようにコンポーネントの子要素に付けると、パターンの指定が勝ちます。コンポーネントの状態や `@container` の中の指定でも、同じプロパティは変えられません。そのため、パターンにはコンポーネントが変えないプロパティだけを書き、変える値は公開プロパティで受け取ります（「[8-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#rule-pattern-leaves-component-properties)」）。最後の `utilities` は、どこに付けても効かなければならない補助クラスなので、最も強いレイヤーにします。`.-visually-hidden` も、`!important` なしでコンポーネントのスタイルに勝ちます。
 

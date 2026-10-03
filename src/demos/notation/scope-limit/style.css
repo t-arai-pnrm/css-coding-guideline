@@ -1,0 +1,37 @@
+@layer components {
+  /* 下限は共通の目印だけにし、中に置くコンポーネントの名前を書かない */
+  @scope (.scoped.site-footer) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.01 250deg);
+    }
+
+    p {
+      color: oklch(50% 0.2 260deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+
+  @scope (.scoped.contact-form) to (.scoped) {
+    :scope {
+      padding: 12px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+      background-color: oklch(100% 0 0deg);
+    }
+  }
+
+  @scope (.scoped.heading-group) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 4px;
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}

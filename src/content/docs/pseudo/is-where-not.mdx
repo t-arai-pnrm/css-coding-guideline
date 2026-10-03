@@ -1,0 +1,131 @@
+---
+title: "3-2 :is()・:where()・:not()"
+description: ":is()と:where()はセレクタをまとめる擬似クラスで、:is()は引数の最大の詳細度を、:where()は0を持ちます。:not()は引数に当てはまらない要素を選び、複数の条件は1つの:not()に並べ、「Xの中にない要素」は:not(X *)と書きます。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+`:is()` と `:where()` は、引数に並べたセレクタのどれかに当てはまる要素を選ぶ擬似クラスです。当てはまる要素は同じで、詳細度だけが違います。`:is()` は引数の中でいちばん高い詳細度を持ち、`:where()` は引数に関係なく0です。`:not()` は、引数のどのセレクタにも当てはまらない要素を選び、詳細度は `:is()` と同じく引数の最大で決まります。
+
+本書では、詳細度を残したいかどうかで `:is()` と `:where()` を選びます。`:not()` で複数の条件を除くときは、`:not(._current):not(._disabled)` と重ねず、`:not(._current, ._disabled)` と1つにまとめます。「見出しの中にないリンク」のように祖先を条件にするときは、`&:not(:is(h2, h3) *)` の形で書きます。詳細度の一覧は、第2章「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」の「イレギュラーな擬似クラスの詳細度」にまとめています。
+
+## 組み合わせの数だけ並ぶセレクタ
+
+複数の場所にある複数の要素に同じスタイルを当てるとき、セレクタリストは組み合わせの数だけ長くなります。記事とサイドバーの中の `h2` と `h3` を選ぶには、`article h2, article h3, aside h2, aside h3` の4つを並べる必要がありました。場所や要素が1つ増えるたびに、並べるセレクタは掛け算で増えます。
+
+セレクタの詳細度も、書いたセレクタの形のまま決まっていました。ベーススタイルの `a:link` は0.1.1になり、クラス1つでは上書きできません。詳細度を下げる手段はなく、上げる手段も、同じクラスを重ねるような技しかありませんでした。
+
+否定の条件も、単純なセレクタしか書けませんでした。Selectors Level 3の `:not()` は、引数に `.a` や `[hidden]` のような単純セレクタを1つしか取れません。「`._current` でも `._disabled` でもない」は `:not()` を重ねて書くしかなく、「`h2` の中にない」のような祖先の条件は表せませんでした。Selectors Level 4で加わった `:is()` と `:where()` も、拡張された `:not()` も、セレクタリストを引数として受け取ります。
+
+## `:is()` でセレクタをまとめる
+
+`:is()` を使うと、組み合わせを掛け算で書けます。`:is(article, aside) :is(h2, h3)` は、先に挙げた4つのセレクタと同じ要素を選びます。引数は、`._lead` のような単純セレクタだけでなく、`nav a` のような子孫結合子を含むセレクタも書けます。
+
+詳細度は、引数の最大になります。`:is(article, aside) :is(h2, h3)` は、どの組み合わせでも0.0.2です。引数に1つだけ詳細度の高いセレクタを混ぜると、ほかの引数に当てはまった要素にも、その詳細度が付きます。引数の詳細度をそろえる理由は、「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+
+ネストしたルールの中では、`:is()` が `&` との組み合わせで役に立ちます。本書の規約では、ネストしたセレクタを `&` で始めるので、祖先の状態を条件にするときは `&:is(:scope[open] *)` のように、祖先を `:is()` の引数の中に書きます。同じ形で、子孫をまとめて選ぶときも `& :is(h2, h3)` と書けます。
+
+`:is()` と `:where()` の引数には、擬似要素を書けません。`:where(*, ::before, ::after)` と書くと、引数が寛容なセレクタリストとして解釈されるので、`::before` と `::after` だけが無視され、擬似要素にはスタイルが当たりません。擬似要素も選びたいときは、`*, ::before, ::after` のように、引数の外に並べます。寛容なセレクタリストの仕組みは、「[3-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」で説明しています。
+
+<Baseline id="is" name=":is()" />
+
+## `:where()` で詳細度を0にする
+
+`:where()` は、`:is()` と同じ要素を選び、詳細度だけを0にします。どのクラスからでも上書きされる前提のスタイルを書くための擬似クラスです。本書では、ベーススタイルのタイプセレクタを `:where(a:any-link)` のように包み、リセットCSSのkiso.cssもすべてのセレクタを `:where()` で書いています。
+
+コンポーネントの中では、セレクタの一部だけを `:where()` で包めます。`& > :where(._heading)` は、直下の子を選ぶ部分の詳細度を0にするので、全体は親の0.1.0のままです。反対に、`:where(._card) ._title` のように前の部分を包めば、`._title` の0.1.0だけが残ります。どの部分の詳細度を残すかを、セレクタの中で選べます。
+
+`:where()` とカスケードレイヤーは、どちらも上書きされやすいスタイルを作れますが、働く段階が違います。レイヤーは詳細度より先に比べるので、後のレイヤーは詳細度に関係なく勝ちます。`:where()` は、同じレイヤーの中で詳細度を0にするだけです。ベーススタイルを `base` レイヤーに入れ、そのうえでタイプセレクタを `:where()` で包むのは、レイヤーを使えない環境に持ち出しても上書きしやすくするためです。
+
+<Baseline id="where" name=":where()" />
+
+## `:not()` の引数をまとめる
+
+複数の条件を除くときは、1つの `:not()` の引数に並べます。`:not(._current, ._disabled)` は、「`._current` と `._disabled` のどちらにも当てはまらない」要素を選びます。`:not(._current):not(._disabled)` と重ねても当てはまる要素は同じですが、詳細度が違います。
+
+```css title="🙆‍♂ Recommended: 除く条件を1つの :not() に並べる"
+@scope (.scoped.page-nav) to (.scoped) {
+  a {
+    color: var(--foreground--muted);
+
+    /* 詳細度は 0.1.1 */
+    &:not([aria-current="page"], [aria-disabled="true"]) {
+      color: var(--foreground--link);
+    }
+  }
+}
+```
+
+```css title="🙅‍♂ Not Recommended: :not() を重ねる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.page-nav) to (.scoped) {
+  a {
+    color: var(--foreground--muted);
+
+    /* 詳細度は 0.2.1 */
+    &:not([aria-current="page"]):not([aria-disabled="true"]) {
+      color: var(--foreground--link);
+    }
+  }
+}
+```
+
+`:not()` の詳細度は、引数の最大の1つ分です。重ねた `:not()` は、それぞれが詳細度を加えるので、除く条件を1つ足すたびに0.1.0ずつ上がります。上の例で、`a[aria-current="page"]` の文字色を別のルールで変えるとき、1つにまとめた形なら0.1.1どうしの比較になり、書いた順番で上書きできます。重ねた形の0.2.1には、クラス1つを足した0.1.1では勝てません。
+
+`:not()` の引数は、`:is()` と違い、寛容なセレクタリストではありません。引数に解釈できないセレクタが1つでもあると、ルール全体が無効になります。対応が分かれる擬似クラスを並べるときは、`:not(:is(:heading, h2))` のように、引数の中でさらに `:is()` で包みます（ルール `forgiving-list-for-partial-support`）。
+
+<Baseline id="not" compatKey="css.selectors.not.selector_list" name=":not() のセレクタリスト" />
+
+## 祖先を条件にする `:not()`
+
+Selectors Level 4の `:not()` には、子孫結合子を含むセレクタも書けます。`a:not(nav a)` は、「`nav a` に当てはまらない `a`」、つまり `nav` の中にないリンクを選びます。ネストしたルールの中では、`&:not(nav *)` と書けば、同じ条件を `&` から始められます。
+
+```css title="🙆‍♂ Recommended: 見出しの中にないリンクにだけ下線を引く"
+@scope (.scoped.entry-body) to (.scoped) {
+  a {
+    &:not(:is(h2, h3) *) {
+      text-decoration-line: underline;
+    }
+  }
+}
+```
+
+`&:not(:is(h2, h3) *)` は、「`h2` か `h3` の子孫である要素」を除きます。詳細度は、`a` の0.0.1に、引数の `:is(h2, h3) *` の0.0.1が加わり、0.0.2です。
+
+同じ条件を、祖先の側を否定して書くと、意味が変わります。`:not(h2, h3) a` は、「`h2` でも `h3` でもない祖先を持つ `a`」です。`html` や `body` は `h2` でも `h3` でもないので、この条件はすべてのリンクに当てはまり、見出しの中のリンクも除けません。Chrome 152で `:not(nav) a` を指定すると、`nav` の中のリンクにもスタイルが当たりました（2026年10月確認）。
+
+```css title="🙅‍♂ Not Recommended: 祖先の側を :not() で否定する"
+/* 🙅‍♂ Not Recommended */
+:not(h2, h3) a {
+  text-decoration-line: underline;
+}
+```
+
+この取り違えは、`:has()` と `:not()` の入れ子と同じく、詳細度からは気づけません。`:not()` の引数の中に祖先を書けば、「〜の中にない」という否定がセレクタの形と一致します。「Xを持たない要素」を `:not(:has(X))` で書く理由は、「[3-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
+
+## 補足と注意点
+
+`:not()` を起点なしで書くと、ページのほとんどの要素に当てはまります。`:not(._current)` だけのセレクタは、`html` や `body` も含め、`._current` を持たないすべての要素を選びます。`:not()` は、`&:not(…)` や `a:not(…)` のように、選びたい要素のセレクタに連結して使います。
+
+`:is()` と `:where()` の引数が寛容なセレクタリストであることは、書き間違いを見つけにくくもします。`:is(h2, h3, :hedaing)` のように擬似クラスの名前を打ち間違えても、その引数だけが無視され、ルールは有効なまま残ります。カンマで並べたセレクタリストならルール全体が効かなくなって気づけるところですが、`:is()` の中では表示の崩れとして表れないことがあるので、引数を足したときは開発者ツールで当たり方を確かめます。
+
+`:is()` と `:where()` の前の空白にも注意します。`a:is(._lead)` は「`._lead` でもある `a`」で、`a :is(._lead)` は「`a` の子孫の `._lead`」です。ネストしたルールの中でも、`&:is(…)` と `& :is(…)` は同じ違いになります。
+
+3つの擬似クラスは、どれもすべての主要なブラウザで使えます。`:is()` と `:where()` は2021年1月に、`:not()` のセレクタリストも同じ時期に、すべての主要なブラウザで使えるようになりました。本書の対象のブラウザでは、この節の書き方をすべて前提として使えます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [:is() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:is)
+- [:where() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:where)
+- [:not() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:not)
+- [Selectors Level 4: The Matches-Any Pseudo-class: :is()](https://drafts.csswg.org/selectors-4/#matches)
+- [Selectors Level 4: The Specificity-adjustment Pseudo-class: :where()](https://drafts.csswg.org/selectors-4/#zero-matches)
+- [Selectors Level 4: The Negation (Matches-None) Pseudo-class: :not()](https://drafts.csswg.org/selectors-4/#negation)
+- [Selectors Level 4: Calculating a selector's specificity](https://drafts.csswg.org/selectors-4/#specificity-rules)

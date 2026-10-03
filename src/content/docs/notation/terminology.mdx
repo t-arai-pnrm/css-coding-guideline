@@ -1,8 +1,8 @@
 ---
-title: "7-7 名前に使う語"
+title: "7-2 名前に使う語"
 description: コンポーネント、子要素のクラス、カスタムプロパティの名前に使う語は、HTMLとCSSで決まっている意味と要素の責務で選び、1つの語に1つの意味だけを持たせます。内容の幅を制限する要素は section-inner、子のコンポーネントを配置する要素は card-outer のように「何の」を併記した inner と outer、画面の端との余白は gutter、子要素の間隔は gap、a 要素は link、サイトの導線は navigation と呼びます。語は省略せず、クラス名に番号を使いません。
 sidebar:
-  order: 7
+  order: 2
 ---
 
 import Guideline from '../../../components/Guideline.astro';
@@ -39,7 +39,7 @@ import Guideline from '../../../components/Guideline.astro';
     display: block flex;
     align-items: center;
     justify-content: space-between;
-    box-sizing: content-box;
+    box-sizing: unset;
     max-inline-size: calc(1140 / 16 * 1rem);
     margin-inline: auto;
     padding-inline: var(--_gutter);
@@ -52,7 +52,7 @@ import Guideline from '../../../components/Guideline.astro';
 }
 ```
 
-`._container` には `container` プロパティがなく、幅を制限しているだけです。CSSでは、`container` プロパティを指定した要素がコンテナです。この名前を見た人は、コンテナクエリがこの要素の幅を参照していると考えます。`._columns` も同じで、CSSの `columns` は段組み（マルチカラム）のプロパティですが、この要素はFlexboxで横に並べているだけです。
+`._container` には `container` プロパティがなく、幅を制限しているだけです。CSSでは、`container` プロパティを指定した要素がコンテナです。この名前を見た人は、コンテナサイズクエリがこの要素の幅を参照していると考えます。`._columns` も同じで、CSSの `columns` は段組み（マルチカラム）のプロパティですが、この要素はFlexboxで横に並べているだけです。
 
 `--_gutter` は、画面の端との余白と、リンクどうしの間隔の2つの意味で使われています。2つの値が同じだったので1つの変数にまとめたのでしょうが、デザインの変更で「ガターを広げる」と決まったとき、この値を変えるとリンクの間隔まで広がります。値を変えてよいかを判断するには、変数を使っている箇所をすべて読む必要があります。
 
@@ -90,7 +90,7 @@ HTMLの要素とも食い違っています。`menu` は、HTMLの `<menu>` 要�
 
 「何の」には、包む対象を表す語を書きます。コンポーネントの名前をそのまま繰り返す必要はなく、`site-header` の中なら `._header-inner`、カードを包む要素なら `._card-outer` です。どれもコンポーネントの子要素として扱い、`outer` を単独のコンポーネントにはしません。`wrapper` は責務を表さない語なので使いませんが、既存のコードにあってすぐに直せないときも、`._card-wrapper` のように何を包むのかを併記します。
 
-`container` は、`container` プロパティを持つ要素にだけ使います。コンポーネントのルートをコンテナにするなら、クラス名は要らず、コンテナの名前を `--site-header` のように付けます。ルートの中の要素をコンテナにするなら、`inner` と同じく、`._list-container` のように何のコンテナかを併記します。コンテナの名前の付け方は「[12-2 コンテナクエリ](/responsive/container-queries/)」で説明しています。
+`container` は、`container` プロパティを持つ要素にだけ使います。コンポーネントのルートをコンテナにするなら、クラス名は要らず、コンテナの名前を `--scoped` にします。ルートの中の要素をコンテナにするなら、`inner` と同じく、`._list-container` のように何のコンテナかを併記し、コンテナの名前はクラス名から下線を除いた `--list-container` にします。コンテナの名前の付け方は「[12-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
 
 `gutter` と `gap` は、余白のある位置で使い分けます。`gutter` は、コンテンツが画面の端に付かないように確保する、インライン方向の余白です。`gap` は、FlexboxやGridの子要素どうしの間隔です。CSSフレームワークには列の間隔を「ガター」と呼ぶものもありますが、本書ではその用法を採りません。CSSのプロパティ名が `gap` なので、列の間隔も `gap` と呼べば、名前とプロパティが一致するからです。
 
@@ -134,7 +134,7 @@ HTMLの要素とも食い違っています。`menu` は、HTMLの `<menu>` 要�
     gap: calc(var(--spacing--sm) / 16 * 1rem);
     justify-content: space-between;
     align-items: center;
-    box-sizing: content-box;
+    box-sizing: unset;
     max-inline-size: calc(1140 / 16 * 1rem);
     margin-inline: auto;
     padding-inline: var(--_gutter);

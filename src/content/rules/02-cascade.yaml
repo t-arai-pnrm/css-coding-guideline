@@ -133,7 +133,7 @@
 - id: layer-by-role
   level: 推奨
   rule: ページ固有のセクションは `pages` レイヤーに、複数の場所で使うコンポーネントは `components` レイヤーに書く。
-  reason: レイヤーの役割とファイルの置き場所が対応し、クエリの選び方（ページはメディアクエリ、コンポーネントはコンテナクエリ）もそろうため。
+  reason: レイヤーの役割とファイルの置き場所が対応し、クエリの選び方（ページはメディアクエリ、コンポーネントはコンテナサイズクエリ）もそろうため。
   page: cascade/layers
   since: 0.1.0
 
@@ -163,23 +163,12 @@
   page: cascade/scope
   since: 0.1.0
 
-- id: scoped-class-on-root
-  level: 必須
-  rule: 'スコープのルートになる要素には、必ず `scoped` クラスを付ける（例：`class="scoped news-card"`）。'
-  reason: '`scoped` クラスが外側のスコープの下限（`to (.scoped)`）になり、入れ子のコンポーネントとの境界になるため。'
-  page: cascade/scope
-  since: 0.1.0
-
-- id: scope-root-with-scope-pseudo
+# 2-5 CSSネストの基礎
+- id: nesting-read-as-is
   level: 推奨
-  rule: スコープのルート要素は `:scope` で選び、`@scope` の直下では `&` を使わない。
-  reason: '`@scope` の直下の `&` を `:where(:scope)` として扱うブラウザは新しく、Safari では 26.2 以降に限られるため。'
-  page: cascade/scope
-  since: 0.1.0
-
-- id: page-scope-root
-  level: 推奨
-  rule: ページ固有のスタイルは、ページのルート要素に `scoped page-<スラッグ>` を付け、`@scope (.scoped.page-<スラッグ>) to (.scoped)` の中に書く。
-  reason: ページのスタイルもほかのページやコンポーネントに漏れず、コンポーネントと同じ書き方で管理できるため。
-  page: cascade/scope
-  since: 0.1.0
+  rule: 'ネストしたセレクタの意味と詳細度は、`&` を親のセレクタリストを包んだ `:is()` に置き換えて確かめ、Sass の展開結果として読まない（`.news, #pickup { & ._title {} }` は `:is(.news, #pickup) ._title`）。'
+  reason: '素の CSS のネストは文字列の展開ではなく、`&` が `:is()` と同じ決まり方で一致と詳細度を決めるので、Sass の展開結果で読むと、当たる要素や詳細度を取り違えるため。'
+  note: '`.a .b { .c & {} }` は `.c :is(.a .b)` になり、Sass の `.c .a .b` と違って、`.a .c .b` の並びにも当てはまります。親が1つのセレクタなら、詳細度は展開した結果と同じです。`&__title` のように `&` に文字をつなげる書き方は無効です（第7章のルール `no-nesting-concatenation`）。'
+  aiProne: true
+  page: cascade/nesting
+  since: 0.20.0

@@ -1,0 +1,182 @@
+---
+title: "7-3 @scopeとネストの使い分け"
+description: "@scopeはBEMのBlockとElementの関係を、ネストはElementとModifierの関係を表すために使います。スコープの下限には中の要素やほかのコンポーネントの名前を書かず、すべてのルートに付ける共通のクラス .scoped を使います。下限の3つの設計の比較、ルートを :scope で選ぶ理由、ページのスコープ、付け忘れの防ぎ方、移行しなくてよい現場もまとめます。"
+sidebar:
+  order: 3
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import limitHtml from '../../../demos/notation/scope-limit/index.html?raw';
+import limitCss from '../../../demos/notation/scope-limit/style.css?raw';
+import limitBadCss from '../../../demos/notation/scope-limit/style.bad.css?raw';
+
+`@scope` は、BEMのBlockとElementの関係（コンポーネントと、その中の子要素）を表すために使います。ネストは、ElementとModifierの関係（要素と、その状態やバリエーション）を表すために使います。BEMが `__` と `--` の名前の連結で表していた2つの関係を、本書ではスコープの範囲とネストに分けて書きます。
+
+スコープの下限には、中にある要素の名前も、ほかのコンポーネントの名前も書きません。すべてのコンポーネントのルートに共通のクラス `scoped` を付け、`@scope (.scoped.<名前>) to (.scoped)` と書きます。下限が汎用の目印なら、中に何を置いても、コンポーネントのCSSはそのコンポーネントの中だけに当たります。
+
+`@scope` の仕組みは「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、ネストの仕様は「[2-5 CSSネストの基礎](/cascade/nesting/)」で説明しています。この節では、2つの機能の分担、スコープの下限を `.scoped` にする理由、ルートとページのスコープの書き方を扱います。
+
+## 名前の連結で表していた2つの関係
+
+BEMのクラス名は、2種類の関係を1つの名前に詰めています。`.media-card__title` は「`media-card` の中の見出し」というBlockとElementの関係を表します。`.media-card__title--large` は「その見出しの大きい版」というElementとModifierの関係を表します。この書き方は、Harry Roberts氏のMindBEMdingの記事で広く知られるようになりました。
+
+```css title="🙅‍♂ Not Recommended: 2つの関係を名前の連結で表す"
+/* 🙅‍♂ Not Recommended */
+.media-card__title {
+  font-size: calc(18 / 16 * 1rem);
+}
+
+.media-card__title--large {
+  font-size: calc(24 / 16 * 1rem);
+}
+```
+
+BEMは、CSSに範囲の仕組みがなかった時代に、名前だけで関係を表すための方法でした。いまは `@scope` で範囲を、ネストで要素とその状態のまとまりを、CSSの構文として書けます。ただし、2つの機能はどちらも「親の中にあるもの」を書けるので、使い分けを決めておかないと、同じ関係が人によって別の構文で書かれます。
+
+たとえば、Blockの中の要素をネストで書くと、`.media-card { & h2 { … } }` の形になります。このネストには下限がないので、カードの中に置いた別のコンポーネントの見出しにも当たり、詳細度も上がります。反対に、Modifierごとに `@scope` を分けて書くと、同じ要素のスタイルが複数のスコープに散らばります。どちらの機能に何を任せるかを、関係の種類で決めておく必要があります。
+
+## スコープとネストの分担
+
+本書では、BEMの3つの単位を次のように書き分けます。
+
+| BEMの単位 | 本書の書き方 | 例 |
+|---|---|---|
+| Block | ルートの `class="scoped <名前>"` と `@scope` | `@scope (.scoped.media-card) to (.scoped)` |
+| Element | スコープの中のルール | `h2`、`._image` |
+| Modifier | 要素のルールの中のネスト | `&[data-variant="featured"]`、`&:any-link:hover` |
+
+Blockのスコープは「どこからどこまでがこのコンポーネントか」を決め、その中のルールが「このコンポーネントの中のどの要素か」を決めます。Elementの名前は、範囲が閉じているので `._image` のように短くてよく、要素が1つしかなければタイプセレクタで選びます。Modifierは、その要素のルールの中に書けば、基本のスタイルと状態やバリエーションのスタイルが1か所にまとまります。
+
+```css title="🙆‍♂ Recommended: Blockを @scope で、Modifierをネストで書く"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    --_title-font-size: calc(18 / 16 * 1rem);
+
+    display: block grid;
+    gap: 12px;
+
+    &[data-variant="featured"] {
+      --_title-font-size: calc(24 / 16 * 1rem);
+    }
+  }
+
+  h2 {
+    font-size: var(--_title-font-size);
+  }
+
+  a {
+    text-decoration-line: none;
+
+    &:any-link:hover {
+      @media (any-hover) {
+        text-decoration-line: underline;
+      }
+    }
+  }
+}
+```
+
+BlockのModifierがElementの見た目を変える場合は、2通りの書き方があります。大きさや色のような値だけを切り替えるなら、この例のようにルートのModifierで内部用のカスタムプロパティを切り替え、Elementがその値を読みます。値では表せない変化なら、Elementのルールの中に `&:is(:scope[data-variant="featured"] *)` と書きます（「[7-5 ネストの判断基準](/notation/nesting-criteria/)」）。どちらの書き方でも、Elementを選ぶセレクタにBlockの名前は現れません。
+
+ネストの深さや `&` の書き方は「[7-4 ネストの書き方](/notation/nesting/)」で、クラス名の形は「[7-1 命名規則](/notation/naming/)」で定めています。この節の分担は、その2つの規約が前提にしている考え方です。
+
+## スコープの下限に具体的な名前を書かない理由
+
+`@scope` の下限には、どんなセレクタでも書けます。そのため、入れ子にした別のコンポーネントの名前や、範囲から外したい子要素の名前を、そのまま下限に書きたくなります。しかし、下限に具体的な名前を書くと、中に置くものが増えるたびに下限を書き足すことになります。
+
+次のフッターでは、中に置いたお問い合わせのフォームのコンポーネントの名前を、下限として書いています。後から見出しのコンポーネントを足すと、その段落にもフッターの色が当たります。直すには `to (.contact-form, .heading-group)` のように名前を書き足すしかなく、フッターの中に置くコンポーネントが増えるほど、下限の一覧は長くなります。
+
+<Demo title="下限に書いていないコンポーネントには、外側のスタイルが届く" html={limitHtml} css={limitBadCss} variant="not-recommended" />
+
+名前を書き足して漏れを防いだとしても、別の問題が残ります。フッターのCSSが、中に置かれるコンポーネントの名前を知っていることです。見出しのコンポーネントの名前を変えたり、フッターの中に置く部品を差し替えたりすると、フッターのCSSも直す必要があります。コンポーネントのCSSがほかのコンポーネントの名前に依存すると、部品を単独で変えられなくなり、コンポーネントとして分けた意味が薄れます。
+
+下限の条件は、「そのコンポーネントのCSSは、そのコンポーネントの中だけに当たる」ことと、中身の名前を含まないことの2つです。この2つを満たすのは、どのコンポーネントのルートにも付いている共通の目印です。次のデモは、下限を `to (.scoped)` にしただけのものです。見出しのコンポーネントの段落には、フッターの色が届きません。
+
+<Demo title="下限を共通の目印にすると、中に何を置いても外側のスタイルが届かない" html={limitHtml} css={limitCss} />
+
+## 下限の3つの設計
+
+共通の目印の作り方には、3つの案があります。1つ目は、ルートに `data-scope` 属性を付け、下限を属性の有無にする案です。CSS Cascading and Inheritance Level 6の仕様書の例にある考え方で、クラス名に手を加えないので副作用は少なくなります。
+
+ただ、コンポーネントの名前をクラスではなく属性に書く形は、見慣れないものです。本書では `data-*` 属性をバリエーションと状態に使うので、コンポーネントの名前と役割が混ざる点も気になります。
+
+```css title="🙅‍♂ Not Recommended: data 属性を下限にする（本書では採らない）"
+/* 🙅‍♂ Not Recommended */
+@scope ([data-scope="media-card"]) to ([data-scope]) {
+  :scope {
+    display: block grid;
+  }
+}
+```
+
+2つ目は、本書が採っている、ルートに共通のクラス `scoped` を付ける案です。`class="scoped media-card"` の形は、HTMLを見ただけでコンポーネントの始まりだと分かり、`@scope` の前置きもクラスだけで書けます。欠点は、ルートに `scoped` を付け忘れても、それを止める仕組みがないことです。付け忘れの防ぎ方は、次の見出しで扱います。
+
+3つ目は、FLOCSSの `c-` のような接頭辞を使い、下限を `to ([class|="c"])` にする案です。接頭辞はすでに多くの現場で守られているので、規則としては浸透させやすい案です。しかし、FLOCSSのLayout、Component、Projectの区別をComponentに集約しなければなりません。どれをLayoutにするかの線引きは人によって違い、区別しても得られるものは少ないからです。
+
+```css title="🙅‍♂ Not Recommended: 接頭辞を下限にする（本書では採らない）"
+/* 🙅‍♂ Not Recommended */
+@scope (.c-media-card) to ([class|="c"]) {
+  :scope {
+    display: block grid;
+  }
+}
+```
+
+この案には、セレクタの側の弱点もあります。`[class|="c"]` は「`class` 属性の値全体が `c` か、`c-` で始まる」という意味の属性セレクタで、クラスを1つずつ調べるわけではありません。`class="js-toggle c-accordion"` のように、別のクラスが先に書かれたルートは下限になりません。クラスを書く順番という、CSSのクラスでは本来意味を持たない情報に、範囲が左右されます。
+
+本書が2つ目の案を選ぶのは、クラスだけで書けて、クラスの順番に左右されず、「[7-1 命名規則](/notation/naming/)」のルートの名前に接頭辞を足さずに済むからです。
+
+## ルートを `:scope` で選ぶ理由
+
+スコープのルートの要素は、`:scope` で選びます。`@scope` の直下に書いた `&` もルートを選びますが、本書では使いません。MDNのブラウザ互換性データによると、`@scope` の直下の `&` を `:where(:scope)` として扱うのは、Chrome 143、Firefox 142、Safari 26.2以降のブラウザです（2026年10月確認）。Firefoxは `@scope` そのものに146から対応しているので、実際に効くのは146以降です。本書の対象のブラウザには、これより古いSafariも含まれます。
+
+下限の3案を考えた著者のgistでは、`@scope` の直下で `& { … }` と書いてルートを選んでいます。本書のコード例は、同じ指定を `:scope { … }` で書いています。`:scope` の詳細度は擬似クラス1つ分の0.1.0で、ルートの状態は `&[data-variant="featured"]` のように `:scope` のルールの中にネストして書きます。
+
+## ページのルートにもスコープを作る
+
+ページ固有のスタイルも、コンポーネントと同じ形で書きます。ページのルートの要素に `scoped page-<スラッグ>` のクラスを付け、スタイルは `@scope (.scoped.page-<スラッグ>) to (.scoped)` の中で指定します。ページのスタイルもほかのページやコンポーネントに漏れず、コンポーネントと同じ書き方で管理できます。
+
+```css title="🙆‍♂ Recommended: ページのルートにもスコープを作る"
+@scope (.scoped.page-about) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 64px;
+  }
+
+  ._lead {
+    font-size: calc(18 / 16 * 1rem);
+  }
+}
+```
+
+ページのルートも `scoped` クラスを持つので、ページの中に置いたコンポーネントは、ページのスコープから外れます。ただし、`@scope` が制限するのはセレクタの適用範囲なので、`color` や `font-size`、カスタムプロパティのような値の継承は続きます。CMSの案件でも、ページのルートになる要素へこのクラスを付けています。
+
+## 共通のクラスの付け忘れを防ぐ
+
+`scoped` の付け忘れには、2つの形があります。HTMLのルートにだけ付け忘れた場合は、`@scope (.scoped.media-card)` がどの要素にも一致しないので、コンポーネントの見た目がすべて消えます。ブラウザで見ればすぐに気付くので、問題になりにくい形です。
+
+見落としやすいのは、HTMLとCSSの両方で付け忘れた場合です。`class="media-card"` と `@scope (.media-card) to (.scoped)` の組み合わせでも、そのコンポーネント自身の見た目は正しく付きます。しかし、このルートは外側のコンポーネントにとっての下限にならないので、外側のスタイルが中まで届きます。外側のコンポーネントのタイプセレクタが、このコンポーネントの見出しや段落にも当たります。
+
+この付け忘れは、Stylelintでは検出できません。HTMLの `class` 属性は検査の対象ではなく、`@scope` の前置きのセレクタも、`selector-class-pattern` のようなルールの対象外です（2026年10月、Stylelint 17.15.0で確認）。そのため本書では、レビューで確かめる項目として「[付録D レビューのチェックリスト](/appendix/checklist/)」に入れています。コンポーネントを新しく作るときは、`scoped` を付けたルートと `@scope` の前置きを含むひな形から書き始めると、付け忘れる機会そのものが減ります。{/* 要確認: 出典なし */}
+
+## 移行しなくてよい現場
+
+`@scope` を使っても、クラスの名前を考えなくてよくなるわけではなく、スコープのルートの名前はページ全体で一意でなければ衝突します。また、`@scope` が防ぐのは内側から外への漏れで、外のCSSが入ってくることは防ぎません。下限の設計が甘ければ、この節の前半で見たように、保守性はかえって下がります。`@scope` を採るなら、`@scope` のための命名規則を新しく決めることになります。
+
+そのため、BEMで困っていない現場は、無理に移行しなくてかまいません。BEMの長い名前は、ページ全体で1つの名前空間でも衝突しないことを、すでに保証しているからです。移行の手間と、チームが新しい規則を覚える負担に見合う利点があるかを、先に確かめます。
+
+CSS ModulesやVueのscoped CSSのように、フレームワークがスコープを作る現場では、`@scope` の利点はほとんどありません。ビルドの段階でクラス名が一意な名前に書き換わるので、範囲の問題はすでに解決しているからです。Tailwind CSSで組む現場も、コンポーネントのクラスを書かないので、`@scope` を使う場面がありません。本書の規約は、素のCSSでコンポーネントを書く現場を対象にしています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
+- [CSS Cascading and Inheritance Level 6: Scoping Styles](https://drafts.csswg.org/css-cascade-6/#scoped-styles)
+- [属性セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Attribute_selectors)
+- [MindBEMding – getting your head ’round BEM syntax - CSS Wizardry](https://csswizardry.com/2013/01/mindbemding-getting-your-head-round-bem-syntax/)
+- [FLOCSS - GitHub](https://github.com/hiloki/flocss)
+- [「@scope入門」という記事を読んで改めて @scope の設計方法を考える](https://gist.github.com/tak-dcxi/a0d3e1cfc9f612ba8131e5081aa96295)（TAK、gist）

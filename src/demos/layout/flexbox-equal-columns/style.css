@@ -1,0 +1,53 @@
+@layer components {
+  @scope (.scoped.flexbox-equal-columns) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._columns {
+      gap: 1rem;
+
+      &[data-method="flex"] {
+        display: block flex;
+
+        & > * {
+          flex: 1;
+        }
+      }
+
+      &[data-method="grid"] {
+        display: block grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    ._item {
+      padding-block: 1rlh;
+
+      /* 内容の領域を薄い色、padding の領域を濃い色で塗り分ける */
+      background-image: linear-gradient(oklch(90% 0.05 250deg) 0 0), none;
+      background-clip: content-box, border-box;
+      background-color: oklch(55% 0.12 250deg);
+      font-size: calc(14 / 16 * 1rem);
+      text-align: center;
+
+      &:nth-child(odd) {
+        padding-inline: 1rem;
+      }
+
+      &:nth-child(even) {
+        padding-inline: 3rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+@layer compositions {
+  /**
+   * 列の最小幅と最大数から、列の数を自動で決める（11-6 grid）。
+   *
+   * @prop {keyword} --grid--mode             [auto-fill]             - repeat() のキーワード（auto-fill | auto-fit）
+   * @prop {length}  --grid--column-min-width [calc(320 / 16 * 1rem)] - 列の最小幅（これより狭くなると列が減る）
+   * @prop {integer} --grid--column-max-count [5]                     - 列の最大数
+   * @prop {length}  --grid--gap              [0px]                   - 行と列の間隔（一括）
+   */
+  .grid {
+    --_c--mode: var(--grid--mode, auto-fill);
+    --_c--row-gap: var(--grid--gap, var(--grid--row-gap, 0px));
+    --_c--column-gap: var(--grid--gap, var(--grid--column-gap, 0px));
+    --_c--column-max-count: var(--grid--column-max-count, 5);
+    --_c--column-min-width: var(--grid--column-min-width, calc(320 / 16 * 1rem));
+
+    /* 要素の幅から列の間隔の合計を引き、最大の列数で割った幅 */
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-max-count) - 1)) / var(--_c--column-max-count)
+    );
+
+    /* 最小幅と、最大の列数で割った幅の大きいほう。ただし要素の幅は超えない */
+    --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-preferred-width)));
+
+    display: block grid;
+    grid-template-columns: repeat(var(--_c--mode), minmax(var(--_c--column-width), 1fr));
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+}
+
+@layer components {
+  @scope (.scoped.product-cards) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._body {
+      /* 最小幅 10rem の列 2 つと隙間 1 つが並ぶ幅から、カードを2列分にする */
+      @container --scoped (inline-size >= calc(10rem * 2 + 1.5rem)) {
+        & > * {
+          grid-column-end: span 2;
+        }
+      }
+
+      /* 4〜5列（カードは1行に2枚）：最後の1枚を2列目から置く */
+      @container --scoped (calc(10rem * 4 + 1.5rem * 3) <= inline-size < calc(10rem * 6 + 1.5rem * 5)) {
+        & > :nth-child(2n + 1):nth-last-child(1) {
+          grid-column-start: 2;
+        }
+      }
+
+      /* 6〜7列（カードは1行に3枚）：最後の行の1枚は3列目から、2枚なら2列目から置く */
+      @container --scoped (calc(10rem * 6 + 1.5rem * 5) <= inline-size < calc(10rem * 8 + 1.5rem * 7)) {
+        & > :nth-child(3n + 4):nth-last-child(1) {
+          grid-column-start: 3;
+        }
+
+        & > :nth-child(3n + 4):nth-last-child(2) {
+          grid-column-start: 2;
+        }
+      }
+
+      /* 8列（カードは1行に4枚）：最後の行の枚数に合わせて、先頭のカードを置く列をずらす */
+      @container --scoped (inline-size >= calc(10rem * 8 + 1.5rem * 7)) {
+        & > :nth-child(4n + 5):nth-last-child(1) {
+          grid-column-start: 4;
+        }
+
+        & > :nth-child(4n + 5):nth-last-child(2) {
+          grid-column-start: 3;
+        }
+
+        & > :nth-child(4n + 5):nth-last-child(3) {
+          grid-column-start: 2;
+        }
+      }
+    }
+
+    ._card {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    p {
+      margin-block-start: 8px;
+    }
+  }
+}

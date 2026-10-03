@@ -15,7 +15,7 @@
 @layer components {
   @scope (.scoped.share-button) to (.scoped) {
     :scope {
-      container: --share-button / inline-size;
+      container: --scoped / inline-size;
     }
 
     a {
@@ -39,7 +39,7 @@
 
     ._label {
       /* アイコン 24px・隙間 16px・ラベル 160px と、左右の余白が並ぶ幅より狭いときは、ラベルを視覚的に隠す */
-      @container --share-button (inline-size < calc((24 + 16 + 160 + 24 * 2) / 16 * 1rem)) {
+      @container --scoped (inline-size < calc((24 + 16 + 160 + 24 * 2) / 16 * 1rem)) {
         position: absolute;
         overflow: clip;
         inline-size: 4px;

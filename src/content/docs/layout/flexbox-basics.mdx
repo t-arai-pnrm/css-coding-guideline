@@ -12,6 +12,8 @@ import distributionHtml from '../../../demos/layout/flexbox-distribution/index.h
 import distributionCss from '../../../demos/layout/flexbox-distribution/style.css?raw';
 import alignmentHtml from '../../../demos/layout/flexbox-alignment/index.html?raw';
 import alignmentCss from '../../../demos/layout/flexbox-alignment/style.css?raw';
+import equalColumnsHtml from '../../../demos/layout/flexbox-equal-columns/index.html?raw';
+import equalColumnsCss from '../../../demos/layout/flexbox-equal-columns/style.css?raw';
 
 Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配るレイアウトの方式です。アイテムを並べる向きを主軸、それに直交する向きを交差軸と呼び、`justify-content` は主軸の配置を、`align-items` は交差軸の配置を決めます。伸び縮みの量は、`flex-grow`、`flex-shrink`、`flex-basis` の3つから計算で決まります。
 
@@ -102,11 +104,64 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 }
 ```
 
-このように別物なので、`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（ルール [`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change) の補足）。`flex: 1` でも列の幅が厳密にはそろわない理由は、「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」で説明しています。
+このように別物なので、`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（ルール [`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change) の補足）。ただし、`flex: 1` で幅がそろうのは、アイテムの `padding` と `border` が同じ場合だけです。その理由は、次の「`flex: 1` でも列の幅がそろわない場合」で説明します。
 
 表の `flex: 1` の `flex-basis` を `0%` としたのは、ブラウザの実装に合わせたためです。仕様では、`flex: 1` は `flex: 1 1 0` に等しいと定義されています。しかし、主要なブラウザは `0%` として扱い、ブラウザの実装を検証するテスト（Web Platform Tests）も、算出値が `0%` になることを確かめています（2026年10月確認）。コンテナの幅が決まっている横並びでは、`0%` も0pxに解決されるので、どちらでも結果は変わりません。
 
 違いが出るのは、`flex-direction: column` で、コンテナの高さが中身で決まる場合です。パーセントの基準になる主軸の大きさが決まっていないので、`0%` は解決できず、`flex-basis` は `content` として扱われます。アイテムは0からではなく中身の高さから伸びるので、等分にはなりません。高さの決まっていない縦のFlexboxでも0を起点にしたいなら、`flex: 1 1 0` と3つの値を書きます。単位のない0は、前に2つの数値があるときだけ `flex-basis` として読まれるので、`flex: 1 0` のように省略すると、0は `flex-shrink` になります。
+
+## `flex: 1` でも列の幅がそろわない場合
+
+`flex: 1` を指定したアイテムでも、インライン方向の `padding` か `border` がアイテムごとに違うと、幅はそろいません。`box-sizing` が `border-box` でも `content-box` でも同じです。3つのアイテムのうち、奇数番目に左右1rem、偶数番目に左右3remの `padding` を付けると、真ん中のアイテムだけが、左右の差を合わせた4rem分広くなります。
+
+ずれる原因は、Flexboxが余りを配る先が内容の領域だからです。`border-box` で `flex-basis` が0なら、`border` の外周までの幅を0にしようとします。しかし、内容の領域の幅は0より小さくならないので、アイテムは `padding` と `border` の合計の幅から始まります（「[10-3 ボックスモデルの基礎](/layout/box-model/)」の補足）。余りは、コンテナの幅からこの大きさを引いて求められ、各アイテムの内容の領域に1：1で足されるので、最初の `padding` と `border` の差がそのまま残ります。この計算の手順は、仕様の「[Determine the flex base size and hypothetical main size of each item](https://drafts.csswg.org/css-flexbox-1/#algo-main-item)」に定められています。
+
+仕様の編集者草案は、この点を改めています（CSSWGの議論は「[[css-flexbox] Flex basis and box-sizing #316](https://github.com/w3c/csswg-drafts/issues/316)」）。`flex-basis` の大きさを決める段階では内容の領域の幅が0より小さくなるのを許し、`border-box` で0を指定したアイテムは、`padding` を含めた外側の大きさを0として扱います。この規則なら、余りが配られた後の外側の幅はそろいます。しかし、2026年10月にChrome 152で確かめた限りでは、内容の領域を0で止める従来の計算のままで、幅は `padding` の差の分だけずれます。{/* 要確認: Safari と Firefox の挙動 */}
+
+列の幅を確実にそろえたいときは、Gridで親が列を決めます。`grid-template-columns: repeat(3, minmax(0, 1fr))` は、先にコンテナの幅を3等分して列を作り、アイテムをその列の中に置きます。`padding` は列の内側に収まるので、`padding` の大きいアイテムは、幅ではなく内容の領域が狭くなります。`1fr` ではなく `minmax(0, 1fr)` と書く理由は、「[10-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
+
+```css title="🙅‍♂ Not Recommended: padding の違うアイテムを、flex: 1 で等分しようとする"
+/* 🙅‍♂ Not Recommended */
+._columns {
+  display: block flex;
+  gap: 1rem;
+
+  & > * {
+    flex: 1;
+    padding-block: 1rlh;
+  }
+
+  & > :nth-child(odd) {
+    padding-inline: 1rem;
+  }
+
+  & > :nth-child(even) {
+    padding-inline: 3rem;
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: 列の幅を Grid で決め、padding を列の内側に収める"
+._columns {
+  display: block grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+
+  & > * {
+    padding-block: 1rlh;
+  }
+
+  & > :nth-child(odd) {
+    padding-inline: 1rem;
+  }
+
+  & > :nth-child(even) {
+    padding-inline: 3rem;
+  }
+}
+```
+
+タブの並びのように、どのアイテムにも同じ `padding` を付けるなら、`flex: 1` でも幅はそろいます。`flex: 1` には、Gridのように列の数を親で決めなくても、子の数に合わせて等分できるという大きな利点があります。そのため本書では、`flex: 1` をルールで禁じません。Gridを選ぶのは、アイテムによって `padding` や `border` が変わりうる並びと、運用で中身や装飾が変わっても列の幅を確実に保ちたい並びです。
 
 ## アイテムが縮まない原因になる自動の最小幅
 
@@ -150,6 +205,10 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 <Demo title="justify-content、align-items、align-self、align-content の対象の違い" html={alignmentHtml} css={alignmentCss} />
 
+次のデモは、「`flex: 1` でも列の幅がそろわない場合」の2つのコード例を並べたものです。内容の領域を薄い色、`padding` の領域を濃い色で塗っています。`flex: 1` の段では真ん中のアイテムだけが広く、Gridの段では3つの列の幅がそろい、真ん中のアイテムは内容の領域が狭くなっています。
+
+<Demo title="padding の違うアイテムを、flex: 1 と Grid で等分する" html={equalColumnsHtml} css={equalColumnsCss} />
+
 アイコン、本文、ボタンを1行に並べる部品は、次のように書けます。大きさを変えたくないアイコンは `flex-shrink: 0` で縮む計算から外し、本文は `flex-grow: 1` で余りを受け取ります。
 
 ```css title="🙆‍♂ Recommended: アイコン、伸びる本文、ボタンを1行に並べる"
@@ -186,6 +245,7 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 - [CSS Flexbox](https://markodenic.com/css-flexbox/)（Marko Denic）
 - [Cheatsheets for Flex, Grid, Anchor positioning and Invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
 - [CSS Flexible Box Layout Module Level 1](https://drafts.csswg.org/css-flexbox-1/)（W3C）
+- [[css-flexbox] Flex basis and box-sizing #316](https://github.com/w3c/csswg-drafts/issues/316)（CSSWG）
 - [flex - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex)
 - [flexbox_computedstyle_flex-shorthand-number.html](https://github.com/web-platform-tests/wpt/blob/master/css/css-flexbox/getcomputedstyle/flexbox_computedstyle_flex-shorthand-number.html)（Web Platform Tests）
 - [主軸に沿ったフレックスアイテムの比率の制御 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_flexible_box_layout/Controlling_ratios_of_flex_items_along_the_main_axis)

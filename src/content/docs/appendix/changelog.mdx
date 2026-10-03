@@ -11,6 +11,84 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.20.0（2026年10月3日）
+
+`@scope` とネスト、擬似クラス、記法、レスポンシブデザインの章の構成を見直し、サイズを問い合わせる `@container` を「コンテナサイズクエリ」と呼ぶことにしました。コンポーネントのルートのコンテナ名も `--scoped` にそろえています。ルールを追加し、変更し、削除したため、マイナーバージョンを上げています。第3章、第7章、第12章の節の番号と、一部の節のURLも変わりました。
+
+- 節を6つ加え、1つを書き直しました。
+  - 「[2-5 CSSネストの基礎](/cascade/nesting/)」：`&` の意味と詳細度を、親のセレクタリストを包んだ `:is()` に置き換えて読む方法を説明しています。`@scope` はBEMのBlockとElementの関係に、ネストはElementとModifierの関係に向いている、という対比も示しました。
+  - 「[3-2 :is()・:where()・:not()](/pseudo/is-where-not/)」：3つの擬似クラスの詳細度と、`:not()` の引数の書き方を説明しています。旧3-2〜3-7は、3-3〜3-8になりました。
+  - 「[7-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」：2-4にあった `@scope` の規約を移し、下限に具体的な要素名や別のコンポーネント名を書かない理由、下限の3案の比較、付け忘れを防ぐ手段を加えました。
+  - 「[7-4 ネストの書き方](/notation/nesting/)」と「[7-6 プロパティの並び順](/notation/property-order/)」：旧7-2「ネストとプロパティの並び順」を2つの節に分けました。
+  - 「[12-2 ブレイクポイントの決め方](/responsive/breakpoints/)」：中身から閾値を導く `calc(10rem * 6 + 1.5rem * 5)` の式を中心にしました。`gap` と `padding` を式から省かないこと、`calc()` を使う判断の基準、AIの出力を確かめる観点も説明しています。
+  - 「[12-3 コンテナサイズクエリ](/responsive/container-size-queries/)」：旧12-2「コンテナクエリ」を書き直しました。ルートを `--scoped` という名前のコンテナにする書き方、同じ閾値をスタイルクエリで子孫に伝える方法、最後の手段としての `zoom` と `progress()` を加えています。
+- 第7章の節を並べ替えました。旧7-7「名前に使う語」を7-2に、旧7-3〜7-6を7-5、7-7〜7-9にしています。
+- 第12章の旧12-3「メディアクエリとブレイクポイント」を「[12-4 メディアクエリ](/responsive/media-queries/)」に改め、メディア特性を使う・使わない・まだ使えないに分けた一覧を加えました。旧12-4〜12-6は、12-5〜12-7になりました。
+- 「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」に、`:is()`、`:not()`、`:has()`、`:nth-child(… of S)`、`:where()` の詳細度の表を加えました。「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」は仕様の説明に絞り、下限のない `@scope` とネストや `:where()` との比較、スコープの近接度を加えました。
+- 「[3-5 数量クエリ](/pseudo/quantity-queries/)」に、最終行の端数を中央に寄せる例を加えました。
+- 「[10-3 ボックスモデルの基礎](/layout/box-model/)」には、最大幅と `padding` で中央に寄せる要素の内容の幅を、`box-sizing: unset` で最大幅にそろえる書き方を加えました。「[10-5 Flexboxの基礎](/layout/flexbox-basics/)」には、`flex: 1` でもアイテムの幅がそろわない場合を加えました。
+- 「[15-3 輪郭と枠線を描く](/decoration/outlines/)」に、擬似要素と `mask-composite: exclude` でグラデーションの角丸の枠線を描く方法を加えました。
+- 「[17-6 スクロールに合わせて動かす](/motion/scroll-driven/)」を書き直しました。画面に入ったら再生する演出は、CSSだけで書く方法（`view()` のタイムラインとスタイルクエリ）を基本にしています。
+- URLを変えました。
+  - `/notation/nesting-and-order/` を、`/notation/nesting/` と `/notation/property-order/` に分けました。
+  - `/responsive/container-queries/` を `/responsive/container-size-queries/` に変えました。
+- ルールを11件追加しました。
+  - [`nesting-read-as-is`](/cascade/nesting/#rule-nesting-read-as-is)：ネストしたセレクタの意味と詳細度は、`&` を `:is()` に置き換えて確かめ、Sassの展開結果として読みません。
+  - [`not-selector-list`](/pseudo/is-where-not/#rule-not-selector-list)：複数の条件を除くときは、`:not(.a):not(.b)` と重ねず、`:not(.a, .b)` と書きます。
+  - [`not-ancestor-in-argument`](/pseudo/is-where-not/#rule-not-ancestor-in-argument)：「Xの中にない要素」は、`&:not(X *)` のように祖先を `:not()` の引数の中に書きます。
+  - [`unset-box-sizing-for-content-max-width`](/layout/box-model/#rule-unset-box-sizing-for-content-max-width)：内容の幅を最大幅にそろえるときは、`calc()` で `padding` を足さず、`box-sizing: unset` で `content-box` に戻します。
+  - [`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)：閾値の式には、`gap`、`padding`、`border` を省かずに含めます。
+  - [`no-container-just-in-case`](/responsive/container-size-queries/#rule-no-container-just-in-case)：`container` は、実際に問い合わせる要素にだけ指定します。
+  - [`density-via-style-query`](/responsive/container-size-queries/#rule-density-via-style-query)：同じ閾値を何度も使うときは、ルートの直下の要素で `--_density` を宣言し、子孫は `@container style()` で切り替えます。
+  - [`no-orientation-for-layout`](/responsive/media-queries/#rule-no-orientation-for-layout)：レイアウトの切り替えを `orientation` で判定せず、`width` で判定します。
+  - [`gradient-border-method`](/decoration/outlines/#rule-gradient-border-method)：グラデーションの枠線は `background-clip: border-area` で描き、どの環境でも必要なときだけ擬似要素と `mask-composite: exclude` を使います。
+  - [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限定し、`@media (any-hover)` の中に書きます。
+  - [`reveal-once-with-style-query`](/motion/scroll-driven/#rule-reveal-once-with-style-query)：画面に入ったら1回だけ再生する演出は、`view()` のタイムラインで切り替えたカスタムプロパティを `@container style()` で問い合わせて作ります。
+- ルールの内容を変えました。
+  - [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)：ルートのコンテナ名を `--scoped` に、子要素のコンテナ名をクラス名から下線を除いた名前に決め、外側のコンポーネントのコンテナを問い合わせないことを加えました。[`container-name-dashed-ident`](/responsive/container-size-queries/#rule-container-name-dashed-ident) の例も合わせました。
+  - [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)：親や兄弟の見た目を変えるときは `:has()`、数えた子要素そのものを変えるときは `:nth-child()` と `:nth-last-child()` の組み合わせを使う、と改めました。[`quantity-query-for-count-conditions`](/pseudo/quantity-queries/#rule-quantity-query-for-count-conditions) には、最終行の端数を中央に寄せる例を加えました。
+  - [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：「中身の幅＋`padding`＋`border`」の例と、式にする判断の基準を加え、AIが誤りやすいルールにしました。
+  - [`zoom-as-last-resort`](/responsive/container-size-queries/#rule-zoom-as-last-resort)：`zoom` を使わないとしていた内容を、最後の手段として使える内容に改めました。使うときは、`@container --scoped (inline-size < 最小幅)` の中で `zoom: min(progress(100cqi, 0px, 最小幅), 1)` と書きます。
+  - [`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)：1回だけ動かす演出の基本を、`IntersectionObserver` からCSSだけの方法に変えました。
+  - [`flexbox-basis-zero-for-ratio`](/layout/flexbox-basics/#rule-flexbox-basis-zero-for-ratio)、[`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change)：`flex: 1` で決まる `flex-basis` の値を `0%` に直しました。`padding` や `border` が違うと幅がそろわないことも補足しています。
+  - [`box-sizing-border-box-base`](/layout/box-model/#rule-box-sizing-border-box-base)、[`gutter-columns-for-content-width`](/layout/spacing/#rule-gutter-columns-for-content-width)：`content-box` に戻すときは `box-sizing: unset` と書くことを補足しました。
+  - [`nested-selector-ampersand`](/notation/nesting/#rule-nested-selector-ampersand)：例を `&:hover` から `&:focus-visible` に変えました。[`scoped-class-on-root`](/notation/scope-and-nesting/#rule-scoped-class-on-root) には、Stylelintでは検出できないのでレビューで確かめる、と書きました。
+  - 次のルールの文と理由では、サイズを問い合わせる `@container` を指す「コンテナクエリ」を「コンテナサイズクエリ」に改めました。ルールの内容は変えていません。
+    - [`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)
+    - [`query-choice-by-layer`](/responsive/escalation/#rule-query-choice-by-layer)
+    - [`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)
+    - [`container-query-inline-size`](/responsive/container-size-queries/#rule-container-query-inline-size)
+    - [`hide-label-visually-in-container-query`](/responsive/container-size-queries/#rule-hide-label-visually-in-container-query)
+    - [`no-var-in-query`](/responsive/breakpoints/#rule-no-var-in-query)
+    - [`media-query-for-macro-layout`](/responsive/media-queries/#rule-media-query-for-macro-layout)
+    - [`layer-by-role`](/cascade/layers/#rule-layer-by-role)
+    - [`logical-properties`](/notation/logical-properties/#rule-logical-properties)
+- ルールを2件削除しました。
+  - `hover-only-when-operable`、`hover-inside-any-hover`：2件を `hover-operable-in-any-hover` に統合したためです。
+- 次のルールは、掲載先を移しました。ルールの内容は、上で挙げたもののほかは変えていません。
+  - 2-4から7-3へ
+    - [`scoped-class-on-root`](/notation/scope-and-nesting/#rule-scoped-class-on-root)
+    - [`scope-root-with-scope-pseudo`](/notation/scope-and-nesting/#rule-scope-root-with-scope-pseudo)
+    - [`page-scope-root`](/notation/scope-and-nesting/#rule-page-scope-root)
+  - 旧7-2から7-4へ
+    - [`nesting-depth-one`](/notation/nesting/#rule-nesting-depth-one)
+    - [`nested-selector-ampersand`](/notation/nesting/#rule-nested-selector-ampersand)
+    - [`nest-own-states`](/notation/nesting/#rule-nest-own-states)
+    - [`nest-own-states-only`](/notation/nesting/#rule-nest-own-states-only)
+    - [`no-nesting-concatenation`](/notation/nesting/#rule-no-nesting-concatenation)
+    - [`conditions-inside-rules`](/notation/nesting/#rule-conditions-inside-rules)
+  - 旧7-2から7-6へ
+    - [`property-order`](/notation/property-order/#rule-property-order)
+    - [`block-content-order`](/notation/property-order/#rule-block-content-order)
+  - 旧12-3から12-2へ
+    - [`breakpoint-from-content`](/responsive/breakpoints/#rule-breakpoint-from-content)
+    - [`no-device-names`](/responsive/breakpoints/#rule-no-device-names)
+    - [`framework-breakpoint-variables`](/responsive/breakpoints/#rule-framework-breakpoint-variables)
+    - [`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem)
+    - [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)
+    - [`no-var-in-query`](/responsive/breakpoints/#rule-no-var-in-query)
+  - 旧12-2の12件のルールは、URLが変わった「[12-3 コンテナサイズクエリ](/responsive/container-size-queries/)」に掲載しています。
+
 ## 0.19.0（2026年10月3日）
 
 10-8を、レイアウトの手法の選び方を説明する節に書き直し、`order` と `reading-order` の値の規則を改めました。ルールを追加し、削除したため、マイナーバージョンを上げています。節のURLも変わりました。
@@ -44,9 +122,9 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」から、Astroでの書き方の節を削除しました。ルート要素の中に `<style>` を置く書き方を前提にした記述も、本書から取り除いています。
 - 「[はじめに](/introduction/preface/)」に、AIが構築を速くする時代に人が設計するものと、AIに丸投げしない理由を加えました。
 - 「[15-1 画像と装飾](/decoration/images-and-decoration/)」に、背景の写真も `<img>` で置く節と、`decoding` 属性の扱いを加えました。
-- 「[7-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」に、要素自身の状態を主語のルールの中にネストする規約を加えました。「[7-3 ネストの判断基準](/notation/nesting-criteria/)」には、BEMにたとえたネストの考え方（BlockとElementの関係は `@scope`、Modifierはネスト）と、親の状態で子の見た目を変える書き方を加えました。本書全体のコード例とデモも、この規約に合わせて直しています。
+- 「[7-2 ネストとプロパティの並び順](/notation/nesting/)」に、要素自身の状態を主語のルールの中にネストする規約を加えました。「[7-3 ネストの判断基準](/notation/nesting-criteria/)」には、BEMにたとえたネストの考え方（BlockとElementの関係は `@scope`、Modifierはネスト）と、親の状態で子の見た目を変える書き方を加えました。本書全体のコード例とデモも、この規約に合わせて直しています。
 - ルールを8件追加しました。
-  - [`nest-own-states`](/notation/nesting-and-order/#rule-nest-own-states)：要素自身の擬似クラス・擬似要素・属性の状態は、`[popover]:popover-open` のように主語に連結せず、主語のルールの中に `&:popover-open` のようにネストして書きます。
+  - [`nest-own-states`](/notation/nesting/#rule-nest-own-states)：要素自身の擬似クラス・擬似要素・属性の状態は、`[popover]:popover-open` のように主語に連結せず、主語のルールの中に `&:popover-open` のようにネストして書きます。
   - [`physical-only-where-no-logical`](/notation/logical-properties/#rule-physical-only-where-no-logical)：物理でしか書けないものは物理で書き、論理と物理の混在を許します。
   - [`no-logical-nitpicking`](/notation/logical-properties/#rule-no-logical-nitpicking)：レビューで、論理と物理の混在だけを理由に指摘しません。
   - [`fixed-viewport-below-min-width`](/responsive/min-viewport-width/#rule-fixed-viewport-below-min-width)：375px未満の画面では、`<meta name="viewport">` の直後に置いたインラインのスクリプトでビューポートの幅を固定します。
@@ -58,7 +136,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`logical-properties`](/notation/logical-properties/#rule-logical-properties)：掲載先を7-4から7-5に移し、補足を書き直しました。
   - [`root-name-kebab-case`](/notation/naming/#rule-root-name-kebab-case)：ルートの名前をPascalCaseにしてもよい、という補足を削除しました。
   - [`no-nesting-under-selector-list`](/notation/nesting-criteria/#rule-no-nesting-under-selector-list)：例のセレクタリストを、要素の状態を連結しない `button, ._selected-count` に変えました。
-  - [`nest-own-states-only`](/notation/nesting-and-order/#rule-nest-own-states-only)：状態の書き方と祖先の状態で変わるスタイルの書き方を、それぞれのルールに委ねる補足を加えました。
+  - [`nest-own-states-only`](/notation/nesting/#rule-nest-own-states-only)：状態の書き方と祖先の状態で変わるスタイルの書き方を、それぞれのルールに委ねる補足を加えました。
   - 次の4件は、比例スケールとルートの中の `<style>` に触れていた補足を直しました。
     - [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)
     - [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)
@@ -148,7 +226,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - ルールの内容を変えました。
   - [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)：すべての動きを条件の中に書く形から、段階的な対応に変えました。装飾的な動きのうちフェード以外を `no-preference` の中に書き、大きな変動は簡素化します。
   - [`animation-longhand-fill-mode`](/motion/transitions-and-keyframes/#rule-animation-longhand-fill-mode)：`animation-fill-mode` は `both` を第一候補にします。
-  - [`hover-only-when-operable`](/interaction/states-and-focus/#rule-hover-only-when-operable)：推奨から必須に上げました。
+  - `hover-only-when-operable`：推奨から必須に上げました。
   - 次の4件は、文言と補足を補いました。
     - [`motion-mode-attribute`](/motion/scroll-driven/#rule-motion-mode-attribute)
     - [`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)
@@ -207,7 +285,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`no-component-for-look-only`](/components/what-is-a-component/#rule-no-component-for-look-only)：見た目が共通だという理由だけで、コンポーネントを作りません。
   - [`no-component-for-future-guess`](/components/what-is-a-component/#rule-no-component-for-future-guess)：将来必要になりそうという予測だけで、コンポーネントを作りません。
   - [`local-parts-stay-in-parent`](/components/what-is-a-component/#rule-local-parts-stay-in-parent)：親の中でしか意味を持たない区画は、別のコンポーネントにせず、親の `@scope` の中で選びます。
-- ルール [`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover) の条件を、`@media (any-hover: hover)` から `@media (any-hover)` に変えました。値なしの `(any-hover)` は同じ意味になるからです。本書のすべてのコード例とデモも書き換えています。
+- ルール `hover-inside-any-hover` の条件を、`@media (any-hover: hover)` から `@media (any-hover)` に変えました。値なしの `(any-hover)` は同じ意味になるからです。本書のすべてのコード例とデモも書き換えています。
 - 文字色を背景の明度から選ぶ `sign()` の式を、`oklch(from var(--_foreground) sign(0.7 - l) 0 h)` にそろえました。
 - コンポジション「[8-14-10 primary-layout](/compositions/primary-layout/)」から、画面モードのスタイルクエリによる分岐を外しました。公開プロパティは `--primary-layout--gutter` のように接尾辞のない1組になり、デフォルト値は旧 `--compact` の値です。
 - 用語集に「通常フロー」と「ブロック整形コンテキスト」を加えました。
@@ -344,8 +422,8 @@ AI向けのルール集やスキルには、生成したときのバージョン
 全体のレビューを受けて、仕様と食い違う説明、動かない例、章どうしの矛盾を直しました。仕様の記述は一次資料と照らし、表示の問題は、確かめられたものだけブラウザで確認しています。ルールの追加や方針の変更はありません。
 
 - 次の4件のルールは、意味を正しくするために文言を訂正しました。ルールの強さは変えていません。
-  - [`no-var-in-query`](/responsive/media-queries/#rule-no-var-in-query)：対象を、メディアクエリの条件と、コンテナクエリのサイズの条件に限りました。スタイルクエリでカスタムプロパティどうしを比べる条件は対象にしません。
-  - [`no-container-type-size`](/responsive/container-queries/#rule-no-container-type-size)：`size` を前提にする単位の `cqw` を `cqh` に直しました。
+  - [`no-var-in-query`](/responsive/breakpoints/#rule-no-var-in-query)：対象を、メディアクエリの条件と、コンテナクエリのサイズの条件に限りました。スタイルクエリでカスタムプロパティどうしを比べる条件は対象にしません。
+  - [`no-container-type-size`](/responsive/container-size-queries/#rule-no-container-type-size)：`size` を前提にする単位の `cqw` を `cqh` に直しました。
   - [`forced-colors-svg-system-colors`](/color-media/forced-colors/#rule-forced-colors-svg-system-colors)：対象を管理している単色のアイコンに限り、塗りで描くものは `fill`、線で描くものは `stroke` だけを補正するようにしました。
   - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：`:focus-visible` が当てはまる条件を、キーボードの操作から、ブラウザがフォーカスの表示を必要と判断する場合に改めました。
 - 本文の例と説明を直しました。
@@ -558,8 +636,8 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
   - [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query)：ヘッダーは高さに余裕があるときだけ固定する
   - [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first)：暗黙のアンカーを優先する
   - [`position-area-logical-keywords`](/layout/positioning/#rule-position-area-logical-keywords)：`position-area` は論理キーワードで書く
-  - [`hide-label-visually-in-container-query`](/responsive/container-queries/#rule-hide-label-visually-in-container-query)：狭いコンテナではボタンのラベルを視覚的にだけ隠す
-  - [`framework-breakpoint-variables`](/responsive/media-queries/#rule-framework-breakpoint-variables)：フレームワークを使うときは、その変数でブレイクポイントを書く
+  - [`hide-label-visually-in-container-query`](/responsive/container-size-queries/#rule-hide-label-visually-in-container-query)：狭いコンテナではボタンのラベルを視覚的にだけ隠す
+  - [`framework-breakpoint-variables`](/responsive/breakpoints/#rule-framework-breakpoint-variables)：フレームワークを使うときは、その変数でブレイクポイントを書く
   - [`fallback-font-metric-overrides`](/typography/fonts/#rule-fallback-font-metric-overrides)：代わりのフォントの寸法を補正する
   - [`wbr-for-long-urls`](/typography/size-and-line-breaks/#rule-wbr-for-long-urls)：長いURLには `<wbr>` を入れる
   - [`text-stroke-paint-order`](/decoration/images-and-decoration/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く

@@ -1,6 +1,6 @@
 ---
 title: "10-3 ボックスモデルの基礎"
-description: "要素は、内容、padding、border、margin の4つの領域を持つ箱として描かれます。box-sizing、auto と中身に合わせた大きさ、% の基準、margin の負の値と auto、ボックスの大きさに含まれない outline と box-shadow、インライン要素での余白の効き方を説明します。"
+description: "要素は、内容、padding、border、margin の4つの領域を持つ箱として描かれます。box-sizing と border-box を取り消す場面、auto と中身に合わせた大きさ、% の基準、margin の負の値と auto、ボックスの大きさに含まれない outline と box-shadow、インライン要素での余白の効き方を説明します。"
 sidebar:
   order: 3
 ---
@@ -55,7 +55,38 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
-`content-box` に戻すのは、内容の幅を固定したい要素だけです。本文の幅を `max-inline-size` で決め、左右の `padding` を画面幅で変えたい場合がその例で、`content-box` なら `padding` が変わっても本文の幅は変わりません（「[10-9 余白を設計する](/layout/spacing/)」）。
+`content-box` に戻すのは、内容の幅を固定したい要素だけです。その代表が、次に説明する、最大幅と左右の `padding` で中央に寄せる要素です。
+
+## `border-box` を取り消して最大幅を内容の幅にする
+
+最大幅を決めて中央に寄せ、左右に `padding` を付ける要素では、`border-box` が不便になります。`max-inline-size` に `padding` が含まれるので、内容の幅は最大幅から左右の `padding` を引いた分しかありません。内容を1140px相当に保とうとすると、最大幅に `padding` を足す `calc()` を書くことになり、`padding` の値を変えるたびに式も直す必要があります。
+
+```css title="🙅‍♂ Not Recommended: 最大幅に左右の padding を足して、内容の幅を保つ"
+/* 🙅‍♂ Not Recommended */
+._container {
+  --_max-inline-size: calc(1140 / 16 * 1rem);
+  --_padding-inline: 20px;
+
+  max-inline-size: calc(var(--_max-inline-size) + var(--_padding-inline) * 2);
+  margin-inline: auto;
+  padding-inline: var(--_padding-inline);
+}
+```
+
+この要素だけ `box-sizing: unset` にすれば、足し算は要りません。`content-box` では `max-inline-size` が内容の領域の幅を指すので、指定した最大幅がそのまま内容の幅になり、`padding` はその外側に付きます。画面が狭いときは、ブロックの `auto` の幅が `padding` を含めて親に収まるので、はみ出しもしません（ルール `unset-box-sizing-for-content-max-width`）。
+
+```css title="🙆‍♂ Recommended: box-sizing を unset にして、最大幅を内容の幅にする"
+._container {
+  box-sizing: unset;
+  max-inline-size: calc(1140 / 16 * 1rem);
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+```
+
+`unset` は、継承するプロパティでは親の値を、継承しないプロパティでは初期値を使うキーワードで、継承しない `box-sizing` では初期値の `content-box` になります。本書で `content-box` と書かずに `unset` と書くのは、「ベーススタイルの `border-box` を取り消す」という意図を宣言で示すためです。`content-box` と書くと、その要素のためにボックスの数え方を選んだように読めます。同じ理由で、「[16-3 フォーム部品](/interaction/forms/)」でも、行数で高さを決めるテキストエリアに `box-sizing: unset` を書いています。
+
+`content-box` へ戻した要素で `inline-size: 100%` を指定すると、`padding` の分だけ親からはみ出します。幅は `auto` のままにし、上限だけを `max-inline-size` で決めます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-no-redundant-width-100)」）。また、この方法は、画面幅いっぱいに広げる子要素を持たない要素に向いています。広げる子要素が混ざるページのレイアウトは、左右に余白の列を持つGridで組みます（「[10-9 余白を設計する](/layout/spacing/)」）。
 
 ## `auto` と中身に合わせた大きさ
 
@@ -164,7 +195,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 `border-box` でも、指定した幅より大きくなることがあります。`padding` と `border` の合計が指定した幅を超えると、内容の領域は0で止まり、ボックスは `padding` と `border` の合計まで広がります。小さな `inline-size` の要素に大きな `padding` を付けるときは、この下限に気を付けます。
 
-`flex: 1` で余りを分けるとき、分けられるのは `padding` と `border` を除いた部分です。アイテムごとに `padding` が違えば、`border-box` でも幅はそろいません。列の幅をそろえるなら、親のGridで列を決めます（「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」）。
+この下限があるので、`padding` の違うフレックスアイテムは、`flex: 1` でも幅がそろいません（「[10-5 Flexboxの基礎](/layout/flexbox-basics/)」の「`flex: 1` でも列の幅がそろわない場合」）。
 
 `inline-size: stretch` は、`margin` を除いた使える幅いっぱいに広げる値で、フレックスアイテムや絶対配置の要素をブロックと同じように横いっぱいにできます。2026年10月の時点でFirefoxは `stretch` に対応していませんが、先に `-webkit-fill-available` を書いておけば、Firefoxを含む主要なブラウザで同じ結果になります。書き方と各ブラウザの対応状況は、「[1-2 保守しやすさを最優先にする](/principles/maintainability/#rule-stretch-over-width-100)」で説明します。
 

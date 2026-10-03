@@ -1,6 +1,6 @@
 ---
 title: 15-3 輪郭と枠線を描く
-description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で、グラデーションの枠線は background-clip の border-area で、ドーナツグラフはマスクで描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
+description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で、グラデーションの枠線は background-clip の border-area で描きます。どの環境でもグラデーションの枠線が必要なときと、ドーナツグラフは、擬似要素とマスクで描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
 sidebar:
   order: 3
 ---
@@ -12,6 +12,8 @@ import shapeTabHtml from '../../../demos/decoration/shape-tab/index.html?raw';
 import shapeTabCss from '../../../demos/decoration/shape-tab/style.css?raw';
 import gradientBorderHtml from '../../../demos/decoration/gradient-border/index.html?raw';
 import gradientBorderCss from '../../../demos/decoration/gradient-border/style.css?raw';
+import gradientBorderMaskHtml from '../../../demos/decoration/gradient-border-mask/index.html?raw';
+import gradientBorderMaskCss from '../../../demos/decoration/gradient-border-mask/style.css?raw';
 import donutHtml from '../../../demos/decoration/donut-chart/index.html?raw';
 import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 
@@ -116,11 +118,58 @@ import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 
 `border-color: transparent` は、`@supports` の中に書きます。外に書くと、未対応の環境では背景の切り抜きが効かないまま枠線だけが透明になり、枠線が消えるからです。`@supports` で分けておけば、未対応の環境では単色の枠線として表示されます。グラデーションの枠線は装飾なので、多くの場合は単色の枠線で足ります。
 
-すべての環境でグラデーションにしたい場合は、擬似要素にグラデーションを敷いて内側をマスクでくり抜く、従来の書き方を使います。ただし、擬似要素と `mask-composite` の指定が増えるので、私は単色の枠線に縮退させるほうを選びます。
-
 `border-area` は、Safari 18.2以降とChrome 150以降が対応しています。Firefoxは未対応です（2026年10月確認）。
 
 <Baseline id="background-clip-border-area" name="background-clip: border-area" />
+
+### どの環境でもグラデーションの枠線にする
+
+ブランドの表現として、Firefoxでもグラデーションの枠線を見せる必要があるなら、擬似要素にグラデーションを敷き、内側をマスクでくり抜きます。マスクの合成（`mask-composite`）は、本書の対象のブラウザのすべてが対応しています。ただし、擬似要素とマスクの指定が増え、`border-area` の2つの宣言に比べて、何を描いているのかがコードから読み取りにくくなります。単色の枠線で足りる場面では、前の例の `border-area` を使います。
+
+```css title="🙆‍♂ Recommended: 擬似要素の透明な枠線にグラデーションを敷き、内側をマスクでくり抜く"
+@scope (.scoped.gradient-frame) to (.scoped) {
+  :scope {
+    --_border-width: var(--gradient-frame--border-width, 2px);
+    --_radius: var(--gradient-frame--radius, var(--rounded--lg));
+    --_gradient: var(
+      --gradient-frame--gradient,
+      linear-gradient(in oklch 90deg, var(--color--accent--500), var(--color--accent--700))
+    );
+
+    position: relative;
+    padding: calc(24px + var(--_border-width));
+    border-radius: var(--_radius);
+    background-color: var(--background--base);
+    isolation: isolate;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: var(--z--backwards);
+      mask-image: conic-gradient(#000 0 0), conic-gradient(#000 0 0);
+      mask-clip: padding-box, border-box;
+      mask-composite: exclude;
+      border: var(--_border-width) solid transparent;
+      border-radius: var(--_radius);
+      background-image: var(--_gradient);
+      background-origin: border-box;
+    }
+  }
+}
+```
+
+<Demo title="擬似要素とマスクで、どの環境でもグラデーションの枠線を描く" html={gradientBorderMaskHtml} css={gradientBorderMaskCss} />
+
+枠線を描くのは `::before` です。`inset: 0` でルートと同じ大きさに広げ、透明な枠線を付けて、`background-origin: border-box` で枠線の外側からグラデーションを敷きます。`mask-image` には2枚の単色の画像を指定し、`mask-clip` で1枚目を `padding-box`、2枚目を `border-box` に切り抜きます。2枚を `mask-composite: exclude` で合成すると、2枚の重なる内側が消え、枠線の部分だけが残ります。マスクの画像は塗りつぶされていれば何でもよく、`conic-gradient(#000 0 0)` は単色の画像を短く書くための指定です。`#000` の色は表示されません。
+
+擬似要素の枠線は、ルートの外周に重なって描かれます。ルート自身には枠線がないので、そのままでは中身が枠線の上に重なります。そこで、ルートの `padding` に枠線の太さを足しています。角丸の半径は、ルートと擬似要素の両方に同じ `--_radius` を指定します。ルートの背景色が擬似要素の角からはみ出さず、擬似要素の内側の角も、枠線の太さの分だけ小さな半径で丸まります。
+
+擬似要素は `z-index: var(--z--backwards)` でルートの中身の背面に回し、ルートには `position: relative` と `isolation: isolate` を指定します。`isolation` でスタッキングコンテキストを作らないと、擬似要素はルートの背景よりも後ろに回り、ルートの背景色に隠れます（「[8-2 コンポーネントの境界を守る](/components/boundaries/#rule-isolation-for-relative-z-index)」）。
+
+この書き方は、私のCodePen（Gradient Border）で使っているものです。CodePenでは、`position: relative` と `isolation` の代わりに `contain: content` を指定しています。`contain: content` に含まれるレイアウトの封じ込めは、要素を絶対配置の包含ブロックにし、スタッキングコンテキストも作るので、1つの宣言で同じ役割を果たします。ただし、ペイントの封じ込めも含むので、ルートからはみ出した子孫の影やポップアップが切り取られます（「[17-7 動きの負荷を抑える](/motion/performance/)」）。本書では、役割がそのまま読み取れる `position: relative` と `isolation: isolate` で書きます。
+
+<Baseline id="masks" />
 
 ### ドーナツグラフ
 
@@ -146,7 +195,7 @@ import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
     --_border-width: 16px;
     --_foreground: var(--donut-chart--foreground, var(--color--accent--500));
 
-    container: --donut-chart / inline-size;
+    container: --scoped / inline-size;
     display: block grid;
     aspect-ratio: 1;
     color: var(--_foreground);
@@ -200,17 +249,15 @@ import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 
 <Demo title="割合に合わせて輪が伸び、中心の数値が数え上がるドーナツグラフ" html={donutHtml} css={donutCss} />
 
-割合は、読み手が知る必要のある情報です。生成コンテンツだけで表示すると、コピーやページ内検索、機械翻訳の対象にならず、CSSが読み込まれない環境では数値が消えます（「[3-7 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/#rule-no-meaningful-generated-content)」）。そこで、数値はHTMLの `span` に書いて `.-visually-hidden` で視覚的に隠し、中心で数え上げる `::after` の数値は、`content` の代替テキストを空にして装飾として扱います。読み上げではHTMLの「40%」だけが伝わり、数え上げの途中の値は読まれません。
+割合は、読み手が知る必要のある情報です。生成コンテンツだけで表示すると、コピーやページ内検索、機械翻訳の対象にならず、CSSが読み込まれない環境では数値が消えます（「[3-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/#rule-no-meaningful-generated-content)」）。そこで、数値はHTMLの `span` に書いて `.-visually-hidden` で視覚的に隠し、中心で数え上げる `::after` の数値は、`content` の代替テキストを空にして装飾として扱います。読み上げではHTMLの「40%」だけが伝わり、数え上げの途中の値は読まれません。
 
 `min()` で上限を100%にしているので、100%を超える値が渡っても、輪が1周を超えて塗られることはありません。グラフの色は `--donut-chart--foreground` で変えられ、輪と中心の数値が同じ色になります。
 
-`::before` が輪です。透明な枠線を付け、`padding-box` と `border-box` に切り抜いた2枚のマスクを `exclude` で合成すると、2枚の重なる内側は消え、枠線の部分だけが残ります。そこに枠線の外側から（`background-origin: border-box`）`conic-gradient()` を敷くので、枠線の太さがそのまま輪の太さになります。マスクの画像は塗りつぶされていれば何でもよく、`conic-gradient(#000 0 0)` は単色の画像を短く書くための指定です。`#000` の色は表示されません。
+`::before` が輪です。前の例のグラデーションの枠線と同じく、透明な枠線を付け、`padding-box` と `border-box` に切り抜いた2枚のマスクを `exclude` で合成して、枠線の部分だけを残しています。そこに枠線の外側から（`background-origin: border-box`）`conic-gradient()` を敷くので、枠線の太さがそのまま輪の太さになります。
 
 `::after` が中心の数値です。`calc(var(--count-up--value) / 1%)` は、割合を1%で割った単位のない数値を返し（「[4-3 計算関数で根拠を式に残す](/values/math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` がその数値を文字にします。`counter-reset` は整数を受け取るので、`calc()` の結果は整数に丸められます。{/* 要確認: counter-reset に @property で登録した値の calc() を渡す書き方の対応状況 */}文字の大きさは、コンテナの幅（`100cqi`）に、グラフの幅が `--_basis-width`（200px）のとき32pxとなる比を掛けて決めています。グラフをどの大きさで置いても、輪と数値の大きさの比が変わりません。`tabular-nums` で数字の幅をそろえるのは、数値が増える間も文字の位置を左右に揺らさないためです。
 
 割合は、0%から数え上げて表示します。`--count-up--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。`@keyframes` には `from` だけを書き、終わりの値は擬似要素で指定した値を使います（「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。輪と数値は同じ `@keyframes` で動くので、輪が伸びるのに合わせて数値も増えます。トランジションではなく `@keyframes` を使うのは、トランジションは値が変わったときにしか動かず、ページを開いたときの表示では何も起きないからです。数値が一定の速さで増えるように、イージングは `linear` にしています。動かすのは、`prefers-reduced-motion: no-preference` のときだけです。
-
-<Baseline id="masks" />
 
 <Baseline id="registered-custom-properties" name="@property" />
 
@@ -220,7 +267,7 @@ import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 
 `@supports` の条件には、実際に使う値の形を書きます。`@supports (background-clip: border-area)` のように値まで書くと、プロパティにだけ対応していて値に対応していない環境も、未対応として扱えます。`shape()` の条件は、`shape(from 0 0, hline to 0)` のように、構文として成り立つ最も短い形にしておくと読みやすくなります。
 
-強制カラーモードでは、グラデーションの `background-image` が表示されなくなり、`border-color` はシステムカラーに置き換わります。そのため、グラデーションの枠線は、透明にした枠線がシステムカラーで描かれ、境界は残ります。一方、何も指定しないとドーナツグラフはグラデーションごと消えてしまうので、輪の擬似要素にだけ `forced-color-adjust: none` を指定し、グラフを画像として表示させます。グラフは色の組み合わせで割合を表す図なので、システムカラーに置き換えると図として成り立たないからです。中心の数値には指定しないので、文字はユーザーの選んだ配色で表示されます。{/* 要確認: 強制カラーモードでの輪の表示をブラウザで確認していない */}強制カラーモードで置き換わる色の一覧は、「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+強制カラーモードでは、グラデーションの `background-image` が表示されなくなり、`border-color` はシステムカラーに置き換わります。そのため、`border-area` のグラデーションの枠線は、透明にした枠線がシステムカラーで描かれ、境界は残ります。擬似要素とマスクで描く枠線も、グラデーションは消えますが、擬似要素の透明な枠線がシステムカラーに置き換わり、マスクで残した枠線の形のまま描かれます。{/* 要確認: 擬似要素とマスクで描く枠線の強制カラーモードでの表示をブラウザで確認していない */}枠線は境界を示す装飾で、システムカラーの単色でも役割を果たすので、`forced-color-adjust: none` は指定しません。一方、何も指定しないとドーナツグラフはグラデーションごと消えてしまうので、輪の擬似要素にだけ `forced-color-adjust: none` を指定し、グラフを画像として表示させます。グラフは色の組み合わせで割合を表す図なので、システムカラーに置き換えると図として成り立たないからです。中心の数値には指定しないので、文字はユーザーの選んだ配色で表示されます。{/* 要確認: 強制カラーモードでの輪の表示をブラウザで確認していない */}強制カラーモードで置き換わる色の一覧は、「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
 
 `clip-path` で作った形は、要素の当たり判定も切り抜きます。切り抜いた外側はクリックできないので、タブの反り返りのような装飾は、この節の例のように背面の擬似要素に描き、タブ本体の当たり判定を変えないようにします（2026年10月、Chrome 152で確認）。
 
@@ -231,7 +278,9 @@ import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 ## 参考リンク
 
 - [Rounded Tab](https://codepen.io/tak-dcxi/pen/MYaaQwv)（CodePen、2025年7月）
+- [Gradient Border](https://codepen.io/tak-dcxi/pen/MYevZzb)（CodePen）
 - [shape() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/basic-shape/shape)
 - [border-shape - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-shape)
 - [background-clip - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/background-clip)
+- [mask-composite - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-composite)
 - [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)

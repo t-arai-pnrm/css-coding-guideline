@@ -1,8 +1,8 @@
 ---
-title: "3-3 子要素の位置で選ぶ"
+title: "3-4 子要素の位置で選ぶ"
 description: ":nth-child() は兄弟の中の位置で要素を選ぶ擬似クラスです。クラスや状態で絞った中での順番は :nth-child(N of S) で書き、タグ名でしか数えない :nth-of-type() を代わりに使いません。位置で選ぶのは、順番そのものが条件になるときに限ります。"
 sidebar:
-  order: 3
+  order: 4
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -149,7 +149,7 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 
 子要素の間隔も、位置で選んで作りません。すべての子に `margin-bottom` を付けて `:last-child` で打ち消す書き方は、要素の順番を変えるたびに打ち消しの対象を確かめ直すことになります。間隔は親の `gap` で作ります（「[10-9 余白を設計する](/layout/spacing/)」）。見出しや段落が続く本文では、2つ目以降の子に `margin-block-start` を付けるコンポジション `prose` を使います（「[11-11 prose：子ごとに変えられる間隔で、本文の流れを作る](/compositions/prose/)」）。
 
-子の数によってレイアウトを切り替える処理も、`:nth-child()` と `:nth-last-child()` の組み合わせで書けます。`:first-child:nth-last-child(3)` は、兄弟がちょうど3つのときの最初の子です。この書き方は数量クエリと呼ばれ、「[3-4 数量クエリ](/pseudo/quantity-queries/)」で説明します。
+子の数によってレイアウトを切り替える処理も、`:nth-child()` と `:nth-last-child()` の組み合わせで書けます。`:first-child:nth-last-child(3)` は、兄弟がちょうど3つのときの最初の子です。この書き方は数量クエリと呼ばれ、「[3-5 数量クエリ](/pseudo/quantity-queries/)」で説明します。
 
 ## ガイドライン
 

@@ -1,0 +1,266 @@
+---
+title: 12-3 コンテナサイズクエリ
+description: 複数の場所に置かれるコンポーネントは、置かれた場所の幅で切り替えます。ルートのコンテナは --scoped と名付け、外側のコンポーネントのコンテナは問い合わせません。同じ閾値はスタイルクエリで子孫に伝え、zoom による縮小は最後の手段にとどめます。
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import cardHtml from '../../../demos/responsive/container-card/index.html?raw';
+import cardCss from '../../../demos/responsive/container-card/style.css?raw';
+import densityHtml from '../../../demos/responsive/density-card/index.html?raw';
+import densityCss from '../../../demos/responsive/density-card/style.css?raw';
+import shareHtml from '../../../demos/responsive/share-button/index.html?raw';
+import shareCss from '../../../demos/responsive/share-button/style.css?raw';
+
+複数の場所に置かれるコンポーネントは、ビューポートではなく、置かれた場所の幅で切り替えます。そのための仕組みがコンテナサイズクエリです。コンポーネントのルートをコンテナにするときは `container: --scoped / inline-size` と書いて `@container --scoped (…)` で問い合わせ、外側のコンポーネントのコンテナは問い合わせません。
+
+コンテナにした要素は、幅を中身から決められなくなります。この副作用があるので、コンテナは問い合わせる要素にだけ指定します。この節では、基本の書き方に加えて、同じ閾値を子孫の要素で使い回す方法と、想定より狭い場所に置かれたときの最後の手段を説明します。
+
+`@container` で問い合わせられるのは、サイズだけではありません。祖先の要素のカスタムプロパティの値を調べるスタイルクエリ（`@container style(…)`）と、スクロールの状態を調べるスクロール状態クエリ（`@container scroll-state(…)`）もあります。本書では、この3つをまとめてコンテナクエリと呼び、サイズを問い合わせるものをコンテナサイズクエリと呼んで区別します。
+
+<Baseline id="container-queries" name="コンテナサイズクエリ" />
+
+## ビューポートの幅では足りない理由
+
+画像と本文を並べたカードを考えます。メインエリアに置いたときは、幅に余裕があるので画像と本文を横に並べたく、サイドバーに置いたときは、幅が狭いので縦に積みたいという要件はよくあります。
+
+メディアクエリでは、この要件を満たせません。メインエリアとサイドバーは同じページにあるので、ビューポートの幅はどちらも同じだからです。結局「サイドバー用」の属性（`data-placement="sidebar"` など）を用意し、置き場所ごとにスタイルを出し分けることになります。
+
+```css title="🙅‍♂ Not Recommended: 置き場所ごとに属性で出し分ける"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 12px;
+
+    @media (width >= calc(768 / 16 * 1rem)) {
+      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+    }
+
+    &[data-placement="sidebar"] {
+      @media (width >= calc(768 / 16 * 1rem)) {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  }
+}
+```
+
+この方法では、置き場所が増えるたびに属性の値も増え、コンポーネントと置き場所が強く結びつきます。カードの配置を決める条件が、カード自身ではなく、カードを置く側が付ける属性にあるためです。コンテナサイズクエリを使えば、カードは自分が使える幅だけを条件に配置を決められます。
+
+コンテナサイズクエリに対応していない環境では、`@container` の中のスタイルが適用されず、クエリの外に書いたスタイルだけが残ります。そのため、基本のスタイルは狭い幅で成り立つように書きます。広い幅でも狭いレイアウトのままになりますが、崩れではなく縮退に収まります。この考え方は、「[12-4 メディアクエリ](/responsive/media-queries/)」で説明するモバイルファーストの書き方と同じです。
+
+## ルートを--scopedという名前のコンテナにする
+
+基本の形は、コンポーネントのルートをコンテナにして、中の要素で条件を判定するものです。ルートのコンテナの名前は、どのコンポーネントでも `--scoped` にそろえます。ルートに付けるクラス `scoped` と同じ語なので、どの要素のコンテナなのかを覚える必要がありません。`--root` という名前は、`:root` と紛れるので採りません。
+
+```css title="🙆‍♂ Recommended: ルートを --scoped のコンテナにし、中の要素で判定する"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    display: block grid;
+    gap: 12px;
+
+    @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
+      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+    }
+  }
+}
+```
+
+コンテナには必ず名前を付け、`@container` の条件でもその名前を指定します。名前を省略した `@container` は、いちばん近い祖先のコンテナを参照するので、コンテナが入れ子になると、どのコンテナを参照しているのかがコードから読み取れません。どのルートも同じ名前にしても、参照先は曖昧になりません。名前を指定した `@container` は、その名前を持ついちばん近い祖先を参照します。そして `@scope` の下限（`to (.scoped)`）が内側のコンポーネントを範囲から外すので、`--scoped` は常に、そのスタイルを書いたコンポーネント自身のルートを指します。
+
+ルート以外の子要素をコンテナにするときは、クラス名から下線を除いた名前を付けます。`._body` をコンテナにするなら `container: --body / inline-size` と書き、`@container --body (…)` で問い合わせます。外側のコンポーネントのコンテナは問い合わせません。ページのレイアウトのコンポーネントが子要素 `._aside` のコンテナ `--aside` を内側のカードが問い合わせると、カードはそのコンポーネントの定義に依存し、別の場所へ移したときに条件が成り立たなくなります。外側の状況で変えたい値は、外側のコンポーネントの要素で公開用のカスタムプロパティ（`--media-card--gap` など）を宣言し、継承で渡します（「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
+
+ルート自身のスタイルに `@container --scoped (…)` を書くのも誤りです。コンテナにした要素は自分自身を問い合わせられないので、ルートの `:scope` に書いた条件は、さらに外側のコンポーネントのルートを参照します。ルート自身の見た目を変えたいときは、外側から公開用のカスタムプロパティで値を受け取ります。
+
+名前は `--` で始めます。近年のCSSでは、`anchor-name` のように、自分で付ける名前に `--` を求めるプロパティが増えています。すべての名前を `--` で始めておけば、プロパティごとに `--` が必要かどうかを覚えずに済み、自分で付けた名前だとすぐに分かります。将来CSSに新しいキーワードが追加されても衝突しません。本書のStylelintの設定では、`container-name-pattern` でこの形を検証しています。
+
+コンテナの指定には、`container-type` を単体で書かず、`container` ショートハンドで名前と種類をまとめて書きます。名前と種類が1つの宣言に入るので、名前の付け忘れが起きません。また、条件には `width` ではなく `inline-size` を使います。物理方向の `width` は書字方向が変わると意味がずれるので、書字方向に依存しない `inline-size` を選びます。
+
+AIが生成するコードでは、次のように名前のないコンテナと `width` の条件の組み合わせをよく見かけます。動作はしますが、ここまでに挙げた点がすべて守られていません。
+
+```css title="🙅‍♂ Not Recommended: 名前のないコンテナと width の条件"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    container-type: inline-size;
+  }
+
+  ._layout {
+    display: block grid;
+    gap: 12px;
+
+    @container (width >= 400px) {
+      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+    }
+  }
+}
+```
+
+このコードでは、ルートと `._layout` の間に別のコンテナが入ると、判定の基準がそちらに変わります。条件の値もpxなので、ユーザーが文字サイズを大きくしても切り替わる幅は変わりません。コンテナサイズクエリを書くたびに、コンテナの名前、`container` ショートハンド、`inline-size`、remへの変換式の4点を確認します。閾値の決め方は「[12-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。
+
+## コード例とデモ
+
+次のデモでは、同じカードのコンポーネントをメインエリアとサイドバーに置いています。ページ全体の段組みはメディアクエリで、カードの中の配置はコンテナサイズクエリで切り替えています。幅のボタンで768px以上を選ぶと2カラムの表示になり、メインエリアのカードでは画像と本文が横並びに、サイドバーのカードでは縦積みのままになります。
+
+<Demo title="同じカードが、置かれた場所の幅に合わせて配置を切り替える" html={cardHtml} css={cardCss} />
+
+切り替えられるのは、配置だけではありません。アイコンと「この記事をシェアする」のラベルを並べたシェアボタンを、本文の下とサイドバーの両方に置くとします。狭いサイドバーではラベルを隠してアイコンだけにしたい場合も、置き場所用の属性を足さずに書けます。
+
+```css title="🙆‍♂ Recommended: 置かれた場所が狭いときだけ、ラベルを視覚的に隠す"
+@scope (.scoped.share-button) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  a {
+    position: relative;
+    display: block flex;
+    column-gap: 1em;
+    justify-content: center;
+    align-items: center;
+    padding-block: 12px;
+    padding-inline: 24px;
+  }
+
+  ._label {
+    /* アイコン 24px・隙間 16px・ラベル 160px と、左右の余白が並ぶ幅 */
+    @container --scoped (inline-size < calc((24 + 16 + 160 + 24 * 2) / 16 * 1rem)) {
+      position: absolute;
+      overflow: clip;
+      inline-size: 4px;
+      block-size: 4px;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+}
+```
+
+ラベルは `display: none` で消さずに、視覚的にだけ隠しています。アイコンのSVGは `aria-hidden="true"` で読み上げの対象から外しているので、ラベルまで消すと、リンクの名前がなくなるからです。隠し方はユーティリティの `.-visually-hidden` と同じ考え方です。ユーティリティはHTMLに付けるクラスで、クエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書いています（「[8-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。閾値は、アイコン、隙間、ラベル、左右の `padding` が1行に並ぶ幅を式で書いています。
+
+<Demo title="同じシェアボタンが、置かれた場所の幅に合わせてラベルを隠す" html={shareHtml} css={shareCss} />
+
+コンテナサイズクエリでは、デザイナーとのやり取りが増えやすくなります。メディアクエリなら、切り替わる幅はページで共通なので、画面の幅ごとのカンプで確認できます。コンテナサイズクエリでは、コンポーネントごとに切り替わる幅が違い、その幅はページのカンプからは読み取れません。{/* 要確認: 出典なし */}コンポーネントがどの幅でどう変わるのかは、実装の前にデザイナーと確認しておきます（「[9-2 実装の前にデザイナーと確かめること](/design-reproduction/designer-questions/)」）。
+
+## 同じ閾値をスタイルクエリで子孫に伝える
+
+1つの閾値で、コンポーネントの中の複数の要素を切り替えたい場面があります。画像の縦横比、見出しの文字サイズ、本文の文字サイズを、同じ幅でそろって変えるような場合です。それぞれの要素に同じ `@container --scoped (…)` を書くと、閾値が3か所に分かれ、変えるときに1か所でも直し忘れると切り替わりがずれます。
+
+そこで、ルートの直下の要素（ここでは `._body`）が、コンテナサイズクエリの中で `--_density: --spacious` のような識別子を宣言し、その子孫の要素はスタイルクエリで切り替えます。閾値を書くのは、`._body` の1か所だけになります。
+
+```css title="🙆‍♂ Recommended: 閾値はルートの直下の要素に1回だけ書き、子孫はスタイルクエリで切り替える"
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    --_density: --compact;
+
+    display: block grid;
+    gap: 12px;
+
+    /* 画像 160px・隙間 16px・本文の最小幅 240px が並ぶ幅 */
+    @container --scoped (inline-size >= calc((160 + 16 + 240) / 16 * 1rem)) {
+      --_density: --spacious;
+
+      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+    }
+  }
+
+  ._title {
+    font-size: calc(16 / 16 * 1rem);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}
+```
+
+宣言をルートではなく `._body` に置くのは、ルートが自分のサイズを問い合わせられないからです。値には `--compact` や `--spacious` のような `--` で始まる識別子を使い、自分で付けた名前だと分かるようにします（「[7-1 命名規則](/notation/naming/)」）。クエリの外にもデフォルトの `--compact` を書いているのは、カスタムプロパティが継承されるからです。デフォルトがないと、このカードを別のコンポーネントの中に置いたとき、外側のコンポーネントで宣言した `--_density` の値を受け継ぎます。
+
+スタイルクエリは、条件を書いた要素の親の値を調べます。そのため、`._body` の子孫はすべて `--_density` で切り替えられる一方、宣言した `._body` 自身は切り替えられません。`._body` の配置は、上の例のように同じコンテナサイズクエリの中に書きます。ルートで決めたモードによってルート自身の値を切り替える方法は「[4-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」で説明しています。
+
+<Baseline id="container-style-queries" name="スタイルクエリ" />
+
+次のデモでは、メインエリアのカードだけが閾値を超え、画像、見出し、本文の3つがそろって切り替わります。スタイルクエリは2026年5月にすべての主要なブラウザで使えるようになり、本書の対象のSafari 18でも動きます（2026年10月確認）。
+
+<Demo title="1つの閾値で、画像と見出しと本文をそろえて切り替えるカード" html={densityHtml} css={densityCss} />
+
+## コンテナの副作用
+
+`container-type: inline-size` を指定した要素には、インライン方向のサイズの封じ込め（`contain: inline-size`）が暗黙的に適用されます。これは「この要素の幅は、中身の大きさに影響されない」という指定です。中身の幅から自分の幅を決める要素に指定すると、中身が幅に反映されないため、幅が極端に小さく計算されてレイアウトが崩れます。
+
+そのため、インライン要素や、`fit-content` など中身から幅が決まる要素は、コンテナにしません。`flex-grow` や `flex-basis` を指定していないflexアイテムと、`auto` のサイズで配置したgridアイテムも同様です。カードを一覧に並べるときは、配置を変えたいカード自身をコンテナにしても、カード自身の配置は切り替わりません。カードのルートをコンテナにして、配置を変える要素を一段内側に置きます。
+
+副作用があるので、コンテナは、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定します。「あとで使うかもしれない」という理由で、すべてのルートや要素に `container` を付けることはしません。問い合わせないコンテナは、封じ込めの副作用だけを残すからです。`subgrid` も、サイズの封じ込めがある要素では無効になります。グリッドの親をコンテナにし、サブグリッドの側の切り替えには `calc()` で求めた値を使います。
+
+コンテナにした要素には `padding` や `border` も指定しません。クエリの条件やコンテナ単位が基準にするのは、コンテナのコンテンツボックスの幅です。`padding` や `border` があると、要素の幅からその分を引いた値で判定されるので、閾値やコンテナ単位の値が見た目の幅とずれます。余白などのレイアウトは子要素に指定し、コンテナは幅の基準に専念させます。
+
+`html`、`body`、ページ全体のレイアウト要素もコンテナにしません。ページ全体の切り替えはメディアクエリの役割だからです。コンテナクエリを提唱したMiriam Suzanneも、講演でこのやり方をアンチパターンとして挙げています。{/* 要確認: 講演の名前と URL */}また、以前の仕様では、コンテナにレイアウトの封じ込め（`contain: layout`）も暗黙的に適用され、中にある `position: fixed` の要素の包含ブロックになっていました。2024年7月にCSSワーキンググループがこの適用をやめると決め、Chrome 129（2024年9月）、Firefox 133（2024年11月）、Safari 18.4（2025年3月）で修正されています（2026年9月確認）。古い環境では従来の動作が残るので、`position: fixed` の要素を含むページ全体をコンテナにする理由はありません。
+
+`<picture>` の `<source>` にある `media` 属性は、コンテナサイズクエリを扱えません。画像の切り替えは、ビューポートを基準にする `media` だけで書きます。置き場所の幅によって、構図の違う画像へ替えたいときは、置き場所ごとにマークアップを分けるなど、HTMLの側で扱います。`container-type: size` は、インライン方向に加えてブロック方向にも封じ込めが起こり、高さを指定していない要素は高さが0に潰れるので、原則として使いません。
+
+## コンテナ単位とクラス名
+
+コンテナの幅を基準にした単位（`cqi` など）もあります。`cqi` はコンテナのインライン方向のサイズの1%です。有効なコンテナが見つからないときは、小さいビューポートの単位（`svi`）として計算されるので、`cqi` を使うのは、名前付きのコンテナがあると言い切れる子孫の要素だけにします。同じコンポーネントの中に `container: --scoped / inline-size` があることを確かめてから使います。単位の選び方は「[4-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で説明しています。
+
+`cqh` と `cqb`、`cqmin` と `cqmax` は、`container-type: size` のコンテナがないとビューポートの値を含んで計算されます。本書は `size` を使わないので、これらの単位を使う場面はほとんどありません。`cqw` は横書きなら `inline-size` のコンテナでも使えますが、物理方向の単位なので、書字方向に追従する `cqi` を選びます。
+
+`container` プロパティが登場して、「container」はCSSの中で意味を持つ語になりました。`.container` という汎用のラッパーのクラスを作ると、コンテナサイズクエリのコンテナなのか、ただの幅の制限なのかが分かりません。`container` を含むクラス名は、`container` プロパティを持つ要素にだけ使います。ルートをコンテナにするならクラス名は要らず、子要素をコンテナにするなら、`._body` のように役割の名前を付け、コンテナの名前をそこから決めます。
+
+## 想定より狭い場所に置かれたときのzoom
+
+コンポーネントが、想定していた最小幅より狭い場所に差し込まれることがあります。列数を減らし、折り返し、余白を詰めても破綻を避けきれないときに限り、最後の手段として `zoom` で中身を縮小します。縮小するのは、想定の最小幅を下回ったときだけで、縮小率は `progress()` でコンテナの幅から求めます。
+
+```css title="🙆‍♂ Recommended: 想定の最小幅を下回ったときだけ、中身を縮小する"
+@scope (.scoped.article-cards) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    /* 最小幅 200px 未満では縮小を許すが、1 を超えて拡大しない */
+    @container --scoped (inline-size < calc(200 / 16 * 1rem)) {
+      zoom: min(progress(100cqi, 0px, calc(200 / 16 * 1rem)), 1);
+    }
+  }
+}
+```
+
+`progress(100cqi, 0px, calc(200 / 16 * 1rem))` は、コンテナの幅が0から200px相当までのどこにあるかを、0から1の数値で返します。コンテナが160px相当なら0.8になり、`._body` の中身は200px相当の幅で組まれたまま、0.8倍に縮小されます。`min(…, 1)` で上限を1にしているので、拡大には使いません。`zoom` を書くのは、コンテナが必ずあるルートの直下の要素です。ルート自身に書くと、`100cqi` が外側のコンテナを基準にしてしまいます。
+
+<Baseline id="progress-function" name="progress()" />
+
+<Baseline id="zoom" name="zoom" />
+
+`progress()` は2026年9月にすべての主要なブラウザで使えるようになりましたが、Safariは26からの対応です（2026年10月確認）。本書の対象のSafari 18では宣言が無効になり、縮小されません。そのため、この指定はプログレッシブ・エンハンスメントとして書き、縮小されなくても中身を読めて操作できる状態を保ちます。
+
+`zoom` は文字も含めてすべてを縮めるので、レイアウトの問題を解決せずに隠してしまいます。デザインを崩さないために乱用したり、文字サイズを縮める代わりに使ったりはしません。判断の順番は、イントリンシックなレイアウト、コンテナサイズクエリによる組み替え、最後に `zoom` です。ページ全体を `zoom` で縮小しない理由は「[12-6 カンプの幅で全体を拡大・縮小しない](/responsive/design-comp-pattern/)」で説明しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS Responsive Rules](https://gist.github.com/tak-dcxi/acd985cd8b7486a807f1c240731cc7e0)（TAK、gist）
+- [CSS コンテナクエリ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_containment/Container_queries)
+- [@container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@container)
+- [container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/container)
+- [Using container size and style queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_size_and_style_queries)
+- [Container Queries Unleashed](https://www.joshwcomeau.com/css/container-queries-unleashed/)（Josh W. Comeau）
+- [Weaker form of layout containment for container queries（csswg-drafts #10544）](https://github.com/w3c/csswg-drafts/issues/10544)（CSSワーキンググループ、2024年7月に決定）
+- [WebKit Features in Safari 18.4](https://webkit.org/blog/16574/webkit-features-in-safari-18-4/)（WebKit Blog、2025年3月）
+- [zoom - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/zoom)
+- [progress() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/progress)
+- [俺流レスポンシブコーディング 2025](https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025)（TAK、2025年11月）

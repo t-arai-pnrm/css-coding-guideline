@@ -55,7 +55,7 @@ CSSをレビューするときの確認の順番は、私のテンプレート�
 6. 内容の変化に耐えられるか（[10-10 変化に強いレイアウト](/layout/defensive/)）
 7. コンポーネントの境界を守っているか（[8-2 コンポーネントの境界を守る](/components/boundaries/)）
 8. レスポンシブ対応の手段を正しい順番で選んでいるか（[12-1 検討する順番](/responsive/escalation/)）
-9. コメントが「なぜ」を説明しているか（[7-6 コメントの書き方](/notation/comments/)）
+9. コメントが「なぜ」を説明しているか（[7-9 コメントの書き方](/notation/comments/)）
 
 インデントやプロパティの並び順は、この一覧に入れていません。整形はツールの仕事で、レビューで指摘するのは、自動化が機能していないときだけです。Stylelintの運用は「[18-1 Stylelintでルールを守る](/operations/stylelint/)」で説明しています。確認の項目をまとめた一覧は、付録D「[レビューのチェックリスト](/appendix/checklist/)」にあります。
 
@@ -154,14 +154,14 @@ AIが生成したCSSは、必ずStylelintを実行してから、レビューで
 ```css title="🙆‍♂ Recommended: ルールに沿って書き直したカードの一覧"
 @scope (.scoped.card-list) to (.scoped) {
   :scope {
-    container: --card-list / inline-size;
+    container: --scoped / inline-size;
   }
 
   ul {
     display: block grid;
     gap: 24px;
 
-    @container --card-list (inline-size >= calc(600 / 16 * 1rem)) {
+    @container --scoped (inline-size >= calc(600 / 16 * 1rem)) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }

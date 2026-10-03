@@ -1,0 +1,52 @@
+@layer tokens {
+  :root {
+    --color--accent--500: oklch(62% 0.19 250deg);
+    --color--accent--700: oklch(55% 0.22 300deg);
+    --rounded--lg: 16px;
+    --background--base: oklch(100% 0 0deg);
+    --z--backwards: -1;
+  }
+}
+
+@layer pages {
+  @scope (.scoped.gradient-frame-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.gradient-frame) to (.scoped) {
+    :scope {
+      --_border-width: var(--gradient-frame--border-width, 2px);
+      --_radius: var(--gradient-frame--radius, var(--rounded--lg));
+      --_gradient: var(
+        --gradient-frame--gradient,
+        linear-gradient(in oklch 90deg, var(--color--accent--500), var(--color--accent--700))
+      );
+
+      position: relative;
+      padding: calc(24px + var(--_border-width));
+      border-radius: var(--_radius);
+      background-color: var(--background--base);
+      isolation: isolate;
+
+      /* 枠線を描く層。透明な枠線の部分だけを残し、内側をくり抜く */
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: var(--z--backwards);
+        mask-image: conic-gradient(#000 0 0), conic-gradient(#000 0 0);
+        mask-clip: padding-box, border-box;
+        mask-composite: exclude;
+        border: var(--_border-width) solid transparent;
+        border-radius: var(--_radius);
+        background-image: var(--_gradient);
+        background-origin: border-box;
+      }
+    }
+  }
+}

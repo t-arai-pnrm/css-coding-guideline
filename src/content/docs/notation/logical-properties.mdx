@@ -1,8 +1,8 @@
 ---
-title: "7-5 論理プロパティと論理値"
+title: "7-8 論理プロパティと論理値"
 description: 論理プロパティを使うのは、多言語への対応よりも、書字方向を前提にしたレイアウトの仕組みとそろえるためです。物理でしか書けないものは物理で書き、論理と物理の混在を許します。margin-inline は実務では左右のショートハンドとして扱ってかまいません。
 sidebar:
-  order: 5
+  order: 8
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -29,7 +29,7 @@ import writingCss from '../../../demos/notation/writing-direction/style.css?raw'
 
 通常フローは、書字方向を前提にした仕組みです。ブロックは行が積み重なる方向に並び、インライン要素は文字が並ぶ方向に流れます。この2つの方向は、`writing-mode` と `direction` で変わります（「[10-2 通常フローの基礎](/layout/normal-flow/)」）。横書きの文書では、たまたまインライン方向が左右、ブロック方向が上下にあたるだけです。
 
-FlexboxとGridも、同じ基準で動きます。`flex-direction: row` の主軸はインライン方向なので、縦書きのコンテナでは上から下に変わります。Gridの列の線はインライン方向の始まりの側から数えるので、`direction: rtl` の文書ではセルの並びが右から左になります。`justify-content` や `align-items` の `start`、`end`、`center` も、書字方向に対する位置を表すキーワードです。コンテナクエリの `container-type: inline-size` も、インライン方向の大きさを条件にします。
+FlexboxとGridも、同じ基準で動きます。`flex-direction: row` の主軸はインライン方向なので、縦書きのコンテナでは上から下に変わります。Gridの列の線はインライン方向の始まりの側から数えるので、`direction: rtl` の文書ではセルの並びが右から左になります。`justify-content` や `align-items` の `start`、`end`、`center` も、書字方向に対する位置を表すキーワードです。コンテナサイズクエリの `container-type: inline-size` も、インライン方向の大きさを条件にします。
 
 この仕組みを利用して、Gridのセルの並びを逆転させる目的で `direction: rtl` を指定するハックがあります。見た目の順番は入れ替わりますが、フォーカスの移動と読み上げはHTMLの順番のままです。キーボードで操作すると、フォーカスが右から左へ飛ぶように見えます。文字の方向まで変わるので、子の中で `direction: ltr` に戻す指定も要ります。
 
@@ -78,7 +78,7 @@ body {
 }
 ```
 
-セーフエリアの扱いは「[12-6 セーフエリアに対応する](/responsive/safe-area/)」で詳しく説明しています。
+セーフエリアの扱いは「[12-7 セーフエリアに対応する](/responsive/safe-area/)」で詳しく説明しています。
 
 ## 中央寄せに `margin-inline: auto` を選ぶ理由
 

@@ -1,27 +1,20 @@
 # 第16章 インタラクション
 
 # 16-1 状態とフォーカスを表す
-- id: hover-inside-any-hover
+- id: hover-operable-in-any-hover
   level: 必須
-  rule: '`:hover` のスタイルは `@media (any-hover)` の中に書き、`(hover: hover)` や画面の幅で判定しない。'
-  reason: タッチ操作の端末でホバーの状態が残り続けるのを防ぎつつ、タブレットにマウスをつないだ場合のように、ホバーできる入力がひとつでもあればホバーを有効にできるため。
-  note: '条件は `(any-hover: hover)` と値まで書かず、`(any-hover)` と書きます。値なしの `(any-hover)` は、値が `none` のときだけ偽になるので、`(any-hover: hover)` と同じ意味です。'
+  rule: 'ホバーのスタイルは、リンクなら `&:any-link:hover`、ボタンやフォームのコントロールなら `&:enabled:hover` のように操作できる状態に限定し、`@media (any-hover)` の中に書く。'
+  reason: '`href` のない現在のページのリンクや無効にしたボタンが押せるかのように反応するのと、タッチ操作の端末でホバーの状態が残り続けるのを防ぎつつ、タブレットにマウスをつないだ場合のように、ホバーできる入力がひとつでもあればホバーを有効にできるため。'
+  note: '条件は `(any-hover: hover)` と値まで書かず、`(any-hover)` と書きます。値なしの `(any-hover)` は、値が `none` のときだけ偽になるので、`(any-hover: hover)` と同じ意味です。`(hover: hover)` や画面の幅では判定しません。`<summary>` と `<label>` には無効の状態がないので、`:hover` に操作できる状態の条件を付けません。'
   aiProne: true
   page: interaction/states-and-focus
-  since: 0.1.0
+  since: 0.20.0
 
 - id: hover-with-focus-visible
   level: 必須
   rule: ホバーで変える見た目は、`:focus-visible` にも同じように指定する。
   reason: キーボードで操作するユーザーにも同じ手がかりを示せ、フォーカスリングが見えにくい場面の補いにもなるため。
   aiProne: true
-  page: interaction/states-and-focus
-  since: 0.1.0
-
-- id: hover-only-when-operable
-  level: 必須
-  rule: ホバーのスタイルは、`:any-link:hover` や `:enabled:hover` のように、操作できる状態に限定して書く。
-  reason: '`href` のないカレントのリンクや、無効にしたボタンが、押せるかのように反応するのを防ぐため。'
   page: interaction/states-and-focus
   since: 0.1.0
 

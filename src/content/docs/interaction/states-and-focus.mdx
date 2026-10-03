@@ -1,6 +1,6 @@
 ---
 title: "16-1 状態とフォーカスを表す"
-description: "ホバーのスタイルは@media (any-hover)の中に書き、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。"
+description: "ホバーのスタイルは操作できる状態に限り、@media (any-hover)の中に書いて、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。"
 sidebar:
   order: 1
 ---
@@ -12,7 +12,7 @@ import hoverHtml from '../../../demos/interaction/hover-focus/index.html?raw';
 import hoverCss from '../../../demos/interaction/hover-focus/style.css?raw';
 import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?raw';
 
-ホバーのスタイルは `@media (any-hover)` の中に書き、同じ見た目を `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
+ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書きます。同じ見た目は `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
 
 選択中や展開中といった状態は、`.is-active` のような状態クラスを使わず、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に検討して、セレクタにします。
 
@@ -76,11 +76,11 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 リングを描いても、フォーカスした要素が固定ヘッダーの下に隠れていては見えません。WCAG 2.2の達成基準2.4.11「隠されないフォーカス（最低限）」（レベルAA）は、キーボードでフォーカスを受けた要素が、制作者の置いたコンテンツで完全に隠れないことを求めています。本書では、ベーススタイルで `:focus` にも `scroll-margin-block-start` を指定して、この問題を防いでいます（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。スクロールする側に `scroll-padding-block-start` で余白を取る方法は、「[10-7 positionの基礎](/layout/positioning/)」で説明しています。
 
-ホバーは、操作できる状態の要素に限って反応させます。上の例では `:enabled:hover` と書いて、無効にしたボタンを除いています。リンクも同じで、`:any-link:hover` と書けば、`href` を持たない現在のページのリンクは反応しません。押せないものが押せそうに見えるのを防ぐためです。
+ホバーは、操作できる状態の要素に限って反応させます。ボタンやフォームのコントロールは、上の例のように `&:enabled:hover` と書いて、無効にしたものを除きます。リンクは `&:any-link:hover` と書けば、`href` を持たない現在のページのリンクが反応しません。押せないものが押せそうに見えるのを防ぐためです。`<summary>` と `<label>` には無効の状態がないので、条件を付けずに `&:hover` と書き、`@media (any-hover)` の中に入れます。
 
 なお、タッチスクリーンを持つノートパソコンでは、マウスもあるので `(any-hover)` が当てはまります。この環境では、指でタップしたときにホバーのスタイルが残ります。入力の方法を操作ごとに見分けたい場合は、JavaScriptのポインターイベントを併用するしかありません。
 
-`@media` は、`&:enabled:hover` のようなセレクタの中に書けます。セレクタの層には、@ルールを数えないからです（「[7-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」）。
+`@media` は、`&:enabled:hover` のようなセレクタの中に書けます。セレクタの層には、@ルールを数えないからです（「[7-4 ネストの書き方](/notation/nesting/)」）。
 
 ## キーボード操作とトランジション
 
@@ -164,7 +164,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 }
 ```
 
-条件には、`pointer` ではなく `any-pointer` を使います。使える入力にタッチ操作がひとつでもあれば、広いほうの大きさにするためです。`pointer` と `any-pointer` の違いは、「[12-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」で説明しています。
+条件には、`pointer` ではなく `any-pointer` を使います。使える入力にタッチ操作がひとつでもあれば、広いほうの大きさにするためです。`pointer` と `any-pointer` の違いは、「[12-4 メディアクエリ](/responsive/media-queries/)」で説明しています。
 
 ## ホバーの変化を透明度で表す方法
 
@@ -224,7 +224,7 @@ HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`
       border-color: currentColor;
     }
 
-    &:not([aria-selected="true"]):hover {
+    &:enabled:not([aria-selected="true"]):hover {
       @media (any-hover) {
         border-color: var(--border--base);
       }
@@ -235,7 +235,7 @@ HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`
 
 ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た目の状態が同じ属性から決まるので、両者がずれません。JavaScriptが属性の更新を忘れたら見た目も変わらないので、不具合にもすぐ気づけます。私は2020年ごろから、状態の管理は原則としてARIA属性とdata属性で行うと決めています。
 
-子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は、第3章「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
+子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は、第3章「[3-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
 
 フォーカスを受けた子に応じて親の見た目を変えるときは、`:focus-within` と `:has(:focus-visible)` を使い分けます。`:focus-within` は、子孫のどれかが `:focus` に当てはまれば当てはまるので、ボタンをマウスでクリックしたときにも親が強調されます（MDN）。子のどれかにフォーカスした時点でグループ全体を強調してよいなら、これで足ります。ブラウザがフォーカスの表示を必要と判断する場合だけ親を強調したいなら、`&:has(:focus-visible)` と書きます。
 

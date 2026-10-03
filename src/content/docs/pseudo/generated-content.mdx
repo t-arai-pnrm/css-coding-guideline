@@ -1,8 +1,8 @@
 ---
-title: "3-7 生成コンテンツと装飾の擬似要素"
+title: "3-8 生成コンテンツと装飾の擬似要素"
 description: "::beforeと::afterには装飾だけを入れ、必須の印や単位のように意味のある文字はHTMLに書きます。装飾の記号は代替テキストを空にし、::markerにはcolorとfont-sizeだけを、::selectionには文字と背景の両方の色を指定します。"
 sidebar:
-  order: 7
+  order: 8
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -137,7 +137,7 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 
 `::first-line` が選ぶ範囲は、要素の幅と文字の大きさで決まります。幅の狭い画面では、同じ段落でも1行に入る文字が減り、太字になる範囲も短くなります。1行目だけを要約として目立たせるような、範囲に意味を持たせる使い方はできません。使うとしても、どこで区切れても意味が変わらない装飾にとどめます。{/* 要確認: 出典なし */}最初の文字を数行分の高さに沈める `initial-letter` は、本書では扱いません。2026年10月の時点で接頭辞なしの `initial-letter` に対応しているのはChrome系のブラウザだけで、Safariは接頭辞付きの `-webkit-initial-letter` だけに対応しています。
 
-フォームの部品に付いた擬似要素のうち、入力欄の例文を選ぶ `::placeholder` と、ファイルの選択ボタンを選ぶ `::file-selector-button` は、「[3-5 フォームの状態を表す擬似クラス](/pseudo/form-states/)」で扱います。
+フォームの部品に付いた擬似要素のうち、入力欄の例文を選ぶ `::placeholder` と、ファイルの選択ボタンを選ぶ `::file-selector-button` は、「[3-6 フォームの状態を表す擬似クラス](/pseudo/form-states/)」で扱います。
 
 ## ガイドライン
 

@@ -33,10 +33,19 @@
   level: 推奨
   rule: '`box-sizing` はベーススタイル（kiso.css）の全称セレクタで `border-box` にそろえ、コンポーネントで `box-sizing: border-box` を書き足さない。'
   reason: '`inline-size` に指定した値が `border` までを含んだ幅になり、`padding` や `border` を変えても幅の計算を直さずに済むため。全称セレクタで指定済みなら、コンポーネントでの指定は何も変えない。'
-  note: '内容の幅を固定したい要素（`max-inline-size` で本文の幅を決め、左右の `padding` だけを変えたい要素など）に限り、`box-sizing: content-box` に戻します。'
+  note: '内容の幅を固定したい要素（`max-inline-size` で本文の幅を決め、左右の `padding` だけを変えたい要素など）に限り、`box-sizing: unset` で初期値の `content-box` に戻します（ルール `unset-box-sizing-for-content-max-width`）。'
   aiProne: true
   page: layout/box-model
   since: 0.5.0
+
+- id: unset-box-sizing-for-content-max-width
+  level: 推奨
+  rule: '画面幅いっぱいに広げる子要素を持たない要素を、最大幅と左右の `padding` で中央に寄せ、内容の幅を最大幅にそろえるときは、`calc()` で最大幅に `padding` を足さず、`box-sizing: unset` で `content-box` に戻す。'
+  reason: '`max-inline-size` が内容の領域の幅を指すようになり、`padding` の値を変えても最大幅の式を直さずに済むため。'
+  note: '`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。`content-box` と書かずに `unset` と書くのは、ベーススタイルの `border-box` を取り消す意図を示すためです。画面幅いっぱいに広げる子要素が混ざるなら、余白の列を持つ Grid で組みます（10-9 のルール `gutter-columns-for-content-width`）。'
+  aiProne: true
+  page: layout/box-model
+  since: 0.20.0
 
 - id: box-fit-content-over-display-change
   level: 推奨
@@ -79,7 +88,7 @@
   level: 推奨
   rule: 'Flexbox のアイテムを中身にかかわらず比率で分けるときは `flex: 1` のように `flex-basis` も0にし、中身の大きさに余りを足して伸ばすときは `flex-grow` だけを指定して、2つを区別する。'
   reason: '`flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと中身の大きさの差が残り、同じ値を指定しても同じ幅にならないため。'
-  note: '`flex: 1` は `1 1 0` に展開されます。`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（第1章のルール `longhand-for-partial-change`）。列の幅を厳密にそろえるなら、Grid で列を決めます。'
+  note: '`flex: 1` は `flex-basis` を `0%` にします（仕様の定義は `1 1 0` ですが、ブラウザの算出値は `0%` です）。高さの決まっていない縦の Flexbox で0を起点にするなら、`flex: 1 1 0` と書きます。`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（第1章のルール `longhand-for-partial-change`）。アイテムの `padding` や `border` が違うと `flex: 1` でも幅はそろわないので、列の幅を確実にそろえるなら Grid で列を決めます。'
   aiProne: true
   page: layout/flexbox-basics
   since: 0.5.0
@@ -378,7 +387,7 @@
   level: 推奨
   rule: ページのコンテンツの最大幅と画面の端の余白は、グリッドの左右に余白の列（ガター）を作って決める。
   reason: 画面幅いっぱいに広げたい要素を、ガターの列まで広げるだけで作れるため。
-  note: 第11章のコンポジション `primary-layout` は、この形を部品にしたものです。
+  note: '第11章のコンポジション `primary-layout` は、この形を部品にしたものです。画面幅いっぱいに広げる子要素がない1つの要素なら、`box-sizing: unset` と `padding` で書けます（10-3 のルール `unset-box-sizing-for-content-max-width`）。'
   page: layout/spacing
   since: 0.1.0
 

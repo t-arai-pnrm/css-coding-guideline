@@ -1,12 +1,12 @@
 ---
 title: "第7章 記法の規約"
-description: クラス名の付け方、ネストと宣言の並び順、ネストの判断基準、モダンな記法、コメントの書き方、名前に使う語、論理プロパティと物理プロパティの使い分けをまとめた章です。
+description: クラス名の付け方と名前に使う語、@scope とネストの使い分け、ネストの書き方と判断基準、プロパティの並び順、モダンな記法、論理プロパティと物理プロパティの使い分け、コメントの書き方をまとめた章です。
 sidebar:
   label: "概要"
   order: 0
 ---
 
-第7章は、CSSの「書き方」の規約をまとめた章です。クラス名の付け方、ネストの深さと宣言の並び順、何をネストするかの判断、新しい記法への統一、コメントの書き方、名前に使う語の意味を定めます。どれも表示の結果を変えませんが、そろっていないと、コードを読むたびに書いた人の癖を読み解くことになります。
+第7章は、CSSの「書き方」の規約をまとめた章です。クラス名の付け方と名前に使う語の意味、`@scope` とネストの分担、ネストの深さと何をネストするかの判断、宣言の並び順、新しい記法への統一、コメントの書き方を定めます。どれも表示の結果を変えませんが、そろっていないと、コードを読むたびに書いた人の癖を読み解くことになります。
 
 規約は、ツールで検査できる形にします。宣言の並び順や `display` の書き方は、機械的に判断できます。こうしたものはStylelintに任せ、人はレビューで命名や設計の判断に集中します。この章の規約の多くは、本書のStylelintの設定で検出できます。
 
@@ -14,17 +14,19 @@ sidebar:
 
 命名も、何度か変えてきました。ブログではPascalCaseのBEMを使い、テンプレートでは `scoped PascalCase` の形を経て、現在は `scoped kebab-case` の形に落ち着いています。この章では、いちばん新しい書き方を紹介します。
 
-節は次の7つです。
+節は次の9つです。
 
 - [7-1 命名規則](/notation/naming/)：5種類のクラス名を見分ける接頭辞と、自分で付ける名前の `--`
-- [7-2 ネストとプロパティの並び順](/notation/nesting-and-order/)：セレクタは2層までのネスト、セレクタの中に書く条件付きのアットルール、宣言の並び順
-- [7-3 ネストの判断基準](/notation/nesting-criteria/)：ネストしてよい関係、直下の子に書く宣言、`&` の詳細度とセレクタリスト、ネストしたルールの後ろの宣言
-- [7-4 モダンな記法にそろえる](/notation/modern-syntax/)：論理プロパティへの統一、`display` の2値構文、個別の変形プロパティ、色の関数の書き方
-- [7-5 論理プロパティと論理値](/notation/logical-properties/)：論理プロパティを使う理由、物理でしか書けないものとの混在、`margin-inline` を左右の余白として扱うこと、右から左へ書く言語と縦書きでの振る舞い
-- [7-6 コメントの書き方](/notation/comments/)：ファイル先頭の説明ブロックと、「なぜ」だけを書くコメント
-- [7-7 名前に使う語](/notation/terminology/)：`inner` と `outer`、`gutter` と `gap`、`link` と `button`、`navigation` と `menu` のような語の意味と使い分け、省略語と数字の扱い
+- [7-2 名前に使う語](/notation/terminology/)：`inner` と `outer`、`gutter` と `gap`、`link` と `button`、`navigation` と `menu` のような語の意味と使い分け、省略語と数字の扱い
+- [7-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)：BEMのBlockとElementを `@scope` で、Modifierをネストで表す分担と、スコープの下限を `.scoped` にする理由
+- [7-4 ネストの書き方](/notation/nesting/)：セレクタは2層までのネスト、主語のルールの中に書く自身の状態、セレクタの中に書く条件付きのアットルール
+- [7-5 ネストの判断基準](/notation/nesting-criteria/)：ネストしてよい関係、直下の子に書く宣言、`&` の詳細度とセレクタリスト、ネストしたルールの後ろの宣言
+- [7-6 プロパティの並び順](/notation/property-order/)：ルールの中の並びと、taks-stylelint-orderによる宣言の並び順
+- [7-7 モダンな記法にそろえる](/notation/modern-syntax/)：論理プロパティへの統一、`display` の2値構文、個別の変形プロパティ、色の関数の書き方
+- [7-8 論理プロパティと論理値](/notation/logical-properties/)：論理プロパティを使う理由、物理でしか書けないものとの混在、`margin-inline` を左右の余白として扱うこと、右から左へ書く言語と縦書きでの振る舞い
+- [7-9 コメントの書き方](/notation/comments/)：ファイル先頭の説明ブロックと、「なぜ」だけを書くコメント
 
-コード例で使っている `@scope` は、第2章の「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。カスタムプロパティの名前の付け方は第8章の「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」、コンテナの名前とクエリの範囲構文は[第12章「レスポンシブデザイン」](/responsive/)で扱います。Stylelintの設定の運用は、「[18-1 Stylelintでルールを守る](/operations/stylelint/)」で説明します。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。
+コード例で使っている `@scope` とネストの仕組みは、第2章の「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」と「[2-5 CSSネストの基礎](/cascade/nesting/)」で説明しています。カスタムプロパティの名前の付け方は第8章の「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」、コンテナの名前とクエリの範囲構文は[第12章「レスポンシブデザイン」](/responsive/)で扱います。Stylelintの設定の運用は、「[18-1 Stylelintでルールを守る](/operations/stylelint/)」で説明します。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。
 
 ## 最初に押さえるルール
 
@@ -33,7 +35,7 @@ sidebar:
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
 - [`child-class-underscore`](/notation/naming/#rule-child-class-underscore)：コンポーネントの子要素のクラス名は、`._title` のように `_` で始まるkebab-caseにします。
-- [`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation)：`&__title` のように、`&` に文字をつなげてクラス名を作りません。
-- [`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules)：`@media` と `@container` は、`@scope` やファイルの直下ではなく各セレクタの中に書きます。
+- [`no-nesting-concatenation`](/notation/nesting/#rule-no-nesting-concatenation)：`&__title` のように、`&` に文字をつなげてクラス名を作りません。
+- [`conditions-inside-rules`](/notation/nesting/#rule-conditions-inside-rules)：`@media` と `@container` は、`@scope` やファイルの直下ではなく各セレクタの中に書きます。
 - [`display-two-value-syntax`](/notation/modern-syntax/#rule-display-two-value-syntax)：`display` は `block flex` のような2値構文で書きます。
 - [`comments-why-only`](/notation/comments/#rule-comments-why-only)：コードの途中のコメントには「なぜそう書くのか」と「なぜ別の書き方をしないのか」だけを書き、何をしているかは書きません。

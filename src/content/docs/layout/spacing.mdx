@@ -82,7 +82,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 ```css title="🙆‍♂ Recommended: 余白を、高さを指定した空のセルの行で作る"
 @scope (.scoped.contact-section) to (.scoped) {
   :scope {
-    container: --contact-section / inline-size;
+    container: --scoped / inline-size;
   }
 
   ._layout {
@@ -95,7 +95,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
       "." 16px
       "--contact-link";
 
-    @container --contact-section (inline-size >= calc(560 / 16 * 1rem)) {
+    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
       grid-template:
         "--heading"
         "." 48px
@@ -179,7 +179,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 中央の列は、最大で1140px相当の幅になり、画面が狭いときも左右にガターの分だけ余白が残ります。子要素は、デフォルトでは中央の列に置かれ、`._banner` だけが左右の余白の列まで広がって、画面幅いっぱいに表示されます。列の境界の線にも `--full-start` のように名前を付けておくと、子要素の側は `--content` や `--full` という名前だけで置き場所を選べます。
 
-最大幅と左右の `padding` で同じことをしようとすると、`box-sizing: border-box` の環境では、最大幅から `padding` の分だけコンテンツが狭くなります。そこで「最大幅に左右の `padding` を足す」という計算をしがちですが、余白の列を使えば、中央の列の最大幅がそのままコンテンツの幅になります。どうしても `padding` で書くなら、その要素だけ `box-sizing: revert` で `content-box` に戻せば、足し算は要りません。
+最大幅と左右の `padding` で同じことをしようとすると、`box-sizing: border-box` の環境では、最大幅から `padding` の分だけコンテンツが狭くなります。そこで「最大幅に左右の `padding` を足す」という計算をしがちですが、余白の列を使えば、中央の列の最大幅がそのままコンテンツの幅になります。画面幅いっぱいに広げる子要素がない1つの要素なら、その要素だけ `box-sizing: unset` で `content-box` に戻せば、`padding` で書いても足し算は要りません（「[10-3 ボックスモデルの基礎](/layout/box-model/#rule-unset-box-sizing-for-content-max-width)」）。
 
 1つのセクションだけなら、`margin-inline: auto` のほうが簡潔かもしれません。この方法が有効なのは、コンテンツの幅に収まる要素と、画面幅いっぱいに広げたい要素が混在する場合です。ビューポートの単位を使った負の `margin` で要素を広げる必要がなくなります。画面幅いっぱいに広げるほかの方法は「[10-11 重なりと全幅](/layout/layering/)」で比べます。第11章のコンポジション `primary-layout` は、この形に「少し狭い」「少し広い」などの列を加えて部品にしたものです。
 

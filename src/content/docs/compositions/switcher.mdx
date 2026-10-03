@@ -1,6 +1,6 @@
 ---
 title: "11-4 switcher：n列と1列を幅で切り替える"
-description: "switcher は、要素の幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にするコンポジションです。閾値の判定は sign() で行い、メディアクエリもコンテナクエリも使いません。"
+description: "switcher は、要素の幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にするコンポジションです。閾値の判定は sign() で行い、メディアクエリもコンテナサイズクエリも使いません。"
 sidebar:
   order: 4
 ---
@@ -112,7 +112,7 @@ import switcherCss from '../../../demos/compositions/switcher/style.css?raw';
 
 `--_c--threshold` は、列の最小幅で指定の列数を並べたときに必要な幅です。列が3つなら隙間は2つなので、「列の最小幅×列数＋列の間隔×（列数−1）」になります。デフォルトの3列・320px相当に、列の間隔として24px相当を渡すと、320×3＋24×2で1008px相当です。
 
-閾値に列の間隔を含めているので、間隔を変えると閾値も変わります。間隔を広げたのに切り替わる幅が変わらなければ、閾値ちょうどの幅で列が最小幅を割り込みます。閾値を式で書いておけば、値を変えても「列の最小幅が守られる」という条件が保たれます。クエリの閾値を式で書く考え方は「[12-3 メディアクエリとブレイクポイント](/responsive/media-queries/#rule-threshold-as-formula)」で説明しています。
+閾値に列の間隔を含めているので、間隔を変えると閾値も変わります。間隔を広げたのに切り替わる幅が変わらなければ、閾値ちょうどの幅で列が最小幅を割り込みます。閾値を式で書いておけば、値を変えても「列の最小幅が守られる」という条件が保たれます。クエリの閾値を式で書く考え方は「[12-2 ブレイクポイントの決め方](/responsive/breakpoints/#rule-threshold-as-formula)」で説明しています。
 
 ### 列の幅の目安：`--_c--column-preferred-width`
 
@@ -194,31 +194,31 @@ import switcherCss from '../../../demos/compositions/switcher/style.css?raw';
 
 [`cluster`](/compositions/cluster/)は、子の幅を中身の大きさで決めて、入りきらなければ折り返します。タグやボタンのように幅が中身で決まる要素は `cluster` に、列の幅をそろえたい要素は `switcher` か `grid` に任せます。
 
-### コンテナクエリで書く場合との比較
+### コンテナサイズクエリで書く場合との比較
 
-同じ切り替えは、コンテナクエリでも書けます。ただし、要素は自分自身をコンテナにして判定できないので、親にコンテナを指定し、子の `grid-template-columns` を条件で切り替える形になります。
+同じ切り替えは、コンテナサイズクエリでも書けます。ただし、要素は自分自身をコンテナにして判定できないので、親にコンテナを指定し、子の `grid-template-columns` を条件で切り替える形になります。
 
-```css title="🙅‍♂ Not Recommended: 列数の切り替えだけのためにコンテナクエリを書く"
+```css title="🙅‍♂ Not Recommended: 列数の切り替えだけのためにコンテナサイズクエリを書く"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.feature-list) to (.scoped) {
   :scope {
-    container: --feature-list / inline-size;
+    container: --scoped / inline-size;
   }
 
   ._items {
     display: block grid;
     gap: 24px;
 
-    @container --feature-list (inline-size >= calc(1008 / 16 * 1rem)) {
+    @container --scoped (inline-size >= calc(1008 / 16 * 1rem)) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 }
 ```
 
-この書き方では、閾値を固定の値で書くしかありません。`@container` の条件の中では `var()` を使えないので（「[12-3 メディアクエリとブレイクポイント](/responsive/media-queries/#rule-no-var-in-query)」のルール）、列数や間隔を変えるたびに、閾値を計算し直して書き換えることになります。コンテナにした要素は幅を中身から決められなくなるという副作用もあり、コンポーネントごとにコンテナの名前を用意する手間もかかります。
+この書き方では、閾値を固定の値で書くしかありません。`@container` の条件の中では `var()` を使えないので（「[12-2 ブレイクポイントの決め方](/responsive/breakpoints/#rule-no-var-in-query)」のルール）、列数や間隔を変えるたびに、閾値を計算し直して書き換えることになります。コンテナにした要素は幅を中身から決められなくなるという副作用もあり、コンポーネントごとにコンテナの名前を用意する手間もかかります。
 
-`switcher` は閾値をカスタムプロパティの式で持つので、`style` 属性で列数や間隔を変えると、閾値も計算し直されます。列数の切り替えだけならコンテナクエリは要りません。コンテナクエリは、画像と本文の位置関係まで組み替えたいときに検討します（「[12-2 コンテナクエリ](/responsive/container-queries/)」）。
+`switcher` は閾値をカスタムプロパティの式で持つので、`style` 属性で列数や間隔を変えると、閾値も計算し直されます。列数の切り替えだけならコンテナサイズクエリは要りません。コンテナサイズクエリは、画像と本文の位置関係まで組み替えたいときに検討します（「[12-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
 
 ### はみ出しと置き場所
 

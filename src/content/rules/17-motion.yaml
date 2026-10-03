@@ -149,12 +149,21 @@
 # 17-6 スクロールに合わせて動かす
 - id: scroll-linked-method
   level: 推奨
-  rule: スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `IntersectionObserver` で属性を切り替えて作り、`scroll` イベントで毎回位置を計算しない。
+  rule: スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `view()` のタイムラインで切り替えたカスタムプロパティを `@container style()` で問い合わせて作り、`scroll` イベントで毎回位置を計算しない。
   reason: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
-  note: '1回だけ動かす演出をCSSだけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しているので、まだ `IntersectionObserver` を基本にします。'
+  note: 'Firefox でも演出を出したい場合と、スクロールを戻しても再生を途中で止めたくない場合は、`IntersectionObserver` で属性を切り替えます。1回だけ動かす演出を CSS だけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しています。'
   aiProne: true
   page: motion/scroll-driven
   since: 0.1.0
+
+- id: reveal-once-with-style-query
+  level: 推奨
+  rule: '画面に入ったら1回だけ再生する演出は、ルートの `view()` のタイムラインで登録していないカスタムプロパティを `false` から `true` に切り替え、子の一時停止したアニメーションを `@container style(--_in-view: true)` の中で `running` にし、全体を `@supports (animation-timeline: view())` で囲む。'
+  reason: 見た目の変化を時間で進むアニメーションで再生するので、スクロールを止めた位置で途中のまま残らず、スクロール駆動アニメーションに対応していない環境では演出なしで内容を表示できるため。
+  note: '登録していないカスタムプロパティは、キーフレームの50%の時点で切り替わるので、`animation-timing-function: linear` なら範囲の中間（`entry 0% entry 60%` なら `entry 30%`）で再生が始まります。範囲を過ぎても値を残すために `animation-fill-mode: both` を指定します。スタイルクエリは自分の値を問い合わせられないので、切り替える要素と再生する要素を分けます。範囲より手前まで戻すと一時停止し、再生の途中なら、その位置で止まります。'
+  aiProne: true
+  page: motion/scroll-driven
+  since: 0.20.0
 
 - id: scroll-animation-explicit-range
   level: 推奨

@@ -1,0 +1,89 @@
+@layer tokens {
+  :root {
+    --duration--reveal: 600ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --color--neutral--400: oklch(70.8% 0 0deg);
+  }
+}
+
+@keyframes --fade-in {
+  from {
+    opacity: var(--fade-in--from-value, 0);
+  }
+}
+
+@keyframes --translate-from {
+  from {
+    translate: var(--translate-from--x-value, 0) var(--translate-from--y-value, 0);
+  }
+}
+
+/* 登録していないカスタムプロパティは、キーフレームの50%の時点で値が切り替わる */
+@keyframes --reveal-card--in-view {
+  from {
+    --_in-view: false;
+  }
+
+  to {
+    --_in-view: true;
+  }
+}
+
+@layer pages {
+  @scope (.scoped.reveal-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 240px;
+      padding: 16px;
+      padding-block-end: 160px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.reveal-card) to (.scoped) {
+    /* ルートはきっかけを作るだけで、自分は動かない */
+    :scope {
+      --_in-view: false;
+
+      @supports (animation-timeline: view()) {
+        animation-name: --reveal-card--in-view;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+
+    ._body {
+      --translate-from--y-value: 24px;
+
+      display: block grid;
+      gap: 8px;
+      padding: 24px;
+      border: 1px solid var(--color--neutral--400);
+      border-radius: 8px;
+
+      @supports (animation-timeline: view()) {
+        animation-name: --fade-in;
+        animation-duration: var(--duration--reveal);
+        animation-timing-function: var(--ease--out-quint);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+
+        /* いちばん近い祖先（ルート）の --_in-view を問い合わせる */
+        @container style(--_in-view: true) {
+          animation-play-state: running;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+          animation-name: --fade-in, --translate-from;
+        }
+      }
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+  }
+}

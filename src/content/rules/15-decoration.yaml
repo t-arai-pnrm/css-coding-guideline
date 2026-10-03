@@ -164,6 +164,15 @@
   page: decoration/outlines
   since: 0.5.0
 
+- id: gradient-border-method
+  level: 推奨
+  rule: 'グラデーションの枠線は `background-clip: border-area` で描いて未対応の環境では単色の枠線に戻し、どの環境でもグラデーションが必要なときだけ、擬似要素の透明な枠線にグラデーションを敷いて `mask-composite: exclude` で内側をくり抜く。'
+  reason: '`border-area` なら2つの宣言で描けて形がコードから読み取れ、装飾の枠線は単色でも境界を示せるため。'
+  note: 'マスクの書き方では、ルートに `position: relative` と `isolation: isolate` を指定し、擬似要素を `z-index: var(--z--backwards)` で背面に回して、ルートの `padding` に枠線の太さを足します。`contain: content` でも配置の基準とスタッキングコンテキストは作れますが、はみ出した子孫の影やポップアップが切り取られます。'
+  aiProne: true
+  page: decoration/outlines
+  since: 0.20.0
+
 - id: shape-function-with-custom-properties
   level: 推奨
   rule: '`clip-path: shape()` の座標は、半径などをカスタムプロパティに入れて、そこから計算する。'

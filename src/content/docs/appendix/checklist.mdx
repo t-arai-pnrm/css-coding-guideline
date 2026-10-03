@@ -35,12 +35,12 @@ sidebar:
 
 ### 命名とスコープ
 
-- [ ] コンポーネントのルートに `scoped` クラスを付け、スタイルを `@scope (.scoped.<名前>) to (.scoped)` の中に書いているか（[`scoped-class-on-root`](/cascade/scope/#rule-scoped-class-on-root)、[`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)）
+- [ ] コンポーネントのルートに `scoped` クラスを付け、スタイルを `@scope (.scoped.<名前>) to (.scoped)` の中に書いているか（[`scoped-class-on-root`](/notation/scope-and-nesting/#rule-scoped-class-on-root)、[`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)）
 - [ ] 子要素は `._`、ユーティリティは `.-` で始め、コンポジションとパターンは接頭辞なしにしているか（[`child-class-underscore`](/notation/naming/#rule-child-class-underscore)、[`utility-class-hyphen`](/notation/naming/#rule-utility-class-hyphen)、[`composition-class-plain`](/notation/naming/#rule-composition-class-plain)）
 - [ ] 名前が、見た目ではなく役割を表しているか。コンポジションは配置の名前、パターンは役割の名前にしているか（[`name-by-role`](/notation/naming/#rule-name-by-role)）
 - [ ] `container` や `button` のような語を、別の意味の名前に使っていないか（[`no-redefining-web-terms`](/notation/naming/#rule-no-redefining-web-terms)）
 - [ ] `wrapper` や `module` のように、責務を表さない名前を使っていないか（[`no-vague-names`](/notation/naming/#rule-no-vague-names)）
-- [ ] `@keyframes`、グリッドのエリア、アンカー、コンテナの名前を `--` で始めているか（[`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names)、[`container-name-dashed-ident`](/responsive/container-queries/#rule-container-name-dashed-ident)）
+- [ ] `@keyframes`、グリッドのエリア、アンカー、コンテナの名前を `--` で始めているか（[`dashed-ident-names`](/notation/naming/#rule-dashed-ident-names)、[`container-name-dashed-ident`](/responsive/container-size-queries/#rule-container-name-dashed-ident)）
 
 ### カスケードとセレクタ
 
@@ -55,10 +55,10 @@ sidebar:
 
 ### ネストと記法
 
-- [ ] セレクタのネストが2層までで、ネストしたセレクタが `&` で始まっているか（[`nesting-depth-one`](/notation/nesting-and-order/#rule-nesting-depth-one)、[`nested-selector-ampersand`](/notation/nesting-and-order/#rule-nested-selector-ampersand)）
-- [ ] 要素自身の擬似クラス・擬似要素・属性の状態を、`[popover]:popover-open` のように主語へ連結せず、`&:popover-open` とネストしているか（[`nest-own-states`](/notation/nesting-and-order/#rule-nest-own-states)）
-- [ ] `&__title` のように、`&` に文字をつなげていないか（[`no-nesting-concatenation`](/notation/nesting-and-order/#rule-no-nesting-concatenation)）
-- [ ] `@media`、`@container`、`@supports` を、各セレクタの中に書いているか（[`conditions-inside-rules`](/notation/nesting-and-order/#rule-conditions-inside-rules)）
+- [ ] セレクタのネストが2層までで、ネストしたセレクタが `&` で始まっているか（[`nesting-depth-one`](/notation/nesting/#rule-nesting-depth-one)、[`nested-selector-ampersand`](/notation/nesting/#rule-nested-selector-ampersand)）
+- [ ] 要素自身の擬似クラス・擬似要素・属性の状態を、`[popover]:popover-open` のように主語へ連結せず、`&:popover-open` とネストしているか（[`nest-own-states`](/notation/nesting/#rule-nest-own-states)）
+- [ ] `&__title` のように、`&` に文字をつなげていないか（[`no-nesting-concatenation`](/notation/nesting/#rule-no-nesting-concatenation)）
+- [ ] `@media`、`@container`、`@supports` を、各セレクタの中に書いているか（[`conditions-inside-rules`](/notation/nesting/#rule-conditions-inside-rules)）
 - [ ] 直下の子へのネストに、親のレイアウトで意味が決まる宣言だけを書いているか（[`nest-child-placement-only`](/notation/nesting-criteria/#rule-nest-child-placement-only)）
 - [ ] 詳細度の違うセレクタリストの中で、セレクタをネストしていないか（[`no-nesting-under-selector-list`](/notation/nesting-criteria/#rule-no-nesting-under-selector-list)）
 - [ ] 寸法、余白、位置を論理プロパティで書いているか（[`logical-properties`](/notation/logical-properties/#rule-logical-properties)）
@@ -124,7 +124,7 @@ sidebar:
 - [ ] `minmax()` や `min-inline-size` の固定の最小値を、`min(100%, …)` で包んでいるか（[`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent)）
 - [ ] 列を `1fr` ではなく `minmax(0, 1fr)` で分けているか（[`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr)）
 - [ ] 要素の数が変わるFlexboxに `flex-wrap: wrap` を指定しているか（[`flex-wrap-for-variable-items`](/layout/defensive/#rule-flex-wrap-for-variable-items)）
-- [ ] 列数を子要素の数ではなく、`auto-fit` やコンテナクエリで切り替えているか（[`quantity-query-for-count-conditions`](/pseudo/quantity-queries/#rule-quantity-query-for-count-conditions)）
+- [ ] 列数を子要素の数ではなく、`auto-fit` やコンテナサイズクエリで切り替えているか（[`quantity-query-for-count-conditions`](/pseudo/quantity-queries/#rule-quantity-query-for-count-conditions)）
 - [ ] 理由のない `white-space: nowrap` がないか（[`no-nowrap-without-reason`](/layout/defensive/#rule-no-nowrap-without-reason)）
 - [ ] はみ出しを切り取るのに、`hidden` ではなく `clip` を使っているか（[`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)）
 - [ ] 横スクロールを隠す前に、はみ出している要素を特定して直したか（[`find-overflow-source-first`](/layout/defensive/#rule-find-overflow-source-first)）
@@ -147,14 +147,14 @@ sidebar:
 
 ## 8. レスポンシブ
 
-- [ ] 「静的 → イントリンシック → コンテナクエリ → メディアクエリ」の順に検討し、不要なクエリを書いていないか（[`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)）
+- [ ] 「静的 → イントリンシック → コンテナサイズクエリ → メディアクエリ」の順に検討し、不要なクエリを書いていないか（[`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)）
 - [ ] タグやアイコンのような固定サイズの要素を、レスポンシブにしていないか（[`no-responsive-for-static-elements`](/responsive/escalation/#rule-no-responsive-for-static-elements)）
-- [ ] コンテナに名前を付け、条件を `inline-size` で書いているか（[`container-name-required`](/responsive/container-queries/#rule-container-name-required)、[`container-query-inline-size`](/responsive/container-queries/#rule-container-query-inline-size)）
-- [ ] `cqi` を、名前付きのコンテナがあると言い切れる要素でだけ使っているか（[`cqi-needs-named-container`](/responsive/container-queries/#rule-cqi-needs-named-container)）
-- [ ] クエリの条件を範囲構文で書き、ブレイクポイントをremの式にしているか（[`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)、[`breakpoint-in-rem`](/responsive/media-queries/#rule-breakpoint-in-rem)）
-- [ ] ブレイクポイントを、デバイスの幅ではなくレイアウトが崩れる幅から決めているか（[`breakpoint-from-content`](/responsive/media-queries/#rule-breakpoint-from-content)）
-- [ ] `sp` や `pc` のようなデバイスの名前を使っていないか（[`no-device-names`](/responsive/media-queries/#rule-no-device-names)）
-- [ ] メディアクエリの条件と、コンテナクエリのサイズの条件の中で `var()` を使っていないか（[`no-var-in-query`](/responsive/media-queries/#rule-no-var-in-query)）
+- [ ] コンテナに名前を付け、条件を `inline-size` で書いているか（[`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)、[`container-query-inline-size`](/responsive/container-size-queries/#rule-container-query-inline-size)）
+- [ ] `cqi` を、名前付きのコンテナがあると言い切れる要素でだけ使っているか（[`cqi-needs-named-container`](/responsive/container-size-queries/#rule-cqi-needs-named-container)）
+- [ ] クエリの条件を範囲構文で書き、ブレイクポイントをremの式にしているか（[`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)、[`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem)）
+- [ ] ブレイクポイントを、デバイスの幅ではなくレイアウトが崩れる幅から決めているか（[`breakpoint-from-content`](/responsive/breakpoints/#rule-breakpoint-from-content)）
+- [ ] `sp` や `pc` のようなデバイスの名前を使っていないか（[`no-device-names`](/responsive/breakpoints/#rule-no-device-names)）
+- [ ] メディアクエリの条件と、コンテナクエリのサイズの条件の中で `var()` を使っていないか（[`no-var-in-query`](/responsive/breakpoints/#rule-no-var-in-query)）
 - [ ] `vw` や `vh` を使っていないか（[`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)）
 
 ## 9. コメント
@@ -168,7 +168,7 @@ sidebar:
 
 次の項目は、確認の順番の9つには含まれていません。しかし、使いやすさやアクセシビリティを損なうものは `MUST` の対象です。関係するスタイルがあれば、あわせて確かめます。
 
-- [ ] ホバーを `@media (any-hover)` の中に書き、`:focus-visible` にも同じ見た目を指定しているか（[`hover-inside-any-hover`](/interaction/states-and-focus/#rule-hover-inside-any-hover)、[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
+- [ ] ホバーを `&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書いているか（[`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)）。`:focus-visible` にも同じ見た目を指定しているか（[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
 - [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
 - [ ] 動きに目的があり、高い頻度で触るUIに装飾的な動きを足していないか（[`motion-needs-purpose`](/motion/purpose/#rule-motion-needs-purpose)）
 - [ ] 装飾的な動きのうちフェード以外を `@media (prefers-reduced-motion: no-preference)` の中で指定し、大きな変動を動きを減らす設定で簡素化しているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして確かめたか（[`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)）
@@ -193,7 +193,9 @@ sidebar:
 
 AIが生成したCSSでは、Stylelintで検出できない誤りが残りやすくなります。付録A「[ルール一覧](/appendix/rules/)」のうち、AIが誤りやすい印の付いたルールを重点的に確かめます。よく見かける古い書き方と置き換え先は、付録B「[モダンな書き方への置き換え表](/appendix/modernize/)」にまとめています。
 
-- [ ] 名前のないコンテナや、コンテナにした要素そのものを条件にしたクエリがないか（[`container-name-required`](/responsive/container-queries/#rule-container-name-required)）
+- [ ] 名前のないコンテナや、コンテナにした要素そのものを条件にしたクエリがないか（[`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)）
+- [ ] ブレイクポイントが `768px` のような慣習の値ではなく、レイアウトが成り立つ条件から決めた値になっているか（[`breakpoint-from-content`](/responsive/breakpoints/#rule-breakpoint-from-content)、[`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)）
+- [ ] 閾値の式が「列の最小幅×列数」で終わらず、列数から決まる隙間（`gap`）の数や、`padding` と `border` まで含んでいるか（[`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)）
 - [ ] 何にでも付いた `width: 100%` や、中央寄せの `margin: 0 auto` がないか（[`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100)、[`margin-inline-auto-centering`](/principles/maintainability/#rule-margin-inline-auto-centering)）
 - [ ] 上書きが効かない原因を調べずに足した `!important` がないか（[`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)）
 - [ ] `._list` や `._link` のように、要素の種類を言い換えただけの子クラスをすべての要素に付けていないか（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）

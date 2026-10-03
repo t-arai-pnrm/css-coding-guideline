@@ -1,7 +1,7 @@
 @layer components {
   @scope (.scoped.contact-section) to (.scoped) {
     :scope {
-      container: --contact-section / inline-size;
+      container: --scoped / inline-size;
       border-radius: 8px;
       background-color: oklch(96% 0.01 250deg);
     }
@@ -21,7 +21,7 @@
       padding-inline: 16px;
 
       /* 広い場所では、余白の行の高さだけを変える */
-      @container --contact-section (inline-size >= calc(560 / 16 * 1rem)) {
+      @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
         grid-template:
           "--heading"
           "." 48px

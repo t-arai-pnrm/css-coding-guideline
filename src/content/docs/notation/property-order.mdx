@@ -1,0 +1,104 @@
+---
+title: "7-6 プロパティの並び順"
+description: ルールの中は、カスタムプロパティ、宣言、条件付きのアットルール、ネストしたルールの順に書きます。宣言の並び順は taks-stylelint-order に従い、人が覚えずに Stylelint の自動修正で並べ替えます。
+sidebar:
+  order: 6
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+宣言の並び順は、著者が公開しているStylelintの設定、taks-stylelint-orderに従います。並び順は人が覚えるものではなく、エディタの保存時か `stylelint --fix` の自動修正に任せるものです。
+
+ルールの中は、カスタムプロパティ、宣言、条件付きのアットルール、ネストしたルールの順に書きます。条件付きのアットルールは、`@supports`、`@container`、`@media` の順に並べます。この並びもStylelintの `order/order` で検査し、自動で並べ替えます。
+
+## 並び順がそろっていない問題
+
+宣言の並び順は、表示の結果を変えません。同じプロパティや、ショートハンドとその個別のプロパティを重ねて書かない限り、どの順番で書いても同じ見た目になります。そのため、並び順は書いた人の癖や、書き足した順番のままになりがちです。
+
+```css title="🙅‍♂ Not Recommended: 書き足した順番のまま並んだ宣言"
+/* 🙅‍♂ Not Recommended */
+._card {
+  color: oklch(20% 0 0deg);
+  padding: 16px;
+  display: block grid;
+  border-radius: 8px;
+  font-size: calc(14 / 16 * 1rem);
+  position: relative;
+  border: 1px solid oklch(85% 0 0deg);
+  gap: 12px;
+}
+```
+
+並び順がそろっていないと、ある宣言を探すたびに、ルールを上から下まで読むことになります。`display` があるのか、`gap` はどこにあるのかを、ルールごとに確かめなければなりません。同じプロパティを2回書いてしまっても、離れた位置にあると気付きにくくなります。
+
+差分とレビューにも影響します。人ごとに並べ方を変えていると、宣言を1つ足しただけの変更にも、並べ替えの差分の混ざる場合があります。レビューする人は、どの行が意味のある変更なのかを見分ける手間を負います。
+
+## taks-stylelint-order の並び順
+
+taks-stylelint-orderは、CSSの仕様のモジュールを単位に、プロパティを47のグループに分けて並べた設定です。大まかには「生成コンテンツ・配置 → 表示・レイアウト → 箱の大きさ・余白 → ボーダー・背景 → 色 → 文字 → UI → 変形・アニメーション」の順になります。
+
+並び順は、統一されていること自体に価値があります。どの宣言がどこにあるかの見当がつくので、差分やレビューで変更点を探しやすくなるからです。一方で、47のグループの順番を人が覚える必要はありません。この種の整形はリンターの仕事であり、自動修正で並べ替えれば十分です。
+
+ルールの中の並びは、`order/order` で決まります。カスタムプロパティを先頭にまとめ、空行を1行挟んで宣言を書き、その後に条件付きのアットルール、最後にネストしたルールを書きます。要素の基本のスタイルが先頭にまとまり、条件による上書きや状態の変化が後に続くので、読む順と上書きの順が一致します。
+
+## コード例
+
+冒頭の例を、taks-stylelint-orderの順に並べ替えます。`position` が先頭に来て、表示とレイアウト、箱の大きさと余白、ボーダー、色、文字の順に続きます。
+
+```css title="🙆‍♂ Recommended: taks-stylelint-order の順に並んだ宣言"
+._card {
+  --_padding: 16px;
+
+  position: relative;
+  display: block grid;
+  gap: 12px;
+  inline-size: min(100%, calc(360 / 16 * 1rem));
+  padding: var(--_padding);
+  border: 1px solid oklch(85% 0 0deg);
+  border-radius: 8px;
+  background-color: oklch(100% 0 0deg);
+  color: oklch(20% 0 0deg);
+  font-size: calc(14 / 16 * 1rem);
+  line-height: 1.6;
+}
+```
+
+条件付きのアットルールとネストしたルールを含むルールは、次の並びになります。`@media` の中の `--_padding-block` は、ルールの先頭で宣言した基本の値より後にあるので、上書きが効きます。
+
+```css title="🙆‍♂ Recommended: ルールの中の並び"
+@scope (.scoped.site-nav) to (.scoped) {
+  a {
+    --_padding-block: 8px;
+
+    display: block flow;
+    padding-block: var(--_padding-block);
+
+    @media (width >= calc(640 / 16 * 1rem)) {
+      --_padding-block: 12px;
+    }
+
+    &[aria-current="page"] {
+      font-weight: 700;
+    }
+  }
+}
+```
+
+## 直感と違う位置に来るプロパティ
+
+いくつか、直感と違う位置に来るプロパティがあります。`box-shadow` はボーダーのグループに入るので、`border-radius` の後に来ます。`background-color` は背景のグループの最後で、`background-image` や `background-size` より後です。トランジションは `transition-duration`、`transition-property`、`transition-timing-function` の順に並びます。
+
+こうした位置を覚えておく必要はありません。手で並べた順番が自動修正で入れ替わっても、表示は変わらないからです。
+
+ただし、ルールの中の並びは別です。宣言をネストしたルールの後ろに書くと、自動修正で宣言が先頭へ移り、表示の変わる場合があります（「[7-5 ネストの判断基準](/notation/nesting-criteria/)」）。宣言は初めからネストしたルールより前に書きます。
+
+`order/order` の並びは、`@scope` の中身にも当てはまります。条件のブロックを `@scope` の直下に書くと、自動修正はそれを先頭へ移し、元のルールが後ろに来て上書きが効かなくなります。本書では、`@media` と `@container` を各セレクタの中に書くことで、この並びと上書きに必要な順番を一致させています（「[7-4 ネストの書き方](/notation/nesting/)」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [tak-dcxi/taks-stylelint-order - GitHub](https://github.com/tak-dcxi/taks-stylelint-order)
+- [hudochenkov/stylelint-order - GitHub](https://github.com/hudochenkov/stylelint-order)

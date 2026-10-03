@@ -1,8 +1,8 @@
 ---
-title: "7-2 ネストとプロパティの並び順"
-description: セレクタのネストは2層（親と、その中の1段）までにして、先頭に & を書きます。@ルールは層に数えません。@media と @container は各セレクタの中に書き、プロパティの並び順は taks-stylelint-order に任せます。
+title: "7-4 ネストの書き方"
+description: セレクタのネストは2層（親と、その中の1段）までにして、先頭に & を書きます。@ルールは層に数えません。要素自身の状態は主語のルールの中にネストし、@media と @container は @scope の直下ではなく各セレクタの中に書きます。
 sidebar:
-  order: 2
+  order: 4
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -17,7 +17,7 @@ import insideCss from '../../../demos/notation/conditions-inside/style.css?raw';
 
 `@media` と `@container` は、`@scope` の直下に置かず、各セレクタの中に書きます。条件のブロックを `@scope` の先頭にまとめると、後ろにある元のルールが勝ってしまい、上書きが効かなくなるからです。Stylelintの並び順の設定は、何もしなければ条件のブロックを先頭へ移す並びにします。本書では、独自のルールでこれを防いでいます。
 
-プロパティの並び順は、著者が公開しているtaks-stylelint-orderに従います。並び順は人が覚えるものではなく、Stylelintの自動修正に任せるものです。
+ネストの仕様は、「[2-5 CSSネストの基礎](/cascade/nesting/)」で説明しています。ネストに要素とその状態の関係を任せ、`@scope` にコンポーネントの範囲を任せるという分担は、「[7-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で定めています。この節では、その分担にもとづいてネストをどう書くかを扱います。
 
 <Baseline id="nesting" name="CSS のネスト" />
 
@@ -57,12 +57,12 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 
 本書では、ネストを「そのスタイルが誰のものか」を示すために使います。ネストしてよいのは、次の4つだけです。
 
-- 要素自身の擬似クラスと擬似要素（`&:hover`、`&::before`）
+- 要素自身の擬似クラスと擬似要素（`&:focus-visible`、`&::before`）
 - 要素自身の属性やクラスで表す状態（`&[aria-current="page"]`）
 - レイアウトに欠かせない直下の子（`& > *`、`& > ._icon`）
 - 条件付きのアットルール（`@media`、`@container`、`@supports`）
 
-独自のスタイルを持つ子要素は、親のルールに入れず、同じ階層に並べます。HTMLの階層を写すことや、詳細度を上げることは、ネストの目的にしません。スコープを閉じるのは `@scope` の役割で、ネストにその代わりをさせることもしません。直下の子のネストに書いてよい宣言や、セレクタリストの中でネストしたときの詳細度など、何をネストするかの判断は「[7-3 ネストの判断基準](/notation/nesting-criteria/)」で詳しく説明します。
+独自のスタイルを持つ子要素は、親のルールに入れず、同じ階層に並べます。HTMLの階層を写すことや、詳細度を上げることは、ネストの目的にしません。スコープを閉じるのは `@scope` の役割で、ネストにその代わりをさせることもしません。直下の子のネストに書いてよい宣言や、セレクタリストの中でネストしたときの詳細度など、何をネストするかの判断は「[7-5 ネストの判断基準](/notation/nesting-criteria/)」で詳しく説明します。
 
 ```css title="🙆‍♂ Recommended: 要素自身の状態と直下の子だけをネストする"
 @scope (.scoped.site-nav) to (.scoped) {
@@ -87,7 +87,9 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 }
 ```
 
-ネストしたセレクタは、必ず `&` で始めます。`&` がなくてもネストは書けますが、先頭に `&` があれば、それが自身の状態なのか、直下の子なのか、子孫なのかをすぐに読み取れます。宣言は、ネストしたルールや条件付きのアットルールより前に書きます。要素の基本のスタイルが先頭にまとまり、状態や条件による変化が後に続くので、読む順と上書きの順が一致するからです。
+ネストしたセレクタは、必ず `&` で始めます。`&` がなくてもネストは書けますが、先頭に `&` があれば、それが自身の状態なのか、直下の子なのか、子孫なのかをすぐに読み取れます。
+
+宣言は、ネストしたルールや条件付きのアットルールより前に書きます。要素の基本のスタイルが先頭にまとまり、状態や条件による変化が後に続くので、読む順と上書きの順が一致するからです。ルールの中の並び順は、「[7-6 プロパティの並び順](/notation/property-order/)」のルール `block-content-order` で定めています。
 
 ## 自身の状態は主語のルールの中に書く
 
@@ -126,13 +128,13 @@ AIにCSSを書かせると、この連結の形がよく出てきます。素の
 }
 ```
 
-詳細度は、連結しても、ネストしても変わりません。親が1つのセレクタなら、`&:popover-open` を展開した結果は `[popover]:popover-open` と同じです。この規約は書く場所を決めるもので、カスケードの結果は変えません。親の状態によって子の見た目を変える書き方は、「[7-3 ネストの判断基準](/notation/nesting-criteria/)」で説明します。
+詳細度は、連結しても、ネストしても変わりません。親が1つのセレクタなら、`&:popover-open` を展開した結果は `[popover]:popover-open` と同じです。この規約は書く場所を決めるもので、カスケードの結果は変えません。親の状態によって子の見た目を変える書き方は、「[7-5 ネストの判断基準](/notation/nesting-criteria/)」で説明します。
 
 ## @ルールを層に数えない理由
 
 「2層まで」は、セレクタだけを数えます。`@scope`、`@media`、`@container`、`@supports`、`@layer` は数えません。@ルールまで数えると、`@layer` と `@scope` で2段、その内側のセレクタで2段と、ネストの残り枠がファイルの構造で決まってしまいます。同じセレクタが、置く場所によって書けたり書けなかったりするので、ルールが分散して、どこまで書いてよいのかが分かりにくくなります。
 
-セレクタだけを数えれば、数え方は単純です。`&:hover` の中に `@media (any-hover)` を入れても、セレクタは2層のままです。状態ごとにセレクタを別のルールへ分けずに済むので、要素の見た目がひとまとまりになります。
+セレクタだけを数えれば、数え方は単純です。`&:any-link:hover` の中に `@media (any-hover)` を入れても、セレクタは2層のままです。状態ごとにセレクタを別のルールへ分けずに済むので、要素の見た目がひとまとまりになります。
 
 Stylelintには、この数え方に合う設定がありません。標準の `max-nesting-depth` は、アットルールも深さに数えます。`ignoreAtRules` は「数えない」ではなく、「その@ルールの中を検査しない」という動作です。`@scope` を指定すると、中で3段ネストしてもエラーになりません（2026年9月、Stylelint 17.15.0で確認）。そのため、本書の設定では `max-nesting-depth` を使いません。セレクタが2層に収まっているかは、レビューで確かめます。
 
@@ -220,41 +222,13 @@ Chrome 153で確かめたところ、この書き方では、条件のブロッ�
 
 私の案件でも、この書き方をしたページで、ヒーローの高さや背景、カルーセルの配置など、主要なスタイルがまとめて効かなくなったことがあります。Stylelintの標準のルールでは検出できず、ビルドも通ったので、ブラウザで確認するまで気づけませんでした。条件をセレクタの中に書く規約を守っていれば、この書き方は `book/conditions-inside-rules` のエラーになります。
 
-## プロパティの並び順
-
-宣言の並び順は、著者が公開しているStylelintの設定、taks-stylelint-orderに従います。CSSの仕様のモジュールを単位に、プロパティを47のグループに分けて並べたものです。大まかには「生成コンテンツ・配置 → 表示・レイアウト → 箱の大きさ・余白 → ボーダー・背景 → 色 → 文字 → UI → 変形・アニメーション」の順になります。
-
-```css title="🙆‍♂ Recommended: taks-stylelint-order の順に並んだ宣言"
-._card {
-  --_padding: 16px;
-
-  position: relative;
-  display: block grid;
-  gap: 12px;
-  inline-size: min(100%, calc(360 / 16 * 1rem));
-  padding: var(--_padding);
-  border: 1px solid oklch(85% 0 0deg);
-  border-radius: 8px;
-  background-color: oklch(100% 0 0deg);
-  color: oklch(20% 0 0deg);
-  font-size: calc(14 / 16 * 1rem);
-  line-height: 1.6;
-}
-```
-
-いくつか、直感と違う位置に来るプロパティがあります。`box-shadow` はボーダーのグループに入るので、`border-radius` の後に来ます。`background-color` は背景のグループの最後で、`background-image` や `background-size` より後です。トランジションは `transition-duration`、`transition-property`、`transition-timing-function` の順に並びます。
-
-ルールの中の並びは、先ほど説明した `order/order` で決まります。カスタムプロパティを先頭にまとめ、空行を1行挟んで宣言を書き、その後に条件付きのアットルール、最後にネストしたルールを書きます。
-
-並び順は、統一されていること自体に価値があります。どの宣言がどこにあるかの見当がつくので、差分やレビューで変更点を探しやすくなるからです。一方で、47のグループの順番を人が覚える必要はありません。この種の整形はリンターの仕事であり、エディタの保存時か `stylelint --fix` で自動で並べ替えれば十分です。
-
 ## ガイドライン
 
 <Guideline />
 
 ## 参考リンク
 
+- [CSS Nesting Module Level 1 - W3C](https://drafts.csswg.org/css-nesting/)
 - [CSS 入れ子の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
 - [& 入れ子セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Nesting_selector)
-- [tak-dcxi/taks-stylelint-order - GitHub](https://github.com/tak-dcxi/taks-stylelint-order)
 - [hudochenkov/stylelint-order - GitHub](https://github.com/hudochenkov/stylelint-order)

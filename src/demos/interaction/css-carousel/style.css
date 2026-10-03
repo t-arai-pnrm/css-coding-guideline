@@ -74,8 +74,8 @@
       }
     }
 
-    li {
-      container: --css-carousel-item / scroll-state;
+    ._slide {
+      container: --slide / scroll-state;
       scroll-snap-align: center;
 
       @supports selector(::scroll-marker) {
@@ -104,7 +104,7 @@
       border-radius: 8px;
 
       /* 止まっていないスライドは、読み上げとフォーカスの対象から外す */
-      @container --css-carousel-item not scroll-state(snapped: inline) {
+      @container --slide not scroll-state(snapped: inline) {
         interactivity: inert;
       }
     }
