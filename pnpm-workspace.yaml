@@ -1,3 +1,6 @@
 ignoredBuiltDependencies:
   - esbuild
   - sharp
+# Starlight の Tabs がビルドで satteri をバンドルするので、ネイティブのバイナリをルートから解決できるようにする
+publicHoistPattern:
+  - '@bruits/*'

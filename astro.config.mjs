@@ -18,15 +18,38 @@ const rulePages = new Map(
     .flatMap((file) => parse(readFileSync(`${RULES_DIR}/${file}`, 'utf8')))
     .map((rule) => [rule.id, rule.page]),
 );
+/** GitHub Pages のプロジェクトサイトとして、サブパスで公開する。 */
+const BASE = '/css-coding-guideline';
+
 const isValidRuleLink = ({ link }) => {
-  const match = link.match(/^\/(.+?)\/?#rule-([a-z0-9-]+)$/);
-  return Boolean(match && rulePages.get(match[2]) === match[1]);
+  const match = link.slice(BASE.length).match(/^\/(.+?)\/?#rule-([a-z0-9-]+)$/);
+  return Boolean(link.startsWith(`${BASE}/`) && match && rulePages.get(match[2]) === match[1]);
+};
+
+/**
+ * 原稿のリンクはルート始まり（`/responsive/...`）で書く。
+ * Markdown のリンクには `base` が付かないので、ビルド時に付ける。
+ */
+const prefixBaseToLinks = {
+  name: 'prefix-base-to-links',
+  element: {
+    filter: ['a'],
+    visit(node, ctx) {
+      const href = node.properties?.href;
+      if (typeof href !== 'string' || !href.startsWith('/') || href.startsWith('//')) return;
+      if (href === BASE || href.startsWith(`${BASE}/`)) return;
+      ctx.setProperty(node, 'href', `${BASE}${href}`);
+    },
+  },
 };
 
 export default defineConfig({
-  // 公開 URL が決まったら `site` を設定し、starlight-llms-txt を追加する。
+  // starlight-llms-txt は、正式な公開 URL が決まったら追加する。
+  site: 'https://t-arai-pnrm.github.io',
+  base: BASE,
   markdown: {
     processor: satteri({
+      hastPlugins: [prefixBaseToLinks],
       features: {
         // 地の文の `--custom-property` がダッシュに置き換わるのを防ぐ
         smartPunctuation: false,
@@ -39,6 +62,8 @@ export default defineConfig({
       title: 'CSSコーディングガイドライン',
       description:
         'CSSの記法と設計の知識をまとめた、実務のためのコーディングガイドライン。',
+      // 公開前なので、検索エンジンに載せない
+      head: [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } }],
       locales: {
         root: { label: '日本語', lang: 'ja' },
       },

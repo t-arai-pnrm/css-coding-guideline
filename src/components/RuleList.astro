@@ -8,6 +8,7 @@ import { inlineCode } from '../lib/inline-code';
 
 const rules = (await getCollection('rules')).sort((a, b) => a.data.order - b.data.order);
 const docs = await getCollection('docs');
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const titleOf = new Map(docs.map((doc) => [doc.id, doc.data.title]));
 
 const groups = CHAPTERS.map((chapter) => ({
@@ -39,7 +40,7 @@ const groups = CHAPTERS.map((chapter) => ({
                   <code>{data.id}</code>
                 </td>
                 <td>
-                  <a href={`/${data.page}/#rule-${data.id}`}>{titleOf.get(data.page) ?? data.page}</a>
+                  <a href={`${base}/${data.page}/#rule-${data.id}`}>{titleOf.get(data.page) ?? data.page}</a>
                 </td>
               </tr>
             ))}
