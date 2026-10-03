@@ -17,11 +17,11 @@
     div {
       padding: 16px;
       border: 1px dashed oklch(70% 0 0deg);
-    }
 
-    div[data-writing-mode="vertical"] {
-      inline-size: calc(400 / 16 * 1rem);
-      writing-mode: vertical-rl;
+      &[data-writing-mode="vertical"] {
+        inline-size: calc(400 / 16 * 1rem);
+        writing-mode: vertical-rl;
+      }
     }
   }
 
@@ -47,10 +47,10 @@
         content: "→" / "";
         display: inline flow-root;
       }
-    }
 
-    a:dir(rtl)::after {
-      scale: -1 1;
+      &:dir(rtl)::after {
+        scale: -1 1;
+      }
     }
   }
 }

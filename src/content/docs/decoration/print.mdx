@@ -67,9 +67,11 @@ import Guideline from '../../../components/Guideline.astro';
 紙の上でもリンクの行き先が分かるように、本文の外部リンクには、印刷のときだけURLを添えます。擬似要素の `content` で `attr(href)` を使うと、`href` 属性の値を文字として表示できます。
 
 ```css title="🙆‍♂ Recommended: 印刷のときだけ、外部リンクの後ろにURLを表示する"
-._body a[href^="http"]::after {
-  @media print {
-    content: " (" attr(href) ")";
+._body a {
+  &[href^="http"]::after {
+    @media print {
+      content: " (" attr(href) ")";
+    }
   }
 }
 ```

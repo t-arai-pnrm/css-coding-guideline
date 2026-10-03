@@ -11,9 +11,31 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.19.0（2026年10月3日）
+
+10-8を、レイアウトの手法の選び方を説明する節に書き直し、`order` と `reading-order` の値の規則を改めました。ルールを追加し、削除したため、マイナーバージョンを上げています。節のURLも変わりました。
+
+- 「10-8 Gridから考える」を「[10-8 レイアウト手法の選び方](/layout/choosing/)」に改め、URLを `/layout/grid-first/` から `/layout/choosing/` に変えました。よくある実装を例に、文章は通常フロー、部品の配置はGrid、中身の量で並べる要素はFlexbox、文章を回り込ませる要素は `float` で組む理由を説明しています。`float` が今でも最適な場面として、モーダルの閉じるボタンと右上の装飾の画像を文章の角に置く書き方を加えました。
+- 旧10-8にあった `grid-template` のエリア、サブグリッド、`grid-auto-flow: dense`、`display: contents` の説明は、「[10-6 Gridの基礎](/layout/grid-basics/)」に移しました。
+- 「[10-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」の `reading-order` を使わないとしていた節を、`order` と `reading-order` の値を1か-1に限る内容へ書き直しました。Stylelintの設定には、この2つのプロパティの値を検証する指定も加えました。
+- ルールを2件追加しました。
+  - [`float-for-corner-elements`](/layout/choosing/#rule-float-for-corner-elements)：文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませます。
+  - [`order-one-or-minus-one`](/layout/reading-flow/#rule-order-one-or-minus-one)：`order` と `reading-order` の値には、z-indexの相対的な値と同じく、`1` か `-1` だけを使います。
+- ルールを1件削除しました。
+  - `no-reading-order`：`reading-order` を1か-1の値で使うことにしたためです。
+- 次の8件のルールは、掲載先を10-8から10-6に移しました。ルールの内容は変えていません。
+  - [`grid-areas-for-changing-structure`](/layout/grid-basics/#rule-grid-areas-for-changing-structure)
+  - [`grid-area-names-match-children`](/layout/grid-basics/#rule-grid-area-names-match-children)
+  - [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)
+  - [`subgrid-for-aligned-rows`](/layout/grid-basics/#rule-subgrid-for-aligned-rows)
+  - [`subgrid-span-rows`](/layout/grid-basics/#rule-subgrid-span-rows)
+  - [`column-width-by-variability`](/layout/grid-basics/#rule-column-width-by-variability)
+  - [`no-dense-for-ordered-items`](/layout/grid-basics/#rule-no-dense-for-ordered-items)
+  - [`display-contents-keep-role`](/layout/grid-basics/#rule-display-contents-keep-role)
+
 ## 0.18.0（2026年10月3日）
 
-著者の指摘にもとづいて、レスポンシブデザインの方針を見直し、論理プロパティ、画像の置き方、AI時代の話を加えました。ルールを追加し、変更し、削除したため、マイナーバージョンを上げています。第7章と第12章の節の番号も一部変わりました。
+著者の指摘にもとづいて、レスポンシブデザインの方針を見直し、論理プロパティ、画像の置き方、AI時代の話、ネストの規約を加えました。ルールを追加し、変更し、削除したため、マイナーバージョンを上げています。第7章と第12章の節の番号も一部変わりました。
 
 - 節を2つ加えました。
   - 「[7-5 論理プロパティと論理値](/notation/logical-properties/)」：Webのレイアウトが論理を前提にしていること、物理でしか書けないもの、`margin-inline` を左右の余白として扱ってよい理由、右から左へ書く言語と縦書きでの振る舞いを説明しています。旧7-5と旧7-6は、7-6と7-7になりました。
@@ -22,7 +44,9 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」から、Astroでの書き方の節を削除しました。ルート要素の中に `<style>` を置く書き方を前提にした記述も、本書から取り除いています。
 - 「[はじめに](/introduction/preface/)」に、AIが構築を速くする時代に人が設計するものと、AIに丸投げしない理由を加えました。
 - 「[15-1 画像と装飾](/decoration/images-and-decoration/)」に、背景の写真も `<img>` で置く節と、`decoding` 属性の扱いを加えました。
-- ルールを7件追加しました。
+- 「[7-2 ネストとプロパティの並び順](/notation/nesting-and-order/)」に、要素自身の状態を主語のルールの中にネストする規約を加えました。「[7-3 ネストの判断基準](/notation/nesting-criteria/)」には、BEMにたとえたネストの考え方（BlockとElementの関係は `@scope`、Modifierはネスト）と、親の状態で子の見た目を変える書き方を加えました。本書全体のコード例とデモも、この規約に合わせて直しています。
+- ルールを8件追加しました。
+  - [`nest-own-states`](/notation/nesting-and-order/#rule-nest-own-states)：要素自身の擬似クラス・擬似要素・属性の状態は、`[popover]:popover-open` のように主語に連結せず、主語のルールの中に `&:popover-open` のようにネストして書きます。
   - [`physical-only-where-no-logical`](/notation/logical-properties/#rule-physical-only-where-no-logical)：物理でしか書けないものは物理で書き、論理と物理の混在を許します。
   - [`no-logical-nitpicking`](/notation/logical-properties/#rule-no-logical-nitpicking)：レビューで、論理と物理の混在だけを理由に指摘しません。
   - [`fixed-viewport-below-min-width`](/responsive/min-viewport-width/#rule-fixed-viewport-below-min-width)：375px未満の画面では、`<meta name="viewport">` の直後に置いたインラインのスクリプトでビューポートの幅を固定します。
@@ -33,6 +57,8 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - ルールの内容を変えました。
   - [`logical-properties`](/notation/logical-properties/#rule-logical-properties)：掲載先を7-4から7-5に移し、補足を書き直しました。
   - [`root-name-kebab-case`](/notation/naming/#rule-root-name-kebab-case)：ルートの名前をPascalCaseにしてもよい、という補足を削除しました。
+  - [`no-nesting-under-selector-list`](/notation/nesting-criteria/#rule-no-nesting-under-selector-list)：例のセレクタリストを、要素の状態を連結しない `button, ._selected-count` に変えました。
+  - [`nest-own-states-only`](/notation/nesting-and-order/#rule-nest-own-states-only)：状態の書き方と祖先の状態で変わるスタイルの書き方を、それぞれのルールに委ねる補足を加えました。
   - 次の4件は、比例スケールとルートの中の `<style>` に触れていた補足を直しました。
     - [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)
     - [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)
@@ -242,9 +268,9 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 3-7：[`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)、[`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)
   - 3-7：[`marker-color-and-font-size-only`](/pseudo/generated-content/#rule-marker-color-and-font-size-only)、[`selection-color-and-background`](/pseudo/generated-content/#rule-selection-color-and-background)
 - 「[8-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」を加え、次のルールを追加しました。`grid-template-areas` や `*-reverse` を書いたルールに `reading-flow` がないことは、Stylelintの独自ルール `book/reading-flow-when-reordered` で検出します。
-  - [`reading-flow-when-reordered`](/layout/reading-flow/#rule-reading-flow-when-reordered)、[`no-reading-order`](/layout/reading-flow/#rule-no-reading-order)
+  - [`reading-flow-when-reordered`](/layout/reading-flow/#rule-reading-flow-when-reordered)、`no-reading-order`（0.19.0で削除）
 - 次のルールの補足に、`reading-flow` を指定する場面を加えました。
-  - [`source-order-for-reading`](/layout/grid-first/#rule-source-order-for-reading)、[`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)
+  - [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)、[`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)
 - 2-2、6-1、8-6、8-7、8-8、8-13-5のコード例と、8-7のデモの `grid-template` に、`reading-flow: grid-rows` を加えました。
 
 ## 0.8.0（2026年10月2日）
@@ -375,7 +401,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 「[8-5 セーフエリアに対応する](/responsive/safe-area/)」を加えました。
 - 次の節に、記事の内容を加えました。
   - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」：`if()` の条件の書き方と評価のタイミング
-  - 「[7-6 Gridから考える](/layout/grid-first/)」：サブグリッドの線の名前と `padding` の扱い
+  - 「[7-6 Gridから考える](/layout/grid-basics/)」：サブグリッドの線の名前と `padding` の扱い
   - 「[7-9 重なりと配置](/layout/positioning/)」：`position-try-order` と `position-visibility`
   - 「[11-3 開閉するUI](/interaction/disclosure/)」：`command` 属性の組み込みのコマンドとカスタムコマンド
 - 第7章の末尾に「[7-13 コンポジション集](/compositions/)」を設け、11のコンポジションに1ページずつを充てました（7-13-1 stack〜7-13-11 prose）。各ページで、使う場面と使わない場面、公開プロパティ、内部の計算、使い分けを説明しています。6-2の一覧表は各ページへのリンクにし、`grid` には公開プロパティ `--grid--mode`（デフォルトは `auto-fill`）を加え、最大の列数のデフォルトを5にしました。
@@ -489,8 +515,8 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`no-abbreviation`](/notation/terminology/#rule-no-abbreviation)：クラス名を省略しない
   - [`child-name-flat`](/notation/naming/#rule-child-name-flat)：子要素の名前にHTMLの階層を映さない
   - `no-bulk-element-selector`：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない（0.7.0で削除）
-  - [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
-  - [`no-dense-for-ordered-items`](/layout/grid-first/#rule-no-dense-for-ordered-items)：順序に意味のある要素に `grid-auto-flow: dense` を使わない
+  - [`flex-auto-margin-for-end-items`](/layout/choosing/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
+  - [`no-dense-for-ordered-items`](/layout/grid-basics/#rule-no-dense-for-ordered-items)：順序に意味のある要素に `grid-auto-flow: dense` を使わない
   - [`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)：マージンの相殺は `display: flow-root` で止める
   - [`sticky-align-self-start`](/layout/positioning/#rule-sticky-align-self-start)：stickyな要素をGridやFlexboxの子にするときは `align-self: start`
   - [`sticky-needs-inset`](/layout/positioning/#rule-sticky-needs-inset)：stickyにはinsetを指定する
@@ -527,7 +553,7 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
 - ルールを17件追加しました。
   - [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)：`:has()` の起点と引数の範囲を絞る
   - [`declared-layer-names-only`](/cascade/layers/#rule-declared-layer-names-only)：宣言したレイヤー名だけを使う
-  - [`column-width-by-variability`](/layout/grid-first/#rule-column-width-by-variability)：列ごとに、内容で伸び縮みさせるか固定するかを決める
+  - [`column-width-by-variability`](/layout/grid-basics/#rule-column-width-by-variability)：列ごとに、内容で伸び縮みさせるか固定するかを決める
   - [`spacing-proximity`](/layout/spacing/#rule-spacing-proximity)：グループの間の余白を、グループの中の余白より大きくする
   - [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query)：ヘッダーは高さに余裕があるときだけ固定する
   - [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first)：暗黙のアンカーを優先する

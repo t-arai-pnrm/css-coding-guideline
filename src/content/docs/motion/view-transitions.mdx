@@ -100,19 +100,21 @@ if (document.startViewTransition) {
 ```css title="🙅‍♂ Not Recommended: 並んだ要素に、連番の名前を手で振る"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.product-list) to (.scoped) {
-  li:nth-child(1) {
-    @media (prefers-reduced-motion: no-preference) {
-      view-transition-name: --card-1;
+  li {
+    &:nth-child(1) {
+      @media (prefers-reduced-motion: no-preference) {
+        view-transition-name: --card-1;
+      }
     }
-  }
 
-  li:nth-child(2) {
-    @media (prefers-reduced-motion: no-preference) {
-      view-transition-name: --card-2;
+    &:nth-child(2) {
+      @media (prefers-reduced-motion: no-preference) {
+        view-transition-name: --card-2;
+      }
     }
-  }
 
-  /* ... */
+    /* ... */
+  }
 }
 
 ::view-transition-group(--card-1),

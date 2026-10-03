@@ -6,8 +6,8 @@
       gap: 8px;
     }
 
-    ._command-button,
-    ._toggle[aria-pressed="true"] {
+    button,
+    ._selected-count {
       padding-block: 8px;
       padding-inline: 16px;
       border-color: transparent;
@@ -16,19 +16,13 @@
       color: oklch(100% 0 0deg);
     }
 
-    ._command-button {
+    button {
       &:enabled {
         background-color: oklch(50% 0.15 250deg);
       }
 
       &[data-variant="danger"] {
         background-color: oklch(55% 0.2 25deg);
-      }
-    }
-
-    ._toggle {
-      &[aria-pressed="true"]:enabled {
-        background-color: oklch(50% 0.15 250deg);
       }
     }
   }

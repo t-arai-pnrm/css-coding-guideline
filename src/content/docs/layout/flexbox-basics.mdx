@@ -15,7 +15,7 @@ import alignmentCss from '../../../demos/layout/flexbox-alignment/style.css?raw'
 
 Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配るレイアウトの方式です。アイテムを並べる向きを主軸、それに直交する向きを交差軸と呼び、`justify-content` は主軸の配置を、`align-items` は交差軸の配置を決めます。伸び縮みの量は、`flex-grow`、`flex-shrink`、`flex-basis` の3つから計算で決まります。
 
-この節では、その計算を数値で追い、`flex: 1` の意味やアイテムが縮まない原因を説明します。FlexboxとGridの選び方は「[10-8 Gridから考える](/layout/grid-first/)」で扱います。
+この節では、その計算を数値で追い、`flex: 1` の意味やアイテムが縮まない原因を説明します。FlexboxとGridを含むレイアウトの手法の選び方は「[10-8 レイアウト手法の選び方](/layout/choosing/)」で扱います。
 
 <Baseline id="flexbox" />
 
@@ -128,13 +128,13 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 <Baseline id="flexbox-gap" name="Flexbox の gap" />
 
-フレックスアイテムの `auto` の `margin` は、`flex-grow` で配った後の余りを吸収し、`justify-content` より先に適用されます。最後のリンクだけを行末へ寄せる使い方は、10-8のルール [`flex-auto-margin-for-end-items`](/layout/grid-first/#rule-flex-auto-margin-for-end-items) で扱っています。
+フレックスアイテムの `auto` の `margin` は、`flex-grow` で配った後の余りを吸収し、`justify-content` より先に適用されます。最後のリンクだけを行末へ寄せる使い方は、10-8のルール [`flex-auto-margin-for-end-items`](/layout/choosing/#rule-flex-auto-margin-for-end-items) で扱っています。
 
 ## 見た目の順番と読み上げの順番
 
-`order` はアイテムを値の小さい順に並べ直し、`row-reverse` と `column-reverse` は並びを逆にします。変わるのは見た目の順番だけなので、読み上げの順番と、Tabキーでフォーカスが移る順番はHTMLの順番のままです。
+`order` はアイテムを値の小さい順に並べ直し、`row-reverse` と `column-reverse` は並びを逆にします。本書では、`order` の値に `1` か `-1` だけを使います（[`order-one-or-minus-one`](/layout/reading-flow/#rule-order-one-or-minus-one)）。変わるのは見た目の順番だけなので、読み上げの順番と、Tabキーでフォーカスが移る順番はHTMLの順番のままです。
 
-フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（[`source-order-for-reading`](/layout/grid-first/#rule-source-order-for-reading)）。
+フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（[`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)）。
 
 並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、2026年10月の時点でBaselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[10-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」）。
 
@@ -172,9 +172,9 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 ## FlexboxとGridの使い分け
 
-FlexboxとGridは、大きさを決める向きが違います。Flexboxはアイテムの中身の大きさから出発して余りや不足を配り、Gridは先に親で行と列を決めてアイテムをそのセルに置きます。タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すなら、Flexboxが向いています（[`flexbox-for-content-sized-items`](/layout/grid-first/#rule-flexbox-for-content-sized-items)）。
+FlexboxとGridは、大きさを決める向きが違います。Flexboxはアイテムの中身の大きさから出発して余りや不足を配り、Gridは先に親で行と列を決めてアイテムをそのセルに置きます。タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すなら、Flexboxが向いています（[`flexbox-for-content-sized-items`](/layout/choosing/#rule-flexbox-for-content-sized-items)）。
 
-一方、列の数と幅を親で決めたい並びや、行をまたいで位置をそろえたい並びは、Gridで組みます。使い分けの基準と例は「[10-8 Gridから考える](/layout/grid-first/)」に、Gridの仕組みは「[10-6 Gridの基礎](/layout/grid-basics/)」にまとめています。
+一方、列の数と幅を親で決めたい並びや、行をまたいで位置をそろえたい並びは、Gridで組みます。使い分けの基準と例は「[10-8 レイアウト手法の選び方](/layout/choosing/)」に、Gridの仕組みは「[10-6 Gridの基礎](/layout/grid-basics/)」にまとめています。
 
 ## ガイドライン
 

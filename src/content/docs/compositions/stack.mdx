@@ -179,9 +179,9 @@ CMSで編集者が入力する本文エリアの中には、どちらも使い�
 
 直下の子が `a` や `span` のようなインライン要素でも、フレックスアイテムになるとブロックレベルの箱として扱われます（ブロック化）。`stack` の中に直接書いたテキストは、無名のフレックスアイテムに包まれ、ほかの子と同じ間隔で積まれます。リンクを文中に置きたいなら、`p` などで包んでから `stack` の子にします。
 
-`margin-block-start: auto` で末尾に寄せられるのは、`stack` の高さに余りがあるときだけです。デモのカードはグリッドの行の高さまで引き伸ばされているので余りがありますが、高さが中身で決まる `stack` では、`auto` の `margin` は0になり、リンクは説明文から `gap` の分だけ離れた位置に置かれます。横方向に同じ使い方をするときのルールは、10-8の「[一部の要素を行末側へ寄せるときは auto の margin を使う](/layout/grid-first/#rule-flex-auto-margin-for-end-items)」にあります。
+`margin-block-start: auto` で末尾に寄せられるのは、`stack` の高さに余りがあるときだけです。デモのカードはグリッドの行の高さまで引き伸ばされているので余りがありますが、高さが中身で決まる `stack` では、`auto` の `margin` は0になり、リンクは説明文から `gap` の分だけ離れた位置に置かれます。横方向に同じ使い方をするときのルールは、10-8の「[一部の要素を行末側へ寄せるときは auto の margin を使う](/layout/choosing/#rule-flex-auto-margin-for-end-items)」にあります。
 
-子の並び順を見た目だけ逆にする `flex-direction: column-reverse` は使いません。読み上げとキーボードのフォーカスはHTMLの順に進むので、見た目の順番と食い違います。見た目の順番を変えたいときの考え方は、10-8のルール「[HTML は文書構造の順番で書く](/layout/grid-first/#rule-source-order-for-reading)」にあります。
+子の並び順を見た目だけ逆にする `flex-direction: column-reverse` は使いません。読み上げとキーボードのフォーカスはHTMLの順に進むので、見た目の順番と食い違います。見た目の順番を変えたいときの考え方は、10-6のルール「[HTML は文書構造の順番で書く](/layout/grid-basics/#rule-source-order-for-reading)」にあります。
 
 <Baseline id="flexbox-gap" name="Flexbox の gap" />
 

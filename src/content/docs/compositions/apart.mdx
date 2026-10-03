@@ -152,7 +152,7 @@ import wrapCss from '../../../demos/compositions/apart-wrap/style.css?raw';
 
 `cluster` にも主軸の配置（`--cluster--justification`）の公開プロパティがあるので、`space-between` を渡せば `apart` と同じ指定になります。それでも `apart` を別に用意するのは、HTMLのクラス名だけで「両端に分ける」という意図が分かるからです。`--cluster--justification: space-between` が付いた `cluster` は、`style` 属性まで読まないと `apart` との違いが分かりません。{/* 要確認: 出典なし */}
 
-両端に分けるもう1つの書き方は、行末側の子に `margin-inline-start: auto` を指定するものです。Flexboxの `auto` の `margin` は、行に余った空間をすべて吸収するので、その子を行末へ押し出します。ナビゲーションの中で最後のアカウントのリンクだけを右端へ寄せるような、並びの一部だけを行末に寄せる場面では、この書き方を使います（「[10-8 Gridを先に検討する](/layout/grid-first/#rule-flex-auto-margin-for-end-items)」のルール）。
+両端に分けるもう1つの書き方は、行末側の子に `margin-inline-start: auto` を指定するものです。Flexboxの `auto` の `margin` は、行に余った空間をすべて吸収するので、その子を行末へ押し出します。ナビゲーションの中で最後のアカウントのリンクだけを右端へ寄せるような、並びの一部だけを行末に寄せる場面では、この書き方を使います（「[10-8 レイアウト手法の選び方](/layout/choosing/#rule-flex-auto-margin-for-end-items)」のルール）。
 
 ```css title="🙆‍♂ Recommended: 折り返した2行目も、行末側の子を行末に寄せる"
 @scope (.scoped.site-header) to (.scoped) {

@@ -27,12 +27,16 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: 意味のある文字を生成コンテンツで入れる"
 /* 🙅‍♂ Not Recommended */
-.label--required::after {
-  content: "必須";
+.label--required {
+  &::after {
+    content: "必須";
+  }
 }
 
-.price::after {
-  content: "円（税込）";
+.price {
+  &::after {
+    content: "円（税込）";
+  }
 }
 ```
 

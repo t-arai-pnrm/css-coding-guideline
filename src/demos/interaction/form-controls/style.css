@@ -75,6 +75,12 @@
       /* つまみの手前の余白。オンのときに広がり、つまみを押し出す */
       &::before {
         content: "";
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--fast);
+          transition-property: flex-grow;
+          transition-timing-function: var(--ease--out-quint);
+        }
       }
 
       /* つまみ */
@@ -85,25 +91,15 @@
         aspect-ratio: 1;
         border-radius: inherit;
         background-color: oklch(100% 0 0deg);
+
+        /* 強制カラーモードでは、背景色で描いたつまみが消えるので、システムカラーで描く */
+        @media (forced-colors: active) {
+          background-color: CanvasText;
+        }
       }
-    }
 
-    ._switch:checked::before {
-      flex-grow: 1;
-    }
-
-    /* 強制カラーモードでは、背景色で描いたつまみが消えるので、システムカラーで描く */
-    ._switch::after {
-      @media (forced-colors: active) {
-        background-color: CanvasText;
-      }
-    }
-
-    ._switch::before {
-      @media (prefers-reduced-motion: no-preference) {
-        transition-duration: var(--duration--fast);
-        transition-property: flex-grow;
-        transition-timing-function: var(--ease--out-quint);
+      &:checked::before {
+        flex-grow: 1;
       }
     }
 

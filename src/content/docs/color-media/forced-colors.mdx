@@ -138,18 +138,20 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[15-1 画像と装飾](/decoration/images-and-decoration/)」）。
 
 ```css title="🙆‍♂ Recommended: アイコンの色を --background-current から受け取る"
-._more::after {
-  content: "";
+._more {
+  &::after {
+    content: "";
 
-  /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
-  display: inline flow-root;
-  mask-image: var(--chevron--rightward);
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  inline-size: 1em;
-  aspect-ratio: 1;
-  background-color: var(--background-current);
+    /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
+    display: inline flow-root;
+    mask-image: var(--chevron--rightward);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    inline-size: 1em;
+    aspect-ratio: 1;
+    background-color: var(--background-current);
+  }
 }
 ```
 
@@ -160,19 +162,21 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 グローバルなカスタムプロパティに頼らず、1つのコンポーネントの中で済ませたい場合は、グラデーションを重ねる方法もあります。`background-image` に単色のグラデーションを、`background-color` にシステムカラーを指定します。
 
 ```css title="🙆‍♂ Recommended: グラデーションが消えると、下のシステムカラーが見える"
-._crumb::before {
-  content: "";
+._crumb {
+  &::before {
+    content: "";
 
-  /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
-  display: inline flow-root;
-  mask-image: var(--chevron--rightward);
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  inline-size: 0.75em;
-  aspect-ratio: 1;
-  background-image: conic-gradient(currentColor 0 0);
-  background-color: CanvasText;
+    /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
+    display: inline flow-root;
+    mask-image: var(--chevron--rightward);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    inline-size: 0.75em;
+    aspect-ratio: 1;
+    background-image: conic-gradient(currentColor 0 0);
+    background-color: CanvasText;
+  }
 }
 ```
 

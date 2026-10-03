@@ -35,16 +35,16 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
     transition-property: opacity, scale, display, overlay;
     transition-timing-function: ease;
     transition-behavior: allow-discrete;
-  }
 
-  ._list:popover-open {
-    @starting-style {
-      opacity: 0;
-      scale: 0;
+    &:popover-open {
+      @starting-style {
+        opacity: 0;
+        scale: 0;
+      }
     }
-  }
 
-  /* ... */
+    /* ... */
+  }
 }
 ```
 
@@ -129,18 +129,18 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
     @media (prefers-reduced-motion: no-preference) {
       --_scale-from: 0.94;
     }
-  }
 
-  ._list:popover-open {
-    @starting-style {
+    &:popover-open {
+      @starting-style {
+        opacity: 0;
+        scale: var(--_scale-from);
+      }
+    }
+
+    &:not(:popover-open) {
       opacity: 0;
       scale: var(--_scale-from);
     }
-  }
-
-  ._list:not(:popover-open) {
-    opacity: 0;
-    scale: var(--_scale-from);
   }
 }
 ```

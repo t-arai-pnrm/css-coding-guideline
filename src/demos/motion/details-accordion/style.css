@@ -23,6 +23,23 @@
 
     details {
       border-block-end: 1px solid oklch(80% 0 0deg);
+
+      /* 開閉する部分。包む要素を足さずに、高さと不透明度を動かす */
+      &::details-content {
+        overflow: clip;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--slow);
+          transition-property: content-visibility, block-size, opacity;
+          transition-timing-function: var(--ease--out-quint);
+          transition-behavior: allow-discrete;
+        }
+      }
+
+      &:not([open])::details-content {
+        block-size: 0;
+        opacity: 0;
+      }
     }
 
     summary {
@@ -32,43 +49,26 @@
       align-items: center;
       padding-block: 12px;
       font-weight: 700;
-    }
 
-    /* 開閉を示す矢印 */
-    summary::after {
-      content: "";
-      inline-size: 0.5em;
-      block-size: 0.5em;
-      border-block-end: 2px solid;
-      border-inline-end: 2px solid;
-      rotate: 45deg;
+      /* 開閉を示す矢印 */
+      &::after {
+        content: "";
+        inline-size: 0.5em;
+        block-size: 0.5em;
+        border-block-end: 2px solid;
+        border-inline-end: 2px solid;
+        rotate: 45deg;
 
-      @media (prefers-reduced-motion: no-preference) {
-        transition-duration: var(--duration--slow);
-        transition-property: rotate;
-        transition-timing-function: var(--ease--out-quint);
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--slow);
+          transition-property: rotate;
+          transition-timing-function: var(--ease--out-quint);
+        }
       }
-    }
 
-    details[open] > summary::after {
-      rotate: 225deg;
-    }
-
-    /* 開閉する部分。包む要素を足さずに、高さと不透明度を動かす */
-    details::details-content {
-      overflow: clip;
-
-      @media (prefers-reduced-motion: no-preference) {
-        transition-duration: var(--duration--slow);
-        transition-property: content-visibility, block-size, opacity;
-        transition-timing-function: var(--ease--out-quint);
-        transition-behavior: allow-discrete;
+      &:is(details[open] > *)::after {
+        rotate: 225deg;
       }
-    }
-
-    details:not([open])::details-content {
-      block-size: 0;
-      opacity: 0;
     }
 
     p {

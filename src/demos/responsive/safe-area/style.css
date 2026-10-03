@@ -16,20 +16,20 @@
 
       /* 固定したバーに最後の行が隠れないよう、バーの高さとセーフエリアの分を空ける */
       padding-block-end: calc(var(--_bar-block-size) + var(--_inset-bottom));
-    }
 
-    /*
-     * 実機の値は iframe の中では0なので、ブラウザが知らない名前の env() を書き、
-     * 第2引数の値を使わせて模擬する。
-     */
-    :scope:has(._portrait:checked) {
-      --_inset-bottom: env(demo-safe-area-inset-bottom, 34px);
-    }
+      /*
+       * 実機の値は iframe の中では0なので、ブラウザが知らない名前の env() を書き、
+       * 第2引数の値を使わせて模擬する。
+       */
+      &:has(._portrait:checked) {
+        --_inset-bottom: env(demo-safe-area-inset-bottom, 34px);
+      }
 
-    :scope:has(._landscape:checked) {
-      --_inset-left: env(demo-safe-area-inset-left, 48px);
-      --_inset-right: env(demo-safe-area-inset-right, 48px);
-      --_inset-bottom: env(demo-safe-area-inset-bottom, 20px);
+      &:has(._landscape:checked) {
+        --_inset-left: env(demo-safe-area-inset-left, 48px);
+        --_inset-right: env(demo-safe-area-inset-right, 48px);
+        --_inset-bottom: env(demo-safe-area-inset-bottom, 20px);
+      }
     }
 
     header,

@@ -26,6 +26,12 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 
 ネストを持ち主の表現に限るのは、ネストが詳細度とHTMLへの依存を伴うからです。ネストしたセレクタは、親のセレクタとつながった1つのセレクタとして詳細度が計算されます。範囲を閉じる効果はなく、親のセレクタが一致する要素の中にあるという条件が付くだけです。ほかの目的でネストすると、この条件と詳細度だけが残ります。
 
+BEMにたとえると、この分担は分かりやすくなります。BlockとElementの関係（コンポーネントと、その中の子要素）は、`@scope` のルートと、スコープの中のルールで表します。Modifier（要素の状態やバリエーション）は、`&:hover` や `&[data-variant="featured"]` のようなネストで表します。BEMが名前の連結で表していた関係を、本書では範囲とネストに分けて書きます（命名の側の書き換えは「[7-1 命名規則](/notation/naming/)」）。
+
+BEMの `.media-card--featured .media-card__title` のように、BlockのModifierがElementの見た目を変える場合もあります。本書では、Elementのルールの中に `&:is(:scope[data-variant="featured"] *)` と書きます（後述の「親の状態で子の見た目を変える」）。大きさや色のような値だけを切り替えるなら、ルートの `&[data-variant="featured"]` で内部プロパティを切り替え、Elementがその値を読む書き方もできます（7-1の書き換えの例）。
+
+ネストで子要素を選ぶのは、直下の子に配置の宣言を書くときだけです。これはElementの関係ではなく、親のレイアウトの一部です。
+
 ## ネストしてよい関係
 
 ネストしてよいのは、「7-2」で挙げた関係です。ここでは、要素自身の状態と擬似要素、条件付きのアットルール、直下の子の3つに分けて説明します。どれも、ネストしたルールが親の要素について述べていて、親のセレクタを外すと意味が変わります。
@@ -121,6 +127,27 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 
 記述を減らすためのネストもしません。見た目の似た要素を1つの親のルールに集めると、片方だけを変えたいときに、セレクタを分けるか、詳細度で上書きするかを迫られます。共有したいのが値なら、デザイントークンやカスタムプロパティで共有します。既存のスタイルに勝つ目的で、親のセレクタを重ねることもしません。詳細度で勝っても、次に上書きしたい人がさらに詳細度を上げることになるからです。順位の問題は `@layer` で、値の切り替えはカスタムプロパティで解決します。
 
+## 親の状態で子の見た目を変える
+
+開閉のボタンを開いたときにアイコンを回転させるなど、親の状態に応じて子の見た目を変えたい場合があります。親の状態と子を `:scope[aria-expanded="true"] ._icon` という1つのセレクタでつなげると、子の見た目を子のルールとは別の場所で指定することになります。かといって、`&[aria-expanded="true"]` の中に `& ._icon` を入れると、セレクタが3層になります。
+
+本書では、祖先の状態によって変わるスタイルを、子のルールの中に `&:is(<祖先のセレクタ> *)` の形で書きます（「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」のルール `is-for-ancestor-context`）。`&:is(:scope[aria-expanded="true"] *)` は、「`aria-expanded="true"` を持つスコープのルートの子孫である、この要素」という意味です。子の見た目が状態によるものも含めて子のルールにまとまり、セレクタは2層に収まって `&` で始まります。
+
+```css title="🙆‍♂ Recommended: 祖先の状態を子のルールの中に書く"
+@scope (.scoped.accordion-trigger) to (.scoped) {
+  ._icon {
+    transition-duration: var(--duration--fast);
+    transition-property: rotate;
+
+    &:is(:scope[aria-expanded="true"] *) {
+      rotate: 180deg;
+    }
+  }
+}
+```
+
+この書き方では、`._icon` のルールを読むだけで、アイコンがどの状態でどう見えるかが分かります。祖先の状態は子の側から見た条件の1つで、`&:hover` のような自身の状態と同じ位置に並びます。擬似要素も同じで、`<details>` が開いたときに `summary` の記号を変えるなら、`summary` のルールの中に `&:is(:scope[open] *)::after` と書きます。ホバーされたリンクを含むカードのように、子孫の状態を祖先が受ける場合も、`&:is(:scope:has(:any-link:hover) *)` のように祖先の側の条件として書けます。
+
 ## `&` が表すもの
 
 `&` は、親のルールに一致した要素を表します。`&:hover` は親の要素自身のホバーで、`& > ._icon` は親の直下の子です。先頭に `&` と結合子のどちらもないセレクタをネストすると、親との間に子孫結合子があるものとして解釈されます。
@@ -147,8 +174,8 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 ```css title="🙅‍♂ Not Recommended: 詳細度の違うセレクタリストの中でネストする"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.action-bar) to (.scoped) {
-  ._command-button,
-  ._toggle[aria-pressed="true"] {
+  button,
+  ._selected-count {
     background-color: oklch(70% 0 0deg);
 
     &:enabled {
@@ -156,7 +183,7 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
     }
   }
 
-  ._command-button {
+  button {
     &[data-variant="danger"] {
       background-color: oklch(55% 0.2 25deg);
     }
@@ -164,28 +191,22 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 }
 ```
 
-`&:enabled` は `:is(._command-button, ._toggle[aria-pressed="true"]):enabled` と同じ意味になり、詳細度は `0.3.0` です。`._command-button` で一致した要素にも、`._toggle[aria-pressed="true"]` の `0.2.0` が使われます。後ろにある `._command-button[data-variant="danger"]` は `0.2.0` なので負け、削除のボタンは赤になりません。親が `._command-button` だけなら、どちらも `0.2.0` になり、後ろに書いた赤が勝ちます。
+このバーには、操作のボタンと、選択中の件数を示す `._selected-count` が並んでいます。2つは角丸や背景色を共有しているので、1つのセレクタリストにまとめています。`&:enabled` は `:is(button, ._selected-count):enabled` と同じ意味になり、詳細度は `0.2.0` です。`button` で一致した要素にも、`._selected-count` の `0.1.0` が使われます。後ろにある `button[data-variant="danger"]` は `0.1.1` なので負け、削除のボタンは赤になりません。親が `button` だけなら、どちらも `0.1.1` になり、後ろに書いた赤が勝ちます。
 
 ```css title="🙆‍♂ Recommended: ネストするルールはセレクタごとに分ける"
 @scope (.scoped.action-bar) to (.scoped) {
-  ._command-button,
-  ._toggle[aria-pressed="true"] {
+  button,
+  ._selected-count {
     background-color: oklch(70% 0 0deg);
   }
 
-  ._command-button {
+  button {
     &:enabled {
       background-color: oklch(50% 0.15 250deg);
     }
 
     &[data-variant="danger"] {
       background-color: oklch(55% 0.2 25deg);
-    }
-  }
-
-  ._toggle {
-    &[aria-pressed="true"]:enabled {
-      background-color: oklch(50% 0.15 250deg);
     }
   }
 }
@@ -201,7 +222,7 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 
 <Demo title="詳細度の違うセレクタリストの中でネストしたボタン" html={listHtml} css={listCss} variant="not-recommended" />
 
-下のデモでも、`._command-button[data-variant="danger"]` のルールそのものは有効で、開発者ツールにも表示されます。打ち消し線が引かれ、勝っているのが `:enabled` のルールだと分かっても、ネストを展開して `:is()` の詳細度を計算しなければ、理由は読み取れません。リストに `._toggle[aria-pressed="true"]` を足した人と、赤が効かないことに気付く人が別の人だと、原因を探すのはさらに難しくなります。
+下のデモでも、`button[data-variant="danger"]` のルールそのものは有効で、開発者ツールにも表示されます。打ち消し線が引かれ、勝っているのが `:enabled` のルールだと分かっても、ネストを展開して `:is()` の詳細度を計算しなければ、理由は読み取れません。リストに `._selected-count` を足した人と、赤が効かないことに気付く人が別の人だと、原因を探すのはさらに難しくなります。
 
 ## セレクタの深さとブロックの深さ
 
@@ -246,7 +267,7 @@ import splitCss from '../../../demos/notation/nesting-split-list/style.css?raw';
 レビューでは、問題の深刻さで指摘を分けます（「[18-2 レビューとAIとの協働](/operations/review-and-ai/)」）。セレクタリストの中のネストで上書きが効かないなら、不具合なので `MUST` です。子自身の見た目を親のネストに書いているだけで、今は正しく表示されているなら、本書の規約を採用したプロジェクトでは `MUST`、そうでなければ `IMO` として伝えます。直下の子の `& >` がマークアップの都合なのか意図した制約なのかがコードから読み取れないときは、`Q` で尋ねます。
 
 ```text title="レビューの指摘の例"
-[MUST] `._command-button, ._toggle[aria-pressed="true"]` の中の `&:enabled` は、詳細度が 0.3.0 になり、後ろの `._command-button[data-variant="danger"]`（0.2.0）に勝ってしまいます。削除のボタンが赤くなりません。`&:enabled` を `._command-button` と `._toggle` のルールに分けてください（`no-nesting-under-selector-list`）。
+[MUST] `button, ._selected-count` の中の `&:enabled` は、詳細度が 0.2.0 になり、後ろの `button[data-variant="danger"]`（0.1.1）に勝ってしまいます。削除のボタンが赤くなりません。`&:enabled` は `button` のルールに移してください（`no-nesting-under-selector-list`）。
 ```
 
 ネストの深さ、詳細度、宣言の順番はツールで検査できますが、ネストしたルールの持ち主が正しいかどうかは、ツールでは判断できません。本書の設定で機械的に検査しているのは、`&` で始まるかどうかと、条件付きのアットルールの位置と、ルールの中の並び順です。この節の判断は、レビューで確かめます。

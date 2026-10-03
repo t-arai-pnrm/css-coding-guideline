@@ -48,12 +48,12 @@ import markerCss from '../../../demos/decoration/list-marker/style.css?raw';
 /* 🙅‍♂ Not Recommended */
 .frame {
   position: relative;
-}
 
-.frame::after {
-  content: "";
-  display: block;
-  padding-top: calc(9 / 16 * 100%);
+  &::after {
+    content: "";
+    display: block;
+    padding-top: calc(9 / 16 * 100%);
+  }
 }
 
 .frame img {
@@ -260,15 +260,17 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 ```css title="🙅‍♂ Not Recommended: border を組み合わせて三角形を作る"
 /* 🙅‍♂ Not Recommended */
-._tooltip::after {
-  --_size: 16px;
+._tooltip {
+  &::after {
+    --_size: 16px;
 
-  content: "";
+    content: "";
 
-  /* ... */
-  border-block-start: calc(var(--_size) / 2 * tan(60deg)) solid;
-  border-inline-start: calc(var(--_size) / 2) solid transparent;
-  border-inline-end: calc(var(--_size) / 2) solid transparent;
+    /* ... */
+    border-block-start: calc(var(--_size) / 2 * tan(60deg)) solid;
+    border-inline-start: calc(var(--_size) / 2) solid transparent;
+    border-inline-end: calc(var(--_size) / 2) solid transparent;
+  }
 }
 ```
 
@@ -284,22 +286,22 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 ._tooltip {
   position: relative;
-}
 
-._tooltip::after {
-  --_size: 16px;
+  &::after {
+    --_size: 16px;
 
-  content: "";
+    content: "";
 
-  /* ツールチップの下端の中央から、下へ突き出す */
-  position: absolute;
-  inset-block-start: 100%;
-  inset-inline-start: 50%;
-  clip-path: var(--shape--triangle-bottom);
-  inline-size: var(--_size);
-  block-size: calc(var(--_size) / 2 * tan(60deg));
-  background-color: inherit;
-  translate: -50% 0;
+    /* ツールチップの下端の中央から、下へ突き出す */
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 50%;
+    clip-path: var(--shape--triangle-bottom);
+    inline-size: var(--_size);
+    block-size: calc(var(--_size) / 2 * tan(60deg));
+    background-color: inherit;
+    translate: -50% 0;
+  }
 }
 ```
 
@@ -312,18 +314,20 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 アイコンは、SVGを `mask-image` のマスクにして描く方法もあります。テンプレートでは、矢印のアイコンをdata URIのトークン（`--chevron--rightward` など）として定義し、擬似要素の `mask-image` で参照しています。色は `background-color` で塗るので、文字色やホバーの状態に合わせて変えられます。
 
 ```css title="🙆‍♂ Recommended: マスクで切り抜き、背景色で塗る"
-._more::after {
-  content: "";
+._more {
+  &::after {
+    content: "";
 
-  /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
-  display: inline flow-root;
-  mask-image: var(--chevron--rightward);
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  inline-size: 1em;
-  aspect-ratio: 1;
-  background-color: var(--background-current);
+    /* 空の擬似要素はインラインになり、幅と高さが効かないので、箱を作る */
+    display: inline flow-root;
+    mask-image: var(--chevron--rightward);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    inline-size: 1em;
+    aspect-ratio: 1;
+    background-color: var(--background-current);
+  }
 }
 ```
 
@@ -483,9 +487,11 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 `<ol>` の番号の色や太さを変えたいときは、`::marker` を使います。リストの意味を保ったまま、`color`、`font-*`、`content` を指定できます。
 
 ```css title="🙆‍♂ Recommended: マーカーの色と太さを ::marker で変える"
-._step::marker {
-  color: var(--color--accent--500);
-  font-weight: 700;
+._step {
+  &::marker {
+    color: var(--color--accent--500);
+    font-weight: 700;
+  }
 }
 ```
 

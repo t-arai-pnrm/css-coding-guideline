@@ -58,11 +58,11 @@ import Guideline from '../../../components/Guideline.astro';
       transition-property: rotate, color;
       transition-timing-function: var(--ease--in-out-quint), var(--ease--out-quad);
     }
-  }
 
-  :scope[aria-expanded="true"] ._icon {
-    color: var(--color--accent--600);
-    rotate: 0.5turn;
+    &:is(:scope[aria-expanded="true"] *) {
+      color: var(--color--accent--600);
+      rotate: 0.5turn;
+    }
   }
 }
 ```

@@ -1,0 +1,209 @@
+---
+title: "10-8 レイアウト手法の選び方"
+description: "要素を並べる手法は、作るものの種類で選びます。見出しと段落が続く文章は通常フローのまま組み、部品の配置はまず親の grid-template で決められないかを検討します。中身の量で幅が決まる並びにはFlexboxを、文章を要素のまわりに回り込ませる配置にはfloatを使います。"
+sidebar:
+  order: 8
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import floatCornerHtml from '../../../demos/layout/float-corner/index.html?raw';
+import floatCornerCss from '../../../demos/layout/float-corner/style.css?raw';
+
+要素を並べる手法は、作るものの種類で選びます。見出しと段落が続く文章は、何も指定しない通常フローのまま組みます。文章でない部品の配置は、まず親の `grid-template` で子要素の位置と大きさを決められないかを検討し、タグやメニューのように中身の量で幅が決まる要素の並びにはFlexboxを使います。
+
+`float` は古い手法と見なされがちですが、文章を要素のまわりに回り込ませる配置では、今でもいちばん崩れにくい手法です。画像に文字を回り込ませる場面のほか、モーダルの閉じるボタンや右上の装飾の画像を文章の角に置く場面でも、私は `position: absolute` ではなく `float` を使います。この節では、よくある実装を例に、どの手法を選ぶかとその理由を説明します。各手法の仕組みは、10-2〜10-7で説明しています。
+
+## 手法を選ばずに組むと起きること
+
+FlexboxとGridが普及してから、要素を並べるときに、まず `display: flex` を書く人は少なくありません。AIが生成するコードにも同じ傾向があり、配置をFlexboxで組み、それで収まらない要素は `position: absolute` で位置を合わせがちです。どちらも見た目は再現できますが、手法の得意な仕事と作るものの性質が合っていないと、内容や幅が変わったときに崩れます。
+
+たとえば、カードを3列の格子状に並べるとき、Flexboxで書くと次のようになります。親で折り返しと間隔を指定し、子要素の幅は「親の幅から間隔の合計を引き、列数で割る」という計算で決めています。
+
+```css title="🙅‍♂ Not Recommended: 格子状の並びを、子要素の幅の計算で作る"
+/* 🙅‍♂ Not Recommended */
+._card-list {
+  display: block flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  & > * {
+    flex-basis: calc((100% - 16px * 2) / 3);
+  }
+}
+```
+
+この書き方では、子要素が親の間隔と列数を知っている必要があります。間隔を24pxに変えたら、子要素の計算式も直さなければなりません。レイアウトを決める情報が親と子に分かれているので、どちらか一方だけを直して崩れる、という事故が起きやすくなります。
+
+位置指定でも、似たことが起きます。モーダルの右上に閉じるボタンを `position: absolute` で置くと、ボタンは通常フローから外れ、文章はボタンのある場所を避けません。広い画面では見出しの右に余白があって重なりませんが、狭い画面では長い見出しがボタンの下に潜り込み、読めなくなります。見出しの `padding-inline-end` でボタンを避けると、今度はボタンの大きさを変えるたびに、見出しの余白も直さなければなりません。
+
+よく「1次元ならFlexbox、2次元ならGrid」と言われますが、この基準では、上のどちらの問題も避けられません。ナビゲーション、本文、サイドバーを横に並べるページの段組みは1次元のレイアウトですが、Gridのほうが簡潔に書けます。文章と閉じるボタンの関係は、そもそも次元の数では説明できません。手法は、配置を何が決めるのか（親の指定か、子の中身の量か、文章の流れか）で選ぶほうが、作るものの性質と食い違わないと私は考えています。
+
+## よくある実装と選ぶ手法
+
+私が手法を選ぶ順番は、次のとおりです。まず、作るものが文章かどうかを確かめ、文章なら通常フローのまま組みます。文章でなければ、親の `grid-template` で配置と大きさを決められないかを検討し、子の中身の量で並べたいときだけFlexboxに切り替えます。文章の中に要素を置き、文章をそのまわりに流したいときは `float` を使います。
+
+| よくある実装 | 選ぶ手法 | 理由 |
+|---|---|---|
+| 見出しと段落が続く記事の本文 | 通常フロー | マージンの相殺と `float` の回り込みが働く |
+| カードを格子状に並べる一覧 | Grid | 列の数と幅を親で決められる |
+| ナビゲーション、本文、サイドバーの段組み | Grid | 各列の幅を親の1行で読める |
+| ロゴ、ナビゲーション、ボタンを並べたヘッダー | Grid | 中央の要素をヘッダーの中央に置ける |
+| 幅によって画像と本文の配置が変わるカード | Grid | エリアのテンプレートを書き換えるだけで済む |
+| タグの一覧やメニューの並び | Flexbox | 子の幅を決めずに、中身の量で並べて折り返せる |
+| 最後のリンクだけを行末へ寄せるナビゲーション | Flexbox | `auto` の `margin` が余った空間を吸収する |
+| 部品の中の要素を同じ間隔で縦に積む | Flexbox | `gap` で間隔をそろえられる |
+| 画像に文章を回り込ませる | `float` | 回り込みは `float` にしかできない |
+| 文章の角に置く閉じるボタンや装飾の画像 | `float` | 文字が要素の下に隠れない |
+
+要素を重ねる配置（画像の上に文字を置くなど）は、表に含めていません。重ねるときも、`position: absolute` の前に、Gridの同じエリアに置く方法を検討します。その理由は「[10-11 重なりと全幅](/layout/layering/)」で説明しています。
+
+## 文章は通常フローで組む
+
+見出し、段落、リスト、図が続く記事の本文は、ワープロで書いた文書と同じ構造です。通常フローは、この構造のための方式で、ブロックは上から下へ積まれ、文字は行の中を流れます。`display` を変えずに、子の `margin` で間隔を作れば足ります。
+
+本文をFlexboxやGridにして `gap` で間隔を作ると、通常フローの2つの仕組みが働かなくなります。1つは `float` で、フレックスアイテムとグリッドアイテムでは無視されるので、本文の中の画像に文字を回り込ませられません。もう1つはマージンの相殺です。通常フローなら隣り合う `margin` は大きいほうだけが効きますが、`gap` の中では `margin` が `gap` に足されるので、見出しの前だけ広げるといった調整の結果を読みにくくなります。
+
+```css title="🙅‍♂ Not Recommended: 記事の本文を Flexbox にして gap で間隔を作る"
+/* 🙅‍♂ Not Recommended */
+._content {
+  display: block flex;
+  flex-direction: column;
+  gap: 16px;
+}
+```
+
+本書では、本文の流れの間隔を、コンポジション `prose` で作ります（「[11-11 prose](/compositions/prose/)」）。2つ目以降の子に `margin-block-start` を付けるだけで、`display` は変えません。間隔を `gap` ではなく `margin` で作る理由は、「[10-9 余白を設計する](/layout/spacing/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 本文は通常フローのまま、2つ目以降の子に margin を付ける"
+.prose {
+  & > * + * {
+    margin-block-start: var(--prose--space, 0);
+  }
+}
+```
+
+一方、カードの中の番号、見出し、説明文、リンクのように、構成が決まっていて間隔を一律にしてよい部品の中身は、Flexboxで縦に積み、`gap` で間隔をそろえます。この並び方は、コンポジション `stack` にしています（「[11-1 stack](/compositions/stack/)」）。ただし、`gap` も配置の指定も書かずに `display: block flex` と `flex-direction: column` だけを書くと、通常フローで積んだときとほぼ同じ並びになり、マージンの相殺が止まるといった違いが増えるだけです。Flexboxに切り替えるときは、切り替えて何を得るのかを説明できるようにしておきます。
+
+## 配置を親で決めるならGrid
+
+文章でない部品の配置は、まず親の `grid-template` で決められないかを検討します。Gridなら、列や行の数と大きさを親の指定だけで決められ、子要素の側に幅の計算や個別の指定を書かずに済みます。先ほどのカードの一覧も、ページの段組みも、親の指定だけで書けます。
+
+```css title="🙆‍♂ Recommended: 列の数と幅を親で決める"
+._card-list {
+  display: block grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+._page {
+  display: block grid;
+  grid-template-columns: calc(240 / 16 * 1rem) minmax(0, 1fr) calc(320 / 16 * 1rem);
+}
+```
+
+`grid-template-columns` を読めば、何列でどういう幅なのかが1行で分かります。子要素の側には、配置のための指定が何もありません。同じ段組みをFlexboxで書くと、両端の子には `flex-shrink: 0` と `flex-basis` を、真ん中の子には `flex-grow: 1` を指定することになり、3つの子のCSSを読み合わせないと全体の形が分かりません。列の幅を `1fr` ではなく `minmax(0, 1fr)` と書いている理由は、「[10-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
+
+Gridの利点が大きいもう1つの例は、ロゴ、ナビゲーション、ボタンを左端、中央、右端に置くヘッダーです。`grid-template-columns: 1fr auto 1fr` と書くと、左右の列が同じ幅になるので、中央の列はヘッダーのちょうど真ん中に置かれます。ただし、`1fr` は `minmax(auto, 1fr)` として扱われ、列の最小幅は中身の最小幅（`min-content`）になるので、中央のリンクが増えると、左右の列はロゴやボタンの文字が折り返されるところまで縮みます。左右の列の最小値を `max-content` にすれば、中身は折り返されず、列も中身の幅より狭くなりません。
+
+```css title="🙆‍♂ Recommended: 左右の列が中身より狭くならないようにする"
+._header {
+  display: block grid;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+  align-items: center;
+
+  & > :last-child {
+    justify-self: end;
+  }
+}
+```
+
+左右が均等になるのは、ヘッダーの幅が「中央の列の幅＋左右の中身の大きいほうの幅×2」以上のときです。それより狭いと、大きいほうの列は中身の幅で固定され、残りが小さいほうの列に回るので、中央の列は小さいほうへずれます。3つの中身の合計より狭い画面でははみ出すので、狭い画面では別の配置に切り替える前提の書き方です。同じ配置をFlexboxの `justify-content: space-between` で書くと、左右の中身の幅が違うだけで、中央の要素が真ん中からずれます。
+
+幅によって画像と本文の配置が変わるカードも、Gridで組みます。エリアに名前を付けたテンプレートを条件ごとに書き換えれば、子要素の配置の指定は1か所ずつで済みます。書き方は「[10-6 Gridの基礎](/layout/grid-basics/)」で、並べたカードの中の見出しやボタンの位置をサブグリッドでそろえる方法とあわせて説明しています。
+
+## 中身の量で並べるならFlexbox
+
+GridはFlexboxの上位互換ではありません。タグの一覧やグローバルナビゲーションのリンクは、1つずつ文字数が違います。`repeat(4, 1fr)` のように親が列の幅を決めると、短いタグにも長いタグと同じ幅が割り当てられてしまいます。Flexboxなら、子要素の幅を決めずに並べるだけで、入りきらない要素は次の行へ折り返されます。この並び方は、コンポジション `cluster` にしています（「[11-2 cluster](/compositions/cluster/)」）。
+
+一部の要素だけを行末側へ寄せる場面も、Flexboxが得意です。フレックスアイテムの `auto` の `margin` は、余った空間をすべて吸収します。ヘッダーのナビゲーションで、最後のアカウントのリンクだけを右端へ寄せるなら、その要素に `margin-inline-start: auto` を指定します。
+
+```css title="🙆‍♂ Recommended: auto の margin で、最後の要素だけを行末へ寄せる"
+._global-nav {
+  display: block flex;
+  gap: 16px;
+  align-items: center;
+
+  & > ._account {
+    margin-inline-start: auto;
+  }
+}
+```
+
+余白の吸収先が1か所に決まるので、ナビゲーションの項目が増減しても、アカウントのリンクは行末に残ります。空の要素を置いて `flex-grow` で押し広げる書き方は、要素が増えるだけなので使いません。全体を均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。余白がなくなったときは、`auto` の `margin` も縮み、ほかのフレックスアイテムと同じように折り返しや縮小の対象になります。
+
+固定幅のサイドと伸び縮みするメインの2カラムも、Flexboxが得意な配置です。メインの `flex-grow` をサイドよりはるかに大きくしておくと、幅に余裕があるうちは横に並び、足りなくなるとクエリなしで縦に積まれます。Gridでは、列の数を切り替えるためにクエリが必要です。この配置は、コンポジション `sidebar` にしています（「[11-5 sidebar](/compositions/sidebar/)」）。
+
+## 文章を避けて置くならfloat
+
+`float` は、レイアウトのために使われていた時代の印象から、古い手法と見なされがちです。しかし、`float` の本来の用途は、要素を行の端に寄せ、その横と下に文章を回り込ませることです。この配置はFlexboxでもGridでも作れず、回り込みの形を変える `shape-outside` も `float` を前提にしています。
+
+画像に文字を回り込ませるときは、画像に `float` を、囲む要素に `display: flow-root` を指定します。`flow-root` を指定した要素は、中の `float` の要素を内側に収めるので、レイアウトのために `float` を使っていた時代のclearfixは要りません。
+
+```css title="🙆‍♂ Recommended: 回り込みには float を使い、flow-root で内側に収める"
+._description {
+  display: block flow-root;
+}
+
+._figure {
+  float: inline-end;
+  inline-size: min(50%, calc(320 / 16 * 1rem));
+  margin-inline-start: 16px;
+}
+```
+
+`float` の値は、`right` ではなく `inline-end` と論理値で書きます。論理値にそろえる理由は「[7-5 論理プロパティと論理値](/notation/logical-properties/)」で説明しています。
+
+同じ仕組みは、文章の角に要素を置く場面でも使えます。右上に装飾の画像を置くカードを考えます。`position: absolute` で置くと、文章は画像を避けないので、狭い画面では文字が画像に重なります。Gridで画像の列を作ると、重なりはしませんが、文章は画像より下の空いた場所へ回り込めず、画像の列の下に縦長の余白が残ります。`float` なら、文章は画像の横を流れ、画像より下では幅いっぱいに広がります。
+
+モーダルの閉じるボタンも同じです。ボタンを `float: inline-end` で上端の角に置けば、見出しや本文はボタンを避けて折り返すので、画面が狭くなっても文字がボタンの下に隠れません。スクロールしてもボタンを上端に留めたいときは、`float` に `position: sticky` を組み合わせます。
+
+```css title="🙆‍♂ Recommended: 閉じるボタンを float で角に置き、sticky で上端に留める"
+._body {
+  --_padding-block: 16px;
+  --_padding-inline: 24px;
+
+  display: block flow-root;
+  padding-block: var(--_padding-block);
+  padding-inline: var(--_padding-inline);
+
+  & > ._close {
+    position: sticky;
+    inset-block-start: 0;
+    float: inline-end;
+    inline-size: calc(44 / 16 * 1rem);
+    aspect-ratio: 1;
+    margin-block-start: calc(var(--_padding-block) * -1);
+    margin-inline: 16px calc(var(--_padding-inline) * -1);
+  }
+}
+```
+
+`position: sticky` の要素は、レイアウト上の位置を保ったまま、スクロールに合わせて描画される位置だけがずれます。そのため、文章はボタンの元の位置を避けて回り込み、ボタン自身は上端に留まります。負の `margin` は、本文の領域の `padding` の分だけボタンを戻し、パネルの角に合わせるための指定です。
+
+次のデモでは、上のパネルが閉じるボタンの例、下のカードが装飾の画像の例です。パネルをスクロールすると、閉じるボタンが上端に留まります。幅のボタンで320pxを選ぶと、見出しと本文がボタンや画像を避けて折り返し、画像より下では幅いっぱいに広がることを確かめられます。
+
+<Demo title="閉じるボタンと装飾の画像を float で文章の角に置く" html={floatCornerHtml} css={floatCornerCss} />
+
+HTMLでは、`float` の要素を、回り込む文章より先に書く必要があります。そのため、モーダルでは閉じるボタンが見出しより先に読み上げられ、フォーカスも先に移ります。見出しを先に読ませたいときは、本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定します。値を `-1` に限る理由と、`reading-flow` に対応したブラウザの状況は「[10-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」で説明しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [Modal](https://codepen.io/tak-dcxi/pen/RNPvmQr)（CodePen、TAK、2025年12月）：閉じるボタンを `float` と `position: sticky` で置くモーダルの実装例
+- [float - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/float)
+- [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)

@@ -69,8 +69,10 @@ import profileCss from '../../../demos/pseudo/profile-form-states/style.css?raw'
 
 ```css title="🙅‍♂ Not Recommended: input:read-only で読み取り専用の入力欄を選ぶ"
 /* 🙅‍♂ Not Recommended */
-input:read-only {
-  background-color: oklch(95% 0 0deg);
+input {
+  &:read-only {
+    background-color: oklch(95% 0 0deg);
+  }
 }
 ```
 
@@ -103,8 +105,10 @@ input:read-only {
 
 ```css title="🙅‍♂ Not Recommended: :not(:placeholder-shown) を「入力済み」の意味で使う"
 /* 🙅‍♂ Not Recommended */
-input:not(:placeholder-shown) {
-  border-color: var(--color--accent--600);
+input {
+  &:not(:placeholder-shown) {
+    border-color: var(--color--accent--600);
+  }
 }
 ```
 

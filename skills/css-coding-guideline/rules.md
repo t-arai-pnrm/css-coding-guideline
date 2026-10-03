@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.18.0
+- バージョン: 0.19.0
 - 生成日: 2026-10-02
-- ルールの数: 501
+- ルールの数: 503
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -268,6 +268,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: `view-transition-name` の名前にも付けます。コンテナの名前は、第12章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
   - 自動チェック: Stylelint: `keyframes-name-pattern`（`@keyframes` のみ）
   - 詳細: 7-1 命名規則（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/naming.mdx）
+- 【必須】要素自身の擬似クラス・擬似要素・属性の状態は、主語のセレクタに連結せず（`[popover]:popover-open`、`._link::after`）、主語のルールの中に `&:popover-open` のようにネストして書く。（`nest-own-states`）
+  - 理由: 要素がどの状態でどう見えるかが1つのルールの中にまとまり、基本のスタイルを変える人が状態のルールを見落とさないため。親が1つのセレクタなら、展開した結果と詳細度は連結と同じになる。
+  - 補足: ネストは2層まで、`&` で始めるという規約（`nesting-depth-one`、`nested-selector-ampersand`）の中で書きます。親（祖先）の状態で子の見た目を変えるときは、第2章のルール `is-for-ancestor-context` に従い、子のルールの中に `&:is(:scope[aria-expanded="true"] *)` のように書きます（擬似要素なら `&:is(:scope[open] *)::after`）。詳細度の違うセレクタリストの中では、ネストせずにセレクタごとのルールに分けます（`no-nesting-under-selector-list`）。
+  - 詳細: 7-2 ネストとプロパティの並び順（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-and-order.mdx）
 - 【禁止】`&__title` や `&--large` のように、`&` に文字をつなげてクラス名を作らない。（`no-nesting-concatenation`）
   - 理由: Sass の書き方で、素の CSS では無効なセレクタになり、ルールごと無視されるため。
   - 詳細: 7-2 ネストとプロパティの並び順（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-and-order.mdx）
@@ -431,6 +435,14 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 負の線番号は明示的なグリッドの終わりから数え、暗黙のトラックを数に入れないので、アイテムが途中のトラックで止まるため。
   - 補足: 列を明示的に決めたグリッドで、端から端までまたがらせる `grid-column: 1 / -1` は使えます。明示的な行がないグリッドの `grid-row: 1 / -1` は、1行分にしかまたがりません。
   - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。（`subgrid-for-aligned-rows`）
+  - 理由: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
+  - 補足: `flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
+  - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
+  - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
 - 【推奨】絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。（`absolute-centering-with-margin-auto`）
   - 理由: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
   - 補足: `inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。
@@ -458,15 +470,11 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討する。（`grid-template-first`）
   - 理由: 配置が親の指定だけで完結し、子要素の側に幅の計算や個別の指定を書かずに済むため。
   - 補足: 「1次元なら Flexbox、2次元なら Grid」という分け方は正確ではありません。1列や1行の並びでも、Grid のほうが簡潔に書ける場面は多くあります。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。（`subgrid-for-aligned-rows`）
-  - 理由: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
-  - 補足: `flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
-  - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
-  - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 10-8 レイアウト手法の選び方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/choosing.mdx）
+- 【推奨】文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませる。（`float-for-corner-elements`）
+  - 理由: 画面の幅や文章の量が変わっても文字が要素の下に隠れず、要素より下の空いた場所には文章が広がるため。
+  - 補足: スクロールしても上端に留めたい閉じるボタンは、`float` に `position: sticky` と `inset-block-start: 0` を組み合わせます。
+  - 詳細: 10-8 レイアウト手法の選び方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/choosing.mdx）
 - 【推奨】Flexbox や Grid の子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作る。（`gap-over-child-margin`）
   - 理由: 端の要素の余白を打ち消す指定が要らず、折り返したときに行の頭へ余計な余白が残ることもないため。
   - 詳細: 10-9 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
@@ -528,9 +536,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: エリアの文字列を含む `grid-template` と `grid`、逆順を含む `flex-flow` も対象です。Grid には `grid-rows` か `grid-columns`、Flexbox には `flex-visual` か `flex-flow` を選びます。空のセル（`.`）を含まず、エリアの名前が1種類しかないテンプレート（`"--pile"` のように、すべての子を同じセルに重ねるもの）は、並べ替えにならないので対象外です。子の `order` や明示的な `grid-row`・`grid-column` で並べ替えるときも親のコンテナに指定しますが、これは Stylelint では検出できません。
   - 自動チェック: Stylelint: `book/reading-flow-when-reordered`（本書の独自ルール）
   - 詳細: 10-14 表示順と読み上げ順を合わせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/reading-flow.mdx）
-- 【非推奨】子に `reading-order` を指定して、読む順番を要素ごとに上書きしない。（`no-reading-order`）
-  - 理由: 見た目の順番、DOM の順番、読む順番がそれぞれ別の指定で決まり、読む順番を知るために各子の値を集めて並べ直す必要が生じるため。
-  - 補足: 読む順番を変えたいときは、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。
+- 【必須】`order` と `reading-order` の値には、`1` か `-1` だけを使う。（`order-one-or-minus-one`）
+  - 理由: 初期値の0に対して「ほかのすべての子より後」か「前」かが1つの値で読み取れ、各子の値を集めて並べ直さなくても順番が分かるため。
+  - 補足: z-index の相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）に限るのと同じ考え方です。2つ以上の子の順番を入れ替えたくなったら、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。`order` で見た目の順番を入れ替えるときは、ルール `flexbox-no-visual-reorder` と `reading-flow-when-reordered` にも従います。
+  - 自動チェック: Stylelint: `declaration-property-value-allowed-list`
   - 詳細: 10-14 表示順と読み上げ順を合わせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/reading-flow.mdx）
 - 【推奨】構成が決まっていて、間隔を一律にしてよい要素を縦に積むときは `stack` を、見出しや段落、図が続き、子ごとに間隔を変えたい本文の流れには `prose` を使う。（`stack-vs-prose`）
   - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
@@ -648,8 +657,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: `pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第16章）。
   - 詳細: 12-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】375px 未満の画面では、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。（`fixed-viewport-below-min-width`）
-  - 理由: 300px 前後の折りたたみ端末のような画面まで CSS で崩さずに組むのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、レイアウトは崩れないため。
-  - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなり、ブラウザのズームでも小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
+  - 理由: 300px 前後の折りたたみ端末のような画面まで見た目をカンプに合わせて整えるのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、カンプに近い見た目を保てるため。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
+  - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなります。ズームしたときの `outerWidth` はブラウザで違い、Chrome では変わりませんが、Firefox では小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
   - 詳細: 12-4 375px未満の画面ではビューポートを固定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
 - 【禁止】カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。（`no-full-liquid-scaling`）
   - 理由: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。
@@ -1390,7 +1399,11 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 7-2 ネストとプロパティの並び順（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-and-order.mdx）
 - 【推奨】ネストするのは、要素自身の擬似クラス・擬似要素・属性の状態、レイアウトに欠かせない直下の子、条件付きのアットルールに限る。（`nest-own-states-only`）
   - 理由: 1つの要素のスタイルが1か所にまとまり、独立した要素のスタイルを親のルールに抱え込まずに済むため。
-  - 補足: 独立した基本のスタイルを持つ子要素は、ネストせずに同じ階層に並べます。
+  - 補足: 独立した基本のスタイルを持つ子要素は、ネストせずに同じ階層に並べます。状態の書き方は `nest-own-states` に、祖先の状態で変わるスタイルは `is-for-ancestor-context` に従います。
+  - 詳細: 7-2 ネストとプロパティの並び順（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-and-order.mdx）
+- 【必須】要素自身の擬似クラス・擬似要素・属性の状態は、主語のセレクタに連結せず（`[popover]:popover-open`、`._link::after`）、主語のルールの中に `&:popover-open` のようにネストして書く。（`nest-own-states`）
+  - 理由: 要素がどの状態でどう見えるかが1つのルールの中にまとまり、基本のスタイルを変える人が状態のルールを見落とさないため。親が1つのセレクタなら、展開した結果と詳細度は連結と同じになる。
+  - 補足: ネストは2層まで、`&` で始めるという規約（`nesting-depth-one`、`nested-selector-ampersand`）の中で書きます。親（祖先）の状態で子の見た目を変えるときは、第2章のルール `is-for-ancestor-context` に従い、子のルールの中に `&:is(:scope[aria-expanded="true"] *)` のように書きます（擬似要素なら `&:is(:scope[open] *)::after`）。詳細度の違うセレクタリストの中では、ネストせずにセレクタごとのルールに分けます（`no-nesting-under-selector-list`）。
   - 詳細: 7-2 ネストとプロパティの並び順（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-and-order.mdx）
 - 【必須】ネストしたセレクタは、`&:hover` や `& > ._icon` のように `&` で始める。（`nested-selector-ampersand`）
   - 理由: 親のセレクタとの関係（自身の状態か、直下の子か、子孫か）が、先頭を見ただけで分かるため。
@@ -1418,7 +1431,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 親のレイアウトを変えるときに一緒に見直す宣言が親のルールの中にまとまり、子を別の親に移しても子自身の見た目が失われないため。
   - 補足: 子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第8章のルール `parent-owns-child-placement` で扱います。
   - 詳細: 7-3 ネストの判断基準（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-criteria.mdx）
-- 【推奨】詳細度の違うセレクタを並べたセレクタリスト（`._button, ._toggle[aria-pressed="true"]`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。（`no-nesting-under-selector-list`）
+- 【推奨】詳細度の違うセレクタを並べたセレクタリスト（`button, ._selected-count`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。（`no-nesting-under-selector-list`）
   - 理由: `&` の詳細度は親のセレクタリストを `:is()` で包んだものと同じになり、詳細度の低いほうのセレクタで一致した要素にも、リストの中でいちばん高い詳細度が付くため。
   - 補足: 宣言だけのセレクタリストと、条件付きのアットルールのネストは、詳細度を変えないので対象にしません。
   - 自動チェック: Stylelint に対応する設定がないため、レビューで確認する
@@ -1719,6 +1732,35 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: トラックを足したり減らしたりしてもアイテムの指定を直さずに済み、どの位置に置くのかがコードから読み取れるため。
   - 補足: `--content-start` と `--content-end` の組を付けると、`grid-column: --content` で置けます。名前を書き間違えるとエラーにならず、アイテムが明示的なグリッドの外に置かれます。端から端までの `1 / -1` や、数でまたがる `span 2` は番号のままでかまいません。名前の付け方は第7章のルール `dashed-ident-names` で扱います。
   - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】幅や中身によって配置の構造が変わるレイアウトは、`grid-template` のエリアで書き、条件ごとにテンプレートだけを書き換える。（`grid-areas-for-changing-structure`）
+  - 理由: 配置の変化が1か所にまとまり、子要素ごとに条件を書かずに済むため。
+  - 補足: エリアの名前を `--` で始める規則は、第7章のルール `dashed-ident-names` で扱います。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】グリッドのエリアの名前は、そのエリアに置く子要素のクラス名とそろえる（`._image` を置くエリアは `--image`）。（`grid-area-names-match-children`）
+  - 理由: `grid-template` の図と、各要素の `grid-area` の対応をすぐに読み取れるため。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。（`source-order-for-reading`）
+  - 理由: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
+  - 補足: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は2026年10月の時点で Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。（`subgrid-for-aligned-rows`）
+  - 理由: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
+  - 補足: `flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【必須】`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。（`subgrid-span-rows`）
+  - 理由: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。（`column-width-by-variability`）
+  - 理由: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
+  - 補足: 一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
+  - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
+  - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
+- 【推奨】サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。（`display-contents-keep-role`）
+  - 理由: `display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。
+  - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
 - 【推奨】`position: absolute` の要素の基準にする祖先には、同じコンポーネントの中で `position: relative` を指定する。（`containing-block-inside-component`）
   - 理由: 基準がコンポーネントの外の祖先に決まると、置く場所によって位置が変わるため。
   - 詳細: 10-7 positionの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/positioning.mdx）
@@ -1768,47 +1810,22 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討する。（`grid-template-first`）
   - 理由: 配置が親の指定だけで完結し、子要素の側に幅の計算や個別の指定を書かずに済むため。
   - 補足: 「1次元なら Flexbox、2次元なら Grid」という分け方は正確ではありません。1列や1行の並びでも、Grid のほうが簡潔に書ける場面は多くあります。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 10-8 レイアウト手法の選び方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/choosing.mdx）
 - 【推奨】タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すときは、Flexbox を使う。（`flexbox-for-content-sized-items`）
   - 理由: 子要素の幅を決めずに並べられ、入りきらない要素は自動で次の行へ回るため。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】幅や中身によって配置の構造が変わるレイアウトは、`grid-template` のエリアで書き、条件ごとにテンプレートだけを書き換える。（`grid-areas-for-changing-structure`）
-  - 理由: 配置の変化が1か所にまとまり、子要素ごとに条件を書かずに済むため。
-  - 補足: エリアの名前を `--` で始める規則は、第7章のルール `dashed-ident-names` で扱います。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】グリッドのエリアの名前は、そのエリアに置く子要素のクラス名とそろえる（`._image` を置くエリアは `--image`）。（`grid-area-names-match-children`）
-  - 理由: `grid-template` の図と、各要素の `grid-area` の対応をすぐに読み取れるため。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。（`source-order-for-reading`）
-  - 理由: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
-  - 補足: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は2026年10月の時点で Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。（`subgrid-for-aligned-rows`）
-  - 理由: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
-  - 補足: `flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【必須】`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。（`subgrid-span-rows`）
-  - 理由: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。（`column-width-by-variability`）
-  - 理由: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
-  - 補足: 一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 10-8 レイアウト手法の選び方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/choosing.mdx）
 - 【推奨】Flexbox の並びで一部の要素だけを行末側へ寄せるときは、その要素に `margin-inline-start: auto` を指定し、空の要素や `flex-grow` を使わない。（`flex-auto-margin-for-end-items`）
   - 理由: 余白の吸収先が1か所に決まり、要素の数が変わっても、寄せる位置が変わらないため。
   - 補足: 均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【非推奨】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
-  - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
-  - 補足: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
-- 【推奨】サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。（`display-contents-keep-role`）
-  - 理由: `display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 10-8 レイアウト手法の選び方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/choosing.mdx）
 - 【推奨】画像のまわりに文字を回り込ませるときは `float` を使い、囲む要素には clearfix ではなく `display: flow-root` を指定する。（`float-for-text-wrap`）
   - 理由: 回り込みは `float` の本来の用途で、`flow-root` なら余計な擬似要素なしに `float` を内側に収められるため。
   - 補足: 値は `float: inline-end` のように論理値で書きます。
-  - 詳細: 10-8 Gridから考える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-first.mdx）
+  - 詳細: 10-8 レイアウト手法の選び方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/choosing.mdx）
+- 【推奨】文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませる。（`float-for-corner-elements`）
+  - 理由: 画面の幅や文章の量が変わっても文字が要素の下に隠れず、要素より下の空いた場所には文章が広がるため。
+  - 補足: スクロールしても上端に留めたい閉じるボタンは、`float` に `position: sticky` と `inset-block-start: 0` を組み合わせます。
+  - 詳細: 10-8 レイアウト手法の選び方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/choosing.mdx）
 - 【推奨】Flexbox や Grid の子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作る。（`gap-over-child-margin`）
   - 理由: 端の要素の余白を打ち消す指定が要らず、折り返したときに行の頭へ余計な余白が残ることもないため。
   - 詳細: 10-9 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/spacing.mdx）
@@ -1921,9 +1938,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: エリアの文字列を含む `grid-template` と `grid`、逆順を含む `flex-flow` も対象です。Grid には `grid-rows` か `grid-columns`、Flexbox には `flex-visual` か `flex-flow` を選びます。空のセル（`.`）を含まず、エリアの名前が1種類しかないテンプレート（`"--pile"` のように、すべての子を同じセルに重ねるもの）は、並べ替えにならないので対象外です。子の `order` や明示的な `grid-row`・`grid-column` で並べ替えるときも親のコンテナに指定しますが、これは Stylelint では検出できません。
   - 自動チェック: Stylelint: `book/reading-flow-when-reordered`（本書の独自ルール）
   - 詳細: 10-14 表示順と読み上げ順を合わせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/reading-flow.mdx）
-- 【非推奨】子に `reading-order` を指定して、読む順番を要素ごとに上書きしない。（`no-reading-order`）
-  - 理由: 見た目の順番、DOM の順番、読む順番がそれぞれ別の指定で決まり、読む順番を知るために各子の値を集めて並べ直す必要が生じるため。
-  - 補足: 読む順番を変えたいときは、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。
+- 【必須】`order` と `reading-order` の値には、`1` か `-1` だけを使う。（`order-one-or-minus-one`）
+  - 理由: 初期値の0に対して「ほかのすべての子より後」か「前」かが1つの値で読み取れ、各子の値を集めて並べ直さなくても順番が分かるため。
+  - 補足: z-index の相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）に限るのと同じ考え方です。2つ以上の子の順番を入れ替えたくなったら、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。`order` で見た目の順番を入れ替えるときは、ルール `flexbox-no-visual-reorder` と `reading-flow-when-reordered` にも従います。
+  - 自動チェック: Stylelint: `declaration-property-value-allowed-list`
   - 詳細: 10-14 表示順と読み上げ順を合わせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/reading-flow.mdx）
 
 ### 第11章 レイアウトコンポジション
@@ -2168,8 +2186,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: 2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
   - 詳細: 12-3 メディアクエリとブレイクポイント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】375px 未満の画面では、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。（`fixed-viewport-below-min-width`）
-  - 理由: 300px 前後の折りたたみ端末のような画面まで CSS で崩さずに組むのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、レイアウトは崩れないため。
-  - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなり、ブラウザのズームでも小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
+  - 理由: 300px 前後の折りたたみ端末のような画面まで見た目をカンプに合わせて整えるのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、カンプに近い見た目を保てるため。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
+  - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなります。ズームしたときの `outerWidth` はブラウザで違い、Chrome では変わりませんが、Firefox では小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
   - 詳細: 12-4 375px未満の画面ではビューポートを固定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
 - 【禁止】カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。（`no-full-liquid-scaling`）
   - 理由: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。

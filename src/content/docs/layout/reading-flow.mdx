@@ -1,6 +1,6 @@
 ---
 title: "10-14 表示順と読み上げ順を合わせる"
-description: "読み上げとTabキーのフォーカスはDOMの順番で進むので、見た目だけを並べ替えると順番が食い違います。まずDOMの順番を読む順に合わせ、エリアや逆順で並べるコンテナにはreading-flowを指定します。reading-orderによる要素ごとの上書きは避けます。"
+description: "読み上げとTabキーのフォーカスはDOMの順番で進むので、見た目だけを並べ替えると順番が食い違います。まずDOMの順番を読む順に合わせ、エリアや逆順で並べるコンテナにはreading-flowを指定します。order と reading-order の値は1か-1だけを使います。"
 sidebar:
   order: 14
 ---
@@ -15,7 +15,7 @@ import wrapCss from '../../../demos/layout/reading-flow-wrap-reverse/style.css?r
 
 スクリーンリーダーの読み上げとTabキーのフォーカスは、DOMの順番で進みます。GridやFlexboxで見た目だけを並べ替えると、目で追う順番と、耳やキーボードで追う順番が食い違います。本書では、まずDOMの順番を読む順に合わせ、そのうえで並べ替えを伴うコンテナには `reading-flow` を指定します。
 
-`reading-flow` は、読み上げとフォーカスの順番を見た目の順番に合わせるプロパティです。2026年10月の時点で対応しているのはChromeとEdgeの137以降だけで、未対応のブラウザではDOMの順番のまま読まれます。この節では、`reading-flow` の値の選び方と、子の順番を個別に上書きする `reading-order` を使わない理由も説明します。
+`reading-flow` は、読み上げとフォーカスの順番を見た目の順番に合わせるプロパティです。2026年10月の時点で対応しているのはChromeとEdgeの137以降だけで、未対応のブラウザではDOMの順番のまま読まれます。この節では、`reading-flow` の値の選び方と、子の順番を個別に上書きする `order` と `reading-order` の値を1か-1に限る理由も説明します。
 
 <Baseline id="reading-flow" />
 
@@ -31,7 +31,7 @@ CSSには、DOMの順番を変えずに見た目の順番だけを変える指�
 
 ## まずDOMの順番を読む順に合わせる
 
-並べ替えの問題に対して最初にすることは、DOMの順番を、内容を読む順番に合わせることです。WCAGも、1.3.2を満たす方法として、DOMの順番を見た目の順番に合わせる方法（C27）を挙げています。見出し、本文、操作のように意味の通る順番でHTMLを書けば、CSSが効かなくても内容が伝わります。この考え方は、「[10-8 Gridから考える](/layout/grid-first/)」のルール [`source-order-for-reading`](/layout/grid-first/#rule-source-order-for-reading) と同じです。
+並べ替えの問題に対して最初にすることは、DOMの順番を、内容を読む順番に合わせることです。WCAGも、1.3.2を満たす方法として、DOMの順番を見た目の順番に合わせる方法（C27）を挙げています。見出し、本文、操作のように意味の通る順番でHTMLを書けば、CSSが効かなくても内容が伝わります。この考え方は、「[10-6 Gridの基礎](/layout/grid-basics/)」のルール [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading) と同じです。
 
 `reading-flow` を指定しても、DOMの順番を直さずに済むわけではありません。2026年10月の時点では、SafariとFirefoxは `reading-flow` に対応していないので、これらのブラウザの利用者にはDOMの順番で読まれます。DOMの順番と見た目の順番のどちらで読んでも、意味が通る状態にしておく必要があります。
 
@@ -108,29 +108,47 @@ Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方�
 
 `display: contents` の要素は箱を作らないので、その子が親のグリッドのアイテムとして並びます。Chromeの記事は、レイアウト上の親から `reading-flow` を継承した `display: contents` の要素も、`reading-flow` のコンテナになると説明しています。`reading-flow` は継承しないプロパティなので、継承させるには `reading-flow: inherit` を書きます。
 
-「10-8」のサブグリッドの例のように、カードを包む `li` に `display: contents` を指定した一覧では、DOMの親子と見た目のアイテムが一致しません。こうした一覧に `reading-flow` を指定するときは、対応したブラウザで、Tabキーとスクリーンリーダーの順番を確かめます。{/* 要確認: 出典なし */}
+「10-6」のサブグリッドの例のように、カードを包む `li` に `display: contents` を指定した一覧では、DOMの親子と見た目のアイテムが一致しません。こうした一覧に `reading-flow` を指定するときは、対応したブラウザで、Tabキーとスクリーンリーダーの順番を確かめます。{/* 要確認: 出典なし */}
 
-## `reading-order` で要素ごとに上書きしない
+## `order` と `reading-order` は1か-1だけを使う
 
-`reading-order` は、`reading-flow` が `normal` 以外のコンテナの子に指定し、読む順番を整数で上書きするプロパティです。初期値は0で、値の小さい子から読み、同じ値の子どうしはコンテナの `reading-flow` の順番で読みます。
+`reading-order` は、`reading-flow` が `normal` 以外のコンテナの子に指定し、読む順番を整数で上書きするプロパティです。初期値は0で、値の小さい子から読み、同じ値の子どうしはコンテナの `reading-flow` の順番で読みます。コンテナの `reading-flow: source-order` は、DOMの順番を保ったまま、子の `reading-order` を使うための値です。
 
-```css title="🙅‍♂ Not Recommended: reading-order で子の読む順番を個別に上書きする"
-/* 🙅‍♂ Not Recommended */
-@scope (.scoped.plan-card) to (.scoped) {
-  ._layout {
-    display: block grid;
+`reading-order` が役立つのは、HTMLの順番に制約があり、1つの子だけを先頭か末尾へ動かしたい場面です。たとえば、閉じるボタンを `float` で見出しの横へ置くモーダルでは、`float` の仕組み上、HTMLではボタンを見出しより前へ書く必要があります（「[10-8 レイアウト手法の選び方](/layout/choosing/)」）。本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定すれば、対応したブラウザでは見出しが先に読まれます。
+
+```css title="🙆‍♂ Recommended: 見出しだけを、ほかのすべての子より先に読ませる"
+@scope (.scoped.modal) to (.scoped) {
+  ._body {
+    display: block flow-root;
     reading-flow: source-order;
 
-    & > a {
+    & > h2 {
       reading-order: -1;
     }
   }
 }
 ```
 
-本書では `reading-order` を使いません。`reading-order` を書いたコンテナでは、見た目の順番、DOMの順番、読む順番が別々の指定で決まります。読む順番を知るには、見た目の順番に加えて、各子の `reading-order` の値を集めて並べ直す必要があります。{/* 要確認: 出典なし */}
+値は、`1` か `-1` だけを使います。初期値0のほかの子に対して、`-1` は「すべての子より前」、`1` は「すべての子より後」を表すので、1つの値を見れば意図が分かります。`2` や `10` のような値を使い始めると、読む順番を知るために各子の値を集めて並べ直す必要が生じ、後から子を差し込むたびに値を積み増すことになります。z-indexの相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）の2つに限っているのと同じ考え方です（「[8-4 デザイントークン](/components/design-tokens/)」）。
 
-`reading-order` で順番を作りたくなったときは、HTMLの順番かレイアウトの指定を見直します。読む順番がDOMの順番と違うなら、HTMLの順番を直します。見た目の順番で読ませたいなら、コンテナに `grid-rows` や `flex-visual` を指定すれば、子に個別の値は要りません。
+```css title="🙅‍♂ Not Recommended: order に段階的な値を振って並べ替える"
+/* 🙅‍♂ Not Recommended */
+._plan {
+  & > ._price {
+    order: 2;
+  }
+
+  & > ._features {
+    order: 3;
+  }
+
+  & > ._heading {
+    order: 1;
+  }
+}
+```
+
+FlexboxとGridの子の `order` も、同じ規則に従います。`order` は見た目の順番を変えるプロパティで、読む順番を変える `reading-order` とは働きが違いますが、値を集めて並べ直さないと順番が分からない点は同じです。2つ以上の子の順番を入れ替えたくなったら、HTMLの順番を直すか、コンテナに `grid-rows` や `flex-visual` を指定します。
 
 ## Stylelintでの検出と未対応のブラウザ
 

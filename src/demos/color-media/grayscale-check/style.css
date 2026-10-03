@@ -21,11 +21,11 @@
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
       gap: 16px;
-    }
 
-    /* 簡易的な確認用。実際の確認には OS のグレースケール表示を使う */
-    :scope:has(._switch :checked) ._preview {
-      filter: grayscale(1);
+      /* 簡易的な確認用。実際の確認には OS のグレースケール表示を使う */
+      &:is(:scope:has(._switch :checked) *) {
+        filter: grayscale(1);
+      }
     }
 
     section {

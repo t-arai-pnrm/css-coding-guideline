@@ -41,20 +41,20 @@
       @media (prefers-reduced-motion: no-preference) {
         --_scale-from: 0.96;
       }
-    }
 
-    /* 表示されたときの、トランジションの開始地点 */
-    ._panel:popover-open {
-      @starting-style {
+      /* 表示されたときの、トランジションの開始地点 */
+      &:popover-open {
+        @starting-style {
+          opacity: 0;
+          scale: var(--_scale-from);
+        }
+      }
+
+      /* 閉じるときの、トランジションの終了地点 */
+      &:not(:popover-open) {
         opacity: 0;
         scale: var(--_scale-from);
       }
-    }
-
-    /* 閉じるときの、トランジションの終了地点 */
-    ._panel:not(:popover-open) {
-      opacity: 0;
-      scale: var(--_scale-from);
     }
 
     p {

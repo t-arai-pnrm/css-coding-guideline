@@ -89,6 +89,45 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 
 ネストしたセレクタは、必ず `&` で始めます。`&` がなくてもネストは書けますが、先頭に `&` があれば、それが自身の状態なのか、直下の子なのか、子孫なのかをすぐに読み取れます。宣言は、ネストしたルールや条件付きのアットルールより前に書きます。要素の基本のスタイルが先頭にまとまり、状態や条件による変化が後に続くので、読む順と上書きの順が一致するからです。
 
+## 自身の状態は主語のルールの中に書く
+
+要素自身の擬似クラス、擬似要素、属性の状態は、主語のセレクタに連結せず、主語のルールの中に `&:popover-open` のようにネストして書きます。`[popover]:popover-open` や `._link::after` のように連結して別のルールにすると、同じ要素のスタイルが複数のルールに分かれます。基本のスタイルを変えた人が、離れた場所にある状態のルールに気付かないことがあります。
+
+```css title="🙅‍♂ Not Recommended: 状態を主語のセレクタに連結する"
+/* 🙅‍♂ Not Recommended */
+[popover] {
+  transition-duration: var(--duration--fast);
+  transition-property: opacity, scale;
+}
+
+[popover]:popover-open {
+  @starting-style {
+    opacity: 0;
+    scale: var(--_scale-from);
+  }
+}
+```
+
+AIにCSSを書かせると、この連結の形がよく出てきます。素のCSSでも正しく動くので、エラーにはなりません。しかし、`[popover]` のルールを読んだだけでは、開いたときの始まりの見た目を別のルールで指定していると分かりません。状態をネストすれば、要素がどの状態でどう見えるかを1つのルールの中で読み取れます。
+
+```css title="🙆‍♂ Recommended: 状態を主語のルールの中にネストする"
+@scope (.scoped.share-menu) to (.scoped) {
+  [popover] {
+    transition-duration: var(--duration--fast);
+    transition-property: opacity, scale;
+
+    &:popover-open {
+      @starting-style {
+        opacity: 0;
+        scale: 0.95;
+      }
+    }
+  }
+}
+```
+
+詳細度は、連結しても、ネストしても変わりません。親が1つのセレクタなら、`&:popover-open` を展開した結果は `[popover]:popover-open` と同じです。この規約は書く場所を決めるもので、カスケードの結果は変えません。親の状態によって子の見た目を変える書き方は、「[7-3 ネストの判断基準](/notation/nesting-criteria/)」で説明します。
+
 ## @ルールを層に数えない理由
 
 「2層まで」は、セレクタだけを数えます。`@scope`、`@media`、`@container`、`@supports`、`@layer` は数えません。@ルールまで数えると、`@layer` と `@scope` で2段、その内側のセレクタで2段と、ネストの残り枠がファイルの構造で決まってしまいます。同じセレクタが、置く場所によって書けたり書けなかったりするので、ルールが分散して、どこまで書いてよいのかが分かりにくくなります。

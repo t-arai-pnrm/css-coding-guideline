@@ -94,6 +94,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
    - `node scripts/lint-examples.mjs <MDX ファイル>`：Recommended のコード例
    - `node node_modules/stylelint/bin/stylelint.mjs "src/demos/<章>/**/*.css"`：デモの CSS（`pnpm exec` は権限で拒否される）
    - `node node_modules/textlint/bin/textlint.js <MDX ファイル>`：原稿
+   - `node scripts/find-unnested-states.mjs <MDX や CSS のファイル>`：要素自身の状態をネストせずに連結しているセレクタ（ルール `nest-own-states`）。詳細度の説明などで連結を見せる例は、意図して残してよい
    - YAML の構文：`node -e "require('yaml').parse(require('fs').readFileSync('<ファイル>','utf8'))"`
 7. 共有のファイル（コンポーネント、設定、ほかの章、`CLAUDE.md`、`DECISIONS.md`）は変えない。変える必要があれば報告する。
 

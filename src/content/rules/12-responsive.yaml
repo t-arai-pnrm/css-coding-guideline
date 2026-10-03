@@ -241,8 +241,8 @@
 - id: fixed-viewport-below-min-width
   level: 推奨
   rule: '375px 未満の画面では、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。'
-  reason: 300px 前後の折りたたみ端末のような画面まで CSS で崩さずに組むのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、レイアウトは崩れないため。
-  note: '判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなり、ブラウザのズームでも小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。'
+  reason: 300px 前後の折りたたみ端末のような画面まで見た目をカンプに合わせて整えるのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、カンプに近い見た目を保てるため。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
+  note: '判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなります。ズームしたときの `outerWidth` はブラウザで違い、Chrome では変わりませんが、Firefox では小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。'
   aiProne: true
   page: responsive/min-viewport-width
   since: 0.18.0

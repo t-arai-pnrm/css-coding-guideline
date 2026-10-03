@@ -129,6 +129,69 @@
   page: layout/grid-basics
   since: 0.5.0
 
+- id: grid-areas-for-changing-structure
+  level: 推奨
+  rule: 幅や中身によって配置の構造が変わるレイアウトは、`grid-template` のエリアで書き、条件ごとにテンプレートだけを書き換える。
+  reason: 配置の変化が1か所にまとまり、子要素ごとに条件を書かずに済むため。
+  note: エリアの名前を `--` で始める規則は、第7章のルール `dashed-ident-names` で扱います。
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: grid-area-names-match-children
+  level: 推奨
+  rule: グリッドのエリアの名前は、そのエリアに置く子要素のクラス名とそろえる（`._image` を置くエリアは `--image`）。
+  reason: '`grid-template` の図と、各要素の `grid-area` の対応をすぐに読み取れるため。'
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: source-order-for-reading
+  level: 推奨
+  rule: HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。
+  reason: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
+  note: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は2026年10月の時点で Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: subgrid-for-aligned-rows
+  level: 推奨
+  rule: 並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。
+  reason: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
+  note: '`flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。'
+  aiProne: true
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: subgrid-span-rows
+  level: 必須
+  rule: '`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。'
+  reason: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: column-width-by-variability
+  level: 推奨
+  rule: 'グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。'
+  reason: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
+  note: '一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。'
+  page: layout/grid-basics
+  since: 0.3.0
+
+- id: no-dense-for-ordered-items
+  level: 非推奨
+  rule: '順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。'
+  reason: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
+  note: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
+  aiProne: true
+  page: layout/grid-basics
+  since: 0.4.0
+
+- id: display-contents-keep-role
+  level: 推奨
+  rule: 'サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。'
+  reason: '`display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。'
+  page: layout/grid-basics
+  since: 0.1.0
+
 # 10-7 positionの基礎
 - id: containing-block-inside-component
   level: 推奨
@@ -230,101 +293,47 @@
   page: layout/positioning
   since: 0.12.0
 
-# 10-8 Gridから考える
+# 10-8 レイアウト手法の選び方
 - id: grid-template-first
   level: 推奨
   rule: レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討する。
   reason: 配置が親の指定だけで完結し、子要素の側に幅の計算や個別の指定を書かずに済むため。
   note: 「1次元なら Flexbox、2次元なら Grid」という分け方は正確ではありません。1列や1行の並びでも、Grid のほうが簡潔に書ける場面は多くあります。
   aiProne: true
-  page: layout/grid-first
+  page: layout/choosing
   since: 0.1.0
 
 - id: flexbox-for-content-sized-items
   level: 推奨
   rule: タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すときは、Flexbox を使う。
   reason: 子要素の幅を決めずに並べられ、入りきらない要素は自動で次の行へ回るため。
-  page: layout/grid-first
+  page: layout/choosing
   since: 0.1.0
-
-- id: grid-areas-for-changing-structure
-  level: 推奨
-  rule: 幅や中身によって配置の構造が変わるレイアウトは、`grid-template` のエリアで書き、条件ごとにテンプレートだけを書き換える。
-  reason: 配置の変化が1か所にまとまり、子要素ごとに条件を書かずに済むため。
-  note: エリアの名前を `--` で始める規則は、第7章のルール `dashed-ident-names` で扱います。
-  page: layout/grid-first
-  since: 0.1.0
-
-- id: grid-area-names-match-children
-  level: 推奨
-  rule: グリッドのエリアの名前は、そのエリアに置く子要素のクラス名とそろえる（`._image` を置くエリアは `--image`）。
-  reason: '`grid-template` の図と、各要素の `grid-area` の対応をすぐに読み取れるため。'
-  page: layout/grid-first
-  since: 0.1.0
-
-- id: source-order-for-reading
-  level: 推奨
-  rule: HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。
-  reason: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
-  note: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は2026年10月の時点で Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
-  page: layout/grid-first
-  since: 0.1.0
-
-- id: subgrid-for-aligned-rows
-  level: 推奨
-  rule: 並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。
-  reason: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
-  note: '`flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。'
-  aiProne: true
-  page: layout/grid-first
-  since: 0.1.0
-
-- id: subgrid-span-rows
-  level: 必須
-  rule: '`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。'
-  reason: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
-  page: layout/grid-first
-  since: 0.1.0
-
-- id: column-width-by-variability
-  level: 推奨
-  rule: 'グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。'
-  reason: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
-  note: '一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。'
-  page: layout/grid-first
-  since: 0.3.0
 
 - id: flex-auto-margin-for-end-items
   level: 推奨
   rule: 'Flexbox の並びで一部の要素だけを行末側へ寄せるときは、その要素に `margin-inline-start: auto` を指定し、空の要素や `flex-grow` を使わない。'
   reason: 余白の吸収先が1か所に決まり、要素の数が変わっても、寄せる位置が変わらないため。
   note: '均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。'
-  page: layout/grid-first
+  page: layout/choosing
   since: 0.4.0
-
-- id: no-dense-for-ordered-items
-  level: 非推奨
-  rule: '順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。'
-  reason: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
-  note: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
-  aiProne: true
-  page: layout/grid-first
-  since: 0.4.0
-
-- id: display-contents-keep-role
-  level: 推奨
-  rule: 'サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。'
-  reason: '`display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。'
-  page: layout/grid-first
-  since: 0.1.0
 
 - id: float-for-text-wrap
   level: 推奨
   rule: '画像のまわりに文字を回り込ませるときは `float` を使い、囲む要素には clearfix ではなく `display: flow-root` を指定する。'
   reason: 回り込みは `float` の本来の用途で、`flow-root` なら余計な擬似要素なしに `float` を内側に収められるため。
   note: '値は `float: inline-end` のように論理値で書きます。'
-  page: layout/grid-first
+  page: layout/choosing
   since: 0.1.0
+
+- id: float-for-corner-elements
+  level: 推奨
+  rule: '文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませる。'
+  reason: 画面の幅や文章の量が変わっても文字が要素の下に隠れず、要素より下の空いた場所には文章が広がるため。
+  note: 'スクロールしても上端に留めたい閉じるボタンは、`float` に `position: sticky` と `inset-block-start: 0` を組み合わせます。'
+  aiProne: true
+  page: layout/choosing
+  since: 0.19.0
 
 # 10-9 余白を設計する
 - id: gap-over-child-margin
@@ -580,11 +589,12 @@
   page: layout/reading-flow
   since: 0.9.0
 
-- id: no-reading-order
-  level: 非推奨
-  rule: '子に `reading-order` を指定して、読む順番を要素ごとに上書きしない。'
-  reason: 見た目の順番、DOM の順番、読む順番がそれぞれ別の指定で決まり、読む順番を知るために各子の値を集めて並べ直す必要が生じるため。
-  note: '読む順番を変えたいときは、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。'
+- id: order-one-or-minus-one
+  level: 必須
+  rule: '`order` と `reading-order` の値には、`1` か `-1` だけを使う。'
+  reason: 初期値の0に対して「ほかのすべての子より後」か「前」かが1つの値で読み取れ、各子の値を集めて並べ直さなくても順番が分かるため。
+  note: 'z-index の相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）に限るのと同じ考え方です。2つ以上の子の順番を入れ替えたくなったら、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。`order` で見た目の順番を入れ替えるときは、ルール `flexbox-no-visual-reorder` と `reading-flow-when-reordered` にも従います。'
+  lint: 'Stylelint: `declaration-property-value-allowed-list`'
   aiProne: true
   page: layout/reading-flow
-  since: 0.9.0
+  since: 0.19.0

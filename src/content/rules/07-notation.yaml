@@ -105,9 +105,18 @@
   level: 推奨
   rule: ネストするのは、要素自身の擬似クラス・擬似要素・属性の状態、レイアウトに欠かせない直下の子、条件付きのアットルールに限る。
   reason: 1つの要素のスタイルが1か所にまとまり、独立した要素のスタイルを親のルールに抱え込まずに済むため。
-  note: 独立した基本のスタイルを持つ子要素は、ネストせずに同じ階層に並べます。
+  note: 独立した基本のスタイルを持つ子要素は、ネストせずに同じ階層に並べます。状態の書き方は `nest-own-states` に、祖先の状態で変わるスタイルは `is-for-ancestor-context` に従います。
   page: notation/nesting-and-order
   since: 0.1.0
+
+- id: nest-own-states
+  level: 必須
+  rule: 要素自身の擬似クラス・擬似要素・属性の状態は、主語のセレクタに連結せず（`[popover]:popover-open`、`._link::after`）、主語のルールの中に `&:popover-open` のようにネストして書く。
+  reason: 要素がどの状態でどう見えるかが1つのルールの中にまとまり、基本のスタイルを変える人が状態のルールを見落とさないため。親が1つのセレクタなら、展開した結果と詳細度は連結と同じになる。
+  note: 'ネストは2層まで、`&` で始めるという規約（`nesting-depth-one`、`nested-selector-ampersand`）の中で書きます。親（祖先）の状態で子の見た目を変えるときは、第2章のルール `is-for-ancestor-context` に従い、子のルールの中に `&:is(:scope[aria-expanded="true"] *)` のように書きます（擬似要素なら `&:is(:scope[open] *)::after`）。詳細度の違うセレクタリストの中では、ネストせずにセレクタごとのルールに分けます（`no-nesting-under-selector-list`）。'
+  aiProne: true
+  page: notation/nesting-and-order
+  since: 0.18.0
 
 - id: nested-selector-ampersand
   level: 必須
@@ -164,7 +173,7 @@
 
 - id: no-nesting-under-selector-list
   level: 推奨
-  rule: 詳細度の違うセレクタを並べたセレクタリスト（`._button, ._toggle[aria-pressed="true"]`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。
+  rule: 詳細度の違うセレクタを並べたセレクタリスト（`button, ._selected-count`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。
   reason: '`&` の詳細度は親のセレクタリストを `:is()` で包んだものと同じになり、詳細度の低いほうのセレクタで一致した要素にも、リストの中でいちばん高い詳細度が付くため。'
   note: 宣言だけのセレクタリストと、条件付きのアットルールのネストは、詳細度を変えないので対象にしません。
   lint: Stylelint に対応する設定がないため、レビューで確認する

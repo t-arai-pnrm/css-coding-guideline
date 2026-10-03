@@ -38,20 +38,20 @@
       /* 現れるときも消えるときも、減速しながら動かす */
       transition-timing-function: var(--ease--out-quint);
       transition-behavior: allow-discrete;
-    }
 
-    /* 表示されたときの、トランジションの開始地点 */
-    [popover]:popover-open {
-      @starting-style {
+      /* 表示されたときの、トランジションの開始地点 */
+      &:popover-open {
+        @starting-style {
+          opacity: 0;
+          scale: var(--_scale-from);
+        }
+      }
+
+      /* 閉じるときの、トランジションの終了地点 */
+      &:not(:popover-open) {
         opacity: 0;
         scale: var(--_scale-from);
       }
-    }
-
-    /* 閉じるときの、トランジションの終了地点 */
-    [popover]:not(:popover-open) {
-      opacity: 0;
-      scale: var(--_scale-from);
     }
 
     /* ボタンの上に出し、下端の中央（ボタンのある側）から広げる */

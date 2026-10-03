@@ -225,10 +225,10 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
       @container --feature-section (inline-size >= calc(640 / 16 * 1rem)) {
         font-size: calc(32 / 16 * 1rem);
       }
-    }
 
-    :scope[data-variant="featured"] h2 {
-      color: var(--foreground--accent);
+      &:is(:scope[data-variant="featured"] *) {
+        color: var(--foreground--accent);
+      }
     }
   }
 }

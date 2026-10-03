@@ -62,21 +62,21 @@ window.addEventListener('scroll', () => {
     position: sticky;
     inset-block-start: 0;
     z-index: var(--z--forwards);
-  }
 
-  :scope::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: var(--z--backwards);
-    background-color: var(--color--neutral--50);
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: var(--z--backwards);
+      background-color: var(--color--neutral--50);
 
-    @supports (animation-timeline: scroll()) {
-      animation-name: --fade-in;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: scroll();
-      animation-range: 0 80px;
+      @supports (animation-timeline: scroll()) {
+        animation-name: --fade-in;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll();
+        animation-range: 0 80px;
+      }
     }
   }
 }

@@ -110,18 +110,18 @@ WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーシ�
     @media (prefers-reduced-motion: no-preference) {
       --_translate-from: 100% 0;
     }
-  }
 
-  :scope:modal {
-    @starting-style {
+    &:modal {
+      @starting-style {
+        opacity: 0;
+        translate: var(--_translate-from);
+      }
+    }
+
+    &:not(:modal) {
       opacity: 0;
       translate: var(--_translate-from);
     }
-  }
-
-  :scope:not(:modal) {
-    opacity: 0;
-    translate: var(--_translate-from);
   }
 }
 ```
@@ -145,16 +145,16 @@ WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーシ�
     @media (prefers-reduced-motion: reduce) {
       transition-duration: var(--duration--instant);
     }
-  }
 
-  :scope:popover-open {
-    @starting-style {
+    &:popover-open {
+      @starting-style {
+        opacity: 0;
+      }
+    }
+
+    &:not(:popover-open) {
       opacity: 0;
     }
-  }
-
-  :scope:not(:popover-open) {
-    opacity: 0;
   }
 }
 ```

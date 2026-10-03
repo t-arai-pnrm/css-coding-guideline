@@ -80,22 +80,22 @@
 
         text-decoration-thickness: 3px;
       }
-    }
 
-    /* href のないカレントのリンクは、ホバーしても反応させない */
-    a:any-link:hover {
-      @media (any-hover) {
-        --_color: var(--_accent--hocus);
+      /* href のないカレントのリンクは、ホバーしても反応させない */
+      &:any-link:hover {
+        @media (any-hover) {
+          --_color: var(--_accent--hocus);
 
-        text-decoration-thickness: 3px;
+          text-decoration-thickness: 3px;
+        }
       }
-    }
 
-    a:not(:focus-visible) {
-      @media (prefers-reduced-motion: no-preference) {
-        transition-duration: var(--duration--fast);
-        transition-property: color, text-decoration-thickness;
-        transition-timing-function: var(--ease--out-quint);
+      &:not(:focus-visible) {
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--fast);
+          transition-property: color, text-decoration-thickness;
+          transition-timing-function: var(--ease--out-quint);
+        }
       }
     }
   }

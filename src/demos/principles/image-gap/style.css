@@ -18,16 +18,18 @@
       inline-size: fit-content;
       background-color: oklch(70% 0.2 25deg);
 
-      &[data-fix="vertical-align"] img {
+      &[data-fix="parent-grid"] {
+        display: block grid;
+      }
+    }
+
+    img {
+      &:is(._frame[data-fix="vertical-align"] *) {
         vertical-align: bottom;
       }
 
-      &[data-fix="display"] img {
+      &:is(._frame[data-fix="display"] *) {
         display: block flow;
-      }
-
-      &[data-fix="parent-grid"] {
-        display: block grid;
       }
     }
 

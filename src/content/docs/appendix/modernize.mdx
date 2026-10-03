@@ -102,7 +102,7 @@ sidebar:
 | `overflow-x: hidden` | `overflow-x: clip` | 挙動：中の `position: sticky` が効かなくなる | [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden) | AI |
 | スクロールする要素の `align-content: center` | `align-content: safe center` | 挙動：中身がはみ出すと、先頭側がスクロールで戻れない位置に置かれる | [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable) | AI |
 | `top: 50%; left: 50%; transform: translate(-50%, -50%);` | `inset: 0; margin: auto;`。Gridの中なら `place-items: center` | 本書の方針 | [`absolute-centering-with-margin-auto`](/layout/positioning/#rule-absolute-centering-with-margin-auto) | AI |
-| カードの見出しの高さを `min-height` やJavaScriptでそろえる | サブグリッド（`grid-template-rows: subgrid`） | 本書の方針 | [`subgrid-for-aligned-rows`](/layout/grid-first/#rule-subgrid-for-aligned-rows) | AI |
+| カードの見出しの高さを `min-height` やJavaScriptでそろえる | サブグリッド（`grid-template-rows: subgrid`） | 本書の方針 | [`subgrid-for-aligned-rows`](/layout/grid-basics/#rule-subgrid-for-aligned-rows) | AI |
 | 条件なしの `position: sticky` のヘッダー | `@media (height >= calc(600 / 16 * 1rem))` の中で固定する | 挙動：高さの低い画面や拡大した画面で、ヘッダーが画面の多くを覆う | [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query) | AI |
 | `scroll` イベントで、ヘッダーが留まったときにクラスを付ける | `container-type: scroll-state` と `@container scroll-state(stuck: block-start)` | 本書の方針 | [`scroll-state-for-sticky-styles`](/layout/positioning/#rule-scroll-state-for-sticky-styles) | AI |
 | ポップオーバーとボタンに `anchor-name` を付け、`top: anchor(bottom)` で配置する | `popovertarget` や `commandfor` の暗黙のアンカーと `position-area` | 本書の方針 | [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first) | AI |

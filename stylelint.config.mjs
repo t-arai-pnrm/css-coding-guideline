@@ -7,6 +7,7 @@
  * - レイヤー名を、宣言した名前だけに限定（第2章 2-3）
  * - 起点のない `:has()` を禁止する独自ルールを追加（第3章 3-2）
  * - 見た目の順番を変えうる配置に `reading-flow` を求める独自ルールを追加（第10章 10-14）
+ * - `order` と `reading-order` の値を 1 と -1 に限定（第10章 10-14）
  *
  * @type {import('stylelint').Config}
  */
@@ -86,6 +87,16 @@ export default {
           return `\`${unit}\`は使用しないでください。代わりに\`${recommendationMap[unit]}\`を検討してください。`;
         },
         severity: 'warning',
+      },
+    ],
+    'declaration-property-value-allowed-list': [
+      {
+        // z-index の相対的な値と同じく、1 と -1 だけを使う（第10章 10-14）
+        order: ['/^-?1$/', '/^(initial|inherit|unset|revert|revert-layer)$/'],
+        'reading-order': ['/^-?1$/', '/^(initial|inherit|unset|revert|revert-layer)$/'],
+      },
+      {
+        message: (name, value) => `\`${name}: ${value}\`は使用しないでください。\`${name}\`の値は 1 か -1 だけを使用します。`,
       },
     ],
     'declaration-property-value-disallowed-list': [

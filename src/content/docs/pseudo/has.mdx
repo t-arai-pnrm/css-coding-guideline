@@ -154,12 +154,16 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 ```css title="🙅‍♂ Not Recommended: ページ全体を起点に、子孫を広く探す"
 /* 🙅‍♂ Not Recommended */
-body:has(img) {
-  /* ... */
+body {
+  &:has(img) {
+    /* ... */
+  }
 }
 
-:root:has([aria-invalid="true"]) {
-  /* ... */
+:root {
+  &:has([aria-invalid="true"]) {
+    /* ... */
+  }
 }
 ```
 

@@ -45,18 +45,18 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
     @media (prefers-reduced-motion: no-preference) {
       --_scale-from: 0.96;
     }
-  }
 
-  :scope:popover-open {
-    @starting-style {
+    &:popover-open {
+      @starting-style {
+        opacity: 0;
+        scale: var(--_scale-from);
+      }
+    }
+
+    &:not(:popover-open) {
       opacity: 0;
       scale: var(--_scale-from);
     }
-  }
-
-  :scope:not(:popover-open) {
-    opacity: 0;
-    scale: var(--_scale-from);
   }
 }
 ```
@@ -98,18 +98,18 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
       transition-property: opacity;
       transition-timing-function: inherit;
     }
-  }
 
-  :scope:modal,
-  :scope:modal::backdrop {
-    @starting-style {
+    &:modal,
+    &:modal::backdrop {
+      @starting-style {
+        opacity: 0;
+      }
+    }
+
+    &:not(:modal),
+    &:not(:modal)::backdrop {
       opacity: 0;
     }
-  }
-
-  :scope:not(:modal),
-  :scope:not(:modal)::backdrop {
-    opacity: 0;
   }
 }
 ```
@@ -126,20 +126,22 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす"
 @scope (.scoped.faq-list) to (.scoped) {
-  details::details-content {
-    overflow: clip;
+  details {
+    &::details-content {
+      overflow: clip;
 
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--slow);
-      transition-property: content-visibility, block-size, opacity;
-      transition-timing-function: var(--ease--out-quint);
-      transition-behavior: allow-discrete;
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--slow);
+        transition-property: content-visibility, block-size, opacity;
+        transition-timing-function: var(--ease--out-quint);
+        transition-behavior: allow-discrete;
+      }
     }
-  }
 
-  details:not([open])::details-content {
-    block-size: 0;
-    opacity: 0;
+    &:not([open])::details-content {
+      block-size: 0;
+      opacity: 0;
+    }
   }
 }
 ```
@@ -169,21 +171,23 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 
 ```css title="🙆‍♂ Recommended: grid-template-rows で高さを動かす"
 @scope (.scoped.faq-list) to (.scoped) {
-  details::details-content {
-    display: block grid;
-    grid-template-rows: 1fr;
+  details {
+    &::details-content {
+      display: block grid;
+      grid-template-rows: 1fr;
 
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--slow);
-      transition-property: content-visibility, grid-template-rows, opacity;
-      transition-timing-function: var(--ease--out-quint);
-      transition-behavior: allow-discrete;
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--slow);
+        transition-property: content-visibility, grid-template-rows, opacity;
+        transition-timing-function: var(--ease--out-quint);
+        transition-behavior: allow-discrete;
+      }
     }
-  }
 
-  details:not([open])::details-content {
-    grid-template-rows: 0fr;
-    opacity: 0;
+    &:not([open])::details-content {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
   }
 
   ._answer {

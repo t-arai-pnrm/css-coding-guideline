@@ -68,6 +68,17 @@
 
         border: none;
       }
+
+      &::after {
+        content: "";
+        mask-image: var(--chevron--rightward);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: 1em;
+        aspect-ratio: 1;
+        background-color: var(--_icon-color);
+      }
     }
 
     a {
@@ -81,18 +92,17 @@
       &[data-fallback="none"] {
         --_icon-color: currentColor;
       }
-    }
 
-    button::after,
-    a::after {
-      content: "";
-      mask-image: var(--chevron--rightward);
-      mask-repeat: no-repeat;
-      mask-position: center;
-      mask-size: contain;
-      inline-size: 1em;
-      aspect-ratio: 1;
-      background-color: var(--_icon-color);
+      &::after {
+        content: "";
+        mask-image: var(--chevron--rightward);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: 1em;
+        aspect-ratio: 1;
+        background-color: var(--_icon-color);
+      }
     }
   }
 }

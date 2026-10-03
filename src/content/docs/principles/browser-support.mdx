@@ -80,10 +80,12 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 ただし、使いにくいのは、その機能をレイアウトの要として使う場合です。ホバーしたカードに背景が滑らかに追従するような装飾的な演出なら、未対応の環境向けに従来の表現を用意して使えます。次の例は、アンカーポジショニングに未対応の環境でだけ、ホバーしたカードに直接背景色を付けるものです。
 
 ```css title="🙆‍♂ Recommended: 未対応の環境では、従来のホバーの表現に切り替える"
-._card:has(:any-link:hover) {
-  @supports not (anchor-name: --card) {
-    @media (any-hover) {
-      background-color: oklch(96% 0.02 250deg);
+._card {
+  &:has(:any-link:hover) {
+    @supports not (anchor-name: --card) {
+      @media (any-hover) {
+        background-color: oklch(96% 0.02 250deg);
+      }
     }
   }
 }

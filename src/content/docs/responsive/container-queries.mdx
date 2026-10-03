@@ -35,11 +35,11 @@ import shareCss from '../../../demos/responsive/share-button/style.css?raw';
     @media (width >= calc(768 / 16 * 1rem)) {
       grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
     }
-  }
 
-  :scope[data-placement="sidebar"] {
-    @media (width >= calc(768 / 16 * 1rem)) {
-      grid-template-columns: minmax(0, 1fr);
+    &[data-placement="sidebar"] {
+      @media (width >= calc(768 / 16 * 1rem)) {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
   }
 }

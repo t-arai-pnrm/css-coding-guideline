@@ -52,9 +52,11 @@ import openStateCss from '../../../demos/pseudo/open-state-controls/style.css?ra
 
 ```css title="🙅‍♂ Not Recommended: [open] と :open をセレクタリストに並べる"
 /* 🙅‍♂ Not Recommended */
-details:open,
-details[open] {
-  border-color: oklch(48% 0.17 260deg);
+details {
+  &:open,
+  &[open] {
+    border-color: oklch(48% 0.17 260deg);
+  }
 }
 ```
 

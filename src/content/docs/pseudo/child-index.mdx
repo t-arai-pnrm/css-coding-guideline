@@ -24,8 +24,10 @@ import tableBadCss from '../../../demos/pseudo/striped-table/style.bad.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: 隠した行も数えて、縞が崩れる"
 /* 🙅‍♂ Not Recommended */
-tbody tr:nth-child(even) {
-  background-color: oklch(96% 0.02 260deg);
+tbody tr {
+  &:nth-child(even) {
+    background-color: oklch(96% 0.02 260deg);
+  }
 }
 ```
 

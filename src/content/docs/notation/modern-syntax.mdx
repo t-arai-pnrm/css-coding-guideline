@@ -87,24 +87,26 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 
 ```css title="🙅‍♂ Not Recommended: 動かすたびに回転も書き直す"
 /* 🙅‍♂ Not Recommended */
-._more-link::after {
-  transform: rotate(45deg);
-}
-
-._more-link:not(:focus-visible)::after {
-  @media (prefers-reduced-motion: no-preference) {
-    transition-duration: var(--duration--fast);
-    transition-property: transform;
+._more-link {
+  &::after {
+    transform: rotate(45deg);
   }
-}
 
-._more-link:focus-visible::after {
-  transform: translateX(4px) rotate(45deg);
-}
+  &:not(:focus-visible)::after {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--fast);
+      transition-property: transform;
+    }
+  }
 
-._more-link:any-link:hover::after {
-  @media (any-hover) {
+  &:focus-visible::after {
     transform: translateX(4px) rotate(45deg);
+  }
+
+  &:any-link:hover::after {
+    @media (any-hover) {
+      transform: translateX(4px) rotate(45deg);
+    }
   }
 }
 ```
@@ -112,24 +114,26 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 `transform` はすべての変形を1つの値で持つので、移動を足すだけでも回転を書き直さなければなりません。書き忘れると、ホバーした瞬間に矢印の向きが戻ります。トランジションも `transform` 全体に掛かるので、どの変形を動かしたいのかがコードから読み取れません。
 
 ```css title="🙆‍♂ Recommended: 回転はそのままに、移動だけを変える"
-._more-link::after {
-  rotate: 45deg;
-}
-
-._more-link:not(:focus-visible)::after {
-  @media (prefers-reduced-motion: no-preference) {
-    transition-duration: var(--duration--fast);
-    transition-property: translate;
+._more-link {
+  &::after {
+    rotate: 45deg;
   }
-}
 
-._more-link:focus-visible::after {
-  translate: 4px 0;
-}
+  &:not(:focus-visible)::after {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--fast);
+      transition-property: translate;
+    }
+  }
 
-._more-link:any-link:hover::after {
-  @media (any-hover) {
+  &:focus-visible::after {
     translate: 4px 0;
+  }
+
+  &:any-link:hover::after {
+    @media (any-hover) {
+      translate: 4px 0;
+    }
   }
 }
 ```

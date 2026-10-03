@@ -22,13 +22,17 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ```css title="🙅‍♂ Not Recommended: 条件なしのホバーと、画面の幅によるホバーの判定"
 /* 🙅‍♂ Not Recommended */
-._submit-button:hover {
-  background-color: var(--_background--hocus);
+._submit-button {
+  &:hover {
+    background-color: var(--_background--hocus);
+  }
 }
 
-@media (width >= 768px) {
-  ._more-link:hover {
-    color: var(--_color--hocus);
+._more-link {
+  &:hover {
+    @media (width >= 768px) {
+      color: var(--_color--hocus);
+    }
   }
 }
 ```
@@ -102,8 +106,10 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ```css title="🙅‍♂ Not Recommended: ホバーを受ける要素自身を動かす"
 /* 🙅‍♂ Not Recommended */
-._submit-button:hover {
-  translate: 0 -4px;
+._submit-button {
+  &:hover {
+    translate: 0 -4px;
+  }
 }
 ```
 
@@ -166,8 +172,10 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ```css title="🙅‍♂ Not Recommended: ホバーを透明度で表す"
 /* 🙅‍♂ Not Recommended */
-._submit-button:hover {
-  opacity: 0.7;
+._submit-button {
+  &:hover {
+    opacity: 0.7;
+  }
 }
 ```
 
@@ -215,11 +223,11 @@ HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`
     &[aria-selected="true"] {
       border-color: currentColor;
     }
-  }
 
-  ._tab:not([aria-selected="true"]):hover {
-    @media (any-hover) {
-      border-color: var(--border--base);
+    &:not([aria-selected="true"]):hover {
+      @media (any-hover) {
+        border-color: var(--border--base);
+      }
     }
   }
 }

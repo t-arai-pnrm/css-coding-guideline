@@ -92,9 +92,11 @@ li:nth-last-child(n + 3) ~ li {
 
 ```css title="🙅‍♂ Not Recommended: > を省いて、孫の位置の要素も数える"
 /* 🙅‍♂ Not Recommended */
-.item-list:has(:nth-child(3)) {
-  /* 項目の中に3つ目の子要素があるだけで当てはまる */
-  justify-content: center;
+.item-list {
+  &:has(:nth-child(3)) {
+    /* 項目の中に3つ目の子要素があるだけで当てはまる */
+    justify-content: center;
+  }
 }
 ```
 
@@ -108,14 +110,14 @@ li:nth-last-child(n + 3) ~ li {
 /* 🙅‍♂ Not Recommended */
 .pickup-list {
   display: block grid;
-}
 
-.pickup-list:has(> :nth-child(2)) {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+  &:has(> :nth-child(2)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-.pickup-list:has(> :nth-child(3)) {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  &:has(> :nth-child(3)) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 ```
 
