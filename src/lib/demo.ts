@@ -2,7 +2,7 @@ import kisoCss from 'kiso.css/kiso.css?raw';
 
 /**
  * デモの土台。
- * - `kiso`: 本書が推奨する環境（レイヤーの順序宣言と、`reset` レイヤーに入れた kiso.css）
+ * - `kiso`: 本書が推奨する環境（レイヤーの順序宣言、`reset` レイヤーに入れた kiso.css、ベーススタイルの全称セレクタの `min-inline-size: 0`）
  * - `none`: ブラウザのデフォルトスタイルのまま
  */
 export type DemoBase = 'kiso' | 'none';
@@ -13,11 +13,18 @@ const LAYER_ORDER =
   '@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;';
 
 /**
- * デモの枠に合わせるための最小限の調整。
+ * デモのベーススタイル。
+ * 全称セレクタの `min-inline-size: 0` は、6-2 のベーススタイルと同じ指定で、本書の列を `1fr` のまま書く前提になる。
  * kiso.css は `body` に `min-block-size: 100dvb` を指定しているが、そのままだと
  * iframe の高さを中身に合わせられないため、デモでは解除する。
  */
 const DEMO_BASE = `@layer base {
+  *,
+  ::before,
+  ::after {
+    min-inline-size: 0;
+  }
+
   :where(body) {
     min-block-size: initial;
     padding: 16px;

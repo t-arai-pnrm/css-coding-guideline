@@ -25,7 +25,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
   gap: 32px;
 
   @media (width >= calc(768 / 16 * 1rem)) {
-    grid-template-columns: minmax(0, 1fr) calc(240 / 16 * 1rem);
+    grid-template-columns: 1fr calc(240 / 16 * 1rem);
   }
 }
 ```
@@ -206,7 +206,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
       grid-template:
         "--header --related"
         "--body --related" 1fr
-        / minmax(0, 1fr) calc(240 / 16 * 1rem);
+        / 1fr calc(240 / 16 * 1rem);
     }
 
     & > ._header {

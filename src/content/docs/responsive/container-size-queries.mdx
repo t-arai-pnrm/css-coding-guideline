@@ -37,12 +37,12 @@ import shareCss from '../../../demos/responsive/share-button/style.css?raw';
     gap: 12px;
 
     @media (width >= calc(768 / 16 * 1rem)) {
-      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+      grid-template-columns: calc(160 / 16 * 1rem) 1fr;
     }
 
     &[data-placement="sidebar"] {
       @media (width >= calc(768 / 16 * 1rem)) {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: 1fr;
       }
     }
   }
@@ -68,7 +68,7 @@ import shareCss from '../../../demos/responsive/share-button/style.css?raw';
     gap: 12px;
 
     @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
-      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+      grid-template-columns: calc(160 / 16 * 1rem) 1fr;
     }
   }
 }
@@ -98,7 +98,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
     gap: 12px;
 
     @container (width >= 400px) {
-      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+      grid-template-columns: calc(160 / 16 * 1rem) 1fr;
     }
   }
 }
@@ -172,7 +172,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
     @container --scoped (inline-size >= calc((160 + 16 + 240) / 16 * 1rem)) {
       --_density: --spacious;
 
-      grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+      grid-template-columns: calc(160 / 16 * 1rem) 1fr;
     }
   }
 
@@ -200,7 +200,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
 `container-type: inline-size` を指定した要素には、インライン方向のサイズの封じ込め（`contain: inline-size`）が暗黙的に適用されます。これは「この要素の幅は、中身の大きさに影響されない」という指定です。中身の幅から自分の幅を決める要素に指定すると、中身が幅に反映されないため、幅が極端に小さく計算されてレイアウトが崩れます。
 
-そのため、インライン要素や、`fit-content` など中身から幅が決まる要素は、コンテナにしません。`flex-grow` や `flex-basis` を指定していないflexアイテムも同様です。gridアイテムで避けるのは、`auto`、`max-content`、`fit-content()` のトラックのように中身からトラックの幅を決める配置と、`justify-self: start` などでアイテムが中身の幅に縮む配置です。`grid-template-columns: repeat(3, minmax(0, 1fr))` のように幅の決まったトラックに引き伸ばされるアイテムは、コンテナにできます。自分に `inline-size` がなくても、トラックから幅を得るからです。カードを一覧に並べるときは、配置を変えたいカード自身をコンテナにしても、カード自身の配置は切り替わりません。カードのルートをコンテナにして、配置を変える要素を一段内側に置きます。
+そのため、インライン要素や、`fit-content` など中身から幅が決まる要素は、コンテナにしません。`flex-grow` や `flex-basis` を指定していないflexアイテムも同様です。gridアイテムで避けるのは、`auto`、`max-content`、`fit-content()` のトラックのように中身からトラックの幅を決める配置と、`justify-self: start` などでアイテムが中身の幅に縮む配置です。`grid-template-columns: repeat(3, 1fr)` のように幅の決まったトラックに引き伸ばされるアイテムは、コンテナにできます。自分に `inline-size` がなくても、トラックから幅を得るからです。カードを一覧に並べるときは、配置を変えたいカード自身をコンテナにしても、カード自身の配置は切り替わりません。カードのルートをコンテナにして、配置を変える要素を一段内側に置きます。
 
 副作用があるので、コンテナは、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定します。「あとで使うかもしれない」という理由で、すべてのルートや要素に `container` を付けることはしません。問い合わせないコンテナは、封じ込めの副作用だけを残すからです。`subgrid` も、サイズの封じ込めがある要素では無効になります。グリッドの親をコンテナにし、サブグリッドの側の切り替えには `calc()` で求めた値を使います。
 

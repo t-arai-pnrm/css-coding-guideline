@@ -97,7 +97,7 @@ sidebar:
 | 何にでも `width: 100%` | 書かない。ブロックレベルの要素は親の幅いっぱいに広がる | 挙動：左右のマージンや `box-sizing: content-box` と組み合わさると、親からはみ出す | [`no-redundant-width-100`](/principles/maintainability/#rule-no-redundant-width-100) | AI |
 | 子要素に `height: 100%` | 親を `display: block grid` にして `stretch` に任せる | 挙動：親の高さが明示されていないと効かない | [`stretch-over-height-100`](/principles/maintainability/#rule-stretch-over-height-100) | AI |
 | 子要素の `margin-bottom` と `:last-child { margin-bottom: 0; }` | 親の `gap` | 本書の方針 | [`gap-over-child-margin`](/layout/spacing/#rule-gap-over-child-margin) | AI |
-| `grid-template-columns: repeat(3, 1fr)` | `repeat(3, minmax(0, 1fr))` | 挙動：長いURLや入力欄があると、列が押し広げられる | [`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr) | AI |
+| `grid-template-columns: repeat(3, minmax(0, 1fr))` | `repeat(3, 1fr)` | 本書の方針 | [`fr-without-minmax-zero`](/layout/defensive/#rule-fr-without-minmax-zero) | AI |
 | `minmax(360px, 1fr)` | `minmax(min(100%, 360px), 1fr)` | 挙動：コンテナが360pxより狭いと、はみ出す | [`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent) | AI |
 | `overflow-x: hidden` | `overflow-x: clip` | 挙動：中の `position: sticky` が効かなくなる | [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden) | AI |
 | スクロールする要素の `align-content: center` | `align-content: safe center` | 挙動：中身がはみ出すと、先頭側がスクロールで戻れない位置に置かれる | [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable) | AI |

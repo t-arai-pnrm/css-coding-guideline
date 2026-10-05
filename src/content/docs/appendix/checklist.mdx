@@ -122,7 +122,7 @@ sidebar:
 - [ ] 長い見出し、画像のない記事、要素の数が違う一覧で、表示を確かめたか（[`design-for-content-changes`](/layout/defensive/#rule-design-for-content-changes)）
 - [ ] 幅や高さを固定値で決めず、`max-inline-size` や `min-block-size` を使っているか（[`max-inline-size-over-fixed-width`](/responsive/escalation/#rule-max-inline-size-over-fixed-width)、[`min-block-size-over-fixed-height`](/responsive/escalation/#rule-min-block-size-over-fixed-height)）
 - [ ] `minmax()` や `min-inline-size` の固定の最小値を、`min(100%, …)` で包んでいるか（[`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent)）
-- [ ] 列を `1fr` ではなく `minmax(0, 1fr)` で分けているか（[`minmax-zero-for-fr`](/layout/defensive/#rule-minmax-zero-for-fr)）
+- [ ] 列を `minmax(0, 1fr)` ではなく `1fr` で分けているか（[`fr-without-minmax-zero`](/layout/defensive/#rule-fr-without-minmax-zero)）
 - [ ] 要素の数が変わるFlexboxに `flex-wrap: wrap` を指定しているか（[`flex-wrap-for-variable-items`](/layout/defensive/#rule-flex-wrap-for-variable-items)）
 - [ ] 列数を子要素の数ではなく、`auto-fit` やコンテナサイズクエリで切り替えているか（[`quantity-query-for-count-conditions`](/pseudo/quantity-queries/#rule-quantity-query-for-count-conditions)）
 - [ ] 理由のない `white-space: nowrap` がないか（[`no-nowrap-without-reason`](/layout/defensive/#rule-no-nowrap-without-reason)）

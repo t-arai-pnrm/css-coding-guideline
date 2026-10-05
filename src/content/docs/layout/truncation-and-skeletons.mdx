@@ -38,7 +38,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 `white-space: nowrap` はルール `no-nowrap-without-reason` で避けている指定ですが、切り詰めは指定する明確な理由にあたります。はみ出しを `hidden` ではなく `clip` で切り取るのは、10-10の「横スクロールの原因と `overflow: clip`」と同じく、スクロールコンテナを作らないためです。Chrome 152では、`overflow-inline: clip` だけでも「…」が表示されることを確かめました（2026年10月確認）。{/* 要確認: Safari 18 の overflow-x: clip と text-overflow の組み合わせ */}
 
-フレックスアイテムやグリッドアイテムの中で切り詰めるときは、アイテムの最小幅が0でなければ、切り詰める前に親が押し広げられます。本書では、全称セレクタの `min-inline-size: 0` と列の `minmax(0, 1fr)` で、最小幅を0にしています（「[10-10 変化に強いレイアウト](/layout/defensive/#rule-minmax-zero-for-fr)」）。
+フレックスアイテムやグリッドアイテムの中で切り詰めるときは、アイテムの最小幅が0でなければ、切り詰める前に親が押し広げられます。本書では、ベーススタイルの全称セレクタの `min-inline-size: 0` で、アイテムの最小幅を0にしています（「[6-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。
 
 ## 切り詰めた文字を読める手段
 

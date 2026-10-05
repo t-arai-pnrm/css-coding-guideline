@@ -6,7 +6,7 @@
 
       /* ページ全体の段組みはビューポートで切り替える */
       @media (width >= calc(720 / 16 * 1rem)) {
-        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        grid-template-columns: 2fr 1fr;
       }
     }
   }
@@ -29,7 +29,7 @@
       @container --scoped (inline-size >= calc((160 + 16 + 240) / 16 * 1rem)) {
         --_density: --spacious;
 
-        grid-template-columns: calc(160 / 16 * 1rem) minmax(0, 1fr);
+        grid-template-columns: calc(160 / 16 * 1rem) 1fr;
         gap: 16px;
         align-items: start;
       }

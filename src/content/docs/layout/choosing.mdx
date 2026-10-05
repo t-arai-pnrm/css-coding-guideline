@@ -92,19 +92,19 @@ FlexboxとGridが普及してから、要素を並べるときに、まず `disp
 ```css title="🙆‍♂ Recommended: 列の数と幅を親で決める"
 ._card-list {
   display: block grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
 ._page {
   display: block grid;
-  grid-template-columns: calc(240 / 16 * 1rem) minmax(0, 1fr) calc(320 / 16 * 1rem);
+  grid-template-columns: calc(240 / 16 * 1rem) 1fr calc(320 / 16 * 1rem);
 }
 ```
 
 `grid-template-columns` を読めば、何列でどういう幅なのかが1行で分かります。子要素の側には、配置のための指定が何もありません。同じ段組みをFlexboxで書くと、両端の子には `flex-shrink: 0` と `flex-basis` を、真ん中の子には `flex-grow: 1` を指定することになり、3つの子のCSSを読み合わせないと全体の形が分かりません。
 
-カードの一覧のような等分の列も、`flex: 1` では子の `padding` や `border` の違いで幅がずれるので、確実にそろえたいならGridで列を決めます（「[10-5 Flexboxの基礎](/layout/flexbox-basics/)」）。列の幅を `1fr` ではなく `minmax(0, 1fr)` と書いている理由は、「[10-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
+カードの一覧のような等分の列も、`flex: 1` では子の `padding` や `border` の違いで幅がずれるので、確実にそろえたいならGridで列を決めます（「[10-5 Flexboxの基礎](/layout/flexbox-basics/)」）。列の幅を `minmax(0, 1fr)` ではなく `1fr` と書いている理由は、「[10-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
 
 Gridの利点が大きいもう1つの例は、ロゴ、ナビゲーション、ボタンを左端、中央、右端に置くヘッダーです。`grid-template-columns: 1fr auto 1fr` と書くと、左右の列が同じ幅になるので、中央の列はヘッダーのちょうど真ん中に置かれます。ただし、`1fr` は `minmax(auto, 1fr)` として扱われ、列の最小幅は中身の最小幅（`min-content`）になるので、中央のリンクが増えると、左右の列はロゴやボタンの文字が折り返されるところまで縮みます。左右の列の最小値を `max-content` にすれば、中身は折り返されず、列も中身の幅より狭くなりません。
 

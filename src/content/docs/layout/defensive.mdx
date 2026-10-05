@@ -1,6 +1,6 @@
 ---
 title: "10-10 変化に強いレイアウト"
-description: "テキストが長くなったら、画像がなかったら、要素の数が変わったらと考えて書くディフェンシブCSSの節です。固定の長さには上限を付け、列は minmax(0, 1fr) で分け、はみ出しは clip で切り取ります。"
+description: "テキストが長くなったら、画像がなかったら、要素の数が変わったらと考えて書くディフェンシブCSSの節です。固定の長さには上限を付け、アイテムの最小幅は0にし、はみ出しは clip で切り取ります。"
 sidebar:
   order: 10
 ---
@@ -12,7 +12,7 @@ import longUrlHtml from '../../../demos/layout/long-url/index.html?raw';
 import longUrlCss from '../../../demos/layout/long-url/style.css?raw';
 import longUrlBadCss from '../../../demos/layout/long-url/style.bad.css?raw';
 
-CSSを書くときは、「テキストが2倍の長さになったら」「画像がなかったら」「要素の数が変わったら」と、常に自問します。想定外の内容が入っても崩れないように書くCSSを、「ディフェンシブ（防衛的）なCSS」と呼びます。固定の長さには親の幅の上限を付け、列は `1fr` ではなく `minmax(0, 1fr)` で分け、はみ出しは `hidden` ではなく `clip` で切り取ります。
+CSSを書くときは、「テキストが2倍の長さになったら」「画像がなかったら」「要素の数が変わったら」と、常に自問します。想定外の内容が入っても崩れないように書くCSSを、「ディフェンシブ（防衛的）なCSS」と呼びます。固定の長さには親の幅の上限を付け、フレックスアイテムとグリッドアイテムの最小幅はベーススタイルで0にし、はみ出しは `hidden` ではなく `clip` で切り取ります。
 
 一度公開したら終わりの短期のキャンペーンサイトは別として、一般的なWebサイトは公開後も更新と改修が続きます。とくにCMSの案件では、クライアントの都合で、デザインカンプにない長さの見出しや、画像のない記事が入ってきます。
 
@@ -70,11 +70,20 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
 
 ## `1fr` が押し広げられる理由
 
-Gridで列を均等に分けるとき、`1fr` と書くことが多いと思います。しかし、`1fr` は `minmax(auto, 1fr)` の省略形で、列の最小幅は `auto` です。グリッドアイテムの最小幅の `auto` は、0ではなく中身の最小幅として扱われます。途中で折り返せない長いURLや、ブラウザが最小幅を決めている `<input>` が入ると、その列だけが中身の幅まで押し広げられ、全体が親からはみ出します。
+Gridで列を均等に分けるとき、`1fr` と書くことが多いと思います。`1fr` は `minmax(auto, 1fr)` の省略形で、列の最小幅は `auto` です。下限が `auto` の列は、その列に置かれたグリッドアイテムの最小幅（`min-inline-size`）より狭くなりません。グリッドアイテムの `min-inline-size` の初期値 `auto` は、0ではなく中身の最小幅として扱われます。そのため、途中で折り返せない長いURLや、ブラウザが最小幅を決めている `<input>` が入ると、その列だけが中身の幅まで押し広げられ、全体が親からはみ出します。
 
-これを防ぐには、列の最小値を0にした `minmax(0, 1fr)` と書きます。最小値が0なので、中身の大きさにかかわらず、列は親の幅を均等に分けます。
+この対策として、列の最小値を0にした `minmax(0, 1fr)` がよく紹介されます。しかし、本書のベーススタイルでは、全称セレクタで全要素に `min-inline-size: 0` を指定しているので（「[6-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）、`minmax(0, 1fr)` は不要です。アイテムの最小幅がすでに0なので、`1fr` の列の下限も0になります。Chrome 153で確かめたところ、アイテムの最小幅が0なら、`1fr` の列は長いURLに押し広げられませんでした（2026年9月確認）。
 
-```css title="🙆‍♂ Recommended: 列の最小値を0にして、中身に押し広げられないようにする"
+```css title="🙆‍♂ Recommended: ベーススタイルで最小幅を0にしてあれば、列は 1fr のまま分ける"
+._cards {
+  display: block grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+```
+
+```css title="🙅‍♂ Not Recommended: ベーススタイルで防いでいるはみ出しを、列ごとに防ぎ直す"
+/* 🙅‍♂ Not Recommended */
 ._cards {
   display: block grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -82,7 +91,9 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 }
 ```
 
-同じ問題は、ベーススタイルで全称セレクタに `min-inline-size: 0` を指定しておけば、フレックスアイテムとグリッドアイテムのどちらでも防げます（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。Chrome 153で確かめたところ、アイテムの最小幅が0なら、`1fr` の列も長いURLに押し広げられませんでした（2026年9月確認）。それでも私は、列の側にも `minmax(0, 1fr)` と書いています。コンポーネントの中で最小値を決めておけば、グローバルの指定がない環境へ持ち出しても崩れないからです。
+`minmax(0, 1fr)` は、ベーススタイルと同じ守りをグリッドごとに書き足すだけで、表示は変わりません。そのうえ、`minmax()` が意図して下限を決めた列と、習慣で書いた列の区別がつかなくなります。`1fr` のままにしておけば、`minmax(min(100%, calc(360 / 16 * 1rem)), 1fr)` のように下限を決めた列だけが `minmax()` で書かれ、どの列に下限があるかがコードから読み取れます。
+
+ただし、ベーススタイルが届かない場所では、この前提が成り立ちません。たとえば、文書の全称セレクタはShadow DOMの中の要素を選ばないので、Shadow DOMの中のグリッドアイテムの最小幅は `auto` のままです（「[8-6 Web Components](/components/web-components/)」）。こうした場所では、Shadow DOMのスタイルにも全称セレクタの `min-inline-size: 0` を書き、ベーススタイルと同じ前提をそろえます。
 
 ## 長い単語やURLで崩れないようにする
 
@@ -90,15 +101,15 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 
 `break-word` と `anywhere` は、どちらも行に収まらない単語を途中で折り返します。違いは、途中の折り返しが要素の最小幅の計算に反映されるかどうかです。`anywhere` は反映するので、中身の最小幅が小さくなります。`break-word` は反映しないので、フレックスアイテムやグリッドアイテムの最小幅は、長いURLの幅のままです。通常のブロックの中では同じように見えるのに、FlexboxやGridの中では `break-word` だけがはみ出します。
 
-次のデモは、2列のカードの片方に長いURLを入れたものです。1つ目は、列を `1fr` で分け、URLに `overflow-wrap: break-word` を指定しています。幅のボタンで320pxを選ぶと、URLのある列が押し広げられ、カードが枠の外へはみ出します。
+次のデモは、2列のカードの片方に長いURLを入れたものです。1つ目は、カードに `min-inline-size: auto` を指定してベーススタイルの最小幅0がない状態を再現し、URLに `overflow-wrap: break-word` を指定しています。幅のボタンで320pxを選ぶと、URLのある列が押し広げられ、カードが枠の外へはみ出します。
 
-<Demo title="1fr の列と overflow-wrap: break-word では、長い URL が列を押し広げる" html={longUrlHtml} css={longUrlBadCss} variant="not-recommended" />
+<Demo title="アイテムの最小幅が auto で overflow-wrap: break-word だと、長い URL が列を押し広げる" html={longUrlHtml} css={longUrlBadCss} variant="not-recommended" />
 
-2つ目は、列を `minmax(0, 1fr)` で分け、折り返しはkiso.cssの `overflow-wrap: anywhere` に任せたものです。どの幅でも2つの列は同じ幅を保ち、URLは列の中で折り返します。
+2つ目は、カードの最小幅をベーススタイルの0のままにし、折り返しはkiso.cssの `overflow-wrap: anywhere` に任せたものです。どの幅でも2つの列は同じ幅を保ち、URLは列の中で折り返します。
 
-<Demo title="minmax(0, 1fr) と overflow-wrap: anywhere で、長い URL を列の中で折り返す" html={longUrlHtml} css={longUrlCss} />
+<Demo title="アイテムの最小幅0と overflow-wrap: anywhere で、長い URL を列の中で折り返す" html={longUrlHtml} css={longUrlCss} />
 
-このデモでは、列の最小値と折り返しの2か所で守っています。どちらか一方でもURLのはみ出しは防げますが、`<input>` や横にスクロールさせる表のように、折り返しでは縮まない中身もあります。列やアイテムの最小幅を0にしておけば、こうした中身が入っても、列の幅は保たれます。`word-break: break-all` のように、収まる単語まで途中で折り返す指定は使いません。改行の制御は「[13-4 文字サイズと改行](/typography/size-and-line-breaks/)」で扱います。
+このデモでは、アイテムの最小幅と折り返しの2か所で守っています。どちらか一方でもURLのはみ出しは防げますが、`<input>` や横にスクロールさせる表のように、折り返しでは縮まない中身もあります。アイテムの最小幅を0にしておけば、こうした中身が入っても、列の幅は保たれます。`word-break: break-all` のように、収まる単語まで途中で折り返す指定は使いません。改行の制御は「[13-4 文字サイズと改行](/typography/size-and-line-breaks/)」で扱います。
 
 ## 縮ませたくない要素を守る
 
@@ -144,11 +155,11 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 ._layout {
   display: block grid;
   reading-flow: grid-rows;
-  grid-template: "--body --media" / minmax(0, 1fr) minmax(0, 1fr);
+  grid-template: "--body --media" / 1fr 1fr;
   gap: 24px;
 
   &:not(:has(> ._media)) {
-    grid-template: "--body" / minmax(0, 1fr);
+    grid-template: "--body" / 1fr;
   }
 
   & > ._body {

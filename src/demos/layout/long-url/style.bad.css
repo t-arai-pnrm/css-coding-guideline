@@ -2,13 +2,13 @@
   @scope (.scoped.link-cards) to (.scoped) {
     :scope {
       display: block grid;
-
-      /* 1fr の最小値は中身の最小幅になるので、長い URL の列が押し広げられる */
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
 
     article {
+      /* ベーススタイルの min-inline-size: 0 がない状態を再現する。最小幅が中身の最小幅になり、長い URL の列が押し広げられる */
+      min-inline-size: auto;
       padding: 16px;
       border: 1px solid oklch(85% 0 0deg);
       border-radius: 8px;

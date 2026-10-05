@@ -45,21 +45,21 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 列の大きさは `grid-template-columns`、行の大きさは `grid-template-rows` に、トラックごとの値を空白で区切って並べます。値には、長さ、中身の大きさを表す `min-content`、`max-content`、`auto`、そして `fr` が使えます。
 
-`fr` は、固定の大きさのトラックと `gap` を引いた残りの空間を、比率で分ける単位です。`calc(200 / 16 * 1rem) minmax(0, 2fr) minmax(0, 1fr)` なら、200px相当の列と溝を除いた残りを、2対1で分けます。溝を除いてから分けるので、`%` で分けたときのように、列の合計が溝の分だけ親の幅を超えることはありません。
+`fr` は、固定の大きさのトラックと `gap` を引いた残りの空間を、比率で分ける単位です。`calc(200 / 16 * 1rem) 2fr 1fr` なら、200px相当の列と溝を除いた残りを、2対1で分けます。溝を除いてから分けるので、`%` で分けたときのように、列の合計が溝の分だけ親の幅を超えることはありません。
 
 同じ理由で、グリッドアイテムの大きさに、親の大きさを前提にした `%` を書かないようにします。グリッドアイテムの `%` は、親ではなく、アイテムが置かれたグリッドエリアを基準に解決されます。`place-content: center` で中央に寄せたグリッドのアイテムに `inline-size: 50%` と書いても、トラックがアイテムの中身の大きさで決まっていれば、その50%にしかなりません。大きさは、トラックの側で `fr` と `minmax()` を使って決めます。
 
 ```css title="🙆‍♂ Recommended: 固定の列を除いた残りを、fr の比率で分ける"
 ._layout {
   display: block grid;
-  grid-template-columns: calc(200 / 16 * 1rem) minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: calc(200 / 16 * 1rem) 2fr 1fr;
   gap: 24px;
 }
 ```
 
 `minmax(最小, 最大)` は、トラックの大きさに下限と上限を付ける関数です。最大が最小より小さいときは、最大が無視され、最小の値になります。`fr` は最大の側にだけ書けて、`minmax(1fr, 200px)` のように最小の側に書くと、宣言全体が無効になります。単独で書いた `1fr` は、`minmax(auto, 1fr)` として扱われます。この `auto` の下限が「`1fr` が等分にならない」原因で、仕組みはこの節の後半の「アイテムの最小幅と `gap`」で説明します。
 
-`repeat(回数, トラック)` は、同じトラックの並びを繰り返す関数です。`repeat(3, minmax(0, 1fr))` は等分の3列になり、`repeat(2, minmax(0, 2fr) minmax(0, 1fr))` のように複数のトラックの組も繰り返せます。回数の代わりに `auto-fill` か `auto-fit` を書くと、最小の幅を下回らない範囲で入るだけの列を作ります。2つの違いはアイテムが列の数より少ないときに現れ、`auto-fill` は空の列を残し、`auto-fit` は空の列を幅0に折りたたみます。使い分けは「[12-1 検討する順番](/responsive/escalation/)」と「[11-6 grid](/compositions/grid/)」で説明しています。
+`repeat(回数, トラック)` は、同じトラックの並びを繰り返す関数です。`repeat(3, 1fr)` は等分の3列になり、`repeat(2, 2fr 1fr)` のように複数のトラックの組も繰り返せます。回数の代わりに `auto-fill` か `auto-fit` を書くと、最小の幅を下回らない範囲で入るだけの列を作ります。2つの違いはアイテムが列の数より少ないときに現れ、`auto-fill` は空の列を残し、`auto-fit` は空の列を幅0に折りたたみます。使い分けは「[12-1 検討する順番](/responsive/escalation/)」と「[11-6 grid](/compositions/grid/)」で説明しています。
 
 ## 明示的なグリッドと暗黙のグリッド
 
@@ -71,7 +71,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 /* 🙅‍♂ Not Recommended */
 ._gallery {
   display: block grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 160px);
 }
 ```
@@ -79,13 +79,13 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 ```css title="🙆‍♂ Recommended: 暗黙の行の大きさを grid-auto-rows で決める"
 ._gallery {
   display: block grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: calc(160 / 16 * 1rem);
   gap: 16px;
 }
 ```
 
-アイテムを自動で置く向きは、`grid-auto-flow` で決まります。初期値の `row` では、アイテムを行の端まで順に詰め、足りなくなると暗黙の行を足します。`column` にすると、列の方向に詰め、足りなくなると暗黙の列を足します。`grid-auto-flow: column` と `grid-auto-columns: minmax(0, 1fr)` を組み合わせると、アイテムがいくつあっても1行に等分で並ぶ、ステップ表示のような並びが書けます。
+アイテムを自動で置く向きは、`grid-auto-flow` で決まります。初期値の `row` では、アイテムを行の端まで順に詰め、足りなくなると暗黙の行を足します。`column` にすると、列の方向に詰め、足りなくなると暗黙の列を足します。`grid-auto-flow: column` と `grid-auto-columns: 1fr` を組み合わせると、アイテムがいくつあっても1行に等分で並ぶ、ステップ表示のような並びが書けます。
 
 `grid-auto-flow` に `dense` を加えると、複数のトラックにまたがるアイテムのせいで空いたセルへ、後ろのアイテムを先に詰めます。隙間は消えますが、見た目の順番だけが変わり、DOMの順番は変わりません。キーボードの移動と読み上げはDOMの順番のままなので、`dense` はタグやサムネイルの一覧のように、順序に意味のない並びに限ります。フォーカスできる要素や、手順、ランキングを並べたグリッドには指定しません。高さの違う項目を短い列へ詰める `display: block grid-lanes` でも、同じ種類の食い違いが起こります。その対処は「[10-13 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)」で説明しています。
 
@@ -143,7 +143,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
       grid-template:
         "--image --heading"
         "--image --body" 1fr
-        / minmax(0, 1fr) minmax(0, 1fr);
+        / 1fr 1fr;
     }
 
     & > ._heading {
@@ -219,7 +219,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 グリッドアイテムの `min-inline-size` の初期値 `auto` は、0ではありません。下限が `auto` のトラックにまたがるアイテムでは、中身の最小幅（`min-content` に近い値）が下限になります。単独の `1fr` は `minmax(auto, 1fr)` なので、長いURLや幅の大きい入力欄を含むアイテムは、その下限まで列を押し広げます。例外は、`overflow: auto` などでスクロールコンテナになったアイテムで、この場合の下限は0です。
 
-防ぎ方は2つあります。1つは、トラックの側で `minmax(0, 1fr)` と書き、列の下限を0にする方法です（「[10-10 変化に強いレイアウト](/layout/defensive/#rule-minmax-zero-for-fr)」）。もう1つは、ベーススタイルの全称セレクタで `min-inline-size: 0` を指定し、アイテムの下限を0にする方法です（「[6-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。本書は両方を使います。グリッドを書くコンポーネントの中で下限を決めておけば、ベーススタイルのない環境へ持ち出しても崩れないからです。
+防ぎ方は2つあります。1つは、トラックの側で `minmax(0, 1fr)` と書き、列の下限を0にする方法です。もう1つは、ベーススタイルの全称セレクタで `min-inline-size: 0` を指定し、アイテムの下限を0にする方法です（「[6-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。本書は後者を使い、列は `1fr` のまま書きます。アイテムの下限が0なら、下限が `auto` のトラックの下限も0になるからです（「[10-10 変化に強いレイアウト](/layout/defensive/#rule-fr-without-minmax-zero)」）。
 
 アイテムの間隔は、アイテムの `margin` ではなく、コンテナの `gap` で作ります（「[10-9 余白を設計する](/layout/spacing/#rule-gap-over-child-margin)」）。`gap` は行の間隔と列の間隔を順に書くショートハンドで、片方だけなら `row-gap` か `column-gap` で指定します。溝はトラックとトラックの間にだけ作られ、グリッドの外周にはできません。
 
@@ -272,7 +272,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 @scope (.scoped.news-list) to (.scoped) {
   ul {
     display: block grid;
-    grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) minmax(0, 1fr);
+    grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) 1fr;
     column-gap: 24px;
     padding-inline: 24px;
   }
@@ -287,7 +287,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 }
 ```
 
-1列目の `max-content` は、日付の幅そのものです。日付の列は、中身より狭くならず、改行もされません。2列目の `fit-content()` は、中身の幅に合わせつつ、括弧の中の値を上限にする指定です。カテゴリが短ければ短いなりの幅になり、長ければ160px相当で折り返します。3列目の `minmax(0, 1fr)` は、残りの幅をすべて受け取ります。
+1列目の `max-content` は、日付の幅そのものです。日付の列は、中身より狭くならず、改行もされません。2列目の `fit-content()` は、中身の幅に合わせつつ、括弧の中の値を上限にする指定です。カテゴリが短ければ短いなりの幅になり、長ければ160px相当で折り返します。3列目の `1fr` は、残りの幅をすべて受け取ります。
 
 項目の `li` は、`grid-column: 1 / -1` で親の3列すべてにまたがり、`grid-template-columns: subgrid` で親の列をそのまま使います。どの項目のカテゴリが長くても、列の幅は一覧全体で1つに決まるので、日付、カテゴリ、タイトルの開始位置がすべての行でそろいます。`align-items: baseline` は、文字の大きさが違うカテゴリとタイトルを、文字のベースラインでそろえる指定です。項目の上下の余白には、ルート要素の行の高さを単位にした `1rlh` を使っています。
 

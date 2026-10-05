@@ -118,7 +118,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 仕様の編集者草案は、この点を改めています（CSSWGの議論は「[[css-flexbox] Flex basis and box-sizing #316](https://github.com/w3c/csswg-drafts/issues/316)」）。`flex-basis` の大きさを決める段階では内容の領域の幅が0より小さくなるのを許し、`border-box` で0を指定したアイテムは、`padding` を含めた外側の大きさを0として扱います。この規則なら、余りが配られた後の外側の幅はそろいます。しかし、2026年10月にChrome 152で確かめた限りでは、内容の領域を0で止める従来の計算のままで、幅は `padding` の差の分だけずれます。{/* 要確認: Safari と Firefox の挙動 */}
 
-列の幅を確実にそろえたいときは、Gridで親が列を決めます。`grid-template-columns: repeat(3, minmax(0, 1fr))` は、先にコンテナの幅を3等分して列を作り、アイテムをその列の中に置きます。`padding` は列の内側に収まるので、`padding` の大きいアイテムは、幅ではなく内容の領域が狭くなります。`1fr` ではなく `minmax(0, 1fr)` と書く理由は、「[10-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
+列の幅を確実にそろえたいときは、Gridで親が列を決めます。`grid-template-columns: repeat(3, 1fr)` は、先にコンテナの幅を3等分して列を作り、アイテムをその列の中に置きます。`padding` は列の内側に収まるので、`padding` の大きいアイテムは、幅ではなく内容の領域が狭くなります。`minmax(0, 1fr)` ではなく `1fr` と書く理由は、「[10-10 変化に強いレイアウト](/layout/defensive/)」で説明しています。
 
 ```css title="🙅‍♂ Not Recommended: padding の違うアイテムを、flex: 1 で等分しようとする"
 /* 🙅‍♂ Not Recommended */
@@ -144,7 +144,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 ```css title="🙆‍♂ Recommended: 列の幅を Grid で決め、padding を列の内側に収める"
 ._columns {
   display: block grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 
   & > * {

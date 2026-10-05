@@ -150,14 +150,14 @@ img {
 @scope (.scoped.hero-header) to (.scoped) {
   :scope {
     display: block grid;
-    grid-template-areas: "--stack";
+    grid-template-areas: "--pile";
     background-color: oklch(20% 0 0deg);
     color: oklch(100% 0 0deg);
   }
 
   img,
   ._body {
-    grid-area: --stack;
+    grid-area: --pile;
   }
 
   img {
@@ -257,7 +257,7 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 
 なお、遅延読み込みの画像で `sizes` を自動で決める `sizes="auto"` は、Safariが対応していません（2026年9月確認）。
 
-`<img>` には `decoding="async"` を指定せず、デフォルトの `auto` に任せます。`decoding` は、画像のデコードをほかの内容の表示とそろえるか（`sync`）、待たずにほかの内容を表示するか（`async`）を伝えるヒントで、`auto` ならブラウザが選びます。Kiteの検証（2023年7月、Chrome 115）では、キャッシュのない通常の読み込みで、`sync` と `async` に目立った性能の差はありませんでした。一方、キャッシュがある状態で `async` を指定すると、画像以外が先に表示され、画像があとから現れるので、画面がちらつきます。
+`<img>` には `decoding="async"` を指定せず、デフォルトの `auto` に任せます。`decoding` は、画像のデコードをほかの内容の表示とそろえるか（`sync`）、待たずにほかの内容を表示するか（`async`）を伝えるヒントで、`auto` ならブラウザが選びます。キャッシュのない通常の読み込みで、`sync` と `async` に目立った性能の差は無い一方、キャッシュがある状態で `async` を指定すると、画像以外が先に表示され、画像があとから現れるので、画面がちらつくのが理由です。
 
 ## 図形は clip-path とマスクで描く
 

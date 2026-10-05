@@ -534,9 +534,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 親がその長さより狭くなったときに、はみ出すのを防ぐため。
   - 補足: 例：`repeat(auto-fit, minmax(min(100%, calc(360 / 16 * 1rem)), 1fr))`、`min-inline-size: min(100%, 320px)`。
   - 詳細: 10-10 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
-- 【推奨】列を均等や比率で分けるときは、`1fr` ではなく `minmax(0, 1fr)` と書く。（`minmax-zero-for-fr`）
-  - 理由: `1fr` の最小値は中身の最小幅になり、長い URL や入力欄が列を押し広げるため。
-  - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。全称セレクタの `min-inline-size: 0`（第6章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
+- 【推奨】列を均等や比率で分けるときは、`minmax(0, 1fr)` ではなく `1fr` と書く。（`fr-without-minmax-zero`）
+  - 理由: ベーススタイルの全称セレクタの `min-inline-size: 0` でグリッドアイテムの最小幅が0になっており、`1fr` の列も中身に押し広げられないため。`minmax(0, 1fr)` は同じ守りを重ねるだけで、意図して下限を決めた `minmax()` との区別もつかなくなる。
+  - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。ベーススタイルの届かない Shadow DOM の中では、Shadow DOM のスタイルにも全称セレクタの `min-inline-size: 0`（第6章のルール `global-min-inline-size-zero`）を書きます。
   - 詳細: 10-10 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
   - 理由: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。
@@ -1941,7 +1941,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。（`subgrid-span-rows`）
   - 理由: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
   - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
-- 【推奨】グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`minmax(0, 1fr)`（残りをすべて使う）のように指定する。（`column-width-by-variability`）
+- 【推奨】グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`1fr`（残りをすべて使う）のように指定する。（`column-width-by-variability`）
   - 理由: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
   - 補足: 一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。
   - 詳細: 10-6 Gridの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/grid-basics.mdx）
@@ -2053,9 +2053,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 親がその長さより狭くなったときに、はみ出すのを防ぐため。
   - 補足: 例：`repeat(auto-fit, minmax(min(100%, calc(360 / 16 * 1rem)), 1fr))`、`min-inline-size: min(100%, 320px)`。
   - 詳細: 10-10 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
-- 【推奨】列を均等や比率で分けるときは、`1fr` ではなく `minmax(0, 1fr)` と書く。（`minmax-zero-for-fr`）
-  - 理由: `1fr` の最小値は中身の最小幅になり、長い URL や入力欄が列を押し広げるため。
-  - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。全称セレクタの `min-inline-size: 0`（第6章のルール `global-min-inline-size-zero`）でも防げますが、トラックの側で最小値を決めておけば、グローバルの指定に頼らずに済みます。
+- 【推奨】列を均等や比率で分けるときは、`minmax(0, 1fr)` ではなく `1fr` と書く。（`fr-without-minmax-zero`）
+  - 理由: ベーススタイルの全称セレクタの `min-inline-size: 0` でグリッドアイテムの最小幅が0になっており、`1fr` の列も中身に押し広げられないため。`minmax(0, 1fr)` は同じ守りを重ねるだけで、意図して下限を決めた `minmax()` との区別もつかなくなる。
+  - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。ベーススタイルの届かない Shadow DOM の中では、Shadow DOM のスタイルにも全称セレクタの `min-inline-size: 0`（第6章のルール `global-min-inline-size-zero`）を書きます。
   - 詳細: 10-10 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/defensive.mdx）
 - 【推奨】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
   - 理由: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。
