@@ -192,6 +192,16 @@
   page: values/math-functions
   since: 0.1.0
 
+# 要確認：ブラウザのズームの最大（500%）と、そこから導いた2.5倍は著者の資料に出典がない
+- id: fluid-font-size-max-ratio
+  level: 推奨
+  rule: '文字サイズを `clamp()` で流体的にするときは、最大値を最小値の2.5倍以内にする。'
+  reason: '推奨値の相対単位の部分はブラウザのズームで大きくならないが、最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。'
+  note: '2.5倍は、ズームの最大を500%として導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。'
+  aiProne: true
+  page: values/math-functions
+  since: 0.21.0
+
 - id: typed-arithmetic-to-unitless
   level: 推奨
   rule: '長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。'

@@ -6,7 +6,13 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import crossfadeHtml from '../../../demos/motion/crossfade-blur/index.html?raw';
+import crossfadeCss from '../../../demos/motion/crossfade-blur/style.css?raw';
+import crossfadeJs from '../../../demos/motion/crossfade-blur/script.js?raw';
+import toastHtml from '../../../demos/motion/keyframes-toast/index.html?raw';
+import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
 
 トランジションは `transition: all` を使わず、動かすプロパティだけをロングハンドで書き、再生時間とイージングにはトークンを使います。途中で取り消されることがある動きは、`@keyframes` ではなくトランジションで作ります。トランジションは、取り消された時点の状態から逆向きに戻るからです。
 
@@ -67,6 +73,8 @@ import Guideline from '../../../components/Guideline.astro';
 }
 ```
 
+`transition-behavior: allow-discrete` も、略記の `transition` に含めず、ロングハンドで書きます。略記の値の中に解釈できないキーワードがあると、宣言全体が無効になります。`allow-discrete` を解釈できないブラウザでは、`display` だけでなく、`opacity` などのトランジションもまとめて失われます。ロングハンドなら、無効になるのは `transition-behavior` の宣言だけです。
+
 この例では、メニューを開いたボタンのアイコンを半回転させ、色も変えています。回転は画面の上にあるものの動きなので `in-out` 系、色の変化は `out` 系のイージングを選んでいます。トランジションのプロパティを `prefers-reduced-motion: no-preference` の中に書いているのは、回転が動きを減らす設定で避けたい動きだからです。動きを減らす設定のときは、状態は変わっても、その途中は見せません（「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。トークンの値と、イージングの選び方は「[17-3 イージングと再生時間](/motion/easing-and-duration/)」で説明しています。
 
 動かすプロパティは、`opacity` と、`translate`、`scale`、`rotate` を優先します。これらは描画をやり直さずに合成だけで動かせるので、滑らかに動きます。`color` や `background-color` は描画のやり直しが必要ですが、小さな部品の状態の変化なら許容できます。どのプロパティがどの処理を起こすかは「[17-7 動きの負荷を抑える](/motion/performance/)」で説明しています。
@@ -101,6 +109,49 @@ import Guideline from '../../../components/Guideline.astro';
 ```
 
 入る側の `transition-duration` も、動きを減らす設定の条件の中に書きます。`transition-property` の初期値は `all` なので、条件の外に再生時間だけを書くと、動きを減らす設定のときにも、すべてのプロパティがその再生時間で動いてしまいます。
+
+### ぼかしでクロスフェードの重なりを目立たなくする
+
+2つの要素を同じ場所に重ね、片方を消しながらもう片方を出すクロスフェードでは、途中で両方が半透明になり、二重に写って見えます。コピーのボタンのアイコンを、押したあとにチェックの印へ切り替えるような場面です。消える側と現れる側に `filter: blur()` を数pxだけ掛けると、途中の重なりがぼけて、1つの形が別の形に変わったように見えます。{/* 要確認: 出典なし（ぼかしで二重写りを目立たなくする技法） */}
+
+```css title="🙆‍♂ Recommended: 切り替わるアイコンに、不透明度と小さなぼかしを組み合わせる"
+@scope (.scoped.copy-button) to (.scoped) {
+  :scope {
+    display: inline grid;
+  }
+
+  ._copy-icon,
+  ._copied-icon {
+    grid-area: 1 / 1;
+    transition-duration: var(--duration--fast);
+    transition-property: opacity, filter;
+    transition-timing-function: var(--ease--out-quint);
+  }
+
+  ._copied-icon {
+    opacity: 0;
+    filter: blur(4px);
+
+    &:is(:scope[data-copied="true"] *) {
+      opacity: 1;
+      filter: none;
+    }
+  }
+
+  ._copy-icon {
+    &:is(:scope[data-copied="true"] *) {
+      opacity: 0;
+      filter: blur(4px);
+    }
+  }
+}
+```
+
+2つのアイコンは、グリッドの同じセルに置いて重ねています。`filter` の `none` と `blur(4px)` の間は、`blur(0)` から補間されます。位置と大きさを変えない変化なので、フェードと同じく、動きを減らす設定の条件の外に書いています。ぼかしの半径を大きくすると描画の負荷が増えるので、数pxにとどめます（「[17-7 動きの負荷を抑える](/motion/performance/)」）。
+
+次のデモでは、ボタンを押すと `data-copied` 属性が `true` になり、コピーのアイコンがチェックの印に切り替わって、1.5秒後に戻ります。左のボタンは不透明度だけを、右のボタンは不透明度とぼかしを動かしています。左は切り替えの途中で四角とチェックの印が重なって見え、右は輪郭がぼけて、1つの形が別の形に変わったように見えます。比べるために、ぼかしの半径を公開用のカスタムプロパティで受け取り、左のボタンだけ0にしています。
+
+<Demo title="コピーのアイコンをチェックの印に切り替え、ぼかしの有無で重なり方を比べる" html={crossfadeHtml} css={crossfadeCss} js={crossfadeJs} widths={[]} />
 
 ## 途中で取り消される動き
 
@@ -184,6 +235,10 @@ const close = async (dialog) => {
 ```
 
 起点や方向は、`@keyframes` の中で参照しているカスタムプロパティに、使う側から値を渡して変えます。このカスタムプロパティは `@keyframes` の引数のようなものなので、本書では「API的なカスタムプロパティ」と呼びます。名前は `--<keyframes の名前>--<値の名前>` の形にします。先頭に `@keyframes` の名前が入っていて、コンポーネントの公開用や内部用のカスタムプロパティとは区別できるので、内部用の `--_` は付けません。
+
+次のデモでは、同じ `--fade-in` と `--translate-from` を使い、下に出す通知は下から、上に出す通知は上から現れます。2つの通知で違うのは、`--translate-from--y-value` の値と配置だけです。通知は `popover` 属性で表示しているので、開くたびに `display: none` から表示され、アニメーションも最初から再生されます。
+
+<Demo title="同じ @keyframes に起点だけを渡し、通知を下からと上から出す" html={toastHtml} css={toastCss} height="12rem" />
 
 `@keyframes` が `from` と `to` の2つのフレームで完結していれば、渡す値は開始値か終了値のどちらかだけです。中間のフレームが加わると、渡す値がフレームの数だけ増え、引数として扱える範囲を超えます。そのため、グローバルに置くのは2つのフレームで完結するものに限ります。
 

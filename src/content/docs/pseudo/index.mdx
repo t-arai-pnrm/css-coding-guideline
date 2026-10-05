@@ -31,9 +31,9 @@ sidebar:
 
 `::scroll-marker` と `::scroll-button()` は、スクロールコンテナにインジケーターとページ送りのボタンを生成する擬似要素です。対応しているのはChromeとEdgeの135以降だけで、Baselineではありません。カルーセルを作るときにだけ使うものなので、使い方と未対応の環境への備えは、第16章「[16-4 CSSでカルーセルを作る](/interaction/carousel/)」でまとめて説明します。段組みの列ごとに箱を生成する `::column` も、同じくChromeとEdgeの135以降だけが対応しており、現時点ではカルーセルの列ごとにスクロールマーカーやスナップ位置を指定するためのものなので扱いません。
 
-`::picker(select)` と `::checkmark` は、`appearance: base-select` を指定した `<select>` のドロップダウンと、選んだ項目の印を選ぶ擬似要素です。対応しているのはChrome 135以降（`::checkmark` は133以降）とSafari 27で、Firefoxが対応していないためBaselineではありません。`<select>` の見た目を変える方法は、第16章「[16-3 フォーム部品](/interaction/forms/)」で現状を示すにとどめています。
+`::picker(select)` と `::checkmark` は、`appearance: base-select` を指定した `<select>` のドロップダウンと、選んだ項目の印を選ぶ擬似要素です。対応しているのはChrome 135以降（`::checkmark` は133以降）とSafari 27で、Firefoxが対応していないためBaselineではありません。`<select>` の見た目を変える方法と、未対応の環境で標準の `<select>` に戻す書き方は、第16章「[16-3 フォーム部品](/interaction/forms/)」で説明します。
 
-`:state()` は、カスタム要素がJavaScriptで設定した独自の状態を選ぶ擬似クラスです。2024年5月にすべての主要なブラウザが対応し、Baseline Newly availableになっています。ただし、使うにはカスタム要素を定義し、`ElementInternals` で状態を管理する必要があり、本書の題材であるHTMLとCSSによるサイト制作から外れるので扱いません。
+`:state()` は、カスタム要素がJavaScriptで設定した独自の状態を選ぶ擬似クラスです。2024年5月にすべての主要なブラウザが対応し、Baseline Newly availableになっています。ただし、使うには `ElementInternals` で状態を管理する必要があります。本書ではカスタム要素の状態を、ブラウザの擬似クラス（`:popover-open` や `:checked`）と `data-*` 属性で選ぶので、`:state()` は扱いません（第8章「[8-6 Web Components](/components/web-components/)」）。
 
 `interestfor` 属性は、ボタンやリンクにホバーやフォーカスで「関心」を示したとき、ツールチップのような要素を表示する仕組みです。関連する擬似クラスとして `:interest-source` と `:interest-target` があります。対応しているのはChromeとEdgeの142以降だけで、Baselineではないので扱いません。
 

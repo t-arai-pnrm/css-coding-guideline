@@ -6,7 +6,11 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import untilFoundHtml from '../../../demos/interaction/until-found-panel/index.html?raw';
+import untilFoundCss from '../../../demos/interaction/until-found-panel/style.css?raw';
+import untilFoundJs from '../../../demos/interaction/until-found-panel/script.js?raw';
 
 開閉するUIは、HTMLの機能で作ります。モーダルは `<dialog>` を `command` 属性で開き、`closedby="any"` で背景のクリックでも閉じられるようにします。メニューのような小さな表示には `popover` 属性を、その場で開閉する項目には `<details>` を使います。
 
@@ -195,6 +199,10 @@ const initializeDisclosure = (link) => {
   }
 }
 ```
+
+次のデモは、上のHTMLに開閉の処理を加えたもので、パネルは閉じた状態で始まります。閉じたまま、Ctrl+F（macOSでは⌘F）で「置き配」を検索してみてください。パネルが自動で開き、見出しの記号が `aria-expanded` に合わせて「−」に変わります。見出しのリンクを押すか、フォーカスしてEnterキーかSpaceキーを押しても開閉できます。
+
+<Demo title="hidden=&quot;until-found&quot; で閉じたパネルが、ページ内検索で自動で開く" html={untilFoundHtml} css={untilFoundCss} js={untilFoundJs} widths={[]} />
 
 <Baseline id="hidden-until-found" name='hidden="until-found"' />
 

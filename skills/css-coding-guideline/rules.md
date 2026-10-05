@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.20.0
-- 生成日: 2026-10-03
-- ルールの数: 512
+- バージョン: 0.21.0
+- 生成日: 2026-10-05
+- ルールの数: 544
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -47,7 +47,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【禁止】対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。（`no-unsupported-layout-features`）
   - 理由: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
-  - 補足: 2026年9月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports not` で従来の表現を用意して使えます。
+  - 補足: 2026年10月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【推奨】フォールバックは、新しいプロパティならそのまま書き、`var()` を含まない新しい値なら従来の宣言を前に書くか `@supports` の中に書き、`var()` を含む宣言と、ほかの宣言もまとめて切り替える宣言は必ず `@supports` の中に書く。（`fallback-method-by-invalidation`）
   - 理由: `var()` を含む宣言は計算値の時点で無効になり、前に書いた宣言に戻らないため。まとめて切り替える宣言は、`@supports` の条件で意図が読め、不要になったときに検索して消せるため。
@@ -80,6 +80,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【必須】レイヤーの順序は、読み込むCSSの先頭で `@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;` と宣言する。（`layer-order-declaration`）
   - 理由: レイヤーの順番は最初に現れた順で決まるので、先頭で宣言すれば `@import` やスタイルを書く順番に左右されなくなるため。
+  - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
+- 【必須】`@import` は、フレームワークや PostCSS のプラグインなどでビルド時に展開し、ブラウザで実行させない。（`import-resolved-at-build`）
+  - 理由: ブラウザは `@import` を書いたファイルを読み込んで解析するまで次の読み込みを始められず、読み込みが直列になって最初の表示が著しく遅れるため。
+  - 補足: Astro（Vite）は `@import` をビルド時に展開し、`layer()` の指定も `@layer` のブロックとして残します。CMS と共存する案件でも、自分で書いた CSS はビルドを通してから配信します。
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】CMS のように、レイヤーに入っていない外部のCSSと共存する環境では `@layer` を使わず、9つの分類はディレクトリ構成と `@import` の順番で保つ。（`no-layers-with-unlayered-css`）
   - 理由: レイヤーの外のCSSは詳細度に関係なくレイヤーの中のCSSに勝つので、自分のCSSだけをレイヤーに入れると構造的に負けるため。
@@ -127,6 +131,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】子要素を位置で選ぶのは、縞模様や先頭の数個のように順番そのものが条件になるときに限り、役割の決まった子はタイプセレクタか子クラスで選ぶ。（`select-roles-not-positions`）
   - 理由: 位置で選んだスタイルは、HTMLの順番を入れ替えたり要素を足したりすると別の子に当たり、役割とスタイルがずれるため。
   - 補足: 子要素の間隔を作るために、`:last-child` や `:first-child` で余白を打ち消すことはしません。間隔は親の `gap`（第10章のルール `gap-over-child-margin`）か、コンポジション `prose` で作ります。
+  - 詳細: 3-4 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
+- 【推奨】`sibling-index()` と `sibling-count()` は、色相や遅延のように未対応の環境で失われても困らない装飾の値に限って使い、`@supports (z-index: sibling-index())` の中に書いて、外に未対応の環境で使う値を書く。（`sibling-functions-for-decoration`）
+  - 理由: 2026年10月の時点で、本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。
+  - 補足: 件数で見た目を切り替える処理は数量クエリで書きます（ルール `quantity-query-for-count-conditions`）。レイアウトの要に使わない理由は、第1章のルール `no-unsupported-layout-features` と同じです。数える対象は `:nth-child()` と同じで、`hidden` 属性で隠した要素も数えます。
   - 詳細: 3-4 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
 - 【推奨】子要素の数で親や兄弟の見た目を変えるときは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で数え、数えた子要素そのものの見た目を変えるときは、`& > :nth-child(2n + 1):nth-last-child(1)` のように子の側で `:nth-child()` と `:nth-last-child()` を組み合わせる。（`quantity-query-with-has`）
   - 理由: スタイルを当てる要素をセレクタの主語にすれば、条件と対象が1つのセレクタで読めるため。子の側で数えると親のプロパティは切り替えられず、兄弟を変えるには `~` で後ろの兄弟を拾う組が要る。反対に、数えた子を `:has()` で変えると、同じ条件が親と子の2か所に現れる。
@@ -180,6 +188,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: Safari の `::marker` は `color` と `font-size` しか反映せず、ほかのプロパティや `content` を指定しても、Safari だけ見た目が変わらないため。
   - 補足: `list-style: none` でマーカーを消すと、Safari の VoiceOver がリストとして読み上げなくなるので、`list-style-type: ""` を使います。
   - 詳細: 3-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+- 【推奨】検索結果のページで検索語に付ける目印のように、内容の一部として読み手に伝える強調は `<mark>` で書き、`::highlight()` は、ページ内検索の一致や構文の色分けのように、操作に合わせて描き直す表示に使う。（`mark-over-highlight-for-meaning`）
+  - 理由: ハイライトは DOM を変えないので、CSS や JavaScript が動かない環境では範囲が表示されず、支援技術への伝わり方も `Highlight` の `type` と環境の対応によって異なるため。
+  - 補足: `::highlight()` に指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。範囲は色だけで区別せず、下線を組み合わせます（第14章のルール `no-color-only-information`）。強制カラーモードでは色が置き換わり、`text-shadow` は `none` になります。
+  - 詳細: 3-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【必須】単位は「ユーザーがブラウザの文字サイズを大きくしたとき、この値も一緒に大きくなるべきか」で選び、大きくなるべき値は rem（または em）、そうでない値は px にする。（`unit-by-text-scaling`）
   - 理由: 文字サイズの設定を尊重しつつ、余白や線まで大きくなって読みにくくなるのを防ぐため。
   - 補足: すべてを rem にする書き方も、すべてを px にする書き方も、この基準に合いません。
@@ -222,6 +234,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`clamp()` の推奨値は、2つの基準の幅とそのときの値から傾きと切片を求めて書き、ジェネレーターが出した数値だけを貼らない。（`clamp-from-slope-intercept`）
   - 理由: 数値だけでは、どの幅でどの値になるのかを読み取れず、値を変えるときに計算をやり直せないため。
   - 補足: 基準の幅と値は、カスタムプロパティを使った式にするか、少なくともコメントに残します。
+  - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
+- 【推奨】文字サイズを `clamp()` で流体的にするときは、最大値を最小値の2.5倍以内にする。（`fluid-font-size-max-ratio`）
+  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。
+  - 補足: 2.5倍は、ズームの最大を500%として導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
   - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【推奨】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
   - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
@@ -400,6 +416,26 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 値が対象のタグと同じ場所に書かれ、セレクタや詳細度に依存せずに渡せるため。
   - 補足: 複数の子にまとめて渡すとき、クエリで値を切り替えるとき、`:hover` や `:has()` などの状態で値を変えるときは、CSS で渡してもかまいません。
   - 詳細: 8-5 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
+- 【推奨】カスタム要素で作る部品は、カスタム要素そのものに `scoped` クラスを付けてルートにし、CSS は外部のファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書く。（`custom-element-as-scope-root`）
+  - 理由: 要素名がコンポーネントの名前を受け持ち、`scoped` クラスが外側のスコープの下限になるので、ほかのコンポーネントと同じ規約で境界を作れるため。
+  - 補足: 名前のクラス（`scoped <名前>` の `<名前>`）は付けません。カスタム要素の中に `<style>` を置いて前置きのない `@scope` で書く方法は、部品を置いた数だけ同じ `<style>` が出力され、CSS がコンポーネントごとのファイルにまとまらないので使いません。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【必須】カスタム要素のルートには、`display: block flow` のように `display` を明示する。（`custom-element-root-display`）
+  - 理由: カスタム要素にはブラウザのデフォルトスタイルがなく、`display` が初期値の `inline` になるので、中にブロックの要素を置くと幅の指定が効かず、背景や枠線も中身を囲む形で描かれないため。
+  - 補足: Shadow DOM で作る部品では、`:host` に書きます。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】JavaScript がなくても動く HTML（`popover` 属性、`<dialog>` と `command` 属性など）を先に作り、カスタム要素は振る舞いを足すだけにする。（`custom-element-enhances-html`）
+  - 理由: スクリプトの読み込みが遅れたり失敗したりしても部品を操作でき、開閉やフォーカスの扱いを自作せずにブラウザに任せられるため。
+  - 補足: ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（3-7）。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】ページから子要素を受け取る部品は Light DOM で作り、Shadow DOM は中身をすべて自分で描く部品に限って使う。（`light-dom-for-received-children`）
+  - 理由: 子要素を受け取る部品を Shadow DOM で作ると、子要素はページの DOM に残り、それを囲む要素だけが Shadow DOM に入るので、1つの部品の CSS がページの CSS ファイルと Shadow DOM の中に分かれるため。
+  - 補足: Light DOM で作れば、部品の CSS は1つのファイルにまとまり、kiso.css のリセットやユーティリティもそのまま当たります。Shadow DOM の中には、ページのセレクタが当たらず、継承する値（カスタムプロパティを含む）だけが届きます。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】Shadow DOM の中では、ページのトークンをカスタムプロパティで参照し、kiso.css のリセットやユーティリティに頼っていた指定は中に書く。（`shadow-dom-restate-page-styles`）
+  - 理由: カスタムプロパティは継承で境界を越えて届くが、ページのリセットとユーティリティのクラスは中の要素に当たらないため。
+  - 補足: たとえば、ボタンの `font` と `color` はブラウザのデフォルトに戻るので `inherit` を指定し、`.-visually-hidden` と同じ指定は中の要素に直接書きます。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】配置が思いどおりにならないときは、値を足したり `position` でずらしたりする前に、その要素がどのレイアウトの方式（通常フロー、Flexbox、Grid、位置指定）の中にあり、どの要素が包含ブロックとスタッキングコンテキストになっているかを確かめる。（`identify-layout-mode-first`）
   - 理由: 効かない指定の多くは、その方式の規則どおりの振る舞いで、値を足して見た目を合わせても原因が残り、内容や文字の大きさが変わったときに崩れるため。
   - 詳細: 10-1 レイアウトの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/fundamentals.mdx）
@@ -557,6 +593,34 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: z-index の相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）に限るのと同じ考え方です。2つ以上の子の順番を入れ替えたくなったら、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。`order` で見た目の順番を入れ替えるときは、ルール `flexbox-no-visual-reorder` と `reading-flow-when-reordered` にも従います。
   - 自動チェック: Stylelint: `declaration-property-value-allowed-list`
   - 詳細: 10-14 表示順と読み上げ順を合わせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/reading-flow.mdx）
+- 【推奨】表は置かれた場所の幅に合わせて縮めず、`min-inline-size` で最小の幅を決め、表を包む要素に `overflow-x: auto` を指定して、それより狭い場所では横にスクロールさせる。（`table-min-size-with-scroller`）
+  - 理由: 表は列の最小の幅の合計までしか縮まないので、`overflow-wrap: anywhere` のもとでは列が1〜2文字の幅まで縮んで数値の途中でも折り返し、折り返せない中身があればページ全体が横にはみ出すため。
+  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、表として読み上げられなくなるブラウザがあるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（2026年10月時点、ルール `physical-only-where-no-logical`）。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【必須】スクロールのラッパーで包んだ表の列の見出しを `position: sticky` で留めるときは、ラッパーに `max-block-size` を指定して、ラッパーの中で縦にスクロールさせる。（`sticky-table-header-needs-block-limit`）
+  - 理由: `overflow-x: auto` を指定すると `overflow-y` も `auto` として計算され、ラッパーが縦方向でも基準のスクロールコンテナになるので、ページをスクロールしても見出しは留まらないため。
+  - 補足: ラッパーには `scrollbar-gutter: stable` も指定し、縦のスクロールバーの出入りで表の幅が変わらないようにします。縦の上限を設けない表では、行の見出し（先頭の列）だけを `inset-inline-start: 0` で横方向に留めます。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【必須】表の見出しのセルを `position: sticky` で留めるときは、表に `border-collapse: separate` と `border-spacing: 0` を指定し、枠線を各セルに持たせる。（`table-sticky-border-separate`）
+  - 理由: `collapse` では隣り合うセルが1本の枠線を共有し、共有の枠線は留めたセルと一緒に動かないので、スクロールすると見出しの境界線が消えて見えるため。
+  - 補足: kiso.css は `table` に `border-collapse: collapse` を指定しています。枠線が二重にならないよう、各セルには `border-block-end` のように1辺ずつ指定します。留めたセルには不透明な背景色を指定し、縦と横の両方に留める左上のセルだけを `z-index: var(--z--forwards)` で前に出します。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【推奨】数値の列のセルは、列の見出しのセルも含めて `text-align: end` で末尾に揃え、表に `font-variant-numeric: tabular-nums` を指定する。（`numeric-cells-tabular-end`）
+  - 理由: 末尾に揃えると1の位がそろい、等幅の数字にすると各桁も縦にそろって、値の大きさを見比べられるため。
+  - 補足: `tabular-nums` は、フォントに等幅の数字（OpenType の `tnum` 機能）があるときだけ反映されます。スクロールのラッパーで包んだ表では、数値の途中で折り返さないよう、数値のセルに `white-space: nowrap` を指定してかまいません。単位は各セルに繰り返さず、`caption` か列の見出しにまとめます。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【推奨】1行で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせる。（`ellipsis-with-nowrap-and-clip`）
+  - 理由: `text-overflow` は折り返さずにはみ出した行にだけ効き、はみ出しを `overflow: hidden` で切り取ると要素がスクロールコンテナになるため。
+  - 補足: `overflow-inline` に対応していない Safari 18 のために、`@supports not (overflow-inline: clip)` の中で `overflow-x: clip` を指定します。2行以上で打ち切るときは、第13章のルール `line-clamp-with-overflow-clip` に従います。行数を制限する要素には `padding-block` を付けず、余白は外側の要素に持たせます。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
+- 【禁止】金額、数量、日付、型番のような数値を、`text-overflow` や行数の制限で切り詰めない。（`no-truncate-numbers`）
+  - 理由: 一部が見えていても値として正しく読めず、「12,800円」が「12…」になると12円と読み違えるおそれがあるため。
+  - 補足: 数値と名前が1行に並ぶなら、名前のほうを切り詰め、数値の要素は `min-inline-size: fit-content` で縮ませません。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
+- 【推奨】読み込み中の表示（スケルトン）は読み込み後の内容と同じ寸法にし、画像の枠は `aspect-ratio`、文字の行は `lh` 単位で場所を取る。（`skeleton-matches-final-size`）
+  - 理由: 寸法が違うと、内容に差し替わったときに後ろの要素が動き、読んでいた位置や押そうとしたボタンがずれるため。
+  - 補足: スピナーだけを置いて、内容が届いたときに場所を取り直す書き方はしません。スピナーは、内容と同じ寸法の枠の中に表示します。`lh` は要素自身の文字サイズと行送りから決まるので、スケルトンにも読み込み後と同じ値を指定します。明滅させるときは、第17章のルール `motion-only-with-no-preference` に従います。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
 - 【推奨】構成が決まっていて、間隔を一律にしてよい要素を縦に積むときは `stack` を、見出しや段落、図が続き、子ごとに間隔を変えたい本文の流れには `prose` を使う。（`stack-vs-prose`）
   - 理由: `stack` の子はフレックスアイテムになり、`float` による回り込みと `margin` の相殺が使えず、間隔も子ごとに変えられないため。
   - 補足: 横に並べるときは、`stack` に `flex-direction: row` を上書きせず、`cluster` や `apart` を使います。CMS で編集者が入力する本文エリアの中には、どちらも使わず `.wysiwyg` で余白を決めます（`prose-not-on-cms-body`）。
@@ -691,10 +755,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
   - 補足: `pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第16章）。
   - 詳細: 12-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
-- 【推奨】375px 未満の画面では、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。（`fixed-viewport-below-min-width`）
-  - 理由: 300px 前後の折りたたみ端末のような画面まで見た目をカンプに合わせて整えるのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、カンプに近い見た目を保てるため。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
+- 【推奨】375px 未満の画面でもカンプの配置を保つ要件があるときに限り、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。要件がなければ固定せず、自然に折り返した表示にする。（`fixed-viewport-below-min-width`）
+  - 理由: 固定すると、幅 320px の端末では 16px の本文が約 13.6px に縮小されるため。320 CSS px で崩れない CSS なら固定しなくても内容は読めるので、固定で得られるのはカンプに近い配置だけである。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
   - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなります。ズームしたときの `outerWidth` はブラウザで違い、Chrome では変わりませんが、Firefox では小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
-  - 詳細: 12-5 375px未満の画面ではビューポートを固定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
+  - 詳細: 12-5 375px未満の画面の扱い（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
 - 【禁止】カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。（`no-full-liquid-scaling`）
   - 理由: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。
   - 補足: ブレイクポイントはデザインの段階で決めず、実装の段階でデザイナーと、保つもの（本文の読みやすさ、情報の量、画像の縦横比、CTA）と崩れとみなす基準（カラムの数を変える時点、余白を削る順番）をすり合わせて決めます（9-2）。コンポーネントの切り替えはコンテナサイズクエリで、ビューポートに密着する要素とページ全体の段組みはメディアクエリで書き、幅で連続的に変えたい値は値ごとに `clamp()` で範囲を決めます（4-3）。
@@ -722,6 +786,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【非推奨】日本語のサイトでは、`font-family` に `system-ui` を使わない。（`no-system-ui-for-japanese`）
   - 理由: Windows では Noto Sans JP ではなく、游ゴシックの画面表示用の書体が使われるため。
   - 補足: 海外製のフレームワークやリセット CSS（Tailwind CSS の初期設定など）が `system-ui` を指定していることがあるので、導入時に確かめます。
+  - 詳細: 13-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
+- 【非推奨】和文を含む要素に `font-size-adjust` を指定しない。（`no-font-size-adjust-for-japanese`）
+  - 理由: 和文の文字も欧文のフォントの x-height などの比に合わせて拡大・縮小され、デザインで決めた文字サイズから外れることがあるため。
+  - 補足: 欧文だけのページで書体の字面をそろえるときは、`:root` に `font-size-adjust: from-font` を一度だけ指定します。`ic-width` と `ic-height` は和文のフォントでは比がほぼ1になり、補正されません。Web フォントの読み込みの前後のずれは、`@font-face` の `size-adjust` で抑えます（`fallback-font-metric-overrides`）。
   - 詳細: 13-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
 - 【非推奨】和文の本文に `font-feature-settings: "palt"` やカーニングを指定せず、ベタ組みにする。（`solid-setting-for-body-text`）
   - 理由: 文字が等間隔に並ぶベタ組みのほうが、長い文章を読み進めやすいため。
@@ -757,6 +825,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 14-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
   - 理由: 配色の切り替えがトークンの定義にまとまり、ダーク用の値の書き忘れや、色の散らばりを防げるため。
+  - 詳細: 14-4 ダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/dark-mode.mdx）
+- 【必須】コンポーネントに `color-scheme` を指定するときは、同じ要素で `color` と `background-color` をセマンティクスのトークンで指定し直す。（`redeclare-colors-with-color-scheme`）
+  - 理由: 継承した `color` は親の配色で計算済みの色なので切り替わらず、背景を指定しないと親の背景が透けて見えるため。
+  - 補足: トークンを `@property` で `<color>` 型として登録すると、`:root` の配色で色が決まり、コンポーネントの `color-scheme` に追従しません（第8章の `at-property-only-when-needed`）。`::placeholder` や `::selection` の色も、`light-dark()` を含むトークンで指定します。
   - 詳細: 14-4 ダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/dark-mode.mdx）
 - 【必須】枠線を消すときは、`border: none` ではなく `border-color: transparent` で透明にする。（`transparent-border-over-none`）
   - 理由: 強制カラーモードでは透明な枠線にも色が付くので、背景色が消えても、ボタンなどの範囲が分かるため。
@@ -854,12 +926,24 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: `interactivity` に対応していない環境では背面を操作できてしまい、見えないリンクにフォーカスが移るため。
   - 補足: CSS で書く場合も、`body:has()` ではなく、`.global-header:has(…) ~ *` のように起点をヘッダーに絞ります。
   - 詳細: 16-4 CSSでカルーセルを作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/carousel.mdx）
+- 【禁止】キーボードショートカットで開閉する UI（コマンドパレットなど）に、出現と退場の動きを付けない。（`no-motion-on-keyboard-shortcut`）
+  - 理由: キーを押す操作は素早く続けて行われることが多く、動きが終わるのを待つと、入力と表示がずれて反応が遅く感じられるため。
+  - 補足: クリックとショートカットのどちらでも開く UI は、ショートカットで開いたときに JavaScript で属性を付け、その属性があるときは `transition-duration` を0にします。キーボードでのフォーカスの移動は `no-motion-on-focus-visible` で扱います。
+  - 詳細: 17-1 動かすかどうかを決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/purpose.mdx）
 - 【必須】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定し、機能的な動きでも大きな変動は、動きを減らす設定ではフェードに簡素化するか短くする。（`motion-only-with-no-preference`）
   - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せず、状態の変化は伝え続けるため。
   - 補足: 大きな変動とは、画面の3分の1以上を占める要素の移動、回転、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときは50ms以下にします。スピナー、プログレスバー、フォーカスリングの表示は変えません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。
   - 詳細: 17-2 動きを減らす設定に対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/reduced-motion.mdx）
 - 【必須】拡大して現れる動きは `scale: 0` から始めず、ツールチップとポップオーバーは0.95〜0.98、ドロップダウンメニューは0.92〜0.96、ダイアログやドロワーは0.85〜0.92から始め、`transform-origin` をトリガーのある側に向ける。（`scale-in-from-near-one`）
   - 理由: 何もないところから膨らむ動きは物理的に不自然で、起点が中央のままだと、どこから現れたのかが伝わらないため。
+  - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【非推奨】UI の出現、退場、移動に、`ease-in` や `in` 系のイージング（だんだん速くなる動き）を使わない。（`no-ease-in-for-ui`）
+  - 理由: 動き始めの変化が小さいので操作してから反応が見えるまでが遅れて感じられ、最も速い状態のまま急に止まるので物理的にも不自然に見えるため。
+  - 補足: 現れる動きと消える動きには `out` 系、画面の上にあるものの移動には `in-out` 系のトークンを使います。本書のイージングのトークンには、`in` 系を用意していません。加速していく様子そのものを見せたい演出のように、理由がある場合は使ってかまいません。
+  - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【必須】操作に応じる機能的な動きの再生時間は300ms以下にし、ダイアログ、ドロワー、シートのように画面の大部分を覆う UI でも500ms以下にする。（`functional-motion-under-300ms`）
+  - 理由: 動きが終わるまで次の操作を待たせず、1日に何度も触る UI でも待ち時間が積み重ならないようにするため。
+  - 補足: 例外は、スクロールで画面に入ったときに一度だけ再生する演出の `--duration--reveal`（600ms）と、ばねの動きの `--duration--spring`（700ms）だけです。どちらも頻繁に触る UI には使いません。ツールチップの表示を遅らせる `transition-delay` は、再生時間に含めません。
   - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
 - 【禁止】`transition: all` や `transition-property: all` を使わない。（`no-transition-all`）
   - 理由: 関係のないプロパティまで動き、意図しないアニメーションや無駄な描画の負荷を生むため。
@@ -882,13 +966,17 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
   - 補足: Firefox でも演出を出したい場合と、スクロールを戻しても再生を途中で止めたくない場合は、`IntersectionObserver` で属性を切り替えます。1回だけ動かす演出を CSS だけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しています。
   - 詳細: 17-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
-- 【推奨】画面に入ったら1回だけ再生する演出は、ルートの `view()` のタイムラインで登録していないカスタムプロパティを `false` から `true` に切り替え、子の一時停止したアニメーションを `@container style(--_in-view: true)` の中で `running` にし、全体を `@supports (animation-timeline: view())` で囲む。（`reveal-once-with-style-query`）
+- 【推奨】画面に入ったら1回だけ再生する演出は、ルートの `view()` のタイムラインで登録していないカスタムプロパティを `false` から `true` に切り替え、子の一時停止したアニメーションを `@container style(--_in-view: true)` の中で `running` にし、全体を `@supports (animation-timeline: view()) and (animation-range: entry)` で囲む。（`reveal-once-with-style-query`）
   - 理由: 見た目の変化を時間で進むアニメーションで再生するので、スクロールを止めた位置で途中のまま残らず、スクロール駆動アニメーションに対応していない環境では演出なしで内容を表示できるため。
   - 補足: 登録していないカスタムプロパティは、キーフレームの50%の時点で切り替わるので、`animation-timing-function: linear` なら範囲の中間（`entry 0% entry 60%` なら `entry 30%`）で再生が始まります。範囲を過ぎても値を残すために `animation-fill-mode: both` を指定します。スタイルクエリは自分の値を問い合わせられないので、切り替える要素と再生する要素を分けます。範囲より手前まで戻すと一時停止し、再生の途中なら、その位置で止まります。
   - 詳細: 17-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
 - 【必須】`will-change` は CSS に書いたままにせず、どうしても必要なときだけ、動きの直前に JavaScript で付けて、終わったら外す。（`will-change-temporarily`）
   - 理由: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。
   - 補足: 外す処理は `transitionend` だけでなく `transitioncancel` にも登録します。動きを減らす設定などでトランジションが起きないときは付けません。
+  - 詳細: 17-7 動きの負荷を抑える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/performance.mdx）
+- 【推奨】`content-visibility: auto` は最初の画面より下にある大きなブロックにだけ指定し、`contain-intrinsic-block-size: auto <長さ>` を組で書く。（`content-visibility-with-intrinsic-size`）
+  - 理由: 描画を省いている間は中身の大きさが0として扱われるので、見積もりの大きさがないとスクロールバーの長さとスクロールの位置が飛ぶため。`auto` を付けると、一度描画したあとは実際の大きさを覚えて使うため。
+  - 補足: 物理の `contain-intrinsic-size` や `contain-intrinsic-height` ではなく、論理の `contain-intrinsic-block-size` を使います。ページ内検索、Tab キーでの移動、スクリーンリーダーの読み上げで中身に届くかを確かめます。閉じたパネルのように、見つかるまで隠しておく中身には `hidden="until-found"` を使います。
   - 詳細: 17-7 動きの負荷を抑える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/performance.mdx）
 - 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
   - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
@@ -987,7 +1075,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【禁止】対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。（`no-unsupported-layout-features`）
   - 理由: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
-  - 補足: 2026年9月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports not` で従来の表現を用意して使えます。
+  - 補足: 2026年10月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
   - 詳細: 1-3 ブラウザサポートとプログレッシブ・エンハンスメント（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-support.mdx）
 - 【推奨】新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。（`supports-for-dependent-declarations`）
   - 理由: 未対応の環境で、従来の手段まで取り上げてしまうのを防ぐため。
@@ -1060,6 +1148,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【推奨】ファイル単位でレイヤーに入れるときは、`@import url("…") layer(<レイヤー>);` で割り当てる。（`import-into-layer`）
   - 理由: どのファイルがどのレイヤーに入るのかを1か所で確認でき、各ファイルの中に `@layer` を書かずに済むため。
+  - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
+- 【必須】`@import` は、フレームワークや PostCSS のプラグインなどでビルド時に展開し、ブラウザで実行させない。（`import-resolved-at-build`）
+  - 理由: ブラウザは `@import` を書いたファイルを読み込んで解析するまで次の読み込みを始められず、読み込みが直列になって最初の表示が著しく遅れるため。
+  - 補足: Astro（Vite）は `@import` をビルド時に展開し、`layer()` の指定も `@layer` のブロックとして残します。CMS と共存する案件でも、自分で書いた CSS はビルドを通してから配信します。
   - 詳細: 2-3 カスケードレイヤーで順位を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/layers.mdx）
 - 【必須】`@layer` と `@import` の `layer()` には、先頭の `@layer` 文で宣言した9つのレイヤー名だけを使う。（`declared-layer-names-only`）
   - 理由: 宣言していない名前はエラーにならず、最後に宣言したレイヤーより後ろに新しいレイヤーとして作られるので、打ち間違えると順番が崩れるため。
@@ -1137,6 +1229,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 位置で選んだスタイルは、HTMLの順番を入れ替えたり要素を足したりすると別の子に当たり、役割とスタイルがずれるため。
   - 補足: 子要素の間隔を作るために、`:last-child` や `:first-child` で余白を打ち消すことはしません。間隔は親の `gap`（第10章のルール `gap-over-child-margin`）か、コンポジション `prose` で作ります。
   - 詳細: 3-4 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
+- 【推奨】`sibling-index()` と `sibling-count()` は、色相や遅延のように未対応の環境で失われても困らない装飾の値に限って使い、`@supports (z-index: sibling-index())` の中に書いて、外に未対応の環境で使う値を書く。（`sibling-functions-for-decoration`）
+  - 理由: 2026年10月の時点で、本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。
+  - 補足: 件数で見た目を切り替える処理は数量クエリで書きます（ルール `quantity-query-for-count-conditions`）。レイアウトの要に使わない理由は、第1章のルール `no-unsupported-layout-features` と同じです。数える対象は `:nth-child()` と同じで、`hidden` 属性で隠した要素も数えます。
+  - 詳細: 3-4 子要素の位置で選ぶ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/child-index.mdx）
 - 【推奨】子要素の数で親や兄弟の見た目を変えるときは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で数え、数えた子要素そのものの見た目を変えるときは、`& > :nth-child(2n + 1):nth-last-child(1)` のように子の側で `:nth-child()` と `:nth-last-child()` を組み合わせる。（`quantity-query-with-has`）
   - 理由: スタイルを当てる要素をセレクタの主語にすれば、条件と対象が1つのセレクタで読めるため。子の側で数えると親のプロパティは切り替えられず、兄弟を変えるには `~` で後ろの兄弟を拾う組が要る。反対に、数えた子を `:has()` で変えると、同じ条件が親と子の2か所に現れる。
   - 補足: 親を起点にする形は、ちょうどN個が `&:has(> :nth-child(N):last-child)`、N個以上が `&:has(> :nth-child(N))`、N個以下が `&:has(> :last-child:nth-child(-n + N))`、N〜M個が `&:has(> :nth-child(N)):not(:has(> :nth-child(M + 1)))` です。1個だけなら `&:has(> :only-child)` で足ります。`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように、兄弟を変えるために子の側で数える形は使いません。どちらの形でも、`>` で直接の子に絞ります（絞らないと、孫の位置の要素も数えます）。起点のない `:has()` は書きません（ルール `no-unanchored-has`）。
@@ -1192,6 +1288,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`::selection` で選択範囲の色を変えるときは、`color` と `background-color` の両方を指定し、2つの色のコントラスト比を確かめる。（`selection-color-and-background`）
   - 理由: 片方だけを変えると、もう片方にはブラウザやユーザーの設定の色が残り、選択した文字が背景に埋もれることがあるため。
   - 補足: 文字と背景のコントラスト比の基準は、第14章のルール `text-contrast-aa` と同じです。iOS の Safari は `::selection` に対応していないので、選択範囲はシステムの色のままになります。
+  - 詳細: 3-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+- 【推奨】検索結果のページで検索語に付ける目印のように、内容の一部として読み手に伝える強調は `<mark>` で書き、`::highlight()` は、ページ内検索の一致や構文の色分けのように、操作に合わせて描き直す表示に使う。（`mark-over-highlight-for-meaning`）
+  - 理由: ハイライトは DOM を変えないので、CSS や JavaScript が動かない環境では範囲が表示されず、支援技術への伝わり方も `Highlight` の `type` と環境の対応によって異なるため。
+  - 補足: `::highlight()` に指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。範囲は色だけで区別せず、下線を組み合わせます（第14章のルール `no-color-only-information`）。強制カラーモードでは色が置き換わり、`text-shadow` は `none` になります。
   - 詳細: 3-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 
 ### 第4章 値と単位
@@ -1281,6 +1381,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`clamp()` の推奨値は、2つの基準の幅とそのときの値から傾きと切片を求めて書き、ジェネレーターが出した数値だけを貼らない。（`clamp-from-slope-intercept`）
   - 理由: 数値だけでは、どの幅でどの値になるのかを読み取れず、値を変えるときに計算をやり直せないため。
   - 補足: 基準の幅と値は、カスタムプロパティを使った式にするか、少なくともコメントに残します。
+  - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
+- 【推奨】文字サイズを `clamp()` で流体的にするときは、最大値を最小値の2.5倍以内にする。（`fluid-font-size-max-ratio`）
+  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。
+  - 補足: 2.5倍は、ズームの最大を500%として導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
   - 詳細: 4-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【推奨】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
   - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
@@ -1730,6 +1834,33 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】トランジションやアニメーションで値を動かすカスタムプロパティは、`inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介さずに直接動かす。（`animated-property-no-inherit`）
   - 理由: 継承するカスタムプロパティを動かすと、子孫の要素すべてでスタイルの計算がフレームごとに繰り返され、カスタムプロパティを介すと合成処理だけで済まなくなるため。
   - 詳細: 8-5 公開プロパティと内部プロパティ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/custom-properties.mdx）
+- 【推奨】カスタム要素で作る部品は、カスタム要素そのものに `scoped` クラスを付けてルートにし、CSS は外部のファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書く。（`custom-element-as-scope-root`）
+  - 理由: 要素名がコンポーネントの名前を受け持ち、`scoped` クラスが外側のスコープの下限になるので、ほかのコンポーネントと同じ規約で境界を作れるため。
+  - 補足: 名前のクラス（`scoped <名前>` の `<名前>`）は付けません。カスタム要素の中に `<style>` を置いて前置きのない `@scope` で書く方法は、部品を置いた数だけ同じ `<style>` が出力され、CSS がコンポーネントごとのファイルにまとまらないので使いません。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【必須】カスタム要素のルートには、`display: block flow` のように `display` を明示する。（`custom-element-root-display`）
+  - 理由: カスタム要素にはブラウザのデフォルトスタイルがなく、`display` が初期値の `inline` になるので、中にブロックの要素を置くと幅の指定が効かず、背景や枠線も中身を囲む形で描かれないため。
+  - 補足: Shadow DOM で作る部品では、`:host` に書きます。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】JavaScript がなくても動く HTML（`popover` 属性、`<dialog>` と `command` 属性など）を先に作り、カスタム要素は振る舞いを足すだけにする。（`custom-element-enhances-html`）
+  - 理由: スクリプトの読み込みが遅れたり失敗したりしても部品を操作でき、開閉やフォーカスの扱いを自作せずにブラウザに任せられるため。
+  - 補足: ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（3-7）。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】カスタム要素の設定は、振る舞いの設定を属性（`hoverable` など）で、見た目の設定を公開プロパティ（`--<要素名>--<プロパティ>`）で受け取る。（`custom-element-settings-attrs-and-props`）
+  - 理由: 見た目の設定を公開プロパティにすれば、JavaScript が動く前から CSS だけで値が届き、親から継承でまとめて渡すこともできるため。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】ページから子要素を受け取る部品は Light DOM で作り、Shadow DOM は中身をすべて自分で描く部品に限って使う。（`light-dom-for-received-children`）
+  - 理由: 子要素を受け取る部品を Shadow DOM で作ると、子要素はページの DOM に残り、それを囲む要素だけが Shadow DOM に入るので、1つの部品の CSS がページの CSS ファイルと Shadow DOM の中に分かれるため。
+  - 補足: Light DOM で作れば、部品の CSS は1つのファイルにまとまり、kiso.css のリセットやユーティリティもそのまま当たります。Shadow DOM の中には、ページのセレクタが当たらず、継承する値（カスタムプロパティを含む）だけが届きます。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】Shadow DOM の CSS では、`:host` に `display` と内部プロパティを書き、中の要素はクラスや `@scope` を使わずに要素と属性のセレクタで選ぶ。（`shadow-dom-host-and-element-selectors`）
+  - 理由: Shadow DOM の境界がスコープの役目を果たすので、短いセレクタでも外に漏れず、ページのセレクタも中に当たらないため。
+  - 補足: CSS は `<template>` の中の `<style>` に書き、`attachShadow()` で作った Shadow DOM に複製します。ネスト、`@media (any-hover)` の中のホバー、`prefers-reduced-motion: no-preference` の中の動きは、Light DOM と同じ規約で書きます。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+- 【推奨】Shadow DOM の中では、ページのトークンをカスタムプロパティで参照し、kiso.css のリセットやユーティリティに頼っていた指定は中に書く。（`shadow-dom-restate-page-styles`）
+  - 理由: カスタムプロパティは継承で境界を越えて届くが、ページのリセットとユーティリティのクラスは中の要素に当たらないため。
+  - 補足: たとえば、ボタンの `font` と `color` はブラウザのデフォルトに戻るので `inherit` を指定し、`.-visually-hidden` と同じ指定は中の要素に直接書きます。
+  - 詳細: 8-6 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 
 ### 第10章 レイアウトの基礎と考え方
 
@@ -2003,6 +2134,49 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: z-index の相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）に限るのと同じ考え方です。2つ以上の子の順番を入れ替えたくなったら、HTML の順番を直すか、コンテナの `reading-flow` に `grid-rows` や `flex-visual` を指定します。`order` で見た目の順番を入れ替えるときは、ルール `flexbox-no-visual-reorder` と `reading-flow-when-reordered` にも従います。
   - 自動チェック: Stylelint: `declaration-property-value-allowed-list`
   - 詳細: 10-14 表示順と読み上げ順を合わせる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/reading-flow.mdx）
+- 【推奨】表は置かれた場所の幅に合わせて縮めず、`min-inline-size` で最小の幅を決め、表を包む要素に `overflow-x: auto` を指定して、それより狭い場所では横にスクロールさせる。（`table-min-size-with-scroller`）
+  - 理由: 表は列の最小の幅の合計までしか縮まないので、`overflow-wrap: anywhere` のもとでは列が1〜2文字の幅まで縮んで数値の途中でも折り返し、折り返せない中身があればページ全体が横にはみ出すため。
+  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、表として読み上げられなくなるブラウザがあるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（2026年10月時点、ルール `physical-only-where-no-logical`）。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【推奨】表には `caption` で名前を付け、見出しのセルは `th` にして、列の見出しには `scope="col"`、行の見出しには `scope="row"` を付ける。（`table-caption-and-scope`）
+  - 理由: 支援技術が、表の名前と、各セルがどの見出しに属するかを伝えられるため。
+  - 補足: スクロールさせる表では、包む要素の `aria-labelledby` でこの `caption` を指し、スクロールする枠にも同じ名前を付けます。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【必須】スクロールのラッパーで包んだ表の列の見出しを `position: sticky` で留めるときは、ラッパーに `max-block-size` を指定して、ラッパーの中で縦にスクロールさせる。（`sticky-table-header-needs-block-limit`）
+  - 理由: `overflow-x: auto` を指定すると `overflow-y` も `auto` として計算され、ラッパーが縦方向でも基準のスクロールコンテナになるので、ページをスクロールしても見出しは留まらないため。
+  - 補足: ラッパーには `scrollbar-gutter: stable` も指定し、縦のスクロールバーの出入りで表の幅が変わらないようにします。縦の上限を設けない表では、行の見出し（先頭の列）だけを `inset-inline-start: 0` で横方向に留めます。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【必須】表の見出しのセルを `position: sticky` で留めるときは、表に `border-collapse: separate` と `border-spacing: 0` を指定し、枠線を各セルに持たせる。（`table-sticky-border-separate`）
+  - 理由: `collapse` では隣り合うセルが1本の枠線を共有し、共有の枠線は留めたセルと一緒に動かないので、スクロールすると見出しの境界線が消えて見えるため。
+  - 補足: kiso.css は `table` に `border-collapse: collapse` を指定しています。枠線が二重にならないよう、各セルには `border-block-end` のように1辺ずつ指定します。留めたセルには不透明な背景色を指定し、縦と横の両方に留める左上のセルだけを `z-index: var(--z--forwards)` で前に出します。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【推奨】数値の列のセルは、列の見出しのセルも含めて `text-align: end` で末尾に揃え、表に `font-variant-numeric: tabular-nums` を指定する。（`numeric-cells-tabular-end`）
+  - 理由: 末尾に揃えると1の位がそろい、等幅の数字にすると各桁も縦にそろって、値の大きさを見比べられるため。
+  - 補足: `tabular-nums` は、フォントに等幅の数字（OpenType の `tnum` 機能）があるときだけ反映されます。スクロールのラッパーで包んだ表では、数値の途中で折り返さないよう、数値のセルに `white-space: nowrap` を指定してかまいません。単位は各セルに繰り返さず、`caption` か列の見出しにまとめます。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【推奨】狭い幅で表の要素の `display` を変えて縦に積むときは、HTML の各要素に `role`（`table`、`rowgroup`、`row`、`columnheader`、`rowheader`、`cell`）を書く。（`stacked-table-aria-roles`）
+  - 理由: `display` を変えた表を表として扱わなくなるブラウザがあり、明示した `role` で表の意味を残せるため。
+  - 補足: 縦に積むのは、1行ごとに完結した記録を並べる表に限り、行どうしを比べる表はスクロールのラッパーで包みます。縦に積んだときに表示する列の名前は HTML に書いて `aria-hidden="true"` を付け、`thead` は `display: none` ではなく視覚的にだけ隠します。切り替えの条件は `inline-size <` の側に書きます。
+  - 詳細: 10-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/tables.mdx）
+- 【推奨】1行で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせる。（`ellipsis-with-nowrap-and-clip`）
+  - 理由: `text-overflow` は折り返さずにはみ出した行にだけ効き、はみ出しを `overflow: hidden` で切り取ると要素がスクロールコンテナになるため。
+  - 補足: `overflow-inline` に対応していない Safari 18 のために、`@supports not (overflow-inline: clip)` の中で `overflow-x: clip` を指定します。2行以上で打ち切るときは、第13章のルール `line-clamp-with-overflow-clip` に従います。行数を制限する要素には `padding-block` を付けず、余白は外側の要素に持たせます。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
+- 【推奨】文字を切り詰めるときは、リンク先のページや詳細の表示など、全文を読める手段を用意する。（`truncate-with-full-text-access`）
+  - 理由: 切り詰めた部分は、画面の上では読めなくなるため。
+  - 補足: `title` 属性の吹き出しは、タッチ操作やキーボードでは表示されないので、全文を読む手段にはしません。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
+- 【禁止】金額、数量、日付、型番のような数値を、`text-overflow` や行数の制限で切り詰めない。（`no-truncate-numbers`）
+  - 理由: 一部が見えていても値として正しく読めず、「12,800円」が「12…」になると12円と読み違えるおそれがあるため。
+  - 補足: 数値と名前が1行に並ぶなら、名前のほうを切り詰め、数値の要素は `min-inline-size: fit-content` で縮ませません。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
+- 【推奨】表や一覧で数値を縦に並べる列と、値が変わり続ける数字には、`font-variant-numeric: tabular-nums` を指定する。（`tabular-nums-for-number-columns`）
+  - 理由: 数字の幅が字ごとに違う書体では、縦に並べた数値の桁の位置がずれて大小を比べにくくなり、値が変わるたびに文字が左右に揺れるため。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
+- 【推奨】読み込み中の表示（スケルトン）は読み込み後の内容と同じ寸法にし、画像の枠は `aspect-ratio`、文字の行は `lh` 単位で場所を取る。（`skeleton-matches-final-size`）
+  - 理由: 寸法が違うと、内容に差し替わったときに後ろの要素が動き、読んでいた位置や押そうとしたボタンがずれるため。
+  - 補足: スピナーだけを置いて、内容が届いたときに場所を取り直す書き方はしません。スピナーは、内容と同じ寸法の枠の中に表示します。`lh` は要素自身の文字サイズと行送りから決まるので、スケルトンにも読み込み後と同じ値を指定します。明滅させるときは、第17章のルール `motion-only-with-no-preference` に従います。
+  - 詳細: 10-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/truncation-and-skeletons.mdx）
 
 ### 第11章 レイアウトコンポジション
 
@@ -2260,10 +2434,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: OS で透明度を下げる設定にしているユーザーが、背景に左右されずに文字を読める状態を保つため。
   - 補足: 2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
   - 詳細: 12-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
-- 【推奨】375px 未満の画面では、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。（`fixed-viewport-below-min-width`）
-  - 理由: 300px 前後の折りたたみ端末のような画面まで見た目をカンプに合わせて整えるのは実装の手間に見合わず、固定すれば表示全体が縮小されるだけで、カンプに近い見た目を保てるため。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
+- 【推奨】375px 未満の画面でもカンプの配置を保つ要件があるときに限り、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。要件がなければ固定せず、自然に折り返した表示にする。（`fixed-viewport-below-min-width`）
+  - 理由: 固定すると、幅 320px の端末では 16px の本文が約 13.6px に縮小されるため。320 CSS px で崩れない CSS なら固定しなくても内容は読めるので、固定で得られるのはカンプに近い配置だけである。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
   - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなります。ズームしたときの `outerWidth` はブラウザで違い、Chrome では変わりませんが、Firefox では小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
-  - 詳細: 12-5 375px未満の画面ではビューポートを固定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
+  - 詳細: 12-5 375px未満の画面の扱い（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
 - 【禁止】カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。（`no-full-liquid-scaling`）
   - 理由: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。
   - 補足: ブレイクポイントはデザインの段階で決めず、実装の段階でデザイナーと、保つもの（本文の読みやすさ、情報の量、画像の縦横比、CTA）と崩れとみなす基準（カラムの数を変える時点、余白を削る順番）をすり合わせて決めます（9-2）。コンポーネントの切り替えはコンテナサイズクエリで、ビューポートに密着する要素とページ全体の段組みはメディアクエリで書き、幅で連続的に変えたい値は値ごとに `clamp()` で範囲を決めます（4-3）。
@@ -2317,6 +2491,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】本文の Web フォントを `font-display: swap` で使うときは、`local()` で参照する代わりのフォントの `@font-face` に `size-adjust` などの補正を指定し、Web フォントの直後に置く。（`fallback-font-metric-overrides`）
   - 理由: 代わりのフォントから Web フォントに切り替わるときの、字幅や行の高さの違いによるレイアウトのずれを小さくできるため。
   - 補足: 値はフォントのファイルの寸法から、Capsize や fontaine のようなツールで計算します。`ascent-override`、`descent-override`、`line-gap-override` は Safari が対応していません（2026年9月）。
+  - 詳細: 13-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
+- 【非推奨】和文を含む要素に `font-size-adjust` を指定しない。（`no-font-size-adjust-for-japanese`）
+  - 理由: 和文の文字も欧文のフォントの x-height などの比に合わせて拡大・縮小され、デザインで決めた文字サイズから外れることがあるため。
+  - 補足: 欧文だけのページで書体の字面をそろえるときは、`:root` に `font-size-adjust: from-font` を一度だけ指定します。`ic-width` と `ic-height` は和文のフォントでは比がほぼ1になり、補正されません。Web フォントの読み込みの前後のずれは、`@font-face` の `size-adjust` で抑えます（`fallback-font-metric-overrides`）。
   - 詳細: 13-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
 - 【必須】`html` 要素と、ほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替える。（`lang-for-typesetting`）
   - 理由: 和文と欧文では適した組版が異なり、`lang` がないと言語に合った指定を当て分けられないため。
@@ -2378,6 +2556,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 13-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
 - 【推奨】`text-align: center` を指定するときは、`text-wrap: balance` と組み合わせる。（`center-with-balance`）
   - 理由: 中央揃えで行の長さがばらつくと、最後の行だけが短く残り、見栄えが悪くなるため。
+  - 補足: 枠線や背景のある左揃えの要素には `text-wrap: balance` を指定しません（行の幅が縮んでも要素の幅は変わらず、枠の中で右にすき間が偏るため）。全称セレクタで、すべての要素に指定することもしません。
   - 詳細: 13-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
 - 【非推奨】段落に `text-align: justify` を指定しない。（`no-text-align-justify`）
   - 理由: 英単語や URL が混ざると、両端をそろえるために行の中に大きなすき間ができるため。
@@ -2427,7 +2606,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 14-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
 - 【推奨】背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書く。（`prefer-sign-over-contrast-color`）
   - 理由: `oklch(from var(--_background) sign(0.7 - l) 0 h)` のように1行で書け、閾値を自分で決められるため。`contrast-color()` は WCAG 2.x のコントラスト比で白か黒を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあるため。
-  - 補足: `contrast-color()` の計算が APCA のような知覚にもとづくアルゴリズムに変わるまでは、使うのを控えます。どちらの書き方でも、選ばれた色のコントラスト比は実際の組み合わせで確かめます。
+  - 補足: `contrast-color()` の計算が APCA のような知覚にもとづくアルゴリズムに変わるまでは、使うのを控えます。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限り、選ばれた色のコントラスト比は実際の組み合わせで確かめます。閾値の0.7は、WCAG 2.x で白と黒のコントラスト比が等しくなる明度（約0.56）ではなく、APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。
   - 詳細: 14-3 背景から文字色を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/contrast-text.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
   - 理由: 配色の切り替えがトークンの定義にまとまり、ダーク用の値の書き忘れや、色の散らばりを防げるため。
@@ -2435,6 +2614,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】`light-dark()` を使うページでは、`<meta name="color-scheme" content="light dark">` で両方の配色に対応していることを宣言する。（`color-scheme-meta-for-light-dark`）
   - 理由: 宣言がないと、OS がダークモードでも `light-dark()` は常にライトの値になり、ブラウザの部品の配色も切り替わらないため。
   - 補足: ダークモードに対応しないサイトでは、この宣言を書きません（第6章の `no-color-scheme-without-dark-mode`）。
+  - 詳細: 14-4 ダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/dark-mode.mdx）
+- 【必須】コンポーネントに `color-scheme` を指定するときは、同じ要素で `color` と `background-color` をセマンティクスのトークンで指定し直す。（`redeclare-colors-with-color-scheme`）
+  - 理由: 継承した `color` は親の配色で計算済みの色なので切り替わらず、背景を指定しないと親の背景が透けて見えるため。
+  - 補足: トークンを `@property` で `<color>` 型として登録すると、`:root` の配色で色が決まり、コンポーネントの `color-scheme` に追従しません（第8章の `at-property-only-when-needed`）。`::placeholder` や `::selection` の色も、`light-dark()` を含むトークンで指定します。
   - 詳細: 14-4 ダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/dark-mode.mdx）
 - 【推奨】テーマを手動で切り替えるときは、`<meta name="color-scheme">` の `content` を `light only`、`dark only`、`light dark` のいずれかに書き換える。（`theme-switch-via-meta`）
   - 理由: 色の切り替えをすべて `light-dark()` に任せられ、切り替えの仕組みが1か所にまとまるため。
@@ -2520,6 +2703,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
   - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
   - 詳細: 15-1 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images-and-decoration.mdx）
+- 【推奨】スクロールできる領域の端を薄くして続きを示すときは、端に線や背景と同じ色のグラデーションを重ねず、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定する。（`scroll-edge-fade-with-mask`）
+  - 理由: 中身そのものが端で薄れるので、背景が写真や別の色でも帯が浮かず、線のように区切りとして読まれることもないため。
+  - 補足: `linear-gradient()` の向きには論理方向のキーワードがないので、両端を同じ幅で薄くして書字方向に左右されない形にします。マスクは要素の外側に描く `outline` も切り取るので、スクロールコンテナがフォーカスを受けるときは、リングを親の `:has(:focus-visible)` に出します。
+  - 詳細: 15-1 画像と装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images-and-decoration.mdx）
 - 【推奨】単色のアイコンの色は `currentColor` で文字色に合わせ、状態ごとにアイコンの色を指定し直さない。（`icon-current-color`）
   - 理由: 文字色を切り替えるだけでアイコンも追従し、色を2か所に書く必要がなくなるため。
   - 補足: `border` の色も、省略すれば `currentColor` になります。
@@ -2604,7 +2791,15 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 16-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨】操作する要素には 24px 相当の最小の大きさを確保し、`@media (any-pointer: coarse)` では 44px 相当にする。大きさは内部のカスタムプロパティの値だけを切り替える。（`hit-area-min-size`）
   - 理由: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
-  - 補足: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。`rem` で書きます。
+  - 補足: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。文字と一緒に大きくなるように `rem` で書き、`max(24px, 24 / 16 * 1rem)` のように CSS ピクセルの下限を併記します。
+  - 詳細: 16-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【推奨】`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。（`user-select-none-for-controls`）
+  - 理由: 初期値の `auto` は親の値が `none` なら `none` として扱われるので、広い範囲に指定すると、文章のコピーや、選択した文字を読み上げや翻訳の機能に渡す操作ができなくなるため。
+  - 補足: Safari は接頭辞なしの `user-select` に対応していないので（2026年10月）、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome 152 で確認）。
+  - 詳細: 16-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【禁止】`html`、`body`、全称セレクタのようにページ全体に及ぶセレクタに `touch-action: none` を指定しない。（`no-global-touch-action-none`）
+  - 理由: ブラウザは触れた要素からスクロールする祖先までの `touch-action` を重ね合わせて許す操作を決めるので、ページ全体でスクロールとピンチでの拡大が止まるため。
+  - 補足: `touch-action` は、ドラッグやスワイプを自分で処理する部品にだけ、`pan-y pinch-zoom` のように残す操作を明示して指定します。ボタンなどの `touch-action: manipulation` は kiso.css が指定しているので、書き直しません。
   - 詳細: 16-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨】開閉する UI は、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のような HTML の機能で作り、`div` とクラスの付け外しで作らない。（`native-disclosure-elements`）
   - 理由: フォーカスの移動、Esc キーでの閉じる操作、トップレイヤーへの表示、ページ内検索での展開を、ブラウザが引き受けてくれるため。
@@ -2653,6 +2848,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: Safari で縦横の比率が保たれず、部品が潰れることがあるため。
   - 補足: `inline-size` と `block-size` の両方を指定します。
   - 詳細: 16-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
+- 【推奨】`<select>` の見た目を `appearance: base-select` で変えるときは、`::picker(select)`、`::picker-icon`、`option::checkmark` の指定も含めて `@supports (appearance: base-select)` の中に書く。（`base-select-in-supports`）
+  - 理由: 未対応の環境（2026年10月の時点では Firefox）でブラウザの標準の `<select>` のまま表示させ、`base-select` を前提にした余白や枠線が標準の部品に当たるのを防ぐため。
+  - 補足: `appearance: base-select` は、`<select>` と `::picker(select)` の両方に指定します。選んだ項目の中身をボタンに表示するには、`<select>` の最初の子に `<button>` を置き、その中に `<selectedcontent>` を書きます。`<div>` と JavaScript でドロップダウンを作り直すことはしません。
+  - 詳細: 16-3 フォーム部品（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/forms.mdx）
 - 【推奨】スイッチは `<input type="checkbox" switch>` で作り、`switch` 属性に対応していない環境でチェックボックスとして扱われることを許容する。（`switch-attribute-progressive`）
   - 理由: 対応した環境ではスクリーンリーダーがオンとオフで読み上げ、未対応の環境でも操作は損なわれないため。
   - 補足: すべての環境でスイッチとして読み上げる必要がある場合は、`role="switch"` を加えます。`<button>` と `aria-pressed` はトグルボタンを表し、オンとオフの意味にならないので使いません。
@@ -2690,6 +2889,11 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 
 - 【推奨】アニメーションを足す前に、状態の変化や操作の結果を伝えるという目的があるかを確かめ、目的のない動きは入れない。（`motion-needs-purpose`）
   - 理由: 何度も触る UI の装飾的な動きは、待ち時間と操作の負担を増やすだけになるため。
+  - 補足: その動きを見る頻度でも判断を変えます。1日に何十回も使う操作（メニュー、タブ、ツールバー）は動かさないか、押したときの縮小のような最小限の動きにとどめます。ブランドの個性を表す動きは、LP のヒーローや初回の案内のように、まれにしか見ない UI に限ります。
+  - 詳細: 17-1 動かすかどうかを決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/purpose.mdx）
+- 【禁止】キーボードショートカットで開閉する UI（コマンドパレットなど）に、出現と退場の動きを付けない。（`no-motion-on-keyboard-shortcut`）
+  - 理由: キーを押す操作は素早く続けて行われることが多く、動きが終わるのを待つと、入力と表示がずれて反応が遅く感じられるため。
+  - 補足: クリックとショートカットのどちらでも開く UI は、ショートカットで開いたときに JavaScript で属性を付け、その属性があるときは `transition-duration` を0にします。キーボードでのフォーカスの移動は `no-motion-on-focus-visible` で扱います。
   - 詳細: 17-1 動かすかどうかを決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/purpose.mdx）
 - 【推奨】動きは CSS のトランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作り、JavaScript のアニメーションライブラリは、CSS だけでは作れない動きにだけ使う。（`css-before-js-animation`）
   - 理由: 合成だけで動かせる CSS の動きはメインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担も要らないため。
@@ -2701,8 +2905,16 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】拡大して現れる動きは `scale: 0` から始めず、ツールチップとポップオーバーは0.95〜0.98、ドロップダウンメニューは0.92〜0.96、ダイアログやドロワーは0.85〜0.92から始め、`transform-origin` をトリガーのある側に向ける。（`scale-in-from-near-one`）
   - 理由: 何もないところから膨らむ動きは物理的に不自然で、起点が中央のままだと、どこから現れたのかが伝わらないため。
   - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【非推奨】UI の出現、退場、移動に、`ease-in` や `in` 系のイージング（だんだん速くなる動き）を使わない。（`no-ease-in-for-ui`）
+  - 理由: 動き始めの変化が小さいので操作してから反応が見えるまでが遅れて感じられ、最も速い状態のまま急に止まるので物理的にも不自然に見えるため。
+  - 補足: 現れる動きと消える動きには `out` 系、画面の上にあるものの移動には `in-out` 系のトークンを使います。本書のイージングのトークンには、`in` 系を用意していません。加速していく様子そのものを見せたい演出のように、理由がある場合は使ってかまいません。
+  - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
 - 【推奨】`linear` のイージングは、マーキーやプログレスバーのように一定の速さで続く動きにだけ使い、UI の状態の変化には使わない。（`linear-only-for-constant-motion`）
   - 理由: 速さが変わらない動きは機械的に見え、始まりと終わりが唐突に感じられるため。
+  - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
+- 【必須】操作に応じる機能的な動きの再生時間は300ms以下にし、ダイアログ、ドロワー、シートのように画面の大部分を覆う UI でも500ms以下にする。（`functional-motion-under-300ms`）
+  - 理由: 動きが終わるまで次の操作を待たせず、1日に何度も触る UI でも待ち時間が積み重ならないようにするため。
+  - 補足: 例外は、スクロールで画面に入ったときに一度だけ再生する演出の `--duration--reveal`（600ms）と、ばねの動きの `--duration--spring`（700ms）だけです。どちらも頻繁に触る UI には使いません。ツールチップの表示を遅らせる `transition-delay` は、再生時間に含めません。
   - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
 - 【推奨】ボタンを押したことを動きで返すときは、`:active` で `scale` を0.96〜0.98に縮め、再生時間を100〜150msにする。（`press-feedback-short`）
   - 理由: 押したことがすぐに伝わり、短い動きなら続けて押す操作の妨げにならないため。
@@ -2710,13 +2922,14 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
 - 【推奨】ばねやバウンスの動きは、`linear()` をジェネレーターで作り、再生時間とセットでトークンにして、コンポーネントに値を直接書かない。（`spring-easing-token`）
   - 理由: 点の数が多く手で保守できず、トークンにすれば、揺れが収まるまでの時間とイージングを対で使い回せるため。
-  - 補足: 揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。
+  - 補足: 揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。`opacity` には使いません。0〜1の範囲を超えた値が丸められ、揺れが明滅になるためです。
   - 詳細: 17-3 イージングと再生時間（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/easing-and-duration.mdx）
 - 【禁止】`transition: all` や `transition-property: all` を使わない。（`no-transition-all`）
   - 理由: 関係のないプロパティまで動き、意図しないアニメーションや無駄な描画の負荷を生むため。
   - 詳細: 17-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
 - 【推奨】トランジションは `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドで書き、再生時間とイージングにはトークンを使う。（`transition-longhand-with-tokens`）
   - 理由: 動かすプロパティが一目で分かり、サイトの中で動きの速さと質感がそろうため。
+  - 補足: `transition-behavior: allow-discrete` も、略記の `transition` に含めず、ロングハンドで書きます。略記に入れると、`allow-discrete` を解釈できないブラウザでは宣言全体が無効になり、ほかのプロパティのトランジションまで失われるためです。
   - 詳細: 17-4 トランジションと@keyframes（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/transitions-and-keyframes.mdx）
 - 【推奨】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
   - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
@@ -2754,13 +2967,13 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
   - 補足: Firefox でも演出を出したい場合と、スクロールを戻しても再生を途中で止めたくない場合は、`IntersectionObserver` で属性を切り替えます。1回だけ動かす演出を CSS だけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しています。
   - 詳細: 17-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
-- 【推奨】画面に入ったら1回だけ再生する演出は、ルートの `view()` のタイムラインで登録していないカスタムプロパティを `false` から `true` に切り替え、子の一時停止したアニメーションを `@container style(--_in-view: true)` の中で `running` にし、全体を `@supports (animation-timeline: view())` で囲む。（`reveal-once-with-style-query`）
+- 【推奨】画面に入ったら1回だけ再生する演出は、ルートの `view()` のタイムラインで登録していないカスタムプロパティを `false` から `true` に切り替え、子の一時停止したアニメーションを `@container style(--_in-view: true)` の中で `running` にし、全体を `@supports (animation-timeline: view()) and (animation-range: entry)` で囲む。（`reveal-once-with-style-query`）
   - 理由: 見た目の変化を時間で進むアニメーションで再生するので、スクロールを止めた位置で途中のまま残らず、スクロール駆動アニメーションに対応していない環境では演出なしで内容を表示できるため。
   - 補足: 登録していないカスタムプロパティは、キーフレームの50%の時点で切り替わるので、`animation-timing-function: linear` なら範囲の中間（`entry 0% entry 60%` なら `entry 30%`）で再生が始まります。範囲を過ぎても値を残すために `animation-fill-mode: both` を指定します。スタイルクエリは自分の値を問い合わせられないので、切り替える要素と再生する要素を分けます。範囲より手前まで戻すと一時停止し、再生の途中なら、その位置で止まります。
   - 詳細: 17-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
 - 【推奨】スクロール駆動アニメーションは、`animation-range` で範囲を明示する。（`scroll-animation-explicit-range`）
   - 理由: 指定しないと `view()` では `cover`（画面に入り始めてから出終わるまで）の全体になり、見せたいタイミングとずれやすいため。
-  - 補足: `entry`、`exit`、`contain` で範囲を絞るときは、範囲の前後の見た目のために `animation-fill-mode: both` も指定します。
+  - 補足: `entry`、`exit`、`contain` で範囲を絞るときは、範囲の前後の見た目のために `animation-fill-mode: both` も指定します。対応を確かめる `@supports` は、`(animation-timeline: view()) and (animation-range: entry)` のように `animation-range` も条件に加えます。
   - 詳細: 17-6 スクロールに合わせて動かす（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/scroll-driven.mdx）
 - 【推奨】JavaScript で動かす演出の準備のスタイルは、JavaScript が準備（監視の開始やライブラリの読み込み）を終えてルートに `data-motion-mode="motion"` を付けたときだけ当て、基本のスタイルは動かないときの最終状態として書く。（`motion-mode-attribute`）
   - 理由: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
@@ -2772,6 +2985,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】`will-change` は CSS に書いたままにせず、どうしても必要なときだけ、動きの直前に JavaScript で付けて、終わったら外す。（`will-change-temporarily`）
   - 理由: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。
   - 補足: 外す処理は `transitionend` だけでなく `transitioncancel` にも登録します。動きを減らす設定などでトランジションが起きないときは付けません。
+  - 詳細: 17-7 動きの負荷を抑える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/performance.mdx）
+- 【推奨】`content-visibility: auto` は最初の画面より下にある大きなブロックにだけ指定し、`contain-intrinsic-block-size: auto <長さ>` を組で書く。（`content-visibility-with-intrinsic-size`）
+  - 理由: 描画を省いている間は中身の大きさが0として扱われるので、見積もりの大きさがないとスクロールバーの長さとスクロールの位置が飛ぶため。`auto` を付けると、一度描画したあとは実際の大きさを覚えて使うため。
+  - 補足: 物理の `contain-intrinsic-size` や `contain-intrinsic-height` ではなく、論理の `contain-intrinsic-block-size` を使います。ページ内検索、Tab キーでの移動、スクリーンリーダーの読み上げで中身に届くかを確かめます。閉じたパネルのように、見つかるまで隠しておく中身には `hidden="until-found"` を使います。
   - 詳細: 17-7 動きの負荷を抑える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/performance.mdx）
 - 【禁止】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
   - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。

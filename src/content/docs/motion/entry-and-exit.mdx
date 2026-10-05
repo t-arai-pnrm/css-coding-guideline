@@ -12,6 +12,11 @@ import popoverHtml from '../../../demos/motion/popover-entry/index.html?raw';
 import popoverCss from '../../../demos/motion/popover-entry/style.css?raw';
 import detailsHtml from '../../../demos/motion/details-accordion/index.html?raw';
 import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
+import staggerHtml from '../../../demos/motion/stagger-steps/index.html?raw';
+import staggerCss from '../../../demos/motion/stagger-steps/style.css?raw';
+import tooltipHtml from '../../../demos/motion/tooltip-delay/index.html?raw';
+import tooltipCss from '../../../demos/motion/tooltip-delay/style.css?raw';
+import tooltipJs from '../../../demos/motion/tooltip-delay/script.js?raw';
 
 `display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。表示された瞬間の見た目を `@starting-style` で指定し、`display` と `overlay` をトランジションの対象に加えれば、ポップオーバーやダイアログの開閉の両方をCSSだけで動かせます。退場を動かす必要がなければ、`@keyframes` の `from` で出現だけを動かすほうが壊れにくくなります。
 
@@ -158,6 +163,10 @@ import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 
 `interpolate-size` に対応しているのは、2026年10月の時点でChrome系のブラウザだけです。ほかのブラウザでは高さが一瞬で切り替わり、不透明度だけが変化しますが、開閉の機能は損なわれません。高さを動かすとレイアウトの計算が毎フレーム起きますが、アコーディオンでは開閉の位置関係を伝えるために許容します。レイアウトを起こす動きの負荷は、「[17-7 動きの負荷を抑える](/motion/performance/)」で説明しています。
 
+高さを補間する方法には、`calc-size()` もあります。`block-size: calc-size(auto, size)` のように、補間したい宣言ごとに書く関数です。2026年10月の時点で対応しているのは、`interpolate-size` と同じくChrome系のブラウザだけです。未対応の環境では宣言ごと無視されるので、多くの場合は直前に普通の値を書いて保険にします。`:root` に一度書けば済む `interpolate-size` より記述が増えるので、本書は現状では採用していません。
+
+<Baseline id="calc-size" />
+
 SafariとFirefoxでも高さを動かすよう求められた場合に限り、`::details-content` をグリッドにして、`grid-template-rows` を `0fr` と `1fr` で切り替えます。`fr` の値は、`interpolate-size` がなくても補間されます。この方法では、行の高さを0まで縮めるために、中身を1つの要素で包みます。
 
 ```html title="中身を1つの要素で包む HTML の例"
@@ -199,6 +208,39 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 
 グリッドアイテムの最小の高さは、デフォルトでは中身の高さになるので、`._answer` の `min-block-size` を0にして、行の高さと一緒に縮めます。はみ出した中身は `overflow: clip` で切り取ります。Firefoxは、2026年10月の時点で `content-visibility` のトランジションにも対応していないので、閉じる動きは一瞬です。包む要素が増えるので、私はこの方法を、すべてのブラウザで高さを動かす必要があるときだけ使っています。
 
+## 頻度の低いUIで要素をずらして出す
+
+並んだ要素を少しずつずらして出す動き（スタッガー）は、頻度の高いUIでは待ち時間を増やすだけです（「[17-1 動かすかどうかを決める](/motion/purpose/)」）。一方で、初回の案内や、LPで一度だけ開く一覧のように、まれにしか見ないUIでは、要素の並びの順番を伝える演出として使えます。このときも、ずらす間隔は30〜80msと短くし、全体が現れ終わるまでの時間を延ばしすぎないようにします。{/* 要確認: 出典なし（30〜80msという間隔） */}
+
+ずらす量は、`sibling-index()` で要素の順番から計算します。`sibling-index()` は、兄弟の中で何番目かを1から数えた整数を返す関数です。順番から決める仕組みは「[3-4 子要素の位置で選ぶ](/pseudo/child-index/)」でも説明しています。
+
+```css title="🙆‍♂ Recommended: 初回の案内の項目を、短い間隔でずらして出す"
+@scope (.scoped.onboarding-steps) to (.scoped) {
+  li {
+    --_stagger: 50ms;
+    --translate-from--y-value: 8px;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: --fade-in, --translate-from;
+      animation-duration: var(--duration--base);
+      animation-timing-function: var(--ease--out-quint);
+      animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
+      animation-fill-mode: both;
+    }
+  }
+}
+```
+
+`min()` で順番の上限を5にしているので、項目がいくつあっても、最後の項目が動き始めるのは250ms後です。項目が多いと、間隔が短くても最後の項目が現れるまでの時間が延びるからです。ずらしている間も、現れた項目はクリックできるようにしておきます。全体が現れ終わるまで `pointer-events: none` などで操作を止めると、演出の時間がそのまま操作の遅れになります。
+
+次のデモでは、7つの項目を50msの間隔でずらして出します。順番の上限が5なので、6つ目と7つ目は同時に動き始めます。案内は `popover` 属性で表示しているので、開くたびに `display: none` から表示され、項目のアニメーションも最初から再生されます。
+
+<Demo title="初回の案内の項目を、sibling-index() で50msずつずらして出す" html={staggerHtml} css={staggerCss} height="24rem" />
+
+<Baseline id="sibling-count" />
+
+`sibling-index()` は、2026年8月にBaselineの「新しく利用可能」になったばかりです。未対応の環境では `animation-delay` の宣言が無効になり、初期値の0になるので、すべての項目が同時に現れます。ずらすのは装飾なので、この違いは許容できます。古い環境でもずらしたいときは、`sibling-index()` の代わりに、テンプレートで各項目の `style` 属性に `--_index` を書き、`calc(var(--_index) * var(--_stagger))` で計算します。このときの `--_index` は、コンポーネントが自分の子に書く値なので、内部用の名前にしています。
+
 ## ツールチップの表示を遅らせる
 
 ツールチップは、出現の動きよりも、表示を始めるまでの時間が使い心地を左右します。ポインターが通り過ぎただけでツールチップが次々に現れると、意図しない表示が画面を覆います。そこで、初回の表示は300〜500ms遅らせ、ポインターが留まったときだけ表示します。
@@ -207,9 +249,49 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 
 CSSで書けるのは、初回の遅延だけです。表示した状態のルールに `transition-delay` を書くと、表示するときだけ遅れ、非表示に戻るときは基本のルールの値ですぐに消えます。トランジションは変化したあとの状態のルールの値で動くからです。遅延は動きではないので、動きを減らす設定の条件の外に書きます。{/* 要確認: 出典なし */}
 
-ウォームアップとクールダウンは、JavaScriptが必要です。どのトリガーにも属さない「直前までツールチップを表示していたか」という状態を、時間とともに覚えておく必要があるからです。JavaScriptでタイマーを管理し、ウォームアップ中だけルートなどに属性を付けて、CSSではその属性があるときに `transition-delay` を0にします。
+ウォームアップとクールダウンは、JavaScriptが必要です。どのトリガーにも属さない「直前までツールチップを表示していたか」という状態を、時間とともに覚えておく必要があるからです。JavaScriptでタイマーを管理し、ウォームアップ中だけルートなどに属性を付けて、CSSではその属性があるときに `transition-delay` と `transition-duration` をどちらも0にします。
 
-ツールチップをホバーで表示するHTMLの仕組みには `interestfor` 属性がありますが、2026年10月の時点でChrome系のブラウザだけが対応しているので、本書では扱っていません（「[第3章 擬似クラスと擬似要素](/pseudo/)」）。そのため、この節では数値の目安だけを示し、デモは用意していません。
+ウォームアップ中に遅延だけを0にすると、隣のボタンに移るたび、新しいツールチップがフェードや拡大で現れ、前のツールチップの退場と重なります。続けて操作している間は、出現の動きそのものが待ち時間に見えるので、再生時間も0にして一度で切り替えます。{/* 要確認: 出典なし（ウォームアップ中に再生時間も0にする） */}
+
+次の例は、ツールバーのボタンのツールチップです。表示する状態は、JavaScriptが項目に付ける `data-open` 属性で、ウォームアップ中であることは、ツールバーのルートに付ける `data-warm` 属性で表します。遅延と再生時間は内部用のカスタムプロパティにまとめ、ウォームアップ中はルートで両方を0に差し替えます。
+
+```css title="🙆‍♂ Recommended: 初回の表示だけを遅らせ、ウォームアップ中は遅延も動きもなくす"
+@scope (.scoped.format-toolbar) to (.scoped) {
+  :scope {
+    --_tooltip-delay: 400ms;
+    --_tooltip-duration: var(--duration--fast);
+
+    @media (prefers-reduced-motion: reduce) {
+      --_tooltip-duration: var(--duration--instant);
+    }
+
+    &[data-warm] {
+      --_tooltip-delay: 0s;
+      --_tooltip-duration: 0s;
+    }
+  }
+
+  ._tooltip {
+    opacity: 0;
+    transition-duration: var(--_tooltip-duration);
+    transition-property: opacity;
+    transition-timing-function: var(--ease--out-quad);
+
+    &:is(._item[data-open] *) {
+      opacity: 1;
+      transition-delay: var(--_tooltip-delay);
+    }
+  }
+}
+```
+
+`transition-delay` は、`data-open` が付いた状態のルールにだけ書いています。表示するときは400ms待ってからフェードし、`data-open` が外れたときは、基本のルールの遅延0ですぐに消えます。動きを減らす設定のときは、フェードの再生時間を50msに短くします（「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。
+
+次のデモでは、ボタンの上でポインターを止めると、400ms後にツールチップが現れます。そのまま隣のボタンへ移ると、遅延なしで一度に切り替わります。ボタンから離れて400ms以上たつと、ウォームアップが終わり、次は再び遅れて現れます。JavaScriptは、遅延が明けて表示が始まった時点（`transitionstart`）で `data-warm` を付け、最後に離れてからクールダウンの時間がたった時点で外します。Tabキーでフォーカスしたときにも表示し、Escキーで閉じられます。
+
+<Demo title="ツールバーのツールチップを、初回だけ400ms遅らせ、続けて触れている間はすぐに表示する" html={tooltipHtml} css={tooltipCss} js={tooltipJs} widths={[]} />
+
+ツールチップをホバーで表示するHTMLの仕組みには `interestfor` 属性がありますが、2026年10月の時点でChrome系のブラウザだけが対応しているので、本書では扱っていません（「[第3章 擬似クラスと擬似要素](/pseudo/)」）。そのため、デモでは、表示の状態もJavaScriptで切り替えています。
 
 ## `@starting-style` とカスケード
 
@@ -247,4 +329,6 @@ CSSで書けるのは、初回の遅延だけです。表示した状態のル�
 - [overlay - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overlay)
 - [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)
 - [interpolate-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/interpolate-size)
+- [calc-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size)
+- [sibling-index() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/sibling-index)
 - [The Big Gotcha With @starting-style | Josh W. Comeau](https://www.joshwcomeau.com/css/starting-style/)（2025年）

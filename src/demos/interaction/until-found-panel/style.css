@@ -1,0 +1,46 @@
+@layer tokens {
+  :root {
+    --background--surface: oklch(96% 0.01 250deg);
+    --border--base: oklch(80% 0 0deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.shipping-section) to (.scoped) {
+    :scope {
+      border: 1px solid var(--border--base);
+      border-radius: 8px;
+      overflow: clip;
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    a {
+      display: block flex;
+      gap: 8px;
+      justify-content: space-between;
+      padding-block: 12px;
+      padding-inline: 16px;
+
+      &::after {
+        content: "+" / "";
+      }
+
+      &[aria-expanded="true"] {
+        &::after {
+          content: "−" / "";
+        }
+      }
+    }
+
+    /* 閉じていても描画されるパネル自体ではなく、内側の要素に余白と背景を付ける */
+    ._panel-inner {
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+      background-color: var(--background--surface);
+    }
+  }
+}

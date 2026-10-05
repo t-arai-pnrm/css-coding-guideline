@@ -49,7 +49,7 @@
   level: 推奨
   rule: 背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書く。
   reason: '`oklch(from var(--_background) sign(0.7 - l) 0 h)` のように1行で書け、閾値を自分で決められるため。`contrast-color()` は WCAG 2.x のコントラスト比で白か黒を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあるため。'
-  note: '`contrast-color()` の計算が APCA のような知覚にもとづくアルゴリズムに変わるまでは、使うのを控えます。どちらの書き方でも、選ばれた色のコントラスト比は実際の組み合わせで確かめます。'
+  note: '`contrast-color()` の計算が APCA のような知覚にもとづくアルゴリズムに変わるまでは、使うのを控えます。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限り、選ばれた色のコントラスト比は実際の組み合わせで確かめます。閾値の0.7は、WCAG 2.x で白と黒のコントラスト比が等しくなる明度（約0.56）ではなく、APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。'
   page: color-media/contrast-text
   since: 0.12.0
 
@@ -69,6 +69,15 @@
   note: ダークモードに対応しないサイトでは、この宣言を書きません（第6章の `no-color-scheme-without-dark-mode`）。
   page: color-media/dark-mode
   since: 0.1.0
+
+- id: redeclare-colors-with-color-scheme
+  level: 必須
+  rule: 'コンポーネントに `color-scheme` を指定するときは、同じ要素で `color` と `background-color` をセマンティクスのトークンで指定し直す。'
+  reason: '継承した `color` は親の配色で計算済みの色なので切り替わらず、背景を指定しないと親の背景が透けて見えるため。'
+  note: 'トークンを `@property` で `<color>` 型として登録すると、`:root` の配色で色が決まり、コンポーネントの `color-scheme` に追従しません（第8章の `at-property-only-when-needed`）。`::placeholder` や `::selection` の色も、`light-dark()` を含むトークンで指定します。'
+  aiProne: true
+  page: color-media/dark-mode
+  since: 0.21.0
 
 - id: theme-switch-via-meta
   level: 推奨

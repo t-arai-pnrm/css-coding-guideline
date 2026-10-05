@@ -14,6 +14,8 @@ import pressHtml from '../../../demos/motion/press-feedback/index.html?raw';
 import pressCss from '../../../demos/motion/press-feedback/style.css?raw';
 import springHtml from '../../../demos/motion/spring-easing/index.html?raw';
 import springCss from '../../../demos/motion/spring-easing/style.css?raw';
+import easingHtml from '../../../demos/motion/easing-compare/index.html?raw';
+import easingCss from '../../../demos/motion/easing-compare/style.css?raw';
 
 イージングは、CSSの `ease` のようなキーワードではなく、quint系やexpo系のトークンから選びます。現れる動きと消える動きには `out` 系を、画面の上にあるものの移動には `in-out` 系を使い、`linear` は一定の速さで続く動きだけに使います。複数のプロパティを動かすときは、プロパティごとに選び分けます。
 
@@ -24,6 +26,10 @@ import springCss from '../../../demos/motion/spring-easing/style.css?raw';
 イージングは、動きの途中の進み具合を決める関数です。再生時間が同じ240msでも、動き始めで大きく進み、終わりぎわでゆっくり止まる動きは、反応が速いと感じられます。反対に、ゆっくり動き出す動きは、最初の数フレームで見た目がほとんど変わらないので、操作してから反応するまでが遅く感じられます。動きの体感の速さは、再生時間と同じくらい、イージングで決まります。
 
 CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるやかで、動きにメリハリがありません。最初の変化が小さいので、再生時間を短くしても機敏には見えにくくなります。トランジションのイージングを指定しないと `ease` になるので、何も考えずに書いた動きは、たいていこの弱いカーブで動いています。
+
+次のデモでは、4つの点を同じ240msで同じ距離だけ動かし、イージングだけを変えています。`--ease--out-quint` と `--ease--out-expo` の点は動き始めてすぐに大きく進むので、ほかの2つより先に着いたように感じられます。`ease-in` の点は、最初の数フレームでほとんど動かず、反応が遅れて見えます。イージングを比べるためのデモなので、動きを減らす設定でも動かしています。
+
+<Demo title="同じ再生時間で、イージングだけを変えて4つの点を動かす" html={easingHtml} css={easingCss} variant="neutral" widths={[]} />
 
 拡大して現れるメニューでよく見かけるのが、次の書き方です。`scale: 0` の点から、要素の中央を起点に、500msかけて `ease` で広がります。
 
@@ -65,6 +71,8 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 ```
 
 現れる動きには、`out` 系を使います。動き始めにほとんどの距離を進むので、操作した直後に変化が見え、最後は減速して目的の位置に収まります。消える動きにも、同じ `out` 系を使います。閉じる操作も、ユーザーの操作への応答だからです。`in` 系で消すと、動き始めの変化が小さく、閉じるボタンを押してから反応するまでが遅れて見えます。
+
+`in` 系と、CSSのキーワードの `ease-in` は、UIの出現、退場、移動のどれにも使いません。動き始めの変化が小さいので、操作してから反応が見えるまでが遅れて感じられます。さらに、最も速い状態で終わるので、勢いのまま急に止まったように見え、物理的にも不自然です。本書のイージングのトークンに `in` 系がないのは、このためです。ただし、加速していく様子そのものを見せたい演出のように、理由がある場合まで禁じるものではありません。{/* 要確認: 出典なし */}
 
 画面の上にすでにあるものを別の位置へ動かすときは、`in-out` 系を使います。止まっていたものが動き出し、また止まる動きなので、両端をなめらかにすると、目で追いやすくなります。スイッチのつまみや、アコーディオンの矢印の回転がこれにあたります。
 
@@ -191,6 +199,8 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 ボタンを押した瞬間に少し縮めると、押したことが手応えとして伝わります。`:active` で `scale` を0.96〜0.98にし、再生時間を100〜150msにします。縮む量が小さく、再生時間が短いので、続けて押す操作の妨げになりません。
 
+縮めるのに `scale` を使うのは、ボタンの中の文字やアイコンも一緒に縮むからです。ボタン全体が奥へ押し込まれたように見え、押した感じが出ます。`padding` や `inline-size` を変えて縮めると、中の文字の大きさは変わらず、周りの要素の位置まで動きます。
+
 次のデモのボタンは、ホバーで背景色を200msで変え、押したときに120msで縮みます。`transition-duration` にカンマ区切りで2つの値を書き、プロパティごとに再生時間を分けています。無効にしたボタンは `:enabled:hover` と `:enabled:active` で除いているので、ホバーと押下のどちらにも反応しません。
 
 <Demo title="ホバーで色を変え、押したときに短く縮める" html={pressHtml} css={pressCss} />
@@ -222,6 +232,8 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 <Baseline id="linear-easing" />
 
+ばねのイージングは、`scale`、`translate`、`rotate` のように、行き過ぎた値にも意味があるプロパティに使い、`opacity` には使いません。補間の結果がプロパティの範囲を超えると、その範囲に丸められるからです（CSS Values and Units Module Level 4）。`opacity` は0〜1の範囲に丸められるので、1を超える区間では1のまま止まり、1を下回る揺り戻しだけがわずかな明滅として残ります。フェードと拡大を組み合わせるなら、`opacity` には `out` 系のトークンを、`scale` にはばねのトークンを、カンマ区切りで選び分けます。
+
 ばねの700msは、機能的な動きの上限（300ms）にも、大きなUIの上限（500ms）にも収まらない例外です。揺れが収まるまでの時間を短くすると、揺れが細かくなって震えているように見えるからです。{/* 要確認: 出典なし */}そのため、頻繁に触るUIには使わず、数回しか触らない操作や、ブランドの個性を出したい場面に限ります。行き過ぎて揺れる動きは「大きな変動」にあたるので、`prefers-reduced-motion: no-preference` の中でだけ指定します。
 
 ## イージングと再生時間を確かめるときの注意
@@ -241,6 +253,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 - [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）
 - [transition-timing-function - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/transition-timing-function)
 - [linear() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/easing-function/linear)
+- [CSS Values and Units Module Level 4（Range Checking）](https://drafts.csswg.org/css-values-4/#combining-range)（W3C、補間の結果は範囲に丸められる）
 - [transform-origin - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/transform-origin)
 - [Linear easing generator](https://linear-easing-generator.netlify.app/)
 - [Springs and Bounces in Native CSS | Josh W. Comeau](https://www.joshwcomeau.com/animation/linear-timing-function/)（2025年）

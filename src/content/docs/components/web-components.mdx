@@ -1,0 +1,210 @@
+---
+title: "8-6 Web Components"
+description: "カスタム要素で部品を作るときも、カスタム要素そのものに scoped を付けてルートにし、外部の CSS に @scope (<要素名>.scoped) to (.scoped) で書きます。ルートには display を明示し、JavaScript がなくても動く HTML を先に作ります。Shadow DOM は、中身をすべて自分で描く部品に限って使います。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import menuHtml from '../../../demos/components/popover-menu-element/index.html?raw';
+import menuCss from '../../../demos/components/popover-menu-element/style.css?raw';
+
+カスタム要素で部品を作るときも、CSSの書き方はほかのコンポーネントと変えません。カスタム要素そのものに `scoped` クラスを付けてコンポーネントのルートにし、外部のCSSファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書きます。カスタム要素にはブラウザのデフォルトスタイルがないので、ルートには `display` を明示します。
+
+HTMLは、JavaScriptがなくても動く形で先に作ります。開閉は `popover` 属性や `<dialog>` に任せ、カスタム要素は、ホバーで開く、フォーカスが外れたら閉じる、といった振る舞いを足すだけにします。ページから子要素を受け取る部品はLight DOM（ページの通常のDOMツリー）で作り、Shadow DOMは中身をすべて自分で描く部品に限って使います。
+
+この節では、カスタム要素のCSSとHTMLの書き方を扱います。JavaScriptの実装は本書の範囲外なので、クラスの定義は形を示すだけにとどめます。
+
+## カスタム要素で部品を作るときの落とし穴
+
+Web Componentsは、カスタム要素、Shadow DOM、`<template>` 要素などの仕組みの総称です。カスタム要素は `<popover-menu>` のように自分で名前を付けたHTMLの要素で、`customElements.define()` でJavaScriptのクラスと結び付けると、振る舞いを持たせられます。名前にはハイフンを含める決まりがあるので、標準の要素と名前が衝突しません。
+
+<Baseline id="autonomous-custom-elements" name="カスタム要素" />
+
+カスタム要素は、標準の要素と違って、ブラウザのデフォルトスタイルを持ちません。何も指定しなければ、`display` は初期値の `inline` になります。中にボタンやリストのようなブロックの要素を置いても、ルートはインラインのボックスのままなので、幅の指定が効かず、背景や枠線も中身を囲む形では描かれません。
+
+振る舞いをJavaScriptに頼りすぎると、別の問題が起きます。クリックでクラスを付け外しして開閉するメニューは、スクリプトの読み込みが終わるまでの間や、読み込みが失敗したときは、まったく操作できません。ブラウザが `popover` 属性で用意している開閉、外側のクリックやEscキーで閉じる処理、フォーカスの扱いも、自作することになります。
+
+カプセル化を期待してShadow DOMを選ぶと、今度はページのCSSが届かなくなります。Shadow DOMの外に書いたセレクタは中の要素に当たらないので、kiso.cssのリセットも、`.-visually-hidden` のようなユーティリティも効きません。ボタンやリストを中に描く部品では、kiso.cssが整えていた指定を、Shadow DOMの中で書き直すことになります。
+
+## カスタム要素をコンポーネントのルートにする
+
+カスタム要素は、そのままコンポーネントのルートにします。要素に `scoped` クラスを付け、`@scope` の前置きには要素名と `.scoped` を連結したセレクタを書きます。`.scoped.<名前>` の `<名前>` の役割を要素名が受け持つので、名前のクラスは付けません。
+
+```html
+<popover-menu class="scoped">…</popover-menu>
+```
+
+```css title="🙆‍♂ Recommended: 要素名と scoped でスコープを作り、ルートに display を明示する"
+@scope (popover-menu.scoped) to (.scoped) {
+  :scope {
+    display: block flow;
+  }
+
+  button {
+    padding-block: 8px;
+    padding-inline: 16px;
+    border-radius: 8px;
+  }
+}
+```
+
+`scoped` クラスを付けるのは、ほかのコンポーネントと同じく、外側のスコープの下限（`to (.scoped)`）にするためです。カスタム要素をカードの中に置いても、カードのCSSはカスタム要素の手前で止まり、中のボタンには当たりません。CSSは、ほかのコンポーネントと同じく `popover-menu.css` のような外部のファイルに書き、レイヤーも `components` に入れます。
+
+ルートの `display` は、必ず明示します。中の要素を縦に並べるだけなら `display: block flow` を、Flexboxで並べるなら `display: block flex` を指定します。指定を忘れても、中身が少ないうちはインラインのボックスのままで見た目の崩れが目立たず、余白や背景を足した段階で初めて気付くことになりがちです。
+
+カスタム要素の中に `<style>` を置いて、前置きのない `@scope` で書く方法もありますが、本書では使いません。同じ部品をページに3つ置けば同じ `<style>` が3つ出力され、CSSがコンポーネントごとのファイルにまとまらないからです。前置きのない `@scope` の仕組みは「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
+
+```html title="🙅‍♂ Not Recommended: カスタム要素の中に style を置く"
+<!-- 🙅‍♂ Not Recommended -->
+<popover-menu>
+  <style>
+    @scope {
+      :scope {
+        display: block flow;
+      }
+    }
+  </style>
+  …
+</popover-menu>
+```
+
+## JavaScriptがなくても動くHTMLを先に作る
+
+HTMLは、カスタム要素が定義される前から動く形で書きます。メニューの開閉は、ボタンの `popovertarget` 属性と、メニューの `popover` 属性で作ります。ポップオーバーはJavaScriptなしで開閉でき、Escキーで閉じる処理やフォーカスの扱いもブラウザが受け持ちます。モーダルなら、`<dialog>` を `command` 属性と `commandfor` 属性で開き、`closedby="any"` で背景のクリックでも閉じられるようにします。モーダルの宣言的な開閉も、対応するブラウザではJavaScriptなしで動きます。ただし、本書の対象に含まれるSafari 18は `command` 属性に対応していないので、ポリフィルのスクリプトが動くまでダイアログは開きません（2026年10月時点。「[16-2 開閉するUI](/interaction/disclosure/)」）。スクリプトが動かない環境でも内容を読ませる必要があるなら、ダイアログの中身をページの中にも置くか、内容を表示する別のページへのリンクにしておきます。{/* 要確認: 出典なし */}
+
+```html title="🙆‍♂ Recommended: 開閉はブラウザの機能で作り、振る舞いの設定は属性で渡す"
+<popover-menu class="scoped" hoverable>
+  <button type="button" popovertarget="service-menu">サービス</button>
+  <ul id="service-menu" popover>
+    <li><a href="/services/production/">サイト制作</a></li>
+    <li><a href="/services/maintenance/">運用と保守</a></li>
+  </ul>
+</popover-menu>
+```
+
+カスタム要素のクラスは、このHTMLに振る舞いを足すだけにします。たとえば、ホバーで開く処理は、`hoverable` 属性があり、ホバーできるポインターがあるときだけ加えます。フォーカスが部品の外に出たら閉じる処理、View Transitionsで開閉をつなぐ処理、選んだ設定を保存する処理も、カスタム要素が受け持つ振る舞いの例です。
+
+```js title="🙆‍♂ Recommended: カスタム要素は、HTMLだけで動く部品に振る舞いを足す"
+class PopoverMenu extends HTMLElement {
+  connectedCallback() {
+    // hoverable 属性があり、ホバーできる環境のときだけ、ホバーで開く処理を足す
+    // フォーカスが部品の外に出たら、メニューを閉じる処理を足す
+  }
+}
+
+customElements.define('popover-menu', PopoverMenu);
+```
+
+こうしておけば、スクリプトの読み込みが遅れたり失敗したりしても、メニューはクリックで開閉できます。CSSも、カスタム要素が定義されたかどうかに関係なく同じように当たります。定義される前の表示を `:not(:defined)` で変えることもできますが、中身を隠さず、定義後と同じ大きさの領域を確保する程度にとどめます（「[3-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)」）。
+
+## 状態と設定の受け取り方
+
+開閉のような状態は、ブラウザが用意している擬似クラスで選びます。メニューを開いている間はメニューに `:popover-open` が当てはまるので、ルートの側では `&:has(:popover-open)` で開いた状態を選べます。チェックボックスやラジオボタンなら `:checked` を使います。JavaScriptだけが知っている状態は、`data-*` 属性に出してセレクタで選びます（「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)」）。カスタム要素の独自の状態を選ぶ `:state()` は、本書では扱いません（第3章「[擬似クラスと擬似要素](/pseudo/)」）。
+
+部品の設定は、振る舞いと見た目で受け取り方を分けます。ホバーで開くかどうかのような振る舞いの設定は、`hoverable` のような属性で受け取り、カスタム要素のクラスが読みます。色や縦横比のような見た目の設定は、ほかのコンポーネントと同じく、`--popover-menu--accent` のような公開プロパティで受け取ります（「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
+
+```html title="🙆‍♂ Recommended: 振る舞いは属性で、見た目は公開プロパティで渡す"
+<popover-menu class="scoped" hoverable style="--popover-menu--accent: oklch(50% 0.15 150deg)">…</popover-menu>
+```
+
+任意の色や数値を属性で受け取ると、属性の値をCSSの値に反映するためのJavaScriptが必要になり、スクリプトが動くまで見た目が決まりません。決まった数のバリエーションから選ぶだけなら、`[data-variant="warning"]` のような属性セレクタでCSSだけで切り替えられます（「[8-1 何をコンポーネントにするか](/components/what-is-a-component/)」）。任意の色や余白を受け渡すときは公開プロパティを使います。公開プロパティなら、CSSだけで値が届き、親の要素から継承でまとめて渡すこともできます。反対に、振る舞いの設定をカスタムプロパティで受け取ると、JavaScriptで計算済みのスタイルを読み取ることになるので、属性に分けておきます。{/* 要確認: 出典なし */}
+
+## コード例とデモ
+
+次のデモは、ポップオーバーで開くメニューを、カスタム要素の `<popover-menu>` で作っています。デモではJavaScriptを読み込んでいないので、カスタム要素は定義されないままですが、ボタンを押せばメニューは開閉します。
+
+<Demo title="JavaScriptがなくても開閉する、カスタム要素のメニュー" html={menuHtml} css={menuCss} height="16rem" />
+
+ルートの `:scope` には、`display: block flow` と、公開プロパティを受ける内部プロパティを書いています。ボタンは、メニューを開いている間だけ `&:has(+ :popover-open)` で押された見た目にしています。どちらのセレクタも、カスタム要素のJavaScriptが持つ状態には頼っていません。
+
+メニューの位置は、アンカーポジショニングに対応する環境でだけ、ボタンの下にそろえます。対応しない環境では、`margin: auto` で画面の中央に表示します（「[10-7 positionの基礎](/layout/positioning/)」）。どちらの環境でも、メニューを開いて項目を選べます。
+
+## Shadow DOMを使う場面
+
+Shadow DOMは、要素の中に、ページのDOMから切り離されたツリーを作る仕組みです。ページに書いた通常のセレクタは中の要素に当たらず、中に書いたセレクタもページの要素に当たりません。境界を越えて届くのは、`color` やカスタムプロパティのような継承する値と、Shadow DOMの側が明示的に用意した入り口だけです。部品が `part` 属性で公開した要素には、外から `::part()` でスタイルを指定できます。Shadow DOMの中からは、`:host` でカスタム要素そのものを、`::slotted()` でページから受け取った子要素を選べます。本書では、`::part()` による公開を基本の設計には使いません。
+
+<Baseline id="shadow-dom" name="Shadow DOM" />
+
+本書では、カスタム要素もLight DOMのまま作るのを基本にします。ページから子要素を受け取る部品、つまりHTMLにリンクやボタンを書いてカスタム要素で包む部品は、Light DOMで作ります。こうした部品をShadow DOMで作ると、受け取った子要素はページのDOMに残り、それを囲む要素だけがShadow DOMの中に入るので、1つの部品のCSSがページのCSSファイルとShadow DOMの中の2か所に分かれます。{/* 要確認: 出典なし */}Light DOMで作れば、部品のCSSは1つのファイルにまとまり、kiso.cssのリセットやユーティリティもそのまま当たります。外側のコンポーネントのCSSが部品の中に入り込むことは、`@scope` の下限と、ほかのコンポーネントの内部を選ばない規約で防げます（「[8-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+Shadow DOMを使うのは、中身をすべて自分で描く部品です。たとえば、`<theme-toggle></theme-toggle>` と書くだけで、ボタン、ポップオーバー、ラジオボタンの選択肢をカスタム要素が生成する配色の切り替えでは、中のHTMLはページのどこにも書かれていません。ページのセレクタで中の構造を選ぶ必要がないので、Shadow DOMで閉じ込めても困りません。
+
+## Shadow DOMの中の書き方
+
+Shadow DOMのCSSは `<template>` の中の `<style>` に書いておき、カスタム要素が `attachShadow()` で作ったShadow DOMへ複製します。ページの外部のCSSファイルはShadow DOMの中まで届かないので、部品のCSSはカスタム要素のスクリプトと一緒に管理します。
+
+```js title="🙆‍♂ Recommended: template の内容を、Shadow DOM に複製する"
+const template = document.createElement('template');
+template.innerHTML = `<style>${STYLES}</style><button type="button">…</button>`;
+
+class ThemeToggle extends HTMLElement {
+  connectedCallback() {
+    if (this.shadowRoot) return;
+    this.attachShadow({ mode: 'open' }).append(template.content.cloneNode(true));
+  }
+}
+
+customElements.define('theme-toggle', ThemeToggle);
+```
+
+カスタム要素そのもの（ホスト）は、Shadow DOMの中から `:host` で選びます。Light DOMの `:scope` と同じく、`:host` には `display` と内部プロパティを書きます。内部プロパティの値には、ページの `:root` で定義したトークンを使えます。カスタムプロパティは継承されるので、Shadow DOMの境界を越えて中に届くからです。
+
+```css title="🙆‍♂ Recommended: :host に display と内部プロパティを書き、中は要素と属性で選ぶ"
+:host {
+  --_background: var(--background--base);
+  --_background--hocus: var(--background--surface);
+
+  display: block flow;
+}
+
+button {
+  padding: 8px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background-color: var(--_background);
+  color: inherit;
+  font: inherit;
+
+  &:enabled:hover {
+    @media (any-hover) {
+      background-color: var(--_background--hocus);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--_background--hocus);
+  }
+}
+
+legend {
+  /* ページの .-visually-hidden は届かないので、同じ指定をここにも書く */
+  position: fixed;
+  inset: 0;
+  inline-size: 4px;
+  block-size: 4px;
+
+  /* ... */
+  opacity: 0;
+}
+```
+
+中の要素は、クラスや `@scope` を使わず、`button` や `[popover]` のような要素と属性のセレクタで選びます。Shadow DOMの境界がスコープの役目を果たすので、短いセレクタでも外に漏れません。ネスト、`@media (any-hover)` の中に書くホバー、`prefers-reduced-motion: no-preference` の中に書く動きは、Light DOMと同じ規約で書きます。
+
+一方、ページのセレクタで指定したスタイルは、中の要素に当たりません。kiso.cssがボタンに指定している `font: unset` や `background-color: unset` が当たらないので、ボタンはブラウザのデフォルトの文字と背景で表示されます。上の例の `color: inherit` と `font: inherit` は、その差を埋めるための指定です。`.-visually-hidden` のようなユーティリティのクラスも効かないので、必要な指定を中に書きます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [ウェブコンポーネント | MDN](https://developer.mozilla.org/ja/docs/Web/API/Web_components)
+- [カスタム要素の使用 - ウェブコンポーネント | MDN](https://developer.mozilla.org/ja/docs/Web/API/Web_components/Using_custom_elements)
+- [シャドウ DOM の使用 - ウェブコンポーネント | MDN](https://developer.mozilla.org/ja/docs/Web/API/Web_components/Using_shadow_DOM)
+- [:host - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:host)
+- [:defined - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:defined)
+- [HTML Standard - Custom elements](https://html.spec.whatwg.org/multipage/custom-elements.html)（WHATWG）
+- [CSS Scoping Module Level 1](https://drafts.csswg.org/css-scoping-1/)（W3C）

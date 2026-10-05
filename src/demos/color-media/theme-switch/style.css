@@ -1,0 +1,133 @@
+@layer tokens {
+  :root {
+    --color--neutral--50: oklch(98.5% 0 0deg);
+    --color--neutral--100: oklch(97% 0 0deg);
+    --color--neutral--400: oklch(70.8% 0 0deg);
+    --color--neutral--600: oklch(43.9% 0 0deg);
+    --color--neutral--800: oklch(26.9% 0 0deg);
+    --color--neutral--900: oklch(20.5% 0 0deg);
+    --color--neutral--950: oklch(14.5% 0 0deg);
+    --background--base: light-dark(var(--color--neutral--100), var(--color--neutral--900));
+    --background--surface: light-dark(oklch(100% 0 0deg), var(--color--neutral--800));
+    --foreground--base: light-dark(var(--color--neutral--950), var(--color--neutral--50));
+    --foreground--muted: light-dark(var(--color--neutral--600), var(--color--neutral--400));
+    --shadow--color: light-dark(oklch(30% 0.05 250deg / 14%), oklch(0% 0 0deg / 30%));
+    --shadow--md:
+      0 4px 8px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent),
+      0 2px 4px -2px var(--shadow--color);
+
+    /* meta 要素の値から、いまの配色をカスタムプロパティにする */
+    &:has(meta[name="color-scheme"][content="light only"]) {
+      --color-scheme: --light;
+    }
+
+    &:has(meta[name="color-scheme"][content="dark only"]) {
+      --color-scheme: --dark;
+    }
+
+    &:has(meta[name="color-scheme"][content="light dark"]) {
+      --color-scheme: --light;
+
+      @media (prefers-color-scheme: dark) {
+        --color-scheme: --dark;
+      }
+    }
+  }
+}
+
+@layer base {
+  :root {
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.theme-switch-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      justify-items: start;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.theme-switcher) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+    }
+
+    legend {
+      font-weight: bolder;
+    }
+
+    ._options {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+
+    label {
+      display: inline flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    ._status {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* スタイルクエリの判定を、文字で表示する */
+    [data-scheme="dark"] {
+      display: none;
+
+      @container style(--color-scheme: --dark) {
+        display: inline;
+      }
+    }
+
+    [data-scheme="light"] {
+      @container style(--color-scheme: --dark) {
+        display: none;
+      }
+    }
+  }
+
+  @scope (.scoped.photo-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      overflow: clip;
+      max-inline-size: calc(320 / 16 * 1rem);
+      border-radius: 8px;
+      background-color: var(--background--surface);
+      box-shadow: var(--shadow--md);
+    }
+
+    ._image {
+      inline-size: 100%;
+
+      /* 暗い配色では、画像の明るさを抑える */
+      @container style(--color-scheme: --dark) {
+        filter: brightness(0.75);
+      }
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._description {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

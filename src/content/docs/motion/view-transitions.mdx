@@ -6,7 +6,14 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import themeHtml from '../../../demos/motion/vt-theme/index.html?raw';
+import themeCss from '../../../demos/motion/vt-theme/style.css?raw';
+import themeJs from '../../../demos/motion/vt-theme/script.js?raw';
+import shuffleHtml from '../../../demos/motion/vt-shuffle/index.html?raw';
+import shuffleCss from '../../../demos/motion/vt-shuffle/style.css?raw';
+import shuffleJs from '../../../demos/motion/vt-shuffle/script.js?raw';
 
 View Transitionsは、画面の状態が切り替わる前後のスナップショットを撮り、その間をアニメーションでつなぐ仕組みです。同じページの中の切り替えはJavaScriptの `document.startViewTransition()` で、ページ間の遷移はCSSの `@view-transition` で有効にします。対応していない環境では、アニメーションせずに切り替わるだけなので、プログレッシブ・エンハンスメントとして使えます。
 
@@ -91,6 +98,10 @@ if (document.startViewTransition) {
 
 前の画面のアニメーションを止め、新しい画面だけを `clip-path` で広げています。動きを減らす設定のときは、新しい画面のアニメーションも止めるので、テーマは一瞬で切り替わります。`clip-path` は `none` との間では補間できないので、ここでは `to` も書いています。
 
+次のデモでは、ボタンでテーマを切り替えます。ボタンを押すと、`types` に `theme-toggle` を渡して `document.startViewTransition()` を呼び、ルートの `data-theme` 属性を書き換えます。新しいテーマの画面が、上から塗り替えるように現れます。View Transitionsに対応していない環境では、テーマが一瞬で切り替わります。
+
+<Demo title="テーマの切り替えだけ、新しい画面を上から塗り替えるように表示する" html={themeHtml} css={themeCss} js={themeJs} widths={[]} />
+
 ## 並んだ要素に名前を付ける
 
 要素ごとに動かすには、`view-transition-name` で名前を付けます。名前を付けた要素は、ページ全体とは別に撮影され、前後の画面で同じ名前を持つ要素の間で、位置と大きさがアニメーションします。この名前は、切り替えに参加する要素の間で一意でなければなりません。
@@ -149,6 +160,10 @@ if (document.startViewTransition) {
 ```
 
 名前そのものを動きを減らす設定の条件の中で付けているのは、名前を付けた要素は位置と大きさが動くからです。条件に当てはまらないときは名前がないので、要素はページ全体のスナップショットに含まれ、フェードだけで切り替わります。`view-transition-class` は動きを指定するための目印でしかなく、`view-transition-name` の代わりにはなりません。名前のない要素にクラスだけを付けても、要素ごとには撮影されません。
+
+次のデモでは、ボタンを押すと、`document.startViewTransition()` の中で項目をランダムに並べ替えます。CSSでは項目に連番の名前を振っていませんが、各項目は前の位置から新しい位置へ移動します。動きを減らす設定のときは名前が付かないので、一覧全体がフェードで切り替わります。
+
+<Demo title="match-element と view-transition-class で、並べ替えた項目を新しい位置へ移動させる" html={shuffleHtml} css={shuffleCss} js={shuffleJs} />
 
 <Baseline id="view-transitions" compatKey="css.properties.view-transition-name.match-element" name="view-transition-name: match-element" />
 

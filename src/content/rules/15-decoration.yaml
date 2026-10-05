@@ -81,6 +81,14 @@
   page: decoration/images-and-decoration
   since: 0.1.0
 
+- id: scroll-edge-fade-with-mask
+  level: 推奨
+  rule: スクロールできる領域の端を薄くして続きを示すときは、端に線や背景と同じ色のグラデーションを重ねず、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定する。
+  reason: 中身そのものが端で薄れるので、背景が写真や別の色でも帯が浮かず、線のように区切りとして読まれることもないため。
+  note: '`linear-gradient()` の向きには論理方向のキーワードがないので、両端を同じ幅で薄くして書字方向に左右されない形にします。マスクは要素の外側に描く `outline` も切り取るので、スクロールコンテナがフォーカスを受けるときは、リングを親の `:has(:focus-visible)` に出します。'
+  page: decoration/images-and-decoration
+  since: 0.21.0
+
 - id: icon-current-color
   level: 推奨
   rule: 単色のアイコンの色は `currentColor` で文字色に合わせ、状態ごとにアイコンの色を指定し直さない。

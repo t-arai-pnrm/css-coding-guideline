@@ -10,10 +10,12 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import revealHtml from '../../../demos/motion/reveal-on-view/index.html?raw';
 import revealCss from '../../../demos/motion/reveal-on-view/style.css?raw';
+import headerHtml from '../../../demos/motion/scroll-header/index.html?raw';
+import headerCss from '../../../demos/motion/scroll-header/style.css?raw';
 
 スクロールに合わせた動きは、値の変わり方で作り方を選びます。スクロール位置に合わせて連続して変わる値には、CSSのスクロール駆動アニメーションを使い、`animation-range` で範囲を明示します。画面に入った時点で1回だけ変わる演出は、`view()` のタイムラインでカスタムプロパティを切り替え、`@container style()` で時間で進むアニメーションを再生して作ります。Firefoxでも演出を出したいときと、スクロールを戻しても再生を止めたくないときは、`IntersectionObserver` で属性を付けます。JavaScriptで毎フレーム同期するのは、それでも作れない複雑な分岐が必要なときだけです。
 
-どの方法でも、演出に対応していない環境では、要素を動き始める前の見た目で待たせません。CSSだけの方法は、`@supports (animation-timeline: view())` で囲みます。JavaScriptを使う方法は、準備を終えてルートに `data-motion-mode="motion"` を付けたときだけ待たせます。待機中の見た目は `@keyframes` の `from` に任せ、`opacity: 0` を別に書きません。演出が動かない環境でも、動きを減らす設定の環境でも、すべての内容を読めるようにするためです。
+どの方法でも、演出に対応していない環境では、要素を動き始める前の見た目で待たせません。CSSだけの方法は、`@supports (animation-timeline: view()) and (animation-range: entry)` で囲みます。JavaScriptを使う方法は、準備を終えてルートに `data-motion-mode="motion"` を付けたときだけ待たせます。待機中の見た目は `@keyframes` の `from` に任せ、`opacity: 0` を別に書きません。演出が動かない環境でも、動きを減らす設定の環境でも、すべての内容を読めるようにするためです。
 
 ## スクロールのたびに位置を計算する問題
 
@@ -57,6 +59,8 @@ window.addEventListener('scroll', () => {
 
 2026年10月の時点で、Firefoxはスクロール駆動アニメーションに対応していません。対応していない環境では `animation-timeline` が無視され、時間で進む普通のアニメーションとして扱われます。再生時間が0なので、一瞬で終わった状態になります。そこで、`@supports` で対応している環境に限って指定します。
 
+`@supports` の条件には、`animation-timeline` だけでなく `animation-range` も加えます。2つは別々のプロパティなので、`animation-timeline` にだけ対応した実装では、範囲の指定が無視されてタイムラインの全体で動き、見せたいタイミングとずれます。{/* 要確認: 出典なし（animation-range に対応しない実装の有無） */}条件には、実際に使う値を書きます。`view()` のタイムラインなら `(animation-timeline: view()) and (animation-range: entry)` です。`scroll()` のタイムラインで長さの範囲を使うなら、`(animation-timeline: scroll()) and (animation-range: 0 80px)` と書きます。
+
 次の例は、ページを80pxスクロールするまでの間に、ヘッダーの背景をフェードインさせます。背景は擬似要素に描き、その `opacity` をスクロール量に合わせて変えます。
 
 ```css title="🙆‍♂ Recommended: スクロールした量に合わせて、ヘッダーの背景を表示する"
@@ -73,7 +77,7 @@ window.addEventListener('scroll', () => {
       z-index: var(--z--backwards);
       background-color: var(--color--neutral--50);
 
-      @supports (animation-timeline: scroll()) {
+      @supports (animation-timeline: scroll()) and (animation-range: 0 80px) {
         animation-name: --fade-in;
         animation-timing-function: linear;
         animation-fill-mode: both;
@@ -86,6 +90,10 @@ window.addEventListener('scroll', () => {
 ```
 
 `animation-range` を指定しない（`normal`）と、範囲はタイムラインの全体になります。`scroll()` ではページの先頭から末尾まで、`view()` では要素が画面に入り始めてから出終わるまで（`cover`）です。見せたいタイミングとずれやすいので、範囲は明示します。上の例では長さで範囲を指定し、80pxスクロールしたところで背景が表示されきります。範囲を過ぎたあとも背景を残すために、`animation-fill-mode: both` を指定しています。指定しないと、範囲の外ではアニメーションが当たらず、もとの見た目に戻ります。
+
+次のデモでは、枠の中をスクロールすると、80pxまでの間にヘッダーの背景が現れ、上へ戻すと薄くなります。スクロール駆動アニメーションに対応していない環境では、アニメーションが当たらないので、背景は最初から表示されています。
+
+<Demo title="スクロールした量に合わせて、ヘッダーの背景をフェードインする" html={headerHtml} css={headerCss} height="320px" />
 
 `view()` では、範囲を名前で指定できます。`entry` は要素が画面に入る間、`exit` は出ていく間、`contain` は要素の全体が画面に収まっている間です。`animation-range: entry 0% entry 100%` のように、名前と割合を組み合わせて細かく絞ることもできます。範囲を絞ると、その前後にアニメーションの当たらない区間が生まれるので、ここでも `animation-fill-mode: both` を指定します。
 
@@ -104,7 +112,7 @@ window.addEventListener('scroll', () => {
 
 @scope (.scoped.hero) to (.scoped) {
   ._background {
-    @supports (animation-timeline: view()) {
+    @supports (animation-timeline: view()) and (animation-range: cover) {
       @media (prefers-reduced-motion: no-preference) {
         animation-name: --hero--parallax;
         animation-timing-function: linear;
@@ -140,7 +148,7 @@ window.addEventListener('scroll', () => {
   :scope {
     --_in-view: false;
 
-    @supports (animation-timeline: view()) {
+    @supports (animation-timeline: view()) and (animation-range: entry) {
       animation-name: --reveal-card--in-view;
       animation-timing-function: linear;
       animation-fill-mode: both;
@@ -152,7 +160,7 @@ window.addEventListener('scroll', () => {
   ._body {
     --translate-from--y-value: 24px;
 
-    @supports (animation-timeline: view()) {
+    @supports (animation-timeline: view()) and (animation-range: entry) {
       animation-name: --fade-in;
       animation-duration: var(--duration--reveal);
       animation-timing-function: var(--ease--out-quint);
@@ -185,7 +193,7 @@ window.addEventListener('scroll', () => {
 
 範囲より手前までスクロールを戻すと、`--_in-view` は `false` に戻り、`._body` のアニメーションは再び一時停止します。再生を終えていれば、見た目は終わった状態のまま変わりません。しかし、再生の途中で戻すと、その位置で止まり、巻き戻りません。次に範囲に入ると、止まった位置から再生を続けます（2026年10月、Chrome 152で確認）。半透明のまま止まるのを避けたい場合は、次の `IntersectionObserver` の方法を使います。
 
-2026年10月の時点で、スクロール駆動アニメーションはChrome 115以降とSafari 26以降が対応し、Firefoxは対応していません。スタイルクエリは、Firefoxも151から使えます。`@supports (animation-timeline: view())` で囲まないと、Firefoxでは `animation-timeline` が無視され、ルートのアニメーションは再生時間が0の普通のアニメーションになります。読み込んだ直後から `--_in-view` が `true` なので、`._body` のアニメーションは画面の外で再生を終えます。`@supports` で囲めば、Firefoxでは演出なしで最初から表示されます。
+2026年10月の時点で、スクロール駆動アニメーションはChrome 115以降とSafari 26以降が対応し、Firefoxは対応していません。スタイルクエリは、Firefoxも151から使えます。`@supports` で囲まないと、Firefoxでは `animation-timeline` が無視され、ルートのアニメーションは再生時間が0の普通のアニメーションになります。読み込んだ直後から `--_in-view` が `true` なので、`._body` のアニメーションは画面の外で再生を終えます。`@supports` で囲めば、Firefoxでは演出なしで最初から表示されます。
 
 動きを減らす設定には、フェードだけで表示して対応しています。`--fade-in` は条件の外に書き、移動の `--translate-from` だけを `prefers-reduced-motion: no-preference` の中で加えます。フェードは、動きを減らす設定でも残してよい動きだからです（「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。
 

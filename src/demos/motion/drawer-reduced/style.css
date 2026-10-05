@@ -1,0 +1,77 @@
+@layer tokens {
+  :root {
+    --duration--slow: 300ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.drawer-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      place-items: center;
+      padding-block: 64px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.site-drawer) to (.scoped) {
+    :scope {
+      --_translate-from: 0;
+
+      inline-size: min(100% - 48px, calc(320 / 16 * 1rem));
+      block-size: 100%;
+      margin-inline-end: 0;
+      padding: 24px;
+      transition-duration: var(--duration--slow);
+      transition-property: display, overlay, opacity, translate;
+      transition-timing-function: var(--ease--out-quint);
+      transition-behavior: allow-discrete;
+
+      /* 動きを減らす設定のときは、起点が 0 のままなので、フェードだけが残る */
+      @media (prefers-reduced-motion: no-preference) {
+        --_translate-from: 100% 0;
+      }
+
+      &:modal {
+        display: block grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 16px;
+
+        @starting-style {
+          opacity: 0;
+          translate: var(--_translate-from);
+        }
+      }
+
+      &:not(:modal) {
+        opacity: 0;
+        translate: var(--_translate-from);
+      }
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ul {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    button {
+      justify-self: end;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 ---
 title: "16-1 状態とフォーカスを表す"
-description: "ホバーのスタイルは操作できる状態に限り、@media (any-hover)の中に書いて、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。"
+description: "ホバーのスタイルは操作できる状態に限り、@media (any-hover)の中に書いて、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。user-select: noneとtouch-actionは、それを必要とする操作部品にだけ指定します。"
 sidebar:
   order: 1
 ---
@@ -15,6 +15,8 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書きます。同じ見た目は `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
 
 選択中や展開中といった状態は、`.is-active` のような状態クラスを使わず、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に検討して、セレクタにします。
+
+文字の選択を止める `user-select: none` は、連打や長押しで文字が選択されて困る操作部品にだけ指定します。`touch-action` も、ドラッグを自分で処理する部品に限り、ページ全体には指定しません。
 
 ## タッチ操作の端末でのホバー
 
@@ -145,12 +147,12 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 指で操作する環境では、操作する領域が小さいと、押し間違いの原因になります。WCAG 2.2の達成基準2.5.8「ターゲットのサイズ（最低限）」（レベルAA）は、ポインターで操作する対象を24×24 CSSピクセル以上にすることを求めています。周囲に十分な間隔がある場合や、文章中のリンクのような場合は例外です。より厳しい達成基準2.5.5「ターゲットのサイズ（強化）」（レベルAAA）は、44×44 CSSピクセルを求めています。
 
-本書では、ボタンやアイコンのような操作する要素に、24px相当の最小の大きさを確保します。タッチ操作ができる環境では、44px相当に広げます。切り替えるのは大きさの値だけで、`min-block-size` と `min-inline-size` の指定は1か所にします。大きさは、ボタンの最小の高さと同じく、文字と一緒に大きくなるように `rem` で書きます（「[4-1 pxとremを使い分ける](/values/px-and-rem/)」）。
+本書では、ボタンやアイコンのような操作する要素に、24px相当の最小の大きさを確保します。タッチ操作ができる環境では、44px相当に広げます。切り替えるのは大きさの値だけで、`min-block-size` と `min-inline-size` の指定は1か所にします。大きさは、ボタンの最小の高さと同じく、文字と一緒に大きくなるように `rem` で書きます（「[4-1 pxとremを使い分ける](/values/px-and-rem/)」）。ただし、`rem` だけで書くと、ブラウザの文字サイズを16pxより小さくしたユーザーの環境では、WCAGが求めるCSSピクセルの下限を下回ります。たとえば文字サイズが12pxなら、`calc(24 / 16 * 1rem)` は18pxです。そこで `max(24px, 24 / 16 * 1rem)` と書き、文字と一緒に大きくなりながら、24pxを下回らないようにします。
 
 ```css title="🙆‍♂ Recommended: 最小の大きさをカスタムプロパティで受け、タッチ操作では値だけを変える"
 @scope (.scoped.icon-button) to (.scoped) {
   :scope {
-    --_hit-size: calc(24 / 16 * 1rem);
+    --_hit-size: max(24px, 24 / 16 * 1rem);
 
     display: inline grid;
     place-content: center;
@@ -158,13 +160,60 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
     min-block-size: var(--_hit-size);
 
     @media (any-pointer: coarse) {
-      --_hit-size: calc(44 / 16 * 1rem);
+      --_hit-size: max(44px, 44 / 16 * 1rem);
     }
   }
 }
 ```
 
 条件には、`pointer` ではなく `any-pointer` を使います。使える入力にタッチ操作がひとつでもあれば、広いほうの大きさにするためです。`pointer` と `any-pointer` の違いは、「[12-4 メディアクエリ](/responsive/media-queries/)」で説明しています。
+
+## 連打や長押しで文字が選択される部品
+
+操作部品の中には、素早く2回押すと、中の文字が選択されてしまうものがあります。Chrome 152で確かめたところ、`<label>`、`<summary>`、`role="tab"` を付けた `<div>` は、ダブルクリックで文字の一部が選択されました。`<button>` の文字は選択されませんでした（2026年10月確認）。`<label>` とラジオボタンで作った表示の切り替えや、数量を1ずつ増やす部品のように、続けて押すことの多い部品では、押すたびに文字が反転して見えます。タッチ操作の端末では、長押しで文字の選択が始まることもあります。{/* 要確認: 出典なし（長押しの挙動は実機で未確認） */}
+
+こうした部品にだけ、`user-select: none` を指定します。Safariは接頭辞なしの `user-select` に対応していないので（2026年10月確認）、`-webkit-user-select` を併記します。接頭辞を書くときは、理由のコメントとStylelintの無効化のコメントを添えます（「[7-7 モダンな記法にそろえる](/notation/modern-syntax/)」）。
+
+```css title="🙆‍♂ Recommended: 連打で文字が選択されて困る操作部品にだけ、user-select: none を指定する"
+@scope (.scoped.view-switcher) to (.scoped) {
+  label {
+    /* Safari は接頭辞なしの user-select に対応していない（2026年10月） */
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+```
+
+<Baseline id="user-select" />
+
+`user-select: none` は、本文の文字や `body` には指定しません。`user-select` は継承しないプロパティですが、初期値の `auto` は、親の値が `none` なら `none` として扱われます（MDN）。そのため、`body` に指定すると、ページのすべての文字が選択できなくなります。文章をコピーして引用や検索に使うユーザーも、選択した文字を読み上げや翻訳の機能に渡すユーザーも困ります。{/* 要確認: 出典なし */}コピーを防ぐ目的でも、開発者ツールやソースの表示で文字は取り出せるので、効果はありません。
+
+## `touch-action` を指定する範囲
+
+`touch-action` は、タッチ操作でブラウザがスクロールや拡大をするかどうかを決めるプロパティです。これを `html` や `body` に `none` で指定すると、ページ全体でスクロールとピンチでの拡大が止まります。`touch-action` も継承しませんが、ブラウザは、触れた要素からスクロールする祖先までの値を重ね合わせて、許す操作を決めるからです（MDN）。拡大して読む必要のあるユーザーが拡大できなくなる点は、`<meta name="viewport">` でズームを止めた場合と同じです（「[16-3 フォーム部品](/interaction/forms/)」）。
+
+```css title="🙅‍♂ Not Recommended: ページ全体のタッチ操作と文字の選択を止める"
+/* 🙅‍♂ Not Recommended */
+body {
+  touch-action: none;
+  user-select: none;
+}
+```
+
+`touch-action` は、ドラッグやスワイプを自分で処理する部品にだけ指定します。たとえば、つまみを横にドラッグして2枚の画像を見比べる部品なら、つまみに `pan-y pinch-zoom` を指定します。横の動きは部品が処理し、縦のスクロールとピンチでの拡大はブラウザに残せます。`none` にするのは、手書きの入力欄のように、すべての指の動きを部品で受け取る場合だけです。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 横のドラッグを処理するつまみにだけ、残す操作を明示して指定する"
+@scope (.scoped.compare-slider) to (.scoped) {
+  ._handle {
+    touch-action: pan-y pinch-zoom;
+  }
+}
+```
+
+<Baseline id="touch-action" />
+
+ボタンには、`touch-action` を書き直しません。kiso.cssが、`<button>` や、`role="button"`、`role="tab"` を付けた要素などに `touch-action: manipulation` を指定しています。iOSでダブルタップしたときの拡大を防ぐためです（「[6-1 壊さないリセット](/reset/kiso/)」）。`manipulation` は、スクロールとピンチでの拡大を許し、ダブルタップでの拡大だけを止める値です。
 
 ## ホバーの変化を透明度で表す方法
 
@@ -324,3 +373,5 @@ HTMLの属性とARIA属性のどちらでも表せない状態だけを、`data-
 - [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)
 - [Selectors Level 4 — The Focus-Indicated Pseudo-class: :focus-visible](https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo)（W3C、仕様が示すブラウザの判断の目安）
 - [解説書 達成基準 2.4.11: 隠されないフォーカス (最低限)](https://waic.jp/translations/WCAG22/Understanding/focus-not-obscured-minimum)（WAICによるWCAG 2.2解説書の日本語訳）
+- [user-select - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/user-select)
+- [touch-action - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/touch-action)

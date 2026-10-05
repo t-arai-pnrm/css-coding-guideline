@@ -46,7 +46,7 @@
     :scope {
       --_in-view: false;
 
-      @supports (animation-timeline: view()) {
+      @supports (animation-timeline: view()) and (animation-range: entry) {
         animation-name: --reveal-card--in-view;
         animation-timing-function: linear;
         animation-fill-mode: both;
@@ -64,7 +64,7 @@
       border: 1px solid var(--color--neutral--400);
       border-radius: 8px;
 
-      @supports (animation-timeline: view()) {
+      @supports (animation-timeline: view()) and (animation-range: entry) {
         animation-name: --fade-in;
         animation-duration: var(--duration--reveal);
         animation-timing-function: var(--ease--out-quint);

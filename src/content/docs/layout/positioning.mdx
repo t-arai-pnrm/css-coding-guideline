@@ -18,6 +18,10 @@ import overlapCss from '../../../demos/layout/overlap-detection/style.css?raw';
 
 本書では、絶対配置の要素の包含ブロックを、同じコンポーネントの中に `position: relative` ではっきり作ります。`position: sticky` を指定するときは、`inset` を指定し、GridとFlexboxの子なら `align-self: start` も指定します。アンカーポジショニングは、未対応の環境でも内容を読める形を先に書いたうえで使います。要素どうしの重なりを検出して装飾を隠す技法は、装飾に限って、対応した環境での上乗せとして使います。
 
+この節は扱う範囲が広いので、目的に合わせて見出しを選んで読めます。`position` の値と包含ブロックの基本は、「[positionの5つの値](#positionの5つの値)」から「[絶対配置の要素を中央に置く](#絶対配置の要素を中央に置く)」までで説明します。スクロールしても画面に留まる要素を作るときは、「[stickyが留まらない原因](#stickyが留まらない原因)」から「[固定ヘッダーと画面の高さ](#固定ヘッダーと画面の高さ)」までを読みます。
+
+ツールチップのように、別の要素の近くに置きたいときは、「[アンカーポジショニングの位置づけ](#アンカーポジショニングの位置づけ)」から後を読みます。後半ほど新しい機能を使う応用で、未対応の環境での扱いもあわせて説明しています。まず覚えるのは「絶対配置の要素を中央に置く」までの基本で、それより後は、作るものに合わせて必要な見出しだけを読めば足ります。
+
 ## positionをレイアウトの方式として考える
 
 CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと位置を決める方式が複数あります。同じプロパティでも、どの方式で配置されるかによって働き方が変わります。`width` は、通常フローでは決まった幅になり、Flexboxの子では縮むことのある仮の幅として扱われます。`z-index` は、通常フローの要素に指定しても何も起きませんが、FlexboxとGridの子なら `position` を指定しなくても効きます。
@@ -249,7 +253,21 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 2026年10月の時点で、`scroll-state()` のクエリに対応しているのはChrome系のブラウザだけです。対応していない環境では条件が成り立たず、境界線がないまま留まります。ヘッダーの機能は損なわれないので、プログレッシブ・エンハンスメントとして使えます。反対に、留まったときにだけメニューを表示するような、見えないと操作できなくなる変化には使いません。
 
-同じ仕組みで、横にスクロールできる表へ「→」の案内を出し、端までスクロールしたら消す、という表示も作れます。表を包むスクロールコンテナに `container-type: scroll-state` を指定し、`scroll-state(scrollable: inline-end)` が成り立つ間だけ案内を表示します。
+同じ仕組みで、横にスクロールできる表へ「→」の案内を出し、端までスクロールしたら消す、という表示も作れます。表を包むスクロールコンテナに `container-type: scroll-state` を指定し、`scroll-state(scrollable: inline-end)` が成り立つ間だけ案内を表示します。表をスクロールのラッパーで包む書き方は「[10-15 表を組む](/layout/tables/)」で説明します。
+
+留まったときにヘッダーの高さを縮める演出には、別の問題があります。`sticky` の要素は通常フローに場所を持つので、高さが縮むと、後ろの内容がその分だけ上へ動きます。ブラウザは、画面に見えている内容の位置を保つスクロールアンカリングの仕組みで、スクロール位置を縮んだ分だけ戻します。Chrome 152で、上端に留まると高さが64px縮むヘッダーを置き、32pxだけスクロールして確かめると、スクロール位置は0に戻り、ヘッダーは元の高さに戻りました（2026年10月確認）。少しだけスクロールしようとするたびにページが先頭へ押し戻され、ヘッダーが伸び縮みを繰り返します。
+
+そのため、留まったときに変えるのは、色や影のように寸法の変わらないものにします。先ほどの例で、内側の要素の境界線の色だけを変えているのも、このためです。高さを変える必要があるなら、ルートに `overflow-anchor: none` を指定して、スクロールアンカリングを止めます。同じ条件で確かめると、スクロール位置は32pxのまま保たれました。
+
+```css title="🙆‍♂ Recommended: 留まると高さが変わるヘッダーを置くときは、スクロールアンカリングを止める"
+:root {
+  overflow-anchor: none;
+}
+```
+
+<Baseline id="overflow-anchor" />
+
+この指定は、ページ全体のスクロールアンカリングを止めます。画面より上で画像が読み込まれて高さが変わったときなどに、見ている内容が押し下げられるようになるので、高さを変えずに済むなら、そのほうを選びます。`overflow-anchor` はSafari 27で対応し、2026年9月にBaselineの「新しく利用可能」になりました（2026年10月確認）。対応していない環境では、指定が無視されるだけです。{/* 要確認: 出典なし */}
 
 ## 固定ヘッダーと画面の高さ
 
@@ -380,7 +398,7 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 
 <Baseline id="anchor-positioning-animations" />
 
-位置が反転したときに、吹き出しの矢印の向きを変えたい場面もあります。CSS Anchor Positioning Module Level 2では、配置する要素に `container-type: anchored` を指定します。`@container anchored(fallback: flip-block)` の中に、反転したときの子孫のスタイルを書けます。ただし、2026年10月の時点で対応しているのはChrome 143以降だけです。使うなら、矢印の向きが変わらなくても意味が通るデザインにしたうえで、上乗せの演出にとどめます。{/* 要確認: 出典なし */}
+位置が反転したときに、吹き出しの矢印の向きを変えたい場面もあります。CSS Anchor Positioning Module Level 2では、配置する要素に `container-type: anchored` を指定します。`@container anchored(fallback: flip-block)` の中に、反転したときの子孫のスタイルを書けます。ただし、2026年10月の時点で対応しているのはChrome 143以降だけなので、本書では今のところ採用しません。ほかのブラウザでは、反転しても矢印が元の向きのまま残り、吹き出しと反対の側を指すからです。位置が反転しうる吹き出しには矢印を付けないか、矢印がなくても、どのボタンの説明かが分かるデザインにします。{/* 要確認: 出典なし */}
 
 <Baseline id="container-anchor-position-queries" />
 
@@ -433,6 +451,7 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 - [position-try-order - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-try-order)
 - [position-visibility - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-visibility)
 - [timeline-scope - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/timeline-scope)
+- [overflow-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor)
 - [Getting stuck: all the ways position: sticky can fail](https://polypane.app/blog/getting-stuck-all-the-ways-position-sticky-can-fail/)（Polypane）
 - [Cheatsheets for flex, grid, anchor positioning and invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
 - [CSS Positioned Layout Module Level 3](https://drafts.csswg.org/css-position-3/)（W3C）
@@ -441,5 +460,6 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 - [CSS Anchor Positioning Module Level 2](https://drafts.csswg.org/css-anchor-position-2/)（W3C、エディターズドラフト）
 - [CSS Conditional Rules Module Level 5 - container-type](https://drafts.csswg.org/css-conditional-5/#container-type)（W3C）
 - [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)（W3C）
+- [CSS Scroll Anchoring Module Level 1](https://drafts.csswg.org/css-scroll-anchoring/)（W3C）
 - [Understanding Success Criterion 2.4.11: Focus Not Obscured (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)（W3C）
 - [C43: Using CSS scroll-padding to un-obscure content](https://www.w3.org/WAI/WCAG22/Techniques/css/C43)（W3C）

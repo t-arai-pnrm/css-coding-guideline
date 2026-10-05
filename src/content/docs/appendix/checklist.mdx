@@ -172,11 +172,13 @@ sidebar:
 - [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
 - [ ] 動きに目的があり、高い頻度で触るUIに装飾的な動きを足していないか（[`motion-needs-purpose`](/motion/purpose/#rule-motion-needs-purpose)）
 - [ ] 装飾的な動きのうちフェード以外を `@media (prefers-reduced-motion: no-preference)` の中で指定し、大きな変動を動きを減らす設定で簡素化しているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして確かめたか（[`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)）
-- [ ] 機能的な動きの再生時間が300ms以下（大きなUIでも500ms以下）か。イージングは標準のキーワードではなくトークンで、現れる動きと出ていく動きは `ease-out` 系、画面の上にあるものの移動は `ease-in-out` 系か（[`transition-longhand-with-tokens`](/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens)）
+- [ ] 機能的な動きの再生時間が300ms以下（大きなUIでも500ms以下）か。イージングは標準のキーワードではなくトークンで、現れる動きと出ていく動きは `ease-out` 系、画面の上にあるものの移動は `ease-in-out` 系か。`ease-in` 系を使っていないか（[`functional-motion-under-300ms`](/motion/easing-and-duration/#rule-functional-motion-under-300ms)、[`no-ease-in-for-ui`](/motion/easing-and-duration/#rule-no-ease-in-for-ui)）
 - [ ] 拡大して現れる動きを `scale: 0` から始めず、`transform-origin` をトリガーのある側に向けているか（[`scale-in-from-near-one`](/motion/easing-and-duration/#rule-scale-in-from-near-one)）
 - [ ] キーボードのフォーカスの移動に動きを付けていないか（[`no-motion-on-focus-visible`](/interaction/states-and-focus/#rule-no-motion-on-focus-visible)）
+- [ ] キーボードショートカットで開閉するUIに、出現と退場の動きを付けていないか（[`no-motion-on-keyboard-shortcut`](/motion/purpose/#rule-no-motion-on-keyboard-shortcut)）
 - [ ] 途中で取り消される動きをトランジションで書き、続けて押されるUIの動きを短くするか省いているか（[`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition)）
 - [ ] レイアウトの変わるプロパティを動かしていないか。`will-change` をCSSに書いたままの状態にしていないか（[`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)、[`will-change-temporarily`](/motion/performance/#rule-will-change-temporarily)）
+- [ ] `content-visibility: auto` を最初の画面より下のブロックにだけ指定しているか。`contain-intrinsic-block-size: auto <長さ>` を組で書いているか（[`content-visibility-with-intrinsic-size`](/motion/performance/#rule-content-visibility-with-intrinsic-size)）
 - [ ] `@keyframes` の名前が `--` で始まり、中間のフレームを持つものをコンポーネントのCSSに置いているか。一度だけ再生する演出で、`@keyframes` の外に `opacity: 0` などを重ねて書いていないか（[`keyframes-local-naming`](/motion/transitions-and-keyframes/#rule-keyframes-local-naming)、[`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)）
 - [ ] `transition: all` を使っていないか（[`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)）
 - [ ] 開閉するUIを、`<dialog>`、`popover` 属性、`<details>` のようなHTMLの機能で作っているか（[`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)）

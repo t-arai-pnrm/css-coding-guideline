@@ -1,0 +1,76 @@
+@layer tokens {
+  :root {
+    --color--neutral--50: oklch(98.5% 0 0deg);
+    --color--neutral--200: oklch(92.2% 0 0deg);
+    --color--neutral--950: oklch(14.5% 0 0deg);
+    --color--accent--600: oklch(52% 0.16 250deg);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.segmented-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      max-inline-size: calc(360 / 16 * 1rem);
+    }
+
+    ._panel {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.segmented-tabs) to (.scoped) {
+    :scope {
+      --_count: 3;
+      --_index: 0;
+
+      display: block grid;
+
+      &:has(._tab:nth-child(2)[aria-selected="true"]) {
+        --_index: 1;
+      }
+
+      &:has(._tab:nth-child(3)[aria-selected="true"]) {
+        --_index: 2;
+      }
+    }
+
+    ._list,
+    ._highlight {
+      display: block grid;
+      grid-area: 1 / 1;
+      grid-auto-columns: 1fr;
+      grid-auto-flow: column;
+    }
+
+    ._list {
+      border-radius: calc(infinity * 1px);
+      background-color: var(--color--neutral--200);
+      color: var(--color--neutral--950);
+    }
+
+    ._highlight {
+      clip-path: xywh(calc(var(--_index) * 100% / var(--_count)) 0 calc(100% / var(--_count)) 100% round calc(infinity * 1px));
+      background-color: var(--color--accent--600);
+      color: var(--color--neutral--50);
+      pointer-events: none;
+    }
+
+    /* 上下の列で文字の位置をそろえる */
+    ._tab,
+    ._highlight > span {
+      display: block grid;
+      place-items: center;
+      padding-block: 8px;
+      font-weight: bolder;
+    }
+
+    ._tab {
+      border-color: transparent;
+      border-radius: calc(infinity * 1px);
+    }
+  }
+}

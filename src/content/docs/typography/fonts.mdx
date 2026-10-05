@@ -155,6 +155,36 @@ Google Fontsを使う場合は、2つのサーバーへの `preconnect`、スタ
 
 この補正が役に立つのは、欧文のWebフォントを本文に使う場合です。和文を総称ファミリーの `sans-serif` に任せるなら、Webフォントへの切り替えそのものが起きません。
 
+### 書体が混ざるときのfont-size-adjust
+
+`font-size-adjust` は、1つの要素の中で書体が混ざるときに、選んだ寸法がそろうように各フォントの大きさを補正するプロパティです。フォントは、同じ `font-size` でも字面の大きさが違います。欧文の小文字の高さ（x-height）が低いフォントは、ほかのフォントの隣に並ぶと小さく見えます。`font-size-adjust` を指定すると、ブラウザはフォントごとに寸法を測り、指定した比になるように文字を拡大・縮小します。
+
+値は、そろえる寸法と比を `ex-height 0.5` のように書きます。比を `from-font` にすると、その要素のフォントスタックで最初に使えるフォントから比を求めます。求めた比は数値として子孫に継承されるので、子孫で書体が切り替わっても、親のフォントと同じ字面の大きさにそろいます。そのため、`from-font` は親の要素で一度だけ指定します。すべての要素に指定すると、要素ごとに自分のフォントから比を求め直すので、何もそろいません。
+
+```css title="🙆‍♂ Recommended: 英語のページで、書体の字面を先頭のフォントにそろえる"
+:where(:root:lang(en)) {
+  font-size-adjust: from-font;
+}
+```
+
+前の見出しの `size-adjust` とは、補正する対象と寸法が違います。`size-adjust` は `@font-face` の記述子で、特定の代わりのフォントだけを、字幅や行の高さに関わる寸法までWebフォントに合わせます。`font-size-adjust` は要素に指定するプロパティで、使われるすべてのフォントを1つの寸法でそろえます。Webフォントの読み込みの前後で行の折り返しが変わるのを防ぐなら、`size-adjust` を使います。`font-size-adjust` は、等幅のコードや代わりのフォントのように、同じ行に書体が混ざるときの字面をそろえるためのものです。
+
+そろえる寸法は、混ざる文字に合わせて選びます。小文字の多い欧文の本文は、寸法を省略したときに使われる `ex-height`（小文字の高さ）でそろえます。大文字や数字が中心のラベルには `cap-height`（大文字の高さ）を、数字の桁や等幅の文字の幅をそろえたいときは `ch-width`（数字の0の送り幅）を使います。`ic-width` と `ic-height` は、漢字の「水」の横と縦の送り幅でそろえる値です。
+
+ただし、和文を含む要素には `font-size-adjust` を指定しません。欧文のフォントを先頭に置いたスタックで `from-font` を指定すると、和文の文字が欧文のフォントの比に合わせて拡大・縮小されるからです。Georgiaの後ろに `sans-serif` を置いた要素で試すと、和文は元の約88%の大きさになりました（2026年10月、macOSのChrome 152で確認）。和文の文字サイズは欧文の小文字の高さと関係なくデザインで決めているので、この補正は意図しない変化になります。
+
+```css title="🙅‍♂ Not Recommended: 和文を含む要素で、欧文のフォントの比にそろえる"
+/* 🙅‍♂ Not Recommended */
+:where(:root) {
+  font-family: Georgia, sans-serif;
+  font-size-adjust: from-font;
+}
+```
+
+和文どうしの大きさをそろえる目的でも、`ic-width` と `ic-height` は役に立ちません。和文のフォントの漢字は送り幅がほぼ1em（全角）なので、どのフォントでも比が1になり、補正が掛からないからです。ヒラギノ角ゴシックで試すと、どちらの比も1でした。「水」を持たない欧文のフォントでも、比は1として扱われます。和文のフォントごとの字面の大きさの違いは、送り幅ではなく、1emの枠の中で字面が占める大きさの違いなので、これらの寸法では測れません。{/* 要確認: 出典なし（和文のフォントでの ic-width と ic-height の比は、macOS の Chrome 152 とヒラギノ角ゴシックだけで確認） */}
+
+<Baseline id="font-size-adjust" />
+
 ## 和文の斜体
 
 HTMLの `em`、`cite`、`i`、`dfn`、`address` は、ブラウザのデフォルトスタイルで斜体になります。欧文では強調や書名を斜体で表しますが、日本語では斜体をほとんど使いません。日本語で強調を表すときは、太字にするのが一般的です。
@@ -209,6 +239,8 @@ kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定し�
 - [font-weight - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-weight)
 - [size-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/size-adjust)
 - [ascent-override - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/ascent-override)
+- [font-size-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-size-adjust)
+- [CSS Fonts Module Level 5: font-size-adjust](https://drafts.csswg.org/css-fonts-5/#font-size-adjust-prop)
 - [Improved font fallbacks](https://developer.chrome.com/blog/font-fallbacks)（Chrome for Developers、2023年2月更新）
 - [【令和最新版】Google Fontsの読み込み最適化の結論](https://www.tak-dcxi.com/article/optimization-of-google-font-loading/)（TAKLOG、2024年3月）
 - [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）

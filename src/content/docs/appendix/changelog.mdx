@@ -11,6 +11,68 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.21.0（2026年10月5日）
+
+Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、文字の切り詰め、モーションの判断基準などを各章に補いました。ルールを32件追加したため、マイナーバージョンを上げています。既存の節の番号とURLは変わっていません。
+
+- 節を3つ加えました。
+  - 「[8-6 Web Components](/components/web-components/)」：カスタム要素そのものをルートにし、`@scope (<要素名>.scoped) to (.scoped)` で閉じる書き方を説明しています。JavaScriptがなくても動くHTMLを先に作る順番も書きました。ページから子要素を受け取る部品はLight DOMで、中身をすべて自分で描く部品はShadow DOMで作る、という使い分けも示しました。
+  - 「[10-15 表を組む](/layout/tables/)」：表をスクロールのラッパーで包む書き方、見出しのセルを `position: sticky` で留める条件、数値の列のそろえ方、狭い幅で縦に積む組み方を説明しています。
+  - 「[10-16 文字の切り詰めと読み込み中の表示](/layout/truncation-and-skeletons/)」：1行の切り詰めに必要な指定、全文を読める手段、数値を切り詰めない理由、スケルトンを読み込み後と同じ寸法にする書き方を説明しています。
+- 「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」に、`@import` をビルド時に展開する理由を加えました。「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」には、Shadow DOMとの使い分けを加えています。
+- 第3章の「[3-4 子要素の位置で選ぶ](/pseudo/child-index/)」に `sibling-index()` と `sibling-count()` を、「[3-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」に `::highlight()` を加えました。
+- 「[4-3 計算関数で根拠を式に残す](/values/math-functions/)」に、流体的な文字サイズの最大値と最小値の比と、Chrome系のブラウザだけが対応する `calc-size()` と `@function` を採用しない理由を加えました。
+- 「[10-7 positionの基礎](/layout/positioning/)」に、留まると大きさが変わる要素とスクロールアンカリングの関係を加えました。
+- 「[13-1 フォントを指定する](/typography/fonts/)」に `font-size-adjust` を、「[13-4 文字サイズと改行](/typography/size-and-line-breaks/)」に `text-wrap: balance` を指定しない要素を加えました。
+- 「[14-3 背景から文字色を決める](/color-media/contrast-text/)」に閾値を0.7にする根拠を、「[14-4 ダークモード](/color-media/dark-mode/)」に一部のコンポーネントだけを暗い配色にする方法を加えました。
+- 「[15-1 画像と装飾](/decoration/images-and-decoration/)」に、スクロールできる領域の端をマスクで薄くする方法と、2つの層を重ねて選んだ範囲だけを切り抜く方法を加えました。
+- 「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」に、`user-select` と `touch-action` を指定する範囲を加えました。「[16-3 フォーム部品](/interaction/forms/)」には `appearance: base-select` を、「[16-4 CSSでカルーセルを作る](/interaction/carousel/)」には `scroll-target-group` を加えています。
+- 第17章では、「[17-1 動かすかどうかを決める](/motion/purpose/)」に使う頻度の目安を加えました。「[17-5 出現と退場](/motion/entry-and-exit/)」には頻度の低いUIで要素をずらして出す方法を、「[17-7 動きの負荷を抑える](/motion/performance/)」には `content-visibility` を加えています。「[17-6 スクロールに合わせて動かす](/motion/scroll-driven/)」の `@supports` の条件には、`animation-range` を加えました。
+- ルールを32件追加しました。
+  - [`import-resolved-at-build`](/cascade/layers/#rule-import-resolved-at-build)：`@import` はビルド時に展開し、ブラウザで実行させません。
+  - [`sibling-functions-for-decoration`](/pseudo/child-index/#rule-sibling-functions-for-decoration)：`sibling-index()` と `sibling-count()` は装飾の値に限り、`@supports` の中で使います。
+  - [`mark-over-highlight-for-meaning`](/pseudo/generated-content/#rule-mark-over-highlight-for-meaning)：内容として伝える強調は `<mark>` で書き、`::highlight()` は操作に合わせて描き直す表示に使います。
+  - [`fluid-font-size-max-ratio`](/values/math-functions/#rule-fluid-font-size-max-ratio)：流体的な文字サイズは、最大値を最小値の2.5倍以内にします。
+  - [`custom-element-as-scope-root`](/components/web-components/#rule-custom-element-as-scope-root)：カスタム要素そのものに `scoped` を付けてルートにします。
+  - [`custom-element-root-display`](/components/web-components/#rule-custom-element-root-display)：カスタム要素のルートには `display` を明示します。
+  - [`custom-element-enhances-html`](/components/web-components/#rule-custom-element-enhances-html)：JavaScriptがなくても動くHTMLを先に作り、カスタム要素は振る舞いを足すだけにします。
+  - [`custom-element-settings-attrs-and-props`](/components/web-components/#rule-custom-element-settings-attrs-and-props)：振る舞いの設定は属性で、見た目の設定は公開プロパティで受け取ります。
+  - [`light-dom-for-received-children`](/components/web-components/#rule-light-dom-for-received-children)：子要素を受け取る部品はLight DOMで作ります。
+  - [`shadow-dom-host-and-element-selectors`](/components/web-components/#rule-shadow-dom-host-and-element-selectors)：Shadow DOMの中は、`:host` と要素・属性のセレクタで書きます。
+  - [`shadow-dom-restate-page-styles`](/components/web-components/#rule-shadow-dom-restate-page-styles)：Shadow DOMの中では、kiso.cssやユーティリティに頼っていた指定を書き直します。
+  - [`skeleton-matches-final-size`](/layout/truncation-and-skeletons/#rule-skeleton-matches-final-size)：スケルトンは読み込み後と同じ寸法にします。
+  - [`ellipsis-with-nowrap-and-clip`](/layout/truncation-and-skeletons/#rule-ellipsis-with-nowrap-and-clip)：1行で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせます。
+  - [`truncate-with-full-text-access`](/layout/truncation-and-skeletons/#rule-truncate-with-full-text-access)：文字を切り詰めるときは、全文を読める手段を用意します。
+  - [`no-truncate-numbers`](/layout/truncation-and-skeletons/#rule-no-truncate-numbers)：金額や数量などの数値を切り詰めません。
+  - [`tabular-nums-for-number-columns`](/layout/truncation-and-skeletons/#rule-tabular-nums-for-number-columns)：縦に並ぶ数値と、変わり続ける数字には `tabular-nums` を指定します。
+  - [`table-min-size-with-scroller`](/layout/tables/#rule-table-min-size-with-scroller)：表は縮めずに最小の幅を決め、包む要素で横にスクロールさせます。
+  - [`table-caption-and-scope`](/layout/tables/#rule-table-caption-and-scope)：表には `caption` を付け、見出しのセルに `scope` を付けます。
+  - [`sticky-table-header-needs-block-limit`](/layout/tables/#rule-sticky-table-header-needs-block-limit)：ラッパーの中で列の見出しを留めるときは、ラッパーに `max-block-size` を指定します。
+  - [`table-sticky-border-separate`](/layout/tables/#rule-table-sticky-border-separate)：見出しのセルを留めるときは、`border-collapse: separate` にして枠線を各セルに持たせます。
+  - [`numeric-cells-tabular-end`](/layout/tables/#rule-numeric-cells-tabular-end)：数値の列は末尾に揃え、`tabular-nums` を指定します。
+  - [`stacked-table-aria-roles`](/layout/tables/#rule-stacked-table-aria-roles)：表を縦に積むときは、各要素に `role` を書きます。
+  - [`no-font-size-adjust-for-japanese`](/typography/fonts/#rule-no-font-size-adjust-for-japanese)：和文を含む要素に `font-size-adjust` を指定しません。
+  - [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：コンポーネントに `color-scheme` を指定するときは、`color` と `background-color` を指定し直します。
+  - [`scroll-edge-fade-with-mask`](/decoration/images-and-decoration/#rule-scroll-edge-fade-with-mask)：スクロールできる領域の端は、`mask-image` のグラデーションで薄くします。
+  - [`user-select-none-for-controls`](/interaction/states-and-focus/#rule-user-select-none-for-controls)：`user-select: none` は、文字が選択されて困る操作部品にだけ指定します。
+  - [`no-global-touch-action-none`](/interaction/states-and-focus/#rule-no-global-touch-action-none)：ページ全体に `touch-action: none` を指定しません。
+  - [`base-select-in-supports`](/interaction/forms/#rule-base-select-in-supports)：`appearance: base-select` の指定は、`@supports` の中に書きます。
+  - [`no-motion-on-keyboard-shortcut`](/motion/purpose/#rule-no-motion-on-keyboard-shortcut)：キーボードショートカットで開閉するUIに、出現と退場の動きを付けません。
+  - [`no-ease-in-for-ui`](/motion/easing-and-duration/#rule-no-ease-in-for-ui)：UIの動きには、原則として `in` 系のイージングを使いません。
+  - [`functional-motion-under-300ms`](/motion/easing-and-duration/#rule-functional-motion-under-300ms)：機能的な動きは300ms以下、画面の大部分を覆うUIでも500ms以下にします。
+  - [`content-visibility-with-intrinsic-size`](/motion/performance/#rule-content-visibility-with-intrinsic-size)：`content-visibility: auto` は画面より下のブロックに限り、`contain-intrinsic-block-size` と組で書きます。
+- 既存のルールの補足を見直しました。
+  - `motion-needs-purpose`、`spring-easing-token`、`transition-longhand-with-tokens`、`scroll-animation-explicit-range` に補足を足しました。
+  - `center-with-balance`、`prefer-sign-over-contrast-color`、`no-unsupported-layout-features` にも補足を足しました。
+  - `reveal-once-with-style-query` は、`@supports` の条件に `animation-range` を加えました。
+- 条件を省いていた説明を直しました。
+  - 「[8-6 Web Components](/components/web-components/)」：`command` 属性によるモーダルの開閉は、Safari 18ではポリフィルが動くまで開かないことを書きました。見た目のバリエーションは属性セレクタでも切り替えられることと、Shadow DOMの境界を越える `::part()` も補っています。「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」の `::part()` の説明も同じく補いました。
+  - 「[10-2 通常フローの基礎](/layout/normal-flow/)」：大きさを指定できないのは通常の非置換インラインボックスで、置換要素と `inline flow-root` のボックスには指定できることを書きました。
+  - 旧「12-5 375px未満の画面ではビューポートを固定する」を「[12-5 375px未満の画面の扱い](/responsive/min-viewport-width/)」に改めました。自然に折り返す表示が基本で、固定は例外であることを、タイトルでも示しています。ズームで `innerWidth` が変わる説明は、デスクトップのページズームに限ることを明記しました。
+  - 「[14-3 背景から文字色を決める](/color-media/contrast-text/)」：APCAでの比較は、閾値の0.7を決めた後の確認であることと、計算の条件を書きました。
+  - 「[16-4 CSSでカルーセルを作る](/interaction/carousel/)」：インジケーターの現在位置を、色だけでなく形でも示すようにし、強制カラーモードでの指定を加えました。
+  - 「[10-7 positionの基礎](/layout/positioning/)」と「[15-1 画像と装飾](/decoration/images-and-decoration/)」の冒頭に、まず覚える範囲と、必要なときに読む範囲の分かれ目を示しました。
+
 ## 0.20.0（2026年10月3日）
 
 `@scope` とネスト、擬似クラス、記法、レスポンシブデザインの章の構成を見直し、サイズを問い合わせる `@container` を「コンテナサイズクエリ」と呼ぶことにしました。コンポーネントのルートのコンテナ名も `--scoped` にそろえています。ルールを追加し、変更し、削除したため、マイナーバージョンを上げています。第3章、第7章、第12章の節の番号と、一部の節のURLも変わりました。

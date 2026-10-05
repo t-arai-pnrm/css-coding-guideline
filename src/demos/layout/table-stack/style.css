@@ -1,0 +1,90 @@
+@layer components {
+  @scope (.scoped.order-table) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    table {
+      --_layout: --table;
+
+      inline-size: 100%;
+      font-variant-numeric: tabular-nums;
+
+      /* 注文番号 96px・注文日 136px・商品 200px・数量 64px・金額 96px・状態 96px が並ぶ幅 */
+      @container --scoped (inline-size < calc((96 + 136 + 200 + 64 + 96 + 96) / 16 * 1rem)) {
+        --_layout: --stacked;
+
+        display: block grid;
+        gap: 8px;
+      }
+    }
+
+    caption {
+      font-weight: bold;
+
+      @container style(--_layout: --table) {
+        padding-block-end: 8px;
+      }
+    }
+
+    thead {
+      /* 見出しは読み上げのために残し、画面からだけ隠す */
+      @container style(--_layout: --stacked) {
+        position: absolute;
+        overflow: clip;
+        inline-size: 4px;
+        block-size: 4px;
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    tbody {
+      @container style(--_layout: --stacked) {
+        display: block grid;
+        gap: 12px;
+      }
+    }
+
+    tr {
+      @container style(--_layout: --stacked) {
+        display: block grid;
+        gap: 4px;
+        padding-block: 12px;
+        padding-inline: 16px;
+        border: 1px solid oklch(85% 0 0deg);
+        border-radius: 8px;
+      }
+    }
+
+    th,
+    td {
+      @container style(--_layout: --table) {
+        padding-block: 8px;
+        padding-inline: 12px;
+        border-block-end: 1px solid oklch(88% 0 0deg);
+      }
+    }
+
+    td {
+      @container style(--_layout: --stacked) {
+        display: block flex;
+        gap: 16px;
+        justify-content: space-between;
+      }
+    }
+
+    ._numeric {
+      text-align: end;
+    }
+
+    ._label {
+      display: none;
+
+      @container style(--_layout: --stacked) {
+        display: block flow;
+        color: oklch(45% 0 0deg);
+      }
+    }
+  }
+}

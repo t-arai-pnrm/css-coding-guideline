@@ -83,12 +83,18 @@
           content: "" / attr(data-label);
           inline-size: 12px;
           block-size: 12px;
-          border-radius: 50%;
+          border: 1px solid transparent;
+          border-radius: calc(infinity * 1px);
           background-color: var(--color--neutral--400);
         }
 
         &::scroll-marker:target-current {
+          inline-size: 32px;
           background-color: var(--color--accent--600);
+
+          @media (forced-colors: active) {
+            background-color: CanvasText;
+          }
         }
       }
     }

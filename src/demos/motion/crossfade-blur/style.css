@@ -1,0 +1,72 @@
+@layer tokens {
+  :root {
+    --duration--fast: 200ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.crossfade-demo) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    ._example {
+      display: block grid;
+      gap: 8px;
+      justify-items: center;
+      font-size: calc(14 / 16 * 1rem);
+
+      /* 比べるために、片方だけぼかしを消す */
+      &.-no-blur {
+        --copy-button--blur: 0px;
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.copy-button) to (.scoped) {
+    :scope {
+      --_blur: var(--copy-button--blur, 4px);
+
+      display: inline grid;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    /* 2つのアイコンを、グリッドの同じセルに重ねる */
+    ._copy-icon,
+    ._copied-icon {
+      grid-area: 1 / 1;
+      inline-size: 32px;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2;
+      transition-duration: var(--duration--fast);
+      transition-property: opacity, filter;
+      transition-timing-function: var(--ease--out-quint);
+    }
+
+    ._copied-icon {
+      opacity: 0;
+      filter: blur(var(--_blur));
+
+      &:is(:scope[data-copied="true"] *) {
+        opacity: 1;
+        filter: none;
+      }
+    }
+
+    ._copy-icon {
+      &:is(:scope[data-copied="true"] *) {
+        opacity: 0;
+        filter: blur(var(--_blur));
+      }
+    }
+  }
+}

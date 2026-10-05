@@ -108,6 +108,15 @@
   page: cascade/layers
   since: 0.1.0
 
+- id: import-resolved-at-build
+  level: 必須
+  rule: '`@import` は、フレームワークや PostCSS のプラグインなどでビルド時に展開し、ブラウザで実行させない。'
+  reason: 'ブラウザは `@import` を書いたファイルを読み込んで解析するまで次の読み込みを始められず、読み込みが直列になって最初の表示が著しく遅れるため。'
+  note: 'Astro（Vite）は `@import` をビルド時に展開し、`layer()` の指定も `@layer` のブロックとして残します。CMS と共存する案件でも、自分で書いた CSS はビルドを通してから配信します。'
+  aiProne: true
+  page: cascade/layers
+  since: 0.21.0
+
 - id: declared-layer-names-only
   level: 必須
   rule: '`@layer` と `@import` の `layer()` には、先頭の `@layer` 文で宣言した9つのレイヤー名だけを使う。'

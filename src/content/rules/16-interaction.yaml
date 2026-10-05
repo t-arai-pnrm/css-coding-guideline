@@ -78,9 +78,25 @@
   level: 推奨
   rule: '操作する要素には 24px 相当の最小の大きさを確保し、`@media (any-pointer: coarse)` では 44px 相当にする。大きさは内部のカスタムプロパティの値だけを切り替える。'
   reason: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
-  note: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。`rem` で書きます。
+  note: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。文字と一緒に大きくなるように `rem` で書き、`max(24px, 24 / 16 * 1rem)` のように CSS ピクセルの下限を併記します。
   page: interaction/states-and-focus
   since: 0.4.0
+
+- id: user-select-none-for-controls
+  level: 推奨
+  rule: '`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。'
+  reason: '初期値の `auto` は親の値が `none` なら `none` として扱われるので、広い範囲に指定すると、文章のコピーや、選択した文字を読み上げや翻訳の機能に渡す操作ができなくなるため。'
+  note: 'Safari は接頭辞なしの `user-select` に対応していないので（2026年10月）、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome 152 で確認）。'
+  page: interaction/states-and-focus
+  since: 0.21.0
+
+- id: no-global-touch-action-none
+  level: 禁止
+  rule: '`html`、`body`、全称セレクタのようにページ全体に及ぶセレクタに `touch-action: none` を指定しない。'
+  reason: 'ブラウザは触れた要素からスクロールする祖先までの `touch-action` を重ね合わせて許す操作を決めるので、ページ全体でスクロールとピンチでの拡大が止まるため。'
+  note: '`touch-action` は、ドラッグやスワイプを自分で処理する部品にだけ、`pan-y pinch-zoom` のように残す操作を明示して指定します。ボタンなどの `touch-action: manipulation` は kiso.css が指定しているので、書き直しません。'
+  page: interaction/states-and-focus
+  since: 0.21.0
 
 # 16-2 開閉する UI
 - id: native-disclosure-elements
@@ -190,6 +206,14 @@
   note: '`inline-size` と `block-size` の両方を指定します。'
   page: interaction/forms
   since: 0.1.0
+
+- id: base-select-in-supports
+  level: 推奨
+  rule: '`<select>` の見た目を `appearance: base-select` で変えるときは、`::picker(select)`、`::picker-icon`、`option::checkmark` の指定も含めて `@supports (appearance: base-select)` の中に書く。'
+  reason: '未対応の環境（2026年10月の時点では Firefox）でブラウザの標準の `<select>` のまま表示させ、`base-select` を前提にした余白や枠線が標準の部品に当たるのを防ぐため。'
+  note: '`appearance: base-select` は、`<select>` と `::picker(select)` の両方に指定します。選んだ項目の中身をボタンに表示するには、`<select>` の最初の子に `<button>` を置き、その中に `<selectedcontent>` を書きます。`<div>` と JavaScript でドロップダウンを作り直すことはしません。'
+  page: interaction/forms
+  since: 0.21.0
 
 - id: switch-attribute-progressive
   level: 推奨

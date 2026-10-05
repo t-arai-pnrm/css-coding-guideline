@@ -1,0 +1,82 @@
+@layer tokens {
+  :root {
+    --duration--base: 240ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@layer base {
+  @keyframes --fade-in {
+    from {
+      opacity: var(--fade-in--from-value, 0);
+    }
+  }
+
+  @keyframes --translate-from {
+    from {
+      translate: var(--translate-from--x-value, 0) var(--translate-from--y-value, 0);
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.stagger-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      place-items: center;
+      padding-block: 32px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.onboarding-steps) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      inline-size: min(100% - 32px, calc(400 / 16 * 1rem));
+      margin: auto;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px oklch(0% 0 0deg / 16%);
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ol {
+      display: block grid;
+      gap: 8px;
+      padding-inline-start: 1.5em;
+      list-style-type: decimal;
+    }
+
+    /* 開くたびに display: none から表示されるので、アニメーションも最初から再生される */
+    li {
+      --_stagger: 50ms;
+      --translate-from--y-value: 8px;
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation-name: --fade-in, --translate-from;
+        animation-duration: var(--duration--base);
+        animation-timing-function: var(--ease--out-quint);
+        animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
+        animation-fill-mode: both;
+      }
+    }
+
+    button {
+      justify-self: end;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+  }
+}

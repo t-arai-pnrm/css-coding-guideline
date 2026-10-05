@@ -1,0 +1,75 @@
+@layer components {
+  /**
+   * ポップオーバーで開くメニュー。
+   * 開閉は popover 属性で動き、カスタム要素の JavaScript はホバーで開く処理などを足すだけにする。
+   *
+   * @prop {color} --popover-menu--accent [oklch(48% 0.17 260deg)] - メニューを開いている間のボタンの枠線の色
+   */
+  @scope (popover-menu.scoped) to (.scoped) {
+    :scope {
+      --_accent: var(--popover-menu--accent, oklch(48% 0.17 260deg));
+      --_border-color: oklch(80% 0 0deg);
+      --_background--hocus: oklch(96% 0.03 260deg);
+
+      /* カスタム要素にはデフォルトスタイルがなく、display が初期値の inline になるので明示する */
+      display: block flow;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: var(--_border-color);
+      border-radius: 8px;
+      font-weight: 700;
+
+      &:enabled:hover {
+        @media (any-hover) {
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--_background--hocus);
+      }
+
+      /* メニューを開いている間は、押された見た目にする */
+      &:has(+ :popover-open) {
+        border-color: var(--_accent);
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    /* アンカーポジショニングに対応しない環境では、画面の中央に出す */
+    [popover] {
+      min-inline-size: calc(160 / 16 * 1rem);
+      margin: auto;
+      padding-block: 4px;
+      border: 1px solid var(--_border-color);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px oklch(0% 0 0deg / 16%);
+
+      /* 対応する環境では、ボタンの下に左端をそろえて出す */
+      @supports (position-area: block-end span-inline-end) {
+        position-area: block-end span-inline-end;
+        margin-block: 8px;
+        margin-inline: 0;
+      }
+    }
+
+    a {
+      display: block flow;
+      padding-block: 8px;
+      padding-inline: 16px;
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--_background--hocus);
+      }
+    }
+  }
+}

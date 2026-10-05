@@ -1,0 +1,67 @@
+@layer tokens {
+  :root {
+    --duration--slow: 300ms;
+    --ease--in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  }
+}
+
+@layer base {
+  :where(:root) {
+    color-scheme: light;
+
+    &[data-theme="dark"] {
+      color-scheme: dark;
+    }
+  }
+
+  :where(body) {
+    background-color: light-dark(oklch(100% 0 0deg), oklch(22% 0 0deg));
+    color: light-dark(oklch(22% 0 0deg), oklch(95% 0 0deg));
+  }
+}
+
+@layer pages {
+  @scope (.scoped.vt-theme-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+      padding-block: 32px;
+    }
+
+    ._toggle {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+  }
+}
+
+@keyframes --theme-toggle--reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+:active-view-transition-type(theme-toggle) {
+  &::view-transition-old(root) {
+    animation-name: none;
+  }
+
+  &::view-transition-new(root) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: --theme-toggle--reveal;
+      animation-duration: var(--duration--slow);
+      animation-timing-function: var(--ease--in-out-quint);
+      animation-fill-mode: both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation-name: none;
+    }
+  }
+}

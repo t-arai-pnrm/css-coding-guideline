@@ -9,6 +9,9 @@
  * import html from '../../../demos/responsive/intrinsic-grid/index.html?raw';
  * import css from '../../../demos/responsive/intrinsic-grid/style.css?raw';
  * <Demo title="auto-fit で列数が変わるカード" html={html} css={css} />
+ *
+ * 状態の切り替えに JavaScript が要るデモは、`script.js` を `js` に渡す。
+ * JavaScript は本書の主題ではないので、コードのタブには出さない。
  */
 import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
 import { buildSrcdoc, type DemoBase, type DemoScheme } from '../lib/demo';
@@ -18,6 +21,8 @@ interface Props {
   title: string;
   html: string;
   css: string;
+  /** デモを動かすためのスクリプト。iframe の中で実行し、タブには出さない。 */
+  js?: string;
   /** `none` にするとブラウザのデフォルトスタイルのまま描画する。 */
   base?: DemoBase;
   scheme?: DemoScheme;
@@ -35,6 +40,7 @@ const {
   title,
   html,
   css,
+  js,
   base = 'kiso',
   scheme = 'light',
   variant = 'recommended',
@@ -43,7 +49,7 @@ const {
   showHtml = true,
 } = Astro.props;
 
-const srcdoc = buildSrcdoc({ html, css, base, scheme });
+const srcdoc = buildSrcdoc({ html, css, js, base, scheme });
 const label = {
   recommended: '🙆‍♂ Recommended',
   'not-recommended': '🙅‍♂ Not Recommended',

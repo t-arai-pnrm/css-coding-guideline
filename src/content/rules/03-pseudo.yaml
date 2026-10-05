@@ -100,6 +100,15 @@
   page: pseudo/child-index
   since: 0.9.0
 
+- id: sibling-functions-for-decoration
+  level: 推奨
+  rule: '`sibling-index()` と `sibling-count()` は、色相や遅延のように未対応の環境で失われても困らない装飾の値に限って使い、`@supports (z-index: sibling-index())` の中に書いて、外に未対応の環境で使う値を書く。'
+  reason: '2026年10月の時点で、本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。'
+  note: '件数で見た目を切り替える処理は数量クエリで書きます（ルール `quantity-query-for-count-conditions`）。レイアウトの要に使わない理由は、第1章のルール `no-unsupported-layout-features` と同じです。数える対象は `:nth-child()` と同じで、`hidden` 属性で隠した要素も数えます。'
+  aiProne: true
+  page: pseudo/child-index
+  since: 0.21.0
+
 # 3-5 数量クエリ
 - id: quantity-query-with-has
   level: 推奨
@@ -228,3 +237,12 @@
   note: '文字と背景のコントラスト比の基準は、第14章のルール `text-contrast-aa` と同じです。iOS の Safari は `::selection` に対応していないので、選択範囲はシステムの色のままになります。'
   page: pseudo/generated-content
   since: 0.9.0
+
+- id: mark-over-highlight-for-meaning
+  level: 推奨
+  rule: '検索結果のページで検索語に付ける目印のように、内容の一部として読み手に伝える強調は `<mark>` で書き、`::highlight()` は、ページ内検索の一致や構文の色分けのように、操作に合わせて描き直す表示に使う。'
+  reason: 'ハイライトは DOM を変えないので、CSS や JavaScript が動かない環境では範囲が表示されず、支援技術への伝わり方も `Highlight` の `type` と環境の対応によって異なるため。'
+  note: '`::highlight()` に指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。範囲は色だけで区別せず、下線を組み合わせます（第14章のルール `no-color-only-information`）。強制カラーモードでは色が置き換わり、`text-shadow` は `none` になります。'
+  aiProne: true
+  page: pseudo/generated-content
+  since: 0.21.0

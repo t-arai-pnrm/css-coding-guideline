@@ -1,0 +1,39 @@
+@layer tokens {
+  :root {
+    --border--base: oklch(80% 0 0deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.tab-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._tabs {
+      display: block flex;
+      border-block-end: 1px solid var(--border--base);
+    }
+
+    ._tab {
+      padding-block: 8px;
+      padding-inline: 16px;
+      /* kiso.css の1px の枠線を消し、下辺にだけ線を引く */
+      border-style: none;
+      border-block-end: 2px solid transparent;
+
+      /* 選択中のタブは、aria-selected 属性で選ぶ */
+      &[aria-selected="true"] {
+        border-color: currentColor;
+        font-weight: 700;
+      }
+
+      &:enabled:not([aria-selected="true"]):hover {
+        @media (any-hover) {
+          border-color: var(--border--base);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+<div class="scoped theme-switch-demo">
+  <fieldset class="scoped theme-switcher">
+    <legend>テーマ</legend>
+    <div class="_options">
+      <label><input type="radio" name="color-scheme" value="light only" />ライト</label>
+      <label><input type="radio" name="color-scheme" value="dark only" />ダーク</label>
+      <label><input type="radio" name="color-scheme" value="light dark" />OSの設定に合わせる</label>
+    </div>
+    <p class="_status">
+      --color-scheme：<span data-scheme="light">--light</span><span data-scheme="dark">--dark</span>
+    </p>
+  </fieldset>
+  <article class="scoped photo-card">
+    <svg class="_image" viewBox="0 0 320 180" role="img" aria-label="山と太陽のイラスト">
+      <rect width="320" height="180" fill="#bfe3ff" />
+      <circle cx="240" cy="56" r="28" fill="#ffd34d" />
+      <polygon points="0,180 96,72 192,180" fill="#5fb37a" />
+      <polygon points="120,180 216,96 320,180" fill="#3f8f5c" />
+    </svg>
+    <div class="_body">
+      <h2>週末の山歩き</h2>
+      <p class="_description">文字色、背景色、影は light-dark() のトークンで、画像の明るさはスタイルクエリで切り替えています。</p>
+    </div>
+  </article>
+</div>

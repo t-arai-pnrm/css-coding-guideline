@@ -1,0 +1,64 @@
+@layer tokens {
+  :root {
+    --background--surface: oklch(96% 0.01 250deg);
+    --border--base: oklch(80% 0 0deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.global-header) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding-block-end: 16px;
+      border-block-end: 1px solid var(--border--base);
+    }
+
+    ._logo {
+      font-weight: 700;
+    }
+
+    ._drawer-button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+
+    /* ボタンの aria-expanded が true の間だけ、ドロワーを表示する */
+    ._drawer {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: var(--background--surface);
+
+      &:is(:scope:has(._drawer-button[aria-expanded="true"]) *) {
+        display: block flow;
+      }
+    }
+
+    ul {
+      display: block grid;
+      gap: 8px;
+    }
+  }
+
+  @scope (.scoped.page-main) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-block-start: 16px;
+
+      /* inert 属性が付いている間は、操作できないことを色でも示す */
+      &[inert] {
+        color: oklch(60% 0 0deg);
+      }
+    }
+
+    a {
+      text-decoration-line: revert;
+    }
+  }
+}

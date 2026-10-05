@@ -6,7 +6,10 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import drawerHtml from '../../../demos/motion/drawer-reduced/index.html?raw';
+import drawerCss from '../../../demos/motion/drawer-reduced/style.css?raw';
 
 装飾的な動きのうちフェード以外は、`@media (prefers-reduced-motion: no-preference)` の中で指定します。動きを「減らす設定のときに止める」のではなく、「設定がないときにだけ付ける」書き方です。機能的な動きでも、画面の3分の1以上を占める要素の移動や回転のような大きな変動は、動きを減らす設定のときにフェードへ簡素化するか、50ms以下に短くします。
 
@@ -127,6 +130,10 @@ WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーシ�
 ```
 
 この例では、移動の起点だけを内部用のカスタムプロパティにし、`no-preference` の中で値を変えています。動きを減らす設定のときは、起点が `0` のままなので位置は変わらず、`opacity` のトランジションだけが残ります。トランジションの指定を1つにまとめたまま、残す動きと止める動きを分けられます。`@starting-style` を使った出現と退場の書き方は「[17-5 出現と退場](/motion/entry-and-exit/)」で説明しています。
+
+次のデモでは、ボタンでドロワーを開きます。ふだんの設定では右端から滑り込み、動きを減らす設定ではその場でフェードします。開発者ツールで設定を切り替えると、2つの動きを比べられます（後述の「設定を再現して確かめる」）。デモではJavaScriptを使わずにダイアログを開くため、ボタンに `command` 属性を指定しています。
+
+<Demo title="ドロワーを右端から滑り込ませ、動きを減らす設定ではフェードだけにする" html={drawerHtml} css={drawerCss} height="20rem" />
 
 ページ遷移のView Transitionsも、簡素化にあたります。デフォルトの動きは画面全体のクロスフェードで、位置や大きさが変わらないので、動きを減らす設定でもそのまま残せます。要素に名前を付けて移動させる独自の動きだけを `no-preference` の中に書く方法は、「[17-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」で説明しています。
 

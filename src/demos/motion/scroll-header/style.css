@@ -1,0 +1,63 @@
+@layer tokens {
+  :root {
+    --color--neutral--50: oklch(98.5% 0 0deg);
+    --z--forwards: 1;
+    --z--backwards: -1;
+  }
+}
+
+@layer base {
+  @keyframes --fade-in {
+    from {
+      opacity: var(--fade-in--from-value, 0);
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.scroll-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      padding-block: 120px 240px;
+      padding-inline: 16px;
+      background-image: linear-gradient(oklch(80% 0.08 220deg), oklch(95% 0.02 220deg) 240px);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.site-header) to (.scoped) {
+    :scope {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: var(--z--forwards);
+
+      /* ヒーローの上に重ねる */
+      margin-block-end: -56px;
+      padding-block: 16px;
+      padding-inline: 16px;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: var(--z--backwards);
+        box-shadow: 0 1px 0 oklch(0% 0 0deg / 12%);
+        background-color: var(--color--neutral--50);
+
+        @supports (animation-timeline: scroll()) and (animation-range: 0 80px) {
+          animation-name: --fade-in;
+          animation-timing-function: linear;
+          animation-fill-mode: both;
+          animation-timeline: scroll();
+          animation-range: 0 80px;
+        }
+      }
+    }
+
+    ._logo {
+      font-weight: 700;
+    }
+  }
+}

@@ -29,11 +29,14 @@ export const buildSrcdoc = ({
   css,
   base = 'kiso',
   scheme = 'light',
+  js,
 }: {
   html: string;
   css: string;
   base?: DemoBase;
   scheme?: DemoScheme;
+  /** デモを動かすためのスクリプト。本文の主題ではないので、コードのタブには出さない。 */
+  js?: string;
 }) => {
   const head = [
     '<meta charset="utf-8">',
@@ -48,5 +51,6 @@ export const buildSrcdoc = ({
     );
   }
   head.push(`<style>\n${css}\n</style>`);
-  return `<!doctype html><html lang="ja"><head>${head.join('')}</head><body>\n${html}\n</body></html>`;
+  const script = js ? `<script type="module">\n${js}\n</script>` : '';
+  return `<!doctype html><html lang="ja"><head>${head.join('')}</head><body>\n${html}\n${script}</body></html>`;
 };

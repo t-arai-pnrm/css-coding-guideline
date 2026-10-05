@@ -1,0 +1,75 @@
+@layer tokens {
+  :root {
+    --duration--base: 240ms;
+    --duration--slow: 300ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* base/keyframes.css に置く、1つのプロパティだけを変える @keyframes */
+@layer base {
+  @keyframes --fade-in {
+    from {
+      opacity: var(--fade-in--from-value, 0);
+    }
+  }
+
+  @keyframes --translate-from {
+    from {
+      translate: var(--translate-from--x-value, 0) var(--translate-from--y-value, 0);
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.toast-demo) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      padding-block: 64px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.toast) to (.scoped) {
+    :scope {
+      --translate-from--y-value: 100%;
+
+      /* ブラウザのデフォルトスタイルの inset: 0 のうち、上端だけを初期値に戻し、画面の下端に置く */
+      inset-inline: 16px;
+      inset-block-start: initial;
+      inset-block-end: 16px;
+      max-inline-size: calc(400 / 16 * 1rem);
+      margin-inline: auto;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-radius: 8px;
+      background-color: oklch(25% 0 0deg);
+      color: oklch(100% 0 0deg);
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation-name: --fade-in, --translate-from;
+        animation-duration: var(--duration--base), var(--duration--slow);
+        animation-timing-function: var(--ease--out-quint);
+        animation-fill-mode: both;
+      }
+
+      /* 上端に置き、上から下りてくるように起点だけを変える */
+      &[data-position="top"] {
+        --translate-from--y-value: -100%;
+
+        inset-block-start: 16px;
+        inset-block-end: initial;
+      }
+    }
+  }
+}

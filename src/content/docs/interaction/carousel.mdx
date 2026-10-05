@@ -109,12 +109,18 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
         content: "" / attr(data-label);
         inline-size: 12px;
         block-size: 12px;
-        border-radius: 50%;
+        border: 1px solid transparent;
+        border-radius: calc(infinity * 1px);
         background-color: var(--color--neutral--400);
       }
 
       &::scroll-marker:target-current {
+        inline-size: 32px;
         background-color: var(--color--accent--600);
+
+        @media (forced-colors: active) {
+          background-color: CanvasText;
+        }
       }
     }
   }
@@ -122,6 +128,8 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 ```
 
 ボタンは、アンカーポジショニングでスクロールコンテナの左右の中央に重ねています。`content` のスラッシュの後ろは代替テキストで、ボタンや点の名前として読み上げられます。MDNによれば、ブラウザはボタンに適切な名前を自動で付けることになっていますが、日本語のページでは「前の事例」のように内容に合った名前を明示します。点の `content` を `""` だけにすると、名前が空になります。そこで、スライドの `data-label` 属性に「1件目」のような名前を書き、`attr()` で代替テキストに渡しています。
+
+表示しているスライドの点は、色を変えるだけでなく、`inline-size` を広げて横長の形にしています。色の違いだけでは、色を見分けにくいユーザーや、色がシステムカラーに置き換わる強制カラーモードで、現在位置が分からなくなるからです。点には透明な枠線を付けておき、強制カラーモードで背景色がページの背景色に置き換わっても、輪郭が残るようにします。そのうえで、強制カラーモードでは現在位置の点だけを `CanvasText` で塗ります（「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
 
 キーボードでの操作も、ブラウザが用意します。Chrome 152で確かめたところ、Tabキーの順番は、前後のボタン、表示しているスライドの中身、カルーセルの後ろの要素の順でした。最初のスライドでは「←」のボタンが無効なので、飛ばされます（2026年10月、Chrome 152で確認）。MDNは、点のグループがタブのリストとして扱われ、矢印キーでスライドを切り替えられると説明していますが、この確認ではTabキーで点のグループに移動しませんでした。キーボードで操作するユーザーには、前後のボタンを必ず用意します。
 
@@ -174,6 +182,16 @@ Chrome系のブラウザでは、スクロールバーが消え、ボタンと�
 
 `container: --slide / scroll-state` と、`scroll-state()` の条件、`interactivity: inert` は、未対応の環境では無視されます。隠れているスライドも読み上げとフォーカスの対象に残りますが、スクロールバーで表示でき、フォーカスが移れば、そのスライドまで自動でスクロールします。内容を読めなくなるわけではないので、`@supports` で囲む必要はありません。
 
+## ページ内リンクを現在位置の印にする `scroll-target-group`
+
+`:target-current` は、`::scroll-marker` だけでなく、ふつうのページ内リンクにも当てはめられます。リンクを並べた要素に `scroll-target-group: auto` を指定すると、その中の `<a href="#…">` がスクロールマーカーとして扱われます（CSS Overflow Module Level 5）。リンク先の要素がいま表示されているリンクに、`:target-current` が当てはまります。記事の目次で、読んでいる節のリンクを強調する表示（スクロールスパイ）を、JavaScriptを使わずに作れます。
+
+Chrome 152で、目次の `<ol>` に `scroll-target-group: auto` を指定して確かめました。ページを下へスクロールすると、`:target-current` に当てはまるリンクが、表示している節のリンクへ順に移りました（2026年10月、Chrome 152で確認）。
+
+<Baseline id="scroll-target-group" />
+
+2026年10月の時点で、`scroll-target-group` に対応しているのはChrome系のブラウザ（140以降）だけです。本書では、現状では採用しません。カルーセルのボタンと点は、なくても横スクロールで同じ内容を読めるので、対応した環境で足す形にしました。目次の強調は、デザインで求められているなら、すべてのブラウザで出す必要があります。Chrome系のブラウザだけをCSSで強調すると、ほかのブラウザのためにJavaScriptの実装を残すことになり、同じ表示を2つの方法で保守することになります。{/* 要確認: 出典なし（採用の判断は著者に確認） */}いまはIntersectionObserverなどのJavaScriptで強調し、SafariとFirefoxが対応してから、CSSに切り替えます。
+
 ## ドロワーの背面を不活性にする方法
 
 `interactivity: inert` には、カルーセルのほかにも使い道があります。ヘッダーと一体になったドロワーメニューで、開いている間に背面のメインエリアとフッターを操作できなくする場面です。ドロワーを開閉するボタンをヘッダーに置いたまま操作させたい場合、ドロワーを `<dialog>` のモーダルにはできません。`showModal()` で開いたダイアログは、ダイアログの外をすべて不活性にするので、ヘッダーのボタンも押せなくなるからです（ダイアログについては「[16-2 開閉するUI](/interaction/disclosure/)」で説明しています）。
@@ -221,7 +239,7 @@ button.addEventListener('click', () => {
 | 強制カラーモード | 点の並びと現在位置の点を見比べる | 表示しているスライドの点を、ほかの点と見分けられる |
 | 200%に拡大した状態 | ボタンとスライドの中身の重なりを見る | ボタンが文字やリンクを覆い、読めない部分ができていない |
 
-動きを減らす設定と強制カラーモードは、Chromeの開発者ツールの「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。点は背景色だけで描いているので、強制カラーモードではシステムカラーに置き換わり、現在位置を見分けられなくなる可能性があります。{/* 要確認: 強制カラーモードでの ::scroll-marker の見え方は未検証 */}見え方を補う方法は「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で扱います。
+動きを減らす設定と強制カラーモードは、Chromeの開発者ツールの「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。点の現在位置は、色に加えて形の違いでも示しているので、強制カラーモードで色が置き換わっても、横長の点で見分けられるはずです。{/* 要確認: 強制カラーモードでの ::scroll-marker の枠線と CanvasText の見え方は未検証。Chrome のエミュレーションで確かめてから、確認した年月を書く */}
 
 ## ガイドライン
 
@@ -233,6 +251,8 @@ button.addEventListener('click', () => {
 - [::scroll-button() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-button)
 - [::scroll-marker - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-marker)
 - [::scroll-marker-group - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-marker-group)
+- [scroll-target-group - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-target-group)
+- [:target-current - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:target-current)
 - [interactivity - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/interactivity)
 - [Using container scroll-state queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
 - [CSS Overflow Module Level 5](https://drafts.csswg.org/css-overflow-5/)（W3C）

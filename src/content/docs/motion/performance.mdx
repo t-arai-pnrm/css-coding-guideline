@@ -6,7 +6,11 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import spotlightHtml from '../../../demos/motion/spotlight/index.html?raw';
+import spotlightCss from '../../../demos/motion/spotlight/style.css?raw';
+import spotlightJs from '../../../demos/motion/spotlight/script.js?raw';
 
 動きの負荷は、変えたプロパティのせいでブラウザがレイアウト、ペイント、合成のどこから処理をやり直すかで決まります。動かすプロパティは、合成だけで処理できる `opacity`、`translate`、`scale`、`rotate` を優先します。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、ほかに方法がない場合（アコーディオンの高さなど）に限ります。
 
@@ -101,7 +105,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 ## `filter` と `backdrop-filter` のコスト
 
-`filter` は、ハードウェアで高速化される場合があっても、負荷が低いわけではありません。`blur()` は、ぼかしの半径が大きいほど、1つの画素を求めるために参照する周りの画素が増えます。`filter` を動かすと、この計算が毎フレーム行われます。半径の小さい `blur()` で短く動かす程度なら許容できますが、ぼかしの半径そのものを大きく変化させるアニメーションは避けます。
+`filter` は、ハードウェアで高速化される場合があっても、負荷が低いわけではありません。`blur()` は、ぼかしの半径が大きいほど、1つの画素を求めるために参照する周りの画素が増えます。`filter` を動かすと、この計算が毎フレーム行われます。半径の小さい `blur()` で短く動かす程度なら許容できますが、ぼかしの半径そのものを大きく変化させるアニメーションは避けます。目安として、動かす要素に掛けるぼかしは数pxにとどめ、止まっている要素でも半径は20px未満にします。{/* 要確認: 出典なし（20px未満という目安） */}クロスフェードの重なりを目立たなくするために、切り替わる要素へ小さなぼかしを掛ける方法は「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。
 
 `backdrop-filter` は、さらに負荷が大きくなりがちです。要素の背後に描かれているものを毎回取り込んでからぼかすので、背面の面積全体を描き直すことになります。背後の内容がスクロールで動くだけでも、ぼかしの計算はやり直されます。大きな要素やモーダルの背景で画面全体をぼかすと、性能の低い端末ではスクロールが滑らかでなくなることもあります。
 
@@ -164,6 +168,10 @@ spotlight.addEventListener('pointermove', (event) => {
 `getBoundingClientRect()` が返すのはビューポートを基準にした位置なので、スクロールやリサイズのあとは測った値が古くなります。そのため、`scroll` と `resize` で測った値を捨て、次の `pointermove` で測り直します。スクロールする祖先の要素が `window` 以外のこともあるので、`scroll` はキャプチャで `document` に登録します。上にある内容が増えて位置がずれる場合は、この方法でも追従できないので、位置の変わらない要素に使います。
 
 なお、この効果は背景のグラデーションを描き直すので、ペイントは毎回起きます。面積の大きい要素に使うと負荷が増えるので、カードのような小さい要素に限ります。
+
+次のデモは、上のCSSとJavaScriptをそのまま使っています。カードの上でポインターを動かすと、光がポインターに追従します。開発者ツールでカードの中の段落を調べると、`--spotlight--x` は継承されず、初期値の `0px` のままです。
+
+<Demo title="ポインターの位置を、継承しないカスタムプロパティでカードだけに書き込む" html={spotlightHtml} css={spotlightCss} js={spotlightJs} widths={[]} />
 
 動かすカスタムプロパティは `inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介しません。この2点は、ルール [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit) で定めています。理由は「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
@@ -248,6 +256,33 @@ button.addEventListener('click', () => {
 
 <Baseline id="contain" />
 
+## `content-visibility: auto` で画面外の描画を後回しにする
+
+長いページでは、最初の画面より下にある内容も含めて、ページ全体のレイアウトが読み込みの時点で計算されます。`content-visibility: auto` を指定した要素は、画面から離れている間は中身のレイアウトとペイントが省かれ、画面の近くまで来たときに描画されます。記事の下に続く長いコメントの一覧や、項目の多いアーカイブのように、大きくて最初は見えないブロックに指定すると、最初の描画にかかる時間を減らせます。
+
+描画を省いている間、要素にはサイズの封じ込めが掛かり、中身の大きさは0として扱われます。そのままでは、画面の近くまで来るたびに要素が本来の高さへ広がり、スクロールバーの長さとスクロールの位置が飛びます。そこで、`contain-intrinsic-block-size` で、描画していない間の高さの見積もりを指定します。値に `auto` を付けると、一度描画したあとは、そのときの実際の高さを覚えておき、次に描画を省くときに使います。
+
+```css title="🙆‍♂ Recommended: 最初の画面より下の大きなブロックで、描画を後回しにする"
+@scope (.scoped.comment-list) to (.scoped) {
+  ._item {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 12rem;
+  }
+}
+```
+
+大きさは、物理の `contain-intrinsic-size` や `contain-intrinsic-height` ではなく、論理の `contain-intrinsic-block-size` で書きます。ブロックの方向に並ぶ要素の幅は親の幅で決まるので、見積もりが要るのは高さだけです。見積もりの値は、典型的な項目の高さに近づけます。実際の高さと離れているほど、画面に近づいたときのずれが大きくなるからです。
+
+最初の画面に入る要素には指定しません。最初の描画で画面の中にあると判断された要素は、そのまま描画されるので、描画を省く効果がありません。また、`content-visibility: auto` は、描画を省いていない間も、レイアウト、スタイル、ペイントの封じ込めを掛けたままにします。`contain: content` と同じく、はみ出した影が切り取られ、スタッキングコンテキストと固定配置の包含ブロックが作られます（「[10-7 positionの基礎](/layout/positioning/)」）。
+
+仕様では、描画を省いた中身も、ページ内検索、Tabキーでのフォーカスの移動、アクセシビリティツリーの対象に残ります。ただし、スクリーンリーダーで読まれない場合があるという報告もあるので、指定したら、ページ内検索、Tabキー、スクリーンリーダーの読み上げで中身に届くかを確かめます。{/* 要確認: スクリーンリーダーで読まれない場合の具体的な環境 */}
+
+閉じたアコーディオンのパネルのように、ユーザーが開くまで隠しておく中身には、`content-visibility: auto` ではなく `hidden="until-found"` を使います。`hidden="until-found"` は中身を隠したまま、ページ内検索で見つかったときに表示する仕組みです。`content-visibility: auto` は、見えている内容の描画の順番を変えるだけで、何も隠しません。使い分けは「[16-2 開閉するUI](/interaction/disclosure/)」で説明しています。
+
+<Baseline id="content-visibility" />
+
+<Baseline id="contain-intrinsic-size" />
+
 ## 負荷をDevToolsで確かめる
 
 動きの負荷は、コードを読むだけでは判断しきれません。同じプロパティでも、ブラウザや値によって合成で処理されるかどうかが変わるからです。ここではChromeのDevToolsの機能を紹介します（2026年10月確認）。
@@ -266,6 +301,9 @@ Renderingパネルでは、描き直しと合成レイヤーを画面の上で�
 - [Rendering performance | web.dev](https://web.dev/articles/rendering-performance)
 - [will-change - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/will-change)
 - [contain - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/contain)
+- [content-visibility - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/content-visibility)
+- [contain-intrinsic-block-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/contain-intrinsic-block-size)
+- [CSS Containment Module Level 2](https://drafts.csswg.org/css-contain-2/#content-visibility)（W3C）
 - [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)
 - [Analyze runtime performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance)
 - [Discover issues with rendering performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/rendering/performance)

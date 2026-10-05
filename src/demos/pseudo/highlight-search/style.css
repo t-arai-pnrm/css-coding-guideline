@@ -1,0 +1,41 @@
+@layer components {
+  @scope (.scoped.text-search) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+    }
+
+    search {
+      display: block grid;
+      gap: 4px;
+    }
+
+    label {
+      font-weight: 700;
+    }
+
+    input {
+      padding: 8px;
+      border-color: oklch(45% 0 0deg);
+      border-radius: 4px;
+    }
+
+    ._status {
+      min-block-size: 1lh;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+    }
+
+    /* スコープの中の要素に、登録した範囲を背景色と下線で示す */
+    ::highlight(search-result) {
+      background-color: oklch(92% 0.12 95deg);
+      color: oklch(20% 0 0deg);
+      text-decoration-line: underline;
+      text-decoration-thickness: 2px;
+    }
+  }
+}

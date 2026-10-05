@@ -137,6 +137,10 @@ kiso.cssは、`body` に `min-block-size: 100dvb` を指定しています（kis
 
 本書のほかの節の指定も、この仕組みを前提にしています。「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」では、スムーススクロールを `:root` に指定しています。「[10-7 positionの基礎](/layout/positioning/)」では、固定ヘッダーの高さを `:root` の `scroll-padding-block-start` で除いています。ページを入れ子のスクロールコンテナでスクロールさせると、これらの指定も効かなくなります。
 
+ページを開いたときの最初のスクロール位置をCSSで決める `scroll-initial-target` も、CSS Scroll Snap Module Level 2で定義されています。要素に `scroll-initial-target: nearest` を指定すると、いちばん近い祖先のスクロールコンテナは、最初からその要素の位置までスクロールした状態で表示されます。間にほかのスクロールコンテナを挟まない要素なら、スクロールするのはルートスクローラーです。ただし、2026年10月の時点で対応しているのはChrome 133以降だけなので、本書では今のところ採用しません。ほかのブラウザではページが先頭から表示され、最初に見せる内容がブラウザによって変わるからです。ページの途中から見せたいときは、URLのフラグメント（`#` のあとのID）でその要素へ移動させます。
+
+<Baseline id="scroll-initial-target" />
+
 文書の先頭の `<!doctype html>` も確かめます。これがない文書は互換モードで描画され、`document.scrollingElement` が `body` を返すなど、スクロールの扱いが標準モードと変わります。HTMLの構文解析の規則では、doctypeより前に空白以外の文字があっても互換モードになります。
 
 AIが生成するコードでは、`html, body { height: 100%; }` に `overflow-x: hidden` を加えた組み合わせをよく見かけます。どちらも単独では理由のある指定に見えるので、レビューで見落としやすい組み合わせです。`html` と `body` に `height` や `overflow` が指定されていたら、ページがビューポートでスクロールしているかを、前の方法で確かめます。
@@ -153,5 +157,6 @@ AIが生成するコードでは、`html, body { height: 100%; }` に `overflow-
 - [CSS Overflow Module Level 3 - Overflow Viewport Propagation](https://drafts.csswg.org/css-overflow-3/#overflow-propagation)（W3C）
 - [CSSOM View Module - scrollingElement](https://drafts.csswg.org/cssom-view/#dom-document-scrollingelement)（W3C）
 - [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)（W3C）
+- [CSS Scroll Snap Module Level 2 - scroll-initial-target](https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target)（W3C）
 - [Non-Document Root Scroller explainer](https://github.com/bokand/NonDocumentRootScroller/blob/master/explainer.md)（GitHub）
 - [The root scroller and how not to lose it](https://polypane.app/blog/the-root-scroller-and-how-not-to-lose-it/)（Polypane）

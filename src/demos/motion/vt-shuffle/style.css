@@ -1,0 +1,54 @@
+@layer tokens {
+  :root {
+    --duration--base: 240ms;
+    --ease--in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.vt-shuffle-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+    }
+
+    ._shuffle {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.product-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(calc(120 / 16 * 1rem), 1fr));
+      gap: 12px;
+      inline-size: 100%;
+    }
+
+    li {
+      --_hue: 0deg;
+
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(90% 0.06 var(--_hue));
+
+      /* 名前はブラウザに任せ、動きを指定するための目印にクラスを付ける */
+      @media (prefers-reduced-motion: no-preference) {
+        view-transition-name: match-element;
+        view-transition-class: product-card;
+      }
+    }
+  }
+}
+
+::view-transition-group(.product-card) {
+  @media (prefers-reduced-motion: no-preference) {
+    animation-duration: var(--duration--base);
+    animation-timing-function: var(--ease--in-out-quint);
+  }
+}

@@ -87,7 +87,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 `block-size: 50%` のような高さの割合は、親の高さが中身で決まる（`auto` の）ときには解決できず、`auto` として扱われます。親の高さが子から決まり、子の高さが親から決まるという循環になるからです。{/* 要確認: 出典なし */}縦の大きさを親に合わせたいときは、親をGridにして行を決めるほうが確実です。
 
-インラインレベルのボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[10-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[10-7 positionの基礎](/layout/positioning/)」で説明しています。
+`<span>` のような通常の非置換インラインボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。インラインレベルのボックスでも、`<img>` のような置換要素や、`display: inline flow-root` のボックスには大きさを指定できます。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[10-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[10-7 positionの基礎](/layout/positioning/)」で説明しています。
 
 ## ブロック整形コンテキストと `display: flow-root`
 

@@ -1,0 +1,72 @@
+@layer tokens {
+  :root {
+    --duration--base: 240ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease--out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@layer components {
+  @scope (.scoped.easing-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._toggle {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    ._rows {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._row {
+      --_ease: ease;
+
+      display: block grid;
+      gap: 4px;
+      font-size: calc(14 / 16 * 1rem);
+
+      &.-ease-in {
+        --_ease: ease-in;
+      }
+
+      &.-out-quint {
+        --_ease: var(--ease--out-quint);
+      }
+
+      &.-out-expo {
+        --_ease: var(--ease--out-expo);
+      }
+    }
+
+    ._track {
+      container: --track / inline-size;
+      padding: 4px;
+      border-radius: calc(infinity * 1px);
+      background-color: oklch(94% 0 0deg);
+    }
+
+    ._dot {
+      display: block flow;
+      inline-size: 24px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background-color: oklch(48% 0.17 260deg);
+
+      /* 動きを比べるためのデモなので、動きを減らす設定でも動かす */
+      transition-duration: var(--duration--base);
+      transition-property: translate;
+      transition-timing-function: var(--_ease);
+
+      /* トラックの右端まで動かす */
+      &:is(:scope:has(._toggle :checked) *) {
+        translate: calc(100cqi - 100%) 0;
+      }
+    }
+  }
+}

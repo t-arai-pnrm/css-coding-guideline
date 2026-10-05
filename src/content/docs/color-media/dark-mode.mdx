@@ -80,6 +80,41 @@ import themeCss from '../../../demos/color-media/theme-tokens/style.css?raw';
 
 カードの側では、配色を一切切り替えていません。枠線は文字色から相対カラー構文で、背景は `color-mix()` で作っています。ボタンの文字色は、背景の明度から `sign()` で決めています。ダークの配色ではアクセントカラーが明るい段階に替わるので、ボタンの文字は黒になります。派生色の作り方は「[14-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」で、文字色の決め方は「[14-3 背景から文字色を決める](/color-media/contrast-text/)」で説明しています。
 
+## 一部のコンポーネントだけを暗い配色にする
+
+ライトの配色のページの中で、フッターのような一部のコンポーネントだけを暗い配色にしたい場合があります。そのときは、コンポーネントのルートに `color-scheme: dark` を指定します。`color-scheme` は継承するプロパティなので、コンポーネントの中の `light-dark()` はダークの値になり、フォームの部品やスクロールバーも暗い配色で描画されます。
+
+ただし、`color-scheme` を指定しただけでは、そのコンポーネントの文字色と背景色は切り替わりません。親から継承した `color` は、親の要素でライトの値に計算された色だからです。背景も、指定しなければ透明のままで、親の明るい背景が透けて見えます（2026年10月、Chrome 152で確認）。`color-scheme` を指定した要素では、`color` と `background-color` をセマンティクスのトークンで指定し直します。
+
+```css title="🙆‍♂ Recommended: color-scheme を指定した要素で、文字色と背景色を指定し直す"
+@scope (.scoped.site-footer) to (.scoped) {
+  :scope {
+    color-scheme: dark;
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+  }
+}
+```
+
+コンポーネントの中で、トークンを参照している宣言は指定し直さなくても切り替わります。登録していないカスタムプロパティは、`light-dark()` を含む値のまま継承されるので、`var()` で参照した要素の配色で色が決まるからです。
+
+この仕組みは、トークンを `@property` で `<color>` 型として登録すると成り立ちません。登録したプロパティは、値を定義した `:root` の時点で色に計算され、その色が子孫に継承されます。`:root` がライトの配色なら、`color-scheme: dark` のコンポーネントの中でもライトの色のままです（2026年10月、Chrome 152で確認）。
+
+```css title="🙅‍♂ Not Recommended: light-dark() で値を持たせるトークンを、色の型で登録する"
+/* 🙅‍♂ Not Recommended */
+@property --foreground--base {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0% 0 0deg);
+}
+```
+
+本書がトークンの定義に `@property` を使わないのは、このように振る舞いが変わるからです（「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。色をアニメーションさせるために登録が必要なら、トークンではなく、コンポーネントの名前を含むプロパティを登録し、コンポーネントの中でトークンを受け取ります。値はその要素の配色で計算されるので、`light-dark()` の切り替えも保たれます。
+
+`::placeholder` や `::selection` のような擬似要素の色も、`light-dark()` を含むトークンで指定します。擬似要素は元の要素の配色を引き継ぐので、トークンを使えば一緒に切り替わります。色を直接書くと、暗い配色のコンポーネントの中で、プレースホルダーや選択範囲の色だけがライトの配色のまま残ります。
+
+`<iframe>` で埋め込んだ文書は、`<iframe>` 要素の `color-scheme` を引き継ぎません。埋め込まれた文書の配色は、その文書のmeta要素や `color-scheme` で決まります。仕様では、`<iframe>` 要素と埋め込まれた文書の配色が食い違うと、ブラウザは埋め込まれた文書に不透明な背景を敷くことになっています。Safariがこの扱いに従っているかは確かめていません。{/* 要確認: 出典なし（Safari での iframe と color-scheme の扱い） */}
+
 ## テーマを手動で切り替える
 
 OSの設定とは別に、サイトの中でテーマを選べるようにする場合も、メタ要素の `content` を書き換えます。私のテンプレートでは「ライト」「ダーク」「OSの設定に合わせる」の3つを選べるようにし、それぞれ `light only`、`dark only`、`light dark` を設定しています。選んだ値はlocalStorageに保存し、次にページを開いたときに読み戻します。
@@ -152,3 +187,4 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 - [スクロールバーにまつわるエトセトラ](https://www.tak-dcxi.com/article/scroll-bar-related-etcetera/)（TAKLOG、2024年3月。テーマの切り替えの方法が本書と異なります）
 - [light-dark() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark)
 - [color-scheme - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color-scheme)
+- [CSS Color Adjustment Module Level 1: color-scheme](https://drafts.csswg.org/css-color-adjust-1/#color-scheme-prop)

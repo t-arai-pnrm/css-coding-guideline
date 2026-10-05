@@ -1,0 +1,20 @@
+<!-- デモの中で送信しても画面が切り替わらないように、method="dialog" にしている -->
+<form class="scoped profile-form" method="dialog">
+  <div class="_field">
+    <label for="profile-form-email">メールアドレス（必須）</label>
+    <input id="profile-form-email" type="email" name="email" autocomplete="email" required>
+  </div>
+  <div class="_field">
+    <label for="profile-form-user">ユーザー名</label>
+    <input id="profile-form-user" type="text" name="username" autocomplete="username" value="taro" aria-describedby="profile-form-user-error">
+    <p class="_error" id="profile-form-user-error" hidden>このユーザー名は、ほかの人が使っています。</p>
+  </div>
+  <label class="_agree"><input type="checkbox" name="agree"> 利用規約に同意する</label>
+  <div class="_actions">
+    <button type="submit" aria-disabled="true">登録する</button>
+    <button type="button" disabled>下書きを保存する</button>
+  </div>
+  <p class="_status" role="status"></p>
+  <!-- デモの操作用。サーバーで検証した結果のエラーを返したことにする -->
+  <button class="_server" type="button">サーバーのエラーを再現する</button>
+</form>

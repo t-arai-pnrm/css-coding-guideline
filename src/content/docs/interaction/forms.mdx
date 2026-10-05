@@ -1,6 +1,6 @@
 ---
 title: "16-3 フォーム部品"
-description: "フォーム部品は、色を変えるだけならaccent-colorで済ませ、作り直すときはinput自体にappearance: noneを指定して描きます。スイッチはswitch属性、入力エラーは:user-invalidで示し、入力欄の文字サイズは1rem以上にします。"
+description: "フォーム部品は、色を変えるだけならaccent-colorで済ませ、作り直すときはinput自体にappearance: noneを指定して描きます。スイッチはswitch属性、入力エラーは:user-invalidで示し、入力欄の文字サイズは1rem以上にします。<select>の見た目は、対応した環境でだけappearance: base-selectで変えます。"
 sidebar:
   order: 3
 ---
@@ -13,7 +13,7 @@ import formCss from '../../../demos/interaction/form-controls/style.css?raw';
 
 フォーム部品は、ブラウザが用意している部品をできるだけそのまま使います。チェックボックスやラジオボタンの色を変えるだけなら、`accent-color` で済ませます。見た目を作り直す必要があるときは、`input` を隠さずに、`input` 自体に `appearance: none` を指定して描きます。
 
-スイッチは `<input type="checkbox" switch>` で作り、入力エラーの見た目は `:invalid` ではなく `:user-invalid` に指定します。入力欄の文字サイズは1rem以上にし、ズームを止める指定は書きません。
+スイッチは `<input type="checkbox" switch>` で作り、入力エラーの見た目は `:invalid` ではなく `:user-invalid` に指定します。入力欄の文字サイズは1rem以上にし、ズームを止める指定は書きません。`<select>` の見た目は、対応した環境でだけ `appearance: base-select` で変え、未対応の環境では標準の `<select>` のまま表示します。
 
 ## kiso.cssが整えるフォームの初期値
 
@@ -102,7 +102,78 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 チェックマークの `::before` は、選択したときだけ作ります。未選択のときも作っておき、枠線を `transparent` にして隠すと、強制カラーモードで枠線の色がシステムカラーに置き換わり、未選択でもチェックマークが見えてしまいます。状態の違いを、色を透明にするかどうかだけで表さないようにします。
 
-`<select>` についても、`appearance: base-select` で見た目を自由に変えられる仕様が進んでいます。ただし、2026年9月の時点で対応しているのはChrome系のブラウザとSafari 27だけです。
+## `appearance: base-select` で `<select>` を変える
+
+`<select>` は、長いあいだ見た目をほとんど変えられない部品でした。開いたときの選択肢の一覧はブラウザやOSの部品で描かれ、角丸や影を付けることも、選択肢に画像を入れることもできません。そのため、デザインに合わせたドロップダウンを、`<div>` とJavaScriptで作り直すことがよくありました。作り直した部品では、キーボードでの選択や読み上げを自分で実装することになり、その分だけ抜けが起きやすくなります。{/* 要確認: 出典なし */}
+
+`appearance: base-select` を `<select>` と、選択肢の一覧を表す `::picker(select)` の両方に指定すると、一覧まで含めてCSSで見た目を変えられるようになります（MDN）。部品は `<select>` のままなので、キーボードでの選択、フォームの送信、読み上げはブラウザが引き受けます。一覧はトップレイヤーに表示され、`<select>` を暗黙のアンカーにして配置されます（「[10-7 positionの基礎](/layout/positioning/)」）。
+
+<Baseline id="customizable-select" name="カスタマイズ可能な <select>" />
+
+2026年10月の時点で対応しているのは、Chrome系のブラウザ（135以降）とSafari 27で、Firefoxは対応していません。本書では、Baselineでない機能はプログレッシブ・エンハンスメントとして使います。対応していない環境では、ブラウザの標準の `<select>` のまま表示されれば十分です。HTMLは、選んだ項目を表示するボタンを、`<select>` の最初の子に置きます。
+
+```html title="選んだ項目の中身を、ボタンの中に写す"
+<select name="sort">
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option value="new">新しい順</option>
+  <option value="popular">人気の順</option>
+</select>
+```
+
+`<selectedcontent>` には、選んでいる `<option>` の中身が写されます。`<option>` に画像や `<span>` を入れておけば、選んだ後のボタンにも同じものが表示されます。対応していないブラウザのHTMLの解析では、`<select>` の中にある `<option>` 以外の開始タグは捨てられます（HTML Standardの以前の解析規則）。`<button>` と `<selectedcontent>` は無視され、`<option>` の中の文字だけが残るので、従来の `<select>` として動きます。
+
+```css title="🙆‍♂ Recommended: 対応した環境でだけ、<select> と選択肢の一覧の見た目を変える"
+@scope (.scoped.sort-select) to (.scoped) {
+  select {
+    @supports (appearance: base-select) {
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-color: var(--color--neutral--400);
+      border-radius: 8px;
+      appearance: base-select;
+
+      &::picker(select) {
+        margin-block-start: 4px;
+        border-color: var(--color--neutral--400);
+        border-radius: 8px;
+        appearance: base-select;
+      }
+
+      &::picker-icon {
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--fast);
+          transition-property: rotate;
+          transition-timing-function: var(--ease--out-quint);
+        }
+      }
+
+      &:open::picker-icon {
+        rotate: 180deg;
+      }
+    }
+  }
+
+  option {
+    @supports (appearance: base-select) {
+      &:checked {
+        font-weight: 700;
+      }
+
+      &::checkmark {
+        color: var(--color--accent--600);
+      }
+    }
+  }
+}
+```
+
+`::picker-icon` はボタンの中の矢印、`option::checkmark` は選んでいる選択肢の前に付く印です。`:open` は、一覧が開いている間だけ `<select>` に当てはまる擬似クラスです。この例では、開いている間は矢印を180度回します。`:open` 自体は2026年5月からBaselineで、Firefoxでも使えます。ここでは `base-select` の見た目と組み合わせるので、同じ `@supports` の中に書いています。
+
+<Baseline id="open-pseudo" name=":open" />
+
+`@supports (appearance: base-select)` で囲むのは、`base-select` を前提にした余白や枠線を、ブラウザの標準の `<select>` に当てないためです。対応していない環境は `appearance: base-select` の宣言を無視しますが、同じルールの `padding` や `border-radius` は標準の部品に当たり、矢印や文字の位置とかみ合わない見た目になりえます。{/* 要確認: 未対応のブラウザでの崩れ方は未検証 */}囲んでおけば、未対応の環境はブロックごと読み飛ばし、`<select>` は標準の見た目のまま残ります。
 
 ## `switch` 属性によるスイッチ
 
@@ -267,6 +338,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 | キーボードだけの操作 | Tabキーで移動し、スペースキーで切り替える | 作り直したチェックボックスとスイッチにもフォーカスが止まり、フォーカスリングが表示され、状態が切り替わる |
 | ページを開いた直後と入力した後 | 何も入力せずに表示し、次に不正な値を入れて欄を離れる | 開いた直後はエラーの見た目にならず、離れた後に枠線の色とヒントの太字でエラーが示される |
 | 強制カラーモード | チェックボックスとスイッチをオンとオフにする | 未選択のチェックボックスにチェックマークが出ず、スイッチの範囲が枠線で分かり、つまみの位置でオンとオフを見分けられる |
+| `appearance: base-select` の対応と未対応 | Chrome系のブラウザまたはSafari 27と、Firefoxで `<select>` を開き、キーボードで選ぶ | 対応した環境ではスタイルを当てた一覧が、未対応の環境では標準の一覧が開き、どちらも矢印キーで選べる |
 | `switch` 属性の対応と未対応 | Safariとほかのブラウザで、スクリーンリーダーで読み上げる | Safariでは「スイッチ」として、ほかのブラウザではチェックボックスとして読み上げられ、どちらでも切り替えられる |
 | 文字を200%に拡大した状態 | ラベルとチェックボックス、スイッチを見比べる | `1lh` で大きさを決めた部品が、ラベルの行の高さに合わせて大きくなる |
 | iOSのSafari | 入力欄にフォーカスする | ページが拡大されない |
@@ -290,3 +362,6 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 - [accent-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/accent-color)
 - [:user-invalid - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:user-invalid)
 - [field-sizing - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing)
+- [Customizable select elements - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select)
+- [::picker() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::picker)
+- [:open - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:open)

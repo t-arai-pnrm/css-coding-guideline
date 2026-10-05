@@ -1,6 +1,6 @@
 ---
 title: "2-3 カスケードレイヤーで順位を決める"
-description: "スタイルの優先順位は、9つのレイヤーの順番で決めます。順番は先頭で宣言し、ファイルは@import … layer()で割り当てます。レイヤーに入っていない外部のCSSと共存するCMSの環境では、レイヤーを使いません。"
+description: "スタイルの優先順位は、9つのレイヤーの順番で決めます。順番は先頭で宣言し、ファイルは@import … layer()で割り当て、@importはビルド時に展開します。レイヤーに入っていない外部のCSSと共存するCMSの環境では、レイヤーを使いません。"
 sidebar:
   order: 3
 ---
@@ -69,6 +69,10 @@ import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?ra
 
 `@import` は、`@layer` 文を除くすべてのルールより前に書く必要があります。ほかのルールの後ろに書いた `@import` は無視されるので、エントリーポイントのファイルには、レイヤーの宣言と `@import` だけを置きます。
 
+ただし、この `@import` はブラウザに実行させず、ビルド時に展開します。ブラウザが `@import` の読み込みを始められるのは、それを書いたファイルをダウンロードして解析した後です。読み込んだファイルの中にさらに `@import` があれば、その分だけ待ちが重なります。CSSは読み込みが終わるまでページの描画を止めるので、この直列の待ちが、そのまま最初の表示の遅れになります。
+
+Astro（Vite）は、ビルド時に `@import` の読み込み先の中身をエントリーポイントのファイルに埋め込み、`layer()` の指定を `@layer` のブロックに置き換えます（2026年10月、Vite 8で確認）。フレームワークを使わない環境では、postcss-importのようなPostCSSのプラグインで同じように展開できます。展開した後もレイヤーの順番とファイルの割り当ては変わらないので、ソースのファイルでは、上の例のように `@import … layer()` で書けます。CMSの案件でも、自分で書いたCSSはビルドを通してから配信します。
+
 `<head>` の中の `<style>` のように `@import` で読み込まないCSSには、`@layer components { … }` の形でレイヤーを自分で書きます。
 
 ## 宣言していないレイヤー名の扱い
@@ -106,7 +110,7 @@ import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?ra
 
 私も、CMSの案件を始めたときは、Astroのテンプレートと同じレイヤーの構成で書き始めました。しかし、CMSの本体やプラグインのCSSとの関係でこの問題があるため、数日後にはレイヤーの使用をやめています。本書のレイヤーの構成は、すべてのCSSを自分で管理できる環境を前提にしたものです。
 
-レイヤーを使わない環境でも、9つの分類そのものは捨てません。ディレクトリを分類ごとに分け、エントリーポイントの `@import` を9つの分類の順番に並べます。レイヤーがなければ、優先順位は詳細度と書いた順番で決まります。ベーススタイルを `:where()` で詳細度0にし、コンポーネントの中をクラス1つ分にそろえておけば、読み込む順番がレイヤーの代わりになります。
+レイヤーを使わない環境でも、9つの分類そのものは捨てません。ディレクトリを分類ごとに分け、エントリーポイントの `@import` を9つの分類の順番に並べます。レイヤーがなければ、優先順位は詳細度と書いた順番で決まります。ベーススタイルを `:where()` で詳細度0にし、コンポーネントの中をクラス1つ分にそろえておけば、読み込む順番がレイヤーの代わりになります。この `@import` も、ビルド時に展開してから配信します。
 
 ```css title="🙆‍♂ Recommended: CMSでは、読み込む順番で9つの分類を保つ"
 @import url("kiso.css");
@@ -171,6 +175,7 @@ AstroのようにすべてのCSSを自分で管理できる静的サイトは、
 
 - [@layer - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@layer)
 - [@import - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@import)
+- [機能：@import のインライン化と書き換え | Vite](https://ja.vite.dev/guide/features#import-のインライン化と書き換え)
 - [CSS Cascading and Inheritance Level 5: Cascade Layers](https://www.w3.org/TR/css-cascade-5/#layering)
 - [CSS Cascading and Inheritance Level 5: Layer Ordering](https://www.w3.org/TR/css-cascade-5/#layer-ordering)
 - [layer-name-pattern | Stylelint](https://stylelint.io/user-guide/rules/layer-name-pattern/)

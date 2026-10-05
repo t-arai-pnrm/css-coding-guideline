@@ -155,7 +155,7 @@
   level: 禁止
   rule: 対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。
   reason: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
-  note: 2026年9月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports not` で従来の表現を用意して使えます。
+  note: 2026年10月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
   aiProne: true
   page: principles/browser-support
   since: 0.1.0

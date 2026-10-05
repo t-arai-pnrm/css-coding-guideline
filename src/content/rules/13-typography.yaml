@@ -58,6 +58,15 @@
   page: typography/fonts
   since: 0.3.0
 
+- id: no-font-size-adjust-for-japanese
+  level: 非推奨
+  rule: '和文を含む要素に `font-size-adjust` を指定しない。'
+  reason: '和文の文字も欧文のフォントの x-height などの比に合わせて拡大・縮小され、デザインで決めた文字サイズから外れることがあるため。'
+  note: '欧文だけのページで書体の字面をそろえるときは、`:root` に `font-size-adjust: from-font` を一度だけ指定します。`ic-width` と `ic-height` は和文のフォントでは比がほぼ1になり、補正されません。Web フォントの読み込みの前後のずれは、`@font-face` の `size-adjust` で抑えます（`fallback-font-metric-overrides`）。'
+  aiProne: true
+  page: typography/fonts
+  since: 0.21.0
+
 # 13-2 和文組版を整える
 - id: lang-for-typesetting
   level: 必須
@@ -186,6 +195,7 @@
   level: 推奨
   rule: '`text-align: center` を指定するときは、`text-wrap: balance` と組み合わせる。'
   reason: 中央揃えで行の長さがばらつくと、最後の行だけが短く残り、見栄えが悪くなるため。
+  note: '枠線や背景のある左揃えの要素には `text-wrap: balance` を指定しません（行の幅が縮んでも要素の幅は変わらず、枠の中で右にすき間が偏るため）。全称セレクタで、すべての要素に指定することもしません。'
   page: typography/size-and-line-breaks
   since: 0.1.0
 

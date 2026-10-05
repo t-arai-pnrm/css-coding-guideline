@@ -1,6 +1,6 @@
 ---
 title: "3-8 生成コンテンツと装飾の擬似要素"
-description: "::beforeと::afterには装飾だけを入れ、必須の印や単位のように意味のある文字はHTMLに書きます。装飾の記号は代替テキストを空にし、::markerにはcolorとfont-sizeだけを、::selectionには文字と背景の両方の色を指定します。"
+description: "::beforeと::afterには装飾だけを入れ、必須の印や単位のように意味のある文字はHTMLに書きます。装飾の記号は代替テキストを空にし、::markerにはcolorとfont-sizeだけを、::selectionには文字と背景の両方の色を指定します。内容として伝える強調は、::highlight()ではなく<mark>で書きます。"
 sidebar:
   order: 8
 ---
@@ -13,7 +13,7 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 
 `::before` と `::after` は、要素の内容の前と後ろに、CSSで箱を足す擬似要素です。この箱に入る内容を生成コンテンツと呼びます。本書では、生成コンテンツに入れるのは装飾だけにします。必須の印、単位、注意書きのように、読み手が知る必要のある文字はHTMLに書きます。
 
-装飾として文字や記号を入れるときは、`content: "→" / ""` のように、スラッシュの後ろの代替テキストを空にします。記号の名前が読み上げられないようにするためです。この節では、擬似要素が作られる条件、読み上げとの関係、`::marker`、`::selection`、`::first-letter`、`::first-line` の制約を順に説明します。擬似要素の書き方そのものは「[3-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」で説明しています。
+装飾として文字や記号を入れるときは、`content: "→" / ""` のように、スラッシュの後ろの代替テキストを空にします。記号の名前が読み上げられないようにするためです。この節では、擬似要素が作られる条件、読み上げとの関係、`::marker`、`::selection`、`::highlight()`、`::first-letter`、`::first-line` の制約を順に説明します。擬似要素の書き方そのものは「[3-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」で説明しています。
 
 <Baseline id="before-after" name="::before と ::after" />
 
@@ -127,6 +127,36 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 }
 ```
 
+## `::highlight()` で文字の範囲に色を付ける
+
+`::highlight()` は、JavaScriptで登録した文字の範囲を選ぶ擬似要素です。範囲は、CSS Custom Highlight APIで作ります。`Range` で始点と終点を決めて `Highlight` にまとめ、名前を付けて `CSS.highlights` に登録すると、CSSの `::highlight(名前)` でその範囲に色を付けられます。範囲を要素で包まないのでDOMは変わらず、要素の境界をまたぐ範囲も1つのハイライトにできます。ページ内検索の一致箇所や、エディターの構文の色分けのように、操作に合わせて範囲を描き直す表示に使います。
+
+```js title="テキストノードの5文字目から9文字目を登録する"
+const range = new Range();
+range.setStart(textNode, 4);
+range.setEnd(textNode, 9);
+CSS.highlights.set('search-result', new Highlight(range));
+```
+
+```css title="🙆‍♂ Recommended: 背景色に下線を組み合わせて範囲を示す"
+::highlight(search-result) {
+  background-color: oklch(92% 0.12 95deg);
+  color: oklch(20% 0 0deg);
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+}
+```
+
+<Baseline id="highlight" name="::highlight() と CSS Custom Highlight API" />
+
+2026年3月にFirefox 149が `::highlight()` に対応し、主要なブラウザがそろいました。Safariは17.2から対応しているので、本書の対象のブラウザはすべて対応しています（2026年10月確認）。指定できるプロパティは `::selection` とほぼ同じで、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。CSS Pseudo-Elements Level 4は、ハイライトの擬似要素で使えるプロパティを、レイアウトを変えないものに限っています。`padding` や `font-weight` で範囲を目立たせることはできません。
+
+ハイライトは、範囲を目立たせても、文書の内容は変えません。MDNによれば、`Highlight` の `type` で綴りや文法の誤りといった意味を支援技術に伝えられますが、対応は環境と種類によって異なります。CSSやJavaScriptが動かない環境では、範囲そのものが表示されません。そのため、内容の一部として読み手に伝える強調は、`<mark>` で書きます。`<mark>` は、周りの文脈との関連で目印を付けた範囲を表す要素で、検索結果のページで検索語に付ける目印のような、ページを開いた時点で決まっている強調に合っています。
+
+ただし、`<mark>` も、多くのスクリーンリーダーは初期設定で読み上げを区別しない、とMDNは説明しています。強調に気付かないと内容を取り違える場面では、「3件が一致しました」のように、要点を文章でも伝えます。`::highlight()` と `<mark>` のどちらで示す範囲も、色だけで区別しません（第14章のルール `no-color-only-information`）。
+
+強制カラーモードでは、`color` と `background-color` がユーザーの配色に置き換わり、`text-shadow` は `none` になります。背景色だけで示したハイライトは、周りの文字と見分けられなくなるおそれがあります。{/* 要確認: 出典なし（強制カラーモードでの ::highlight() の表示はブラウザで確かめていない） */}上の例で下線を組み合わせているのは、強制カラーモードで線の色を置き換えられても、線そのものは残るからです。強制カラーモードの全体の扱いは、第14章「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+
 ## `::first-letter` と `::first-line` を和文に使うとき
 
 `::first-letter` はブロックコンテナの最初の1文字を、`::first-line` は最初の1行を選ぶ擬似要素です。どちらも、指定できるプロパティは文字、背景、余白などの一部に限られます。和文では、1文字は仮名か漢字の1字です。MDNによれば、最初の文字の前後にある括弧や引用符のような約物も、`::first-letter` に含まれます。段落が開き括弧で始まれば、括弧と次の1字が一緒に大きくなります。
@@ -156,6 +186,12 @@ import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
 - [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。アイコン付きのリストを `::marker` なしで描く例）
 - [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)
 - [::selection - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::selection)
+- [::highlight() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::highlight)
+- [CSS Custom Highlight API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/CSS_Custom_Highlight_API)
+- [CSS Custom Highlight API Module Level 1](https://drafts.csswg.org/css-highlight-api-1/)
+- [CSS Pseudo-Elements Module Level 4](https://drafts.csswg.org/css-pseudo-4/)
+- [`<mark>` - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Elements/mark)
+- [CSS Color Adjustment Module Level 1](https://drafts.csswg.org/css-color-adjust-1/)
 - [::first-letter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::first-letter)
 - [::first-line - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::first-line)
 

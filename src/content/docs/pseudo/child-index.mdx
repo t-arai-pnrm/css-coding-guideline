@@ -14,7 +14,7 @@ import tableBadCss from '../../../demos/pseudo/striped-table/style.bad.css?raw';
 
 `:first-child` や `:nth-child()` は、兄弟の中で何番目にあるかによって要素を選ぶ擬似クラスです。表の縞模様や、一覧の先頭の数件だけを目立たせる処理を、HTMLにクラスを足さずに書けます。本書では、クラスや状態で絞った中での順番を `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使いません。
 
-位置で選ぶのは、縞模様のように順番そのものが条件になる場面だけです。役割の決まった子は、タイプセレクタか子クラスで選びます。この節では、位置で選ぶ擬似クラスが何を数えるのか、`An+B` の式の読み方、`of S` で数える対象を絞る方法を順に説明します。
+位置で選ぶのは、縞模様のように順番そのものが条件になる場面だけです。役割の決まった子は、タイプセレクタか子クラスで選びます。この節では、位置で選ぶ擬似クラスが何を数えるのか、`An+B` の式の読み方、`of S` で数える対象を絞る方法を順に説明します。位置を値として返す `sibling-index()` と `sibling-count()` も取り上げます。
 
 <Baseline id="nth-child-of" name=":nth-child(An+B of S)" />
 
@@ -141,6 +141,35 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 
 `:nth-of-type()` が適しているのは、種類の違う要素が混ざった並びで、ある種類の何番目かを選ぶときです。記事の本文で最初の `p` だけ文字を大きくする、といった場面では、`p:first-of-type` のほうが意図をそのまま表します。ただし、本書の規約ではタイプセレクタの順番に頼る場面自体が多くありません。
 
+## 位置を値にする `sibling-index()` と `sibling-count()`
+
+ここまでの擬似クラスは、位置を条件にして要素を選ぶものでした。`sibling-index()` と `sibling-count()` は、位置そのものを値として返す関数です。`sibling-index()` は兄弟の中で何番目かを、`sibling-count()` は自分を含む兄弟の数を、どちらも整数で返します。`:nth-child()` と同じく1から数えるので、最初の子の `sibling-index()` は1です。
+
+返す値は整数なので、`calc()` の中で角度や時間に変えられます。項目ごとに色相を少しずつずらす指定は、`:nth-child()` で書くと項目の数だけルールが要りますが、`sibling-index()` なら1つの式で済み、項目を足しても式を書き足す必要がありません。同じ式で `animation-delay` を項目ごとに遅らせれば、項目が順に現れる演出も書けます。ずらす間隔と、動きを減らす設定との組み合わせは、第17章「[17-5 出現と退場](/motion/entry-and-exit/)」で扱います。
+
+<Baseline id="sibling-count" name="sibling-index() と sibling-count()" />
+
+2026年8月にSafari 26.2が対応し、主要なブラウザの最新版がそろいました（Chrome 138、Firefox 154）。ただし、本書の対象のブラウザのうち、Safari 18系の最終版は対応していません（2026年10月確認）。そのため本書では、未対応の環境で失われても困らない装飾の値に限って使い、`@supports` の中に書きます。レイアウトの要に使わないのは、未対応の環境で表示が崩れるからです（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
+
+```css title="🙆‍♂ Recommended: 対応した環境でだけ、項目ごとに色相をずらす"
+@scope (.scoped.topic-list) to (.scoped) {
+  li {
+    --_hue: 250deg;
+
+    border-inline-start: 4px solid oklch(60% 0.12 var(--_hue));
+
+    @supports (z-index: sibling-index()) {
+      /* 1項目ごとに色相を40度ずつずらす */
+      --_hue: calc(210deg + sibling-index() * 40deg);
+    }
+  }
+}
+```
+
+`@supports` を省くと、未対応の環境で線が消えます。カスタムプロパティは中身を検証せずに受け取るので、`--_hue` には解釈できない式がそのまま入り、それを使う `border-inline-start` が計算値の時点で無効になるからです。`@supports` の中に書けば、未対応の環境ではすべての項目が同じ色相の線になります。線の色は装飾なので、色相がそろっても、項目の内容は文字で伝わります。
+
+数える対象は `:nth-child()` と同じで、`of S` のような絞り込みはありません。`hidden` 属性で隠した項目も兄弟として数えるので、絞り込みのある一覧では、見えている項目の色相が飛び飛びになります。子の数を扱う点では「[3-5 数量クエリ](/pseudo/quantity-queries/)」と似ていますが、役割が違います。数量クエリは「3件以上なら」のように数を条件にして宣言を切り替え、`sibling-count()` は数を式に入れて連続的に変わる値を作ります。件数で見た目を切り替える処理は、本書の対象のブラウザがすべて対応している数量クエリで書きます。
+
 ## 位置で選ばないほうがよい場面
 
 位置で選ぶのは、順番そのものが条件になる場面だけです。縞模様、先頭の数件の強調、最後の要素の後ろに区切りを付けない処理などです。役割の決まった子を `:first-child` や `:last-child` で選ぶと、HTMLの順番を入れ替えたり要素を足したりしたとき、スタイルが別の子に当たります。
@@ -160,5 +189,8 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 - [:nth-child() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:nth-child)
 - [:nth-of-type() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:nth-of-type)
 - [Selectors Level 4: Child-indexed Pseudo-classes](https://drafts.csswg.org/selectors-4/#child-index)
+- [sibling-index() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sibling-index)
+- [sibling-count() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sibling-count)
+- [CSS Values and Units Module Level 5: Tree Counting Functions](https://drafts.csswg.org/css-values-5/#tree-counting)
 - [CSS Syntax Module Level 3: The An+B microsyntax](https://drafts.csswg.org/css-syntax-3/#anb-microsyntax)
 - [CSS セレクタのレシピ - 子要素インデックス編](https://griponminds.jp/blog/css-selectors-child-index/)（grip on minds、2023年5月）

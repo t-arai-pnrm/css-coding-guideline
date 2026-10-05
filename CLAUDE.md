@@ -20,6 +20,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `src/content/rules/*.yaml`: ルールの定義。書式は同じディレクトリの `README.md` を見る。
 - `src/demos/<章のディレクトリ>/<デモ名>/`: デモの `index.html` と `style.css`。
   - 🙅‍♂ Not Recommended のデモは `style.bad.css` という名前にする（Stylelint の対象外になる）。
+  - 状態の切り替えに JavaScript が要るデモは、`script.js` を置いて `<Demo js={…}>` に渡す。JavaScript のタブは出さない。CSS と HTML だけで作れるデモには使わない。
 - `src/components/`
   - `Demo`：ライブデモ
   - `Guideline`：そのページのルール

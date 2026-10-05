@@ -1,0 +1,45 @@
+@layer tokens {
+  :root {
+    --background--muted: oklch(90% 0.08 260deg);
+  }
+}
+
+@property --spotlight--x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --spotlight--y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@layer pages {
+  @scope (.scoped.spotlight-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      place-items: center;
+      padding-block: 24px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.spotlight) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      max-inline-size: calc(400 / 16 * 1rem);
+      padding: 24px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+      background-image: radial-gradient(circle 160px at var(--spotlight--x) var(--spotlight--y), var(--background--muted), transparent);
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+  }
+}
