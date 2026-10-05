@@ -11,6 +11,9 @@ import Guideline from '../../../components/Guideline.astro';
 import hoverHtml from '../../../demos/interaction/hover-focus/index.html?raw';
 import hoverCss from '../../../demos/interaction/hover-focus/style.css?raw';
 import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?raw';
+import tabsHtml from '../../../demos/interaction/aria-selected-tabs/index.html?raw';
+import tabsCss from '../../../demos/interaction/aria-selected-tabs/style.css?raw';
+import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw';
 
 ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書きます。同じ見た目は `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
 
@@ -283,6 +286,10 @@ HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`
 ```
 
 ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た目の状態が同じ属性から決まるので、両者がずれません。JavaScriptが属性の更新を忘れたら見た目も変わらないので、不具合にもすぐ気づけます。私は2020年ごろから、状態の管理は原則としてARIA属性とdata属性で行うと決めています。
+
+次のデモでは、スクリプトはタブの `aria-selected` 属性を書き換えるだけで、クラスは付け外ししていません。タブを押すか、タブにフォーカスして左右の矢印キーを押すと、`aria-selected="true"` になったタブへ下線が移ります。選択していないタブにマウスを重ねると、薄い色の下線が出ます。
+
+<Demo title='aria-selected="true" のタブに下線が付き、選択を移すと下線も移る' html={tabsHtml} css={tabsCss} js={tabsJs} widths={[]} />
 
 子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は、第3章「[3-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
 

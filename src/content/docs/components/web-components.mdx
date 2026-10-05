@@ -10,6 +10,10 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import menuHtml from '../../../demos/components/popover-menu-element/index.html?raw';
 import menuCss from '../../../demos/components/popover-menu-element/style.css?raw';
+import menuJs from '../../../demos/components/popover-menu-element/script.js?raw';
+import themeToggleHtml from '../../../demos/components/theme-toggle-shadow/index.html?raw';
+import themeToggleCss from '../../../demos/components/theme-toggle-shadow/style.css?raw';
+import themeToggleJs from '../../../demos/components/theme-toggle-shadow/script.js?raw';
 
 カスタム要素で部品を作るときも、CSSの書き方はほかのコンポーネントと変えません。カスタム要素そのものに `scoped` クラスを付けてコンポーネントのルートにし、外部のCSSファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書きます。カスタム要素にはブラウザのデフォルトスタイルがないので、ルートには `display` を明示します。
 
@@ -114,11 +118,11 @@ customElements.define('popover-menu', PopoverMenu);
 
 ## コード例とデモ
 
-次のデモは、ポップオーバーで開くメニューを、カスタム要素の `<popover-menu>` で作っています。デモではJavaScriptを読み込んでいないので、カスタム要素は定義されないままですが、ボタンを押せばメニューは開閉します。
+次のデモは、ポップオーバーで開くメニューを、カスタム要素の `<popover-menu>` で作っています。ホバーできるポインターがある環境では、ボタンにポインターを重ねるとメニューが開き、ボタンとメニューから離れると閉じます。どの環境でもボタンを押せば開閉し、Tabキーでフォーカスをメニューの外に出すと閉じます。ボタンの `popovertarget` 属性による開閉はブラウザの機能なので、カスタム要素のスクリプトが動く前から使えます。
 
-<Demo title="JavaScriptがなくても開閉する、カスタム要素のメニュー" html={menuHtml} css={menuCss} height="16rem" />
+<Demo title="ホバーで開く振る舞いをカスタム要素で足した、ポップオーバーのメニュー" html={menuHtml} css={menuCss} js={menuJs} height="16rem" />
 
-ルートの `:scope` には、`display: block flow` と、公開プロパティを受ける内部プロパティを書いています。ボタンは、メニューを開いている間だけ `&:has(+ :popover-open)` で押された見た目にしています。どちらのセレクタも、カスタム要素のJavaScriptが持つ状態には頼っていません。
+ルートの `:scope` には、`display: block flow` と、公開プロパティを受ける内部プロパティを書いています。ボタンは、メニューを開いている間だけ `&:has(+ :popover-open)` で押された見た目にしています。どちらのセレクタも、カスタム要素のJavaScriptが持つ状態には頼っていません。ホバーで開くときも、スクリプトはボタンの `popovertarget` を通してメニューを開くだけなので、クリックで開いたときと同じセレクタで押された見た目になります。
 
 メニューの位置は、アンカーポジショニングに対応する環境でだけ、ボタンの下にそろえます。対応しない環境では、`margin: auto` で画面の中央に表示します（「[10-7 positionの基礎](/layout/positioning/)」）。どちらの環境でも、メニューを開いて項目を選べます。
 
@@ -194,6 +198,10 @@ legend {
 中の要素は、クラスや `@scope` を使わず、`button` や `[popover]` のような要素と属性のセレクタで選びます。Shadow DOMの境界がスコープの役目を果たすので、短いセレクタでも外に漏れません。ネスト、`@media (any-hover)` の中に書くホバー、`prefers-reduced-motion: no-preference` の中に書く動きは、Light DOMと同じ規約で書きます。
 
 一方、ページのセレクタで指定したスタイルは、中の要素に当たりません。kiso.cssがボタンに指定している `font: unset` や `background-color: unset` が当たらないので、ボタンはブラウザのデフォルトの文字と背景で表示されます。上の例の `color: inherit` と `font: inherit` は、その差を埋めるための指定です。`.-visually-hidden` のようなユーティリティのクラスも効かないので、必要な指定を中に書きます。
+
+次のデモは、`<theme-toggle>` のShadow DOMを `<template>` の複製で作り、ボタンで開くポップオーバーのラジオボタンで配色を選べるようにしたものです。Shadow DOMのCSSを読めるよう、デモでは `<template>` をHTMLのタブに置き、スクリプトはそれを複製するだけにしています。ボタンの文字が周りの文と同じ書体と大きさになり、選択肢のラジオボタンに余白が付かないのは、kiso.cssではなく、Shadow DOMの中に書き直した指定によるものです。配色を切り替えると、ページの `:root` で `light-dark()` を使って定義したトークンが境界を越えて届き、ボタンとポップオーバーの背景も変わります（「[14-4 ダークモード](/color-media/dark-mode/)」）。
+
+<Demo title="Shadow DOMの中で :host と kiso.css の代わりの指定を書いた、配色の切り替え" html={themeToggleHtml} css={themeToggleCss} js={themeToggleJs} scheme="light dark" height="16rem" />
 
 ## ガイドライン
 

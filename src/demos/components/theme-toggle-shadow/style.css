@@ -1,0 +1,16 @@
+@layer tokens {
+  :root {
+    --background--base: light-dark(oklch(100% 0 0deg), oklch(20.5% 0 0deg));
+    --background--surface: light-dark(oklch(95% 0 0deg), oklch(30% 0 0deg));
+    --foreground--base: light-dark(oklch(14.5% 0 0deg), oklch(98.5% 0 0deg));
+  }
+}
+
+@layer base {
+  :where(body) {
+    display: block grid;
+    gap: 16px;
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+  }
+}

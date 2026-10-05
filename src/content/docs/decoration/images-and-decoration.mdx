@@ -27,6 +27,9 @@ import currentColorHtml from '../../../demos/decoration/current-color-icon/index
 import currentColorCss from '../../../demos/decoration/current-color-icon/style.css?raw';
 import shadowHtml from '../../../demos/decoration/shadow-tokens/index.html?raw';
 import shadowCss from '../../../demos/decoration/shadow-tokens/style.css?raw';
+import segmentedHtml from '../../../demos/decoration/segmented-tabs/index.html?raw';
+import segmentedCss from '../../../demos/decoration/segmented-tabs/style.css?raw';
+import segmentedJs from '../../../demos/decoration/segmented-tabs/script.js?raw';
 import nestedRadiusHtml from '../../../demos/decoration/nested-radius/index.html?raw';
 import nestedRadiusCss from '../../../demos/decoration/nested-radius/style.css?raw';
 import frostedHtml from '../../../demos/decoration/frosted-header/index.html?raw';
@@ -407,6 +410,10 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 <Baseline id="rect-xywh" compatKey="css.types.basic-shape.xywh" name="xywh()" />
 
 下の列（`._list`）は、`role="tab"` を付けた `<button>` を並べた、操作するためのタブです。上の列（`._highlight`）は見た目のためだけの複製なので、`aria-hidden="true"` で読み上げから外し、中身は `<span>` にしてフォーカスを受けないようにします。`pointer-events: none` で、クリックは下のタブに通します。どのタブを選んでいるかは、`aria-selected` から `:has()` で読み取り、`--_index` に入れています。
+
+次のデモでは、タブを選ぶとスクリプトが `aria-selected` を付け替え、`:has()` で決まる `--_index` が変わります。上の列を切り抜く範囲が選んだタブに移り、背景と文字の色が一度で切り替わります。キーボードでは、左右の矢印キーでタブを移れます。
+
+<Demo title="選んだときの色で描いた列を重ね、選んだタブの範囲だけを切り抜いて見せる" html={segmentedHtml} css={segmentedCss} js={segmentedJs} />
 
 この方法では、選んだときの見た目を1つの列としてまとめて描けます。角丸の帯をタブの区切りと関係なく置くことも、列全体に掛けたグラデーションのうち選んだ範囲だけを見せることもできます。選択が変わったときに変わるのは、切り抜く範囲だけです。なお、`xywh()` の位置は左端から数えるので、右から左へ書く言語では、`:dir(rtl)` で位置の計算を反転させます。
 

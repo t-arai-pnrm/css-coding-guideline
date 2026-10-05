@@ -10,6 +10,9 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import carouselHtml from '../../../demos/interaction/css-carousel/index.html?raw';
 import carouselCss from '../../../demos/interaction/css-carousel/style.css?raw';
+import drawerHtml from '../../../demos/interaction/drawer-inert/index.html?raw';
+import drawerCss from '../../../demos/interaction/drawer-inert/style.css?raw';
+import drawerJs from '../../../demos/interaction/drawer-inert/script.js?raw';
 
 カルーセルは、スクロールスナップで作った横スクロールを土台にします。ページ送りのボタンは `::scroll-button()`、現在の位置を示すインジケーターは `::scroll-marker` と `::scroll-marker-group` で足し、JavaScriptは使いません。止まっていないスライドは、`scroll-state()` のコンテナクエリと `interactivity: inert` で、読み上げとフォーカスの対象から外します。
 
@@ -224,7 +227,13 @@ button.addEventListener('click', () => {
 });
 ```
 
-`body` の直下の要素のうち、ヘッダー以外に `inert` を付けています。ヘッダーが `body` の直下にある構造が前提で、ヘッダーを包む要素がある場合は、その要素の兄弟を対象にします。CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります。`.global-header:has(._drawer-button[aria-expanded="true"]) ~ *` のように後ろの兄弟を選べば、ページ全体を調べ直さずに済みます。Chrome 152では、この形で背面のリンクにフォーカスできなくなることを確かめました（2026年10月、Chrome 152で確認）。ただし、`interactivity` がBaselineになるまでは、`inert` 属性の代わりにはしません。
+`body` の直下の要素のうち、ヘッダー以外に `inert` を付けています。ヘッダーが `body` の直下にある構造が前提で、ヘッダーを包む要素がある場合は、その要素の兄弟を対象にします。
+
+次のデモでは、上のスクリプトをそのまま動かしています。まずドロワーを閉じたままTabキーを押し、本文のリンクにフォーカスが移ることを確かめてください。「メニュー」ボタンでドロワーを開いてからTabキーを押すと、フォーカスはヘッダーのボタンからドロワーのリンクへ移り、最後のリンクの次は、灰色になった本文のリンクを飛ばしてデモの外へ出ます。
+
+<Demo title="ドロワーを開いている間は、背面の本文に inert 属性が付き、リンクにフォーカスが移らない" html={drawerHtml} css={drawerCss} js={drawerJs} widths={[]} />
+
+CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります。`.global-header:has(._drawer-button[aria-expanded="true"]) ~ *` のように後ろの兄弟を選べば、ページ全体を調べ直さずに済みます。Chrome 152では、この形で背面のリンクにフォーカスできなくなることを確かめました（2026年10月、Chrome 152で確認）。ただし、`interactivity` がBaselineになるまでは、`inert` 属性の代わりにはしません。
 
 ## カルーセルで確かめる状態
 

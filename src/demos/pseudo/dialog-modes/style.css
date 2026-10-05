@@ -1,0 +1,58 @@
+@layer components {
+  @scope (.scoped.help-launcher) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+    }
+
+    ._actions {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+  }
+
+  @scope (.scoped.help-dialog) to (.scoped) {
+    :scope {
+      padding: 24px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+
+      /* モーダルのときは幅の上限だけを決め、中央に置く配置はデフォルトスタイルに任せる */
+      &:modal {
+        max-inline-size: calc(560 / 16 * 1rem);
+      }
+
+      /* モーダルでないときは、背面の操作を妨げないように右下に置く */
+      &[open]:not(:modal) {
+        position: fixed;
+        inset-inline: auto 16px;
+        inset-block-end: 16px;
+        box-shadow: 0 4px 16px oklch(0% 0 0deg / 16%);
+      }
+    }
+
+    h2 {
+      margin-block-end: 8px;
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    p {
+      margin-block-end: 16px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+  }
+}

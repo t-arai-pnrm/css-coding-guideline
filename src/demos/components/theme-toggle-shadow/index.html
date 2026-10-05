@@ -1,0 +1,95 @@
+<template id="theme-toggle-template">
+  <style>
+    :host {
+      --_background: var(--background--base);
+      --_background--hocus: var(--background--surface);
+
+      display: block flow;
+    }
+
+    button {
+      padding: 8px;
+      border: 1px solid currentColor;
+      border-radius: 8px;
+      background-color: var(--_background);
+
+      /* ページの kiso.css の color: unset と font: unset は届かないので、ここで継承させる */
+      color: inherit;
+      font: inherit;
+
+      &:enabled:hover {
+        @media (any-hover) {
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    /* アンカーポジショニングに対応しない環境では、画面の中央に出す */
+    [popover] {
+      margin: auto;
+      padding: 16px;
+      border: 1px solid currentColor;
+      border-radius: 8px;
+      background-color: var(--_background);
+      color: inherit;
+
+      /* 対応する環境では、ボタンの下に左端をそろえて出す */
+      @supports (position-area: block-end span-inline-end) {
+        position-area: block-end span-inline-end;
+        margin-block: 8px;
+        margin-inline: 0;
+      }
+    }
+
+    /* kiso.css が fieldset と radio に指定しているリセットも、ここに書き直す */
+    fieldset {
+      display: block grid;
+      gap: 8px;
+      min-inline-size: 0;
+      margin-inline: unset;
+      padding: unset;
+      border: unset;
+    }
+
+    legend {
+      /* ページの .-visually-hidden は届かないので、同じ指定をここにも書く */
+      position: fixed;
+      inset: 0;
+      contain: strict;
+      inline-size: 4px;
+      block-size: 4px;
+      margin: unset;
+      padding: unset;
+      border: unset;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    label {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    input {
+      margin: unset;
+    }
+  </style>
+  <button type="button" popovertarget="theme-menu">配色</button>
+  <div id="theme-menu" popover>
+    <fieldset>
+      <legend>配色</legend>
+      <label><input type="radio" name="color-scheme" value="light dark" />OSの設定に合わせる</label>
+      <label><input type="radio" name="color-scheme" value="light only" />ライト</label>
+      <label><input type="radio" name="color-scheme" value="dark only" />ダーク</label>
+    </fieldset>
+  </div>
+</template>
+
+<p>ボタンで配色を選ぶと、ページの背景と文字の色が切り替わります。</p>
+<theme-toggle></theme-toggle>

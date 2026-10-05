@@ -7,7 +7,10 @@ const select = (selected) => {
     const isSelected = tab === selected;
     tab.setAttribute('aria-selected', String(isSelected));
     tab.tabIndex = isSelected ? 0 : -1;
-    panelOf(tab).hidden = isSelected ? false : 'until-found';
+    // 隠したパネルは、Tab キーの順序からも外す
+    const panel = panelOf(tab);
+    panel.hidden = isSelected ? false : 'until-found';
+    panel.tabIndex = isSelected ? 0 : -1;
   }
 };
 

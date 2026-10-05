@@ -10,6 +10,12 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import profileHtml from '../../../demos/pseudo/profile-form-states/index.html?raw';
 import profileCss from '../../../demos/pseudo/profile-form-states/style.css?raw';
+import selectAllHtml from '../../../demos/pseudo/select-all/index.html?raw';
+import selectAllCss from '../../../demos/pseudo/select-all/style.css?raw';
+import selectAllJs from '../../../demos/pseudo/select-all/script.js?raw';
+import ariaStatesHtml from '../../../demos/pseudo/aria-states/index.html?raw';
+import ariaStatesCss from '../../../demos/pseudo/aria-states/style.css?raw';
+import ariaStatesJs from '../../../demos/pseudo/aria-states/script.js?raw';
 
 フォームの状態は、`:user-invalid`、`:checked`、`:disabled`、`:placeholder-shown` のような擬似クラスで選びます。ブラウザが管理する状態をそのまま参照するので、JavaScriptで状態のクラスを付け外しする必要はありません。ただし、どの擬似クラスも、名前から想像する範囲と、実際に当てはまる範囲が少しずつ違います。
 
@@ -58,6 +64,10 @@ import profileCss from '../../../demos/pseudo/profile-form-states/style.css?raw'
 ```
 
 上の例で `&:indeterminate` と書かずに `[type="checkbox"]` を加えているのは、ラジオボタンを除くためです。スコープの中にラジオボタンがあると、まだ何も選んでいないグループのラジオボタンが、すべて `:indeterminate` に当てはまります。中間の状態の印は、未選択のラジオボタンに付けるものではありません。
+
+次のデモでは、お知らせの一部だけを選ぶと、スクリプトが「すべて選ぶ」の `indeterminate` を `true` にし、横線の印が付きます。下の「配信の頻度」のラジオボタンは、どれも選んでいないので `:indeterminate` に当てはまりますが、`[type="checkbox"]` で除いているので印は付きません。チェックと中間の状態は背景色が同じなので、白い余白と横線の形で区別しています。
+
+<Demo title="一部だけを選んだときに、「すべて選ぶ」のチェックボックスを中間の状態にする" html={selectAllHtml} css={selectAllCss} js={selectAllJs} widths={[]} />
 
 <Baseline id="indeterminate" />
 
@@ -173,6 +183,10 @@ input {
 ```
 
 kiso.cssも、`:where(:disabled, [aria-disabled="true" i])` に `cursor: default` を指定して、両方を同じ状態として扱っています。なお、`aria-disabled="true"` はクリックやキー操作を止めません。操作を止める処理は、JavaScriptで別に書きます。
+
+次のデモでは、「登録する」ボタンに `aria-disabled="true"` を付けておき、利用規約に同意するとスクリプトで `false` に変えます。隣の「下書きを保存する」は `disabled` 属性で無効にしたボタンです。2つの見た目は同じですが、Tabキーでフォーカスできるのは「登録する」だけです。「サーバーのエラーを再現する」を押すと、ユーザー名の入力欄に `aria-invalid="true"` が付き、メールアドレスを空のまま登録しようとしたときの `:user-invalid` と同じ色の枠線になります。
+
+<Demo title="aria-disabled と aria-invalid の状態を、:disabled と :user-invalid と同じ見た目にする" html={ariaStatesHtml} css={ariaStatesCss} js={ariaStatesJs} widths={[]} />
 
 ## ガイドライン
 

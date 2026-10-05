@@ -10,6 +10,9 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import themeHtml from '../../../demos/color-media/theme-tokens/index.html?raw';
 import themeCss from '../../../demos/color-media/theme-tokens/style.css?raw';
+import themeSwitchHtml from '../../../demos/color-media/theme-switch/index.html?raw';
+import themeSwitchCss from '../../../demos/color-media/theme-switch/style.css?raw';
+import themeSwitchJs from '../../../demos/color-media/theme-switch/script.js?raw';
 
 ダークモードに対応するときは、セマンティクスのトークンの値を `light-dark()` で書き、`<meta name="color-scheme" content="light dark">` で両方の配色に対応することを宣言します。配色の切り替えはトークンの側で済ませ、コンポーネントには `prefers-color-scheme` のメディアクエリを書きません。
 
@@ -167,6 +170,10 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 ```
 
 使う側では、`@container style(--color-scheme: --dark)` のように条件を書きます。値を `--` で始めるのは、自分で付けた名前だと分かるようにするためです。スタイルクエリは2026年5月にすべての主要なブラウザで使えるようになったので、本書の対象のブラウザでは問題なく動作します（2026年9月確認）。ただし、色の切り替えは `light-dark()` で足りるので、このフラグを使う場面は多くありません。
+
+次のデモでは、ラジオボタンで選んだ値をメタ要素の `content` に書き込み、ラジオボタンの下に `--color-scheme` の値を表示しています。「ダーク」を選ぶと、カードの文字色、背景色、影は `light-dark()` のトークンで切り替わり、イラストの明るさはスタイルクエリで抑えられます。「OSの設定に合わせる」を選んだ状態では、OSの外観の設定を変えると、表示も一緒に変わります。
+
+<Demo title="選んだテーマをメタ要素に書き込み、トークンの色とスタイルクエリで表示を切り替える" html={themeSwitchHtml} css={themeSwitchCss} js={themeSwitchJs} scheme="light dark" />
 
 テーマを切り替える瞬間には、View Transitionで画面を上から塗り替えるアニメーションを付けています。切り替えの処理は、`types` に `theme-toggle` を指定して `document.startViewTransition()` に渡します。CSSの側では、`:active-view-transition-type(theme-toggle)` でアニメーションを定義します。動きを減らす設定をしているユーザーには、アニメーションを付けません。View Transitionsの書き方は「[17-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」で扱います。
 

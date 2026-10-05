@@ -10,6 +10,9 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import sectionHtml from '../../../demos/pseudo/decorated-section/index.html?raw';
 import sectionCss from '../../../demos/pseudo/decorated-section/style.css?raw';
+import highlightHtml from '../../../demos/pseudo/highlight-search/index.html?raw';
+import highlightCss from '../../../demos/pseudo/highlight-search/style.css?raw';
+import highlightJs from '../../../demos/pseudo/highlight-search/script.js?raw';
 
 `::before` と `::after` は、要素の内容の前と後ろに、CSSで箱を足す擬似要素です。この箱に入る内容を生成コンテンツと呼びます。本書では、生成コンテンツに入れるのは装飾だけにします。必須の印、単位、注意書きのように、読み手が知る必要のある文字はHTMLに書きます。
 
@@ -146,6 +149,10 @@ CSS.highlights.set('search-result', new Highlight(range));
   text-decoration-thickness: 2px;
 }
 ```
+
+次のデモでは、入力欄の語に一致する範囲を本文から集め、`search-result` という名前で登録しています。語を書き換えると、一致した範囲の背景色と下線が付け直されます。範囲を要素で包まないので、開発者ツールで本文を見てもDOMは変わりません。一致した数は、色とは別に文章でも示しています。
+
+<Demo title="入力した語に一致する範囲を、::highlight() で背景色と下線で示す" html={highlightHtml} css={highlightCss} js={highlightJs} widths={[]} />
 
 <Baseline id="highlight" name="::highlight() と CSS Custom Highlight API" />
 

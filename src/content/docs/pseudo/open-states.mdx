@@ -10,6 +10,9 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import openStateHtml from '../../../demos/pseudo/open-state-controls/index.html?raw';
 import openStateCss from '../../../demos/pseudo/open-state-controls/style.css?raw';
+import dialogModesHtml from '../../../demos/pseudo/dialog-modes/index.html?raw';
+import dialogModesCss from '../../../demos/pseudo/dialog-modes/style.css?raw';
+import dialogModesJs from '../../../demos/pseudo/dialog-modes/script.js?raw';
 
 開閉の状態は、JavaScriptで付け外しするクラスではなく、要素自身の状態をセレクタにして選びます。`<details>` と `<dialog>` は `[open]` 属性セレクタで、`popover` 属性の要素は `:popover-open` で、モーダルとして開いたダイアログは `:modal` で選びます。2026年5月にすべての主要なブラウザが対応した `:open` は、本書の対象のSafariが対応するまで使いません（2026年10月確認）。
 
@@ -111,6 +114,10 @@ details {
 ```
 
 この例では、`showModal()` で開いたときは幅の上限だけを決め、画面の中央に置く配置はブラウザのデフォルトスタイル（`margin: auto`）に任せます。`show()` で開いたときは右下に置きます。`dialog[open]` だけで書くと、2つの開き方に同じスタイルが当たり、背面を操作できるはずのダイアログまで中央に重なります。モーダルの間に背面のスクロールを止める `:root:has(:modal)` も、同じ理由で `dialog[open]` ではなく `:modal` を使っています（第6章「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+
+次のデモでは、同じ `<dialog>` を2つの開き方で開けます。「モーダルで開く」は `command="show-modal"` で開くので、`:modal` に当てはまって画面の中央に表示され、背面のボタンは押せなくなります。「モーダルでなく開く」は、対応する `command` の値がないので、スクリプトで `show()` を呼んでいます。こちらは `[open]:not(:modal)` に当てはまって右下に表示され、開いている間も背面のボタンを押せます。
+
+<Demo title="同じダイアログを、:modal のときは中央に、[open]:not(:modal) のときは右下に置く" html={dialogModesHtml} css={dialogModesCss} js={dialogModesJs} widths={[]} height="20rem" />
 
 `:modal` は、ダイアログ以外にも当てはまります。`requestFullscreen()` で全画面表示にした要素も、ほかの要素を操作できない状態にするので `:modal` になります。そのため、動画のプレーヤーを全画面にしている間も `:root:has(:modal)` が当てはまり、ルート要素のスクロールが止まります。
 

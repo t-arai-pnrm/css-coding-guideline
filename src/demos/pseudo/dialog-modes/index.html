@@ -1,0 +1,13 @@
+<div class="scoped help-launcher">
+  <p>ダイアログを開いて、背面のボタンを押せるか試してください。</p>
+  <div class="_actions">
+    <button type="button" commandfor="help-dialog" command="show-modal">モーダルで開く</button>
+    <!-- モーダルでない開き方には command の値がないので、スクリプトで show() を呼ぶ -->
+    <button type="button" class="_show">モーダルでなく開く</button>
+  </div>
+  <dialog class="scoped help-dialog" id="help-dialog" aria-labelledby="help-dialog-title">
+    <h2 id="help-dialog-title">ショートカットキー</h2>
+    <p><kbd>/</kbd> キーで、検索欄に移動します。</p>
+    <button type="button" commandfor="help-dialog" command="close">閉じる</button>
+  </dialog>
+</div>
