@@ -1,0 +1,209 @@
+---
+title: "11-11 アイコンを配置する"
+description: "文字に添えるアイコンは、GridかFlexboxで置き、position: absoluteで重ねません。折り返すおそれのある行頭や行末のアイコンは、margin-block: calc((1lh - アイコンの大きさ) / 2) で1行目の中央に置きます。中身の構造が決まらずGridにできないときはfloatで置き、位置を式で書きます。"
+sidebar:
+  order: 11
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import gridHtml from '../../../demos/layout-practice/icon-align-grid/index.html?raw';
+import gridCss from '../../../demos/layout-practice/icon-align-grid/style.css?raw';
+import centerHtml from '../../../demos/layout-practice/icon-align-center/index.html?raw';
+import centerCss from '../../../demos/layout-practice/icon-align-center/style.bad.css?raw';
+import compareHtml from '../../../demos/layout-practice/icon-float-vs-absolute/index.html?raw';
+import compareCss from '../../../demos/layout-practice/icon-float-vs-absolute/style.css?raw';
+
+リストの行頭のチェックマークやリンクの末尾の矢印のように、文字に添えるアイコンは、GridかFlexboxで文章と並べます。`position: absolute` で重ねると、アイコンが文章の配置に加わらないので、値が食い違ったときに文字の上へ重なります。文章が2行以上に折り返すおそれがあるなら、アイコンの上下の `margin` を `calc((1lh - アイコンの大きさ) / 2)` にして、1行目の行の高さの中央に置きます。
+
+項目の中身に `strong` や複数の段落が入り、GridやFlexboxにできないときは、アイコンを `float` で行の始端に置きます。それもできずに `position: absolute` を使うなら、位置を `calc()` の式で書き、何の値から決めたかをコードに残します。手法の優先の順は、Grid・Flexbox、`float`、`position: absolute` です。
+
+## 項目全体の中央に置いたアイコンと、重ねたアイコン
+
+行頭にアイコンを置くとき、よく見かけるのが、項目をFlexboxにして `align-items: center` を指定する書き方です。1行の項目なら、アイコンは文字の中央にそろいます。しかし、文章が2行以上になると、アイコンは項目全体の高さの中央に移り、どの行にもそろわなくなります。3行の項目では、アイコンが2行目の横に来て、項目の始まりが分かりにくくなります。
+
+```css title="🙅‍♂ Not Recommended: 項目全体の高さの中央にアイコンを置く"
+/* 🙅‍♂ Not Recommended */
+._check {
+  display: block flex;
+  gap: 0.5em;
+  align-items: center;
+
+  &::before {
+    content: "";
+    flex-shrink: 0;
+    inline-size: 1em;
+    aspect-ratio: 1;
+  }
+}
+```
+
+Flexboxにはもう1つ問題があります。項目の中に `strong` や `a` があると、それぞれが別のフレックスアイテムになり、文章が途中で縦に分かれます。次のデモの3つ目の項目では、「30日間」だけが独立した列になっています。
+
+<Demo title="align-items: center で、アイコンが項目全体の中央に移る" html={centerHtml} css={centerCss} variant="not-recommended" />
+
+これを避けようとして、アイコンを `position: absolute` で項目の左上に重ねる書き方もあります。項目に `padding-inline-start` を付けてアイコンの場所を空け、そこへアイコンを置く方法です。絶対配置の要素は通常フローから外れるので、文章はアイコンがないかのように並びます。アイコンの大きさと項目の `padding` が別々の宣言に分かれていて、片方を変えたときにもう片方が追いつかないと、アイコンは文字の上に重なります。
+
+## 1行目の中央を `1lh` で求める
+
+中身が1つの文章なら、項目をGridにして、アイコンの列と文章の列に分けます。アイコンの上下の `margin` を `calc((1lh - var(--_icon-size)) / 2)` にすると、1行目の行の高さとアイコンの大きさの差が、上下に半分ずつ配られます。アイコンは1行目の中央に置かれ、2行目以降がいくつ増えても動きません。
+
+```css title="🙆‍♂ Recommended: Gridの列に置いたアイコンを、1行目の中央にそろえる"
+@scope (.scoped.check-list) to (.scoped) {
+  li {
+    --_icon-size: 1em;
+
+    display: block grid;
+    grid-template-columns: var(--_icon-size) minmax(0, 1fr);
+    column-gap: 0.5em;
+    align-items: start;
+
+    &::before {
+      content: "";
+
+      /* アイコンの描き方は 16-2 を参照 */
+      inline-size: var(--_icon-size);
+      aspect-ratio: 1;
+
+      /* 1行目の行の高さの中で、上下の中央に置く */
+      margin-block: calc((1lh - var(--_icon-size)) / 2);
+    }
+  }
+}
+```
+
+`lh` は、その要素の `line-height` を長さにした単位です。擬似要素は項目の文字の大きさと行の高さを継承するので、`1lh` は項目の1行の高さと同じ値になります。文字の大きさや `line-height` を変えても、式を直す必要はありません。`align-items: start` は、アイコンを項目の上端から置くための指定で、1行目にそろえる位置は `margin` の式が決めます。
+
+<Baseline id="lh" />
+
+行末にアイコンを置くリンクの一覧も、同じ形で書けます。リンクを `grid-template-columns: minmax(0, 1fr) var(--_icon-size)` の2列にし、丸い枠を描く `::before` と矢印を描く `::after` を、同じ右の列の1行目に重ねます。どちらの擬似要素にも同じ `margin-block` の式を指定すれば、リンクの文字が2行になっても、アイコンは1行目の横に残ります。
+
+アイコンの大きさが1行の高さより大きいときは、式の値が負になり、アイコンは行の上下へはみ出して中央に置かれます。項目どうしの間隔が狭いと隣の項目に食い込むので、アイコンを大きくするときは、行の高さか項目の間隔も見直します。{/* 要確認: 出典なし（アイコンが1lhより大きいときの振る舞い） */}
+
+## アイコンが付いてもラベルを中央に保つボタン
+
+ボタンの末尾に矢印を置くと、ラベルが矢印の分だけ左へずれ、ボタンの中央に来なくなります。そこで、ボタンを `grid-template-columns: 1fr auto 1fr` の3列にし、左から順に空の `::before`、ラベル、矢印の `::after` を置きます。左右の列が同じ幅になるので、ラベルはボタンの中央に保たれます。
+
+```css title="🙆‍♂ Recommended: 左右の列を同じ幅にして、ラベルを中央に置く"
+._button {
+  display: block grid;
+  grid-template-columns: 1fr auto 1fr;
+  column-gap: 1ch;
+  align-items: center;
+
+  &::before {
+    content: "";
+  }
+
+  &::after {
+    content: "";
+    justify-self: end;
+
+    /* アイコンの描き方は 16-2 を参照 */
+    inline-size: 1em;
+    aspect-ratio: 1;
+  }
+}
+```
+
+このボタンでは、`align-items: center` で問題ありません。ラベルは短い1行で、折り返さないことを前提にしているからです。項目全体の中央と1行目の中央が一致する場面では、`1lh` の式を使わずに済みます。ラベルが長くなり、狭い画面で折り返すおそれがあるボタンなら、リストと同じく `margin-block` の式で1行目にそろえます。
+
+## 中身をGridにできないときは `float` で置く
+
+CMSで入力した本文のリストのように、項目の中身に `strong` や `a` が入ったり、段落が2つ以上入ったりする場面では、項目をGridやFlexboxにできません。中身のテキストやインライン要素が、それぞれ別のアイテムに分かれてしまうからです。この場面では、アイコンを擬似要素で描き、`float: inline-start` で行の始端に寄せます。中身は通常フローのまま流れるので、構造が変わっても崩れません。
+
+```css title="🙆‍♂ Recommended: float したアイコンを、項目の padding の中へ戻す"
+@scope (.scoped.notice-list) to (.scoped) {
+  li {
+    --_icon-size: 1em;
+    --_gap: 0.5em;
+    --_icon-offset: calc(var(--_icon-size) + var(--_gap));
+
+    display: block flow-root;
+    padding-inline-start: var(--_icon-offset);
+
+    &::before {
+      content: "";
+      float: inline-start;
+
+      /* アイコンの描き方は 16-2 を参照 */
+      inline-size: var(--_icon-size);
+      aspect-ratio: 1;
+
+      /* 1行目の行の高さの中で、上下の中央に置く */
+      margin-block: calc((1lh - var(--_icon-size)) / 2);
+
+      /* 項目の padding の中へ戻し、文章の幅を狭めない */
+      margin-inline-start: calc(var(--_icon-offset) * -1);
+    }
+  }
+}
+```
+
+項目の `padding-inline-start` と擬似要素の負の `margin-inline-start` は、どちらも `--_icon-offset` から決めています。アイコンの大きさか間隔を変えれば、両方が一緒に変わります。擬似要素は項目の `padding` の中へ戻るので、2行目以降もアイコンの下へ回り込まずに1行目とそろいます。`display: block flow-root` は、`float` の擬似要素を項目の中に収めるための指定です（「[11-12 floatで文章を回り込ませる](/layout-practice/float/)」）。
+
+同じ配置は、`position: absolute` でも書けます。項目に `position: relative` を指定し、擬似要素を `inset-inline-start: 0` で `padding` の中に置きます。縦の位置は、`float` の版と同じ式を `inset-block-start` に書きます。擬似要素は項目の `line-height` を継承しているので、`1lh` は項目の1行の高さです。
+
+```css title="🙆‍♂ Recommended: 絶対配置で置くなら、位置を式で書く"
+._notice {
+  --_icon-size: 1em;
+  --_gap: 0.5em;
+  --_icon-offset: calc(var(--_icon-size) + var(--_gap));
+  --_padding-block: 12px;
+
+  position: relative;
+  padding-block: var(--_padding-block);
+  padding-inline-start: var(--_icon-offset);
+
+  &::before {
+    content: "";
+    position: absolute;
+
+    /* 項目の padding に、1行目の行の高さとアイコンの差の半分を足す */
+    inset-block-start: calc(var(--_padding-block) + (1lh - var(--_icon-size)) / 2);
+    inset-inline-start: 0;
+    inline-size: var(--_icon-size);
+    aspect-ratio: 1;
+  }
+}
+```
+
+私は、2つのうち `float` の版を勧めます。`float` の要素は行の始端を占めるので、アイコンの大きさと項目の `padding` が食い違っても、1行目の文字はアイコンの横へ押し出され、重なりません。絶対配置の要素は行の配置に加わらないので、食い違えば文字の上に重なります。また、`inset-block-start` は項目の `padding` を含む領域の上端から測るので、項目に `padding-block` を付けたら、その値も式に足す必要があります。`float` の版は内容の領域の中に置かれるので、この足し算が要りません。
+
+## コード例とデモ
+
+次のデモでは、チェックリストの項目、リンクの一覧、ボタンにアイコンを置いています。チェックリストとリンクの一覧は、幅のボタンで320pxを選ぶと文章が折り返しますが、アイコンは1行目の横に残ります。ボタンでは、矢印が付いていてもラベルが中央にあります。
+
+<Demo title="Gridとlhでアイコンをそろえたチェックリスト、リンク、ボタン" html={gridHtml} css={gridCss} />
+
+次のデモでは、同じ項目を `float` と `position: absolute` で置いています。2つ目の項目は段落が2つあり、1つ目の項目には `strong` が入っているので、どちらもGridにはできません。3つ目の項目では、擬似要素の側だけでアイコンを大きくし、項目の `padding` を直していません。`float` の版では1行目の文字がアイコンの横へ押し出されますが、`position: absolute` の版ではアイコンが文字に重なります。
+
+<Demo title="同じ項目を float と position: absolute で置いたときの違い" html={compareHtml} css={compareCss} variant="neutral" />
+
+## 補足と注意点
+
+アイコンの位置を決める `margin-block` は、要素の間の間隔ではありません。要素の間の縦の `margin` を次兄弟結合子で付けるルール（「[11-2 余白を設計する](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)」）の対象には含めません。同じ理由で、負の `margin-inline-start` も、要素を並べる間隔ではなく、アイコンを `padding` の中へ戻すための指定です。
+
+`1lh` が指すのは、擬似要素自身の行の高さです。アイコンの大きさを `font-size` で決めようとして擬似要素の文字の大きさを変えると、`1lh` も変わり、項目の行の高さとずれます。アイコンの大きさは `inline-size` で決め、擬似要素の `font-size` と `line-height` は項目から継承させたままにします。行の高さの決め方は「[14-3 行の高さとハーフレディング](/typography/line-height/)」で説明しています。
+
+アイコンをマスクで描くか、インラインSVGで描くかは、「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で説明しています。マスクで描いたアイコンは、`background-color` を文字色にすると、強制カラーモードで消えます。デモでは、通常の文字の中のアイコンをグラデーションとシステムカラーの重ね塗りで、リンクとボタンの中のアイコンを `--background-current` で塗っています。この2つの使い分けは「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+
+`float`、`margin`、`inset` の値は、`inline-start` や `margin-inline-start` のように論理値と論理プロパティで書きます。右から左へ書く言語でも、アイコンは行の始端に置かれます（「[9-8 論理プロパティと論理値](/notation/logical-properties/)」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月）：行頭のアイコンを1行目にそろえる書き方
+- [column-menu](https://codepen.io/tak-dcxi/pen/pvbYooy)（CodePen、TAK）：リンクの行末のアイコンを、Gridの列に重ねて1行目にそろえる実装例
+- [Button](https://codepen.io/tak-dcxi/pen/RNWozZE)（CodePen、TAK）：`1fr auto 1fr` の3列で、アイコンが付いてもラベルを中央に保つボタン
+- [List Icon](https://codepen.io/tak-dcxi/pen/qBGxwmR)（CodePen、TAK）：中身をGridにできないリストで、アイコンを `float` で置く実装例
+- [CSS Values and Units Module Level 4: Font-relative Lengths](https://www.w3.org/TR/css-values-4/#font-relative-lengths)
+- [CSS Grid Layout Module Level 2](https://www.w3.org/TR/css-grid-2/)
+- [&lt;length&gt; - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/length#lh)：`lh` 単位

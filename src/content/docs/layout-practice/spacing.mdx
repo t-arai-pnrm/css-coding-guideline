@@ -1,8 +1,8 @@
 ---
-title: "11-3 余白を設計する"
+title: "11-2 余白を設計する"
 description: "一律の間隔は親の gap で、構成の決まった要素の間ごとに違う余白は grid-template の空のセルで作ります。ページに並べるセクションの上下の余白は、各セクションの padding-block で作ります。要素の有無が変わる場所と本文の流れには縦の margin を使い、次兄弟結合子で前の要素を条件にして、後ろの要素の margin-block-start に付けます。"
 sidebar:
-  order: 3
+  order: 2
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -56,7 +56,7 @@ import sectionSpacingCss from '../../../demos/layout-practice/section-spacing/st
 }
 ```
 
-`overflow: auto` や、見えない `padding` と `border` でも相殺は止まりますが、使いません。`overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取ります（「[7-8 positionの基礎](/layout/positioning/)」）。FlexboxやGridにした要素の子も、親との間では相殺しません。余白を子と親の枠の間に取りたいだけなら、親の `padding` で足ります。
+`overflow: auto` や、見えない `padding` と `border` でも相殺は止まりますが、使いません。`overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取ります（「[7-9 positionの基礎](/layout/positioning/)」）。FlexboxやGridにした要素の子も、親との間では相殺しません。余白を子と親の枠の間に取りたいだけなら、親の `padding` で足ります。
 
 ## 親の `gap` による間隔
 
@@ -186,7 +186,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 最大幅と左右の `padding` で同じことをしようとすると、`box-sizing: border-box` の環境では、最大幅から `padding` の分だけコンテンツが狭くなります。そこで「最大幅に左右の `padding` を足す」という計算をしがちですが、余白の列を使えば、中央の列の最大幅がそのままコンテンツの幅になります。画面幅いっぱいに広げる子要素がない1つの要素なら、その要素だけ `box-sizing: unset` で `content-box` に戻せば、`padding` で書いても足し算は要りません（「[7-3 ボックスモデルの基礎](/layout/box-model/#rule-unset-box-sizing-for-content-max-width)」）。
 
-1つのセクションだけなら、`margin-inline: auto` のほうが簡潔かもしれません。この方法が有効なのは、コンテンツの幅に収まる要素と、画面幅いっぱいに広げたい要素が混在する場合です。ビューポートの単位を使った負の `margin` で要素を広げる必要がなくなります。画面幅いっぱいに広げるほかの方法は「[11-5 重なりと全幅](/layout-practice/layering/)」で比べます。第12章のコンポジション `primary-layout` は、この形に「少し狭い」「少し広い」などの列を加えて部品にしたものです。
+1つのセクションだけなら、`margin-inline: auto` のほうが簡潔かもしれません。この方法が有効なのは、コンテンツの幅に収まる要素と、画面幅いっぱいに広げたい要素が混在する場合です。ビューポートの単位を使った負の `margin` で要素を広げる必要がなくなります。画面幅いっぱいに広げるほかの方法は「[11-4 重なりと全幅](/layout-practice/layering/)」で比べます。第12章のコンポジション `primary-layout` は、この形に「少し狭い」「少し広い」などの列を加えて部品にしたものです。
 
 ## ページに並べるセクションの上下の余白
 

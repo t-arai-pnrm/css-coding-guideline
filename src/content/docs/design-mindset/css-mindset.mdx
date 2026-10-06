@@ -27,8 +27,8 @@ CSSは、処理の手順ではなく、どう表示されてほしいかを宣�
 | カスケードを使う | 全体の土台（幹）と部品のスタイル（葉）を分けて組み合わせる | [第4章](/cascade/)、[8-1](/reset/kiso/)、[8-2](/reset/base-styles/) |
 | 必要最小限のCSSを書く | デフォルト値と継承を活かし、必要な宣言だけを明示的に書く | [1-1](/principles/browser-suggestion/)、[2-3](/design-mindset/maintainability/) |
 | 責任の境界を決める | 枠（レイアウト）と中身（コンポーネント）の責任を分ける | [10-2](/components/boundaries/)、[10-3](/components/compositions-and-utilities/)、[第12章](/compositions/) |
-| 文脈を確かめる | 親が整形コンテキストとスタッキングコンテキストを決める | [7-1](/layout/fundamentals/)、[1-3](/principles/layout-algorithms/)、[11-5](/layout-practice/layering/) |
-| 内容が変わる前提で書く | 固定値を避け、意図を書いて計算をブラウザに任せる | [11-4](/layout-practice/defensive/)、[13-1](/responsive/escalation/)、[12-6](/compositions/grid/) |
+| 文脈を確かめる | 親が整形コンテキストとスタッキングコンテキストを決める | [7-1](/layout/fundamentals/)、[1-3](/principles/layout-algorithms/)、[11-4](/layout-practice/layering/) |
+| 内容が変わる前提で書く | 固定値を避け、意図を書いて計算をブラウザに任せる | [11-3](/layout-practice/defensive/)、[13-1](/responsive/escalation/)、[12-6](/compositions/grid/) |
 
 以下では、視点ごとに要点を説明し、本書でそれを具体化している箇所を示します。
 
@@ -62,7 +62,7 @@ BEMのような命名規則が担っていた範囲の管理も、本書は `@sc
 
 同じ宣言でも、親がどんな環境を作っているかで結果が変わります。親がFlexboxなら子の `width` は縮む出発点になり、親がスタッキングコンテキストを作っていれば、子の `z-index` をどれだけ大きくしても、親より手前に重なっている要素の、さらに手前には出られません。要素が思いどおりにならないときは、その要素より先に親の環境を確かめるのが、解決の近道です。
 
-本書では、要素がどの方式の中にあり、どの要素が包含ブロックとスタッキングコンテキストを作っているかを確かめる手順を、「[7-1 レイアウトの基礎](/layout/fundamentals/)」で説明しています。方式によってプロパティの意味が変わる例は「[1-3 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」にまとめています。重なり順の不具合をスタッキングコンテキストから調べる方法は、「[11-5 重なりと全幅](/layout-practice/layering/)」で扱います。
+本書では、要素がどの方式の中にあり、どの要素が包含ブロックとスタッキングコンテキストを作っているかを確かめる手順を、「[7-1 レイアウトの基礎](/layout/fundamentals/)」で説明しています。方式によってプロパティの意味が変わる例は「[1-3 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」にまとめています。重なり順の不具合をスタッキングコンテキストから調べる方法は、「[11-4 重なりと全幅](/layout-practice/layering/)」で扱います。
 
 ### 内容が変わる前提で書く
 
@@ -74,7 +74,7 @@ BEMのような命名規則が担っていた範囲の管理も、本書は `@sc
 
 たとえば、カードを3列に並べる一覧なら、カンプの幅から逆算した304pxをカードの幅に書くのではなく、列の最小幅だけを決めて、列の数と幅は一覧の実際の幅からブラウザに計算させます。この書き方は、「[12-6 grid](/compositions/grid/)」でコンポジションにしています。
 
-想定外の内容への備え方は「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。クエリを書く前に、要素の性質とレイアウトの機能で対応する順番は、「[13-1 検討する順番](/responsive/escalation/)」で説明しています。
+想定外の内容への備え方は「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。クエリを書く前に、要素の性質とレイアウトの機能で対応する順番は、「[13-1 検討する順番](/responsive/escalation/)」で説明しています。
 
 ## `z-index`、CSS設計、`!important` の扱い
 

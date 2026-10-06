@@ -1,0 +1,107 @@
+@layer components {
+  @scope (.scoped.area-picker) to (.scoped) {
+    :scope {
+      --_area: block-end span-inline-end;
+
+      /* 同じデモを複数置いても、アンカーの名前がほかのデモに届かないようにする */
+      anchor-scope: --area-picker;
+      display: block grid;
+      gap: 16px;
+
+      &:has(._block-end:checked) {
+        --_area: block-end;
+      }
+
+      &:has(._corner:checked) {
+        --_area: block-start inline-start;
+      }
+
+      &:has(._inline-end:checked) {
+        --_area: inline-end;
+      }
+
+      &:has(._block-end-span-start:checked) {
+        --_area: block-end span-inline-start;
+      }
+
+      &:has(._center:checked) {
+        --_area: center;
+      }
+    }
+
+    fieldset {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+
+    legend {
+      font-weight: 700;
+    }
+
+    ._stage {
+      /* マス目の外側の線は、配置する要素の包含ブロックの辺になる */
+      position: relative;
+      display: block grid;
+      place-items: center;
+      min-block-size: calc(280 / 16 * 1rem);
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+
+      /* アンカーの列と行を破線で示し、9マスを見えるようにする */
+      &::before,
+      &::after {
+        @supports (anchor-name: --area-picker) {
+          content: "";
+          position: absolute;
+          position-anchor: --area-picker;
+          border: 0 dashed oklch(70% 0.1 250deg);
+        }
+      }
+
+      &::before {
+        @supports (anchor-name: --area-picker) {
+          inset-block: 0;
+          inset-inline: anchor(start) anchor(end);
+          border-inline-width: 1px;
+        }
+      }
+
+      &::after {
+        @supports (anchor-name: --area-picker) {
+          inset-block: anchor(start) anchor(end);
+          inset-inline: 0;
+          border-block-width: 1px;
+        }
+      }
+    }
+
+    ._anchor {
+      anchor-name: --area-picker;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+      background-color: oklch(45% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+    }
+
+    ._target {
+      padding-block: 4px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(92% 0.08 85deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      @supports (position-area: block-end span-inline-end) {
+        position: absolute;
+        position-area: var(--_area);
+        position-anchor: --area-picker;
+        margin: 4px;
+      }
+    }
+  }
+}

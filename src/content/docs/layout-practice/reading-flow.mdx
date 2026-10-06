@@ -1,8 +1,8 @@
 ---
-title: "11-11 表示順と読み上げ順を合わせる"
+title: "11-10 表示順と読み上げ順を合わせる"
 description: "読み上げとTabキーのフォーカスはDOMの順番で進むので、見た目だけを並べ替えると順番が食い違います。まずDOMの順番を読む順に合わせ、エリアや逆順で並べるコンテナにはreading-flowを指定します。order と reading-order の値は1か-1だけを使います。"
 sidebar:
-  order: 11
+  order: 10
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -108,13 +108,13 @@ Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方�
 
 `display: contents` の要素は箱を作らないので、その子が親のグリッドのアイテムとして並びます。Chromeの記事は、レイアウト上の親から `reading-flow` を継承した `display: contents` の要素も、`reading-flow` のコンテナになると説明しています。`reading-flow` は継承しないプロパティなので、継承させるには `reading-flow: inherit` を書きます。
 
-「7-7」のサブグリッドの例のように、カードを包む `li` に `display: contents` を指定した一覧では、DOMの親子と見た目のアイテムが一致しません。こうした一覧に `reading-flow` を指定するときは、対応したブラウザで、Tabキーとスクリーンリーダーの順番を確かめます。{/* 要確認: 出典なし */}
+「[7-11 display: contentsで箱をなくす](/layout/display-contents/)」のサブグリッドの例のように、カードを包む `li` に `display: contents` を指定した一覧では、DOMの親子と見た目のアイテムが一致しません。こうした一覧に `reading-flow` を指定するときは、対応したブラウザで、Tabキーとスクリーンリーダーの順番を確かめます。{/* 要確認: 出典なし */}
 
 ## `order` と `reading-order` は1か-1だけを使う
 
 `reading-order` は、`reading-flow` が `normal` 以外のコンテナの子に指定し、読む順番を整数で上書きするプロパティです。初期値は0で、値の小さい子から読み、同じ値の子どうしはコンテナの `reading-flow` の順番で読みます。コンテナの `reading-flow: source-order` は、DOMの順番を保ったまま、子の `reading-order` を使うための値です。
 
-`reading-order` が役立つのは、HTMLの順番に制約があり、1つの子だけを先頭か末尾へ動かしたい場面です。たとえば、閉じるボタンを `float` で見出しの横へ置くモーダルでは、`float` の仕組み上、HTMLではボタンを見出しより前へ書く必要があります（「[11-2 floatで文章を回り込ませる](/layout-practice/float/)」）。本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定すれば、対応したブラウザでは見出しが先に読まれます。
+`reading-order` が役立つのは、HTMLの順番に制約があり、1つの子だけを先頭か末尾へ動かしたい場面です。たとえば、閉じるボタンを `float` で見出しの横へ置くモーダルでは、`float` の仕組み上、HTMLではボタンを見出しより前へ書く必要があります（「[11-12 floatで文章を回り込ませる](/layout-practice/float/)」）。本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定すれば、対応したブラウザでは見出しが先に読まれます。
 
 ```css title="🙆‍♂ Recommended: 見出しだけを、ほかのすべての子より先に読ませる"
 @scope (.scoped.modal) to (.scoped) {
@@ -156,7 +156,7 @@ FlexboxとGridの子の `order` も、同じ規則に従います。`order` は�
 
 子の `order`、`grid-row`、`grid-column` による並べ替えは検出できません。これらは子のルールに書かれ、どのコンテナの中で使われるかがCSSだけでは決まらないからです。子の側で並べ替えるときは、親のコンテナに `reading-flow` があるかを自分で確かめます。
 
-未対応のブラウザは `reading-flow` の宣言を無視し、DOMの順番で読みます。`@supports` で分岐する必要はありません。高さの違う項目を詰める `grid-lanes` でも、見た目とDOMの順番が離れます。2026年10月の時点で、`grid-lanes` と `reading-flow` の両方に対応したブラウザはありません（「[11-10 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」）。
+未対応のブラウザは `reading-flow` の宣言を無視し、DOMの順番で読みます。`@supports` で分岐する必要はありません。高さの違う項目を詰める `grid-lanes` でも、見た目とDOMの順番が離れます。2026年10月の時点で、`grid-lanes` と `reading-flow` の両方に対応したブラウザはありません（「[11-9 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」）。
 
 ## ガイドライン
 

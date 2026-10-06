@@ -58,7 +58,7 @@
     ._tooltip {
       --_duration: var(--duration--fast);
 
-      margin: auto;
+      margin: revert;
       padding-block: 4px;
       padding-inline: 8px;
       font-size: calc(14 / 16 * 1rem);
@@ -67,6 +67,7 @@
       @supports (position-area: block-start) {
         position-area: block-start;
         margin-block: 8px;
+        margin-inline: 0;
       }
 
       @media (prefers-reduced-motion: no-preference) {
@@ -76,13 +77,14 @@
 
     /* ボタンの下に出し、左上の角（ボタンのある側）から広げる */
     ._menu {
-      margin: auto;
+      margin: revert;
       padding-block: 4px;
       transform-origin: 0% 0%;
 
       @supports (position-area: block-end span-inline-end) {
         position-area: block-end span-inline-end;
         margin-block: 8px;
+        margin-inline: 0;
       }
 
       @media (prefers-reduced-motion: no-preference) {
@@ -105,7 +107,7 @@
       gap: 16px;
       justify-items: end;
       max-inline-size: calc(360 / 16 * 1rem);
-      margin: auto;
+      margin: revert;
       padding: 24px;
 
       @media (prefers-reduced-motion: no-preference) {

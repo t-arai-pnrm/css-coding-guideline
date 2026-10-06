@@ -179,7 +179,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
 
 折り返す幅が「メインの最小幅＋サイドの幅＋列の間隔」になるのは、子の中身がそれより狭く縮められる場合だけです。フレックスアイテムは、`min-inline-size` の初期値 `auto` によって、中身の最小幅（`min-content`）より狭くなりません。折り返しの判定でも、`flex-basis` がこの最小幅より小さければ、最小幅のほうが使われます。
 
-たとえば、サイドに幅300pxの画像があると、`--sidebar--side-width` を240px相当にしても、判定には300pxが使われ、折り返す幅は計算より60px広がります（Chromeで確認）。メインに幅の広い表があるときも同じなので、公開プロパティの値は、それぞれの中身の最小幅より大きくしておきます。縦に積んだあとで中身が親からはみ出すときの対処は、「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
+たとえば、サイドに幅300pxの画像があると、`--sidebar--side-width` を240px相当にしても、判定には300pxが使われ、折り返す幅は計算より60px広がります（Chromeで確認）。メインに幅の広い表があるときも同じなので、公開プロパティの値は、それぞれの中身の最小幅より大きくしておきます。縦に積んだあとで中身が親からはみ出すときの対処は、「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
 
 ### grid-template で書くとき
 
@@ -232,7 +232,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
 
 横に並んでいる間、サイドの高さはメインと同じになります。`align-items` の初期値（`normal`）では、フレックスアイテムが行の高さいっぱいに伸びるからです。この性質を使うと、目次をスクロールに合わせて留める配置が作れます。
 
-`position: sticky` は、`.side-column` そのものではなく、その中の要素に指定します。`.side-column` は行の高さまで伸びているので、中の要素はその範囲でずれる余地を持ちます。`.side-column` に直接指定するなら、`align-self: start` で伸びるのを止めます（「[7-8 positionの基礎](/layout/positioning/#rule-sticky-align-self-start)」。伸びた要素には、ずれる余地がありません）。縦に積んだあとは、サイドの行の高さは中身と同じになるので、`sticky` を指定しても留まりません。
+`position: sticky` は、`.side-column` そのものではなく、その中の要素に指定します。`.side-column` は行の高さまで伸びているので、中の要素はその範囲でずれる余地を持ちます。`.side-column` に直接指定するなら、`align-self: start` で伸びるのを止めます（「[7-9 positionの基礎](/layout/positioning/#rule-sticky-align-self-start)」。伸びた要素には、ずれる余地がありません）。縦に積んだあとは、サイドの行の高さは中身と同じになるので、`sticky` を指定しても留まりません。
 
 ## ガイドライン
 

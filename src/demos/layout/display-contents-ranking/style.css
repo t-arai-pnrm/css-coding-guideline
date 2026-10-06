@@ -1,0 +1,128 @@
+@layer components {
+  @scope (.scoped.ranking) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._body {
+      /* 外側のコンポーネントの値を継承しないよう、クエリの外にもデフォルトの値を書く */
+      --_density: --compact;
+
+      /* 順位 48px 相当・タイトル 240px 相当・著者 120px 相当・日付 96px 相当と、列の隙間 16px が 3 つ、左右の余白 16px が並ぶ幅 */
+      @container --scoped (inline-size >= calc(48 / 16 * 1rem + 240 / 16 * 1rem + 120 / 16 * 1rem + 96 / 16 * 1rem + 16px * 3 + 16px * 2)) {
+        --_density: --spacious;
+      }
+
+      & > * + * {
+        margin-block-start: 12px;
+      }
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ul {
+      display: block grid;
+
+      /* 狭いときは、順位（不変）と記事の情報（残りすべて）の 2 列 */
+      grid-template-columns: max-content 1fr;
+      column-gap: 16px;
+      border-block-end: 1px solid oklch(88% 0 0deg);
+
+      /* 広いときは、順位（不変）・タイトル（残りすべて）・著者（120px 相当まで）・日付（不変）の 4 列 */
+      @container style(--_density: --spacious) {
+        grid-template-columns: max-content 1fr fit-content(calc(120 / 16 * 1rem)) max-content;
+      }
+    }
+
+    li {
+      --_background-color: transparent;
+
+      /* 箱をなくし、中の article を ul のグリッドアイテムにする。カスタムプロパティは article に継承される */
+      display: contents;
+
+      &:nth-child(odd of :not([hidden])) {
+        --_background-color: oklch(97% 0.01 250deg);
+      }
+    }
+
+    article {
+      display: block grid;
+
+      /* 列は ul のグリッドに参加させ、どの行でも列の位置をそろえる */
+      grid-template-columns: subgrid;
+      grid-column: 1 / -1;
+      align-items: start;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-block-start: 1px solid oklch(88% 0 0deg);
+      background-color: var(--_background-color);
+
+      @container style(--_density: --spacious) {
+        align-items: center;
+      }
+    }
+
+    ._rank {
+      color: oklch(55% 0.18 25deg);
+      font-weight: bold;
+      font-variant-numeric: tabular-nums;
+    }
+
+    ._meta {
+      /* 狭いときだけ箱を作り、タイトルの下に著者と日付を並べる */
+      @container style(--_density: --compact) {
+        display: block grid;
+        reading-flow: grid-rows;
+        grid-template:
+          "--title --title"
+          "--author --date"
+          / 1fr max-content;
+        gap: 8px 16px;
+        align-items: center;
+
+        & > ._title {
+          grid-area: --title;
+        }
+
+        & > ._author {
+          grid-area: --author;
+        }
+
+        & > time {
+          grid-area: --date;
+        }
+      }
+
+      /* 広いときは箱をなくし、タイトル・著者・日付を article のサブグリッドの 2〜4 列目に並べる */
+      @container style(--_density: --spacious) {
+        display: contents;
+      }
+    }
+
+    ._title {
+      font-size: calc(15 / 16 * 1rem);
+    }
+
+    a {
+      color: oklch(45% 0.15 260deg);
+
+      &:any-link:hover {
+        @media (any-hover) {
+          text-decoration-line: underline;
+        }
+      }
+    }
+
+    ._author,
+    time {
+      color: oklch(45% 0 0deg);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    time {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}

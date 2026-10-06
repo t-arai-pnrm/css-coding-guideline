@@ -1,6 +1,6 @@
 ---
 title: "7-7 Gridの基礎"
-description: "Gridは、親で線とトラックを決め、子をその線に合わせて置くレイアウトの方式です。明示的なグリッドと暗黙のグリッドの違い、線の番号と名前による配置、grid-template のエリア、*-items と *-content の違い、アイテムの最小幅と gap、サブグリッドでそろえるカードと一覧を説明します。"
+description: "Gridは、親で線とトラックを決め、子をその線に合わせて置くレイアウトの方式です。グリッドの用語、fr・fit-content()・minmax() によるトラックの大きさ、アイテムの最小幅と gap、明示的なグリッドと暗黙のグリッドの違い、線の番号と名前による配置、grid-template のエリアを説明します。"
 sidebar:
   order: 7
 ---
@@ -10,16 +10,10 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import implicitHtml from '../../../demos/layout/grid-basics-implicit/index.html?raw';
 import implicitCss from '../../../demos/layout/grid-basics-implicit/style.css?raw';
-import alignmentHtml from '../../../demos/layout/grid-basics-alignment/index.html?raw';
-import alignmentCss from '../../../demos/layout/grid-basics-alignment/style.css?raw';
-import subgridHtml from '../../../demos/layout/subgrid-cards/index.html?raw';
-import subgridCss from '../../../demos/layout/subgrid-cards/style.css?raw';
-import newsHtml from '../../../demos/layout/news-list/index.html?raw';
-import newsCss from '../../../demos/layout/news-list/style.css?raw';
 
-Gridは、親の要素で線とトラック（行と列）を決め、子をその線に合わせて置くレイアウトの方式です。トラックの大きさは `fr`、`minmax()`、`repeat()` で書き、行の数がアイテムの数で変わるなら、行は `grid-template-rows` ではなく `grid-auto-rows` で決めます。意味のある位置に置くアイテムは、線の番号ではなく、`--` で始まる線の名前で指定します。
+Gridは、親の要素で線とトラック（行と列）を決め、子をその線に合わせて置くレイアウトの方式です。トラックの大きさは、`fr`、`max-content`、`fit-content()`、`minmax()` で書きます。行の数がアイテムの数で変わるなら、行は `grid-template-rows` ではなく `grid-auto-rows` で決めます。意味のある位置に置くアイテムは、線の番号ではなく、`--` で始まる線の名前かエリアの名前で指定します。
 
-Gridの指定で読み違えが起きやすいのは、3つの区別です。明示的なグリッドと暗黙のグリッドの区別、配置のプロパティの `*-items` と `*-content` の区別、そしてトラックの最小幅を中身で決めるのか0にするのかの区別です。後半では、配置の構造を `grid-template` のエリアで書く方法と、サブグリッドで並べたカードの中の行をそろえる方法を説明します。レイアウトの手法の中からGridを選ぶ基準は「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」で扱います。
+Gridの指定で読み違えが起きやすいのは、明示的なグリッドと暗黙のグリッドの区別と、トラックの最小幅を中身で決めるのか0にするのかの区別です。このページでは、この2つを中心に、グリッドの用語、トラックの大きさ、線とエリアによる配置を説明します。配置のプロパティでアイテムをそろえる方法と、サブグリッドで行や列をそろえる方法は「[7-8 Gridでアイテムをそろえる](/layout/grid-alignment/)」で、レイアウトの手法の中からGridを選ぶ基準は「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」で扱います。
 
 <Baseline id="grid" />
 
@@ -29,19 +23,19 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 典型的なのは、`grid-row: 1 / -1` でサイドバーを全行にまたがらせたつもりが、途中の行で止まってしまう例です。`-1` は、アイテムが増えて足された行を数に入れないからです。
 
-配置のプロパティでは、`align-items: center` は効くのに `align-content: center` は効かない、あるいはその逆、という場面がよくあります。2つはそろえる対象が違うので、同じ値でも結果が変わります。
+行の大きさでも同じ種類の読み違えが起こります。`grid-template-rows: repeat(2, 160px)` と書いたカードの一覧で、3行目のカードだけが160pxではなく中身の高さで並ぶ、という現象です。3行目は、`grid-template-rows` の指定が届かない、ブラウザが足した行だからです。
 
 長いURLを含む `1fr` の列だけがほかの列より広がる、という現象もあります。どれも仕様どおりの振る舞いなので、値を足して見た目を合わせる前に、どの規則が働いているかを確かめます。
 
 ## グリッドを構成するものの名前
 
-`display: block grid` を指定した要素をグリッドコンテナ、その直接の子をグリッドアイテムと呼びます。孫の要素はアイテムではないので、親のグリッドには参加しません。孫を親のトラックに合わせたいときは、子をサブグリッドにします（この節の「サブグリッドで行と列をそろえる」）。要素に包まれていない文字も、匿名のアイテムとして1つのセルを占めます。
+`display: block grid` を指定した要素をグリッドコンテナ、その直接の子をグリッドアイテムと呼びます。孫の要素はアイテムではないので、親のグリッドには参加しません。孫を親のトラックに合わせたいときは、子をサブグリッドにします（「[7-8 Gridでアイテムをそろえる](/layout/grid-alignment/)」）。要素に包まれていない文字も、匿名のアイテムとして1つのセルを占めます。
 
 グリッドを区切る線をグリッド線と呼びます。隣り合う2本の線の間の帯がトラックで、横方向に並ぶものが列、縦方向に並ぶものが行です。3列のグリッドには、列の線が4本あります。線の番号は、インライン方向とブロック方向の始まりの側から1、2、3と数え、終わりの側からは-1、-2と数えます。始まりの側は書字方向で決まり、`direction: rtl` の文書では右端が1本目の線になります。
 
 1つの行と1つの列が交わる区画をセルと呼び、これがグリッドの最小の単位です。4本の線で囲まれた、1つ以上のセルからなる長方形の範囲をグリッドエリアと呼びます。アイテムは、線を指定してエリアに置かれます。トラックとトラックの間の隙間は、`gap` で作る溝（ガター）です。
 
-## トラックの大きさを決める `fr`、`minmax()`、`repeat()`
+## トラックの大きさを決める `fr`、`fit-content()`、`minmax()`、`repeat()`
 
 列の大きさは `grid-template-columns`、行の大きさは `grid-template-rows` に、トラックごとの値を空白で区切って並べます。値には、長さ、中身の大きさを表す `min-content`、`max-content`、`auto`、そして `fr` が使えます。
 
@@ -57,9 +51,25 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 }
 ```
 
-`minmax(最小, 最大)` は、トラックの大きさに下限と上限を付ける関数です。最大が最小より小さいときは、最大が無視され、最小の値になります。`fr` は最大の側にだけ書けて、`minmax(1fr, 200px)` のように最小の側に書くと、宣言全体が無効になります。単独で書いた `1fr` は、`minmax(auto, 1fr)` として扱われます。この `auto` の下限が「`1fr` が等分にならない」原因で、仕組みはこの節の後半の「アイテムの最小幅と `gap`」で説明します。
+中身の大きさを表すキーワードは、折り返しの扱いで区別します。`max-content` は、中身を1か所も折り返さずに並べたときの幅です。`min-content` は、折り返せる位置ですべて折り返したときの幅で、いちばん長い単語や画像の幅になります。文章を含む列を `min-content` にすると、単語や文字ごとに折り返されるので、`min-content` は画像やボタンのように折り返さない中身の列に限ります。
+
+`fit-content(上限)` は、トラックを中身の `max-content` に合わせ、上限で頭打ちにする関数です。中身が短ければ短いなりの幅になり、長ければ上限の幅で折り返します。下限は `auto` なので、`min-content` が上限より大きい中身では、トラックは上限を超えて `min-content` まで広がります。`auto` の下限とアイテムの `min-inline-size` の関係は、次の「アイテムの最小幅と `gap`」で説明します。
+
+`max-content`、`fit-content()`、`fr` は、列ごとに「中身に応じて幅が変わってよいか」を決めてから選びます。改行させたくない不変の列は `max-content`、上限まで中身に合わせる可変の列は `fit-content()`、残りの幅をすべて受け取る可変の列は `fr` です。この選び方を、ニュースの一覧と画像を並べるカードに当てはめた例は「[7-8 Gridでアイテムをそろえる](/layout/grid-alignment/)」で示します。
+
+`minmax(最小, 最大)` は、トラックの大きさに下限と上限を付ける関数です。最大が最小より小さいときは、最大が無視され、最小の値になります。`fr` は最大の側にだけ書けて、`minmax(1fr, 200px)` のように最小の側に書くと、宣言全体が無効になります。単独で書いた `1fr` は、`minmax(auto, 1fr)` として扱われます。この `auto` の下限が「`1fr` が等分にならない」原因で、仕組みは次の「アイテムの最小幅と `gap`」で説明します。
 
 `repeat(回数, トラック)` は、同じトラックの並びを繰り返す関数です。`repeat(3, 1fr)` は等分の3列になり、`repeat(2, 2fr 1fr)` のように複数のトラックの組も繰り返せます。回数の代わりに `auto-fill` か `auto-fit` を書くと、最小の幅を下回らない範囲で入るだけの列を作ります。2つの違いはアイテムが列の数より少ないときに現れ、`auto-fill` は空の列を残し、`auto-fit` は空の列を幅0に折りたたみます。使い分けは「[13-1 検討する順番](/responsive/escalation/)」と「[12-6 grid](/compositions/grid/)」で説明しています。
+
+## アイテムの最小幅と `gap`
+
+グリッドアイテムの `min-inline-size` の初期値 `auto` は、0ではありません。下限が `auto` のトラックにまたがるアイテムでは、中身の最小幅（`min-content` に近い値）が下限になります。単独の `1fr` は `minmax(auto, 1fr)` なので、長いURLや幅の大きい入力欄を含むアイテムは、その下限まで列を押し広げます。例外は、`overflow: auto` などでスクロールコンテナになったアイテムで、この場合の下限は0です。
+
+防ぎ方は2つあります。1つは、トラックの側で `minmax(0, 1fr)` と書き、列の下限を0にする方法です。もう1つは、ベーススタイルの全称セレクタで `min-inline-size: 0` を指定し、アイテムの下限を0にする方法です（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。本書は後者を使い、列は `1fr` のまま書きます。アイテムの下限が0なら、下限が `auto` のトラックの下限も0になるからです（「[11-3 変化に強いレイアウト](/layout-practice/defensive/#rule-fr-without-minmax-zero)」）。
+
+アイテムの間隔は、アイテムの `margin` ではなく、コンテナの `gap` で作ります（「[11-2 余白を設計する](/layout-practice/spacing/#rule-gap-over-child-margin)」）。`gap` は行の間隔と列の間隔を順に書くショートハンドで、片方だけなら `row-gap` か `column-gap` で指定します。溝はトラックとトラックの間にだけ作られ、グリッドの外周にはできません。
+
+溝はトラックではないので、線の番号にも数えられません。一方、溝は空のトラックの間にも作られます。`auto-fit` で折りたたまれた列の溝は一緒に消えますが、暗黙の行がたくさん作られたグリッドでは、高さ0の空の行の間にも溝が残ります。アイテムの数より行が多くなる指定をしたときは、溝の積み重なりで余白が広がっていないかを確かめます。
 
 ## 明示的なグリッドと暗黙のグリッド
 
@@ -87,7 +97,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 アイテムを自動で置く向きは、`grid-auto-flow` で決まります。初期値の `row` では、アイテムを行の端まで順に詰め、足りなくなると暗黙の行を足します。`column` にすると、列の方向に詰め、足りなくなると暗黙の列を足します。`grid-auto-flow: column` と `grid-auto-columns: 1fr` を組み合わせると、アイテムがいくつあっても1行に等分で並ぶ、ステップ表示のような並びが書けます。
 
-`grid-auto-flow` に `dense` を加えると、複数のトラックにまたがるアイテムのせいで空いたセルへ、後ろのアイテムを先に詰めます。隙間は消えますが、見た目の順番だけが変わり、DOMの順番は変わりません。キーボードの移動と読み上げはDOMの順番のままなので、`dense` はタグやサムネイルの一覧のように、順序に意味のない並びに限ります。フォーカスできる要素や、手順、ランキングを並べたグリッドには指定しません。高さの違う項目を短い列へ詰める `display: block grid-lanes` でも、同じ種類の食い違いが起こります。その対処は「[11-10 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」で説明しています。
+`grid-auto-flow` に `dense` を加えると、複数のトラックにまたがるアイテムのせいで空いたセルへ、後ろのアイテムを先に詰めます。隙間は消えますが、見た目の順番だけが変わり、DOMの順番は変わりません。キーボードの移動と読み上げはDOMの順番のままなので、`dense` はタグやサムネイルの一覧のように、順序に意味のない並びに限ります。フォーカスできる要素や、手順、ランキングを並べたグリッドには指定しません。高さの違う項目を短い列へ詰める `display: block grid-lanes` でも、同じ種類の食い違いが起こります。その対処は「[11-9 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」で説明しています。
 
 ## 線の番号と線の名前でアイテムを置く
 
@@ -116,7 +126,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 }
 ```
 
-この例では、本文の列の左右に余白の列（ガター）を置き、通常のアイテムは本文の列に、`._hero` だけは画面の端から端まで置いています。同じ配置を `grid-column: 2 / 3` と `1 / 4` で書くと、列を1本足しただけで、すべてのアイテムの番号を直すことになります。名前なら、列を足しても名前の位置は変わらず、コードを読めば何の位置に置くのかが分かります。ガターの列を使う設計は「[11-3 余白を設計する](/layout-practice/spacing/#rule-gutter-columns-for-content-width)」で説明しています。
+この例では、本文の列の左右に余白の列（ガター）を置き、通常のアイテムは本文の列に、`._hero` だけは画面の端から端まで置いています。同じ配置を `grid-column: 2 / 3` と `1 / 4` で書くと、列を1本足しただけで、すべてのアイテムの番号を直すことになります。名前なら、列を足しても名前の位置は変わらず、コードを読めば何の位置に置くのかが分かります。ガターの列を使う設計は「[11-2 余白を設計する](/layout-practice/spacing/#rule-gutter-columns-for-content-width)」で説明しています。
 
 名前を書き間違えたときの振る舞いは、見落としやすいので知っておきます。指定した名前の線がグリッドにないと、ブラウザは暗黙のトラックの線がすべてその名前を持つものとみなし、エラーを出さずに、アイテムを明示的なグリッドの外に置きます。配置がずれたときは、まず名前の綴りを確かめます。`grid-template-areas` で付けたエリアの名前も、同じように `-start` と `-end` の線の名前を作ります。
 
@@ -177,19 +187,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 この例では、HTMLには見出しを先に書き、見た目では画像を先に表示しています。HTMLは見た目の順番ではなく、見出しから始まる文書構造の順番で書き、見た目の順番はGridの配置で変えます。スクリーンリーダーの読み上げや、CSSが適用されない環境でも、内容が意味の通る順番で伝わるからです。
 
-ただし、リンクやボタンのようにフォーカスできる要素を並べ替えると、キーボードで移動する順番が見た目と食い違います。見た目の順番に合わせて移動させる `reading-flow` というプロパティもありますが、2026年10月の時点で対応しているのはChromeとEdgeの137以降だけです。フォーカスできる要素は、HTMLの順番と見た目の順番をそろえておきます。上の例のように `grid-template` で並べ替えるときは、同じルールに `reading-flow` も指定します。理由と値の選び方は「[11-11 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
-
-## `*-items` と `*-content` の違い
-
-配置のプロパティは、方向と対象の組み合わせでできています。`justify-*` はインライン方向（横書きでは横）、`align-*` はブロック方向（横書きでは縦）を扱います。`*-items` は、各アイテムを自分のグリッドエリアの中でそろえ、`*-self` はそれを1つのアイテムだけ上書きします。`*-content` は、トラックのまとまり全体を、グリッドコンテナの中でそろえます。
-
-`*-items` の初期値 `normal` は、Gridではアイテムをエリアいっぱいに伸ばす `stretch` として働きます。ただし、画像のように縦横比を持つアイテムは、伸ばされず `start` として扱われます。
-
-`*-content` が効くのは、トラックの合計がグリッドコンテナより小さく、余りがあるときだけです。`fr` のトラックは余りをすべて受け取るので、`fr` の列だけのグリッドに `justify-content: center` を指定しても、何も変わりません。トラックの大きさを固定の長さや `max-content` で決めたときに、`place-content: center` でまとまりを中央に寄せたり、`space-between` で両端に散らしたりできます。
-
-`*-content` の初期値 `normal` は、`auto` の大きさのトラックを余りの分だけ伸ばします。行を指定していないグリッドに高さを与えると、各行が中身の高さより広がり、余りを等分して受け取るのはこのためです。行を中身の高さのまま上に詰めたいなら、`align-content: start` を指定します。
-
-`place-items` と `place-content` は、`align-*` と `justify-*` をまとめて書くショートハンドです。値を2つ書くときは、ブロック方向の `align-*` が先、インライン方向の `justify-*` が後になります。値が1つなら、両方の方向に同じ値が入ります。なお、Flexboxには `justify-items` と `justify-self` がなく、指定しても無視されます（「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」）。
+ただし、リンクやボタンのようにフォーカスできる要素を並べ替えると、キーボードで移動する順番が見た目と食い違います。見た目の順番に合わせて移動させる `reading-flow` というプロパティもありますが、2026年10月の時点で対応しているのはChromeとEdgeの137以降だけです。フォーカスできる要素は、HTMLの順番と見た目の順番をそろえておきます。上の例のように `grid-template` で並べ替えるときは、同じルールに `reading-flow` も指定します。理由と値の選び方は「[11-10 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
 
 ## コード例とデモ
 
@@ -199,122 +197,18 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 <Demo title="明示的な行と暗黙の行、負の線番号の範囲" html={implicitHtml} css={implicitCss} />
 
-次のデモは、固定の大きさの2列2行のトラックを、高さ200pxのコンテナに置いたものです。`place-items: center` ではトラックは左上に残り、アイテムがセルの中で縮みます。`place-content: center` ではアイテムはセルいっぱいのまま、トラックのまとまりが中央へ移ります。
-
-<Demo title="place-items と place-content の違い" html={alignmentHtml} css={alignmentCss} />
-
-2つは対象が違うので、組み合わせても打ち消し合いません。アイコンの一覧をコンテナの中央に置き、アイコンもセルの中央に置くなら、両方を指定します。
-
-```css title="🙆‍♂ Recommended: トラックのまとまりとアイテムを、それぞれ中央に置く"
-._icon-list {
-  display: block grid;
-  grid-template-columns: repeat(4, calc(64 / 16 * 1rem));
-  gap: 16px;
-  place-content: center;
-  place-items: center;
-}
-```
-
-## アイテムの最小幅と `gap`
-
-グリッドアイテムの `min-inline-size` の初期値 `auto` は、0ではありません。下限が `auto` のトラックにまたがるアイテムでは、中身の最小幅（`min-content` に近い値）が下限になります。単独の `1fr` は `minmax(auto, 1fr)` なので、長いURLや幅の大きい入力欄を含むアイテムは、その下限まで列を押し広げます。例外は、`overflow: auto` などでスクロールコンテナになったアイテムで、この場合の下限は0です。
-
-防ぎ方は2つあります。1つは、トラックの側で `minmax(0, 1fr)` と書き、列の下限を0にする方法です。もう1つは、ベーススタイルの全称セレクタで `min-inline-size: 0` を指定し、アイテムの下限を0にする方法です（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。本書は後者を使い、列は `1fr` のまま書きます。アイテムの下限が0なら、下限が `auto` のトラックの下限も0になるからです（「[11-4 変化に強いレイアウト](/layout-practice/defensive/#rule-fr-without-minmax-zero)」）。
-
-アイテムの間隔は、アイテムの `margin` ではなく、コンテナの `gap` で作ります（「[11-3 余白を設計する](/layout-practice/spacing/#rule-gap-over-child-margin)」）。`gap` は行の間隔と列の間隔を順に書くショートハンドで、片方だけなら `row-gap` か `column-gap` で指定します。溝はトラックとトラックの間にだけ作られ、グリッドの外周にはできません。
-
-溝はトラックではないので、線の番号にも数えられません。一方、溝は空のトラックの間にも作られます。`auto-fit` で折りたたまれた列の溝は一緒に消えますが、暗黙の行がたくさん作られたグリッドでは、高さ0の空の行の間にも溝が残ります。アイテムの数より行が多くなる指定をしたときは、溝の積み重なりで余白が広がっていないかを確かめます。
-
-## サブグリッドで行と列をそろえる
-
-カードを横に並べると、見出しの行数や本文の長さがカードごとに違い、ボタンの位置がばらばらになります。よくある対策は、カードを `flex-direction: column` にして、本文に `flex-grow: 1` を指定する方法です。これでボタンの位置はそろいますが、見出しの高さはそろいません。そろえられるのは、伸ばした1か所だけです。
-
-見出しに `min-height` を指定したり、JavaScriptで高さを測ってそろえたりする方法もあります。しかし、固定の高さは見出しが想定より長くなると破綻し、JavaScriptは読み込みや再計算の手間がかかります。今は、サブグリッドを使えばCSSだけですべての行をそろえられます。
-
-<Baseline id="subgrid" />
-
-```css title="🙆‍♂ Recommended: カードの行を、並べる側のグリッドの行に参加させる"
-@scope (.scoped.card-grid) to (.scoped) {
-  :scope {
-    display: block grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
-    gap: 24px 16px;
-  }
-
-  article {
-    display: block grid;
-    grid-template-rows: subgrid;
-    grid-row: span 3;
-    row-gap: 8px;
-  }
-}
-```
-
-`grid-template-rows: subgrid` を指定したカードは、自分の行を持たず、並べる側のグリッドの行をそのまま使います。同じ行に並んだカードの見出しは、同じ高さの行に入ります。行の高さは、その行でいちばん高い見出しに合わせて決まります。本文とボタンの行も同じです。
-
-`grid-row: span 3` は、カードが親の行を3行分使うという指定で、中の要素の数と一致させます。指定を忘れると、カードは親の1行分にしかまたがらず、見出しと本文とボタンが同じ1行に押し込まれてしまいます。サブグリッドの行の間隔は、何も指定しなければ親の `gap` を引き継ぐので、カードの中の間隔は `row-gap` で指定し直しています。
-
-サブグリッドにした方向には、暗黙のトラックが作られません。カードに4つ目の要素を足しても、`span 3` のままでは新しい行は増えず、はみ出した要素は最後の行に重なります。要素を足したら、`span` の数も直します。カードごとに要素の数が違い、`span` の数を1つに決められないときは、その方向をサブグリッドにしたままでは解決できません。サブグリッドの行の数は、親から受け継いだ数で決まり、中身から逆算する仕組みがないからです。そろえる行をすべてのカードに共通の部分に限るか、その方向のサブグリッドをやめます。また、サブグリッドの中の線の番号は、1から数え直されます。カードの中で `grid-row: 1` と書けば、カードが親のどの行に置かれていても、カードの最初の行を指します。
-
-線の番号と違い、線の名前とエリアの名前は親から引き継がれます。親で `--content-start` と名付けた線や、`grid-template-areas` で付けたエリアの名前は、サブグリッドの中のアイテムからもそのまま指定できます。サブグリッドの側で `grid-template-columns: subgrid [--label] [--value]` のように名前の並びを書くと、受け継いだ線に自分用の名前を足すこともできます。名前で置いておけば、親の列の構成が変わっても、カードの側の指定を直さずに済みます。
-
-サブグリッドにした要素の `padding` と `border` は、トラックを狭めるのではなく、端のトラックに置かれたアイテムの余白として扱われます。親の行の大きさを決めるときもこの余白が含まれるので、カードの最初と最後の行は、`padding` の分だけ高くなります。次のデモのカードには `padding: 16px` を指定していますが、すべてのカードが同じ余白を持つので、見出しや本文の位置はずれません。
-
-要素の数がカードごとに違う場合の回避策として、`grid-row: span 99` のように大きめの行数を予約する方法も知られています。中身のない行は高さ0になるので、先頭からの行はそろいます。ただし、親の `row-gap` は空の行の間にも入るので、親の行の間隔を0にしてカードの間隔を別の方法で作る必要があります。また、要素の数が違えば最後の要素は別の行に入るので、末尾のボタンの位置はそろいません。
-
-次のデモでは、見出しと本文の長さが違う3枚のカードを並べています。幅のボタンで768pxを選ぶと3列になり、見出し、本文、ボタンの位置が横一列にそろいます。
-
-<Demo title="サブグリッドで、カードの見出し・本文・ボタンの位置をそろえる" html={subgridHtml} css={subgridCss} />
-
-サブグリッドは、列をそろえるときにも使えます。日付、カテゴリ、タイトルを1行ずつ並べるニュースの一覧を考えます。列の幅を決める前に、それぞれの列が可変か不変かを考えます。日付は途中で改行されると読みにくいので、改行しない不変の列です。カテゴリは長すぎると窮屈になるので、上限を決めた可変の列にします。タイトルは、残りの幅をすべて使う可変の列です。
-
-```css title="🙆‍♂ Recommended: 列ごとに可変か不変かを決め、項目の列をサブグリッドでそろえる"
-@scope (.scoped.news-list) to (.scoped) {
-  ul {
-    display: block grid;
-    grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) 1fr;
-    column-gap: 24px;
-    padding-inline: 24px;
-  }
-
-  li {
-    display: block grid;
-    grid-template-columns: subgrid;
-    grid-column: 1 / -1;
-    align-items: baseline;
-    padding-block: 1rlh;
-  }
-}
-```
-
-1列目の `max-content` は、日付の幅そのものです。日付の列は、中身より狭くならず、改行もされません。2列目の `fit-content()` は、中身の幅に合わせつつ、括弧の中の値を上限にする指定です。カテゴリが短ければ短いなりの幅になり、長ければ160px相当で折り返します。3列目の `1fr` は、残りの幅をすべて受け取ります。
-
-項目の `li` は、`grid-column: 1 / -1` で親の3列すべてにまたがり、`grid-template-columns: subgrid` で親の列をそのまま使います。どの項目のカテゴリが長くても、列の幅は一覧全体で1つに決まるので、日付、カテゴリ、タイトルの開始位置がすべての行でそろいます。`align-items: baseline` は、文字の大きさが違うカテゴリとタイトルを、文字のベースラインでそろえる指定です。項目の上下の余白には、ルート要素の行の高さを単位にした `1rlh` を使っています。
-
-{/* 要確認: 出典なし */}ただし、一覧を狭い場所に置くと、日付とカテゴリの列に幅を取られて、タイトルの列が極端に細くなります。次のデモでは、一覧のルートをコンテナにして、タイトルが160px相当を確保できない幅ではタイトルを次の行へ移しています。
-
-<Demo title="日付・カテゴリ・タイトルの列を、サブグリッドで全項目にそろえる" html={newsHtml} css={newsCss} />
-
-サブグリッドにできるのは、グリッドの直接の子だけです。カードを `<li>` で包んでいるなど、グリッドとカードの間に別の要素があるときは、その要素に `display: contents` を指定して箱をなくします。ただし、`display: contents` を指定した要素は、ブラウザによっては暗黙のロールを失うことがあります。ロールを持たない `<div>` なら問題はありません。`<li>` や `<section>` なら、`role` 属性でロールを明示し、スクリーンリーダーで読み上げを確かめます。
-
-サブグリッドを使うカードは、親がグリッドであることを前提にしています。そのため、カードを並べる側のグリッドまで含めて、1つのコンポーネントとして扱います。この考え方は「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
-
 ## ガイドライン
 
 <Guideline />
 
 ## 参考リンク
 
-- [An Interactive Guide to CSS Grid](https://www.joshwcomeau.com/css/interactive-guide-to-grid/)（Josh W. Comeau、2023年11月、2026年6月更新）
 - [Cheatsheets for Flex, Grid, Anchor positioning and Invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
-- [カードの高さを揃えたければsubgridを使えばいい](https://www.tak-dcxi.com/article/if-you-want-to-align-the-heights-of-the-cards-you-can-use-subgrid/)（TAKLOG、2024年3月）
-- [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月）
+- [An Interactive Guide to CSS Grid](https://www.joshwcomeau.com/css/interactive-guide-to-grid/)（Josh W. Comeau、2023年11月、2026年6月更新）
 - [CSS Grid Layout Module Level 1](https://www.w3.org/TR/css-grid-1/)（W3C）
-- [CSS Grid Layout Module Level 2](https://www.w3.org/TR/css-grid-2/)（W3C）
-- [CSS Box Alignment Module Level 3](https://www.w3.org/TR/css-align-3/)（W3C）
 - [グリッドレイアウトの基本概念 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout)
 - [線ベースの配置を用いたグリッドレイアウト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Grid_layout_using_line-based_placement)
 - [グリッドの自動配置 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Auto-placement_in_grid_layout)
 - [grid-template - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template)
-- [サブグリッド - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Subgrid)
+- [minmax() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/minmax)
 - [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)

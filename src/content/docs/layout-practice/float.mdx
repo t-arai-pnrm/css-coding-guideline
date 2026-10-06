@@ -1,8 +1,8 @@
 ---
-title: "11-2 floatで文章を回り込ませる"
-description: "文章を要素のまわりに回り込ませる配置には float を使います。画像の横と下に文章を流す配置、閉じるボタンや装飾の画像を文章の角に置く配置、行頭のアイコンを1行目にそろえる配置が当てはまります。値は inline-start と inline-end の論理値で書き、float の要素を囲む要素には display: flow-root を指定します。"
+title: "11-12 floatで文章を回り込ませる"
+description: "文章を要素のまわりに回り込ませる配置には float を使います。画像の横と下に文章を流す配置、閉じるボタンや装飾の画像を文章の角に置く配置が当てはまります。値は inline-start と inline-end の論理値で書き、float の要素を囲む要素には display: flow-root を指定します。"
 sidebar:
-  order: 2
+  order: 12
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -11,7 +11,7 @@ import Guideline from '../../../components/Guideline.astro';
 import floatCornerHtml from '../../../demos/layout-practice/float-corner/index.html?raw';
 import floatCornerCss from '../../../demos/layout-practice/float-corner/style.css?raw';
 
-文章を要素のまわりに回り込ませる配置には、`float` を使います。画像の横と下に文章を流す配置のほか、モーダルの閉じるボタンや右上の装飾の画像を文章の角に置く配置、行頭のアイコンを1行目の文字にそろえる配置が当てはまります。値は `right` ではなく `inline-end` のように論理値で書き、`float` の要素を囲む要素には `display: flow-root` を指定します。
+文章を要素のまわりに回り込ませる配置には、`float` を使います。画像の横と下に文章を流す配置のほか、モーダルの閉じるボタンや右上の装飾の画像を文章の角に置く配置が当てはまります。値は `right` ではなく `inline-end` のように論理値で書き、`float` の要素を囲む要素には `display: flow-root` を指定します。
 
 `float` は古い手法と見なされがちですが、回り込みはFlexboxやGridでは作れない配置で、今でもいちばん崩れにくい手法です。私は、文章の角に要素を置く場面でも、`position: absolute` ではなく `float` を使います。作るものに合わせた手法全体の選び方は、「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」で説明しています。
 
@@ -50,7 +50,7 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
 <Baseline id="display-flow-root" />
 
-フレックスアイテムとグリッドアイテムでは、`float` は無視されます。回り込みは通常フローの仕組みなので、回り込ませる要素と文章は、`display` を変えていない親の中に置きます。記事の本文を `gap` で間隔を作るためにFlexboxやGridにしない理由の1つは、ここにあります（「[11-3 余白を設計する](/layout-practice/spacing/)」）。
+フレックスアイテムとグリッドアイテムでは、`float` は無視されます。回り込みは通常フローの仕組みなので、回り込ませる要素と文章は、`display` を変えていない親の中に置きます。記事の本文を `gap` で間隔を作るためにFlexboxやGridにしない理由の1つは、ここにあります（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
 
 `float` の値は、`left` や `right` ではなく、`inline-start` と `inline-end` で書きます。行の始端と終端を指すので、縦書きや右から左へ書く言語でも、意図した側に寄せられます。論理値にそろえる理由は「[9-8 論理プロパティと論理値](/notation/logical-properties/)」で説明しています。
 
@@ -61,12 +61,12 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 ```css title="🙆‍♂ Recommended: 回り込みには float を使い、flow-root で内側に収める"
 ._description {
   display: block flow-root;
-}
 
-._figure {
-  float: inline-end;
-  inline-size: min(50%, calc(320 / 16 * 1rem));
-  margin-inline-start: 16px;
+  & > ._figure {
+    float: inline-end;
+    inline-size: min(50%, calc(320 / 16 * 1rem));
+    margin-inline-start: 16px;
+  }
 }
 ```
 
@@ -77,15 +77,19 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 <Baseline id="shape-outside" />
 
 ```css title="🙆‍♂ Recommended: 円形の写真のまわりに、円に沿って文章を回り込ませる"
-._avatar {
-  float: inline-start;
-  inline-size: calc(160 / 16 * 1rem);
-  aspect-ratio: 1;
-  margin-inline-end: 16px;
-  border-radius: calc(infinity * 1px);
-  shape-margin: 16px;
-  shape-outside: circle(50%) border-box;
-  object-fit: cover;
+._profile {
+  display: block flow-root;
+
+  & > ._avatar {
+    float: inline-start;
+    inline-size: calc(160 / 16 * 1rem);
+    aspect-ratio: 1;
+    margin-inline-end: 16px;
+    border-radius: calc(infinity * 1px);
+    shape-margin: 16px;
+    shape-outside: circle(50%) border-box;
+    object-fit: cover;
+  }
 }
 ```
 
@@ -124,48 +128,13 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
 <Demo title="閉じるボタンと装飾の画像を float で文章の角に置く" html={floatCornerHtml} css={floatCornerCss} />
 
-## 行頭のアイコンを1行目にそろえる
-
-リストの項目の先頭にアイコンを置くとき、項目をFlexboxにして `align-items: center` を指定することがよくあります。1行なら問題ありませんが、文章が2行以上になると、アイコンは項目全体の高さの中央に置かれ、1行目からずれます。項目の中に `strong` や `a` があると、それぞれが別のフレックスアイテムになり、文章が途中で分かれてしまうこともあります。
-
-アイコンを擬似要素で描き、`float: inline-start` で行の始端に寄せれば、文章は通常フローのまま流れます。アイコンの上下の `margin` を `calc((1lh - アイコンの大きさ) / 2)` にすると、1行目の行の高さの中で、アイコンが上下の中央に置かれます。
-
-```css title="🙆‍♂ Recommended: float したアイコンを、1行目の行の高さの中央に置く"
-@scope (.scoped.check-list) to (.scoped) {
-  li {
-    --_icon-size: 1em;
-    --_gap: 0.5em;
-
-    display: block flow-root;
-    padding-inline-start: calc(var(--_icon-size) + var(--_gap));
-
-    &::before {
-      content: "";
-      float: inline-start;
-      inline-size: var(--_icon-size);
-      aspect-ratio: 1;
-
-      /* 1行目の行の高さの中で、上下の中央に置く */
-      margin-block: calc((1lh - var(--_icon-size)) / 2);
-
-      /* 項目の padding の中へ戻し、文章の幅を狭めない */
-      margin-inline-start: calc((var(--_icon-size) + var(--_gap)) * -1);
-      border: 0.3em solid;
-      border-radius: calc(infinity * 1px);
-    }
-  }
-}
-```
-
-`1lh` は、その要素の行の高さです。擬似要素は項目の文字の大きさと行の高さを継承するので、文字の大きさを変えても、アイコンは1行目の中央に置かれたままです。負の `margin-inline-start` で擬似要素を項目の `padding` の中へ戻しているので、文章の行は短くなりません。2行目以降も、アイコンの下へ回り込まずに1行目とそろいます。
-
-この `margin` は、要素の間の間隔ではなく、アイコンの位置を決める指定です。要素の間の縦の `margin` を次兄弟結合子で付けるルール（「[11-3 余白を設計する](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)」）の対象には含めません。アイコンを `border` で描いているのは、強制カラーモードでも線の色がシステムカラーに置き換わって残るからです（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
-
 ## 補足と注意点
 
-HTMLでは、`float` の要素を、回り込む文章より先に書く必要があります。そのため、モーダルでは閉じるボタンが見出しより先に読み上げられ、フォーカスも先に移ります。見出しを先に読ませたいときは、本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定します。値を `-1` に限る理由と、`reading-flow` に対応したブラウザの状況は「[11-11 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
+HTMLでは、`float` の要素を、回り込む文章より先に書く必要があります。そのため、モーダルでは閉じるボタンが見出しより先に読み上げられ、フォーカスも先に移ります。見出しを先に読ませたいときは、本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定します。値を `-1` に限る理由と、`reading-flow` に対応したブラウザの状況は「[11-10 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
 
 回り込みを途中で止め、ある要素から下を `float` の要素より下に置きたいときは、その要素に `clear` を指定します。値は `float` と同じく、`inline-start`、`inline-end`、`both` で書きます。ただし、記事の節ごとに回り込みを閉じたいだけなら、節を囲む要素に `display: flow-root` を指定するほうが、どの要素に `clear` が要るかを考えずに済みます。
+
+リストの行頭のアイコンも、中身に `strong` や複数の段落が入って項目をGridにできないときは、`float` で行の始端に置きます。`margin-block` に `1lh` を使った式で1行目の中央にそろえる書き方と、GridやFlexboxで置く場合との使い分けは、「[11-11 アイコンを配置する](/layout-practice/icon-alignment/)」で説明しています。
 
 `float` は、要素を横へ並べる目的では使いません。横に並べるならGridかFlexboxを使い、要素の幅を中身に合わせたいなら `inline-size: fit-content` を使います（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。`float` を使うのは、文章を回り込ませたいときだけです。
 
@@ -179,7 +148,6 @@ HTMLでは、`float` の要素を、回り込む文章より先に書く必要�
 {/* textlint-disable ja-technical-writing/no-doubled-joshi */}
 
 - [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
-- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月）：行頭のアイコンを1行目にそろえる書き方
 - [Modal](https://codepen.io/tak-dcxi/pen/RNPvmQr)（CodePen、TAK、2025年12月）：閉じるボタンを `float` と `position: sticky` で置くモーダルの実装例
 - [CSS 2.2: Floats](https://www.w3.org/TR/CSS22/visuren.html#floats)
 - [float - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/float)

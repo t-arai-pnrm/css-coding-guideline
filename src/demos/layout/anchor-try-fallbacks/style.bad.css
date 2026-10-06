@@ -1,0 +1,50 @@
+@layer components {
+  @scope (.scoped.tip-stage) to (.scoped) {
+    :scope {
+      /* はみ出したかどうかは、この包含ブロックを基準に判定される */
+      position: relative;
+      display: block grid;
+      grid-template-rows: 1fr 1fr;
+      min-block-size: calc(240 / 16 * 1rem);
+      padding: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._item {
+      /* 項目ごとに同じ名前のアンカーを置くので、名前が届く範囲を項目の中に限る */
+      anchor-scope: --tip-stage;
+
+      &:last-child {
+        align-self: end;
+      }
+    }
+
+    ._anchor {
+      anchor-name: --tip-stage;
+      display: inline flow-root;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+      background-color: oklch(45% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+    }
+
+    ._tip {
+      display: block flow-root;
+      inline-size: fit-content;
+      padding-block: 4px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(92% 0.08 85deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      @supports (position-area: block-end span-inline-end) {
+        position: absolute;
+        position-area: block-end span-inline-end;
+        position-anchor: --tip-stage;
+        margin-block-start: 8px;
+      }
+    }
+  }
+}

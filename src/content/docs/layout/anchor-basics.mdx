@@ -1,0 +1,220 @@
+---
+title: "7-10 アンカーポジショニングの基礎"
+description: "アンカーポジショニングは、絶対配置の要素を、包含ブロックの辺ではなく別の要素（アンカー）の辺を基準に置く仕組みです。anchor-name と position-anchor による結び付け、anchor() と anchor-size()、position-area の9マス、position-try-fallbacks による位置の切り替え、ポップオーバーの暗黙のアンカー、包含ブロックとの関係、未対応の環境への備えを説明します。"
+sidebar:
+  order: 10
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import areaHtml from '../../../demos/layout/anchor-position-area/index.html?raw';
+import areaCss from '../../../demos/layout/anchor-position-area/style.css?raw';
+import tryHtml from '../../../demos/layout/anchor-try-fallbacks/index.html?raw';
+import tryCss from '../../../demos/layout/anchor-try-fallbacks/style.css?raw';
+import tryBadCss from '../../../demos/layout/anchor-try-fallbacks/style.bad.css?raw';
+
+アンカーポジショニングは、`absolute` か `fixed` の要素を、包含ブロックの辺ではなく、別の要素（アンカー）の辺を基準に置く仕組みです。アンカーに `anchor-name` で名前を付け、配置する要素の `position-anchor` でその名前を参照し、`position-area` で置く領域を選びます。画面の端で収まらないときは、`position-try-fallbacks` で反対側へ切り替えます。
+
+本書では、ポップオーバーを開くボタンを基準にするなら、名前を付けずに暗黙のアンカーを使います。`position-area` の値は論理キーワードで書きます。対象のブラウザの一部が対応していないので、アンカーを基準にした指定は `@supports` の中に書き、その外に、未対応の環境でも内容を読めて操作できる配置を書きます。
+
+この節は、「[7-9 positionの基礎](/layout/positioning/)」の続きで、絶対配置と包含ブロックの仕組みを前提にしています。ツールチップやメニュー、ホバーした項目への背景の追従といった使い方は、「[11-6 アンカーポジショニング](/layout-practice/anchor-positioning/)」で扱います。
+
+## 絶対配置だけでは別の要素の隣に置けない
+
+絶対配置の要素は、包含ブロックの辺からの距離で置かれます。ボタンのすぐ下に説明を出すなら、ボタンと説明を1つの要素で包み、その要素に `position: relative` を指定して包含ブロックにします。説明は、その要素の子孫に置くしかありません。
+
+祖先に `overflow: hidden` があると、説明はその範囲で切り取られます。説明をポップオーバーにすれば切り取られませんが、トップレイヤーに表示されるので包含ブロックはビューポートになり、ボタンの位置にはそろえられません。
+
+そのため、この位置はJavaScriptで決めてきました。ボタンの位置と大きさを調べて座標を計算し、スクロールや画面の大きさが変わるたびに計算し直します。画面の端で収まらないときに反対側へ回す処理も、自前で書くか、ライブラリで補います。{/* 要確認: 出典なし */}
+
+アンカーポジショニングでは、この計算をブラウザが行います。位置の基準はアンカーになり、包含ブロックは、配置できる範囲の外枠として働きます。
+
+## アンカーと配置する要素を結び付ける
+
+アンカーにする要素には `anchor-name` で名前を付け、配置する要素には `position-anchor` でその名前を指定します。名前は、カスタムプロパティと同じく `--` で始まる識別子です（「[9-1 命名規則](/notation/naming/)」）。`position-anchor` で決めたアンカーは「デフォルトのアンカー」と呼ばれ、`position-area` と、名前を省いた `anchor()` の基準になります。
+
+```css title="🙆‍♂ Recommended: アンカーに名前を付け、配置する要素から参照する"
+@scope (.scoped.field-note) to (.scoped) {
+  input {
+    anchor-name: --field-note;
+  }
+
+  ._note {
+    @supports (position-area: block-end span-inline-end) {
+      position: absolute;
+      position-area: block-end span-inline-end;
+      position-anchor: --field-note;
+    }
+  }
+}
+```
+
+アンカーには、配置する要素より先にレイアウトが済んでいる要素しかなれません。具体的には、アンカーが配置する要素の包含ブロックの中にあり、同じ包含ブロックに置かれた絶対配置の要素どうしなら、アンカーが文書の順で先にある必要があります。包含ブロックを作っている要素そのものと、その外にある要素は、アンカーにできません。条件を満たすアンカーがなければ、`position-area` は働かず、要素は通常の絶対配置の位置に置かれます。
+
+同じ名前のアンカーが複数あるときは、条件を満たすもののうち、文書の順で最後の要素が選ばれます。入力欄の説明のようなコンポーネントを繰り返し置くと、別の入力欄が基準に選ばれることがあります。`anchor-scope` は、名前が届く範囲を、指定した要素の子孫に限るプロパティです。`anchor-scope: --field-note` で特定の名前を、`anchor-scope: all` ですべての名前を限ります。繰り返し置くコンポーネントでの使い方は、11-6で扱います。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.anchor-scope" name="anchor-scope" />
+
+## ポップオーバーの暗黙のアンカー
+
+ポップオーバーを開くボタンを基準にするなら、`anchor-name` で名前を付ける必要はありません。`popovertarget` 属性や `commandfor` 属性でボタンとポップオーバーを結び付けると、ボタンがポップオーバーの「暗黙のアンカー」になります。カスタマイズ可能な `<select>` でも、選択肢の一覧（`::picker(select)`）の暗黙のアンカーは `<select>` です。暗黙のアンカーは要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要りません。
+
+```css title="🙆‍♂ Recommended: 開いたボタンを基準に、名前を付けずにポップオーバーを置く"
+@scope (.scoped.help-tip) to (.scoped) {
+  [popover] {
+    @supports (position-area: block-end span-inline-end) {
+      position-area: block-end span-inline-end;
+    }
+  }
+}
+```
+
+```html
+<span class="scoped help-tip">
+  <button type="button" popovertarget="help-tip-1">入力のヒント</button>
+  <span id="help-tip-1" popover>半角の数字で入力してください。</span>
+</span>
+```
+
+`position-anchor` の初期値 `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。`anchor()` で暗黙のアンカーを参照するときは、`position-anchor: auto` を明示します。初期値が `auto` から `normal` に変わったのは、2026年のChrome 151、Firefox 151、Safari 27です。それより前のChromeとSafari 26では、指定しなくても `anchor()` が暗黙のアンカーを使っていました。
+
+<Baseline id="anchor-positioning" compatKey="html.elements.button.popovertarget.implicit_anchor_reference" name="popovertarget による暗黙のアンカー" />
+
+`popovertarget` の暗黙のアンカーは、Chrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです（2026年10月確認）。ポップオーバーの開閉そのものは、「[17-2 開閉するUI](/interaction/disclosure/)」で扱います。
+
+## `anchor()` と `anchor-size()` でアンカーの辺と大きさを参照する
+
+`anchor()` は、アンカーの辺の位置を返す関数で、`inset` のプロパティにだけ書けます。`inset-block-start: anchor(end)` は、配置する要素のブロック方向の始まりの辺を、アンカーの終わりの辺にそろえる指定です。辺は、`start` や `end` のような論理キーワード、`top` や `left` のような物理キーワード、中央の `center`、割合で指定します。`inside` は書いたプロパティと同じ側の辺を、`outside` は反対側の辺を指すので、`inset: anchor(inside)` と書くと、4辺をアンカーの4辺に重ねられます。
+
+```css title="🙆‍♂ Recommended: anchor() で、アンカーの下端と行頭側の辺にそろえる"
+@scope (.scoped.field-note) to (.scoped) {
+  ._note {
+    @supports (anchor-name: --field-note) {
+      position: absolute;
+      inset-block-start: anchor(--field-note end);
+      inset-inline-start: anchor(--field-note start);
+    }
+  }
+}
+```
+
+この例のように、関数の最初の引数にアンカーの名前を書くと、デフォルトのアンカー以外の要素も参照できます。2つのアンカーの間に要素を広げるような、`position-area` のマス目で表せない配置には、`anchor()` を使います。アンカーの中央にそろえるだけなら、`justify-self: anchor-center` のように、配置のプロパティに `anchor-center` を指定します。
+
+`anchor-size()` は、アンカーの幅や高さを返す関数で、大きさ（`inline-size`、`min-inline-size` など）、`inset`、`margin` のプロパティに書けます。メニューの幅を開いたボタンの幅以上にするなら、`min-inline-size: anchor-size(inline)` と書きます。`padding` などのほかのプロパティに書いた宣言は無効です。
+
+参照できるアンカーがないとき、`anchor()` と `anchor-size()` は、第2引数に書いた代わりの値を使います。代わりの値がなければ、宣言ごと計算値の時点で無効になり、プロパティは初期値に戻ります。`inset` なら初期値の `auto` になるので、要素は `inset` を指定していない絶対配置の要素と同じく、静的位置に置かれます。
+
+## `position-area` で9マスから領域を選ぶ
+
+`position-area` は、アンカーを中央のマスとする3×3のマス目を考え、配置する要素を置く領域をマスで選ぶプロパティです。中央の行と列はアンカーの大きさで、外側の行と列は、アンカーの辺から包含ブロックの辺までです。配置する要素は、選んだ領域を包含ブロックとして配置されます。
+
+値は、ブロック方向とインライン方向のそれぞれで、始まり、中央、終わりのどの行や列かを選びます。`block-start inline-start` は、アンカーの上の行で、行頭側の列にある角のマスです。`span-` を付けると中央のマスまで広がり、`block-end span-inline-end` は、下の行のうち、アンカーの列から行末側の列までの2マスにまたがります。`span-all` は3マスすべてです。キーワードを1つだけ書くと、`block-end` のように軸の決まるキーワードなら、もう一方の軸は `span-all` として扱われます。`center` のように軸の決まらないキーワードは、同じキーワードを2つ書いたものとして扱われます。
+
+配置する要素は、選んだ領域の中で、アンカーに近い側へ寄ります。下の行ならアンカーの下端に接し、行末側の列ならアンカーの行末側の辺と接します。`span-all` の軸では、アンカーの中央にそろいます。そのため、`block-end` だけならアンカーの真下の中央に置かれ、`block-end span-inline-end` なら、アンカーの行頭側の辺にそろって行末側へ伸びます。
+
+次のデモでは、値を切り替えて位置を確かめられます。破線は、アンカーの行と列の境界です。外側の枠は、配置する要素の包含ブロックで、外側の行と列はこの枠の辺まで広がります。
+
+<Demo title="position-area の値を切り替えて、9マスのどこに置かれるかを確かめる" html={areaHtml} css={areaCss} />
+
+値には、`bottom` や `right` のような物理キーワードと、`block-end` や `span-inline-end` のような論理キーワードがあります。本書では、プロパティと同じく論理キーワードで書きます（「[9-8 論理プロパティと論理値](/notation/logical-properties/)」）。縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示されるからです。
+
+`position-area` を指定すると、`auto` の `margin` と `inset` は0として扱われます。アンカーとの間隔は、下の行に置くなら `margin-block-start: 4px` のように、アンカーの側の `margin` で空けます。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.position-area" name="position-area" />
+
+## はみ出したときに位置を切り替える
+
+`position-try-fallbacks` は、最初の位置で包含ブロックからはみ出すときに試す、代わりの位置をカンマ区切りで並べるプロパティです。ブラウザは最初の位置から順に試し、はみ出さない最初の位置を使います。候補には、反転のキーワード、`position-area` の値、`@position-try` で名前を付けた位置を書けます。
+
+反転のキーワードは、元の指定を軸ごとに反転させます。`flip-block` はブロック方向に、`flip-inline` はインライン方向に反転させ、`flip-block flip-inline` のように組み合わせることもできます。反転すると `margin` と `inset` の値も反対側に移るので、`margin-block-start: 8px` で空けた間隔は、上に反転すると、ボタンとの間の `margin-block-end` になります。
+
+次の2つのデモは、同じHTMLに2つのボタンを置いたものです。1つ目は候補を書いていないので、下端の近くのボタンの説明は下に収まらず、ボタンに重なります。2つ目は `position-try-fallbacks: flip-block` を加えたもので、下に空きがないボタンの説明だけが上に表示されます。
+
+<Demo title="候補がないと、下に収まらない説明がボタンに重なる" html={tryHtml} css={tryBadCss} variant="not-recommended" />
+
+<Demo title="flip-block を候補にすると、下に空きがないときだけ上に表示する" html={tryHtml} css={tryCss} />
+
+反転で表せない位置は、`@position-try` で名前を付けて定義します。中に書けるのは、`inset`、`margin`、大きさ、配置（`align-self` など）のプロパティと、`position-anchor`、`position-area` だけです。名前はページ全体で共有されるので、コンポーネントの名前を前に付けます。
+
+```css title="🙆‍♂ Recommended: 上下に収まらないときは、行末側に表示する"
+@position-try --field-note-inline-end {
+  position-area: inline-end;
+  margin-block-start: 0;
+  margin-inline-start: 8px;
+}
+
+@scope (.scoped.field-note) to (.scoped) {
+  ._note {
+    @supports (position-area: block-end span-inline-end) {
+      position: absolute;
+      position-area: block-end span-inline-end;
+      position-anchor: --field-note;
+      position-try-fallbacks: flip-block, --field-note-inline-end;
+      margin-block-start: 8px;
+    }
+  }
+}
+```
+
+一度切り替わった位置は、元の位置に空きができても自動では戻らず、再びはみ出したときに選び直されます。スクロールのたびに位置が行き来しないようにするためです。書いた順ではなく空きの大きさで選ばせるときは、`position-try-order: most-block-size` のように指定します。`position-try` は、この2つをまとめて書く一括指定です。
+
+`position-visibility` は、配置した要素を隠す条件を決めるプロパティです。初期値の `anchors-visible` では、アンカーがスクロールなどで完全に見えなくなると、配置した要素も見えなくなります。`no-overflow` は包含ブロックからはみ出したときに隠し、`always` は常に表示します。`position-visibility` はSafariでは26.2から使えます（2026年10月確認）。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.position-try-fallbacks" name="position-try-fallbacks" />
+
+## 包含ブロックがマス目とはみ出しの範囲を決める
+
+アンカーポジショニングでも、包含ブロックの決まり方は「[7-9 positionの基礎](/layout/positioning/)」と同じです。変わるのは役割で、位置の基準ではなく、`position-area` のマス目の外枠と、はみ出したかどうかを判定する範囲になります。先のデモの枠に `position: relative` を指定しているのは、この範囲を枠に合わせるためです。
+
+カードの中で `position: absolute` を使い、カードに `position: relative` を指定すると、マス目もはみ出しの判定もカードの範囲になります。カードの下端に近いボタンの説明は、画面には十分な空きがあっても、カードからはみ出すので反転します。説明を画面の端まで使って表示したいなら、包含ブロックをビューポートにします。
+
+ポップオーバーはトップレイヤーに表示されるので、祖先の指定にかかわらず、包含ブロックはビューポートになります。祖先の `overflow` で切り取られず、はみ出しも画面の端で判定され、ページのどこにあるボタンもアンカーにできます。そのため、ツールチップやメニューはポップオーバーで作ります。`position: fixed` もビューポートを基準にしますが、祖先に `transform` や `filter` があると、その祖先が包含ブロックになります。
+
+## 未対応の環境では読める位置に置く
+
+<Baseline id="anchor-positioning" compatKey="css.properties.anchor-name" name="アンカーポジショニング（anchor-name）" />
+
+`anchor-name` と `anchor()` は、Chrome 125、Firefox 147、Safari 26で対応し、2026年1月に主要なブラウザがそろいました。一方、機能全体のBaselineは「一部のブラウザのみ」のままです。`position-visibility` の一部の値のように、Safari 27だけが対応していて、ほかのブラウザが対応していないものが含まれているからです（2026年10月確認）。いずれにしても、本書の対象のSafari 18系は対応していません。
+
+未対応の環境では、アンカーを基準にした配置の指定がすべて無視されます。ポップオーバーは、ブラウザの既定のスタイルの `inset: 0` と `margin: auto` で画面の中央に置かれる仕組みなので、kiso.cssが `margin` を解除していると、画面の左上に寄ります。絶対配置の要素は静的位置に置かれ、ほかの内容に重なることもあります。第1章のルールに従い、アンカーポジショニングはレイアウトの要として使いません（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。指定を `@supports` の中に書き、その外には、未対応の環境でも内容を読めて操作できる配置を書きます。
+
+```css title="🙆‍♂ Recommended: 未対応の環境では画面の中央に、対応した環境ではボタンの下に表示する"
+@scope (.scoped.help-tip) to (.scoped) {
+  [popover] {
+    margin: revert;
+
+    @supports (position-area: block-end span-inline-end) {
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block;
+      margin-block: 4px 0;
+      margin-inline: 0;
+    }
+  }
+}
+```
+
+HTMLは、暗黙のアンカーの例と同じです。`margin: revert` は、kiso.cssが解除した `margin` を、ブラウザのデフォルトスタイルの `auto` に戻す指定です。未対応の環境では、デフォルトスタイルの `inset: 0` と合わせて、ポップオーバーが画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。`@supports` の条件には、実際に使う値を書きます。`anchor-name` に対応していても、`position-area` の一部の値に対応していないブラウザがあるからです。
+
+`position-area` を指定したときに `auto` の `margin` を0として扱うようになったのは、Chrome 143、Firefox 148、Safari 26.2からです（2026年10月確認）。それより前のブラウザでは、未対応の環境のために戻した `auto` の `margin` が残り、要素が選んだ領域の中央に寄ります。そのため、`@supports` の中では、ボタンとの間隔を含めて `margin` を指定し直しています。
+
+ポップオーバーではない要素は、`position: absolute` ごと `@supports` の中に書きます。先の2つのデモの説明は、未対応の環境ではボタンの後ろの通常フローに表示されます。位置は変わりますが、ほかの内容には重なりません。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS Anchor Positioning Module Level 1](https://drafts.csswg.org/css-anchor-position-1/)（W3C）
+- [CSS アンカー位置指定 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_anchor_positioning)
+- [Using CSS anchor positioning - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning/Using)
+- [Fallback options and conditional hiding for overflow - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning/Try_options_hiding)
+- [anchor() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/anchor)
+- [anchor-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size)
+- [anchor-scope - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/anchor-scope)
+- [position-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-anchor)
+- [position-area - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area)
+- [position-try-fallbacks - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-try-fallbacks)
+- [position-visibility - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-visibility)
+- [HTML Standard - 15.3.3 Flow content](https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3)（WHATWG。`[popover]` の既定のスタイル）

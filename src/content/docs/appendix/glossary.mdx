@@ -86,15 +86,15 @@ sidebar:
 | レイアウトの方式 | 子の大きさと位置を決める規則のまとまりです。通常フロー、Flexbox、Grid、位置指定などがあり、親の `display` の内側の値と、要素自身の `position` で決まります。同じプロパティでも、方式によって働き方が変わります。レイアウトモードとも言います。 | [1-3](/principles/layout-algorithms/)、[7-1](/layout/fundamentals/) |
 | 通常フロー | FlexboxやGridを指定していない要素が従う、既定のレイアウトの方式です。ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスは行の中をインライン方向に流れます。 | [7-2](/layout/normal-flow/) |
 | ブロック整形コンテキスト | 通常フローのブロックを並べる、閉じた範囲です。中の `float` を内側に収め、外とのマージンの相殺を止めます。本書では `display: flow-root` で作ります。 | [7-2](/layout/normal-flow/)、[7-5](/layout/margin-collapse/) |
-| 読み上げ順 | スクリーンリーダーが読み上げ、キーボードでフォーカスが移る順番です。DOMの順番で決まり、`reading-flow` を指定したコンテナでは見た目の順番に合わせられます。 | [11-11](/layout-practice/reading-flow/) |
-| サブグリッド | `grid-template-rows: subgrid` のように、親のグリッドの行や列をそのまま使う仕組みです。並べたカードの中の行をそろえるときに使います。 | [7-7](/layout/grid-basics/) |
-| ガター | ページのコンテンツの左右に置く、余白のための列です。画面幅いっぱいに広げたい要素は、この列まで広げます。 | [11-3](/layout-practice/spacing/) |
-| 次兄弟結合子 | `h2 + p` の `+` のように、直前の兄弟要素を条件にして要素を選ぶ結合子です。本書では、要素の間のブロック方向の `margin` を、`& > * + *` のようにこの結合子で選んだ後ろの要素の `margin-block-start` に付けます。 | [11-3](/layout-practice/spacing/) |
-| ディフェンシブCSS | テキストが長くなったら、画像がなかったら、要素の数が変わったらと考え、想定外の内容が入っても崩れないように書くCSSです。 | [11-4](/layout-practice/defensive/) |
-| 包含ブロック | 要素の大きさや位置を計算するときの基準になる領域です。`inset` やパーセントの値も、この領域を基準に解決されます。絶対配置では、包含ブロックを形成する最も近い祖先が基準です。`position` が `static` 以外の祖先や、`transform` などを指定した祖先が該当します。該当する祖先がなければ初期包含ブロックが基準になります。 | [7-8](/layout/positioning/) |
-| スタッキングコンテキスト | 重なり順を決める単位です。z-indexは、同じスタッキングコンテキストの中の要素どうしでしか比べられません。 | [11-5](/layout-practice/layering/) |
+| 読み上げ順 | スクリーンリーダーが読み上げ、キーボードでフォーカスが移る順番です。DOMの順番で決まり、`reading-flow` を指定したコンテナでは見た目の順番に合わせられます。 | [11-10](/layout-practice/reading-flow/) |
+| サブグリッド | `grid-template-rows: subgrid` のように、親のグリッドの行や列をそのまま使う仕組みです。並べたカードの中の行をそろえるときに使います。 | [7-8](/layout/grid-alignment/) |
+| ガター | ページのコンテンツの左右に置く、余白のための列です。画面幅いっぱいに広げたい要素は、この列まで広げます。 | [11-2](/layout-practice/spacing/) |
+| 次兄弟結合子 | `h2 + p` の `+` のように、直前の兄弟要素を条件にして要素を選ぶ結合子です。本書では、要素の間のブロック方向の `margin` を、`& > * + *` のようにこの結合子で選んだ後ろの要素の `margin-block-start` に付けます。 | [11-2](/layout-practice/spacing/) |
+| ディフェンシブCSS | テキストが長くなったら、画像がなかったら、要素の数が変わったらと考え、想定外の内容が入っても崩れないように書くCSSです。 | [11-3](/layout-practice/defensive/) |
+| 包含ブロック | 要素の大きさや位置を計算するときの基準になる領域です。`inset` やパーセントの値も、この領域を基準に解決されます。絶対配置では、包含ブロックを形成する最も近い祖先が基準です。`position` が `static` 以外の祖先や、`transform` などを指定した祖先が該当します。該当する祖先がなければ初期包含ブロックが基準になります。 | [7-9](/layout/positioning/) |
+| スタッキングコンテキスト | 重なり順を決める単位です。z-indexは、同じスタッキングコンテキストの中の要素どうしでしか比べられません。 | [11-4](/layout-practice/layering/) |
 | トップレイヤー | `<dialog>` のモーダルや `popover` 属性の要素が表示される層です。本来は、z-indexと関係なく最前面に描かれます。 | [10-2](/components/boundaries/)、[17-2](/interaction/disclosure/) |
-| アンカーポジショニング | ある要素（アンカー）の位置を基準に、別の要素を配置する仕組みです。本書の対象のブラウザではまだレイアウトの要にしません（2026年9月確認）。 | [11-7](/layout-practice/anchor-positioning/) |
+| アンカーポジショニング | ある要素（アンカー）の位置を基準に、別の要素を配置する仕組みです。本書の対象のブラウザではまだレイアウトの要にしません（2026年9月確認）。 | [7-10](/layout/anchor-basics/) |
 
 ## レスポンシブ
 
@@ -104,7 +104,7 @@ sidebar:
 | コンテナクエリ | `@container` で、祖先の要素（コンテナ）の状態を条件にするクエリの総称です。サイズを調べるコンテナサイズクエリ、カスタムプロパティの値を調べるスタイルクエリ、スクロールの状態を調べるスクロール状態クエリの3つを含みます。 | [13-3](/responsive/container-size-queries/) |
 | コンテナサイズクエリ | ビューポートではなく、コンテナの大きさで条件を判定するコンテナクエリです。`container: --scoped / inline-size` でコンポーネントのルートをコンテナにし、`@container --scoped (inline-size >= …)` のように書きます。 | [13-3](/responsive/container-size-queries/) |
 | スタイルクエリ | コンテナのカスタムプロパティの値を条件にするコンテナクエリです。`@container style(--color-scheme: --dark)` のように書きます。 | [6-4](/values/if-and-attr/)、[13-3](/responsive/container-size-queries/)、[15-4](/color-media/dark-mode/) |
-| スクロール状態クエリ | `sticky` の要素が留まっているか、スクロールスナップで止まっているかのような、スクロールの状態を条件にするコンテナクエリです。`@container scroll-state(stuck: block-start)` のように書きます。 | [11-6](/layout-practice/sticky-header/)、[17-4](/interaction/carousel/) |
+| スクロール状態クエリ | `sticky` の要素が留まっているか、スクロールスナップで止まっているかのような、スクロールの状態を条件にするコンテナクエリです。`@container scroll-state(stuck: block-start)` のように書きます。 | [11-5](/layout-practice/sticky-header/)、[17-4](/interaction/carousel/) |
 | ブレイクポイント | レイアウトを切り替える幅です。デバイスの幅ではなく、レイアウトが崩れる幅から決め、remの式で書きます。 | [13-2](/responsive/breakpoints/) |
 | 範囲構文 | `min-width` の代わりに、`(width >= …)` のように不等号でクエリの条件を書く構文です。 | [13-4](/responsive/media-queries/) |
 | モバイルファースト | 狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを `width >=` の条件の中に足す書き方です。 | [13-4](/responsive/media-queries/) |

@@ -1,0 +1,220 @@
+---
+title: "7-11 display: contentsで箱をなくす"
+description: "display: contents は、要素の箱だけをなくし、子を親のレイアウトに直接参加させる指定です。幅で並びを変えるだけなら grid-template のエリアで組み、display: contents はサブグリッドに参加させるときや、幅によってラッパーの箱を出し入れするときに限って使います。箱をなくした要素は、ロールと hidden 属性の扱いに注意します。"
+sidebar:
+  order: 11
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import rankingHtml from '../../../demos/layout/display-contents-ranking/index.html?raw';
+import rankingCss from '../../../demos/layout/display-contents-ranking/style.css?raw';
+
+`display: contents` は、要素の箱だけをなくし、その子を親のレイアウトに直接参加させる指定です。要素はDOMに残り、継承も働きますが、背景、境界線、`padding` は描かれなくなります。本書では、この指定を、サブグリッドに参加させるときと、幅によってラッパーの箱を出し入れするときに限って使います。
+
+画面の幅で並びを変えたいだけなら、`display: contents` は使わず、`grid-template` のエリアで組みます。箱をなくした要素は、ブラウザによっては見出しやリストなどのロールを失い、スクリーンリーダーで正しく読み上げられなくなるからです。使うときは、ロールを持たない `div` か `span` に限るか、`role` 属性でロールを明示します。
+
+<Baseline id="display-contents" compatKey="css.properties.display.contents" name="display: contents" />
+
+## 箱だけがなくなる仕組み
+
+`display: contents` を指定した要素は、自分の箱を作りません。子の箱と、`::before` と `::after` の箱は、その要素の親の中に直接置かれたものとして扱われます。親がグリッドなら、孫にあたる要素がグリッドアイテムになります。要素の中に直接書いた文字も、親のグリッドの中で無名のアイテムになります。
+
+なくなるのは箱だけで、要素そのものはDOMに残ります。そのため、`color` や `font-size` のように継承されるプロパティと、カスタムプロパティは、これまでどおり子に継承されます。一方で、箱に対して働く `background-color`、`border`、`padding`、`margin`、`inline-size` は、指定しても何も描かれません。
+
+この性質は、レイアウトの上では便利です。HTMLの入れ子を変えずに、間にある要素だけをレイアウトから外せるからです。ただし、スクリーンリーダーなどの支援技術は、要素の種類から決まる暗黙のロール（`ul` ならリスト、`li` ならリストの項目）を手がかりに内容を伝えます。ブラウザによっては、箱をなくした要素がアクセシビリティツリーから外れ、このロールが伝わらなくなります。
+
+つまり、`display: contents` は、見た目のために文書構造の一部を取り除きうる指定です。便利だからと気軽に使うと、見た目は整っていても、読み上げでは一覧や見出しの区切りが分からなくなります。使う前に、箱をなくさずに済む組み方がないかを確かめます。
+
+## 幅で並びを変えるだけならエリアで組む
+
+`display: contents` がよく使われるのは、画面の幅によってレイアウトの構造が変わる場面です。たとえば、狭いときは見出し、画像、本文の順で縦に積み、広いときは画像を左、見出しと本文を右へ並べるレイアウトです。これをFlexboxで組むと、次のように `display: contents` と `order` が必要になります。
+
+```html title="画像と、見出しと本文をまとめた箱を並べる"
+<div class="_layout">
+  <img class="_image" src="…" alt="" width="640" height="480">
+  <div class="_text">
+    <hgroup class="_headline">…</hgroup>
+    <div class="_body">…</div>
+  </div>
+</div>
+```
+
+```css title="🙅‍♂ Not Recommended: ラッパーの箱をなくし、order で見出しを前へ出す"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.feature) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    --_density: --compact;
+
+    display: block flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      flex-direction: row;
+    }
+  }
+
+  ._text {
+    display: contents;
+
+    @container style(--_density: --spacious) {
+      display: block flow;
+    }
+  }
+
+  ._headline {
+    order: -1;
+
+    @container style(--_density: --spacious) {
+      order: unset;
+    }
+  }
+}
+```
+
+この組み方には、問題が3つあります。1つ目は、広いときの配置に合わせて、HTMLを画像から書いていることです。2つ目は、狭いときに `order` で見出しを画像より前へ出しているので、見た目の順番と読み上げの順番が食い違うことです。3つ目は、レイアウトのためだけのラッパー（`._text`）を足し、その箱を幅によって消していることです。
+
+同じレイアウトは、Gridの `grid-template` のエリアで組めます。テンプレートを内部用のカスタムプロパティ `--_template` に入れ、コンテナサイズクエリの中ではテンプレートだけを差し替えます。
+
+```css title="🙆‍♂ Recommended: テンプレートを差し替えて、構造の変化をエリアで書く"
+@scope (.scoped.feature) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    --_density: --compact;
+    --_template:
+      "--headline"
+      "--image"
+      "--body";
+
+    display: block grid;
+    reading-flow: grid-rows;
+    grid-template: var(--_template);
+    gap: 16px;
+
+    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
+      --_density: --spacious;
+      --_template:
+        "--image --headline"
+        "--image --body" 1fr
+        / 1fr 1fr;
+    }
+
+    & > ._headline {
+      grid-area: --headline;
+    }
+
+    & > ._image {
+      grid-area: --image;
+    }
+
+    & > ._body {
+      grid-area: --body;
+    }
+  }
+}
+```
+
+```html title="見出しから始まる文書構造の順番で書く"
+<div class="_layout">
+  <hgroup class="_headline">…</hgroup>
+  <img class="_image" src="…" alt="" width="640" height="480">
+  <div class="_body">…</div>
+</div>
+```
+
+HTMLは見出しから書き、ラッパーも足していません。配置の変化はテンプレートの差し替えにまとまり、`order` も使いません。広いときに画像が見出しより左に来る並べ替えは、同じルールの `reading-flow: grid-rows` で、対応したブラウザでは読み上げとフォーカスの順番も見た目に合わせられます（「[11-10 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。エリアの書き方は「[7-7 Gridの基礎](/layout/grid-basics/)」で説明しています。
+
+見出しと副題を別々のエリアに置きたいときだけは、`hgroup` の箱をなくす必要があります。それでも、箱をなくすのは文書構造として必要な `hgroup` の1つだけで、レイアウトのためのラッパーは足しません。`hgroup` には `role="group"` でロールを明示します。
+
+## サブグリッドに参加させる
+
+1つ目の使いどころは、サブグリッドです。サブグリッドにできるのはグリッドの直接の子だけなので、`ul > li > article` のように、グリッドとカードの間に `li` があると、`article` を `ul` の列に参加させられません。`li` の箱をなくせば、`article` が `ul` の直接のグリッドアイテムになります。
+
+<Baseline id="subgrid" />
+
+```css title="🙆‍♂ Recommended: li の箱をなくし、article を ul のサブグリッドにする"
+@scope (.scoped.article-list) to (.scoped) {
+  ul {
+    display: block grid;
+    grid-template-columns: max-content 1fr max-content;
+    column-gap: 16px;
+  }
+
+  li {
+    display: contents;
+  }
+
+  article {
+    display: block grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+  }
+}
+```
+
+```html title="li のロールを明示する"
+<ul>
+  <li role="listitem">
+    <article>…</article>
+  </li>
+</ul>
+```
+
+`li` は箱をなくすので、`role="listitem"` でロールを明示します。`ul` は箱を残しているのでロールを失いませんが、マーカーを `list-style: none` で消すと、SafariのVoiceOverがリストとして読み上げなくなります。マーカーは `list-style-type: ""` で消すか、`ul` にも `role="list"` を指定します（「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。
+
+`li` 自身をグリッドアイテムにできるなら、`display: contents` は要りません。「[7-8 Gridでアイテムをそろえる](/layout/grid-alignment/)」のお知らせの一覧は、`li` に直接 `grid-template-columns: subgrid` を指定しています。`li` の中に `article` を置き、カードとしての区切りを持たせたいときだけ、`li` の箱をなくします。`li` もサブグリッドにして2段で列を受け渡す方法もありますが、間の要素ごとに同じ指定を重ねることになります。
+
+## 幅によってラッパーの箱を出し入れする
+
+2つ目の使いどころは、幅によってラッパーの箱を出し入れする場面です。狭いときは、いくつかの子をラッパーでまとめて1つのセルに入れ、その中で小さなグリッドを組みます。広いときは、同じ子を親のトラックにそろえて横に並べます。このとき、広いときにはラッパーの箱が邪魔になるので、`display: contents` で消します。
+
+前の節のFlexboxの例と違うのは、HTMLの順番と見た目の順番が、どちらの幅でも一致していることです。並べ替えのために箱を消すのではなく、子をまとめる箱が必要な幅と、子を親の列にそろえたい幅があるから箱を出し入れします。`order` も使いません。
+
+同じ考え方は、文字組みでも使えます。「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」の改行のユーティリティは、日本語のときだけ `span` を箱にし、ほかの言語では `display: contents` で箱を消しています。条件によって箱の要不要が分かれる場面は、この使いどころにあたります。
+
+## コード例とデモ
+
+次のデモは、よく読まれた記事のランキングです。狭いときは、順位の右にタイトルを置き、その下に著者と日付を並べた2段のカードになります。広いときは、順位、タイトル、著者、日付の4列を、表のようにすべての行でそろえます。幅のボタンで、320px、480px、768pxを切り替えて確かめてください。
+
+<Demo title="ランキングを、狭いときは2段のカード、広いときは4列の表のように並べる" html={rankingHtml} css={rankingCss} widths={[320, 480, 768]} />
+
+この例では、2つの使いどころを組み合わせています。`li` は `display: contents` で箱をなくし、`article` を `ul` の直接のグリッドアイテムにしています。`article` は `grid-column: 1 / -1` と `grid-template-columns: subgrid` で、`ul` の列をそのまま使います。`ul` の列は、狭いときは順位と記事の情報の2列、広いときは4列です。
+
+タイトル、著者、日付をまとめた `._meta` が、出し入れするラッパーです。狭いときは、自分でグリッドを組み、タイトルを1行目に、著者と日付を2行目に置きます。広いときは `display: contents` で箱をなくすので、3つの子が `article` のサブグリッドの2〜4列目に入ります。エリアの指定を狭いときのスタイルクエリの中に書いているのは、広いときの `article` にそのエリアの名前がないからです。名前の見つからないエリアを指定したアイテムは、明示的なグリッドの外に置かれます。
+
+縞模様の背景は、`li` で宣言したカスタムプロパティを、`article` が `background-color` に使っています。`li` は箱をなくしているので背景は描かれませんが、カスタムプロパティは継承されます。幅の切り替えにはスタイルクエリを使っているので、未対応のブラウザでは `._meta` がふつうのブロックになり、タイトル、著者、日付が縦に積まれます。
+
+## ロールとhidden属性の注意点
+
+箱をなくした要素は、ブラウザによっては暗黙のロールを失います。ロールを持たない `div` や `span` なら、失うものはありません。`li`、`section`、`hgroup` のようにロールを持つ要素の箱をなくすときは、`role` 属性でロールを明示し、スクリーンリーダーで読み上げを確かめます。暗黙のロールと同じ値を `role` に書くのはふだんなら不要な指定ですが、箱をなくした要素には必要です。
+
+`display: contents` は、`hidden` 属性も上書きします。ブラウザのデフォルトスタイルは `[hidden] { display: none; }` という通常の宣言なので、作者のCSSで `li { display: contents; }` と書くと、`hidden` を付けた `li` まで表示されます。本書のリセットCSSであるkiso.cssは、`[hidden]` に `display: none !important` を指定しているので、この問題は起きません。kiso.cssを使わない場合は、同じ指定を自分で書きます（「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」）。
+
+ボタンやリンクのように、フォーカスできる要素には `display: contents` を使いません。箱がないので、フォーカスリングを描く場所がありません。ブラウザによっては、要素がアクセシビリティツリーから外れ、ボタンやリンクとして読み上げられなくなります。
+
+`display: contents` を使った一覧に `reading-flow` を組み合わせると、DOMの親子と見た目のアイテムが一致しないので、順番の予想が難しくなります。デモの一覧は並べ替えていないので、`ul` には `reading-flow` を指定していません。並べ替えるときは、対応したブラウザでTabキーとスクリーンリーダーの順番を確かめます（「11-10」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [CSS Display Module Level 3](https://www.w3.org/TR/css-display-3/)（W3C）
+- [CSS Grid Layout Module Level 2](https://www.w3.org/TR/css-grid-2/)（W3C）
+- [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)
+- [display: contents - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/display#contents)
+- [サブグリッド - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Subgrid)
+- [ARIA: listitem ロール - アクセシビリティ | MDN](https://developer.mozilla.org/ja/docs/Web/Accessibility/ARIA/Reference/Roles/listitem_role)

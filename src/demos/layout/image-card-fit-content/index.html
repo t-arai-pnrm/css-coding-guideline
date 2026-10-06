@@ -1,0 +1,32 @@
+<div class="scoped demo-stack">
+  <article class="scoped image-card">
+    <div class="_layout">
+      <h2 class="_heading">幅300pxの画像</h2>
+      <figure class="_figure">
+        <img width="300" height="200" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23a9cbe8'/%3E%3Ccircle cx='150' cy='100' r='66' fill='%23f29e4c'/%3E%3C/svg%3E">
+        <figcaption>短いキャプション</figcaption>
+      </figure>
+      <p class="_body">画像の列は、画像の幅に合わせて300pxになります。</p>
+    </div>
+  </article>
+  <article class="scoped image-card">
+    <div class="_layout">
+      <h2 class="_heading">幅400pxの画像</h2>
+      <figure class="_figure">
+        <img width="400" height="300" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23a9cbe8'/%3E%3Ccircle cx='200' cy='150' r='100' fill='%23f29e4c'/%3E%3C/svg%3E">
+        <figcaption>キャプションが長くても、<code>contain: inline-size</code> を指定しているので、画像の列の幅は画像の幅のまま変わらず、キャプションは列の幅の中で折り返します。</figcaption>
+      </figure>
+      <p class="_body">画像の列は400pxになり、残りの幅をテキストの列が使います。</p>
+    </div>
+  </article>
+  <article class="scoped image-card">
+    <div class="_layout">
+      <h2 class="_heading">幅500pxの画像</h2>
+      <figure class="_figure">
+        <img width="500" height="300" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='300' viewBox='0 0 500 300'%3E%3Crect width='500' height='300' fill='%23a9cbe8'/%3E%3Ccircle cx='250' cy='150' r='100' fill='%23f29e4c'/%3E%3C/svg%3E">
+        <figcaption>上限で頭打ちになる例</figcaption>
+      </figure>
+      <p class="_body">画像の列は上限の480px相当で止まり、画像はその幅まで縮みます。</p>
+    </div>
+  </article>
+</div>

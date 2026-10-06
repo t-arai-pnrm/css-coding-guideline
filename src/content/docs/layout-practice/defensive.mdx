@@ -1,8 +1,8 @@
 ---
-title: "11-4 変化に強いレイアウト"
-description: "テキストが長くなったら、画像がなかったら、要素の数が変わったらと考えて書くディフェンシブCSSの節です。固定の長さには上限を付け、高さは block-size で固定せずに min-block-size、aspect-ratio、max-block-size で決め、アイテムの最小幅は0にし、はみ出しは clip で切り取ります。"
+title: "11-3 変化に強いレイアウト"
+description: "テキストが長くなったら、画像がなかったら、要素の数が変わったらと考えて書くディフェンシブCSSの節です。固定の長さには上限を付け、高さは block-size で固定せずに min-block-size、aspect-ratio、max-block-size で決め、アイテムの最小幅は0にし、はみ出しは hidden ではなく clip で切り取ります。hidden は、0fr で畳む中身のようにスクロールコンテナが要る場面に限ります。"
 sidebar:
-  order: 4
+  order: 3
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -14,8 +14,11 @@ import heroHeightCss from '../../../demos/layout-practice/hero-height/style.css?
 import longUrlHtml from '../../../demos/layout-practice/long-url/index.html?raw';
 import longUrlCss from '../../../demos/layout-practice/long-url/style.css?raw';
 import longUrlBadCss from '../../../demos/layout-practice/long-url/style.bad.css?raw';
+import stickyClipHtml from '../../../demos/layout-practice/sticky-in-clip/index.html?raw';
+import stickyClipCss from '../../../demos/layout-practice/sticky-in-clip/style.css?raw';
+import stickyClipBadCss from '../../../demos/layout-practice/sticky-in-clip/style.bad.css?raw';
 
-CSSを書くときは、「テキストが2倍の長さになったら」「画像がなかったら」「要素の数が変わったら」と、常に自問します。想定外の内容が入っても崩れないように書くCSSを、「ディフェンシブ（防衛的）なCSS」と呼びます。固定の長さには親の幅の上限を付け、高さは `block-size` で固定せずに `min-block-size` や `aspect-ratio` で決めます。フレックスアイテムとグリッドアイテムの最小幅はベーススタイルで0にし、はみ出しは `hidden` ではなく `clip` で切り取ります。
+CSSを書くときは、「テキストが2倍の長さになったら」「画像がなかったら」「要素の数が変わったら」と、常に自問します。想定外の内容が入っても崩れないように書くCSSを、「ディフェンシブ（防衛的）なCSS」と呼びます。固定の長さには親の幅の上限を付け、高さは `block-size` で固定せずに `min-block-size` や `aspect-ratio` で決めます。フレックスアイテムとグリッドアイテムの最小幅はベーススタイルで0にし、はみ出しは `hidden` ではなく `clip` で切り取ります。`hidden` を使うのは、スクロールコンテナが要る場面に限ります。
 
 一度公開したら終わりの短期のキャンペーンサイトは別として、一般的なWebサイトは公開後も更新と改修が続きます。とくにCMSの案件では、クライアントの都合で、デザインカンプにない長さの見出しや、画像のない記事が入ってきます。
 
@@ -134,7 +137,7 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
 }
 ```
 
-高さそのものが行数で決まる指定は、例外として `block-size` で書きます。チェックボックスを行の高さに合わせる `1lh`（「[17-3 フォーム部品](/interaction/forms/)」）や、読み込み中の表示で見出し2行分の場所を取る `2lh`（「[11-13 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)」）です。どちらも文字サイズや行送りに合わせて変わるので、行の高さとずれません。
+高さそのものが行数で決まる指定は、例外として `block-size` で書きます。チェックボックスを行の高さに合わせる `1lh`（「[17-3 フォーム部品](/interaction/forms/)」）や、読み込み中の表示で見出し2行分の場所を取る `2lh`（「[11-14 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)」）です。どちらも文字サイズや行送りに合わせて変わるので、行の高さとずれません。
 
 高さを `%` で決めるときは、別の落とし穴があります。幅は親の幅から決まりますが、高さは中身の高さから決まります。子が「親の高さの50%」と指定し、親の高さが子の中身に依存していると、どちらも相手を待つ循環になり、ブラウザは `%` を無視して `auto` として扱います。
 
@@ -246,13 +249,13 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 
 画像の上に文字を重ねるレイアウトでは、画像を読み込めなかったとき、背景と文字の色が近いと文字を読めなくなります。画像の後ろに、文字と十分なコントラストを持つ背景色を用意しておきます。画像の扱いは「[16-1 画像の配置と読み込み](/decoration/images/)」で説明します。
 
-入りきらない文字を折り返さずに「…」で打ち切る方法と、読み込み中の表示を読み込み後と同じ寸法にする方法は、「[11-13 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)」で説明します。
+入りきらない文字を折り返さずに「…」で打ち切る方法と、読み込み中の表示を読み込み後と同じ寸法にする方法は、「[11-14 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)」で説明します。
 
 ## 表の列幅と `table-layout`
 
 表の列幅は、デフォルトの `table-layout: auto` では、セルの中身から計算されます。ある行に長い文字列が入ると、その列が広がり、ほかの列が狭くなります。CMSで行が追加されるたびに列幅が変わり、同じ表のデザインを保てません。
 
-列幅をデザインどおりに保ちたい表には、`table-layout: fixed` を指定します。列幅は、`<col>` 要素か最初の行のセルに指定した幅で決まり、指定のない列は残りの幅を分け合います。中身は列幅に影響しないので、長い文字列は、kiso.cssの `overflow-wrap: anywhere` によってセルの中で折り返します。{/* 要確認: 出典なし */} 狭い画面での表のスクロール、見出しのセルの固定、縦に積む組み方は「[11-12 表を組む](/layout-practice/tables/)」で扱います。
+列幅をデザインどおりに保ちたい表には、`table-layout: fixed` を指定します。列幅は、`<col>` 要素か最初の行のセルに指定した幅で決まり、指定のない列は残りの幅を分け合います。中身は列幅に影響しないので、長い文字列は、kiso.cssの `overflow-wrap: anywhere` によってセルの中で折り返します。{/* 要確認: 出典なし */} 狭い画面での表のスクロール、見出しのセルの固定、縦に積む組み方は「[11-13 表を組む](/layout-practice/tables/)」で扱います。
 
 ```css title="🙆‍♂ Recommended: 列幅を中身ではなく、表の幅と列の指定で決める"
 ._table {
@@ -267,7 +270,7 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 
 `table-layout: fixed` は、表の幅が `auto` のときには効きません。`inline-size` で表の幅を決めておきます。列の数が多く、狭い画面で列幅を保てない表は、横にスクロールする領域で包みます。{/* 要確認: 出典なし */}
 
-## 横スクロールの原因と `overflow: clip`
+## 横スクロールの原因を特定する
 
 ページに横スクロールが出たら、まず、はみ出している要素を特定します。DevToolsのコンソールで次のスクリプトを実行すると、すべての要素に枠線を付けたうえで、ビューポートより広い要素を一覧できます。`$$()` は、DevToolsのコンソールで使える `querySelectorAll()` の省略形です。
 
@@ -281,7 +284,7 @@ $$('*').forEach((el) => {
 
 `margin` が原因のはみ出しは、このスクリプトでは見つかりません。枠線を目で追って確かめます。原因が分かったら、ここまでに説明した方法で、その要素を直します。
 
-そのうえで、画面の端まで広げた装飾などが意図せずはみ出す場合に備えて、ベーススタイル（`base` レイヤー）で、ルートの横方向のはみ出しを切り取ることがあります。このとき、`overflow-x: hidden` は使いません。`hidden` を指定した要素はスクロールコンテナになり、中にある `position: sticky` の要素が、その要素を基準に粘着しようとして機能しなくなるからです。`clip` は、はみ出した部分を切り取るだけでスクロールコンテナを作らないので、`sticky` を壊しません。`sticky` が動かない原因の切り分けは「[7-8 positionの基礎](/layout/positioning/)」にまとめています。
+そのうえで、画面の端まで広げた装飾などが意図せずはみ出す場合に備えて、ベーススタイル（`base` レイヤー）で、ルートの横方向のはみ出しを切り取ることがあります。このとき、`overflow-x: hidden` ではなく `clip` を使います。理由は次の見出しで説明します。
 
 ```css title="🙆‍♂ Recommended: 横方向のはみ出しを clip で切り取る"
 @layer base {
@@ -298,7 +301,80 @@ $$('*').forEach((el) => {
 
 <Baseline id="overflow-clip" />
 
-`overflow: clip` は、本書の対象のすべてのブラウザで使えます。論理プロパティの `overflow-inline` は、Safariでは26から対応したので、対応していない環境には `@supports` で `overflow-x` を指定しています（2026年9月確認）。はみ出しの対策に `contain: paint` を使う方法もありますが、中にある `position: fixed` の要素の基準が変わってしまうので使いません。この仕組みは「[7-8 positionの基礎](/layout/positioning/)」で説明します。`hidden` ではなく `clip` を選ぶ理由は、ページのスクロールを入れ子にしないためでもあります。`html` と `body` の両方に `overflow-x: hidden` を指定すると、`body` がスクロールコンテナになり、ページのスクロールが `body` に移ることがあります（「[11-9 ページのスクロールとルートスクローラー](/layout-practice/root-scroller/)」）。
+`overflow: clip` は、本書の対象のすべてのブラウザで使えます。論理プロパティの `overflow-inline` は、Safariでは26から対応したので、対応していない環境には `@supports` で `overflow-x` を指定しています（2026年9月確認）。はみ出しの対策に `contain: paint` を使う方法もありますが、中にある `position: fixed` の要素の基準が変わってしまうので使いません。この仕組みは「[7-9 positionの基礎](/layout/positioning/)」で説明します。
+
+ルートでは、`clip` を選ぶ理由がもう1つあります。`html` と `body` の両方に `overflow-x: hidden` を指定すると、`body` がスクロールコンテナになり、ページのスクロールが `body` に移ることがあります（「[11-8 ページのスクロールとルートスクローラー](/layout-practice/root-scroller/)」）。
+
+## `overflow: hidden` より `clip` を優先する
+
+はみ出しを切り取るだけなら、場所を問わず、`overflow: hidden` ではなく `overflow: clip` を使います。どちらも、はみ出した中身を切り取る点は同じです。違うのは、要素がスクロールコンテナになるかどうかです。`hidden` の要素は、ユーザーのスクロール操作を受け付けないだけで、スクロールコンテナになります。CSS Overflow Module Level 3では、`hidden` の中身はプログラムからはスクロールできなければならないと定めています。`clip` は、プログラムからのスクロールも含めて、あらゆるスクロールを禁止し、スクロールコンテナを作りません。
+
+スクロールコンテナになると、中身の位置がずれる場合もあります。`hidden` の要素の中で、はみ出した位置にある要素へフォーカスを移したり、ページ内リンクで移動したりすると、ブラウザはその要素を見せるために、`hidden` の要素の中身をスクロールさせます。スクロールバーがないので、ユーザーは元の位置に戻せません。JavaScriptの `scrollIntoView()` や `scrollTo()` も、同じように中身を動かします。`clip` の要素は、どの方法でもスクロールしません（フォーカスと `scrollIntoView()` はChrome 152で確認。ページ内リンクは未確認）。{/* 要確認: ページ内リンクで hidden の要素の中身がスクロールすること */}
+
+スクロールコンテナを探す仕組みにも影響します。`scroll()` で作るスクロール駆動アニメーションのタイムラインは、デフォルトでいちばん近い祖先のスクロールコンテナを基準にします。祖先に `hidden` の要素があると、そこが基準になり、ページをスクロールしてもアニメーションが進みません。スクロール駆動アニメーションは「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で説明しています。
+
+同じ理由で、`position: sticky` も留まらなくなります。`sticky` の要素は、いちばん近い祖先のスクロールコンテナを基準に留まるからです。祖先が `hidden` だと、その要素は自身の中身の高さまで伸びているのでスクロールせず、ページをスクロールしても `sticky` の要素はその要素と一緒に流れていきます。`sticky` が動かない原因の切り分けは「[7-9 positionの基礎](/layout/positioning/)」にまとめています。
+
+```css title="🙅‍♂ Not Recommended: はみ出した装飾を hidden で切り取る"
+/* 🙅‍♂ Not Recommended */
+._section {
+  position: relative;
+  overflow: hidden;
+}
+```
+
+```css title="🙆‍♂ Recommended: はみ出した装飾を clip で切り取る"
+._section {
+  position: relative;
+  overflow: clip;
+}
+```
+
+次の2つのデモは、右上の装飾の円がはみ出すセクションに、`position: sticky` の見出しを置いたものです。デモの枠の中をスクロールすると、`hidden` で切り取った1つ目では、見出しが段落と一緒に流れていきます。`clip` で切り取った2つ目では、見出しが枠の上端に留まります。どちらも、円のはみ出しは同じように切り取られています。
+
+<Demo title="overflow: hidden で切り取ると、中の sticky の見出しが留まらない" html={stickyClipHtml} css={stickyClipBadCss} variant="not-recommended" widths={[]} height="360px" />
+
+<Demo title="overflow: clip で切り取ると、中の sticky の見出しが留まる" html={stickyClipHtml} css={stickyClipCss} widths={[]} height="360px" />
+
+片方の軸だけを切り取りたいときも、`clip` を使います。`overflow-x: hidden` のように片方の軸を `hidden` にすると、もう片方の軸の `visible` は `auto` として計算され、要素はその軸でもスクロールコンテナになります。横のはみ出しを隠したつもりで縦にスクロールバーが出るのは、このためです。`clip` なら、もう片方の軸は `visible` のまま残ります。ただし、もう片方の軸を `auto` や `scroll` にすると、`clip` は `hidden` として計算されます。
+
+`clip` には、`hidden` が作る新しいBFCを作らないという違いもあります。`overflow: hidden` で親子の `margin` の相殺を止めていた箇所を `clip` に変えると、相殺が戻ります。BFCが目的なら、`overflow` ではなく `display: flow-root` を使います（「[11-2 余白を設計する](/layout-practice/spacing/#rule-flow-root-for-margin-collapse)」）。切り取る位置を外側へ広げたり内容の辺へ寄せたりする `overflow-clip-margin` は、「[11-14 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)」で扱います。
+
+## `overflow: hidden` を使う場面
+
+`overflow: hidden` を使うのは、スクロールコンテナであることが要る場面に限ります。代表的なのが、`grid-template-rows` を `0fr` と `1fr` で切り替えて、アコーディオンの中身を開閉する場合です。`fr` の値は補間できるので、`interpolate-size` に対応していないブラウザでも、高さをトランジションで動かせます。
+
+この書き方では、中身を包んだグリッドアイテムを0の高さまで縮めます。ところが、グリッドアイテムの `min-block-size` の初期値 `auto` は、次の3つの条件をすべて満たすとき、中身の大きさから決まる最小サイズとして扱われます。この規則は、CSS Grid Layout Module Level 1の「グリッドアイテムの自動の最小サイズ」で定められています。1つ目は、`overflow` の算出値がスクロールできる値（`hidden`、`scroll`、`auto`）ではないことです。2つ目は、最小値が `auto` の行にまたがっていること、3つ目は、複数の行にまたがるなら、どれも `fr` の行ではないことです。`0fr` は `minmax(auto, 0fr)` の省略形なので、2つ目の条件を満たします。そのため、`overflow` が `visible` や `clip` のアイテムは、行が `0fr` になっても中身の高さより縮みません。
+
+`overflow: hidden` のアイテムは1つ目の条件を外れるので、仕様のとおり最小サイズが0になり、行と一緒に0まで縮みます。はみ出した中身の切り取りと、最小サイズを0にすることを、1つの指定で済ませられます。本書のベーススタイルが0にしているのは `min-inline-size` だけなので（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）、高さの方向の最小サイズはここで外す必要があります。
+
+```css title="🙆‍♂ Recommended: 0fr で畳む中身は overflow: hidden で最小サイズを0にする"
+@scope (.scoped.disclosure) to (.scoped) {
+  ._panel {
+    display: block grid;
+    grid-template-rows: 1fr;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--slow);
+      transition-property: grid-template-rows;
+      transition-timing-function: var(--ease--out-quint);
+    }
+
+    /* 閉じている間は、スクリプトで inert 属性を付ける */
+    &[inert] {
+      grid-template-rows: 0fr;
+    }
+  }
+
+  ._body {
+    overflow: hidden;
+  }
+}
+```
+
+`clip` で同じことをするなら、`min-block-size: 0` を別に書く必要があります。2つの指定の組み合わせは、片方を消すと開閉が崩れるのに、それぞれの目的がコードから読み取りにくくなります。この場面では、スクロールコンテナになることが目的に合っているので、`hidden` を選びます。実際に、`::details-content` を `grid-template-rows` で開閉する方式では、Safari 18.4で `clip` のラッパーでは開閉が崩れ、`hidden` のラッパーが必要でした（2025年5月確認）。
+
+スクロールコンテナになるので、前の見出しで説明したとおり、閉じた中身へフォーカスを移すと、中身の位置がずれる場合もあります。この例では、閉じている間はスクリプトで `inert` 属性を付け、中身にフォーカスが移らないようにしています。`<details>` の開閉に使う例は「[18-5 出現と退場](/motion/entry-and-exit/)」にあります。ほかに `hidden` が要るのは、モーダルを開いている間にルート要素のスクロールを止める場面です（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-modal-scroll-lock-root)」）。
 
 ## 中央に寄せたスクロール領域の先頭が切れる
 
@@ -327,8 +403,11 @@ $$('*').forEach((el) => {
 
 - [横スクロールバーの発生源を素早く特定する方法と最新の防止策](https://www.tak-dcxi.com/article/methods-to-quickly-identify-the-source-of-horizontal-scrolling-and-the-latest-prevention-measures/)（TAKLOG、2024年3月）
 - [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [CSSのみでdetails要素のアニメーションを実装する方法](https://www.tak-dcxi.com/article/css-only-details-animation-2025/)（TAKLOG、2025年5月）
 - [overflow-wrap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-wrap)
 - [minmax() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/minmax)
 - [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
+- [CSS Overflow Module Level 3 - 3.1. Managing Overflow: the overflow-x, overflow-y, and overflow properties](https://drafts.csswg.org/css-overflow-3/#overflow-properties)
+- [CSS Grid Layout Module Level 1 - 6.6. Automatic Minimum Size of Grid Items](https://drafts.csswg.org/css-grid-1/#min-size-auto)
 - [table-layout - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/table-layout)
 - [Defensive CSS](https://defensivecss.dev/)

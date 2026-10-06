@@ -1,0 +1,90 @@
+@layer tokens {
+  :root {
+    --background--surface: oklch(96% 0.01 250deg);
+    --foreground--muted: oklch(45% 0 0deg);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.demo-stack) to (.scoped) {
+    :scope {
+      & > * + * {
+        margin-block-start: 24px;
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.image-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+      background-color: var(--background--surface);
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._layout {
+      --_density: --compact;
+
+      display: block grid;
+      reading-flow: grid-rows;
+
+      /* 狭いときは、画像を上に置き、テキストの左右に 24px の余白の列を取る */
+      grid-template:
+        "--image --image   --image"
+        ".       .         .      " 1rlh
+        ".       --heading .      "
+        ".       .         .      " 1rlh
+        ".       --body    .      "
+        ".       .         .      " 1rlh
+        / 24px 1fr 24px;
+
+      /* 画像の列 240px 相当・隙間 32px・テキストの列の最小幅 240px 相当・右の余白 32px が並ぶ幅 */
+      @container --scoped (inline-size >= calc(240 / 16 * 1rem + 32px + 240 / 16 * 1rem + 32px)) {
+        --_density: --spacious;
+
+        /* 画像の列は、画像の幅に合わせ、480px 相当で頭打ちにする */
+        grid-template:
+          "--image . .         ." 1.5rlh
+          "--image . --heading ."
+          "--image . .         ." 1.5rlh
+          "--image . --body    ." 1fr
+          "--image . .         ." 1.5rlh
+          / fit-content(calc(480 / 16 * 1rem)) 32px minmax(calc(240 / 16 * 1rem), 1fr) 32px;
+      }
+
+      & > ._figure {
+        grid-area: --image;
+      }
+
+      & > ._heading {
+        grid-area: --heading;
+      }
+
+      & > ._body {
+        grid-area: --body;
+      }
+    }
+
+    img {
+      /* 縦に積むときは、画像を列の幅いっぱいに広げる */
+      inline-size: 100%;
+
+      @container style(--_density: --spacious) {
+        inline-size: auto;
+      }
+    }
+
+    figcaption {
+      /* キャプションの長さが、画像の列の幅を押し広げないようにする */
+      contain: inline-size;
+      padding: 16px;
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._heading {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}

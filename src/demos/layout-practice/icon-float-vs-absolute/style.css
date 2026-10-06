@@ -1,0 +1,109 @@
+@layer tokens {
+  :root {
+    --check: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L10 18L20 6" /></svg>');
+  }
+}
+
+@layer components {
+  @scope (.scoped.icon-float-vs-absolute) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+      line-height: 1.75;
+    }
+
+    section {
+      & > * + * {
+        margin-block-start: 12px;
+      }
+    }
+
+    ._heading {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._list {
+      border-block-start: 1px solid oklch(85% 0 0deg);
+    }
+
+    ._float-item {
+      --_icon-size: 1em;
+      --_gap: 0.5em;
+      --_icon-offset: calc(var(--_icon-size) + var(--_gap));
+      --_padding-block: 12px;
+
+      /* float した擬似要素を、項目の中に収める */
+      display: block flow-root;
+      padding-block: var(--_padding-block);
+      padding-inline-start: var(--_icon-offset);
+      border-block-end: 1px solid oklch(85% 0 0deg);
+
+      & > * + p {
+        margin-block-start: 0.5em;
+      }
+
+      &::before {
+        content: "";
+        float: inline-start;
+        mask-image: var(--check);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: var(--_icon-size);
+        aspect-ratio: 1;
+
+        /* 1行目の行の高さの中で、上下の中央に置く */
+        margin-block: calc((1lh - var(--_icon-size)) / 2);
+
+        /* 項目の padding の中へ戻す */
+        margin-inline-start: calc(var(--_icon-offset) * -1);
+
+        /* 強制カラーモードではグラデーションが消え、CanvasText で描かれる */
+        background-image: conic-gradient(currentColor 0 0);
+        background-color: CanvasText;
+      }
+
+      &[data-icon-size="large"]::before {
+        --_icon-size: 2.25em;
+      }
+    }
+
+    ._absolute-item {
+      --_icon-size: 1em;
+      --_gap: 0.5em;
+      --_icon-offset: calc(var(--_icon-size) + var(--_gap));
+      --_padding-block: 12px;
+
+      position: relative;
+      padding-block: var(--_padding-block);
+      padding-inline-start: var(--_icon-offset);
+      border-block-end: 1px solid oklch(85% 0 0deg);
+
+      & > * + p {
+        margin-block-start: 0.5em;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+
+        /* 項目の padding に、1行目の行の高さとアイコンの差の半分を足す */
+        inset-block-start: calc(var(--_padding-block) + (1lh - var(--_icon-size)) / 2);
+        inset-inline-start: 0;
+        mask-image: var(--check);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: var(--_icon-size);
+        aspect-ratio: 1;
+        background-image: conic-gradient(currentColor 0 0);
+        background-color: CanvasText;
+      }
+
+      &[data-icon-size="large"]::before {
+        --_icon-size: 2.25em;
+      }
+    }
+  }
+}

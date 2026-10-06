@@ -34,25 +34,7 @@
   page: layout-practice/choosing
   since: 0.22.0
 
-# 11-2 floatで文章を回り込ませる
-- id: float-for-text-wrap
-  level: 推奨
-  rule: '画像のまわりに文字を回り込ませるときは `float` を使い、囲む要素には clearfix ではなく `display: flow-root` を指定する。'
-  reason: 回り込みは `float` の本来の用途で、`flow-root` なら余計な擬似要素なしに `float` を内側に収められるため。
-  note: '値は `float: inline-end` のように論理値で書きます。'
-  page: layout-practice/float
-  since: 0.1.0
-
-- id: float-for-corner-elements
-  level: 推奨
-  rule: '文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませる。'
-  reason: 画面の幅や文章の量が変わっても文字が要素の下に隠れず、要素より下の空いた場所には文章が広がるため。
-  note: 'スクロールしても上端に留めたい閉じるボタンは、`float` に `position: sticky` と `inset-block-start: 0` を組み合わせます。'
-  aiProne: true
-  page: layout-practice/float
-  since: 0.19.0
-
-# 11-3 余白を設計する
+# 11-2 余白を設計する
 - id: gap-over-child-margin
   level: 推奨
   rule: Flexbox や Grid の子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作る。
@@ -124,7 +106,7 @@
   page: layout-practice/spacing
   since: 0.3.0
 
-# 11-4 変化に強いレイアウト
+# 11-3 変化に強いレイアウト
 - id: design-for-content-changes
   level: 推奨
   rule: CSS を書くときは、テキストが2倍の長さになったら、画像がなかったら、要素の数が変わったらと考え、そのパターンで表示を確かめる。
@@ -193,8 +175,8 @@
 - id: overflow-clip-over-hidden
   level: 必須
   rule: 'はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。'
-  reason: '`hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなるため。'
-  note: '`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-8 を参照してください。'
+  reason: '`hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなり、フォーカスやプログラムからのスクロールで中身がずれ、片方の軸だけ指定してももう一方が `auto` になるため。'
+  note: '`hidden` を使うのは、スクロールコンテナが要る場面に限ります（例：`grid-template-rows` を `0fr` と `1fr` で切り替えて開閉する中身。スクロールコンテナになると自動の最小サイズが0になり、`0fr` まで畳めます）。`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-9 を参照してください。'
   aiProne: true
   page: layout-practice/defensive
   since: 0.1.0
@@ -207,7 +189,7 @@
   page: layout-practice/defensive
   since: 0.5.0
 
-# 11-5 重なりと全幅
+# 11-4 重なりと全幅
 - id: grid-stack-before-absolute
   level: 推奨
   rule: '要素を重ねるときは、`position: absolute` の前に、Grid の同じエリアに置く方法を検討する。'
@@ -251,7 +233,7 @@
   page: layout-practice/layering
   since: 0.1.0
 
-# 11-6 固定ヘッダー
+# 11-5 固定ヘッダー
 - id: sticky-header-height-query
   level: 推奨
   rule: 'ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。'
@@ -270,7 +252,7 @@
   page: layout-practice/sticky-header
   since: 0.5.0
 
-# 11-7 アンカーポジショニング
+# 11-6 アンカーポジショニング
 - id: anchor-scope-for-repeated-components
   level: 推奨
   rule: 繰り返し置くコンポーネントの中でアンカーポジショニングを使うときは、ルートに `anchor-scope` を指定して、アンカーの名前が届く範囲をコンポーネントの中に限る。
@@ -278,24 +260,6 @@
   note: アンカーポジショニングをレイアウトの要として使わない規則は、第1章のルール `no-unsupported-layout-features` で扱います。
   page: layout-practice/anchor-positioning
   since: 0.1.0
-
-- id: implicit-anchor-first
-  level: 推奨
-  rule: ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。
-  reason: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
-  note: '暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。'
-  aiProne: true
-  page: layout-practice/anchor-positioning
-  since: 0.3.0
-
-- id: position-area-logical-keywords
-  level: 推奨
-  rule: '`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。'
-  reason: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
-  note: 論理プロパティを使う規則は、第9章のルール `logical-properties` で扱います。
-  aiProne: true
-  page: layout-practice/anchor-positioning
-  since: 0.3.0
 
 - id: anchor-indicator-as-decoration
   level: 推奨
@@ -305,7 +269,7 @@
   page: layout-practice/anchor-positioning
   since: 0.23.0
 
-# 11-8 要素どうしの重なりを検出する
+# 11-7 要素どうしの重なりを検出する
 - id: overlap-detection-for-decoration-only
   level: 推奨
   rule: 'アンカーポジショニングとスクロール駆動アニメーションで要素どうしの重なりを検出する技法は、隠れても内容と操作に影響しない装飾にだけ使い、指定はすべて `@supports` の中に書く。'
@@ -314,7 +278,7 @@
   page: layout-practice/overlap-detection
   since: 0.12.0
 
-# 11-9 ページのスクロールとルートスクローラー
+# 11-8 ページのスクロールとルートスクローラー
 - id: root-scroller-for-page-scroll
   level: 推奨
   rule: 'ページ全体のスクロールはビューポート（ルートスクローラー）に任せ、`html`、`body`、ページ全体を包むラッパーをスクロールコンテナにしない。'
@@ -337,11 +301,11 @@
   level: 推奨
   rule: '画面に残したいヘッダーやサイドバーは、本文だけをスクロールさせる構造ではなく、`position: sticky` で留める。'
   reason: 'ページ全体がビューポートでスクロールしたまま、留めたい要素だけが位置を保てるため。'
-  note: 'ヘッダーは、ビューポートの高さが十分なときだけ留めます（11-6）。'
+  note: 'ヘッダーは、ビューポートの高さが十分なときだけ留めます（11-5）。'
   page: layout-practice/root-scroller
   since: 0.5.0
 
-# 11-10 grid-lanesで石積みのレイアウトを組む
+# 11-9 grid-lanesで石積みのレイアウトを組む
 - id: grid-lanes-inside-supports
   level: 推奨
   rule: '`display: block grid-lanes` は `@supports (display: block grid-lanes)` の中に書き、その外には通常の Grid（`display: block grid`）と同じ `grid-template-columns` を書く。'
@@ -376,7 +340,7 @@
   page: layout-practice/masonry
   since: 0.5.0
 
-# 11-11 表示順と読み上げ順を合わせる
+# 11-10 表示順と読み上げ順を合わせる
 - id: reading-flow-when-reordered
   level: 必須
   rule: '`grid-template-areas`、`flex-direction: row-reverse | column-reverse`、`flex-wrap: wrap-reverse`、`grid-auto-flow: dense` を書いたルールには、同じルールに `reading-flow` を指定する。'
@@ -397,7 +361,53 @@
   page: layout-practice/reading-flow
   since: 0.19.0
 
-# 11-12 表を組む
+# 11-11 アイコンを配置する
+- id: icon-grid-over-absolute
+  level: 推奨
+  rule: '文字に添えるアイコンは Grid か Flexbox で文章と並べ、`position: absolute` で重ねない。'
+  reason: '絶対配置の要素は行の配置に加わらないので、アイコンの大きさと文章の側の余白が食い違ったときに、アイコンが内容に重なるため。'
+  note: '手法の優先の順は、Grid・Flexbox、`float`、`position: absolute` です。項目の中身に `strong` や複数の段落が入って Grid にできないときは、`float: inline-start` で置きます。'
+  aiProne: true
+  page: layout-practice/icon-alignment
+  since: 0.24.0
+
+- id: icon-first-line-with-lh
+  level: 必須
+  rule: '文章が折り返すおそれのある行頭や行末のアイコンは、`margin-block: calc((1lh - アイコンの大きさ) / 2)` で1行目の中央に置き、`align-items: center` で項目全体の中央に置かない。'
+  reason: '`align-items: center` では、文章が2行以上になるとアイコンが項目全体の高さの中央に移り、どの行にもそろわなくなるため。`1lh` なら文字の大きさや `line-height` を変えても式を直さずに済む。'
+  note: '1行で折り返さないボタンのラベルのように、項目全体の中央と1行目の中央が一致する場面では `align-items: center` でかまいません。この `margin` はアイコンの位置を決める指定なので、ルール `block-margin-with-sibling-combinator` の対象外です。擬似要素の `font-size` を変えると `1lh` も変わるので、アイコンの大きさは `inline-size` で決めます。'
+  aiProne: true
+  page: layout-practice/icon-alignment
+  since: 0.24.0
+
+- id: out-of-flow-icon-position-calc
+  level: 必須
+  rule: '中身の構造が決まらず Grid や Flexbox にできないアイコンを `float` や `position: absolute` で置くときは、位置を `calc()` の式で書き、何の値から決めたかを残す。'
+  reason: 'アイコンの大きさ、間隔、項目の `padding` を同じカスタムプロパティから計算すれば、どれかを変えたときにほかの値も一緒に変わり、数値の食い違いで重なったりずれたりしないため。'
+  note: '例：`--_icon-offset: calc(var(--_icon-size) + var(--_gap))` を項目の `padding-inline-start` と擬似要素の負の `margin-inline-start` に使います。`position: absolute` の `inset-block-start` は `padding` を含む領域の上端から測るので、`calc(var(--_padding-block) + (1lh - var(--_icon-size)) / 2)` のように項目の `padding-block` も足します。'
+  aiProne: true
+  page: layout-practice/icon-alignment
+  since: 0.24.0
+
+# 11-12 floatで文章を回り込ませる
+- id: float-for-text-wrap
+  level: 推奨
+  rule: '画像のまわりに文字を回り込ませるときは `float` を使い、囲む要素には clearfix ではなく `display: flow-root` を指定する。'
+  reason: 回り込みは `float` の本来の用途で、`flow-root` なら余計な擬似要素なしに `float` を内側に収められるため。
+  note: '値は `float: inline-end` のように論理値で書きます。'
+  page: layout-practice/float
+  since: 0.1.0
+
+- id: float-for-corner-elements
+  level: 推奨
+  rule: '文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませる。'
+  reason: 画面の幅や文章の量が変わっても文字が要素の下に隠れず、要素より下の空いた場所には文章が広がるため。
+  note: 'スクロールしても上端に留めたい閉じるボタンは、`float` に `position: sticky` と `inset-block-start: 0` を組み合わせます。'
+  aiProne: true
+  page: layout-practice/float
+  since: 0.19.0
+
+# 11-13 表を組む
 - id: table-min-size-with-scroller
   level: 推奨
   rule: '表は置かれた場所の幅に合わせて縮めず、`min-inline-size` で最小の幅を決め、表を包む要素に `overflow-x: auto` を指定して、それより狭い場所では横にスクロールさせる。'
@@ -450,7 +460,7 @@
   page: layout-practice/tables
   since: 0.21.0
 
-# 11-13 文字の切り詰めと読み込み中の表示
+# 11-14 文字の切り詰めと読み込み中の表示
 - id: ellipsis-with-nowrap-and-clip
   level: 推奨
   rule: '1行で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせる。'

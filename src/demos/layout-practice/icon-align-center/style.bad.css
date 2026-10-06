@@ -1,0 +1,41 @@
+@layer tokens {
+  :root {
+    --check: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L10 18L20 6" /></svg>');
+  }
+}
+
+@layer components {
+  @scope (.scoped.icon-align-center) to (.scoped) {
+    :scope {
+      max-inline-size: calc(360 / 16 * 1rem);
+      line-height: 1.75;
+    }
+
+    ._checks {
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._check {
+      --_icon-size: 1em;
+
+      /* 項目全体の高さの中央に置かれ、strong も別のアイテムになる */
+      display: block flex;
+      gap: 0.5em;
+      align-items: center;
+
+      &::before {
+        content: "";
+        flex-shrink: 0;
+        mask-image: var(--check);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: var(--_icon-size);
+        aspect-ratio: 1;
+        background-color: currentColor;
+      }
+    }
+  }
+}

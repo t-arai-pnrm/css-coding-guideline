@@ -1,0 +1,37 @@
+@layer components {
+  @scope (.scoped.faq-section) to (.scoped) {
+    :scope {
+      position: relative;
+      display: block grid;
+      gap: 1rlh;
+
+      /* hidden はセクションをスクロールコンテナにするので、中の sticky がこの要素を基準にして留まらない */
+      overflow: hidden;
+      padding-block-end: 24px;
+      padding-inline: 16px;
+      background-color: oklch(96% 0.01 250deg);
+
+      /* セクションの外へはみ出す装飾 */
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block-start: -48px;
+        inset-inline-end: -48px;
+        inline-size: calc(160 / 16 * 1rem);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background-color: oklch(85% 0.08 250deg);
+      }
+    }
+
+    h2 {
+      position: sticky;
+      inset-block-start: 0;
+      padding-block: 12px;
+      background-color: oklch(30% 0.05 260deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(20 / 16 * 1rem);
+      text-align: center;
+    }
+  }
+}

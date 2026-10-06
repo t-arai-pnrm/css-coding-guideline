@@ -120,7 +120,8 @@ export default {
         ignoreProperties: {
           'word-break': 'auto-phrase',
           display: '/grid-lanes$/',
-          'inline-size': ['/^round\\(/', '/^calc-size\\(/', '-webkit-fill-available'],
+          'inline-size': ['/^round\\(/', '/^calc-size\\(/', '-webkit-fill-available', '/^anchor-size\\(/'],
+          '/^(min-|max-)?(inline|block)-size$/': '/^anchor-size\\(/',
         },
       },
     ],

@@ -52,7 +52,7 @@ CSSをレビューするときの確認の順番は、私のテンプレート�
 3. 対象のブラウザで動くか（[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)）
 4. 不要な記述や副作用のある上書きがないか（[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/)）
 5. グローバルのCSSに重い指定がないか（[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)）
-6. 内容の変化に耐えられるか（[11-4 変化に強いレイアウト](/layout-practice/defensive/)）
+6. 内容の変化に耐えられるか（[11-3 変化に強いレイアウト](/layout-practice/defensive/)）
 7. コンポーネントの境界を守っているか（[10-2 コンポーネントの境界を守る](/components/boundaries/)）
 8. レスポンシブ対応の手段を正しい順番で選んでいるか（[13-1 検討する順番](/responsive/escalation/)）
 9. コメントが「なぜ」を説明しているか（[9-9 コメントの書き方](/notation/comments/)）
@@ -110,7 +110,7 @@ AIが生成するCSSには、よく見かける誤りがあります。本書で
 
 7つ目は、Tailwind CSSのユーティリティだけで組み、コンポーネントのクラスを書かない前提を持ち込むことです。{/* 要確認: 出典なし */}本書では、コンポーネントはクラスと `@scope` で作り、ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（`utility-single-purpose`）。私のテンプレートのAI向けの規約でも、明示的な要求がない限りTailwind CSSやCSS-in-JSは使わないと定めています（`no-unrequested-css-framework`）。
 
-8つ目は、アンカーポジショニングやView Transitionsを「未対応」とみなし、位置の計算や画面の切り替えをJavaScriptで作り直すことです。{/* 要確認: 出典なし */}2026年9月時点で、`anchor-name` は2026年1月に、同じページの中のView Transitionsは2025年10月に、主要なブラウザの最新版がそろいました。本書の対象のSafari 18系でアンカーポジショニングが使えないのは事実です。それでも、未対応の環境向けの表示をCSSで用意すれば、プログレッシブ・エンハンスメントとして使えます（[11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)、[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)）。「未対応」という判断は、対応状況を確かめてから受け入れます（`verify-support-claims`）。
+8つ目は、アンカーポジショニングやView Transitionsを「未対応」とみなし、位置の計算や画面の切り替えをJavaScriptで作り直すことです。{/* 要確認: 出典なし */}2026年9月時点で、`anchor-name` は2026年1月に、同じページの中のView Transitionsは2025年10月に、主要なブラウザの最新版がそろいました。本書の対象のSafari 18系でアンカーポジショニングが使えないのは事実です。それでも、未対応の環境向けの表示をCSSで用意すれば、プログレッシブ・エンハンスメントとして使えます（[11-6 アンカーポジショニング](/layout-practice/anchor-positioning/)、[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)）。「未対応」という判断は、対応状況を確かめてから受け入れます（`verify-support-claims`）。
 
 9つ目は、レイヤーを使うプロジェクトで、`@layer` の外にスタイルを書くことです。レイヤーに入っていないスタイルは、詳細度に関係なくすべてのレイヤーに勝つので、決めたレイヤーの順番が崩れます（`no-unlayered-styles`）。5つ目のCMSの場合とは反対の誤りで、どちらもレイヤーの外のCSSが最も強いという仕組みを知らないことから起きます。詳しくは「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。
 

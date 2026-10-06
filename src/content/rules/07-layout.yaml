@@ -42,7 +42,7 @@
   level: 推奨
   rule: '画面幅いっぱいに広げる子要素を持たない要素を、最大幅と左右の `padding` で中央に寄せ、内容の幅を最大幅にそろえるときは、`calc()` で最大幅に `padding` を足さず、`box-sizing: unset` で `content-box` に戻す。'
   reason: '`max-inline-size` が内容の領域の幅を指すようになり、`padding` の値を変えても最大幅の式を直さずに済むため。'
-  note: '`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。`content-box` と書かずに `unset` と書くのは、ベーススタイルの `border-box` を取り消す意図を示すためです。画面幅いっぱいに広げる子要素が混ざるなら、余白の列を持つ Grid で組みます（11-3 のルール `gutter-columns-for-content-width`）。'
+  note: '`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。`content-box` と書かずに `unset` と書くのは、ベーススタイルの `border-box` を取り消す意図を示すためです。画面幅いっぱいに広げる子要素が混ざるなら、余白の列を持つ Grid で組みます（11-2 のルール `gutter-columns-for-content-width`）。'
   aiProne: true
   page: layout/box-model
   since: 0.20.0
@@ -162,30 +162,6 @@
   page: layout/grid-basics
   since: 0.1.0
 
-- id: subgrid-for-aligned-rows
-  level: 推奨
-  rule: 並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。
-  reason: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
-  note: '`flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。'
-  aiProne: true
-  page: layout/grid-basics
-  since: 0.1.0
-
-- id: subgrid-span-rows
-  level: 必須
-  rule: '`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。'
-  reason: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
-  page: layout/grid-basics
-  since: 0.1.0
-
-- id: column-width-by-variability
-  level: 推奨
-  rule: 'グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`1fr`（残りをすべて使う）のように指定する。'
-  reason: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
-  note: '一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。'
-  page: layout/grid-basics
-  since: 0.3.0
-
 - id: no-dense-for-ordered-items
   level: 非推奨
   rule: '順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。'
@@ -195,14 +171,39 @@
   page: layout/grid-basics
   since: 0.4.0
 
-- id: display-contents-keep-role
+# 7-8 Gridでアイテムをそろえる
+- id: subgrid-for-aligned-rows
   level: 推奨
-  rule: 'サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。'
-  reason: '`display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。'
-  page: layout/grid-basics
+  rule: 並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。
+  reason: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
+  note: '`flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。'
+  aiProne: true
+  page: layout/grid-alignment
   since: 0.1.0
 
-# 7-8 positionの基礎
+- id: subgrid-span-rows
+  level: 必須
+  rule: '`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。'
+  reason: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
+  page: layout/grid-alignment
+  since: 0.1.0
+
+- id: column-width-by-variability
+  level: 推奨
+  rule: 'グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`1fr`（残りをすべて使う）のように指定する。'
+  reason: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
+  note: '一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。`fit-content()` の列は `fr` の列より先に上限まで広がるので、隣の `fr` の列には `minmax(下限, 1fr)` で下限を付けます。'
+  page: layout/grid-alignment
+  since: 0.3.0
+
+- id: contain-caption-in-intrinsic-track
+  level: 推奨
+  rule: '`fit-content()` などの中身の幅で決まるトラックに画像とキャプションを置くときは、キャプションに `contain: inline-size` を指定し、列の幅を画像だけで決める。'
+  reason: キャプションの1行の長さも `max-content` に含まれ、長いキャプションが画像の幅に関係なく列を上限まで押し広げるため。
+  page: layout/grid-alignment
+  since: 0.24.0
+
+# 7-9 positionの基礎
 - id: containing-block-inside-component
   level: 推奨
   rule: '`position: absolute` の要素の基準にする祖先には、同じコンポーネントの中で `position: relative` を指定する。'
@@ -250,3 +251,57 @@
   note: '上限は、`calc(100svb - 16px * 2)` のように、スクロールで値が変わらない `svb` から余白を引いて決めます。'
   page: layout/positioning
   since: 0.4.0
+
+# 7-10 アンカーポジショニングの基礎
+- id: implicit-anchor-first
+  level: 推奨
+  rule: ポップオーバーを開くボタンを基準に配置するときは、`anchor-name` で名前を付けず、`popovertarget` や `commandfor` による暗黙のアンカーを使う。
+  reason: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
+  note: '暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。'
+  aiProne: true
+  page: layout/anchor-basics
+  since: 0.3.0
+
+- id: position-area-logical-keywords
+  level: 推奨
+  rule: '`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。'
+  reason: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
+  note: 論理プロパティを使う規則は、第9章のルール `logical-properties` で扱います。
+  aiProne: true
+  page: layout/anchor-basics
+  since: 0.3.0
+
+- id: anchor-fallback-placement
+  level: 必須
+  rule: 'アンカーを基準にした配置の指定は `@supports` の中に書き、その外には、未対応の環境でも内容を読めて操作できる配置を書く。ポップオーバーは `margin: revert` で画面の中央に、ポップオーバーではない要素は `position: absolute` ごと `@supports` に入れて通常フローに置く。'
+  reason: 未対応の環境ではアンカーを基準にした指定がすべて無視され、要素が画面の端や静的位置に表示されて、ほかの内容に重なるため。
+  note: '`@supports` の条件には、`position-area: block-end span-inline-end` のように実際に使う値を書きます。`position-area` が `auto` の `margin` を0として扱わないブラウザ（Chrome 142以前、Safari 26.1以前など）があるので、`@supports` の中では `margin` を指定し直します。レイアウトの要として使わない規則は、第1章のルール `no-unsupported-layout-features` で扱います。'
+  aiProne: true
+  page: layout/anchor-basics
+  since: 0.24.0
+
+# 7-11 display: contentsで箱をなくす
+- id: display-contents-with-reason
+  level: 推奨
+  rule: '`display: contents` は、サブグリッドに参加させるときや、幅によってラッパーの箱を出し入れするときなど、箱をなくす理由があるときだけ使う。画面の幅で並びを変えるだけなら `grid-template` のエリアで組む。'
+  reason: '箱をなくした要素はブラウザによってロールを失い、Flexbox で構造を変えると `order` も必要になって、読み上げやフォーカスの順番が見た目と食い違いやすいため。'
+  note: 'エリアで組むときは、テンプレートを `--_template` に入れてコンテナサイズクエリの中で差し替え、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。レイアウトのためだけのラッパーは足しません。'
+  aiProne: true
+  page: layout/display-contents
+  since: 0.24.0
+
+- id: display-contents-keep-role
+  level: 推奨
+  rule: '`display: contents` で箱をなくす要素は、ロールを持たない `div` か `span` に限るか、`role` 属性でロールを明示して読み上げを確かめる。'
+  reason: '`display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。'
+  note: 'リストの `li` には `role="listitem"` を明示します。`display: contents` は `[hidden]` の `display: none` も上書きしますが、kiso.css の `[hidden]` の `!important` で防げます（ルール `important-only-for-guarantees`）。'
+  page: layout/display-contents
+  since: 0.1.0
+
+- id: no-display-contents-on-focusable
+  level: 禁止
+  rule: 'ボタンやリンクのようにフォーカスできる要素に、`display: contents` を指定しない。'
+  reason: '箱がないのでフォーカスリングを描けず、ブラウザによっては要素がアクセシビリティツリーから外れて、ボタンやリンクとして読み上げられなくなるため。'
+  aiProne: true
+  page: layout/display-contents
+  since: 0.24.0

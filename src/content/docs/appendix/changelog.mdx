@@ -11,6 +11,42 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.24.0（2026年10月7日）
+
+著者の依頼を受けて、アンカーポジショニングの基礎、`display: contents`、アイコンの配置の節を新設し、`fit-content()` と `overflow: clip` の説明を広げました。ルールを追加し、変更したため、マイナーバージョンを上げています。
+
+- 構成を次のように変えました。本書は公開前なので、旧URLからの転送は置いていません。
+  - 第7章に「[7-10 アンカーポジショニングの基礎](/layout/anchor-basics/)」と「[7-11 display: contentsで箱をなくす](/layout/display-contents/)」を新設しました。
+  - 「[7-7 Gridの基礎](/layout/grid-basics/)」が長くなったため、アイテムのそろえ方とサブグリッドを「[7-8 Gridでアイテムをそろえる](/layout/grid-alignment/)」に分けました。旧7-8「positionの基礎」は7-9になります。
+  - 旧11-2「floatで文章を回り込ませる」を「[11-12 floatで文章を回り込ませる](/layout-practice/float/)」に移しました。`float` は余白などより使う場面が少ないので、表の前に置いています。旧11-3〜11-11は11-2〜11-10に、旧11-12と旧11-13は11-13と11-14になります。URLは変わりません。
+  - 「[11-11 アイコンを配置する](/layout-practice/icon-alignment/)」を新設しました。
+- 「[7-10 アンカーポジショニングの基礎](/layout/anchor-basics/)」では、`anchor-name`、`anchor()`、`position-area` の9マス、`position-try-fallbacks` による反転、未対応の環境への備えなどを説明しています。「[11-6 アンカーポジショニング](/layout-practice/anchor-positioning/)」は、ツールチップやメニューなどの実践に絞りました。
+- 「[7-11 display: contentsで箱をなくす](/layout/display-contents/)」では、箱だけがなくなる仕組みと、ロールと `hidden` 属性の注意点を説明しています。画面の幅で並びを変えるだけなら `grid-template` のエリアで組み、`display: contents` はサブグリッドへの参加やラッパーの箱の出し入れに使います。ランキングのデモも加えています。
+- 「[11-11 アイコンを配置する](/layout-practice/icon-alignment/)」では、文字に添えるアイコンをGridと `1lh` で1行目にそろえる方法と、`1fr auto 1fr` でラベルを中央に保つボタンを扱います。Gridにできないときの `float` と `position: absolute` も比べています。11-12にあった行頭のアイコンの説明は、ここに移しました。
+- 次の説明を加えたり直したりしました。
+  - 「[6-1 pxとremを使い分ける](/values/px-and-rem/)」：行の高さを基準にする `lh` と `rlh` を加えました。
+  - 「[7-7 Gridの基礎](/layout/grid-basics/)」：`max-content`、`min-content`、`fit-content()` の違いと、列ごとに可変か不変かで選ぶ考え方を加えました。
+  - 「[7-8 Gridでアイテムをそろえる](/layout/grid-alignment/)」：画像の列を `fit-content()` で画像の幅に合わせ、キャプションを `contain: inline-size` で列の幅の計算から外すカードのデモを加えました。
+  - 「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」：`overflow: clip` の説明を横スクロールの話から切り離し、`hidden` がスクロールコンテナを作ることで起きる問題を、`sticky` の比較のデモとともに説明しました。`hidden` を使うのは、`grid-template-rows` を `0fr` にして畳む中身のように、スクロールコンテナが要る場面に限ります。
+  - 「[11-12 floatで文章を回り込ませる](/layout-practice/float/)」：回り込む要素のコード例を、囲む要素のルールの中へネストする形に直しました。
+  - 「[18-5 出現と退場](/motion/entry-and-exit/)」：`grid-template-rows` で開閉する中身を `overflow: hidden` にし、`min-block-size: 0` を消しました。
+  - 「[10-7 Web Components](/components/web-components/)」と「[18-3 イージングと再生時間](/motion/easing-and-duration/)」：未対応の環境でポップオーバーを中央に出す指定を、`margin: revert` に直しました。
+  - 本書のStylelintの設定：大きさのプロパティに `anchor-size()` を書いても、値の誤りとして報告しないようにしました。
+- ルールを8件追加しました。
+  - [`anchor-fallback-placement`](/layout/anchor-basics/#rule-anchor-fallback-placement)：アンカーを基準にした配置は `@supports` の中に書き、外には未対応の環境でも読める配置を書きます。
+  - [`display-contents-with-reason`](/layout/display-contents/#rule-display-contents-with-reason)：`display: contents` は箱をなくす理由があるときだけ使い、並びを変えるだけならエリアで組みます。
+  - [`no-display-contents-on-focusable`](/layout/display-contents/#rule-no-display-contents-on-focusable)：フォーカスできる要素に `display: contents` を指定しません。
+  - [`contain-caption-in-intrinsic-track`](/layout/grid-alignment/#rule-contain-caption-in-intrinsic-track)：中身の幅で決まる列のキャプションには `contain: inline-size` を指定します。
+  - [`icon-grid-over-absolute`](/layout-practice/icon-alignment/#rule-icon-grid-over-absolute)：文字に添えるアイコンはGridかFlexboxで並べ、`position: absolute` で重ねません。
+  - [`icon-first-line-with-lh`](/layout-practice/icon-alignment/#rule-icon-first-line-with-lh)：折り返すおそれのある文章のアイコンは、`1lh` の式で1行目の中央に置きます。
+  - [`out-of-flow-icon-position-calc`](/layout-practice/icon-alignment/#rule-out-of-flow-icon-position-calc)：`float` や `position: absolute` で置くアイコンの位置は、`calc()` の式で書きます。
+- ルールを変えました。
+  - [`display-contents-keep-role`](/layout/display-contents/#rule-display-contents-keep-role)：対象をサブグリッドの場面に限らず、ロールを持たない要素に `span` を加えて、7-11に移しました。
+  - [`implicit-anchor-first`](/layout/anchor-basics/#rule-implicit-anchor-first) と [`position-area-logical-keywords`](/layout/anchor-basics/#rule-position-area-logical-keywords)：掲載するページを7-10に移しました。`implicit-anchor-first` には、`anchor()` で暗黙のアンカーを使うときは `position-anchor: auto` を明示する補足を加えています。
+  - [`overflow-clip-over-hidden`](/layout-practice/defensive/#rule-overflow-clip-over-hidden)：理由を広げ、`hidden` を使うのはスクロールコンテナが要る場面に限るという補足を加えました。
+  - [`column-width-by-variability`](/layout/grid-alignment/#rule-column-width-by-variability)：`fit-content()` の列の隣の `fr` の列には、`minmax()` で下限を付けるという補足を加えました。
+  - `subgrid-for-aligned-rows` など4件：掲載するページを7-8に移しました。ほかの3件は `subgrid-span-rows`、`column-width-by-variability`、`contain-caption-in-intrinsic-track` です。
+
 ## 0.23.0（2026年10月6日）
 
 著者の指摘を受けて、第1章と第2章の節を分け直し、スタイルクエリで状態を伝える節を新設しました。ベーススタイルの `:where()` は `@layer` を使えない場合に限り、コンテナサイズクエリはフラグを宣言する1か所に集めるよう、ルールを改めています。ルールを追加し、変更したため、マイナーバージョンを上げています。
@@ -95,7 +131,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - ルール [`float-for-text-wrap`](/layout-practice/float/#rule-float-for-text-wrap) と [`float-for-corner-elements`](/layout-practice/float/#rule-float-for-corner-elements) は、内容を変えずに、掲載するページを11-2に移しました。
 - ルールの内容を変えました。
   - [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：上限の `max-block-size` と、比率が決まっている要素の `aspect-ratio` を加えました。正方形を `inline-size` と `aspect-ratio: 1` で書くことと、`input` 要素の例外は補足に書いています。掲載するページは13-1から11-4に移しました。
-  - [`column-width-by-variability`](/layout/grid-basics/#rule-column-width-by-variability)：残りをすべて使う列の例を、`minmax(0, 1fr)` から `1fr` に改めました。
+  - [`column-width-by-variability`](/layout/grid-alignment/#rule-column-width-by-variability)：残りをすべて使う列の例を、`minmax(0, 1fr)` から `1fr` に改めました。
   - [`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem) と [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：閾値の式の各項を、その値を宣言した単位で書くことを補足に加えました。
   - [`import-resolved-at-build`](/cascade/layers/#rule-import-resolved-at-build)：補足に例外を加えました。「[最小の構成で始める](/introduction/quick-start/)」のように、学習や検証のため、ビルドせずに手元で試す場合です。最小の構成のページにも、学習用の構成であることと、実務ではビルドして配信することを書いています。
   - [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)：例外（カスタム要素、Shadow DOM、CMSのWYSIWYGの本文エリア）と、それぞれのルールを補足に加えました。「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」の本文にも、3つの例外をまとめています。
@@ -278,11 +314,11 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`grid-areas-for-changing-structure`](/layout/grid-basics/#rule-grid-areas-for-changing-structure)
   - [`grid-area-names-match-children`](/layout/grid-basics/#rule-grid-area-names-match-children)
   - [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)
-  - [`subgrid-for-aligned-rows`](/layout/grid-basics/#rule-subgrid-for-aligned-rows)
-  - [`subgrid-span-rows`](/layout/grid-basics/#rule-subgrid-span-rows)
-  - [`column-width-by-variability`](/layout/grid-basics/#rule-column-width-by-variability)
+  - [`subgrid-for-aligned-rows`](/layout/grid-alignment/#rule-subgrid-for-aligned-rows)
+  - [`subgrid-span-rows`](/layout/grid-alignment/#rule-subgrid-span-rows)
+  - [`column-width-by-variability`](/layout/grid-alignment/#rule-column-width-by-variability)
   - [`no-dense-for-ordered-items`](/layout/grid-basics/#rule-no-dense-for-ordered-items)
-  - [`display-contents-keep-role`](/layout/grid-basics/#rule-display-contents-keep-role)
+  - [`display-contents-keep-role`](/layout/display-contents/#rule-display-contents-keep-role)
 
 ## 0.18.0（2026年10月3日）
 
@@ -804,11 +840,11 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
 - ルールを17件追加しました。
   - [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)：`:has()` の起点と引数の範囲を絞る
   - [`declared-layer-names-only`](/cascade/layers/#rule-declared-layer-names-only)：宣言したレイヤー名だけを使う
-  - [`column-width-by-variability`](/layout/grid-basics/#rule-column-width-by-variability)：列ごとに、内容で伸び縮みさせるか固定するかを決める
+  - [`column-width-by-variability`](/layout/grid-alignment/#rule-column-width-by-variability)：列ごとに、内容で伸び縮みさせるか固定するかを決める
   - [`spacing-proximity`](/layout-practice/spacing/#rule-spacing-proximity)：グループの間の余白を、グループの中の余白より大きくする
   - [`sticky-header-height-query`](/layout-practice/sticky-header/#rule-sticky-header-height-query)：ヘッダーは高さに余裕があるときだけ固定する
-  - [`implicit-anchor-first`](/layout-practice/anchor-positioning/#rule-implicit-anchor-first)：暗黙のアンカーを優先する
-  - [`position-area-logical-keywords`](/layout-practice/anchor-positioning/#rule-position-area-logical-keywords)：`position-area` は論理キーワードで書く
+  - [`implicit-anchor-first`](/layout/anchor-basics/#rule-implicit-anchor-first)：暗黙のアンカーを優先する
+  - [`position-area-logical-keywords`](/layout/anchor-basics/#rule-position-area-logical-keywords)：`position-area` は論理キーワードで書く
   - [`hide-label-visually-in-container-query`](/responsive/container-size-queries/#rule-hide-label-visually-in-container-query)：狭いコンテナではボタンのラベルを視覚的にだけ隠す
   - [`framework-breakpoint-variables`](/responsive/breakpoints/#rule-framework-breakpoint-variables)：フレームワークを使うときは、その変数でブレイクポイントを書く
   - [`fallback-font-metric-overrides`](/typography/fonts/#rule-fallback-font-metric-overrides)：代わりのフォントの寸法を補正する

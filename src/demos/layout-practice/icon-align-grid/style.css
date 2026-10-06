@@ -1,0 +1,156 @@
+@layer tokens {
+  :root {
+    --check: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L10 18L20 6" /></svg>');
+    --chevron--rightward: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4L16 12L8 20" /></svg>');
+  }
+}
+
+@layer base {
+  :root {
+    --background-current: currentColor;
+
+    @media (forced-colors: active) {
+      --background-current: CanvasText;
+    }
+  }
+
+  :any-link {
+    @media (forced-colors: active) {
+      --background-current: LinkText;
+    }
+  }
+
+  button {
+    &:enabled {
+      @media (forced-colors: active) {
+        --background-current: ButtonText;
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.icon-align-grid) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+      line-height: 1.75;
+    }
+
+    section {
+      & > * + * {
+        margin-block-start: 12px;
+      }
+    }
+
+    ._heading {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._checks {
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._check {
+      --_icon-size: 1em;
+
+      /* アイコンの列と文章の列に分ける */
+      display: block grid;
+      grid-template-columns: var(--_icon-size) minmax(0, 1fr);
+      column-gap: 0.5em;
+      align-items: start;
+
+      &::before {
+        content: "";
+        mask-image: var(--check);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: var(--_icon-size);
+        aspect-ratio: 1;
+
+        /* 1行目の行の高さの中で、上下の中央に置く */
+        margin-block: calc((1lh - var(--_icon-size)) / 2);
+        background-color: var(--background-current);
+      }
+    }
+
+    ._menu {
+      border-block-start: 1px solid oklch(85% 0 0deg);
+    }
+
+    ._menu-item {
+      border-block-end: 1px solid oklch(85% 0 0deg);
+    }
+
+    ._link {
+      --_icon-size: 1.5em;
+
+      /* 文章の列と、アイコンの列を作る */
+      display: block grid;
+      grid-template-columns: minmax(0, 1fr) var(--_icon-size);
+      column-gap: 1.5em;
+      padding-block: 12px;
+
+      /* 丸い枠と矢印を、同じエリアに重ねる */
+      &::before,
+      &::after {
+        content: "";
+
+        /* 1行目の右の列に置く */
+        grid-area: 1 / 2;
+        inline-size: var(--_icon-size);
+        aspect-ratio: 1;
+        margin-block: calc((1lh - var(--_icon-size)) / 2);
+      }
+
+      &::before {
+        border: 1px solid;
+        border-radius: calc(infinity * 1px);
+      }
+
+      &::after {
+        mask-image: var(--chevron--rightward);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: 50%;
+        background-color: var(--background-current);
+      }
+    }
+
+    ._button {
+      /* 左右の列を同じ幅にして、ラベルを中央に保つ */
+      display: block grid;
+      grid-template-columns: 1fr auto 1fr;
+      column-gap: 1ch;
+      align-items: center;
+      inline-size: min(100%, calc(240 / 16 * 1rem));
+      min-block-size: calc(48 / 16 * 1rem);
+      padding-inline: 16px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background-color: oklch(35% 0.08 250deg);
+      color: oklch(100% 0 0deg);
+
+      /* 左の列を埋める空の擬似要素 */
+      &::before {
+        content: "";
+      }
+
+      &::after {
+        content: "";
+        justify-self: end;
+        mask-image: var(--chevron--rightward);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        inline-size: 1em;
+        aspect-ratio: 1;
+        background-color: var(--background-current);
+      }
+    }
+  }
+}

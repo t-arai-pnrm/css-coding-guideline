@@ -118,7 +118,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 仕様の編集者草案は、この点を改めています（CSSWGの議論は「[[css-flexbox] Flex basis and box-sizing #316](https://github.com/w3c/csswg-drafts/issues/316)」）。`flex-basis` の大きさを決める段階では内容の領域の幅が0より小さくなるのを許し、`border-box` で0を指定したアイテムは、`padding` を含めた外側の大きさを0として扱います。この規則なら、余りが配られた後の外側の幅はそろいます。しかし、2026年10月にChrome 152で確かめた限りでは、内容の領域を0で止める従来の計算のままで、幅は `padding` の差の分だけずれます。{/* 要確認: Safari と Firefox の挙動 */}
 
-列の幅を確実にそろえたいときは、Gridで親が列を決めます。`grid-template-columns: repeat(3, 1fr)` は、先にコンテナの幅を3等分して列を作り、アイテムをその列の中に置きます。`padding` は列の内側に収まるので、`padding` の大きいアイテムは、幅ではなく内容の領域が狭くなります。`minmax(0, 1fr)` ではなく `1fr` と書く理由は、「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
+列の幅を確実にそろえたいときは、Gridで親が列を決めます。`grid-template-columns: repeat(3, 1fr)` は、先にコンテナの幅を3等分して列を作り、アイテムをその列の中に置きます。`padding` は列の内側に収まるので、`padding` の大きいアイテムは、幅ではなく内容の領域が狭くなります。`minmax(0, 1fr)` ではなく `1fr` と書く理由は、「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
 
 ```css title="🙅‍♂ Not Recommended: padding の違うアイテムを、flex: 1 で等分しようとする"
 /* 🙅‍♂ Not Recommended */
@@ -169,7 +169,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 `overflow` を `hidden` や `auto` にしてスクロールコンテナになったアイテムは、自動の最小幅が0になります。ただし、`overflow: hidden` で止めると中身が切り取られ、URLや入力欄の一部が見えなくなります。隠すのではなく、最小幅を0にして、中身を折り返させるかスクロールさせます。
 
-本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
+本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
 
 `flex-direction: column` では、同じことが高さで起き、`min-block-size: auto` が中身の高さとして扱われます。高さを決めた縦のFlexboxで、スクロールさせたいアイテムがはみ出すときは、そのアイテムに `overflow: auto` か `min-block-size: 0` を指定します。
 
@@ -191,7 +191,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（[`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)）。
 
-並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、2026年10月の時点でBaselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[11-11 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
+並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、2026年10月の時点でBaselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[11-10 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
 
 <Baseline id="reading-flow" />
 

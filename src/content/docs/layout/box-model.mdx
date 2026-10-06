@@ -86,7 +86,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 `unset` は、継承するプロパティでは親の値を、継承しないプロパティでは初期値を使うキーワードで、継承しない `box-sizing` では初期値の `content-box` になります。本書で `content-box` と書かずに `unset` と書くのは、「ベーススタイルの `border-box` を取り消す」という意図を宣言で示すためです。`content-box` と書くと、その要素のためにボックスの数え方を選んだように読めます。同じ理由で、「[17-3 フォーム部品](/interaction/forms/)」でも、行数で高さを決めるテキストエリアに `box-sizing: unset` を書いています。
 
-`content-box` へ戻した要素で `inline-size: 100%` を指定すると、`padding` の分だけ親からはみ出します。幅は `auto` のままにし、上限だけを `max-inline-size` で決めます（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-no-redundant-width-100)」）。また、この方法は、画面幅いっぱいに広げる子要素を持たない要素に向いています。広げる子要素が混ざるページのレイアウトは、左右に余白の列を持つGridで組みます（「[11-3 余白を設計する](/layout-practice/spacing/)」）。
+`content-box` へ戻した要素で `inline-size: 100%` を指定すると、`padding` の分だけ親からはみ出します。幅は `auto` のままにし、上限だけを `max-inline-size` で決めます（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-no-redundant-width-100)」）。また、この方法は、画面幅いっぱいに広げる子要素を持たない要素に向いています。広げる子要素が混ざるページのレイアウトは、左右に余白の列を持つGridで組みます（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
 
 ## `auto` と中身に合わせた大きさ
 
@@ -126,11 +126,11 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
-`min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[11-4 変化に強いレイアウト](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)」）。
+`min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[11-3 変化に強いレイアウト](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)」）。
 
 ## `%` の基準
 
-`inline-size` の `%` は、包含ブロックの幅に対する割合です。包含ブロックは、通常フローの要素ならいちばん近いブロックの祖先の内容の領域で、絶対配置の要素なら `position` が `static` 以外のいちばん近い祖先の `padding` の領域です（「[7-8 positionの基礎](/layout/positioning/)」）。
+`inline-size` の `%` は、包含ブロックの幅に対する割合です。包含ブロックは、通常フローの要素ならいちばん近いブロックの祖先の内容の領域で、絶対配置の要素なら `position` が `static` 以外のいちばん近い祖先の `padding` の領域です（「[7-9 positionの基礎](/layout/positioning/)」）。
 
 `block-size` の `%` は、包含ブロックの高さが決まっているときだけ計算されます。親の高さが中身から決まる場合、子の高さと親の高さが互いに依存して循環するので、`%` は `auto` として扱われます。子の高さを親にそろえるときは、`height: 100%` ではなく、親をGridにして伸ばします（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-stretch-over-height-100)」）。
 
@@ -138,7 +138,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 ## `margin` の負の値と `auto`
 
-`margin` には負の値を指定できます。`margin-block-start` を負にすると要素は前の要素に重なるように引き上げられ、幅が `auto` のブロックの `margin-inline` を負にすると、その分だけ横に広がります。負のマージンは、コンポジションの子に付いた余白を親の端で打ち消すといった、余白の調整に使います。要素を重ねる目的なら、Gridの同じエリアに置くほうが、重ねたどちらの大きさも親の高さに反映されます（「[11-5 重なりと全幅](/layout-practice/layering/#rule-grid-stack-before-absolute)」）。
+`margin` には負の値を指定できます。`margin-block-start` を負にすると要素は前の要素に重なるように引き上げられ、幅が `auto` のブロックの `margin-inline` を負にすると、その分だけ横に広がります。負のマージンは、コンポジションの子に付いた余白を親の端で打ち消すといった、余白の調整に使います。要素を重ねる目的なら、Gridの同じエリアに置くほうが、重ねたどちらの大きさも親の高さに反映されます（「[11-4 重なりと全幅](/layout-practice/layering/#rule-grid-stack-before-absolute)」）。
 
 `margin` の `auto` は、余った空間を受け取る値です。通常フローのブロックでは、`inline-size`、左右の `margin`、`padding`、`border` の合計が包含ブロックの幅と等しくなるように決まります。左右を `auto` にすると、余りが等分されて中央に寄ります（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-margin-inline-auto-centering)」）。通常フローでは上下の `auto` は0として扱われ、上下の中央寄せには使えません。
 
