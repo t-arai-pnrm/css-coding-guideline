@@ -48,6 +48,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
   - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
+  - 補足: 置換要素（`img` など）は、`stretch` では伸びず、明示的な高さが必要なので、`block-size: 100%` を例外として書いてよいです。
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
@@ -214,7 +215,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【必須】`line-height` は単位のない数値で指定する。（`unitless-line-height`）
   - 理由: 単位のある値は計算後の長さのまま子要素に継承され、文字サイズの違う子要素で行が重なったり空きすぎたりするため。
-  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。
+  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-3）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
   - 自動チェック: Stylelint: `declaration-property-unit-allowed-list`
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【禁止】`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` を使わない。（`no-vw-vh`）
@@ -255,7 +256,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【推奨】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
-  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。
+  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-4 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
   - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【必須】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
@@ -1156,6 +1157,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
   - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
+  - 補足: 置換要素（`img` など）は、`stretch` では伸びず、明示的な高さが必要なので、`block-size: 100%` を例外として書いてよいです。
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
@@ -1401,7 +1403,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【必須】`line-height` は単位のない数値で指定する。（`unitless-line-height`）
   - 理由: 単位のある値は計算後の長さのまま子要素に継承され、文字サイズの違う子要素で行が重なったり空きすぎたりするため。
-  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。
+  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-3）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
   - 自動チェック: Stylelint: `declaration-property-unit-allowed-list`
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【推奨】サイズのトークンは単位のない数値（px 相当）で持ち、使う場所で `calc(var(--spacing--md) / 16 * 1rem)` や `calc(var(--spacing--md) * 1px)` に変換する。（`unitless-size-tokens`）
@@ -1478,7 +1480,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【推奨】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
-  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。
+  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-4 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
   - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【必須】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。

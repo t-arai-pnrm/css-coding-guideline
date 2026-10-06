@@ -62,7 +62,7 @@
   level: 必須
   rule: '`line-height` は単位のない数値で指定する。'
   reason: 単位のある値は計算後の長さのまま子要素に継承され、文字サイズの違う子要素で行が重なったり空きすぎたりするため。
-  note: '見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。'
+  note: '見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-3）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。'
   lint: 'Stylelint: `declaration-property-unit-allowed-list`'
   aiProne: true
   page: values/px-and-rem
@@ -233,7 +233,7 @@
   level: 推奨
   rule: '`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。'
   reason: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
-  note: '`media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。'
+  note: '`media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-4 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。'
   aiProne: true
   page: values/if-and-attr
   since: 0.5.0
