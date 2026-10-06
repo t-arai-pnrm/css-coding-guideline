@@ -107,9 +107,11 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
 この式があれば、ルートの文字サイズを `62.5%` にして計算を簡単にする必要もありません。ルートの文字サイズはブラウザの設定のままにしておき、変換は式に任せます。
 
 ```css title="🙆‍♂ Recommended: 変換の式で、カンプのピクセル値を残す"
-._lead {
-  max-inline-size: calc(560 / 16 * 1rem);
-  font-size: calc(18 / 16 * 1rem);
+@scope (.scoped.article-header) to (.scoped) {
+  ._lead {
+    max-inline-size: calc(560 / 16 * 1rem);
+    font-size: calc(18 / 16 * 1rem);
+  }
 }
 ```
 
@@ -179,12 +181,14 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
 たとえば、行頭のアイコンを1行目の中央に置くときは、アイコンの上下の `margin` を、1行の高さとアイコンの大きさの差の半分にします。文字の大きさや `line-height` を変えても、式を直す必要はありません。アイコンの配置の全体は「[11-11 アイコンを配置する](/layout-practice/icon-alignment/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 1行の高さを基準に、アイコンを1行目の中央に置く"
-._item {
-  &::before {
-    content: "";
-    inline-size: 1em;
-    aspect-ratio: 1;
-    margin-block: calc((1lh - 1em) / 2);
+@scope (.scoped.feature-list) to (.scoped) {
+  ._item {
+    &::before {
+      content: "";
+      inline-size: 1em;
+      aspect-ratio: 1;
+      margin-block: calc((1lh - 1em) / 2);
+    }
   }
 }
 ```

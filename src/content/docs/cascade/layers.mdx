@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import unlayeredHtml from '../../../demos/cascade/unlayered-wins/index.html?raw';
 import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?raw';
@@ -38,6 +39,8 @@ import unlayeredCss from '../../../demos/cascade/unlayered-wins/style.bad.css?ra
 7. `components`：複数の場所で使うコンポーネント
 8. `patterns`：静的で再利用できる見た目のパターン
 9. `utilities`：単機能の補助クラス
+
+<Figure src="cascade/layer-stack" alt="9つのレイヤーと、レイヤーの外のスタイルを、強い順に縦に積んだ図。いちばん上が最も強く、下へ行くほど弱くなる。上から順に、レイヤーの外（レイヤーに入れていないCSS。破線の枠で強調している）、9番目のutilities、8番目のpatterns、7番目のcomponents、6番目のpages、5番目のcompositions、4番目のvendors、3番目のbase、2番目のreset、1番目のtokens。番号は先頭の@layer文で宣言する順番で、前に宣言したレイヤーほど弱く、後ろほど強い。右側の括弧は役割のまとまりを示し、utilitiesとpatternsが重ねて使うもの、components、pages、compositionsがページの組み立て、base、reset、tokensが土台。" />
 
 最初の3つは、すべてのページの土台です。`tokens` を最も弱いレイヤーにしているのは、トークンの中身がカスタムプロパティの定義だけだからです。後ろのレイヤーで同じ名前のトークンを定義し直せば、そちらが優先されます。`reset` の後ろに `base` を置くのは、kiso.cssのデフォルト（`line-height: 1.5` など）をベーススタイルで上書きできるようにするためです。
 

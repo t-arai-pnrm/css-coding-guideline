@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import modesHtml from '../../../demos/layout/margin-collapse-modes/index.html?raw';
 import modesCss from '../../../demos/layout/margin-collapse-modes/style.css?raw';
@@ -52,6 +53,8 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 3つ目の場面は、中身のない要素です。`padding`、`border`、中身のいずれもなく、高さが0の要素では、自分の `margin-block-start` と `margin-block-end` が隣り合って1つにまとまり、さらに前後の兄弟の `margin` と相殺します。空の要素の `margin` は、前後の余白を通り抜けて1か所に吸収されるわけです。CMSの本文に入った空の `<p>` が余白を増やさないのは、この規則によるものです。
 
+<Figure src="layout/margin-collapse-cases" alt="margin が相殺する3つの場面を、上から順に3つの図で示したもの。margin は、アクセント色の半透明の破線の帯で描いている。1つ目は兄弟どうしで、上の要素Aの下の24pxの帯と、下の要素Bの上の40pxの帯が重なって1つになり、間は64pxではなく40pxになる。2つ目は親と最初の子で、親にborderとpaddingがないため、最初の子の上の24pxの帯が親の外へ出て、親の背景の外に空きができる。3つ目は中身のない要素で、高さ0の空の要素の上下のmarginも、前後のmarginと1つにまとまり、AとBの間は最大の32pxになる。" />
+
 ## 相殺した余白の大きさ
 
 正の値どうしが相殺すると、余白は大きいほうの値になります。24pxと40pxなら40pxです。2つの値が等しければその値のままで、16pxと16pxは16pxです。
@@ -59,6 +62,8 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 負の値が混ざると、計算が変わります。正の値と負の値が相殺するときは、2つを足します。30pxと-20pxなら10px、25pxと-25pxなら0pxです。負の値どうしなら、絶対値の大きいほうが残り、-25pxと-75pxでは-75pxになって、下の要素は上の要素に75px重なります。
 
 3つ以上の `margin` が相殺することもあります。CSS 2.2の仕様では、相殺に加わる正の値のうち最大のものから、負の値のうち絶対値が最大のものを引きます。上の要素の `margin-block-end: 40px` に、ラッパーの `margin-block-start: -16px` とその最初の子の `margin-block-start: 24px` が続くと、3つが1か所で相殺します。正の値の最大は40px、負の値の絶対値の最大は16pxなので、間は24pxです。
+
+<Figure src="layout/margin-collapse-sizes" alt="相殺した margin の大きさを、数直線の上の棒で示した図。縦の破線が0で、右が正の値、左が負の値。灰色の棒が相殺に加わる margin、アクセント色の棒が相殺した結果。1行目の正と正は、24pxと40pxが相殺して、大きいほうの40px。2行目の正と負は、30pxと-20pxを足して10px。3行目の負と負は、-25pxと-75pxのうち、絶対値の大きいほうの-75px。4行目の3つ以上は、40pxと-16pxと24pxで、最大の正の値40pxから、負の値の絶対値の最大16pxを引いて24px。" />
 
 {/* 要確認: ブラウザでの実測は権限で止められたため行っていない。この節の数値は CSS 2.2 の 8.3.1 の計算規則にもとづく */}
 

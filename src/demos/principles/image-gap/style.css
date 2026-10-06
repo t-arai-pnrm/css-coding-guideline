@@ -25,14 +25,12 @@
       &[data-fix="parent-grid"] {
         display: block grid;
       }
-    }
 
-    img {
-      &:is(._frame[data-fix="vertical-align"] *) {
+      &[data-fix="vertical-align"] img {
         vertical-align: bottom;
       }
 
-      &:is(._frame[data-fix="display"] *) {
+      &[data-fix="display"] img {
         display: block flow;
       }
     }

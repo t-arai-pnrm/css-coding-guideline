@@ -26,6 +26,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - `Guideline`：そのページのルール
   - `Baseline`：ブラウザの対応状況
   - `RuleList`：付録A
+  - `Figure`：図（SVG）をインラインで埋め込み、ライトとダークのテーマに色を追従させる。SVG は `src/assets/figures/<章>/<名前>.svg` に置き、`<Figure src="<章>/<名前>" alt="…" />` で読み込む。SVG の中では色を直接書かず、`Figure.astro` のクラス（`_box`、`_box -accent`、`_text`、`_text-muted`、`_text-accent`、`_arrow`、`_arrowhead`）を使う
   - `ImagePlaceholder`：用意できていない画像
 - `src/lib/book.mjs`: 部と章の構成。サイドバーと生成スクリプトが使う。
 - `astro.config.mjs`: ルールへのリンク（`/<page>/#rule-<id>`）は、ルールの定義と照らして正しいものだけをリンク検証から外している。

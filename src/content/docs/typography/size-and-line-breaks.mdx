@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import breakHtml from '../../../demos/typography/heading-line-breaks/index.html?raw';
 import breakCss from '../../../demos/typography/heading-line-breaks/style.css?raw';
@@ -39,6 +40,8 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 ## 流体的な文字サイズをユーティリティにする
 
 文字サイズを幅に合わせて変えるなら、`clamp()` を使います。最小値と最大値をremで決め、その間を画面の幅に比例して補間すれば、どの幅でも段差のない大きさになります。最小値と最大値をremにし、推奨値にremを含める理由は、「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+
+<Figure src="typography/fluid-vs-steps" alt="横軸を画面の幅、縦軸を文字サイズ（px）とし、2通りの書き方を重ねたグラフ。灰色の線は、ブレイクポイントごとに切り替える書き方で、768pxで24pxから32pxへ、1024pxで32pxから40pxへと、2回の段差で階段状に上がる。アクセント色の線は clamp() で、375pxの24pxから1280pxの40pxまで、段差なく右上がりの直線で変わる。" />
 
 ただし、傾きと切片を要素ごとに計算して書くのは大変です。オンラインのジェネレーターで作った数値を貼ると、計算の手順がコードに残りません。そこで、計算をユーティリティの中にまとめ、使う側は最小値と最大値だけを渡すようにします。
 

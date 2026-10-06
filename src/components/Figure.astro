@@ -1,0 +1,129 @@
+---
+/**
+ * 図（SVG）をインラインで埋め込み、ライトテーマとダークテーマに色を追従させる。
+ * SVG は `src/assets/figures/<章>/<名前>.svg` に置き、`src="<章>/<名前>"` で指定する。
+ * SVG の中では色を直接書かず、このコンポーネントで定義したクラスを使う。
+ *   図形：`_box`（`-accent` で強調）、`_arrow`（線と軸）、`_arrowhead`、`_guide`（補助線）
+ *   グラフ：`_curve`（実線）、`_curve-muted`（比較対象の実線）、`_curve-faint`（破線）、`_dot`
+ *   文字：`_text`、`_text-muted`、`_text-accent`
+ * 代替テキストは「電話越しでも伝わる」くらい詳しく書く。
+ */
+interface Props {
+  src: string;
+  alt: string;
+}
+
+const { src, alt } = Astro.props;
+
+const figures = import.meta.glob<string>('../assets/figures/**/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+const svg = figures[`../assets/figures/${src}.svg`];
+if (svg === undefined) {
+  throw new Error(`Figure: src/assets/figures/${src}.svg がありません。`);
+}
+---
+
+<figure class="scoped figure not-content" role="img" aria-label={alt}>
+  <div class="_body" aria-hidden="true" set:html={svg} />
+</figure>
+
+<style is:global>
+  @layer starlight, base, components;
+
+  @layer components {
+    @scope (.scoped.figure) to (.scoped) {
+      :scope {
+        --_surface: var(--sl-color-gray-6);
+        --_line: var(--sl-color-gray-4);
+        --_arrow: var(--sl-color-gray-3);
+        --_text: var(--sl-color-white);
+        --_text-muted: var(--sl-color-gray-2);
+        --_accent-surface: var(--sl-color-accent-low);
+        --_accent-line: var(--sl-color-accent);
+        --_accent-text: var(--sl-color-accent-high);
+
+        margin-block: 1.5rem;
+        margin-inline: 0;
+      }
+
+      ._body > svg {
+        display: block flow;
+        inline-size: 100%;
+        block-size: auto;
+        max-inline-size: 30rem;
+        margin-inline: auto;
+        font-family: inherit;
+      }
+
+      ._box {
+        fill: var(--_surface);
+        stroke: var(--_line);
+        stroke-width: 1.5;
+      }
+
+      ._box.-accent {
+        fill: var(--_accent-surface);
+        stroke: var(--_accent-line);
+      }
+
+      ._text {
+        fill: var(--_text);
+      }
+
+      ._text-muted {
+        fill: var(--_text-muted);
+      }
+
+      ._text-accent {
+        fill: var(--_accent-text);
+      }
+
+      ._arrow {
+        fill: none;
+        stroke: var(--_arrow);
+        stroke-width: 1.5;
+      }
+
+      ._arrowhead {
+        fill: var(--_arrow);
+      }
+
+      ._guide {
+        fill: none;
+        stroke: var(--_line);
+        stroke-dasharray: 2 3;
+        stroke-width: 1;
+      }
+
+      ._curve {
+        fill: none;
+        stroke: var(--_accent-text);
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 3;
+      }
+
+      ._curve-muted {
+        fill: none;
+        stroke: var(--_arrow);
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 3;
+      }
+
+      ._curve-faint {
+        fill: none;
+        stroke: var(--_accent-line);
+        stroke-dasharray: 5 4;
+        stroke-width: 2;
+      }
+
+      ._dot {
+        fill: var(--_accent-text);
+      }
+    }
+  }
+</style>

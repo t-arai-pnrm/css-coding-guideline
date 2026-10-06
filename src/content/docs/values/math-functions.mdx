@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import fluidHtml from '../../../demos/values/fluid-heading/index.html?raw';
 import fluidCss from '../../../demos/values/fluid-heading/style.css?raw';
@@ -79,12 +80,14 @@ AIが生成するコードにも、同じ傾向があります。流体的な文
 `inline-size: min(100%, 320px)` は、「幅は320pxだが、親の幅は超えない」という意味です。固定の幅が必要な要素でも、狭い場所ではみ出しません。反対に `padding-inline: max(16px, 5%)` は、「左右の余白は親の幅の5%だが、16pxより狭くしない」という意味で、ページの左右の余白によく使います。
 
 ```css title="🙆‍♂ Recommended: min() で上限を、max() で下限を決める"
-._thumbnail {
-  inline-size: min(100%, 320px);
-}
+@scope (.scoped.page-section) to (.scoped) {
+  :scope {
+    padding-inline: max(16px, 5%);
+  }
 
-._section {
-  padding-inline: max(16px, 5%);
+  ._thumbnail {
+    inline-size: min(100%, 320px);
+  }
 }
 ```
 
@@ -108,6 +111,8 @@ AIが生成するコードにも、同じ傾向があります。流体的な文
 ```
 
 傾きは、画面の幅が1px増えたときの値の増え方です。`100svi` を掛ければ、画面の幅に比例する値が得られます。0.01768に `100svi` を掛けた値は、`1.768svi` と同じです。切片は幅が0のときの値で、これをremに変換して足します。
+
+<Figure src="values/clamp-line" alt="横軸を画面の幅、縦軸を文字サイズ（px）としたグラフ。画面の幅が375pxのとき24px、1280pxのとき40pxの2点を、右上がりの直線で結んでいる。375pxより狭い範囲は最小値の24pxで水平になり、1280pxより広い範囲は最大値の40pxで水平になる。直線を左へ延ばすと、画面の幅が0のとき縦軸の17.37pxを通る。この17.37pxが切片で、直線の傾きは1pxあたり約0.01768。延長した部分は破線で、clamp()の範囲に収められるため使われない。" />
 
 ```css title="🙆‍♂ Recommended: 最小値と最大値は rem、推奨値は rem と svi の和"
 @scope (.scoped.fluid-heading) to (.scoped) {
@@ -197,8 +202,10 @@ WCAG 2.1の達成基準1.4.4は、支援技術なしで文字を200%まで拡大
 一方、デザインカンプの値を使う計算に、この割り算は要りません。`calc(40px / 1280px * 100svi)` と書かなくても、はじめから単位のない数値で割れば同じ結果になり、どのブラウザでも計算できます。「[6-1 pxとremを使い分ける](/values/px-and-rem/)」で説明したように、サイズのトークンを単位のない数値で持っておくと、こうした計算もしやすくなります。
 
 ```css title="🙆‍♂ Recommended: デザインカンプの値は単位のない数値で割る"
-._section {
-  padding-inline: calc(40 / 1280 * 100svi);
+@scope (.scoped.page-section) to (.scoped) {
+  :scope {
+    padding-inline: calc(40 / 1280 * 100svi);
+  }
 }
 ```
 

@@ -25,17 +25,15 @@
       font-weight: 700;
     }
 
-    input {
-      /* ネイティブの検証のエラーと、ARIA属性で伝えるエラーを同じ見た目にする */
-      &:is(:user-invalid, [aria-invalid="true"]) {
-        border-color: var(--color--error--600);
-      }
-    }
-
     ._field input {
       padding: 8px;
       border-color: var(--color--neutral--600);
       border-radius: 4px;
+
+      /* ネイティブの検証のエラーと、ARIA属性で伝えるエラーを同じ見た目にする */
+      &:is(:user-invalid, [aria-invalid="true"]) {
+        border-color: var(--color--error--600);
+      }
     }
 
     ._error {

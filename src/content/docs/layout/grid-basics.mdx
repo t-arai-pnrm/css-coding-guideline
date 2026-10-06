@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import implicitHtml from '../../../demos/layout/grid-basics-implicit/index.html?raw';
 import implicitCss from '../../../demos/layout/grid-basics-implicit/style.css?raw';
@@ -34,6 +35,8 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 グリッドを区切る線をグリッド線と呼びます。隣り合う2本の線の間の帯がトラックで、横方向に並ぶものが列、縦方向に並ぶものが行です。3列のグリッドには、列の線が4本あります。線の番号は、インライン方向とブロック方向の始まりの側から1、2、3と数え、終わりの側からは-1、-2と数えます。始まりの側は書字方向で決まり、`direction: rtl` の文書では右端が1本目の線になります。
 
 1つの行と1つの列が交わる区画をセルと呼び、これがグリッドの最小の単位です。4本の線で囲まれた、1つ以上のセルからなる長方形の範囲をグリッドエリアと呼びます。アイテムは、線を指定してエリアに置かれます。トラックとトラックの間の隙間は、`gap` で作る溝（ガター）です。
+
+<Figure src="layout/grid-terms" alt="3列2行のグリッドに、構成する名前を付けた図。列の線は、グリッドの上側に左から1、2、3、4、下側に左から-4、-3、-2、-1の番号が付いている。行の線も、左側に上から1、2、3、右側に-3、-2、-1の番号が付いている。左上のセルは、1つの行と1つの列が交わる区画で、色を付けて強調している。1列目と2列目の間の縦の帯は、gapで作る溝。2列目全体を囲む破線の枠は、隣り合う2本の線の間の帯である、トラック（列）。3列目の2つのセルをまとめて囲む破線の枠は、4本の線で囲まれた長方形の範囲である、グリッドエリアで、2セル分にあたる。" />
 
 ## トラックの大きさを決める `fr`、`fit-content()`、`minmax()`、`repeat()`
 

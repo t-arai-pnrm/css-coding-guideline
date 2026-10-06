@@ -6,6 +6,7 @@ sidebar:
 ---
 
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import fixedHtml from '../../../demos/principles/fixed-button/index.html?raw';
 import fixedCss from '../../../demos/principles/fixed-button/style.bad.css?raw';
@@ -101,6 +102,8 @@ AIにデザインカンプからコードを書かせると、カンプに書か
   }
 }
 ```
+
+<Figure src="principles/clamp-endpoints" alt="横軸を画面の幅、縦軸を文字サイズ（px）としたグラフ。画面の幅が375pxのとき24px、1280pxのとき40pxという2つの端点に点が打たれ、その間を右上がりの直線が結んでいる。375pxより狭い範囲は最小値の24pxで水平、1280pxより広い範囲は最大値の40pxで水平になる。2つの端点の間の値は、ブラウザが補間して決める。" />
 
 `clamp()` の最小値と最大値が2つの端点で、真ん中の推奨値が端点を結ぶ式です。式の求め方は「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。Gridの `repeat()` と `minmax()` で列を決める書き方も同じ考え方で、列の幅の下限と上限だけを決めれば、列の数と幅はブラウザが実際の幅から決めます。
 

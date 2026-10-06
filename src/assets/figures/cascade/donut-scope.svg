@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 358" width="480" height="358">
+  <title>下限（to (.scoped)）の有無による、外側の @scope の範囲</title>
+  <text class="_text-muted" x="385" y="14" font-size="13" text-anchor="middle">外側の @scope の範囲に入るか</text>
+  <text class="_text" x="340" y="38" font-size="14" text-anchor="middle" font-weight="700">下限あり</text>
+  <text class="_text-muted" x="340" y="55" font-size="12" text-anchor="middle">to (.scoped)</text>
+  <text class="_text" x="430" y="38" font-size="14" text-anchor="middle" font-weight="700">下限なし</text>
+  <text class="_text-muted" x="430" y="55" font-size="12" text-anchor="middle">to を省く</text>
+  <!-- 木の連結線 -->
+  <path class="_arrow" d="M10 102 V212"/>
+  <path class="_arrow" d="M10 128 H20"/>
+  <path class="_arrow" d="M10 170 H20"/>
+  <path class="_arrow" d="M10 212 H20"/>
+  <path class="_arrow" d="M30 228 V296"/>
+  <path class="_arrow" d="M30 254 H40"/>
+  <path class="_arrow" d="M30 296 H40"/>
+  <!-- article.scoped.media-card -->
+  <rect class="_box -accent" x="0" y="70" width="282" height="32" rx="6"/>
+  <text class="_text-accent" x="12" y="91" font-size="14" text-anchor="start" font-weight="700">article.scoped.media-card</text>
+  <rect class="_box -accent" x="300" y="70" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="340" y="91" font-size="14" text-anchor="middle">○ 入る</text>
+  <rect class="_box -accent" x="390" y="70" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="430" y="91" font-size="14" text-anchor="middle">○ 入る</text>
+  <!-- h2 -->
+  <rect class="_box" x="20" y="112" width="262" height="32" rx="6"/>
+  <text class="_text" x="32" y="133" font-size="14" text-anchor="start">h2</text>
+  <rect class="_box -accent" x="300" y="112" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="340" y="133" font-size="14" text-anchor="middle">○ 入る</text>
+  <rect class="_box -accent" x="390" y="112" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="430" y="133" font-size="14" text-anchor="middle">○ 入る</text>
+  <!-- p -->
+  <rect class="_box" x="20" y="154" width="262" height="32" rx="6"/>
+  <text class="_text" x="32" y="175" font-size="14" text-anchor="start">p</text>
+  <rect class="_box -accent" x="300" y="154" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="340" y="175" font-size="14" text-anchor="middle">○ 入る</text>
+  <rect class="_box -accent" x="390" y="154" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="430" y="175" font-size="14" text-anchor="middle">○ 入る</text>
+  <!-- aside.scoped.author-note -->
+  <rect class="_box -accent" x="20" y="196" width="262" height="32" rx="6"/>
+  <text class="_text-accent" x="32" y="217" font-size="14" text-anchor="start" font-weight="700">aside.scoped.author-note</text>
+  <rect class="_box" x="300" y="196" width="80" height="32" rx="6" stroke-dasharray="4 3"/>
+  <text class="_text-muted" x="340" y="217" font-size="14" text-anchor="middle">× 外れる</text>
+  <rect class="_box -accent" x="390" y="196" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="430" y="217" font-size="14" text-anchor="middle">○ 入る</text>
+  <!-- h3 -->
+  <rect class="_box" x="40" y="238" width="242" height="32" rx="6"/>
+  <text class="_text" x="52" y="259" font-size="14" text-anchor="start">h3</text>
+  <rect class="_box" x="300" y="238" width="80" height="32" rx="6" stroke-dasharray="4 3"/>
+  <text class="_text-muted" x="340" y="259" font-size="14" text-anchor="middle">× 外れる</text>
+  <rect class="_box -accent" x="390" y="238" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="430" y="259" font-size="14" text-anchor="middle">○ 入る</text>
+  <!-- p -->
+  <rect class="_box" x="40" y="280" width="242" height="32" rx="6"/>
+  <text class="_text" x="52" y="301" font-size="14" text-anchor="start">p</text>
+  <rect class="_box" x="300" y="280" width="80" height="32" rx="6" stroke-dasharray="4 3"/>
+  <text class="_text-muted" x="340" y="301" font-size="14" text-anchor="middle">× 外れる</text>
+  <rect class="_box -accent" x="390" y="280" width="80" height="32" rx="6"/>
+  <text class="_text-accent" x="430" y="301" font-size="14" text-anchor="middle">○ 入る</text>
+  <!-- 凡例 -->
+  <rect class="_box -accent" x="0" y="340" width="16" height="16" rx="3"/>
+  <text class="_text-muted" x="26" y="353" font-size="13" text-anchor="start">.scoped を持つ要素（外側のルートと、下限になる入れ子のルート）</text>
+</svg>

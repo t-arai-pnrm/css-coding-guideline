@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 460" width="480" height="460">
+  <title>margin が相殺する3つの場面</title>
+  <!-- 兄弟 -->
+  <text class="_text" x="0" y="14" font-size="14" text-anchor="start" font-weight="700">兄弟どうし</text>
+  <rect class="_box" x="0" y="26" width="220" height="28" rx="4"/>
+  <text class="_text" x="110" y="45" font-size="13" text-anchor="middle">A</text>
+  <rect class="_box -accent" x="0" y="54" width="220" height="40" rx="0" fill-opacity="0.45" stroke-dasharray="4 3"/>
+  <rect class="_box -accent" x="0" y="54" width="220" height="24" rx="0" fill-opacity="0.45" stroke-dasharray="4 3"/>
+  <text class="_text-muted" x="8" y="70" font-size="12" text-anchor="start">24px（A の下）</text>
+  <text class="_text-muted" x="8" y="90" font-size="12" text-anchor="start">40px（B の上）</text>
+  <rect class="_box" x="0" y="94" width="220" height="28" rx="4"/>
+  <text class="_text" x="110" y="113" font-size="13" text-anchor="middle">B</text>
+  <text class="_text" x="244" y="62" font-size="14" text-anchor="start">重なって1つになり、</text>
+  <text class="_text" x="244" y="82" font-size="14" text-anchor="start">間は 40px（64px にならない）</text>
+  <!-- 親と最初の子 -->
+  <text class="_text" x="0" y="164" font-size="14" text-anchor="start" font-weight="700">親と最初の子</text>
+  <rect class="_box -accent" x="0" y="176" width="220" height="24" rx="0" fill-opacity="0.45" stroke-dasharray="4 3"/>
+  <text class="_text-muted" x="8" y="193" font-size="12" text-anchor="start">24px（子の上）</text>
+  <rect class="_box" x="0" y="200" width="220" height="76" rx="6"/>
+  <text class="_text-muted" x="8" y="268" font-size="12" text-anchor="start">親（border・padding なし）</text>
+  <rect class="_box -accent" x="16" y="200" width="188" height="28" rx="4"/>
+  <text class="_text-accent" x="110" y="219" font-size="13" text-anchor="middle" font-weight="700">最初の子</text>
+  <text class="_text" x="244" y="212" font-size="14" text-anchor="start">子の margin が</text>
+  <text class="_text" x="244" y="232" font-size="14" text-anchor="start">親の外へ出て、</text>
+  <text class="_text" x="244" y="252" font-size="14" text-anchor="start">親の背景の外に空きができる</text>
+  <!-- 空の要素 -->
+  <text class="_text" x="0" y="324" font-size="14" text-anchor="start" font-weight="700">中身のない要素</text>
+  <rect class="_box" x="0" y="336" width="220" height="28" rx="4"/>
+  <text class="_text" x="110" y="355" font-size="13" text-anchor="middle">A</text>
+  <rect class="_box -accent" x="0" y="364" width="220" height="32" rx="0" fill-opacity="0.45" stroke-dasharray="4 3"/>
+  <text class="_text-muted" x="8" y="386" font-size="12" text-anchor="start">32px</text>
+  <path class="_curve-faint" d="M56 390 H212"/>
+  <text class="_text-accent" x="212" y="378" font-size="12" text-anchor="end">空の要素（高さ 0）</text>
+  <rect class="_box" x="0" y="396" width="220" height="28" rx="4"/>
+  <text class="_text" x="110" y="415" font-size="13" text-anchor="middle">B</text>
+  <text class="_text" x="244" y="366" font-size="14" text-anchor="start">空の要素の上下の margin も</text>
+  <text class="_text" x="244" y="386" font-size="14" text-anchor="start">前後の margin と1つになり、</text>
+  <text class="_text" x="244" y="406" font-size="14" text-anchor="start">間は最大の 32px</text>
+</svg>

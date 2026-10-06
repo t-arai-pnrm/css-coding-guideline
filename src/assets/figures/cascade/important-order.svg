@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 402" width="480" height="402">
+  <title>!important の有無で、レイヤーの強さの順番が逆になる</title>
+  <!-- 強さの矢印 -->
+  <path class="_arrow" d="M10 344 V56"/>
+  <polygon class="_arrowhead" points="10,48 5,58 15,58"/>
+  <text class="_text-muted" x="10" y="40" font-size="13" text-anchor="middle">強い</text>
+  <text class="_text-muted" x="10" y="362" font-size="13" text-anchor="middle">弱い</text>
+  <text class="_text" x="108" y="16" font-size="14" text-anchor="middle" font-weight="700">!important なし</text>
+  <text class="_text-muted" x="108" y="33" font-size="12" text-anchor="middle">後ろのレイヤーほど強い</text>
+  <text class="_text" x="400" y="16" font-size="14" text-anchor="middle" font-weight="700">!important あり</text>
+  <text class="_text-muted" x="400" y="33" font-size="12" text-anchor="middle">前のレイヤーほど強い</text>
+  <!-- 同じレイヤーの位置を結ぶ線 -->
+  <path class="_curve-faint" d="M188 62 L320 332"/>
+  <path class="_curve-faint" d="M188 302 L320 92"/>
+  <!-- なし: レイヤーの外 -->
+  <rect class="_box -accent" x="28" y="50" width="160" height="24" rx="5" stroke-dasharray="4 3"/>
+  <text class="_text-accent" x="108" y="67" font-size="13" text-anchor="middle" font-weight="700">レイヤーの外</text>
+  <!-- なし: utilities -->
+  <rect class="_box" x="28" y="80" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="97" font-size="13" text-anchor="middle">utilities</text>
+  <!-- なし: patterns -->
+  <rect class="_box" x="28" y="110" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="127" font-size="13" text-anchor="middle">patterns</text>
+  <!-- なし: components -->
+  <rect class="_box" x="28" y="140" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="157" font-size="13" text-anchor="middle">components</text>
+  <!-- なし: pages -->
+  <rect class="_box" x="28" y="170" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="187" font-size="13" text-anchor="middle">pages</text>
+  <!-- なし: compositions -->
+  <rect class="_box" x="28" y="200" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="217" font-size="13" text-anchor="middle">compositions</text>
+  <!-- なし: vendors -->
+  <rect class="_box" x="28" y="230" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="247" font-size="13" text-anchor="middle">vendors</text>
+  <!-- なし: base -->
+  <rect class="_box" x="28" y="260" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="277" font-size="13" text-anchor="middle">base</text>
+  <!-- なし: reset -->
+  <rect class="_box -accent" x="28" y="290" width="160" height="24" rx="5"/>
+  <text class="_text-accent" x="108" y="307" font-size="13" text-anchor="middle" font-weight="700">reset</text>
+  <!-- なし: tokens -->
+  <rect class="_box" x="28" y="320" width="160" height="24" rx="5"/>
+  <text class="_text" x="108" y="337" font-size="13" text-anchor="middle">tokens</text>
+  <!-- あり: tokens -->
+  <rect class="_box" x="320" y="50" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="67" font-size="13" text-anchor="middle">tokens</text>
+  <!-- あり: reset -->
+  <rect class="_box -accent" x="320" y="80" width="160" height="24" rx="5"/>
+  <text class="_text-accent" x="400" y="97" font-size="13" text-anchor="middle" font-weight="700">reset</text>
+  <!-- あり: base -->
+  <rect class="_box" x="320" y="110" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="127" font-size="13" text-anchor="middle">base</text>
+  <!-- あり: vendors -->
+  <rect class="_box" x="320" y="140" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="157" font-size="13" text-anchor="middle">vendors</text>
+  <!-- あり: compositions -->
+  <rect class="_box" x="320" y="170" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="187" font-size="13" text-anchor="middle">compositions</text>
+  <!-- あり: pages -->
+  <rect class="_box" x="320" y="200" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="217" font-size="13" text-anchor="middle">pages</text>
+  <!-- あり: components -->
+  <rect class="_box" x="320" y="230" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="247" font-size="13" text-anchor="middle">components</text>
+  <!-- あり: patterns -->
+  <rect class="_box" x="320" y="260" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="277" font-size="13" text-anchor="middle">patterns</text>
+  <!-- あり: utilities -->
+  <rect class="_box" x="320" y="290" width="160" height="24" rx="5"/>
+  <text class="_text" x="400" y="307" font-size="13" text-anchor="middle">utilities</text>
+  <!-- あり: レイヤーの外 -->
+  <rect class="_box -accent" x="320" y="320" width="160" height="24" rx="5" stroke-dasharray="4 3"/>
+  <text class="_text-accent" x="400" y="337" font-size="13" text-anchor="middle" font-weight="700">レイヤーの外</text>
+  <text class="_text-muted" x="28" y="390" font-size="13" text-anchor="start">!important を付けた宣言は、付けていない宣言のすべてに勝つ</text>
+</svg>

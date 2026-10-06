@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import stickyHtml from '../../../demos/layout/sticky-toc/index.html?raw';
 import stickyCss from '../../../demos/layout/sticky-toc/style.css?raw';
@@ -25,6 +26,8 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 この節では、まず5つの値がそれぞれ何を変えるかを説明し、次に位置の基準になる包含ブロックを扱います。最後に、つまずきやすい `sticky` が留まらない原因を説明します。重なり順（z-index）と、要素を画面幅いっぱいに広げる方法は、「[11-4 重なりと全幅](/layout-practice/layering/)」で扱います。留まったヘッダーの見た目の切り替えと固定ヘッダーの条件は「[11-5 固定ヘッダー](/layout-practice/sticky-header/)」で、ツールチップのように別の要素を基準に置くアンカーポジショニングは「[7-10 アンカーポジショニングの基礎](/layout/anchor-basics/)」で扱います。
 
 ## positionの5つの値
+
+<Figure src="layout/position-values" alt="relative、absolute、fixed、stickyの4つの値の違いを、4つの小さな図で並べた比較図。それぞれの図で、アクセント色のBが対象の要素、AとCは前後の要素。relativeの図では、Bの元の場所が破線で空いたままで、Cはその下に残り、Bは右下へずれて描かれてCと少し重なる。absoluteの図では、Bが右上へ置かれ、場所を占めないのでCはAの直下へ詰める。fixedの図では、ビューポートの枠の右上にBが留まり、スクロールの矢印が下を向いていても、BはAやCの続きの内容と一緒には動かない。stickyの図では、親の範囲を示す破線の中で、Bが上端に留まり、Cは通常の位置にある。スクロールの矢印は上を向いている。" />
 
 ### static
 
@@ -63,6 +66,8 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 | `static`、`relative`、`sticky` | いちばん近いブロックコンテナの祖先の、内容の領域 |
 | `absolute` | `position` が `static` 以外のいちばん近い祖先の、`padding` の領域。なければ初期包含ブロック |
 | `fixed` | ビューポート |
+
+<Figure src="layout/containing-block" alt="子要素のpositionの値ごとに、包含ブロックになる祖先の領域を示した入れ子の図。外側から順に、ビューポート、position: relativeのカード、position: staticのdiv、その中の子要素が入れ子になっている。3つの領域に番号を付けて強調している。1番は、divの中の内容の領域で、static、relative、stickyの子の包含ブロック。2番は、カードのborderの内側にあるpaddingの領域で、position が static 以外のいちばん近い祖先として、absoluteの子の包含ブロック。3番は、いちばん外側のビューポートで、fixedの子の包含ブロック。" />
 
 `absolute` で当てはまる祖先がないときの「初期包含ブロック」は、ビューポートの大きさの矩形をページの先頭に置いたものです。基準を作り忘れると、要素はページの左上を基準に置かれ、置いた場所によって位置がずれます。
 

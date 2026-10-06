@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import planHtml from '../../../demos/pseudo/plan-option/index.html?raw';
 import planCss from '../../../demos/pseudo/plan-option/style.css?raw';
@@ -30,6 +31,8 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 ## `:has()` の仕組み
 
 `:has()` の引数は、起点の要素から見た相対的なセレクタです。結合子を書かなければ子孫を探し、`>` なら直接の子、`+` なら直後の兄弟、`~` なら後ろのすべての兄弟を探します。`.card:has(img)` は「`img` を子孫に持つ `.card`」、`.card:has(> img)` は「`img` を直接の子に持つ `.card`」、`h2:has(+ p)` は「直後に `p` が続く `h2`」を選びます。
+
+<Figure src="pseudo/has-scope" alt=":has()の引数ごとに、起点の要素から見てどの要素が探索範囲に入るかを示した表。左は、起点の.cardを中心にしたHTMLの木で、上から、前の兄弟のh2、起点の.card、その子のimgとdiv、divの子のspan（.cardから見て孫）、直後の兄弟のp、その後ろの兄弟のpが並ぶ。右の4列は引数の書き方で、結合子を書かない場合は子孫、> は直接の子、+ は直後の兄弟、~ は後ろのすべての兄弟を探索する。子孫の列では、img、div、spanが探索範囲に入る。> の列では、直接の子のimgとdivだけが入る。+ の列では、直後の兄弟のpだけが入る。~ の列では、直後の兄弟のpと、その後ろの兄弟のpが入る。前の兄弟のh2は、どの列でも探索範囲に入らない。スタイルが当たるのは、探索される要素ではなく、起点の.cardである。" />
 
 スタイルが当たるのは、起点の要素です。`.card:has(> img)` のスタイルは `.card` に当たり、`img` には当たりません。引数は条件を表すだけで、選ぶ対象を変えないので、「`:has()` の前に書いたものが選ばれる」と読みます。
 
@@ -94,6 +97,8 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 ```
 
 `.card:has(:not(img))` は、「`img` 以外の子孫を1つでも持つカード」を選びます。1枚目と2枚目には、`img` 以外の要素（`span`）があるので、どちらも当てはまります。画像を持たないカードだけを選んだことにはなりません。一方、`.card:not(:has(img))` は、「`img` の子孫を持たないカード」を選ぶので、当てはまるのは2枚目だけです。
+
+<Figure src="pseudo/has-not" alt="3枚のカードに、2つのセレクタが当たるかを示した表。カードは、1枚目が画像のimgと説明文のspan、2枚目が説明文のspanだけ、3枚目が画像のimgだけを持つ。上の行のセレクタは .card:has(:not(img)) で、img以外の子孫を持つカードに当たる。1枚目と2枚目に当たり、3枚目には当たらない。画像を持たないカードだけを選ぶ意図とは違う。下の行のセレクタは .card:not(:has(img)) で、imgの子孫を持たないカードに当たる。2枚目だけに当たり、1枚目と3枚目には当たらない。こちらが意図どおりで、画像を持たないカードは2枚目だけである。" />
 
 ```css title="🙅‍♂ Not Recommended: 「画像を持たない」のつもりで :has() の中に :not() を入れる"
 /* 🙅‍♂ Not Recommended */

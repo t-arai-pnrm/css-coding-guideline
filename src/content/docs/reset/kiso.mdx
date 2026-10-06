@@ -150,12 +150,14 @@ kiso.cssは、ブラウザのデフォルトスタイルのうち、役に立つ
 kiso.cssの初期値がプロジェクトに合わないときは、kiso.cssのファイルを書き換えず、`base` レイヤーで上書きします。たとえばkiso.cssは、`line-height` を1.5にしています。WCAGの達成基準1.4.12は、ユーザーが行間を1.5倍に変えても内容が損なわれないことを求めるもので、初期値を1.5にする要件ではありません。達成基準1.4.8（AAA）は、段落内の行間を1.5倍以上にすることを求めるので、1.5はこの基準を満たす値です。プロジェクトのトークンで1.6にしたいなら、ベーススタイルの `:root` で指定し直します。`base` レイヤーは `reset` レイヤーより強いので、詳細度を気にする必要はありません。
 
 ```css title="🙆‍♂ Recommended: kiso.cssの値は base レイヤーで上書きする"
-:where(:root) {
-  line-height: var(--leading--normal);
-}
+@layer base {
+  :root {
+    line-height: var(--leading--normal);
+  }
 
-:where(h1) {
-  margin-block: unset;
+  h1 {
+    margin-block: unset;
+  }
 }
 ```
 

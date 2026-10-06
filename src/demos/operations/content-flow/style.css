@@ -42,18 +42,18 @@
 
     color: var(--foreground--base);
     line-height: 1.8;
-  }
 
-  :scope > * + * {
-    margin-block-start: var(--_flow-space);
-  }
+    & > * + * {
+      margin-block-start: var(--_flow-space);
+    }
 
-  :scope > * + :is(h2, h3) {
-    margin-block-start: var(--_space-before-heading);
-  }
+    & > * + :is(h2, h3) {
+      margin-block-start: var(--_space-before-heading);
+    }
 
-  :scope > :is(h2, h3) + * {
-    margin-block-start: var(--_space-after-heading);
+    & > :is(h2, h3) + * {
+      margin-block-start: var(--_space-after-heading);
+    }
   }
 
   h2 {

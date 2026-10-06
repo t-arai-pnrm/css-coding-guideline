@@ -7,6 +7,7 @@ sidebar:
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import donutHtml from '../../../demos/cascade/donut-scope/index.html?raw';
 import donutCss from '../../../demos/cascade/donut-scope/style.css?raw';
@@ -68,6 +69,8 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 ## ドーナツスコープで入れ子のコンポーネントを除く
 
 `to (.scoped)` は、スコープの下限です。ルートの子孫のうち、`.scoped` に当てはまる要素とその中身は、スコープから外れます。下限の要素そのものも、スコープの外です。ルートから下限までの間だけにスタイルが当たるので、穴の開いたドーナツにたとえて「ドーナツスコープ」と呼ばれます。
+
+<Figure src="cascade/donut-scope" alt="入れ子のコンポーネントを含むHTMLの木と、外側の@scopeの範囲に各要素が入るかを示した表。木は、article.scoped.media-cardを根とし、その子にh2、p、aside.scoped.author-noteがあり、asideの子にh3とpがある。右の2列は、to (.scoped) で下限を書いた場合と、省いた場合。下限ありでは、articleとh2とpだけが範囲に入り、aside、h3、その中のpは範囲から外れる。下限なしでは、6つの要素すべてが範囲に入る。.scopedを持つarticleとasideは、色を付けて強調している。" />
 
 次のデモでは、`.media-card` の中に、別のコンポーネントの `.author-note` を入れ子にしています。どちらのコンポーネントにも、段落の `p` があります。外側のスコープでは `p` を大きな青い文字にしていますが、入れ子のコンポーネントの段落には届いていません。タイプセレクタで選んだスタイルも、下限で止まります。
 

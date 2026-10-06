@@ -149,6 +149,11 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
     display: block grid;
     grid-template-columns: max-content 1fr max-content;
     column-gap: 16px;
+
+    /* li の箱がないので、article が ul の実質的な直下の子になる */
+    & article {
+      grid-column: 1 / -1;
+    }
   }
 
   li {
@@ -158,7 +163,6 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
   article {
     display: block grid;
     grid-template-columns: subgrid;
-    grid-column: 1 / -1;
   }
 }
 ```
@@ -189,7 +193,7 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 
 <Demo title="ランキングを、狭いときは2段のカード、広いときは4列の表のように並べる" html={rankingHtml} css={rankingCss} widths={[320, 480, 768]} />
 
-この例では、2つの使いどころを組み合わせています。`li` は `display: contents` で箱をなくし、`article` を `ul` の直接のグリッドアイテムにしています。`article` は `grid-column: 1 / -1` と `grid-template-columns: subgrid` で、`ul` の列をそのまま使います。`ul` の列は、狭いときは順位と記事の情報の2列、広いときは4列です。
+この例では、2つの使いどころを組み合わせています。`li` は `display: contents` で箱をなくし、`article` を `ul` の直接のグリッドアイテムにしています。`article` は `grid-template-columns: subgrid` で、`ul` の列をそのまま使います。`article` の `grid-column: 1 / -1` は、配置が `ul` のグリッドで決まるので、`ul` のルールに `& article` としてネストしています。`ul` の列は、狭いときは順位と記事の情報の2列、広いときは4列です。
 
 タイトル、著者、日付をまとめた `._meta` が、出し入れするラッパーです。狭いときは、自分でグリッドを組み、タイトルを1行目に、著者と日付を2行目に置きます。広いときは `display: contents` で箱をなくすので、3つの子が `article` のサブグリッドの2〜4列目に入ります。エリアの指定を狭いときのスタイルクエリの中に書いているのは、広いときの `article` にそのエリアの名前がないからです。名前の見つからないエリアを指定したアイテムは、明示的なグリッドの外に置かれます。
 

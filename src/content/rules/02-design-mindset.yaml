@@ -45,6 +45,7 @@
   level: 推奨
   rule: '子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。'
   reason: '`height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。'
+  note: '置換要素（`img` など）は、`stretch` では伸びず、明示的な高さが必要なので、`block-size: 100%` を例外として書いてよいです。'
   aiProne: true
   page: design-mindset/maintainability
   since: 0.1.0

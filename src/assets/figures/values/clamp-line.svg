@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 340" width="480" height="340">
+  <title>clamp() の推奨値は2点を結ぶ直線で、最小値と最大値で頭打ちになる</title>
+  <!-- 補助線 -->
+  <path class="_guide" d="M56 165 H156 V290"/>
+  <path class="_guide" d="M56 81.7 H397.3 V290"/>
+  <!-- 軸 -->
+  <path class="_arrow" d="M56 290 V34"/>
+  <polygon class="_arrowhead" points="56,26 52,35 60,35"/>
+  <path class="_arrow" d="M56 290 H466"/>
+  <polygon class="_arrowhead" points="474,290 465,286 465,294"/>
+  <!-- 直線の延長（clamp() で切り取られる部分） -->
+  <path class="_curve-faint" d="M56 199.5 L156 165"/>
+  <path class="_curve-faint" d="M397.3 81.7 L456 61.4"/>
+  <!-- clamp() の値 -->
+  <path class="_curve" d="M56 165 H156 L397.3 81.7 H456"/>
+  <circle class="_dot" cx="156" cy="165" r="5"/>
+  <circle class="_dot" cx="397.3" cy="81.7" r="5"/>
+  <circle class="_dot" cx="56" cy="199.5" r="4"/>
+  <!-- 目盛りと文字 -->
+  <text class="_text-muted" x="48" y="294" font-size="12" text-anchor="end">0</text>
+  <text class="_text" x="156" y="310" font-size="13" text-anchor="middle">375</text>
+  <text class="_text" x="397.3" y="310" font-size="13" text-anchor="middle">1280</text>
+  <text class="_text" x="48" y="169" font-size="13" text-anchor="end">24</text>
+  <text class="_text" x="48" y="85.7" font-size="13" text-anchor="end">40</text>
+  <text class="_text-muted" x="48" y="203.5" font-size="12" text-anchor="end">17.37</text>
+  <text class="_text-muted" x="56" y="18" font-size="13" text-anchor="start">font-size（px）</text>
+  <text class="_text-muted" x="474" y="330" font-size="13" text-anchor="end">画面の幅（px）</text>
+  <text class="_text-accent" x="64" y="156" font-size="14" text-anchor="start">最小値</text>
+  <text class="_text-accent" x="462" y="65.7" font-size="14" text-anchor="end">最大値</text>
+  <text class="_text" x="262" y="186" font-size="14" text-anchor="start" font-weight="700">推奨値の直線</text>
+  <text class="_text-muted" x="262" y="206" font-size="13" text-anchor="start">傾き 0.01768</text>
+  <text class="_text-muted" x="262" y="224" font-size="13" text-anchor="start">切片 17.37px</text>
+</svg>
