@@ -127,13 +127,17 @@ WOFF2は圧縮率が高く、本書の対象のブラウザはすべて対応し
 <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
 ```
 
-Google Fontsを使う場合は、2つのサーバーへの `preconnect`、スタイルシートの `preload`、`media="print"` を使った読み込みを組み合わせます。`media="print"` で読み込んだスタイルシートは画面の表示に使われないので、ページの描画を止めません。読み込みが終わった時点で `onload` が `media` を `all` に書き換え、フォントが使われるようになります。
+Google Fontsを使う場合は、2つのサーバーへの `preconnect` で接続を先に済ませ、スタイルシートは `rel="preload"` で読み込みます。`rel="stylesheet"` のままではレンダリングをブロックしますが、`preload` で取得したスタイルシートは描画を止めません。読み込みが終わった時点で `onload` が `rel` を `stylesheet` に書き換え、スタイルが適用されます。JavaScriptが無効な環境のために、`<noscript>` で通常のスタイルシートも用意します。
+
+URLに `display=swap` を指定しておくと、Webフォントの読み込み中は代わりのフォントで文字が表示されます。
 
 ```html title="Google Fontsの読み込みでページの描画を止めない"
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" fetchpriority="high" href="{href}" />
-<link rel="stylesheet" href="{href}" media="print" onload='this.media="all"' />
+<link rel="preload" as="style" fetchpriority="high" href="{fontのURL}" onload="this.onload=null;this.rel='stylesheet'" />
+<noscript>
+  <link rel="stylesheet" href={fontのURL}" />
+</noscript>
 ```
 
 ### 代わりのフォントの寸法をWebフォントに近づける

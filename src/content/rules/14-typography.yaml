@@ -136,7 +136,7 @@
   level: 禁止
   rule: '`line-height: 1` を指定しない。'
   reason: 文言の変更、画面の幅、文字サイズの設定、機械翻訳で改行が起きたとき、行が重なって読めなくなることがあるため。
-  note: 上下の余白を詰めたいときは、`text-box-trim` か `calc((1em - 1lh) / 2)` でハーフレディングを取り除きます。
+  note: 上下の余白を詰めたいときは、`text-box-trim` でハーフレディングを取り除きます。
   lint: 'Stylelint: `declaration-property-value-disallowed-list`（警告）'
   aiProne: true
   page: typography/line-height
@@ -154,15 +154,7 @@
   level: 推奨
   rule: ハーフレディングを取り除くときは `text-box-trim` を使い、`text-box-edge` は和文ではデフォルト値のまま、英文では `cap alphabetic` にする。
   reason: '`line-height` を小さくせずに、1行目の上と最後の行の下の余白だけを削れるため。'
-  note: 和文に `cap alphabetic` を使うと詰まりすぎます。対応していない環境では余白が残るだけなので、プログレッシブ・エンハンスメントとして使います。
-  page: typography/line-height
-  since: 0.1.0
-
-- id: leading-trim-formula
-  level: 推奨
-  rule: 余白の側でハーフレディングを打ち消すときは `calc((1em - 1lh) / 2)` の式を使い、`line-height` の値を書き写さない。
-  reason: '`lh` が要素の行の高さを参照するので、`line-height` を変えても打ち消す量が自動で追従するため。'
-  note: 英文では `1em` の代わりに `1cap` を使います。カスタムプロパティ（`--leading-trim`）にしておくと、余白の計算に足すだけで使えます。
+  note: 和文に `cap alphabetic` を使うと詰まりすぎます。対象のすべてのブラウザが対応しているので、フォールバックは書きません。
   page: typography/line-height
   since: 0.1.0
 

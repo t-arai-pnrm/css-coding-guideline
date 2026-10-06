@@ -129,12 +129,12 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 ```css title="🙅‍♂ Not Recommended: 対象のすべてが対応している機能のフォールバックを残す"
 /* 🙅‍♂ Not Recommended */
 :root {
-  --leading-trim: calc((1em - 1lh) / 2);
+  --icon-size: 1lh;
 }
 
 @supports not (top: 1lh) {
   :root {
-    --leading-trim: 0px;
+    --icon-size: 1.5em;
   }
 }
 ```
@@ -151,7 +151,7 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 
 宣言に `var()` を含む場合は、`@supports` の中に書きます。`var()` を含む宣言は、構文の検査が値の計算まで先送りされます。未対応の関数があると分かった時点では、前の宣言はもう使えないので、宣言は「計算値の時点で無効」になり、プロパティの初期値か継承した値が使われます。型付きの `attr()` は `var()` と組み合わせることが多いので、6-4では `@supports` の中に書いています。
 
-新しい機能に合わせて、ほかの宣言もまとめて切り替える場合も、`@supports` の中に書きます。`display` でレイアウトの方式を切り替えると、`grid-template-columns` や子の `aspect-ratio` のように、ほかの宣言の意味も変わるからです。「[11-10 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」で `display` を2つ並べずに `@supports` を使うのは、このためです。`@supports` の条件は検索できるので、対象のすべてが対応した時点で、分岐をまとめて消せます。
+新しい機能に合わせて、ほかの宣言もまとめて切り替える場合も、`@supports` の中に書きます。`display` でレイアウトの方式を切り替えると、`grid-template-columns` や子の `aspect-ratio` のように、ほかの宣言の意味も変わるからです。「[11-9 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」で `display` を2つ並べずに `@supports` を使うのは、このためです。`@supports` の条件は検索できるので、対象のすべてが対応した時点で、分岐をまとめて消せます。
 
 ## `scripting` メディア特性でJavaScriptのない環境に備える
 
