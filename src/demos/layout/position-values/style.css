@@ -34,7 +34,7 @@
     }
 
     ._item {
-      inline-size: calc(80 / 16 * 1rem);
+      inline-size: calc(112 / 16 * 1rem);
       padding-block: 4px;
       padding-inline: 8px;
       background-color: oklch(92% 0.02 250deg);
@@ -61,6 +61,9 @@
 
       &[data-position="sticky"] {
         position: sticky;
+
+        /* 留まったときに fixed の B と重ならないよう、行の始端から離す */
+        margin-inline-start: calc(160 / 16 * 1rem);
       }
     }
   }
