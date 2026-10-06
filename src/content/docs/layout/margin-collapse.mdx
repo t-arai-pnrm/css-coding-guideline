@@ -1,8 +1,8 @@
 ---
-title: "10-4 マージンの相殺"
-description: "通常フローでは、ブロック方向に隣り合う margin は足し算にならず、大きいほうだけが残ります。相殺が起きる条件と起きない条件、負の値を含む計算を説明し、本書が子の margin より親の gap を選び、相殺を止めるときに display: flow-root を使う理由を述べます。"
+title: "7-5 マージンの相殺"
+description: "通常フローでは、ブロック方向に隣り合う margin は足し算にならず、大きいほうだけが残ります。相殺が起きる場面と起きない場面、負の値を含む相殺した余白の大きさを説明し、親子の相殺を止めるときに overflow ではなく display: flow-root を使う理由を述べます。"
 sidebar:
-  order: 4
+  order: 5
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -17,7 +17,9 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 相殺は、兄弟の間だけでなく、親と最初の子、親と最後の子、中身のない要素の上下の間でも起きます。一方で、FlexboxやGridのアイテム、`display: flow-root` の要素とその子の間、`float` や絶対配置の要素では起きません。余白が思った大きさにならないときは、値を調整する前に、その `margin` がどの要素の `margin` と隣り合っているかを確かめます。
 
-本書は、並んだ要素の間隔を子の `margin` ではなく親の `gap` で作り、親子の相殺を止めたいときは親に `display: block flow-root` を指定します。この節では、相殺の規則と、この書き方を選ぶ理由を説明します。
+相殺は、余白を打ち消す仕組みではなく、隣り合う要素の余白のうち大きいほうが採られる仕組みです。`margin` を「前後の要素から最低これだけ離したい」という距離と捉えれば、段落や見出しが続く本文では、余白が重なって広がりすぎるのを防ぐ便利な仕組みです。一方、`margin` でカードやセクションを並べるレイアウトでは、思わぬずれを生みます。`margin` をこう捉える理由と、本書がレイアウトの間隔を親の `gap` で、文章の要素の間を `margin` で作る書き分けは、「[7-4 marginの役割](/layout/margin-role/)」で説明しています。
+
+子の `margin` を残したまま親子の相殺を止めたいときは、親に `display: block flow-root` を指定します。`overflow: hidden` や見えない `padding` でも止まりますが、副作用があるか、止める意図がコードから読み取れません。この節では、相殺の規則と、止め方の選び方を説明します。
 
 ## 余白が足し算にならない場面
 
@@ -38,9 +40,11 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 どちらの場面でも、CSSの指定に誤りはありません。ずれの原因は値ではなく、通常フローで隣り合う `margin` をまとめる規則にあります。この規則を知らないまま、`padding-block-start: 1px` や `overflow: hidden` で直すと、なぜ直ったのかがコードから読み取れなくなります。
 
+2つの場面では、`margin` に、合計で決まる間隔や背景の内側の余白という、前後の要素との最低限の距離とは別の意味を持たせています。間隔を親の `gap` で、背景の内側の余白を親の `padding` で作れば、そもそも相殺は起きません（「[7-4 marginの役割](/layout/margin-role/)」）。それでも、本文の `margin` や、親の外へ出た子の余白を読み解くには、相殺の規則を知っておく必要があります。
+
 ## 相殺が起きる場面
 
-相殺するのは、ブロック方向の `margin` だけです。横書きでは上下の `margin` が相殺し、左右の `margin` は隣り合っても足し算になります。縦書きではブロック方向が横になるので、左右の `margin` が相殺します。物理的な上下ではなく、`writing-mode` が決めるブロック方向を基準にします（「[10-1 レイアウトの基礎](/layout/fundamentals/)」）。
+相殺するのは、ブロック方向の `margin` だけです。横書きでは上下の `margin` が相殺し、左右の `margin` は隣り合っても足し算になります。縦書きではブロック方向が横になるので、左右の `margin` が相殺します。物理的な上下ではなく、`writing-mode` が決めるブロック方向を基準にします（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
 
 1つ目の場面は、通常フローで隣り合う兄弟です。上の要素の `margin-block-end` と、すぐ下の要素の `margin-block-start` が相殺します。「隣り合う」は、2つの `margin` の間に、行（文字やインラインの要素が並んだ行ボックス）、`padding`、`border` のどれもないことを指します。HTMLのタグの間の改行や空白は、それだけでは行を作らないので、相殺を妨げません。
 
@@ -72,27 +76,11 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 新しいブロック整形コンテキストを作る要素は、子の `margin` を外へ出しません。`display: flow-root`、`overflow` が `visible` と `clip` 以外の要素、`float` した要素、`inline flow-root` の要素がこれにあたります。また、`float` した要素と絶対配置の要素は通常フローから外れるので、自分の `margin` がほかの要素の `margin` と相殺することもありません。ルート要素（`<html>`）の `margin` も相殺しません。
 
-## 本書の書き方：親の `gap` と `display: flow-root`
+## 相殺を止めるときの `display: flow-root`
 
-本書は、FlexboxやGridの子要素の間隔を、子の `margin` ではなく親の `gap` で作ります（「[10-9 余白を設計する](/layout/spacing/)」）。`gap` は要素と要素の間にだけ空き、相殺も起きないので、`gap` の値がそのまま間隔になります。相殺の規則を思い出さなくても、コードを読めば間隔が分かります。
+相殺を止める必要があるのは、子の `margin` を残したまま、その余白を親の内側に収めたいときです。本文の領域を包む要素に背景を付けた場合や、CMSで入力された本文の最初の見出しが `margin-block-start` を持つ場合がこれにあたります。並べる間隔や背景の内側の余白を新しく作るだけなら、親の `gap` や `padding` で足ります（「[7-4 marginの役割](/layout/margin-role/)」）。
 
-```css title="🙆‍♂ Recommended: 間隔は親の gap で作る"
-._news-list {
-  display: block grid;
-  gap: 24px;
-}
-```
-
-親の背景の内側に余白を取りたいだけなら、子の `margin` ではなく親の `padding-block` で作ります。子の `margin` は、親に `padding` や `border` がないと親の外へ出るからです。コンポーネントのルートに外側の `margin` を持たせない方針（「[8-2 コンポーネントの境界を守る](/components/boundaries/)」）も、子の `margin` が外へ出ると守れなくなります。
-
-```css title="🙆‍♂ Recommended: 背景の内側の余白は親の padding で作る"
-._section {
-  padding-block: 32px;
-  background-color: oklch(96% 0.01 250deg);
-}
-```
-
-子の `margin` を残したまま親子の相殺を止めたいときは、親に `display: block flow-root` を指定します（ルール「[`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)」）。`flow-root` は、新しいブロック整形コンテキストを作るためだけの値で、ほかのレイアウトに影響しません。止まるのは親子の相殺で、`flow-root` の中の兄弟どうしは相殺したままです。
+その場合は、親に `display: block flow-root` を指定します（ルール「[`flow-root-for-margin-collapse`](/layout-practice/spacing/#rule-flow-root-for-margin-collapse)」）。`flow-root` は、スクロールコンテナや切り取りを作らずに、新しいブロック整形コンテキストを作れる値です。ただし、変わるのは相殺だけではありません。中の `float` した要素も、親の高さの計算に入ります。また、親の外にある `float` の横では、親のボックスは `float` と重ならないよう、幅を狭めるか `float` の下へ送られます（「[11-2 floatで文章を回り込ませる](/layout-practice/float/)」）。止まるのは親子の相殺で、`flow-root` の中の兄弟どうしは相殺したままです。
 
 <Baseline id="display-flow-root" />
 
@@ -110,7 +98,7 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 }
 ```
 
-`overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が効かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が効かなくなる理由は「[10-7 positionの基礎](/layout/positioning/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
+`overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が効かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が効かなくなる理由は「[7-8 positionの基礎](/layout/positioning/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
 
 ## コード例とデモ
 
@@ -127,8 +115,6 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 通常フローでは、空の `<p>` の `margin` が前後の16pxと相殺して通り抜けるので、1つ目と2つ目の段落の間は16pxです。`<hr>` は `border` を持つので通り抜けませんが、自分の24pxと前後の16pxが相殺し、線の上下はどちらも24pxになります。Gridでは、空の `<p>` の前後に `gap` が1つずつ空いて32pxになり、`<hr>` の上下は16pxと24pxを足した40pxになります。
 
 ## 補足と注意点
-
-本文のように種類の違う要素が続く領域では、相殺がむしろ役に立ちます。図や区切り線のように自分で余白を持つ要素と、流れの間隔が隣り合っても、大きいほうだけが効くからです。本書が本文の領域を通常フローのまま `margin` で組むのは、この性質を使うためです（「[10-9 余白を設計する](/layout/spacing/)」の「本文の流れの間隔」）。
 
 余白を作るために、空の要素や `<p>&nbsp;</p>` を置くのは避けます。空の要素は、上のデモのとおり通常フローでは相殺で消え、`gap` で並べた領域では `gap` の2つ分の間隔になり、置き場所の親によって結果が変わります。`&nbsp;` だけの段落や `<br>` は1行を作るので、余白の大きさが行の高さで決まり、文字の大きさを変えると一緒に変わります。
 

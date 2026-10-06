@@ -1,0 +1,103 @@
+@layer tokens {
+  :root {
+    --duration--base: 240ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --z--backwards: -1;
+  }
+}
+
+@layer components {
+  @scope (.scoped.link-menu) to (.scoped) {
+    :scope {
+      /* 同じメニューを複数置いても、アンカーの名前がほかのメニューに届かないようにする */
+      anchor-scope: --current-hocus;
+    }
+
+    ._list {
+      --_has-hocus: --false;
+
+      position: relative;
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      isolation: isolate;
+
+      /* ホバーかフォーカスしている項目に重ねる背景 */
+      &::after {
+        @supports (anchor-name: --current-hocus) {
+          content: "";
+          position: absolute;
+          inset: anchor(inside);
+          z-index: var(--z--backwards);
+          position-anchor: --current-hocus;
+
+          /* 強制カラーモードでは、背景色が消える代わりに枠線に色が付く */
+          border: 1px solid transparent;
+          border-radius: 8px;
+          background-color: oklch(from currentColor l c h / 10%);
+
+          @container style(--_has-hocus: --false) {
+            opacity: 0;
+          }
+        }
+      }
+
+      /* キーボードで移動しているときは、背景を動かさずに移す */
+      &:not(:has(> li > :focus-visible))::after {
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--base);
+          transition-property: inset, opacity;
+          transition-timing-function: var(--ease--out-quint);
+          transition-behavior: allow-discrete;
+        }
+      }
+
+      &:has(> li > :any-link:hover) {
+        @media (any-hover) {
+          --_has-hocus: --true;
+        }
+      }
+
+      &:has(> li > :focus-visible) {
+        --_has-hocus: --true;
+      }
+    }
+
+    ._link {
+      --_hocus: --false;
+
+      display: block grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 16px;
+      align-items: center;
+      padding: 16px;
+
+      &::after {
+        content: "→" / "";
+
+        @container style(--_hocus: --true) {
+          translate: 4px;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--base);
+          transition-property: translate;
+          transition-timing-function: var(--ease--out-quint);
+        }
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          --_hocus: --true;
+
+          anchor-name: --current-hocus;
+        }
+      }
+
+      &:focus-visible {
+        --_hocus: --true;
+
+        anchor-name: --current-hocus;
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 ---
-title: "16-2 開閉するUI"
-description: "モーダルは<dialog>をcommand属性とclosedby属性で開閉し、小さな表示にはpopover属性を使います。アコーディオンは<details>とname属性で作り、見出しの構造が必要なパネルやタブはhidden=\"until-found\"で隠します。"
+title: "17-2 開閉するUI"
+description: "モーダルは<dialog>をcommand属性とclosedby属性で開閉し、小さな表示にはpopover属性を使います。アコーディオンは<details>とname属性で作り、見出しの構造が必要なパネルやタブはhidden=\"until-found\"で隠します。ヘッダーのボタンで開閉するドロワーでは、背面の要素にinert属性を付けます。"
 sidebar:
   order: 2
 ---
@@ -11,10 +11,13 @@ import Guideline from '../../../components/Guideline.astro';
 import untilFoundHtml from '../../../demos/interaction/until-found-panel/index.html?raw';
 import untilFoundCss from '../../../demos/interaction/until-found-panel/style.css?raw';
 import untilFoundJs from '../../../demos/interaction/until-found-panel/script.js?raw';
+import drawerHtml from '../../../demos/interaction/drawer-inert/index.html?raw';
+import drawerCss from '../../../demos/interaction/drawer-inert/style.css?raw';
+import drawerJs from '../../../demos/interaction/drawer-inert/script.js?raw';
 
 開閉するUIは、HTMLの機能で作ります。モーダルは `<dialog>` を `command` 属性で開き、`closedby="any"` で背景のクリックでも閉じられるようにします。メニューのような小さな表示には `popover` 属性を、その場で開閉する項目には `<details>` を使います。
 
-見出しの構造を保ちたいアコーディオンやタブでは、閉じたパネルを `hidden="until-found"` で隠します。どれも `display: none` とクラスの付け外しで作るより、少ないコードで、キーボードやページ内検索にも対応できます。
+見出しの構造を保ちたいアコーディオンやタブでは、閉じたパネルを `hidden="until-found"` で隠します。ヘッダーのボタンで開閉するドロワーはモーダルにできないので、開いている間は背面の要素に `inert` 属性を付けます。どれも `display: none` とクラスの付け外しで作るより、少ないコードで、キーボードやページ内検索にも対応できます。
 
 ## 開閉をブラウザの機能に任せる
 
@@ -41,6 +44,7 @@ import untilFoundJs from '../../../demos/interaction/until-found-panel/script.js
 | メニューや通知のような小さな表示 | `popover` 属性 |
 | その場で開閉する項目（FAQなど） | `<details>` と `<summary>` |
 | 見出しの下で開閉するパネル、タブ | `hidden="until-found"` |
+| ヘッダーのボタンを残したまま開くドロワー | 背面の要素に付ける `inert` 属性 |
 
 ## `command` 属性と `closedby` 属性によるダイアログの開閉
 
@@ -97,7 +101,51 @@ viewer.addEventListener('command', (event) => {
 
 `command` イベントは、組み込みのコマンドでも、操作の前に発生します。イベントは取り消し可能で、`preventDefault()` を呼ぶとダイアログやポップオーバーの開閉も行われません。
 
-ダイアログと背景を `@starting-style` でフェードさせる方法は、「[17-5 出現と退場](/motion/entry-and-exit/)」で説明します。
+ダイアログと背景を `@starting-style` でフェードさせる方法は、「[18-5 出現と退場](/motion/entry-and-exit/)」で説明します。
+
+## ドロワーの背面を不活性にする方法
+
+ヘッダーと一体になったドロワーメニューでも、開いている間は、背面のメインエリアとフッターを操作できなくします。ただし、ドロワーを開閉するボタンをヘッダーに置いたまま操作させたい場合、ドロワーを `<dialog>` のモーダルにはできません。`showModal()` で開いたダイアログは、ダイアログの外をすべて不活性にするので、ヘッダーのボタンも押せなくなるからです。
+
+そこで、背面の要素だけを不活性にします。不活性になった要素は、クリックとフォーカスができなくなり、アクセシビリティツリーからも外れます。この状態は、HTMLでは `inert` 属性で、CSSでは `interactivity: inert` で指定できます。2025年3月の時点で、私はこの場面をCSSで次のように書いていました。
+
+```css title="🙅‍♂ Not Recommended: ページ全体を起点にした :has() で、ヘッダー以外を不活性にする"
+/* 🙅‍♂ Not Recommended */
+body:has(.drawer-button[aria-expanded="true"]) {
+  & :not(.global-header, .global-header *) {
+    interactivity: inert;
+  }
+}
+```
+
+このコードには、本書の規約と合わない点が3つあります。1つ目は、`:has()` の起点が `body` で、引数も子孫全体を調べる形になっていることです。DOMが変わるたびに `body` の子孫全体を調べ直すので、要素の多いページではスタイルの再計算が重くなります（第5章「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」）。2つ目は、ヘッダーが `<div>` などで包まれている場合に、その祖先も `:not()` に一致して不活性になることです。`interactivity` は継承し、子孫から打ち消せないので、ヘッダーごと操作できなくなります。
+
+3つ目は、未対応の環境で機能が損なわれることです。`interactivity` に対応していない環境では、ドロワーが開いている間も背面を操作できてしまい、フォーカスがドロワーの外へ出て、見えないリンクを操作することになります。開閉のボタンの `aria-expanded` はJavaScriptで切り替えているので、本書では、同じ処理の中で背面の要素に `inert` 属性を付けることを基本にします。`inert` 属性は、主要なブラウザで使えます。
+
+<Baseline id="inert" name="inert 属性" />
+
+```js title="ドロワーの開閉に合わせて、背面の要素に inert 属性を付ける"
+const button = document.querySelector('.global-header ._drawer-button');
+const background = document.querySelectorAll('body > :not(.global-header)');
+
+button.addEventListener('click', () => {
+  const expanded = button.getAttribute('aria-expanded') !== 'true';
+  button.setAttribute('aria-expanded', String(expanded));
+  for (const element of background) element.inert = expanded;
+});
+```
+
+`body` の直下の要素のうち、ヘッダー以外に `inert` を付けています。ヘッダーが `body` の直下にある構造が前提で、ヘッダーを包む要素がある場合は、その要素の兄弟を対象にします。
+
+次のデモでは、上のスクリプトをそのまま動かしています。まずドロワーを閉じたままTabキーを押し、本文のリンクにフォーカスが移ることを確かめてください。「メニュー」ボタンでドロワーを開いてからTabキーを押すと、フォーカスはヘッダーのボタンからドロワーのリンクへ移り、最後のリンクの次は、灰色になった本文のリンクを飛ばしてデモの外へ出ます。
+
+<Demo title="ドロワーを開いている間は、背面の本文に inert 属性が付き、リンクにフォーカスが移らない" html={drawerHtml} css={drawerCss} js={drawerJs} widths={[]} />
+
+CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります。`.global-header:has(._drawer-button[aria-expanded="true"]) ~ *` のように後ろの兄弟を選べば、ページ全体を調べ直さずに済みます。Chrome 152では、この形で背面のリンクにフォーカスできなくなることを確かめました（2026年10月、Chrome 152で確認）。ただし、`interactivity` がBaselineになるまでは、`inert` 属性の代わりにはしません。
+
+<Baseline id="interactivity" name="interactivity" />
+
+`interactivity: inert` は、カルーセルで隠れているスライドを読み上げとフォーカスから外すときにも使います。この使い方は「[17-4 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。
 
 ## スクロールの連鎖を止める
 
@@ -118,7 +166,7 @@ viewer.addEventListener('command', (event) => {
 
 <Baseline id="overscroll-behavior" compatKey="css.properties.overscroll-behavior-block" name="overscroll-behavior-block" />
 
-上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
 ## `popover` 属性による小さな表示
 
@@ -128,7 +176,7 @@ viewer.addEventListener('command', (event) => {
 
 <Baseline id="popover" />
 
-注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[10-7 positionの基礎](/layout/positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、「[17-5 出現と退場](/motion/entry-and-exit/)」のデモにあります。
+注意したいのは、ボタンの隣に表示する位置の決め方です。アンカーポジショニングを使えばCSSだけでボタンの位置に合わせられますが、Safariは26から対応したので、本書の対象のすべてでは使えません（「[11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)」）。対象のすべてが対応するまでは、未対応の環境でも内容に重ならない位置を基本にします。出現と退場の動かし方は、「[18-5 出現と退場](/motion/entry-and-exit/)」のデモにあります。
 
 ## `<details>` と `name` 属性によるアコーディオン
 
@@ -154,7 +202,7 @@ viewer.addEventListener('command', (event) => {
 
 開いているときのスタイルは、`[open]` 属性のセレクタで書きます。`:open` という擬似クラスもありますが、Safariは26.5から対応したので、2026年9月の時点では本書の対象のすべてでは使えません。
 
-開閉する部分を `::details-content` で選び、高さと不透明度を動かす方法は、「[17-5 出現と退場](/motion/entry-and-exit/)」で説明します。
+開閉する部分を `::details-content` で選び、高さと不透明度を動かす方法は、「[18-5 出現と退場](/motion/entry-and-exit/)」で説明します。
 
 ## `hidden="until-found"` で隠すタブとアコーディオン
 
@@ -187,7 +235,7 @@ const initializeDisclosure = (link) => {
 };
 ```
 
-ページ内検索などで自動で開いたときには `beforematch` イベントが発生するので、`aria-expanded` を更新します。見た目の状態は、「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
+ページ内検索などで自動で開いたときには `beforematch` イベントが発生するので、`aria-expanded` を更新します。見た目の状態は、「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
 
 `hidden="until-found"` に対応したブラウザは、要素を `display: none` ではなく `content-visibility: hidden` で隠します。中身だけが隠れて要素自体は描画されるので、その要素の余白、枠線、背景は、閉じていても表示されます。これらは内側の要素に指定します。
 
@@ -206,7 +254,7 @@ const initializeDisclosure = (link) => {
 
 <Baseline id="hidden-until-found" name='hidden="until-found"' />
 
-Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、閉じたパネルの中身はページ内検索で見つかりません。ただし、隠すのは初期化が成功した後なので、開閉の処理は動き、JavaScriptが動かない環境では最初から中身が表示されています。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[6-1 壊さないリセット](/reset/kiso/)」）。
+Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、閉じたパネルの中身はページ内検索で見つかりません。ただし、隠すのは初期化が成功した後なので、開閉の処理は動き、JavaScriptが動かない環境では最初から中身が表示されています。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[8-1 壊さないリセット](/reset/kiso/)」）。
 
 ## 開閉するUIで確かめる状態
 
@@ -219,6 +267,7 @@ Safariは、2026年9月の時点で `hidden="until-found"` に対応していま
 | `hidden="until-found"` に対応したブラウザ | 閉じたパネルの中の語をページ内検索する | パネルが自動で開き、`aria-expanded` が `true` になる |
 | Safari（`closedby` 属性と `hidden="until-found"` が未対応） | ダイアログを閉じ、閉じたパネルの中の語を検索する | Escキーと閉じるボタンでダイアログが閉じる。パネルの中身は検索で見つからないが、見出しのリンクで開ける |
 | キーボードだけの操作 | ダイアログを開いて閉じ、`<summary>` を操作する | 開いたダイアログの外は操作できず、閉じると開く前のボタンにフォーカスが戻る。`<details>` もキーボードで開閉できる |
+| ドロワーを開いた状態 | Tabキーだけで操作する | フォーカスはヘッダーのボタンとドロワーのリンクに移り、背面の本文やフッターのリンクには止まらない |
 | 動きを減らす設定 | ダイアログと `<details>` を開閉する | `<details>` の高さと不透明度は動かず、ダイアログのフェードだけが残る |
 | 強制カラーモード | ダイアログを開き、開閉の状態を見比べる | ダイアログの範囲と、開いている項目が見分けられる |
 
@@ -243,6 +292,8 @@ JavaScriptの無効は、Chromeの開発者ツールのコマンドメニュー�
 - [HTML Standard - The button element](https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element)（WHATWG。`command` 属性と `commandfor` 属性）
 - [Cheatsheets for flex, grid, anchor positioning and invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
 - [dialog 要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/dialog)
+- [inert - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Global_attributes/inert)
+- [interactivity - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/interactivity)
 - [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)
 - [overscroll-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior)
 - [CSS Overscroll Behavior Module Level 1](https://drafts.csswg.org/css-overscroll-1/)（W3C）

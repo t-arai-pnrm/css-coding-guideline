@@ -18,8 +18,11 @@
     }
 
     legend {
-      margin-block-end: 8px;
       font-weight: 700;
+    }
+
+    legend + * {
+      margin-block-start: 8px;
     }
 
     ul {
@@ -35,8 +38,9 @@
     }
 
     input {
+      /* input の大きさを aspect-ratio で決めると、Safari で潰れることがあるので、両方を指定する */
       inline-size: 20px;
-      aspect-ratio: 1;
+      block-size: 20px;
       border-color: var(--color--neutral--600);
       border-radius: 4px;
       appearance: none;

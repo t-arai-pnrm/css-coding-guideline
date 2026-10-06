@@ -13,6 +13,8 @@ import quickStartCss from '../../../demos/introduction/quick-start/style.css?raw
 
 このページでは、コピーしてそのままブラウザに表示できる最小の構成を示します。あわせて、本文のコード例が省略している部分を説明し、本書独自の名前の付け方を早見表にまとめます。
 
+この構成は、ビルドツールを用意せずに本書の書き方を試すための学習用です。エントリーポイントの `@import` をブラウザがそのまま読むので、各ファイルの読み込みが直列になり、最初の表示が遅れます。実務では、同じファイル構成のまま、ビルドツールで `@import` を展開して1つのCSSにしてから配信します。本書のルールの `import-resolved-at-build` も、この展開を求めています。学習や検証のため、ビルドせずに試す場合だけを例外にしています（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/#rule-import-resolved-at-build)」）。
+
 ## 本文のコード例だけでは動かない理由
 
 本文のコード例は、説明に必要な部分だけを抜き出したものです。「[本書の読み方](/introduction/how-to-read/)」で説明しているとおり、ほとんどのコード例ではカスケードレイヤー（`@layer`）の記述を省略しています。`._main-link` のように `_` で始まるクラスのルールは、`@scope` の中に書く前提で、`@scope` の記述も省略していることがあります。
@@ -21,7 +23,7 @@ import quickStartCss from '../../../demos/introduction/quick-start/style.css?raw
 
 kiso.cssの読み込み方にも、環境による違いがあります。本文では `@import url("kiso.css") layer(reset);` と書いていますが、ブラウザはこの `kiso.css` を、書いたCSSファイルと同じ場所にあるファイルのURLとして読みます。npmでパッケージをインストールしただけでは、`node_modules` の中のファイルは読まれません。
 
-こうした前提を1か所にまとめたのが、次の最小の構成です。この構成のトークンは、例のカードに必要なものだけを定義しています。本文のコード例を試すときは、この構成のコンポーネントのファイルへ貼り付け、コード例が参照するトークンを「[8-4 デザイントークン](/components/design-tokens/)」の定義から足してください。`--foreground--base` のような色のトークンや、`--ease--out-quint` のようなイージングのトークンも、そのページで定義しています。
+こうした前提を1か所にまとめたのが、次の最小の構成です。この構成のトークンは、例のカードに必要なものだけを定義しています。本文のコード例を試すときは、この構成のコンポーネントのファイルへ貼り付け、コード例が参照するトークンを「[10-4 デザイントークン](/components/design-tokens/)」の定義から足してください。`--foreground--base` のような色のトークンや、`--ease--out-quint` のようなイージングのトークンも、そのページで定義しています。
 
 ## 最小の構成のファイル
 
@@ -39,7 +41,7 @@ css/
     └── news-card.css   … コンポーネント
 ```
 
-HTMLは、エントリーポイントの `style.css` だけを読み込みます。コンポーネントのルートの要素には `class="scoped news-card"` を付け、子要素は `h2` や `time` のようなタイプセレクタで選ぶので、クラスを付けていません。`_` で始まる子クラスを付けるのは、同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけです（「[8-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+HTMLは、エントリーポイントの `style.css` だけを読み込みます。コンポーネントのルートの要素には `class="scoped news-card"` を付け、子要素は `h2` や `time` のようなタイプセレクタで選ぶので、クラスを付けていません。`_` で始まる子クラスを付けるのは、同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけです（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
 
 ```html title="index.html"
 <!doctype html>
@@ -60,7 +62,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
 </html>
 ```
 
-エントリーポイントには、レイヤーの順番の宣言と `@import` だけを書きます。先頭の `@layer` 文で9つのレイヤーの順番を決め、その後ろで各ファイルを `layer()` 付きの `@import` でレイヤーに割り当てます。レイヤーの順番は先頭の `@layer` 文で決まるので、`@import` を並べる順番には左右されません（「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
+エントリーポイントには、レイヤーの順番の宣言と `@import` だけを書きます。先頭の `@layer` 文で9つのレイヤーの順番を決め、その後ろで各ファイルを `layer()` 付きの `@import` でレイヤーに割り当てます。レイヤーの順番は先頭の `@layer` 文で決まるので、`@import` を並べる順番には左右されません（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
 
 ```css title="🙆‍♂ Recommended: css/style.css"
 /**
@@ -75,7 +77,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
 @import url("./components/news-card.css") layer(components);
 ```
 
-トークンのファイルには、`:root` のカスタムプロパティだけを書きます。色はプリミティブ（`--color--…`）と、役割を表すセマンティクス（`--foreground--…` など）の2層にしています。余白のトークンは単位を付けずに定義し、使う場所で単位に変換します（「[8-4 デザイントークン](/components/design-tokens/)」）。
+トークンのファイルには、`:root` のカスタムプロパティだけを書きます。色はプリミティブ（`--color--…`）と、役割を表すセマンティクス（`--foreground--…` など）の2層にしています。余白のトークンは単位を付けずに定義し、使う場所で単位に変換します（「[10-4 デザイントークン](/components/design-tokens/)」）。
 
 ```css title="🙆‍♂ Recommended: css/tokens/colors.css"
 /**
@@ -104,7 +106,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
 }
 ```
 
-コンポーネントのファイルには、1つのコンポーネントの `@scope` だけを書きます。外から変えてよい見出しの色は、公開プロパティ `--news-card--accent` として受け取ります。`:scope` で内部プロパティ `--_accent` に受け、渡されなかったときのデフォルト値を `var()` のフォールバックに書いています（「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
+コンポーネントのファイルには、1つのコンポーネントの `@scope` だけを書きます。外から変えてよい見出しの色は、公開プロパティ `--news-card--accent` として受け取ります。`:scope` で内部プロパティ `--_accent` に受け、渡されなかったときのデフォルト値を `var()` のフォールバックに書いています（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
 
 ```css title="🙆‍♂ Recommended: css/components/news-card.css"
 /**
@@ -141,7 +143,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
 }
 ```
 
-このファイルには `@layer components { … }` を書いていません。エントリーポイントの `@import` に `layer(components)` を付けているので、ファイルの中身がすべて `components` レイヤーに入ります。`<head>` の中の `<style>` のように、`@import` で読み込まないCSSでは、`@layer` を自分で書きます（「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
+このファイルには `@layer components { … }` を書いていません。エントリーポイントの `@import` に `layer(components)` を付けているので、ファイルの中身がすべて `components` レイヤーに入ります。`<head>` の中の `<style>` のように、`@import` で読み込まないCSSでは、`@layer` を自分で書きます（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
 
 ## kiso.cssを読み込む方法
 
@@ -175,21 +177,21 @@ npmでインストールする場合（`npm install kiso.css`）は、CSSの `@i
 
 | 記法 | 例 | 意味 | 詳しい節 |
 |---|---|---|---|
-| `scoped <名前>` | `class="scoped news-card"` | コンポーネントのルート。`scoped` は、外側のスコープの下限にもなる | [7-3](/notation/scope-and-nesting/)、[7-1](/notation/naming/) |
-| `scoped page-<スラッグ>` | `class="scoped page-about"` | ページ固有のスタイルのルート | [7-3](/notation/scope-and-nesting/) |
-| `._<名前>` | `._main-link`、`._sub-link` | コンポーネントの子要素のうち、同じ種類の要素を役割で区別するものと、`div` と `span` の役割を示すもの。スコープの中だけで意味を持つ | [7-1](/notation/naming/)、[8-2](/components/boundaries/) |
-| `.-<名前>` | `.-visually-hidden`、`.-fluid-text--md` | ユーティリティ。段階や種類は `--` で続ける | [7-1](/notation/naming/)、[8-3](/components/compositions-and-utilities/) |
-| 接頭辞なし（配置の名前） | `.cluster`、`.switcher` | コンポジション（配置のパターン） | [7-1](/notation/naming/)、[8-3](/components/compositions-and-utilities/) |
-| 接頭辞なし（役割の名前） | `.section-heading`、`.icon` | パターン（静的な見た目の断片）。コンポーネントが変える値は `--<パターン>--<プロパティ>` で受け取る | [7-1](/notation/naming/)、[8-3](/components/compositions-and-utilities/) |
-| `--<分類>--<名前>` | `--color--accent--600`、`--spacing--md` | デザイントークン | [8-4](/components/design-tokens/) |
-| `--<役割>--<バリエーション>` | `--foreground--muted` | 役割を表す色のトークン | [8-4](/components/design-tokens/) |
-| `--<コンポーネント>--<プロパティ>` | `--news-card--accent` | 公開プロパティ。外から値を渡してよい | [8-5](/components/custom-properties/) |
-| `--_<名前>` | `--_accent` | 内部プロパティ。コンポーネントの中だけで使う | [8-5](/components/custom-properties/) |
-| `--_<名前>--<状態>` | `--_background--hocus` | 状態やモードごとの値 | [8-5](/components/custom-properties/) |
-| `--<名前>`（値として使う名前） | `@keyframes --fade-in` | 自分で付けて値として使う名前 | [7-1](/notation/naming/) |
-| `data-variant` | `data-variant="featured"` | コンポーネントのバリエーション | [7-1](/notation/naming/) |
-| 擬似クラス、ARIA属性 | `:checked`、`[aria-selected="true"]` | 状態。`.is-active` のような状態クラスは使わない | [16-1](/interaction/states-and-focus/) |
-| 9つのレイヤー名 | `tokens`、`components` | レイヤー名。値として使わないので `--` を付けない | [2-3](/cascade/layers/) |
+| `scoped <名前>` | `class="scoped news-card"` | コンポーネントのルート。`scoped` は、外側のスコープの下限にもなる | [9-3](/notation/scope-and-nesting/)、[9-1](/notation/naming/) |
+| `scoped page-<スラッグ>` | `class="scoped page-about"` | ページ固有のスタイルのルート | [9-3](/notation/scope-and-nesting/) |
+| `._<名前>` | `._main-link`、`._sub-link` | コンポーネントの子要素のうち、同じ種類の要素を役割で区別するものと、`div` と `span` の役割を示すもの。スコープの中だけで意味を持つ | [9-1](/notation/naming/)、[10-2](/components/boundaries/) |
+| `.-<名前>` | `.-visually-hidden`、`.-fluid-text--md` | ユーティリティ。段階や種類は `--` で続ける | [9-1](/notation/naming/)、[10-3](/components/compositions-and-utilities/) |
+| 接頭辞なし（配置の名前） | `.cluster`、`.switcher` | コンポジション（配置のパターン） | [9-1](/notation/naming/)、[10-3](/components/compositions-and-utilities/) |
+| 接頭辞なし（役割の名前） | `.section-heading`、`.icon` | パターン（静的な見た目の断片）。コンポーネントが変える値は `--<パターン>--<プロパティ>` で受け取る | [9-1](/notation/naming/)、[10-3](/components/compositions-and-utilities/) |
+| `--<分類>--<名前>` | `--color--accent--600`、`--spacing--md` | デザイントークン | [10-4](/components/design-tokens/) |
+| `--<役割>--<バリエーション>` | `--foreground--muted` | 役割を表す色のトークン | [10-4](/components/design-tokens/) |
+| `--<コンポーネント>--<プロパティ>` | `--news-card--accent` | 公開プロパティ。外から値を渡してよい | [10-5](/components/custom-properties/) |
+| `--_<名前>` | `--_accent` | 内部プロパティ。コンポーネントの中だけで使う | [10-5](/components/custom-properties/) |
+| `--_<名前>--<状態>` | `--_background--hocus` | 状態やモードごとの値 | [10-5](/components/custom-properties/) |
+| `--<名前>`（値として使う名前） | `@keyframes --fade-in` | 自分で付けて値として使う名前 | [9-1](/notation/naming/) |
+| `data-variant` | `data-variant="featured"` | コンポーネントのバリエーション | [9-1](/notation/naming/) |
+| 擬似クラス、ARIA属性 | `:checked`、`[aria-selected="true"]` | 状態。`.is-active` のような状態クラスは使わない | [17-1](/interaction/states-and-focus/) |
+| 9つのレイヤー名 | `tokens`、`components` | レイヤー名。値として使わないので `--` を付けない | [4-3](/cascade/layers/) |
 
 内部プロパティの `--_` には、種類ごとの接頭辞もあります。コンポジションは `--_c--`、パターンは `--_p--`、ユーティリティは `--_u--`、ベーススタイルは `--_b--` で始めます。コンポーネントの内部プロパティと名前がぶつからないようにするためです。
 

@@ -11,21 +11,132 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.23.0（2026年10月6日）
+
+著者の指摘を受けて、第1章と第2章の節を分け直し、スタイルクエリで状態を伝える節を新設しました。ベーススタイルの `:where()` は `@layer` を使えない場合に限り、コンテナサイズクエリはフラグを宣言する1か所に集めるよう、ルールを改めています。ルールを追加し、変更したため、マイナーバージョンを上げています。
+
+- 構成を次のように変えました。本書は公開前なので、旧URLからの転送は置いていません。
+  - 第1章「[CSSのマインドセット](/principles/)」を、CSSという言語の捉え方と学び方の章にしました。旧1-5は「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」に、旧1-2は1-3に、旧1-6〜1-9は1-4〜1-7になります。
+  - 第2章「[CSS設計の考え方](/design-mindset/)」を、CSSを書き、設計するときの判断の章にしました。旧1-3は「[2-2 CSSで考えるための6つの視点](/design-mindset/css-mindset/)」に、旧1-4は「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/)」になり、URLは `/principles/` から `/design-mindset/` に変わりました。
+  - 旧7-4「マージンの相殺」が長くなったため、「[7-4 marginの役割](/layout/margin-role/)」を新設し、余白の役割と書き分けをそちらに移しました。旧7-4〜7-7は7-5〜7-8になります。
+  - 第10章の旧10-6は「[10-7 Web Components](/components/web-components/)」になりました。
+  - 旧11-6「固定ヘッダーとアンカーポジショニング」を、「[11-6 固定ヘッダー](/layout-practice/sticky-header/)」と「[11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)」の2つの節に分け、URLも分けました。
+  - 旧11-6の発展の節を「[11-8 要素どうしの重なりを検出する](/layout-practice/overlap-detection/)」として独立させました。旧11-7〜11-11は11-9〜11-13になります。
+- 「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」を新設しました。ブレイクポイントは `--_density`、ホバーとフォーカスは `--_hocus` のフラグとして立て、子孫と擬似要素は `@container style()` で切り替えます。スタイルクエリが問い合わせる要素、子から親へは `:has()` を使うこと、`if()` との使い分けも説明しています。
+- 本書のサンプルを、スタイルクエリのルールに合わせて直しました。子要素ごとに書いていたコンテナサイズクエリは、フラグを宣言する要素に集めています。表を縦に積む例の `--_layout` は `--_density` に、`--_in-view` と `--_overlapping` の値は `--true`/`--false` に直しました。5-1、9-7、17-1のホバーの例も、`--_hocus` で擬似要素や子要素を動かす形にしています。
+- ベーススタイルの書き方を改めました。本書の既定は `@layer base` の中の素のセレクタで、`:where()` で詳細度を0にするのは `@layer` を使えない場合（「[19-4 CMSと共存する](/operations/cms/)」）だけです。第4章、第8章、第14章、第15章、第16章などのサンプルとデモを書き換えました。「[5-2 :is()・:where()・:not()](/pseudo/is-where-not/)」には、状態のセレクタを `:where()` で包まない理由を加えました。
+- 「[11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)」に、ホバーやフォーカスした項目へ背景が追従するデモを加えました。
+- 次の説明を加えたり直したりしました。
+  - 「はじめに」の「[素のCSSで書く理由](/introduction/why-plain-css/)」：素のCSSで書くのは、どの道具でもCSSの土台になる仕組みだからです。VueやAstroのスコープの仕組みを使う場合は `@scope` だけを置き換え、ほかの規約は残すことを加えました。
+  - 2-2の「内容が変わる前提で書く」：CMSを導入しない静的なサイトでも、CMSで内容を更新するつもりで実装する、という考え方を土台にしました。
+  - 「[4-5 CSSネストの基礎](/cascade/nesting/)」と「[9-4 ネストの書き方](/notation/nesting/)」：ネストしたセレクタを必ず `&` で始める理由に、長いネストでも親を読み違えないことと、`&` を省くと子孫結合子として扱われることを加えました。
+  - 「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」：読み込みに失敗した `img` の `::before` は、ChromeとFirefoxでは表示されますが、Safariでは表示されないので頼らない、と補足しました。
+  - 「[7-4 marginの役割](/layout/margin-role/)」：`margin` を縦に長い文書で要素どうしを最低これだけ離したいという距離として捉え、`margin`・`padding`・`gap` が受け持つ余白の違いを説明しました。レイアウトの間隔は親の `gap` で、文章の要素の間は後ろの要素の `margin-block-start` で作る書き分けも、この節にまとめています。
+  - 「[7-5 マージンの相殺](/layout/margin-collapse/)」：相殺を「大きいほうが採られる仕組み」として説明し、7-4の捉え方とつなげました。相殺を止める `display: flow-root` を使う場面を絞って示しています。
+  - 「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」：下線の位置の値は、下線を描く要素の文字の大きさで決まることを明示し、仕様とリリースノートを参考リンクに加えました。
+  - 「[9-7 モダンな記法にそろえる](/notation/modern-syntax/)」：個別の変形プロパティを合成する順番と、その順から外れる変形をアニメーションさせるときは `transform` を使うことを加えました。
+  - 「[9-8 論理プロパティと論理値](/notation/logical-properties/)」：論理プロパティへの反対の意見を「物理と論理は意味が違うので、意図に合うほうを選ぶべき」と描き直しました。
+  - 「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」：冒頭のコード例をリンクとボタンの2つにし、リンクは `&:any-link:hover` に絞ることを先に述べました。
+- ルールを4件追加しました。
+  - [`is-for-state-selectors`](/pseudo/is-where-not/#rule-is-for-state-selectors)：状態のセレクタは `:where()` で包まず、まとめたいときは `:is()` を使います。
+  - [`hocus-via-style-query`](/components/style-queries/#rule-hocus-via-style-query)：ホバーとフォーカスで子要素や擬似要素の見た目を変えるときは、`--_hocus` のフラグをスタイルクエリで問い合わせます。
+  - [`state-flag-values`](/components/style-queries/#rule-state-flag-values)：フラグの値は `--` で始まる識別子にし、2値の状態は `--true` と `--false` にそろえます。
+  - [`anchor-indicator-as-decoration`](/layout-practice/anchor-positioning/#rule-anchor-indicator-as-decoration)：ホバーした項目へ背景が移る表現は、未対応の環境では背景が付かないだけになる装飾として扱います。
+- ルールを変えました。
+  - [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：推奨から必須にし、13-3から10-6に移しました。コンテナサイズクエリは、フラグを宣言する1つの要素のルールだけに書きます。
+  - [`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)：対象を、`@layer` を使えない場合のベーススタイルに限りました。
+  - [`no-heavy-specificity-in-global`](/reset/global-pitfalls/#rule-no-heavy-specificity-in-global)：対象を、レイヤーの外に書くリセットとベーススタイルにしました。
+  - 2-3のルール（`maintainability-first` など10件）は、掲載するページのURLだけが変わりました。
+  - [`margin-collapse-padding-for-inner-space`](/layout/margin-role/#rule-margin-collapse-padding-for-inner-space)：掲載するページを「マージンの相殺」から新設の7-4に移しました。URLだけが変わり、内容は変えていません。
+  - 旧11-6のルール5件は、掲載するページのURLだけが変わりました。11-6には `scroll-state-for-sticky-styles` と `sticky-header-height-query` を載せています。11-7には、`anchor-scope-for-repeated-components` など3件を載せています。
+  - 次の12件のルールは、補足や例を新しい方針に合わせて直しました。
+    - `heading-with-fallback`
+    - `reset-zero-specificity`
+    - `is-keeps-highest-specificity`
+    - `is-for-ancestor-context`
+    - `individual-transform-properties`
+    - `nested-selector-ampersand`
+    - `hover-target-stays-still`
+    - `reveal-once-with-style-query`
+    - `stacked-table-aria-roles`
+    - `container-name-required`
+    - `no-var-in-query`
+    - `no-unrequested-css-framework`
+
+## 0.22.0（2026年10月6日）
+
+本の構成を5部19章に見直しました。第I部「CSSコーディングにおけるマインドセット」を立てて考え方の3章を集め、レイアウトの章を基礎編と実装編に分けています。あわせて、CSSのマインドセットの節と「はじめに」のページを加え、余白、高さ、レイアウトの手法の選び方のルールを加えたり改めたりしました。ルールを追加し、変更し、1件を削除したため、マイナーバージョンを上げています。
+
+- 構成を次のように変えました。本書は公開前なので、旧URLからの転送は置いていません。
+  - 第I部「CSSコーディングにおけるマインドセット」に、第1章「[CSSのマインドセット](/principles/)」（旧「本書の前提となる考え方」）、第2章「[CSS設計の考え方](/design-mindset/)」（旧第5章）、第3章「[デザインを再現する](/design-reproduction/)」（旧第9章）を置きました。
+  - 旧第10章「レイアウトの基礎と考え方」を分けました。旧10-1〜10-7は、基礎編の第7章「[レイアウトの仕組み](/layout/)」の7-1〜7-7になります。旧10-8〜10-16は、実装編の第11章「[レイアウトを組む](/layout-practice/)」の11-1、11-3〜11-5、11-7〜11-11になり、URLは `/layout/` から `/layout-practice/` に変わりました。
+  - これに合わせて、旧第2〜4章は第4〜6章（第II部「基礎編」）に、旧第6〜8章は第8〜10章（第III部「設計編」）に、旧第11〜17章は第12〜18章（第IV部「実装編」）に、旧第18章は第19章（第V部「運用編」）になりました。第1章の旧1-2〜1-7は1-4〜1-9になります。
+  - 更新履歴の過去の項目は、記録した時点の章と節の番号のままにしています。リンクは新しいURLに直しました。
+- 節とページを4つ加えました。
+  - 「[1-2 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」：同じ `width` が、通常フロー、Flexbox、Grid、位置指定の中でそれぞれ違う意味を持つ理由と、指定が効かないときに方式から確かめる考え方を説明しています。
+  - 「[1-3 CSSで考えるための6つの視点](/design-mindset/css-mindset/)」：ボックス、カスケード、最小限の記述、境界、文脈、内容の変化という6つの視点を示し、本書のどの章が具体化しているかと対応させました。
+  - 「[11-2 floatで文章を回り込ませる](/layout-practice/float/)」：11-1の `float` の節を独立させました。回り込みの仕組みと `display: flow-root`、`shape-outside`、閉じるボタンや装飾を文章の角に置く書き方を説明しています。行頭のアイコンを1行目の文字にそろえる書き方も加えました。
+  - 「はじめに」の「[素のCSSで書く理由](/introduction/why-plain-css/)」：CSS-in-JSとStyleX、スコープとグローバルなスタイル、公開プロパティによる再利用、見た目のロジックの分担を手がかりに、本書がスタイルを素のCSSで書く理由をまとめました。
+- 「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」に、表示の制御権がユーザーとブラウザにあることと、端点を決めて間の計算をブラウザに任せる書き方を加えました。
+- 「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」の表を、著者の記事「実例で学ぶFlexboxとCSS Gridの使い分け」に合わせて広げました。一部だけ大きいタイル、1行なら中央に寄せる並び、最後の行の中央寄せ、レンガ状の並びなどを加え、縦に積む要素の間隔が前後の要素で変わるときは通常フローで組むことを説明しています。
+- 「[11-3 余白を設計する](/layout-practice/spacing/)」に、縦の `margin` を次兄弟結合子で付ける理由を加えました。「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」には、高さを `min-block-size`、`aspect-ratio`、`max-block-size` で決める節を加えています。第12章の「[12-1 stack](/compositions/stack/)」と「[12-11 prose](/compositions/prose/)」にも、通常フローとの使い分けを加えました。
+- デモを3つ加えました。
+  - 11-1：FlexboxとGridで、最終行の寄せ方を比べるデモ
+  - 11-3：要素そのものの `margin` と、次兄弟結合子で付けた `margin` を比べるデモ
+  - 11-4：高さを固定した帯と、下限だけを決めた帯を比べるデモ
+- 閾値の式の誤りを直しました。`calc((560 + 240 + 32) / 16 * 1rem)` のような式は、pxで指定した隙間までremに換算していました。これを、`calc(560 / 16 * 1rem + 240 / 16 * 1rem + 32px)` のように各項を宣言した単位で足す形にしています。対象は「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」「[11-10 表を組む](/layout-practice/tables/)」、付録C、各デモです。
+- 本書のサンプルを、新しいルールに合わせて直しました。要素自身に付けていた縦の `margin` は、次兄弟結合子で選んだ要素に移しています。正方形のアイコンは `inline-size` と `aspect-ratio: 1` で書き、固定の高さは `min-block-size` や `max-block-size` に置き換えました。
+- ルールを3件追加しました。
+  - [`normal-flow-for-conditional-spacing`](/layout-practice/choosing/#rule-normal-flow-for-conditional-spacing)：縦に積む要素の間隔が前後の要素の種類や有無で変わるときは、通常フローのまま次兄弟結合子の `margin` で間隔を作ります。
+  - [`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)：要素の間のブロック方向の `margin` は、次兄弟結合子で前の要素を条件にし、後ろの要素の `margin-block-start` に付けます。
+  - [`fr-without-minmax-zero`](/layout-practice/defensive/#rule-fr-without-minmax-zero)：列を均等や比率で分けるときは、`minmax(0, 1fr)` ではなく `1fr` と書きます。
+- ルールを1件削除しました。
+  - `minmax-zero-for-fr`：列を `minmax(0, 1fr)` で分けるルールです。ベーススタイルの全称セレクタの `min-inline-size: 0` で同じ守りが効いているので、`fr-without-minmax-zero` に置き換えました。
+- ルール [`float-for-text-wrap`](/layout-practice/float/#rule-float-for-text-wrap) と [`float-for-corner-elements`](/layout-practice/float/#rule-float-for-corner-elements) は、内容を変えずに、掲載するページを11-2に移しました。
+- ルールの内容を変えました。
+  - [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：上限の `max-block-size` と、比率が決まっている要素の `aspect-ratio` を加えました。正方形を `inline-size` と `aspect-ratio: 1` で書くことと、`input` 要素の例外は補足に書いています。掲載するページは13-1から11-4に移しました。
+  - [`column-width-by-variability`](/layout/grid-basics/#rule-column-width-by-variability)：残りをすべて使う列の例を、`minmax(0, 1fr)` から `1fr` に改めました。
+  - [`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem) と [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：閾値の式の各項を、その値を宣言した単位で書くことを補足に加えました。
+  - [`import-resolved-at-build`](/cascade/layers/#rule-import-resolved-at-build)：補足に例外を加えました。「[最小の構成で始める](/introduction/quick-start/)」のように、学習や検証のため、ビルドせずに手元で試す場合です。最小の構成のページにも、学習用の構成であることと、実務ではビルドして配信することを書いています。
+  - [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)：例外（カスタム要素、Shadow DOM、CMSのWYSIWYGの本文エリア）と、それぞれのルールを補足に加えました。「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」の本文にも、3つの例外をまとめています。
+- 読者視点のレビューを受けて、節を分け、移しました。
+  - 「[7-7 positionの基礎](/layout/positioning/)」から、スクロール状態クエリ、固定ヘッダー、アンカーポジショニングを、新しい「[11-6 固定ヘッダーとアンカーポジショニング](/layout-practice/sticky-header/)」に移しました。要素どうしの重なりの検出は、11-6の末尾の発展の節にしています。7-7には、5つの値、包含ブロック、中央に置く方法、`sticky` が留まらない原因を残しました。これに合わせて、11-6〜11-10は11-7〜11-11になりました。
+  - 16-1「画像と装飾」を、「[16-1 画像の配置と読み込み](/decoration/images/)」「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」「[16-3 表面と文字の装飾](/decoration/surfaces/)」に分けました。16-1のURLは `/decoration/images-and-decoration/` から `/decoration/images/` に変わりました。16-2〜16-4は16-4〜16-6になりました。
+  - 「[17-4 CSSでカルーセルを作る](/interaction/carousel/)」から、ドロワーの背面を不活性にする方法を「[17-2 開閉するUI](/interaction/disclosure/)」に移しました。`scroll-target-group` による目次の強調は、17-4の末尾の発展の節にしています。
+  - 次のルールは、内容を変えずに、掲載するページを移しました。
+    - 11-6（固定ヘッダー）：`scroll-state-for-sticky-styles`、`sticky-header-height-query`
+    - 11-6（アンカーポジショニング）：`anchor-scope-for-repeated-components`、`implicit-anchor-first`、`position-area-logical-keywords`
+    - 11-6（重なりの検出）：`overlap-detection-for-decoration-only`
+    - 16-2：`clip-path-shape-tokens`、`scroll-edge-fade-with-mask`、`icon-current-color`、`inline-svg-hidden-with-text`
+    - 16-3（影）：`shadow-black-in-dark-mode`、`shadow-tokens-light-source`、`no-animate-layered-shadow`
+    - 16-3（リストと文字）：`marker-for-list-number-style`、`text-stroke-paint-order`
+    - 17-2：`inert-attribute-for-background`
+- 読者視点のレビューを受けて、説明を直しました。
+  - 「[10-6 Web Components](/components/web-components/)」：任意の色や数値を属性で受け取るとJavaScriptが必要、という説明を改めました。型付きの `attr()` で読む方法もあるが、Safariが未対応なので、本書の対象のすべてのブラウザで動く公開プロパティを使う、という説明にしています。
+  - 「[7-4 マージンの相殺](/layout/margin-collapse/)」：`display: flow-root` が相殺のほかに `float` の扱いも変えることを加えました。
+  - 「[第9章 記法の規約](/notation/)」の概要：表記をそろえる規約と、意図しない適用や上書きを防ぐ規約を分けて説明しました。
+  - 「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」と「[1-3 CSSで考えるための6つの視点](/design-mindset/css-mindset/)」：C#やPythonとの比較を、CSSでは宣言のほかにもブラウザの受け取る入力が多い、という説明に改めました。1-3は、ほかの節が詳しく扱う内容を短くし、本書の地図として読めるようにしています。
+  - 序文、「素のCSSで書く理由」、「[2-1 CSS設計のマインドセット](/design-mindset/what-is-css-design/)」、「[3-1 ピクセルではなく意図を再現する](/design-reproduction/intent/)」、第13章の概要：同じ主張の繰り返しを、各ページの役割に合わせて短くしました。2-1には、共通化したカードに項目を足す例を加え、保守性、拡張性、再利用性の違いを1つの例で比べています。
+  - 「[11-3 余白を設計する](/layout-practice/spacing/)」：冒頭で、一律の間隔は `gap`、構成の決まった不均等な間隔は空のセル、前後の要素で変わる間隔は通常フローの `margin`、という選び方を先に示しました。
+  - 「[第12章 レイアウトコンポジション](/compositions/)」の概要：目的の表から選んで引く、参照用の章としての読み方を加えました。
+  - 「[15-3 背景から文字色を決める](/color-media/contrast-text/)」：閾値の0.7で選ばれる文字色とコントラスト比を表にし、APCAとの比較を節の末尾に分けました。
+
+
 ## 0.21.0（2026年10月5日）
 
 Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、文字の切り詰め、モーションの判断基準などを各章に補いました。ルールを32件追加したため、マイナーバージョンを上げています。既存の節の番号とURLは変わっていません。
 
 - 節を3つ加えました。
   - 「[8-6 Web Components](/components/web-components/)」：カスタム要素そのものをルートにし、`@scope (<要素名>.scoped) to (.scoped)` で閉じる書き方を説明しています。JavaScriptがなくても動くHTMLを先に作る順番も書きました。ページから子要素を受け取る部品はLight DOMで、中身をすべて自分で描く部品はShadow DOMで作る、という使い分けも示しました。
-  - 「[10-15 表を組む](/layout/tables/)」：表をスクロールのラッパーで包む書き方、見出しのセルを `position: sticky` で留める条件、数値の列のそろえ方、狭い幅で縦に積む組み方を説明しています。
-  - 「[10-16 文字の切り詰めと読み込み中の表示](/layout/truncation-and-skeletons/)」：1行の切り詰めに必要な指定、全文を読める手段、数値を切り詰めない理由、スケルトンを読み込み後と同じ寸法にする書き方を説明しています。
+  - 「[10-15 表を組む](/layout-practice/tables/)」：表をスクロールのラッパーで包む書き方、見出しのセルを `position: sticky` で留める条件、数値の列のそろえ方、狭い幅で縦に積む組み方を説明しています。
+  - 「[10-16 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)」：1行の切り詰めに必要な指定、全文を読める手段、数値を切り詰めない理由、スケルトンを読み込み後と同じ寸法にする書き方を説明しています。
 - 「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」に、`@import` をビルド時に展開する理由を加えました。「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」には、Shadow DOMとの使い分けを加えています。
 - 第3章の「[3-4 子要素の位置で選ぶ](/pseudo/child-index/)」に `sibling-index()` と `sibling-count()` を、「[3-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」に `::highlight()` を加えました。
 - 「[4-3 計算関数で根拠を式に残す](/values/math-functions/)」に、流体的な文字サイズの最大値と最小値の比と、Chrome系のブラウザだけが対応する `calc-size()` と `@function` を採用しない理由を加えました。
-- 「[10-7 positionの基礎](/layout/positioning/)」に、留まると大きさが変わる要素とスクロールアンカリングの関係を加えました。
+- 「[10-7 positionの基礎](/layout-practice/sticky-header/)」に、留まると大きさが変わる要素とスクロールアンカリングの関係を加えました。
 - 「[13-1 フォントを指定する](/typography/fonts/)」に `font-size-adjust` を、「[13-4 文字サイズと改行](/typography/size-and-line-breaks/)」に `text-wrap: balance` を指定しない要素を加えました。
 - 「[14-3 背景から文字色を決める](/color-media/contrast-text/)」に閾値を0.7にする根拠を、「[14-4 ダークモード](/color-media/dark-mode/)」に一部のコンポーネントだけを暗い配色にする方法を加えました。
-- 「[15-1 画像と装飾](/decoration/images-and-decoration/)」に、スクロールできる領域の端をマスクで薄くする方法と、2つの層を重ねて選んだ範囲だけを切り抜く方法を加えました。
+- 「[15-1 画像と装飾](/decoration/icons-and-masks/)」に、スクロールできる領域の端をマスクで薄くする方法と、2つの層を重ねて選んだ範囲だけを切り抜く方法を加えました。
 - 「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」に、`user-select` と `touch-action` を指定する範囲を加えました。「[16-3 フォーム部品](/interaction/forms/)」には `appearance: base-select` を、「[16-4 CSSでカルーセルを作る](/interaction/carousel/)」には `scroll-target-group` を加えています。
 - 第17章では、「[17-1 動かすかどうかを決める](/motion/purpose/)」に使う頻度の目安を加えました。「[17-5 出現と退場](/motion/entry-and-exit/)」には頻度の低いUIで要素をずらして出す方法を、「[17-7 動きの負荷を抑える](/motion/performance/)」には `content-visibility` を加えています。「[17-6 スクロールに合わせて動かす](/motion/scroll-driven/)」の `@supports` の条件には、`animation-range` を加えました。
 - ルールを32件追加しました。
@@ -40,20 +151,20 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`light-dom-for-received-children`](/components/web-components/#rule-light-dom-for-received-children)：子要素を受け取る部品はLight DOMで作ります。
   - [`shadow-dom-host-and-element-selectors`](/components/web-components/#rule-shadow-dom-host-and-element-selectors)：Shadow DOMの中は、`:host` と要素・属性のセレクタで書きます。
   - [`shadow-dom-restate-page-styles`](/components/web-components/#rule-shadow-dom-restate-page-styles)：Shadow DOMの中では、kiso.cssやユーティリティに頼っていた指定を書き直します。
-  - [`skeleton-matches-final-size`](/layout/truncation-and-skeletons/#rule-skeleton-matches-final-size)：スケルトンは読み込み後と同じ寸法にします。
-  - [`ellipsis-with-nowrap-and-clip`](/layout/truncation-and-skeletons/#rule-ellipsis-with-nowrap-and-clip)：1行で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせます。
-  - [`truncate-with-full-text-access`](/layout/truncation-and-skeletons/#rule-truncate-with-full-text-access)：文字を切り詰めるときは、全文を読める手段を用意します。
-  - [`no-truncate-numbers`](/layout/truncation-and-skeletons/#rule-no-truncate-numbers)：金額や数量などの数値を切り詰めません。
-  - [`tabular-nums-for-number-columns`](/layout/truncation-and-skeletons/#rule-tabular-nums-for-number-columns)：縦に並ぶ数値と、変わり続ける数字には `tabular-nums` を指定します。
-  - [`table-min-size-with-scroller`](/layout/tables/#rule-table-min-size-with-scroller)：表は縮めずに最小の幅を決め、包む要素で横にスクロールさせます。
-  - [`table-caption-and-scope`](/layout/tables/#rule-table-caption-and-scope)：表には `caption` を付け、見出しのセルに `scope` を付けます。
-  - [`sticky-table-header-needs-block-limit`](/layout/tables/#rule-sticky-table-header-needs-block-limit)：ラッパーの中で列の見出しを留めるときは、ラッパーに `max-block-size` を指定します。
-  - [`table-sticky-border-separate`](/layout/tables/#rule-table-sticky-border-separate)：見出しのセルを留めるときは、`border-collapse: separate` にして枠線を各セルに持たせます。
-  - [`numeric-cells-tabular-end`](/layout/tables/#rule-numeric-cells-tabular-end)：数値の列は末尾に揃え、`tabular-nums` を指定します。
-  - [`stacked-table-aria-roles`](/layout/tables/#rule-stacked-table-aria-roles)：表を縦に積むときは、各要素に `role` を書きます。
+  - [`skeleton-matches-final-size`](/layout-practice/truncation-and-skeletons/#rule-skeleton-matches-final-size)：スケルトンは読み込み後と同じ寸法にします。
+  - [`ellipsis-with-nowrap-and-clip`](/layout-practice/truncation-and-skeletons/#rule-ellipsis-with-nowrap-and-clip)：1行で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせます。
+  - [`truncate-with-full-text-access`](/layout-practice/truncation-and-skeletons/#rule-truncate-with-full-text-access)：文字を切り詰めるときは、全文を読める手段を用意します。
+  - [`no-truncate-numbers`](/layout-practice/truncation-and-skeletons/#rule-no-truncate-numbers)：金額や数量などの数値を切り詰めません。
+  - [`tabular-nums-for-number-columns`](/layout-practice/truncation-and-skeletons/#rule-tabular-nums-for-number-columns)：縦に並ぶ数値と、変わり続ける数字には `tabular-nums` を指定します。
+  - [`table-min-size-with-scroller`](/layout-practice/tables/#rule-table-min-size-with-scroller)：表は縮めずに最小の幅を決め、包む要素で横にスクロールさせます。
+  - [`table-caption-and-scope`](/layout-practice/tables/#rule-table-caption-and-scope)：表には `caption` を付け、見出しのセルに `scope` を付けます。
+  - [`sticky-table-header-needs-block-limit`](/layout-practice/tables/#rule-sticky-table-header-needs-block-limit)：ラッパーの中で列の見出しを留めるときは、ラッパーに `max-block-size` を指定します。
+  - [`table-sticky-border-separate`](/layout-practice/tables/#rule-table-sticky-border-separate)：見出しのセルを留めるときは、`border-collapse: separate` にして枠線を各セルに持たせます。
+  - [`numeric-cells-tabular-end`](/layout-practice/tables/#rule-numeric-cells-tabular-end)：数値の列は末尾に揃え、`tabular-nums` を指定します。
+  - [`stacked-table-aria-roles`](/layout-practice/tables/#rule-stacked-table-aria-roles)：表を縦に積むときは、各要素に `role` を書きます。
   - [`no-font-size-adjust-for-japanese`](/typography/fonts/#rule-no-font-size-adjust-for-japanese)：和文を含む要素に `font-size-adjust` を指定しません。
   - [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：コンポーネントに `color-scheme` を指定するときは、`color` と `background-color` を指定し直します。
-  - [`scroll-edge-fade-with-mask`](/decoration/images-and-decoration/#rule-scroll-edge-fade-with-mask)：スクロールできる領域の端は、`mask-image` のグラデーションで薄くします。
+  - [`scroll-edge-fade-with-mask`](/decoration/icons-and-masks/#rule-scroll-edge-fade-with-mask)：スクロールできる領域の端は、`mask-image` のグラデーションで薄くします。
   - [`user-select-none-for-controls`](/interaction/states-and-focus/#rule-user-select-none-for-controls)：`user-select: none` は、文字が選択されて困る操作部品にだけ指定します。
   - [`no-global-touch-action-none`](/interaction/states-and-focus/#rule-no-global-touch-action-none)：ページ全体に `touch-action: none` を指定しません。
   - [`base-select-in-supports`](/interaction/forms/#rule-base-select-in-supports)：`appearance: base-select` の指定は、`@supports` の中に書きます。
@@ -71,7 +182,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - 旧「12-5 375px未満の画面ではビューポートを固定する」を「[12-5 375px未満の画面の扱い](/responsive/min-viewport-width/)」に改めました。自然に折り返す表示が基本で、固定は例外であることを、タイトルでも示しています。ズームで `innerWidth` が変わる説明は、デスクトップのページズームに限ることを明記しました。
   - 「[14-3 背景から文字色を決める](/color-media/contrast-text/)」：APCAでの比較は、閾値の0.7を決めた後の確認であることと、計算の条件を書きました。
   - 「[16-4 CSSでカルーセルを作る](/interaction/carousel/)」：インジケーターの現在位置を、色だけでなく形でも示すようにし、強制カラーモードでの指定を加えました。
-  - 「[10-7 positionの基礎](/layout/positioning/)」と「[15-1 画像と装飾](/decoration/images-and-decoration/)」の冒頭に、まず覚える範囲と、必要なときに読む範囲の分かれ目を示しました。
+  - 「[10-7 positionの基礎](/layout/positioning/)」と「[15-1 画像と装飾](/decoration/images/)」の冒頭に、まず覚える範囲と、必要なときに読む範囲の分かれ目を示しました。
 
 ## 0.20.0（2026年10月3日）
 
@@ -101,7 +212,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`unset-box-sizing-for-content-max-width`](/layout/box-model/#rule-unset-box-sizing-for-content-max-width)：内容の幅を最大幅にそろえるときは、`calc()` で `padding` を足さず、`box-sizing: unset` で `content-box` に戻します。
   - [`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)：閾値の式には、`gap`、`padding`、`border` を省かずに含めます。
   - [`no-container-just-in-case`](/responsive/container-size-queries/#rule-no-container-just-in-case)：`container` は、実際に問い合わせる要素にだけ指定します。
-  - [`density-via-style-query`](/responsive/container-size-queries/#rule-density-via-style-query)：同じ閾値を何度も使うときは、ルートの直下の要素で `--_density` を宣言し、子孫は `@container style()` で切り替えます。
+  - [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：同じ閾値を何度も使うときは、ルートの直下の要素で `--_density` を宣言し、子孫は `@container style()` で切り替えます。
   - [`no-orientation-for-layout`](/responsive/media-queries/#rule-no-orientation-for-layout)：レイアウトの切り替えを `orientation` で判定せず、`width` で判定します。
   - [`gradient-border-method`](/decoration/outlines/#rule-gradient-border-method)：グラデーションの枠線は `background-clip: border-area` で描き、どの環境でも必要なときだけ擬似要素と `mask-composite: exclude` を使います。
   - [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限定し、`@media (any-hover)` の中に書きます。
@@ -112,8 +223,8 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：「中身の幅＋`padding`＋`border`」の例と、式にする判断の基準を加え、AIが誤りやすいルールにしました。
   - [`zoom-as-last-resort`](/responsive/container-size-queries/#rule-zoom-as-last-resort)：`zoom` を使わないとしていた内容を、最後の手段として使える内容に改めました。使うときは、`@container --scoped (inline-size < 最小幅)` の中で `zoom: min(progress(100cqi, 0px, 最小幅), 1)` と書きます。
   - [`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)：1回だけ動かす演出の基本を、`IntersectionObserver` からCSSだけの方法に変えました。
-  - [`flexbox-basis-zero-for-ratio`](/layout/flexbox-basics/#rule-flexbox-basis-zero-for-ratio)、[`longhand-for-partial-change`](/principles/maintainability/#rule-longhand-for-partial-change)：`flex: 1` で決まる `flex-basis` の値を `0%` に直しました。`padding` や `border` が違うと幅がそろわないことも補足しています。
-  - [`box-sizing-border-box-base`](/layout/box-model/#rule-box-sizing-border-box-base)、[`gutter-columns-for-content-width`](/layout/spacing/#rule-gutter-columns-for-content-width)：`content-box` に戻すときは `box-sizing: unset` と書くことを補足しました。
+  - [`flexbox-basis-zero-for-ratio`](/layout/flexbox-basics/#rule-flexbox-basis-zero-for-ratio)、[`longhand-for-partial-change`](/design-mindset/maintainability/#rule-longhand-for-partial-change)：`flex: 1` で決まる `flex-basis` の値を `0%` に直しました。`padding` や `border` が違うと幅がそろわないことも補足しています。
+  - [`box-sizing-border-box-base`](/layout/box-model/#rule-box-sizing-border-box-base)、[`gutter-columns-for-content-width`](/layout-practice/spacing/#rule-gutter-columns-for-content-width)：`content-box` に戻すときは `box-sizing: unset` と書くことを補足しました。
   - [`nested-selector-ampersand`](/notation/nesting/#rule-nested-selector-ampersand)：例を `&:hover` から `&:focus-visible` に変えました。[`scoped-class-on-root`](/notation/scope-and-nesting/#rule-scoped-class-on-root) には、Stylelintでは検出できないのでレビューで確かめる、と書きました。
   - 次のルールの文と理由では、サイズを問い合わせる `@container` を指す「コンテナクエリ」を「コンテナサイズクエリ」に改めました。ルールの内容は変えていません。
     - [`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)
@@ -155,12 +266,12 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 
 10-8を、レイアウトの手法の選び方を説明する節に書き直し、`order` と `reading-order` の値の規則を改めました。ルールを追加し、削除したため、マイナーバージョンを上げています。節のURLも変わりました。
 
-- 「10-8 Gridから考える」を「[10-8 レイアウト手法の選び方](/layout/choosing/)」に改め、URLを `/layout/grid-first/` から `/layout/choosing/` に変えました。よくある実装を例に、文章は通常フロー、部品の配置はGrid、中身の量で並べる要素はFlexbox、文章を回り込ませる要素は `float` で組む理由を説明しています。`float` が今でも最適な場面として、モーダルの閉じるボタンと右上の装飾の画像を文章の角に置く書き方を加えました。
+- 「10-8 Gridから考える」を「[10-8 レイアウト手法の選び方](/layout-practice/choosing/)」に改め、URLを `/layout/grid-first/` から `/layout-practice/choosing/` に変えました。よくある実装を例に、文章は通常フロー、部品の配置はGrid、中身の量で並べる要素はFlexbox、文章を回り込ませる要素は `float` で組む理由を説明しています。`float` が今でも最適な場面として、モーダルの閉じるボタンと右上の装飾の画像を文章の角に置く書き方を加えました。
 - 旧10-8にあった `grid-template` のエリア、サブグリッド、`grid-auto-flow: dense`、`display: contents` の説明は、「[10-6 Gridの基礎](/layout/grid-basics/)」に移しました。
-- 「[10-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」の `reading-order` を使わないとしていた節を、`order` と `reading-order` の値を1か-1に限る内容へ書き直しました。Stylelintの設定には、この2つのプロパティの値を検証する指定も加えました。
+- 「[10-14 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」の `reading-order` を使わないとしていた節を、`order` と `reading-order` の値を1か-1に限る内容へ書き直しました。Stylelintの設定には、この2つのプロパティの値を検証する指定も加えました。
 - ルールを2件追加しました。
-  - [`float-for-corner-elements`](/layout/choosing/#rule-float-for-corner-elements)：文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませます。
-  - [`order-one-or-minus-one`](/layout/reading-flow/#rule-order-one-or-minus-one)：`order` と `reading-order` の値には、z-indexの相対的な値と同じく、`1` か `-1` だけを使います。
+  - [`float-for-corner-elements`](/layout-practice/float/#rule-float-for-corner-elements)：文章の角に置く要素（モーダルの閉じるボタン、右上の装飾の画像など）は、`position: absolute` ではなく `float` で置き、文章を回り込ませます。
+  - [`order-one-or-minus-one`](/layout-practice/reading-flow/#rule-order-one-or-minus-one)：`order` と `reading-order` の値には、z-indexの相対的な値と同じく、`1` か `-1` だけを使います。
 - ルールを1件削除しました。
   - `no-reading-order`：`reading-order` を1か-1の値で使うことにしたためです。
 - 次の8件のルールは、掲載先を10-8から10-6に移しました。ルールの内容は変えていません。
@@ -183,7 +294,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 - 「[12-5 カンプの幅で全体を拡大・縮小しない](/responsive/design-comp-pattern/)」を書き直しました。2サイズのカンプの比率を保って全体を拡大・縮小する方法（比例スケールと画面モード）をやめ、その理由と、コンテナクエリと `cqi` で局所だけを拡大・縮小する方法を説明しています。本書のほかのページからも、`--px`、`--rem`、`--screen` を使う記述を取り除きました。
 - 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」から、Astroでの書き方の節を削除しました。ルート要素の中に `<style>` を置く書き方を前提にした記述も、本書から取り除いています。
 - 「[はじめに](/introduction/preface/)」に、AIが構築を速くする時代に人が設計するものと、AIに丸投げしない理由を加えました。
-- 「[15-1 画像と装飾](/decoration/images-and-decoration/)」に、背景の写真も `<img>` で置く節と、`decoding` 属性の扱いを加えました。
+- 「[15-1 画像と装飾](/decoration/images/)」に、背景の写真も `<img>` で置く節と、`decoding` 属性の扱いを加えました。
 - 「[7-2 ネストとプロパティの並び順](/notation/nesting/)」に、要素自身の状態を主語のルールの中にネストする規約を加えました。「[7-3 ネストの判断基準](/notation/nesting-criteria/)」には、BEMにたとえたネストの考え方（BlockとElementの関係は `@scope`、Modifierはネスト）と、親の状態で子の見た目を変える書き方を加えました。本書全体のコード例とデモも、この規約に合わせて直しています。
 - ルールを8件追加しました。
   - [`nest-own-states`](/notation/nesting/#rule-nest-own-states)：要素自身の擬似クラス・擬似要素・属性の状態は、`[popover]:popover-open` のように主語に連結せず、主語のルールの中に `&:popover-open` のようにネストして書きます。
@@ -192,8 +303,8 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`fixed-viewport-below-min-width`](/responsive/min-viewport-width/#rule-fixed-viewport-below-min-width)：375px未満の画面では、`<meta name="viewport">` の直後に置いたインラインのスクリプトでビューポートの幅を固定します。
   - [`no-full-liquid-scaling`](/responsive/design-comp-pattern/#rule-no-full-liquid-scaling)：カンプの幅に対する比率で、ページ全体を拡大・縮小しません。
   - [`local-liquid-with-cqi`](/responsive/design-comp-pattern/#rule-local-liquid-with-cqi)：拡大・縮小させたい局所は、コンテナクエリの単位で組みます。
-  - [`img-over-background-image`](/decoration/images-and-decoration/#rule-img-over-background-image)：写真など内容に関わる画像は `<img>` で置き、`background-image` はパターン画像や細かな装飾だけに使います。
-  - [`no-decoding-async`](/decoration/images-and-decoration/#rule-no-decoding-async)：`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せます。
+  - [`img-over-background-image`](/decoration/images/#rule-img-over-background-image)：写真など内容に関わる画像は `<img>` で置き、`background-image` はパターン画像や細かな装飾だけに使います。
+  - [`no-decoding-async`](/decoration/images/#rule-no-decoding-async)：`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せます。
 - ルールの内容を変えました。
   - [`logical-properties`](/notation/logical-properties/#rule-logical-properties)：掲載先を7-4から7-5に移し、補足を書き直しました。
   - [`root-name-kebab-case`](/notation/naming/#rule-root-name-kebab-case)：ルートの名前をPascalCaseにしてもよい、という補足を削除しました。
@@ -242,8 +353,8 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`smooth-scroll-conditional`](/reset/base-styles/#rule-smooth-scroll-conditional)：ページの読み込みが終わってルート要素に `data-loaded` 属性が付くまで、スムーススクロールを無効にする条件を加えました。フラグメント付きのURLで表示した直後に、なめらかにスクロールしないようにするためです。
   - `screen-mode-single-source`：ビューポートの `@media` を `:root` の1か所にまとめ、`--screen` と比例スケールの比率をそこで一緒に切り替えます。
   - [`stack-vs-prose`](/compositions/stack/#rule-stack-vs-prose)：`stack` を使う条件を、同じ役割の要素から、構成が決まっていて間隔を一律にしてよい要素に改めました。
-  - [`no-lazy-loading-first-view`](/decoration/images-and-decoration/#rule-no-lazy-loading-first-view)：`fetchpriority="high"` を、ファーストビューの画像すべてではなく、LCPの候補になる画像にだけ指定するようにしました。
-  - [`fit-content-over-flex-shrink-zero`](/layout/defensive/#rule-fit-content-over-flex-shrink-zero)：`fit-content` の上限は同じ並びのほかのアイテムや `gap` を差し引きません。アイコンと並ぶボタンの中のラベルには指定しない、と補足しました。
+  - [`no-lazy-loading-first-view`](/decoration/images/#rule-no-lazy-loading-first-view)：`fetchpriority="high"` を、ファーストビューの画像すべてではなく、LCPの候補になる画像にだけ指定するようにしました。
+  - [`fit-content-over-flex-shrink-zero`](/layout-practice/defensive/#rule-fit-content-over-flex-shrink-zero)：`fit-content` の上限は同じ並びのほかのアイテムや `gap` を差し引きません。アイコンと並ぶボタンの中のラベルには指定しない、と補足しました。
   - `proportional-scale-comp-values`：`--px` と `--rem` に比率1の値を先に入れ、長さどうしの割り算に対応していることを `@supports` で確かめられたときだけ比例の式に切り替える、と補足しました。割り算に対応していないブラウザでも、カンプどおりの寸法で表示されます。
   - [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)：ルート要素の中に `<style>` を置く場合は、項目だけを数える書き方にする、と補足しました。
 - 本文の説明の誤りを直しました。
@@ -312,7 +423,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 
 - 第6章に「[6-6 名前に使う語](/notation/terminology/)」を加えました。著者のデザインシステムの用語の指針をもとに、`inner` と `outer`、`container`、`gutter` と `gap`、`columns`、`link` と `button`、`navigation` と `menu` の意味と使い分けをまとめています。
 - 「[6-1 命名規則](/notation/naming/)」に、バリエーションの軸が2つ以上あるときの属性の分け方を加えました。
-- 「[8-9 余白を設計する](/layout/spacing/)」に、ページに並べるセクションの上下の余白の作り方を加えました。
+- 「[8-9 余白を設計する](/layout-practice/spacing/)」に、ページに並べるセクションの上下の余白の作り方を加えました。
 - 第12章「[画像・装飾](/decoration/)」の3ページに、デモを加えました。
 - 第7章の[概要](/components/)に、OOCSS、BEM、SMACSS、FLOCSSとの対応を加えました。
 - ルールを9件追加しました。
@@ -324,7 +435,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-text-only-name`](/notation/terminology/#rule-no-text-only-name)：`text` だけの名前を付けません。
   - [`renaming-terms-is-breaking`](/notation/terminology/#rule-renaming-terms-is-breaking)：公開プロパティやコンポーネントの名前に使った語の変更は、互換性のない変更として扱います。
   - [`variant-attribute-per-axis`](/notation/naming/#rule-variant-attribute-per-axis)：独立したバリエーションの軸は、軸ごとに別の属性で表します。
-  - [`section-padding-block`](/layout/spacing/#rule-section-padding-block)：ページに並べるセクションの上下の余白は、各セクションのルートの `padding-block` で作ります。
+  - [`section-padding-block`](/layout-practice/spacing/#rule-section-padding-block)：ページに並べるセクションの上下の余白は、各セクションのルートの `padding-block` で作ります。
 - ルール [`no-vague-names`](/notation/naming/#rule-no-vague-names) の補足の例を、`_inner` から `_section-inner` に変えました。
 - 本書のコード例とデモのクラス名を、命名のルールに合わせて直しました。`._inner` には「何の」を併記し、`._columns`、`._row`、`._text` のような名前を役割の名前に変えています。`._list`、`._link`、`._button`、`li` の `._item` のように要素の種類を言い換えただけのクラスは、タイプセレクタか役割の名前に変えました。
 
@@ -336,12 +447,12 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - 第11章「色・画像・装飾」を、第11章「[色](/color-media/)」と第12章「[画像・装飾](/decoration/)」に分けました。旧第12章と旧第13章は、第13章と第14章になります。画像と装飾、角の形、輪郭と枠線、印刷の4ページはURLが `/decoration/` に変わりました。
   - 第11章を、「[11-1 色の形式と色空間](/color-media/color/)」「[11-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」「[11-3 背景から文字色を決める](/color-media/contrast-text/)」「[11-4 ダークモード](/color-media/dark-mode/)」「[11-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」の5節に組み直しました。
   - 第8章に「[8-2 通常フローの基礎](/layout/normal-flow/)」を加え、「[8-1 レイアウトの基礎](/layout/fundamentals/)」をレイアウトの方式の全体像に絞りました。
-  - positionの説明を「[8-7 positionの基礎](/layout/positioning/)」の1ページにまとめ、包含ブロック、アンカーポジショニング、重なりの検出を扱いました。旧8-11「stickyが動かないとき」はこのページに統合しています。Gridでの重ね方、スタッキングコンテキスト、全幅の手法は「[8-11 重なりと全幅](/layout/layering/)」に分けました。
+  - positionの説明を「[8-7 positionの基礎](/layout/positioning/)」の1ページにまとめ、包含ブロック、アンカーポジショニング、重なりの検出を扱いました。旧8-11「stickyが動かないとき」はこのページに統合しています。Gridでの重ね方、スタッキングコンテキスト、全幅の手法は「[8-11 重なりと全幅](/layout-practice/layering/)」に分けました。
   - 第7章に「[7-1 何をコンポーネントにするか](/components/what-is-a-component/)」を加え、旧7-1の「見た目が似ているコンポーネントを共通化してよいか」をこのページに移しました。
 - ルールを8件追加しました。
   - [`no-flex-grid-props-in-flow`](/layout/normal-flow/#rule-no-flex-grid-props-in-flow)：`gap` や `align-items` のようにFlexboxやGridでだけ働くプロパティを、通常フローの要素に書きません。
-  - [`overlap-detection-for-decoration-only`](/layout/positioning/#rule-overlap-detection-for-decoration-only)：アンカーポジショニングとスクロール駆動アニメーションで重なりを検出する技法は、装飾にだけ使い、`@supports` の中に書きます。
-  - [`z-index-on-items-without-position`](/layout/layering/#rule-z-index-on-items-without-position)：FlexboxとGridの子の重なり順を変えるだけなら、`position: relative` を足さずにz-indexを指定します。
+  - [`overlap-detection-for-decoration-only`](/layout-practice/overlap-detection/#rule-overlap-detection-for-decoration-only)：アンカーポジショニングとスクロール駆動アニメーションで重なりを検出する技法は、装飾にだけ使い、`@supports` の中に書きます。
+  - [`z-index-on-items-without-position`](/layout-practice/layering/#rule-z-index-on-items-without-position)：FlexboxとGridの子の重なり順を変えるだけなら、`position: relative` を足さずにz-indexを指定します。
   - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-sign-over-contrast-color)：背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書きます。
   - [`component-decision-tests`](/components/what-is-a-component/#rule-component-decision-tests)：コンポーネントにするかは、繰り返し使うか、全インスタンスで構造や振る舞いを制御したいか、既知の構造の拡張があるか、の順に判定します。
   - [`no-component-for-look-only`](/components/what-is-a-component/#rule-no-component-for-look-only)：見た目が共通だという理由だけで、コンポーネントを作りません。
@@ -356,7 +467,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 
 本書のコード例とデモが本書のルールに従っていない箇所を、すべての章で直しました。ルールの追加や意味の変更はないため、パッチバージョンを上げています。
 
-- 初期値、ブラウザのデフォルトスタイル、kiso.css、継承で決まる値を指定し直している宣言を消しました（[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults)）。主な対象は、`border` の `currentColor` や `1px solid`、リストの `padding` と `list-style-type`、見出しの `margin` です。リンクの `text-decoration` や、`fieldset` と `legend` の余白も消しています。
+- 初期値、ブラウザのデフォルトスタイル、kiso.css、継承で決まる値を指定し直している宣言を消しました（[`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults)）。主な対象は、`border` の `currentColor` や `1px solid`、リストの `padding` と `list-style-type`、見出しの `margin` です。リンクの `text-decoration` や、`fieldset` と `legend` の余白も消しています。
 - 値を戻す宣言を、`0` や `none` ではなく、戻したい先に合うキーワード（`initial`、`unset`、`revert`、`revert-layer`）で書くようにしました（[`explicit-rollback-keyword`](/cascade/cascade-basics/#rule-explicit-rollback-keyword)）。
 - Not Recommendedの例を、教えたい点のほかは本書の書き方に揃えました。例の主題が古いコード全体のものは、そのままにしています。
 - このほか、`font-weight: bold` を `700` に、幅いっぱいに広げる `inline-size: 100%` を `stretch` に、物理プロパティを論理プロパティに直しました。`div` には役割のクラスを付け、`img` には `width` と `height` の属性を加えています。
@@ -371,11 +482,11 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - `no-typed-arithmetic`：単位のついた値どうしの割り算（typed arithmetic）を使わない
 - ルールを3件追加しました。
   - [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)：長さを単位のない数値に変えるときは、`tan(atan2(長さ, 1px))` ではなく、`calc(100svi / 1px)` のように単位のついた値で割ります。
-  - [`stretch-over-width-100`](/principles/maintainability/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書きます。
+  - [`stretch-over-width-100`](/design-mindset/maintainability/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書きます。
   - [`pattern-leaves-component-properties`](/components/compositions-and-utilities/#rule-pattern-leaves-component-properties)：パターンには重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は公開プロパティで受け取ります。
-- ルールの補足を3件更新しました。[`no-redundant-defaults`](/principles/maintainability/#rule-no-redundant-defaults) には、その文脈でブラウザが無視するプロパティも消すことを加えました。[`composition-class-plain`](/notation/naming/#rule-composition-class-plain) には、パターンにも接頭辞を付けず、コンポジションは配置の名前、パターンは役割の名前で区別することを加えました。
+- ルールの補足を3件更新しました。[`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults) には、その文脈でブラウザが無視するプロパティも消すことを加えました。[`composition-class-plain`](/notation/naming/#rule-composition-class-plain) には、パターンにも接頭辞を付けず、コンポジションは配置の名前、パターンは役割の名前で区別することを加えました。
 - 「[4-3 計算関数で根拠を式に残す](/values/math-functions/)」で、typed arithmeticの対応状況を「Safari 26以降」から「Safari 18.2以降」に正しました。あわせて、Chromeでは割り算で定義した長さがブラウザのズームで拡大縮小されない注意を加えました。9-4の式とデモも、単位のついた値での割り算に書き換えています（[9-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)）。
-- 「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」に、`div` が親の幅に広がる仕組みの説明を加えました。「[8-2 ボックスモデルの基礎](/layout/box-model/)」と「[12-4 フォーム部品](/interaction/forms/)」の `stretch` の対応状況を改め、1-2にリンクしています。
+- 「[1-2 保守しやすさを最優先にする](/design-mindset/maintainability/)」に、`div` が親の幅に広がる仕組みの説明を加えました。「[8-2 ボックスモデルの基礎](/layout/box-model/)」と「[12-4 フォーム部品](/interaction/forms/)」の `stretch` の対応状況を改め、1-2にリンクしています。
 - 「[3-2 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で、`:has()` と `:not()` を組み合わせたセレクタを読み解く手順を書き直しました。
 - 「[5-1 壊さないリセット](/reset/kiso/)」の冒頭に、初期値、ブラウザのデフォルトスタイル、作者のCSSの3層と、リセットCSSの変遷を説明する節を加えました。
 - 「[6-1 命名規則](/notation/naming/)」のクラス名の表にパターンを加え、4種類から5種類にしました。「[7-2 コンポジションとユーティリティ](/components/compositions-and-utilities/)」に、節「パターンに書いてよいプロパティ」を加えています。パターンの内部プロパティは `--_p--` で始めることにし、[`internal-property-prefix`](/components/custom-properties/#rule-internal-property-prefix) の補足に加えました。
@@ -407,8 +518,8 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - 3-6：[`open-attribute-for-details-dialog`](/pseudo/open-states/#rule-open-attribute-for-details-dialog)、[`popover-open-for-popover`](/pseudo/open-states/#rule-popover-open-for-popover)、[`modal-pseudo-for-modal-styles`](/pseudo/open-states/#rule-modal-pseudo-for-modal-styles)、[`empty-without-whitespace`](/pseudo/open-states/#rule-empty-without-whitespace)
   - 3-7：[`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)、[`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)
   - 3-7：[`marker-color-and-font-size-only`](/pseudo/generated-content/#rule-marker-color-and-font-size-only)、[`selection-color-and-background`](/pseudo/generated-content/#rule-selection-color-and-background)
-- 「[8-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)」を加え、次のルールを追加しました。`grid-template-areas` や `*-reverse` を書いたルールに `reading-flow` がないことは、Stylelintの独自ルール `book/reading-flow-when-reordered` で検出します。
-  - [`reading-flow-when-reordered`](/layout/reading-flow/#rule-reading-flow-when-reordered)、`no-reading-order`（0.19.0で削除）
+- 「[8-14 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」を加え、次のルールを追加しました。`grid-template-areas` や `*-reverse` を書いたルールに `reading-flow` がないことは、Stylelintの独自ルール `book/reading-flow-when-reordered` で検出します。
+  - [`reading-flow-when-reordered`](/layout-practice/reading-flow/#rule-reading-flow-when-reordered)、`no-reading-order`（0.19.0で削除）
 - 次のルールの補足に、`reading-flow` を指定する場面を加えました。
   - [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)、[`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)
 - 2-2、6-1、8-6、8-7、8-8、8-13-5のコード例と、8-7のデモの `grid-template` に、`reading-flow: grid-rows` を加えました。
@@ -428,7 +539,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 
 - `@scope` の中で、`._list`、`._item`、`._link`、`._title` のように要素の種類を言い換えただけのクラスを外し、タイプセレクタで選ぶようにしました。同じ種類の要素を役割で区別しているクラスと、ルールや本文が名前を挙げて説明しているクラスは残しています。
 - 「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」のドーナツスコープのデモを、タイプセレクタの `p` が下限で止まることを示す形に改めました。
-- `<a>` の `_button` は、`_contact-link` や `_cta-link` のように `link` の語を使う名前へ改めました（「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」「[7-7 余白を設計する](/layout/spacing/)」ほか）。
+- `<a>` の `_button` は、`_contact-link` や `_cta-link` のように `link` の語を使う名前へ改めました（「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」「[7-7 余白を設計する](/layout-practice/spacing/)」ほか）。
 - 「[7-13-5 sidebar](/compositions/sidebar/)」では、子要素のクラスとコンポジションのクラスを並べる説明を、タイプセレクタを前提とする説明へ改めました。
 - 次の2件のルールは、意味を変えずに文言を直しました。
   - [`child-class-underscore`](/notation/naming/#rule-child-class-underscore)：例を `._title` から `._main-link` に改めました。
@@ -476,7 +587,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 - 各章の概要に「最初に押さえるルール」を加えました。
 - 「[3-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」に3種類のビューポートの図を、「[7-1 レイアウトの基礎](/layout/fundamentals/)」に `align-items` と `align-content` の図を加えました。
 - 「[10-4 角の形を変える](/decoration/shapes/)」の角丸の式に、前提と数値の例を加えました。
-- 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」に、WCAGの大きな文字の定義と非テキストのコントラストを加えました。「[10-3 画像と装飾](/decoration/images-and-decoration/)」には、単色のアイコンの描き方を選ぶ表を加えました。
+- 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」に、WCAGの大きな文字の定義と非テキストのコントラストを加えました。「[10-3 画像と装飾](/decoration/icons-and-masks/)」には、単色のアイコンの描き方を選ぶ表を加えました。
 - 「[11-4 フォーム部品](/interaction/forms/)」「[11-3 開閉するUI](/interaction/disclosure/)」「[11-6 CSSでカルーセルを作る](/interaction/carousel/)」に、確かめる状態の一覧を加えました。
 
 ## 0.5.1（2026年10月1日）
@@ -499,7 +610,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - 「[7-11 sticky が動かないとき](/layout/positioning/)」：基準を最寄りのスクロールコンテナとし、`overflow: clip` を区別しました。
   - 「[7-4 Flexboxの基礎](/layout/flexbox-basics/)」：`flex: 1` の `flex-basis` が実装では `0%` になることと、縦のFlexboxでの違いを加えました。
   - 「[8-5 セーフエリアに対応する](/responsive/safe-area/)」：固定するバーと浮かせるボタンに、左右のセーフエリアを加えました。
-  - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」「[10-3 画像と装飾](/decoration/images-and-decoration/)」：寸法を持つ擬似要素に `display` を加え、単独で写しても描けるようにしました。
+  - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」「[10-3 画像と装飾](/decoration/icons-and-masks/)」：寸法を持つ擬似要素に `display` を加え、単独で写しても描けるようにしました。
   - 「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」：`:focus-visible` はキーボードの操作に限らないことを説明しました。
   - 「[7-13 コンポジション集](/compositions/)」：CMSの本文の中では `stack` と `prose` を使わず、`wysiwyg` を使うことに統一しました。
   - 「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」：スキルを登録する前に、自分の環境で `pnpm gen:ai` を実行する手順を加えました。
@@ -515,18 +626,18 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 
 - 節を5つ追加しました。
   - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」
-  - 「[7-12 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)」
+  - 「[7-12 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」
   - 「[10-4 角の形を変える](/decoration/shapes/)」：`corner-shape` と、画面いっぱいのときだけ角丸を消す方法
   - 「[10-5 輪郭と枠線を描く](/decoration/outlines/)」：`shape()`、`border-shape`、`background-clip: border-area`。下書きの印刷の節は10-6に繰り下げました。
   - 「[11-6 CSSでカルーセルを作る](/interaction/carousel/)」：`::scroll-button()`、`::scroll-marker`、`interactivity: inert`
 - 既存の節に内容を加えました。
-  - 「[1-2 保守しやすさを最優先にする](/principles/maintainability/)」：`flex: 1` では列の幅がそろわない理由
+  - 「[1-2 保守しやすさを最優先にする](/design-mindset/maintainability/)」：`flex: 1` では列の幅がそろわない理由
   - 「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」：`all` でまとめて戻すときのキーワード
   - 「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」：`:is()` などの引数に擬似要素を書けないこと
   - 「[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)」：壊れた既存のCSSから、`all: revert-layer !important` でコンポーネントを切り離す例外
   - 「[6-4 公開プロパティと内部プロパティ](/components/custom-properties/)」：カスタムプロパティを動かすときの負荷（例の `@property` を `inherits: false` に改めました）
-  - 「[7-8 変化に強いレイアウト](/layout/defensive/)」：スクロールする要素の中央寄せと `safe center`
-  - 「[7-11 sticky が動かないとき](/layout/positioning/)」：`scroll-state()` で留まっている間だけ見た目を変える方法
+  - 「[7-8 変化に強いレイアウト](/layout-practice/defensive/)」：スクロールする要素の中央寄せと `safe center`
+  - 「[7-11 sticky が動かないとき](/layout-practice/sticky-header/)」：`scroll-state()` で留まっている間だけ見た目を変える方法
   - 「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」：`prefers-reduced-transparency`
   - 「[10-1 色とダークモード](/color-media/color/)」：`alpha()` 関数
   - 「[11-2 モーションを実装する](/motion/scroll-driven/)」：`timeline-trigger` と `animation-trigger` の位置づけ
@@ -537,12 +648,12 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - 「[7-3 マージンの相殺](/layout/margin-collapse/)」：相殺が起きる条件と起きない条件、負のマージンを含む計算、相殺の止め方
   - 「[7-4 Flexboxの基礎](/layout/flexbox-basics/)」：主軸と交差軸、`flex-grow`・`flex-shrink`・`flex-basis` による空間の配り方
   - 「[7-5 Gridの基礎](/layout/grid-basics/)」：トラック・線・エリア、明示的なグリッドと暗黙のグリッド、配置のプロパティ
-  - 「[7-10 ページのスクロールとルートスクローラー](/layout/root-scroller/)」：ページのスクロールを入れ子のスクロールコンテナにしない
+  - 「[7-10 ページのスクロールとルートスクローラー](/layout-practice/root-scroller/)」：ページのスクロールを入れ子のスクロールコンテナにしない
 - 「[8-5 セーフエリアに対応する](/responsive/safe-area/)」を加えました。
 - 次の節に、記事の内容を加えました。
   - 「[3-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」：`if()` の条件の書き方と評価のタイミング
   - 「[7-6 Gridから考える](/layout/grid-basics/)」：サブグリッドの線の名前と `padding` の扱い
-  - 「[7-9 重なりと配置](/layout/positioning/)」：`position-try-order` と `position-visibility`
+  - 「[7-9 重なりと配置](/layout-practice/anchor-positioning/)」：`position-try-order` と `position-visibility`
   - 「[11-3 開閉するUI](/interaction/disclosure/)」：`command` 属性の組み込みのコマンドとカスタムコマンド
 - 第7章の末尾に「[7-13 コンポジション集](/compositions/)」を設け、11のコンポジションに1ページずつを充てました（7-13-1 stack〜7-13-11 prose）。各ページで、使う場面と使わない場面、公開プロパティ、内部の計算、使い分けを説明しています。6-2の一覧表は各ページへのリンクにし、`grid` には公開プロパティ `--grid--mode`（デフォルトは `auto-fill`）を加え、最大の列数のデフォルトを5にしました。
 - 「[6-1 コンポーネントの境界を守る](/components/boundaries/)」に、1つのコンポーネントのCSSを1つのファイルに書くことを加えました。
@@ -565,12 +676,12 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`if-for-own-custom-property`](/values/if-and-attr/#rule-if-for-own-custom-property)
   - [`if-fallback-and-else`](/values/if-and-attr/#rule-if-fallback-and-else)
   - [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit)
-  - [`safe-center-for-scrollable`](/layout/defensive/#rule-safe-center-for-scrollable)
-  - [`scroll-state-for-sticky-styles`](/layout/positioning/#rule-scroll-state-for-sticky-styles)
-  - [`grid-lanes-inside-supports`](/layout/masonry/#rule-grid-lanes-inside-supports)
-  - [`grid-lanes-no-placement-for-ordered-items`](/layout/masonry/#rule-grid-lanes-no-placement-for-ordered-items)
-  - [`flow-tolerance-no-infinite`](/layout/masonry/#rule-flow-tolerance-no-infinite)
-  - [`columns-for-top-to-bottom-lists`](/layout/masonry/#rule-columns-for-top-to-bottom-lists)
+  - [`safe-center-for-scrollable`](/layout-practice/defensive/#rule-safe-center-for-scrollable)
+  - [`scroll-state-for-sticky-styles`](/layout-practice/sticky-header/#rule-scroll-state-for-sticky-styles)
+  - [`grid-lanes-inside-supports`](/layout-practice/masonry/#rule-grid-lanes-inside-supports)
+  - [`grid-lanes-no-placement-for-ordered-items`](/layout-practice/masonry/#rule-grid-lanes-no-placement-for-ordered-items)
+  - [`flow-tolerance-no-infinite`](/layout-practice/masonry/#rule-flow-tolerance-no-infinite)
+  - [`columns-for-top-to-bottom-lists`](/layout-practice/masonry/#rule-columns-for-top-to-bottom-lists)
   - [`reduced-transparency-opaque-background`](/responsive/media-queries/#rule-reduced-transparency-opaque-background)
   - [`corner-shape-guard-when-broken`](/decoration/shapes/#rule-corner-shape-guard-when-broken)
   - [`full-bleed-radius-with-sign`](/decoration/shapes/#rule-full-bleed-radius-with-sign)
@@ -579,7 +690,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-autoplay-carousel`](/interaction/carousel/#rule-no-autoplay-carousel)
   - [`carousel-controls-in-supports`](/interaction/carousel/#rule-carousel-controls-in-supports)
   - [`carousel-inert-unsnapped`](/interaction/carousel/#rule-carousel-inert-unsnapped)
-  - [`inert-attribute-for-background`](/interaction/carousel/#rule-inert-attribute-for-background)
+  - [`inert-attribute-for-background`](/interaction/disclosure/#rule-inert-attribute-for-background)
   - [`ai-layout-with-grid-areas`](/operations/review-and-ai/#rule-ai-layout-with-grid-areas)
   - [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)
   - [`no-inline-block-for-rows`](/layout/normal-flow/#rule-no-inline-block-for-rows)
@@ -625,7 +736,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`box-sizing-border-box-base`](/layout/box-model/#rule-box-sizing-border-box-base)
   - [`box-fit-content-over-display-change`](/layout/box-model/#rule-box-fit-content-over-display-change)
   - [`box-state-border-without-shift`](/layout/box-model/#rule-box-state-border-without-shift)
-  - [`margin-collapse-padding-for-inner-space`](/layout/margin-collapse/#rule-margin-collapse-padding-for-inner-space)
+  - [`margin-collapse-padding-for-inner-space`](/layout/margin-role/#rule-margin-collapse-padding-for-inner-space)
   - [`margin-collapse-no-empty-spacers`](/layout/margin-collapse/#rule-margin-collapse-no-empty-spacers)
   - [`flexbox-basis-zero-for-ratio`](/layout/flexbox-basics/#rule-flexbox-basis-zero-for-ratio)
   - [`flexbox-check-auto-min-size`](/layout/flexbox-basics/#rule-flexbox-check-auto-min-size)
@@ -633,9 +744,9 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`grid-auto-rows-for-item-count`](/layout/grid-basics/#rule-grid-auto-rows-for-item-count)
   - [`grid-negative-lines-explicit-only`](/layout/grid-basics/#rule-grid-negative-lines-explicit-only)
   - [`grid-named-lines-for-placement`](/layout/grid-basics/#rule-grid-named-lines-for-placement)
-  - [`root-scroller-for-page-scroll`](/layout/root-scroller/#rule-root-scroller-for-page-scroll)
-  - [`root-scroller-no-fixed-root-height`](/layout/root-scroller/#rule-root-scroller-no-fixed-root-height)
-  - [`root-scroller-sticky-instead-of-pane`](/layout/root-scroller/#rule-root-scroller-sticky-instead-of-pane)
+  - [`root-scroller-for-page-scroll`](/layout-practice/root-scroller/#rule-root-scroller-for-page-scroll)
+  - [`root-scroller-no-fixed-root-height`](/layout-practice/root-scroller/#rule-root-scroller-no-fixed-root-height)
+  - [`root-scroller-sticky-instead-of-pane`](/layout-practice/root-scroller/#rule-root-scroller-sticky-instead-of-pane)
   - [`safe-area-inset-with-viewport-fit-cover`](/responsive/safe-area/#rule-safe-area-inset-with-viewport-fit-cover)
   - [`safe-area-combine-with-max`](/responsive/safe-area/#rule-safe-area-combine-with-max)
   - [`safe-area-background-to-edge`](/responsive/safe-area/#rule-safe-area-background-to-edge)
@@ -655,9 +766,9 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-abbreviation`](/notation/terminology/#rule-no-abbreviation)：クラス名を省略しない
   - [`child-name-flat`](/notation/naming/#rule-child-name-flat)：子要素の名前にHTMLの階層を映さない
   - `no-bulk-element-selector`：コンポーネントの中で要素型のセレクタにまとめてスタイルを当てない（0.7.0で削除）
-  - [`flex-auto-margin-for-end-items`](/layout/choosing/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
+  - [`flex-auto-margin-for-end-items`](/layout-practice/choosing/#rule-flex-auto-margin-for-end-items)：行末へ寄せる要素には自動マージンを使う
   - [`no-dense-for-ordered-items`](/layout/grid-basics/#rule-no-dense-for-ordered-items)：順序に意味のある要素に `grid-auto-flow: dense` を使わない
-  - [`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)：マージンの相殺は `display: flow-root` で止める
+  - [`flow-root-for-margin-collapse`](/layout-practice/spacing/#rule-flow-root-for-margin-collapse)：マージンの相殺は `display: flow-root` で止める
   - [`sticky-align-self-start`](/layout/positioning/#rule-sticky-align-self-start)：stickyな要素をGridやFlexboxの子にするときは `align-self: start`
   - [`sticky-needs-inset`](/layout/positioning/#rule-sticky-needs-inset)：stickyにはinsetを指定する
   - [`sticky-cap-block-size`](/layout/positioning/#rule-sticky-cap-block-size)：画面より高くなりうるstickyな要素の高さを制限する
@@ -666,9 +777,9 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`prefers-contrast-more-for-faint-borders`](/responsive/media-queries/#rule-prefers-contrast-more-for-faint-borders)：薄い境界線は `prefers-contrast: more` で濃くする
   - [`gradient-interpolation-space`](/color-media/color/#rule-gradient-interpolation-space)：グラデーションには補間の色空間を書く
   - [`transparent-outline-for-custom-focus`](/color-media/forced-colors/#rule-transparent-outline-for-custom-focus)：フォーカスリングを描き直すときは透明な `outline` を残す
-  - [`shadow-tokens-light-source`](/decoration/images-and-decoration/#rule-shadow-tokens-light-source)：影のトークンは光源の向きをそろえる
-  - [`no-animate-layered-shadow`](/decoration/images-and-decoration/#rule-no-animate-layered-shadow)：重ねた影そのものを動かさない
-  - [`marker-for-list-number-style`](/decoration/images-and-decoration/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
+  - [`shadow-tokens-light-source`](/decoration/surfaces/#rule-shadow-tokens-light-source)：影のトークンは光源の向きをそろえる
+  - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：重ねた影そのものを動かさない
+  - [`marker-for-list-number-style`](/decoration/surfaces/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
   - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：キーボードのフォーカスに限るときは `:has(:focus-visible)` を使う
   - [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーを受ける要素は動かさない
   - [`hit-area-min-size`](/interaction/states-and-focus/#rule-hit-area-min-size)：操作する要素の最小の大きさを確保する
@@ -694,15 +805,15 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
   - [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)：`:has()` の起点と引数の範囲を絞る
   - [`declared-layer-names-only`](/cascade/layers/#rule-declared-layer-names-only)：宣言したレイヤー名だけを使う
   - [`column-width-by-variability`](/layout/grid-basics/#rule-column-width-by-variability)：列ごとに、内容で伸び縮みさせるか固定するかを決める
-  - [`spacing-proximity`](/layout/spacing/#rule-spacing-proximity)：グループの間の余白を、グループの中の余白より大きくする
-  - [`sticky-header-height-query`](/layout/positioning/#rule-sticky-header-height-query)：ヘッダーは高さに余裕があるときだけ固定する
-  - [`implicit-anchor-first`](/layout/positioning/#rule-implicit-anchor-first)：暗黙のアンカーを優先する
-  - [`position-area-logical-keywords`](/layout/positioning/#rule-position-area-logical-keywords)：`position-area` は論理キーワードで書く
+  - [`spacing-proximity`](/layout-practice/spacing/#rule-spacing-proximity)：グループの間の余白を、グループの中の余白より大きくする
+  - [`sticky-header-height-query`](/layout-practice/sticky-header/#rule-sticky-header-height-query)：ヘッダーは高さに余裕があるときだけ固定する
+  - [`implicit-anchor-first`](/layout-practice/anchor-positioning/#rule-implicit-anchor-first)：暗黙のアンカーを優先する
+  - [`position-area-logical-keywords`](/layout-practice/anchor-positioning/#rule-position-area-logical-keywords)：`position-area` は論理キーワードで書く
   - [`hide-label-visually-in-container-query`](/responsive/container-size-queries/#rule-hide-label-visually-in-container-query)：狭いコンテナではボタンのラベルを視覚的にだけ隠す
   - [`framework-breakpoint-variables`](/responsive/breakpoints/#rule-framework-breakpoint-variables)：フレームワークを使うときは、その変数でブレイクポイントを書く
   - [`fallback-font-metric-overrides`](/typography/fonts/#rule-fallback-font-metric-overrides)：代わりのフォントの寸法を補正する
   - [`wbr-for-long-urls`](/typography/size-and-line-breaks/#rule-wbr-for-long-urls)：長いURLには `<wbr>` を入れる
-  - [`text-stroke-paint-order`](/decoration/images-and-decoration/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く
+  - [`text-stroke-paint-order`](/decoration/surfaces/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く
   - [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：モーダルの中のスクロールの連鎖を止める
   - [`view-transition-name-unique`](/motion/view-transitions/#rule-view-transition-name-unique)：同じ `view-transition-name` を複数の要素に付けない
   - [`view-transition-match-element`](/motion/view-transitions/#rule-view-transition-match-element)：並んだ要素には `match-element` を使う

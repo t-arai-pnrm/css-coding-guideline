@@ -1,5 +1,5 @@
 ---
-title: "第15章 画像・装飾"
+title: "第16章 画像・装飾"
 description: "画像の比率と出し分け、アイコンや影などの装飾、corner-shape による角の形、shape() と border-area による輪郭と枠線の書き方をまとめた章です。"
 sidebar:
   label: "概要"
@@ -14,12 +14,14 @@ sidebar:
 
 この章は次の節で構成しています。
 
-- [15-1 画像と装飾](/decoration/images-and-decoration/)：`aspect-ratio` と `object-fit`、`srcset` と `sizes`、`clip-path` とマスク、`currentColor` のアイコン、影と角丸、文字の縁取り
-- [15-2 角の形を変える](/decoration/shapes/)：`corner-shape` によるスクワークルや反り返るタブと、画面いっぱいのときだけ角丸を消す `sign()`
-- [15-3 輪郭と枠線を描く](/decoration/outlines/)：`clip-path` の `shape()` によるタブと吹き出し、`border-shape`、`border-area` のグラデーションの枠線、マスクで描くドーナツグラフ
-{/* 15-4の執筆後に、一覧に加えてリンクする: [15-4 印刷のスタイル](/decoration/print/)：画面との差分だけを書く @media print、外部リンクのURL、改ページの制御 */}
+- [16-1 画像の配置と読み込み](/decoration/images/)：`aspect-ratio` と `object-fit`、`<img>` の大きさの属性、背景の写真を `<img>` で置く理由、`srcset` と `sizes`、画像の形式と読み込みの優先度
+- [16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)：`clip-path` で描く図形、マスクで描くアイコンとスクロールできる領域の端、`currentColor` のアイコン、インラインSVGの代替テキスト
+- [16-3 表面と文字の装飾](/decoration/surfaces/)：影と角丸のトークン、すりガラスの背景、`::marker` による番号の装飾、文字の縁取り
+- [16-4 角の形を変える](/decoration/shapes/)：`corner-shape` によるスクワークルや反り返るタブと、画面いっぱいのときだけ角丸を消す `sign()`
+- [16-5 輪郭と枠線を描く](/decoration/outlines/)：`clip-path` の `shape()` によるタブと吹き出し、`border-shape`、`border-area` のグラデーションの枠線、マスクで描くドーナツグラフ
+{/* 16-6の執筆後に、一覧に加えてリンクする: [16-6 印刷のスタイル](/decoration/print/)：画面との差分だけを書く @media print、外部リンクのURL、改ページの制御 */}
 
-色の定義と派生色の作り方は第14章「[色](/color-media/)」で扱います。強制カラーモードで背景色の図形やアイコンが消えないようにする方法は「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で、擬似要素の作り方は[第3章「擬似クラスと擬似要素」](/pseudo/)で説明しています。この章のコード例では `@layer` の記述を省略していますが、デモのCSSには省略せずに書いています。
+色の定義と派生色の作り方は第15章「[色](/color-media/)」で扱います。強制カラーモードで背景色の図形やアイコンが消えないようにする方法は「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で、擬似要素の作り方は[第5章「擬似クラスと擬似要素」](/pseudo/)で説明しています。この章のコード例では `@layer` の記述を省略していますが、デモのCSSには省略せずに書いています。
 
 ## 最初に押さえるルール
 
@@ -27,7 +29,7 @@ sidebar:
 
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
-- [`img-width-height-attributes`](/decoration/images-and-decoration/#rule-img-width-height-attributes)：`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。
-- [`no-lazy-loading-first-view`](/decoration/images-and-decoration/#rule-no-lazy-loading-first-view)：ファーストビューで表示される画像には、`loading="lazy"` を指定しません。
-- [`aspect-ratio-for-ratios`](/decoration/images-and-decoration/#rule-aspect-ratio-for-ratios)：要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作りません。
-- [`icon-current-color`](/decoration/images-and-decoration/#rule-icon-current-color)：単色のアイコンの色は `currentColor` で文字色に合わせます。
+- [`img-width-height-attributes`](/decoration/images/#rule-img-width-height-attributes)：`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。
+- [`no-lazy-loading-first-view`](/decoration/images/#rule-no-lazy-loading-first-view)：ファーストビューで表示される画像には、`loading="lazy"` を指定しません。
+- [`aspect-ratio-for-ratios`](/decoration/images/#rule-aspect-ratio-for-ratios)：要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作りません。
+- [`icon-current-color`](/decoration/icons-and-masks/#rule-icon-current-color)：単色のアイコンの色は `currentColor` で文字色に合わせます。

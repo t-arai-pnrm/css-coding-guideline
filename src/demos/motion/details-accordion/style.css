@@ -7,7 +7,7 @@
 
 @layer base {
   /* キーワードで決まる大きさ（auto）へのトランジションを有効にする（第6章のベーススタイル） */
-  :where(:root) {
+  :root {
     @media (prefers-reduced-motion: no-preference) {
       interpolate-size: allow-keywords;
     }
@@ -17,8 +17,11 @@
 @layer components {
   @scope (.scoped.faq-list) to (.scoped) {
     h2 {
-      margin-block-end: 12px;
       font-size: calc(20 / 16 * 1rem);
+    }
+
+    h2 + * {
+      margin-block-start: 12px;
     }
 
     details {
@@ -54,7 +57,7 @@
       &::after {
         content: "";
         inline-size: 0.5em;
-        block-size: 0.5em;
+        aspect-ratio: 1;
         border-block-end: 2px solid;
         border-inline-end: 2px solid;
         rotate: 45deg;

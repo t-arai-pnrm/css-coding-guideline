@@ -1,0 +1,144 @@
+---
+title: "11-13 文字の切り詰めと読み込み中の表示"
+description: "内容が入りきらないときの切り詰めと、内容がまだ届いていないときのスケルトンを扱う節です。1行の切り詰めは text-overflow に nowrap と clip を組み合わせ、数値は切り詰めず、スケルトンは aspect-ratio と lh で読み込み後と同じ寸法にします。"
+sidebar:
+  order: 13
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+文字を「…」で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせ、全文を読める手段を別に用意します。金額や数量のような数値は切り詰めません。データを読み込む間に置く仮の表示（スケルトン）は、`aspect-ratio` と `lh` 単位で、読み込み後の内容と同じ寸法にします。
+
+この節は、「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」の続きです。11-4では、想定より長い文字や要素の数の変化で崩れないように書く方法を説明しました。この節では、内容が場所に入りきらないときと、内容がまだ届いていないときの2つの場面を扱います。
+
+## 入りきらない内容と、まだ届いていない内容
+
+カードの見出しや表のセルのように、置ける幅が決まっている場所には、デザインカンプより長い文字が入ってきます。11-4の方法で折り返せば崩れませんが、一覧の行の高さをそろえたい場所では、折り返さずに打ち切りたいこともあります。打ち切ると、レイアウトは保てる代わりに、読めない部分ができます。どこを打ち切り、打ち切った部分をどう読ませるかを決めておかないと、読み手は必要な情報にたどり着けません。
+
+内容がまだ届いていない間の表示も、レイアウトを崩す原因になります。読み込み中の表示と読み込み後の内容の寸法が違えば、差し替わった瞬間に後ろの要素が動きます。読んでいた位置や押そうとしたボタンがずれるので、読み手は操作を誤ります。
+
+どちらの場面も、デザインカンプには描かれないことが多い状態です。カンプには、ちょうど収まる長さの文字と、読み込みの終わった内容が描かれています。実装する側が、入りきらない場合と届く前の場合を想定して、寸法と見せ方を決めます。{/* 要確認: 出典なし */}
+
+## 1行に収まらない文字を打ち切る
+
+1行に収まらない文字を「…」で打ち切るときは、`text-overflow: ellipsis` を使います。ただし、このプロパティだけでは何も起きません。行を折り返さない指定（`white-space: nowrap`）と、行方向のはみ出しを切り取る指定（`overflow-inline: clip`）がそろったときに、切り取られる位置へ「…」を表示します。
+
+```css title="🙆‍♂ Recommended: 1行に収まらない文字を「…」で打ち切る"
+._file-name {
+  overflow-inline: clip;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @supports not (overflow-inline: clip) {
+    overflow-x: clip;
+  }
+}
+```
+
+`white-space: nowrap` はルール `no-nowrap-without-reason` で避けている指定ですが、切り詰めは指定する明確な理由にあたります。はみ出しを `hidden` ではなく `clip` で切り取るのは、11-4の「横スクロールの原因と `overflow: clip`」と同じく、スクロールコンテナを作らないためです。Chrome 152では、`overflow-inline: clip` だけでも「…」が表示されることを確かめました（2026年10月確認）。{/* 要確認: Safari 18 の overflow-x: clip と text-overflow の組み合わせ */}
+
+フレックスアイテムやグリッドアイテムの中で切り詰めるときは、アイテムの最小幅が0でなければ、切り詰める前に親が押し広げられます。本書では、ベーススタイルの全称セレクタの `min-inline-size: 0` で、アイテムの最小幅を0にしています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。
+
+## 切り詰めた文字を読める手段
+
+切り詰めた部分は、画面の上では読めなくなります。そのため、切り詰めるときは、全文を読める手段を用意します。カードの見出しならリンク先のページに全文を載せ、表のセルなら行を開いて詳細を見せる、といった形です。
+
+`title` 属性の吹き出しは、タッチ操作やキーボードでは表示されないので、全文を読む手段にはなりません。切り詰めは表示だけの処理で、文字そのものは文書に残っているので、スクリーンリーダーは全文を読み上げます。{/* 要確認: 出典なし */}
+
+## 数値は切り詰めない
+
+金額や数量、日付、型番のような数値は切り詰めません。文章なら冒頭から内容の見当が付きますが、数値は一部だけでは値として読めないからです。「12,800円」が「12…」になると、読み手は12円と読み違えるおそれがあります。数値と名前が1行に並ぶなら、名前のほうを切り詰め、数値の要素は縮ませません。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 名前は切り詰め、金額は切り詰めずに数字の幅をそろえる"
+._item {
+  display: block flex;
+  gap: 16px;
+  align-items: baseline;
+}
+
+._item-name {
+  flex-grow: 1;
+  overflow-inline: clip;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @supports not (overflow-inline: clip) {
+    overflow-x: clip;
+  }
+}
+
+._item-price {
+  min-inline-size: fit-content;
+  font-variant-numeric: tabular-nums;
+}
+```
+
+金額の要素は、`min-inline-size: fit-content` で中身の幅より縮まないようにしています（「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」の「縮ませたくない要素を守る」）。名前の要素は最小幅が0なので、行に収まらない分だけ縮み、末尾が「…」になります。
+
+`font-variant-numeric: tabular-nums` は、数字をすべて同じ幅で表示する指定です。書体によっては、「1」が「0」より狭いというように、数字の幅が字ごとに違います。そのまま金額を縦に並べると、桁の位置がずれて大小を比べにくくなります。カウントダウンのように値が変わり続ける数字は、変わるたびに左右へ揺れます。
+
+表や一覧の数値の列と、値が変わり続ける数字には、`tabular-nums` を指定します。本書では、この指定をユーティリティ `.-tabular-nums` にもしています（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。表の数値の列を末尾にそろえる書き方は、「[11-12 表を組む](/layout-practice/tables/)」で説明します。
+
+## 2行以上で打ち切る
+
+2行以上で打ち切るときは、`-webkit-line-clamp` を使います。書き方は「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」のルール[`line-clamp-with-overflow-clip`](/typography/size-and-line-breaks/#rule-line-clamp-with-overflow-clip)のとおりです。
+
+行数を制限した要素に `padding-block` を付けると、切り取られるはずの次の行が、下の余白にのぞきます。`clip` が切り取る位置は、パディングの外側の辺だからです（Chrome 152で確認）。余白は、行数を制限する要素ではなく、その外側の要素に持たせます。
+
+切り取る位置を内容の辺に変える `overflow-clip-margin: content-box` という指定もあります。
+
+<Baseline id="overflow-clip-margin" compatKey="css.properties.overflow-clip-margin.content-box" name="overflow-clip-margin: content-box" />
+
+`content-box` の値には、Firefoxが148から対応しています。Chromeも104から対応していますが、両方の軸を `clip` にしたときだけ効く部分的な実装なので、上の表では未対応として扱われています。Chrome 152で確かめたところ、ブロック方向だけを切り取る行数制限のユーティリティでは効きませんでした。Safariは対応していません（2026年10月確認）。未対応の環境では次の行がのぞいたままになるので、本書では今のところ採用せず、余白を外側の要素に持たせます。
+
+## 読み込み中の表示を読み込み後と同じ寸法にする
+
+データを読み込む間に、内容の形を灰色の面で示す仮の表示を、スケルトンと呼びます。スケルトンは、読み込み後の内容と同じ寸法にします。寸法が違うと、内容に差し替わった瞬間、後ろの要素が押し下げられます。このずれはレイアウトシフトと呼ばれ、Core Web VitalsのCLS（Cumulative Layout Shift）という指標で測られます。
+
+読み込み中にスピナーだけを置く書き方も、同じずれを起こします。スピナーの高さは内容の高さと関係がないので、内容が届いたとき、ページはその差の分だけ場所を取り直します。スピナーを使うなら、内容と同じ寸法の枠を先に置き、その中に表示します。{/* 要確認: 出典なし */}
+
+寸法は、内容の種類に合った単位で決めます。画像や動画の枠は、`aspect-ratio` で比率を決め、幅から高さが決まるようにします。文字の行は、`lh` 単位で高さを決めます。`1lh` はその要素の `line-height` の計算値なので、文字サイズと行送りが読み込み後と同じなら、`3lh` は3行の文章と同じ高さになります。
+
+```css title="🙆‍♂ Recommended: 画像の枠は比率で、文字の行は lh で場所を取る"
+@scope (.scoped.card-skeleton) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 8px;
+    line-height: var(--leading--normal);
+  }
+
+  ._media {
+    aspect-ratio: 16 / 9;
+    background-color: var(--color--neutral--100);
+  }
+
+  ._title {
+    block-size: 2lh;
+    background-color: var(--color--neutral--100);
+    font-size: calc(20 / 16 * 1rem);
+  }
+
+  ._excerpt {
+    block-size: 3lh;
+    background-color: var(--color--neutral--100);
+  }
+}
+```
+
+この例は、画像、2行の見出し、3行の抜粋が並ぶカードのスケルトンです。`gap`、`line-height`、見出しの文字サイズには、読み込み後のカードと同じ値を指定します。`lh` は要素自身の文字サイズと行送りから決まるので、見出しのように文字サイズの違う要素では、スケルトンの側にも同じ文字サイズが要ります。行数を制限している見出しなら、上限の行数で場所を取ります。
+
+実際の行数が上限より少なければ、差し替わったときに寸法は縮みます。読み込み後のカードでも見出しに `min-block-size: 2lh` を指定しておけば、この差はなくなり、一覧に並べたカードの見出しの高さもそろいます。{/* 要確認: 出典なし */}
+
+スケルトンを明滅させて読み込み中であることを示すなら、その動きはルール[`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)に従います（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。明滅を `prefers-reduced-motion: no-preference` の中だけで指定する例は、「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」にあります。明滅を止めた環境でも灰色の面は残るので、内容が入る場所は示せます。{/* 要確認: 出典なし */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [text-overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-overflow)
+- [font-variant-numeric - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-variant-numeric)
+- [overflow-clip-margin - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-clip-margin)
+- [Cumulative Layout Shift (CLS)](https://web.dev/articles/cls)（web.dev）

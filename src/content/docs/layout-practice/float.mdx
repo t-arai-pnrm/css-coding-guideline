@@ -1,0 +1,187 @@
+---
+title: "11-2 floatで文章を回り込ませる"
+description: "文章を要素のまわりに回り込ませる配置には float を使います。画像の横と下に文章を流す配置、閉じるボタンや装飾の画像を文章の角に置く配置、行頭のアイコンを1行目にそろえる配置が当てはまります。値は inline-start と inline-end の論理値で書き、float の要素を囲む要素には display: flow-root を指定します。"
+sidebar:
+  order: 2
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import floatCornerHtml from '../../../demos/layout-practice/float-corner/index.html?raw';
+import floatCornerCss from '../../../demos/layout-practice/float-corner/style.css?raw';
+
+文章を要素のまわりに回り込ませる配置には、`float` を使います。画像の横と下に文章を流す配置のほか、モーダルの閉じるボタンや右上の装飾の画像を文章の角に置く配置、行頭のアイコンを1行目の文字にそろえる配置が当てはまります。値は `right` ではなく `inline-end` のように論理値で書き、`float` の要素を囲む要素には `display: flow-root` を指定します。
+
+`float` は古い手法と見なされがちですが、回り込みはFlexboxやGridでは作れない配置で、今でもいちばん崩れにくい手法です。私は、文章の角に要素を置く場面でも、`position: absolute` ではなく `float` を使います。作るものに合わせた手法全体の選び方は、「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」で説明しています。
+
+## 角の要素を `position: absolute` で置くと起きること
+
+FlexboxとGridが普及する前は、ページの段組みを `float` で組み、親の高さを保つためにclearfixを書いていました。そのころの印象から、`float` は「レイアウトの古い手法」として片付けられがちです。その結果、文章を回り込ませたい配置まで、`position: absolute` やGridで組まれることがあります。
+
+モーダルの右上に閉じるボタンを置く場面を考えます。ボタンを `position: absolute` で置くと、ボタンは通常フローから外れ、文章はボタンのある場所を避けません。
+
+```css title="🙅‍♂ Not Recommended: 閉じるボタンを絶対配置で角に置く"
+/* 🙅‍♂ Not Recommended */
+._body {
+  position: relative;
+  padding-block: 16px;
+  padding-inline: 24px;
+
+  & > ._close {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    inline-size: calc(44 / 16 * 1rem);
+    aspect-ratio: 1;
+  }
+}
+```
+
+広い画面では見出しの右に余白があるので、ボタンと重なりません。しかし、狭い画面では長い見出しがボタンの下に潜り込み、読めなくなります。見出しに `padding-inline-end` を足してボタンを避けると、今度はボタンの大きさを変えるたびに、見出しの余白も直さなければなりません。
+
+装飾の画像をカードの右上に置く場面でも、同じことが起きます。`position: absolute` では、狭い画面で文字が画像に重なります。Gridで画像の列を作れば重なりませんが、文章は画像より下の空いた場所へ回り込めないので、画像の列の下に縦長の余白が残ります。
+
+## 回り込みの仕組み
+
+`float` を指定した要素は、通常フローから外れ、行の始端か終端に寄せられます。後に続くブロックは、`float` の要素がないかのように積まれますが、その中の行ボックスは `float` の要素を避けて短くなります。そのため、文字は `float` の要素の横を流れ、要素より下では行の幅いっぱいに戻ります。
+
+`float` の要素の高さは、親の高さに含まれません。親の背景や枠線は、`float` の要素の途中で終わってしまいます。親に `display: flow-root` を指定すると、親が新しいブロック整形コンテキストを作り、`float` の要素を内側に収めます。かつてのclearfixのように、擬似要素で `clear` を指定する必要はありません（「[7-2 通常フローの基礎](/layout/normal-flow/)」）。
+
+<Baseline id="display-flow-root" />
+
+フレックスアイテムとグリッドアイテムでは、`float` は無視されます。回り込みは通常フローの仕組みなので、回り込ませる要素と文章は、`display` を変えていない親の中に置きます。記事の本文を `gap` で間隔を作るためにFlexboxやGridにしない理由の1つは、ここにあります（「[11-3 余白を設計する](/layout-practice/spacing/)」）。
+
+`float` の値は、`left` や `right` ではなく、`inline-start` と `inline-end` で書きます。行の始端と終端を指すので、縦書きや右から左へ書く言語でも、意図した側に寄せられます。論理値にそろえる理由は「[9-8 論理プロパティと論理値](/notation/logical-properties/)」で説明しています。
+
+## 画像に文章を回り込ませる
+
+画像に文章を回り込ませるときは、画像に `float` を、囲む要素に `display: flow-root` を指定します。画像の幅は、`min()` で親の幅の半分を上限にしておくと、狭い画面でも文章の幅が残ります。
+
+```css title="🙆‍♂ Recommended: 回り込みには float を使い、flow-root で内側に収める"
+._description {
+  display: block flow-root;
+}
+
+._figure {
+  float: inline-end;
+  inline-size: min(50%, calc(320 / 16 * 1rem));
+  margin-inline-start: 16px;
+}
+```
+
+`margin-inline-start` は、画像と文章の間の距離です。`float` の要素の `margin` は相殺されないので、画像の側に書いた値が、そのまま文章との距離になります。
+
+回り込みの形は、`shape-outside` で変えられます。指定しなければ、文章は画像の四角い外形に沿って回り込みます。円形に切り抜いた人物の写真なら、`shape-outside: circle(50%)` を指定すると、文章が円の外周に沿って回り込みます。
+
+<Baseline id="shape-outside" />
+
+```css title="🙆‍♂ Recommended: 円形の写真のまわりに、円に沿って文章を回り込ませる"
+._avatar {
+  float: inline-start;
+  inline-size: calc(160 / 16 * 1rem);
+  aspect-ratio: 1;
+  margin-inline-end: 16px;
+  border-radius: calc(infinity * 1px);
+  shape-margin: 16px;
+  shape-outside: circle(50%) border-box;
+  object-fit: cover;
+}
+```
+
+`circle(50%) border-box` は、`margin` を含まない枠を基準にした円です。基準を省略すると `margin` を含む枠になり、`margin-inline-end` の分だけ円の中心がずれます。文章との距離は `shape-margin` で円の外側に取りますが、回り込みの形は `margin` を含む枠からはみ出せないので、同じ値を `margin-inline-end` にも書いています。{/* 要確認: 出典なし（shape-outside の例と、margin-inline-end を同じ値にする理由） */}
+
+## 文章の角に要素を置く
+
+カードの右上の装飾の画像は、`float: inline-end` で置きます。文章は画像の横を流れ、画像より下では幅いっぱいに広がるので、画面が狭くなっても文字は画像に重なりません。Gridの列のように、画像の下に余白が残ることもありません。
+
+モーダルの閉じるボタンも同じです。ボタンを `float: inline-end` で上端の角に置けば、見出しや本文はボタンを避けて折り返します。スクロールしてもボタンを上端に留めたいときは、`float` に `position: sticky` を組み合わせます。
+
+```css title="🙆‍♂ Recommended: 閉じるボタンを float で角に置き、sticky で上端に留める"
+._body {
+  --_padding-block: 16px;
+  --_padding-inline: 24px;
+
+  display: block flow-root;
+  padding-block: var(--_padding-block);
+  padding-inline: var(--_padding-inline);
+
+  & > ._close {
+    position: sticky;
+    inset-block-start: 0;
+    float: inline-end;
+    inline-size: calc(44 / 16 * 1rem);
+    aspect-ratio: 1;
+    margin-block-start: calc(var(--_padding-block) * -1);
+    margin-inline: 16px calc(var(--_padding-inline) * -1);
+  }
+}
+```
+
+`position: sticky` の要素は、レイアウト上の位置を保ったまま、スクロールに合わせて描画される位置だけがずれます。そのため、文章はボタンの元の位置を避けて回り込み、ボタン自身は上端に留まります。負の `margin` は、本文の領域の `padding` の分だけボタンを戻し、パネルの角に合わせるための指定です。
+
+次のデモでは、上のパネルが閉じるボタンの例、下のカードが装飾の画像の例です。パネルをスクロールすると、閉じるボタンが上端に留まります。幅のボタンで320pxを選ぶと、見出しと本文がボタンや画像を避けて折り返し、画像より下では幅いっぱいに広がることを確かめられます。
+
+<Demo title="閉じるボタンと装飾の画像を float で文章の角に置く" html={floatCornerHtml} css={floatCornerCss} />
+
+## 行頭のアイコンを1行目にそろえる
+
+リストの項目の先頭にアイコンを置くとき、項目をFlexboxにして `align-items: center` を指定することがよくあります。1行なら問題ありませんが、文章が2行以上になると、アイコンは項目全体の高さの中央に置かれ、1行目からずれます。項目の中に `strong` や `a` があると、それぞれが別のフレックスアイテムになり、文章が途中で分かれてしまうこともあります。
+
+アイコンを擬似要素で描き、`float: inline-start` で行の始端に寄せれば、文章は通常フローのまま流れます。アイコンの上下の `margin` を `calc((1lh - アイコンの大きさ) / 2)` にすると、1行目の行の高さの中で、アイコンが上下の中央に置かれます。
+
+```css title="🙆‍♂ Recommended: float したアイコンを、1行目の行の高さの中央に置く"
+@scope (.scoped.check-list) to (.scoped) {
+  li {
+    --_icon-size: 1em;
+    --_gap: 0.5em;
+
+    display: block flow-root;
+    padding-inline-start: calc(var(--_icon-size) + var(--_gap));
+
+    &::before {
+      content: "";
+      float: inline-start;
+      inline-size: var(--_icon-size);
+      aspect-ratio: 1;
+
+      /* 1行目の行の高さの中で、上下の中央に置く */
+      margin-block: calc((1lh - var(--_icon-size)) / 2);
+
+      /* 項目の padding の中へ戻し、文章の幅を狭めない */
+      margin-inline-start: calc((var(--_icon-size) + var(--_gap)) * -1);
+      border: 0.3em solid;
+      border-radius: calc(infinity * 1px);
+    }
+  }
+}
+```
+
+`1lh` は、その要素の行の高さです。擬似要素は項目の文字の大きさと行の高さを継承するので、文字の大きさを変えても、アイコンは1行目の中央に置かれたままです。負の `margin-inline-start` で擬似要素を項目の `padding` の中へ戻しているので、文章の行は短くなりません。2行目以降も、アイコンの下へ回り込まずに1行目とそろいます。
+
+この `margin` は、要素の間の間隔ではなく、アイコンの位置を決める指定です。要素の間の縦の `margin` を次兄弟結合子で付けるルール（「[11-3 余白を設計する](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)」）の対象には含めません。アイコンを `border` で描いているのは、強制カラーモードでも線の色がシステムカラーに置き換わって残るからです（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
+
+## 補足と注意点
+
+HTMLでは、`float` の要素を、回り込む文章より先に書く必要があります。そのため、モーダルでは閉じるボタンが見出しより先に読み上げられ、フォーカスも先に移ります。見出しを先に読ませたいときは、本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定します。値を `-1` に限る理由と、`reading-flow` に対応したブラウザの状況は「[11-11 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
+
+回り込みを途中で止め、ある要素から下を `float` の要素より下に置きたいときは、その要素に `clear` を指定します。値は `float` と同じく、`inline-start`、`inline-end`、`both` で書きます。ただし、記事の節ごとに回り込みを閉じたいだけなら、節を囲む要素に `display: flow-root` を指定するほうが、どの要素に `clear` が要るかを考えずに済みます。
+
+`float` は、要素を横へ並べる目的では使いません。横に並べるならGridかFlexboxを使い、要素の幅を中身に合わせたいなら `inline-size: fit-content` を使います（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。`float` を使うのは、文章を回り込ませたいときだけです。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月）：行頭のアイコンを1行目にそろえる書き方
+- [Modal](https://codepen.io/tak-dcxi/pen/RNPvmQr)（CodePen、TAK、2025年12月）：閉じるボタンを `float` と `position: sticky` で置くモーダルの実装例
+- [CSS 2.2: Floats](https://www.w3.org/TR/CSS22/visuren.html#floats)
+- [float - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/float)
+- [clear - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clear)
+- [shape-outside - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/shape-outside)

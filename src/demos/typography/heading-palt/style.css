@@ -1,9 +1,11 @@
 @layer base {
-  :where(:root:lang(ja)) {
-    font-kerning: none;
+  :root {
+    &:lang(ja) {
+      font-kerning: none;
+    }
   }
 
-  :where(:heading, h1, h2, h3, h4, h5, h6, caption) {
+  :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
     font-kerning: normal;
 
     &:lang(ja) {
@@ -20,9 +22,12 @@
     }
 
     ._label-text {
-      margin-block-end: 4px;
       color: oklch(45% 0 0deg);
       font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._label-text + h2 {
+      margin-block-start: 4px;
     }
 
     h2 {

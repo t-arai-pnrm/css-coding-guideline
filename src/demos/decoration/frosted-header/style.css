@@ -5,7 +5,7 @@
 }
 
 @layer base {
-  :where(body) {
+  body {
     /* デモの枠が base レイヤーで付けた余白を取り除き、ヘッダーを枠の上端に付ける */
     padding: revert-layer;
   }
@@ -31,7 +31,7 @@
     }
 
     ._swatch {
-      block-size: 120px;
+      min-block-size: 120px;
       border-radius: 8px;
 
       &[data-tone="1"] {

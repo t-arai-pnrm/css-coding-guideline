@@ -14,7 +14,7 @@ const LAYER_ORDER =
 
 /**
  * デモのベーススタイル。
- * 全称セレクタの `min-inline-size: 0` は、6-2 のベーススタイルと同じ指定で、本書の列を `1fr` のまま書く前提になる。
+ * 全称セレクタの `min-inline-size: 0` は、8-2 のベーススタイルと同じ指定で、本書の列を `1fr` のまま書く前提になる。
  * kiso.css は `body` に `min-block-size: 100dvb` を指定しているが、そのままだと
  * iframe の高さを中身に合わせられないため、デモでは解除する。
  */
@@ -25,7 +25,7 @@ const DEMO_BASE = `@layer base {
     min-inline-size: 0;
   }
 
-  :where(body) {
+  body {
     min-block-size: initial;
     padding: 16px;
   }

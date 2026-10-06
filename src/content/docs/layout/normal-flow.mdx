@@ -1,5 +1,5 @@
 ---
-title: "10-2 通常フローの基礎"
+title: "7-2 通常フローの基礎"
 description: "通常フローは、何も指定しない要素が従うレイアウトの方式です。ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスは行の中をインライン方向に流れます。行ボックスと匿名ボックス、幅と高さの決まり方、ブロック整形コンテキストと display: flow-root、通常フローで効かないプロパティを説明します。"
 sidebar:
   order: 2
@@ -15,7 +15,7 @@ import flowRootCss from '../../../demos/layout/normal-flow-flow-root/style.css?r
 
 通常フロー（フローレイアウト）は、`display` を変えていない要素が従うレイアウトの方式です。FlexboxやGridと同じく独自の規則を持ち、ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスと文字は行の中をインライン方向に流れます。ブロックの幅は包含ブロックの幅いっぱいに広がり、高さは中身から決まります。
 
-`gap` や `align-items` が効かない、インライン要素の上下の `margin` が空かない、`float` が親からはみ出すといった現象は、どれも通常フローの規則どおりの振る舞いです。この節では、その規則を、FlexboxやGridと同じ1つの方式として説明します。方式の全体像は「[10-1 レイアウトの基礎](/layout/fundamentals/)」で扱います。
+`gap` や `align-items` が効かない、インライン要素の上下の `margin` が空かない、`float` が親からはみ出すといった現象は、どれも通常フローの規則どおりの振る舞いです。この節では、その規則を、FlexboxやGridと同じ1つの方式として説明します。方式の全体像は「[7-1 レイアウトの基礎](/layout/fundamentals/)」で扱います。
 
 ## 通常フローを「何もしていない状態」と考えたとき
 
@@ -29,13 +29,13 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 通常フローには2つの方向があります。ブロック方向は段落が積まれていく方向で、横書きでは上から下です。インライン方向は1行の中で文字が進む方向で、横書きでは左から右です。ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスはインライン方向に流れて、行の端で折り返します。
 
-この2つの方向は、物理的な上下左右ではなく、`writing-mode` で決まります。縦書きにすると、ブロック方向は右から左に、インライン方向は上から下に変わります。本書が `width` や `margin-top` ではなく、`inline-size` や `margin-block-start` のような論理プロパティを使うのは、書字方向が変わっても同じ意味で働くからです（「[7-8 論理プロパティと論理値](/notation/logical-properties/)」）。
+この2つの方向は、物理的な上下左右ではなく、`writing-mode` で決まります。縦書きにすると、ブロック方向は右から左に、インライン方向は上から下に変わります。本書が `width` や `margin-top` ではなく、`inline-size` や `margin-block-start` のような論理プロパティを使うのは、書字方向が変わっても同じ意味で働くからです（「[9-8 論理プロパティと論理値](/notation/logical-properties/)」）。
 
 ## ブロックレベルとインラインレベルのボックス
 
 `display` の値は、2つの役割を持っています。1つは、その要素が親の中でブロックとして積まれるか、インラインとして流れるかという外側の振る舞いです。もう1つは、その要素の子をどの方式で並べるかという内側の振る舞いです。`<p>` や `<div>` がブロックレベルに、`<span>` や `<a>` がインラインレベルになるのは、ブラウザのデフォルトスタイルが `display` を決めているからで、要素そのものの性質ではありません。
 
-本書は `display: block flex` のような2値構文で書きます（「[7-7 モダンな記法にそろえる](/notation/modern-syntax/)」）。`block` は外側がブロックで内側が通常フロー、`inline` は外側がインラインで内側も通常フローです。`inline-block` は、2値構文では `inline flow-root` になり、文字と同じ行に並びながら、中ではブロックの規則で大きさを持ちます。
+本書は `display: block flex` のような2値構文で書きます（「[9-7 モダンな記法にそろえる](/notation/modern-syntax/)」）。`block` は外側がブロックで内側が通常フロー、`inline` は外側がインラインで内側も通常フローです。`inline-block` は、2値構文では `inline flow-root` になり、文字と同じ行に並びながら、中ではブロックの規則で大きさを持ちます。
 
 <Baseline id="two-value-display" name="display の2値構文" />
 
@@ -43,7 +43,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 ## 行ボックスとベースライン
 
-インラインレベルのボックスは、行ボックスという横長の箱の中に並びます。行ボックスの高さは、中の文字とボックスの `line-height` から決まり、行の中の要素はデフォルトで文字のベースライン（アルファベットの下端の線）にそろいます。インライン要素の上下の `padding` は背景を広げて描かれますが、行ボックスの高さには加わらず、上下の `margin` は無視されます（「[10-3 ボックスモデルの基礎](/layout/box-model/)」）。
+インラインレベルのボックスは、行ボックスという横長の箱の中に並びます。行ボックスの高さは、中の文字とボックスの `line-height` から決まり、行の中の要素はデフォルトで文字のベースライン（アルファベットの下端の線）にそろいます。インライン要素の上下の `padding` は背景を広げて描かれますが、行ボックスの高さには加わらず、上下の `margin` は無視されます（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。
 
 画像の下にできる数ピクセルの隙間も、行ボックスの規則から生まれます。`<img>` はインラインレベルの要素なので、下端をベースラインにそろえ、その下に文字のディセンダー（「g」や「y」の下に出る部分）のための空きが残ります。kiso.cssは画像や動画に `vertical-align: bottom` を指定して、この隙間をなくしています。
 
@@ -87,7 +87,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 `block-size: 50%` のような高さの割合は、親の高さが中身で決まる（`auto` の）ときには解決できず、`auto` として扱われます。親の高さが子から決まり、子の高さが親から決まるという循環になるからです。{/* 要確認: 出典なし */}縦の大きさを親に合わせたいときは、親をGridにして行を決めるほうが確実です。
 
-`<span>` のような通常の非置換インラインボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。インラインレベルのボックスでも、`<img>` のような置換要素や、`display: inline flow-root` のボックスには大きさを指定できます。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[10-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[10-7 positionの基礎](/layout/positioning/)」で説明しています。
+`<span>` のような通常の非置換インラインボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。インラインレベルのボックスでも、`<img>` のような置換要素や、`display: inline flow-root` のボックスには大きさを指定できます。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[7-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[7-8 positionの基礎](/layout/positioning/)」で説明しています。
 
 ## ブロック整形コンテキストと `display: flow-root`
 
@@ -95,11 +95,11 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 独立していることは、3つの振る舞いに表れます。中の `float` は要素の外へはみ出さず、要素の高さに含まれます。中の子の `margin` は、要素の `margin` と相殺しません。要素自体も、隣の `float` と重ならず、その横に収まります。
 
-新しいBFCは、ルート要素、`float` した要素、絶対配置の要素、`inline flow-root` の要素、`overflow` が `visible` と `clip` 以外の要素などが作ります。このうち、BFCを作ることだけを目的にした値が `display: flow-root` です。`overflow: hidden` もBFCを作りますが、影や絶対配置の子を切り取り、中の `position: sticky` を妨げるので、BFCのために使うのは避けます（[`flow-root-for-margin-collapse`](/layout/spacing/#rule-flow-root-for-margin-collapse)）。
+新しいBFCは、ルート要素、`float` した要素、絶対配置の要素、`inline flow-root` の要素、`overflow` が `visible` と `clip` 以外の要素などが作ります。このうち、BFCを作ることだけを目的にした値が `display: flow-root` です。`overflow: hidden` もBFCを作りますが、影や絶対配置の子を切り取り、中の `position: sticky` を妨げるので、BFCのために使うのは避けます（[`flow-root-for-margin-collapse`](/layout-practice/spacing/#rule-flow-root-for-margin-collapse)）。
 
 <Baseline id="display-flow-root" />
 
-以前は、`float` を囲むために、親の `::after` に `clear: both` を指定するclearfixを書いていました。`display: flow-root` なら擬似要素なしに同じことができます（[`float-for-text-wrap`](/layout/choosing/#rule-float-for-text-wrap)）。親子や兄弟の `margin` が相殺する条件は「[10-4 マージンの相殺](/layout/margin-collapse/)」で説明しています。
+以前は、`float` を囲むために、親の `::after` に `clear: both` を指定するclearfixを書いていました。`display: flow-root` なら擬似要素なしに同じことができます（[`float-for-text-wrap`](/layout-practice/float/#rule-float-for-text-wrap)）。親子や兄弟の `margin` が相殺する条件は「[7-5 マージンの相殺](/layout/margin-collapse/)」で説明しています。
 
 ## 通常フローで効かないプロパティ
 
@@ -124,7 +124,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 ここまでの規則から分かるように、プロパティの意味は、要素がどの方式の中にあるかで変わります。`inline-size` は、通常フローでは守られる値で、Flexboxでは縮む出発点です。`margin-block: auto` は、通常フローでは0として扱われ、FlexboxやGridでは余った空間を吸収して要素を寄せます。
 
-`min-inline-size: auto` も、通常フローのブロックでは0ですが、フレックスアイテムでは中身の最小幅として扱われ、アイテムが縮まない原因になります（「[10-5 Flexboxの基礎](/layout/flexbox-basics/)」）。マージンの相殺は通常フローでだけ起き、フレックスアイテムとグリッドアイテムの間では起きません。
+`min-inline-size: auto` も、通常フローのブロックでは0ですが、フレックスアイテムでは中身の最小幅として扱われ、アイテムが縮まない原因になります（「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」）。マージンの相殺は通常フローでだけ起き、フレックスアイテムとグリッドアイテムの間では起きません。
 
 方式を決めるのは、要素自身ではなく親の `display` の内側の値です。親を `flex` に変えると、子のすべてが通常フローの規則の代わりにFlexboxの規則で並び、子の指定の意味がまとめて変わります。
 
@@ -154,11 +154,11 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 ## 補足と注意点
 
-通常フローは、FlexboxやGridの代わりが見つかるまでの仮の状態ではありません。見出し、段落、リスト、画像が続く本文は、通常フローのまま `margin` で間隔を作るほうが、`float` による回り込みや `margin` の相殺が働きます（[`prose-in-normal-flow`](/layout/spacing/#rule-prose-in-normal-flow)）。部品の中で間隔を一定にしたい並びは、FlexboxかGridにして `gap` で間隔を決めます（「[10-9 余白を設計する](/layout/spacing/)」）。
+通常フローは、FlexboxやGridの代わりが見つかるまでの仮の状態ではありません。見出し、段落、リスト、画像が続く本文は、通常フローのまま `margin` で間隔を作るほうが、`float` による回り込みや `margin` の相殺が働きます（[`prose-in-normal-flow`](/layout-practice/spacing/#rule-prose-in-normal-flow)）。部品の中で間隔を一定にしたい並びは、FlexboxかGridにして `gap` で間隔を決めます（「[11-3 余白を設計する](/layout-practice/spacing/)」）。
 
 親をFlexboxやGridにしても、変わるのは子の並べ方だけです。親自身は、外側の値に従って、祖先の通常フローの中にブロックとして積まれます。`display: block flex` の `block` は、この外側の振る舞いを表しています。
 
-`position: absolute` と `fixed` の要素、`float` した要素は、通常フローから外れます。`float` の要素は、後に続く行ボックスを横へ押しやります。位置指定の規則は「[10-7 positionの基礎](/layout/positioning/)」で説明しています。
+`position: absolute` と `fixed` の要素、`float` した要素は、通常フローから外れます。`float` の要素は、後に続く行ボックスを横へ押しやります。位置指定の規則は「[7-8 positionの基礎](/layout/positioning/)」で説明しています。
 
 ## ガイドライン
 

@@ -1,0 +1,252 @@
+# 第7章 レイアウトの仕組み
+
+# 7-1 レイアウトの基礎
+- id: identify-layout-mode-first
+  level: 推奨
+  rule: 配置が思いどおりにならないときは、値を足したり `position` でずらしたりする前に、その要素がどのレイアウトの方式（通常フロー、Flexbox、Grid、位置指定）の中にあり、どの要素が包含ブロックとスタッキングコンテキストになっているかを確かめる。
+  reason: 効かない指定の多くは、その方式の規則どおりの振る舞いで、値を足して見た目を合わせても原因が残り、内容や文字の大きさが変わったときに崩れるため。
+  aiProne: true
+  page: layout/fundamentals
+  since: 0.5.0
+
+- id: no-inline-block-for-rows
+  level: 非推奨
+  rule: '要素を横に並べるために `display: inline-block`（`inline flow-root`）を使わず、親を Flexbox か Grid にして `gap` で間隔を決める。'
+  reason: タグの間の改行や空白が匿名のインラインボックスになり、親の `font-size` で幅の変わる隙間が要素の間に入るため。
+  note: '`inline flow-root` は、文中のインライン要素に上下の余白や幅を持たせたいときに使います。'
+  aiProne: true
+  page: layout/normal-flow
+  since: 0.5.0
+
+# 7-2 通常フローの基礎
+- id: no-flex-grid-props-in-flow
+  level: 非推奨
+  rule: '`gap`、`align-items`、`justify-content` のように Flexbox や Grid でだけ働くプロパティを、`display` が `flex` でも `grid` でもない通常フローの要素に書かない。'
+  reason: 通常フローのブロックコンテナではこれらのプロパティは何も変えず、書いてあると間隔や配置がそこで決まっていると読まれて、実際の指定（子の `margin` など）を見誤らせるため。
+  note: '`align-content` は、ブロックコンテナでも中身をブロック方向にそろえるので、この対象から外れます。`gap` は段組み（`column-count` など）でも働きます。'
+  aiProne: true
+  page: layout/normal-flow
+  since: 0.12.0
+
+# 7-3 ボックスモデルの基礎
+- id: box-sizing-border-box-base
+  level: 推奨
+  rule: '`box-sizing` はベーススタイル（kiso.css）の全称セレクタで `border-box` にそろえ、コンポーネントで `box-sizing: border-box` を書き足さない。'
+  reason: '`inline-size` に指定した値が `border` までを含んだ幅になり、`padding` や `border` を変えても幅の計算を直さずに済むため。全称セレクタで指定済みなら、コンポーネントでの指定は何も変えない。'
+  note: '内容の幅を固定したい要素（`max-inline-size` で本文の幅を決め、左右の `padding` だけを変えたい要素など）に限り、`box-sizing: unset` で初期値の `content-box` に戻します（ルール `unset-box-sizing-for-content-max-width`）。'
+  aiProne: true
+  page: layout/box-model
+  since: 0.5.0
+
+- id: unset-box-sizing-for-content-max-width
+  level: 推奨
+  rule: '画面幅いっぱいに広げる子要素を持たない要素を、最大幅と左右の `padding` で中央に寄せ、内容の幅を最大幅にそろえるときは、`calc()` で最大幅に `padding` を足さず、`box-sizing: unset` で `content-box` に戻す。'
+  reason: '`max-inline-size` が内容の領域の幅を指すようになり、`padding` の値を変えても最大幅の式を直さずに済むため。'
+  note: '`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。`content-box` と書かずに `unset` と書くのは、ベーススタイルの `border-box` を取り消す意図を示すためです。画面幅いっぱいに広げる子要素が混ざるなら、余白の列を持つ Grid で組みます（11-3 のルール `gutter-columns-for-content-width`）。'
+  aiProne: true
+  page: layout/box-model
+  since: 0.20.0
+
+- id: box-fit-content-over-display-change
+  level: 推奨
+  rule: '要素の幅を中身に合わせるときは、`display: inline-block` や `float` に変えず、`inline-size: fit-content` を指定する。'
+  reason: '`display` や `float` を変えると、前後の文字と同じ行に並ぶ、ベースラインにそろうといった外側の振る舞いまで変わるが、`fit-content` ならブロックのまま幅だけが変わるため。'
+  note: '親より長い中身は、`fit-content` なら親の幅で折り返します。折り返させたくない場合だけ `max-content` を使います。'
+  aiProne: true
+  page: layout/box-model
+  since: 0.5.0
+
+- id: box-state-border-without-shift
+  level: 推奨
+  rule: 'ホバーや選択などの状態で枠線を足すときは、`border-width` を変えず、同じ太さの透明な `border` を最初から置いて色だけを変えるか、`outline` か `box-shadow` で描く。'
+  reason: '`border` はボックスの大きさに含まれ、状態によって太さが変わると要素が広がって周りの要素が押し出されるが、`outline` と `box-shadow` は大きさに含まれないため。'
+  note: '枠線を消すときに `border: none` ではなく `border-color: transparent` にする理由は、第15章の `transparent-border-over-none` を参照してください。'
+  aiProne: true
+  page: layout/box-model
+  since: 0.5.0
+
+# 7-4 marginの役割
+- id: margin-collapse-padding-for-inner-space
+  level: 推奨
+  rule: 親の背景や枠線の内側に余白を取るときは、最初の子の `margin-block-start` や最後の子の `margin-block-end` ではなく、親の `padding-block` で作る。
+  reason: 通常フローでは、親に `padding` や `border` がないと子の `margin` が親の `margin` と相殺して親の外へ出て、背景の外に余白ができるため。
+  note: 'コンポーネントのルートに外側の `margin` を持たせない方針（第10章）も、子の `margin` が外へ出ると守れなくなります。相殺そのものを止めたいときは、親に `display: block flow-root` を指定します（ルール `flow-root-for-margin-collapse`）。'
+  aiProne: true
+  page: layout/margin-role
+  since: 0.5.0
+
+# 7-5 マージンの相殺
+- id: margin-collapse-no-empty-spacers
+  level: 非推奨
+  rule: '余白を作るために、空の要素、`<br>`、`<p>&nbsp;</p>` を置かない。'
+  reason: '中身のない要素は上下の `margin` が相殺して通り抜けるので余白にならず、`&nbsp;` や `<br>` の行は行の高さで余白が決まり、文字の大きさで変わるため。'
+  note: 余白は、前後の要素の `margin` か、親の `gap` や `grid-template` で作ります。CMS の本文に入った空の段落は、通常フローでは相殺で消えますが、`gap` で並べた領域では `gap` の2つ分の間隔になります。
+  page: layout/margin-collapse
+  since: 0.5.0
+
+# 7-6 Flexboxの基礎
+- id: flexbox-basis-zero-for-ratio
+  level: 推奨
+  rule: 'Flexbox のアイテムを中身にかかわらず比率で分けるときは `flex: 1` のように `flex-basis` も0にし、中身の大きさに余りを足して伸ばすときは `flex-grow` だけを指定して、2つを区別する。'
+  reason: '`flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと中身の大きさの差が残り、同じ値を指定しても同じ幅にならないため。'
+  note: '`flex: 1` は `flex-basis` を `0%` にします（仕様の定義は `1 1 0` ですが、ブラウザの算出値は `0%` です）。高さの決まっていない縦の Flexbox で0を起点にするなら、`flex: 1 1 0` と書きます。`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（第1章のルール `longhand-for-partial-change`）。アイテムの `padding` や `border` が違うと `flex: 1` でも幅はそろわないので、列の幅を確実にそろえるなら Grid で列を決めます。'
+  aiProne: true
+  page: layout/flexbox-basics
+  since: 0.5.0
+
+- id: flexbox-check-auto-min-size
+  level: 推奨
+  rule: 'フレックスアイテムが縮まずにはみ出すときは、固定の幅を足したり `overflow: hidden` で隠したりする前に、自動の最小幅（`min-inline-size: auto`）が中身の最小幅になっていないかを確かめる。'
+  reason: 'フレックスアイテムの `min-inline-size: auto` は中身の最小幅（`min-content`）として扱われ、`flex-shrink` で縮む量を計算してもそれより小さくならないため。`overflow: hidden` でも最小幅は0になるが、中身を切り取って隠すだけになる。'
+  note: '本書のベーススタイルでは、全称セレクタの `min-inline-size: 0`（第8章のルール `global-min-inline-size-zero`）で前もって防いでいます。`flex-direction: column` のコンテナでは、同じことが `min-block-size` で起きます。'
+  aiProne: true
+  page: layout/flexbox-basics
+  since: 0.5.0
+
+- id: flexbox-no-visual-reorder
+  level: 非推奨
+  rule: 'フォーカスできる要素や、順番に意味のある要素を並べた Flexbox で、`order` や `row-reverse`・`column-reverse` によって見た目の順番を入れ替えない。'
+  reason: 読み上げの順番とキーボードでフォーカスが移る順番は HTML の順番のままなので、見た目の順番と食い違うため。
+  note: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、2026年10月の時点で Baseline ではありません。それでも並べ替えるときは、ルール `reading-flow-when-reordered` に従って `reading-flow` を指定します。
+  aiProne: true
+  page: layout/flexbox-basics
+  since: 0.5.0
+
+# 7-7 Gridの基礎
+- id: grid-auto-rows-for-item-count
+  level: 推奨
+  rule: アイテムの数で行数が変わるグリッドでは、`grid-template-rows` で行を決めず、`grid-auto-rows` で暗黙の行の大きさを決める。
+  reason: 明示的な行の数を超えたアイテムは暗黙の行に入り、`grid-template-rows` の大きさが当てはまらず、行の高さが途中から変わるため。
+  note: '暗黙の行の大きさの初期値は `auto`（中身の大きさ）です。列の方向に足していく `grid-auto-flow: column` では、`grid-auto-columns` で決めます。'
+  aiProne: true
+  page: layout/grid-basics
+  since: 0.5.0
+
+- id: grid-negative-lines-explicit-only
+  level: 非推奨
+  rule: '暗黙の行や列が作られるグリッドで、アイテムを最後まで届かせるために `-1` などの負の線番号を使わない。'
+  reason: 負の線番号は明示的なグリッドの終わりから数え、暗黙のトラックを数に入れないので、アイテムが途中のトラックで止まるため。
+  note: '列を明示的に決めたグリッドで、端から端までまたがらせる `grid-column: 1 / -1` は使えます。明示的な行がないグリッドの `grid-row: 1 / -1` は、1行分にしかまたがりません。'
+  aiProne: true
+  page: layout/grid-basics
+  since: 0.5.0
+
+- id: grid-named-lines-for-placement
+  level: 推奨
+  rule: 意味のある位置にアイテムを置くときは、線の番号ではなく、`--` で始まる線の名前かエリアの名前で指定する。
+  reason: トラックを足したり減らしたりしてもアイテムの指定を直さずに済み、どの位置に置くのかがコードから読み取れるため。
+  note: '`--content-start` と `--content-end` の組を付けると、`grid-column: --content` で置けます。名前を書き間違えるとエラーにならず、アイテムが明示的なグリッドの外に置かれます。端から端までの `1 / -1` や、数でまたがる `span 2` は番号のままでかまいません。名前の付け方は第9章のルール `dashed-ident-names` で扱います。'
+  page: layout/grid-basics
+  since: 0.5.0
+
+- id: grid-areas-for-changing-structure
+  level: 推奨
+  rule: 幅や中身によって配置の構造が変わるレイアウトは、`grid-template` のエリアで書き、条件ごとにテンプレートだけを書き換える。
+  reason: 配置の変化が1か所にまとまり、子要素ごとに条件を書かずに済むため。
+  note: エリアの名前を `--` で始める規則は、第9章のルール `dashed-ident-names` で扱います。
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: grid-area-names-match-children
+  level: 推奨
+  rule: グリッドのエリアの名前は、そのエリアに置く子要素のクラス名とそろえる（`._image` を置くエリアは `--image`）。
+  reason: '`grid-template` の図と、各要素の `grid-area` の対応をすぐに読み取れるため。'
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: source-order-for-reading
+  level: 推奨
+  rule: HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。
+  reason: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
+  note: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は2026年10月の時点で Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: subgrid-for-aligned-rows
+  level: 推奨
+  rule: 並べたカードの中の見出し、本文、ボタンの位置をそろえるときは、固定の高さや JavaScript ではなく、サブグリッドを使う。
+  reason: 中身の量が変わっても、同じ行にある要素の高さが自動でそろうため。
+  note: '`flex-direction: column` と `flex-grow` の組み合わせでは、そろえられるのは1か所だけです。'
+  aiProne: true
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: subgrid-span-rows
+  level: 必須
+  rule: '`grid-template-rows: subgrid` を指定した要素には、中の要素の数と同じ行数を `grid-row: span N` で指定する。'
+  reason: 指定しないと、サブグリッドが親の1行分にしかまたがらず、中の要素がすべて同じ1行に押し込まれるため。
+  page: layout/grid-basics
+  since: 0.1.0
+
+- id: column-width-by-variability
+  level: 推奨
+  rule: 'グリッドの列の幅は、列ごとに可変か不変かを決めてから、`max-content`（改行させない）、`fit-content()`（上限まで中身に合わせる）、`1fr`（残りをすべて使う）のように指定する。'
+  reason: 中身の長さが変わっても、どの列が伸び、どの列が伸びないかがコードから読み取れ、意図どおりに振る舞うため。
+  note: '一覧の項目は `grid-template-columns: subgrid` で親の列に参加させると、すべての項目で列の位置がそろいます。'
+  page: layout/grid-basics
+  since: 0.3.0
+
+- id: no-dense-for-ordered-items
+  level: 非推奨
+  rule: '順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。'
+  reason: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。
+  note: タグやサムネイルの一覧のように、順序に意味のない並びには使えます。
+  aiProne: true
+  page: layout/grid-basics
+  since: 0.4.0
+
+- id: display-contents-keep-role
+  level: 推奨
+  rule: 'サブグリッドのために `display: contents` で箱をなくす要素は、ロールを持たない `div` に限るか、`role` 属性でロールを明示して読み上げを確かめる。'
+  reason: '`display: contents` を指定した要素は、ブラウザによっては見出しやリストなどの暗黙のロールが失われることがあるため。'
+  page: layout/grid-basics
+  since: 0.1.0
+
+# 7-8 positionの基礎
+- id: containing-block-inside-component
+  level: 推奨
+  rule: '`position: absolute` の要素の基準にする祖先には、同じコンポーネントの中で `position: relative` を指定する。'
+  reason: 基準がコンポーネントの外の祖先に決まると、置く場所によって位置が変わるため。
+  page: layout/positioning
+  since: 0.1.0
+
+- id: absolute-centering-with-margin-auto
+  level: 推奨
+  rule: '絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使う。'
+  reason: 位置を決める指定が `inset` と `margin` にまとまり、変形のプロパティを配置のために使わずに済むため。
+  note: '`inset: 0` だけでは親いっぱいに広がるので、`inline-size` と `block-size`（`fit-content` など）で大きさを決めます。グリッドやフレックスの中なら、`place-items: center` で足ります。絶対配置にする必要のない通常のブロックなら、縦方向は `align-content: center` で足ります。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.1.0
+
+- id: no-fixed-inside-transformed-ancestor
+  level: 非推奨
+  rule: '`position: fixed` の要素を、`transform`、`filter`、`contain` などを指定した祖先の中に置かない。'
+  reason: これらの祖先が包含ブロックになり、要素がビューポートではなくその祖先を基準に配置されるため。
+  note: '個別の変形プロパティ（`translate` など）、`backdrop-filter`、`perspective`、`content-visibility: auto` と、これらを書いた `will-change` も包含ブロックを作ります。モーダルは、`<dialog>` の `showModal()` でトップレイヤーに表示します（第17章）。'
+  page: layout/positioning
+  since: 0.1.0
+
+- id: sticky-align-self-start
+  level: 必須
+  rule: 'Grid や Flexbox の子に `position: sticky` を指定するときは、その要素に `align-self: start` を指定する。'
+  reason: '`align-self` の初期値では要素が行の高さいっぱいに伸び、包含ブロックの中でずらす余地がなくなるため。'
+  note: '親の `align-items: start` でも同じ結果になりますが、ほかの子の高さも変わります。'
+  aiProne: true
+  page: layout/positioning
+  since: 0.4.0
+
+- id: sticky-needs-inset
+  level: 必須
+  rule: '`position: sticky` には、留めたい軸の `inset-block-start` などの inset を、`auto` 以外の値で1つ以上指定する。'
+  reason: 指定がないと、その軸では留まる位置が決まらず、`relative` と同じ動きになるため。
+  page: layout/positioning
+  since: 0.4.0
+
+- id: sticky-cap-block-size
+  level: 推奨
+  rule: '画面より高くなりうる `sticky` の要素には、`max-block-size` と `overflow-y: auto` を指定する。'
+  reason: 要素が画面より高いと、下端が見えないまま上端で留まり、末尾に届かなくなるため。
+  note: '上限は、`calc(100svb - 16px * 2)` のように、スクロールで値が変わらない `svb` から余白を引いて決めます。'
+  page: layout/positioning
+  since: 0.4.0

@@ -1,0 +1,91 @@
+@layer tokens {
+  :root {
+    --duration--fast: 200ms;
+    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --foreground--base: oklch(25% 0 0deg);
+    --foreground--accent: oklch(48% 0.17 260deg);
+    --background--base: oklch(100% 0 0deg);
+    --background--surface: oklch(96% 0.01 250deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.link-menu) to (.scoped) {
+    :scope {
+      --_background: var(--background--base);
+      --_background--hocus: var(--background--surface);
+    }
+
+    ul {
+      max-inline-size: calc(400 / 16 * 1rem);
+      border-block-start: 1px solid oklch(85% 0 0deg);
+    }
+
+    li {
+      border-block-end: 1px solid oklch(85% 0 0deg);
+    }
+
+    a {
+      /* 外側のコンポーネントの値を継承しないよう、デフォルト値を書く */
+      --_hocus: --false;
+
+      display: block flex;
+      column-gap: 16px;
+      align-items: start;
+      padding-block: 12px;
+      padding-inline: 8px;
+      background-color: var(--_background);
+      color: var(--foreground--base);
+      text-decoration-line: none;
+
+      /* 要素自身の見た目は、状態のセレクタに直接書く */
+      &:any-link:hover {
+        @media (any-hover) {
+          --_hocus: --true;
+
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        --_hocus: --true;
+
+        background-color: var(--_background--hocus);
+      }
+
+      /* 矢印。擬似要素のスタイルクエリは、元の要素（a）を問い合わせる */
+      &::after {
+        --_icon-size: 0.5em;
+
+        content: "";
+        flex-shrink: 0;
+        inline-size: var(--_icon-size);
+        aspect-ratio: 1;
+
+        /* 1行目の行の高さの中で、上下の中央に置く */
+        margin-block: calc((1lh - var(--_icon-size)) / 2);
+        margin-inline-start: auto;
+        border-block-start: 2px solid var(--foreground--accent);
+        border-inline-end: 2px solid var(--foreground--accent);
+        rotate: 45deg;
+
+        @container style(--_hocus: --true) {
+          translate: 4px;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition-duration: var(--duration--fast);
+          transition-property: translate;
+          transition-timing-function: var(--ease--out-quint);
+        }
+      }
+    }
+
+    ._label {
+      @container style(--_hocus: --true) {
+        color: var(--foreground--accent);
+        text-decoration-line: underline;
+      }
+    }
+  }
+}

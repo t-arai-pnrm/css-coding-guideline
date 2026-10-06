@@ -1,0 +1,96 @@
+@layer tokens {
+  :root {
+    --foreground--accent: oklch(48% 0.17 260deg);
+    --foreground--muted: oklch(45% 0 0deg);
+    --background--surface: oklch(96% 0.01 250deg);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+
+      /* ページ全体の段組みはビューポートで切り替える */
+      @media (width >= calc(720 / 16 * 1rem)) {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.event-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._layout {
+      /* 外側のコンポーネントの値を継承しないよう、デフォルト値をクエリの外に書く */
+      --_density: --compact;
+
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: var(--background--surface);
+
+      /* 日付の列 80px 相当・隙間 24px・本文の最小幅 240px 相当が並ぶ幅 */
+      @container --scoped (inline-size >= calc(80 / 16 * 1rem + 24px + 240 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        /* フラグを宣言した要素自身の見た目は、同じクエリの中で変える */
+        grid-template-columns: calc(80 / 16 * 1rem) 1fr;
+        gap: 24px;
+        padding: 24px;
+      }
+    }
+
+    ._date {
+      display: block flex;
+      column-gap: 4px;
+      align-items: baseline;
+      color: var(--foreground--accent);
+      font-weight: 700;
+
+      @container style(--_density: --spacious) {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    ._day {
+      font-size: calc(16 / 16 * 1rem);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(32 / 16 * 1rem);
+        line-height: 1.2;
+      }
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(24 / 16 * 1rem);
+      }
+    }
+
+    ._description {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(16 / 16 * 1rem);
+      }
+    }
+
+    ._body {
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+  }
+}

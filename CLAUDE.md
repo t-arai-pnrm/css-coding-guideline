@@ -41,6 +41,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 感嘆符は使わない。
   - 冗長な表現を避ける。
 - 一人称は「私」で、使うのは控えめにする。見解は根拠とともに述べる。
+- 本文に個人名を出さない。「〜氏は…と述べています」のように人の発言として紹介せず、本書の主張として書く。出典は参考リンクに挙げる。
 - 節のページの流れは次のとおり。
   1. 冒頭で結論
   2. 問題提起
@@ -49,7 +50,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   5. 補足と注意点
   6. `## ガイドライン`（直後に `<Guideline />`）
   7. `## 参考リンク`
-- 1ページは4,000〜6,000字で、各見出しに3〜5段落を書く。章の概要ページ、「はじめに」のページ（`introduction/` 以下）、ルールを置かない考え方の節（1-4〜1-7、5-1、9-1、9-2）は、字数の規定の対象外。考え方の節には `## ガイドライン` を置かない。
+- 1ページは4,000〜6,000字で、各見出しに3〜5段落を書く。章の概要ページ、「はじめに」のページ（`introduction/` 以下）、ルールを置かない考え方の節（1-3〜1-7、2-1、2-2、3-1、3-2）は、字数の規定の対象外。考え方の節には `## ガイドライン` を置かない。
 - 各ページが単体で意味が通るように書く。ほかのページに触れるときは、リンクと一言の要約を添える。
 - コード例のラベル
   - コードブロックのタイトルに `🙆‍♂ Recommended: …` と `🙅‍♂ Not Recommended: …` を付ける。
@@ -68,25 +69,30 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 本書のサンプルとサイトの CSS は、本書のルールに従う。詳しいルールは `src/content/rules/*.yaml` と各章にある。
 
 - 論理プロパティ、`display` の2値構文（`block flex`）、変形の個別プロパティ（`translate` など）を使う。
-- クエリは範囲構文で書き、閾値は `calc(640 / 16 * 1rem)` の形にする。`vw` と `vh` は使わない。
+- クエリは範囲構文で書き、閾値は `calc(640 / 16 * 1rem)` の形にする。幅を足し合わせる式では、各項をその値を宣言した単位で書く（rem の幅は `… / 16 * 1rem`、px の `gap` や `padding` は px のまま。例：`calc(560 / 16 * 1rem + 240 / 16 * 1rem + 32px)`）。`vw` と `vh` は使わない。
 - ネストは1段で、先頭に `&` を書く。`@media` と `@container` は各セレクタの中に書く。
 - 命名
   - ルートは `scoped <名前>`、子要素は `._kebab`、ユーティリティは `.-kebab`。
   - カスタムプロパティは、公開用が `--<コンポーネント>--<プロパティ>`、内部用が `--_<プロパティ>`。
 - スコープは `@scope (.scoped.<名前>) to (.scoped)`。
 - コンテナは、ルートで `container: --scoped / inline-size` とし、`@container --scoped (…)` で問い合わせる。子要素をコンテナにするときは、クラス名から下線を除いた名前（`._body` → `--body`）にする。外側のコンポーネントのコンテナは問い合わせない。
+- コンテナサイズクエリを書くのは、コンポーネントの中でフラグを宣言する1つのルールだけにする。その要素が `--_density: --compact`（既定値として明示）をクエリの中で `--spacious` に切り替え、ほかの子孫は `@container style(--_density: --spacious)` で切り替える。3段階が要るときだけ `--regular` を足す。
+- ホバーとフォーカスで子要素や疑似要素を変えるときは、状態のセレクタで `--_hocus: --true`（既定値 `--false`）を立て、`@container style(--_hocus: --true)` で切り替える。要素自身の見た目は状態のセレクタに直接書き、子から親の向きは `:has()` を使う。状態のフラグの値は `--true` / `--false` にそろえる。
 - ホバーは `&:any-link:hover` か `&:enabled:hover` に絞り、`@media (any-hover)` の中に書く（`<summary>` と `<label>` は除く）。
+- ベーススタイルは `@layer base` の中に素のセレクタで書く。`:where()` で詳細度を0にするのは `@layer` を使えない場合（第19章）だけ。状態のセレクタをまとめるときは `:where()` ではなく `:is()` を使い、詳細度を残す。
 - `border-box` を取り消すときは `box-sizing: unset` と書く。
+- 要素の間のブロック方向の `margin` は、`& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` のように次兄弟結合子で選んだ後ろの要素の `margin-block-start` に付ける。要素自身に条件なしの `margin-block-end` を付けたり、`:last-child` で打ち消したりしない。
+- 高さは `block-size` で固定せず、`min-block-size`、`max-block-size`、`aspect-ratio` で決める。正方形は `inline-size` と `aspect-ratio: 1` で書く。
 
 ## 章を書く手順
 
-見本の章は第12章（`src/content/docs/responsive/`）。文体、節の構成、コード例とデモの見せ方、ルールの粒度は、これに合わせる。
+見本の章は第13章（`src/content/docs/responsive/`）。文体、節の構成、コード例とデモの見せ方、ルールの粒度は、これに合わせる。
 
 1. 骨組みのページ（`draft: true` と「執筆予定」のメモ）を本文で置き換える。frontmatter の `title` と `sidebar.order` は変えず、`draft: true` を消して `description` を書き直す。
-2. ルールを `src/content/rules/<章番号2桁>-<章のディレクトリ>.yaml` に書く（例：`07-notation.yaml`）。章の番号が変わったら、ファイル名も付け替える。ID はほかの章と重複させない（`grep -rn "id: <ID>" src/content/rules` で確認する）。
+2. ルールを `src/content/rules/<章番号2桁>-<章のディレクトリ>.yaml` に書く（例：`09-notation.yaml`）。章の番号が変わったら、ファイル名も付け替える。ID はほかの章と重複させない（`grep -rn "id: <ID>" src/content/rules` で確認する）。
 3. デモは `src/demos/<章のディレクトリ>/<デモ名>/` に `index.html` と `style.css` で置く。
    - デモの CSS も本書の規約で書く。`@layer` と `@scope (.scoped.<名前>) to (.scoped)` は省略しない。
-     - 例外：CMS と共存する CSS のデモ（第18章）は `@layer` を使わない（ルール `no-layers-with-unlayered-css`）。
+     - 例外：CMS と共存する CSS のデモ（第19章）は `@layer` を使わない（ルール `no-layers-with-unlayered-css`）。
 4. 対応状況は `<Baseline id="…" />` で示す。ID が web-features にあるかは、次のコマンドで確認する。
 
    ```

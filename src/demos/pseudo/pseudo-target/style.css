@@ -12,6 +12,10 @@
       padding: 16px;
       border: 1px solid oklch(80% 0 0deg);
       border-radius: 8px;
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
     }
 
     h3 {
@@ -19,8 +23,6 @@
     }
 
     p {
-      margin-block-start: 8px;
-
       /* 条件に当てはまる段落の箱全体に当たる */
       &:first-of-type:is(._class-example *) {
         background-color: var(--_highlight);

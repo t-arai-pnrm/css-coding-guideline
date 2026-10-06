@@ -4,10 +4,10 @@
  * - ベンダープレフィックスの例外をなくした（例外の指定が効いていなかったため）
  * - `@media` と `@container` をセレクタの中に書くことを求める独自ルールを追加
  * - z-index の数値の禁止パターンを、1 と -1 も含むすべての整数に広げた（10〜19 などを通していた問題も解消）
- * - レイヤー名を、宣言した名前だけに限定（第2章 2-3）
- * - 起点のない `:has()` を禁止する独自ルールを追加（第3章 3-3）
- * - 見た目の順番を変えうる配置に `reading-flow` を求める独自ルールを追加（第10章 10-14）
- * - `order` と `reading-order` の値を 1 と -1 に限定（第10章 10-14）
+ * - レイヤー名を、宣言した名前だけに限定（第4章 4-3）
+ * - 起点のない `:has()` を禁止する独自ルールを追加（第5章 5-3）
+ * - 見た目の順番を変えうる配置に `reading-flow` を求める独自ルールを追加（第11章 11-8）
+ * - `order` と `reading-order` の値を 1 と -1 に限定（第11章 11-8）
  *
  * @type {import('stylelint').Config}
  */
@@ -91,7 +91,7 @@ export default {
     ],
     'declaration-property-value-allowed-list': [
       {
-        // z-index の相対的な値と同じく、1 と -1 だけを使う（第10章 10-14）
+        // z-index の相対的な値と同じく、1 と -1 だけを使う（第11章 11-8）
         order: ['/^-?1$/', '/^(initial|inherit|unset|revert|revert-layer)$/'],
         'reading-order': ['/^-?1$/', '/^(initial|inherit|unset|revert|revert-layer)$/'],
       },
@@ -103,7 +103,7 @@ export default {
       {
         // 1 と -1 を含むすべての整数を禁止する（相対的な値も --z--forwards と --z--backwards で書く）
         'z-index': ['/^[+-]?\\d+$/'],
-        // 改行したときに行が詰まりすぎるため（第13章 13-3）
+        // 改行したときに行が詰まりすぎるため（第14章 14-3）
         'line-height': ['/^1$/'],
       },
       {
@@ -131,7 +131,7 @@ export default {
       },
     ],
     'function-url-no-scheme-relative': true,
-    // セレクタのネストは 2 層までだが、@ルールを数えない設定が Stylelint にないので、検査しない（第7章 7-4）。
+    // セレクタのネストは 2 層までだが、@ルールを数えない設定が Stylelint にないので、検査しない（第9章 9-4）。
     'media-feature-name-value-no-unknown': true,
     'no-descending-specificity': null,
     'order/order': [
@@ -189,10 +189,10 @@ export default {
         ],
       },
     ],
-    // 例外は設けない。必要なプレフィックスは、理由のコメントと無効化のコメントを添えて書く（第7章 7-7）。
+    // 例外は設けない。必要なプレフィックスは、理由のコメントと無効化のコメントを添えて書く（第9章 9-7）。
     'property-no-vendor-prefix': true,
     'keyframes-name-pattern': /^--[\w][\w-]*$/,
-    // 打ち間違えたレイヤー名は、エラーにならず新しいレイヤーになる（第2章 2-3）。
+    // 打ち間違えたレイヤー名は、エラーにならず新しいレイヤーになる（第4章 4-3）。
     // `starlight` はこのサイトの CSS だけで使う、Starlight のレイヤー。
     'layer-name-pattern': [
       '^(tokens|reset|base|vendors|compositions|pages|components|patterns|utilities|starlight)$',

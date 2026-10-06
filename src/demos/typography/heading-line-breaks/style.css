@@ -1,5 +1,5 @@
 @layer base {
-  :where(:heading, h1, h2, h3, h4, h5, h6, caption) {
+  :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
     &:lang(ja) {
       /* 文節で区切れるブラウザでだけ、行の長さもそろえる */
       @supports (word-break: auto-phrase) {
@@ -24,9 +24,12 @@
     }
 
     p {
-      margin-block-end: 8px;
       color: oklch(45% 0 0deg);
       font-size: calc(14 / 16 * 1rem);
+    }
+
+    p + h2 {
+      margin-block-start: 8px;
     }
 
     h2 {

@@ -11,7 +11,11 @@
     }
 
     figure {
-      margin: 0;
+      margin: unset;
+
+      & > * + figcaption {
+        margin-block-start: 8px;
+      }
     }
 
     ._frame {
@@ -34,7 +38,6 @@
     }
 
     figcaption {
-      margin-block-start: 8px;
       font-size: calc(14 / 16 * 1rem);
     }
   }

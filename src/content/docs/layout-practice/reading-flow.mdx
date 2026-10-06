@@ -1,0 +1,172 @@
+---
+title: "11-11 表示順と読み上げ順を合わせる"
+description: "読み上げとTabキーのフォーカスはDOMの順番で進むので、見た目だけを並べ替えると順番が食い違います。まずDOMの順番を読む順に合わせ、エリアや逆順で並べるコンテナにはreading-flowを指定します。order と reading-order の値は1か-1だけを使います。"
+sidebar:
+  order: 11
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import cardHtml from '../../../demos/layout-practice/reading-flow-card/index.html?raw';
+import cardCss from '../../../demos/layout-practice/reading-flow-card/style.css?raw';
+import wrapHtml from '../../../demos/layout-practice/reading-flow-wrap-reverse/index.html?raw';
+import wrapCss from '../../../demos/layout-practice/reading-flow-wrap-reverse/style.css?raw';
+
+スクリーンリーダーの読み上げとTabキーのフォーカスは、DOMの順番で進みます。GridやFlexboxで見た目だけを並べ替えると、目で追う順番と、耳やキーボードで追う順番が食い違います。本書では、まずDOMの順番を読む順に合わせ、そのうえで並べ替えを伴うコンテナには `reading-flow` を指定します。
+
+`reading-flow` は、読み上げとフォーカスの順番を見た目の順番に合わせるプロパティです。2026年10月の時点で対応しているのはChromeとEdgeの137以降だけで、未対応のブラウザではDOMの順番のまま読まれます。この節では、`reading-flow` の値の選び方と、子の順番を個別に上書きする `order` と `reading-order` の値を1か-1に限る理由も説明します。
+
+<Baseline id="reading-flow" />
+
+## 見た目の順番とDOMの順番が離れる場面
+
+CSSには、DOMの順番を変えずに見た目の順番だけを変える指定がいくつもあります。`grid-template-areas` は子をテンプレートの好きな位置に置き、`flex-direction: row-reverse` と `column-reverse` は並びを逆にします。`flex-wrap: wrap-reverse` は折り返した行を逆の側へ積み、`grid-auto-flow: dense` は空いたセルへ後ろの子を先に詰めます。子の側の `order` や、`grid-row` と `grid-column` による配置も同じです。
+
+これらで変わるのは、画面に描かれる位置だけです。読み上げの順番も、Tabキーでフォーカスが移る順番も、DOMの順番のままです。そのため、見た目では上にあるボタンへ、Tabキーでは最後にたどり着くといったことが起きます。キーボードで操作する人には、フォーカスが画面の上下を飛ぶように見えます。
+
+この食い違いは、WCAGのレベルAの達成基準に関わります。1.3.2「意味のある順序」は、提示の順番が意味に影響するとき、正しい読み順をプログラムで判定できることを求めます。2.4.3「フォーカス順序」は、フォーカスの移る順番が意味と操作性を保つことを求めます。
+
+ただし、2.4.3の解説は、フォーカスの順番が見た目の配置と完全に一致する必要はないとしています。装飾の画像と本文の左右を入れ替えるだけなら、フォーカスできる要素がなく、読み上げの意味も変わりません。問題になるのは、手順やランキングのように順番が内容になる並びと、リンクやボタンを含む並びです。
+
+## まずDOMの順番を読む順に合わせる
+
+並べ替えの問題に対して最初にすることは、DOMの順番を、内容を読む順番に合わせることです。WCAGも、1.3.2を満たす方法として、DOMの順番を見た目の順番に合わせる方法（C27）を挙げています。見出し、本文、操作のように意味の通る順番でHTMLを書けば、CSSが効かなくても内容が伝わります。この考え方は、「[7-7 Gridの基礎](/layout/grid-basics/)」のルール [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading) と同じです。
+
+`reading-flow` を指定しても、DOMの順番を直さずに済むわけではありません。2026年10月の時点では、SafariとFirefoxは `reading-flow` に対応していないので、これらのブラウザの利用者にはDOMの順番で読まれます。DOMの順番と見た目の順番のどちらで読んでも、意味が通る状態にしておく必要があります。
+
+たとえば、DOMの順番が見出し、本文、ボタンで、見た目では見出しの横にボタンを上げたカードを考えます。DOMの順番なら「見出し、本文、ボタン」、見た目の順番なら「見出し、ボタン、本文」と読まれ、どちらでも内容は伝わります。一方、手順の3番目を先頭に表示するような並べ替えでは、どちらかの順番で意味が崩れます。こうした並べ替えは、`reading-flow` では解決しません。
+
+フォーカスの順番を変えるために、正の `tabindex` を使う方法もあります。しかし、正の値を持つ要素は、ページのほかのすべての要素より先にフォーカスされます。正の `tabindex` はアクセシビリティツリーの順番に反映されないので、読み上げの順番とも食い違います。
+
+```html title="🙅‍♂ Not Recommended: 正の tabindex でフォーカスの順番を見た目に合わせる"
+<!-- 🙅‍♂ Not Recommended -->
+<div class="_layout">
+  <h2>スタンダードプラン</h2>
+  <p>…<a href="…" tabindex="2">過去のアーカイブ</a>…</p>
+  <a href="…" tabindex="1">申し込む</a>
+</div>
+```
+
+## `reading-flow` の値
+
+`reading-flow` は、GridとFlexboxのコンテナ（とブロックコンテナ）に指定します。初期値の `normal` はDOMの順番のままです。それ以外の値を指定したコンテナは、直接の子を読む順番を、値で決まる順番に並べ替えます。見た目は変わりません。
+
+Gridのコンテナに使う値は3つです。`grid-rows` は、行ごとに、書字方向の順で読みます。横書きなら、上の行から、各行を左から右へ読みます。`grid-columns` は列ごとに読み、`grid-order` は子の `order` の順に読みます。`grid-order` はエリアや `grid-row` で置いた位置を見ないので、エリアで並べ替えたグリッドでは `grid-rows` か `grid-columns` を選びます。
+
+Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方向を考慮して、画面に見えている順番で読みます。`flex-flow` は、`flex-direction` と `flex-wrap` の向きに沿って読むので、`row-reverse` なら主軸の始点である右から、`wrap-reverse` なら下の行から読みます。残る `source-order` は、それだけではDOMの順番のままで、子の `reading-order` を使うための値です。
+
+本書では、見た目の順番を変えうる4つの宣言を書いたルールに、必ず `reading-flow` を書きます。4つとは、`grid-template-areas`、`flex-direction: row-reverse` と `column-reverse`、`flex-wrap: wrap-reverse`、`grid-auto-flow: dense` です。エリアの文字列を含む `grid-template` と `grid` も同じに扱います。子の `order` や `grid-row` で並べ替えるときも、親のコンテナに書きます。
+
+見た目とDOMの順番が今は一致していても、`reading-flow` を書きます。{/* 要確認: 出典なし */}順番が一致していれば読む順番は変わらないので、書いて困ることはありません。書いてあれば、そのコンテナの読む順番を確かめたことがコードから分かり、あとでテンプレートを書き換えて順番が離れても、読む順番が見た目に追従します。
+
+```css title="🙆‍♂ Recommended: エリアで並べるグリッドに reading-flow を書く"
+@scope (.scoped.feature-card) to (.scoped) {
+  ._layout {
+    display: block grid;
+    reading-flow: grid-rows;
+    grid-template:
+      "--heading"
+      "--image"
+      "--body";
+    gap: 16px;
+
+    & > h2 {
+      grid-area: --heading;
+    }
+
+    & > img {
+      grid-area: --image;
+    }
+
+    & > p {
+      grid-area: --body;
+    }
+  }
+}
+```
+
+## コード例とデモ
+
+次のデモは、見出し、本文、「申し込む」のリンクを、この順番でHTMLに書いたカードです。狭いときはDOMの順番どおり縦に積みます。480px以上では `grid-template` を書き換えて、「申し込む」を見出しの右へ上げます。本文には「過去のアーカイブ」というリンクもあります。
+
+<Demo title="エリアで並べ替えたカードに reading-flow: grid-rows を指定する" html={cardHtml} css={cardCss} />
+
+対応したブラウザで幅を768pxにしてTabキーで移動すると、見た目で上の行にある「申し込む」が、「過去のアーカイブ」より先にフォーカスされます。未対応のブラウザでは「過去のアーカイブ」が先になりますが、本文を読んでから申し込む順番なので、意味は通ります。Chromeの記事によると、並べ替えの対象はコンテナの直接の子です。本文の中のリンクは、本文の段落の位置で読まれると考えると、順番を予想できます。
+
+次のデモは、チャットの入力欄の上に、よくある質問のボタンを並べたものです。ボタンの並びは `flex-wrap: wrap-reverse` で下から上へ折り返すので、HTMLの先頭に書いたよく使う質問ほど、入力欄に近い下の行に並びます。
+
+<Demo title="wrap-reverse で上へ折り返すボタンに reading-flow: flex-visual を指定する" html={wrapHtml} css={wrapCss} widths={[320, 480, 768]} />
+
+`flex-visual` を指定したので、対応したブラウザでは、上の行の左のボタンから画面の順番どおりにフォーカスが移ります。`flex-flow` にすると、折り返しの向きに沿って下の行から読みます。このデモは目で追う順番に合わせた例で、未対応のブラウザでは、DOMの順番どおりよく使う質問から読まれます。
+
+## フォーカスのスコープと `display: contents`
+
+`reading-flow` を指定したコンテナは、フォーカスのスコープ（focus scope）になります。Tabキーでコンテナに入ると、中のフォーカスできる要素をすべてたどってから、外の次の要素へ移ります。2つ目のデモでは、ボタンをすべてたどってから入力欄へ移ります。
+
+コンテナの直接の子に指定した正の `tabindex` は、並べ替えでは無視されます。`tabindex="0"` でフォーカスできるようにした要素は、ほかの要素と同じく `reading-flow` の順番に従います。正の `tabindex` で順番を作っていたコードに `reading-flow` を足すと、対応したブラウザでだけ順番が変わるので、先に正の `tabindex` を取り除きます。
+
+`display: contents` の要素は箱を作らないので、その子が親のグリッドのアイテムとして並びます。Chromeの記事は、レイアウト上の親から `reading-flow` を継承した `display: contents` の要素も、`reading-flow` のコンテナになると説明しています。`reading-flow` は継承しないプロパティなので、継承させるには `reading-flow: inherit` を書きます。
+
+「7-7」のサブグリッドの例のように、カードを包む `li` に `display: contents` を指定した一覧では、DOMの親子と見た目のアイテムが一致しません。こうした一覧に `reading-flow` を指定するときは、対応したブラウザで、Tabキーとスクリーンリーダーの順番を確かめます。{/* 要確認: 出典なし */}
+
+## `order` と `reading-order` は1か-1だけを使う
+
+`reading-order` は、`reading-flow` が `normal` 以外のコンテナの子に指定し、読む順番を整数で上書きするプロパティです。初期値は0で、値の小さい子から読み、同じ値の子どうしはコンテナの `reading-flow` の順番で読みます。コンテナの `reading-flow: source-order` は、DOMの順番を保ったまま、子の `reading-order` を使うための値です。
+
+`reading-order` が役立つのは、HTMLの順番に制約があり、1つの子だけを先頭か末尾へ動かしたい場面です。たとえば、閉じるボタンを `float` で見出しの横へ置くモーダルでは、`float` の仕組み上、HTMLではボタンを見出しより前へ書く必要があります（「[11-2 floatで文章を回り込ませる](/layout-practice/float/)」）。本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定すれば、対応したブラウザでは見出しが先に読まれます。
+
+```css title="🙆‍♂ Recommended: 見出しだけを、ほかのすべての子より先に読ませる"
+@scope (.scoped.modal) to (.scoped) {
+  ._body {
+    display: block flow-root;
+    reading-flow: source-order;
+
+    & > h2 {
+      reading-order: -1;
+    }
+  }
+}
+```
+
+値は、`1` か `-1` だけを使います。初期値0のほかの子に対して、`-1` は「すべての子より前」、`1` は「すべての子より後」を表すので、1つの値を見れば意図が分かります。`2` や `10` のような値を使い始めると、読む順番を知るために各子の値を集めて並べ直す必要が生じ、後から子を差し込むたびに値を積み増すことになります。z-indexの相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）の2つに限っているのと同じ考え方です（「[10-4 デザイントークン](/components/design-tokens/)」）。
+
+```css title="🙅‍♂ Not Recommended: order に段階的な値を振って並べ替える"
+/* 🙅‍♂ Not Recommended */
+._plan {
+  & > ._price {
+    order: 2;
+  }
+
+  & > ._features {
+    order: 3;
+  }
+
+  & > ._heading {
+    order: 1;
+  }
+}
+```
+
+FlexboxとGridの子の `order` も、同じ規則に従います。`order` は見た目の順番を変えるプロパティで、読む順番を変える `reading-order` とは働きが違いますが、値を集めて並べ直さないと順番が分からない点は同じです。2つ以上の子の順番を入れ替えたくなったら、HTMLの順番を直すか、コンテナに `grid-rows` や `flex-visual` を指定します。
+
+## Stylelintでの検出と未対応のブラウザ
+
+本書のStylelintの設定には、`reading-flow` の書き忘れを検出する独自ルール `book/reading-flow-when-reordered` を入れています。この節で挙げた4つの宣言（`flex-flow`、エリアの文字列を含む `grid-template` と `grid` を含む）を書いたルールに、`reading-flow` がなければ報告します。`@container` の中でテンプレートを書き換えるときは、外側のルールに `reading-flow` があれば通ります。
+
+子の `order`、`grid-row`、`grid-column` による並べ替えは検出できません。これらは子のルールに書かれ、どのコンテナの中で使われるかがCSSだけでは決まらないからです。子の側で並べ替えるときは、親のコンテナに `reading-flow` があるかを自分で確かめます。
+
+未対応のブラウザは `reading-flow` の宣言を無視し、DOMの順番で読みます。`@supports` で分岐する必要はありません。高さの違う項目を詰める `grid-lanes` でも、見た目とDOMの順番が離れます。2026年10月の時点で、`grid-lanes` と `reading-flow` の両方に対応したブラウザはありません（「[11-10 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Use CSS reading-flow for logical sequential focus navigation](https://developer.chrome.com/blog/reading-flow)（Chrome for Developers、2025年5月）
+- [CSS Display Module Level 4: Reading Order: the reading-flow property](https://drafts.csswg.org/css-display-4/#reading-flow)
+- [reading-flow - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/reading-flow)
+- [reading-order - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/reading-order)
+- [Understanding Success Criterion 1.3.2: Meaningful Sequence](https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence.html)（W3C WAI）
+- [Understanding Success Criterion 2.4.3: Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html)（W3C WAI）

@@ -1,5 +1,5 @@
 ---
-title: "3-3 :has() で祖先と前の兄弟を選ぶ"
+title: "5-3 :has() で祖先と前の兄弟を選ぶ"
 description: ":has()は、引数に当てはまる子孫や後ろの兄弟を持つ要素を選ぶ擬似クラスです。起点のない:has()は書かず、起点はコンポーネントのルートのような狭い要素に、引数は結合子で範囲を絞ります。"
 sidebar:
   order: 3
@@ -33,7 +33,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 スタイルが当たるのは、起点の要素です。`.card:has(> img)` のスタイルは `.card` に当たり、`img` には当たりません。引数は条件を表すだけで、選ぶ対象を変えないので、「`:has()` の前に書いたものが選ばれる」と読みます。
 
-詳細度は、`:is()` と同じく、引数でいちばん高いセレクタの詳細度になります。`.card:has(> img)` は、`.card` の0.1.0に `img` の0.0.1が加わり、0.1.1です。詳細度の数え方は「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で、`:is()` との共通点は「[2-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+詳細度は、`:is()` と同じく、引数でいちばん高いセレクタの詳細度になります。`.card:has(> img)` は、`.card` の0.1.0に `img` の0.0.1が加わり、0.1.1です。詳細度の数え方は「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で、`:is()` との共通点は「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
 
 引数の解釈には、`:is()` や `:where()` と違う点があります。`:has()` の引数は、解釈できないセレクタが1つでもあると全体が無効になります。初期の仕様では無視される扱いでしたが、2022年末に変わりました。対応が分かれるセレクタを引数に入れるときは、`:has(:is(:heading, h2))` のように `:is()` で包むと、解釈できないものだけが無視されます。また、引数の中に `:has()` を入れ子にすることと、`::before` のような擬似要素を書くことは、仕様で認められていません。
 
@@ -58,9 +58,9 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 <Demo title="直下のラジオボタンがチェックされたカードだけ、選んだ見た目にする" html={planHtml} css={planCss} />
 
-入力欄の検証の結果を、ラベルや説明文に伝えることもできます。入力欄を包む要素に `&:has(:user-invalid)` を書けば、入力して離れたあとで値が不正なときだけ、説明文の色を変えられます。`:user-invalid` が当てはまる条件と、フォーム部品の実装は第16章「[16-3 フォーム部品](/interaction/forms/)」で説明しています。
+入力欄の検証の結果を、ラベルや説明文に伝えることもできます。入力欄を包む要素に `&:has(:user-invalid)` を書けば、入力して離れたあとで値が不正なときだけ、説明文の色を変えられます。`:user-invalid` が当てはまる条件と、フォーム部品の実装は第17章「[17-3 フォーム部品](/interaction/forms/)」で説明しています。
 
-キーボードの操作にも応じられます。カードの中のリンクにキーボードでフォーカスしたとき、カード全体に枠線を付けたいなら、カードのルートに `&:has(:focus-visible)` を書きます。フォーカスの表し方は第16章「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明しています。
+キーボードの操作にも応じられます。カードの中のリンクにキーボードでフォーカスしたとき、カード全体に枠線を付けたいなら、カードのルートに `&:has(:focus-visible)` を書きます。フォーカスの表し方は第17章「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明しています。
 
 ## 後ろの兄弟によって前の要素を変える
 
@@ -132,7 +132,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 }
 ```
 
-この重さは、実際に測れる大きさになります。w0s.jpの記事では、Chromeの開発者ツールでブログのトップページを測り、起点のない `:has(> .c-entry-link)` の照合に0.751秒かかったと報告しています。2番目に重いセレクタの3倍以上でした（2024年8月の記事）。起点に要素名を加えて `article:has(> .entry-link)` のように書けば、照合の対象は `article` だけになります。同じ記事は、`.bar:has(*)` のように引数が何にでも当てはまる形も、範囲を限定していない例に挙げています。引数の絞り方は、最後の見出しで説明します。
+この重さは、実際に測れる大きさになります。起点に要素名を加えて `article:has(> .entry-link)` のように書けば、照合の対象は `article` だけになります。同じ記事は、`.bar:has(*)` のように引数が何にでも当てはまる形も、範囲を限定していない例に挙げています。引数の絞り方は、最後の見出しで説明します。
 
 ネストと `@scope` の中では、起点を書き忘れやすくなります。ネストしたルールの中で `&` を省いて `:has(> img)` と書くと、`& :has(> img)` と解釈され、親の子孫のすべての要素が起点になります。`@scope` の直下に書いた `:has()` も、スコープの中のすべての要素が起点です。本書の規約どおり、ネストしたセレクタを `&` で始めていれば、この誤りは起きません。
 
@@ -169,7 +169,7 @@ body {
 
 起点はコンポーネントのルートのような狭い要素にし、引数は `>` や `+` の結合子で範囲を絞ります。デモの選択肢のカードは、`&:has(> input:checked)` でカードの直下の子だけを調べていました。調べる範囲はカード1枚の中に収まるので、ページの大きさには左右されません。
 
-例外は、モーダルを開いている間に背面のスクロールを止める `:root:has(:modal)` のように、ページ全体の状態を表すスタイルです。ほかの要素を起点にできないので、`:root` を起点にします。こうしたルールは数を少なく保ちます。{/* 要確認: 出典なし */}`:root:has(:modal)` の書き方は第6章「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+例外は、モーダルを開いている間に背面のスクロールを止める `:root:has(:modal)` のように、ページ全体の状態を表すスタイルです。ほかの要素を起点にできないので、`:root` を起点にします。こうしたルールは数を少なく保ちます。{/* 要確認: 出典なし */}`:root:has(:modal)` の書き方は第8章「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
 
 重さが気になったときは、推測せずに測ります。Chromeの開発者ツールでは、パフォーマンスパネルの記録の設定（Capture settings）で「Enable CSS selector stats」を有効にすると、スタイルの再計算の内訳がセレクタごとに表示されます。かかった時間（Elapsed）の長いセレクタのうち、照合を試みた数（Match Attempts）に比べて一致した数（Match Count）の少ないものを見直します（2026年9月確認）。
 
@@ -182,7 +182,5 @@ body {
 - [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
 - [:has() - CSS | MDN: Performance considerations](https://developer.mozilla.org/en-US/docs/Web/CSS/:has#performance_considerations)
 - [Selectors Level 4: The Relational Pseudo-class](https://drafts.csswg.org/selectors-4/#relational)
-- [CSS セレクタのレシピ - :has() 擬似クラス編](https://griponminds.jp/blog/css-selectors-has-pseudo-class/)（grip on minds）
-- [制約のない :has() のパフォーマンス計測](https://blog.w0s.jp/entry/719)（w0s.jp、2024年8月）
 - [Decoding CSS selectors: :has(:not()) vs :not(:has())](https://polypane.app/blog/decoding-css-selectors-has-not-vs-not-has/)（Polypane）
 - [Analyze CSS selector performance during Recalculate Style events | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/selector-stats)

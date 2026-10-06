@@ -19,6 +19,8 @@
     }
 
     a {
+      --_density: --compact;
+
       position: relative;
       display: block flex;
       column-gap: 1em;
@@ -29,17 +31,22 @@
       border-radius: 8px;
       background-color: oklch(30% 0 0deg);
       color: oklch(100% 0 0deg);
+
+      /* アイコン 24px 相当・隙間 16px 相当・ラベル 160px 相当と、左右の余白 24px が並ぶ幅 */
+      @container --scoped (inline-size >= calc(24 / 16 * 1rem + 16 / 16 * 1rem + 160 / 16 * 1rem + 24px * 2)) {
+        --_density: --spacious;
+      }
     }
 
     svg {
       flex-shrink: 0;
       inline-size: calc(24 / 16 * 1em);
-      block-size: calc(24 / 16 * 1em);
+      aspect-ratio: 1;
     }
 
     ._label {
-      /* アイコン 24px・隙間 16px・ラベル 160px と、左右の余白が並ぶ幅より狭いときは、ラベルを視覚的に隠す */
-      @container --scoped (inline-size < calc((24 + 16 + 160 + 24 * 2) / 16 * 1rem)) {
+      /* 狭いときは、ラベルを視覚的に隠す */
+      @container style(--_density: --compact) {
         position: absolute;
         overflow: clip;
         inline-size: 4px;

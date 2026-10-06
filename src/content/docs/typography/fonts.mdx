@@ -1,5 +1,5 @@
 ---
-title: "13-1 フォントを指定する"
+title: "14-1 フォントを指定する"
 description: "和文のフォントは、特に指定がなければ総称ファミリーのsans-serifだけで十分です。Noto Sans JPを必ず表示するときは端末のフォントを優先し、和文には斜体を使わず、font-weightは数値のトークンで指定します。"
 sidebar:
   order: 1
@@ -18,8 +18,10 @@ import Guideline from '../../../components/Guideline.astro';
 
 ```css title="🙅‍♂ Not Recommended: OSごとのフォントを並べる"
 /* 🙅‍♂ Not Recommended */
-:where(:root) {
-  font-family: "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+@layer base {
+  :root {
+    font-family: "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  }
 }
 ```
 
@@ -34,8 +36,10 @@ import Guideline from '../../../components/Guideline.astro';
 デザインで特に指定がなければ、`font-family` には `sans-serif` だけを指定します。本書が推奨するリセットCSSのkiso.cssも、`:root` に `sans-serif` を指定しています。Safariは `font-family` の指定がないと明朝体で表示するので、何も指定しないわけにはいきません。
 
 ```css title="🙆‍♂ Recommended: 総称ファミリーだけを指定する"
-:where(:root) {
-  font-family: sans-serif;
+@layer base {
+  :root {
+    font-family: sans-serif;
+  }
 }
 ```
 
@@ -48,8 +52,10 @@ OSのアップデートで表示されるフォントが変わる可能性はあ
   --font-family--inter: "Inter", sans-serif;
 }
 
-:where(:root) {
-  font-family: var(--font-family--inter);
+@layer base {
+  :root {
+    font-family: var(--font-family--inter);
+  }
 }
 ```
 
@@ -59,8 +65,10 @@ OSのアップデートで表示されるフォントが変わる可能性はあ
 
 ```css title="🙅‍♂ Not Recommended: 日本語のサイトで system-ui を使う"
 /* 🙅‍♂ Not Recommended */
-:where(:root) {
-  font-family: system-ui, sans-serif;
+@layer base {
+  :root {
+    font-family: system-ui, sans-serif;
+  }
 }
 ```
 
@@ -82,8 +90,10 @@ AIにCSSを書かせたときも、OSごとのフォントを並べたスタッ�
     local("Noto Sans CJK JP Regular");
 }
 
-:where(:root) {
-  font-family: "Local Noto Sans JP", "Noto Sans JP", sans-serif;
+@layer base {
+  :root {
+    font-family: "Local Noto Sans JP", "Noto Sans JP", sans-serif;
+  }
 }
 ```
 
@@ -95,7 +105,7 @@ AIにCSSを書かせたときも、OSごとのフォントを並べたスタッ�
 
 ## Webフォントを読み込む
 
-Webフォントを自分のサーバーから配信するときは、`@font-face` にいくつかの記述子を加えます。私が使っているテンプレートでは、形式をWOFF2だけにし、`unicode-range` で文字の範囲ごとにファイルを分け、`font-display` で読み込み中の表示を決めています。`@font-face` は、ベーススタイルと同じ `base` レイヤーに置きます（[2-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
+Webフォントを自分のサーバーから配信するときは、`@font-face` にいくつかの記述子を加えます。私が使っているテンプレートでは、形式をWOFF2だけにし、`unicode-range` で文字の範囲ごとにファイルを分け、`font-display` で読み込み中の表示を決めています。`@font-face` は、ベーススタイルと同じ `base` レイヤーに置きます（[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
 
 ```css title="🙆‍♂ Recommended: 本文用のWebフォントを定義する"
 @font-face {
@@ -162,8 +172,12 @@ Google Fontsを使う場合は、2つのサーバーへの `preconnect`、スタ
 値は、そろえる寸法と比を `ex-height 0.5` のように書きます。比を `from-font` にすると、その要素のフォントスタックで最初に使えるフォントから比を求めます。求めた比は数値として子孫に継承されるので、子孫で書体が切り替わっても、親のフォントと同じ字面の大きさにそろいます。そのため、`from-font` は親の要素で一度だけ指定します。すべての要素に指定すると、要素ごとに自分のフォントから比を求め直すので、何もそろいません。
 
 ```css title="🙆‍♂ Recommended: 英語のページで、書体の字面を先頭のフォントにそろえる"
-:where(:root:lang(en)) {
-  font-size-adjust: from-font;
+@layer base {
+  :root {
+    &:lang(en) {
+      font-size-adjust: from-font;
+    }
+  }
 }
 ```
 
@@ -175,9 +189,11 @@ Google Fontsを使う場合は、2つのサーバーへの `preconnect`、スタ
 
 ```css title="🙅‍♂ Not Recommended: 和文を含む要素で、欧文のフォントの比にそろえる"
 /* 🙅‍♂ Not Recommended */
-:where(:root) {
-  font-family: Georgia, sans-serif;
-  font-size-adjust: from-font;
+@layer base {
+  :root {
+    font-family: Georgia, sans-serif;
+    font-size-adjust: from-font;
+  }
 }
 ```
 
@@ -194,12 +210,18 @@ HTMLの `em`、`cite`、`i`、`dfn`、`address` は、ブラウザのデフォ�
 kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体を解除し、`em` を太字にしています。kiso.cssを使わない場合は、次の指定を `reset` レイヤーに入れます。
 
 ```css title="🙆‍♂ Recommended: 日本語の文書では斜体を解除し、強調を太字にする"
-:where(em:lang(ja)) {
-  font-weight: bolder;
-}
+@layer reset {
+  em {
+    &:lang(ja) {
+      font-weight: bolder;
+    }
+  }
 
-:where(:is(address, i, cite, em, dfn):lang(ja)) {
-  font-style: unset;
+  :is(address, i, cite, em, dfn) {
+    &:lang(ja) {
+      font-style: unset;
+    }
+  }
 }
 ```
 
@@ -209,7 +231,7 @@ kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体�
 
 `font-weight` は、`bold` のようなキーワードではなく、`700` のような数値で指定します。キーワードで表せる太さは、`normal`（400）と `bold`（700）の2つだけです。Noto Sans JPのように太さを9段階持つフォントやバリアブルフォントでは、数値でなければデザインカンプの指定を再現できません。
 
-数値は、コンポーネントに直接書かず、トークンにします。太さの名前を決めておけば、デザインで使う太さがそろい、トークンにない中途半端な値も紛れ込みにくくなります。トークンの命名は「[8-4 デザイントークン](/components/design-tokens/)」で説明します。
+数値は、コンポーネントに直接書かず、トークンにします。太さの名前を決めておけば、デザインで使う太さがそろい、トークンにない中途半端な値も紛れ込みにくくなります。トークンの命名は「[10-4 デザイントークン](/components/design-tokens/)」で説明します。
 
 ```css title="🙆‍♂ Recommended: 太さを数値のトークンで指定する"
 :root {
@@ -225,7 +247,7 @@ kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体�
 }
 ```
 
-kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定しています。ブラウザのデフォルトスタイルに合わせるためです。`bolder` は親より一段太くする相対的なキーワードなので、プロジェクトで太さをそろえたいときは、`base` レイヤーで数値のトークンに上書きします。kiso.cssの値を上書きする方法は、「[6-1 壊さないリセット](/reset/kiso/)」で説明しています。
+kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定しています。ブラウザのデフォルトスタイルに合わせるためです。`bolder` は親より一段太くする相対的なキーワードなので、プロジェクトで太さをそろえたいときは、`base` レイヤーで数値のトークンに上書きします。kiso.cssの値を上書きする方法は、「[8-1 壊さないリセット](/reset/kiso/)」で説明しています。
 
 ## ガイドライン
 

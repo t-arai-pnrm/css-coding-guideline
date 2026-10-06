@@ -13,19 +13,21 @@
     }
   }
 
-  :where(:any-link) {
+  :any-link {
     @media (forced-colors: active) {
       --background-current: LinkText;
     }
   }
 
-  :where(button:enabled) {
-    @media (forced-colors: active) {
-      --background-current: ButtonText;
+  button {
+    &:enabled {
+      @media (forced-colors: active) {
+        --background-current: ButtonText;
+      }
     }
   }
 
-  :where(:disabled) {
+  :disabled {
     @media (forced-colors: active) {
       --background-current: GrayText;
     }

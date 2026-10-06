@@ -1,0 +1,264 @@
+---
+title: "16-1 画像の配置と読み込み"
+description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。img には width と height の属性を書き、背景の写真も img で置きます。srcset と sizes はツールで確かめ、ファーストビューの画像は遅延読み込みにせず、写真は AVIF で書き出します。"
+sidebar:
+  order: 1
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import objectFitHtml from '../../../demos/decoration/object-fit/index.html?raw';
+import objectFitCss from '../../../demos/decoration/object-fit/style.css?raw';
+import aspectRatioHtml from '../../../demos/decoration/aspect-ratio/index.html?raw';
+import aspectRatioCss from '../../../demos/decoration/aspect-ratio/style.css?raw';
+import fitHeightHtml from '../../../demos/decoration/fit-height/index.html?raw';
+import fitHeightBadCss from '../../../demos/decoration/fit-height/style.bad.css?raw';
+import fitHeightCss from '../../../demos/decoration/fit-height/style.css?raw';
+import heroHeaderHtml from '../../../demos/decoration/hero-header/index.html?raw';
+import heroHeaderCss from '../../../demos/decoration/hero-header/style.css?raw';
+
+画像の縦横比は `aspect-ratio` で決め、中身は `object-fit` の `cover` か `contain` で収めます。初期値の `fill` のまま、画像を引き伸ばさないようにします。`<img>` には `width` と `height` の属性を書き、`srcset` と `sizes` の値は、手で計算せずにツールで確かめて決めます。
+
+写真を背景に敷くときも、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置きます。ファーストビューに表示される画像には `loading="lazy"` を指定せず、写真のような画像はAVIFで書き出します。
+
+アイコンや図形の描き方は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で、影や角丸、すりガラスの背景、文字の縁取りのような装飾は「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明しています。
+
+<Baseline id="aspect-ratio" />
+
+## 古い書き方で比率を保つと起きること
+
+`aspect-ratio` が使えなかった頃は、`padding-top` に割合を指定して、縦横比を保っていました。`padding` の割合は親要素の幅を基準に計算されるので、`9 / 16 * 100%` を指定すれば、幅に対して16:9の高さを作れます。
+
+```css title="🙅‍♂ Not Recommended: padding-top の割合で比率を作る"
+/* 🙅‍♂ Not Recommended */
+.frame {
+  position: relative;
+
+  &::after {
+    content: "";
+    display: block;
+    padding-top: calc(9 / 16 * 100%);
+  }
+}
+
+.frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+```
+
+この書き方では、比率を作るための擬似要素と、中身を重ねるための絶対配置が必要です。中身は枠から外れた状態になるので、テキストが増えても枠は伸びません。コードを読んでも、`padding-top` が比率のための指定だとすぐには分かりません。
+
+画像の側にも、よくある問題があります。枠の大きさに合わせようとして、画像へ `width: 100%` と `height: 100%` だけを指定すると、比率の違う画像が縦や横に引き伸ばされます。CMSで編集者が画像を差し替えるサイトでは、どのような比率の画像が入るかを事前に決められません。
+
+## aspect-ratio で比率を決める
+
+縦横比は `aspect-ratio` で指定します。幅が決まれば、高さは比率から計算されます。擬似要素と絶対配置は要りません。
+
+```css title="🙆‍♂ Recommended: aspect-ratio で比率を決め、object-fit で収める"
+._thumbnail {
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+._avatar {
+  inline-size: 48px;
+  aspect-ratio: 1;
+  border-radius: calc(infinity * 1px);
+  object-fit: cover;
+}
+```
+
+<Demo title="元の画像の比率が違っても、サムネイルは16:9に、アバターは正円にそろう" html={aspectRatioHtml} css={aspectRatioCss} />
+
+サムネイルの幅は、`100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書いて親の幅いっぱいに広げます（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-stretch-over-width-100)」）。正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[11-4 変化に強いレイアウト](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)」でも取り上げています。
+
+`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。ブラウザは、この2つの属性から縦横比を計算し、画像を読み込む前から表示する場所を確保します。属性がないと、画像が読み込まれた瞬間に高さが決まり、下にある文章がずれて、読んでいた位置を見失います。
+
+```html
+<img src="thumbnail.avif" width="800" height="450" alt="" />
+```
+
+属性に書いた値が、そのまま表示の大きさになるわけではありません。kiso.cssは、画像に `max-inline-size: 100%` と `block-size: auto` を指定しています。枠より大きな画像は枠の幅まで縮み、高さは属性の比率を保ったまま決まります。
+
+## object-fit は cover か contain にする
+
+大きさを決めた画像には、`object-fit` を指定します。初期値の `fill` は、画像を枠いっぱいに引き伸ばすので、比率の違う画像が歪みます。`fill` が望ましい場面は、ほとんどありません。
+
+<Demo title="16:9の画像を正方形の枠に入れたときの、object-fit の違い" html={objectFitHtml} css={objectFitCss} variant="neutral" />
+
+`cover` は、比率を保ったまま枠を覆うように拡大し、はみ出した部分を切り取ります。写真のサムネイルやメインビジュアルのように、枠を埋めることを優先する画像に向いています。`contain` は、画像全体が枠に収まるように縮めます。ロゴや図版のように、切り取られると困る画像に使います。
+
+私のテンプレートでは、ベーススタイルで `<img>` と `<video>` を `cover` にしています。`contain` が必要な画像だけ、コンポーネントで上書きします。切り取る位置は `object-position` で調整できます。人物の顔が写真の上のほうにあるなら、`object-position: 50% 20%` のように上寄りにすれば、顔が切れにくくなります。
+
+```css title="🙆‍♂ Recommended: 画像と動画は cover を既定にする"
+@layer base {
+  img,
+  video {
+    object-fit: cover;
+  }
+}
+```
+
+### 隣の要素の高さに合わせる
+
+グリッドの中で、画像の高さを隣の本文の高さに合わせたい場合があります。画像に `block-size: 100%` を指定すると、画像の元の高さで行が押し広げられ、本文の下に余白ができて間延びします。この場合は、`block-size: 0` と `min-block-size: 100%` を組み合わせます（2026年9月、Chrome 153で確認）。
+
+<Demo title="block-size: 100% では、画像の元の高さで行が伸び、本文の下が空く" html={fitHeightHtml} css={fitHeightBadCss} variant="not-recommended" />
+
+```css title="🙆‍♂ Recommended: 画像の高さを、同じ行の本文の高さに合わせる"
+img {
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
+  block-size: 0;
+  min-block-size: 100%;
+  object-fit: cover;
+}
+```
+
+<Demo title="画像の高さが本文の高さに合い、はみ出した部分は切り取られる" html={fitHeightHtml} css={fitHeightCss} />
+
+`block-size: 0` で画像が行の高さを押し広げないようにし、`min-block-size: 100%` でセルの高さまで広げています。行の高さは本文だけで決まり、画像はその高さに合わせて `cover` で切り取られます。
+
+### 画像の上の文字には背景色を用意する
+
+画像や動画の上に文字を載せるときは、画像が表示されなかった場合に備えて、文字と対になる背景色を指定しておきます。通信の状態によって画像を読み込めないと、白い背景の上に白い文字だけが残り、読めなくなるからです。
+
+```css title="🙆‍♂ Recommended: 画像がなくても白い文字が読める背景色を敷く"
+@scope (.scoped.hero-header) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-areas: "--pile";
+    background-color: oklch(20% 0 0deg);
+    color: oklch(100% 0 0deg);
+  }
+
+  img,
+  ._body {
+    grid-area: --pile;
+  }
+
+  img {
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
+    block-size: 0;
+    min-block-size: 100%;
+    object-fit: cover;
+  }
+}
+```
+
+<Demo title="画像を表示できなくても、背景色の上で白い文字が読める" html={heroHeaderHtml} css={heroHeaderCss} />
+
+背景色は、画像の平均的な色ではなく、文字色とのコントラストが取れる色にします。このコード例では、白い文字に対して暗いグレーを敷いています。画像と本文は同じグリッドのエリアに重ね、画像の高さは前の項目と同じ方法で本文に合わせています。
+
+## 背景の写真も `<img>` で置く
+
+前の項目のヒーローのように写真を背景に敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を背景に置きます。`background-image` を使うのは、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に限ります。
+
+```css title="🙅‍♂ Not Recommended: 背景の写真を background-image で敷く"
+/* 🙅‍♂ Not Recommended */
+._hero {
+  background-image: url("hero.avif");
+  background-position: center;
+  background-size: cover;
+}
+```
+
+`<img>` にする理由は4つあります。1つ目は、`<picture>` や `srcset` と `sizes` で、画面の幅や解像度に合った画像を読み込めることです。`background-image` でも `image-set()` で解像度ごとの候補は書けますが、画像がレイアウトの中で表示される幅をブラウザに伝える手段はありません。2つ目は、画像だけを加工しやすいことです。背景画像の要素に指定した `opacity` や `filter` は中の文字にも及ぶので、画像だけを薄くするには擬似要素を足すことになります。`<img>` なら、画像に直接指定できます。
+
+3つ目は、`alt` 属性で画像の意味を伝えられることです。内容を伝える写真には代替テキストを書き、装飾なら `alt=""` にして読み上げから外します。背景画像には代替テキストを付ける手段がありません。4つ目は、読み込みの早さです。ブラウザのプリロードスキャナーは、HTMLを解析する段階で `<img>` を見つけて先に要求しますが、CSSの中の `background-image` は対象外で、スタイルシートを読み込んで適用するまで見つかりません。その画像がLCPの候補なら、見つかるまでの分だけ表示が遅れます。
+
+```html title="🙆‍♂ Recommended: 背景の写真を、本文と同じエリアに重ねる img で置く"
+<div class="scoped hero-header">
+  <img
+    src="hero-800.avif"
+    srcset="hero-800.avif 800w, hero-1600.avif 1600w"
+    sizes="100vw"
+    width="1600"
+    height="900"
+    alt=""
+    fetchpriority="high"
+  />
+  <div class="_body">
+    <!-- ... -->
+  </div>
+</div>
+```
+
+背景の `<img>` は絶対配置にせず、前の項目のコード例のように、本文と同じグリッドのエリアに置きます。重ねるだけの入れ物なら、コンポジションの「[12-9 pile](/compositions/pile/)」（すべての子を同じセルに重ねる）を使えます。どちらも、本文が増えれば枠が伸び、画像はその高さに合わせて `cover` で切り取られます。画像をHTMLで先に書けば、`z-index` を使わなくても本文が手前に描かれます。
+
+```css title="🙆‍♂ Recommended: 敷き詰めるパターンは background-image で描く"
+._section {
+  background-image: url("dots.svg");
+  background-size: 24px;
+  background-repeat: repeat;
+}
+```
+
+単色やグラデーションだけの背景は、画像のファイルを読み込まず、意味も持たないので、`background-image` で足ります。パターン画像も、内容を伝えず、表示される幅に合わせて出し分ける必要がないので、`<img>` にする利点がありません。やむを得ずLCPの候補の写真を `background-image` で敷く場合は、`<link rel="preload">` でその画像を先に読み込ませます。
+
+## レスポンシブ画像
+
+画面の幅や解像度に合わせて、大きさの違う画像を出し分けるには、`srcset` と `sizes` の属性を使います。`srcset` には画像の候補とその幅を、`sizes` には画像がレイアウトの中で表示される幅を書きます。ブラウザは、表示される幅と画面の解像度から、ちょうどよい候補を選んで読み込みます。
+
+```html
+<img
+  src="photo-800.avif"
+  srcset="photo-400.avif 400w, photo-800.avif 800w, photo-1200.avif 1200w"
+  sizes="(width >= 1024px) 50vw, 100vw"
+  width="1200"
+  height="800"
+  alt="川沿いの桜並木"
+/>
+```
+
+難しいのは `sizes` です。表示される幅はCSSのレイアウトで決まるので、余白、段組み、コンテナサイズクエリによる切り替えまで考えて、ビューポートの幅との関係を書き出す必要があります。私は、`sizes` を手で計算しません。仮の値を入れたページでRespImageLintのブックマークレットを実行し、提案された値を採用しています。
+
+RespImageLintが提案する `sizes` の値は、`vw` を使って書かれています。`sizes` はCSSのプロパティではなくHTMLの属性で、画像を選ぶ時点のビューポートの幅を基準にします。本書では、`sizes` の中の `vw` を、`vw` を使わないという規約（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）の例外として扱います。
+
+`<picture>` の `<source>` にある `media` 属性は、ビューポートを基準にした条件しか書けません。コンテナサイズクエリで配置を切り替えるコンポーネントでも、画像の切り替えはビューポートを基準にして書くしかありません。この制約は「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」でも取り上げています。
+
+### 形式と読み込みの優先度
+
+写真のような画像は、AVIFで書き出します。AVIFは、WebPより10〜30%ほど小さく、2024年1月にすべての主要なブラウザで使えるようになりました。Webページで表示する画像では、ブラウザの対応を理由にJPEGやPNGを主な形式にする必要はもうありません。ただし、AVIFへの変換はWebPの2倍以上の時間がかかるので、画像の多いサイトでは、ビルドの時間を見積もっておきます。
+
+ファーストビューに表示される画像には、`loading="lazy"` を指定しません。遅延読み込みにすると、ページでいちばん大きな要素の表示が遅れるからです。スクロールしないと見えない画像と `<iframe>` にだけ、`loading="lazy"` を付けます。
+
+そのうえで、LCPの候補になる画像（ヒーロー画像のように、ファーストビューでいちばん大きく表示される画像）にだけ、`fetchpriority="high"` を指定して優先して読み込ませます。ファーストビューの画像すべてに指定すると、優先する画像どうしで帯域を奪い合い、肝心の画像が早まりません。
+
+<Baseline id="loading-lazy" />
+
+遅延読み込みは、通信やデコードの仕事をなくすのではなく、あとへ先送りするだけです。先送りした先がスクロールや操作の最中だと、通信、デコード、レイアウトの処理が同じ時間に重なり、操作への応答（INP）や体感を悪くすることがあります。ページ内のすべての `<img>` に一括で付けると、この状態を作りやすくなります。ファーストビューの直下の画像にまで付けるかどうかは、実測で決めます。遅延読み込みする画像や埋め込みにも、`width` と `height` の属性か `aspect-ratio` で場所を確保しておきます。確保しないと、読み込んだ瞬間にレイアウトがずれます。
+
+装飾のための画像や、隣の見出しと同じ内容を表すだけの画像には、`alt=""` を指定します。カードのサムネイルのように、見出しのリンクと同じ内容を繰り返す画像がその例です。意味のある画像には、内容が伝わる代替テキストを書きます。
+
+なお、遅延読み込みの画像で `sizes` を自動で決める `sizes="auto"` は、Safariが対応していません（2026年9月確認）。
+
+`<img>` には `decoding="async"` を指定せず、デフォルトの `auto` に任せます。`decoding` は、画像のデコードをほかの内容の表示とそろえるか（`sync`）、待たずにほかの内容を表示するか（`async`）を伝えるヒントで、`auto` ならブラウザが選びます。キャッシュのない通常の読み込みでは、`sync` と `async` に目立った性能の差はありません。一方、キャッシュのある状態で `async` を指定すると、画像以外を先に表示して画像をあとから描くので、画面がちらつきます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月。`aspect-ratio`、`clip-path`、`currentColor` の例）
+- [AVIFの普及でWebPはもういらないかもしれない](https://www.tak-dcxi.com/article/avif-format-is-fine-for-astros-images/)（TAKLOG、2024年3月）
+- [当ブログのレスポンシブコーディングについて](https://www.tak-dcxi.com/article/my-blogs-responsive-coding/)（TAKLOG、2024年3月。RespImageLintの使い方。本書と一部の方針が異なります）
+- [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月）
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [RespImageLint](https://ausi.github.io/respimagelint/)
+- [背景に写真を敷くときは background-image ではなく img を使う、という投稿](https://x.com/tak_dcxi/status/1437975403746922497)（TAK、X、2021年9月）
+- [Don't fight the browser preload scanner](https://web.dev/articles/preload-scanner)（web.dev。プリロードスキャナーはCSSの `background-image` を見つけない）
+- [decoding="async" について詳しく調べてみる](https://zenn.dev/ixkaito/articles/deep-dive-into-decoding)（Kite、Zenn、2023年7月）
+- [HTML Standard: decoding 属性](https://html.spec.whatwg.org/multipage/images.html#decoding-images)（WHATWG）
+- [Lazy loading - Performance | MDN](https://developer.mozilla.org/ja/docs/Web/Performance/Guides/Lazy_loading)
+- [aspect-ratio - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)
+- [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)

@@ -1,0 +1,35 @@
+@layer components {
+  @scope (.scoped.hero-banner) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      align-content: center;
+
+      /* デザインカンプの高さに固定する */
+      block-size: calc(320 / 16 * 1rem);
+      padding: 24px;
+      background-color: oklch(30% 0.05 260deg);
+      color: oklch(100% 0 0deg);
+    }
+
+    h2 {
+      font-size: calc(24 / 16 * 1rem);
+    }
+
+    a {
+      justify-self: start;
+    }
+  }
+
+  @scope (.scoped.news-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-block: 24px;
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}

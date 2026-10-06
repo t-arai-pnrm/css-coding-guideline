@@ -1,0 +1,45 @@
+---
+title: "第11章 レイアウトを組む"
+description: "作るものに合わせてレイアウトの手法を選び、組み立てる章です。通常フロー、Grid、Flexbox、floatの選び方、余白と高さの決め方、内容が変わっても崩れない書き方、重なりと全幅、固定ヘッダー、アンカーポジショニング、要素どうしの重なりの検出、ページのスクロール、石積みのレイアウト、表示順と読み上げ順、表、文字の切り詰めを扱います。"
+sidebar:
+  label: "概要"
+  order: 0
+---
+
+この章では、要素を並べる、間を空ける、重ねるといったレイアウトを、実際に組み立てる方法を扱います。レイアウトは、まず親の `grid-template` で配置と余白を決められないかを考え、子要素の側には配置のための指定をなるべく書きません。そのうえで、内容の長さや量が変わっても崩れないように、守りの指定を加えます。各方式の規則は、第7章「[レイアウトの仕組み](/layout/)」で説明しています。
+
+私が勧めているのは、FlexboxではなくGridから考え始めることです。「1次元ならFlexbox、2次元ならGrid」という分け方が広まっていますが、1行の並びでもGridのほうが簡潔に書ける場面は多くあります。何でもFlexboxで組むと、子要素の側に幅の計算や打ち消しの指定が散らばり、レイアウトの全体像がどこにも書かれていない状態になりがちです。一方で、見出しと段落が続く文章のように、要素の関係で間隔が変わる流れは、通常フローのまま組みます。
+
+もうひとつ大事にしているのは、内容が変わっても崩れないことです。一般的なWebサイトは公開後も更新が続き、とくにCMSの案件では、デザインカンプにない長さの見出しや、画像のない記事が入ってきます。既存のサイトの改修では、長いURLや入力欄が枠を突き抜ける不具合を直す作業が、定期的に発生します。こうした不具合の多くは、書くときに「もし〜だったら」と考えておけば防げるという印象です。
+
+この章は次の13の節で構成しています。
+
+- [11-1 レイアウト手法の選び方](/layout-practice/choosing/)：よくある実装ごとの通常フロー、Grid、Flexbox、`float` の選び方と、間隔が条件で変わる縦の並びを通常フローで組む理由
+- [11-2 floatで文章を回り込ませる](/layout-practice/float/)：回り込みの仕組みと `display: flow-root`、画像への回り込みと `shape-outside`、閉じるボタンや装飾を文章の角に置く書き方、行頭のアイコンを1行目にそろえる書き方
+- [11-3 余白を設計する](/layout-practice/spacing/)：`gap` と `margin` の使い分け、ブロック方向の `margin` を次兄弟結合子で付ける理由、空のグリッドセルで作る余白、本文の流れの余白
+- [11-4 変化に強いレイアウト](/layout-practice/defensive/)：内容の長さや量が変わっても崩れない書き方（ディフェンシブCSS）と、高さを `min-block-size`・`aspect-ratio`・`max-block-size` で決める理由
+- [11-5 重なりと全幅](/layout-practice/layering/)：Gridで要素を重ねる方法、スタッキングコンテキストと重なり順、画面幅いっぱいに広げる手法
+- [11-6 固定ヘッダー](/layout-practice/sticky-header/)：高さが十分な画面に限って固定するヘッダー、フォーカスやページ内リンクの移動先を隠さない `scroll-padding`、留まっている間の見た目を変える `scroll-state()`、留まったときに高さを変えない理由
+- [11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)：未対応の環境でも読める形を先に書く使い方、暗黙のアンカーと `position-area`、ホバーした項目へ移る背景
+- [11-8 要素どうしの重なりを検出する](/layout-practice/overlap-detection/)：飾りと本文の間隔をアンカーポジショニングとスクロールタイムラインで測り、近づいたら飾りを隠す技法と、装飾に限って使う理由
+- [11-9 ページのスクロールとルートスクローラー](/layout-practice/root-scroller/)：ページ全体のスクロールを入れ子のスクロールコンテナにしてしまう原因と、用途ごとの直し方
+- [11-10 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)：高さの違う項目を詰める `display: block grid-lanes`、未対応の環境へのフォールバック、`columns` との使い分け
+- [11-11 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)：並べ替えた配置で、読み上げとフォーカスの順番を `reading-flow` で見た目に合わせる書き方と、DOMの順番を先に直す理由
+- [11-12 表を組む](/layout-practice/tables/)：最小の幅を決めた表を包む要素の中でスクロールさせる方法、見出しのセルの留め方と `border-collapse`、数値の列のそろえ方、狭い幅で縦に積むときの `role`
+- [11-13 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)：1行の切り詰めに必要な指定、全文を読める手段、数値を切り詰めない理由と `tabular-nums`、スケルトンを読み込み後と同じ寸法にする書き方
+
+stack、cluster、switcher、gridなど、配置のパターンを部品にしたコンポジションの使い方と使い分けは、第12章「[レイアウトコンポジション](/compositions/)」で扱います。コンポーネントのルートに外側の余白を持たせない考え方と、z-indexの管理は第10章「[コンポーネントとカスタムプロパティ](/components/)」で扱います。幅に応じてレイアウトを切り替える方法は第13章「[レスポンシブデザイン](/responsive/)」で説明しています。
+
+この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
+
+## 最初に押さえるルール
+
+{/* 要確認: 著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
+
+次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
+
+- [`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)：要素の間の縦の `margin` は、`& > * + *` のようなセレクタで、後ろの要素の `margin-block-start` に付けます。
+- [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：高さは `block-size` で固定せず、`min-block-size`、`max-block-size`、`aspect-ratio` で決めます。
+- [`minmax-min-capped-at-100-percent`](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)：`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にします。
+- [`overflow-clip-over-hidden`](/layout-practice/defensive/#rule-overflow-clip-over-hidden)：はみ出しを切り取るだけなら、`overflow: hidden` ではなく `clip` を使います。
+- [`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula)：親の幅を超えて画面の端まで広げる量は「画面の幅と親の幅の差の半分」の式で書き、`100vw` を使いません。

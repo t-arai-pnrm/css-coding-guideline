@@ -1,0 +1,255 @@
+---
+title: "10-6 スタイルクエリで状態を伝える"
+description: "幅や操作の状態で複数の子要素を切り替えるときは、状態を --_density や --_hocus のフラグとして1か所で立て、子孫は @container style() で問い合わせます。フラグを立てた要素自身は問い合わせられないので、その要素の見た目はサイズクエリや状態のセレクタに直接書き、子から親への向きは :has() を使います。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import densityHtml from '../../../demos/components/density-event-card/index.html?raw';
+import densityCss from '../../../demos/components/density-event-card/style.css?raw';
+import hocusHtml from '../../../demos/components/hocus-arrow-link/index.html?raw';
+import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
+
+コンポーネントの中で、置かれた場所の幅や操作の状態に合わせて複数の子要素の見た目を変えるときは、状態をカスタムプロパティのフラグとして1か所で立て、子孫の要素は `@container style()` で問い合わせます。幅による切り替えは `--_density: --compact` と `--spacious`、ホバーとフォーカスは `--_hocus: --false` と `--true` で表します。コンテナサイズクエリと状態のセレクタを書くのは、フラグを立てる要素のルールだけになります。
+
+スタイルクエリは、親から子孫への一方向にしか値を伝えられず、フラグを立てた要素自身は問い合わせられません。この制約は、スタイルクエリがどの要素を問い合わせるかという仕組みから来ています。そこでこの節では、仕組みを説明したうえで、フラグを立てる要素自身の見た目の書き方と、子から親へ状態を伝えるときの `:has()` との使い分けを扱います。
+
+<Baseline id="container-style-queries" name="スタイルクエリ" />
+
+## 閾値と状態のセレクタが子要素に散らばる問題
+
+画像と見出しを並べたカードで、置かれた場所が広いときに、配置、画像の縦横比、見出しの文字サイズをそろって変えたい場面を考えます。子要素ごとにコンテナサイズクエリを書くと、同じ閾値が要素の数だけ並びます。
+
+```css title="🙅‍♂ Not Recommended: 子要素ごとに同じ閾値のコンテナサイズクエリを書く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    display: block grid;
+    gap: 12px;
+
+    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
+      grid-template-columns: calc(240 / 16 * 1rem) 1fr;
+    }
+  }
+
+  ._thumbnail {
+    aspect-ratio: 16 / 9;
+
+    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
+      aspect-ratio: 1;
+    }
+  }
+
+  ._title {
+    font-size: calc(18 / 16 * 1rem);
+
+    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+}
+```
+
+閾値を変えるときは、この3か所をすべて直します。1か所でも直し忘れると、配置は横並びになったのに見出しは小さいままといった、どの幅のデザインにもない中間の状態ができます。閾値の式をカスタムプロパティに入れて共有する方法も採れません。コンテナサイズクエリの条件では `var()` を使わないのが本書のルールだからです（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」のルール `no-var-in-query`）。
+
+ホバーとフォーカスでも、同じ形の重複が起こります。リンクにホバーしたとき、中のアイコンを動かし、ラベルに下線を引くとします。従来は、親の状態のセレクタの後ろに子孫結合子で子を続けて選んでいました。
+
+```css title="🙅‍♂ Not Recommended: 親の状態のセレクタから、子孫結合子で子を選ぶ"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.link-menu) to (.scoped) {
+  a {
+    &:any-link:hover ._icon {
+      @media (any-hover) {
+        translate: 4px;
+      }
+    }
+
+    &:focus-visible ._icon {
+      translate: 4px;
+    }
+
+    &:any-link:hover ._label {
+      @media (any-hover) {
+        text-decoration-line: underline;
+      }
+    }
+
+    &:focus-visible ._label {
+      text-decoration-line: underline;
+    }
+  }
+}
+```
+
+この書き方では、ホバーとフォーカスの2つの条件を、変えたい子要素の数だけ書き写すことになります。`a:any-link:hover ._icon` の詳細度は0.3.1で、`._icon` 自身のルールの0.1.0より高くなります。アイコンの見た目をあとで別の状態で変えたいときは、さらに詳細度の高いセレクタが要ります。アイコンの見た目も、自身のルールと親のルールの2か所に分かれ、`._icon` のルールを読むだけでは、どの状態でどう変わるのかが分かりません。
+
+## 状態をフラグにして子孫に伝える
+
+どちらの重複も、状態を1つの要素でカスタムプロパティのフラグとして立て、子孫の要素がそのフラグを問い合わせる形に変えれば解消します。`@container style(--_density: --spacious)` は、祖先の要素の `--_density` の計算値が `--spacious` のときにだけ、中のスタイルを適用する書き方です。カスタムプロパティは継承するので、フラグを立てた要素の子孫なら、どの深さの要素からでも同じ値を読めます。
+
+```css title="🙆‍♂ Recommended: 閾値はフラグを宣言する要素に1回だけ書き、子孫はスタイルクエリで切り替える"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    --_density: --compact;
+
+    display: block grid;
+    gap: 12px;
+
+    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      grid-template-columns: calc(240 / 16 * 1rem) 1fr;
+    }
+  }
+
+  ._thumbnail {
+    aspect-ratio: 16 / 9;
+
+    @container style(--_density: --spacious) {
+      aspect-ratio: 1;
+    }
+  }
+
+  ._title {
+    font-size: calc(18 / 16 * 1rem);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+}
+```
+
+コンテナサイズクエリを書くのは、フラグを宣言する `._body` のルールだけです。`._body` はデフォルト値の `--compact` をクエリの外に書き、クエリの中で `--spacious` に切り替えます。ほかの子孫は、狭い幅の見た目をクエリなしで書き、広い幅の見た目だけを `@container style(--_density: --spacious)` の中に書きます。閾値を変えるときに直すのは、`._body` の1か所です。3段階の切り替えが要るときだけ、`._body` に2つ目のクエリを足して、`--compact`、`--regular`、`--spacious` の順に切り替えます。
+
+ホバーとフォーカスも同じ形で書きます。リンクやボタンの状態のセレクタで `--_hocus: --true` を立て、子要素と擬似要素は `@container style(--_hocus: --true)` で切り替えます。ホバーを `@media (any-hover)` の中に書き、`:focus-visible` にも同じ変化を付けるという2つの条件は、フラグを立てる1か所にだけ書けば済みます（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+
+```css title="🙆‍♂ Recommended: ホバーとフォーカスでフラグを立て、子と擬似要素で問い合わせる"
+@scope (.scoped.link-menu) to (.scoped) {
+  a {
+    --_hocus: --false;
+
+    &:any-link:hover {
+      @media (any-hover) {
+        --_hocus: --true;
+      }
+    }
+
+    &:focus-visible {
+      --_hocus: --true;
+    }
+
+    &::after {
+      content: "";
+
+      @container style(--_hocus: --true) {
+        translate: 4px;
+      }
+    }
+  }
+
+  ._label {
+    @container style(--_hocus: --true) {
+      text-decoration-line: underline;
+    }
+  }
+}
+```
+
+フラグの値には、`--compact` や `--true` のように `--` で始まる識別子を使い、自分で付けた名前だと分かるようにします（「[9-1 命名規則](/notation/naming/)」）。状態のフラグの値は、どのコンポーネントでも `--true` と `--false` にそろえます。スタイルクエリは値が一致するかどうかを調べるだけなので、`--true` と `1` や `true` が混ざっていると、`style(--_hocus: 1)` と書き間違えても条件が成り立たないだけで、構文の誤りにはなりません。値をそろえておけば、この取り違えが起こりません。
+
+## スタイルクエリが問い合わせる要素
+
+スタイルクエリを使うのに、`container` の指定は要りません。仕様では、`container-type` の初期値 `normal` の要素も、サイズの問い合わせには使えない一方で、スタイルの問い合わせには使えるコンテナとされています。つまり、すべての要素がスタイルクエリのコンテナです。
+
+名前を書かない `@container style()` は、条件を書いた要素の最も近い祖先のコンテナを問い合わせます。すべての要素がコンテナなので、問い合わせ先は実質的に親の要素です。親より上の要素で立てたフラグも、継承によって親の計算値になっているので、子孫のどの深さからでも読めます。サイズの条件と違い、スタイルクエリに `--scoped` のような名前を付けずに済むのは、このためです。`@container --scoped style(…)` のように名前を付けると、問い合わせ先がルートに変わり、ルートの子孫で宣言したフラグを読めなくなります。
+
+擬似要素（`::before`、`::after`、`::marker`）は、元の要素を問い合わせます。仕様は、擬似要素のクエリのコンテナになれる要素を、元の要素とその祖先と定めています。そのため、リンク自身に立てた `--_hocus` で、リンクの `::after` の矢印を切り替えられます。
+
+一方で、要素は自分自身を問い合わせられません。`@container` は、コンテナの子孫のスタイルに条件を付ける仕組みだからです。`._body` に `@container style(--_density: --spacious)` を書くと、`._body` 自身の値ではなく親の値を調べるので、`._body` の配置は切り替わりません。そのため、フラグを宣言した要素自身の見た目は、フラグを切り替えるのと同じサイズクエリの中に書きます。ホバーとフォーカスでも同じで、リンク自身の背景色は `&:any-link:hover` と `&:focus-visible` の中に直接書きます。値は `--_background--hocus` のような接尾辞の内部プロパティで受けます（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
+
+フラグのデフォルト値（`--compact`、`--false`）を明示するのは、カスタムプロパティが継承するからです。デフォルト値を書かないと、このコンポーネントを別のコンポーネントの中に置いたとき、外側で同じ名前のフラグが立っていれば、その値を受け継ぎます。外側のリンクにホバーしただけで、内側のコンポーネントの矢印まで動くことになります。同じ理由で、フラグはルートの `:scope` ではなく、`._body` のようなルートの子孫に置きます。`:scope` に書いた `@container --scoped (…)` は、ルート自身ではなく外側のコンポーネントのルートを問い合わせるからです（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
+
+## 子から親へ伝えるときの:has()
+
+スタイルクエリは、親から子孫への一方向にしか状態を伝えられません。カードの中のリンクにホバーしたとき、カード全体の影を濃くするように、子の状態で親自身の見た目を変えるときは、従来どおり `:has()` を使います。
+
+子孫のホバーとフォーカスを、親でまとめてほかの子孫に伝えたいときは、`:has()` とフラグを組み合わせます。ルートで `--_has-hocus: --true` を立て、伝えたい子孫は `@container style(--_has-hocus: --true)` で切り替えます。次の例では、カードの中のリンクにホバーするかフォーカスすると、リンクの外にある画像が拡大されます。
+
+```css title="🙆‍♂ Recommended: 子孫のホバーとフォーカスを :has() で受け、フラグでほかの子孫に伝える"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    --_has-hocus: --false;
+
+    &:has(:any-link:hover) {
+      @media (any-hover) {
+        --_has-hocus: --true;
+      }
+    }
+
+    &:has(:focus-visible) {
+      --_has-hocus: --true;
+    }
+  }
+
+  img {
+    @container style(--_has-hocus: --true) {
+      scale: 1.05;
+    }
+  }
+}
+```
+
+ここでもルート自身の見た目（影など）は、フラグではなく `&:has(…)` の中に直接書きます。ルートの子孫が読むだけなので、このフラグは `:scope` に置いてかまいません。`:scope` に置けないのは、サイズクエリでフラグを切り替える場合だけです。なお、`[open]` や `aria-expanded` のような属性で表す祖先の状態は、「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」の `&:is(:scope[open] *)` の形で子のルールの中に書けます。ホバーとフォーカスでフラグを使うのは、`@media (any-hover)` と `:focus-visible` の2つの条件を子ごとに書き写さないためです。
+
+## コード例とデモ
+
+次のデモでは、同じイベントのカードをメインエリアとサイドバーに置いています。コンテナサイズクエリを書いているのは、フラグを宣言する `._layout` だけです。メインエリアのカードだけが閾値を超え、日付の位置、日の数字、見出し、説明の文字サイズがそろって切り替わります。
+
+<Demo title="1つのフラグで、日付の配置と文字サイズをそろえて切り替えるカード" html={densityHtml} css={densityCss} />
+
+`._date` の中の `._day` は、`._layout` から見て孫の要素ですが、`--_density` が継承されているので同じ形で問い合わせられます。`._layout` 自身の列と余白は、`--_density` を切り替えるのと同じサイズクエリの中で変えています。閾値の式は、日付の列、隙間、本文の最小幅を足したものです（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
+
+次のデモは、ホバーとフォーカスで矢印が右へ動くリンクの一覧です。リンク自身の背景色は状態のセレクタに直接書き、`::after` の矢印とラベルの下線は `--_hocus` を問い合わせて切り替えています。キーボードのTabキーでフォーカスを移しても、同じように変わります。
+
+<Demo title="ホバーとフォーカスで、矢印が動き、ラベルに下線が引かれるリンク" html={hocusHtml} css={hocusCss} />
+
+矢印の上下の位置は、`margin-block: calc((1lh - var(--_icon-size)) / 2)` で決めています。`1lh` はその要素の行の高さなので、ラベルが2行に折り返しても、矢印は1行目の高さの中で上下の中央にそろいます（「[11-2 floatで文章を回り込ませる](/layout-practice/float/)」）。矢印のトランジションは装飾的な動きなので、`prefers-reduced-motion: no-preference` の中に書いています。
+
+## 補足と注意点
+
+フラグを立てた要素自身の値を、そのフラグで切り替えたい場面もあります。その選択肢が `if()` で、`if(style(--_density: --spacious): 24px; else: 12px)` のように、要素自身に定義したカスタムプロパティの値で1つの値を切り替えられます。ただし、`if()` に対応しているのはChrome 137以降とEdgeだけで、FirefoxとSafariは対応していません（2026年10月確認）。仕様もCSS Values 5のEditor's Draftの段階です。使うなら、「[6-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」のルールに従い、前に従来の宣言を書いて、条件1つと `else` の形にとどめます。
+
+<Baseline id="if" name="if()" />
+
+スタイルクエリは、Chrome 111、Safari 18、Firefox 151で使えるようになり、2026年5月にBaselineの新しく利用可能（Newly available）になりました（2026年10月確認）。本書の対象のSafari 18でも動きます。一方、`style(--_columns > 2)` のような範囲の比較は、ChromeとFirefoxが対応しているもののSafariが対応していないので、使いません。フラグは値が一致するかどうかだけで判定できる識別子にしておけば、範囲の比較は要りません。
+
+<Baseline id="style-query-range-syntax" name="スタイルクエリの範囲の比較" />
+
+スタイルクエリに対応していない環境では、`@container style()` の中のスタイルが適用されず、デフォルトの見た目だけが残ります。子孫のデフォルトの見た目をモバイルファーストの狭い幅に合わせて書いておけば、フラグを宣言する要素の配置だけが広い幅に切り替わり、子孫は狭い幅の見た目のまま表示されます。ホバーとフォーカスでは、子の変化がなくなっても、リンク自身の背景色の変化は残ります。
+
+フラグは見た目を切り替えるためのもので、状態そのものを支援技術に伝えるものではありません。開閉や選択のように、意味を持つ状態は、`aria-expanded` や `aria-selected` のような属性でHTMLに表し、CSSはその属性を読みます（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。CSSのフラグとして立てるのは、ホバーや幅のように、HTMLに属性として書かない状態に限ります。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS Conditional Rules Module Level 5: Container Queries](https://drafts.csswg.org/css-conditional-5/#container-queries)（W3C）
+- [CSS Conditional Rules Module Level 5: Style Container Queries](https://drafts.csswg.org/css-conditional-5/#style-container)（W3C）
+- [Using container size and style queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_size_and_style_queries)
+- [@container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@container)
+- [CSS Values and Units Module Level 5: Conditional Value Selection](https://drafts.csswg.org/css-values-5/#if-notation)（W3C）
+- [if() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/if)

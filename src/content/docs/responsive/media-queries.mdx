@@ -1,5 +1,5 @@
 ---
-title: 12-4 メディアクエリ
+title: 13-4 メディアクエリ
 description: メディアクエリは、ビューポートを基準にしたページ全体の段組み、ユーザーの設定、入力の手段を調べるときに使い、条件は範囲構文で書きます。メディア特性は、使うもの、使わないもの、まだ使えないものに分けて選びます。
 sidebar:
   order: 4
@@ -13,7 +13,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 本書でメディアクエリを使うのは、3つの場面です。ビューポートを基準にするページ全体の段組み（とビューポートに固定した要素）、動きを減らすといったユーザーの設定、ホバーやポインターの精度といった入力の手段です。幅の条件は `min-width` ではなく範囲構文で書き、メディア特性は、使うもの、使わないもの、まだ使えないものに分けて選びます。
 
-コンポーネントの中の切り替えは、先に「[12-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で書けないかを考えます。ブレイクポイントの値の決め方と書き方は、「[12-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。
+コンポーネントの中の切り替えは、先に「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で書けないかを考えます。ブレイクポイントの値の決め方と書き方は、「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。
 
 <Baseline id="media-query-range-syntax" name="メディアクエリの範囲構文" />
 
@@ -44,7 +44,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 `device-width` と `device-height`（`device-aspect-ratio` も同様）は使いません。これらが調べるのは端末の画面そのものの大きさで、ブラウザのウィンドウが実際に使える幅ではありません。ウィンドウを狭めたり、分割表示にしたり、ズームしたりしても値は変わらないため、レイアウトの判断に使えません。MDNも新しいプロジェクトでは避けるよう書いており、代わりに `width` を使います。
 
-`screen` のメディアタイプも書きません。印刷のスタイルと分ける必要があるときに `print` を書けば足り、`screen and` を付けても条件が読みにくくなるだけだからです。印刷のスタイルは第15章で説明します。{/* 第15章の執筆後にリンクする: /decoration/print/ */}
+`screen` のメディアタイプも書きません。印刷のスタイルと分ける必要があるときに `print` を書けば足り、`screen and` を付けても条件が読みにくくなるだけだからです。印刷のスタイルは第16章で説明します。{/* 第16章の執筆後にリンクする: /decoration/print/ */}
 
 ## 範囲構文で書く
 
@@ -70,7 +70,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 }
 ```
 
-閾値をremで書く理由と、`calc(640 / 16 * 1rem)` の形にする理由は、「[12-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。範囲構文はコンテナサイズクエリの条件にも使い、`@container --scoped (inline-size >= …)` のように書きます。
+閾値をremで書く理由と、`calc(640 / 16 * 1rem)` の形にする理由は、「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。範囲構文はコンテナサイズクエリの条件にも使い、`@container --scoped (inline-size >= …)` のように書きます。
 
 ## 基本にするスタイルと広い画面の差分
 
@@ -88,7 +88,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 狭い画面を基本にするのは、多くの場合、狭い画面のレイアウトのほうが単純だからです。1カラムに積んだ状態を基本にしておけば、広い画面で段組みを足す差分は小さく済みます。広い画面の複雑なレイアウトを基本にすると、狭い画面で打ち消すための指定が増えていきます。
 
-条件付きのアットルールは、上のコード例のように各セレクタの中に書きます。条件のブロックをファイルやスコープの先頭にまとめて置くと、同じ詳細度の元のルールがその後ろに来たとき、後ろのルールが優先され、条件付きの指定が打ち消されてしまうからです。この規約は「[7-4 ネストの書き方](/notation/nesting/)」で説明しています。
+条件付きのアットルールは、上のコード例のように各セレクタの中に書きます。条件のブロックをファイルやスコープの先頭にまとめて置くと、同じ詳細度の元のルールがその後ろに来たとき、後ろのルールが優先され、条件付きの指定が打ち消されてしまうからです。この規約は「[9-4 ネストの書き方](/notation/nesting/)」で説明しています。
 
 ## コード例とデモ
 
@@ -96,7 +96,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 <Demo title="本文とサイドバーの段組みを、成り立つ幅でだけ2カラムにする" html={pageHtml} css={pageCss} />
 
-832px相当より狭いときは、サイドバーが本文の下に回ります。このように、ページ全体の骨組みはメディアクエリで、その中に置くコンポーネントはコンテナサイズクエリで切り替えるのが、本書の基本の役割分担です。
+文字サイズが標準のとき、832pxより狭い画面では、サイドバーが本文の下に回ります。このように、ページ全体の骨組みはメディアクエリで、その中に置くコンポーネントはコンテナサイズクエリで切り替えるのが、本書の基本の役割分担です。
 
 この役割分担は、部屋と家具にたとえると整理できます。部屋がページ（ほぼビューポート）で、家具がヘッダーや本文、サイドバーといったランドマークやセクションです。家具の配置や数、大きさは部屋の大きさで決まるので、ページ全体のレイアウト（マクロレイアウト）としてメディアクエリで扱います。家具の上に置くボタンやカードの配置は、置かれた家具の大きさで決まるので、部分のレイアウト（ミクロレイアウト）としてコンテナサイズクエリで扱います。
 
@@ -104,9 +104,9 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 幅のメディアクエリを使ってよいのは、ページ全体の段組みの切り替え、モーダルやトーストのようにビューポートに固定される要素、そして常に画面幅いっぱいに表示され、ほかの場所に置かれることがないと言い切れるブロック（ヒーローヘッダーなど）です。どれも、ビューポートの大きさそのものが判断の基準になります。モーダルやトーストは、マークアップ上のどこに書かれていても、表示されるときはビューポートを基準に配置されます。
 
-ヒーローヘッダーのようなブロックは、「ほかの場所に置かれることがない」と言い切れるかどうかが分かれ目です。同じ見た目のブロックを記事の途中にも置く可能性があるなら、コンテナサイズクエリで書いておくほうが安全です。ブロックの幅がビューポートの幅と一致しなくなり、ビューポートを基準にした切り替えが合わなくなるからです。ビューポート単位（`svi` や `svb`）も、同じ基準で使い分けます（「[4-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
+ヒーローヘッダーのようなブロックは、「ほかの場所に置かれることがない」と言い切れるかどうかが分かれ目です。同じ見た目のブロックを記事の途中にも置く可能性があるなら、コンテナサイズクエリで書いておくほうが安全です。ブロックの幅がビューポートの幅と一致しなくなり、ビューポートを基準にした切り替えが合わなくなるからです。ビューポート単位（`svi` や `svb`）も、同じ基準で使い分けます（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
 
-画面の幅で画像を差し替えるときは、CSSの `background-image` を切り替えずに、HTMLの `<picture>` の `<source>` に `media` 属性で条件を書きます。`media` 属性はビューポートを基準にするメディアクエリで、範囲構文もそのまま使えます。写真を `<img>` で置く理由は「[15-1 画像と装飾](/decoration/images-and-decoration/)」で説明しています。
+画面の幅で画像を差し替えるときは、CSSの `background-image` を切り替えずに、HTMLの `<picture>` の `<source>` に `media` 属性で条件を書きます。`media` 属性はビューポートを基準にするメディアクエリで、範囲構文もそのまま使えます。写真を `<img>` で置く理由は「[16-1 画像の配置と読み込み](/decoration/images/)」で説明しています。
 
 ```html
 <picture>
@@ -122,14 +122,14 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 | メディア特性 | 判断 | 理由と説明している場所 |
 | --- | --- | --- |
 | `width`（範囲構文） | 使う | ページ全体の段組み。この節 |
-| `prefers-reduced-motion` | 使う | 動きを減らす設定。[17-2](/motion/reduced-motion/) |
-| `any-hover` | 使う | ホバーできる入力があるか。値なしの `(any-hover)` と書く。[16-1](/interaction/states-and-focus/) |
+| `prefers-reduced-motion` | 使う | 動きを減らす設定。[18-2](/motion/reduced-motion/) |
+| `any-hover` | 使う | ホバーできる入力があるか。値なしの `(any-hover)` と書く。[17-1](/interaction/states-and-focus/) |
 | `any-pointer` | 使う | 入力の精度。この節 |
 | `prefers-contrast` | 使う | コントラストを上げる設定。この節 |
-| `forced-colors` | 使う | 強制カラーモード。[14-5](/color-media/forced-colors/) |
-| `prefers-color-scheme` | トークンでだけ使う | コンポーネントには書かず、トークンの `light-dark()` で切り替える。[14-4](/color-media/dark-mode/) |
-| `scripting` | 使う | JavaScriptが使えるか。[1-3](/principles/browser-support/) |
-| `print`（メディアタイプ） | 使う | 印刷のスタイル。15-4 |
+| `forced-colors` | 使う | 強制カラーモード。[15-5](/color-media/forced-colors/) |
+| `prefers-color-scheme` | トークンでだけ使う | コンポーネントには書かず、トークンの `light-dark()` で切り替える。[15-4](/color-media/dark-mode/) |
+| `scripting` | 使う | JavaScriptが使えるか。[1-2](/principles/browser-support/) |
+| `print`（メディアタイプ） | 使う | 印刷のスタイル。16-6 |
 | `prefers-reduced-transparency` | 追加の対策として使う | Chrome系だけが対応。この節 |
 | `min-width`、`max-width` | 使わない | 範囲構文で書く |
 | `device-width`、`device-height`、`device-aspect-ratio` | 使わない | 端末の画面の大きさで、使える幅ではない |
@@ -138,7 +138,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 | `resolution` | 使わない | 画像の解像度は `srcset` で選ばせる |
 | `screen`（メディアタイプ） | 書かない | `print` と分けるときだけ `print` を書く |
 | `display-mode` | 使わない | インストールしたアプリの表示を調べるもので、Webサイトの制作では使わない |
-| `color-gamut`、`dynamic-range` | 使わない | 範囲外の色はブラウザが置き換える。[14-1](/color-media/color/) |
+| `color-gamut`、`dynamic-range` | 使わない | 範囲外の色はブラウザが置き換える。[15-1](/color-media/color/) |
 | `inverted-colors` | まだ使えない | Safariだけが対応 |
 | `prefers-reduced-data` | まだ使えない | どのブラウザも対応していない |
 | `@custom-media` | まだ使えない | どのブラウザも対応していない |
@@ -147,7 +147,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 {/* 要確認: 出典なし */}`display-mode` は、ホーム画面に追加したWebアプリの表示のされ方を調べるメディア特性です。本書が対象にするコーポレートサイトやLPでは分岐が要らず、`fullscreen` の値はSafariとデスクトップのFirefoxが対応していません。`color-gamut` と `dynamic-range` は対応がそろっていますが、`oklch()` で書いた色が画面で表示できる範囲を超えると、ブラウザが近い色に置き換えて描画するので、通常は分岐を書かずに済みます。
 
-`@custom-media` は、`@custom-media --wide (width >= calc(768 / 16 * 1rem));` のように条件に名前を付けて使い回す仕様です。ブラウザが対応すれば、条件の中に `var()` を書けない問題（「[12-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）を解決できますが、2026年10月の時点ではどのブラウザも対応していません。
+`@custom-media` は、`@custom-media --wide (width >= calc(768 / 16 * 1rem));` のように条件に名前を付けて使い回す仕様です。ブラウザが対応すれば、条件の中に `var()` を書けない問題（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）を解決できますが、2026年10月の時点ではどのブラウザも対応していません。
 
 <Baseline id="custom-media-queries" name="@custom-media" />
 
@@ -173,7 +173,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 `prefers-contrast` は、OSでコントラストを上げる、または下げる設定にしているかを調べます。値は `no-preference`、`more`、`less`、`custom` の4つです。`custom` は強制カラーモードの状態に当たり、ユーザーが選んだ配色で色が上書きされるので、色の指定は要りません。薄い灰色の境界線や補助テキストで区別や意味を伝えている部品は、`more` のときに色を濃くします。
 
-`forced-colors` は配色を上書きするモードですが、`prefers-contrast: more` は配色を上書きせず、コントラストを上げてほしいという希望だけを伝えます。強制カラーモードに対応しただけでは、この設定のユーザーには薄い色が残ります。強制カラーモードの扱いは「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
+`forced-colors` は配色を上書きするモードですが、`prefers-contrast: more` は配色を上書きせず、コントラストを上げてほしいという希望だけを伝えます。強制カラーモードに対応しただけでは、この設定のユーザーには薄い色が残ります。強制カラーモードの扱いは「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: コントラストを上げる設定のときに境界線を濃くする"
 ._field {

@@ -1,5 +1,5 @@
 ---
-title: "7-7 モダンな記法にそろえる"
+title: "9-7 モダンな記法にそろえる"
 description: 寸法と余白は論理プロパティ、display は2値構文、変形は translate・rotate・scale の個別プロパティで書きます。色の関数はスペース区切りにし、rgba() とカンマ区切りは使いません。
 sidebar:
   order: 7
@@ -10,7 +10,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 同じ見た目を作れる書き方が複数あるときは、新しい記法にそろえます。寸法や余白は `width` ではなく `inline-size` のような論理プロパティで、`display` は `block flex` のような2値構文で書きます。変形は `transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティで書きます。
 
-色の関数は `rgb(0 0 0 / 80%)` のようにスペースで区切り、`rgba()` やカンマ区切りは使いません。色相には `deg` を付けます。ベンダープレフィックスは、接頭辞なしでは動かないものを除いて書きません。メディアクエリの範囲構文もこの仲間ですが、ルールは第12章で扱います。
+色の関数は `rgb(0 0 0 / 80%)` のようにスペースで区切り、`rgba()` やカンマ区切りは使いません。色相には `deg` を付けます。ベンダープレフィックスは、接頭辞なしでは動かないものを除いて書きません。メディアクエリの範囲構文もこの仲間ですが、ルールは第13章で扱います。
 
 どれも、新しいことができるようになる書き方ではありません。目的は、コードの書き方をそろえ、読んだときに意図が伝わるようにすることです。ほとんどは本書のStylelintの設定で検出できるので、全部を覚えなくても、ツールの指摘に従えば守れます。
 
@@ -48,7 +48,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 | `padding-left`、`padding-right` | `padding-inline`（まとめて指定） |
 | `top`、`right`、`bottom`、`left` | `inset` と `inset-block-start` など |
 
-論理プロパティにそろえる理由は、多言語への対応よりも、FlexboxやGridのような主要なレイアウトの仕組みが書字方向を基準に動いているからです。理由の詳細と、物理でしか書けないものとの混在、`margin-inline` を左右の余白として扱ってよいか、右から左へ書く言語と縦書きでの振る舞いは、「[7-8 論理プロパティと論理値](/notation/logical-properties/)」で説明します。
+論理プロパティにそろえる理由は、多言語への対応よりも、FlexboxやGridのような主要なレイアウトの仕組みが書字方向を基準に動いているからです。理由の詳細と、物理でしか書けないものとの混在、`margin-inline` を左右の余白として扱ってよいか、右から左へ書く言語と縦書きでの振る舞いは、「[9-8 論理プロパティと論理値](/notation/logical-properties/)」で説明します。
 
 ## `display` の2値構文
 
@@ -115,8 +115,24 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 
 ```css title="🙆‍♂ Recommended: 回転はそのままに、移動だけを変える"
 ._more-link {
+  --_hocus: --false;
+
+  &:focus-visible {
+    --_hocus: --true;
+  }
+
+  &:any-link:hover {
+    @media (any-hover) {
+      --_hocus: --true;
+    }
+  }
+
   &::after {
     rotate: 45deg;
+
+    @container style(--_hocus: --true) {
+      translate: 4px 0;
+    }
   }
 
   &:not(:focus-visible)::after {
@@ -125,28 +141,55 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
       transition-property: translate;
     }
   }
+}
+```
 
-  &:focus-visible::after {
-    translate: 4px 0;
+個別のプロパティなら、ホバーとフォーカスで変えるのは移動の値だけです。トランジションの対象も `translate` に絞れます。値の書き方は、`translate: 4px 0`（横と縦）、`rotate: 45deg`、`scale: 1.1` のようにシンプルです。なお、どちらの例も、キーボードでフォーカスしたときは一度で動かすために、トランジションを `:not(:focus-visible)` の中に書いています（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+
+2つ目の例では、リンクのホバーとフォーカスを、フラグのカスタムプロパティ `--_hocus` で `::after` に伝えています。リンクの状態のセレクタで `--_hocus: --true` を立て、`::after` の中の `@container style(--_hocus: --true)` で移動を切り替えます。擬似要素の名前なしの `style()` は、元の要素（ここではリンク）を問い合わせます。リンクにデフォルト値の `--_hocus: --false` を明示しているのは、外側の要素で立てたフラグを継承して動いてしまわないようにするためです。この書き方は「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
+
+`transform` を使うのは、個別のプロパティがない `skewX()` などの変形、X軸とY軸の回転を重ねるような3Dの複合指定、個別のプロパティでは表せない順番で変形を重ねる場合だけです。`rotate` プロパティは1つの軸の回転しか表せません。順番については、次に説明する合成の決まりがあります。
+
+<Baseline id="individual-transforms" name="個別の変形プロパティ" />
+
+## 個別の変形プロパティを合成する順番
+
+個別のプロパティは、宣言を書いた順に関係なく、仕様が定める順番に従って合成されます。CSS Transforms Level 2の仕様は、要素の変形の行列を、`translate`、`rotate`、`scale`、`transform` の順に掛け合わせて求めると定めています。後から掛けた行列ほど先に作用するので、見た目の上では、要素はまず `transform` の関数で変形され、次に `scale`、`rotate`、`translate` の順に変形されます。そのため、拡大・縮小と回転は `transform-origin` を中心に行われ、移動は回転の影響を受けず、画面の向きのまま行われます。
+
+この順番は、アニメーションやトランジションで値を変えている間も変わりません。`@keyframes` で `rotate` と `translate` を動かしても、要素はその場で回転し、移動は常に画面の向きに沿います。そのため、「回転してから、回転した向きに移動する」動きは、個別のプロパティでは作れません。中心の周りを回る軌道の動きがその例です。
+
+決まった順番から外れる変形をアニメーションさせるときは、`transform` に関数を並べて書いてかまいません。次の例では、`rotate()` で回転した向きに `translate()` で24px動かすので、点は半径24pxの円を描きます。
+
+```css title="🙆‍♂ Recommended: 回転した向きに移動する軌道の動きは transform で書く"
+@keyframes --loading-orbit--revolve {
+  from {
+    transform: rotate(0deg) translate(24px);
   }
 
-  &:any-link:hover::after {
-    @media (any-hover) {
-      translate: 4px 0;
+  to {
+    transform: rotate(360deg) translate(24px);
+  }
+}
+
+@scope (.scoped.loading-orbit) to (.scoped) {
+  ._dot {
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: --loading-orbit--revolve;
+      animation-duration: 1.2s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
     }
   }
 }
 ```
 
-個別のプロパティなら、ホバーとフォーカスで書くのは移動の値だけです。トランジションの対象も `translate` に絞れます。値の書き方は、`translate: 4px 0`（横と縦）、`rotate: 45deg`、`scale: 1.1` のようにシンプルです。なお、どちらの例も、キーボードでフォーカスしたときは一度で動かすために、トランジションを `:not(:focus-visible)` の中に書いています（「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+`from` と `to` で関数の並びをそろえているので、ブラウザは関数ごとに値を補間します。`rotate()` が0度から360度まで回る間、`translate()` の24pxは変わりません。並びがそろっていないと、行列に変換してから補間するので、0度と360度の回転が同じ行列になり、点は回りません。`transform-origin` を要素の外にずらし、`rotate` だけで回す方法もあります。ただ、その場合は回転の中心を要素の大きさから逆算することになり、軌道の半径を値として読み取れません。{/* 要確認: 出典なし（行列での補間の説明は仕様の補間の規則から） */}
 
-`transform` を使うのは、個別のプロパティがない `skewX()` などの変形、変形の順番を変える必要がある場合、X軸とY軸の回転を重ねるような3Dの複合指定だけです。`rotate` プロパティは1つの軸の回転しか表せません。個別のプロパティは、常に `transform: translate() rotate() scale()` と書いたときと同じ順番で組み合わされます。「回転してから、回転した向きに移動する」ように順番を変えたいときは、`transform` に関数を並べて書きます。
-
-<Baseline id="individual-transforms" name="個別の変形プロパティ" />
+一方で、「1行で書きたいから」は `transform` を使う理由にしません。変形の順番が決まった順番と同じなら、個別のプロパティで書いても見た目は変わらず、変形ごとに値を変えられる利点も残るからです。`transform` を選ぶのは、上に挙げたように、個別のプロパティでは表せない変形がある場合に限ります。
 
 ## クエリの範囲構文
 
-メディアクエリとコンテナサイズクエリの条件は、`min-width: 768px` ではなく `width >= 768px` のような範囲構文で書きます。不等式としてそのまま読めて、境界の値を含むかどうかも明確になるからです。書き方と理由は「[12-4 メディアクエリ](/responsive/media-queries/)」で説明しています。
+メディアクエリとコンテナサイズクエリの条件は、`min-width: 768px` ではなく `width >= 768px` のような範囲構文で書きます。不等式としてそのまま読めて、境界の値を含むかどうかも明確になるからです。書き方と理由は「[13-4 メディアクエリ](/responsive/media-queries/)」で説明しています。
 
 ## 色の関数の書き方
 
@@ -171,7 +214,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 
 `rgba()` は、仕様上は `rgb()` の別名で、古い書き方として廃止されたわけではありません。ただ、`rgb()` でも不透明度を指定できるので、同じ意味の関数を2つ使い分ける理由がありません。不透明度はパーセントで書き、色相の `deg` も省略しません。数値が角度だとはっきりし、明度や彩度の値と見分けやすくなるからです。
 
-本書のStylelintの設定では、これらを4つのルールで検出し、自動修正もできます。対象のルールは、`color-function-notation`、`color-function-alias-notation`、`alpha-value-notation`、`hue-degree-notation` です。`white` のような色の名前（`color-named`）と、`#00000080` のような不透明度付きの16進数（`color-hex-alpha`）も禁止しています。どの色の関数を選ぶかは、「[14-1 色の形式と色空間](/color-media/color/)」で扱います。
+本書のStylelintの設定では、これらを4つのルールで検出し、自動修正もできます。対象のルールは、`color-function-notation`、`color-function-alias-notation`、`alpha-value-notation`、`hue-degree-notation` です。`white` のような色の名前（`color-named`）と、`#00000080` のような不透明度付きの16進数（`color-hex-alpha`）も禁止しています。どの色の関数を選ぶかは、「[15-1 色の形式と色空間](/color-media/color/)」で扱います。
 
 ## ベンダープレフィックス
 
@@ -199,6 +242,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 - [CSS 論理的プロパティと値 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_logical_properties_and_values)
 - [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)
 - [translate - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/translate)
+- [CSS Transforms Module Level 2](https://drafts.csswg.org/css-transforms-2/#ctm)
 - [rgb() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/rgb)
 - [tak-dcxi/stylelint-plugin-display-multi-keyword-syntax - GitHub](https://github.com/tak-dcxi/stylelint-plugin-display-multi-keyword-syntax)
 - [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）

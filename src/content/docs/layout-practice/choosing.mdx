@@ -1,0 +1,282 @@
+---
+title: "11-1 レイアウト手法の選び方"
+description: "要素を並べる手法は、作るものの種類で選びます。見出しと段落が続く文章や、前後の要素の種類や有無で間隔が変わる縦の並びは通常フローのまま組み、部品の配置はまず親の grid-template で決められないかを検討します。中身の量で幅が決まる並びや行ごとに並べ方を変える並びにはFlexboxを、文章を要素のまわりに回り込ませる配置にはfloatを使います。"
+sidebar:
+  order: 1
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import lastRowCenterHtml from '../../../demos/layout-practice/last-row-center/index.html?raw';
+import lastRowCenterCss from '../../../demos/layout-practice/last-row-center/style.css?raw';
+
+要素を並べる手法は、作るものの種類で選びます。見出しと段落が続く文章と、前後の要素の種類や有無で間隔が変わる縦の並びは、何も指定しない通常フローのまま組みます。文章でない部品の配置は、まず親の `grid-template` で子要素の位置と大きさを決められないかを検討し、タグやメニューのように中身の量で幅が決まる並びや、行ごとに並べ方を変える並びにはFlexboxを使います。
+
+`float` は古い手法と見なされがちですが、文章を要素のまわりに回り込ませる配置では、今でもいちばん崩れにくい手法です。画像に文字を回り込ませる場面のほか、モーダルの閉じるボタンや右上の装飾の画像を文章の角に置く場面でも、私は `position: absolute` ではなく `float` を使います（「[11-2 floatで文章を回り込ませる](/layout-practice/float/)」）。この節では、よくある実装を例に、どの手法を選ぶかとその理由を説明します。各手法の仕組みは、7-2〜7-8で説明しています。
+
+## 手法を選ばずに組むと起きること
+
+FlexboxとGridが普及してから、要素を並べるときに、まず `display: flex` を書く人は少なくありません。AIが生成するコードにも同じ傾向があり、配置をFlexboxで組み、それで収まらない要素は `position: absolute` で位置を合わせがちです。どちらも見た目は再現できますが、手法の得意な仕事と作るものの性質が合っていないと、内容や幅が変わったときに崩れます。
+
+たとえば、カードを3列の格子状に並べるとき、Flexboxで書くと次のようになります。親で折り返しと間隔を指定し、子要素の幅は「親の幅から間隔の合計を引き、列数で割る」という計算で決めています。
+
+```css title="🙅‍♂ Not Recommended: 格子状の並びを、子要素の幅の計算で作る"
+/* 🙅‍♂ Not Recommended */
+._card-list {
+  display: block flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  & > * {
+    flex-basis: calc((100% - 16px * 2) / 3);
+  }
+}
+```
+
+この書き方では、子要素が親の間隔と列数を知っている必要があります。間隔を24pxに変えたら、子要素の計算式も直さなければなりません。レイアウトを決める情報が親と子に分かれているので、どちらか一方だけを直して崩れる、という事故が起きやすくなります。
+
+位置指定でも、似たことが起きます。モーダルの右上に閉じるボタンを `position: absolute` で置くと、ボタンは通常フローから外れ、文章はボタンのある場所を避けません。広い画面では見出しの右に余白があって重なりませんが、狭い画面では長い見出しがボタンの下に潜り込み、読めなくなります。見出しの `padding-inline-end` でボタンを避けると、今度はボタンの大きさを変えるたびに、見出しの余白も直さなければなりません。
+
+よく「1次元ならFlexbox、2次元ならGrid」と言われますが、この基準では、上のどちらの問題も避けられません。ナビゲーション、本文、サイドバーを横に並べるページの段組みは1次元のレイアウトですが、Gridのほうが簡潔に書けます。文章と閉じるボタンの関係は、そもそも次元の数では説明できません。手法は、配置を何が決めるのか（親の指定か、子の中身の量か、文章の流れか）で選ぶほうが、作るものの性質と食い違わないと私は考えています。
+
+## よくある実装と選ぶ手法
+
+私が手法を選ぶ順番は、次のとおりです。まず、作るものが文章か、間隔が前後の要素で変わる縦の並びかを確かめ、そうなら通常フローのまま組みます。そうでなければ、親の `grid-template` で配置と大きさを決められないかを検討し、子の中身の量で並べたいときと、行ごとに並べ方を変えたいときだけFlexboxに切り替えます。文章の中に要素を置き、文章をそのまわりに流したいときは `float` を使います。
+
+| よくある実装 | 選ぶ手法 | 理由 |
+|---|---|---|
+| 見出しと段落が続く記事の本文 | 通常フロー | マージンの相殺と `float` の回り込みが働く |
+| 前後の要素の種類や有無で間隔が変わる縦の並び | 通常フロー | 要素の関係ごとに書いた `margin` がそのまま働く |
+| カードを格子状に並べる一覧 | Grid | 列の数と幅を親で決められる |
+| 一部のタイルだけを大きくした一覧 | Grid | アイテムを複数の行と列にまたがらせられる |
+| 1行なら中央に、複数行なら左に寄せる一覧 | Grid（Flexboxでも可） | 列の幅と中央寄せを親の指定だけで書ける |
+| 並べたカードの中で、見出しやボタンの位置をそろえる | Grid（サブグリッド） | カードの中の行を、親の行にそろえられる（[7-7](/layout/grid-basics/)） |
+| ナビゲーション、本文、サイドバーの段組み | Grid | 各列の幅を親の1行で読める |
+| ロゴ、ナビゲーション、ボタンを並べたヘッダー | Grid | 中央の要素をヘッダーの中央に置ける |
+| 幅によって画像と本文の配置が変わるカード | Grid | エリアのテンプレートを書き換えるだけで済む |
+| 横にスクロールさせるカードの列 | Grid | 縮み方を管理せずに、列の幅で並べられる（[17-4](/interaction/carousel/)） |
+| 画像の上に文字を重ねる | Grid | 同じエリアに置くだけで重なる（[11-5](/layout-practice/layering/)） |
+| タグの一覧やメニューの並び | Flexbox | 子の幅を決めずに、中身の量で並べて折り返せる |
+| 最終行の端数を中央に寄せる格子状の一覧 | Flexbox | `justify-content` が1行ずつ効く |
+| 行ごとに列数の違う一覧（レンガ状） | Flexbox | 子ごとに列数を変えるだけで済む |
+| 最後のリンクだけを行末へ寄せるナビゲーション | Flexbox | `auto` の `margin` が余った空間を吸収する |
+| 部品の中の要素を同じ間隔で縦に積む | Flexbox | `gap` で間隔をそろえられる |
+| 幅が足りなければ縦に積む、固定幅のサイドとメイン | Flexbox | クエリなしで縦に積める（[12-5](/compositions/sidebar/)） |
+| 画像に文章を回り込ませる | `float` | 回り込みは `float` にしかできない |
+| 文章の角に置く閉じるボタンや装飾の画像 | `float` | 文字が要素の下に隠れない |
+
+## 文章は通常フローで組む
+
+見出し、段落、リスト、図が続く記事の本文は、ワープロで書いた文書と同じ構造です。通常フローは、この構造のための方式で、ブロックは上から下へ積まれ、文字は行の中を流れます。`display` を変えずに、子の `margin` で間隔を作れば足ります。
+
+本文をFlexboxやGridにして `gap` で間隔を作ると、通常フローの2つの仕組みが働かなくなります。1つは `float` で、フレックスアイテムとグリッドアイテムでは無視されるので、本文の中の画像に文字を回り込ませられません。もう1つはマージンの相殺です。通常フローなら隣り合う `margin` は大きいほうだけが効きますが、`gap` の中では `margin` が `gap` に足されるので、見出しの前だけ広げるといった調整の結果を読みにくくなります。
+
+```css title="🙅‍♂ Not Recommended: 記事の本文を Flexbox にして gap で間隔を作る"
+/* 🙅‍♂ Not Recommended */
+._content {
+  display: block flex;
+  flex-direction: column;
+  gap: 16px;
+}
+```
+
+本書では、本文の流れの間隔を、コンポジション `prose` で作ります（「[12-11 prose](/compositions/prose/)」）。2つ目以降の子に `margin-block-start` を付けるだけで、`display` は変えません。間隔を `gap` ではなく `margin` で作る理由は、「[11-3 余白を設計する](/layout-practice/spacing/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 本文は通常フローのまま、2つ目以降の子に margin を付ける"
+.prose {
+  & > * + * {
+    margin-block-start: var(--prose--space, 0);
+  }
+}
+```
+
+一方、カードの中の番号、見出し、説明文、リンクのように、構成が決まっていて間隔を一律にしてよい部品の中身は、Flexboxで縦に積み、`gap` で間隔をそろえます。この並び方は、コンポジション `stack` にしています（「[12-1 stack](/compositions/stack/)」）。ただし、`gap` も配置の指定も書かずに `display: block flex` と `flex-direction: column` だけを書くと、通常フローで積んだときとほぼ同じ並びになり、マージンの相殺が止まるといった違いが増えるだけです。Flexboxに切り替えるときは、切り替えて何を得るのかを説明できるようにしておきます。
+
+## 間隔が前後の要素で変わる縦の並び
+
+部品の中身でも、間隔が一律にならない縦の並びがあります。カードの本文で見出しの直後だけを詰める場合や、CMSの入力によってリード文が出力されない場合です。前後の要素の種類や有無で間隔が変わる並びは、FlexboxやGridにせず、通常フローのまま組みます。
+
+`gap` は、すべての間に同じ値を空けます。条件で変わる間隔を `gap` の上で作ろうとすると、子の `margin` で広げたり負の値で詰めたりすることになり、その `margin` は相殺されずに `gap` へ足されます。通常フローなら、次兄弟結合子で関係ごとに書いた `margin-block-start` が、そのまま間隔になります。
+
+```css title="🙆‍♂ Recommended: 通常フローのまま、前の要素を条件に margin を付ける"
+._body {
+  & > * + * {
+    margin-block-start: 16px;
+  }
+
+  & > :is(:heading, h1, h2, h3, h4, h5, h6) + * {
+    margin-block-start: 8px;
+  }
+}
+```
+
+見出しの直後の要素には、詳細度の高い2つ目のルールが勝って8pxが付き、それ以外の要素には16pxが付きます。どの要素が欠けても、残った要素の間にだけ間隔が空きます。`:heading` はブラウザの対応が分かれるので、タイプセレクタと並べて `:is()` の中に書いています（「[5-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」）。`margin` を隣り合う要素の関係で書く理由は、11-3のルール「[縦の margin は次兄弟結合子で付ける](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)」で説明しています。
+
+縦に積む方法は、間隔の決まり方で選びます。間隔が一律なら `stack` の `gap`、要素の種類と順番が決まっていて間ごとの余白だけが違うなら空のグリッドセル、前後の要素で間隔が変わるなら通常フローです。空のセルは、要素が欠けると余白の行だけが残るので、要素の有無が変わる並びには使えません。見出しや段落が続く流れを自分でHTMLに書くなら、この考え方を部品にした `prose` を使えます。
+
+## 配置を親で決めるならGrid
+
+文章でない部品の配置は、まず親の `grid-template` で決められないかを検討します。Gridなら、列や行の数と大きさを親の指定だけで決められ、子要素の側に幅の計算や個別の指定を書かずに済みます。先ほどのカードの一覧も、ページの段組みも、親の指定だけで書けます。
+
+```css title="🙆‍♂ Recommended: 列の数と幅を親で決める"
+._card-list {
+  display: block grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+._page {
+  display: block grid;
+  grid-template-columns: calc(240 / 16 * 1rem) 1fr calc(320 / 16 * 1rem);
+}
+```
+
+`grid-template-columns` を読めば、何列でどういう幅なのかが1行で分かります。子要素の側には、配置のための指定が何もありません。同じ段組みをFlexboxで書くと、両端の子には `flex-shrink: 0` と `flex-basis` を、真ん中の子には `flex-grow: 1` を指定することになり、3つの子のCSSを読み合わせないと全体の形が分かりません。
+
+カードの一覧のような等分の列も、`flex: 1` では子の `padding` や `border` の違いで幅がずれるので、確実にそろえたいならGridで列を決めます（「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」）。列の幅を `minmax(0, 1fr)` ではなく `1fr` と書いている理由は、「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
+
+Gridの利点が大きいもう1つの例は、ロゴ、ナビゲーション、ボタンを左端、中央、右端に置くヘッダーです。`grid-template-columns: 1fr auto 1fr` と書くと、左右の列が同じ幅になるので、中央の列はヘッダーのちょうど真ん中に置かれます。ただし、`1fr` は `minmax(auto, 1fr)` として扱われ、列の最小幅は中身の最小幅（`min-content`）になるので、中央のリンクが増えると、左右の列はロゴやボタンの文字が折り返されるところまで縮みます。左右の列の最小値を `max-content` にすれば、中身は折り返されず、列も中身の幅より狭くなりません。
+
+```css title="🙆‍♂ Recommended: 左右の列が中身より狭くならないようにする"
+._header {
+  display: block grid;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+  align-items: center;
+
+  & > :last-child {
+    justify-self: end;
+  }
+}
+```
+
+左右が均等になるのは、ヘッダーの幅が「中央の列の幅＋左右の中身の大きいほうの幅×2」以上のときです。それより狭いと、大きいほうの列は中身の幅で固定され、残りが小さいほうの列に回るので、中央の列は小さいほうへずれます。3つの中身の合計より狭い画面でははみ出すので、狭い画面では別の配置に切り替える前提の書き方です。同じ配置をFlexboxの `justify-content: space-between` で書くと、左右の中身の幅が違うだけで、中央の要素が真ん中からずれます。
+
+幅によって画像と本文の配置が変わるカードも、Gridで組みます。エリアに名前を付けたテンプレートを条件ごとに書き換えれば、子要素の配置の指定は1か所ずつで済みます。書き方は「[7-7 Gridの基礎](/layout/grid-basics/)」で、並べたカードの中の見出しやボタンの位置をサブグリッドでそろえる方法とあわせて説明しています。
+
+一部のタイルだけを大きくする一覧も、Gridで組みます。4列の格子で、`:nth-child(5n + 1)` の子に `grid-area: span 2 / span 2` を指定すれば、5枚に1枚が2行2列にまたがり、ほかのタイルは空いたセルに順に入ります。Flexboxでは、1つのアイテムが複数の行にまたがれません。
+
+1行に収まるときは中央へ、複数行になったら左へ寄せる一覧は、どちらの手法でも組めますが、Gridのほうが意図をそのまま書けます。列の幅を `fr` ではなく長さで決めた `auto-fit` は、アイテムのない列を幅0に畳むので、`justify-content: center` で残った列のまとまりが中央に寄ります。複数行になると、最終行のアイテムは列に従って左から並びます。Flexboxでも最初と最後の子に `auto` の `margin` を付ければ同じ見た目になりますが、その目的はコードから読み取りにくくなります。
+
+```css title="🙆‍♂ Recommended: 列の幅を長さで決め、列のまとまりを中央に寄せる"
+._list {
+  --_column: 3;
+  --_gap: 16px;
+
+  display: block grid;
+  grid-template-columns: repeat(auto-fit, calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column)));
+  gap: var(--_gap);
+  justify-content: center;
+}
+```
+
+## 中身の量や行ごとに並べるならFlexbox
+
+GridはFlexboxの上位互換ではありません。タグの一覧やグローバルナビゲーションのリンクは、1つずつ文字数が違います。`repeat(4, 1fr)` のように親が列の幅を決めると、短いタグにも長いタグと同じ幅が割り当てられてしまいます。Flexboxなら、子要素の幅を決めずに並べるだけで、入りきらない要素は次の行へ折り返されます。この並び方は、コンポジション `cluster` にしています（「[12-2 cluster](/compositions/cluster/)」）。
+
+Flexboxは、折り返した行を1行ずつ独立して並べます。そのため、格子状の一覧の最終行の端数を中央に寄せるなら、Flexboxのほうが簡潔です。子の幅を列数と間隔から計算し、親に `justify-content: center` を指定すれば、最終行に残ったアイテムが中央に寄ります。Gridのアイテムは親が決めた列に置かれるので、同じことをするには、数量クエリで端数のアイテムの開始位置をずらします（「[5-5 数量クエリ](/pseudo/quantity-queries/)」）。
+
+```css title="🙆‍♂ Recommended: 列数から子の幅を計算し、最終行を中央に寄せる"
+@scope (.scoped.product-list) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._list {
+    --_column: 1;
+    --_gap: 16px;
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--_gap);
+    justify-content: center;
+
+    @container --scoped (inline-size >= calc(480 / 16 * 1rem)) {
+      --_column: 2;
+    }
+
+    @container --scoped (inline-size >= calc(768 / 16 * 1rem)) {
+      --_column: 3;
+    }
+
+    & > * {
+      flex-basis: calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column));
+    }
+  }
+}
+```
+
+次のデモでは、上がこのFlexboxの一覧で、その下に先ほどのGridの一覧を、アイテムが2つのものと5つのものに分けて並べています。幅のボタンで1024pxを選ぶと、Flexboxでは最終行の2つが中央に寄ります。Gridでは、1行に収まる2つのアイテムは中央に寄り、5つのアイテムの最終行は列にそろって左から並びます。560pxでは、Flexboxの最終行の1つが中央に寄ることを確かめられます。
+
+<Demo title="Flexbox は最終行の端数を中央に寄せ、Grid は1行のときだけ中央に寄せる" html={lastRowCenterHtml} css={lastRowCenterCss} widths={[320, 560, 1024]} />
+
+行ごとに列数の違うレンガ状の一覧も、同じ計算で組めます。2つ目以降の子と4つ目以降の子で `--_column` を上書きすれば、広い画面では1行目に1枚、2行目に2枚、3行目以降に3枚ずつ並びます。列数は親のクエリで決めるので、閾値は1か所で済みます。Gridで同じ形を作るには、1、2、3の公倍数の6列の格子を作り、子ごとにまたがる列の数を計算することになります。
+
+```css title="🙆‍♂ Recommended: 子ごとに列数を上書きして、行ごとに枚数を変える"
+@scope (.scoped.feature-list) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._list {
+    --_gap: 16px;
+    --_second-row-column: 1;
+    --_later-row-column: 1;
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--_gap);
+
+    @container --scoped (inline-size >= calc(640 / 16 * 1rem)) {
+      --_second-row-column: 2;
+      --_later-row-column: 3;
+    }
+
+    & > * {
+      --_column: 1;
+
+      flex-basis: calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column));
+    }
+
+    & > :nth-child(n + 2) {
+      --_column: var(--_second-row-column);
+    }
+
+    & > :nth-child(n + 4) {
+      --_column: var(--_later-row-column);
+    }
+  }
+}
+```
+
+一部の要素だけを行末側へ寄せる場面も、Flexboxが得意です。フレックスアイテムの `auto` の `margin` は、余った空間をすべて吸収します。ヘッダーのナビゲーションで、最後のアカウントのリンクだけを右端へ寄せるなら、その要素に `margin-inline-start: auto` を指定します。
+
+```css title="🙆‍♂ Recommended: auto の margin で、最後の要素だけを行末へ寄せる"
+._global-nav {
+  display: block flex;
+  gap: 16px;
+  align-items: center;
+
+  & > ._account {
+    margin-inline-start: auto;
+  }
+}
+```
+
+余白の吸収先が1か所に決まるので、ナビゲーションの項目が増減しても、アカウントのリンクは行末に残ります。空の要素を置いて `flex-grow` で押し広げる書き方は、要素が増えるだけなので使いません。全体を均等に散らす `justify-content: space-between` は、寄せる位置が要素の数で変わるので、この用途には向きません。余白がなくなったときは、`auto` の `margin` も縮み、ほかのフレックスアイテムと同じように折り返しや縮小の対象になります。
+
+固定幅のサイドと伸び縮みするメインの2カラムも、Flexboxが得意な配置です。メインの `flex-grow` をサイドよりはるかに大きくしておくと、幅に余裕があるうちは横に並び、足りなくなるとクエリなしで縦に積まれます。Gridでは、列の数を切り替えるためにクエリが必要です。この配置は、コンポジション `sidebar` にしています（「[12-5 sidebar](/compositions/sidebar/)」）。
+
+## 文章を避けて置くならfloat
+
+`float` の本来の用途は、要素を行の端に寄せ、その横と下に文章を回り込ませることです。この配置は、FlexboxやGridでは作れません。画像に文章を回り込ませる配置のほか、モーダルの閉じるボタンや装飾の画像を文章の角に置く配置も、`position: absolute` ではなく `float` で組めば、画面が狭くなっても文字が要素の下に隠れません。
+
+回り込みの仕組みと、`float` の要素を `display: flow-root` で内側に収める書き方は、「[11-2 floatで文章を回り込ませる](/layout-practice/float/)」で説明しています。`position: sticky` と組み合わせた閉じるボタンや、行頭のアイコンを1行目にそろえる書き方も、同じ節にあります。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
+- [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)

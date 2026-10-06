@@ -21,11 +21,11 @@
 /* 登録していないカスタムプロパティは、キーフレームの50%の時点で値が切り替わる */
 @keyframes --reveal-card--in-view {
   from {
-    --_in-view: false;
+    --_in-view: --false;
   }
 
   to {
-    --_in-view: true;
+    --_in-view: --true;
   }
 }
 
@@ -44,7 +44,7 @@
   @scope (.scoped.reveal-card) to (.scoped) {
     /* ルートはきっかけを作るだけで、自分は動かない */
     :scope {
-      --_in-view: false;
+      --_in-view: --false;
 
       @supports (animation-timeline: view()) and (animation-range: entry) {
         animation-name: --reveal-card--in-view;
@@ -72,7 +72,7 @@
         animation-play-state: paused;
 
         /* いちばん近い祖先（ルート）の --_in-view を問い合わせる */
-        @container style(--_in-view: true) {
+        @container style(--_in-view: --true) {
           animation-play-state: running;
         }
 

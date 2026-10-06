@@ -35,9 +35,12 @@
     }
 
     a {
-      /* 日付 96px・カテゴリ 160px・タイトル 160px と、列の隙間 2 つ、左右の余白が並ぶ幅 */
-      @container --scoped (inline-size < calc((96 + 160 + 160 + 24 * 2 + 24 * 2) / 16 * 1rem)) {
-        grid-column: 1 / -1;
+      /* 狭いときは、タイトルを次の行へ移して全幅を使う */
+      grid-column: 1 / -1;
+
+      /* 日付 96px 相当・カテゴリ 160px 相当・タイトル 160px 相当と、列の隙間 24px が 2 つ、左右の余白 24px が並ぶ幅 */
+      @container --scoped (inline-size >= calc(96 / 16 * 1rem + 160 / 16 * 1rem + 160 / 16 * 1rem + 24px * 2 + 24px * 2)) {
+        grid-column: auto;
       }
     }
   }

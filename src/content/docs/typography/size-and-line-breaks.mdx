@@ -1,5 +1,5 @@
 ---
-title: "13-4 文字サイズと改行"
+title: "14-4 文字サイズと改行"
 description: "画面の幅で変える文字サイズはclamp()のユーティリティにまとめます。和文の見出しはword-break: auto-phraseとtext-wrap: balanceで文節ごとに折り返し、見た目のための改行に<br>を使いません。行数の制限は-webkit-line-clampとoverflow-block: clipで書きます。"
 sidebar:
   order: 4
@@ -13,7 +13,7 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 
 画面の幅に合わせて変えたい文字サイズは、クエリで段階的に切り替えず、`clamp()` で最小値と最大値の間をなめらかに変えます。サイト全体で使うなら、計算をまとめたユーティリティを用意します。改行は、和文の見出しを `word-break: auto-phrase` と `text-wrap: balance` で文節ごとに折り返し、本文は通常の折り返しのままにします。見た目を整えるための `<br>` は使いません。
 
-`clamp()` の式の組み立て方は、「[4-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+`clamp()` の式の組み立て方は、「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
 
 ## 文字サイズのブレイクポイントごとの切り替え
 
@@ -38,7 +38,7 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 
 ## 流体的な文字サイズをユーティリティにする
 
-文字サイズを幅に合わせて変えるなら、`clamp()` を使います。最小値と最大値をremで決め、その間を画面の幅に比例して補間すれば、どの幅でも段差のない大きさになります。最小値と最大値をremにし、推奨値にremを含める理由は、「[4-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+文字サイズを幅に合わせて変えるなら、`clamp()` を使います。最小値と最大値をremで決め、その間を画面の幅に比例して補間すれば、どの幅でも段差のない大きさになります。最小値と最大値をremにし、推奨値にremを含める理由は、「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
 
 ただし、傾きと切片を要素ごとに計算して書くのは大変です。オンラインのジェネレーターで作った数値を貼ると、計算の手順がコードに残りません。そこで、計算をユーティリティの中にまとめ、使う側は最小値と最大値だけを渡すようにします。
 
@@ -83,11 +83,11 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 <p class="_lead -fluid-text" style="--fluid-text--min-font-size: 18; --fluid-text--max-font-size: 22">…</p>
 ```
 
-公開プロパティは `--fluid-text--` で始め、内部で使う値は `--_u--` で始めています。コンポーネントの内部プロパティと名前がぶつからないようにするためです。公開プロパティと内部プロパティの考え方は「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
+公開プロパティは `--fluid-text--` で始め、内部で使う値は `--_u--` で始めています。コンポーネントの内部プロパティと名前がぶつからないようにするためです。公開プロパティと内部プロパティの考え方は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
-比例させる基準は、`--fluid-text--relative-unit` で切り替えます。サイト全体で文字の大きさの調和をとるなら、デフォルトの `100svi`（画面の幅）を使います。置かれた場所の幅に合わせたいコンポーネントでは `100cqi` を渡し、コンテナの幅を基準にします。`cqi` が参照するのは、インライン方向のサイズクエリに対応する、最も近い祖先のコンテナです。名前は関係しないので、名前付きの `@container` が問い合わせるコンテナと、`cqi` の参照先は一致するとは限りません。間に別のコンテナが入れば、基準の幅も変わります。`cqi` はコンテナが見つからないと `svi` として計算されるので、デフォルトを `svi` にそろえています。コンテナの書き方は「[12-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
+比例させる基準は、`--fluid-text--relative-unit` で切り替えます。サイト全体で文字の大きさの調和をとるなら、デフォルトの `100svi`（画面の幅）を使います。置かれた場所の幅に合わせたいコンポーネントでは `100cqi` を渡し、コンテナの幅を基準にします。`cqi` が参照するのは、インライン方向のサイズクエリに対応する、最も近い祖先のコンテナです。名前は関係しないので、名前付きの `@container` が問い合わせるコンテナと、`cqi` の参照先は一致するとは限りません。間に別のコンテナが入れば、基準の幅も変わります。`cqi` はコンテナが見つからないと `svi` として計算されるので、デフォルトを `svi` にそろえています。コンテナの書き方は「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
 
-流体的にするのは、見出しやリード文のように、画面の幅によって大きさを変えたい文字だけです。タグやラベルのように大きさを変える必要のない文字には使いません。カンプの比率を保ってほしいと頼まれた場合も、本文まで含めた文字サイズ全体を画面の幅に比例させることはしません。狭い画面で本文が読めないほど小さくなるからです（「[12-6 カンプの幅で全体を拡大・縮小しない](/responsive/design-comp-pattern/)」）。
+流体的にするのは、見出しやリード文のように、画面の幅によって大きさを変えたい文字だけです。タグやラベルのように大きさを変える必要のない文字には使いません。カンプの比率を保ってほしいと頼まれた場合も、本文まで含めた文字サイズ全体を画面の幅に比例させることはしません。狭い画面で本文が読めないほど小さくなるからです（「[13-6 カンプの幅で全体を拡大・縮小しない](/responsive/design-comp-pattern/)」）。
 
 ## 和文の見出しの折り返し
 
@@ -96,15 +96,17 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 `word-break: auto-phrase` を指定すると、ブラウザが文節の区切りを判断し、文節の間でだけ折り返します。さらに `text-wrap: balance` を組み合わせると、各行の長さがそろい、最後の行だけが短くなるのを防げます。
 
 ```css title="🙆‍♂ Recommended: 見出しの折り返しを言語ごとに整える"
-:where(:heading, h1, h2, h3, h4, h5, h6, caption) {
-  &:lang(en) {
-    text-wrap: balance;
-  }
-
-  &:lang(ja) {
-    @supports (word-break: auto-phrase) {
+@layer base {
+  :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
+    &:lang(en) {
       text-wrap: balance;
-      word-break: auto-phrase;
+    }
+
+    &:lang(ja) {
+      @supports (word-break: auto-phrase) {
+        text-wrap: balance;
+        word-break: auto-phrase;
+      }
     }
   }
 }
@@ -138,8 +140,10 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 
 ```css title="🙅‍♂ Not Recommended: はみ出しを防ぐために、どこでも折り返す"
 /* 🙅‍♂ Not Recommended */
-:where(p) {
-  word-break: break-all;
+@layer base {
+  p {
+    word-break: break-all;
+  }
 }
 ```
 
@@ -219,7 +223,7 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 }
 ```
 
-`-webkit-box-orient` には、`vertical` ではなく `block-axis` を指定します。書字方向に合わせたブロック方向の指定で、縦書きでも同じように行数を制限できます。行数は `--line-clamp--limit` で受け取り、指定がなければ3行にします。ベンダープレフィックスを書くときの作法は、「[7-7 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
+`-webkit-box-orient` には、`vertical` ではなく `block-axis` を指定します。書字方向に合わせたブロック方向の指定で、縦書きでも同じように行数を制限できます。行数は `--line-clamp--limit` で受け取り、指定がなければ3行にします。ベンダープレフィックスを書くときの作法は、「[9-7 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
 
 はみ出した行を隠すには、`overflow: hidden` ではなく `overflow-block: clip` を使います。`overflow: hidden` では、`hanging-punctuation` でぶら下げた約物まで切り取られます。`overflow-y: hidden` を指定すると、横方向の `overflow` が `auto` に変わり、スクロールバーの表示される場合があります。`clip` ならブロック方向だけを切り取り、スクロールできる領域も作りません。`overflow-block` はSafari 26で対応したので、Safari 18のために `overflow-y: clip` を用意しています。
 

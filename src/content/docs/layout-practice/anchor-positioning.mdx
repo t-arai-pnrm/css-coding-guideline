@@ -1,0 +1,162 @@
+---
+title: "11-7 アンカーポジショニング"
+description: "ツールチップやメニューを別の要素の近くに置くアンカーポジショニングは、未対応の環境でも内容を読める形を先に書いてから使います。ボタンが開くポップオーバーは、暗黙のアンカーと position-area の論理キーワードで配置し、ホバーした項目に背景を追従させる表現は、未対応の環境では表示されないだけの装飾として使います。"
+sidebar:
+  order: 7
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import hoverIndicatorHtml from '../../../demos/layout-practice/hover-indicator/index.html?raw';
+import hoverIndicatorCss from '../../../demos/layout-practice/hover-indicator/style.css?raw';
+
+ツールチップやメニューを別の要素の近くに置くアンカーポジショニングは、未対応の環境でも内容を読める形を先に書いたうえで使います。ボタンが開くポップオーバーなら、名前を付けずに暗黙のアンカーを使い、`position-area` の論理キーワードで配置します。ホバーした項目を背景が追いかける表現のように、なくても困らない装飾なら、未対応の環境では表示されないだけの形で使えます。
+
+この節は、絶対配置を前提にしています。`absolute` と `fixed` の要素は、親の流れから外れ、包含ブロック（位置と大きさの基準になる領域）の辺からの距離で置かれます。値ごとの違いと包含ブロックの決まり方は、「[7-8 positionの基礎](/layout/positioning/)」で説明しています。ヘッダーを上端に留める `position: sticky` の使い方は、「[11-6 固定ヘッダー](/layout-practice/sticky-header/)」で扱います。
+
+アンカーポジショニングをスクロール駆動アニメーションと組み合わせて、飾りが本文に近づいたら隠す技法は、「[11-8 要素どうしの重なりを検出する](/layout-practice/overlap-detection/)」で説明しています。装飾に限って使う技法なので、ポップアップを作るだけなら読まなくても足ります。
+
+## ポップアップの位置で起きる問題
+
+ツールチップやメニューは、開いたボタンのすぐ下に表示したいものです。ところが、ポップオーバーのようにトップレイヤーに表示する要素は、祖先の指定にかかわらずビューポートを基準に置かれます。`inset` で書けるのはビューポートの辺からの距離だけなので、ボタンがページのどこにあっても、その位置にそろえることはできません。
+
+この位置は、以前はJavaScriptで決めていました。ボタンの位置と大きさを調べてポップアップの座標を計算し、スクロールや画面の大きさが変わるたびに計算し直します。画面の端で収まらないときに反対側へ回す処理も、自前で書くか、ライブラリで補います。{/* 要確認: 出典なし */}
+
+この位置をCSSで決める仕組みがアンカーポジショニングですが、本書の対象のブラウザのすべてでは使えません。JavaScriptの計算をCSSに置き換えるなら、対応していない環境でポップアップをどこに表示するかを、別に決めておく必要があります。
+
+## アンカーポジショニングの位置づけ
+
+アンカーポジショニングは、ある要素（アンカー）の位置を基準にして、別の要素を配置する仕組みです。アンカーに `anchor-name` で名前を付け、配置する要素の `inset` に `anchor()` 関数を書くと、ツールチップやメニューを、ボタンのすぐ下に表示できます。配置する要素は `absolute` か `fixed` の要素で、包含ブロックの辺ではなく、アンカーの辺からの位置で決まります。
+
+画面の端で収まらないときは、`position-try-fallbacks` で反対側へ反転させることもできます。一度切り替わった位置は、元の位置に空きができても自動では戻らず、再びはみ出したときに選び直されます。はみ出すかどうかは、配置する要素の包含ブロックを基準に判定されます。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.anchor-name" name="アンカーポジショニング（anchor-name）" />
+
+`anchor-name` と `anchor()` は、Chrome 125、Firefox 147、Safari 26で対応し、2026年1月に主要なブラウザがそろいました。一方、機能全体のBaselineは「一部のブラウザのみ」のままです。`position-visibility` の一部の値のように、Safari 27だけが対応していて、ほかのブラウザが対応していないものが含まれているからです（2026年10月確認）。いずれにしても、本書の対象のSafari 18系は対応していません。
+
+未対応の環境では、アンカーを基準にした配置の指定がすべて無視されます。ツールチップが意図しない場所に表示され、ほかの内容に重なることもあります。そのため、第1章のルールに従い、アンカーポジショニングはレイアウトの要として使いません（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。未対応の環境でも内容を読めて操作できる形を先に書き、対応した環境でだけ、アンカーを基準とした配置へ切り替えます。
+
+```css title="🙆‍♂ Recommended: 未対応の環境では画面の中央に、対応した環境ではボタンの下に表示する"
+@scope (.scoped.help-tip) to (.scoped) {
+  :scope {
+    anchor-scope: --help-tip;
+  }
+
+  button {
+    anchor-name: --help-tip;
+  }
+
+  [popover] {
+    margin: auto;
+
+    @supports (anchor-name: --help-tip) {
+      inset: unset;
+      inset-block-start: anchor(--help-tip end);
+      inset-inline-start: anchor(--help-tip start);
+      position-try-fallbacks: flip-block;
+      margin-block-start: 4px;
+    }
+  }
+}
+```
+
+```html
+<span class="scoped help-tip">
+  <button type="button" popovertarget="help-tip-1">入力のヒント</button>
+  <span id="help-tip-1" popover>半角の数字で入力してください。</span>
+</span>
+```
+
+ヒントは `popover` 属性でトップレイヤーに表示しています。未対応の環境では、`margin: auto` によって画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。対応した環境では、ブラウザのデフォルトスタイルが `[popover]` に指定している `inset: 0` を `unset` で初期値の `auto` に戻し、`anchor()` で決めた2辺だけで位置を決めます。アンカーの名前は、ほかの名前と同じく `--` で始めます（「[9-1 命名規則](/notation/naming/)」）。
+
+ルートの `anchor-scope` は、アンカーの名前が有効な範囲を、このコンポーネントの中に限る指定です。同じコンポーネントがページに複数あると、同じ名前のアンカーも複数でき、トップレイヤーの要素からはどれも見えるので、最後のアンカーが基準に選ばれます。別のコンポーネントのボタンの下に表示されないように、繰り返し置くコンポーネントでは、ルートで範囲を限ります。
+
+## 暗黙のアンカーと `position-area` で配置する
+
+ポップオーバーを開くボタンを基準にするなら、`anchor-name` で名前を付ける必要はありません。`popovertarget` 属性や `commandfor` 属性でボタンとポップオーバーを結び付けると、ボタンがポップオーバーの「暗黙のアンカー」になります。カスタマイズ可能な `<select>` でも、選択肢の一覧（`::picker(select)`）の暗黙のアンカーは `<select>` です。暗黙のアンカーは要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要りません。本書では、使える場面では暗黙のアンカーを優先します。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 暗黙のアンカーを基準に、position-area で表示する位置を決める"
+@scope (.scoped.help-tip) to (.scoped) {
+  [popover] {
+    margin: auto;
+
+    @supports (position-area: block-end span-inline-end) {
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block;
+      margin-block-start: 4px;
+    }
+  }
+}
+```
+
+HTMLは先ほどと同じです。`position-area` は、アンカーを中央のマスとする3×3のマス目を考え、配置する要素を置くマスを選ぶプロパティです。`block-end span-inline-end` は、アンカーの下の行で、アンカーの列から行末側の列までにまたがるという意味です。`inset` と `anchor()` で1辺ずつ書くより短く、揃え方も選んだマスに合わせて決まります。`anchor()` は、マス目で表せない配置に使います。
+
+値には、`bottom` や `right` のような物理キーワードと、`block-end` や `span-inline-end` のような論理キーワードがあります。本書では、プロパティと同じく論理キーワードで書きます（「[9-8 論理プロパティと論理値](/notation/logical-properties/)」）。縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示されるからです。
+
+はみ出したときの候補は、`position-try-fallbacks` にカンマ区切りで並べます。候補には、`flip-block flip-inline` のように組み合わせた反転のキーワードも、`position-area` の値も書けます。書いた順ではなく空きの大きさで選ばせたいときは、`position-try-order` を指定します。`most-block-size` なら、最初の位置と候補のうち、ブロック方向の空きが最も大きい位置を選びます。
+
+```css title="🙆‍♂ Recommended: 上下のうち、空きの大きいほうにメニューを開く"
+@scope (.scoped.site-menu) to (.scoped) {
+  ul {
+    margin: auto;
+
+    @supports (position-area: block-end span-inline-end) {
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block;
+      position-try-order: most-block-size;
+    }
+  }
+}
+```
+
+`position-visibility` の初期値 `anchors-visible` では、アンカーがスクロールなどで完全に見えなくなると、配置した要素も見えなくなります。ボタンがスクロールで隠れたあとに、メニューだけが浮いて見えることを防げます。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.position-area" name="position-area" />
+
+`position-area` は、Chrome 129、Firefox 147、Safari 26で対応しています。ボタンの暗黙のアンカーは、`popovertarget` ならChrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです。`position-try-order` はFirefoxでは148から、`position-visibility` はSafariでは26.2からです（2026年10月確認）。`position-area` を指定すると、`auto` の `margin` と `inset` は0として扱われます。未対応の環境のために書いた `margin: auto` も0になるので、`@supports` の中では、ボタンとの間隔を空ける `margin-block-start` だけを指定しています。
+
+暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。`position-anchor` の初期値 `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使うからです。初期値は2026年にChrome 151、Firefox 151、Safari 27で `normal` に変わり、それより前のChromeとSafari 26では、指定しなくても `anchor()` が暗黙のアンカーを使っていました。
+
+アンカーの大きさに合わせるときは、`min-inline-size: anchor-size(inline)` のように `anchor-size()` を使います。この関数を書けるのは、大きさ、`inset`、`margin` のプロパティだけで、`padding` などに書いた宣言は無視されます。また、`position-area` と `position-try-fallbacks` は離散的に切り替わるので、反転するときの位置の変化をトランジションで滑らかにはできません。アンカーが動いたときの `anchor()` の値の変化を補間できるのも、Chrome 125以降とSafari 26以降だけです（2026年10月確認）。
+
+<Baseline id="anchor-positioning-animations" />
+
+位置が反転したときに吹き出しの矢印の向きを変える `@container anchored(fallback: flip-block)` は、2026年10月の時点でChrome 143以降だけが対応しているので、本書では採用しません。ほかのブラウザでは、反転しても矢印が吹き出しと反対の側を指すからです。位置が反転しうる吹き出しには矢印を付けないか、矢印がなくても、どのボタンの説明かが分かるデザインにします。{/* 要確認: 出典なし */}
+
+<Baseline id="container-anchor-position-queries" />
+
+## ホバーした項目に背景を追従させる
+
+アンカーポジショニングは、装飾にも使えます。メニューの項目にマウスを載せると、1枚の背景が項目から項目へ移っていく表現は、ホバーしている項目をアンカーにして背景を配置すれば作れます。項目ごとに背景を付ける書き方では、背景はその場で付いたり消えたりするだけで、項目の間を移動させられません。
+
+背景には、項目を並べたリストの `::after` を使い、`inset: anchor(inside)` でアンカーの4辺に合わせます。アンカーの名前 `--current-hocus` は、ホバーしているリンクと、キーボードでフォーカスしているリンクにだけ付けます。名前を持つリンクが変わると、背景もそのリンクの位置へ移ります。同じメニューを複数置いても名前が混ざらないように、ルートには `anchor-scope` を指定します。
+
+<Demo title="ホバーかフォーカスした項目へ、背景が移っていくメニュー" html={hoverIndicatorHtml} css={hoverIndicatorCss} />
+
+どの項目にもホバーしていない間は、その名前のアンカーがありません。仕様では、参照できるアンカーがない `anchor()` は、代わりの値を書いていなければ、宣言ごと計算値の時点で無効になります。`inset` は初期値の `auto` に戻り、中身のない `::after` は大きさを持たなくなります。そのままでは、マウスを外した瞬間に背景が消えます。そこで、リストに `--_has-hocus` のフラグを置き、どのリンクにもホバーやフォーカスがない間は `opacity: 0` にして、次に説明するトランジションで薄れさせます。擬似要素のスタイルクエリは元の要素を問い合わせるので、リストに立てたフラグを `::after` から読めます。フラグの書き方は、「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
+
+トランジションの対象は `inset` と `opacity` で、`transition-behavior: allow-discrete` を加えています。`auto` との間は補間できず、値は離散的に切り替わりますが、`allow-discrete` を指定すると、切り替わりがトランジションの半ばまで遅れます。そのため、マウスを外したあとも、背景は最後の項目の位置に留まったまま薄れていきます。キーボードで項目を移るときは、`&:not(:has(> li > :focus-visible))::after` の条件でトランジションを外し、背景をすぐに移します。フォーカスリングは移った先にすぐ表示されるので、背景が遅れて追いかけると、現在の位置が一瞬分かりにくくなるからです。{/* 要確認: 出典なし */}
+
+背景の色は、`oklch(from currentColor l c h / 10%)` で文字色を薄めたものです。強制カラーモードでは背景色が置き換わって見えなくなるので、透明な枠線を付けておき、枠線に色が付くようにしています（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
+
+前述のとおり、`anchor()` の値の変化を補間できるのはChromeとSafariだけで、Firefox 147以降では、背景はアニメーションせずに次の項目へ切り替わります。アンカーポジショニングに未対応の環境では、`@supports` の中の指定が無視されて `::after` が生成されず、ホバーした項目に背景が付かないだけになります。ホバーの手がかりは矢印の移動でも示しているので、メニューの使い方は変わりません。第1章のルールがアンカーポジショニングを避けるのは、レイアウトの要として使う場合です（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。この背景は、なくても内容を読めて操作できる装飾なので、プログレッシブ・エンハンスメントとして使えます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS アンカー位置指定 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_anchor_positioning)
+- [Using CSS anchor positioning - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning/Using)（暗黙のアンカー）
+- [position-area - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area)
+- [position-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-anchor)
+- [anchor-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size)
+- [position-try-order - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-try-order)
+- [position-visibility - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-visibility)
+- [Cheatsheets for flex, grid, anchor positioning and invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
+- [CSS Anchor Positioning Module Level 1](https://drafts.csswg.org/css-anchor-position-1/)（W3C）
+- [CSS Anchor Positioning Module Level 1 - Resolvable anchor() functions](https://drafts.csswg.org/css-anchor-position-1/#resolvable-anchor-function)（W3C）
+- [CSS Anchor Positioning Module Level 2](https://drafts.csswg.org/css-anchor-position-2/)（W3C、エディターズドラフト）
+- [column-menu](https://codepen.io/tak-dcxi/pen/pvbYooy)（CodePen）

@@ -1,5 +1,5 @@
 ---
-title: "16-4 CSSでカルーセルを作る"
+title: "17-4 CSSでカルーセルを作る"
 description: "カルーセルはスクロールスナップを土台にし、ページ送りのボタンとインジケーターを::scroll-button()と::scroll-markerで足します。止まっていないスライドはinteractivity: inertで読み上げとフォーカスから外し、未対応の環境ではスクロールバー付きの横スクロールとして読めるようにします。"
 sidebar:
   order: 4
@@ -10,9 +10,6 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import carouselHtml from '../../../demos/interaction/css-carousel/index.html?raw';
 import carouselCss from '../../../demos/interaction/css-carousel/style.css?raw';
-import drawerHtml from '../../../demos/interaction/drawer-inert/index.html?raw';
-import drawerCss from '../../../demos/interaction/drawer-inert/style.css?raw';
-import drawerJs from '../../../demos/interaction/drawer-inert/script.js?raw';
 
 カルーセルは、スクロールスナップで作った横スクロールを土台にします。ページ送りのボタンは `::scroll-button()`、現在の位置を示すインジケーターは `::scroll-marker` と `::scroll-marker-group` で足し、JavaScriptは使いません。止まっていないスライドは、`scroll-state()` のコンテナクエリと `interactivity: inert` で、読み上げとフォーカスの対象から外します。
 
@@ -22,7 +19,7 @@ import drawerJs from '../../../demos/interaction/drawer-inert/script.js?raw';
 
 カルーセルは、限られた面積に多くの情報を詰め込める部品として、トップページのメインビジュアルや事例の紹介によく使われます。ただし、自動で再生しない限り、2枚目以降のスライドはユーザーが操作するまで表示されません。私の経験では、自動で切り替わるカルーセルでも、ユーザーが最後まで見ることはほとんどありません。
 
-自動再生には、アクセシビリティの面でも高い敷居があります。WCAGの達成基準2.2.2は、5秒を超えて自動で動く情報に、一時停止、停止、非表示のいずれかの手段を求めています。{/* 要確認: 出典なし */}停止ボタンを置いても、読み上げの途中でスライドが切り替わる、キーボードで操作している途中にフォーカスしていた要素が画面の外へ流れる、といった問題が残ります。本書では、カルーセルを自動で再生しません。動きを減らす設定への対応を整理した「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の表でも、自動で回るカルーセルは、設定があれば動きを止める側に分類しています。
+自動再生には、アクセシビリティの面でも高い敷居があります。WCAGの達成基準2.2.2は、5秒を超えて自動で動く情報に、一時停止、停止、非表示のいずれかの手段を求めています。{/* 要確認: 出典なし */}停止ボタンを置いても、読み上げの途中でスライドが切り替わる、キーボードで操作している途中にフォーカスしていた要素が画面の外へ流れる、といった問題が残ります。本書では、カルーセルを自動で再生しません。動きを減らす設定への対応を整理した「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の表でも、自動で回るカルーセルは、設定があれば動きを止める側に分類しています。
 
 CSSだけでカルーセルを作れるようになっても、こうした問題は解決しません。変わるのは実装の手段だけです。2枚目以降が見られにくいことや、どこまで見たのか分かりにくいことは、カルーセルというUIそのものの性質です。カルーセルを選ぶ前に、カードを一覧で並べられないかを検討します。{/* 要確認: 出典なし */}4〜6件の事例なら、グリッドで並べれば一覧性が高く、すべてのカードが最初から目に入ります。
 
@@ -58,7 +55,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 スライドの `li` には `_slide` のクラスを付け、グリッドの列として並べ、`grid-auto-columns` で1枚の幅を決めます。`100%` なら1枚ずつ、`calc((100% - 16px * 2) / 3)` なら3枚ずつ見える形になります。`scroll-snap-type: inline mandatory` は、インライン方向のスクロールが終わったとき、必ずどれかのスライドの位置で止める指定です。`overscroll-behavior-inline: contain` は、端までスクロールしたときに、横のスワイプがブラウザの「戻る」の操作として扱われるのを防ぎます。
 
-`scroll-behavior: smooth` は、後で足すボタンやインジケーターを押したときのスクロールを滑らかにします。`::scroll-marker` を押したときは、スクロールコンテナの `scroll-behavior` が `smooth` なら滑らかに、`auto` なら即座に移動しました（2026年10月、Chrome 152で確認）。動きを減らす設定のユーザーには移動を即座に済ませたいので、`prefers-reduced-motion: no-preference` の条件の中に書きます。ページ全体の `scroll-behavior` の扱いは「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+`scroll-behavior: smooth` は、後で足すボタンやインジケーターを押したときのスクロールを滑らかにします。`::scroll-marker` を押したときは、スクロールコンテナの `scroll-behavior` が `smooth` なら滑らかに、`auto` なら即座に移動しました（2026年10月、Chrome 152で確認）。動きを減らす設定のユーザーには移動を即座に済ませたいので、`prefers-reduced-motion: no-preference` の条件の中に書きます。ページ全体の `scroll-behavior` の扱いは「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
 
 ## `::scroll-button()` と `::scroll-marker` でボタンとインジケーターを作る
 
@@ -66,7 +63,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 <Baseline id="scroll-buttons" name="::scroll-button()" />
 
-`::scroll-marker` は、スクロールコンテナの中の要素（ここではスライド）に生成される、インジケーターの点の擬似要素です。スクロールコンテナに `scroll-marker-group: after`（または `before`）を指定すると、点をまとめる `::scroll-marker-group` が生成され、点を押すと対応するスライドまでスクロールします。表示しているスライドの点は、`:target-current` 擬似クラスで選べます。
+`::scroll-marker` は、スクロールコンテナの中の要素（ここではスライド）に生成される、インジケーターの点の擬似要素です。スクロールコンテナに `scroll-marker-group: after`（または `before`）を指定すると、点をまとめる `::scroll-marker-group` が生成され、点を押すと対応するスライドまでスクロールします。表示しているスライドの点は、`:target-current` 擬似クラスで選べます。スクロールマーカーの別の使い方として、目次のページ内リンクに `:target-current` を当てはめる方法を、このページの最後の「[発展：ページ内リンクを現在位置の印にする scroll-target-group](#発展ページ内リンクを現在位置の印にする-scroll-target-group)」で紹介します。
 
 <Baseline id="scroll-markers" name="::scroll-marker と ::scroll-marker-group" />
 
@@ -86,7 +83,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
         inset-block-start: anchor(center);
         position-anchor: --css-carousel;
         inline-size: 40px;
-        block-size: 40px;
+        aspect-ratio: 1;
         translate: 0 -50%;
       }
 
@@ -111,7 +108,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
       &::scroll-marker {
         content: "" / attr(data-label);
         inline-size: 12px;
-        block-size: 12px;
+        min-block-size: 12px;
         border: 1px solid transparent;
         border-radius: calc(infinity * 1px);
         background-color: var(--color--neutral--400);
@@ -132,7 +129,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 ボタンは、アンカーポジショニングでスクロールコンテナの左右の中央に重ねています。`content` のスラッシュの後ろは代替テキストで、ボタンや点の名前として読み上げられます。MDNによれば、ブラウザはボタンに適切な名前を自動で付けることになっていますが、日本語のページでは「前の事例」のように内容に合った名前を明示します。点の `content` を `""` だけにすると、名前が空になります。そこで、スライドの `data-label` 属性に「1件目」のような名前を書き、`attr()` で代替テキストに渡しています。
 
-表示しているスライドの点は、色を変えるだけでなく、`inline-size` を広げて横長の形にしています。色の違いだけでは、色を見分けにくいユーザーや、色がシステムカラーに置き換わる強制カラーモードで、現在位置が分からなくなるからです。点には透明な枠線を付けておき、強制カラーモードで背景色がページの背景色に置き換わっても、輪郭が残るようにします。そのうえで、強制カラーモードでは現在位置の点だけを `CanvasText` で塗ります（「[14-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
+表示しているスライドの点は、色を変えるだけでなく、`inline-size` を広げて横長の形にしています。色の違いだけでは、色を見分けにくいユーザーや、色がシステムカラーに置き換わる強制カラーモードで、現在位置が分からなくなるからです。点には透明な枠線を付けておき、強制カラーモードで背景色がページの背景色に置き換わっても、輪郭が残るようにします。そのうえで、強制カラーモードでは現在位置の点だけを `CanvasText` で塗ります（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
 
 キーボードでの操作も、ブラウザが用意します。Chrome 152で確かめたところ、Tabキーの順番は、前後のボタン、表示しているスライドの中身、カルーセルの後ろの要素の順でした。最初のスライドでは「←」のボタンが無効なので、飛ばされます（2026年10月、Chrome 152で確認）。MDNは、点のグループがタブのリストとして扱われ、矢印キーでスライドを切り替えられると説明していますが、この確認ではTabキーで点のグループに移動しませんでした。キーボードで操作するユーザーには、前後のボタンを必ず用意します。
 
@@ -140,7 +137,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 横スクロールで隠れているスライドも、DOMの中には残っています。何もしなければ、スクリーンリーダーは画面に見えていないスライドの中身まで読み上げ、Tabキーでは隠れているスライドのリンクにフォーカスが移ります。見えている1枚の後に、見えていない数枚分の読み上げとフォーカスが続くので、カルーセルの後ろにある内容までなかなかたどり着けません。
 
-そこで、スライドを `scroll-state` のコンテナにし（名前は、クラス名から下線を除いた `--slide`）、スナップして止まっていないスライドの中身を `interactivity: inert` にします。`interactivity: inert` は、HTMLの `inert` 属性と同じ不活性の状態を、CSSから指定するプロパティです。不活性になった要素は、クリックとフォーカスができなくなり、アクセシビリティツリーからも外れます。
+そこで、スライドを `scroll-state` のコンテナにし（名前は、クラス名から下線を除いた `--slide`）、スナップして止まっていないスライドの中身を `interactivity: inert` にします。`interactivity: inert` は、HTMLの `inert` 属性と同じ不活性の状態を、CSSから指定するプロパティです。不活性になった要素は、クリックとフォーカスができなくなり、アクセシビリティツリーからも外れます。`inert` の別の使い方として、ドロワーを開いている間に背面を操作できなくする方法を「[17-2 開閉するUI](/interaction/disclosure/#ドロワーの背面を不活性にする方法)」で説明しています。
 
 <Baseline id="container-scroll-state-queries" name="scroll-state() のコンテナクエリ" />
 
@@ -185,56 +182,6 @@ Chrome系のブラウザでは、スクロールバーが消え、ボタンと�
 
 `container: --slide / scroll-state` と、`scroll-state()` の条件、`interactivity: inert` は、未対応の環境では無視されます。隠れているスライドも読み上げとフォーカスの対象に残りますが、スクロールバーで表示でき、フォーカスが移れば、そのスライドまで自動でスクロールします。内容を読めなくなるわけではないので、`@supports` で囲む必要はありません。
 
-## ページ内リンクを現在位置の印にする `scroll-target-group`
-
-`:target-current` は、`::scroll-marker` だけでなく、ふつうのページ内リンクにも当てはめられます。リンクを並べた要素に `scroll-target-group: auto` を指定すると、その中の `<a href="#…">` がスクロールマーカーとして扱われます（CSS Overflow Module Level 5）。リンク先の要素がいま表示されているリンクに、`:target-current` が当てはまります。記事の目次で、読んでいる節のリンクを強調する表示（スクロールスパイ）を、JavaScriptを使わずに作れます。
-
-Chrome 152で、目次の `<ol>` に `scroll-target-group: auto` を指定して確かめました。ページを下へスクロールすると、`:target-current` に当てはまるリンクが、表示している節のリンクへ順に移りました（2026年10月、Chrome 152で確認）。
-
-<Baseline id="scroll-target-group" />
-
-2026年10月の時点で、`scroll-target-group` に対応しているのはChrome系のブラウザ（140以降）だけです。本書では、現状では採用しません。カルーセルのボタンと点は、なくても横スクロールで同じ内容を読めるので、対応した環境で足す形にしました。目次の強調は、デザインで求められているなら、すべてのブラウザで出す必要があります。Chrome系のブラウザだけをCSSで強調すると、ほかのブラウザのためにJavaScriptの実装を残すことになり、同じ表示を2つの方法で保守することになります。{/* 要確認: 出典なし（採用の判断は著者に確認） */}いまはIntersectionObserverなどのJavaScriptで強調し、SafariとFirefoxが対応してから、CSSに切り替えます。
-
-## ドロワーの背面を不活性にする方法
-
-`interactivity: inert` には、カルーセルのほかにも使い道があります。ヘッダーと一体になったドロワーメニューで、開いている間に背面のメインエリアとフッターを操作できなくする場面です。ドロワーを開閉するボタンをヘッダーに置いたまま操作させたい場合、ドロワーを `<dialog>` のモーダルにはできません。`showModal()` で開いたダイアログは、ダイアログの外をすべて不活性にするので、ヘッダーのボタンも押せなくなるからです（ダイアログについては「[16-2 開閉するUI](/interaction/disclosure/)」で説明しています）。
-
-2025年3月の時点で、私はこの場面を次のように書いていました。
-
-```css title="🙅‍♂ Not Recommended: ページ全体を起点にした :has() で、ヘッダー以外を不活性にする"
-/* 🙅‍♂ Not Recommended */
-body:has(.drawer-button[aria-expanded="true"]) {
-  & :not(.global-header, .global-header *) {
-    interactivity: inert;
-  }
-}
-```
-
-このコードには、本書の規約と合わない点が3つあります。1つ目は、`:has()` の起点が `body` で、引数も子孫全体を調べる形になっていることです。DOMが変わるたびに `body` の子孫全体を調べ直すので、要素の多いページではスタイルの再計算が重くなります（第3章「[3-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」）。2つ目は、ヘッダーが `<div>` などで包まれている場合に、その祖先も `:not()` に一致して不活性になることです。`interactivity` は継承し、子孫から打ち消せないので、ヘッダーごと操作できなくなります。
-
-3つ目は、未対応の環境で機能が損なわれることです。カルーセルと違い、ドロワーが開いている間に背面を操作できてしまうと、フォーカスがドロワーの外へ出て、見えないリンクを操作することになります。開閉のボタンの `aria-expanded` はJavaScriptで切り替えているので、本書では、同じ処理の中で背面の要素に `inert` 属性を付けることを基本にします。`inert` 属性は、主要なブラウザで使えます。
-
-<Baseline id="inert" name="inert 属性" />
-
-```js title="ドロワーの開閉に合わせて、背面の要素に inert 属性を付ける"
-const button = document.querySelector('.global-header ._drawer-button');
-const background = document.querySelectorAll('body > :not(.global-header)');
-
-button.addEventListener('click', () => {
-  const expanded = button.getAttribute('aria-expanded') !== 'true';
-  button.setAttribute('aria-expanded', String(expanded));
-  for (const element of background) element.inert = expanded;
-});
-```
-
-`body` の直下の要素のうち、ヘッダー以外に `inert` を付けています。ヘッダーが `body` の直下にある構造が前提で、ヘッダーを包む要素がある場合は、その要素の兄弟を対象にします。
-
-次のデモでは、上のスクリプトをそのまま動かしています。まずドロワーを閉じたままTabキーを押し、本文のリンクにフォーカスが移ることを確かめてください。「メニュー」ボタンでドロワーを開いてからTabキーを押すと、フォーカスはヘッダーのボタンからドロワーのリンクへ移り、最後のリンクの次は、灰色になった本文のリンクを飛ばしてデモの外へ出ます。
-
-<Demo title="ドロワーを開いている間は、背面の本文に inert 属性が付き、リンクにフォーカスが移らない" html={drawerHtml} css={drawerCss} js={drawerJs} widths={[]} />
-
-CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります。`.global-header:has(._drawer-button[aria-expanded="true"]) ~ *` のように後ろの兄弟を選べば、ページ全体を調べ直さずに済みます。Chrome 152では、この形で背面のリンクにフォーカスできなくなることを確かめました（2026年10月、Chrome 152で確認）。ただし、`interactivity` がBaselineになるまでは、`inert` 属性の代わりにはしません。
-
 ## カルーセルで確かめる状態
 
 カルーセルを実装したら、対応したブラウザで動くことだけでなく、未対応の環境や設定を変えた環境でも内容を読めるかを確かめます。このページで説明した振る舞いから、確かめる状態を次の表にまとめました。
@@ -249,6 +196,16 @@ CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります�
 | 200%に拡大した状態 | ボタンとスライドの中身の重なりを見る | ボタンが文字やリンクを覆い、読めない部分ができていない |
 
 動きを減らす設定と強制カラーモードは、Chromeの開発者ツールの「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。点の現在位置は、色に加えて形の違いでも示しているので、強制カラーモードで色が置き換わっても、横長の点で見分けられるはずです。{/* 要確認: 強制カラーモードでの ::scroll-marker の枠線と CanvasText の見え方は未検証。Chrome のエミュレーションで確かめてから、確認した年月を書く */}
+
+## 発展：ページ内リンクを現在位置の印にする `scroll-target-group`
+
+ここからは、カルーセルから離れたスクロールマーカーの使い方です。リンクを並べた要素に `scroll-target-group: auto` を指定すると、その中の `<a href="#…">` がスクロールマーカーとして扱われます（CSS Overflow Module Level 5）。リンク先の要素がいま表示されているリンクには、`:target-current` が当てはまります。記事の目次で、読んでいる節のリンクを強調する表示（スクロールスパイ）を、JavaScriptを使わずに作れます。
+
+Chrome 152で、目次の `<ol>` に `scroll-target-group: auto` を指定して確かめました。ページを下へスクロールすると、`:target-current` に当てはまるリンクが、表示している節のリンクへ順に移りました（2026年10月、Chrome 152で確認）。
+
+<Baseline id="scroll-target-group" />
+
+2026年10月の時点で、`scroll-target-group` に対応しているのはChrome系のブラウザ（140以降）だけなので、本書は現状では採用しません。カルーセルのボタンと点はなくても横スクロールで同じ内容を読めますが、目次の強調は、デザインで求められているならすべてのブラウザで出す必要があります。Chrome系のブラウザだけをCSSで強調すると、ほかのブラウザのためにJavaScriptの実装を残すことになり、同じ表示を2つの方法で保守することになります。{/* 要確認: 出典なし（採用の判断は著者に確認） */}いまはIntersectionObserverなどのJavaScriptで強調し、SafariとFirefoxが対応してから、CSSに切り替えます。
 
 ## ガイドライン
 

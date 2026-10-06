@@ -1,0 +1,94 @@
+@layer components {
+  @scope (.scoped.order-table) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    table {
+      --_density: --compact;
+
+      display: block grid;
+      gap: 8px;
+      inline-size: 100%;
+      font-variant-numeric: tabular-nums;
+
+      /*
+       * 注文番号 72px・注文日 112px・商品 176px・数量 40px・金額 72px・状態 72px（どれも中身の幅で px 相当）に、
+       * セルの左右の余白 12px × 2 を 6 列分足した幅
+       */
+      @container --scoped (inline-size >= calc((72 + 112 + 176 + 40 + 72 + 72) / 16 * 1rem + 12px * 2 * 6)) {
+        --_density: --spacious;
+
+        display: block table;
+      }
+    }
+
+    caption {
+      font-weight: bold;
+
+      @container style(--_density: --spacious) {
+        padding-block-end: 8px;
+      }
+    }
+
+    thead {
+      /* 見出しは読み上げのために残し、画面からだけ隠す */
+      @container style(--_density: --compact) {
+        position: absolute;
+        overflow: clip;
+        inline-size: 4px;
+        block-size: 4px;
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    tbody {
+      @container style(--_density: --compact) {
+        display: block grid;
+        gap: 12px;
+      }
+    }
+
+    tr {
+      @container style(--_density: --compact) {
+        display: block grid;
+        gap: 4px;
+        padding-block: 12px;
+        padding-inline: 16px;
+        border: 1px solid oklch(85% 0 0deg);
+        border-radius: 8px;
+      }
+    }
+
+    th,
+    td {
+      @container style(--_density: --spacious) {
+        padding-block: 8px;
+        padding-inline: 12px;
+        border-block-end: 1px solid oklch(88% 0 0deg);
+      }
+    }
+
+    td {
+      @container style(--_density: --compact) {
+        display: block flex;
+        gap: 16px;
+        justify-content: space-between;
+      }
+    }
+
+    ._numeric {
+      text-align: end;
+    }
+
+    ._label {
+      display: none;
+
+      @container style(--_density: --compact) {
+        display: block flow;
+        color: oklch(45% 0 0deg);
+      }
+    }
+  }
+}

@@ -4,46 +4,52 @@
  */
 export const PARTS = [
   {
-    label: '第I部 基礎編',
+    label: '第I部 CSSコーディングにおけるマインドセット',
     chapters: [
-      { number: 1, dir: 'principles', title: '本書の前提となる考え方' },
-      { number: 2, dir: 'cascade', title: 'カスケードを制御する' },
-      { number: 3, dir: 'pseudo', title: '擬似クラスと擬似要素' },
-      { number: 4, dir: 'values', title: '値と単位' },
+      { number: 1, dir: 'principles', title: 'CSSのマインドセット' },
+      { number: 2, dir: 'design-mindset', title: 'CSS設計の考え方' },
+      { number: 3, dir: 'design-reproduction', title: 'デザインを再現する' },
     ],
   },
   {
-    label: '第II部 設計編',
+    label: '第II部 基礎編',
     chapters: [
-      { number: 5, dir: 'design-mindset', title: 'CSS設計の考え方' },
-      { number: 6, dir: 'reset', title: 'リセットとベーススタイル' },
-      { number: 7, dir: 'notation', title: '記法の規約' },
-      { number: 8, dir: 'components', title: 'コンポーネントとカスタムプロパティ' },
+      { number: 4, dir: 'cascade', title: 'カスケードを制御する' },
+      { number: 5, dir: 'pseudo', title: '擬似クラスと擬似要素' },
+      { number: 6, dir: 'values', title: '値と単位' },
+      { number: 7, dir: 'layout', title: 'レイアウトの仕組み' },
     ],
   },
   {
-    label: '第III部 実装編',
+    label: '第III部 設計編',
     chapters: [
-      { number: 9, dir: 'design-reproduction', title: 'デザインを再現する' },
-      { number: 10, dir: 'layout', title: 'レイアウトの基礎と考え方' },
-      { number: 11, dir: 'compositions', title: 'レイアウトコンポジション' },
-      { number: 12, dir: 'responsive', title: 'レスポンシブデザイン' },
-      { number: 13, dir: 'typography', title: 'タイポグラフィと和文組版' },
-      { number: 14, dir: 'color-media', title: '色' },
-      { number: 15, dir: 'decoration', title: '画像・装飾' },
-      { number: 16, dir: 'interaction', title: 'インタラクション' },
-      { number: 17, dir: 'motion', title: 'モーション' },
+      { number: 8, dir: 'reset', title: 'リセットとベーススタイル' },
+      { number: 9, dir: 'notation', title: '記法の規約' },
+      { number: 10, dir: 'components', title: 'コンポーネントとカスタムプロパティ' },
     ],
   },
   {
-    label: '第IV部 運用編',
-    chapters: [{ number: 18, dir: 'operations', title: '実務での運用' }],
+    label: '第IV部 実装編',
+    chapters: [
+      { number: 11, dir: 'layout-practice', title: 'レイアウトを組む' },
+      { number: 12, dir: 'compositions', title: 'レイアウトコンポジション' },
+      { number: 13, dir: 'responsive', title: 'レスポンシブデザイン' },
+      { number: 14, dir: 'typography', title: 'タイポグラフィと和文組版' },
+      { number: 15, dir: 'color-media', title: '色' },
+      { number: 16, dir: 'decoration', title: '画像・装飾' },
+      { number: 17, dir: 'interaction', title: 'インタラクション' },
+      { number: 18, dir: 'motion', title: 'モーション' },
+    ],
+  },
+  {
+    label: '第V部 運用編',
+    chapters: [{ number: 19, dir: 'operations', title: '実務での運用' }],
   },
 ];
 
 export const CHAPTERS = PARTS.flatMap((part) => part.chapters);
 
-/** 章の見出し（例: 第8章 レスポンシブデザイン）。 */
+/** 章の見出し（例: 第13章 レスポンシブデザイン）。 */
 export const chapterLabel = (chapter) => `第${chapter.number}章 ${chapter.title}`;
 
 /**

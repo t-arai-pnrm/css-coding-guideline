@@ -1,0 +1,132 @@
+---
+title: "11-6 固定ヘッダー"
+description: "ヘッダーは、ビューポートの高さが十分なときだけ position: sticky で固定し、フォーカスやページ内リンクの移動先が隠れないように、スクロールで見せる範囲からヘッダーの分を除きます。上端に留まっている間の見た目は scroll-state() のコンテナクエリで切り替え、変えるのは色や影のように寸法の変わらないものに限ります。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Guideline from '../../../components/Guideline.astro';
+
+ヘッダーを画面の上に固定するのは、ビューポートの高さが十分なときだけにします。固定するときは、フォーカスした要素やページ内リンクの移動先がヘッダーの下に隠れないように、スクロールで見せる範囲からヘッダーの分を除きます。上端に留まっている間だけ見た目を変えるときは、`scroll` イベントではなく `scroll-state()` のコンテナクエリを使い、変えるのは色や影のように寸法の変わらないものに限ります。
+
+この節は、`position: sticky` を前提にしています。`sticky` の要素は、通常フローの位置に置かれたまま、スクロールに合わせて、祖先のスクロールコンテナと包含ブロック（位置と大きさの基準になる領域）の範囲の中でずれます。値ごとの違い、包含ブロックの決まり方、`sticky` が留まらない原因は、「[7-8 positionの基礎](/layout/positioning/)」で説明しています。
+
+ヘッダーの中のメニューやツールチップを、開いたボタンのすぐ下に表示する方法は、「[11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)」で説明しています。未対応の環境でも内容を読める形を先に書き、対応した環境でだけボタンの近くに置く書き方です。
+
+## 固定ヘッダーで起きる問題
+
+ヘッダーを固定してまず問題になるのは、画面の広さです。横向きのスマートフォンでは、ビューポートの高さが400px前後しかなく、固定したヘッダーが画面の多くを覆って、本文を読める範囲が狭くなります。{/* 要確認: 出典なし */}拡大した画面でも同じことが起きます。拡大するとCSSピクセルで数えたビューポートの高さが縮むので、パソコンでも、固定したヘッダーが画面の多くを覆います。
+
+固定したヘッダーは、フォーカスした要素も隠します。Shift+Tabで前の要素へフォーカスを戻すと、ブラウザはその要素が見えるようにスクロールしますが、要素はビューポートの上端にそろうので、ヘッダーの下に入ります。ページ内リンクで見出しへ移動したときも、見出しが上端にそろってヘッダーに隠れます。WCAG 2.2の達成基準2.4.11（レベルAA）は、キーボードでフォーカスした要素が、作成者の置いたコンテンツで完全に隠れないことを求めています。固定ヘッダーは、その典型的な原因として挙げられています。
+
+上端に留まったときの見た目の切り替えも、問題になりやすいところです。留まったら影を付ける、背景を不透明にする、といった演出は、以前は `scroll` イベントでスクロール量を調べて、JavaScriptでクラスを付け替えて作っていました。スクロールのたびに位置を調べる処理が、見た目のためだけに動き続けます。
+
+留まったときにヘッダーの高さを縮める演出は、さらに別の問題を起こします。`sticky` の要素は通常フローに場所を持つので、高さが縮むと後ろの内容が動き、ブラウザがスクロール位置を押し戻すことがあります。この問題は、節の最後の「留まったときに高さを変えない」で説明します。
+
+## 固定ヘッダーと画面の高さ
+
+ヘッダーを画面の上に固定するのは、ビューポートの高さが十分なときだけにします。固定の条件には、幅ではなく高さのメディアクエリを使います。問題は本文を読める範囲が縦に狭くなることなので、幅で判定すると、横向きのスマートフォンや拡大した画面を見分けられないからです。
+
+```css title="🙆‍♂ Recommended: ビューポートの高さが十分なときだけ、ヘッダーを固定する"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    @media (height >= calc(600 / 16 * 1rem)) {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: var(--z--header);
+    }
+  }
+}
+```
+
+閾値は、ほかのクエリと同じく `rem` で書きます（「[13-4 メディアクエリ](/responsive/media-queries/)」）。ユーザーがブラウザの文字サイズを大きくすると閾値も大きくなり、ヘッダーは早めに固定をやめます。600px相当は、横向きのスマートフォンや、200%に拡大したノートパソコンの画面で固定を外すための目安です。{/* 要確認: 出典なし */}`z-index` には数値を直接書かず、ページ全体の重なり順を決めるトークン `--z--header` を使います（「[10-4 デザイントークン](/components/design-tokens/)」）。固定しない画面では重なる相手がないので、`z-index` も条件の中に書いています。
+
+固定には、`position: fixed` ではなく `sticky` を使います。`fixed` の要素は通常フローから外れるので、本文の先頭がヘッダーの下に隠れないように、ヘッダーの高さと同じ余白を別に空ける必要があります。`sticky` の要素は通常フローに場所を持ったまま留まるので、この余白が要らず、条件を外したときも、ヘッダーはそのまま文書の先頭に置かれます。{/* 要確認: 出典なし */}
+
+`sticky` で留まるのは、ヘッダーの親の範囲の中だけです。ヘッダーを `<body>` の直下に置けば、ページの最後まで留まります。ヘッダーだけを包む要素を挟むと、親の高さがヘッダーと同じになり、ヘッダーはずれる余地を失います。留まらないときは「[7-8 positionの基礎](/layout/positioning/)」の原因を順に確かめます。
+
+## フォーカスとページ内リンクの移動先を隠さない
+
+固定しているときも、フォーカスした要素がヘッダーの下に入ることはあります。「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」では、`[id]` と `:focus` に `scroll-margin-block-start: 4rlh` を指定し、移動先の上に余白を空けています。これは移動先の要素の側に付ける余白で、ヘッダーの高さを知らなくても、たいていのヘッダーの下から見出しや入力欄を出せます。
+
+ヘッダーの高さが決まっているなら、スクロールする側のルートに `scroll-padding-block-start` を指定する方法もあります。スクロールで内容を見せる範囲からヘッダーの分を除く指定で、仕様では、フォーカスやページ内リンクによるスクロールと、Spaceキーなどで1画面ずつ送るときの送り幅に反映されるとされています。
+
+```css title="🙆‍♂ Recommended: ヘッダーを固定するときだけ、スクロールで見せる範囲からヘッダーの高さを除く"
+:root {
+  @media (height >= calc(600 / 16 * 1rem)) {
+    scroll-padding-block-start: calc(64 / 16 * 1rem);
+  }
+}
+```
+
+閾値は、ヘッダーのクエリとそろえます。ヘッダーを固定しない画面で余白だけが残ると、移動先の上に意味のない空きができるからです。`scroll-padding` を指定するのは、ページをスクロールさせているルートです。ページを入れ子のスクロールコンテナでスクロールさせていると、この指定は効きません（「[11-9 ページのスクロールとルートスクローラー](/layout-practice/root-scroller/)」）。
+
+`scroll-padding` と `scroll-margin` を両方指定すると、2つの余白は足し合わされます。ルートでヘッダーの高さを除くなら、ベーススタイルの `scroll-margin-block-start` は、見出しの上に少しゆとりを残す程度の値に下げます。{/* 要確認: 出典なし */}
+
+## 留まっている間だけ見た目を変える
+
+上端に留まったときの見た目は、コンテナクエリの `scroll-state()` で切り替えます。`sticky` の要素が留まっているかどうかをCSSだけで判定できるので、スクロールのたびにJavaScriptで位置を調べる処理が要りません。
+
+<Baseline id="container-scroll-state-queries" name="scroll-state() のコンテナクエリ" />
+
+`sticky` の要素に `container-type: scroll-state` を指定します。すると、その中の要素は `@container scroll-state(stuck: block-start)` の条件を使い、上端に留まっている間だけスタイルを変えられます。コンテナクエリなので、条件で変えられるのはコンテナの子孫だけです。ヘッダーそのものではなく、内側の要素に見た目を書きます。
+
+`stuck` の値には、`top` や `bottom` のような物理キーワードと、`block-start` や `block-end` のような論理キーワードがあります。本書では、`inset-block-start` で留める位置を決めているのに合わせて、論理キーワードで書きます（「[9-8 論理プロパティと論理値](/notation/logical-properties/)」）。下端に留めるフッターなら `stuck: block-end` です。
+
+```css title="🙆‍♂ Recommended: 上端に留まっている間だけ、ヘッダーの内側に境界線を付ける"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    position: sticky;
+    inset-block-start: 0;
+    container: --scoped / scroll-state;
+  }
+
+  ._header-inner {
+    border-block-end: 1px solid transparent;
+    background-color: var(--color--neutral--50);
+
+    @container --scoped scroll-state(stuck: block-start) {
+      border-block-end-color: var(--color--neutral--400);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--fast);
+      transition-property: border-block-end-color;
+    }
+  }
+}
+```
+
+2026年10月の時点で、`scroll-state()` のクエリに対応しているのはChrome系のブラウザだけです。対応していない環境では条件が成り立たず、境界線がないまま留まります。ヘッダーの機能は損なわれないので、プログレッシブ・エンハンスメントとして使えます。反対に、留まったときにだけメニューを表示するような、見えないと操作できなくなる変化には使いません。
+
+同じ仕組みで、横にスクロールできる表の案内を、`scroll-state(scrollable: inline-end)` が成り立つ間だけ表示できます（「[11-12 表を組む](/layout-practice/tables/)」）。
+
+## 留まったときに高さを変えない
+
+留まったときにヘッダーの高さを縮める演出には、別の問題があります。`sticky` の要素は通常フローに場所を持つので、高さが縮むと、後ろの内容がその分だけ上へ動きます。ブラウザは、見えている内容の位置を保つスクロールアンカリングの仕組みで、スクロール位置を縮んだ分だけ戻します。Chrome 152で、留まると高さが64px縮むヘッダーを置いて32pxスクロールすると、スクロール位置は0に戻り、ヘッダーも元の高さに戻りました（2026年10月確認）。少しスクロールするたびにページが先頭へ押し戻され、ヘッダーが伸び縮みを繰り返します。
+
+そのため、留まったときに変えるのは、色や影のように寸法の変わらないものにします。先ほどの例で、内側の要素の境界線の色だけを変えているのも、このためです。高さを変える必要があるなら、ルートに `overflow-anchor: none` を指定して、スクロールアンカリングを止めます。同じ条件で確かめると、スクロール位置は32pxのまま保たれました。
+
+```css title="🙆‍♂ Recommended: 留まると高さが変わるヘッダーを置くときは、スクロールアンカリングを止める"
+:root {
+  overflow-anchor: none;
+}
+```
+
+<Baseline id="overflow-anchor" />
+
+この指定は、ページ全体のスクロールアンカリングを止めます。画面より上で画像が読み込まれて高さが変わったときなどに、見ている内容が押し下げられるようになるので、高さを変えずに済むなら、そのほうを選びます。`overflow-anchor` はSafari 27で対応し、2026年9月にBaselineの「新しく利用可能」になりました（2026年10月確認）。対応していない環境では、指定が無視されるだけです。{/* 要確認: 出典なし */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Using container scroll-state queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
+- [overflow-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor)
+- [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)（W3C）
+- [CSS Scroll Anchoring Module Level 1](https://drafts.csswg.org/css-scroll-anchoring/)（W3C）
+- [Understanding Success Criterion 2.4.11: Focus Not Obscured (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)（W3C）
+- [C43: Using CSS scroll-padding to un-obscure content](https://www.w3.org/WAI/WCAG22/Techniques/css/C43)（W3C）

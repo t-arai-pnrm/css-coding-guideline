@@ -1,5 +1,5 @@
 ---
-title: "3-6 フォームの状態を表す擬似クラス"
+title: "5-6 フォームの状態を表す擬似クラス"
 description: "フォームの状態を表す擬似クラスは、それぞれ当てはまる条件が違います。:invalidは操作の前から、:read-onlyは編集できないすべての要素に、:placeholder-shownはplaceholder属性のある入力欄にだけ当てはまります。条件を確かめてから使い分け、ARIAでしか表せない状態は属性セレクタで補います。"
 sidebar:
   order: 6
@@ -35,7 +35,7 @@ import ariaStatesJs from '../../../demos/pseudo/aria-states/script.js?raw';
 
 検証の対象にならない要素は、どちらにも当てはまりません。無効にした入力欄、`readonly` を付けた入力欄、`type="hidden"` の入力欄は、検証の対象から外れます。`required` と `readonly` を両方付けた空の入力欄は、`:invalid` になりません（Chrome 152で確認、2026年10月）。一方、`<form>` と `<fieldset>` は、中に `:invalid` の要素が1つでもあれば `:invalid` です。
 
-`:user-valid` と `:user-invalid` は、ユーザーが値を変えて入力欄を離れた後か、送信しようとした後にだけ当てはまります。エラーの見た目を `:invalid` ではなく `:user-invalid` に指定する理由と書き方は、第16章「[16-3 フォーム部品](/interaction/forms/)」のルール `user-invalid-for-errors` で説明しています。正しく入力できたことを示す見た目も、同じ理由で `:valid` ではなく `:user-valid` に指定します。
+`:user-valid` と `:user-invalid` は、ユーザーが値を変えて入力欄を離れた後か、送信しようとした後にだけ当てはまります。エラーの見た目を `:invalid` ではなく `:user-invalid` に指定する理由と書き方は、第17章「[17-3 フォーム部品](/interaction/forms/)」のルール `user-invalid-for-errors` で説明しています。正しく入力できたことを示す見た目も、同じ理由で `:valid` ではなく `:user-valid` に指定します。
 
 <Baseline id="user-pseudos" name=":user-valid と :user-invalid" />
 
@@ -146,7 +146,7 @@ input {
 
 `::placeholder` は、プレースホルダーの文字を選ぶ擬似要素です。ブラウザの既定のプレースホルダーは薄い色で、Chromeは `darkgray`、Firefoxは入力欄の文字色を54%の不透明度にした色を使います（MDN）。どちらも、白い背景とのコントラスト比が、WCAGが本文の文字に求める4.5:1に届かないことがあります。
 
-プレースホルダーの色は、`color` で背景とのコントラスト比が4.5:1以上になる色を指定します。`opacity` で薄くすると、背景の色が透けて見え、背景が変わるたびにコントラスト比も変わります。本書が推奨するkiso.cssは、`::placeholder` の `opacity` を初期値に戻して、ブラウザの差をなくしています（「[6-1 壊さないリセット](/reset/kiso/)」）。
+プレースホルダーの色は、`color` で背景とのコントラスト比が4.5:1以上になる色を指定します。`opacity` で薄くすると、背景の色が透けて見え、背景が変わるたびにコントラスト比も変わります。本書が推奨するkiso.cssは、`::placeholder` の `opacity` を初期値に戻して、ブラウザの差をなくしています（「[8-1 壊さないリセット](/reset/kiso/)」）。
 
 <Baseline id="placeholder" />
 
@@ -160,7 +160,7 @@ input {
 
 ## ネイティブの状態とARIA属性の使い分け
 
-状態のスタイルは、まずネイティブの擬似クラスで書きます。`disabled` 属性や `required` 属性で表せる状態は、ブラウザが操作の可否や検証の結果まで管理し、支援技術にも伝えるからです。状態のクラスを使わず、擬似クラスかARIA属性をセレクタにする方針は、第16章「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」のルール `state-by-pseudo-class-or-aria` で定めています。
+状態のスタイルは、まずネイティブの擬似クラスで書きます。`disabled` 属性や `required` 属性で表せる状態は、ブラウザが操作の可否や検証の結果まで管理し、支援技術にも伝えるからです。状態のクラスを使わず、擬似クラスかARIA属性をセレクタにする方針は、第17章「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」のルール `state-by-pseudo-class-or-aria` で定めています。
 
 ただし、同じ状態を、ネイティブの属性ではなくARIA属性で表す場面があります。送信ボタンを `disabled` にすると、フォーカスの順序から外れ、Tabキーでボタンにたどり着けなくなります（MDN）。そこで、フォーカスを残したまま `aria-disabled="true"` で無効を伝えることがあります。サーバーで検証した結果のエラーも、ブラウザの制約の検証では表せないので、JavaScriptで `aria-invalid="true"` を付けます。
 

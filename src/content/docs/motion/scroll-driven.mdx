@@ -1,5 +1,5 @@
 ---
-title: "17-6 スクロールに合わせて動かす"
+title: "18-6 スクロールに合わせて動かす"
 description: "スクロール位置に合わせて連続して変わる動きはCSSのスクロール駆動アニメーションで作ります。画面に入ったときに1回だけ動かす演出は、view()のタイムラインで切り替えたカスタムプロパティをスタイルクエリで問い合わせて再生し、Firefoxでも演出が必要なときはIntersectionObserverを使います。scrollイベントで毎回位置を計算する方法は使いません。"
 sidebar:
   order: 6
@@ -49,7 +49,7 @@ window.addEventListener('scroll', () => {
 | 画面に入ったときに一度だけ変わる | `view()` のタイムラインとスタイルクエリ（Firefoxでも出すなら `IntersectionObserver`）で、CSSのアニメーションを再生する | 見出しやカードが現れる演出 |
 | スクロール量に応じて複雑に分岐する | `requestAnimationFrame` で制御するJavaScript | 段落を入れ替えながら進む演出 |
 
-スクロール駆動アニメーションでは、ブラウザがスクロールの位置をそのままアニメーションの進み具合として使います。`opacity` や `translate` のような合成だけで済むプロパティなら、メインスレッドが忙しいときにもスクロールに追従しやすくなります（「[17-7 動きの負荷を抑える](/motion/performance/)」）。`IntersectionObserver` も、交差したときにだけコールバックが呼ばれるので、スクロールのたびに位置を読む必要がありません。
+スクロール駆動アニメーションでは、ブラウザがスクロールの位置をそのままアニメーションの進み具合として使います。`opacity` や `translate` のような合成だけで済むプロパティなら、メインスレッドが忙しいときにもスクロールに追従しやすくなります（「[18-7 動きの負荷を抑える](/motion/performance/)」）。`IntersectionObserver` も、交差したときにだけコールバックが呼ばれるので、スクロールのたびに位置を読む必要がありません。
 
 ## スクロール駆動アニメーションで値を連続して変える
 
@@ -125,28 +125,28 @@ window.addEventListener('scroll', () => {
 }
 ```
 
-2つの例で、動きを減らす設定への扱いが違います。ヘッダーの背景はフェードだけなので、条件の外に書いています。パララックスは、スクロールに合わせて要素を移動させる大きな変動にあたるので、`no-preference` の中でだけ指定し、設定があるときは無効化します。判断の4段階は「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明しています。
+2つの例で、動きを減らす設定への扱いが違います。ヘッダーの背景はフェードだけなので、条件の外に書いています。パララックスは、スクロールに合わせて要素を移動させる大きな変動にあたるので、`no-preference` の中でだけ指定し、設定があるときは無効化します。判断の4段階は「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明しています。
 
 ## 画面に入ったら1回だけ再生する
 
 画面に入った時点で1回だけ再生する演出は、CSSだけで作れます。スクロール駆動アニメーションは「画面に入った」ことを知らせるきっかけにだけ使い、見た目の変化は時間で進む普通のアニメーションで再生します。スクロール駆動アニメーションで `opacity` を直接動かすと、進み具合がスクロールの位置で決まるので、スクロールを止めた位置で表示が途中のまま残り、スクロールの速さで動きの速さも変わるからです。
 
-きっかけには、カスタムプロパティを使います。ルートの `view()` のタイムラインで `--_in-view` を `false` から `true` に切り替え、子は一時停止したアニメーションを `@container style(--_in-view: true)` の中で再生します。
+きっかけには、カスタムプロパティを使います。ルートの `view()` のタイムラインで `--_in-view` を `--false` から `--true` に切り替えます。子は、一時停止したアニメーションを `@container style(--_in-view: --true)` の中で再生します。
 
 ```css title="🙆‍♂ Recommended: view() のタイムラインで切り替えた値を、スタイルクエリで問い合わせて再生する"
 @keyframes --reveal-card--in-view {
   from {
-    --_in-view: false;
+    --_in-view: --false;
   }
 
   to {
-    --_in-view: true;
+    --_in-view: --true;
   }
 }
 
 @scope (.scoped.reveal-card) to (.scoped) {
   :scope {
-    --_in-view: false;
+    --_in-view: --false;
 
     @supports (animation-timeline: view()) and (animation-range: entry) {
       animation-name: --reveal-card--in-view;
@@ -167,7 +167,7 @@ window.addEventListener('scroll', () => {
       animation-fill-mode: both;
       animation-play-state: paused;
 
-      @container style(--_in-view: true) {
+      @container style(--_in-view: --true) {
         animation-play-state: running;
       }
 
@@ -181,21 +181,21 @@ window.addEventListener('scroll', () => {
 
 <Demo title="画面に入ったカードが、1回だけフェードインする" html={revealHtml} css={revealCss} height="360px" />
 
-ルートは、`view()` のタイムラインで自分の位置を測るだけで、自分は動きません。`--_in-view` は `@property` で登録していないので、キーフレームの間を補間できず、進み具合の50%の時点で `false` から `true` に切り替わります（CSS Custom Properties Level 1）。`linear` を指定しているので、切り替わるのは範囲のちょうど中間です。この例の範囲は `entry 0%` から `entry 60%` なので、要素の30%が画面に入った位置で `true` になります（2026年10月、Chrome 152で確認）。`animation-fill-mode: both` を指定しているので、範囲を過ぎたあとも `true` のまま残ります。
+ルートは、`view()` のタイムラインで自分の位置を測るだけで、自分は動きません。`--_in-view` は `@property` で登録していないので、キーフレームの間を補間できず、進み具合の50%の時点で `--false` から `--true` に切り替わります（CSS Custom Properties Level 1）。`linear` を指定しているので、切り替わるのは範囲のちょうど中間です。この例の範囲は `entry 0%` から `entry 60%` なので、要素の30%が画面に入った位置で `--true` になります（2026年10月、Chrome 152で確認）。`animation-fill-mode: both` を指定しているので、範囲を過ぎたあとも `--true` のまま残ります。
 
-子の `._body` は、`animation-play-state: paused` と `animation-fill-mode: both` で、`@keyframes` の `from` の見た目のまま待機します。`--_in-view` が `true` になると、`@container style()` の中の `running` が当てはまり、アニメーションが最後まで再生されます。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは、`@keyframes` に渡すカスタムプロパティだけを変えればすみます。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。
+子の `._body` は、`animation-play-state: paused` と `animation-fill-mode: both` で、`@keyframes` の `from` の見た目のまま待機します。`--_in-view` が `--true` になると、`@container style()` の中の `running` が当てはまり、アニメーションが最後まで再生されます。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは、`@keyframes` に渡すカスタムプロパティだけを変えればすみます。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。
 
-`@container style()` は、名前を指定しなければ、いちばん近い祖先の要素の値を問い合わせます。要素は自分自身の値を問い合わせられないので、値を切り替える要素（ルート）と、再生する要素（`._body`）を分けています。`--fade-in` と `--translate-from` はサイト全体で使う `@keyframes` で、定義は「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。一方、`--_in-view` はコンポーネントの内部用のカスタムプロパティなので、それを切り替える `@keyframes` には、コンポーネントの名前を付けます。
+`@container style()` は、名前を指定しなければ、いちばん近い祖先の要素の値を問い合わせます。要素は自分自身の値を問い合わせられないので、値を切り替える要素（ルート）と、再生する要素（`._body`）を分けています。`--fade-in` と `--translate-from` はサイト全体で使う `@keyframes` で、定義は「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」で説明しています。一方、`--_in-view` はコンポーネントの内部用のカスタムプロパティなので、それを切り替える `@keyframes` には、コンポーネントの名前を付けます。
 
 <Baseline id="container-style-queries" name="@container style()" />
 
 ### スクロールを戻したときと、対応していない環境
 
-範囲より手前までスクロールを戻すと、`--_in-view` は `false` に戻り、`._body` のアニメーションは再び一時停止します。再生を終えていれば、見た目は終わった状態のまま変わりません。しかし、再生の途中で戻すと、その位置で止まり、巻き戻りません。次に範囲に入ると、止まった位置から再生を続けます（2026年10月、Chrome 152で確認）。半透明のまま止まるのを避けたい場合は、次の `IntersectionObserver` の方法を使います。
+範囲より手前までスクロールを戻すと、`--_in-view` は `--false` に戻り、`._body` のアニメーションは再び一時停止します。再生を終えていれば、見た目は終わった状態のまま変わりません。しかし、再生の途中で戻すと、その位置で止まり、巻き戻りません。次に範囲に入ると、止まった位置から再生を続けます（2026年10月、Chrome 152で確認）。半透明のまま止まるのを避けたい場合は、次の `IntersectionObserver` の方法を使います。
 
-2026年10月の時点で、スクロール駆動アニメーションはChrome 115以降とSafari 26以降が対応し、Firefoxは対応していません。スタイルクエリは、Firefoxも151から使えます。`@supports` で囲まないと、Firefoxでは `animation-timeline` が無視され、ルートのアニメーションは再生時間が0の普通のアニメーションになります。読み込んだ直後から `--_in-view` が `true` なので、`._body` のアニメーションは画面の外で再生を終えます。`@supports` で囲めば、Firefoxでは演出なしで最初から表示されます。
+2026年10月の時点で、スクロール駆動アニメーションはChrome 115以降とSafari 26以降が対応し、Firefoxは対応していません。スタイルクエリは、Firefoxも151から使えます。`@supports` で囲まないと、Firefoxでは `animation-timeline` が無視され、ルートのアニメーションは再生時間が0の普通のアニメーションになります。読み込んだ直後から `--_in-view` が `--true` なので、`._body` のアニメーションは画面の外で再生を終えます。`@supports` で囲めば、Firefoxでは演出なしで最初から表示されます。
 
-動きを減らす設定には、フェードだけで表示して対応しています。`--fade-in` は条件の外に書き、移動の `--translate-from` だけを `prefers-reduced-motion: no-preference` の中で加えます。フェードは、動きを減らす設定でも残してよい動きだからです（「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。
+動きを減らす設定には、フェードだけで表示して対応しています。`--fade-in` は条件の外に書き、移動の `--translate-from` だけを `prefers-reduced-motion: no-preference` の中で加えます。フェードは、動きを減らす設定でも残してよい動きだからです（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。
 
 ### IntersectionObserver で属性を切り替える
 
@@ -251,7 +251,7 @@ if (root && !reduced) {
 root?.setAttribute('data-motion-mode', reduced ? 'reduced' : 'motion');
 ```
 
-待機の条件を `@media (scripting: enabled)` だけにすると、スクリプトの読み込みや初期化に失敗した環境で、要素が透明のまま止まります。この条件はJavaScriptが有効なことしか表さないからです。`data-motion-mode="motion"` は監視を始めたあとにしか付かないので、処理が途中で止まれば待機のスタイルは当たらず、内容はそのまま読めます。`scripting` メディア特性と、透明を戻す処理が動かないときの問題は、「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明しています。再生のセレクタにも同じ属性の条件を書くのは、待機の宣言より詳細度を高くして、確実に上書きするためです。
+待機の条件を `@media (scripting: enabled)` だけにすると、スクリプトの読み込みや初期化に失敗した環境で、要素が透明のまま止まります。この条件はJavaScriptが有効なことしか表さないからです。`data-motion-mode="motion"` は監視を始めたあとにしか付かないので、処理が途中で止まれば待機のスタイルは当たらず、内容はそのまま読めます。`scripting` メディア特性と、透明を戻す処理が動かないときの問題は、「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明しています。再生のセレクタにも同じ属性の条件を書くのは、待機の宣言より詳細度を高くして、確実に上書きするためです。
 
 動きを減らす設定のときは、JavaScriptが `reduced` を付けて監視をしないので、要素は最初から表示されます。CSSの側も `no-preference` の条件で囲んでいるので、ページを開いたあとに設定を変えた場合も、待機のスタイルは外れます。演出を無効化せず、フェードだけに簡素化するなら、JavaScriptは設定にかかわらず監視して `motion` を付けます。CSSでは、移動の `--translate-from` だけを `no-preference` の中で追加します。
 
@@ -341,7 +341,7 @@ window.addEventListener(
 
 動き始める前の要素を隠すのに、`visibility: hidden` や `display: none` を使わないでください。スクリーンリーダーで読めなくなったり、ページ内検索で見つからなくなったりします。`opacity` で透明にした要素は、見えなくても読み上げと検索の対象に残ります。
 
-アニメーションは、略記の `animation` ではなく、ロングハンドで書きます。略記は `animation-timeline` と `animation-range` もリセットするので、略記をあとに書くと、先に指定したスクロール駆動の設定が消えます（「[17-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。
+アニメーションは、略記の `animation` ではなく、ロングハンドで書きます。略記は `animation-timeline` と `animation-range` もリセットするので、略記をあとに書くと、先に指定したスクロール駆動の設定が消えます（「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。
 
 ## ガイドライン
 

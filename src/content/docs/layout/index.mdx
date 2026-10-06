@@ -1,37 +1,27 @@
 ---
-title: "第10章 レイアウトの基礎と考え方"
-description: "レイアウトの基礎となる仕組み（通常フロー、ボックスモデル、マージンの相殺、Flexbox、Grid、position）、作るものに合わせたレイアウトの手法の選び方、余白の設計、内容が変わっても崩れない書き方、重なりの仕組み、表示順と読み上げ順の合わせ方、表の組み方をまとめた章です。"
+title: "第7章 レイアウトの仕組み"
+description: "レイアウトの土台になる仕組みをまとめた章です。通常フロー、Flexbox、Grid、位置指定という方式の違い、ボックスモデルと大きさの決まり方、margin・padding・gap が受け持つ余白の違いとマージンの相殺、各方式で子の大きさと位置が決まる規則を扱います。"
 sidebar:
   label: "概要"
   order: 0
 ---
 
-この章では、要素を並べる、間を空ける、重ねるといったレイアウトの書き方を扱います。レイアウトは、まず親の `grid-template` で配置と余白を決められないかを考え、子要素の側には配置のための指定をなるべく書きません。そのうえで、内容の長さや量が変わっても崩れないように、守りの指定を加えます。
+この章では、要素の大きさと位置がどう決まるのかという、レイアウトの仕組みを扱います。CSSのレイアウトは、通常フロー、Flexbox、Grid、位置指定（`position`）という複数の方式でできていて、同じ `margin` や `inline-size` でも、要素がどの方式の中にあるかで働き方が変わります。この章は、その規則を方式ごとに整理し直すための章です。
 
-私が勧めているのは、FlexboxではなくGridから考え始めることです。「1次元ならFlexbox、2次元ならGrid」という分け方が広まっていますが、1行の並びでもGridのほうが簡潔に書ける場面は多くあります。何でもFlexboxで組むと、子要素の側に幅の計算や打ち消しの指定が散らばり、レイアウトの全体像がどこにも書かれていない状態になりがちです。
+レイアウトの不具合の多くは、方式の規則を知らないまま値を足したことから生まれます。インライン要素に上下の余白を付けても空かない、`position: sticky` が留まらない、フレックスアイテムが縮まずにはみ出す、といった場面は、どれも方式の規則どおりの振る舞いです。値を少しずつ変えて見た目を合わせる前に、要素がどの方式の中にあり、何を基準に大きさが決まっているのかを確かめます。CSSをレイアウトのアルゴリズムの集まりとして捉える考え方は、「[1-3 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」で説明しています。
 
-もうひとつ大事にしているのは、内容が変わっても崩れないことです。一般的なWebサイトは公開後も更新が続き、とくにCMSの案件では、デザインカンプにない長さの見出しや、画像のない記事が入ってきます。既存のサイトの改修では、長いURLや入力欄が枠を突き抜ける不具合を直す作業が、定期的に発生します。こうした不具合の多くは、書くときに「もし〜だったら」と考えておけば防げるという印象です。
+この章は次の8つの節で構成しています。7-1で方式の全体像を示し、7-2〜7-8で方式ごとの規則を説明します。
 
-この章は次の16の節で構成しています。10-1〜10-7は、ほかの節が前提にしている仕組みと、レイアウトの方式ごとの基礎です。
+- [7-1 レイアウトの基礎](/layout/fundamentals/)：レイアウトの方式の全体像、方式を決める親の `display`、包含ブロックの要約、重なり、FlexboxとGridの配置のプロパティ
+- [7-2 通常フローの基礎](/layout/normal-flow/)：ブロック方向とインライン方向、ブロックとインラインのボックス、行ボックスと匿名ボックス、幅と高さの決まり方、`display: flow-root`
+- [7-3 ボックスモデルの基礎](/layout/box-model/)：内容・`padding`・`border`・`margin` の領域、`box-sizing`、大きさの決まり方と `%` の基準
+- [7-4 marginの役割](/layout/margin-role/)：縦に長い文書のための `margin`、`margin`・`padding`・`gap` が受け持つ余白の違い、レイアウトの間隔と文章の要素の間の余白の書き分け
+- [7-5 マージンの相殺](/layout/margin-collapse/)：相殺が起きる条件と起きない条件、負のマージンを含む計算、`display: flow-root` による相殺の止め方
+- [7-6 Flexboxの基礎](/layout/flexbox-basics/)：主軸と交差軸、`flex-grow`・`flex-shrink`・`flex-basis` による空間の配り方、折り返し
+- [7-7 Gridの基礎](/layout/grid-basics/)：トラック・線・エリアの用語、明示的なグリッドと暗黙のグリッド、配置のプロパティ、`grid-template` のエリア、サブグリッドでそろえるカード
+- [7-8 positionの基礎](/layout/positioning/)：`position` の5つの値、包含ブロック、絶対配置の要素を中央に置く方法、`sticky` が留まらない原因
 
-- [10-1 レイアウトの基礎](/layout/fundamentals/)：レイアウトの方式の全体像、方式を決める親の `display`、包含ブロックの要約、重なり、FlexboxとGridの配置のプロパティ
-- [10-2 通常フローの基礎](/layout/normal-flow/)：ブロック方向とインライン方向、ブロックとインラインのボックス、行ボックスと匿名ボックス、幅と高さの決まり方、`display: flow-root`
-- [10-3 ボックスモデルの基礎](/layout/box-model/)：内容・`padding`・`border`・`margin` の領域、`box-sizing`、大きさの決まり方と `%` の基準
-- [10-4 マージンの相殺](/layout/margin-collapse/)：相殺が起きる条件と起きない条件、負のマージンを含む計算、相殺の止め方
-- [10-5 Flexboxの基礎](/layout/flexbox-basics/)：主軸と交差軸、`flex-grow`・`flex-shrink`・`flex-basis` による空間の配り方、折り返し
-- [10-6 Gridの基礎](/layout/grid-basics/)：トラック・線・エリアの用語、明示的なグリッドと暗黙のグリッド、配置のプロパティ、`grid-template` のエリア、サブグリッドでそろえるカード
-- [10-7 positionの基礎](/layout/positioning/)：`position` の5つの値、包含ブロック、`sticky` が留まらない原因、固定ヘッダー、アンカーポジショニング、重なりの検出
-- [10-8 レイアウト手法の選び方](/layout/choosing/)：よくある実装ごとの通常フロー、Grid、Flexbox、`float` の選び方と、`float` が今でも最適な場面
-- [10-9 余白を設計する](/layout/spacing/)：`gap` と `margin` の使い分け、空のグリッドセルで作る余白、本文の流れの余白
-- [10-10 変化に強いレイアウト](/layout/defensive/)：内容の長さや量が変わっても崩れない書き方（ディフェンシブCSS）
-- [10-11 重なりと全幅](/layout/layering/)：Gridで要素を重ねる方法、スタッキングコンテキストと重なり順、画面幅いっぱいに広げる手法
-- [10-12 ページのスクロールとルートスクローラー](/layout/root-scroller/)：ページ全体のスクロールを入れ子のスクロールコンテナにしてしまう原因と、用途ごとの直し方
-- [10-13 grid-lanesで石積みのレイアウトを組む](/layout/masonry/)：高さの違う項目を詰める `display: block grid-lanes`、未対応の環境へのフォールバック、`columns` との使い分け
-- [10-14 表示順と読み上げ順を合わせる](/layout/reading-flow/)：並べ替えた配置で、読み上げとフォーカスの順番を `reading-flow` で見た目に合わせる書き方と、DOMの順番を先に直す理由
-- [10-15 表を組む](/layout/tables/)：最小の幅を決めた表を包む要素の中でスクロールさせる方法、見出しのセルの留め方と `border-collapse`、数値の列のそろえ方、狭い幅で縦に積むときの `role`
-- [10-16 文字の切り詰めと読み込み中の表示](/layout/truncation-and-skeletons/)：1行の切り詰めに必要な指定、全文を読める手段、数値を切り詰めない理由と `tabular-nums`、スケルトンを読み込み後と同じ寸法にする書き方
-
-stack、cluster、switcher、gridなど、配置のパターンを部品にしたコンポジションの使い方と使い分けは、第11章「[レイアウトコンポジション](/compositions/)」で扱います。コンポーネントのルートに外側の余白を持たせない考え方と、z-indexの管理は[第8章「コンポーネントとカスタムプロパティ」](/components/)で扱います。幅に応じてレイアウトを切り替える方法は[第12章「レスポンシブデザイン」](/responsive/)で、フレックスアイテムとグリッドアイテムの最小幅を0にするベーススタイルは[第6章「リセットとベーススタイル」](/reset/)で説明しています。
+これらの仕組みを使って、作るものに合わせて手法を選び、余白を設計し、内容が変わっても崩れないように組む方法は、第11章「[レイアウトを組む](/layout-practice/)」で扱います。`position` を応用する固定ヘッダーは「[11-6 固定ヘッダー](/layout-practice/sticky-header/)」で、アンカーポジショニングは「[11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)」で説明しています。配置のパターンを部品にしたコンポジションは第12章「[レイアウトコンポジション](/compositions/)」で、フレックスアイテムとグリッドアイテムの最小幅を0にするベーススタイルは第8章「[リセットとベーススタイル](/reset/)」で説明しています。
 
 この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
 
@@ -41,8 +31,7 @@ stack、cluster、switcher、gridなど、配置のパターンを部品にし�
 
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
-- [`minmax-min-capped-at-100-percent`](/layout/defensive/#rule-minmax-min-capped-at-100-percent)：`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にします。
-- [`overflow-clip-over-hidden`](/layout/defensive/#rule-overflow-clip-over-hidden)：はみ出しを切り取るだけなら、`overflow: hidden` ではなく `clip` を使います。
+- [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)：配置が思いどおりにならないときは、値を足す前に、その要素がどのレイアウトの方式の中にあるかを確かめます。
+- [`flexbox-check-auto-min-size`](/layout/flexbox-basics/#rule-flexbox-check-auto-min-size)：フレックスアイテムが縮まずにはみ出すときは、固定の幅を足す前に、自動の最小幅を確かめます。
 - [`sticky-align-self-start`](/layout/positioning/#rule-sticky-align-self-start)：GridやFlexboxの子に `position: sticky` を指定するときは、その要素に `align-self: start` も指定します。
-- [`full-bleed-offset-formula`](/layout/layering/#rule-full-bleed-offset-formula)：親の幅を超えて画面の端まで広げる量は「画面の幅と親の幅の差の半分」の式で書き、`100vw` を使いません。
 - [`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)：フォーカスできる要素や順番に意味のある要素を、`order` や `row-reverse` で見た目だけ入れ替えません。

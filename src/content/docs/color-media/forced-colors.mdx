@@ -1,5 +1,5 @@
 ---
-title: "14-5 強制カラーモードとコントラスト"
+title: "15-5 強制カラーモードとコントラスト"
 description: "強制カラーモードでは、ブラウザが色をシステムカラーに置き換えます。枠線は消さずに透明にし、背景色で描いた図形はシステムカラーにフォールバックさせます。色だけで情報を伝えていないかは、グレースケール表示で確かめます。"
 sidebar:
   order: 5
@@ -57,9 +57,9 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 }
 ```
 
-システムカラーは、強制カラーモード以外でも使えます。「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」で紹介したフォーカスリングは、`Canvas` と `CanvasText` の2色を重ねているので、強制カラーモードでもそのまま見えます。
+システムカラーは、強制カラーモード以外でも使えます。「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で紹介したフォーカスリングは、`Canvas` と `CanvasText` の2色を重ねているので、強制カラーモードでもそのまま見えます。
 
-要素ごとに強制カラーモードを無効にする、`forced-color-adjust: none` というプロパティもあります。ただし、ユーザーが自分で選んだ配色を打ち消す指定なので、本書では、システムカラーに置き換えると図として成り立たないグラフのような要素に限って使います（「[15-3 輪郭と枠線を描く](/decoration/outlines/)」のドーナツグラフ）。Safariも対応していません（2026年9月確認）。
+要素ごとに強制カラーモードを無効にする、`forced-color-adjust: none` というプロパティもあります。ただし、ユーザーが自分で選んだ配色を打ち消す指定なので、本書では、システムカラーに置き換えると図として成り立たないグラフのような要素に限って使います（「[16-5 輪郭と枠線を描く](/decoration/outlines/)」のドーナツグラフ）。Safariも対応していません（2026年9月確認）。
 
 ## 枠線は消さずに透明にする
 
@@ -84,7 +84,7 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 
 通常の表示では、2つのボタンの見た目は変わりません。違いが出るのは強制カラーモードのときです。`border-color` はシステムカラーに置き換わるので、透明にしておいた枠線に色が付きます。背景色が消えても枠線が残るので、クリックできる範囲が分かります。
 
-kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を付けています。デザインで枠線を消したいときも、kiso.cssのREADMEのとおり、`border: none` ではなく `border-color: transparent` で上書きします。kiso.cssの方針は「[6-1 壊さないリセット](/reset/kiso/)」で説明しています。
+kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を付けています。デザインで枠線を消したいときも、kiso.cssのREADMEのとおり、`border: none` ではなく `border-color: transparent` で上書きします。kiso.cssの方針は「[8-1 壊さないリセット](/reset/kiso/)」で説明しています。
 
 フォーカスリングを `box-shadow` などで描き直すときも、`outline` は消さず、透明にして残します。通常の表示では、透明な `outline` は見えず、`box-shadow` の表現だけが見えます。強制カラーモードでは `outline-color` がシステムカラーに置き換わるので、キーボードで操作している位置が見えます。`outline: none` で消すと、強制カラーモードでもリングが消えます。
 
@@ -97,7 +97,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 }
 ```
 
-同じ理由で、要素の境界を `box-shadow` だけで描かないようにします。`box-shadow` で描いた枠線は、強制カラーモードでは `none` になって消えます。フォーカスリングを `box-shadow` だけで描かないことは、「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+同じ理由で、要素の境界を `box-shadow` だけで描かないようにします。`box-shadow` で描いた枠線は、強制カラーモードでは `none` になって消えます。フォーカスリングを `box-shadow` だけで描かないことは、「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
 
 ## 背景色で描いた図形をフォールバックさせる
 
@@ -106,36 +106,40 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 そこで、背景色をカスタムプロパティ `--background-current` から受け取るようにします。通常は `currentColor` を、強制カラーモードでは文脈に合ったシステムカラーを入れておきます。
 
 ```css title="🙆‍♂ Recommended: 強制カラーモードでは、文脈に合ったシステムカラーにする"
-:root {
-  --background-current: currentColor;
+@layer base {
+  :root {
+    --background-current: currentColor;
 
-  @media (forced-colors: active) {
-    --background-current: CanvasText;
+    @media (forced-colors: active) {
+      --background-current: CanvasText;
+    }
   }
-}
 
-:where(:any-link) {
-  @media (forced-colors: active) {
-    --background-current: LinkText;
+  :any-link {
+    @media (forced-colors: active) {
+      --background-current: LinkText;
+    }
   }
-}
 
-:where(button:enabled) {
-  @media (forced-colors: active) {
-    --background-current: ButtonText;
+  button {
+    &:enabled {
+      @media (forced-colors: active) {
+        --background-current: ButtonText;
+      }
+    }
   }
-}
 
-:where(:disabled) {
-  @media (forced-colors: active) {
-    --background-current: GrayText;
+  :disabled {
+    @media (forced-colors: active) {
+      --background-current: GrayText;
+    }
   }
 }
 ```
 
-通常の文字の中では `CanvasText`、リンクの中では `LinkText`、有効なボタンの中では `ButtonText`、無効な要素の中では `GrayText` になります。アイコンは、周りの文字と同じシステムカラーで描かれます。セレクタは `:where()` で包み、詳細度を0にしています。コンポーネントの側で文脈を足したいときに、簡単に上書きできるようにするためです。
+通常の文字の中では `CanvasText`、リンクの中では `LinkText`、有効なボタンの中では `ButtonText`、無効な要素の中では `GrayText` になります。アイコンは、周りの文字と同じシステムカラーで描かれます。これらの指定は `base` レイヤーに書くので、コンポーネントの側で文脈を足したいときは、クラス1つで上書きできます。レイヤーを使えない環境では、セレクタを `:where()` で包んで詳細度を0にします（「[19-4 CMSと共存する](/operations/cms/)」）。
 
-アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[15-1 画像と装飾](/decoration/images-and-decoration/)」）。
+アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」）。
 
 ```css title="🙆‍♂ Recommended: アイコンの色を --background-current から受け取る"
 ._more {
@@ -199,46 +203,48 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 対象を見分けるために、単色のアイコンは `svg` 要素に `fill="currentColor"`（塗りで描く場合）か `stroke="currentColor"`（線で描く場合）を書き、図形の要素には色を書かないことにします。塗りで描くアイコンには `fill` だけを、線で描くアイコンには `stroke` だけを補正します。両方をすべての `svg` に指定すると、もともと線のない塗りのアイコンにも、`svg` 要素から継承した線が描かれてしまいます。`stroke` の初期値は `none` で、`fill` と `stroke` はどちらも継承するからです（SVG 2）。
 
 ```css title="🙆‍♂ Recommended: 単色のアイコンの色を、文脈に合ったシステムカラーに固定する"
-:where(svg) {
-  @media (forced-colors: active) {
-    --_b--svg-foreground: CanvasText;
-  }
-}
+@layer base {
+  svg {
+    @media (forced-colors: active) {
+      --_b--svg-foreground: CanvasText;
+    }
 
-/* 塗りで描くアイコン */
-:where(svg[fill="currentColor" i]) {
-  @media (forced-colors: active) {
-    fill: var(--_b--svg-foreground) !important;
-  }
-}
+    /* 塗りで描くアイコン */
+    &[fill="currentColor" i] {
+      @media (forced-colors: active) {
+        fill: var(--_b--svg-foreground) !important;
+      }
+    }
 
-/* 線で描くアイコン */
-:where(svg[stroke="currentColor" i]) {
-  @media (forced-colors: active) {
-    stroke: var(--_b--svg-foreground) !important;
-  }
-}
+    /* 線で描くアイコン */
+    &[stroke="currentColor" i] {
+      @media (forced-colors: active) {
+        stroke: var(--_b--svg-foreground) !important;
+      }
+    }
 
-:where(:any-link svg) {
-  @media (forced-colors: active) {
-    --_b--svg-foreground: LinkText;
-  }
-}
+    &:is(:any-link *) {
+      @media (forced-colors: active) {
+        --_b--svg-foreground: LinkText;
+      }
+    }
 
-:where(button:enabled svg) {
-  @media (forced-colors: active) {
-    --_b--svg-foreground: ButtonText;
-  }
-}
+    &:is(button:enabled *) {
+      @media (forced-colors: active) {
+        --_b--svg-foreground: ButtonText;
+      }
+    }
 
-:where(:disabled svg) {
-  @media (forced-colors: active) {
-    --_b--svg-foreground: GrayText;
+    &:is(:disabled *) {
+      @media (forced-colors: active) {
+        --_b--svg-foreground: GrayText;
+      }
+    }
   }
 }
 ```
 
-ここで `!important` を使うのは、ベーススタイルの詳細度が0だからです。コンポーネントの側で `svg` 要素の色を指定していると、`!important` がなければそちらが勝ち、システムカラーになりません。`!important` を使ってよい場面は、「[2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で整理しています。
+ここで `!important` を使うのは、ベーススタイルが `components` レイヤーより前の `base` レイヤーにあるからです。コンポーネントの側で `svg` 要素の色を指定していると、`!important` がなければ後のレイヤーにあるそちらが勝ち、システムカラーになりません。`!important` を付けた宣言は、レイヤーの順番が逆になり、前のレイヤーにあるものが勝ちます。`!important` を使ってよい場面は、「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で整理しています。
 
 ただし、この指定が補正できるのは、`svg` 要素に書いた色と、それを継承する図形だけです。図形の要素に `fill` や `stroke` を属性やCSSで書くと、その値が継承した値より優先されるので、システムカラーには置き換わりません。CSSの `fill: currentColor` で色を決めるアイコンも、属性のセレクタには当てはまらないので、そのコンポーネントの中で同じ補正を書きます。`fill="none"` のように描かない部分は、もとの `none` のまま残ります。
 
@@ -271,7 +277,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 }
 ```
 
-スクロールバーの色も同じです。強制カラーモードでは指定した色のせいでスクロールバーを見失うおそれがあるので、変えるなら `forced-colors: none` の中に限ります。スクロールバーの扱いは「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
+スクロールバーの色も同じです。強制カラーモードでは指定した色のせいでスクロールバーを見失うおそれがあるので、変えるなら `forced-colors: none` の中に限ります。スクロールバーの扱いは「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
 
 以前の私は、この条件を `@media not (forced-colors: active)` と書いていました。いまは `@media (forced-colors: none)` にそろえています。否定の `not` を使わずに条件を書けるので、読み間違いが起きにくくなります。
 

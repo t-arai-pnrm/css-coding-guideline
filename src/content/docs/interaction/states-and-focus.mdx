@@ -1,5 +1,5 @@
 ---
-title: "16-1 状態とフォーカスを表す"
+title: "17-1 状態とフォーカスを表す"
 description: "ホバーのスタイルは操作できる状態に限り、@media (any-hover)の中に書いて、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。user-select: noneとtouch-actionは、それを必要とする操作部品にだけ指定します。"
 sidebar:
   order: 1
@@ -50,7 +50,28 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 
 ホバーのスタイルは、`@media (any-hover)` の中に書きます。`any-hover` は、使える入力のうち「どれかひとつでも」ホバーできるかを調べるメディア特性です。トラックパッドをつないだタブレットでもホバーが有効になり、つなぐ・外すの変化にも追従します。
 
-```css title="🙆‍♂ Recommended: ホバーを any-hover の中に書き、:focus-visible にも同じ見た目を指定する"
+ホバーのセレクタは、操作できる状態の要素に絞ります。リンクは `&:any-link:hover`、ボタンやフォームのコントロールは `&:enabled:hover` と書きます。`:any-link` は `href` を持つリンクにだけ当てはまるので、`href` を外した現在のページのリンクは反応しません。`:enabled` は無効にしたボタンを除きます。押せないものが押せそうに見えるのを防ぐためです。`<summary>` と `<label>` には無効の状態がないので、条件を付けずに `&:hover` と書きます。
+
+```css title="🙆‍♂ Recommended: ホバーを操作できる状態に絞って any-hover の中に書き、:focus-visible にも同じ見た目を指定する"
+@scope (.scoped.text-link) to (.scoped) {
+  :scope {
+    --_color: var(--color--accent--600);
+    --_color--hocus: var(--color--accent--700);
+
+    color: var(--_color);
+
+    &:focus-visible {
+      color: var(--_color--hocus);
+    }
+
+    &:any-link:hover {
+      @media (any-hover) {
+        color: var(--_color--hocus);
+      }
+    }
+  }
+}
+
 @scope (.scoped.save-button) to (.scoped) {
   :scope {
     --_background: var(--color--accent--600);
@@ -77,15 +98,13 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 
 ホバーで変える見た目は、`:focus-visible` にも同じように指定します。キーボードで操作するユーザーも、マウスで操作するユーザーと同じ手がかりを得られます。祖先の `overflow` でフォーカスリングの一部が切り取られた場合にも、背景色の変化でフォーカスの位置が分かります。`:focus-visible` のスタイルはメディアクエリの外に書きます。タッチ操作の端末にも、キーボードをつないで使うユーザーはいるからです。
 
-フォーカスリングそのものは、ベーススタイルで二重のリングを定義しています（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。コンポーネントで指定するのは、リングに加える背景色などの変化だけです。リングを `outline: none` で消すことはしません。
+フォーカスリングそのものは、ベーススタイルで二重のリングを定義しています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。コンポーネントで指定するのは、リングに加える背景色などの変化だけです。リングを `outline: none` で消すことはしません。
 
-リングを描いても、フォーカスした要素が固定ヘッダーの下に隠れていては見えません。WCAG 2.2の達成基準2.4.11「隠されないフォーカス（最低限）」（レベルAA）は、キーボードでフォーカスを受けた要素が、制作者の置いたコンテンツで完全に隠れないことを求めています。本書では、ベーススタイルで `:focus` にも `scroll-margin-block-start` を指定して、この問題を防いでいます（「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」）。スクロールする側に `scroll-padding-block-start` で余白を取る方法は、「[10-7 positionの基礎](/layout/positioning/)」で説明しています。
-
-ホバーは、操作できる状態の要素に限って反応させます。ボタンやフォームのコントロールは、上の例のように `&:enabled:hover` と書いて、無効にしたものを除きます。リンクは `&:any-link:hover` と書けば、`href` を持たない現在のページのリンクが反応しません。押せないものが押せそうに見えるのを防ぐためです。`<summary>` と `<label>` には無効の状態がないので、条件を付けずに `&:hover` と書き、`@media (any-hover)` の中に入れます。
+リングを描いても、フォーカスした要素が固定ヘッダーの下に隠れていては見えません。WCAG 2.2の達成基準2.4.11「隠されないフォーカス（最低限）」（レベルAA）は、キーボードでフォーカスを受けた要素が、制作者の置いたコンテンツで完全に隠れないことを求めています。本書では、ベーススタイルで `:focus` にも `scroll-margin-block-start` を指定して、この問題を防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。スクロールする側に `scroll-padding-block-start` で余白を取る方法は、「[11-6 固定ヘッダー](/layout-practice/sticky-header/)」で説明しています。
 
 なお、タッチスクリーンを持つノートパソコンでは、マウスもあるので `(any-hover)` が当てはまります。この環境では、指でタップしたときにホバーのスタイルが残ります。入力の方法を操作ごとに見分けたい場合は、JavaScriptのポインターイベントを併用するしかありません。
 
-`@media` は、`&:enabled:hover` のようなセレクタの中に書けます。セレクタの層には、@ルールを数えないからです（「[7-4 ネストの書き方](/notation/nesting/)」）。
+`@media` は、`&:enabled:hover` のようなセレクタの中に書けます。セレクタの層には、@ルールを数えないからです（「[9-4 ネストの書き方](/notation/nesting/)」）。
 
 ## キーボード操作とトランジション
 
@@ -103,7 +122,7 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 }
 ```
 
-`:focus-visible` が当てはまっている間は、トランジションの指定がありません。そのため、フォーカスが来た瞬間に一度で色が変わります。フォーカスが離れるときとホバーのときは、`:not(:focus-visible)` が当てはまるので、なめらかに色が戻ります。トランジションを動きを減らす設定の条件で囲む理由は、「[17-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明します。
+`:focus-visible` が当てはまっている間は、トランジションの指定がありません。そのため、フォーカスが来た瞬間に一度で色が変わります。フォーカスが離れるときとホバーのときは、`:not(:focus-visible)` が当てはまるので、なめらかに色が戻ります。トランジションを動きを減らす設定の条件で囲む理由は、「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明します。
 
 ## ホバーで動く要素の当たり判定
 
@@ -123,34 +142,48 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 ```css title="🙆‍♂ Recommended: ホバーを受ける要素は動かさず、子要素を動かす"
 @scope (.scoped.lift-button) to (.scoped) {
   :scope {
+    --_hocus: --false;
+    --_focus-visible: --false;
+
     display: inline grid;
+
+    &:focus-visible {
+      --_hocus: --true;
+      --_focus-visible: --true;
+    }
 
     &:enabled:hover {
       @media (any-hover) {
-        --_lift: -4px;
+        --_hocus: --true;
       }
     }
   }
 
   ._face {
-    translate: 0 var(--_lift, 0);
+    @container style(--_hocus: --true) {
+      translate: 0 -4px;
+    }
 
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--fast);
-      transition-property: translate;
-      transition-timing-function: var(--ease--out-quint);
+    @container style(--_focus-visible: --false) {
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--fast);
+        transition-property: translate;
+        transition-timing-function: var(--ease--out-quint);
+      }
     }
   }
 }
 ```
 
-この例の `:focus-visible` の指定は省略しています。ホバーとフォーカスに同じ見た目を指定する理由は、先に説明したとおりです。
+ボタンのホバーとフォーカスは、フラグのカスタムプロパティ `--_hocus` で子の `._face` に伝えます。ボタンの状態のセレクタで `--_hocus: --true` を立て、`._face` は `@container style(--_hocus: --true)` で持ち上がります。名前なしの `style()` は親を問い合わせ、カスタムプロパティは継承するので、ボタンで立てたフラグを `._face` から読めます。ボタンにデフォルト値の `--_hocus: --false` を明示しているのは、外側の要素で立てたフラグを継承しないためです。
+
+キーボードでフォーカスしたときは一度で持ち上げるので、トランジションも `--_focus-visible` のフラグで切り替えます。ボタンの `&:not(:focus-visible)` にトランジションを書いても、`transition` は継承しないので、動く `._face` には掛かりません。フラグとスタイルクエリで状態を伝える書き方は、「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
 
 ## 操作する領域の大きさ
 
 指で操作する環境では、操作する領域が小さいと、押し間違いの原因になります。WCAG 2.2の達成基準2.5.8「ターゲットのサイズ（最低限）」（レベルAA）は、ポインターで操作する対象を24×24 CSSピクセル以上にすることを求めています。周囲に十分な間隔がある場合や、文章中のリンクのような場合は例外です。より厳しい達成基準2.5.5「ターゲットのサイズ（強化）」（レベルAAA）は、44×44 CSSピクセルを求めています。
 
-本書では、ボタンやアイコンのような操作する要素に、24px相当の最小の大きさを確保します。タッチ操作ができる環境では、44px相当に広げます。切り替えるのは大きさの値だけで、`min-block-size` と `min-inline-size` の指定は1か所にします。大きさは、ボタンの最小の高さと同じく、文字と一緒に大きくなるように `rem` で書きます（「[4-1 pxとremを使い分ける](/values/px-and-rem/)」）。ただし、`rem` だけで書くと、ブラウザの文字サイズを16pxより小さくしたユーザーの環境では、WCAGが求めるCSSピクセルの下限を下回ります。たとえば文字サイズが12pxなら、`calc(24 / 16 * 1rem)` は18pxです。そこで `max(24px, 24 / 16 * 1rem)` と書き、文字と一緒に大きくなりながら、24pxを下回らないようにします。
+本書では、ボタンやアイコンのような操作する要素に、24px相当の最小の大きさを確保します。タッチ操作ができる環境では、44px相当に広げます。切り替えるのは大きさの値だけで、`min-block-size` と `min-inline-size` の指定は1か所にします。大きさは、ボタンの最小の高さと同じく、文字と一緒に大きくなるように `rem` で書きます（「[6-1 pxとremを使い分ける](/values/px-and-rem/)」）。ただし、`rem` だけで書くと、ブラウザの文字サイズを16pxより小さくしたユーザーの環境では、WCAGが求めるCSSピクセルの下限を下回ります。たとえば文字サイズが12pxなら、`calc(24 / 16 * 1rem)` は18pxです。そこで `max(24px, 24 / 16 * 1rem)` と書き、文字と一緒に大きくなりながら、24pxを下回らないようにします。
 
 ```css title="🙆‍♂ Recommended: 最小の大きさをカスタムプロパティで受け、タッチ操作では値だけを変える"
 @scope (.scoped.icon-button) to (.scoped) {
@@ -169,13 +202,13 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 }
 ```
 
-条件には、`pointer` ではなく `any-pointer` を使います。使える入力にタッチ操作がひとつでもあれば、広いほうの大きさにするためです。`pointer` と `any-pointer` の違いは、「[12-4 メディアクエリ](/responsive/media-queries/)」で説明しています。
+条件には、`pointer` ではなく `any-pointer` を使います。使える入力にタッチ操作がひとつでもあれば、広いほうの大きさにするためです。`pointer` と `any-pointer` の違いは、「[13-4 メディアクエリ](/responsive/media-queries/)」で説明しています。
 
 ## 連打や長押しで文字が選択される部品
 
 操作部品の中には、素早く2回押すと、中の文字が選択されてしまうものがあります。Chrome 152で確かめたところ、`<label>`、`<summary>`、`role="tab"` を付けた `<div>` は、ダブルクリックで文字の一部が選択されました。`<button>` の文字は選択されませんでした（2026年10月確認）。`<label>` とラジオボタンで作った表示の切り替えや、数量を1ずつ増やす部品のように、続けて押すことの多い部品では、押すたびに文字が反転して見えます。タッチ操作の端末では、長押しで文字の選択が始まることもあります。{/* 要確認: 出典なし（長押しの挙動は実機で未確認） */}
 
-こうした部品にだけ、`user-select: none` を指定します。Safariは接頭辞なしの `user-select` に対応していないので（2026年10月確認）、`-webkit-user-select` を併記します。接頭辞を書くときは、理由のコメントとStylelintの無効化のコメントを添えます（「[7-7 モダンな記法にそろえる](/notation/modern-syntax/)」）。
+こうした部品にだけ、`user-select: none` を指定します。Safariは接頭辞なしの `user-select` に対応していないので（2026年10月確認）、`-webkit-user-select` を併記します。接頭辞を書くときは、理由のコメントとStylelintの無効化のコメントを添えます（「[9-7 モダンな記法にそろえる](/notation/modern-syntax/)」）。
 
 ```css title="🙆‍♂ Recommended: 連打で文字が選択されて困る操作部品にだけ、user-select: none を指定する"
 @scope (.scoped.view-switcher) to (.scoped) {
@@ -194,7 +227,7 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 
 ## `touch-action` を指定する範囲
 
-`touch-action` は、タッチ操作でブラウザがスクロールや拡大をするかどうかを決めるプロパティです。これを `html` や `body` に `none` で指定すると、ページ全体でスクロールとピンチでの拡大が止まります。`touch-action` も継承しませんが、ブラウザは、触れた要素からスクロールする祖先までの値を重ね合わせて、許す操作を決めるからです（MDN）。拡大して読む必要のあるユーザーが拡大できなくなる点は、`<meta name="viewport">` でズームを止めた場合と同じです（「[16-3 フォーム部品](/interaction/forms/)」）。
+`touch-action` は、タッチ操作でブラウザがスクロールや拡大をするかどうかを決めるプロパティです。これを `html` や `body` に `none` で指定すると、ページ全体でスクロールとピンチでの拡大が止まります。`touch-action` も継承しませんが、ブラウザは、触れた要素からスクロールする祖先までの値を重ね合わせて、許す操作を決めるからです（MDN）。拡大して読む必要のあるユーザーが拡大できなくなる点は、`<meta name="viewport">` でズームを止めた場合と同じです（「[17-3 フォーム部品](/interaction/forms/)」）。
 
 ```css title="🙅‍♂ Not Recommended: ページ全体のタッチ操作と文字の選択を止める"
 /* 🙅‍♂ Not Recommended */
@@ -216,7 +249,7 @@ body {
 
 <Baseline id="touch-action" />
 
-ボタンには、`touch-action` を書き直しません。kiso.cssが、`<button>` や、`role="button"`、`role="tab"` を付けた要素などに `touch-action: manipulation` を指定しています。iOSでダブルタップしたときの拡大を防ぐためです（「[6-1 壊さないリセット](/reset/kiso/)」）。`manipulation` は、スクロールとピンチでの拡大を許し、ダブルタップでの拡大だけを止める値です。
+ボタンには、`touch-action` を書き直しません。kiso.cssが、`<button>` や、`role="button"`、`role="tab"` を付けた要素などに `touch-action: manipulation` を指定しています。iOSでダブルタップしたときの拡大を防ぐためです（「[8-1 壊さないリセット](/reset/kiso/)」）。`manipulation` は、スクロールとピンチでの拡大を許し、ダブルタップでの拡大だけを止める値です。
 
 ## ホバーの変化を透明度で表す方法
 
@@ -233,7 +266,7 @@ body {
 
 もうひとつの問題は、意図が伝わらないことです。コードを読んだ人には、「ホバーしたら暗くしたい」のか「目立たなくしたい」のかが分かりません。デザインで別の色が指定されているなら、その色をそのまま書いたほうが、意図とコードが一致します。
 
-背景色や文字色を変えるときは、状態ごとの値を `--_background--hocus` のような接尾辞を付けた内部プロパティにまとめます。値には、デザインで決まっている色のトークンを使います。専用の色がない場合は、`oklch(from var(--_background) calc(l - 0.1) c h)` のように、相対カラー構文で元の色から明るさだけを変えた色を作ります。接尾辞の付け方は「[8-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で、相対カラー構文は「[14-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」で扱います。
+背景色や文字色を変えるときは、状態ごとの値を `--_background--hocus` のような接尾辞を付けた内部プロパティにまとめます。値には、デザインで決まっている色のトークンを使います。専用の色がない場合は、`oklch(from var(--_background) calc(l - 0.1) c h)` のように、相対カラー構文で元の色から明るさだけを変えた色を作ります。接尾辞の付け方は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で、相対カラー構文は「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」で扱います。
 
 次のデモでは、ボタンとリンクにマウスを重ねたときと、Tabキーでフォーカスを移したときに、同じように色が変わります。無効にしたボタンと、`href` のない現在のページのリンクは反応しません。
 
@@ -291,7 +324,7 @@ ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た�
 
 <Demo title='aria-selected="true" のタブに下線が付き、選択を移すと下線も移る' html={tabsHtml} css={tabsCss} js={tabsJs} widths={[]} />
 
-子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は、第3章「[3-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
+子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は、第5章「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
 
 フォーカスを受けた子に応じて親の見た目を変えるときは、`:focus-within` と `:has(:focus-visible)` を使い分けます。`:focus-within` は、子孫のどれかが `:focus` に当てはまれば当てはまるので、ボタンをマウスでクリックしたときにも親が強調されます（MDN）。子のどれかにフォーカスした時点でグループ全体を強調してよいなら、これで足ります。ブラウザがフォーカスの表示を必要と判断する場合だけ親を強調したいなら、`&:has(:focus-visible)` と書きます。
 
@@ -302,16 +335,16 @@ HTMLの属性とARIA属性のどちらでも表せない状態だけを、`data-
 ```css title="🙆‍♂ Recommended: HTMLの属性とARIA属性のどちらでも表せない状態は、data-* 属性で表す"
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
-    block-size: 80px;
+    min-block-size: 80px;
 
     &[data-compact-mode] {
-      block-size: 56px;
+      min-block-size: 56px;
     }
   }
 }
 ```
 
-画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` も、同じく見た目のためだけにある状態です。一方、コンポーネントのバリエーションを表す `data-variant` は、状態ではありません。HTMLを書いた時点で決まり、操作によって変わらない値です。BEMのModifierは状態とバリエーションの両方を表していましたが、本書では、状態はこの節の優先順位で、バリエーションは `data-variant` で表します。バリエーションの書き方は、第7章「[7-1 命名規則](/notation/naming/)」で説明しています。
+画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` も、同じく見た目のためだけにある状態です。一方、コンポーネントのバリエーションを表す `data-variant` は、状態ではありません。HTMLを書いた時点で決まり、操作によって変わらない値です。BEMのModifierは状態とバリエーションの両方を表していましたが、本書では、状態はこの節の優先順位で、バリエーションは `data-variant` で表します。バリエーションの書き方は、第9章「[9-1 命名規則](/notation/naming/)」で説明しています。
 
 ## カード全体をリンクにする
 
@@ -354,7 +387,7 @@ HTMLの属性とARIA属性のどちらでも表せない状態だけを、`data-
 
 カードに `position: relative` を指定し、`::after` の配置の基準にします。フォーカスリングは、リンクの周りではなく `:has(._heading-link:focus-visible)` でカードの外周に出します。見出しのリンクにフォーカスしたとき、押せる範囲（カード全体）とリングの範囲が一致するからです。カードの中にほかのリンクを置くときは、`position: relative` と `z-index: var(--z--forwards)` で `::after` より手前に重ねます。
 
-リンク自身のリングのうち、ベーススタイルで内側に描いた `box-shadow` は、`initial` で初期値の `none` に戻します。`outline` は `outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります。私の案件のコードでは `outline: none` で消していましたが、本書のルール（「[6-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」の `no-outline-none`）に合わせて、この書き方にしました。
+リンク自身のリングのうち、ベーススタイルで内側に描いた `box-shadow` は、`initial` で初期値の `none` に戻します。`outline` は `outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります。私の案件のコードでは `outline: none` で消していましたが、本書のルール（「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」の `no-outline-none`）に合わせて、この書き方にしました。
 
 この方法にも弱点があります。`::after` がカードの上に重なるので、カードの中の文章をドラッグして選択できません。以前の私は、この問題を避けるためにJavaScriptでカードのクリックを拾っていました。現在は、実装の手軽さとJavaScriptのない環境でも動くことを優先して、`::after` を広げる方法を使っています。
 

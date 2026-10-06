@@ -1,5 +1,5 @@
 ---
-title: "第2章 カスケードを制御する"
+title: "第4章 カスケードを制御する"
 description: "スタイルの優先順位を、詳細度の競争ではなく、レイヤーの順番とスコープの範囲で設計するための章です。カスケードの仕組み、セレクタの詳細度、カスケードレイヤー、@scope、CSSネストを扱います。"
 sidebar:
   label: "概要"
@@ -14,13 +14,13 @@ sidebar:
 
 この章は次の5つの節で構成しています。
 
-- [2-1 カスケード・詳細度・継承](/cascade/cascade-basics/)：優先順位が決まる仕組みの全体像と、`!important` を使ってよい場面
-- [2-2 セレクタで詳細度を設計する](/cascade/selectors/)：`:where()`、`:is()`、`:not()`、`:has()` の詳細度と、使わないセレクタ
-- [2-3 カスケードレイヤーで順位を決める](/cascade/layers/)：9つのレイヤーの役割と、レイヤーを使わないと判断する基準
-- [2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)：ドーナツスコープの動作、スコープの近接度、`@scope` が防がないもの
-- [2-5 CSSネストの基礎](/cascade/nesting/)：`&` が `:is()` と同じように働く仕組みと、Sassのネストとの違い
+- [4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)：優先順位が決まる仕組みの全体像と、`!important` を使ってよい場面
+- [4-2 セレクタで詳細度を設計する](/cascade/selectors/)：`:where()`、`:is()`、`:not()`、`:has()` の詳細度と、使わないセレクタ
+- [4-3 カスケードレイヤーで順位を決める](/cascade/layers/)：9つのレイヤーの役割と、レイヤーを使わないと判断する基準
+- [4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)：ドーナツスコープの動作、スコープの近接度、`@scope` が防がないもの
+- [4-5 CSSネストの基礎](/cascade/nesting/)：`&` が `:is()` と同じように働く仕組みと、Sassのネストとの違い
 
-リセットCSSをレイヤーに入れる方法とベーススタイルの中身は第6章「[リセットとベーススタイル](/reset/)」で、スコープのルートや子要素の命名、`@scope` とネストの使い分け、条件付きのアットルールを書く位置は第7章「[記法の規約](/notation/)」で扱います。親のコンポーネントから子のコンポーネントの見た目を変える方法は、第8章「[コンポーネントとカスタムプロパティ](/components/)」で説明します。
+リセットCSSをレイヤーに入れる方法とベーススタイルの中身は第8章「[リセットとベーススタイル](/reset/)」で、スコープのルートや子要素の命名、`@scope` とネストの使い分け、条件付きのアットルールを書く位置は第9章「[記法の規約](/notation/)」で扱います。親のコンポーネントから子のコンポーネントの見た目を変える方法は、第10章「[コンポーネントとカスタムプロパティ](/components/)」で説明します。
 
 ## 最初に押さえるルール
 
@@ -30,6 +30,6 @@ sidebar:
 
 - [`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)：`!important` は、詳細度や読み込み順の競争で勝つ目的には使いません。
 - [`no-specificity-hacks`](/cascade/selectors/#rule-no-specificity-hacks)：上書きのためだけに詳細度を上げるセレクタ（`.a.a` や、祖先を足したセレクタなど）を書きません。
-- [`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)：ベーススタイルのタイプセレクタは `:where()` で包み、詳細度を0にします。
+- [`where-for-base-selectors`](/cascade/selectors/#rule-where-for-base-selectors)：`@layer` を使えない場合に限り、ベーススタイルのセレクタを `:where()` で包み、詳細度を0にします。レイヤーを使う場合は、`base` レイヤーに素のセレクタで書きます。
 - [`no-layers-with-unlayered-css`](/cascade/layers/#rule-no-layers-with-unlayered-css)：レイヤーに入っていない外部のCSSと共存するCMSのような環境では、`@layer` を使いません。
 - [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)：コンポーネントのスタイルは `@scope (.scoped.<名前>) to (.scoped)` の中に書きます。

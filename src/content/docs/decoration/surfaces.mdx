@@ -1,0 +1,171 @@
+---
+title: "16-3 表面と文字の装飾"
+description: "影と角丸はトークンから選び、影は光源の向きをそろえて、色はライトモードでは背景の色相に寄せ、ダークモードでは黒にします。すりガラスの背景は backdrop-filter で作り、番号付きリストの番号は ::marker で装飾し、文字の縁取りは paint-order で塗りの下に描きます。"
+sidebar:
+  order: 3
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import shadowHtml from '../../../demos/decoration/shadow-tokens/index.html?raw';
+import shadowCss from '../../../demos/decoration/shadow-tokens/style.css?raw';
+import nestedRadiusHtml from '../../../demos/decoration/nested-radius/index.html?raw';
+import nestedRadiusCss from '../../../demos/decoration/nested-radius/style.css?raw';
+import frostedHtml from '../../../demos/decoration/frosted-header/index.html?raw';
+import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
+import markerHtml from '../../../demos/decoration/list-marker/index.html?raw';
+import markerCss from '../../../demos/decoration/list-marker/style.css?raw';
+import strokeHtml from '../../../demos/decoration/text-stroke/index.html?raw';
+import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
+
+影と角丸は、段階を決めたトークンから選びます。影のトークンは光源の向きをそろえ、高いほどオフセットとぼかしを大きく、不透明度を低くします。影の色は、ライトモードでは背景の色相に寄せ、ダークモードでは黒にして不透明度を上げます。
+
+すりガラスの背景は、半透明の背景に `backdrop-filter: blur()` を重ねて作ります。番号付きリストの番号は `::marker` で装飾し、文字の縁取りは `-webkit-text-stroke` で描いて、`paint-order: stroke fill` で塗りの下に置きます。
+
+どれも要素の表面と文字に付ける装飾なので、作るものに合わせて必要な見出しだけを読めば足ります。画像の比率と読み込みは「[16-1 画像の配置と読み込み](/decoration/images/)」で、アイコンと図形は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で説明しています。
+
+## 影と角丸はトークンから選ぶ
+
+影は、段階的に強くなる「高さ」のスケールとしてトークンにします。画面の光源は1つに決め、どのトークンも同じ向きの影にします。本書の例は真上からの光なので、水平方向のオフセットは0です。斜めの光にするなら、水平と垂直のオフセットの比を、すべてのトークンでそろえます。要素が高く浮くほど、オフセットとぼかしを大きくし、不透明度は下げます。浮いた要素ほど、影が遠くまで広がって薄くなるからです。
+
+```css title="🙆‍♂ Recommended: 光源をそろえ、高いほどオフセットとぼかしを大きく、不透明度を低くする"
+:root {
+  --shadow--hue: 250deg;
+  --shadow--color: light-dark(oklch(30% 0.05 var(--shadow--hue) / 14%), oklch(0% 0 0deg / 30%));
+  --shadow--sm: 0 2px 4px -1px var(--shadow--color);
+  --shadow--md:
+    0 4px 8px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent),
+    0 2px 4px -2px var(--shadow--color);
+  --shadow--lg:
+    0 8px 16px -4px color-mix(in oklab, var(--shadow--color) 60%, transparent),
+    0 4px 6px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent);
+}
+```
+
+<Demo title="同じ影のトークンを、ライトモードとダークモードの背景に置いたとき" html={shadowHtml} css={shadowCss} />
+
+ライトモードの影は、背景の色相に寄せます。灰色がかった黒の影を色のある背景に重ねると、背景がくすんで見えるからです。背景の色相に合わせ、明度と彩度を下げた色にすると、背景と自然になじみます。上の例では、背景のアクセントカラーの色相を `--shadow--hue` に持たせています。背景が無彩色のサイトでは、彩度が0の黒のままでも構いません。
+
+影の色は、ダークモードでは黒のままにします。暗い背景で白い影を付けると、影ではなく光って見えてしまうからです。代わりに、ダークモードでは黒の不透明度を上げて、暗い背景の上でも奥行きが分かるようにします。影は強制カラーモードでは消えるので、要素の境界は影だけで表しません。
+
+複数の影を重ねたトークンは、描画の計算量が影の数に比例して増えます。`transition` や `animation` で影そのものを動かすと、古い端末ではコマ落ちしやすくなります。影を動かしたいときは、影を付けた擬似要素の `opacity` だけを動かします。{/* 要確認: 出典なし */}透明な部分の輪郭に沿わせたいときは、`box-shadow` ではなく `filter: drop-shadow()` を使います。
+
+角丸も、`--rounded--sm` から `--rounded--xl` までの段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[16-4 角の形を変える](/decoration/shapes/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする"
+@scope (.scoped.account-menu) to (.scoped) {
+  :scope {
+    --_radius: var(--rounded--md);
+    --_padding: 4px;
+
+    padding: var(--_padding);
+    border-radius: var(--_radius);
+  }
+
+  li {
+    border-radius: calc(var(--_radius) - var(--_padding));
+  }
+}
+```
+
+<Demo title="内側の角丸を外側と同じにすると、角の部分だけ余白が広く見える" html={nestedRadiusHtml} css={nestedRadiusCss} variant="neutral" />
+
+角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。影や角丸の値をpxで指定する理由は、「[6-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
+
+## すりガラスの背景は、真後ろの色だけが混ざる
+
+`backdrop-filter: blur()` で、要素の背後をぼかしたすりガラスの背景を作れます。効果を見せるには、要素の背景を半透明にします。ぼかしの対象になるのは、その要素の真後ろにあるピクセルだけです。固定ヘッダーの少し下にある色付きの要素は、ヘッダーに重なるまでぼかしに混ざらず、スクロールの途中で急に色が現れます。
+
+```css title="🙆‍♂ Recommended: 半透明の背景に backdrop-filter を重ねる"
+._header {
+  position: sticky;
+  inset-block-start: 0;
+  background-color: oklch(from var(--background--base) l c h / 70%);
+  backdrop-filter: blur(12px);
+}
+```
+
+<Demo title="スクロールすると、ヘッダーの真後ろにある色だけがぼかされて混ざる" html={frostedHtml} css={frostedCss} height="320px" />
+
+`-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[7-8 positionの基礎](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
+
+<Baseline id="backdrop-filter" />
+
+固定ヘッダーの背景色を、スクロール位置のセクションに合わせて切り替えたいときは、ヘッダーの背景を書き換える代わりに、ヘッダーの後ろに `position: sticky` の色付きの要素（ブロッカー）を置く方法があります。ブロッカーは、自分の入っているセクションの外へは追従しないので、セクションを抜けると次のセクションの色に入れ替わります。ただし、各セクションの先頭に、ヘッダーと同じ高さの余白が必要です。ヘッダーを高さのあるときだけ固定する場合（「[11-6 固定ヘッダー](/layout-practice/sticky-header/)」）は、ブロッカーも同じ条件の中に書き、余白が取れない場面では別の方法を選びます。
+
+## 番号付きリストのマーカーは ::marker で装飾する
+
+`<ol>` の番号の色や太さを変えたいときは、`::marker` を使います。リストの意味を保ったまま、`color`、`font-*`、`content` を指定できます。
+
+```css title="🙆‍♂ Recommended: マーカーの色と太さを ::marker で変える"
+._step {
+  &::marker {
+    color: var(--color--accent--500);
+    font-weight: 700;
+  }
+}
+```
+
+`::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲むような装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
+
+<Demo title="::marker で番号の色と太さを変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
+
+kiso.cssは、リストのマーカーを `list-style-type: ""` で空にしています。`::marker` で装飾するリストでは、`list-style-type: revert` でブラウザのデフォルトの番号に戻し、マーカーを置く余白を `padding-inline-start` で確保します。円で囲むリストでは、空のマーカーをそのまま使い、`counter-reset` と `counter-increment` で数えた番号を描きます。
+
+<Baseline id="marker" />
+
+## 文字の縁取りは塗りの下に描く
+
+写真の上の見出しやバナーの文字に、縁取りを付けたいことがあります。文字の縁取りは `-webkit-text-stroke` で描きます。接頭辞が付いていますが、WHATWGのCompatibility Standardで定義され、すべての主要なブラウザが対応しています。接頭辞のない書き方はないので、理由のコメントを添えて、Stylelintの警告を無効にします。
+
+<Baseline id="text-stroke-fill" name="-webkit-text-stroke" />
+
+ただし、縁取りの線は字形の輪郭を中心に、内側と外側へ半分ずつ描かれます。初期値では塗りの上に線を重ねるので、線を太くするほど、内側の半分が塗りを覆って文字が細くなります。画数の多い漢字では、字の中のすき間が線で埋まり、読めなくなることもあります。
+
+```css title="🙅‍♂ Not Recommended: 太い縁取りを塗りの上に重ねる"
+/* 🙅‍♂ Not Recommended */
+._title {
+  color: oklch(100% 0 0deg);
+
+  /* 文字の縁取りは、接頭辞付きの指定でしか書けない（2026年9月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-text-stroke: 8px oklch(25% 0 0deg);
+}
+```
+
+`paint-order: stroke fill` を指定すると、線を先に描き、その上に塗りを重ねます。線の内側の半分は塗りに隠れ、外側の半分だけが縁取りとして見えます。字の形が崩れないので、縁取りを太くしても読みやすさを保てます。
+
+```css title="🙆‍♂ Recommended: 縁取りを塗りの下に描く"
+._title {
+  color: oklch(100% 0 0deg);
+
+  /* 文字の縁取りは、接頭辞付きの指定でしか書けない（2026年9月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-text-stroke: 8px oklch(25% 0 0deg);
+  paint-order: stroke fill;
+}
+```
+
+<Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} variant="neutral" />
+
+見えるのは線の外側の半分なので、線の幅は、見せたい縁取りの2倍を指定します。上の例では、8pxの線で4pxの縁取りになります。`paint-order` はもともとSVGのプロパティで、HTMLの文字には、2024年3月にすべての主要なブラウザで使えるようになりました。対応していない環境では、縁取りが塗りの上に重なるだけです。
+
+<Baseline id="paint-order" />
+
+縁取りは、読みやすさを補う装飾として使います。`-webkit-text-fill-color: transparent` で塗りを消して、縁取りだけの文字にすると、細い線だけで字の形を読み取ることになり、背景とのコントラストも確かめにくくなります。本文や長い見出しには使わず、短い装飾の文字に限ります。{/* 要確認: 出典なし */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Designing Beautiful Shadows in CSS](https://www.joshwcomeau.com/css/designing-shadows/)（Josh W. Comeau。光源、高さと影の関係、背景の色相に寄せた影。記事のダークモードの扱いは本書と異なります）
+- [Next-level frosted glass with backdrop-filter](https://www.joshwcomeau.com/css/backdrop-filter/)（Josh W. Comeau。記事は `-webkit-` の併記を勧めますが、本書は接頭辞なしで書きます）
+- [Sneaky Header Blocker Trick](https://www.joshwcomeau.com/css/header-blockers/)（Josh W. Comeau）
+- [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)
+- [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)
+- [-webkit-text-stroke - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-text-stroke)
+- [paint-order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/paint-order)
+- [Compatibility Standard: -webkit-text-stroke](https://compat.spec.whatwg.org/#the-webkit-text-stroke)（WHATWG）

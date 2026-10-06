@@ -138,6 +138,8 @@ sidebar:
 - [ショートハンドプロパティ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Shorthand_properties)：ショートハンドが省略した値を初期値に戻す仕組み
 - [CSS 入れ子の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)：ネイティブのネストの書き方
 - [CSS カスタムプロパティ（変数）の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties)：カスタムプロパティの基本
+- [レイアウトモード - MDN 用語集](https://developer.mozilla.org/ja/docs/Glossary/Layout_mode)：子の大きさと位置を決めるアルゴリズムの区別
+- [CSS エラー処理 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Guides/Syntax/Error_handling)：文法に合わない宣言をブラウザが無視する仕組み
 - [CSS 論理的プロパティと値 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_logical_properties_and_values)：論理プロパティの一覧
 - [長さの単位（length） - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/length)：rem、ビューポート単位、コンテナ単位などの長さの単位
 - [メディアクエリの使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_media_queries/Using_media_queries)：メディアクエリと範囲構文の書き方
@@ -262,6 +264,7 @@ sidebar:
 - [Writing plugins - Stylelint](https://stylelint.io/developer-guide/plugins/)：独自ルールを書くためのガイド
 - [unit-disallowed-list - Stylelint](https://stylelint.io/user-guide/rules/unit-disallowed-list/)：使わない単位を検出するルール
 - [layer-name-pattern - Stylelint](https://stylelint.io/user-guide/rules/layer-name-pattern/)：レイヤー名を検査するルール
+- [declaration-property-value-no-unknown - Stylelint](https://stylelint.io/user-guide/rules/declaration-property-value-no-unknown/)：プロパティが受け付けない値を検出するルール
 - [Analyze CSS selector performance during Recalculate Style events | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/selector-stats)：セレクタごとのスタイルの再計算の時間を測る機能
 - [hudochenkov/stylelint-order - GitHub](https://github.com/hudochenkov/stylelint-order)：宣言の並び順を検査するStylelintのプラグイン
 - [yuschick/stylelint-plugin-logical-css - GitHub](https://github.com/yuschick/stylelint-plugin-logical-css)：論理プロパティと論理的な単位を求めるStylelintのプラグイン
@@ -274,10 +277,9 @@ sidebar:
 
 ## 参考にしたサイト
 
-- [zudo-css-wisdom](https://zudo-css-wisdom.takazudomodular.com/)：AIのコーディングエージェント向けの、実践的なCSSのリファレンス
-- [Kevin Powell](https://kevinpowell.co/)：CSSの講座と解説を公開しているKevin Powell氏のサイト
-- [Every Layout](https://every-layout.dev/)：stackやclusterのような、配置のパターンを部品にする考え方
-- [griponminds](https://griponminds.jp/blog/)：アンカーポジショニングやView Transitionsなど、CSSの新しい仕様と注意点を扱うブログ
+- [You can't escape CSS](https://www.youtube.com/watch?v=nasmWiGE5FM)：CSS-in-JSやStyleXを選んでも、アーキテクチャの設計は残ること（ポッドキャスト、2026年10月）
+- [We've got separation of concerns wrong](https://www.youtube.com/watch?v=GBAQstjnP3k)：見た目のロジックをCSSが受け持つという関心の分離の捉え方（ポッドキャスト、2026年6月）
+- [StyleX](https://stylexjs.com/docs/learn/)：スタイルをJavaScriptのオブジェクトで書き、ビルドの段階で原子的なクラスのCSSを生成する道具（Meta）
 - [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)：動かすプロパティと描画の負荷
 - [Improved font fallbacks | Chrome for Developers](https://developer.chrome.com/blog/font-fallbacks)：代わりのフォントの寸法を補正する方法
 - [Proximity Principle in Visual Design | Nielsen Norman Group](https://www.nngroup.com/articles/gestalt-proximity/)：近接の原則
@@ -285,11 +287,6 @@ sidebar:
 - [Linearly Scale font-size with CSS clamp() Based on the Viewport](https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/)：`clamp()` の推奨値を傾きと切片から求める方法（CSS-Tricks）
 - [The Surprising Truth About Pixels and Accessibility](https://www.joshwcomeau.com/css/surprising-truth-about-pixels-and-accessibility/)：pxとremの使い分けとアクセシビリティ（Josh W. Comeau）
 - [Removing list styles without affecting semantics](https://matuzo.at/blog/2023/removing-list-styles-without-affecting-semantics)：リストの意味を保ったままマーカーを消す方法（Manuel Matuzović）
-- [ウェブデザインにおけるline-heightについて](https://parashuto.com/rriver/development/line-height-in-web-design)：行の高さとハーフレディングの解説（Rriver）
 - [Typography troubles: Balancing lines in Japanese & Korean](https://ryelle.codes/2025/04/typography-troubles-balancing-in-japanese-korean/)：和文と韓国語の行の長さをそろえるときの問題（ryelle.codes、2025年4月）
-- [単位付きの余白のスケールについての Adam Wathan 氏の投稿](https://x.com/adamwathan/status/2003638134840656373)：余白のスケールを単位付きで設計したことについての振り返り（X）
-- [CSS セレクタのレシピ - :has() 擬似クラス編](https://griponminds.jp/blog/css-selectors-has-pseudo-class/)（grip on minds）：`:has()` の使い方の例
-- [CSS セレクタのレシピ - 子要素インデックス編](https://griponminds.jp/blog/css-selectors-child-index/)（grip on minds、2023年5月）：`:nth-child()` と `of S` の使い方
-- [制約のない :has() のパフォーマンス計測](https://blog.w0s.jp/entry/719)（w0s.jp、2024年8月）：起点のない `:has()` の重さの計測
-- [Quantity Queriesで要素数ごとに表示を切り替える](https://bcrikko.github.io/til/posts/2025-07-09/quantity-queries/)（ダーシノ、2025年7月）：`:has()` で書く数量クエリ
+- [単位付きの余白のスケールについての投稿](https://x.com/adamwathan/status/2003638134840656373)：余白のスケールを単位付きで設計したことについての振り返り（X）
 - [Use CSS reading-flow for logical sequential focus navigation](https://developer.chrome.com/blog/reading-flow)（Chrome for Developers、2025年5月）：`reading-flow` の使い方

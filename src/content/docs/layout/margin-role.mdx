@@ -1,0 +1,140 @@
+---
+title: "7-4 marginの役割"
+description: "margin は、縦に長い文書で要素どうしを最低これだけ離したいという距離を表すプロパティです。margin、padding、gap が受け持つ余白の違いを整理し、本書がレイアウトの間隔を親の gap で、文章の要素の間の余白を次兄弟結合子で選んだ後ろの要素の margin-block-start で、背景の内側の余白を親の padding で作る理由を説明します。"
+sidebar:
+  order: 4
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import cardHtml from '../../../demos/layout/margin-role/index.html?raw';
+import cardCss from '../../../demos/layout/margin-role/style.css?raw';
+
+`margin` は、要素と前後の要素の間に「最低これだけ離したい」という距離を表すプロパティです。HTMLが縦に長い文書を書くための言語として生まれたことと結び付いた考え方です。ブロック方向で隣り合う `margin` が足し算にならず、大きいほうが採られる仕組み（マージンの相殺）も、この捉え方から説明できます。
+
+本書は、ボックスを並べるレイアウトの間隔をFlexboxやGridの `gap` に任せ、`margin` は段落や見出しのような文章の要素の間の余白に使います。文章の要素の間の `margin` は、次兄弟結合子で前の要素を条件にして選んだ後ろの要素の `margin-block-start` に付けます。要素自身に条件なしの `margin-block-end` を付け、最後の要素で打ち消す書き方はしません。
+
+背景や枠線の内側の余白は、子の `margin` ではなく親の `padding` で作ります。この節では、`margin`、`padding`、`gap` が受け持つ余白の違いと、この書き分けを選ぶ理由を説明します。相殺が起きる条件と、相殺した余白の大きさの計算は「[7-5 マージンの相殺](/layout/margin-collapse/)」で扱います。
+
+## `margin` でレイアウトを組んだときに起きること
+
+お知らせのカードを縦に並べるとき、各カードへ `margin-block-end` を付け、最後のカードだけ0に戻す書き方は、今もよく見かけます。
+
+```css title="🙅‍♂ Not Recommended: 子の margin で並べる間隔を作り、最後だけ打ち消す"
+/* 🙅‍♂ Not Recommended */
+._card {
+  margin-block-end: 24px;
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+}
+```
+
+1列で並べている間は、見た目に問題はありません。しかし、間隔を決めているのが子の側なので、並べ方を変えるたびに子の指定を直すことになります。広い画面で2列のグリッドに変えると、最後の行の左側のカードには `margin-block-end` が残り、列の間隔は別の指定で足さなければなりません。カードの1つを条件によって出さないようにしたときも、どの要素の余白を打ち消すかを考え直します。
+
+同じ考え方で、カードの背景の内側に余白を取ろうとして、見出しに `margin-block-start` を付けることもあります。通常フローでは、親に `padding` や `border` がないと、子の `margin` が親の `margin` と相殺して親の外へ出ます。その結果、余白は背景の内側ではなく、カードの外側にできます。
+
+どちらも、CSSの不具合ではありません。並べる間隔や背景の内側の余白という、`margin` の本来の意味とは違う役割を持たせたことから生じるずれです。`margin` が何のための仕組みかを知っておくと、どの余白をどのプロパティで作るかを判断できます。
+
+## 縦に長い文書のための仕組み
+
+HTMLは、もともと論文のような縦に長い文書を書くための言語です。その文書で `margin` が表すのは、段落や見出しを読みやすくするために「前後の要素から最低これだけ離したい」という希望です。見出しが下に24px、段落が上に40pxを求めているなら、40px離せば両方の希望を満たせるので、相殺は大きいほうを採ります。
+
+この捉え方は、相殺のほかの規則にも当てはまります。文書は行を積み重ねる方向に長くなるので、相殺もブロック方向だけで起き、インライン方向の `margin` は隣り合っても足し算になります。入れ子の要素の `margin` が親の外へ出る動作も、章や節の終わりに余白を取りたい文書を想像すると納得できます。節の最後の段落と、節を包む要素が下に余白を求めても、区切りに要るのは1つ分の余白です。
+
+かつてのCSSにはレイアウトの機能がなく、ボックスを並べるにも `margin` と `padding`、それに `<table>` や `float` を使うしかありませんでした。そうした使い方では、`margin` に、合計で決まる間隔や、背景の内側の余白という、最低限の距離とは別の意味を持たせます。大きいほうを採る規則がその意図と合わないので、相殺が不具合のように見えていました。前の節の2つの場面も、この使い方の名残です。
+
+今は、FlexboxとGridがレイアウトを受け持ちます。本書は、ボックスを並べる間隔をFlexboxやGridの `gap` に任せ、`margin` は文章の要素の間の余白という本来の用途に使います。段落、図、区切り線のように自分で余白を持つ要素が続く本文では、相殺のおかげで大きいほうの余白だけが効き、余白が重なって広がりすぎることがありません。CMSで入力される本文も、通常フローのまま `margin` で間隔を作ります（ルール「[`prose-in-normal-flow`](/layout-practice/spacing/#rule-prose-in-normal-flow)」）。
+
+## `margin`、`padding`、`gap` が受け持つ余白
+
+3つのプロパティは、どれも余白を作りますが、余白の持ち主と置かれる場所が違います。`margin` は要素自身の `border` の外側にあり、その要素と前後の要素との距離を表します。`padding` は `border` の内側にあり、要素の背景が描かれる領域で、中身と枠の距離を表します。`gap` は親のプロパティで、Flexbox、Grid、段組みの子と子の間にだけ空きます。
+
+相殺するかどうかも違います。`padding` と `gap` は相殺せず、指定した値がそのまま余白になります。`margin` は通常フローでだけ相殺し、フレックスアイテムとグリッドアイテムの `margin` は相殺せず、`gap` に足されます。同じ `margin-block-start: 24px` でも、親が通常フローなら前の要素の `margin` と比べて大きいほうが採られ、親がGridなら `gap` との合計になります。要素がどのレイアウトの方式の中にあるかで同じ指定の働き方が変わることは、「[7-1 レイアウトの基礎](/layout/fundamentals/)」で説明しています。
+
+どのプロパティを選ぶかは、余白を誰が決めるかで判断します。並んだ要素の間隔を親がそろえて決めるなら `gap`、背景や枠線の内側に中身との距離を取るなら `padding`、要素の種類によって前後の距離が変わるなら `margin` です。ボタンの押せる範囲を広げるときに `padding` を使うのも、`margin` の領域には背景が描かれず、クリックの対象にもならないからです（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。
+
+コンポーネントのルートには、外側の `margin` を持たせません。ルートの `margin` は、そのコンポーネントを置く場所との距離なので、置く側の親が決めるべき値だからです（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。親の背景の内側に余白を取るときに子の `margin` を使うと、相殺で余白が親の外へ出て、結果としてルートが外側の `margin` を持つのと同じことが起きます。
+
+## 本書の余白の書き分け
+
+本書は、レイアウトの間隔を親の `gap` で作ります。カードの一覧、ヘッダーの中のロゴとナビゲーション、フォームの項目の並びのように、ボックスを並べる場面がこれにあたります。`gap` は要素と要素の間にだけ空き、相殺も起きないので、値がそのまま間隔になり、列の数を変えても子の側に何も書き足さずに済みます。
+
+```css title="🙆‍♂ Recommended: 並べる間隔は親の gap で作る"
+._card-list {
+  display: block grid;
+  gap: 24px;
+}
+```
+
+文章の要素の間の余白は、通常フローのまま `margin` で作ります。そのときは、次兄弟結合子で前の要素を条件にして選んだ後ろの要素の `margin-block-start` に付けます（ルール「[`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)」）。余白は要素そのものの性質ではなく、隣り合う2つの要素の関係から生まれるからです。前に要素があるときだけ余白が付くので、要素が欠けたり並びが変わったりしても、余計な余白が残りません。
+
+```css title="🙆‍♂ Recommended: 文章の要素の間は、後ろの要素の margin-block-start で作る"
+._body {
+  & > * + * {
+    margin-block-start: 16px;
+  }
+
+  & > :is(:heading, h1, h2, h3, h4, h5, h6) + * {
+    margin-block-start: 8px;
+  }
+}
+```
+
+2つ目のルールは、見出しの直後の要素の余白を狭くします。2つ目のセレクタは詳細度が高いので、見出しの直後では1つ目のルールに勝ちます。`:heading` はブラウザの対応が分かれるので、タイプセレクタと並べて `:is()` の中に書いています（「[5-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」）。
+
+```css title="🙅‍♂ Not Recommended: 要素自身に margin-block-end を付け、最後の子で打ち消す"
+/* 🙅‍♂ Not Recommended */
+._body {
+  & > p {
+    margin-block-end: 16px;
+  }
+
+  & > :last-child {
+    margin-block-end: 0;
+  }
+}
+```
+
+要素自身に条件なしの `margin-block-end` を付けないのは、後ろに何が続くかを知らないまま、前の要素が余白を決めてしまうからです。段落の後ろに段落が続くか見出しが続くかで、必要な距離は変わります。後ろの要素の側で前の要素を条件にすれば、組み合わせごとの距離をセレクタで書き分けられ、最後の要素で打ち消す指定も要りません。
+
+背景や枠線の内側の余白は、親の `padding` で作ります。最初の子の `margin-block-start` や最後の子の `margin-block-end` で作ると、親に `padding` や `border` がない限り、相殺で余白が親の外へ出るからです。
+
+```css title="🙆‍♂ Recommended: 背景の内側の余白は親の padding で作る"
+._card {
+  padding: 24px;
+  background-color: oklch(96% 0.02 250deg);
+}
+```
+
+## コード例とデモ
+
+次のデモは、お知らせの記事をカードにしたものです。カードの背景の内側の余白は `padding: 24px` で、見出し、本文、フッターの間隔はカードの `gap: 24px` で作っています。本文の領域だけは通常フローのままにし、`& > * + *` で2つ目以降の要素に16px、見出しの前に32px、見出しの直後に8pxの `margin-block-start` を付けています。
+
+<Demo title="背景の内側は padding、ブロックの間隔は gap、本文の要素の間は後ろの要素の margin-block-start で作る" html={cardHtml} css={cardCss} variant="recommended" />
+
+3種類の余白は、それぞれ別の要素のルールに書かれています。カードの余白を変えたいときは `:scope` の `padding` を、見出しと本文の間隔を変えたいときは `gap` を、本文の段落の間を変えたいときは `._body` のルールを見れば足ります。本文から段落を1つ消しても、残った要素の間にだけ余白が付き、最後の要素の下に余白が残ることはありません。
+
+## 補足と注意点
+
+`margin` には、`auto` と負の値もあります。`auto` はFlexboxやGridの中で要素を端へ寄せ、負の値は親の `padding` を打ち消して要素を広げるときなどに使います。これらは要素の間の距離ではなく位置を決める使い方なので、この節で扱う余白の書き分けの対象外です。値の意味は「[7-3 ボックスモデルの基礎](/layout/box-model/)」で説明しています。
+
+本文のように種類の違う要素が続く領域を、`gap` で並べるGridにすることは避けます。Gridにすると相殺が起きなくなり、区切り線のように自分で `margin` を持つ要素の前後では、`gap` と `margin` が足されて余白が広がりすぎます。空の段落も、通常フローなら相殺で消えますが、Gridでは `gap` の2つ分の間隔を作ります。この違いは「[7-5 マージンの相殺](/layout/margin-collapse/)」のデモで確かめられます。
+
+AIが生成するコードでは、要素自身に `margin-bottom` を付けて `:last-child` で打ち消す書き方をよく見かけます。レビューでは、その要素の並べ方を確かめ、ボックスを並べているなら親の `gap` に、文章の要素の間なら次兄弟結合子で選んだ後ろの要素の `margin-block-start` に書き換えます。
+
+余白の大きさをどう決めるか、間ごとに違う余白を `grid-template` の空のセルで作る方法は「[11-3 余白を設計する](/layout-practice/spacing/)」で説明しています。`gap` で縦に積む部品は「[12-1 stack](/compositions/stack/)」で、本文の要素の間の `margin` を部品にした書き方は「[12-11 prose](/compositions/prose/)」で扱います。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
+- [The Rules of Margin Collapse](https://www.joshwcomeau.com/css/rules-of-margin-collapse/)（Josh W. Comeau）
+- [CSS Box Model Module Level 3](https://www.w3.org/TR/css-box-3/)
+- [margin - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/margin)
+- [padding - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/padding)
+- [gap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gap)

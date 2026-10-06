@@ -25,8 +25,8 @@
       display: block grid;
       gap: 12px;
 
-      /* 画像 160px・隙間 16px・本文の最小幅 240px が並ぶ幅 */
-      @container --scoped (inline-size >= calc((160 + 16 + 240) / 16 * 1rem)) {
+      /* 画像 160px 相当・隙間 16px・本文の最小幅 240px 相当が並ぶ幅 */
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem + 16px + 240 / 16 * 1rem)) {
         --_density: --spacious;
 
         grid-template-columns: calc(160 / 16 * 1rem) 1fr;
@@ -54,12 +54,15 @@
     }
 
     ._lead {
-      margin-block-start: 8px;
       font-size: calc(14 / 16 * 1rem);
 
       @container style(--_density: --spacious) {
         font-size: calc(16 / 16 * 1rem);
       }
+    }
+
+    ._title + ._lead {
+      margin-block-start: 8px;
     }
   }
 }

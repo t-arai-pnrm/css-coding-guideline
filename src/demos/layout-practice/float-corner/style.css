@@ -1,0 +1,100 @@
+@layer components {
+  @scope (.scoped.float-corner) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._panel {
+      overflow-y: auto;
+      max-block-size: calc(240 / 16 * 1rem);
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._body {
+      --_padding-block: 16px;
+      --_padding-inline: 24px;
+
+      /* float した閉じるボタンを、本文の領域の中に収める */
+      display: block flow-root;
+
+      /* HTML では閉じるボタンが先にあるので、見出しを先に読ませる */
+      reading-flow: source-order;
+      padding-block: var(--_padding-block);
+      padding-inline: var(--_padding-inline);
+
+      & > * + p {
+        margin-block-start: 1em;
+      }
+
+      & > h2 {
+        reading-order: -1;
+      }
+
+      & > ._close {
+        /* 文章を回り込ませ、スクロールしても上端に留める */
+        position: sticky;
+        inset-block-start: 0;
+        float: inline-end;
+        inline-size: calc(44 / 16 * 1rem);
+        aspect-ratio: 1;
+
+        /* padding の分だけ戻して、パネルの角に置く */
+        margin-block-start: calc(var(--_padding-block) * -1);
+        margin-inline: 16px calc(var(--_padding-inline) * -1);
+      }
+    }
+
+    ._close {
+      display: block grid;
+      border-color: transparent;
+      background-color: oklch(35% 0 0deg);
+      color: oklch(100% 0 0deg);
+
+      &::before,
+      &::after {
+        content: "";
+        grid-area: 1 / 1;
+        place-self: center;
+        inline-size: 50%;
+        border-block-start: 2px solid;
+      }
+
+      &::before {
+        rotate: 45deg;
+      }
+
+      &::after {
+        rotate: -45deg;
+      }
+    }
+
+    ._card {
+      display: block flow-root;
+      padding: 24px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.02 250deg);
+
+      & > * + p {
+        margin-block-start: 1em;
+      }
+
+      & > ._decoration {
+        /* 文章の右上に置き、文章を左と下へ回り込ませる */
+        float: inline-end;
+        inline-size: calc(96 / 16 * 1rem);
+        margin-block-end: 8px;
+        margin-inline-start: 16px;
+      }
+    }
+
+    ._decoration {
+      fill: oklch(70% 0.12 250deg);
+    }
+  }
+}

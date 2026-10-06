@@ -40,7 +40,7 @@
           inset-block-start: anchor(center);
           position-anchor: --css-carousel;
           inline-size: 40px;
-          block-size: 40px;
+          aspect-ratio: 1;
           border: 1px solid;
           border-radius: 50%;
           background-color: var(--color--neutral--50);
@@ -82,7 +82,7 @@
         &::scroll-marker {
           content: "" / attr(data-label);
           inline-size: 12px;
-          block-size: 12px;
+          min-block-size: 12px;
           border: 1px solid transparent;
           border-radius: calc(infinity * 1px);
           background-color: var(--color--neutral--400);

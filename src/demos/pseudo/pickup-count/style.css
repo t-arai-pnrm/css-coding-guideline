@@ -5,8 +5,13 @@
       gap: 32px;
     }
 
+    /* 見出しの次の一覧は別のコンポーネントのルートで、このスコープからは選べないので、間隔は section の gap で空ける */
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
     h2 {
-      margin-block-end: 8px;
       color: oklch(45% 0 0deg);
       font-size: calc(14 / 16 * 1rem);
     }
@@ -47,7 +52,7 @@
       font-size: calc(18 / 16 * 1rem);
     }
 
-    p {
+    h3 + p {
       margin-block-start: 8px;
     }
   }

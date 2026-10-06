@@ -6,7 +6,7 @@
 }
 
 @layer base {
-  :where(:root) {
+  :root {
     color-scheme: light;
 
     &[data-theme="dark"] {
@@ -14,7 +14,7 @@
     }
   }
 
-  :where(body) {
+  body {
     background-color: light-dark(oklch(100% 0 0deg), oklch(22% 0 0deg));
     color: light-dark(oklch(22% 0 0deg), oklch(95% 0 0deg));
   }

@@ -1,8 +1,8 @@
 ---
-title: "10-7 positionの基礎"
-description: "position は、親の方式で置かれた位置を補正するか（relative、sticky）、要素を親の流れから外して置き直すか（absolute、fixed）を決めるプロパティです。static、relative、absolute、fixed、sticky の違い、包含ブロックの決まり方、sticky が留まらない原因、アンカーポジショニング、要素どうしの重なりの検出を説明します。"
+title: "7-8 positionの基礎"
+description: "position は、親の方式で置かれた位置を補正するか（relative、sticky）、要素を親の流れから外して置き直すか（absolute、fixed）を決めるプロパティです。static、relative、absolute、fixed、sticky の違い、包含ブロックの決まり方、絶対配置の要素を中央に置く方法、sticky が留まらない原因を説明します。"
 sidebar:
-  order: 7
+  order: 8
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -11,16 +11,10 @@ import Guideline from '../../../components/Guideline.astro';
 import stickyHtml from '../../../demos/layout/sticky-toc/index.html?raw';
 import stickyCss from '../../../demos/layout/sticky-toc/style.css?raw';
 import stickyBadCss from '../../../demos/layout/sticky-toc/style.bad.css?raw';
-import overlapHtml from '../../../demos/layout/overlap-detection/index.html?raw';
-import overlapCss from '../../../demos/layout/overlap-detection/style.css?raw';
 
 `position` の `static` 以外の値は、働き方で2つに分かれます。`relative` と `sticky` は、親が決めた方式（通常フロー、Flexbox、Grid）に参加したまま、配置された後の位置を `inset` の分だけ補正します。`absolute` と `fixed` は、要素を親の流れから外し、絶対配置という別のレイアウトの方式で置き直します。位置の基準になる「包含ブロック」は、値によって、また祖先の `transform` などの指定によって変わります。
 
-本書では、絶対配置の要素の包含ブロックを、同じコンポーネントの中に `position: relative` ではっきり作ります。`position: sticky` を指定するときは、`inset` を指定し、GridとFlexboxの子なら `align-self: start` も指定します。アンカーポジショニングは、未対応の環境でも内容を読める形を先に書いたうえで使います。要素どうしの重なりを検出して装飾を隠す技法は、装飾に限って、対応した環境での上乗せとして使います。
-
-この節は扱う範囲が広いので、目的に合わせて見出しを選んで読めます。`position` の値と包含ブロックの基本は、「[positionの5つの値](#positionの5つの値)」から「[絶対配置の要素を中央に置く](#絶対配置の要素を中央に置く)」までで説明します。スクロールしても画面に留まる要素を作るときは、「[stickyが留まらない原因](#stickyが留まらない原因)」から「[固定ヘッダーと画面の高さ](#固定ヘッダーと画面の高さ)」までを読みます。
-
-ツールチップのように、別の要素の近くに置きたいときは、「[アンカーポジショニングの位置づけ](#アンカーポジショニングの位置づけ)」から後を読みます。後半ほど新しい機能を使う応用で、未対応の環境での扱いもあわせて説明しています。まず覚えるのは「絶対配置の要素を中央に置く」までの基本で、それより後は、作るものに合わせて必要な見出しだけを読めば足ります。
+本書では、絶対配置の要素の包含ブロックを、同じコンポーネントの中に `position: relative` ではっきり作ります。`position: sticky` を指定するときは、`inset` を指定し、GridとFlexboxの子なら `align-self: start` も指定します。
 
 ## positionをレイアウトの方式として考える
 
@@ -28,13 +22,13 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 `position` も、この方式に関わるプロパティです。`top` や `left` を書くための前提の指定と覚えていると、`absolute` を指定した要素がFlexboxの子として並ばなくなる理由や、`relative` を指定しただけで重なり順が変わる理由を説明できません。前者は、要素が絶対配置に移って親の流れから外れたことで起きる変化です。後者は、`static` 以外の要素（位置指定された要素）が、`static` の要素より後に描かれることで起きる変化です。
 
-この節では、まず5つの値がそれぞれ何を変えるかを説明し、次に位置の基準になる包含ブロックを扱います。そのあとで、つまずきやすい `sticky`、新しいアンカーポジショニング、アンカーポジショニングを使って要素どうしの重なりを検出する技法を順に説明します。重なり順（z-index）と、要素を画面幅いっぱいに広げる方法は、「[10-11 重なりと全幅](/layout/layering/)」で扱います。
+この節では、まず5つの値がそれぞれ何を変えるかを説明し、次に位置の基準になる包含ブロックを扱います。最後に、つまずきやすい `sticky` が留まらない原因を説明します。重なり順（z-index）と、要素を画面幅いっぱいに広げる方法は、「[11-5 重なりと全幅](/layout-practice/layering/)」で扱います。留まったヘッダーの見た目の切り替えと固定ヘッダーの条件は「[11-6 固定ヘッダー](/layout-practice/sticky-header/)」で、ツールチップのように別の要素を基準に置くアンカーポジショニングは「[11-7 アンカーポジショニング](/layout-practice/anchor-positioning/)」で扱います。
 
 ## positionの5つの値
 
 ### static
 
-`static` は初期値で、要素を通常フロー、Flexbox、Gridのうち、親が決めた方式のまま配置します。`inset` を指定しても無視されます。通常フローの仕組みは「[10-2 通常フローの基礎](/layout/normal-flow/)」で説明しています。
+`static` は初期値で、要素を通常フロー、Flexbox、Gridのうち、親が決めた方式のまま配置します。`inset` を指定しても無視されます。通常フローの仕組みは「[7-2 通常フローの基礎](/layout/normal-flow/)」で説明しています。
 
 ### relative
 
@@ -99,7 +93,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 }
 ```
 
-基準にする祖先は、同じコンポーネントの中に置きます。コンポーネントの外の祖先を基準にすると、置く場所によって位置が変わってしまうからです。コンポーネントのルートそのものに `position: absolute` と `inset` を指定しない理由は、「[8-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+基準にする祖先は、同じコンポーネントの中に置きます。コンポーネントの外の祖先を基準にすると、置く場所によって位置が変わってしまうからです。コンポーネントのルートそのものに `position: absolute` と `inset` を指定しない理由は、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 
 ## position以外で包含ブロックを作る指定
 
@@ -107,9 +101,9 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 見落としやすいのは、個別の変形プロパティ（`translate`、`rotate`、`scale`）、すりガラスの効果に使う `backdrop-filter`、`content-visibility: auto` です。`will-change: transform` のように、これらのプロパティを `will-change` に書いただけでも包含ブロックになります。
 
-影響が大きいのは `fixed` です。フェードインの演出のために `translate` を指定した要素の中に固定ヘッダーを置くと、ヘッダーはビューポートではなく、その要素に対して固定されてしまいます。スクロールすると、ヘッダーは要素と一緒に画面の外へ流れます。モーダルは `<dialog>` の `showModal()` でトップレイヤーに表示し、この問題を避けます。トップレイヤーの要素は、祖先の指定にかかわらずビューポートを基準にします。ダイアログの実装は「[16-2 開閉するUI](/interaction/disclosure/)」で扱います。
+影響が大きいのは `fixed` です。フェードインの演出のために `translate` を指定した要素の中に固定ヘッダーを置くと、ヘッダーはビューポートではなく、その要素に対して固定されてしまいます。スクロールすると、ヘッダーは要素と一緒に画面の外へ流れます。モーダルは `<dialog>` の `showModal()` でトップレイヤーに表示し、この問題を避けます。トップレイヤーの要素は、祖先の指定にかかわらずビューポートを基準にします。ダイアログの実装は「[17-2 開閉するUI](/interaction/disclosure/)」で扱います。
 
-コンテナサイズクエリのための `container-type`（`inline-size` と `size`）は、現在の仕様ではレイアウトの封じ込めを含まないので、包含ブロックを作りません。ただし、以前の仕様に沿って実装したブラウザでは、包含ブロックになることがあります。仕様が変わった経緯とブラウザの対応は、「[12-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。固定ヘッダーやモーダルを含む `html` と `body` には、`container-type` を指定しません。
+コンテナサイズクエリのための `container-type`（`inline-size` と `size`）は、現在の仕様ではレイアウトの封じ込めを含まないので、包含ブロックを作りません。ただし、以前の仕様に沿って実装したブラウザでは、包含ブロックになることがあります。仕様が変わった経緯とブラウザの対応は、「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。固定ヘッダーやモーダルを含む `html` と `body` には、`container-type` を指定しません。
 
 ## 絶対配置の要素を中央に置く
 
@@ -125,7 +119,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 }
 ```
 
-`translate` を使う方法は、位置を決める指定が `inset` と変形の2か所に分かれ、何のための変形なのかが読み取りにくくなります。絶対配置の要素に `place-self: center` を指定する方法もありますが、Safariは26から対応したので、2026年10月の時点ではまだ使えません（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
+`translate` を使う方法は、位置を決める指定が `inset` と変形の2か所に分かれ、何のための変形なのかが読み取りにくくなります。絶対配置の要素に `place-self: center` を指定する方法もありますが、Safariは26から対応したので、2026年10月の時点ではまだ使えません（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
 
 そもそも絶対配置にする必要がないことも多くあります。Gridの中なら `place-items: center` で足ります。高さのある通常のブロックの中で縦方向の中央に置くだけなら、そのブロックに `align-content: center` を指定します。`align-content` がブロックコンテナでも働くようになったのは、2024年4月からです（2026年10月確認）。
 
@@ -197,7 +191,7 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 原因がはっきりしないときは、DevToolsで `sticky` の要素から祖先へ順にたどります。Computedタブで `overflow-x` と `overflow-y` の算出値を見て、`auto`、`scroll`、`hidden` のどれかになっている要素を探します。書いた値ではなく算出値を見るのは、片方の軸だけを指定すると、もう一方の軸の値も変わることがあるからです。たとえば `overflow-x: hidden` だけを書くと、`overflow-y` の `visible` は `auto` として算出され、その要素は縦方向にもスクロールするスクロールコンテナになります。
 
-見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[10-10 変化に強いレイアウト](/layout/defensive/)」）。親子のマージンの相殺を止めるために `overflow: auto` を使う書き方も、同じ理由で避けます。相殺を止めるなら `display: flow-root` を使います（「[10-9 余白を設計する](/layout/spacing/)」）。
+見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[11-4 変化に強いレイアウト](/layout-practice/defensive/)」）。親子のマージンの相殺を止めるために `overflow: auto` を使う書き方も、同じ理由で避けます。相殺を止めるなら `display: flow-root` を使います（「[11-3 余白を設計する](/layout-practice/spacing/)」）。
 
 スクロールコンテナが意図したものである場合は、別の話です。たとえば、高さを決めて `overflow: auto` にした領域の中で見出しを留めるなら、見出しはその領域の中で留まります。領域に高さがなければスクロールせず、何も起きません。この場合に必要なのは、その領域に高さの上限を決めて、スクロールが起きるようにすることです。ページ全体のスクロールで留める通常の `sticky` では、親に高さを指定する必要はありません。
 
@@ -217,214 +211,9 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 }
 ```
 
-上限は、スクロールで値が変わらない `svb`（小さいほうのビューポートの高さ）から、上下の余白を引いた値にしています。本書は `dvb` を要素の大きさに使いません。スクロールのたびに値が変わり、レイアウトシフトの原因になるからです（「[4-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。`overflow-y: auto` を指定した要素自身はスクロールコンテナになりますが、要素の中の話なので、留まる動きには影響しません。
+上限は、スクロールで値が変わらない `svb`（小さいほうのビューポートの高さ）から、上下の余白を引いた値にしています。本書は `dvb` を要素の大きさに使いません。スクロールのたびに値が変わり、レイアウトシフトの原因になるからです（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。`overflow-y: auto` を指定した要素自身はスクロールコンテナになりますが、要素の中の話なので、留まる動きには影響しません。
 
-## 留まっている間だけ見た目を変える
-
-ヘッダーが上端に留まったら影を付ける、背景を不透明にする、といった演出は、以前は `scroll` イベントでスクロール量を調べて、JavaScriptでクラスを付け替えて作っていました。今は、コンテナクエリの `scroll-state()` で、`sticky` の要素が留まっているかどうかをCSSだけで判定できます。
-
-<Baseline id="container-scroll-state-queries" name="scroll-state() のコンテナクエリ" />
-
-`sticky` の要素に `container-type: scroll-state` を指定します。すると、その中の要素は `@container scroll-state(stuck: block-start)` の条件を使い、上端に留まっている間だけスタイルを変えられます。コンテナクエリなので、条件で変えられるのはコンテナの子孫だけです。ヘッダーそのものではなく、内側の要素に見た目を書きます。
-
-```css title="🙆‍♂ Recommended: 上端に留まっている間だけ、ヘッダーの内側に境界線を付ける"
-@scope (.scoped.site-header) to (.scoped) {
-  :scope {
-    position: sticky;
-    inset-block-start: 0;
-    container: --scoped / scroll-state;
-  }
-
-  ._header-inner {
-    border-block-end: 1px solid transparent;
-    background-color: var(--color--neutral--50);
-
-    @container --scoped scroll-state(stuck: block-start) {
-      border-block-end-color: var(--color--neutral--400);
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--fast);
-      transition-property: border-block-end-color;
-    }
-  }
-}
-```
-
-2026年10月の時点で、`scroll-state()` のクエリに対応しているのはChrome系のブラウザだけです。対応していない環境では条件が成り立たず、境界線がないまま留まります。ヘッダーの機能は損なわれないので、プログレッシブ・エンハンスメントとして使えます。反対に、留まったときにだけメニューを表示するような、見えないと操作できなくなる変化には使いません。
-
-同じ仕組みで、横にスクロールできる表へ「→」の案内を出し、端までスクロールしたら消す、という表示も作れます。表を包むスクロールコンテナに `container-type: scroll-state` を指定し、`scroll-state(scrollable: inline-end)` が成り立つ間だけ案内を表示します。表をスクロールのラッパーで包む書き方は「[10-15 表を組む](/layout/tables/)」で説明します。
-
-留まったときにヘッダーの高さを縮める演出には、別の問題があります。`sticky` の要素は通常フローに場所を持つので、高さが縮むと、後ろの内容がその分だけ上へ動きます。ブラウザは、画面に見えている内容の位置を保つスクロールアンカリングの仕組みで、スクロール位置を縮んだ分だけ戻します。Chrome 152で、上端に留まると高さが64px縮むヘッダーを置き、32pxだけスクロールして確かめると、スクロール位置は0に戻り、ヘッダーは元の高さに戻りました（2026年10月確認）。少しだけスクロールしようとするたびにページが先頭へ押し戻され、ヘッダーが伸び縮みを繰り返します。
-
-そのため、留まったときに変えるのは、色や影のように寸法の変わらないものにします。先ほどの例で、内側の要素の境界線の色だけを変えているのも、このためです。高さを変える必要があるなら、ルートに `overflow-anchor: none` を指定して、スクロールアンカリングを止めます。同じ条件で確かめると、スクロール位置は32pxのまま保たれました。
-
-```css title="🙆‍♂ Recommended: 留まると高さが変わるヘッダーを置くときは、スクロールアンカリングを止める"
-:root {
-  overflow-anchor: none;
-}
-```
-
-<Baseline id="overflow-anchor" />
-
-この指定は、ページ全体のスクロールアンカリングを止めます。画面より上で画像が読み込まれて高さが変わったときなどに、見ている内容が押し下げられるようになるので、高さを変えずに済むなら、そのほうを選びます。`overflow-anchor` はSafari 27で対応し、2026年9月にBaselineの「新しく利用可能」になりました（2026年10月確認）。対応していない環境では、指定が無視されるだけです。{/* 要確認: 出典なし */}
-
-## 固定ヘッダーと画面の高さ
-
-ヘッダーを画面の上に固定するのは、ビューポートの高さが十分にあるときだけにします。横向きのスマートフォンや拡大した画面では、固定したヘッダーが画面の多くを覆い、本文を読める範囲が狭くなるからです。拡大するとCSSピクセルで数えたビューポートの高さが縮むので、パソコンでも同じことが起きます。{/* 要確認: 出典なし */}
-
-固定したヘッダーは、フォーカスした要素も隠します。WCAG 2.2の達成基準2.4.11（レベルAA）は、キーボードでフォーカスした要素が、作成者の置いたコンテンツで完全に隠れないことを求めています。固定ヘッダーは、その典型的な原因として挙げられています。
-
-```css title="🙆‍♂ Recommended: ビューポートの高さが十分なときだけ、ヘッダーを固定する"
-@scope (.scoped.site-header) to (.scoped) {
-  :scope {
-    @media (height >= calc(600 / 16 * 1rem)) {
-      position: sticky;
-      inset-block-start: 0;
-      z-index: var(--z--header);
-    }
-  }
-}
-```
-
-閾値は、ほかのクエリと同じく `rem` で書きます（「[12-4 メディアクエリ](/responsive/media-queries/)」）。ユーザーがブラウザの文字サイズを大きくすると閾値も大きくなり、ヘッダーは早めに固定をやめます。600px相当は、横向きのスマートフォンや、200%に拡大したノートパソコンの画面で固定を外すための目安です。{/* 要確認: 出典なし */}
-
-固定しているときも、フォーカスした要素がヘッダーの下に入ることはあります。「[6-2 ベーススタイルに書くもの](/reset/base-styles/)」では、`[id]` と `:focus` に `scroll-margin-block-start: 4rlh` を指定し、移動先の上に余白を空けています。ヘッダーの高さが決まっているなら、スクロールする側のルートに `scroll-padding-block-start` を指定する方法もあります。スクロールで内容を見せる範囲からヘッダーの分を除く指定で、仕様では、フォーカスやページ内リンクによるスクロールと、Spaceキーなどで1画面ずつ送るときの送り幅に反映されるとされています。
-
-```css title="🙆‍♂ Recommended: ヘッダーを固定するときだけ、スクロールで見せる範囲からヘッダーの高さを除く"
-:root {
-  @media (height >= calc(600 / 16 * 1rem)) {
-    scroll-padding-block-start: calc(64 / 16 * 1rem);
-  }
-}
-```
-
-閾値は、ヘッダーのクエリとそろえます。`scroll-padding` と `scroll-margin` を両方指定すると、2つの余白は足し合わされます。ルートでヘッダーの高さを除くなら、ベーススタイルの `scroll-margin-block-start` は、見出しの上に少しゆとりを残す程度の値に下げます。{/* 要確認: 出典なし */}
-
-## アンカーポジショニングの位置づけ
-
-アンカーポジショニングは、ある要素（アンカー）の位置を基準にして、別の要素を配置する仕組みです。アンカーに `anchor-name` で名前を付け、配置する要素の `inset` に `anchor()` 関数を書くと、ツールチップやメニューを、ボタンのすぐ下に表示できます。配置する要素は `absolute` か `fixed` の要素で、包含ブロックの辺ではなく、アンカーの辺からの位置で決まります。
-
-画面の端で収まらないときは、`position-try-fallbacks` で反対側へ反転させることもできます。一度切り替わった位置は、元の位置に空きができても自動では戻らず、再びはみ出したときに選び直されます。はみ出すかどうかは、配置する要素の包含ブロックを基準に判定されます。
-
-<Baseline id="anchor-positioning" compatKey="css.properties.anchor-name" name="アンカーポジショニング（anchor-name）" />
-
-`anchor-name` と `anchor()` は、Chrome 125、Firefox 147、Safari 26で対応し、2026年1月に主要なブラウザがそろいました。一方、機能全体のBaselineは「一部のブラウザのみ」のままです。`position-visibility` の一部の値のように、Safari 27だけが対応していて、ほかのブラウザが対応していないものが含まれているからです（2026年10月確認）。いずれにしても、本書の対象のSafari 18系は対応していません。
-
-未対応の環境では、アンカーを基準にした配置の指定がすべて無視されます。ツールチップが意図しない場所に表示され、ほかの内容に重なることもあります。そのため、第1章のルールに従い、アンカーポジショニングはレイアウトの要として使いません（「[1-3 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。未対応の環境でも内容を読めて操作できる形を先に書き、対応した環境でだけ、アンカーを基準とした配置へ切り替えます。
-
-```css title="🙆‍♂ Recommended: 未対応の環境では画面の中央に、対応した環境ではボタンの下に表示する"
-@scope (.scoped.help-tip) to (.scoped) {
-  :scope {
-    anchor-scope: --help-tip;
-  }
-
-  button {
-    anchor-name: --help-tip;
-  }
-
-  [popover] {
-    margin: auto;
-
-    @supports (anchor-name: --help-tip) {
-      inset: unset;
-      inset-block-start: anchor(--help-tip end);
-      inset-inline-start: anchor(--help-tip start);
-      position-try-fallbacks: flip-block;
-      margin-block-start: 4px;
-    }
-  }
-}
-```
-
-```html
-<span class="scoped help-tip">
-  <button type="button" popovertarget="help-tip-1">入力のヒント</button>
-  <span id="help-tip-1" popover>半角の数字で入力してください。</span>
-</span>
-```
-
-ヒントは `popover` 属性でトップレイヤーに表示しています。未対応の環境では、`margin: auto` によって画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。対応した環境では、ブラウザのデフォルトスタイルが `[popover]` に指定している `inset: 0` を `unset` で初期値の `auto` に戻し、`anchor()` で決めた2辺だけで位置を決めます。アンカーの名前は、ほかの名前と同じく `--` で始めます（「[7-1 命名規則](/notation/naming/)」）。
-
-ルートの `anchor-scope` は、アンカーの名前が有効な範囲を、このコンポーネントの中に限る指定です。同じコンポーネントがページに複数あると、同じ名前のアンカーも複数できます。トップレイヤーの要素のように、ページ全体を包含ブロックにする要素からは、どのアンカーも見えるので、最後のアンカーが基準に選ばれ、別のコンポーネントのボタンの下に表示されてしまいます。繰り返し置くコンポーネントでアンカーを使うときは、ルートで範囲を限ります。
-
-## 暗黙のアンカーと `position-area` で配置する
-
-ポップオーバーを開くボタンを基準にするなら、`anchor-name` で名前を付ける必要はありません。`popovertarget` 属性や `commandfor` 属性でボタンとポップオーバーを結び付けると、ボタンがポップオーバーの「暗黙のアンカー」になります。カスタマイズ可能な `<select>` でも、選択肢の一覧（`::picker(select)`）の暗黙のアンカーは `<select>` です。暗黙のアンカーは要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要りません。本書では、使える場面では暗黙のアンカーを優先します。{/* 要確認: 出典なし */}
-
-```css title="🙆‍♂ Recommended: 暗黙のアンカーを基準に、position-area で表示する位置を決める"
-@scope (.scoped.help-tip) to (.scoped) {
-  [popover] {
-    margin: auto;
-
-    @supports (position-area: block-end span-inline-end) {
-      position-area: block-end span-inline-end;
-      position-try-fallbacks: flip-block;
-      margin-block-start: 4px;
-    }
-  }
-}
-```
-
-HTMLは先ほどと同じです。`position-area` は、アンカーを中央のマスとする3×3のマス目を考え、配置する要素を置くマスを選ぶプロパティです。`block-end span-inline-end` は、アンカーの下の行で、アンカーの列から行末側の列までにまたがるという意味です。`inset` と `anchor()` で1辺ずつ書くより短く、揃え方も選んだマスに合わせて決まります。`anchor()` は、マス目で表せない配置に使います。
-
-値には、`bottom` や `right` のような物理キーワードと、`block-end` や `span-inline-end` のような論理キーワードがあります。本書では、プロパティと同じく論理キーワードで書きます（「[7-8 論理プロパティと論理値](/notation/logical-properties/)」）。縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示されるからです。
-
-はみ出したときの候補は、`position-try-fallbacks` にカンマ区切りで並べます。候補には、`flip-block flip-inline` のように組み合わせた反転のキーワードも、`position-area` の値も書けます。書いた順ではなく空きの大きさで選ばせたいときは、`position-try-order` を指定します。`most-block-size` なら、最初の位置と候補のうち、ブロック方向の空きが最も大きい位置を選びます。
-
-```css title="🙆‍♂ Recommended: 上下のうち、空きの大きいほうにメニューを開く"
-@scope (.scoped.site-menu) to (.scoped) {
-  ul {
-    margin: auto;
-
-    @supports (position-area: block-end span-inline-end) {
-      position-area: block-end span-inline-end;
-      position-try-fallbacks: flip-block;
-      position-try-order: most-block-size;
-    }
-  }
-}
-```
-
-`position-visibility` の初期値 `anchors-visible` では、アンカーがスクロールなどで完全に見えなくなると、配置した要素も見えなくなります。ボタンがスクロールで隠れたあとに、メニューだけが浮いて見えることを防げます。
-
-<Baseline id="anchor-positioning" compatKey="css.properties.position-area" name="position-area" />
-
-`position-area` は、Chrome 129、Firefox 147、Safari 26で対応しています。ボタンの暗黙のアンカーは、`popovertarget` ならChrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです。`position-try-order` はFirefoxでは148から、`position-visibility` はSafariでは26.2からです（2026年10月確認）。`position-area` を指定すると、`auto` の `margin` と `inset` は0として扱われます。未対応の環境のために書いた `margin: auto` も0になるので、`@supports` の中では、ボタンとの間隔を空ける `margin-block-start` だけを指定しています。
-
-暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。`position-anchor` の初期値 `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使うからです。初期値は2026年にChrome 151、Firefox 151、Safari 27で `normal` に変わり、それより前のChromeとSafari 26では、指定しなくても `anchor()` が暗黙のアンカーを使っていました。
-
-アンカーの大きさに合わせるときは、`min-inline-size: anchor-size(inline)` のように `anchor-size()` を使います。この関数を書けるのは、大きさ、`inset`、`margin` のプロパティだけで、`padding` などに書いた宣言は無視されます。また、`position-area` と `position-try-fallbacks` は離散的に切り替わるので、反転するときの位置の変化をトランジションで滑らかにはできません。アンカーが動いたときの `anchor()` の値の変化を補間できるのも、Chrome 125以降とSafari 26以降だけです（2026年10月確認）。
-
-<Baseline id="anchor-positioning-animations" />
-
-位置が反転したときに、吹き出しの矢印の向きを変えたい場面もあります。CSS Anchor Positioning Module Level 2では、配置する要素に `container-type: anchored` を指定します。`@container anchored(fallback: flip-block)` の中に、反転したときの子孫のスタイルを書けます。ただし、2026年10月の時点で対応しているのはChrome 143以降だけなので、本書では今のところ採用しません。ほかのブラウザでは、反転しても矢印が元の向きのまま残り、吹き出しと反対の側を指すからです。位置が反転しうる吹き出しには矢印を付けないか、矢印がなくても、どのボタンの説明かが分かるデザインにします。{/* 要確認: 出典なし */}
-
-<Baseline id="container-anchor-position-queries" />
-
-## 要素どうしの重なりを検出する
-
-見出しの横に絶対配置で飾りの図形を置くと、画面が狭くなるにつれて、飾りと本文の間隔が詰まり、やがて重なります。ふつうはメディアクエリやコンテナサイズクエリで飾りを消しますが、閾値は、本文の最大幅、飾りの大きさ、余白から逆算した値です。どれかを変えると閾値も直す必要があり、計算を誤れば、重なっているのに消えない幅が残ります。
-
-アンカーポジショニングとスクロール駆動アニメーションを組み合わせると、2つの要素の間隔を実際に測り、足りないときだけ飾りを隠せます。Ahmad Shadeedが紹介した技法で、仕組みは4段階です。
-
-1段目では、飾りと本文にアンカーの名前を付け、測るための空の要素（以下、測定用の要素）を絶対配置にして、`anchor()` で飾りの行末側の辺から本文の行頭側の辺までの範囲に置きます。2段目では、測定用の要素に `overflow-x: auto` を指定し、中に20pxの擬似要素を入れます。間隔が20pxを切ると、中身がはみ出して、測定用の要素はスクロールできる状態になります。
-
-3段目では、測定用の要素に `scroll-timeline` でスクロールタイムラインを作り、ルートの `timeline-scope` でその名前をルートから参照できるようにします。スクロールタイムラインは、スクロールできない間は無効で、そのタイムラインに結び付けたアニメーションは働きません。ルートに、最初と最後のキーフレームで同じ値を指定するアニメーションを結び付けると、はみ出している間だけ、スクロールしなくてもその値が当たります。4段目では、その値（ここでは `--_overlapping: 1`）をスタイルクエリで調べ、飾りを隠します。
-
-<Demo title="飾りの円と本文の間隔が20pxを切ると、円が消える" html={overlapHtml} css={overlapCss} />
-
-デモの幅を狭めると、円と本文の間隔が20pxを切ったところで円が消えます。閾値をメディアクエリで書いていないので、本文の最大幅や円の大きさを変えても、CSSのほかの箇所を直す必要はありません。
-
-測定用の要素には、`inert` 属性を付けています。中身がはみ出した要素はスクロールコンテナです。スクロールコンテナをキーボードで選べるブラウザでは、見えないこの要素にもフォーカスが移ります。`inert` を付けると、フォーカスを受け取らず、支援技術からも隠れます。スクロールバーは `scrollbar-width: none` で隠しています。
-
-<Baseline id="scroll-driven-animations" compatKey="css.properties.timeline-scope" name="timeline-scope" />
-
-<Baseline id="container-style-queries" />
-
-この技法には、アンカーポジショニング、スクロール駆動アニメーション、カスタムプロパティのスタイルクエリの3つが必要です。2026年10月の時点で、3つとも使えるのはChrome系のブラウザとSafari 26以降で、Firefoxはスクロール駆動アニメーションに対応していません。そのため、指定はすべて `@supports` の中に書きます。未対応の環境では、飾りは表示されたままです。
-
-本書では、この技法を、隠れても内容と操作に影響しない飾りにだけ使います。隠す対象が本文やボタンだと、未対応の環境と対応した環境で読める内容が変わるからです。飾りが本文に重なっても読めるように、飾りは `z-index: var(--z--backwards)` で本文の後ろに置き、本文には背景色を付けておきます。間隔に余裕を持たせられるレイアウトなら、飾りをGridの列に置いて重ならないようにするほうが単純です。{/* 要確認: 出典なし */}
+留まるようになった要素の応用は、「[11-6 固定ヘッダー](/layout-practice/sticky-header/)」で説明しています。上端に留まっている間だけ見た目を変える方法と、ビューポートの高さが十分なときだけヘッダーを固定する方法を扱います。
 
 ## ガイドライン
 
@@ -436,30 +225,12 @@ HTMLは先ほどと同じです。`position-area` は、アンカーを中央の
 {/* textlint-disable ja-technical-writing/no-doubled-joshi */}
 
 - [Understanding Layout Algorithms](https://www.joshwcomeau.com/css/understanding-layout-algorithms/)（Josh W. Comeau。プロパティの働きはレイアウトの方式で決まる）
-- [Detect when elements overlap with CSS](https://ishadeed.com/article/css-detect-overlap/)（Ahmad Shadeed、2026年9月）
 - [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月）
 - [position - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/position)
 - [包含ブロック - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Containing_block)
 - [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
 - [align-self - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/align-self)
-- [Using container scroll-state queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
-- [CSS アンカー位置指定 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_anchor_positioning)
-- [Using CSS anchor positioning - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning/Using)（暗黙のアンカー）
-- [position-area - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area)
-- [position-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/position-anchor)
-- [anchor-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size)
-- [position-try-order - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-try-order)
-- [position-visibility - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-visibility)
-- [timeline-scope - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/timeline-scope)
-- [overflow-anchor - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor)
 - [Getting stuck: all the ways position: sticky can fail](https://polypane.app/blog/getting-stuck-all-the-ways-position-sticky-can-fail/)（Polypane）
-- [Cheatsheets for flex, grid, anchor positioning and invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
 - [CSS Positioned Layout Module Level 3](https://drafts.csswg.org/css-position-3/)（W3C）
 - [CSS Overflow Module Level 3 - Scrolling and Clipping Overflow](https://drafts.csswg.org/css-overflow-3/#overflow-properties)（W3C）
-- [CSS Anchor Positioning Module Level 1](https://drafts.csswg.org/css-anchor-position-1/)（W3C）
-- [CSS Anchor Positioning Module Level 2](https://drafts.csswg.org/css-anchor-position-2/)（W3C、エディターズドラフト）
 - [CSS Conditional Rules Module Level 5 - container-type](https://drafts.csswg.org/css-conditional-5/#container-type)（W3C）
-- [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)（W3C）
-- [CSS Scroll Anchoring Module Level 1](https://drafts.csswg.org/css-scroll-anchoring/)（W3C）
-- [Understanding Success Criterion 2.4.11: Focus Not Obscured (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)（W3C）
-- [C43: Using CSS scroll-padding to un-obscure content](https://www.w3.org/WAI/WCAG22/Techniques/css/C43)（W3C）

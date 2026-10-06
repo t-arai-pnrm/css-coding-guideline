@@ -1,5 +1,5 @@
 ---
-title: "13-2 和文組版を整える"
+title: "14-2 和文組版を整える"
 description: "和文組版の土台は、text-autospace、text-spacing-trim、line-breakの3つの初期値です。本文はベタ組みにし、見出しだけをpaltとカーニングで詰めます。言語ごとの切り替えはlang属性と:lang()で行います。"
 sidebar:
   order: 2
@@ -31,7 +31,7 @@ import paltCss from '../../../demos/typography/heading-palt/style.css?raw';
 
 ## 和文組版の3つの初期値
 
-kiso.cssは、和文組版のための3つの初期値を `:root` に指定しています。どれも継承されるプロパティなので、`:root` に1回書けば文書全体に適用されます。`:root` に書く理由と書き方は「[6-1 壊さないリセット](/reset/kiso/)」で説明しているので、ここではそれぞれの値を選んだ理由を説明します。
+kiso.cssは、和文組版のための3つの初期値を `:root` に指定しています。どれも継承されるプロパティなので、`:root` に1回書けば文書全体に適用されます。`:root` に書く理由と書き方は「[8-1 壊さないリセット](/reset/kiso/)」で説明しているので、ここではそれぞれの値を選んだ理由を説明します。
 
 `text-spacing-trim` は、括弧や句読点のような約物の周りのアキを調整するプロパティです。和文の括弧や句読点は、全角の幅の中に半分ほどのアキを含んでいます。閉じ括弧と開き括弧のように約物が隣り合うと、アキが重なって間延びするので、`trim-start` はこれを詰めます。さらに、行頭にある開き括弧のアキも詰めます。
 
@@ -41,16 +41,26 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 `line-break: strict` は、小書きの仮名（「ッ」や「ゃ」など）や長音記号を行頭に置かない、厳格な禁則を適用します。行末に余白が出やすくなる面はありますが、読み誤りを防ぐほうを優先します。
 
-反対に、アキを入れると困る要素もあります。等幅フォントで桁をそろえる `pre`、日付を表す `time`、ユーザーが文字を入力する欄です。入力中にアキが入ると、カーソルの動きが不自然になるおそれがあります。これらの要素では `text-autospace` を無効にし、`pre` では `text-spacing-trim` の詰めも止めます。kiso.cssを使っていれば指定済みです。
+反対に、アキを入れると困る要素もあります。等幅フォントで桁をそろえる `pre`、日付を表す `time`、ユーザーが文字を入力する欄です。入力中にアキが入ると、カーソルの動きが不自然になるおそれがあります。これらの要素では `text-autospace` を無効にし、`pre` では `text-spacing-trim` の詰めも止めます。kiso.cssを使っていれば指定済みです。kiso.cssを使わない場合は、次の指定を `reset` レイヤーに入れます。
 
 ```css title="🙆‍♂ Recommended: アキを入れると困る要素で、自動のアキを止める"
-:where(pre) {
-  text-spacing-trim: space-all;
-  text-autospace: no-autospace;
-}
+@layer reset {
+  pre {
+    text-spacing-trim: space-all;
+    text-autospace: no-autospace;
+  }
 
-:where(time, input:not([type="button" i], [type="submit" i], [type="reset" i]), textarea, [contenteditable]) {
-  text-autospace: no-autospace;
+  time,
+  textarea,
+  [contenteditable] {
+    text-autospace: no-autospace;
+  }
+
+  input {
+    &:not([type="button" i], [type="submit" i], [type="reset" i]) {
+      text-autospace: no-autospace;
+    }
+  }
 }
 ```
 
@@ -68,41 +78,49 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 ```css title="🙅‍♂ Not Recommended: 本文全体の文字を詰める"
 /* 🙅‍♂ Not Recommended */
-:where(:root) {
-  font-feature-settings: "palt";
-  letter-spacing: 0.06em;
+@layer base {
+  :root {
+    font-feature-settings: "palt";
+    letter-spacing: 0.06em;
+  }
 }
 ```
 
-注意したいのは、`font-kerning` の初期値の `auto` です。`auto` はカーニングの有無をブラウザに任せる値なので、何も指定しないと、和文の本文にもカーニングの掛かる場合があります。そこで、日本語の文書では `:root` に `font-kerning: none` を指定します。英文はカーニングを掛けたほうが読みやすいので、英語の要素には `normal` を指定します。
+注意したいのは、`font-kerning` の初期値の `auto` です。`auto` はカーニングの有無をブラウザに任せる値なので、何も指定しないと、和文の本文にもカーニングの掛かる場合があります。そこで、日本語の文書では `:root` に `font-kerning: none` を指定します。英文はカーニングを掛けたほうが読みやすいので、英語の要素には `normal` を指定します。どちらもベーススタイルなので、`base` レイヤーに書きます。
 
 ```css title="🙆‍♂ Recommended: 和文の本文はカーニングを止め、英文には掛ける"
-:where(:root:lang(ja)) {
-  font-kerning: none;
-}
+@layer base {
+  :root {
+    &:lang(ja) {
+      font-kerning: none;
+    }
+  }
 
-:where(:lang(en)) {
-  font-kerning: normal;
+  :lang(en) {
+    font-kerning: normal;
+  }
 }
 ```
 
-和文のほうを `:lang(ja)` だけで書かず、`:root` に限っているのは、継承を生かすためです。`:where(:lang(ja))` と書くと、日本語のすべての要素に `none` が直接指定されます。見出しで `normal` を指定しても、見出しの中の `span` には `none` が当たり、カーニングが途切れてしまいます。
+和文のほうを `:lang(ja)` だけで書かず、`:root` に限っているのは、継承を生かすためです。`:lang(ja)` と書くと、日本語のすべての要素に `none` が直接指定されます。見出しで `normal` を指定しても、見出しの中の `span` には `none` が当たり、カーニングが途切れてしまいます。
 
 ## 見出しの詰め
 
 見出しは、本文と違って文字を詰めます。大きな文字では、約物や仮名の周りのアキが目立ち、間延びして見えるからです。見出しには `font-kerning: normal` を指定し、日本語のときは `font-feature-settings: "palt"` も指定します。
 
 ```css title="🙆‍♂ Recommended: 見出しだけを詰める"
-:where(:heading, h1, h2, h3, h4, h5, h6, caption) {
-  font-kerning: normal;
+@layer base {
+  :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
+    font-kerning: normal;
 
-  &:lang(ja) {
-    font-feature-settings: "palt";
+    &:lang(ja) {
+      font-feature-settings: "palt";
+    }
   }
 }
 ```
 
-`:heading` は見出しをまとめて選ぶ新しい擬似クラスで、対応していないブラウザのために、従来のタイプセレクタと並べて `:where()` の中に書きます。この書き方は、第3章「[3-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」で説明しています。表の見出しにあたる `caption` も、見出しと同じ扱いにしています。本書のサイトも、見出しに `palt` を指定しています。
+`:heading` は見出しをまとめて選ぶ新しい擬似クラスで、対応していないブラウザのために、従来のタイプセレクタと並べて `:is()` の中に書きます。この書き方は、第5章「[5-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」で説明しています。表の見出しにあたる `caption` も、見出しと同じ扱いにしています。本書のサイトも、見出しに `palt` を指定しています。
 
 次のデモでは、同じ見出しをベタ組みのままと、`palt` とカーニングを指定した状態で並べています。詰めた見出しは、括弧や読点の周りのアキが小さくなり、1行に入る文字も増えます。
 
@@ -161,11 +179,13 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 「※」で始まる注釈では、2行目以降を1文字ぶん字下げして、「※」の後ろに文字の頭をそろえるのが一般的です。以前は `padding-inline-start: 1em` と `text-indent: -1em` を組み合わせていましたが、いまは `text-indent` の `hanging` キーワードを使います。`hanging` は、1行目以外のすべての行を字下げする指定です。
 
 ```css title="🙆‍♂ Recommended: 注釈の2行目以降を「※」の幅だけ字下げする"
-:where(p[role="note"], [role="note"] li) {
-  text-indent: hanging 1ic;
+@layer base {
+  :is(p[role="note"], [role="note"] li) {
+    text-indent: hanging 1ic;
 
-  &::before {
-    content: "※";
+    &::before {
+      content: "※";
+    }
   }
 }
 ```

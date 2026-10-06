@@ -1,0 +1,86 @@
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    section {
+      display: block grid;
+      gap: 12px;
+    }
+
+    h2 {
+      font-size: calc(16 / 16 * 1rem);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.product-list) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ul {
+      --_column: 1;
+      --_gap: 16px;
+
+      display: block flex;
+      flex-wrap: wrap;
+      gap: var(--_gap);
+
+      /* 折り返した行は1行ずつ並ぶので、最終行の端数だけが中央に寄る */
+      justify-content: center;
+
+      @container --scoped (inline-size >= calc(480 / 16 * 1rem)) {
+        --_column: 2;
+      }
+
+      @container --scoped (inline-size >= calc(768 / 16 * 1rem)) {
+        --_column: 3;
+      }
+    }
+
+    li {
+      flex-basis: calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column));
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(94% 0.03 250deg);
+      text-align: center;
+    }
+  }
+
+  @scope (.scoped.feature-grid) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ul {
+      --_column: 1;
+      --_gap: 16px;
+
+      display: block grid;
+
+      /* 列の幅を長さで決めると、auto-fit がアイテムのない列を幅0に畳む */
+      grid-template-columns: repeat(auto-fit, calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column)));
+      gap: var(--_gap);
+      justify-content: center;
+
+      @container --scoped (inline-size >= calc(480 / 16 * 1rem)) {
+        --_column: 2;
+      }
+
+      @container --scoped (inline-size >= calc(768 / 16 * 1rem)) {
+        --_column: 3;
+      }
+    }
+
+    li {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(94% 0.04 160deg);
+      text-align: center;
+    }
+  }
+}

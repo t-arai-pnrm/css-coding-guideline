@@ -1,0 +1,49 @@
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 16px;
+
+      /* カードの高さを中身に合わせ、下の余白の違いを比べられるようにする */
+      align-items: start;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.notice-card) to (.scoped) {
+    :scope {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(96% 0.02 250deg);
+
+      /* 余白は、前に要素があるときだけ、後ろの要素の上に付ける */
+      & > * + * {
+        margin-block-start: 16px;
+      }
+
+      & > :is(:heading, h1, h2, h3, h4, h5, h6) + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    /* 要素の箱の範囲を見せる */
+    h2,
+    p,
+    ul {
+      outline: 1px dashed oklch(70% 0.08 250deg);
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ul {
+      padding-inline-start: 1.5em;
+
+      /* kiso.css が空にしているマーカーを、ブラウザのデフォルトの黒丸に戻す */
+      list-style-type: revert;
+    }
+  }
+}

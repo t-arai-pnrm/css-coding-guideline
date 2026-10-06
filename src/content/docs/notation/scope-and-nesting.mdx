@@ -1,5 +1,5 @@
 ---
-title: "7-3 @scopeとネストの使い分け"
+title: "9-3 @scopeとネストの使い分け"
 description: "@scopeはBEMのBlockとElementの関係を、ネストはElementとModifierの関係を表すために使います。スコープの下限には中の要素やほかのコンポーネントの名前を書かず、すべてのルートに付ける共通のクラス .scoped を使います。下限の3つの設計の比較、ルートを :scope で選ぶ理由、ページのスコープ、付け忘れの防ぎ方、移行しなくてよい現場もまとめます。"
 sidebar:
   order: 3
@@ -15,11 +15,11 @@ import limitBadCss from '../../../demos/notation/scope-limit/style.bad.css?raw';
 
 スコープの下限には、中にある要素の名前も、ほかのコンポーネントの名前も書きません。すべてのコンポーネントのルートに共通のクラス `scoped` を付け、`@scope (.scoped.<名前>) to (.scoped)` と書きます。下限が汎用の目印なら、中に何を置いても、コンポーネントのCSSはそのコンポーネントの中だけに当たります。
 
-`@scope` の仕組みは「[2-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、ネストの仕様は「[2-5 CSSネストの基礎](/cascade/nesting/)」で説明しています。この節では、2つの機能の分担、スコープの下限を `.scoped` にする理由、ルートとページのスコープの書き方を扱います。
+`@scope` の仕組みは「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、ネストの仕様は「[4-5 CSSネストの基礎](/cascade/nesting/)」で説明しています。この節では、2つの機能の分担、スコープの下限を `.scoped` にする理由、ルートとページのスコープの書き方を扱います。
 
 ## 名前の連結で表していた2つの関係
 
-BEMのクラス名は、2種類の関係を1つの名前に詰めています。`.media-card__title` は「`media-card` の中の見出し」というBlockとElementの関係を表します。`.media-card__title--large` は「その見出しの大きい版」というElementとModifierの関係を表します。この書き方は、Harry Roberts氏のMindBEMdingの記事で広く知られるようになりました。
+BEMのクラス名は、2種類の関係を1つの名前に詰めています。`.media-card__title` は「`media-card` の中の見出し」というBlockとElementの関係を表します。`.media-card__title--large` は「その見出しの大きい版」というElementとModifierの関係を表します。この書き方は、MindBEMdingと呼ばれる記法として広く知られています。
 
 ```css title="🙅‍♂ Not Recommended: 2つの関係を名前の連結で表す"
 /* 🙅‍♂ Not Recommended */
@@ -77,9 +77,9 @@ Blockのスコープは「どこからどこまでがこのコンポーネント
 }
 ```
 
-BlockのModifierがElementの見た目を変える場合は、2通りの書き方があります。大きさや色のような値だけを切り替えるなら、この例のようにルートのModifierで内部用のカスタムプロパティを切り替え、Elementがその値を読みます。値では表せない変化なら、Elementのルールの中に `&:is(:scope[data-variant="featured"] *)` と書きます（「[7-5 ネストの判断基準](/notation/nesting-criteria/)」）。どちらの書き方でも、Elementを選ぶセレクタにBlockの名前は現れません。
+BlockのModifierがElementの見た目を変える場合は、2通りの書き方があります。大きさや色のような値だけを切り替えるなら、この例のようにルートのModifierで内部用のカスタムプロパティを切り替え、Elementがその値を読みます。値では表せない変化なら、Elementのルールの中に `&:is(:scope[data-variant="featured"] *)` と書きます（「[9-5 ネストの判断基準](/notation/nesting-criteria/)」）。どちらの書き方でも、Elementを選ぶセレクタにBlockの名前は現れません。
 
-ネストの深さや `&` の書き方は「[7-4 ネストの書き方](/notation/nesting/)」で、クラス名の形は「[7-1 命名規則](/notation/naming/)」で定めています。この節の分担は、その2つの規約が前提にしている考え方です。
+ネストの深さや `&` の書き方は「[9-4 ネストの書き方](/notation/nesting/)」で、クラス名の形は「[9-1 命名規則](/notation/naming/)」で定めています。この節の分担は、その2つの規約が前提にしている考え方です。
 
 ## スコープの下限に具体的な名前を書かない理由
 
@@ -125,7 +125,7 @@ BlockのModifierがElementの見た目を変える場合は、2通りの書き�
 
 この案には、セレクタの側の弱点もあります。`[class|="c"]` は「`class` 属性の値全体が `c` か、`c-` で始まる」という意味の属性セレクタで、クラスを1つずつ調べるわけではありません。`class="js-toggle c-accordion"` のように、別のクラスが先に書かれたルートは下限になりません。クラスを書く順番という、CSSのクラスでは本来意味を持たない情報に、範囲が左右されます。
 
-本書が2つ目の案を選ぶのは、クラスだけで書けて、クラスの順番に左右されず、「[7-1 命名規則](/notation/naming/)」のルートの名前に接頭辞を足さずに済むからです。
+本書が2つ目の案を選ぶのは、クラスだけで書けて、クラスの順番に左右されず、「[9-1 命名規則](/notation/naming/)」のルートの名前に接頭辞を足さずに済むからです。
 
 ## ルートを `:scope` で選ぶ理由
 

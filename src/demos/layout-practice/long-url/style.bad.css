@@ -1,0 +1,30 @@
+@layer components {
+  @scope (.scoped.link-cards) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    article {
+      /* ベーススタイルの min-inline-size: 0 がない状態を再現する。最小幅が中身の最小幅になり、長い URL の列が押し広げられる */
+      min-inline-size: auto;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    p {
+      /* 折り返すつもりの指定だが、break-word は中身の最小幅を小さくしない */
+      overflow-wrap: break-word;
+    }
+
+    h2 + p {
+      margin-block-start: 8px;
+    }
+  }
+}
