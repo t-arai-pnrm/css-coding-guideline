@@ -1,0 +1,34 @@
+@layer components {
+  @scope (.scoped.global-nav) to (.scoped) {
+    ul {
+      --_rule-width: 1px;
+      --_rule-color: oklch(70% 0 0deg);
+
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px var(--_rule-width);
+      column-rule: var(--_rule-width) solid var(--_rule-color);
+      overflow: clip;
+    }
+
+    li {
+      padding-block: 8px;
+      padding-inline: 24px;
+
+      /* gap decorations に対応していない環境では、広げた影の上下を切り取って縦線にする */
+      @supports not (column-rule-inset: 0) {
+        clip-path: inset(0 -100%);
+        box-shadow: 0 0 0 var(--_rule-width) var(--_rule-color);
+
+        /* 強制カラーモードでは box-shadow が消えるので、同じ位置に outline を描く */
+        @media (forced-colors: active) {
+          outline: var(--_rule-width) solid;
+        }
+      }
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+}

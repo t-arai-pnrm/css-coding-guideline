@@ -14,6 +14,8 @@ import alignmentHtml from '../../../demos/layout/flexbox-alignment/index.html?ra
 import alignmentCss from '../../../demos/layout/flexbox-alignment/style.css?raw';
 import equalColumnsHtml from '../../../demos/layout/flexbox-equal-columns/index.html?raw';
 import equalColumnsCss from '../../../demos/layout/flexbox-equal-columns/style.css?raw';
+import shrinkPriorityHtml from '../../../demos/layout/flexbox-shrink-priority/index.html?raw';
+import shrinkPriorityCss from '../../../demos/layout/flexbox-shrink-priority/style.css?raw';
 
 Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配るレイアウトの方式です。アイテムを並べる向きを主軸、それに直交する向きを交差軸と呼び、`justify-content` は主軸の配置を、`align-items` は交差軸の配置を決めます。伸び縮みの量は、`flex-grow`、`flex-shrink`、`flex-basis` の3つから計算で決まります。
 
@@ -173,6 +175,48 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 `flex-direction: column` では、同じことが高さで起き、`min-block-size: auto` が中身の高さとして扱われます。高さを決めた縦のFlexboxで、スクロールさせたいアイテムがはみ出すときは、そのアイテムに `overflow: auto` か `min-block-size: 0` を指定します。
 
+## 縮める順番を `flex-shrink` で決める
+
+`flex-shrink` には、0か1以外の値を使う場面もあります。2カラムのどちらを先に縮めるかを決める場面です。メインとサイドを並べたとき、`flex-shrink` が初期値の1のままだと、不足は `flex-basis` の比で両方に配られます。メインの `flex-basis` が800px、サイドが400pxなら、不足の3分の2をメインが受け持ちます。そのため、縦に積む手前の中間の幅では、サイドに余裕があるのにメインが狭くなります。
+
+サイドの `flex-shrink` を9999のような大きな値にすると、不足のほとんどをサイドが受け持ちます。縮む量の比は、`flex-shrink` に `flex-basis` を掛けた値で決まるので、メインが1×800で800、サイドが9999×400で3,999,600です。サイドが不足の約99.98%を受け持ち、メインはほぼ縮みません。
+
+```css title="🙆‍♂ Recommended: サイドを最小幅まで先に縮め、メインの幅を保つ"
+._columns {
+  display: block flex;
+  gap: 24px;
+
+  & > ._main {
+    flex-grow: 1;
+    flex-basis: calc(800 / 16 * 1rem);
+  }
+
+  & > ._side {
+    flex-shrink: 9999;
+    flex-basis: calc(400 / 16 * 1rem);
+  }
+}
+
+._side {
+  min-inline-size: calc(240 / 16 * 1rem);
+}
+```
+
+この指定で、コンテナを広い幅から狭めていくと、3つの段階を順に通ります。まず、コンテナの幅が `flex-basis` と `gap` の合計（800＋400＋24で1224px）より広い間は、余りをすべてメインが受け取ります。サイドの `flex-grow` は0なので、サイドは400pxのままで、狭めるとメインだけが800pxに近づきます。この段階で働いているのは `flex-shrink` ではなく `flex-grow` で、伸びない側の `flex-basis` がそのまま最大幅になります。
+
+1224pxを下回ると、サイドが縮み始めます。サイドが `min-inline-size` の240pxに届くのは、不足が約160px、つまりコンテナの幅が約1064pxのときです。この間にメインが縮むのは、160pxの不足に800/4,000,400を掛けた約0.03pxだけです。最小幅に届いたアイテムはそれ以上縮まない値に固定され、残りの不足はほかのアイテムに配り直されます。そのため、1064pxより狭くなると、メインがコンテナの幅から264px（サイドの240pxと `gap` の24px）を引いた幅まで縮みます。
+
+次の表は、この計算をChrome 152で測った結果と比べたものです（2026年10月確認）。サイドの `flex-shrink` が1のままだと、1088pxでメインは709px程度まで狭くなりますが、9999にするとメインは800pxを保っています。
+
+| コンテナの幅 | サイドが `flex-shrink: 1` | サイドが `flex-shrink: 9999` |
+|---|---|---|
+| 1280px | メイン856px、サイド400px | メイン856px、サイド400px |
+| 1168px | メイン762.66px、サイド381.34px | メイン799.99px、サイド344.01px |
+| 1088px | メイン709.34px、サイド354.66px | メイン799.98px、サイド264.02px |
+| 928px | メイン602.66px、サイド301.34px | メイン664px、サイド240px |
+
+メインに `flex-shrink: 0` を指定しても、中間の幅ではメインの幅を保てます。ただし、メインがどの幅でも縮まなくなるので、コンテナが「800＋240＋24」の1064pxより狭くなると、メインがはみ出します。大きな値の `flex-shrink` は、縮める順番だけを決め、メインが縮む余地を残します。縦に積む切り替えは、この指定とは別に、コンテナサイズクエリや「[12-5 sidebar](/compositions/sidebar/)」の折り返し（`flex-grow` の差と `flex-basis` で縦に積む方式）で行います。`flex-shrink` の値は、縦に積むまでの中間の幅で、どちらの列を先に狭めるかを決めます。
+
 ## 折り返しと間隔
 
 初期値の `flex-wrap: nowrap` では、入りきらないアイテムは縮み、縮みきるとはみ出します。`flex-wrap: wrap` なら、次の行へ回ります。要素の数が運用で変わる並びには、折り返しを指定しておきます（[`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items)）。
@@ -209,6 +253,12 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 <Demo title="padding の違うアイテムを、flex: 1 と Grid で等分する" html={equalColumnsHtml} css={equalColumnsCss} />
 
+次のデモは、「縮める順番を `flex-shrink` で決める」の2つの指定を並べたものです。幅のボタンで表示幅を変えると、各列に、その列の幅をremの整数に丸めた値が出ます。デモの表示幅には `body` の左右の `padding`（16pxずつ）が含まれるので、コンテナの幅は表示幅から32px狭くなります。1120pxでは、1段目のメインが約44remまで狭くなり、2段目ではメインが50remのまま、サイドだけが約16.5remまで縮みます。
+
+<Demo title="サイドの flex-shrink を変えて、縮める順番を決める" html={shrinkPriorityHtml} css={shrinkPriorityCss} widths={[960, 1120, 1280]} />
+
+幅の表示には、各列をコンテナにして、`counter-reset: --rem calc(100cqi / 1rem)` で数えています。`100cqi` はコンテナの幅で、それを `1rem` で割ると単位のない数値になり（「[6-3 計算関数で根拠を式に残す](/values/math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` で文字にできます。列は `flex-basis` で幅が決まるので、コンテナにしても幅は中身に左右されません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していないので、デモでは `@supports` で、対応するブラウザでだけ表示しています。
+
 アイコン、本文、ボタンを1行に並べる部品は、次のように書けます。大きさを変えたくないアイコンは `flex-shrink: 0` で縮む計算から外し、本文は `flex-grow: 1` で余りを受け取ります。
 
 ```css title="🙆‍♂ Recommended: アイコン、伸びる本文、ボタンを1行に並べる"
@@ -244,6 +294,7 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 - [An Interactive Guide to Flexbox](https://www.joshwcomeau.com/css/interactive-guide-to-flexbox/)（Josh W. Comeau）
 - [CSS Flexbox](https://markodenic.com/css-flexbox/)（Marko Denic）
 - [Cheatsheets for Flex, Grid, Anchor positioning and Invoker commands](https://polypane.app/blog/cheatsheets-for-flex-grid-anchor-positioning-and-invoker-commands/)（Polypane、2026年7月）
+- [flex-shrink: 9999](https://codepen.io/tak-dcxi/pen/gbrJBgV)（TAK、CodePen）
 - [CSS Flexible Box Layout Module Level 1](https://drafts.csswg.org/css-flexbox-1/)（W3C）
 - [[css-flexbox] Flex basis and box-sizing #316](https://github.com/w3c/csswg-drafts/issues/316)（CSSWG）
 - [flex - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/flex)

@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import trimHtml from '../../../demos/typography/text-box-trim/index.html?raw';
 import trimCss from '../../../demos/typography/text-box-trim/style.css?raw';
+import mediaTextHtml from '../../../demos/typography/media-text-trim/index.html?raw';
+import mediaTextCss from '../../../demos/typography/media-text-trim/style.css?raw';
 
 行の高さ（`line-height`）は、ベーススタイルで1.5以上にして各要素に継承させ、`line-height: 1` は使いません。値はトークンから選び、和文の本文は1.7〜2、見出しは1.25〜1.5を目安にします。デザインの都合で文字の上下の余白を詰めたいときは、行の高さを小さくするのではなく、`text-box-trim` でハーフレディングを取り除きます。
 
@@ -98,9 +100,9 @@ CSSの行は、`line-height` の高さを持つ箱として並びます。行の
 }
 ```
 
-`text-box-trim` には、上下の両方を削る `trim-both`、上だけを削る `trim-start`、下だけを削る `trim-end` があります。ハーフレディングをなくしたいなら `trim-both` を使います。画像と見出しを横に並べて上端をそろえたいときは、`trim-start` だけで足りることが多いでしょう。
+`text-box-trim` には、上下の両方を削る `trim-both`、上だけを削る `trim-start`、下だけを削る `trim-end` があります。ハーフレディングをなくしたいなら `trim-both` を使います。画像と見出しを横に並べて上端をそろえたいときは、`trim-start` だけで足ります（このページの後半で説明します）。
 
-どこまで削るかは `text-box-edge` で決めます。デフォルト値の `text` は、フォントの文字の領域の上端と下端で切り取ります。英文では、大文字の上端とベースラインで切り取る `cap alphabetic` が適していますが、和文に使うと詰まりすぎるので、和文はデフォルト値のままにします。上のユーティリティは、英語の要素でだけ `text-box-edge` を変えています。
+どこまで削るかは `text-box-edge` で決めます。デフォルト値の `auto` は `text` として扱われ、フォントの文字の領域（アセントとディセント）の上端と下端で切り取ります。英文では、大文字の上端とベースラインで切り取る `cap alphabetic` が適していますが、和文に使うと詰まりすぎるので、和文はデフォルト値のままにします。上のユーティリティは、英語の要素でだけ `text-box-edge` を変えています。
 
 次のデモでは、同じバッジと段落を、ハーフレディングが残った状態と、`.-trim-both` で取り除いた状態で並べています。背景色の範囲を比べると、上下の余白が `padding` の値だけになっているのが分かります。英語のバッジは、大文字の上端とベースラインで切り取られるので、和文のバッジより低くなります。
 
@@ -112,6 +114,89 @@ web-featuresのデータでは、`text-box-trim` は2026年8月のFirefox 154で
 
 Adobe製のツールで作ったデザインカンプを再現する案件では、全称セレクタですべての要素に `text-box-trim` を指定するのも選択肢です。すべての余白がハーフレディングを含まない前提になるので、カンプの数値をそのまま `margin` や `gap` に書けます。
 
+## 画像と並べた文章の上端をそろえる
+
+画像と文章を2カラムで横に並べるときは、文章の側の先頭の要素に `text-box-trim: trim-start` を指定して、画像の上端と文字の上端をそろえます。グリッドで画像と見出しを同じ行に置いても、見出しの1行目の上にはハーフレディングが残るので、文字の上端は画像の上端より下がります。28pxの見出しで `line-height` が1.4なら、1emを基準にして約5.6pxのずれです。見出しの文字が大きいほど、このずれは目立ちます。
+
+次の例では、HTMLを見出し、画像、本文の順に書き、狭い幅では縦に積みます。コンテナの幅が画像の列とテキストの列の最小幅を足した値を超えたら、`--_density` のフラグを `--spacious` に切り替え、画像を左の列の2行分に置きます。本文の行を `1fr` にしているので、見出しの行は見出しの高さだけになり、見出しが画像の上端の横に来ます。ハーフレディングを取り除くのは、見出しに付けた `.-trim-start` です。
+
+```html title="🙆‍♂ Recommended: 画像の横に来る見出しに .-trim-start を付ける"
+<article class="scoped media-text">
+  <div class="_body">
+    <h2 class="_heading -trim-start">見出し</h2>
+    <img class="_image" width="480" height="360" alt="" src="/* ... */">
+    <div class="_paragraphs">
+      <p>本文</p>
+    </div>
+  </div>
+</article>
+```
+
+```css title="🙆‍♂ Recommended: 2カラムで画像と文章を並べ、文章の先頭のハーフレディングを取り除く"
+@scope (.scoped.media-text) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    --_density: --compact;
+
+    display: block grid;
+    reading-flow: grid-rows;
+    grid-template:
+      "--heading"
+      "--image"
+      "--paragraphs";
+    gap: 1rlh 24px;
+
+    /* 画像の列 240px 相当・隙間 24px・テキストの列 240px 相当が並ぶ幅 */
+    @container --scoped (inline-size >= calc(240 / 16 * 1rem + 24px + 240 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      grid-template:
+        "--image --heading"
+        "--image --paragraphs" 1fr
+        / minmax(calc(240 / 16 * 1rem), 2fr) minmax(calc(240 / 16 * 1rem), 3fr);
+      align-content: start;
+    }
+
+    & > ._heading {
+      grid-area: --heading;
+    }
+
+    & > ._image {
+      grid-area: --image;
+    }
+
+    & > ._paragraphs {
+      grid-area: --paragraphs;
+    }
+  }
+
+  ._heading {
+    line-height: 1.4;
+  }
+}
+
+.-trim-start {
+  text-box-trim: trim-start;
+
+  &:lang(en) {
+    text-box-edge: cap alphabetic;
+  }
+}
+```
+
+次のデモでは、上の見出しにハーフレディングが残り、下の見出しは `.-trim-start` で取り除いています。2カラムの幅で比べると、下の見出しだけ、文字の上端が画像の上端と同じ高さにあります。狭い幅では見出しがコンポーネントの先頭に来るので、取り除いても見出しの上の余白が詰まるだけで、ほかの配置は変わりません。
+
+<Demo title="画像の横の見出しにハーフレディングが残った状態と、.-trim-start で取り除いた状態" html={mediaTextHtml} css={mediaTextCss} variant="neutral" />
+
+そろうのは、字面の上端ではなく、フォントの文字の領域の上端です。`text-box-edge` のデフォルト値の `auto` は、仕様では `text` として扱われ、上側は「text-over baseline」で切り取ります。これは、CSS 2で行内の要素の内容の領域の上端に使うフォントのアセントの位置です。和文フォントによっては、アセントが漢字の上端より上にあり、そのぶんの差が残ります。{/* 要確認: 出典なし */}それでも、行の高さで増えたハーフレディングのずれはなくなります。英文の見出しでは、`.-trim-start` が `text-box-edge: cap alphabetic` に切り替えるので、大文字の上端が画像の上端にそろいます。
+
+`trim-both` ではなく `trim-start` にするのは、そろえたいのが上端だけだからです。見出しの下のハーフレディングまで削ると、見出しと本文の間が `gap` で指定した値より狭く見えるようになります。テキストの列の下端は画像の下端とそろえる対象ではないので、残しておいて困ることはありません。
+
+`text-box-trim` は、ブロックの要素に指定すると、その中の最初の行に作用します。見出しと本文を1つの要素で包んでテキストの列にしている場合は、包んでいる要素に `trim-start` を付ければ、先頭の要素がどれでも上端がそろいます。ただし、包んでいる要素と最初の行の間に `padding` や `border` があると、何も削られません。`text-box-trim` に対応していない環境では、指定が無視され、見出しがハーフレディングのぶん下がるだけで、レイアウトは崩れません。
+
 ## ガイドライン
 
 <Guideline />
@@ -121,6 +206,8 @@ Adobe製のツールで作ったデザインカンプを再現する案件では
 - [line-height - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/line-height)
 - [text-box-trim - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-box-trim)
 - [text-box-edge - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-box-edge)
+- [CSS Inline Layout Module Level 3](https://drafts.csswg.org/css-inline-3/)（W3C Editor's Draft。`text-box-trim` と `text-box-edge` の定義）
+- [text-box-trim](https://codepen.io/tak-dcxi/pen/KwMzRyP)（CodePen。2カラムの画像とテキストの上端をそろえる例）
 - [Web Content Accessibility Guidelines (WCAG) 2.1 達成基準 1.4.8 視覚的提示](https://waic.jp/translations/WCAG21/#visual-presentation)（WAICによる日本語訳）
 - [Understanding SC 1.4.12: Text Spacing](https://www.w3.org/WAI/WCAG21/Understanding/text-spacing.html)（W3C）
 - [ウェブデザインにおけるline-heightについて](https://parashuto.com/rriver/development/line-height-in-web-design)（Rriver）

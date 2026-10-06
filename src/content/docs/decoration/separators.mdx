@@ -1,0 +1,187 @@
+---
+title: 16-6 区切り線を引く
+description: 並んだ要素の間の区切り線は、各要素の border ではなく、Grid と Flexbox の gap に描きます。gap decorations（column-rule と row-rule）は対応している環境だけで描き、未対応の環境では線がなくても成り立つようにするか、box-shadow で同じ位置に線を描きます。box-shadow の線には、強制カラーモードで outline に切り替える指定を添えます。
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import dotsHtml from '../../../demos/decoration/separator-dots/index.html?raw';
+import dotsCss from '../../../demos/decoration/separator-dots/style.css?raw';
+import linesHtml from '../../../demos/decoration/separator-lines/index.html?raw';
+import linesCss from '../../../demos/decoration/separator-lines/style.css?raw';
+import gridHtml from '../../../demos/decoration/bordered-grid/index.html?raw';
+import gridCss from '../../../demos/decoration/bordered-grid/style.css?raw';
+
+並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描きます。gap decorations（`column-rule` と `row-rule` をGridとFlexboxの `gap` に描く機能）を使えば、線は要素の間にだけ描かれ、折り返しや列数が変わっても行の端に余計な線が残りません。ただし、2026年10月の時点で対応しているのはChromeとEdgeだけです。
+
+そのため、gap decorationsは、線がなくても内容を読めて操作できる場面で、プログレッシブ・エンハンスメントとして使います。未対応の環境でも線が要るときは、`gap` を線の太さにして、各要素の `box-shadow` で同じ位置に線を描きます。
+
+## 要素の枠線で区切ると何が起きるか
+
+メニューの項目の間に縦線を入れるとき、各項目に `border-inline-end` を付け、最後の項目だけ `:last-child` で打ち消す書き方がよく使われます。1行に収まるあいだは、この書き方で項目の間にだけ線が引かれます。
+
+```css title="🙅‍♂ Not Recommended: 各項目の枠線を付け、最後の項目だけ打ち消す"
+/* 🙅‍♂ Not Recommended */
+.menu {
+  display: block flex;
+  flex-wrap: wrap;
+
+  & > li {
+    padding-inline: 24px;
+    border-inline-end: 1px solid oklch(70% 0 0deg);
+
+    &:last-child {
+      border-inline-end: none;
+    }
+  }
+}
+```
+
+この書き方は、項目が折り返すと崩れます。`:last-child` が選ぶのはメニュー全体の最後の項目だけなので、1行目の末尾に来た項目には線が残り、行の右端に区切る相手のいない線が引かれます。どの項目が行の末尾に来るかは、メニューの幅と文字の大きさで決まるので、セレクタでは選べません。
+
+グリッドでは、さらに問題が増えます。各セルに `border` を付けると、隣り合うセルの線が重なって、セルの間だけ線が2倍の太さになります。重なりを避けるために右と下の線だけを付け、行の末尾の列と最後の行で打ち消そうとしても、`auto-fill` で列の数が変わるグリッドでは、どのセルが末尾の列にあるのかが決まりません。表の `border-collapse` のように線を共有する仕組みは、表のレイアウトにしかありません（「[11-13 表を組む](/layout-practice/tables/)」）。
+
+どちらの問題も、2つの要素の間にある線を、片方の要素に持たせたことから起きています。要素の間の領域は `gap` なので、線も `gap` に描けば、行の端や空いたセルの扱いを要素ごとに考える必要がなくなります。
+
+## gap decorations で gap に線を描く
+
+gap decorationsは、マルチカラムの段の間に線を引く `column-rule` を、GridとFlexboxにも広げた機能です。列の間の線は `column-rule`、行の間の線は新しく加わった `row-rule` で描き、両方をまとめて `rule` で指定できます。線は `gap` の中央に描かれ、レイアウトには影響しません。
+
+線の長さは、`column-rule-inset` と `row-rule-inset` で両端を縮めて調整します（負の値なら延びます）。コンテナの縁などにある端（cap）と、ほかの線と交わる端（junction）は、`-cap` と `-junction` の付いたプロパティで別々に指定できます。Gridでは、交点で線を途切れさせるかを `*-rule-break` で、行と列の線のどちらを上に描くかを `rule-overlap` で決めます。空いたセルの隣に線を描くかは `*-rule-visibility-items` で決めます。
+
+Flexboxでは、列の間の線はフレックスラインごとに、その行の高さ（交差軸の大きさ）で描かれます。線は項目と項目の間の `gap` にだけ描かれるので、行の末尾の項目の後ろには線が引かれず、前の例の `:last-child` の問題は起きません。
+
+2026年10月の時点で、gap decorationsに対応しているのは、ChromeとEdgeの149以降だけです。FirefoxとSafariは対応していません。未対応の環境では、GridとFlexboxに指定した `column-rule` は無視され、線が描かれないだけで、レイアウトは変わりません。
+
+<Baseline id="gap-decorations" />
+
+Chromeのブログには、試験提供の時点（2025年6月）の記事もあります。その記事の `column-rule-offset` は `column-rule-inset` に、`gap-rule-paint-order` は `rule-overlap` に名前が変わりました（CSS Gaps Module Level 1）。プロパティの名前は、仕様とMDNで確かめます。
+
+## メニューに点の区切りを入れる
+
+最初の例は、フッターのリンクの間に丸い点を置くメニューです。リンクの並びは「[12-2 cluster](/compositions/cluster/)」（子を横に並べ、入りきらなければ折り返すコンポジション）に任せ、コンポーネントは `ul` に区切りの点だけを描きます。点は `column-rule` の線を短く縮めて作るので、HTMLに区切りの文字を書く必要がありません。
+
+```css title="🙆‍♂ Recommended: 点線の線を1つの点の長さまで縮め、行の中央に置く"
+@scope (.scoped.footer-links) to (.scoped) {
+  ul {
+    --_separator-size: 1ex;
+
+    column-rule: var(--_separator-size) dotted oklch(60% 0 0deg);
+    column-rule-inset: calc((1lh - var(--_separator-size)) / 2);
+    font-size: calc(14 / 16 * 1rem);
+  }
+}
+```
+
+<Demo title="対応している環境では、リンクの間に丸い点が入る" html={dotsHtml} css={dotsCss} widths={[320, 480, 768]} />
+
+`dotted` の線は、線の太さと同じ大きさの点の並びとして描かれます。線の太さを `1ex` にし、`column-rule-inset` で上下の端を「行の高さ（`1lh`）から点の大きさを引いた残りの半分」ずつ縮めます。線の長さが点1つ分になり、行の中央に丸い点が1つだけ残ります（2026年10月、Chrome 152で確認）。点の大きさを `ex` で決めているのは、点が区切りの文字「・」の代わりなので、文字の大きさに比例させるためです。
+
+この例では、`@supports` を書いていません。未対応の環境では `column-rule` が無視され、点のないリンクの並びになるだけで、リンクの間隔は `cluster` の `gap` で保たれるからです。元にした私のCodePenでは点の大きさを列の間隔に足していますが、本書では間隔を `cluster` に任せ、リンクの位置を環境によらずそろえています。
+
+この方法は、各項目が1行に収まることを前提にしています。項目の中で文字が折り返すと、フレックスラインの高さが2行分になり、縮めたあとの線に点が2つ以上並びます。項目の文言が長いメニューでは、点ではなく次の例の縦線を使います。
+
+## メニューに縦線を入れる
+
+次の例は、グローバルナビゲーションの項目の間に縦線を入れるメニューです。gap decorationsに対応している環境では、列の間隔を線の太さ（1px）にして `column-rule` で線を描き、項目の間の余白は各項目の `padding` で取ります。未対応の環境でも線を見せるために、各項目の `box-shadow` で同じ位置に線を描きます。
+
+```css title="🙆‍♂ Recommended: 列の間隔を線の太さにし、未対応の環境では box-shadow で同じ位置に線を描く"
+@scope (.scoped.global-nav) to (.scoped) {
+  ul {
+    --_rule-width: 1px;
+    --_rule-color: oklch(70% 0 0deg);
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: 8px var(--_rule-width);
+    column-rule: var(--_rule-width) solid var(--_rule-color);
+    overflow: clip;
+  }
+
+  li {
+    padding-block: 8px;
+    padding-inline: 24px;
+
+    @supports not (column-rule-inset: 0) {
+      clip-path: inset(0 -100%);
+      box-shadow: 0 0 0 var(--_rule-width) var(--_rule-color);
+
+      @media (forced-colors: active) {
+        outline: var(--_rule-width) solid;
+      }
+    }
+  }
+}
+```
+
+<Demo title="列の間隔に縦線を描く。未対応の環境では box-shadow で描く" html={linesHtml} css={linesCss} widths={[320, 480, 768]} />
+
+未対応の環境では、各項目の周りに線の太さだけ広げた `box-shadow` を描き、`clip-path: inset(0 -100%)` で上下だけを切り取ります。影の左右の端が縦線として残ります。列の間隔は線の太さと同じなので、隣り合う項目の影は `gap` の中でぴったり重なり、1本の線に見えます。行の先頭の項目の左側の線は、`ul` の外にはみ出すので、`ul` の `overflow: clip` で隠します。
+
+`box-shadow` の方法は、行の末尾の項目の右側にも線を描きます。メニューが折り返して行の末尾が `ul` の右端に届かないと、その線は隠れずに残ります。そのため、`box-shadow` は `@supports not` の中に書き、gap decorationsに対応している環境では描きません。条件に `column-rule` を使えない理由は、「補足と注意点」で説明します。
+
+項目の `padding` は、リンクのフォーカスリングを守る役割も持ちます。`clip-path` と `overflow: clip` は、項目と `ul` からはみ出したものを切り取ります。ベーススタイルのフォーカスリングはリンクの外側6pxまで描かれる（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）ので、上下左右の余白を6px以上取り、リングを項目の内側に収めています。
+
+## セルに枠線のあるグリッド
+
+3つ目の例は、すべてのセルを枠線で囲むグリッドです。各セルの `border` では隣り合う線が2倍の太さになるので、`gap` と外側の `padding` を線の太さにそろえ、各セルの周りに線の太さだけ広げた `box-shadow` を描きます。
+
+```css title="🙆‍♂ Recommended: gap と padding を線の太さにし、各セルの box-shadow を gap の中で重ねる"
+@scope (.scoped.feature-grid) to (.scoped) {
+  :scope {
+    --_rule-width: 1px;
+    --_rule-color: oklch(70% 0 0deg);
+
+    display: block grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(calc(240 / 16 * 1rem), 100%), 1fr));
+    gap: var(--_rule-width);
+    padding: var(--_rule-width);
+  }
+
+  li {
+    padding: 24px;
+    box-shadow: 0 0 0 var(--_rule-width) var(--_rule-color);
+
+    @media (forced-colors: active) {
+      outline: var(--_rule-width) solid;
+    }
+  }
+}
+```
+
+<Demo title="セルの影を gap の中で重ね、1本の枠線に見せる" html={gridHtml} css={gridCss} widths={[320, 600, 960]} />
+
+隣り合うセルの影は、線の太さと同じ幅の `gap` の中で重なるので、線は1本の太さのままです。外周の線はコンテナの `padding` の中に描かれ、`box-shadow` はボックスの大きさに含まれないので、セルの寸法も変わりません。各セルは自分の周りに線を描くだけなので、列の数が変わっても、末尾の列や最後の行を選ぶセレクタは要りません。
+
+この例では、gap decorationsを使っていません。gap decorationsは `gap` の中にしか線を描かないので、外周の線はコンテナの `border` で別に描きます。さらに、最後の行の空いた位置の扱いを `*-rule-visibility-items` で決める必要があります。セルを1つずつ囲むデザインなら、すべてのブラウザで同じ表示になる `box-shadow` のほうが、書く量も少なくなります。
+
+列の数と間隔は、「[12-6 grid](/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）には任せず、コンポーネントに書いています。この例の `gap` は線の太さそのもので、レイアウトの間隔ではなく線の描き方の一部だからです。前の例のメニューで `cluster` を使わずに `gap` を書いたのも、同じ理由です。
+
+## 補足と注意点
+
+gap decorationsに対応しているかを `@supports` で判定するときは、条件に `column-rule` を使いません。`column-rule` はマルチカラムのプロパティとして、FirefoxとSafariも以前から対応しているので、`@supports (column-rule: 1px solid)` は未対応の環境でも真になります。条件には、`column-rule-inset` のような、gap decorationsで加わったプロパティを書きます。
+
+強制カラーモードでは、`box-shadow` が `none` になり、影で描いた線は消えます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)」）。そこで、2つ目と3つ目の例では、`@media (forced-colors: active)` の中で同じ太さの `outline` を描いています。`outline` は広げた影と同じく、ボックスの外側に描かれるので、線の位置は変わりません。2つ目の例では、`outline` も `clip-path` で上下を切り取られ、縦線だけが残ります（2026年10月、Chrome 152で確認）。`outline-color` はシステムカラーに置き換わるので、色は指定しません。{/* 要確認: Firefox の強制カラーモードで、outline に置き換えた線の表示を確認していない */}
+
+gap decorationsの線の色は、`column-rule-color` が強制カラーモードで置き換わるプロパティに含まれているので、システムカラーで描かれます。{/* 要確認: row-rule-color が強制カラーモードで置き換わるか */}1つ目の例の点も、強制カラーモードではシステムカラーの点として残ります。
+
+gap decorationsを使ったら、その宣言を開発者ツールで外し、未対応の環境での見え方を確かめます（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/#rule-verify-fallback-by-removal)」）。点の区切りのように、線がなくても間隔で区切りが読み取れるなら、そのまま使えます。線がないと境界が分からないデザインなら、`box-shadow` で線を描いておき、gap decorationsは対応している環境での改善として足します。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [box-shadow column-rule](https://codepen.io/tak-dcxi/pen/dPGJmPP)（CodePen）
+- [Rounded List Separator](https://codepen.io/editor/tak-dcxi/pen/019d15f3-63c4-75fb-a230-aa169e8cb185)（CodePen）
+- [grid + border-collapse](https://codepen.io/tak-dcxi/pen/NPxdgag)（CodePen）
+- [CSS Gaps Module Level 1](https://drafts.csswg.org/css-gaps-1/)（Editor's Draft、2026年9月9日）
+- [Gap decorations: Now available in Chromium](https://developer.chrome.com/blog/gap-decorations-stable)（Chrome for Developers、2026年5月）
+- [CSS でギャップのスタイルを設定する新しい方法](https://developer.chrome.com/blog/gap-decorations?hl=ja)（Chrome for Developers、2025年6月。試験提供の時点の記事で、プロパティの名前が現在の仕様と異なります）
+- [column-rule - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-rule)
+- [column-rule-inset-cap - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-rule-inset-cap)
+- [rule-visibility-items - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/rule-visibility-items)

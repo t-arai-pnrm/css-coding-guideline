@@ -1,0 +1,36 @@
+@layer tokens {
+  :root {
+    --spacing--xxs: 8;
+    --spacing--lg: 32;
+  }
+}
+
+@layer compositions {
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.footer-links) to (.scoped) {
+    ul {
+      --_separator-size: 1ex;
+
+      column-rule: var(--_separator-size) dotted oklch(60% 0 0deg);
+      column-rule-inset: calc((1lh - var(--_separator-size)) / 2);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 ---
 title: 16-5 輪郭と枠線を描く
-description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で、グラデーションの枠線は background-clip の border-area で描きます。どの環境でもグラデーションの枠線が必要なときと、ドーナツグラフは、擬似要素とマスクで描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
+description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で描き、吹き出しの枠線は同じ輪郭を border-shape に渡して対応した環境だけに足します。グラデーションの枠線は background-clip の border-area で描きます。どの環境でもグラデーションの枠線が必要なときと、ドーナツグラフは、擬似要素とマスクで描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
 sidebar:
   order: 5
 ---
@@ -16,6 +16,8 @@ import gradientBorderMaskHtml from '../../../demos/decoration/gradient-border-ma
 import gradientBorderMaskCss from '../../../demos/decoration/gradient-border-mask/style.css?raw';
 import donutHtml from '../../../demos/decoration/donut-chart/index.html?raw';
 import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
+import balloonHtml from '../../../demos/decoration/balloon-shape/index.html?raw';
+import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 要素の輪郭は `clip-path` の `shape()` で、枠線の塗りは `background-clip: border-area` で描きます。どちらも、以前は複数の擬似要素やマスクの重ね合わせで作っていた形を、1つか2つの宣言で書けるようにする機能です。`shape()` はすべての主要なブラウザが対応していますが、`border-area` は対応が分かれています。
 
@@ -86,9 +88,52 @@ import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 
 ### 吹き出しの枠線と border-shape
 
-吹き出しも、本体と三角の尻尾を1つの `shape()` で描けば、擬似要素を使わずに作れます。ただし、`clip-path` は要素の描画を切り抜くだけなので、枠線を付けると、尻尾の部分と下の辺の枠線が切り落とされます（2026年10月、Chrome 152で確認）。そのため、`clip-path` で作る吹き出しは、枠線のない塗りだけのデザインに向いています。
+吹き出しも、本体としっぽを1つの `shape()` で描けば、擬似要素を使わずに作れます。ただし、`clip-path` は要素の描画を切り抜くだけなので、ふつうの `border` を付けると、しっぽの部分と下の辺の枠線が切り落とされます（2026年10月、Chrome 152で確認）。枠線を輪郭に沿わせるには、要素の枠線そのものを図形の関数で指定する `border-shape` を使います。`border-shape` に対応しているのはChrome 147以降だけなので、輪郭は `clip-path` で描き、枠線だけを `@supports` で足します（2026年10月確認）。
 
-枠線のある吹き出しには、`border-shape` が使えるようになる見込みです。`border-shape` は、要素の枠線そのものを図形の関数で指定するプロパティです。枠線と影は、指定した輪郭に沿って描かれます。私は、吹き出しに枠線を付けるときに重宝しそうだと考えています。ただし、対応しているのはChrome 147以降だけなので、いまは対応状況を見守る段階です（2026年10月確認）。
+```css title="🙆‍♂ Recommended: 輪郭を1つのカスタムプロパティにして、clip-path と border-shape で共有する"
+@scope (.scoped.balloon) to (.scoped) {
+  :scope {
+    --_padding-block: var(--balloon--padding-block, 24px);
+    --_radius: var(--balloon--radius, 12px);
+    --_arrow-half-width: calc(var(--balloon--arrow-width, 24px) / 2);
+    --_arrow-height: calc(var(--_arrow-half-width) * tan(60deg)); /* 正三角形の高さ */
+    --_arrow-position: var(--balloon--arrow-position, 50%);
+    --_shape: shape(
+      from var(--_radius) 0,
+      hline to calc(100% - var(--_radius)),
+      curve to right var(--_radius) with right top,
+      vline to calc(100% - (var(--_radius) + var(--_arrow-height))),
+      curve to calc(100% - var(--_radius)) calc(100% - var(--_arrow-height)) with right calc(100% - var(--_arrow-height)),
+      hline to calc(var(--_arrow-position) + var(--_arrow-half-width)),
+      line by calc(var(--_arrow-half-width) * -1) var(--_arrow-height),
+      line by calc(var(--_arrow-half-width) * -1) calc(var(--_arrow-height) * -1),
+      hline to var(--_radius),
+      curve to left calc(100% - (var(--_radius) + var(--_arrow-height))) with left calc(100% - var(--_arrow-height)),
+      vline to var(--_radius),
+      curve to var(--_radius) top with left top,
+      close
+    );
+
+    clip-path: var(--_shape);
+    padding-block: var(--_padding-block) calc(var(--_padding-block) + var(--_arrow-height));
+    padding-inline: 24px;
+    background-color: var(--background--base);
+
+    @supports (border-shape: shape(from 0 0, hline to 0)) {
+      border: 4px solid var(--color--accent--300);
+      border-shape: var(--_shape);
+    }
+  }
+}
+```
+
+<Demo title="Chrome 147以降では枠線が輪郭に沿い、未対応の環境では塗りだけの吹き出しになる" html={balloonHtml} css={balloonCss} />
+
+輪郭は、左上の角丸の終わりから時計回りに一周します。右下の角丸のあと、しっぽの右端まで下の辺を戻り、`line by` でしっぽの先端へ下りてから、しっぽの左端へ上がります。しっぽの位置 `--_arrow-position` は、しっぽの中心を本体の左端からの距離で指定します。`shape()` の値は、`--_shape` という1つのカスタムプロパティに入れ、`clip-path` と `border-shape` の両方から参照します。同じ輪郭を2か所に書くと、片方だけを直したときに、枠線と塗りの形がずれるからです。
+
+しっぽは正三角形にしています。高さは、幅の半分に `tan(60deg)` を掛けた値です。正三角形の底辺の半分と高さは、60度の角をはさむ直角三角形の2辺なので、この比になります。しっぽは本体の下の `padding` の中に描くので、下の `padding` には、しっぽの高さを足します。足さないと、本体の下の辺が `padding` の内側へ上がり、本文の下の余白が、しっぽの高さの分だけ狭くなります。
+
+`border-shape` に対応した環境では、枠線と背景が `border-shape` の輪郭に沿って描かれます（2026年10月、Chrome 152で確認）。`clip-path` を外しても見た目はほぼ変わりませんが、未対応の環境で形を作るのは `clip-path` なので、両方を書きます。未対応の環境では、`@supports` の中の `border` も使われないので、枠線のない塗りだけの吹き出しになります。`border` を `@supports` の外に書くと、しっぽと下の辺の枠線だけが切り落とされた、欠けた枠になります。
 
 <Baseline id="border-shape" name="border-shape" />
 
@@ -279,6 +324,7 @@ import donutCss from '../../../demos/decoration/donut-chart/style.css?raw';
 
 - [Rounded Tab](https://codepen.io/tak-dcxi/pen/MYaaQwv)（CodePen、2025年7月）
 - [Gradient Border](https://codepen.io/tak-dcxi/pen/MYevZzb)（CodePen）
+- [balloon(border-shape)](https://codepen.io/tak-dcxi/pen/gbwrRjq)（CodePen。`shape()` を共有する吹き出し）
 - [shape() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/basic-shape/shape)
 - [border-shape - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-shape)
 - [background-clip - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/background-clip)

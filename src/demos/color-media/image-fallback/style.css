@@ -1,8 +1,8 @@
 @layer pages {
-  @scope (.scoped.hero-demo) to (.scoped) {
+  @scope (.scoped.image-fallback-demo) to (.scoped) {
     :scope {
       display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
       gap: 16px;
     }
 
@@ -19,14 +19,21 @@
 }
 
 @layer components {
-  @scope (.scoped.hero-header) to (.scoped) {
+  /**
+   * 画像の上に文字を載せるバナー。画像が表示されなければ、文字色と対比する背景色が見える。
+   *
+   * @prop {color} --image-banner--foreground [oklch(100% 0 0deg)] - 文字色
+   */
+  @scope (.scoped.image-banner) to (.scoped) {
     :scope {
       display: block grid;
       grid-template-areas: "--pile";
       overflow: clip;
       border-radius: 8px;
+
+      /* 文字色が白なら黒、濃い色なら白になる。未対応の環境では背景色が付かない */
       background-color: contrast-color(currentColor);
-      color: oklch(100% 0 0deg);
+      color: var(--image-banner--foreground, oklch(100% 0 0deg));
     }
 
     img,
@@ -45,12 +52,12 @@
     ._body {
       display: block grid;
       gap: 4px;
-      padding-block: 64px 24px;
+      padding-block: 48px 24px;
       padding-inline: 24px;
     }
 
     ._title {
-      font-size: calc(24 / 16 * 1rem);
+      font-size: calc(20 / 16 * 1rem);
     }
   }
 }

@@ -1,0 +1,51 @@
+@layer pages {
+  @scope (.scoped.balloon-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(280 / 16 * 1rem)), 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.balloon) to (.scoped) {
+    :scope {
+      --_padding-block: var(--balloon--padding-block, 24px);
+      --_padding-inline: var(--balloon--padding-inline, clamp(16px, 5%, 32px));
+      --_border-width: var(--balloon--border-width, 4px);
+      --_border-color: var(--balloon--border-color, oklch(72% 0.08 20deg));
+      --_radius: var(--balloon--radius, 12px);
+      --_arrow-half-width: calc(var(--balloon--arrow-width, 24px) / 2);
+      --_arrow-height: calc(var(--_arrow-half-width) * tan(60deg)); /* 正三角形の高さ */
+      --_arrow-position: var(--balloon--arrow-position, 50%);
+      --_shape: shape(
+        from var(--_radius) 0,
+        hline to calc(100% - var(--_radius)),
+        curve to right var(--_radius) with right top,
+        vline to calc(100% - (var(--_radius) + var(--_arrow-height))),
+        curve to calc(100% - var(--_radius)) calc(100% - var(--_arrow-height)) with right calc(100% - var(--_arrow-height)),
+        hline to calc(var(--_arrow-position) + var(--_arrow-half-width)),
+        line by calc(var(--_arrow-half-width) * -1) var(--_arrow-height),
+        line by calc(var(--_arrow-half-width) * -1) calc(var(--_arrow-height) * -1),
+        hline to var(--_radius),
+        curve to left calc(100% - (var(--_radius) + var(--_arrow-height))) with left calc(100% - var(--_arrow-height)),
+        vline to var(--_radius),
+        curve to var(--_radius) top with left top,
+        close
+      );
+
+      clip-path: var(--_shape);
+      padding-block: var(--_padding-block) calc(var(--_padding-block) + var(--_arrow-height));
+      padding-inline: var(--_padding-inline);
+      background-color: oklch(96% 0.02 20deg);
+      color: oklch(25% 0.02 20deg);
+
+      @supports (border-shape: shape(from 0 0, hline to 0)) {
+        border: var(--_border-width) solid var(--_border-color);
+        border-shape: var(--_shape);
+      }
+    }
+  }
+}

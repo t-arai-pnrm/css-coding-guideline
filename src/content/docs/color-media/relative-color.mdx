@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import derivedHtml from '../../../demos/color-media/derived-colors/index.html?raw';
 import derivedCss from '../../../demos/color-media/derived-colors/style.css?raw';
+import toastHtml from '../../../demos/color-media/toast-palette/index.html?raw';
+import toastCss from '../../../demos/color-media/toast-palette/style.css?raw';
 
 透過させた色や明度を変えた色は、元の色から作ります。1つの色の不透明度や明度だけを変えるときは、`oklch(from var(--color) l c h / 10%)` のような相対カラー構文で書きます。背景色と文字色の中間のように、2つの色の間の色は `color-mix()` で作ります。
 
@@ -129,6 +131,45 @@ import derivedCss from '../../../demos/color-media/derived-colors/style.css?raw'
 
 相対カラー構文は、変える成分を名前で書けることも利点です。`calc(l - 0.1)` なら明度を下げたことが、`/ 10%` なら不透明度を変えたことが読み取れます。`color-mix()` で黒を混ぜると、明度と一緒に彩度も下がるので、意図が「暗くする」なのか「くすませる」なのかが書き方から分かりません。
 
+## 文字色1つからトーストの配色を作る
+
+相対カラー構文と `color-mix()` を組み合わせると、1つの色からコンポーネントの配色をまとめて作れます。保存の完了や失敗を知らせるトーストを例にします。トーストに渡すのは文字色だけで、枠線と背景の色は文字色から作ります。
+
+枠線の色は `currentColor` にして、文字色と同じにします。背景の色は、文字色と、文字色に対比する白か黒を `color-mix()` で混ぜ、文字色を10%だけ残した色にします。対比する白か黒は `oklch(from var(--_foreground) sign(0.7 - l) 0 h)` で作り、文字色の明度が0.7より低ければ白に、0.7以上なら黒になります。この書き方は「[15-3 背景から文字色を決める](/color-media/contrast-text/)」で、背景色から文字色を選ぶ方法として説明しています。ここでは向きを逆にして、文字色から背景の色を選んでいます。
+
+```css title="🙆‍♂ Recommended: 文字色から、枠線と背景の色を作る"
+@scope (.scoped.toast) to (.scoped) {
+  :scope {
+    --_foreground: var(--toast--foreground, oklch(45% 0.12 250deg));
+    --_contrast: oklch(from var(--_foreground) sign(0.7 - l) 0 h);
+
+    padding: 16px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    background-color: color-mix(in oklab, var(--_foreground), var(--_contrast) 90%);
+    color: var(--_foreground);
+
+    &[data-variant="success"] {
+      --_foreground: oklch(45% 0.12 150deg);
+    }
+
+    &[data-variant="error"] {
+      --_foreground: oklch(48% 0.15 25deg);
+    }
+  }
+}
+```
+
+文字色が濃ければ、背景は白寄りの淡い色になります。文字色が明るければ対比色は黒になり、背景は黒寄りの暗い色になります。どちらの場合も、背景の明度は文字色から離れる向きに決まります。
+
+成功や失敗のような種類は、`data-variant` 属性のセレクタで内部プロパティの `--_foreground` を書き換えます。種類にない色を使いたいときは、`style` 属性で公開プロパティの `--toast--foreground` を渡します。どちらの場合も書き換えるのは文字色の1つだけで、枠線と背景の色を種類ごとに書く必要はありません。なお、`data-variant` 属性を付けた要素では、種類の色が公開プロパティより優先されます。種類の宣言が `--_foreground` を上書きするからです。
+
+<Demo title="文字色を1つ変えるだけで、枠線と背景の色が変わる" html={toastHtml} css={toastCss} />
+
+1つ目は既定の色、2つ目と3つ目は `data-variant` 属性で種類を選んだトーストです。4つ目は `style` 属性で明るい黄色を渡した例で、対比色が黒に変わり、背景が暗くなります。
+
+背景の色を文字色から作るので、文字色を変えるとコントラスト比も変わります。デモの濃い3色は、文字色と背景のコントラスト比が計算上およそ6:1で、WCAGのAAの基準（4.5:1）を満たします。一方、明度が0.65のオレンジのように閾値の0.7をわずかに下回る色を渡すと、背景は白に近くなり、コントラスト比は3:1ほどに下がります。種類の色を決めるときと、公開プロパティで色を渡すときは、文字色と背景の組み合わせでコントラスト比を確かめます。
+
 ## コード例とデモ
 
 次のデモでは、3枚のカードの元の色だけを変えています。背景、枠線、バッジの色は、それぞれのカードの元の色から相対カラー構文で作っています。
@@ -157,6 +198,7 @@ import derivedCss from '../../../demos/color-media/derived-colors/style.css?raw'
 - [CSS Relative Colors](https://ishadeed.com/article/css-relative-colors/)（Ahmad Shadeed。相対カラー構文の使い道。記事は `hsl()` と `rgb()` の例も挙げていますが、本書は `oklch()` で書きます）
 - [えっ！？まだ色の指定でrgba()関数を使っているの！？](https://www.tak-dcxi.com/article/rgba-function-is-legacy-syntax/)（TAKLOG、2024年5月。`color-mix()` の補間の色空間などが本書と異なります）
 - [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。ホバーの色を `color-mix()` で作る例）
+- [toast](https://codepen.io/tak-dcxi/pen/XJdOWpK)（CodePen。文字色1つから、相対カラー構文と `color-mix()` でトーストの枠線と背景の色を作る例）
 - [相対色の使用 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_colors/Relative_colors)
 - [alpha() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/alpha)
 - [color-mix() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color-mix)

@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.24.0
+- バージョン: 0.25.0
 - 生成日: 2026-10-06
-- ルールの数: 556
+- ルールの数: 567
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -870,6 +870,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 元の色を1か所直すだけで派生させた色も追従し、元の色との関係がコードに残るため。
   - 補足: `--color-primary-rgb: 228 161 83` のような、`rgb()` で不透明度を付けるためだけのトークンは作りません。
   - 詳細: 15-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
+- 【推奨】画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、`background-color: contrast-color(currentColor)` で文字色から決める。（`contrast-color-for-image-fallback`）
+  - 理由: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color()` に未対応の環境では背景色が付かないだけで、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱えるため。
+  - 補足: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x の計算が読みにくいほうを選ぶ中間の明度の色は、ふつう渡されません。
+  - 詳細: 15-3 背景から文字色を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/contrast-text.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
   - 理由: 配色の切り替えがトークンの定義にまとまり、ダーク用の値の書き忘れや、色の散らばりを防げるため。
   - 詳細: 15-4 ダークモード（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/dark-mode.mdx）
@@ -909,6 +913,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
   - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
   - 詳細: 16-2 アイコン・SVG・マスク（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/icons-and-masks.mdx）
+- 【推奨】行ごとに背景や枠線を敷く装飾は、インラインの要素に `-webkit-box-decoration-break: clone` と `box-decoration-break: clone` を併記して描く。（`inline-decoration-clone-with-prefix`）
+  - 理由: 初期値の `slice` では折り返した位置の `padding` と枠線がなくなり、Safari は接頭辞付きの宣言にしか対応していないため。
+  - 補足: 上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。
+  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨】`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。（`corner-shape-guard-when-broken`）
   - 理由: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
   - 補足: 錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。
@@ -925,6 +933,20 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: `border-area` なら2つの宣言で描けて形がコードから読み取れ、装飾の枠線は単色でも境界を示せるため。
   - 補足: マスクの書き方では、ルートに `position: relative` と `isolation: isolate` を指定し、擬似要素を `z-index: var(--z--backwards)` で背面に回して、ルートの `padding` に枠線の太さを足します。`contain: content` でも配置の基準とスタッキングコンテキストは作れますが、はみ出した子孫の影やポップアップが切り取られます。
   - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+- 【推奨】吹き出しのように枠線を輪郭に沿わせる形は、`shape()` を1つのカスタムプロパティに入れて `clip-path` と `border-shape` で共有し、`border` と `border-shape` は `@supports (border-shape: …)` の中に書く。（`shared-shape-for-border-shape`）
+  - 理由: 同じ輪郭を2か所に書くと片方だけ直したときに塗りと枠線がずれ、`@supports` の外の `border` は未対応の環境で `clip-path` に切り落とされて欠けた枠になるため。
+  - 補足: しっぽの高さは `半幅 * tan(60deg)` で正三角形にし、下の `padding` にしっぽの高さを足します。
+  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+- 【推奨】並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描く。（`separators-in-gap`）
+  - 理由: 折り返しや列数の変化で行の末尾に来る要素はセレクタで選べず、要素に線を持たせると、行の端に区切る相手のいない線が残ったり、隣り合う線が二重になったりするため。
+  - 補足: gap decorations（`column-rule`、`row-rule`）を使うか、`gap` を線の太さにして各要素の `box-shadow` を重ねます。表の枠線は `border-collapse` で共有します（11-13）。
+  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+- 【非推奨】区切り線のために各要素に `border` を付け、`:last-child` や `:nth-child()` で末尾の要素の `border` を打ち消さない。（`no-last-child-border-reset`）
+  - 理由: 打ち消せるのは並び全体の最後の要素だけで、折り返した行の末尾や、列数が変わるグリッドの末尾の列には線が残るため。
+  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+- 【必須】gap decorations の対応を `@supports` で判定するときは、`column-rule` ではなく `column-rule-inset` のような gap decorations で加わったプロパティを条件にする。（`gap-decorations-supports-condition`）
+  - 理由: `column-rule` はマルチカラムのプロパティとしてすべてのブラウザが対応しているので、gap decorations に未対応の環境でも条件が真になるため。
+  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 - 【必須】ホバーのスタイルは、リンクなら `&:any-link:hover`、ボタンやフォームのコントロールなら `&:enabled:hover` のように操作できる状態に限定し、`@media (any-hover)` の中に書く。（`hover-operable-in-any-hover`）
   - 理由: `href` のない現在のページのリンクや無効にしたボタンが押せるかのように反応するのと、タッチ操作の端末でホバーの状態が残り続けるのを防ぎつつ、タブレットにマウスをつないだ場合のように、ホバーできる入力がひとつでもあればホバーを有効にできるため。
   - 補足: 条件は `(any-hover: hover)` と値まで書かず、`(any-hover)` と書きます。値なしの `(any-hover)` は、値が `none` のときだけ偽になるので、`(any-hover: hover)` と同じ意味です。`(hover: hover)` や画面の幅では判定しません。`<summary>` と `<label>` には無効の状態がないので、`:hover` に操作できる状態の条件を付けません。
@@ -1511,6 +1533,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【非推奨】フォーカスできる要素や、順番に意味のある要素を並べた Flexbox で、`order` や `row-reverse`・`column-reverse` によって見た目の順番を入れ替えない。（`flexbox-no-visual-reorder`）
   - 理由: 読み上げの順番とキーボードでフォーカスが移る順番は HTML の順番のままなので、見た目の順番と食い違うため。
   - 補足: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、2026年10月の時点で Baseline ではありません。それでも並べ替えるときは、ルール `reading-flow-when-reordered` に従って `reading-flow` を指定します。
+  - 詳細: 7-6 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
+- 【推奨】2カラムのどちらを先に縮めるかを決めるときは、先に縮める列に `flex-shrink: 9999` のような大きな値と `min-inline-size` を指定し、もう一方の列に `flex-shrink: 0` を指定しない。（`large-flex-shrink-for-shrink-order`）
+  - 理由: 不足は `flex-shrink` と `flex-basis` の積の比で配られるので、大きな値の列がほぼすべてを受け持ち、最小幅に届いてから残りがもう一方に配られるため。`flex-shrink: 0` はどの幅でも縮まなくなり、狭い幅ではみ出す。
+  - 補足: 縦に積む切り替えは、コンテナサイズクエリや `sidebar` の折り返しで別に行います。
   - 詳細: 7-6 Flexboxの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/flexbox-basics.mdx）
 - 【推奨】アイテムの数で行数が変わるグリッドでは、`grid-template-rows` で行を決めず、`grid-auto-rows` で暗黙の行の大きさを決める。（`grid-auto-rows-for-item-count`）
   - 理由: 明示的な行の数を超えたアイテムは暗黙の行に入り、`grid-template-rows` の大きさが当てはまらず、行の高さが途中から変わるため。
@@ -2648,6 +2674,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: `line-height` を小さくせずに、1行目の上と最後の行の下の余白だけを削れるため。
   - 補足: 和文に `cap alphabetic` を使うと詰まりすぎます。対象のすべてのブラウザが対応しているので、フォールバックは書きません。
   - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
+- 【推奨】画像と文章を2カラムで横に並べるときは、文章の側の先頭の要素に `text-box-trim: trim-start` を指定し、画像の上端と文字の上端をそろえる。（`trim-start-beside-media`）
+  - 理由: 1行目の上のハーフレディングがなくなり、行の高さを変えずに、文字の上端が画像の上端と同じ高さになるため。
+  - 補足: `trim-both` にすると、見出しと本文の間が `gap` より狭く見えます。英文では `text-box-edge: cap alphabetic` にします。
+  - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
 - 【推奨】和文の見出しには、`@supports (word-break: auto-phrase)` の中で `word-break: auto-phrase` と `text-wrap: balance` を指定する。（`auto-phrase-for-headings`）
   - 理由: 文節の区切りで折り返し、各行の長さもそろうので、見出しが読みやすくなるため。
   - 補足: 2026年9月の時点で対応しているのは Chrome 系のブラウザだけで、ほかのブラウザでは通常の折り返しになります。英文の見出しには `text-wrap: balance` を指定します。
@@ -2709,9 +2739,17 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 背景色と文字色の中間のように、2つの色の関係で決まる色を、両方の色の変化に追従させられるため。
   - 補足: `currentColor` に不透明度を付けるときは、`color-mix(in oklab, currentColor 60%, transparent)` のように透明と混ぜます。
   - 詳細: 15-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
-- 【推奨】背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書く。（`prefer-sign-over-contrast-color`）
-  - 理由: `oklch(from var(--_background) sign(0.7 - l) 0 h)` のように1行で書け、閾値を自分で決められるため。`contrast-color()` は WCAG 2.x のコントラスト比で白か黒を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあるため。
-  - 補足: `contrast-color()` の計算が APCA のような知覚にもとづくアルゴリズムに変わるまでは、使うのを控えます。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限り、選ばれた色のコントラスト比は実際の組み合わせで確かめます。閾値の0.7は、WCAG 2.x で白と黒のコントラスト比が等しくなる明度（約0.56）ではなく、APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。
+- 【推奨】種類ごとに色が変わるコンポーネントは、元の色1つを内部プロパティで差し替え、枠線は `currentColor`、背景は元の色と `sign()` で作った対比色を `color-mix()` で混ぜて作る。（`variant-palette-from-one-color`）
+  - 理由: 種類を足すときに書くのが色1つで済み、枠線や背景の色を種類ごとに持たずに済むため。
+  - 補足: 種類は `data-variant` 属性で、種類にない色は公開プロパティ（`--toast--foreground`）で渡します。文字色と背景の組み合わせごとにコントラスト比を確かめます。
+  - 詳細: 15-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
+- 【推奨】背景色から文字色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書く。（`prefer-sign-over-contrast-color`）
+  - 理由: `contrast-color()` に対応していない Safari 18系（本書の対象のブラウザに含まれる）では `color` の宣言が無効になり、継承した文字色が背景に溶け込むため。また `contrast-color()` は WCAG 2.x のコントラスト比で白か黒を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあり、閾値や色味を変えられないため。
+  - 補足: `oklch(from var(--_background) sign(0.7 - l) 0 h)` のように1行で書けます。Safari 18系を対象から外したあとも、閾値を自分で決めたい場合や、黒と白の代わりに色味のある色を使いたい場合は `sign()` で書きます。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限り、選ばれた色のコントラスト比は実際の組み合わせで確かめます。閾値の0.7は、WCAG 2.x で白と黒のコントラスト比が等しくなる明度（約0.56）ではなく、APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。画像が表示されなかった場合の背景色は、`contrast-color-for-image-fallback` を参照してください。
+  - 詳細: 15-3 背景から文字色を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/contrast-text.mdx）
+- 【推奨】画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、`background-color: contrast-color(currentColor)` で文字色から決める。（`contrast-color-for-image-fallback`）
+  - 理由: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color()` に未対応の環境では背景色が付かないだけで、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱えるため。
+  - 補足: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x の計算が読みにくいほうを選ぶ中間の明度の色は、ふつう渡されません。
   - 詳細: 15-3 背景から文字色を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/contrast-text.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
   - 理由: 配色の切り替えがトークンの定義にまとまり、ダーク用の値の書き忘れや、色の散らばりを防げるため。
@@ -2740,7 +2778,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 15-5 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
 - 【禁止】要素の境界や区切りを、`box-shadow` だけで描かない。（`no-box-shadow-only-boundary`）
   - 理由: 強制カラーモードでは `box-shadow` が `none` になり、境界が消えるため。
-  - 補足: フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。
+  - 補足: フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。区切り線や枠線を `box-shadow` で描くときは、`@media (forced-colors: active)` の中で同じ太さの `outline` を描きます（16-6）。
   - 詳細: 15-5 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
 - 【必須】`mask-image` や `clip-path` で切り抜き、`background-color` で塗る図形は、`currentColor` を直接指定せず、強制カラーモードでシステムカラーに切り替わるカスタムプロパティ（`--background-current`）から色を受け取る。（`background-current-for-shapes`）
   - 理由: 強制カラーモードでは `background-color` がページの背景色に置き換わり、図形が見えなくなるため。
@@ -2786,6 +2824,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 16-1 画像の配置と読み込み（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images.mdx）
 - 【必須】画像や動画の上に文字を載せるときは、画像が表示されなくても文字を読める背景色を指定する。（`text-on-image-fallback-background`）
   - 理由: 画像を読み込めないと、文字と背景の色が近くなり、文字を読めなくなることがあるため。
+  - 補足: 背景色は `contrast-color(currentColor)` で文字色から決めます（ルール `contrast-color-for-image-fallback`）。`contrast-color()` に対応していない環境では背景色が付きませんが、画像が表示されれば見た目は変わらないので許容します。
   - 詳細: 16-1 画像の配置と読み込み（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images.mdx）
 - 【推奨】背景に写真を敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置く。（`img-over-background-image`）
   - 理由: `<picture>` や `srcset` と `sizes` で表示される幅に合った画像を読み込め、`opacity` やフィルターで画像だけを加工でき、`alt` で意味を伝えられるうえ、HTML を解析する段階でプリロードスキャナーに見つかり、LCP の候補でも表示が遅れないため。
@@ -2838,6 +2877,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
   - 補足: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
   - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+- 【推奨】行ごとに背景や枠線を敷く装飾は、インラインの要素に `-webkit-box-decoration-break: clone` と `box-decoration-break: clone` を併記して描く。（`inline-decoration-clone-with-prefix`）
+  - 理由: 初期値の `slice` では折り返した位置の `padding` と枠線がなくなり、Safari は接頭辞付きの宣言にしか対応していないため。
+  - 補足: 上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。
+  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨】`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。（`corner-shape-guard-when-broken`）
   - 理由: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
   - 補足: 錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。
@@ -2845,6 +2888,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。（`full-bleed-radius-with-sign`）
   - 理由: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
   - 補足: `/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。
+  - 詳細: 16-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
+- 【推奨】角丸を `corner-shape: squircle` に置き換えるときは、見た目の大きさが合うように `border-radius` を大きくし、その指定を `@supports` の中に書く。（`squircle-larger-radius`）
+  - 理由: スクワークルは同じ半径でも円弧の角丸より角が小さく見え、倍率を `if()` で決めるカスタムプロパティは、未対応の環境では `border-radius` ごと無効にするため。
+  - 補足: 倍率は半径によって変わります（著者の CodePen では、8px 以上が2倍、24px 以上が1.67倍で `superellipse(1.75)`、32px 以上が1.5倍で `superellipse(1.5)`）。錠剤型のボタンに `squircle` を1行足すだけの場合は、ルール `corner-shape-guard-when-broken` に従います。
   - 詳細: 16-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
 - 【推奨】`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。（`guard-new-shapes-with-supports`）
   - 理由: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
@@ -2858,6 +2905,24 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: `shape()` の値は長く、数値を直接並べると形が読み取れず、大きさを変えるたびにすべての座標を書き直すことになるため。
   - 補足: `shape()` に対応していない環境には、`@supports not` で `border-radius` の形に戻します。
   - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+- 【推奨】吹き出しのように枠線を輪郭に沿わせる形は、`shape()` を1つのカスタムプロパティに入れて `clip-path` と `border-shape` で共有し、`border` と `border-shape` は `@supports (border-shape: …)` の中に書く。（`shared-shape-for-border-shape`）
+  - 理由: 同じ輪郭を2か所に書くと片方だけ直したときに塗りと枠線がずれ、`@supports` の外の `border` は未対応の環境で `clip-path` に切り落とされて欠けた枠になるため。
+  - 補足: しっぽの高さは `半幅 * tan(60deg)` で正三角形にし、下の `padding` にしっぽの高さを足します。
+  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+- 【推奨】並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描く。（`separators-in-gap`）
+  - 理由: 折り返しや列数の変化で行の末尾に来る要素はセレクタで選べず、要素に線を持たせると、行の端に区切る相手のいない線が残ったり、隣り合う線が二重になったりするため。
+  - 補足: gap decorations（`column-rule`、`row-rule`）を使うか、`gap` を線の太さにして各要素の `box-shadow` を重ねます。表の枠線は `border-collapse` で共有します（11-13）。
+  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+- 【非推奨】区切り線のために各要素に `border` を付け、`:last-child` や `:nth-child()` で末尾の要素の `border` を打ち消さない。（`no-last-child-border-reset`）
+  - 理由: 打ち消せるのは並び全体の最後の要素だけで、折り返した行の末尾や、列数が変わるグリッドの末尾の列には線が残るため。
+  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+- 【推奨】gap decorations は、線がなくても内容を読める区切りに使い、線がないと境界が分からないときは `box-shadow` で同じ位置に線を描いたうえで、対応している環境の改善として足す。（`gap-decorations-progressive`）
+  - 理由: 2026年10月時点で対応しているのは Chrome と Edge だけで、未対応の環境では線が描かれないため。
+  - 補足: Grid と Flexbox の `column-rule` は、未対応の環境では無視されるだけなので、線を足すだけなら `@supports` は要りません。`box-shadow` の線と切り替えるときは `@supports not` の中に `box-shadow` を書き、強制カラーモードでは `outline` に切り替えます（ルール `no-box-shadow-only-boundary`）。
+  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+- 【必須】gap decorations の対応を `@supports` で判定するときは、`column-rule` ではなく `column-rule-inset` のような gap decorations で加わったプロパティを条件にする。（`gap-decorations-supports-condition`）
+  - 理由: `column-rule` はマルチカラムのプロパティとしてすべてのブラウザが対応しているので、gap decorations に未対応の環境でも条件が真になるため。
+  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 
 ### 第17章 インタラクション
 

@@ -1,6 +1,6 @@
 ---
 title: "15-3 背景から文字色を決める"
-description: "背景色から文字色を黒か白に決めるときは、相対カラー構文と sign() で oklch(from var(--_background) sign(0.7 - l) 0 h) と書きます。contrast-color() は WCAG 2.x のコントラスト比で選ぶため、中間の明度の色で読みにくいほうを選ぶことがあり、APCA に変わるまでは使うのを控えます。"
+description: "背景色から文字色を黒か白に決めるときは、相対カラー構文と sign() で oklch(from var(--_background) sign(0.7 - l) 0 h) と書きます。contrast-color() は Safari 18系で使えず、WCAG 2.x のコントラスト比で選ぶため中間の明度の色で読みにくいほうを選ぶことがあるので、文字色には使いません。画像の上の文字に敷くフォールバックの背景色は、contrast-color(currentColor) で決めます。"
 sidebar:
   order: 3
 ---
@@ -10,10 +10,12 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import contrastHtml from '../../../demos/color-media/contrast-text/index.html?raw';
 import contrastCss from '../../../demos/color-media/contrast-text/style.css?raw';
+import imageFallbackHtml from '../../../demos/color-media/image-fallback/index.html?raw';
+import imageFallbackCss from '../../../demos/color-media/image-fallback/style.css?raw';
 
 背景色から文字色を黒か白に決めるときは、相対カラー構文と `sign()` を組み合わせ、`color: oklch(from var(--_background) sign(0.7 - l) 0 h);` と書きます。背景の明度が0.7より低ければ白に、0.7以上なら黒になります。この書き方は、不透明で、選ばれる文字色とのコントラスト比を確認済みの背景色に使います。閾値の0.7は読みやすさを優先した本書の方針で、WCAGのAAへの適合を保証する値ではありません。
 
-同じことをする `contrast-color()` という関数もあります。しかし、いまの `contrast-color()` は、WCAG 2.xのコントラスト比のアルゴリズムで黒か白を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあります。知覚にもとづくAPCAのようなアルゴリズムに変わるまでは、`contrast-color()` は使わず、`sign()` で書きます。
+同じことをする `contrast-color()` という関数もありますが、本書の対象のブラウザのうちSafari 18系は対応していません。また、いまの `contrast-color()` はWCAG 2.xのコントラスト比のアルゴリズムで黒か白を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあります。そのため、文字色は `sign()` で決めます。一方、画像の上に文字を載せるときに、画像が表示されなかった場合に備えて敷く背景色は、`background-color: contrast-color(currentColor);` で文字色から決めます。こちらは、未対応の環境では背景色が付かないだけで済むからです。
 
 <Baseline id="abs-sign" name="sign()" />
 
@@ -82,11 +84,11 @@ import contrastCss from '../../../demos/color-media/contrast-text/style.css?raw'
 
 `sign()` は、黒と白のうちどちらかを選ぶだけで、選んだ色が基準を満たすことまでは保証しません。最後は、実際の背景色と文字色の組み合わせでコントラスト比を確かめます。コントラストの基準と確かめ方は「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。知覚にもとづくコントラストのモデルであるAPCAで0.7を比べた結果は、ページの最後の「[閾値をAPCAで比べる](#閾値をapcaで比べる)」にまとめています。
 
-## contrast-color() を使わない理由
+## contrast-color() と sign() の使い分け
 
-`contrast-color()` は、背景色を渡すと、白か黒のうちコントラストの高いほうを返す関数です。`color: contrast-color(var(--_background));` と書けば、上の `sign()` の式と同じように、背景色から文字色が決まります。
+`contrast-color()` は、色を渡すと、白か黒のうちその色とのコントラストが高いほうを返す関数です。`color: contrast-color(var(--_background));` と書けば、上の `sign()` の式と同じように、背景色から文字色が決まります。どちらを使うかは、対応していない環境で何が起きるかと、選ばれる色を調整する必要があるかで決めます。
 
-```css title="🙅‍♂ Not Recommended: contrast-color() で文字色を決める"
+```css title="🙅‍♂ Not Recommended: Safari 18系に対応する間に、contrast-color() で文字色を決める"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.badge) to (.scoped) {
   :scope {
@@ -98,9 +100,31 @@ import contrastCss from '../../../demos/color-media/contrast-text/style.css?raw'
 }
 ```
 
-この書き方を勧めない理由は2つあります。1つ目は、`sign()` でも1行で書けることです。`oklch(from var(--_background) sign(0.7 - l) 0 h)` は `contrast-color()` より少し長いだけで、閾値を自分で決められます。
+この書き方を勧めない理由は2つあります。1つ目は、Safari 18系で文字が読めなくなることです。`contrast-color()` に対応していない環境では `color` の宣言が無効になり、文字色は親から継承した色のままになります。本文の濃い文字色を継承すれば、濃い背景のバッジの上で文字が背景に溶け込みます。文字色は内容を読むための指定なので、未対応の環境で欠けてはいけません。
 
-2つ目は、いまの `contrast-color()` の計算方法です。主要なブラウザは、WCAG 2.xのコントラスト比で黒か白を選んでいます。上で見た明度0.57の青のように、中間の明度の色では比の差がわずかで、読みにくいほうの黒を選ぶことがあります。閾値を変える手段もありません。知覚にもとづくAPCAのようなアルゴリズムに変わるまでは、`contrast-color()` を使うのを控えます。
+2つ目は、いまの `contrast-color()` の計算方法です。主要なブラウザは、WCAG 2.xのコントラスト比で黒か白を選んでいます。上で見た明度0.57の青のように、中間の明度の色では比の差がわずかで、読みにくいほうの黒を選ぶことがあります。閾値を変える手段も、黒と白以外の色を返させる手段もありません。Safari 18系を対象から外したあとも、閾値を自分で決めたい場合や、後で説明するように黒と白の代わりに色味のある色を使いたい場合は、`sign()` で書きます。
+
+一方、画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色には、`contrast-color()` を使います。文字色は先に決まっているので、その文字色と対比する背景色を `contrast-color(currentColor)` で求めます。
+
+```css title="🙆‍♂ Recommended: 画像が表示されなかった場合の背景色を、文字色から決める"
+@scope (.scoped.image-banner) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-areas: "--pile";
+    background-color: contrast-color(currentColor);
+    color: var(--image-banner--foreground, oklch(100% 0 0deg));
+  }
+
+  img,
+  ._body {
+    grid-area: --pile;
+  }
+}
+```
+
+`currentColor` は、その要素の `color` の値です。白い文字なら黒い背景が、濃い文字なら白い背景が敷かれるので、画像に合わせて文字色を変えても、背景色を書き直す必要がありません。画像が表示されれば、背景色は画像に隠れて見えません。画像と本文をグリッドの同じエリアに重ねる方法と、写真を `<img>` で置く理由は、「[16-1 画像の配置と読み込み](/decoration/images/)」で説明しています。
+
+この用途で `contrast-color()` を使えるのは、2つの理由がなくなるからです。Safari 18系では宣言が無効になって背景色が付きませんが、困るのは画像を読み込めなかったときだけで、画像が表示されれば見た目は対応した環境と変わりません。対応した環境だけで表示を改善するプログレッシブ・エンハンスメントとして扱えます。また、画像の上の文字には、画像のどの部分とも対比するよう白や黒に近い色を選びます。WCAG 2.xの計算が読みにくいほうを選ぶ中間の明度の色は、ふつう渡されません。{/* 要確認: 出典なし */}
 
 `contrast-color()` は、2026年4月にすべての主要なブラウザで使えるようになりました。ただし、Safariが対応したのはバージョン26からで、本書の対象のブラウザ（Safari 18系の最終版以降）には未対応の環境が残ります（2026年10月確認）。
 
@@ -144,6 +168,12 @@ import contrastCss from '../../../demos/color-media/contrast-text/style.css?raw'
 <Demo title="背景色の明度から、文字色が黒か白に決まる" html={contrastHtml} css={contrastCss} />
 
 明度0.57の青までは白い文字に、0.75から先は黒い文字になります。どの色見本でも、CSSの側で指定しているのは背景色だけです。デモの色は、選ばれた文字色とのコントラスト比が4.5:1以上になるものを選んでいます。明度0.6から0.7の色を加えると白い文字が選ばれますが、WCAG 2.xのコントラスト比では基準に届きません。
+
+次のデモでは、画像の上に文字を載せたバナーで、画像を表示できなかった場合の背景色を `contrast-color(currentColor)` で決めています。
+
+<Demo title="画像を表示できなくても、文字色と対比する背景色の上で文字が読める" html={imageFallbackHtml} css={imageFallbackCss} />
+
+白い文字のバナーには黒い背景が、濃い文字のバナーには白い背景が敷かれます。CSSで指定しているのは文字色だけで、背景色は書いていません。`contrast-color()` に対応していないブラウザでは、画像を表示できなかったバナーに背景色が付きません。
 
 ## sign() で書くときの注意
 

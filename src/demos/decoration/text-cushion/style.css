@@ -1,0 +1,68 @@
+@layer pages {
+  @scope (.scoped.cushion-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(280 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    figure {
+      display: block grid;
+      grid-template-rows: 1fr auto;
+      gap: 8px;
+    }
+
+    h2 {
+      padding: 24px;
+      border-radius: 8px;
+      background-image: linear-gradient(in oklch 135deg, oklch(70% 0.12 200deg), oklch(55% 0.15 280deg));
+      font-size: calc(24 / 16 * 1rem);
+    }
+
+    figcaption {
+      font-size: calc(14 / 16 * 1rem);
+      text-align: center;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.text-cushion) to (.scoped) {
+    :scope {
+      --_space: var(--text-cushion--space, 8px);
+      --_padding: var(--text-cushion--padding, 0.5em);
+      --_border-width: var(--text-cushion--border-width, 2px);
+
+      padding: var(--_padding);
+      border: var(--_border-width) solid currentColor;
+      background-color: oklch(98% 0.01 90deg);
+      color: oklch(25% 0.02 280deg);
+
+      /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年10月） */
+      /* stylelint-disable-next-line property-no-vendor-prefix */
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+
+      /* 座布団の高さと間隔から、行の間隔を長さで決める。中に子要素を置かない */
+      /* stylelint-disable-next-line declaration-property-unit-allowed-list */
+      line-height: calc(1cap + (var(--_padding) + var(--_border-width) + var(--_space)) * 2);
+
+      /* 比べるための指定。box-decoration-break を初期値に戻す */
+      &[data-break="slice"] {
+        /* stylelint-disable-next-line property-no-vendor-prefix */
+        -webkit-box-decoration-break: initial;
+        box-decoration-break: initial;
+      }
+    }
+  }
+}
+
+@layer utilities {
+  .-br {
+    display: contents;
+
+    &:lang(ja) {
+      display: block flow;
+    }
+  }
+}

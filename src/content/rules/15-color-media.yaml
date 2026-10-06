@@ -44,16 +44,32 @@
   page: color-media/relative-color
   since: 0.1.0
 
+- id: variant-palette-from-one-color
+  level: 推奨
+  rule: 種類ごとに色が変わるコンポーネントは、元の色1つを内部プロパティで差し替え、枠線は `currentColor`、背景は元の色と `sign()` で作った対比色を `color-mix()` で混ぜて作る。
+  reason: 種類を足すときに書くのが色1つで済み、枠線や背景の色を種類ごとに持たずに済むため。
+  note: 種類は `data-variant` 属性で、種類にない色は公開プロパティ（`--toast--foreground`）で渡します。文字色と背景の組み合わせごとにコントラスト比を確かめます。
+  page: color-media/relative-color
+  since: 0.25.0
+
 # 15-3 背景から文字色を決める
 - id: prefer-sign-over-contrast-color
   level: 推奨
-  rule: 背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書く。
-  reason: '`oklch(from var(--_background) sign(0.7 - l) 0 h)` のように1行で書け、閾値を自分で決められるため。`contrast-color()` は WCAG 2.x のコントラスト比で白か黒を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあるため。'
-  note: '`contrast-color()` の計算が APCA のような知覚にもとづくアルゴリズムに変わるまでは、使うのを控えます。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限り、選ばれた色のコントラスト比は実際の組み合わせで確かめます。閾値の0.7は、WCAG 2.x で白と黒のコントラスト比が等しくなる明度（約0.56）ではなく、APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。'
+  rule: 背景色から文字色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書く。
+  reason: '`contrast-color()` に対応していない Safari 18系（本書の対象のブラウザに含まれる）では `color` の宣言が無効になり、継承した文字色が背景に溶け込むため。また `contrast-color()` は WCAG 2.x のコントラスト比で白か黒を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあり、閾値や色味を変えられないため。'
+  note: '`oklch(from var(--_background) sign(0.7 - l) 0 h)` のように1行で書けます。Safari 18系を対象から外したあとも、閾値を自分で決めたい場合や、黒と白の代わりに色味のある色を使いたい場合は `sign()` で書きます。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限り、選ばれた色のコントラスト比は実際の組み合わせで確かめます。閾値の0.7は、WCAG 2.x で白と黒のコントラスト比が等しくなる明度（約0.56）ではなく、APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。画像が表示されなかった場合の背景色は、`contrast-color-for-image-fallback` を参照してください。'
   page: color-media/contrast-text
   since: 0.12.0
 
-# 15-4 ダークモード
+- id: contrast-color-for-image-fallback
+  level: 推奨
+  rule: '画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、`background-color: contrast-color(currentColor)` で文字色から決める。'
+  reason: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color()` に未対応の環境では背景色が付かないだけで、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱えるため。
+  note: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x の計算が読みにくいほうを選ぶ中間の明度の色は、ふつう渡されません。
+  aiProne: true
+  page: color-media/contrast-text
+  since: 0.25.0
+
 - id: light-dark-in-semantic-tokens
   level: 推奨
   rule: ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。
@@ -115,7 +131,7 @@
   level: 禁止
   rule: 要素の境界や区切りを、`box-shadow` だけで描かない。
   reason: 強制カラーモードでは `box-shadow` が `none` になり、境界が消えるため。
-  note: フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。
+  note: 'フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。区切り線や枠線を `box-shadow` で描くときは、`@media (forced-colors: active)` の中で同じ太さの `outline` を描きます（16-6）。'
   page: color-media/forced-colors
   since: 0.1.0
 

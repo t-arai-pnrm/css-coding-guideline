@@ -1,0 +1,38 @@
+@layer pages {
+  @scope (.scoped.toast-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+    }
+  }
+}
+
+@layer components {
+  /**
+   * 文字色1つから、枠線と背景の色を作るトースト。
+   *
+   * @prop {color} --toast--foreground [oklch(45% 0.12 250deg)] - 文字色（枠線と背景の元の色）
+   */
+  @scope (.scoped.toast) to (.scoped) {
+    :scope {
+      --_foreground: var(--toast--foreground, oklch(45% 0.12 250deg));
+
+      /* 文字色の明度が0.7より低ければ白、0.7以上なら黒になる */
+      --_contrast: oklch(from var(--_foreground) sign(0.7 - l) 0 h);
+
+      padding: 16px;
+      border: 1px solid currentColor;
+      border-radius: 4px;
+      background-color: color-mix(in oklab, var(--_foreground), var(--_contrast) 90%);
+      color: var(--_foreground);
+
+      &[data-variant="success"] {
+        --_foreground: oklch(45% 0.12 150deg);
+      }
+
+      &[data-variant="error"] {
+        --_foreground: oklch(48% 0.15 25deg);
+      }
+    }
+  }
+}

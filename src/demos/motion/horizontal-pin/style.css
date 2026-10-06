@@ -1,0 +1,90 @@
+@layer tokens {
+  :root {
+    --color--neutral--100: oklch(97% 0 0deg);
+  }
+}
+
+@layer base {
+  /* --translate-from と対になる。もとの位置から、渡した値まで動かす */
+  @keyframes --translate-to {
+    to {
+      translate: var(--translate-to--x-value, 0) var(--translate-to--y-value, 0);
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.pin-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 48px;
+      padding-block: 48px 240px;
+    }
+
+    ._lead {
+      padding-inline: 16px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.horizontal-pin) to (.scoped) {
+    :scope {
+      --_column-width: var(--horizontal-pin--column-width, min(calc(640 / 16 * 1rem), 100cqi));
+      --_column-count: var(--horizontal-pin--column-count, 6);
+      --_column-gap: var(--horizontal-pin--column-gap, 24px);
+
+      /* 列の全体の幅 = 列の幅 × 列の数 + 間隔 × (列の数 - 1) */
+      --_scroller-width: calc(var(--_column-width) * var(--_column-count) + var(--_column-gap) * (var(--_column-count) - 1));
+
+      container: --scoped / inline-size;
+      background-color: var(--color--neutral--100);
+    }
+
+    /* 動かさない環境では、横にスクロールして見る */
+    ._body {
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+
+      @supports (animation-timeline: view()) and (animation-range: contain) {
+        @media (prefers-reduced-motion: no-preference) {
+          /* スクロールコンテナを作らずに、はみ出した列を切り取る */
+          overflow: clip;
+
+          /* 縦にスクロールする量を、横に動かす量に対応させる */
+          min-block-size: var(--_scroller-width);
+          view-timeline-name: --horizontal-pin;
+        }
+      }
+    }
+
+    ._list {
+      display: block grid;
+      grid-auto-columns: var(--_column-width);
+      grid-auto-flow: column;
+      column-gap: var(--_column-gap);
+
+      @supports (animation-timeline: view()) and (animation-range: contain) {
+        @media (prefers-reduced-motion: no-preference) {
+          /* 自身の幅からコンテナの幅を引いた分だけ左へ動かし、最後の列を右端にそろえる */
+          --translate-to--x-value: calc(-100% + 100cqi);
+
+          position: sticky;
+          inset-block-start: 0;
+          align-content: center;
+          min-inline-size: var(--_scroller-width);
+          min-block-size: 100svb;
+          animation-name: --translate-to;
+          animation-timing-function: linear;
+          animation-fill-mode: both;
+          animation-timeline: --horizontal-pin;
+          animation-range: contain 0% contain 100%;
+        }
+      }
+    }
+
+    img {
+      inline-size: 100%;
+    }
+  }
+}

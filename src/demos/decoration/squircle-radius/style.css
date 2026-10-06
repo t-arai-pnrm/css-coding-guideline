@@ -1,0 +1,59 @@
+@layer pages {
+  @scope (.scoped.squircle-radius-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    figure {
+      display: block grid;
+      gap: 8px;
+      justify-items: center;
+    }
+
+    ._pair {
+      display: block flex;
+      gap: 12px;
+    }
+
+    ._box {
+      inline-size: 88px;
+      aspect-ratio: 1;
+      background-color: oklch(52% 0.16 250deg);
+    }
+
+    figcaption {
+      font-size: calc(14 / 16 * 1rem);
+      text-align: center;
+    }
+  }
+}
+
+@layer utilities {
+  .-corner-squircle {
+    --_u--radius: var(--corner-squircle--radius, 24px);
+    --_u--radius-ratio: 1;
+
+    border-radius: calc(var(--_u--radius) * var(--_u--radius-ratio));
+
+    /* corner-shape、if()、スタイルクエリの範囲の比較に対応した環境だけ */
+    @supports (corner-shape: if(style(--test = 1): squircle)) {
+      --_u--radius-ratio: if(
+        style(--_u--radius >= 32px): 1.5;
+        style(--_u--radius >= 24px): 1.67;
+        style(--_u--radius >= 8px): 2;
+        style(--_u--radius >= 6px): 1.6;
+        style(--_u--radius >= 4px): 1.2;
+        style(--_u--radius >= 2px): 1.25;
+        else: 1
+      );
+
+      corner-shape: if(
+        style(--_u--radius >= 32px): superellipse(1.5);
+        style(--_u--radius >= 24px): superellipse(1.75);
+        else: squircle
+      );
+    }
+  }
+}

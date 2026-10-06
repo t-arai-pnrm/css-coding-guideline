@@ -112,6 +112,14 @@
   page: layout/flexbox-basics
   since: 0.5.0
 
+- id: large-flex-shrink-for-shrink-order
+  level: 推奨
+  rule: '2カラムのどちらを先に縮めるかを決めるときは、先に縮める列に `flex-shrink: 9999` のような大きな値と `min-inline-size` を指定し、もう一方の列に `flex-shrink: 0` を指定しない。'
+  reason: '不足は `flex-shrink` と `flex-basis` の積の比で配られるので、大きな値の列がほぼすべてを受け持ち、最小幅に届いてから残りがもう一方に配られるため。`flex-shrink: 0` はどの幅でも縮まなくなり、狭い幅ではみ出す。'
+  note: '縦に積む切り替えは、コンテナサイズクエリや `sidebar` の折り返しで別に行います。'
+  page: layout/flexbox-basics
+  since: 0.25.0
+
 # 7-7 Gridの基礎
 - id: grid-auto-rows-for-item-count
   level: 推奨

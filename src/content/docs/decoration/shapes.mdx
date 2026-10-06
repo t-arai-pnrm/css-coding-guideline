@@ -1,6 +1,6 @@
 ---
 title: 16-4 角の形を変える
-description: 角丸だけでは作れない角の形は corner-shape で書きます。錠剤型のボタンをスクワークルにする、タブの下の端を反り返らせるといった形を、未対応の環境での見え方を確かめて取り入れます。要素が画面いっぱいに広がったときだけ角丸を消す sign() の書き方も扱います。
+description: 角丸だけでは作れない角の形は corner-shape で書きます。錠剤型のボタンをスクワークルにする、スクワークルの角丸を半径に応じて大きくする、タブの下の端を反り返らせるといった形を、未対応の環境での見え方を確かめて取り入れます。要素が画面いっぱいに広がったときだけ角丸を消す sign() の書き方も扱います。
 sidebar:
   order: 4
 ---
@@ -12,6 +12,8 @@ import keywordsHtml from '../../../demos/decoration/corner-shape-keywords/index.
 import keywordsCss from '../../../demos/decoration/corner-shape-keywords/style.css?raw';
 import squircleHtml from '../../../demos/decoration/squircle-button/index.html?raw';
 import squircleCss from '../../../demos/decoration/squircle-button/style.css?raw';
+import squircleRadiusHtml from '../../../demos/decoration/squircle-radius/index.html?raw';
+import squircleRadiusCss from '../../../demos/decoration/squircle-radius/style.css?raw';
 import scoopTabHtml from '../../../demos/decoration/scoop-tab/index.html?raw';
 import scoopTabCss from '../../../demos/decoration/scoop-tab/style.css?raw';
 import fullBleedHtml from '../../../demos/decoration/full-bleed-radius/index.html?raw';
@@ -59,6 +61,50 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 未対応の環境で別の角丸にしたい場合は、`@supports` で分岐します。たとえば、対応している環境ではスクワークルに、対応していない環境では小さめの角丸にするとします。この場合は `border-radius: var(--rounded--md)` を基本に書きます。そして、`@supports (corner-shape: squircle)` の中で `border-radius` と `corner-shape` を一緒に指定します。新しい機能に合わせて既存の宣言まで変える場合に、その宣言を `@supports` の中に入れる書き方です。
 
 <Baseline id="corner-shape" name="corner-shape" />
+
+### スクワークルの角丸の大きさを合わせる
+
+スクワークルは、同じ `border-radius` でも、円弧の角丸より角が小さく見えます。直線から曲線へ移る位置は同じでも、曲線が角の近くまで直線に寄ってから曲がるからです。角丸のデザインをスクワークルへ置き換えるとき、半径をそのままにすると、角が締まって見えます。見た目の大きさを合わせるには、`border-radius` を大きくします。
+
+どれだけ大きくするかは、半径によって変わります。私は、半径から倍率と角の形を決めるユーティリティを使っています。倍率と、大きい半径で `superellipse()` の値を変える境目は、CodePenを作るうえで参考にした記事の値です。記事では、ふつうの角丸とスクワークルを並べて、見た目が合う値を半径ごとに決めています（参考リンクを参照）。
+
+```css title="🙆‍♂ Recommended: 対応した環境だけ、半径に応じて border-radius を大きくする"
+.-corner-squircle {
+  --_u--radius: var(--corner-squircle--radius, 24px);
+  --_u--radius-ratio: 1;
+
+  border-radius: calc(var(--_u--radius) * var(--_u--radius-ratio));
+
+  /* corner-shape、if()、スタイルクエリの範囲の比較に対応した環境だけ */
+  @supports (corner-shape: if(style(--test = 1): squircle)) {
+    --_u--radius-ratio: if(
+      style(--_u--radius >= 32px): 1.5;
+      style(--_u--radius >= 24px): 1.67;
+      style(--_u--radius >= 8px): 2;
+      style(--_u--radius >= 6px): 1.6;
+      style(--_u--radius >= 4px): 1.2;
+      style(--_u--radius >= 2px): 1.25;
+      else: 1
+    );
+
+    corner-shape: if(
+      style(--_u--radius >= 32px): superellipse(1.5);
+      style(--_u--radius >= 24px): superellipse(1.75);
+      else: squircle
+    );
+  }
+}
+```
+
+<Demo title="左は border-radius の角丸、右は同じ半径を .-corner-squircle に渡したもの" html={squircleRadiusHtml} css={squircleRadiusCss} variant="neutral" />
+
+使う側は、角丸の半径を `--corner-squircle--radius` に渡します。半径が8px以上24px未満のときは2倍の `squircle`、24px以上32px未満のときは1.67倍の `superellipse(1.75)`、32px以上のときは1.5倍の `superellipse(1.5)` になります。大きい半径では、倍率を下げるのと合わせて、`squircle`（`superellipse(2)`）より円弧に近い値へ切り替えています。`if()` は条件を上から順に調べるので、大きい半径の条件から書きます。
+
+`@supports` の条件には、`corner-shape`、`if()`、スタイルクエリの範囲の比較の3つをすべて使った値を書きます。カスタムプロパティは、どんな値でも構文の誤りにならないので、`if()` に未対応の環境でも `--_u--radius-ratio` に `if(…)` の文字列がそのまま入ります。それを `calc()` で使うと `border-radius` の宣言が無効になり、角丸が消えます。`@supports` で囲めば、未対応の環境では倍率が1のままになり、ふつうの角丸で表示されます。{/* 要確認: 範囲の比較に未対応で if() に対応した環境で、この条件が成り立たないこと */}
+
+「[6-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」では、`if()` を、要素自身のカスタムプロパティを `style()` で調べる場面に限り、条件1つと `else` の形なら使ってもよいとしています。このユーティリティは、要素自身の半径を調べる点では6-4の範囲に収まりますが、条件は複数です。1つの長さを倍率に置き換える対応表で、状態の分岐ではないので、例外として扱っています。{/* 要確認: 6-4 の「条件1つと else」との関係（著者に確認） */}
+
+<Baseline id="if" name="if()" />
 
 ### 下の端が反り返るタブ
 
@@ -168,7 +214,8 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 ## 参考リンク
 
-- [corner-shape: squircle](https://codepen.io/tak-dcxi/pen/azmdqZb)（CodePen、2025年6月）
+- [corner-shape: squircle](https://codepen.io/tak-dcxi/pen/azmdqZb)（CodePen、2025年6月。半径ごとの倍率の例）
+- [Tailwind CSSでcorner-shape: squircleをプログレッシブエンハンスメントとして実装する](https://qiita.com/kskwtnk/items/f1f3f4f187bf5f4f292a)（Qiita、2025年12月。CodePenの倍率の出典）
 - [Rounded Tab](https://codepen.io/tak-dcxi/pen/MYaaQwv)（CodePen、2025年7月。マスクと `corner-shape: scoop` の2つの方式）
 - [corner-shape - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/corner-shape)
 - [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)

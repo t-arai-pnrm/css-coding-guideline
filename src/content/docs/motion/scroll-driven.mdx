@@ -12,6 +12,8 @@ import revealHtml from '../../../demos/motion/reveal-on-view/index.html?raw';
 import revealCss from '../../../demos/motion/reveal-on-view/style.css?raw';
 import headerHtml from '../../../demos/motion/scroll-header/index.html?raw';
 import headerCss from '../../../demos/motion/scroll-header/style.css?raw';
+import pinHtml from '../../../demos/motion/horizontal-pin/index.html?raw';
+import pinCss from '../../../demos/motion/horizontal-pin/style.css?raw';
 
 スクロールに合わせた動きは、値の変わり方で作り方を選びます。スクロール位置に合わせて連続して変わる値には、CSSのスクロール駆動アニメーションを使い、`animation-range` で範囲を明示します。画面に入った時点で1回だけ変わる演出は、`view()` のタイムラインでカスタムプロパティを切り替え、`@container style()` で時間で進むアニメーションを再生して作ります。Firefoxでも演出を出したいときと、スクロールを戻しても再生を止めたくないときは、`IntersectionObserver` で属性を付けます。JavaScriptで毎フレーム同期するのは、それでも作れない複雑な分岐が必要なときだけです。
 
@@ -45,7 +47,7 @@ window.addEventListener('scroll', () => {
 
 | 値の変わり方 | 手段 | 例 |
 | --- | --- | --- |
-| スクロール位置に合わせて連続して変わる | スクロール駆動アニメーション | パララックス、スクロールした量に応じたヘッダーの背景 |
+| スクロール位置に合わせて連続して変わる | スクロール駆動アニメーション | パララックス、スクロールした量に応じたヘッダーの背景、縦のスクロールで横に流れるセクション |
 | 画面に入ったときに一度だけ変わる | `view()` のタイムラインとスタイルクエリ（Firefoxでも出すなら `IntersectionObserver`）で、CSSのアニメーションを再生する | 見出しやカードが現れる演出 |
 | スクロール量に応じて複雑に分岐する | `requestAnimationFrame` で制御するJavaScript | 段落を入れ替えながら進む演出 |
 
@@ -126,6 +128,82 @@ window.addEventListener('scroll', () => {
 ```
 
 2つの例で、動きを減らす設定への扱いが違います。ヘッダーの背景はフェードだけなので、条件の外に書いています。パララックスは、スクロールに合わせて要素を移動させる大きな変動にあたるので、`no-preference` の中でだけ指定し、設定があるときは無効化します。判断の4段階は「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明しています。
+
+## 縦のスクロールで横に流れるセクション
+
+縦にスクロールする間だけセクションを画面に留め、中の列を横に流す演出も、スクロール駆動アニメーションで作れます。セクションの高さを横に並んだ列の全体の幅と同じだけ取り、その高さをスクロールする間に、列を `translate` で左へ動かします。動く量はスクロールした量で決まるので、スクロールを止めれば列も止まり、上へ戻せば右へ戻ります。
+
+この演出は、外側の `._body` と、列を横に並べた `._list` の2つの要素で作ります。`._body` には `view-timeline-name` でタイムラインの名前を付け、`min-block-size` に列の全体の幅を指定します。`._list` は `position: sticky` と `inset-block-start: 0` で画面の上端に留め、`animation-timeline` にそのタイムラインの名前を指定して動かします。`._body` が画面の上端を越えている間、`._list` は画面に留まったまま横へ動き、`._body` の下端が来ると一緒に上へ流れていきます。
+
+```css title="🙆‍♂ Recommended: 縦のスクロールに合わせて、留めた列を横に動かす"
+@keyframes --translate-to {
+  to {
+    translate: var(--translate-to--x-value, 0) var(--translate-to--y-value, 0);
+  }
+}
+
+@scope (.scoped.horizontal-pin) to (.scoped) {
+  :scope {
+    --_column-width: var(--horizontal-pin--column-width, min(calc(640 / 16 * 1rem), 100cqi));
+    --_column-count: var(--horizontal-pin--column-count, 6);
+    --_column-gap: var(--horizontal-pin--column-gap, 24px);
+    --_scroller-width: calc(var(--_column-width) * var(--_column-count) + var(--_column-gap) * (var(--_column-count) - 1));
+
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+
+    @supports (animation-timeline: view()) and (animation-range: contain) {
+      @media (prefers-reduced-motion: no-preference) {
+        overflow: clip;
+        min-block-size: var(--_scroller-width);
+        view-timeline-name: --horizontal-pin;
+      }
+    }
+  }
+
+  ._list {
+    display: block grid;
+    grid-auto-columns: var(--_column-width);
+    grid-auto-flow: column;
+    column-gap: var(--_column-gap);
+
+    @supports (animation-timeline: view()) and (animation-range: contain) {
+      @media (prefers-reduced-motion: no-preference) {
+        --translate-to--x-value: calc(-100% + 100cqi);
+
+        position: sticky;
+        inset-block-start: 0;
+        align-content: center;
+        min-inline-size: var(--_scroller-width);
+        min-block-size: 100svb;
+        animation-name: --translate-to;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --horizontal-pin;
+        animation-range: contain 0% contain 100%;
+      }
+    }
+  }
+}
+```
+
+範囲の `contain 0% contain 100%` は、要素が画面より高いときは、要素の上端が画面の上端に達してから、下端が画面の下端に達するまでを表します。これは `._list` が画面に留まっている間と同じなので、列は、留まり始めた位置から動き始め、ページとともに流れ出す直前で止まります。移動の量は `calc(-100% + 100cqi)` です。`translate` の `%` は要素自身の幅が基準なので、列の全体の幅からルートのコンテナの幅を引いた分だけ左へ動き、最後の列がコンテナの右端にそろって止まります。`._body` の高さを列の全体の幅にしているので、縦にスクロールする量と横に動く量は、画面の高さとコンテナの幅の差の分だけずれますが、ほぼ対応します。
+
+`--translate-to` は、「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」のサイト全体で使う `--translate-from` と対になる `@keyframes` です。`translate` だけを変え、`from` を省いて、もとの位置から `--translate-to--x-value` で渡した位置まで動かします。中間のフレームも、同時に動かすほかのプロパティもないので、コンポーネントの名前は付けず、`base/keyframes.css` に置きます。
+
+列は画面より広いので、`._body` ではみ出しを切り取ります。ここで `overflow: hidden` を使うと、`._body` がスクロールコンテナになり、`._list` はページではなく `._body` を基準に留まろうとします。`._body` は中身の高さまで伸びていてスクロールしないので、列は留まらずにページと一緒に流れていきます（2026年10月、Chrome 152で確認）。`overflow: clip` はスクロールコンテナを作らないので、`sticky` の基準をページのスクロールに保ったまま、はみ出しだけを切り取れます。`contain: paint` でも切り取れますが、中の `position: fixed` の基準を変えてしまうので使いません（「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」）。
+
+`._list` の高さは `min-block-size: 100svb` で、画面の高さを最小値にしています。コンポーネントの中でビューポート単位を使うのは例外ですが、この列は `sticky` で画面に留めるので、高さの基準も画面です。`dvb` を使うと、スクロール中にブラウザのUIが出入りするたびに高さが変わり、留めた列が上下にずれます（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
+
+留める指定と動かす指定は、どちらも `@supports` と `prefers-reduced-motion: no-preference` の中にまとめます。スクロールに合わせた横の移動は、画面の大部分を占める要素の移動なので、大きな変動にあたります（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。条件に合わないときは、`._body` が `overflow-x: auto` で横スクロールの領域となり、列を指やスクロールバーで動かして見ます。`sticky` と `._body` の高さを条件の外で指定すると、動かない環境では、列の先頭だけが留まって見えたまま、列の幅の分だけ縦のスクロールが続き、後ろの列を見る手段がなくなります。
+
+<Demo title="縦のスクロールに合わせて、留めた画像の列が横に流れる" html={pinHtml} css={pinCss} height="480px" />
+
+デモの枠の中を下へスクロールすると、画像の列が枠の上端に留まり、右から左へ流れます。最後の画像が右端にそろうと、列は次の段落と一緒に上へ流れていきます。`--_column-count` は、列の数と一致させる必要があります。列の数を変えたら、`--horizontal-pin--column-count` に新しい数を渡します。
 
 ## 画面に入ったら1回だけ再生する
 
@@ -350,9 +428,11 @@ window.addEventListener(
 ## 参考リンク
 
 - [スクロール連動アニメーションの実装例](https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
+- [horizontal-pin section](https://codepen.io/tak-dcxi/pen/KwMVwZz)（CodePen。本書では `contain: paint` を `overflow: clip` に、`100dvb` を `100svb` に変えています）
 - [Scroll-driven animation & container style query](https://codepen.io/editor/tak-dcxi/pen/01a04777-8c8e-722c-87de-1cf4dd564270)（CodePen）
 - [CSS スクロール駆動アニメーション - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations)
 - [animation-range - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-range)
+- [view-timeline-name - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/view-timeline-name)
 - [animation-fill-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-fill-mode)
 - [CSS Custom Properties for Cascading Variables Module Level 1](https://drafts.csswg.org/css-variables-1/#defining-variables)（W3C、カスタムプロパティは値が50%の時点で切り替わる）
 - [交差オブザーバー API - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Intersection_Observer_API)

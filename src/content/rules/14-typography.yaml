@@ -158,6 +158,14 @@
   page: typography/line-height
   since: 0.1.0
 
+- id: trim-start-beside-media
+  level: 推奨
+  rule: '画像と文章を2カラムで横に並べるときは、文章の側の先頭の要素に `text-box-trim: trim-start` を指定し、画像の上端と文字の上端をそろえる。'
+  reason: 1行目の上のハーフレディングがなくなり、行の高さを変えずに、文字の上端が画像の上端と同じ高さになるため。
+  note: '`trim-both` にすると、見出しと本文の間が `gap` より狭く見えます。英文では `text-box-edge: cap alphabetic` にします。'
+  page: typography/line-height
+  since: 0.25.0
+
 # 14-4 文字サイズと改行
 - id: auto-phrase-for-headings
   level: 推奨

@@ -1,0 +1,89 @@
+@layer pages {
+  @scope (.scoped.demo-stack) to (.scoped) {
+    :scope {
+      & > * + * {
+        margin-block-start: 48px;
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.media-text) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+      line-height: 1.8;
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._body {
+      --_density: --compact;
+
+      display: block grid;
+      reading-flow: grid-rows;
+
+      /* 狭いときは、見出し、画像、本文の順に縦に積む */
+      grid-template:
+        "--heading"
+        "--image"
+        "--paragraphs";
+      gap: 1rlh 24px;
+
+      /* 画像の列 240px 相当・隙間 24px・テキストの列 240px 相当が並ぶ幅 */
+      @container --scoped (inline-size >= calc(240 / 16 * 1rem + 24px + 240 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        /* 画像を左の列に置き、右の列の上に見出し、その下に本文を置く */
+        grid-template:
+          "--image --heading"
+          "--image --paragraphs" 1fr
+          / minmax(calc(240 / 16 * 1rem), 2fr) minmax(calc(240 / 16 * 1rem), 3fr);
+        align-content: start;
+      }
+
+      & > ._heading {
+        grid-area: --heading;
+      }
+
+      & > ._image {
+        grid-area: --image;
+      }
+
+      & > ._paragraphs {
+        grid-area: --paragraphs;
+      }
+    }
+
+    ._heading {
+      font-size: calc(22 / 16 * 1rem);
+      line-height: 1.4;
+
+      @container style(--_density: --spacious) {
+        font-size: calc(28 / 16 * 1rem);
+      }
+    }
+
+    ._image {
+      inline-size: 100%;
+      border-radius: 8px;
+    }
+
+    ._paragraphs {
+      & > * + * {
+        margin-block-start: 1rlh;
+      }
+    }
+  }
+}
+
+@layer utilities {
+  /* 1行目の上にあるハーフレディングだけを取り除く */
+  .-trim-start {
+    text-box-trim: trim-start;
+
+    /* 英文は大文字の上端で切り取る */
+    &:lang(en) {
+      text-box-edge: cap alphabetic;
+    }
+  }
+}

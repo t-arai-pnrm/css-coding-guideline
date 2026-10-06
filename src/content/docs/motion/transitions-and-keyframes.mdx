@@ -211,6 +211,12 @@ const close = async (dialog) => {
     translate: var(--translate-from--x-value, 0) var(--translate-from--y-value, 0);
   }
 }
+
+@keyframes --translate-to {
+  to {
+    translate: var(--translate-to--x-value, 0) var(--translate-to--y-value, 0);
+  }
+}
 ```
 
 複数のプロパティを同時に動かしたいときは、`animation-name` にカンマ区切りで並べます。再生時間とイージングも同じ順に並べられるので、不透明度は早めに終え、移動はゆっくり止める、といった調整がプロパティごとにできます。値の数が名前より少ないときは、値のリストが繰り返して使われます。

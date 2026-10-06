@@ -11,6 +11,39 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.25.0（2026年10月7日）
+
+著者の依頼を受けて、区切り線の節を新設し、各章に実装例を加えました。`contrast-color()` の方針を改め、画像が表示されなかったときの背景色で使うことにしています。ルールを追加し、変更したため、マイナーバージョンを上げています。
+
+- 構成を次のように変えました。
+  - 第16章に「[16-6 区切り線を引く](/decoration/separators/)」を新設しました。印刷のスタイルは16-7になります。
+- 「[16-6 区切り線を引く](/decoration/separators/)」では、GridとFlexboxの `gap` に線を描くgap decorationsと、使えない環境で `box-shadow` を使う方法を扱います。デモは、メニューの点の区切り、メニューの縦線、枠線のあるグリッドの3つです。
+- 「[15-3 背景から文字色を決める](/color-media/contrast-text/)」：`contrast-color()` と `sign()` の使い分けに書き直しました。画像が表示されなかったときの背景色は `contrast-color(currentColor)` で決めます。文字色は、Safari 18系に対応する間は `sign()` で決めます。「[16-1 画像の配置と読み込み](/decoration/images/)」の例も `contrast-color(currentColor)` にしました。
+- 次の説明を加えたり直したりしました。
+  - 「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」：大きな `flex-shrink` と最小幅で先に縮める列を決め、中間の幅でメインの幅を保つ書き方を加えました。
+  - 「[14-3 行の高さとハーフレディング](/typography/line-height/)」：画像と並べた文章の上端を `text-box-trim: trim-start` でそろえる例を加えました。`text-box-edge` の初期値の説明を、仕様に合わせて `auto` に直しています。
+  - 「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」：文字色1つからトーストの枠線と背景の色を作る例を加えました。
+  - 「[16-3 表面と文字の装飾](/decoration/surfaces/)」：`box-decoration-break: clone` で見出しの行ごとに背景を敷く例を加えました。
+  - 「[16-4 角の形を変える](/decoration/shapes/)」：`corner-shape: squircle` のときに `border-radius` を大きくする例を加えました。
+  - 「[16-5 輪郭と枠線を描く](/decoration/outlines/)」：吹き出しの例を、`shape()` を `clip-path` と `border-shape` で共有する書き方に具体化しました。
+  - 「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」：縦のスクロールで横に流れるセクションの例を加えました。「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」の `@keyframes` の一覧には `--translate-to` を加えています。
+- ルールを追加しました。
+  - [`contrast-color-for-image-fallback`](/color-media/contrast-text/#rule-contrast-color-for-image-fallback)：画像が表示されなかったときの背景色は `contrast-color(currentColor)` で決めます。
+  - [`variant-palette-from-one-color`](/color-media/relative-color/#rule-variant-palette-from-one-color)：種類ごとに色が変わる部品は、元の色1つから枠線と背景を作ります。
+  - [`large-flex-shrink-for-shrink-order`](/layout/flexbox-basics/#rule-large-flex-shrink-for-shrink-order)：先に縮める列には、大きな `flex-shrink` と最小幅を指定します。
+  - [`trim-start-beside-media`](/typography/line-height/#rule-trim-start-beside-media)：画像と並べた文章の先頭に `text-box-trim: trim-start` を指定します。
+  - [`inline-decoration-clone-with-prefix`](/decoration/surfaces/#rule-inline-decoration-clone-with-prefix)：行ごとの装飾は、`box-decoration-break: clone` を接頭辞付きと併記します。
+  - [`squircle-larger-radius`](/decoration/shapes/#rule-squircle-larger-radius)：`squircle` にするときは `border-radius` を大きくします。
+  - [`shared-shape-for-border-shape`](/decoration/outlines/#rule-shared-shape-for-border-shape)：`shape()` を1つのカスタムプロパティに入れ、`clip-path` と `border-shape` で共有します。
+  - [`separators-in-gap`](/decoration/separators/#rule-separators-in-gap)：並んだ要素の間の区切り線は、要素の `border` ではなく `gap` に描きます。
+  - [`no-last-child-border-reset`](/decoration/separators/#rule-no-last-child-border-reset)：末尾の要素の `border` を `:last-child` で打ち消しません。
+  - [`gap-decorations-progressive`](/decoration/separators/#rule-gap-decorations-progressive)：gap decorationsは、対応している環境の改善として足します。
+  - [`gap-decorations-supports-condition`](/decoration/separators/#rule-gap-decorations-supports-condition)：対応を判定する `@supports` の条件には、`column-rule-inset` のような新しいプロパティを使います。
+- ルールを変えました。
+  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-sign-over-contrast-color)：理由を、Safari 18系で `color` の宣言が無効になることと、WCAG 2.xの計算の問題の2つに書き直しました。
+  - [`no-box-shadow-only-boundary`](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)：区切り線を `box-shadow` で描くときは、強制カラーモードで `outline` を描くという補足を加えました。
+  - [`text-on-image-fallback-background`](/decoration/images/#rule-text-on-image-fallback-background)：背景色を `contrast-color(currentColor)` で決め、未対応の環境では背景色が付かなくてよいという補足を加えました。
+
 ## 0.24.0（2026年10月7日）
 
 著者の依頼を受けて、アンカーポジショニングの基礎、`display: contents`、アイコンの配置の節を新設し、`fit-content()` と `overflow: clip` の説明を広げました。ルールを追加し、変更したため、マイナーバージョンを上げています。

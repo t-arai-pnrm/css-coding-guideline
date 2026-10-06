@@ -1,6 +1,6 @@
 ---
 title: "16-3 表面と文字の装飾"
-description: "影と角丸はトークンから選び、影は光源の向きをそろえて、色はライトモードでは背景の色相に寄せ、ダークモードでは黒にします。すりガラスの背景は backdrop-filter で作り、番号付きリストの番号は ::marker で装飾し、文字の縁取りは paint-order で塗りの下に描きます。"
+description: "影と角丸はトークンから選び、影は光源の向きをそろえて、色はライトモードでは背景の色相に寄せ、ダークモードでは黒にします。すりガラスの背景は backdrop-filter で作り、番号付きリストの番号は ::marker で装飾し、文字の縁取りは paint-order で塗りの下に描きます。見出しの行ごとに敷く背景は、インラインの要素に box-decoration-break: clone を指定して描きます。"
 sidebar:
   order: 3
 ---
@@ -18,10 +18,12 @@ import markerHtml from '../../../demos/decoration/list-marker/index.html?raw';
 import markerCss from '../../../demos/decoration/list-marker/style.css?raw';
 import strokeHtml from '../../../demos/decoration/text-stroke/index.html?raw';
 import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
+import cushionHtml from '../../../demos/decoration/text-cushion/index.html?raw';
+import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 影と角丸は、段階を決めたトークンから選びます。影のトークンは光源の向きをそろえ、高いほどオフセットとぼかしを大きく、不透明度を低くします。影の色は、ライトモードでは背景の色相に寄せ、ダークモードでは黒にして不透明度を上げます。
 
-すりガラスの背景は、半透明の背景に `backdrop-filter: blur()` を重ねて作ります。番号付きリストの番号は `::marker` で装飾し、文字の縁取りは `-webkit-text-stroke` で描いて、`paint-order: stroke fill` で塗りの下に置きます。
+すりガラスの背景は、半透明の背景に `backdrop-filter: blur()` を重ねて作ります。番号付きリストの番号は `::marker` で装飾し、文字の縁取りは `-webkit-text-stroke` で描いて、`paint-order: stroke fill` で塗りの下に置きます。見出しの行ごとに敷く背景は、インラインの要素に `box-decoration-break: clone` を指定して描きます。
 
 どれも要素の表面と文字に付ける装飾なので、作るものに合わせて必要な見出しだけを読めば足ります。画像の比率と読み込みは「[16-1 画像の配置と読み込み](/decoration/images/)」で、アイコンと図形は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で説明しています。
 
@@ -155,16 +157,66 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 
 縁取りは、読みやすさを補う装飾として使います。`-webkit-text-fill-color: transparent` で塗りを消して、縁取りだけの文字にすると、細い線だけで字の形を読み取ることになり、背景とのコントラストも確かめにくくなります。本文や長い見出しには使わず、短い装飾の文字に限ります。{/* 要確認: 出典なし */}
 
+## 見出しの行ごとに背景を敷く
+
+キービジュアルの上の見出しでは、文字の後ろに行ごとの帯（座布団）を敷くデザインがよくあります。座布団は、見出しの中のインラインの要素に `padding`、`border`、背景色を付け、`box-decoration-break: clone` を指定して描きます。行の数だけ要素を分けたり、擬似要素で帯を重ねたりする必要はありません。
+
+インラインの要素が複数の行にまたがると、背景と `border` は行ごとの断片に分けて描かれます。初期値の `slice` では、1本の帯を行の端で切ったように描かれるので、折り返した位置の `padding` と `border` がなくなります。`clone` を指定すると、断片ごとに `padding` と `border` が付き、各行が独立した座布団になります。ブロックやインラインブロックの要素は、行をまたいでも1つの箱のままなので、行ごとには描けません。座布団は、必ずインラインの要素に付けます。
+
+```css title="🙆‍♂ Recommended: インラインの要素に clone を指定し、行の間隔を座布団の高さから決める"
+@scope (.scoped.text-cushion) to (.scoped) {
+  :scope {
+    --_space: var(--text-cushion--space, 8px);
+    --_padding: var(--text-cushion--padding, 0.5em);
+    --_border-width: var(--text-cushion--border-width, 2px);
+
+    padding: var(--_padding);
+    border: var(--_border-width) solid currentColor;
+    background-color: var(--background--base);
+
+    /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年10月） */
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+
+    /* 座布団の高さと間隔から、行の間隔を長さで決める。中に子要素を置かない */
+    /* stylelint-disable-next-line declaration-property-unit-allowed-list */
+    line-height: calc(1cap + (var(--_padding) + var(--_border-width) + var(--_space)) * 2);
+  }
+}
+```
+
+改行の位置は、「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」の `.-br` ユーティリティで決めます。日本語のときだけ `span` をブロックにして改行するユーティリティで、`<br>` と違い、機械翻訳で言語が変わると改行がなくなります。座布団の要素は、`.-br` の `span` の内側に置きます。
+
+```html title="改行する位置で .-br の span を分け、その内側に座布団を置く"
+<h2>
+  <span class="-br"><span class="scoped text-cushion">春の特別展は、</span></span>
+  <span class="-br"><span class="scoped text-cushion">3月31日まで開催しています</span></span>
+</h2>
+```
+
+<Demo title="幅が足りずに折り返した行にも、clone なら padding と枠線が付く" html={cushionHtml} css={cushionCss} />
+
+Safariは、接頭辞付きの `-webkit-box-decoration-break` にしか対応していません（2026年10月確認）。接頭辞なしの宣言だけでは、Safariで座布団が行の端で切れるので、接頭辞付きの宣言を前に併記します。ベンダープレフィックスを書く場面と、理由のコメントの残し方は、「[9-7 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
+
+<Baseline id="box-decoration-break" />
+
+行の間隔には注意が要ります。インラインの要素の上下の `padding` と `border` は、行の高さに加わらず、上下の行へはみ出して描かれます（「[7-2 通常フローの基礎](/layout/normal-flow/)」）。行の間隔が座布団の高さより狭いと、上下の座布団が重なります。座布団の高さは、文字の内容領域の高さに、上下の `padding` と `border` を足した値です。そこで `line-height` を、文字の高さに `padding`、`border`、座布団の間隔を上下の分だけ足した長さにしています。この `line-height` は長さで書くので、本書の「`line-height` は単位のない数値で指定する」ルールの例外です。長さの `line-height` は子要素にそのまま継承されるので、座布団の中には文字サイズの違う子要素を置かないようにし、理由をコメントに残して警告を無効にします。
+
+式の文字の高さには、大文字の高さの `1cap` を使っています。ただし、背景が描かれる内容領域の高さは、フォントのアセントとディセントで決まり、`1cap` や `1em` と一致するとは限りません。Chrome 152で測ると、ヒラギノ角ゴシックの内容領域は `1em`、macOSの `system-ui` は約 `1.18em` でした（2026年10月確認）。座布団の間の実際のすき間は、`--_space` の2倍から、内容領域と `1cap` の差を引いた長さになります。`--_space` はすき間そのものではないので、使うフォントで表示を確かめて値を決めます。{/* 要確認: 1em ではなく 1cap を使う根拠 */}
+
 ## ガイドライン
 
 <Guideline />
 
 ## 参考リンク
 
+- [box-decoration-break: clone](https://codepen.io/tak-dcxi/pen/myEBWRK)（CodePen）
 - [Designing Beautiful Shadows in CSS](https://www.joshwcomeau.com/css/designing-shadows/)（Josh W. Comeau。光源、高さと影の関係、背景の色相に寄せた影。記事のダークモードの扱いは本書と異なります）
 - [Next-level frosted glass with backdrop-filter](https://www.joshwcomeau.com/css/backdrop-filter/)（Josh W. Comeau。記事は `-webkit-` の併記を勧めますが、本書は接頭辞なしで書きます）
 - [Sneaky Header Blocker Trick](https://www.joshwcomeau.com/css/header-blockers/)（Josh W. Comeau）
 - [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)
+- [box-decoration-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/box-decoration-break)
 - [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)
 - [-webkit-text-stroke - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-text-stroke)
 - [paint-order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/paint-order)

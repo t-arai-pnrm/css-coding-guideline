@@ -49,7 +49,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 `vertical-align: middle` は、要素の中心を、親のベースラインからx-height（小文字の「x」の高さ）の半分だけ上の位置に合わせる指定です。フォントの寸法で位置が決まるので、行の見た目の中央と一致しないことがあります。アイコンと文字の中央をそろえたいときは、親をFlexboxにして `align-items: center` を使います。
 
-インライン要素が複数の行にまたがると、背景、`border`、`padding` は、各行の断片に分けて描かれます。デフォルトでは1つの帯を行の端で切ったように描かれ、行の端の `padding` と角丸は失われます。各行の断片を独立した箱として描きたいときは、`box-decoration-break: clone` を指定します。Safariは接頭辞付きの `-webkit-box-decoration-break` だけに対応しています（2026年10月確認）。{/* 要確認: 出典なし */}
+インライン要素が複数の行にまたがると、背景、`border`、`padding` は、各行の断片に分けて描かれます。デフォルトでは1つの帯を行の端で切ったように描かれ、行の端の `padding` と角丸は失われます。各行の断片を独立した箱として描きたいときは、`box-decoration-break: clone` を指定します。Safariは接頭辞付きの `-webkit-box-decoration-break` だけに対応しています（2026年10月確認）。{/* 要確認: 出典なし */}見出しの行ごとに背景を敷く使い方と、上下の行と重ならない `line-height` の決め方は、「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明しています。
 
 <Baseline id="box-decoration-break" />
 
