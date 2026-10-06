@@ -78,7 +78,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 4-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【必須】`@layer` を使えない場合に限り、ベーススタイルのセレクタを `:where()` で包み、詳細度を 0 にする（例：`:where(a:any-link)`）。（`where-for-base-selectors`）
   - 理由: レイヤーがなければ優先順位が読み込む順番と詳細度だけで決まり、`a:any-link`（0.1.1）のような指定をクラス1つでは上書きできなくなるため。
-  - 補足: `@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。
+  - 補足: `@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。上書きされる前提のデフォルト値（リセットで消した `list-style-type` を戻す `:where(ul, ol)` など）は、`@layer` や `@scope` の中でも `:where()` で詳細度を 0 にしてかまいません（`is-for-state-selectors`）。
   - 詳細: 4-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【推奨】状態のセレクタ（`:hover`、`:focus-visible`、`:checked`、`[aria-expanded="true"]`、`[open]` など）は `:where()` で包まず、まとめたいときは `:is()` を使う。（`is-for-state-selectors`）
   - 理由: 状態のスタイルは既定の見た目より優先されるべきで、`:where()` で詳細度を 0 にすると、同じ要素の既定のスタイルに書く順番しだいで負けるため。
@@ -558,7 +558,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-2 余白を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/spacing.mdx）
 - 【推奨】要素の高さは `block-size` で固定しない。一定の高さが要るときは `min-block-size` で下限を、上限が要るときは `max-block-size` で上限を決め、縦横比が決まっている要素（画像、動画、擬似要素で描くアイコンなど）は `aspect-ratio` で決める。（`min-block-size-over-fixed-height`）
   - 理由: 内容が増えたときや、ユーザーが文字サイズを大きくしたときにも、中身があふれないため。`aspect-ratio` なら幅に応じて高さが決まり、どの幅でも比率が保たれる。
-  - 補足: `inline-size` と `block-size` に同じ値を書いて正方形を作らず、`inline-size` と `aspect-ratio: 1` で書きます。行の高さに合わせる `1lh`、読み込み中の表示の `2lh` のように、高さそのものが行数で決まる指定は対象外です。`appearance: none` で描き直す `input` 要素は、`aspect-ratio` で大きさを決めると Safari で比率を保てずに潰れることがあるので、`inline-size` と `block-size` の両方で指定します（17-3）。
+  - 補足: `inline-size` と `block-size` に同じ値を書いて正方形を作らず、`inline-size` と `aspect-ratio: 1` で書きます。行の高さに合わせる `1lh`、読み込み中の表示の `2lh` のように、高さそのものが行数で決まる指定は対象外です。`appearance: none` で描き直す `input` 要素は、`aspect-ratio` で大きさを決めると Safari で比率を保てずに潰れることがあるので、`inline-size` と `block-size` の両方で指定します（17-3）。画面全体を覆う `position: fixed` の背景やダイアログのように、高さが画面の大きさで決まる指定（`100lvb`、`100%`）も対象外です。
   - 詳細: 11-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/defensive.mdx）
 - 【必須】`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にする。（`minmax-min-capped-at-100-percent`）
   - 理由: 親がその長さより狭くなったときに、はみ出すのを防ぐため。
@@ -1208,7 +1208,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 4-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【必須】`@layer` を使えない場合に限り、ベーススタイルのセレクタを `:where()` で包み、詳細度を 0 にする（例：`:where(a:any-link)`）。（`where-for-base-selectors`）
   - 理由: レイヤーがなければ優先順位が読み込む順番と詳細度だけで決まり、`a:any-link`（0.1.1）のような指定をクラス1つでは上書きできなくなるため。
-  - 補足: `@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。
+  - 補足: `@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。上書きされる前提のデフォルト値（リセットで消した `list-style-type` を戻す `:where(ul, ol)` など）は、`@layer` や `@scope` の中でも `:where()` で詳細度を 0 にしてかまいません（`is-for-state-selectors`）。
   - 詳細: 4-2 セレクタで詳細度を設計する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/cascade/selectors.mdx）
 - 【推奨】`:is()`、`:not()`、`:has()` の引数には、詳細度の高いセレクタを混ぜない。（`is-keeps-highest-specificity`）
   - 理由: これらの擬似クラスの詳細度は、引数の中でいちばん高いセレクタの詳細度になるため。
@@ -1831,7 +1831,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 9-4 ネストの書き方（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting.mdx）
 - 【推奨】直下の子へネストしたルール（`& > ._icon`）には、`flex-shrink`、`grid-area`、`align-self` のように親のレイアウトによって意味が決まる宣言だけを書き、子自身の大きさや見た目は子のルールに書く。（`nest-child-placement-only`）
   - 理由: 親のレイアウトを変えるときに一緒に見直す宣言が親のルールの中にまとまり、子を別の親に移しても子自身の見た目が失われないため。
-  - 補足: 子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第10章のルール `parent-owns-child-placement` で扱います。
+  - 補足: 子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第10章のルール `parent-owns-child-placement` で扱います。親が `display: contents` にした要素を挟んでいても、その箱がないので子は実質的な直下の子です。サブグリッドの `article` の `grid-column` は、親の `ul` のルールに `& article` と書きます。
   - 詳細: 9-5 ネストの判断基準（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/notation/nesting-criteria.mdx）
 - 【推奨】詳細度の違うセレクタを並べたセレクタリスト（`button, ._selected-count`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。（`no-nesting-under-selector-list`）
   - 理由: `&` の詳細度は親のセレクタリストを `:is()` で包んだものと同じになり、詳細度の低いほうのセレクタで一致した要素にも、リストの中でいちばん高い詳細度が付くため。
@@ -2150,7 +2150,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/defensive.mdx）
 - 【推奨】要素の高さは `block-size` で固定しない。一定の高さが要るときは `min-block-size` で下限を、上限が要るときは `max-block-size` で上限を決め、縦横比が決まっている要素（画像、動画、擬似要素で描くアイコンなど）は `aspect-ratio` で決める。（`min-block-size-over-fixed-height`）
   - 理由: 内容が増えたときや、ユーザーが文字サイズを大きくしたときにも、中身があふれないため。`aspect-ratio` なら幅に応じて高さが決まり、どの幅でも比率が保たれる。
-  - 補足: `inline-size` と `block-size` に同じ値を書いて正方形を作らず、`inline-size` と `aspect-ratio: 1` で書きます。行の高さに合わせる `1lh`、読み込み中の表示の `2lh` のように、高さそのものが行数で決まる指定は対象外です。`appearance: none` で描き直す `input` 要素は、`aspect-ratio` で大きさを決めると Safari で比率を保てずに潰れることがあるので、`inline-size` と `block-size` の両方で指定します（17-3）。
+  - 補足: `inline-size` と `block-size` に同じ値を書いて正方形を作らず、`inline-size` と `aspect-ratio: 1` で書きます。行の高さに合わせる `1lh`、読み込み中の表示の `2lh` のように、高さそのものが行数で決まる指定は対象外です。`appearance: none` で描き直す `input` 要素は、`aspect-ratio` で大きさを決めると Safari で比率を保てずに潰れることがあるので、`inline-size` と `block-size` の両方で指定します（17-3）。画面全体を覆う `position: fixed` の背景やダイアログのように、高さが画面の大きさで決まる指定（`100lvb`、`100%`）も対象外です。
   - 詳細: 11-3 変化に強いレイアウト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/defensive.mdx）
 - 【必須】`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にする。（`minmax-min-capped-at-100-percent`）
   - 理由: 親がその長さより狭くなったときに、はみ出すのを防ぐため。

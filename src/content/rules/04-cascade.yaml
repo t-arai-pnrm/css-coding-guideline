@@ -72,7 +72,7 @@
   level: 必須
   rule: '`@layer` を使えない場合に限り、ベーススタイルのセレクタを `:where()` で包み、詳細度を 0 にする（例：`:where(a:any-link)`）。'
   reason: 'レイヤーがなければ優先順位が読み込む順番と詳細度だけで決まり、`a:any-link`（0.1.1）のような指定をクラス1つでは上書きできなくなるため。'
-  note: '`@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。'
+  note: '`@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。上書きされる前提のデフォルト値（リセットで消した `list-style-type` を戻す `:where(ul, ol)` など）は、`@layer` や `@scope` の中でも `:where()` で詳細度を 0 にしてかまいません（`is-for-state-selectors`）。'
   aiProne: true
   page: cascade/selectors
   since: 0.1.0
