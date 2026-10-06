@@ -3,6 +3,9 @@
     :scope {
       display: block grid;
       gap: 24px;
+
+      /* fixed の B が置かれる上端を空けて、説明文に重ならないようにする */
+      padding-block-start: 40px;
     }
 
     section {
@@ -20,9 +23,9 @@
       padding: 8px;
       border: 1px dashed oklch(60% 0 0deg);
 
-      /* sticky の B がずれる余地を作るため、枠を高くする */
+      /* sticky の B がずれる余地を作るため、枠をデモの高さより高くする */
       &:has(> [data-position="sticky"]) {
-        min-block-size: calc(320 / 16 * 1rem);
+        min-block-size: calc(480 / 16 * 1rem);
       }
 
       & > * + * {
