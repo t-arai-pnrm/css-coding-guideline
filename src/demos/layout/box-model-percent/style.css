@@ -1,0 +1,30 @@
+@layer components {
+  @scope (.scoped.box-model-percent) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: start;
+    }
+
+    ._parent {
+      border: 1px dashed oklch(60% 0 0deg);
+
+      &[data-size="narrow"] {
+        inline-size: calc(160 / 16 * 1rem);
+      }
+
+      &[data-size="wide"] {
+        inline-size: calc(320 / 16 * 1rem);
+      }
+    }
+
+    /* 上下の padding の % も、親の幅に対する割合になる */
+    ._child {
+      padding-block: 10%;
+      background-color: oklch(85% 0.08 250deg);
+      font-size: calc(14 / 16 * 1rem);
+      text-align: center;
+    }
+  }
+}

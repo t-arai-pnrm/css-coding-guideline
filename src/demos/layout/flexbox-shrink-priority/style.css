@@ -10,13 +10,24 @@
       gap: 8px;
     }
 
-    h3 {
+    h3,
+    ._note {
       font-size: calc(14 / 16 * 1rem);
     }
 
     ._columns {
+      position: relative;
       display: block flex;
       gap: 24px;
+
+      /* メインの flex-basis の位置に線を引き、メインがそこから縮んだかを見せる */
+      &::after {
+        content: "";
+        position: absolute;
+        inset-block: -4px;
+        inset-inline-start: calc(800 / 16 * 1rem - 1px);
+        border-inline-start: 2px dashed oklch(55% 0.2 25deg);
+      }
 
       & > ._main {
         flex-grow: 1;
@@ -55,14 +66,14 @@
       font-weight: 700;
       font-variant-numeric: tabular-nums;
 
-      /* 長さを長さで割れるブラウザでだけ、列の幅を rem の整数で表示する */
+      /* 長さを長さで割れるブラウザでだけ、列の幅を px の整数で表示する */
       @supports (z-index: calc(1px / 1px)) {
         display: block flow;
-        counter-reset: --rem calc(100cqi / 1rem);
+        counter-reset: --px calc(100cqi / 1px);
       }
 
       &::before {
-        content: "幅：約" counter(--rem) "rem";
+        content: "幅：約" counter(--px) "px";
       }
     }
   }

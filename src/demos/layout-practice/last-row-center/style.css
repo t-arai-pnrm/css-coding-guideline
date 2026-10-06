@@ -40,10 +40,13 @@
       @container --scoped (inline-size >= calc(768 / 16 * 1rem)) {
         --_column: 3;
       }
+
+      & > li {
+        flex-basis: calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column));
+      }
     }
 
     li {
-      flex-basis: calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column));
       padding: 16px;
       border-radius: 8px;
       background-color: oklch(94% 0.03 250deg);

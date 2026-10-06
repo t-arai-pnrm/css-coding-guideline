@@ -1,0 +1,39 @@
+@layer components {
+  @scope (.scoped.flexbox-wrap-gap) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._tags {
+      display: block flex;
+      gap: 8px;
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      &[data-wrap="wrap"] {
+        flex-wrap: wrap;
+      }
+    }
+
+    ._tag {
+      /* タグの中では折り返さず、中身の幅より縮めない */
+      min-inline-size: fit-content;
+      padding-block: 4px;
+      padding-inline: 12px;
+      border-radius: 9999px;
+      background-color: oklch(90% 0.05 250deg);
+      font-size: calc(14 / 16 * 1rem);
+      white-space: nowrap;
+    }
+  }
+}

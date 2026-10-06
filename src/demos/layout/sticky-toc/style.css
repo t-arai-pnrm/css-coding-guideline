@@ -4,6 +4,11 @@
       display: block grid;
       grid-template-columns: 1fr calc(160 / 16 * 1rem);
       gap: 24px;
+
+      & > nav {
+        /* セルの高さまで伸びないようにして、セルの中でずらす余地を作る */
+        align-self: start;
+      }
     }
 
     article {
@@ -14,9 +19,6 @@
     nav {
       position: sticky;
       inset-block-start: 16px;
-
-      /* セルの高さまで伸びないようにして、セルの中でずらす余地を作る */
-      align-self: start;
       overflow-y: auto;
       max-block-size: calc(100svb - 16px * 2);
       padding: 12px;

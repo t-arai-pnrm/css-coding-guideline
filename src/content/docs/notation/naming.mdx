@@ -260,14 +260,14 @@ BEMなどの命名規則と、本書の命名が分かれるところもあり�
     grid-template-areas:
       "--image"
       "--body";
-  }
 
-  ._image {
-    grid-area: --image;
-  }
+    & > ._image {
+      grid-area: --image;
+    }
 
-  ._body {
-    grid-area: --body;
+    & > ._body {
+      grid-area: --body;
+    }
   }
 }
 ```

@@ -13,6 +13,10 @@ import modesHtml from '../../../demos/layout/margin-collapse-modes/index.html?ra
 import modesCss from '../../../demos/layout/margin-collapse-modes/style.css?raw';
 import emptyHtml from '../../../demos/layout/margin-collapse-empty/index.html?raw';
 import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw';
+import sizesHtml from '../../../demos/layout/margin-collapse-sizes/index.html?raw';
+import sizesCss from '../../../demos/layout/margin-collapse-sizes/style.css?raw';
+import blockedHtml from '../../../demos/layout/margin-collapse-blocked/index.html?raw';
+import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?raw';
 
 通常フローでは、ブロック方向で隣り合う2つ以上の `margin` は、足し算されず、1つにまとまります。これをマージンの相殺（margin collapsing）と呼びます。まとまった余白の大きさは、正の値どうしなら大きいほうの値です。上の要素の `margin-block-end: 24px` と下の要素の `margin-block-start: 40px` が隣り合えば、間は64pxではなく40pxになります。
 
@@ -51,9 +55,28 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 2つ目の場面は、親と最初の子、親と最後の子です。親に `border-block-start` と `padding-block-start` がなく、最初の子の前に文字もなければ、子の `margin-block-start` は親の `margin-block-start` と隣り合い、相殺します。親の `margin-block-start` が0でも相殺は起き、子の余白が親の外へ出ます。下の端でも同じことが起きますが、こちらは親の `block-size` が `auto` のときに限られます。
 
+```css title="🙅‍♂ Not Recommended: 背景の内側の余白を、最初の子の margin で取ろうとする"
+/* 🙅‍♂ Not Recommended */
+._section {
+  background-color: oklch(96% 0.02 250deg);
+}
+
+._heading {
+  margin-block-start: 32px;
+}
+```
+
+この例では、`._section` が `padding` と `border` を持たないので、見出しの32pxはセクションの外側にできます。
+
 3つ目の場面は、中身のない要素です。`padding`、`border`、中身のいずれもなく、高さが0の要素では、自分の `margin-block-start` と `margin-block-end` が隣り合って1つにまとまり、さらに前後の兄弟の `margin` と相殺します。空の要素の `margin` は、前後の余白を通り抜けて1か所に吸収されるわけです。CMSの本文に入った空の `<p>` が余白を増やさないのは、この規則によるものです。
 
 <Figure src="layout/margin-collapse-cases" alt="margin が相殺する3つの場面を、上から順に3つの図で示したもの。margin は、アクセント色の半透明の破線の帯で描いている。1つ目は兄弟どうしで、上の要素Aの下の24pxの帯と、下の要素Bの上の40pxの帯が重なって1つになり、間は64pxではなく40pxになる。2つ目は親と最初の子で、親にborderとpaddingがないため、最初の子の上の24pxの帯が親の外へ出て、親の背景の外に空きができる。3つ目は中身のない要素で、高さ0の空の要素の上下のmarginも、前後のmarginと1つにまとまり、AとBの間は最大の32pxになる。" />
+
+次のデモは、段落、空の `<p>`、`<hr>` を並べた本文です。左は通常フローで、`* + *` で2つ目以降の要素に `margin-block-start: 16px` を付けています。右はGridで、`gap: 16px` で間隔を作っています。`<hr>` は、どちらも上下に24pxの `margin` を持ちます。
+
+<Demo title="空の p と hr の余白は、通常フローでは相殺し、Grid では gap に足される" html={emptyHtml} css={emptyCss} variant="neutral" />
+
+通常フローでは、空の `<p>` の `margin` が前後の16pxと相殺して通り抜けるので、1つ目と2つ目の段落の間は16pxです。`<hr>` は `border` を持つので通り抜けませんが、自分の24pxと前後の16pxが相殺し、線の上下はどちらも24pxになります。Gridでは、空の `<p>` の前後に `gap` が1つずつ空いて32pxになり、`<hr>` の上下は16pxと24pxを足した40pxになります。
 
 ## 相殺した余白の大きさ
 
@@ -65,13 +88,53 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 <Figure src="layout/margin-collapse-sizes" alt="相殺した margin の大きさを、数直線の上の棒で示した図。縦の破線が0で、右が正の値、左が負の値。灰色の棒が相殺に加わる margin、アクセント色の棒が相殺した結果。1行目の正と正は、24pxと40pxが相殺して、大きいほうの40px。2行目の正と負は、30pxと-20pxを足して10px。3行目の負と負は、-25pxと-75pxのうち、絶対値の大きいほうの-75px。4行目の3つ以上は、40pxと-16pxと24pxで、最大の正の値40pxから、負の値の絶対値の最大16pxを引いて24px。" />
 
-{/* 要確認: ブラウザでの実測は権限で止められたため行っていない。この節の数値は CSS 2.2 の 8.3.1 の計算規則にもとづく */}
+次のデモでは、2つの兄弟の `margin` を3通りに組み合わせています。正と正では間が40px、正と負では10pxになり、負と負ではBがAに24px重なります。
+
+<Demo title="正と負の組み合わせで、相殺した余白の大きさが変わる" html={sizesHtml} css={sizesCss} variant="neutral" />
 
 親子と兄弟の相殺が重なると、1か所に4つ以上の `margin` が集まることもあります。加わる `margin` が増えるほど、どの指定で間隔が決まっているのかを追いにくくなります。本書が子の `margin` で間隔を作らない理由の1つは、この追いにくさです。
+
+次の悪い例は、見出しの直後だけ間を詰めるために、段落に負の `margin` を足したものです。間は24pxと-16pxを足した8pxになりますが、その値は相殺の計算を知らないと読み取れません。
+
+```css title="🙅‍♂ Not Recommended: 相殺の計算に頼って、負の margin で間を詰める"
+/* 🙅‍♂ Not Recommended */
+._heading {
+  margin-block-end: 24px;
+}
+
+._heading + ._lead {
+  margin-block-start: -16px;
+}
+```
+
+```css title="🙆‍♂ Recommended: 見出しの直後の間は、後ろの要素の margin-block-start だけで決める"
+._body {
+  & > * + * {
+    margin-block-start: 24px;
+  }
+
+  & > :is(:heading, h1, h2, h3, h4, h5, h6) + * {
+    margin-block-start: 8px;
+  }
+}
+```
+
+見出しに下の `margin` を付けなければ、相殺に加わる値は後ろの要素の1つだけになり、指定した8pxがそのまま間になります。
 
 ## 相殺が起きない場面
 
 `margin` の間に何かが挟まると、相殺は起きません。親と子の間なら、親の `padding` や `border` が1pxでもあれば、子の `margin` は親の内側に留まります。兄弟の間に文字だけの行があったり、`<br>` が挟まったりした場合も同じです。インラインの要素や `inline flow-root` の要素も行を作るので、その前後の `margin` は相殺しません。
+
+```css title="🙆‍♂ Recommended: 親の padding が挟まると、子の margin は親の内側に留まる"
+._section {
+  padding-block: 16px;
+  background-color: oklch(92% 0.04 250deg);
+}
+```
+
+次のデモでは、同じ `margin-block-start: 24px` の子を2つの親に入れています。`padding` のない親では、24pxが親の外へ出て、点線の枠と背景の間に空きができます。`padding-block: 16px` の親では、24pxが `padding` の内側に留まり、背景の上端から子までが40pxになります。
+
+<Demo title="親の padding が挟まると、子の margin は親の外へ出ない" html={blockedHtml} css={blockedCss} variant="neutral" />
 
 高さの指定は、片側にだけ影響します。親に `block-size` や0でない `min-block-size` を指定すると、最後の子の `margin-block-end` は親の外へ出なくなります。一方で、最初の子の `margin-block-start` は、親の高さに関係なく親の外へ出ます。空の要素も、0より大きい `block-size` か `min-block-size` を指定すると上下の `margin` が隣り合わなくなり、通り抜けは起きません（値が0なら、指定していても通り抜けます）。
 
@@ -105,23 +168,15 @@ import emptyCss from '../../../demos/layout/margin-collapse-empty/style.css?raw'
 
 `overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が効かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が効かなくなる理由は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
 
-## コード例とデモ
-
 次のデモでは、同じ2つの子要素を、3種類の親に入れています。1つ目の子は上に32px、下に24px、2つ目の子は上に40px、下に32pxの `margin` を持ちます。点線の枠は親を囲む要素で、親の外へ出た余白がその内側に見えます。
 
 <Demo title="通常フロー、flow-root、Grid で、同じ margin の相殺の仕方が変わる" html={modesHtml} css={modesCss} variant="neutral" />
 
 通常フローの親では、最初の子の上の32pxと最後の子の下の32pxが親の外へ出て、枠と背景の間に空きができます。子どうしの間は、24pxと40pxが相殺して40pxです。`display: block flow-root` の親では、32pxが背景の内側に収まりますが、子どうしの間は40pxのままです。Gridの親では、親子と兄弟のどちらも相殺せず、子どうしの間は24pxと40pxを足した64pxになります。
 
-次のデモは、段落、空の `<p>`、`<hr>` を並べた本文です。左は通常フローで、`* + *` で2つ目以降の要素に `margin-block-start: 16px` を付けています。右はGridで、`gap: 16px` で間隔を作っています。`<hr>` は、どちらも上下に24pxの `margin` を持ちます。
-
-<Demo title="空の p と hr の余白は、通常フローでは相殺し、Grid では gap に足される" html={emptyHtml} css={emptyCss} variant="neutral" />
-
-通常フローでは、空の `<p>` の `margin` が前後の16pxと相殺して通り抜けるので、1つ目と2つ目の段落の間は16pxです。`<hr>` は `border` を持つので通り抜けませんが、自分の24pxと前後の16pxが相殺し、線の上下はどちらも24pxになります。Gridでは、空の `<p>` の前後に `gap` が1つずつ空いて32pxになり、`<hr>` の上下は16pxと24pxを足した40pxになります。
-
 ## 補足と注意点
 
-余白を作るために、空の要素や `<p>&nbsp;</p>` を置くのは避けます。空の要素は、上のデモのとおり通常フローでは相殺で消え、`gap` で並べた領域では `gap` の2つ分の間隔になり、置き場所の親によって結果が変わります。`&nbsp;` だけの段落や `<br>` は1行を作るので、余白の大きさが行の高さで決まり、文字の大きさを変えると一緒に変わります。
+余白を作るために、空の要素や `<p>&nbsp;</p>` を置くのは避けます。空の要素は、「相殺が起きる場面」のデモのとおり通常フローでは相殺で消え、`gap` で並べた領域では `gap` の2つ分の間隔になり、置き場所の親によって結果が変わります。`&nbsp;` だけの段落や `<br>` は1行を作るので、余白の大きさが行の高さで決まり、文字の大きさを変えると一緒に変わります。
 
 {/* 要確認: 出典なし（空の要素で余白を作らない方針） */}
 

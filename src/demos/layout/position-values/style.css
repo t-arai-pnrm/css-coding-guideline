@@ -1,0 +1,64 @@
+@layer components {
+  @scope (.scoped.position-values) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._box {
+      /* absolute の B の包含ブロックを、この枠にする */
+      position: relative;
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      /* sticky の B がずれる余地を作るため、枠を高くする */
+      &:has(> [data-position="sticky"]) {
+        min-block-size: calc(320 / 16 * 1rem);
+      }
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._item {
+      inline-size: calc(80 / 16 * 1rem);
+      padding-block: 4px;
+      padding-inline: 8px;
+      background-color: oklch(92% 0.02 250deg);
+    }
+
+    ._target {
+      /* 同じ inset を指定し、値ごとの働き方の違いだけを見せる */
+      inset-block-start: 16px;
+      inset-inline-start: 48px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+
+      &[data-position="relative"] {
+        position: relative;
+      }
+
+      &[data-position="absolute"] {
+        position: absolute;
+      }
+
+      &[data-position="fixed"] {
+        position: fixed;
+      }
+
+      &[data-position="sticky"] {
+        position: sticky;
+      }
+    }
+  }
+}

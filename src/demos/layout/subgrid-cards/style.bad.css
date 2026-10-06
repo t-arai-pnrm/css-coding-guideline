@@ -1,0 +1,38 @@
+/* 🙅‍♂ Not Recommended */
+@layer components {
+  @scope (.scoped.card-grid) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 24px 16px;
+    }
+
+    article {
+      /* カードごとに縦に並べ、本文を伸ばしてボタンを下端に寄せる */
+      display: block flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    h2 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    p {
+      /* ボタンの位置はそろうが、見出しの高さはカードごとに違うまま */
+      flex-grow: 1;
+    }
+
+    a {
+      align-self: start;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

@@ -1,0 +1,53 @@
+@layer components {
+  @scope (.scoped.card-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+
+  @scope (.scoped.product-card) to (.scoped) {
+    :scope {
+      /* バッジの包含ブロックを、カードのルートに作る */
+      position: relative;
+      padding-block: 16px;
+      padding-inline: 16px 80px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+
+      /* 比較のため、1つ目のカードだけ包含ブロックを作らない */
+      &[data-demo="without-containing-block"] {
+        position: static;
+      }
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    h4 {
+      font-size: calc(16 / 16 * 1rem);
+    }
+
+    ._badge {
+      position: absolute;
+      inset-block-start: 8px;
+      inset-inline-end: 8px;
+      padding-block: 2px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(55% 0.18 25deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(12 / 16 * 1rem);
+    }
+  }
+}

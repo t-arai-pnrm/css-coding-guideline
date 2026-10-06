@@ -1,0 +1,42 @@
+@layer components {
+  @scope (.scoped.normal-flow-directions) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    /* 縦書きの親の論理プロパティは親自身の書字方向で解釈されるので、見出しとの間は gap で空ける */
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._parent {
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+
+      &[data-writing-mode="vertical"] {
+        /* 縦書きのインライン方向は上から下なので、この指定が物理的な高さになる */
+        inline-size: 200px;
+        writing-mode: vertical-rl;
+      }
+    }
+
+    /* 同じ論理プロパティが、書字方向に合わせて向きを変える */
+    ._block {
+      padding-inline-start: 8px;
+      border-inline-start: 4px solid oklch(45% 0.15 260deg);
+      background-color: oklch(92% 0.04 250deg);
+    }
+  }
+}

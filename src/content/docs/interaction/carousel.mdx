@@ -45,10 +45,10 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
     @media (prefers-reduced-motion: no-preference) {
       scroll-behavior: smooth;
     }
-  }
 
-  ._slide {
-    scroll-snap-align: center;
+    & > ._slide {
+      scroll-snap-align: center;
+    }
   }
 }
 ```
@@ -145,9 +145,16 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 
 ```css title="🙆‍♂ Recommended: 止まっていないスライドの中身を不活性にする"
 @scope (.scoped.css-carousel) to (.scoped) {
+  ul {
+    /* ... */
+
+    & > ._slide {
+      scroll-snap-align: center;
+    }
+  }
+
   ._slide {
     container: --slide / scroll-state;
-    scroll-snap-align: center;
   }
 
   article {

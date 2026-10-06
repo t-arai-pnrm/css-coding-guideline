@@ -1,0 +1,34 @@
+@layer components {
+  @scope (.scoped.sticky-inset) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._section {
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      & > * + * {
+        margin-block-start: 1rlh;
+      }
+    }
+
+    ._heading {
+      position: sticky;
+
+      /* 留める位置を決める。auto のままの軸では relative と同じ動きになる */
+      inset-block-start: 0;
+      padding-block: 4px;
+      padding-inline: 8px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* 比較のため、1つ目の見出しだけ inset を指定しない */
+      &[data-demo="without-inset"] {
+        inset-block-start: auto;
+      }
+    }
+  }
+}

@@ -16,6 +16,16 @@ import inlineHtml from '../../../demos/layout/box-model-inline/index.html?raw';
 import inlineCss from '../../../demos/layout/box-model-inline/style.css?raw';
 import outlineHtml from '../../../demos/layout/box-model-outline/index.html?raw';
 import outlineCss from '../../../demos/layout/box-model-outline/style.css?raw';
+import percentHtml from '../../../demos/layout/box-model-percent/index.html?raw';
+import percentCss from '../../../demos/layout/box-model-percent/style.css?raw';
+import marginAutoHtml from '../../../demos/layout/box-model-margin-auto/index.html?raw';
+import marginAutoCss from '../../../demos/layout/box-model-margin-auto/style.css?raw';
+import unsetHtml from '../../../demos/layout/box-model-unset-box-sizing/index.html?raw';
+import unsetCss from '../../../demos/layout/box-model-unset-box-sizing/style.css?raw';
+import intrinsicHtml from '../../../demos/layout/box-model-intrinsic/index.html?raw';
+import intrinsicCss from '../../../demos/layout/box-model-intrinsic/style.css?raw';
+import minMaxHtml from '../../../demos/layout/box-model-min-max/index.html?raw';
+import minMaxCss from '../../../demos/layout/box-model-min-max/style.css?raw';
 
 要素は、内側から順に、内容、`padding`、`border`、`margin` の4つの領域を持つ箱（ボックス）として描かれます。`inline-size` がどの領域までの幅を指すかは `box-sizing` で決まり、本書ではkiso.cssに合わせて、すべての要素を `border-box` にしています。指定した幅は、`border` の外周までの幅です。
 
@@ -43,6 +53,10 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 ボックスのいちばん内側は、文字や子要素が置かれる内容の領域です。その外側に、内容と枠の間を空ける `padding`、枠線を描く `border`、ほかのボックスとの間を空ける `margin` の領域が順に重なります。`background-clip` の初期値は `border-box` なので、背景色は `border` の下まで塗られ、破線の枠線の隙間からも見えます。
 
+次のデモは、ボックスの4つの領域を色分けしたものです。内容の領域は緑、`padding` の領域は青、`margin` の領域は親の斜線で表しています。
+
+<Demo title="ボックスの4つの領域と、背景が描かれる範囲" html={areasHtml} css={areasCss} />
+
 `margin` の領域には、要素自身の背景は描かれず、クリックの対象にもなりません。ボタンの押せる範囲を広げるときに `margin` ではなく `padding` を使うのは、このためです。縦に並んだブロックの間では、上下の `margin` が足されずに大きいほうだけが残ることがあり、この現象は「[7-5 マージンの相殺](/layout/margin-collapse/)」で説明しています。
 
 `box-sizing` は、`inline-size` と `block-size` がどの領域の大きさを指すかを決めます。初期値の `content-box` では内容の領域を指し、`border-box` では `border` の外周までを指します。kiso.cssは、全称セレクタと `::before`、`::after` を `border-box` にしています（「[8-1 壊さないリセット](/reset/kiso/)」）。そのため、`inline-size: 50%` の要素は、`padding` をいくつにしても親の半分に収まります。
@@ -54,6 +68,10 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
   border: 1px solid oklch(85% 0 0deg);
 }
 ```
+
+次のデモでは、同じ240px相当の `inline-size` を指定した2つの要素を、`content-box` と `border-box` で比べています。どちらも左右に24pxの `padding` と8pxの `border` を持ちます。`content-box` の要素は上の帯より64px広い304pxになり、`border-box` の要素は帯と同じ幅に収まります。
+
+<Demo title="同じ inline-size でも、box-sizing によって全体の幅が変わる" html={sizingHtml} css={sizingCss} />
 
 `content-box` に戻すのは、内容の幅を固定したい要素だけです。その代表が、次に説明する、最大幅と左右の `padding` で中央に寄せる要素です。
 
@@ -84,6 +102,10 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
+次のデモでは、`max-inline-size` が240px相当で左右に20pxの `padding` を持つ2つの要素を比べています。緑が内容の領域です。`border-box` のままの要素では内容の幅が200pxに減り、`box-sizing: unset` の要素では内容の幅が240pxのまま、`padding` を含めた全体が280pxになります。
+
+<Demo title="box-sizing を unset にすると、最大幅が内容の幅になる" html={unsetHtml} css={unsetCss} variant="neutral" />
+
 `unset` は、継承するプロパティでは親の値を、継承しないプロパティでは初期値を使うキーワードで、継承しない `box-sizing` では初期値の `content-box` になります。本書で `content-box` と書かずに `unset` と書くのは、「ベーススタイルの `border-box` を取り消す」という意図を宣言で示すためです。`content-box` と書くと、その要素のためにボックスの数え方を選んだように読めます。同じ理由で、「[17-3 フォーム部品](/interaction/forms/)」でも、行数で高さを決めるテキストエリアに `box-sizing: unset` を書いています。
 
 `content-box` へ戻した要素で `inline-size: 100%` を指定すると、`padding` の分だけ親からはみ出します。幅は `auto` のままにし、上限だけを `max-inline-size` で決めます（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-no-redundant-width-100)」）。また、この方法は、画面幅いっぱいに広げる子要素を持たない要素に向いています。広げる子要素が混ざるページのレイアウトは、左右に余白の列を持つGridで組みます（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
@@ -92,7 +114,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 `inline-size` と `block-size` の初期値は `auto` です。通常フローのブロックでは、`inline-size: auto` は包含ブロックの幅から左右の `margin` を引いた残りいっぱいの幅、`block-size: auto` は中身を収める高さを表します。一方、`float` の要素、`inline flow-root` の要素、左右の片側しか位置を指定していない絶対配置の要素、横に並ぶフレックスアイテムの `inline-size: auto` は、中身に合わせた幅を表します。絶対配置の要素でも `inset-inline` で左右の両方を指定すると、`auto` の幅は包含ブロックいっぱいに広がり、縦に並ぶフレックスアイテムも `align-items` の初期値（`stretch`）によってコンテナの幅まで広がります。`auto` の意味は、要素がどのレイアウトの方式の中にあるかと、位置や揃え方の指定で変わります（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
 
-中身に合わせた幅は、キーワードで明示できます。`min-content` は、折り返せる位置ですべて折り返したときの幅で、英語なら最も長い単語の幅です。日本語は文字の間で折り返せるので、ほぼ1文字の幅になります。`max-content` は、一度も折り返さないときの幅です。
+中身に合わせた幅は、キーワードで明示できます。`min-content` は、折り返せる位置ですべて折り返したときの幅で、英語なら最も長い単語の幅です。日本語は文字の間で折り返せるので、ほぼ1文字の幅になります。kiso.cssのように `overflow-wrap: anywhere` を指定していると、英単語の途中でも折り返せるので、英語でもほぼ1文字の幅になります。`max-content` は、一度も折り返さないときの幅です。
 
 `fit-content` は、使える幅の中で `max-content` まで広がり、使える幅が狭ければその幅に縮み、`min-content` より狭くはならない値です。ラベルやバッジのように、中身の幅だけを占め、親が狭いときは折り返してほしい要素に使います。
 
@@ -104,6 +126,10 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
   background-color: oklch(95% 0.03 250deg);
 }
 ```
+
+次のデモでは、同じ文の要素を、中身より狭い120pxの枠に入れています。`min-content` は1文字ずつ折り返し、`max-content` は折り返さずに枠からはみ出し、`fit-content` は枠の幅まで広がってそこで折り返します。
+
+<Demo title="min-content、max-content、fit-content の幅の違い" html={intrinsicHtml} css={intrinsicCss} variant="neutral" widths={[]} />
 
 幅を中身に合わせる目的で `display: inline-block` や `float` に変えると、要素が前後の文字と同じ行に並ぶなど、外側の振る舞いまで変わります。`fit-content` なら、ブロックのまま幅だけが変わります。{/* 要確認: 出典なし */}2026年10月の時点で、すべての主要なブラウザが対応しています。
 
@@ -128,21 +154,76 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 `min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[11-3 変化に強いレイアウト](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)」）。
 
+次のデモでは、幅240pxの親の中に、`inline-size: fit-content` の要素を3つ置いています。1つ目は下限の320pxで親からはみ出し、`min(100%, …)` で書いた2つ目は親の240pxで止まります。3つ目は下限200pxと上限120pxが矛盾し、下限の200pxになります。
+
+<Demo title="固定の下限ははみ出し、下限と上限が矛盾すると下限が勝つ" html={minMaxHtml} css={minMaxCss} variant="neutral" widths={[]} />
+
 ## `%` の基準
 
 `inline-size` の `%` は、包含ブロックの幅に対する割合です。包含ブロックは、通常フローの要素ならいちばん近いブロックの祖先の内容の領域で、絶対配置の要素なら `position` が `static` 以外のいちばん近い祖先の `padding` の領域です（「[7-9 positionの基礎](/layout/positioning/)」）。
 
 `block-size` の `%` は、包含ブロックの高さが決まっているときだけ計算されます。親の高さが中身から決まる場合、子の高さと親の高さが互いに依存して循環するので、`%` は `auto` として扱われます。子の高さを親にそろえるときは、`height: 100%` ではなく、親をGridにして伸ばします（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-stretch-over-height-100)」）。
 
-`padding` と `margin` の `%` は、上下と左右のどちらでも、包含ブロックのインライン方向の大きさ（横書きなら幅）に対する割合です。上下の余白の基準を高さにすると、`block-size` と同じ循環が起きるからです。かつてはこの性質を使い、`padding-top: 56.25%` で16:9の箱を作っていましたが、今は `aspect-ratio` で書きます（「[16-1 画像の配置と読み込み](/decoration/images/#rule-aspect-ratio-for-ratios)」）。
+`padding` と `margin` の `%` は、上下と左右のどちらでも、包含ブロックのインライン方向の大きさ（横書きなら幅）に対する割合です。上下の余白の基準を高さにすると、`block-size` と同じ循環が起きるからです。次のデモでは、幅の違う2つの親の中で、子に同じ `padding-block: 10%` を指定しています。上下の `padding` は、親の幅が160pxなら16px、320pxなら32pxになります。
+
+<Demo title="上下の padding の % も、親の幅に対する割合になる" html={percentHtml} css={percentCss} variant="neutral" widths={[]} />
+
+かつてはこの性質を使い、`padding-top: 56.25%` で16:9の箱を作っていましたが、今は `aspect-ratio` で書きます（「[16-1 画像の配置と読み込み](/decoration/images/#rule-aspect-ratio-for-ratios)」）。
+
+```css title="🙅‍♂ Not Recommended: 上の padding の % で縦横の比率を作る"
+/* 🙅‍♂ Not Recommended */
+._video {
+  position: relative;
+  block-size: 0;
+  padding-top: 56.25%;
+}
+```
+
+```css title="🙆‍♂ Recommended: 縦横の比率は aspect-ratio で書く"
+._video {
+  aspect-ratio: 16 / 9;
+}
+```
 
 ## `margin` の負の値と `auto`
 
 `margin` には負の値を指定できます。`margin-block-start` を負にすると要素は前の要素に重なるように引き上げられ、幅が `auto` のブロックの `margin-inline` を負にすると、その分だけ横に広がります。負のマージンは、コンポジションの子に付いた余白を親の端で打ち消すといった、余白の調整に使います。要素を重ねる目的なら、Gridの同じエリアに置くほうが、重ねたどちらの大きさも親の高さに反映されます（「[11-4 重なりと全幅](/layout-practice/layering/#rule-grid-stack-before-absolute)」）。
 
+次の例では、カードの画像の左右に、カードの `padding` と同じ大きさの負の `margin` を付けています。画像の幅は `auto` のままなので、左右の `padding` の分だけ広がり、カードの端まで届きます。
+
+```css title="🙆‍♂ Recommended: 負の margin で、親の padding を越えて端まで広げる"
+@scope (.scoped.card) to (.scoped) {
+  :scope {
+    --_padding: 24px;
+
+    padding: var(--_padding);
+  }
+
+  ._image {
+    margin-inline: calc(var(--_padding) * -1);
+  }
+}
+```
+
 `margin` の `auto` は、余った空間を受け取る値です。通常フローのブロックでは、`inline-size`、左右の `margin`、`padding`、`border` の合計が包含ブロックの幅と等しくなるように決まります。左右を `auto` にすると、余りが等分されて中央に寄ります（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-margin-inline-auto-centering)」）。通常フローでは上下の `auto` は0として扱われ、上下の中央寄せには使えません。
 
 フレックスアイテムとグリッドアイテムでは、上下の `auto` も余った空間を受け取ります。フレックスアイテムの1つに `margin-inline-start: auto` を付ければ、その要素から後ろが行の末尾に寄ります（「[11-1 レイアウト手法の選び方](/layout-practice/choosing/#rule-flex-auto-margin-for-end-items)」）。
+
+```css title="🙆‍♂ Recommended: auto の margin で、ログインのリンクを行の末尾に寄せる"
+._header {
+  display: block flex;
+  gap: 16px;
+  align-items: center;
+}
+
+._login {
+  margin-inline-start: auto;
+}
+```
+
+次のデモの上は、幅を中身に合わせたブロックの `margin-inline` を `auto` にしたもので、左右の余りが等分されて中央に寄ります。下は3つ並んだフレックスアイテムの最後の1つに `margin-inline-start: auto` を指定したもので、行の余りをすべてその `margin` が受け取ります。
+
+<Demo title="auto の margin が、余った空間を受け取る" html={marginAutoHtml} css={marginAutoCss} variant="neutral" />
 
 ## ボックスの大きさに含まれない `outline` と `box-shadow`
 
@@ -165,6 +246,10 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 フォーカスリングを `outline` で描くのも、この性質によります。リングを付けても周りがずれず、強制カラーモードでも表示が残ります（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
+次のデモでは、1行目のBにだけ `outline` と `box-shadow` を付けています。装飾は隣のAとCに重なって描かれますが、AとCの位置は装飾のない2行目と変わりません。
+
+<Demo title="outline と box-shadow はボックスの大きさに含まれない" html={outlineHtml} css={outlineCss} />
+
 ## インライン要素の `padding` と `margin`
 
 `<span>` や `<a>` のようなインライン要素では、左右の `padding`、`border`、`margin` は前後の文字を押し広げますが、上下の値は行の高さに反映されません。上下の `margin` は無視され、上下の `padding` と `border` は描かれるものの、行の高さは `line-height` だけで決まるので、背景や枠線が前後の行に重なります。インライン要素には、`inline-size` と `block-size` も適用されません。
@@ -173,23 +258,19 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 上下の余白を行の高さに反映させたいときは、要素を `display: inline flow-root`（`inline-block`）にします。外側はインラインのまま、内側がブロックの規則になるので、上下の `padding`、`margin`、`inline-size` がボックスの大きさに反映されます。`<img>` のような置換要素も、インラインのまま上下の値が行の高さに反映されます。
 
-## コード例とデモ
-
-次のデモは、ボックスの4つの領域を色分けしたものです。内容の領域は緑、`padding` の領域は青、`margin` の領域は親の斜線で表しています。破線の `border` の隙間に青い背景が見えるのは、`background-clip` の初期値が `border-box` だからです。
-
-<Demo title="ボックスの4つの領域と、背景が描かれる範囲" html={areasHtml} css={areasCss} />
-
-次のデモでは、同じ240px相当の `inline-size` を指定した2つの要素を、`content-box` と `border-box` で比べています。どちらも左右に24pxの `padding` と8pxの `border` を持ちます。`content-box` の要素は上の帯より64px広い304pxになり、`border-box` の要素は帯と同じ幅に収まります。
-
-<Demo title="同じ inline-size でも、box-sizing によって全体の幅が変わる" html={sizingHtml} css={sizingCss} />
+```css title="🙆‍♂ Recommended: 上下の余白を行の高さに反映させるタグは inline flow-root にする"
+._tag {
+  display: inline flow-root;
+  padding-block: 4px;
+  padding-inline: 8px;
+  border-radius: 4px;
+  background-color: oklch(95% 0.03 250deg);
+}
+```
 
 次のデモは、インライン要素に上下12pxの `padding` と `margin` を付けたものです。1つ目の段落では、背景が前後の行に重なるだけで行の間隔は変わらず、`inline flow-root` にした2つ目の段落では、その行だけ高さが増えています。
 
 <Demo title="インライン要素と inline flow-root の要素で、上下の余白の扱いが違う" html={inlineHtml} css={inlineCss} />
-
-最後のデモでは、1行目のBにだけ `outline` と `box-shadow` を付けています。装飾は隣のAとCに重なって描かれますが、AとCの位置は装飾のない2行目と変わりません。
-
-<Demo title="outline と box-shadow はボックスの大きさに含まれない" html={outlineHtml} css={outlineCss} />
 
 ## 補足と注意点
 

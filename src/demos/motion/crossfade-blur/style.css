@@ -35,12 +35,16 @@
       display: inline grid;
       padding: 12px;
       border-radius: 8px;
+
+      /* 2つのアイコンを、グリッドの同じセルに重ねる */
+      & > ._copy-icon,
+      & > ._copied-icon {
+        grid-area: 1 / 1;
+      }
     }
 
-    /* 2つのアイコンを、グリッドの同じセルに重ねる */
     ._copy-icon,
     ._copied-icon {
-      grid-area: 1 / 1;
       inline-size: 32px;
       fill: none;
       stroke: currentColor;

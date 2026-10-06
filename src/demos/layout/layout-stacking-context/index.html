@@ -1,0 +1,20 @@
+<div class="scoped layout-stacking-context">
+  <section>
+    <h3>親に z-index なし</h3>
+    <div class="_stage">
+      <div class="_parent">
+        <div class="_child">子 z-index: 99</div>
+      </div>
+      <div class="_sibling">親の兄弟 z-index: 2</div>
+    </div>
+  </section>
+  <section>
+    <h3>親に z-index: 1</h3>
+    <div class="_stage">
+      <div class="_parent" data-context>
+        <div class="_child">子 z-index: 99</div>
+      </div>
+      <div class="_sibling">親の兄弟 z-index: 2</div>
+    </div>
+  </section>
+</div>

@@ -100,12 +100,16 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
     &:has(._tab:nth-child(3)[aria-selected="true"]) {
       --_index: 2;
     }
+
+    & > ._list,
+    & > ._highlight {
+      grid-area: 1 / 1;
+    }
   }
 
   ._list,
   ._highlight {
     display: block grid;
-    grid-area: 1 / 1;
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
   }

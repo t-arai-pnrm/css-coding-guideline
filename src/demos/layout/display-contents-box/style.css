@@ -1,0 +1,44 @@
+@layer components {
+  @scope (.scoped.contents-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._grid {
+      display: block grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    ._wrapper {
+      padding: 8px;
+      border: 2px solid oklch(55% 0.18 25deg);
+      background-color: oklch(95% 0.03 25deg);
+
+      /* 継承されるプロパティは、箱をなくしても子に届く */
+      color: oklch(45% 0.18 25deg);
+
+      /* 箱だけをなくし、2 と 3 を ._grid のグリッドアイテムにする。枠線、背景、padding は描かれない */
+      &[data-demo="contents"] {
+        display: contents;
+      }
+    }
+
+    ._item {
+      padding: 8px;
+      border: 1px solid oklch(80% 0 0deg);
+      font-weight: 700;
+      text-align: center;
+    }
+  }
+}

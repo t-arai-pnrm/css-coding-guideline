@@ -4,6 +4,10 @@
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
       gap: 24px 16px;
+
+      & > article {
+        grid-row: span 3;
+      }
     }
 
     article {
@@ -11,11 +15,14 @@
 
       /* 見出し・本文・リンクの3行を、親のグリッドの行に参加させる */
       grid-template-rows: subgrid;
-      grid-row: span 3;
       row-gap: 8px;
       padding: 16px;
       border: 1px solid oklch(85% 0 0deg);
       border-radius: 8px;
+
+      & > a {
+        justify-self: start;
+      }
     }
 
     h2 {
@@ -23,7 +30,6 @@
     }
 
     a {
-      justify-self: start;
       padding-block: 8px;
       padding-inline: 16px;
       border-radius: 4px;

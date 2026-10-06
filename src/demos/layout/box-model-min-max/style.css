@@ -1,0 +1,36 @@
+@layer components {
+  @scope (.scoped.box-model-min-max) to (.scoped) {
+    /* 親の幅を 240px にし、outline で親の端を見せる（大きさに含まれない） */
+    ._parent {
+      display: block grid;
+      grid-template-columns: 100%;
+      gap: 12px;
+      inline-size: min(100%, calc(240 / 16 * 1rem));
+      outline: 1px dashed oklch(60% 0 0deg);
+    }
+
+    ._button {
+      inline-size: fit-content;
+      padding-block: 8px;
+      padding-inline: 12px;
+      background-color: oklch(85% 0.08 250deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* 固定の下限は、親より広いとはみ出す */
+      &[data-limit="fixed"] {
+        min-inline-size: calc(320 / 16 * 1rem);
+      }
+
+      /* 親の幅を上限にした下限は、親の幅で止まる */
+      &[data-limit="capped"] {
+        min-inline-size: min(100%, calc(320 / 16 * 1rem));
+      }
+
+      /* 下限と上限が矛盾すると、下限が勝つ */
+      &[data-limit="conflict"] {
+        min-inline-size: calc(200 / 16 * 1rem);
+        max-inline-size: calc(120 / 16 * 1rem);
+      }
+    }
+  }
+}

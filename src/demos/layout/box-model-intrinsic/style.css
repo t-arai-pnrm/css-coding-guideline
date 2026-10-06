@@ -1,0 +1,46 @@
+@layer components {
+  @scope (.scoped.box-model-intrinsic) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: start;
+    }
+
+    section {
+      display: block grid;
+      gap: 4px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 中身より狭い枠に入れ、枠線で使える幅を見せる */
+    ._frame {
+      inline-size: calc(120 / 16 * 1rem);
+      border: 1px dashed oklch(60% 0 0deg);
+    }
+
+    ._box {
+      padding-inline: 8px;
+      background-color: oklch(85% 0.08 250deg / 80%);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* 折り返せる位置ですべて折り返し、ほぼ1文字の幅になる */
+      &[data-size="min-content"] {
+        inline-size: min-content;
+      }
+
+      /* 折り返さない幅になり、枠からはみ出す */
+      &[data-size="max-content"] {
+        inline-size: max-content;
+      }
+
+      /* 使える幅まで広がり、そこで折り返す */
+      &[data-size="fit-content"] {
+        inline-size: fit-content;
+      }
+    }
+  }
+}

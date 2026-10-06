@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.field-note) to (.scoped) {
+    :scope {
+      position: relative;
+      display: block grid;
+      gap: 4px;
+      justify-items: start;
+      padding-block-end: 40px;
+    }
+
+    input {
+      anchor-name: --field-note;
+      inline-size: calc(280 / 16 * 1rem);
+      max-inline-size: 100%;
+      padding-block: 4px;
+      padding-inline: 8px;
+      border: 1px solid oklch(60% 0 0deg);
+      border-radius: 4px;
+    }
+
+    ._note {
+      padding-block: 4px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(92% 0.08 85deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* input の下端と行頭側の辺にそろえ、幅を input と同じにする */
+      @supports (anchor-name: --field-note) {
+        position: absolute;
+        inset-block-start: anchor(--field-note end);
+        inset-inline-start: anchor(--field-note start);
+        inline-size: anchor-size(--field-note inline);
+        margin-block-start: 4px;
+      }
+    }
+  }
+}

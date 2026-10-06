@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import rankingHtml from '../../../demos/layout/display-contents-ranking/index.html?raw';
 import rankingCss from '../../../demos/layout/display-contents-ranking/style.css?raw';
+import boxHtml from '../../../demos/layout/display-contents-box/index.html?raw';
+import boxCss from '../../../demos/layout/display-contents-box/style.css?raw';
 
 `display: contents` は、要素の箱だけをなくし、その子を親のレイアウトに直接参加させる指定です。要素はDOMに残り、継承も働きますが、背景、境界線、`padding` は描かれなくなります。本書では、この指定を、サブグリッドに参加させるときと、幅によってラッパーの箱を出し入れするときに限って使います。
 
@@ -22,6 +24,10 @@ import rankingCss from '../../../demos/layout/display-contents-ranking/style.css
 `display: contents` を指定した要素は、自分の箱を作りません。子の箱と、`::before` と `::after` の箱は、その要素の親の中に直接置かれたものとして扱われます。親がグリッドなら、孫にあたる要素がグリッドアイテムになります。要素の中に直接書いた文字も、親のグリッドの中で無名のアイテムになります。
 
 なくなるのは箱だけで、要素そのものはDOMに残ります。そのため、`color` や `font-size` のように継承されるプロパティと、カスタムプロパティは、これまでどおり子に継承されます。一方で、箱に対して働く `background-color`、`border`、`padding`、`margin`、`inline-size` は、指定しても何も描かれません。
+
+次のデモは、3列のグリッドの中に、2と3を包むラッパーを置いたものです。ラッパーに `display: contents` を指定すると、2と3がそれぞれ1列を占め、ラッパーの枠線と背景は消えます。文字の色は、ラッパーから継承されたままです。
+
+<Demo title="display: contents の有無で、ラッパーの子がグリッドアイテムになるかが変わる" html={boxHtml} css={boxCss} variant="neutral" />
 
 この性質は、レイアウトの上では便利です。HTMLの入れ子を変えずに、間にある要素だけをレイアウトから外せるからです。ただし、スクリーンリーダーなどの支援技術は、要素の種類から決まる暗黙のロール（`ul` ならリスト、`li` ならリストの項目）を手がかりに内容を伝えます。ブラウザによっては、箱をなくした要素がアクセシビリティツリーから外れ、このロールが伝わらなくなります。
 
@@ -187,8 +193,6 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 
 同じ考え方は、文字組みでも使えます。「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」の改行のユーティリティは、日本語のときだけ `span` を箱にし、ほかの言語では `display: contents` で箱を消しています。条件によって箱の要不要が分かれる場面は、この使いどころにあたります。
 
-## コード例とデモ
-
 次のデモは、よく読まれた記事のランキングです。狭いときは、順位の右にタイトルを置き、その下に著者と日付を並べた2段のカードになります。広いときは、順位、タイトル、著者、日付の4列を、表のようにすべての行でそろえます。幅のボタンで、320px、480px、768pxを切り替えて確かめてください。
 
 <Demo title="ランキングを、狭いときは2段のカード、広いときは4列の表のように並べる" html={rankingHtml} css={rankingCss} widths={[320, 480, 768]} />
@@ -197,13 +201,70 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 
 タイトル、著者、日付をまとめた `._meta` が、出し入れするラッパーです。狭いときは、自分でグリッドを組み、タイトルを1行目に、著者と日付を2行目に置きます。広いときは `display: contents` で箱をなくすので、3つの子が `article` のサブグリッドの2〜4列目に入ります。エリアの指定を狭いときのスタイルクエリの中に書いているのは、広いときの `article` にそのエリアの名前がないからです。名前の見つからないエリアを指定したアイテムは、明示的なグリッドの外に置かれます。
 
+```css title="🙆‍♂ Recommended: 狭いときだけラッパーにグリッドを組ませ、広いときは箱をなくす"
+@scope (.scoped.ranking) to (.scoped) {
+  ._meta {
+    @container style(--_density: --compact) {
+      display: block grid;
+      reading-flow: grid-rows;
+      grid-template:
+        "--title --title"
+        "--author --date"
+        / 1fr max-content;
+      gap: 8px 16px;
+
+      & > ._title {
+        grid-area: --title;
+      }
+
+      & > ._author {
+        grid-area: --author;
+      }
+
+      & > time {
+        grid-area: --date;
+      }
+    }
+
+    @container style(--_density: --spacious) {
+      display: contents;
+    }
+  }
+}
+```
+
 縞模様の背景は、`li` で宣言したカスタムプロパティを、`article` が `background-color` に使っています。`li` は箱をなくしているので背景は描かれませんが、カスタムプロパティは継承されます。幅の切り替えにはスタイルクエリを使っているので、未対応のブラウザでは `._meta` がふつうのブロックになり、タイトル、著者、日付が縦に積まれます。
 
 ## ロールとhidden属性の注意点
 
 箱をなくした要素は、ブラウザによっては暗黙のロールを失います。ロールを持たない `div` や `span` なら、失うものはありません。`li`、`section`、`hgroup` のようにロールを持つ要素の箱をなくすときは、`role` 属性でロールを明示し、スクリーンリーダーで読み上げを確かめます。暗黙のロールと同じ値を `role` に書くのはふだんなら不要な指定ですが、箱をなくした要素には必要です。
 
+```html title="箱をなくす hgroup に、ロールを明示する"
+<hgroup class="_headline" role="group">
+  <h2>…</h2>
+  <p>…</p>
+</hgroup>
+```
+
 `display: contents` は、`hidden` 属性も上書きします。ブラウザのデフォルトスタイルは `[hidden] { display: none; }` という通常の宣言なので、作者のCSSで `li { display: contents; }` と書くと、`hidden` を付けた `li` まで表示されます。本書のリセットCSSであるkiso.cssは、`[hidden]` に `display: none !important` を指定しているので、この問題は起きません。kiso.cssを使わない場合は、同じ指定を自分で書きます（「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」）。
+
+```css title="🙅‍♂ Not Recommended: hidden 属性の指定がブラウザのデフォルトスタイルだけの環境で、li の箱をなくす"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-list) to (.scoped) {
+  li {
+    /* hidden を付けた li も表示される */
+    display: contents;
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: kiso.css を使わない場合は、hidden 属性の指定に !important を付ける"
+@layer reset {
+  [hidden]:not([hidden="until-found" i]) {
+    display: none !important;
+  }
+}
+```
 
 ボタンやリンクのように、フォーカスできる要素には `display: contents` を使いません。箱がないので、フォーカスリングを描く場所がありません。ブラウザによっては、要素がアクセシビリティツリーから外れ、ボタンやリンクとして読み上げられなくなります。
 

@@ -13,6 +13,12 @@ import areaCss from '../../../demos/layout/anchor-position-area/style.css?raw';
 import tryHtml from '../../../demos/layout/anchor-try-fallbacks/index.html?raw';
 import tryCss from '../../../demos/layout/anchor-try-fallbacks/style.css?raw';
 import tryBadCss from '../../../demos/layout/anchor-try-fallbacks/style.bad.css?raw';
+import linkHtml from '../../../demos/layout/anchor-link/index.html?raw';
+import linkCss from '../../../demos/layout/anchor-link/style.css?raw';
+import popoverHtml from '../../../demos/layout/anchor-implicit-popover/index.html?raw';
+import popoverCss from '../../../demos/layout/anchor-implicit-popover/style.css?raw';
+import functionsHtml from '../../../demos/layout/anchor-functions/index.html?raw';
+import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 アンカーポジショニングは、`absolute` か `fixed` の要素を、包含ブロックの辺ではなく、別の要素（アンカー）の辺を基準に置く仕組みです。アンカーに `anchor-name` で名前を付け、配置する要素の `position-anchor` でその名前を参照し、`position-area` で置く領域を選びます。画面の端で収まらないときは、`position-try-fallbacks` で反対側へ切り替えます。
 
@@ -23,6 +29,24 @@ import tryBadCss from '../../../demos/layout/anchor-try-fallbacks/style.bad.css?
 ## 絶対配置だけでは別の要素の隣に置けない
 
 絶対配置の要素は、包含ブロックの辺からの距離で置かれます。ボタンのすぐ下に説明を出すなら、ボタンと説明を1つの要素で包み、その要素に `position: relative` を指定して包含ブロックにします。説明は、その要素の子孫に置くしかありません。
+
+```css title="🙅‍♂ Not Recommended: ボタンと説明を包み、包み込んだ要素の辺から説明の位置を決める"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.button-note) to (.scoped) {
+  :scope {
+    position: relative;
+    display: inline flow-root;
+  }
+
+  ._note {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+  }
+}
+```
+
+この書き方で説明がボタンの下に来るのは、包んだ要素の大きさがボタンと同じ間だけです。包んだ要素にほかの内容を足すと、説明の位置はボタンではなく、包んだ要素の下端に合わせて動きます。
 
 祖先に `overflow: hidden` があると、説明はその範囲で切り取られます。説明をポップオーバーにすれば切り取られませんが、トップレイヤーに表示されるので包含ブロックはビューポートになり、ボタンの位置にはそろえられません。
 
@@ -49,6 +73,10 @@ import tryBadCss from '../../../demos/layout/anchor-try-fallbacks/style.bad.css?
   }
 }
 ```
+
+次のデモでは、入力欄をアンカーにして、その下に説明を置いています。包含ブロックは、入力欄と説明を包むコンポーネントのルートです。
+
+<Demo title="anchor-name と position-anchor で、入力欄の下に説明を置く" html={linkHtml} css={linkCss} />
 
 アンカーには、配置する要素より先にレイアウトが済んでいる要素しかなれません。具体的には、アンカーが配置する要素の包含ブロックの中にあり、同じ包含ブロックに置かれた絶対配置の要素どうしなら、アンカーが文書の順で先にある必要があります。包含ブロックを作っている要素そのものと、その外にある要素は、アンカーにできません。条件を満たすアンカーがなければ、`position-area` は働かず、要素は通常の絶対配置の位置に置かれます。
 
@@ -77,6 +105,10 @@ import tryBadCss from '../../../demos/layout/anchor-try-fallbacks/style.bad.css?
 </span>
 ```
 
+次のデモでボタンを押すと、ポップオーバーがボタンの下に開きます。デモのCSSには、あとの「未対応の環境では読める位置に置く」で説明する、未対応の環境のための `margin` の指定も含めています。
+
+<Demo title="名前を付けずに、開いたボタンの下にポップオーバーを置く" html={popoverHtml} css={popoverCss} height="160px" />
+
 `position-anchor` の初期値 `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。`anchor()` で暗黙のアンカーを参照するときは、`position-anchor: auto` を明示します。初期値が `auto` から `normal` に変わったのは、2026年のChrome 151、Firefox 151、Safari 27です。それより前のChromeとSafari 26では、指定しなくても `anchor()` が暗黙のアンカーを使っていました。
 
 <Baseline id="anchor-positioning" compatKey="html.elements.button.popovertarget.implicit_anchor_reference" name="popovertarget による暗黙のアンカー" />
@@ -102,6 +134,10 @@ import tryBadCss from '../../../demos/layout/anchor-try-fallbacks/style.bad.css?
 この例のように、関数の最初の引数にアンカーの名前を書くと、デフォルトのアンカー以外の要素も参照できます。2つのアンカーの間に要素を広げるような、`position-area` のマス目で表せない配置には、`anchor()` を使います。アンカーの中央にそろえるだけなら、`justify-self: anchor-center` のように、配置のプロパティに `anchor-center` を指定します。
 
 `anchor-size()` は、アンカーの幅や高さを返す関数で、大きさ（`inline-size`、`min-inline-size` など）、`inset`、`margin` のプロパティに書けます。メニューの幅を開いたボタンの幅以上にするなら、`min-inline-size: anchor-size(inline)` と書きます。`padding` などのほかのプロパティに書いた宣言は無効です。
+
+次のデモは、先の例に `inline-size: anchor-size(--field-note inline)` を加え、説明を入力欄の下に、入力欄と同じ幅で置いたものです。
+
+<Demo title="anchor() で入力欄の下端と行頭側の辺にそろえ、anchor-size() で幅を合わせる" html={functionsHtml} css={functionsCss} />
 
 参照できるアンカーがないとき、`anchor()` と `anchor-size()` は、第2引数に書いた代わりの値を使います。代わりの値がなければ、宣言ごと計算値の時点で無効になり、プロパティは初期値に戻ります。`inset` なら初期値の `auto` になるので、要素は `inset` を指定していない絶対配置の要素と同じく、静的位置に置かれます。
 
@@ -170,6 +206,23 @@ import tryBadCss from '../../../demos/layout/anchor-try-fallbacks/style.bad.css?
 カードの中で `position: absolute` を使い、カードに `position: relative` を指定すると、マス目もはみ出しの判定もカードの範囲になります。カードの下端に近いボタンの説明は、画面には十分な空きがあっても、カードからはみ出すので反転します。説明を画面の端まで使って表示したいなら、包含ブロックをビューポートにします。
 
 ポップオーバーはトップレイヤーに表示されるので、祖先の指定にかかわらず、包含ブロックはビューポートになります。祖先の `overflow` で切り取られず、はみ出しも画面の端で判定され、ページのどこにあるボタンもアンカーにできます。そのため、ツールチップやメニューはポップオーバーで作ります。`position: fixed` もビューポートを基準にしますが、祖先に `transform` や `filter` があると、その祖先が包含ブロックになります。
+
+```css title="🙆‍♂ Recommended: カードの中の説明をポップオーバーにして、はみ出しを画面の端で判定する"
+@scope (.scoped.product-card) to (.scoped) {
+  :scope {
+    position: relative;
+  }
+
+  [popover] {
+    @supports (position-area: block-end span-inline-end) {
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block;
+    }
+  }
+}
+```
+
+この例のカードには `position: relative` がありますが、ポップオーバーの包含ブロックはビューポートのままです。カードの下端に近いボタンでも、画面の下に空きがあれば、説明はボタンの下に表示されます。
 
 ## 未対応の環境では読める位置に置く
 

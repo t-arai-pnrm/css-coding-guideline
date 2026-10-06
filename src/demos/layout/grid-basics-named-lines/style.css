@@ -1,0 +1,41 @@
+@layer components {
+  @scope (.scoped.named-lines-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+
+      /* 本文の列の左右に、余白の列を置く。本文の列は 480px 相当で頭打ちにする */
+      grid-template-columns:
+        [--full-start] minmax(16px, 1fr)
+        [--content-start] minmax(0, calc(480 / 16 * 1rem))
+        [--content-end] minmax(16px, 1fr)
+        [--full-end];
+      row-gap: 8px;
+      padding-block: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      & > * {
+        grid-column: --content;
+      }
+
+      & > ._hero {
+        grid-column: --full;
+      }
+    }
+
+    ._hero,
+    ._item {
+      padding-block: 8px;
+      padding-inline: 8px;
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._hero {
+      background-color: oklch(55% 0.15 30deg);
+    }
+
+    ._item {
+      background-color: oklch(70% 0.12 250deg);
+    }
+  }
+}

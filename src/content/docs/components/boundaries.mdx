@@ -377,11 +377,11 @@ z-indexは、コンポーネントのルートと内部の要素で、指定し�
   :scope {
     display: block grid;
     isolation: isolate;
-  }
 
-  ._card-outer,
-  ._visual-outer {
-    grid-area: 1 / 1;
+    & > ._card-outer,
+    & > ._visual-outer {
+      grid-area: 1 / 1;
+    }
   }
 
   ._card-outer {

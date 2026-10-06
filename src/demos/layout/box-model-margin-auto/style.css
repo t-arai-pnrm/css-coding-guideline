@@ -1,0 +1,45 @@
+@layer components {
+  @scope (.scoped.box-model-margin-auto) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._frame {
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      &[data-layout="flex"] {
+        display: block flex;
+        gap: 8px;
+      }
+    }
+
+    ._box {
+      padding-block: 4px;
+      padding-inline: 8px;
+      background-color: oklch(85% 0.08 250deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* 幅を中身に合わせ、残りの幅を左右の margin に等分する */
+      &[data-margin="center"] {
+        inline-size: fit-content;
+        margin-inline: auto;
+      }
+
+      /* 行の余りをすべて左の margin が受け取り、後ろが行の末尾に寄る */
+      &[data-margin="push"] {
+        margin-inline-start: auto;
+      }
+    }
+  }
+}

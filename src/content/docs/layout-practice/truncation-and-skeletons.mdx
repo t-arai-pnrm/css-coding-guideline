@@ -55,10 +55,13 @@ import Guideline from '../../../components/Guideline.astro';
   display: block flex;
   gap: 16px;
   align-items: baseline;
+
+  & > ._item-name {
+    flex-grow: 1;
+  }
 }
 
 ._item-name {
-  flex-grow: 1;
   overflow-inline: clip;
   text-overflow: ellipsis;
   white-space: nowrap;

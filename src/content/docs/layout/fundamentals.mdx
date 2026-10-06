@@ -9,6 +9,12 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import alignmentHtml from '../../../demos/layout/alignment-items-content/index.html?raw';
 import alignmentCss from '../../../demos/layout/alignment-items-content/style.css?raw';
+import parentDisplayHtml from '../../../demos/layout/layout-parent-display/index.html?raw';
+import parentDisplayCss from '../../../demos/layout/layout-parent-display/style.css?raw';
+import containingBlockHtml from '../../../demos/layout/layout-containing-block/index.html?raw';
+import containingBlockCss from '../../../demos/layout/layout-containing-block/style.css?raw';
+import stackingHtml from '../../../demos/layout/layout-stacking-context/index.html?raw';
+import stackingCss from '../../../demos/layout/layout-stacking-context/style.css?raw';
 
 CSSのレイアウトは、1つの仕組みではなく、通常フロー、Flexbox、Grid、位置指定（`position`）といった複数の方式の組み合わせでできています。同じ `margin` や `align-items` でも、要素がどの方式の中に置かれているかで、効き方が変わります。指定が思いどおりに効かないときは、値を足す前に、その要素がどの方式の中にあるかを確かめます。
 
@@ -19,6 +25,21 @@ CSSのレイアウトは、1つの仕組みではなく、通常フロー、Flex
 レイアウトの不具合を直すとき、値を少しずつ変えて見た目を合わせる人は少なくありません。インライン要素に `margin-block` を付けても上下が空かない、ブロックの親に `gap` を書いても子の間が空かない、`position: sticky` が留まらない、といった場面です。こうした指定は、壊れているわけではなく、その方式の規則どおりに振る舞っています。
 
 規則を知らないまま値を足すと、不具合は見た目の上では消えても、原因は残ります。たとえば、インライン要素の上下の余白を `position: relative` と `top` でずらして作ると、その要素だけが行から浮き、文字の大きさを変えたときに重なります。正しい直し方は、要素を `inline flow-root` にして、ブロックの規則で余白を持たせることです。直し方を選ぶには、どの方式の規則が働いているかを知る必要があります。
+
+```css title="🙅‍♂ Not Recommended: インライン要素を位置指定でずらして余白に見せる"
+/* 🙅‍♂ Not Recommended */
+._tag {
+  position: relative;
+  inset-block-start: 4px;
+}
+```
+
+```css title="🙆‍♂ Recommended: inline flow-root にして、ブロックの規則で余白を持たせる"
+._tag {
+  display: inline flow-root;
+  margin-block: 4px;
+}
+```
 
 AIが生成するコードにも、同じ傾向があります。方式の違いを考えずに、`display: flex` と `align-items: center` を何にでも足し、効かなければ `position: absolute` で位置を合わせるコードはよく見かけます。レビューで「なぜこの指定が要るのか」を問うためにも、方式ごとの基本の振る舞いを押さえておきます。
 
@@ -33,6 +54,33 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 | Grid | `display: block grid` | 親で行と列を決め、アイテムをセルに置く | 7-7 |
 | 位置指定 | `position: absolute` など | 通常フローから外し、包含ブロックを基準に置く | 7-9 |
 
+コードでは、通常フローは何も書かず、FlexboxとGridは親の `display` で、位置指定は要素自身の `position` で選びます。
+
+```css title="🙆‍♂ Recommended: 方式ごとの指定"
+/* 通常フロー：display を変えない */
+._body {
+  margin-block-start: 16px;
+}
+
+/* Flexbox と Grid：親の display の内側の値で選ぶ */
+._actions {
+  display: block flex;
+  gap: 8px;
+}
+
+._list {
+  display: block grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+}
+
+/* 位置指定：要素自身の position で選ぶ */
+._badge {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
+}
+```
+
 通常フローは、何も指定しない要素が従う方式です。ブロックレベルのボックスはブロック方向（横書きでは上から下）に積まれ、インラインレベルのボックスと文字は、行の中をインライン方向（横書きでは左から右）に流れます。FlexboxやGridへ切り替える前の仮の状態ではなく、行ボックス、匿名ボックス、マージンの相殺といった独自の規則を持つ方式です。詳しくは「[7-2 通常フローの基礎](/layout/normal-flow/)」で説明しています。
 
 このほかに、段組み（`column-count`）や表（`display: table`）の方式もあります。どちらも、子の大きさと位置を自分の規則で決める点では、上の4つと変わりません。{/* 要確認: 出典なし */}
@@ -43,6 +91,10 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 つまり、要素がどの方式で並ぶかは、親の `display` の内側の値で決まります。親を `display: block grid` に変えると、子は通常フローではなくGridの規則で並び、子に書いた `margin` や `inline-size` の意味も変わります。要素自身の `display` を見ても、その要素がどう並ぶかは分かりません。
 
+次のデモでは、`inline-size: 96px` と `padding-block: 16px` を指定した同じ `<span>` を、2つの親に入れています。通常フローの親では、`<span>` はインラインのまま行に流れ、幅は無視され、上下の `padding` は行の高さに加わりません。親を `display: block flex` にすると、同じ指定がアイテムの幅と高さとして効きます。
+
+<Demo title="親の display を変えると、子の同じ指定の効き方が変わる" html={parentDisplayHtml} css={parentDisplayCss} variant="neutral" />
+
 例外は、要素自身の指定で方式から外れる場合です。`position: absolute` と `fixed` の要素は、親がどの方式でも、その流れから外れます。`float` した要素も通常フローからは外れますが、フレックスアイテムとグリッドアイテムでは `float` が無視され、ほかの子と同じように並びます。不具合を調べるときは、親の `display` と、要素自身の `position` と `float` の両方を確かめます。
 
 ## 包含ブロック
@@ -51,11 +103,39 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 位置指定の要素は、包含ブロックの決まり方が違います。`position: absolute` の要素は `position` が `static` 以外のいちばん近い祖先を、`fixed` の要素はビューポートを基準にします。ただし、祖先に `transform` などがあると、その祖先が包含ブロックになります。包含ブロックを作る条件は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。
 
+カードの角にバッジを置くときは、カードに `position: relative` を指定して、カードを包含ブロックにします。
+
+```css title="🙆‍♂ Recommended: カードを包含ブロックにして、バッジを角に置く"
+._card {
+  position: relative;
+}
+
+._badge {
+  position: absolute;
+  inset-block-end: 8px;
+  inset-inline-end: 8px;
+}
+```
+
+次のデモでは、点線の枠が `position: relative` の祖先です。カードに `position` がないと、バッジは祖先の角を基準にして、カードの外に出ます。カードに `position: relative` を指定すると、バッジはカードの角に収まります。
+
+<Demo title="包含ブロックが変わると、絶対配置のバッジの基準が変わる" html={containingBlockHtml} css={containingBlockCss} variant="neutral" />
+
 ## 重なりとスタッキングコンテキスト
 
 要素の前後の重なりは、デフォルトではHTMLの順番で決まり、後に書いた要素が手前に描かれます。`z-index` で順番を変えられるのは、同じスタッキングコンテキストの中だけです。親が `z-index: 1` のスタッキングコンテキストを作っていれば、子に `z-index: 99` を指定しても、親の兄弟の `z-index: 2` の要素より手前には出ません。
 
+次のデモは、この例をそのまま並べたものです。親に `z-index` がないと、子の `z-index: 99` が親の兄弟と比べられ、子が手前に出ます。親に `z-index: 1` を指定すると、子は親の中に閉じ込められ、親ごと兄弟の後ろに回ります。
+
+<Demo title="親がスタッキングコンテキストを作ると、子の z-index は親の外と比べられない" html={stackingHtml} css={stackingCss} variant="neutral" />
+
 `z-index` が効くかどうかも、方式で変わります。通常フローの要素は、`position` を指定しないと `z-index` が効きませんが、フレックスアイテムとグリッドアイテムは、`position` がなくても効きます。スタッキングコンテキストは、`opacity` が1未満の要素や、`transform` を持つ要素などでも作られます。意図して作るときは `isolation: isolate` を使います（「[11-4 重なりと全幅](/layout-practice/layering/)」）。
+
+```css title="🙆‍♂ Recommended: z-index の数値を使わずにスタッキングコンテキストを作る"
+._card {
+  isolation: isolate;
+}
+```
 
 ## FlexboxとGridが通常フローを置き換える
 
@@ -74,13 +154,27 @@ Flexboxは、アイテムの中身の大きさから出発して、余った空�
 
 `align-content` は、通常フローのブロックコンテナにも使えます。ブロックコンテナに指定すると、`display` を変えずに中身を上下の中央に置けます（「[7-2 通常フローの基礎](/layout/normal-flow/)」）。
 
-## コード例とデモ
-
 次のデモでは、高さ200pxのコンテナに、高さ48pxの行を2つ持つGridと、段落1つのブロックを並べています。`align-items: end` では、各アイテムが自分のセルの下端にそろうだけで、行のまとまりはコンテナの上に残ります。`align-content: end` では、行のまとまりがコンテナの下端へ移ります。3つ目は、`display` をブロックのまま、`align-content: center` で段落を上下の中央に置いた例です。
 
 <Demo title="align-items と align-content の違いと、ブロックコンテナの align-content" html={alignmentHtml} css={alignmentCss} />
 
 方式どうしを組み合わせても、それぞれの規則は変わりません。GridやFlexboxのコンテナの中でも、`position: absolute` の子は流れから外れ、包含ブロックとスタッキングコンテキストの規則もそのまま働きます。一方、グリッドアイテム自身に `position: sticky` を指定すると、そのアイテムはデフォルトでセルの高さいっぱいに伸びるので、ずれる余地がなく、留まらないように見えます。同じアイテムに `align-self: start` を指定して伸びるのを止めると留まります（「[7-9 positionの基礎](/layout/positioning/)」）。組み合わせで起きる問題も、それぞれの方式の規則に分けて考えれば、原因を特定できます。
+
+```css title="🙆‍♂ Recommended: グリッドアイテムを伸ばさずに、スクロールに追従させる"
+._layout {
+  display: block grid;
+  grid-template-columns: 1fr calc(240 / 16 * 1rem);
+
+  & > ._sidebar {
+    align-self: start;
+  }
+}
+
+._sidebar {
+  position: sticky;
+  inset-block-start: 16px;
+}
+```
 
 ## ガイドライン
 

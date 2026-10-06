@@ -12,6 +12,7 @@ import alignmentHtml from '../../../demos/layout/grid-basics-alignment/index.htm
 import alignmentCss from '../../../demos/layout/grid-basics-alignment/style.css?raw';
 import subgridHtml from '../../../demos/layout/subgrid-cards/index.html?raw';
 import subgridCss from '../../../demos/layout/subgrid-cards/style.css?raw';
+import subgridBadCss from '../../../demos/layout/subgrid-cards/style.bad.css?raw';
 import newsHtml from '../../../demos/layout/news-list/index.html?raw';
 import newsCss from '../../../demos/layout/news-list/style.css?raw';
 import imageCardHtml from '../../../demos/layout/image-card-fit-content/index.html?raw';
@@ -30,6 +31,23 @@ Gridでそろえたつもりの位置がずれる原因は、大きく2つあり
 前者の典型は、`align-items: center` は効くのに `align-content: center` は効かない、あるいはその逆、という場面です。2つはそろえる対象が違うので、同じ値でも結果が変わります。
 
 後者の典型は、横に並べたカードです。見出しの行数や本文の長さがカードごとに違うと、ボタンの位置がばらばらになります。カードを `flex-direction: column` にして本文に `flex-grow: 1` を指定すればボタンの位置はそろいますが、見出しの高さはそろいません。そろえられるのは、伸ばした1か所だけです。見出しに `min-height` を指定したり、JavaScriptで高さを測ったりする方法もありますが、固定の高さは見出しが想定より長くなると破綻し、JavaScriptは読み込みや再計算の手間がかかります。
+
+```css title="🙅‍♂ Not Recommended: カードの中だけで縦に並べ、本文を伸ばしてボタンを下端に寄せる"
+/* 🙅‍♂ Not Recommended */
+article {
+  display: block flex;
+  flex-direction: column;
+  gap: 8px;
+
+  & > p {
+    flex-grow: 1;
+  }
+}
+```
+
+次のデモは、この指定でカードを3つ並べたものです。幅のボタンで768pxを選んで3列にすると、ボタンは下端にそろいますが、見出しの行数が多いカードだけ本文の開始位置が下がります。同じカードをサブグリッドでそろえたデモは、後の「サブグリッドでカードの行をそろえる」にあります。
+
+<Demo title="Flexboxで本文を伸ばしても、見出しの高さはカードごとにそろわない" html={subgridHtml} css={subgridBadCss} variant="not-recommended" widths={[320, 768]} />
 
 列の幅でも、似たずれが起きます。画像とテキストを横に並べるカードで、画像の列を `1fr` や固定の長さにすると、画像の幅と列の幅が食い違います。幅300pxの画像を幅480pxの列に置くと、画像が引き伸ばされるか、横に余白が空きます。
 
@@ -71,12 +89,15 @@ Gridでそろえたつもりの位置がずれる原因は、大きく2つあり
     display: block grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
     gap: 24px 16px;
+
+    & > article {
+      grid-row: span 3;
+    }
   }
 
   article {
     display: block grid;
     grid-template-rows: subgrid;
-    grid-row: span 3;
     row-gap: 8px;
   }
 }

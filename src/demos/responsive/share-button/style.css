@@ -36,10 +36,13 @@
       @container --scoped (inline-size >= calc(24 / 16 * 1rem + 16 / 16 * 1rem + 160 / 16 * 1rem + 24px * 2)) {
         --_density: --spacious;
       }
+
+      & > svg {
+        flex-shrink: 0;
+      }
     }
 
     svg {
-      flex-shrink: 0;
       inline-size: calc(24 / 16 * 1em);
       aspect-ratio: 1;
     }

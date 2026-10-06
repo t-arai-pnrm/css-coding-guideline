@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.fixed-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._panel {
+      min-block-size: calc(240 / 16 * 1rem);
+      padding: 16px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      /* フェードインの演出などで変形を指定すると、fixed の子孫の包含ブロックになる */
+      &[data-demo="translate"] {
+        translate: 0;
+      }
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._fixed {
+      position: fixed;
+      inset-block-end: 8px;
+      inset-inline-end: 8px;
+      padding-block: 4px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

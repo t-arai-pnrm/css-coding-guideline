@@ -14,13 +14,16 @@
       gap: 40px;
       justify-items: center;
       padding-block-start: 8px;
+
+      & > ._shapes {
+        justify-self: stretch;
+      }
     }
 
     ._shapes {
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
       gap: 16px;
-      justify-self: stretch;
     }
 
     li {

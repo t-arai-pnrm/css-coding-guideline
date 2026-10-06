@@ -1,0 +1,25 @@
+@layer components {
+  @scope (.scoped.margin-role-spaces) to (.scoped) {
+    /* 背景の内側は padding、アイテムの間は gap */
+    :scope {
+      display: block grid;
+      gap: 16px;
+      padding: 16px;
+      border: 1px dashed oklch(60% 0 0deg);
+      background-color: oklch(96% 0.02 250deg);
+    }
+
+    ._item {
+      padding: 12px;
+      border: 2px solid oklch(35% 0.12 260deg);
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* margin は gap に足され、その領域には親の背景が見える */
+      &[data-margin] {
+        margin-block: 12px;
+      }
+    }
+  }
+}

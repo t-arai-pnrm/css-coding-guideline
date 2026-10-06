@@ -21,6 +21,24 @@
       /* 計算を追いやすいよう、コンテナの幅を 480px に固定する */
       inline-size: 480px;
       border: 1px dashed oklch(60% 0 0deg);
+
+      &[data-case="grow"] > * {
+        flex-grow: 1;
+        flex-basis: 80px;
+      }
+
+      &[data-case="grow"] > :last-child {
+        flex-grow: 2;
+        flex-basis: 160px;
+      }
+
+      &[data-case="shrink"] > * {
+        flex-basis: 400px;
+      }
+
+      &[data-case="shrink"] > :last-child {
+        flex-basis: 200px;
+      }
     }
 
     ._item {
@@ -33,32 +51,6 @@
       &:nth-child(even) {
         background-color: oklch(55% 0.12 250deg);
       }
-    }
-
-    [data-case="grow"] > * {
-      flex-grow: 1;
-      flex-basis: 80px;
-
-      &:last-child {
-        flex-grow: 2;
-        flex-basis: 160px;
-      }
-    }
-
-    [data-case="shrink"] > * {
-      flex-basis: 400px;
-
-      &:last-child {
-        flex-basis: 200px;
-      }
-    }
-
-    [data-case="grow-only"] > * {
-      flex-grow: 1;
-    }
-
-    [data-case="flex-one"] > * {
-      flex: 1;
     }
   }
 }

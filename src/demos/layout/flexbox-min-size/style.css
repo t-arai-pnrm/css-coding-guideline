@@ -1,0 +1,51 @@
+@layer components {
+  @scope (.scoped.flexbox-min-size) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      font-family: system-ui, sans-serif;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._card {
+      display: block flex;
+      gap: 12px;
+      align-items: center;
+
+      /* はみ出しを見せるため、コンテナの幅を狭める */
+      max-inline-size: 280px;
+      padding: 12px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      & > ._icon {
+        flex-shrink: 0;
+      }
+    }
+
+    ._icon {
+      inline-size: 24px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background-color: oklch(70% 0.12 250deg);
+    }
+
+    ._body {
+      margin: 0;
+      background-color: oklch(90% 0.05 250deg);
+
+      &:is([data-fixed] > *) {
+        min-inline-size: 0;
+        overflow-wrap: anywhere;
+      }
+    }
+  }
+}

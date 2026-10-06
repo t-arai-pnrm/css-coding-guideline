@@ -1,0 +1,41 @@
+@layer components {
+  @scope (.scoped.feature-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._layout {
+      display: block grid;
+      reading-flow: grid-rows;
+      grid-template:
+        "--image"
+        "--heading"
+        "--body";
+      gap: 16px;
+
+      /* 広いときは、テンプレートだけを書き換えて、画像を左、見出しと本文を右に置く */
+      @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
+        grid-template:
+          "--image --heading"
+          "--image --body" 1fr
+          / 1fr 1fr;
+      }
+
+      & > ._heading {
+        grid-area: --heading;
+      }
+
+      & > ._body {
+        grid-area: --body;
+      }
+
+      & > ._image {
+        grid-area: --image;
+      }
+    }
+
+    ._heading {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}

@@ -1,0 +1,44 @@
+@layer components {
+  @scope (.scoped.layout-containing-block) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 位置指定された祖先。カードが包含ブロックにならないと、バッジはここを基準にする */
+    ._ancestor {
+      position: relative;
+      padding: 8px;
+      padding-block-end: 40px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._card {
+      padding: 16px;
+      padding-block-end: 40px;
+      background-color: oklch(92% 0.04 250deg);
+
+      &[data-positioned] {
+        position: relative;
+      }
+    }
+
+    ._badge {
+      position: absolute;
+      inset-block-end: 8px;
+      inset-inline-end: 8px;
+      padding-inline: 8px;
+      background-color: oklch(55% 0.2 25deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

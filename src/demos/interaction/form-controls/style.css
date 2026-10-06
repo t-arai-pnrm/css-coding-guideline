@@ -15,12 +15,15 @@
       gap: 20px;
       justify-items: start;
       accent-color: var(--_accent);
+
+      & > ._field {
+        justify-self: stretch;
+      }
     }
 
     ._field {
       display: block grid;
       gap: 4px;
-      justify-self: stretch;
     }
 
     ._label {
@@ -52,6 +55,10 @@
       display: block flex;
       gap: 8px;
       align-items: center;
+
+      & > :is(._switch, ._checkbox) {
+        flex-shrink: 0;
+      }
     }
 
     /* switch 属性に対応していない環境でも、同じ見た目のスイッチにする */
@@ -59,7 +66,6 @@
       --_background: oklch(70% 0 0deg);
 
       display: inline flex;
-      flex-shrink: 0;
       inline-size: calc(1lh * 2);
       block-size: 1lh;
       padding: 2px;
@@ -106,7 +112,6 @@
     /* 見た目を作り直したチェックボックス。チェックマークは選択したときだけ作る */
     ._checkbox {
       display: inline grid;
-      flex-shrink: 0;
       place-content: center;
       inline-size: 1lh;
       block-size: 1lh;

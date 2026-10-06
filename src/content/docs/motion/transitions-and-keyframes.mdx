@@ -118,11 +118,15 @@ import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
 @scope (.scoped.copy-button) to (.scoped) {
   :scope {
     display: inline grid;
+
+    & > ._copy-icon,
+    & > ._copied-icon {
+      grid-area: 1 / 1;
+    }
   }
 
   ._copy-icon,
   ._copied-icon {
-    grid-area: 1 / 1;
     transition-duration: var(--duration--fast);
     transition-property: opacity, filter;
     transition-timing-function: var(--ease--out-quint);

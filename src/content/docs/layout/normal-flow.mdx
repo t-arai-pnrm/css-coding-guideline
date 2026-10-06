@@ -12,6 +12,14 @@ import modesHtml from '../../../demos/layout/normal-flow-modes/index.html?raw';
 import modesCss from '../../../demos/layout/normal-flow-modes/style.css?raw';
 import flowRootHtml from '../../../demos/layout/normal-flow-flow-root/index.html?raw';
 import flowRootCss from '../../../demos/layout/normal-flow-flow-root/style.css?raw';
+import directionsHtml from '../../../demos/layout/normal-flow-directions/index.html?raw';
+import directionsCss from '../../../demos/layout/normal-flow-directions/style.css?raw';
+import outerDisplayHtml from '../../../demos/layout/normal-flow-outer-display/index.html?raw';
+import outerDisplayCss from '../../../demos/layout/normal-flow-outer-display/style.css?raw';
+import baselineGapHtml from '../../../demos/layout/normal-flow-baseline-gap/index.html?raw';
+import baselineGapCss from '../../../demos/layout/normal-flow-baseline-gap/style.css?raw';
+import sizingHtml from '../../../demos/layout/normal-flow-sizing/index.html?raw';
+import sizingCss from '../../../demos/layout/normal-flow-sizing/style.css?raw';
 
 通常フロー（フローレイアウト）は、`display` を変えていない要素が従うレイアウトの方式です。FlexboxやGridと同じく独自の規則を持ち、ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスと文字は行の中をインライン方向に流れます。ブロックの幅は包含ブロックの幅いっぱいに広がり、高さは中身から決まります。
 
@@ -20,6 +28,14 @@ import flowRootCss from '../../../demos/layout/normal-flow-flow-root/style.css?r
 ## 通常フローを「何もしていない状態」と考えたとき
 
 通常フローは、`display: flex` や `grid` を指定する前の、何も起きていない状態だと思われがちです。そう考えると、`gap: 16px` を書いたのに子の間が空かない、`align-items: center` で中央に寄らないといった場面で、指定の誤りではなくブラウザの不具合を疑うことになります。実際には、通常フローがこれらのプロパティを使わない方式だというだけです。
+
+```css title="🙅‍♂ Not Recommended: ブロックのままの親に gap と align-items を書く"
+/* 🙅‍♂ Not Recommended */
+._list {
+  gap: 16px;
+  align-items: center;
+}
+```
 
 インライン要素の上下の `margin` が空かない、画像の下に隙間ができる、親の背景が中の `float` を囲まない、といった現象も、通常フローの規則を知っていれば理由から説明できます。
 
@@ -31,6 +47,17 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 この2つの方向は、物理的な上下左右ではなく、`writing-mode` で決まります。縦書きにすると、ブロック方向は右から左に、インライン方向は上から下に変わります。本書が `width` や `margin-top` ではなく、`inline-size` や `margin-block-start` のような論理プロパティを使うのは、書字方向が変わっても同じ意味で働くからです（「[9-8 論理プロパティと論理値](/notation/logical-properties/)」）。
 
+```css title="🙆‍♂ Recommended: 方向を論理プロパティで書く"
+._block {
+  padding-inline-start: 8px;
+  border-inline-start: 4px solid;
+}
+```
+
+次のデモでは、この指定をした2つの段落を、横書きの親と `writing-mode: vertical-rl` の親に入れています。横書きでは段落が上から下へ積まれ、線は左に引かれます。縦書きでは、同じ指定のまま段落が右から左へ積まれ、線は上に引かれます。
+
+<Demo title="同じ論理プロパティが、書字方向に合わせて向きを変える" html={directionsHtml} css={directionsCss} variant="neutral" />
+
 ## ブロックレベルとインラインレベルのボックス
 
 `display` の値は、2つの役割を持っています。1つは、その要素が親の中でブロックとして積まれるか、インラインとして流れるかという外側の振る舞いです。もう1つは、その要素の子をどの方式で並べるかという内側の振る舞いです。`<p>` や `<div>` がブロックレベルに、`<span>` や `<a>` がインラインレベルになるのは、ブラウザのデフォルトスタイルが `display` を決めているからで、要素そのものの性質ではありません。
@@ -41,17 +68,56 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 内側の値が `flow` か `flow-root` の要素は、ブロックコンテナと呼ばれ、子を通常フローで並べます。外側の値は、親が通常フローのときだけ意味を持ちます。親がFlexboxやGridなら、`<span>` もブロックのように大きさを持つアイテムになり、外側の値は無視されます。
 
+```css title="🙆‍♂ Recommended: 外側と内側を2値構文で書き分ける"
+._label {
+  display: block flow;
+}
+
+._tag {
+  display: inline flow-root;
+}
+```
+
+次のデモでは、文字の間に置いた2つの `<span>` の `display` を変えています。`block flow` では `<span>` が行から出てブロック方向に積まれ、`inline` では文字と同じ行に流れます。`inline flow-root` は文字と同じ行に流れながら、上下の `padding` の分だけ行を押し広げます。
+
+<Demo title="display の外側と内側の値で、span の並び方が変わる" html={outerDisplayHtml} css={outerDisplayCss} variant="neutral" />
+
 ## 行ボックスとベースライン
 
 インラインレベルのボックスは、行ボックスという横長の箱の中に並びます。行ボックスの高さは、中の文字とボックスの `line-height` から決まり、行の中の要素はデフォルトで文字のベースライン（アルファベットの下端の線）にそろいます。インライン要素の上下の `padding` は背景を広げて描かれますが、行ボックスの高さには加わらず、上下の `margin` は無視されます（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。
 
 画像の下にできる数ピクセルの隙間も、行ボックスの規則から生まれます。`<img>` はインラインレベルの要素なので、下端をベースラインにそろえ、その下に文字のディセンダー（「g」や「y」の下に出る部分）のための空きが残ります。kiso.cssは画像や動画に `vertical-align: bottom` を指定して、この隙間をなくしています。
 
+次のデモでは、背景色を付けた親に画像を1枚入れています。ブラウザのデフォルトの `vertical-align: baseline` では、画像の下に背景色の帯が残ります。kiso.cssの `vertical-align: bottom` では、画像の下端が行の下端にそろい、帯が消えます。
+
+<Demo title="画像をベースラインにそろえると、下に隙間ができる" html={baselineGapHtml} css={baselineGapCss} variant="neutral" />
+
 `vertical-align: middle` は、要素の中心を、親のベースラインからx-height（小文字の「x」の高さ）の半分だけ上の位置に合わせる指定です。フォントの寸法で位置が決まるので、行の見た目の中央と一致しないことがあります。アイコンと文字の中央をそろえたいときは、親をFlexboxにして `align-items: center` を使います。
+
+```css title="🙆‍♂ Recommended: アイコンと文字の中央を Flexbox でそろえる"
+._link {
+  display: inline flex;
+  gap: 4px;
+  align-items: center;
+}
+```
 
 インライン要素が複数の行にまたがると、背景、`border`、`padding` は、各行の断片に分けて描かれます。デフォルトでは1つの帯を行の端で切ったように描かれ、行の端の `padding` と角丸は失われます。各行の断片を独立した箱として描きたいときは、`box-decoration-break: clone` を指定します。Safariは接頭辞付きの `-webkit-box-decoration-break` だけに対応しています（2026年10月確認）。{/* 要確認: 出典なし */}見出しの行ごとに背景を敷く使い方と、上下の行と重ならない `line-height` の決め方は、「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明しています。
 
 <Baseline id="box-decoration-break" />
+
+```css title="🙆‍♂ Recommended: 行ごとの断片を独立した箱として描く"
+._marker {
+  padding-inline: 4px;
+  border-radius: 4px;
+  background-color: oklch(92% 0.08 90deg);
+
+  /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年10月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+```
 
 ## 匿名ボックス
 
@@ -85,6 +151,10 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 幅を指定すると、通常フローはその値を守ります。親より広い `inline-size` を指定したブロックは、縮まずに親からはみ出します。Flexboxでは同じ `inline-size` が `flex-basis` の出発点として扱われ、足りなければ縮むので、同じ指定でも結果が変わります。
 
+次のデモでは、幅200pxの親に子を1つ入れています。`inline-size: auto` の子は親の幅いっぱいに広がり、`inline-size: 280px` の子は親からはみ出します。同じ280pxの子でも、親を `display: block flex` にすると、親の幅まで縮みます。
+
+<Demo title="通常フローは指定した幅を守り、Flexbox は縮める" html={sizingHtml} css={sizingCss} variant="neutral" />
+
 `block-size: 50%` のような高さの割合は、親の高さが中身で決まる（`auto` の）ときには解決できず、`auto` として扱われます。親の高さが子から決まり、子の高さが親から決まるという循環になるからです。{/* 要確認: 出典なし */}縦の大きさを親に合わせたいときは、親をGridにして行を決めるほうが確実です。
 
 `<span>` のような通常の非置換インラインボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。インラインレベルのボックスでも、`<img>` のような置換要素や、`display: inline flow-root` のボックスには大きさを指定できます。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[7-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。
@@ -98,6 +168,24 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 新しいBFCは、ルート要素、`float` した要素、絶対配置の要素、`inline flow-root` の要素、`overflow` が `visible` と `clip` 以外の要素などが作ります。このうち、BFCを作ることだけを目的にした値が `display: flow-root` です。`overflow: hidden` もBFCを作りますが、影や絶対配置の子を切り取り、中の `position: sticky` を妨げるので、BFCのために使うのは避けます（[`flow-root-for-margin-collapse`](/layout-practice/spacing/#rule-flow-root-for-margin-collapse)）。
 
 <Baseline id="display-flow-root" />
+
+次のデモは、`float` した四角と短い本文を入れた親を2つ並べたものです。通常のブロックの親は `float` を高さに含まないので、四角が親の下へはみ出し、次の要素まで回り込みます。親に `display: block flow-root` を指定すると、親が新しいBFCを作り、四角を内側に収めます。
+
+<Demo title="display: flow-root で、float を親の内側に収める" html={flowRootHtml} css={flowRootCss} variant="neutral" />
+
+画像に文字を回り込ませる部品は、次のように書けます。`float` の値は、書字方向に合わせて `inline-start` のような論理値で書きます。
+
+```css title="🙆‍♂ Recommended: 回り込みを親の内側に収める"
+._media {
+  display: block flow-root;
+}
+
+._image {
+  float: inline-start;
+  max-inline-size: 40%;
+  margin-inline-end: 16px;
+}
+```
 
 以前は、`float` を囲むために、親の `::after` に `clear: both` を指定するclearfixを書いていました。`display: flow-root` なら擬似要素なしに同じことができます（[`float-for-text-wrap`](/layout-practice/float/#rule-float-for-text-wrap)）。親子や兄弟の `margin` が相殺する条件は「[7-5 マージンの相殺](/layout/margin-collapse/)」で説明しています。
 
@@ -128,27 +216,20 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 方式を決めるのは、要素自身ではなく親の `display` の内側の値です。親を `flex` に変えると、子のすべてが通常フローの規則の代わりにFlexboxの規則で並び、子の指定の意味がまとめて変わります。
 
-## コード例とデモ
-
 次のデモでは、文字、`<span>`、`<p>` が混ざった同じHTMLを、通常フロー、Flexbox、Gridの親に入れています。通常フローでは、`<p>` が幅いっぱいに広がり、その前後の文字は匿名のブロックボックスに包まれて別の行になります。`<span>` には上下の `margin` を付けていますが、通常フローでは無視されます。Flexboxでは、文字と要素が中身の幅のアイテムとして横に並び、`<span>` の上下の `margin` も効きます。Gridでは、それぞれが1行ずつのアイテムになり、幅いっぱいに伸びます。
 
 <Demo title="同じ HTML でも、通常フロー、Flexbox、Grid で並び方が変わる" html={modesHtml} css={modesCss} variant="neutral" />
 
-次のデモは、`float` した四角と短い本文を入れた親を2つ並べたものです。通常のブロックの親は `float` を高さに含まないので、四角が親の下へはみ出し、次の要素まで回り込みます。親に `display: block flow-root` を指定すると、親が新しいBFCを作り、四角を内側に収めます。
+たとえば、ボタンを `margin-block-start: auto` でカードの下端へ寄せる書き方は、カードが通常フローのままでは働かず、カードを縦向きのFlexboxにすると働きます。
 
-<Demo title="display: flow-root で、float を親の内側に収める" html={flowRootHtml} css={flowRootCss} variant="neutral" />
-
-画像に文字を回り込ませる部品は、次のように書けます。`float` の値は、書字方向に合わせて `inline-start` のような論理値で書きます。
-
-```css title="🙆‍♂ Recommended: 回り込みを親の内側に収める"
-._media {
-  display: block flow-root;
+```css title="🙆‍♂ Recommended: 縦向きの Flexbox で、ボタンをカードの下端に寄せる"
+._card {
+  display: block flex;
+  flex-direction: column;
 }
 
-._image {
-  float: inline-start;
-  max-inline-size: 40%;
-  margin-inline-end: 16px;
+._button {
+  margin-block-start: auto;
 }
 ```
 

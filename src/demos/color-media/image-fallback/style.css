@@ -34,11 +34,11 @@
       /* 文字色が白なら黒、濃い色なら白になる。未対応の環境では背景色が付かない */
       background-color: contrast-color(currentColor);
       color: var(--image-banner--foreground, oklch(100% 0 0deg));
-    }
 
-    img,
-    ._body {
-      grid-area: --pile;
+      & > img,
+      & > ._body {
+        grid-area: --pile;
+      }
     }
 
     img {

@@ -1,0 +1,34 @@
+@layer components {
+  @scope (.scoped.box-model-unset-box-sizing) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 指定した最大幅の目安として、同じ幅の帯を置く */
+    ._ruler {
+      inline-size: min(100%, calc(240 / 16 * 1rem));
+      padding-block: 4px;
+      background-color: oklch(45% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+      text-align: center;
+    }
+
+    /* 左右の padding の領域を、内容の領域とは別の色で見せる */
+    ._container {
+      max-inline-size: calc(240 / 16 * 1rem);
+      padding-inline: 20px;
+      background-color: oklch(85% 0.08 250deg);
+
+      &[data-sizing="unset"] {
+        box-sizing: unset;
+      }
+    }
+
+    ._content {
+      padding-block: 8px;
+      background-color: oklch(90% 0.08 150deg);
+    }
+  }
+}

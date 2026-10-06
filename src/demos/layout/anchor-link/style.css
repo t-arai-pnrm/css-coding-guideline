@@ -1,0 +1,36 @@
+@layer components {
+  @scope (.scoped.field-note) to (.scoped) {
+    :scope {
+      /* 説明の包含ブロック。アンカーの input はこの中に置く */
+      position: relative;
+      display: block grid;
+      gap: 4px;
+      justify-items: start;
+      padding-block-end: 40px;
+    }
+
+    input {
+      anchor-name: --field-note;
+      padding-block: 4px;
+      padding-inline: 8px;
+      border: 1px solid oklch(60% 0 0deg);
+      border-radius: 4px;
+    }
+
+    ._note {
+      padding-block: 4px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(92% 0.08 85deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* 未対応の環境では、input の後ろの通常フローに表示する */
+      @supports (position-area: block-end span-inline-end) {
+        position: absolute;
+        position-area: block-end span-inline-end;
+        position-anchor: --field-note;
+        margin-block-start: 4px;
+      }
+    }
+  }
+}

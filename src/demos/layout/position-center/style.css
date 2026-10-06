@@ -1,0 +1,26 @@
+@layer components {
+  @scope (.scoped.video-thumb) to (.scoped) {
+    ._media {
+      /* ラベルの包含ブロックにする */
+      position: relative;
+      max-inline-size: calc(480 / 16 * 1rem);
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      background-color: oklch(30% 0.03 250deg);
+    }
+
+    ._label {
+      /* 包含ブロックいっぱいの範囲を作り、内容の大きさに縮めて、残りを margin: auto で均等に分ける */
+      position: absolute;
+      inset: 0;
+      inline-size: fit-content;
+      block-size: fit-content;
+      margin: auto;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 9999px;
+      background-color: oklch(100% 0 0deg);
+      font-weight: 700;
+    }
+  }
+}

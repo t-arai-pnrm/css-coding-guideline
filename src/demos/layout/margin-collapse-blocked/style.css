@@ -1,0 +1,41 @@
+@layer components {
+  @scope (.scoped.margin-collapse-blocked) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 枠線で、親の外に出た余白が見えるようにする */
+    ._frame {
+      border: 1px dashed oklch(60% 0 0deg);
+    }
+
+    ._parent {
+      background-color: oklch(92% 0.04 250deg);
+
+      &[data-padding] {
+        padding-block: 16px;
+      }
+    }
+
+    /* 相殺を見せるため、最初の子の margin で上の余白を作っている */
+    ._child {
+      margin-block-start: 24px;
+      padding: 8px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

@@ -1,0 +1,28 @@
+@layer components {
+  @scope (.scoped.help-tip) to (.scoped) {
+    button {
+      padding-block: 4px;
+      padding-inline: 12px;
+      border: 1px solid oklch(60% 0 0deg);
+      border-radius: 4px;
+    }
+
+    [popover] {
+      /* 未対応の環境では、ブラウザのデフォルトスタイルに戻して画面の中央に表示する */
+      margin: revert;
+      padding-block: 4px;
+      padding-inline: 8px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 4px;
+      background-color: oklch(92% 0.08 85deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* 名前を付けなくても、popovertarget で開いたボタンが基準になる */
+      @supports (position-area: block-end span-inline-end) {
+        position-area: block-end span-inline-end;
+        margin-block: 4px 0;
+        margin-inline: 0;
+      }
+    }
+  }
+}

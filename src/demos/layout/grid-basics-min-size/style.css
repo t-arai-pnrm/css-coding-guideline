@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.min-size-demo) to (.scoped) {
+    :scope {
+      & > * + * {
+        margin-block-start: 16px;
+      }
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._grid {
+      display: block grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-block-start: 8px;
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      /* デモの環境はベーススタイルで min-inline-size: 0 を指定しているので、初期値に戻して比べる */
+      &[data-min="auto"] > ._item {
+        min-inline-size: auto;
+      }
+    }
+
+    ._item {
+      padding-block: 4px;
+      padding-inline: 8px;
+      background-color: oklch(70% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+
+      /* kiso.css の anywhere は最小幅を小さくするので、URL を折り返さない単語として扱う break-word に戻す */
+      overflow-wrap: break-word;
+    }
+  }
+}

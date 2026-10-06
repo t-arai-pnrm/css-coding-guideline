@@ -47,6 +47,10 @@
       padding: 16px;
       border: 1px solid oklch(85% 0 0deg);
       border-radius: 8px;
+
+      & > a {
+        align-self: start;
+      }
     }
 
     ._card-number {
@@ -58,9 +62,8 @@
       font-size: calc(18 / 16 * 1rem);
     }
 
-    /* 中身の幅に戻し、余った高さを上に取ってカードの下端に寄せる */
+    /* 余った高さを上に取ってカードの下端に寄せる。中身の幅に戻す align-self は li の中に書く */
     a {
-      align-self: start;
       margin-block-start: auto;
       padding-block: 8px;
       padding-inline: 16px;

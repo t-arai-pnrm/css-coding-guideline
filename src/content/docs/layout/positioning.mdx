@@ -12,6 +12,18 @@ import Guideline from '../../../components/Guideline.astro';
 import stickyHtml from '../../../demos/layout/sticky-toc/index.html?raw';
 import stickyCss from '../../../demos/layout/sticky-toc/style.css?raw';
 import stickyBadCss from '../../../demos/layout/sticky-toc/style.bad.css?raw';
+import valuesHtml from '../../../demos/layout/position-values/index.html?raw';
+import valuesCss from '../../../demos/layout/position-values/style.css?raw';
+import containingBlockHtml from '../../../demos/layout/position-containing-block/index.html?raw';
+import containingBlockCss from '../../../demos/layout/position-containing-block/style.css?raw';
+import fixedTransformHtml from '../../../demos/layout/position-fixed-transform/index.html?raw';
+import fixedTransformCss from '../../../demos/layout/position-fixed-transform/style.css?raw';
+import centerHtml from '../../../demos/layout/position-center/index.html?raw';
+import centerCss from '../../../demos/layout/position-center/style.css?raw';
+import stickyInsetHtml from '../../../demos/layout/sticky-inset/index.html?raw';
+import stickyInsetCss from '../../../demos/layout/sticky-inset/style.css?raw';
+import stickyClipHtml from '../../../demos/layout/sticky-scroll-container/index.html?raw';
+import stickyClipCss from '../../../demos/layout/sticky-scroll-container/style.css?raw';
 
 `position` の `static` 以外の値は、働き方で2つに分かれます。`relative` と `sticky` は、親が決めた方式（通常フロー、Flexbox、Grid）に参加したまま、配置された後の位置を `inset` の分だけ補正します。`absolute` と `fixed` は、要素を親の流れから外し、絶対配置という別のレイアウトの方式で置き直します。位置の基準になる「包含ブロック」は、値によって、また祖先の `transform` などの指定によって変わります。
 
@@ -22,6 +34,23 @@ import stickyBadCss from '../../../demos/layout/sticky-toc/style.bad.css?raw';
 CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと位置を決める方式が複数あります。同じプロパティでも、どの方式で配置されるかによって働き方が変わります。`width` は、通常フローでは決まった幅になり、Flexboxの子では縮むことのある仮の幅として扱われます。`z-index` は、通常フローの要素に指定しても何も起きませんが、FlexboxとGridの子なら `position` を指定しなくても効きます。
 
 `position` も、この方式に関わるプロパティです。`top` や `left` を書くための前提の指定と覚えていると、`absolute` を指定した要素がFlexboxの子として並ばなくなる理由や、`relative` を指定しただけで重なり順が変わる理由を説明できません。前者は、要素が絶対配置に移って親の流れから外れたことで起きる変化です。後者は、`static` 以外の要素（位置指定された要素）が、`static` の要素より後に描かれることで起きる変化です。
+
+```css title="🙅‍♂ Not Recommended: Flexbox の子の1つに position: absolute を指定する"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.tag-list) to (.scoped) {
+  :scope {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  ._new {
+    position: absolute;
+  }
+}
+```
+
+この例の `._new` は、フレックスアイテムとして並ばず、`gap` の計算からも外れます。`inset` を指定していないので、一覧の先頭の位置に置かれ、最初のタグに重なって描かれます。
 
 この節では、まず5つの値がそれぞれ何を変えるかを説明し、次に位置の基準になる包含ブロックを扱います。最後に、つまずきやすい `sticky` が留まらない原因を説明します。重なり順（z-index）と、要素を画面幅いっぱいに広げる方法は、「[11-4 重なりと全幅](/layout-practice/layering/)」で扱います。留まったヘッダーの見た目の切り替えと固定ヘッダーの条件は「[11-5 固定ヘッダー](/layout-practice/sticky-header/)」で、ツールチップのように別の要素を基準に置くアンカーポジショニングは「[7-10 アンカーポジショニングの基礎](/layout/anchor-basics/)」で扱います。
 
@@ -56,6 +85,10 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 <Baseline id="sticky-positioning" />
 
 `fixed` と `sticky` の要素は、z-indexを指定しなくてもスタッキングコンテキストを作ります。`relative` と `absolute` は、z-indexに `auto` 以外を指定したときだけ作ります。
+
+次のデモでは、5つの値のBに、同じ `inset` を指定しています。枠の中をスクロールすると、`fixed` のBは枠の同じ位置に留まり、`sticky` のBは破線の枠の範囲で上端に留まります。
+
+<Demo title="同じ inset を指定しても、position の値によって B の置かれ方が変わる" html={valuesHtml} css={valuesCss} variant="neutral" height="360px" />
 
 ## 包含ブロックはどの祖先で決まるか
 
@@ -98,6 +131,10 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 }
 ```
 
+次のデモでは、1つ目のカードだけ包含ブロックを作っていません。そのバッジは、デモの枠の右上に置かれます。
+
+<Demo title="包含ブロックを作らないと、バッジがカードの外の角に置かれる" html={containingBlockHtml} css={containingBlockCss} variant="neutral" />
+
 基準にする祖先は、同じコンポーネントの中に置きます。コンポーネントの外の祖先を基準にすると、置く場所によって位置が変わってしまうからです。コンポーネントのルートそのものに `position: absolute` と `inset` を指定しない理由は、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 
 ## position以外で包含ブロックを作る指定
@@ -107,6 +144,10 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 見落としやすいのは、個別の変形プロパティ（`translate`、`rotate`、`scale`）、すりガラスの効果に使う `backdrop-filter`、`content-visibility: auto` です。`will-change: transform` のように、これらのプロパティを `will-change` に書いただけでも包含ブロックになります。
 
 影響が大きいのは `fixed` です。フェードインの演出のために `translate` を指定した要素の中に固定ヘッダーを置くと、ヘッダーはビューポートではなく、その要素に対して固定されてしまいます。スクロールすると、ヘッダーは要素と一緒に画面の外へ流れます。モーダルは `<dialog>` の `showModal()` でトップレイヤーに表示し、この問題を避けます。トップレイヤーの要素は、祖先の指定にかかわらずビューポートを基準にします。ダイアログの実装は「[17-2 開閉するUI](/interaction/disclosure/)」で扱います。
+
+次のデモでは、2つ目の枠に `translate: 0` を指定しています。見た目は変わりませんが、枠の中をスクロールすると、2つ目の「固定」だけが枠と一緒に流れます。
+
+<Demo title="祖先に translate を指定すると、fixed の要素がその祖先を基準に置かれる" html={fixedTransformHtml} css={fixedTransformCss} variant="neutral" height="320px" />
 
 コンテナサイズクエリのための `container-type`（`inline-size` と `size`）は、現在の仕様ではレイアウトの封じ込めを含まないので、包含ブロックを作りません。ただし、以前の仕様に沿って実装したブラウザでは、包含ブロックになることがあります。仕様が変わった経緯とブラウザの対応は、「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。固定ヘッダーやモーダルを含む `html` と `body` には、`container-type` を指定しません。
 
@@ -123,6 +164,8 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
   margin: auto;
 }
 ```
+
+<Demo title="inset: 0 と margin: auto で、ラベルを包含ブロックの中央に置く" html={centerHtml} css={centerCss} />
 
 `translate` を使う方法は、位置を決める指定が `inset` と変形の2か所に分かれ、何のための変形なのかが読み取りにくくなります。絶対配置の要素に `place-self: center` を指定する方法もありますが、Safariは26から対応したので、2026年10月の時点ではまだ使えません（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
 
@@ -164,12 +207,15 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
     display: block grid;
     grid-template-columns: 1fr calc(240 / 16 * 1rem);
     gap: 32px;
+
+    & > nav {
+      align-self: start;
+    }
   }
 
   nav {
     position: sticky;
     inset-block-start: 16px;
-    align-self: start;
   }
 }
 ```
@@ -180,13 +226,31 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 <Demo title="align-self: start を加えると、目次が枠の上端に留まる" html={stickyHtml} css={stickyCss} height="360px" />
 
-親の `align-items: start` でも同じ結果になります。ただし、親に指定すると、同じ親のほかの子も中身の高さになります。`sticky` の要素だけが伸びなければよいので、私は要素の側に `align-self: start` を書いています。`align-self` は、配置が親のテンプレートと対になっている指定です。本来は子の側に置かない方針ですが、この場合は `sticky` と一組の指定として、同じルールに書きます。
+親の `align-items: start` でも同じ結果になります。ただし、親に指定すると、同じ親のほかの子も中身の高さになります。`sticky` の要素だけが伸びなければよいので、私は子だけを指定する `align-self: start` を使います。`align-self` は、配置が親のレイアウトと対になっている指定なので、親のルールの中に `& > nav` とネストして書きます。
 
 ### insetを指定する
 
 `sticky` は、どの位置で留めるかを `inset` で決めます。`inset-block-start` のように、留めたい軸のプロパティが1つは `auto` 以外でなければ、その軸では `relative` と同じ動きになります。先ほどの例の `inset-block-start: 16px` は、スクロールコンテナの上端から16px離れた位置で留める指定です。
 
 下端や、横にスクロールする領域の端に留めるときも同じです。見出しを上端に、フッターの操作欄を下端に留めるなら、それぞれ `inset-block-start` と `inset-block-end` を指定します。本書では、ほかの場面と同じく、物理プロパティの `top` ではなく論理プロパティで書きます。
+
+```css title="🙆‍♂ Recommended: 見出しを上端に、操作欄を下端に留める"
+@scope (.scoped.form-section) to (.scoped) {
+  h2 {
+    position: sticky;
+    inset-block-start: 0;
+  }
+
+  ._actions {
+    position: sticky;
+    inset-block-end: 0;
+  }
+}
+```
+
+次のデモでは、1つ目の見出しにだけ `inset` を指定していません。枠の中をスクロールすると、1つ目の見出しは本文と一緒に流れ、2つ目の見出しは枠の範囲で上端に留まります。
+
+<Demo title="inset を指定しない sticky の見出しは留まらない" html={stickyInsetHtml} css={stickyInsetCss} variant="neutral" height="240px" />
 
 ### 祖先のスクロールコンテナ
 
@@ -198,6 +262,27 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 見つけたら、その指定が必要かを確かめます。はみ出しを切り取るだけなら、スクロールコンテナを作らない `overflow: clip` に変えます（「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」）。親子のマージンの相殺を止めるために `overflow: auto` を使う書き方も、同じ理由で避けます。相殺を止めるなら `display: flow-root` を使います（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
 
+```css title="🙅‍♂ Not Recommended: はみ出しを切り取るために overflow-x: hidden を指定する"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.page-section) to (.scoped) {
+  :scope {
+    overflow-x: hidden;
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: はみ出しを切り取るだけなら overflow: clip にする"
+@scope (.scoped.page-section) to (.scoped) {
+  :scope {
+    overflow: clip;
+  }
+}
+```
+
+次のデモでは、1つ目の枠に `overflow-x: hidden` と同じ指定をしています。その枠がスクロールコンテナになるので、中の見出しはページのスクロールに反応せず、本文と一緒に流れます。
+
+<Demo title="祖先がスクロールコンテナになると、sticky の見出しがページのスクロールで留まらない" html={stickyClipHtml} css={stickyClipCss} variant="neutral" height="240px" />
+
 スクロールコンテナが意図したものである場合は、別の話です。たとえば、高さを決めて `overflow: auto` にした領域の中で見出しを留めるなら、見出しはその領域の中で留まります。領域に高さがなければスクロールせず、何も起きません。この場合に必要なのは、その領域に高さの上限を決めて、スクロールが起きるようにすることです。ページ全体のスクロールで留める通常の `sticky` では、親に高さを指定する必要はありません。
 
 ### 画面より高い要素
@@ -206,10 +291,17 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 ```css title="🙆‍♂ Recommended: 画面より高くなりうる sticky の要素には、高さの上限を決める"
 @scope (.scoped.article-layout) to (.scoped) {
+  :scope {
+    display: block grid;
+
+    & > nav {
+      align-self: start;
+    }
+  }
+
   nav {
     position: sticky;
     inset-block-start: 16px;
-    align-self: start;
     overflow-y: auto;
     max-block-size: calc(100svb - 16px * 2);
   }

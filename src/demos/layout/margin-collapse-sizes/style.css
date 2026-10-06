@@ -1,0 +1,58 @@
+@layer components {
+  @scope (.scoped.margin-collapse-sizes) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 枠の中は通常フローのまま、子の margin が枠の外へ出ないようにする */
+    ._frame {
+      display: block flow-root;
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+
+      &[data-pair="positive"] {
+        --_upper: 24px;
+        --_lower: 40px;
+      }
+
+      &[data-pair="mixed"] {
+        --_upper: 30px;
+        --_lower: -20px;
+      }
+
+      &[data-pair="negative"] {
+        --_upper: -8px;
+        --_lower: -24px;
+      }
+    }
+
+    p {
+      padding: 12px;
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 相殺を見せるため、兄弟の両方に margin を付けている */
+    ._upper {
+      margin-block-end: var(--_upper);
+      background-color: oklch(85% 0.08 250deg);
+    }
+
+    /* 重なりが見えるよう、下の要素を半透明にする */
+    ._lower {
+      margin-block-start: var(--_lower);
+      background-color: oklch(70% 0.12 30deg / 70%);
+    }
+  }
+}

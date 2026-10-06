@@ -9,6 +9,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import cardHtml from '../../../demos/layout/margin-role/index.html?raw';
 import cardCss from '../../../demos/layout/margin-role/style.css?raw';
+import spacesHtml from '../../../demos/layout/margin-role-spaces/index.html?raw';
+import spacesCss from '../../../demos/layout/margin-role-spaces/style.css?raw';
 
 `margin` は、要素と前後の要素の間に「最低これだけ離したい」という距離を表すプロパティです。HTMLが縦に長い文書を書くための言語として生まれたことと結び付いた考え方です。ブロック方向で隣り合う `margin` が足し算にならず、大きいほうが採られる仕組み（マージンの相殺）も、この捉え方から説明できます。
 
@@ -47,11 +49,29 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 
 今は、FlexboxとGridがレイアウトを受け持ちます。本書は、ボックスを並べる間隔をFlexboxやGridの `gap` に任せ、`margin` は文章の要素の間の余白という本来の用途に使います。段落、図、区切り線のように自分で余白を持つ要素が続く本文では、相殺のおかげで大きいほうの余白だけが効き、余白が重なって広がりすぎることがありません。CMSで入力される本文も、通常フローのまま `margin` で間隔を作ります（ルール「[`prose-in-normal-flow`](/layout-practice/spacing/#rule-prose-in-normal-flow)」）。
 
+次の例では、本文の要素の間に16px、区切り線の前後に40pxの `margin` を付けています。区切り線の下の40pxと、次の段落の上の16pxは相殺するので、線の下の間隔は56pxではなく40pxです。
+
+```css title="🙆‍♂ Recommended: 本文の要素の間と、区切り線の前後に求める距離を margin で書く"
+._body {
+  & > * + * {
+    margin-block-start: 16px;
+  }
+
+  & > hr {
+    margin-block: 40px;
+  }
+}
+```
+
 ## `margin`、`padding`、`gap` が受け持つ余白
 
 3つのプロパティは、どれも余白を作りますが、余白の持ち主と置かれる場所が違います。`margin` は要素自身の `border` の外側にあり、その要素と前後の要素との距離を表します。`padding` は `border` の内側にあり、要素の背景が描かれる領域で、中身と枠の距離を表します。`gap` は親のプロパティで、Flexbox、Grid、段組みの子と子の間にだけ空きます。
 
 相殺するかどうかも違います。`padding` と `gap` は相殺せず、指定した値がそのまま余白になります。`margin` は通常フローでだけ相殺し、フレックスアイテムとグリッドアイテムの `margin` は相殺せず、`gap` に足されます。同じ `margin-block-start: 24px` でも、親が通常フローなら前の要素の `margin` と比べて大きいほうが採られ、親がGridなら `gap` との合計になります。要素がどのレイアウトの方式の中にあるかで同じ指定の働き方が変わることは、「[7-1 レイアウトの基礎](/layout/fundamentals/)」で説明しています。
+
+次のデモは、`gap: 16px` と `padding: 16px` を持つGridの親に、3つのアイテムを並べたものです。アイテムの背景は自分の `padding` の下まで塗られ、2つ目のアイテムの上下12pxの `margin` には親の背景が見えます。その `margin` は `gap` に足されるので、2つ目のアイテムの前後は28px空きます。
+
+<Demo title="padding、gap、margin が作る余白の位置" html={spacesHtml} css={spacesCss} variant="neutral" />
 
 どのプロパティを選ぶかは、余白を誰が決めるかで判断します。並んだ要素の間隔を親がそろえて決めるなら `gap`、背景や枠線の内側に中身との距離を取るなら `padding`、要素の種類によって前後の距離が変わるなら `margin` です。ボタンの押せる範囲を広げるときに `padding` を使うのも、`margin` の領域には背景が描かれず、クリックの対象にもならないからです（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。
 
@@ -107,8 +127,6 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
   background-color: oklch(96% 0.02 250deg);
 }
 ```
-
-## コード例とデモ
 
 次のデモは、お知らせの記事をカードにしたものです。カードの背景の内側の余白は `padding: 24px` で、見出し、本文、フッターの間隔はカードの `gap: 24px` で作っています。本文の領域だけは通常フローのままにし、`& > * + *` で2つ目以降の要素に16px、見出しの前に32px、見出しの直後に8pxの `margin-block-start` を付けています。
 

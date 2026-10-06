@@ -1,0 +1,38 @@
+@layer components {
+  @scope (.scoped.layout-parent-display) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._parent {
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+      background-color: oklch(97% 0.01 250deg);
+
+      &[data-mode="flex"] {
+        display: block flex;
+        gap: 8px;
+      }
+    }
+
+    /* 同じ指定が、親の方式によって無視されるか効くかを見せる */
+    ._item {
+      inline-size: 96px;
+      padding-block: 16px;
+      background-color: oklch(70% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}

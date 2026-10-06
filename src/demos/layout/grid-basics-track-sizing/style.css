@@ -1,0 +1,54 @@
+@layer components {
+  @scope (.scoped.track-sizing-demo) to (.scoped) {
+    :scope {
+      & > * + * {
+        margin-block-start: 16px;
+      }
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._grid {
+      display: block grid;
+      gap: 8px;
+      margin-block-start: 8px;
+
+      /* 2列目はどれも 1fr。1列目の値だけを変えて、トラックの幅を比べる */
+      &[data-track="fr"] {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      /* 中身を1か所も折り返さない幅 */
+      &[data-track="max-content"] {
+        grid-template-columns: max-content 1fr;
+      }
+
+      /* 折り返せる位置ですべて折り返した幅。和文は1文字ごとに折り返す */
+      &[data-track="min-content"] {
+        grid-template-columns: min-content 1fr;
+      }
+
+      /* 中身の幅に合わせ、120px で頭打ちにする */
+      &[data-track="fit-content"] {
+        grid-template-columns: fit-content(120px) 1fr;
+      }
+    }
+
+    ._item {
+      padding-block: 4px;
+      padding-inline: 8px;
+      background-color: oklch(70% 0.12 250deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._rest {
+      padding-block: 4px;
+      padding-inline: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

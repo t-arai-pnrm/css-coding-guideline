@@ -27,6 +27,10 @@
       display: block flex;
       gap: 12px;
       align-items: center;
+
+      & > input {
+        flex-shrink: 0;
+      }
     }
 
     input {
@@ -35,7 +39,6 @@
       --_ease: var(--ease--in-out-quint);
 
       display: inline flex;
-      flex-shrink: 0;
       inline-size: calc(1lh * 2);
       block-size: 1lh;
       padding: 2px;

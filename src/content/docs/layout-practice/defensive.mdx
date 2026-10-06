@@ -207,10 +207,13 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
   gap: 8px;
   align-items: center;
   min-inline-size: fit-content;
+
+  & > ._icon {
+    flex-shrink: 0;
+  }
 }
 
 ._icon {
-  flex-shrink: 0;
   inline-size: 1em;
   aspect-ratio: 1;
 }

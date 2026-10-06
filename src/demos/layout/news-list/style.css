@@ -26,25 +26,28 @@
       align-items: baseline;
       padding-block: 1rlh;
       border-block-end: 1px solid oklch(85% 0 0deg);
+
+      & > ._category {
+        justify-self: start;
+      }
+
+      & > a {
+        /* 狭いときは、タイトルを次の行へ移して全幅を使う */
+        grid-column: 1 / -1;
+
+        /* 日付 96px 相当・カテゴリ 160px 相当・タイトル 160px 相当と、列の隙間 24px が 2 つ、左右の余白 24px が並ぶ幅 */
+        @container --scoped (inline-size >= calc(96 / 16 * 1rem + 160 / 16 * 1rem + 160 / 16 * 1rem + 24px * 2 + 24px * 2)) {
+          grid-column: auto;
+        }
+      }
     }
 
     ._category {
-      justify-self: start;
       padding-block: 2px;
       padding-inline: 8px;
       border-radius: 4px;
       background-color: oklch(94% 0.02 250deg);
       font-size: calc(12 / 16 * 1rem);
-    }
-
-    a {
-      /* 狭いときは、タイトルを次の行へ移して全幅を使う */
-      grid-column: 1 / -1;
-
-      /* 日付 96px 相当・カテゴリ 160px 相当・タイトル 160px 相当と、列の隙間 24px が 2 つ、左右の余白 24px が並ぶ幅 */
-      @container --scoped (inline-size >= calc(96 / 16 * 1rem + 160 / 16 * 1rem + 160 / 16 * 1rem + 24px * 2 + 24px * 2)) {
-        grid-column: auto;
-      }
     }
   }
 }

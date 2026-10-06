@@ -72,12 +72,15 @@
       @media (prefers-reduced-motion: no-preference) {
         scroll-behavior: smooth;
       }
+
+      & > ._slide {
+        scroll-snap-align: center;
+      }
     }
 
     ._slide {
       container: --slide / scroll-state;
       display: block grid;
-      scroll-snap-align: center;
 
       @supports selector(::scroll-marker) {
         &::scroll-marker {

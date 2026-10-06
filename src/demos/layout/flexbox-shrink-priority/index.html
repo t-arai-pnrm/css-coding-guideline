@@ -1,12 +1,13 @@
 <div class="scoped flexbox-shrink-priority">
+  <p class="_note">赤い点線は、コンテナの始点から800px（メインの flex-basis）の位置です。</p>
   <section>
     <h3>サイドの flex-shrink: 1（初期値）</h3>
     <div class="_columns" data-shrink="default">
       <div class="_main">
-        <p class="_body">メイン（basis 50rem、grow 1）<span class="_width"></span></p>
+        <p class="_body">メイン（basis 800px、grow 1）<span class="_width"></span></p>
       </div>
       <div class="_side">
-        <p class="_body">サイド（basis 25rem、最小 15rem）<span class="_width"></span></p>
+        <p class="_body">サイド（basis 400px、最小 240px）<span class="_width"></span></p>
       </div>
     </div>
   </section>
@@ -14,10 +15,10 @@
     <h3>サイドの flex-shrink: 9999</h3>
     <div class="_columns" data-shrink="side-first">
       <div class="_main">
-        <p class="_body">メイン（basis 50rem、grow 1）<span class="_width"></span></p>
+        <p class="_body">メイン（basis 800px、grow 1）<span class="_width"></span></p>
       </div>
       <div class="_side">
-        <p class="_body">サイド（basis 25rem、最小 15rem）<span class="_width"></span></p>
+        <p class="_body">サイド（basis 400px、最小 240px）<span class="_width"></span></p>
       </div>
     </div>
   </section>

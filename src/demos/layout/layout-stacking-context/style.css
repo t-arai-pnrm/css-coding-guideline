@@ -1,0 +1,63 @@
+/* stylelint-disable declaration-property-value-disallowed-list -- 本文の数値と対応させるため、トークンを使わずに書く */
+@layer components {
+  @scope (.scoped.layout-stacking-context) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    h3 + * {
+      margin-block-start: 8px;
+    }
+
+    /* 親と兄弟を同じセルに置いて重ねる */
+    ._stage {
+      display: block grid;
+
+      & > ._parent,
+      & > ._sibling {
+        grid-area: 1 / 1;
+      }
+
+      & > ._sibling {
+        justify-self: end;
+      }
+    }
+
+    ._parent {
+      inline-size: 70%;
+      padding: 16px;
+      border: 1px dashed oklch(60% 0 0deg);
+      background-color: oklch(97% 0.01 250deg);
+
+      /* グリッドアイテムは、position なしで z-index が効き、スタッキングコンテキストを作る */
+      &[data-context] {
+        z-index: 1;
+      }
+    }
+
+    ._child {
+      position: relative;
+      z-index: 99;
+      min-block-size: 64px;
+      padding: 8px;
+      background-color: oklch(45% 0.15 260deg);
+      color: oklch(100% 0 0deg);
+    }
+
+    ._sibling {
+      z-index: 2;
+      inline-size: 50%;
+      min-block-size: 64px;
+      margin-block-start: 40px;
+      padding: 8px;
+      background-color: oklch(85% 0.12 80deg);
+      text-align: end;
+    }
+  }
+}

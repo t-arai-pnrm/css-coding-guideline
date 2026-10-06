@@ -1,0 +1,29 @@
+@layer components {
+  @scope (.scoped.normal-flow-baseline-gap) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    h3 + * {
+      margin-block-start: 8px;
+    }
+
+    /* 背景色で、画像の下に残る空きを見えるようにする */
+    ._frame {
+      background-color: oklch(85% 0.12 80deg);
+    }
+
+    ._image {
+      /* kiso.css の bottom を取り消し、ブラウザのデフォルトに戻す */
+      &[data-align="baseline"] {
+        vertical-align: revert;
+      }
+    }
+  }
+}

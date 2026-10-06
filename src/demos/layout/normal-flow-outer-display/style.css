@@ -1,0 +1,36 @@
+@layer components {
+  @scope (.scoped.normal-flow-outer-display) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    h3 + * {
+      margin-block-start: 8px;
+    }
+
+    ._parent {
+      padding: 8px;
+      border: 1px dashed oklch(60% 0 0deg);
+    }
+
+    /* 上下の padding が行の高さに加わるかどうかで、内側の振る舞いの違いを見せる */
+    ._box {
+      padding-block: 8px;
+      padding-inline: 8px;
+      background-color: oklch(85% 0.1 250deg);
+
+      &[data-display="block"] {
+        display: block flow;
+      }
+
+      &[data-display="inline-flow-root"] {
+        display: inline flow-root;
+      }
+    }
+  }
+}

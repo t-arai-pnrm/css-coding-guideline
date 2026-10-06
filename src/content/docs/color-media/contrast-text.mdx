@@ -113,11 +113,11 @@ import imageFallbackCss from '../../../demos/color-media/image-fallback/style.cs
     grid-template-areas: "--pile";
     background-color: contrast-color(currentColor);
     color: var(--image-banner--foreground, oklch(100% 0 0deg));
-  }
 
-  img,
-  ._body {
-    grid-area: --pile;
+    & > img,
+    & > ._body {
+      grid-area: --pile;
+    }
   }
 }
 ```
