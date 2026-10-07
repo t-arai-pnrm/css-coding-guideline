@@ -38,3 +38,11 @@ sidebar:
 - [`progressive-enhancement-if-harmless`](/principles/browser-support/#rule-progressive-enhancement-if-harmless)：対象のブラウザの一部しか対応していない機能は、未対応の環境でも内容を読めて操作できる場合に限って使います。
 - [`no-unsupported-layout-features`](/principles/browser-support/#rule-no-unsupported-layout-features)：対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要にしません。
 - [`no-chrome-only-check`](/principles/browser-support/#rule-no-chrome-only-check)：表示はChromeだけでなく、Safari（iOSを含む）とFirefoxでも確かめます。
+
+## この章で判断できるようになること
+
+この章を読むと、固定値で見た目を合わせるか、制約を書いて計算をブラウザに任せるかを、どの環境でも破綻しないかという基準で選べるようになります。新しい機能を使いたいときは、対象のブラウザの対応状況から、プログレッシブ・エンハンスメントとして使えるか、レイアウトの要にしてはいけないかを判断できます。指定が思いどおりに働かないときは、値を足す前に、要素がどのレイアウトの方式の中にあるかから原因を確かめられます。SNSで見かけたTipsや覚えた解決策も、仕様と問題の原因に照らして、いまの文脈で使ってよいかを判断できます。
+
+## 次の章へ
+
+この章で決めたのは、CSSという言語の捉え方と、対象にするブラウザの範囲です。ただし、この前提だけでは、コードを書くたびに何を優先するかまでは決まりません。次は、内容が変わることを前提にする理由と、保守しやすさを最優先にする理由を、第2章「[CSS設計の考え方](/design-mindset/)」で説明します。

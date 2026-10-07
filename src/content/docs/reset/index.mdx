@@ -31,3 +31,11 @@ sidebar:
 - [`reset-no-destructive-reset`](/reset/kiso/#rule-reset-no-destructive-reset)：`* { margin: 0; padding: 0; }` のように、要素の機能や便利なデフォルトを一律に消すリセットをしません。
 - [`no-heavy-specificity-in-global`](/reset/global-pitfalls/#rule-no-heavy-specificity-in-global)：リセットやベーススタイルに、クラス1つで上書きできない詳細度のセレクタを書きません。
 - [`no-global-smooth-scroll`](/reset/base-styles/#rule-no-global-smooth-scroll)：`html` や `:root` に、`scroll-behavior: smooth` を無条件に指定しません。
+
+## この章で判断できるようになること
+
+この章を読むと、リセットCSSやベーススタイルに書こうとしている指定を、土台に置いてよいか、コンポーネントに任せるべきかで判断できるようになります。判断の材料は、クラス1つで上書きできない詳細度になっていないか、レイアウトを指定していないか、ブラウザの便利なデフォルトやアクセシビリティの仕組みを壊していないかです。フォーカスリングやスクロールの挙動のように、コンポーネントで個別に対応させず土台で決めておくべきものも見分けられます。
+
+## 次の章へ
+
+土台が決まると、その上にコンポーネントのCSSが増えていきます。書く人ごとに命名、ネストの仕方、宣言の並びが違うと、読むたびに書き手の癖を読み解くことになり、意図しない適用や上書きも起きます。次は、こうした書き方をそろえる規約を、第9章「[記法の規約](/notation/)」で定めます。

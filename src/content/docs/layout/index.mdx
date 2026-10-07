@@ -39,3 +39,11 @@ sidebar:
 - [`flexbox-check-auto-min-size`](/layout/flexbox-basics/#rule-flexbox-check-auto-min-size)：フレックスアイテムが縮まずにはみ出すときは、固定の幅を足す前に、自動の最小幅を確かめます。
 - [`sticky-align-self-start`](/layout/positioning/#rule-sticky-align-self-start)：GridやFlexboxの子に `position: sticky` を指定するときは、その要素に `align-self: start` も指定します。
 - [`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)：フォーカスできる要素や順番に意味のある要素を、`order` や `row-reverse` で見た目だけ入れ替えません。
+
+## この章で判断できるようになること
+
+この章を読むと、配置が思いどおりにならないとき、値を足す前に、要素がどの方式の中にあり、大きさが何で決まっているかから原因を特定できるようになります。フレックスアイテムがはみ出すなら自動の最小幅を、GridやFlexboxの子で `position: sticky` が留まらないなら `align-self` を確かめる、というように、症状に合った規則から調べられます。余白を `margin`、`padding`、`gap` のどれに受け持たせるか、マージンの相殺が起きる条件にあるか、`display: contents` で箱をなくしてよいかも判断できます。
+
+## 次の章へ
+
+ここまでで、CSSが値とレイアウトの方式から表示を決める仕組みを一通り確認しました。第III部では、この仕組みの上で、書いた本人以外が触っても壊れにくいCSSをどう書くかを決めます。最初に決めるのは、後から書くすべてのコンポーネントに影響する土台のスタイルなので、第8章「[リセットとベーススタイル](/reset/)」から始めます。

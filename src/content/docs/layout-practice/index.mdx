@@ -46,3 +46,11 @@ stack、cluster、switcher、gridなど、配置のパターンを部品にし�
 - [`minmax-min-capped-at-100-percent`](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)：`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にします。
 - [`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)：はみ出しを切り取るだけなら、`overflow: hidden` ではなく `clip` を使います。
 - [`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula)：親の幅を超えて画面の端まで広げる量は「画面の幅と親の幅の差の半分」の式で書き、`100vw` を使いません。
+
+## この章で判断できるようになること
+
+この章を読むと、作るものを見て、通常フロー、Grid、Flexbox、`float` のどれで組むかを決め、配置と余白を親と子のどちらに書くかを決められるようになります。長い見出しや画像のない記事、件数の増減があっても、どの要素が伸び、どこで折り返し、どこを切り取るかを、書く前に決められます。横スクロールが出たときの原因の特定や、並べ替えた配置で読み上げ順がずれないかの確認も、実装の段階で行えます。
+
+## 次の章へ
+
+ここまでで、内容の長さや件数が変わっても崩れない配置を組み立てました。ただ、縦に積む配置や、折り返しながら横へ並べる配置、幅で列数を変える配置は、ページやコンポーネントをまたいで何度も現れ、その都度同じ指定を書き直すことになります。第12章「[レイアウトコンポジション](/compositions/)」では、こうした配置のパターンを部品にし、目的から選んで使う方法を説明します。

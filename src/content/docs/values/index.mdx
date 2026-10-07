@@ -35,3 +35,11 @@ sidebar:
 - [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height)：`line-height` は単位のない数値で指定します。
 - [`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)：`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` は使いません。
 - [`clamp-rem-bounds`](/values/math-functions/#rule-clamp-rem-bounds)：文字サイズを `clamp()` で書くときは、最小値と最大値をremにし、推奨値をremと相対単位の和にします。
+
+## この章で判断できるようになること
+
+この章を読むと、ある値をユーザーの文字サイズの設定に追従させるべきかどうかから、pxとremのどちらで書くかを決められるようになります。画面の大きさで変わる値では、`vw` と `vh` を避けて `svi` や `dvb` などから選ぶか、置き場所の幅に合わせる `cqi` を使うかを判断できます。ジェネレーターで作った `clamp()` の値のように根拠の見えない数値を見つけたときは、式に書き直して根拠を残せます。
+
+## 次の章へ
+
+単位と式によって、1つの値がどう計算されるかは決められるようになりました。ただし、その値が実際の大きさや位置にどう反映されるかは、要素がどのレイアウトの方式の中にあるかで変わります。次は、通常フロー、Flexbox、Grid、位置指定のそれぞれの規則を、第7章「[レイアウトの仕組み](/layout/)」で整理します。

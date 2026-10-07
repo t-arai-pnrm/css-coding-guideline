@@ -77,6 +77,8 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 <Demo title="形のトークンで切り抜いた三角形と、下向きの三角形を付けたツールチップ" html={triangleHtml} css={triangleCss} />
 
+デモの上は、下端の中央に下向きの三角形を付けたツールチップです。その下には、4つの形のトークンで正方形を切り抜き、上、下、右、左を向いた三角形を並べています。
+
 三角形は、ツールチップの本体を基準に絶対配置します。絶対配置した擬似要素はブロックの箱になるので、`display` を指定しなくても、`inline-size` と `aspect-ratio` で大きさが決まります。`translate: -50% 0` で三角形の幅の半分だけ戻し、本体の中央にそろえます。
 
 `polygon()` の値は直接書かず、トークンとして定義します。`polygon(0 0, 100% 0, 50% 100%)` という値を見て、下向きの三角形だとすぐに気づく人は多くないでしょう。`--shape--triangle-bottom` という名前なら、形がすぐに分かります。縦横比を `2 / tan(60deg)` にすると、正三角形になります（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Safari 18 と Firefox で、aspect-ratio の比に書いた tan() が効くか */}
@@ -159,6 +161,8 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 <Demo title="マスクで描いた矢印が、背景色に合わせた文字色で塗られる" html={maskIconHtml} css={maskIconCss} />
 
+デモの1つ目は明るい背景に濃い文字、2つ目は濃い背景に白い文字のセクションです。どちらのセクションでも、リンクの後ろの矢印は、リンクの文字と同じ色で塗られます。
+
 `display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定がなくても描けます。
 
 `background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
@@ -228,6 +232,8 @@ button {
 ```
 
 <Demo title="無効なボタンでは、文字色だけを変えると、アイコンと枠線も同じ色になる" html={currentColorHtml} css={currentColorCss} />
+
+デモの1つ目は通常のボタン、2つ目は `disabled` を付けたボタンです。2つ目では文字色を薄い灰色に変えているだけですが、アイコンと枠線も同じ灰色になります。
 
 `border` の色を省略した場合も、初期値は `currentColor` です。文字と同じ色の枠線なら、`border: 1px solid` とだけ書けば足ります。色を2か所に書かなければ、片方だけ変え忘れることもありません。
 

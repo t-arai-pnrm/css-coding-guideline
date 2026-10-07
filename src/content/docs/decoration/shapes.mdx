@@ -37,7 +37,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 <Demo title="border-radius: 24px の正方形に、corner-shape のキーワードを指定したとき" html={keywordsHtml} css={keywordsCss} variant="neutral" />
 
-このデモは、`corner-shape` に対応していない環境では、5つとも同じ角丸で表示されます。`notch` のように角丸から最も離れた形でも、未対応の環境では角丸に戻るだけです。
+このデモでは、同じ角丸の正方形を5つ並べ、それぞれに `round`、`squircle`、`bevel`、`scoop`、`notch` を指定しています。対応している環境（Chrome）では、四隅が順に、円弧の角丸、スクワークル、斜めの切り落とし、内側へのえぐれ、四角い切り欠きになります。このデモは、`corner-shape` に対応していない環境では、5つとも同じ角丸で表示されます。`notch` のように角丸から最も離れた形でも、未対応の環境では角丸に戻るだけです。
 
 ```css title="🙆‍♂ Recommended: 錠剤型のボタンに corner-shape を1行足す"
 @scope (.scoped.button) to (.scoped) {
@@ -53,6 +53,8 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 ```
 
 <Demo title="錠剤型のボタンと、corner-shape: squircle を足したボタン" html={squircleHtml} css={squircleCss} variant="neutral" />
+
+デモの1つ目は `corner-shape` を初期値に戻した錠剤型のボタン、2つ目は `corner-shape: squircle` を足したボタンです。対応している環境（Chrome）では、2つ目のボタンの左右の端が、半円より角張った曲線になります。
 
 私は、スクワークルのボタンを作るときに、錠剤型のボタンへ `corner-shape: squircle` を1行足すだけにしています。対応していない環境では、この宣言が無視され、錠剤型のボタンとして表示されます。形は少し変わりますが、ボタンとしての見え方は崩れないので、`@supports` で囲む必要はありません。`border-radius` の値に `calc(infinity * 1px)` を使う理由は、「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明しています。
 
@@ -97,6 +99,8 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 ```
 
 <Demo title="左は border-radius の角丸、右は同じ半径を .-corner-squircle に渡したもの" html={squircleRadiusHtml} css={squircleRadiusCss} variant="neutral" />
+
+デモでは、半径8px、24px、32pxのそれぞれで、左に `border-radius` の角丸、右に `.-corner-squircle` の正方形を並べています。`corner-shape`、`if()`、スタイルクエリの範囲の比較に対応している環境（Chrome）では、右の角は大きい半径のスクワークルで描かれ、角の見た目の大きさが左に近くなります。未対応の環境では、右も左と同じ角丸になります。
 
 使う側は、角丸の半径を `--corner-squircle--radius` に渡します。半径が8px以上24px未満のときは2倍の `squircle`、24px以上32px未満のときは1.67倍の `superellipse(1.75)`、32px以上のときは1.5倍の `superellipse(1.5)` になります。大きい半径では、倍率を下げるのと合わせて、`squircle`（`superellipse(2)`）より円弧に近い値へ切り替えています。`if()` は条件を上から順に調べるので、大きい半径の条件から書きます。
 

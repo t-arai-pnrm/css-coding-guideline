@@ -86,7 +86,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 `fixed` と `sticky` の要素は、z-indexを指定しなくてもスタッキングコンテキストを作ります。`relative` と `absolute` は、z-indexに `auto` 以外を指定したときだけ作ります。
 
-次のデモでは、5つの値のBに、同じ `inset` を指定しています。枠の中をスクロールすると、`fixed` のBは枠の同じ位置に留まり、`sticky` のBは破線の枠の範囲で上端に留まります。
+次のデモでは、5つの値のBに、同じ `inset` を指定しています。枠の中をスクロールすると、`fixed` のBは枠の同じ位置に留まり、`sticky` のBは破線の枠の範囲で上端に留まります。スクロールする前の位置では、`static` のBは `inset` が無視されてAとCの間に並び、`relative` のBは元の場所を空けたまま下へ16px、行末側へ48pxずれます。`absolute` のBは流れから外れ、破線の枠の角から同じ距離に置かれます。
 
 <Demo title="同じ inset を指定しても、position の値によって B の置かれ方が変わる" html={valuesHtml} css={valuesCss} variant="neutral" height="360px" />
 
@@ -131,7 +131,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 }
 ```
 
-次のデモでは、1つ目のカードだけ包含ブロックを作っていません。そのバッジは、デモの枠の右上に置かれます。
+次のデモでは、1つ目のカードだけ包含ブロックを作っていません。そのバッジは、デモの枠の右上に置かれます。`position: relative` を指定した2つ目のカードでは、バッジがカードの右上の角に収まります。
 
 <Demo title="包含ブロックを作らないと、バッジがカードの外の角に置かれる" html={containingBlockHtml} css={containingBlockCss} variant="neutral" />
 
@@ -166,6 +166,8 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 ```
 
 <Demo title="inset: 0 と margin: auto で、ラベルを包含ブロックの中央に置く" html={centerHtml} css={centerCss} />
+
+このデモでは、16:9の暗い色の枠を包含ブロックにして、「再生する」のラベルを枠の上下左右の中央に置いています。ラベルの大きさは中身で決まるので、文言を変えても中央からずれません。
 
 `translate` を使う方法は、位置を決める指定が `inset` と変形の2か所に分かれ、何のための変形なのかが読み取りにくくなります。絶対配置の要素に `place-self: center` を指定する方法もありますが、Safariは26から対応したので、2026年10月の時点ではまだ使えません（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
 

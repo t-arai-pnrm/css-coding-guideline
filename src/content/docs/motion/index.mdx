@@ -36,3 +36,11 @@ sidebar:
 - [`scale-in-from-near-one`](/motion/easing-and-duration/#rule-scale-in-from-near-one)：拡大して現れる動きは `scale: 0` から始めず、`transform-origin` をトリガーのある側に向けます。
 - [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)：`transition: all` や `transition-property: all` を使いません。
 - [`starting-style-for-entry`](/motion/entry-and-exit/#rule-starting-style-for-entry)：`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。
+
+## この章で判断できるようになること
+
+この章を読むと、動きを足す前に、その動きが状態の変化や操作の結果を伝えるものか、どのくらいの頻度で見られるものかを確かめ、入れるかどうかを決められるようになります。動きを減らす設定に対しては、止めるか、フェードにするか、短くするか、そのまま残すかを動きの種類ごとに選べます。実装の手段は、トランジションと `@keyframes`、`@starting-style`、スクロール駆動アニメーション、View Transitionsから選べます。描画の負荷も、レイアウト、ペイント、合成のどれが起きるかから見積もれます。
+
+## 次の章へ
+
+第11章からこの章までで、レイアウト、文字、色、装飾、操作、動きについて、書き方のルールを決めてきました。ルールは、書いた時点では守られていても、人の入れ替わりや作業の分担、AIが出力するコードによって少しずつ崩れ、CMSのようにルールの前提が成り立たない環境もあります。第19章「[実務での運用](/operations/)」では、Stylelintとレビューでルールを守り続ける方法と、前提が成り立たない環境での書き方を説明します。

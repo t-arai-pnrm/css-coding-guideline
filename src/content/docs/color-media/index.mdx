@@ -33,3 +33,11 @@ sidebar:
 - [`transparent-border-over-none`](/color-media/forced-colors/#rule-transparent-border-over-none)：枠線を消すときは、`border: none` ではなく `border-color: transparent` で透明にします。
 - [`derive-colors-from-base`](/color-media/relative-color/#rule-derive-colors-from-base)：透過させた色や明度を変えた色は元の色から作り、そのためのトークンやRGBの値を別に用意しません。
 - [`light-dark-in-semantic-tokens`](/color-media/dark-mode/#rule-light-dark-in-semantic-tokens)：ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントにメディアクエリを書きません。
+
+## この章で判断できるようになること
+
+この章を読むと、透過させた色や明度を変えた色が要るときに、トークンを増やさず、相対カラー構文と `color-mix()` のどちらで元の色から作るかを決められます。背景色に合わせて文字色を黒か白にする場面では、`contrast-color()` と、相対カラー構文と `sign()` の組み合わせのどちらを使うかを、対応するブラウザと、色を自分で決めたいかどうかから選べます。ダークモードや強制カラーモードで色が置き換わったときに、どの部品の情報が伝わらなくなるかも、実装する前に見積もれます。
+
+## 次の章へ
+
+ここまでで、色の定義と、設定によって色が置き換わる場面への備えが決まりました。画像やアイコン、影、角の形といった装飾は、この色を使って描くうえに、画像が表示されない場合や新しい図形の機能に未対応の環境でも、内容と部品の形を保つ必要があります。第16章「[画像・装飾](/decoration/)」では、画像の配置と読み込み、アイコン、角の形、輪郭と区切り線の書き方を説明します。

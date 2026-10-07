@@ -31,3 +31,11 @@ sidebar:
 - [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限定し、`@media (any-hover)` の中に書きます。
 - [`hide-panels-after-init`](/interaction/disclosure/#rule-hide-panels-after-init)：開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してからJavaScriptで隠します。
 - [`no-maximum-scale`](/interaction/forms/#rule-no-maximum-scale)：入力欄での拡大を防ぐために、`maximum-scale` や `user-scalable=no` でズームを止めません。
+
+## この章で判断できるようになること
+
+この章を読むと、ホバーで変える見た目をどの状態に限定し、キーボードで操作したときにどう表すかを決められるようになります。開閉するUIでは、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のどれを使うかを、背面を操作できなくするか、ページ内検索で中身を見つけられるようにするかといった要件から選べます。フォーム部品やカルーセルについても、JavaScriptで作り直していた振る舞いのうち、ブラウザの機能に置き換えられるものを見分けられます。
+
+## 次の章へ
+
+ここまでで、操作に応じて状態を切り替え、その状態を伝えられるようになりました。切り替わる瞬間に動きを付けると変化は分かりやすくなりますが、繰り返し触るUIでは待ち時間が増え、動きを減らす設定をしているユーザーには不調の原因にもなるので、動かすかどうかは別に判断します。第18章「[モーション](/motion/)」では、動かすかどうかの判断から、出現と退場、View Transitionsまでを説明します。

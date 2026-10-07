@@ -34,3 +34,11 @@ sidebar:
 - [`no-lazy-loading-first-view`](/decoration/images/#rule-no-lazy-loading-first-view)：ファーストビューで表示される画像には、`loading="lazy"` を指定しません。
 - [`aspect-ratio-for-ratios`](/decoration/images/#rule-aspect-ratio-for-ratios)：要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作りません。
 - [`icon-current-color`](/decoration/icons-and-masks/#rule-icon-current-color)：単色のアイコンの色は `currentColor` で文字色に合わせます。
+
+## この章で判断できるようになること
+
+この章を読むと、画像を置くときに、大きさの属性、比率、読み込みの優先度をどう指定すれば、後ろの内容を押し下げず表示も遅らせずに済むかを決められるようになります。アイコンや図形を `clip-path`、マスク、インラインSVGのどれで描くかも、色を文字色に合わせたいか、代替テキストが要るかから選べます。`corner-shape` や `shape()` のような新しい機能を使うときは、未対応の環境で何が描かれるかを確かめ、`@supports` で切り替える指定を見極められます。
+
+## 次の章へ
+
+ここまでの章で、部品が静止しているときの見た目が決まりました。ボタンやリンク、開閉するUI、フォーム部品は、ユーザーが操作すると状態が変わり、その状態をキーボードやスクリーンリーダーの利用者にも伝える必要があります。第17章「[インタラクション](/interaction/)」では、ホバーとフォーカスの状態の表し方と、開閉するUIやフォーム部品をブラウザの機能に任せて作る方法を説明します。

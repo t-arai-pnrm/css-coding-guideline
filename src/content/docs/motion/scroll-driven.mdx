@@ -259,6 +259,8 @@ window.addEventListener('scroll', () => {
 
 <Demo title="画面に入ったカードが、1回だけフェードインする" html={revealHtml} css={revealCss} height="360px" />
 
+デモの枠の中を下へスクロールすると、3枚のカードが画面に入ったところで1枚ずつ現れます。上へ戻してからもう一度スクロールしても、再生を終えたカードは表示されたままです。スクロール駆動アニメーションに対応していない環境では、カードは最初から表示されています。
+
 ルートは、`view()` のタイムラインで自分の位置を測るだけで、自分は動きません。`--_in-view` は `@property` で登録していないので、キーフレームの間を補間できず、進み具合の50%の時点で `--false` から `--true` に切り替わります（CSS Custom Properties Level 1）。`linear` を指定しているので、切り替わるのは範囲のちょうど中間です。この例の範囲は `entry 0%` から `entry 60%` なので、要素の30%が画面に入った位置で `--true` になります（2026年10月、Chrome 152で確認）。`animation-fill-mode: both` を指定しているので、範囲を過ぎたあとも `--true` のまま残ります。
 
 子の `._body` は、`animation-play-state: paused` と `animation-fill-mode: both` で、`@keyframes` の `from` の見た目のまま待機します。`--_in-view` が `--true` になると、`@container style()` の中の `running` が当てはまり、アニメーションが最後まで再生されます。`opacity: 0` を別に書かないので、開始の見た目を変えたいときは、`@keyframes` に渡すカスタムプロパティだけを変えればすみます。再生時間の `--duration--reveal`（600ms）は、機能的な動きの上限（300ms）を超えます。ページを読み進める間に一度だけ再生する、頻度の低い装飾なので、例外として扱います。

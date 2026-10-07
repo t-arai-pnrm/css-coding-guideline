@@ -47,6 +47,8 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 <Demo title="同じ影のトークンを、ライトモードとダークモードの背景に置いたとき" html={shadowHtml} css={shadowCss} />
 
+デモでは、ライトモードとダークモードの背景に、`--shadow--sm`、`--shadow--md`、`--shadow--lg` の影を付けたカードを3枚ずつ置いています。ライトモードの影は背景と同じ青みを帯び、ダークモードの影は不透明度を上げた黒で描かれます。
+
 ライトモードの影は、背景の色相に寄せます。灰色がかった黒の影を色のある背景に重ねると、背景がくすんで見えるからです。背景の色相に合わせ、明度と彩度を下げた色にすると、背景と自然になじみます。上の例では、背景のアクセントカラーの色相を `--shadow--hue` に持たせています。背景が無彩色のサイトでは、彩度が0の黒のままでも構いません。
 
 影の色は、ダークモードでは黒のままにします。暗い背景で白い影を付けると、影ではなく光って見えてしまうからです。代わりに、ダークモードでは黒の不透明度を上げて、暗い背景の上でも奥行きが分かるようにします。影は強制カラーモードでは消えるので、要素の境界は影だけで表しません。
@@ -73,6 +75,8 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 <Demo title="内側の角丸を外側と同じにすると、角の部分だけ余白が広く見える" html={nestedRadiusHtml} css={nestedRadiusCss} variant="neutral" />
 
+デモの1つ目は内側にも外側と同じ16pxを、2つ目は16pxから余白の8pxを引いた8pxを指定したメニューです。選んでいる項目の背景の角を見比べると、1つ目では外側の角との間が辺の部分より広く空き、2つ目では同じ幅にそろいます。
+
 角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。影や角丸の値をpxで指定する理由は、「[6-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
 
 ## すりガラスの背景は、真後ろの色だけが混ざる
@@ -89,6 +93,8 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 ```
 
 <Demo title="スクロールすると、ヘッダーの真後ろにある色だけがぼかされて混ざる" html={frostedHtml} css={frostedCss} height="320px" />
+
+デモの枠の中をスクロールすると、色の付いたブロックがヘッダーの後ろを通ります。ヘッダーに重なった部分の色だけがぼかされて透け、まだ重なっていないブロックの色はヘッダーに混ざりません。
 
 `-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[7-10 positionの基礎](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
 
@@ -112,6 +118,8 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 `::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲むような装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
 
 <Demo title="::marker で番号の色と太さを変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
+
+デモの1つ目は `::marker` で番号を青の太字にしたリスト、2つ目は `::before` で番号を青い円で囲んだリストです。
 
 kiso.cssは、リストのマーカーを `list-style-type: ""` で空にしています。`::marker` で装飾するリストでは、`list-style-type: revert` でブラウザのデフォルトの番号に戻し、マーカーを置く余白を `padding-inline-start` で確保します。円で囲むリストでは、空のマーカーをそのまま使い、`counter-reset` と `counter-increment` で数えた番号を描きます。
 
@@ -150,6 +158,8 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 ```
 
 <Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} variant="neutral" />
+
+デモの1つ目は `paint-order` の指定なし、2つ目は `paint-order: stroke fill` です。1つ目では8pxの線が白い文字の内側にも重なって文字が細く見え、2つ目では文字の太さを保ったまま外側に縁取りが付きます。
 
 見えるのは線の外側の半分なので、線の幅は、見せたい縁取りの2倍を指定します。上の例では、8pxの線で4pxの縁取りになります。`paint-order` はもともとSVGのプロパティで、HTMLの文字には、2024年3月にすべての主要なブラウザで使えるようになりました。対応していない環境では、縁取りが塗りの上に重なるだけです。
 
@@ -196,6 +206,8 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 ```
 
 <Demo title="幅が足りずに折り返した行にも、clone なら padding と枠線が付く" html={cushionHtml} css={cushionCss} />
+
+デモの1つ目は `box-decoration-break` の指定なし、2つ目は `clone` です。幅のボタンで320pxにすると「3月31日まで開催しています」の行が折り返し、1つ目では折り返した位置の行の端に `padding` と枠線が付かず、2つ目では折り返したどの行にも付きます。
 
 Safariは、接頭辞付きの `-webkit-box-decoration-break` にしか対応していません（2026年10月確認）。接頭辞なしの宣言だけでは、Safariで座布団が行の端で切れるので、接頭辞付きの宣言を前に併記します。ベンダープレフィックスを書く場面と、理由のコメントの残し方は、「[9-7 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
 

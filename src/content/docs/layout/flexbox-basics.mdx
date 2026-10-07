@@ -95,7 +95,7 @@ Flexboxの不具合には、よく見かける型があります。2つのアイ
 
 `align-content` は、折り返してできた行を、コンテナの交差軸のどこに置くかを決めます。`flex-wrap` が初期値の `nowrap` のコンテナは1行のコンテナとして扱われ、`align-content` は効きません。
 
-次のデモは、高さ160pxのコンテナで配置のプロパティを比べたものです。2つ目のアイテムだけ高さを変えています。4つ目では、折り返した2行のまとまりが、`align-content: end` でコンテナの下端に移っています。
+次のデモは、高さ160pxのコンテナで配置のプロパティを比べたものです。2つ目のアイテムだけ高さを変えています。1つ目では3つのアイテムが行頭、中央、行末に分かれ、2つ目では3つともコンテナの上下の中央に並び、3つ目ではCだけが下端に置かれます。4つ目では、折り返した2行のまとまりが、`align-content: end` でコンテナの下端に移っています。
 
 <Demo title="justify-content、align-items、align-self、align-content の対象の違い" html={alignmentHtml} css={alignmentCss} />
 
@@ -326,7 +326,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 }
 ```
 
-次のデモは、同じタグの並びを `nowrap` と `wrap` で比べたものです。タグには、中身の幅より縮まないよう `min-inline-size: fit-content` を指定しています。幅のボタンで狭めると、`nowrap` の段ではタグがコンテナの外へはみ出し、`wrap` の段では次の行へ回ります。行の間にも、アイテムの間と同じ `gap` が入ります。
+次のデモは、同じタグの並びを `nowrap` と `wrap` で比べたものです。タグには、中身の幅より縮まないよう `min-inline-size: fit-content` を指定しています。幅のボタンで狭めると、`nowrap` の段ではタグがコンテナの外へはみ出し、`wrap` の段では次の行へ回ります。行の間にも、アイテムの間と同じ `gap` が入ります。9つのタグを1行に並べると768pxより広くなるので、幅のボタンのどれを選んでも `nowrap` の段ははみ出し、`wrap` の段は狭い幅ほど行が増えます。
 
 <Demo title="flex-wrap: nowrap と wrap の比較" html={wrapGapHtml} css={wrapGapCss} widths={[320, 480, 768]} />
 
