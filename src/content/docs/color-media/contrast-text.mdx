@@ -1,6 +1,6 @@
 ---
 title: "15-3 背景から文字色を決める"
-description: "背景色から文字色を黒か白に決めるときは、対象の環境が Safari 26 以上なら contrast-color(var(--_background)) と書きます。Safari 18系に対応するときや、切り替える明度や色を自分で決めたいときは、相対カラー構文と sign() で oklch(from var(--_background) sign(0.7 - l) 0 h) と書きます。どちらで決めた色も、実際の表示で読みやすさを確かめます。画像の上の文字に敷くフォールバックの背景色は、contrast-color(currentColor) で決めます。"
+description: "背景色から文字色を黒か白に決めるときは、対象の環境が Safari 26 以上なら contrast-color(var(--_background)) と書きます。Safari 18系に対応するときや、切り替える明度や色を自分で決めたいときは、相対カラー構文と sign() で oklch(from var(--_background) sign(0.7 - l) 0 h) と書きます。どちらで決めた色も、実際の表示で読みやすさを確かめます。画像の上の文字に敷くフォールバックの背景色は、文字色から sign() で先に決め、対応する環境では contrast-color(currentColor) で上書きします。"
 sidebar:
   order: 3
 ---
@@ -15,7 +15,7 @@ import imageFallbackCss from '../../../demos/color-media/image-fallback/style.cs
 
 背景色から文字色を黒か白に決めるときは、`color: contrast-color(var(--_background));` と書きます。`contrast-color()` は、渡した色に対してブラウザが黒か白を選んで返す関数です。Safariが対応したのはバージョン26からなので、この書き方を使うのは、対象の環境がSafari 26以上の場合です。また、不透明で、選ばれる文字色とのコントラスト比を確認済みの背景色に使います。
 
-Safari 18系にも対応する場合や、切り替える明度や色を自分で決めたい場合は、相対カラー構文と `sign()` で書きます。式は `color: oklch(from var(--_background) sign(0.7 - l) 0 h);` です。背景の明度が0.7より低ければ白に、0.7以上なら黒になります。画像の上の文字に敷く、画像が表示されなかったときの背景色は、対象の環境にかかわらず `background-color: contrast-color(currentColor);` で文字色から決めます。
+Safari 18系にも対応する場合や、切り替える明度や色を自分で決めたい場合は、相対カラー構文と `sign()` で書きます。式は `color: oklch(from var(--_background) sign(0.7 - l) 0 h);` です。背景の明度が0.7より低ければ白に、0.7以上なら黒になります。画像の上の文字に敷く、画像が表示されなかったときの背景色は、文字色から決めます。まず `sign()` で書き、`contrast-color(currentColor)` に対応する環境ではそれで上書きします。
 
 <Baseline id="contrast-color" />
 
@@ -149,48 +149,36 @@ Safari 18系にも対応する場合や、切り替える明度や色を自分�
 
 どちらの書き方も、黒と白のうちどちらかを選ぶだけで、選んだ色が基準を満たすことまでは保証しません。最後は、実際の背景色と文字色の組み合わせでコントラスト比を確かめます。コントラストの基準と確かめ方は「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。知覚にもとづくコントラストのモデルであるAPCAで0.7を比べた結果は、ページの最後の「[閾値をAPCAで比べる](#閾値をapcaで比べる)」にまとめています。
 
-## 1つの色から配色を組み立てる
+## 文字色から背景色を決める
 
-同じ関数を使うと、文字色から背景色を作ることもできます。トーストのように色のバリエーションを持つ部品では、バリエーションごとに書き換える色を1つにできます。
+`contrast-color()` は、背景色から文字色を決めるだけでなく、向きを逆にして、文字色から背景の色を決めるのにも使えます。文字色が先に決まる部品では、文字色と対比する黒か白を求め、文字色を少しだけ混ぜて背景色にします。
 
-```css title="🙆‍♂ Recommended: 文字色だけを受け取り、背景色は文字色から作る（対象の環境がSafari 26以上のとき）"
+```css title="🙆‍♂ Recommended: 文字色と対比する黒か白に、文字色を混ぜて背景色を作る（対象の環境がSafari 26以上のとき）"
 @scope (.scoped.toast) to (.scoped) {
   :scope {
     --_foreground: var(--toast--foreground, var(--foreground--base));
     --_contrast-color: contrast-color(var(--_foreground));
 
-    padding: 1em;
-    border: 1px solid;
-    border-radius: 4px;
     background-color: color-mix(in oklab, var(--_foreground), var(--_contrast-color) 90%);
     color: var(--_foreground);
-
-    &[data-variant="success"] {
-      --_foreground: var(--color--accent--600);
-    }
-
-    &[data-variant="error"] {
-      --_foreground: var(--color--error--600);
-    }
   }
 }
 ```
 
-`--_contrast-color` が、文字色と対比する黒か白です。背景色は、その黒か白に文字色を10%だけ混ぜて作ります。枠線は `currentColor` なので文字色と同じです。バリエーションのルールでは、`--_foreground` だけを書き換えます。
+`--_contrast-color` が、文字色と対比する黒か白です。背景色は、その黒か白に文字色を10%だけ混ぜて作ります。暗い文字色なら淡い背景に、明るい文字色なら暗い背景になります。枠線や種類ごとの色の切り替えを含めたトーストの完成例は、「[15-2 相対カラー構文と color-mix()](/color-media/relative-color/)」の「文字色1つからトーストの配色を作る」で説明しています。この節で扱うのは、`contrast-color()` が受け持つ2つの宣言だけです。
 
-文字、枠線、背景の3色がすべて `--_foreground` から決まるので、色を1つ選べばバリエーションが1つ増えます。暗い文字色なら淡い背景に、明るい文字色なら暗い背景になるので、ダークモードで明るい段階の色を渡しても、文字と背景の明暗が逆転することはありません。ただし、背景に文字色を混ぜるとコントラスト比は下がるので、バリエーションの色ごとに確かめます。
-
-Safari 26より前の環境では、`background-color` の宣言が無効になり、トーストに背景色が付きません。文字色と枠線は `--_foreground` のまま表示されるので、ページの背景の上で文字は読めます。Safari 18系に対応するときは、`--_contrast-color` の値を `oklch(from var(--_foreground) sign(0.7 - l) 0 h)` に替えれば、同じ組み立て方で背景色まで付きます。
+Safari 26より前の環境では、`--_contrast-color` の宣言が無効になるので、`background-color` も無効になり、背景色が付きません。文字色は残りますが、読めるかどうかはページの背景で決まります。Safari 18系に対応するときは、`--_contrast-color` の値を `oklch(from var(--_foreground) sign(0.7 - l) 0 h)` に替えます。背景色が付くので、この置き換えは必須です。背景に文字色を混ぜるとコントラスト比は下がるので、色ごとに確かめます。
 
 ## 画像が表示されなかったときの背景色
 
-画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色には、対象の環境にSafari 18系が含まれていても `contrast-color()` を使います。文字色は先に決まっているので、その文字色と対比する背景色を `contrast-color(currentColor)` で求めます。
+画像の上に文字を載せる部品では、画像が表示されなかった場合に備えて、文字色と対比する背景色を敷きます。文字色は先に決まっているので、背景色はその文字色から求めます。`contrast-color(currentColor)` に未対応の環境では宣言が無効になるので、同じ値を `sign()` で先に書いておきます。
 
 ```css title="🙆‍♂ Recommended: 画像が表示されなかった場合の背景色を、文字色から決める"
 @scope (.scoped.image-banner) to (.scoped) {
   :scope {
     display: block grid;
     grid-template-areas: "--pile";
+    background-color: oklch(from currentColor sign(0.7 - l) 0 h);
     background-color: contrast-color(currentColor);
     color: var(--image-banner--foreground, oklch(100% 0 0deg));
 
@@ -202,15 +190,15 @@ Safari 26より前の環境では、`background-color` の宣言が無効にな�
 }
 ```
 
-`currentColor` は、その要素の `color` の値です。白い文字なら黒い背景が、濃い文字なら白い背景が敷かれるので、画像に合わせて文字色を変えても、背景色を書き直す必要がありません。画像が表示されれば、背景色は画像に隠れて見えません。画像と本文をグリッドの同じエリアに重ねる方法と、写真を `<img>` で置く理由は、「[16-1 画像の配置と読み込み](/decoration/images/)」で説明しています。
+`currentColor` は、その要素の `color` の値です。白い文字なら黒い背景が、濃い文字なら白い背景が敷かれるので、画像に合わせて文字色を変えても、背景色を書き直す必要がありません。1つ目の宣言が、Safari 18系を含む環境で背景色を保証します。2つ目の `contrast-color(currentColor)` に対応する環境では、後ろの宣言が前の宣言を上書きし、対応しない環境では無効になって1つ目が残ります。画像が表示されれば、背景色は画像に隠れて見えません。画像と本文をグリッドの同じエリアに重ねる方法と、写真を `<img>` で置く理由は、「[16-1 画像の配置と読み込み](/decoration/images/)」で説明しています。
 
-次のデモでは、画像の上に文字を載せたバナーで、画像を表示できなかった場合の背景色を `contrast-color(currentColor)` で決めています。
+次のデモでは、画像の上に文字を載せたバナーで、画像を表示できなかった場合の背景色を文字色から決めています。
 
 <Demo title="画像を表示できなくても、文字色と対比する背景色の上で文字が読める" html={imageFallbackHtml} css={imageFallbackCss} />
 
 白い文字のバナーには黒い背景が、濃い文字のバナーには白い背景が敷かれます。CSSで指定しているのは文字色だけで、背景色は書いていません。
 
-この用途でSafari 26以上という条件を外せるのは、未対応の環境で起きることが文字色の場合と違うからです。Safari 18系では背景色が付きませんが、困るのは画像を読み込めなかったときだけなので、対応した環境だけで表示を改善するプログレッシブ・エンハンスメントとして扱えます。また、画像の上の文字には、画像のどの部分とも対比するよう白や黒に近い色を選ぶので、WCAG 2.xとAPCAで判定が分かれる中間の明度の色は、ふつう渡されません。{/* 要確認: 出典なし */}
+`contrast-color(currentColor)` だけを書くと、Safari 18系では背景色が付かず、白い文字が明るいページの背景に溶け込みます。画像が読み込めなかったときに文字が読めなくなるので、「画像が失敗したときだけの問題」として省くことはできません。`sign()` の式を先に置くのは、そのためです。画像の上の文字には、画像のどの部分とも対比するよう白や黒に近い色を選ぶので、WCAG 2.xとAPCAで判定が分かれる中間の明度の色は、ふつう渡されません。{/* 要確認: 出典なし */}
 
 ## 背景色から文字色を決めるときの注意
 

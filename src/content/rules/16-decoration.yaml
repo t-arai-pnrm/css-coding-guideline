@@ -29,7 +29,7 @@
   level: 必須
   rule: 画像や動画の上に文字を載せるときは、画像が表示されなくても文字を読める背景色を指定する。
   reason: 画像を読み込めないと、文字と背景の色が近くなり、文字を読めなくなることがあるため。
-  note: '背景色は `contrast-color(currentColor)` で文字色から決めます（ルール `contrast-color-for-image-fallback`）。`contrast-color()` に対応していない環境では背景色が付きませんが、画像が表示されれば見た目は変わらないので許容します。'
+  note: '背景色は文字色から決めます。`sign()` の宣言を先に書き、`contrast-color(currentColor)` で上書きします（ルール `contrast-color-for-image-fallback`）。`contrast-color()` だけだと、対応していない環境で背景色が付かず、画像が表示されないときに文字が読めなくなります。'
   page: decoration/images
   since: 0.1.0
 

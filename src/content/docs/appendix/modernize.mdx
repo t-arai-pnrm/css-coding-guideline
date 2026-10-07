@@ -22,7 +22,7 @@ sidebar:
 | よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | `height: 100vh` | `min-block-size: 100svb` | 挙動：モバイルでブラウザのUIが表示されていると、要素が見切れる | [`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)、[`prefer-svi-svb`](/values/viewport-and-container-units/#rule-prefer-svi-svb) | AI |
-| `width: 100vw` や `margin-inline: calc(50% - 50vw)` で画面の端まで広げる | レイアウトのガターの列まで広げる（`grid-column: --full`）。背景だけなら `calc((100lvi - 100%) / -2)` | 挙動：スクロールバーが幅を取る環境で、横スクロールが起きる | [`full-bleed-via-layout-first`](/layout-practice/layering/#rule-full-bleed-via-layout-first)、[`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula) | AI |
+| `width: 100vw` や `margin-inline: calc(50% - 50vw)` で画面の端まで広げる | レイアウトのガターの列まで広げる（`grid-column: --full`）。背景だけなら `calc((100lvi - 100%) / -2)`（`lvi` もクラシックなスクロールバーの幅を含むので、ルートで横方向のはみ出しを `clip` する前提の条件付き） | 挙動：スクロールバーが幅を取る環境で、横スクロールが起きる | [`full-bleed-via-layout-first`](/layout-practice/layering/#rule-full-bleed-via-layout-first)、[`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula) | AI |
 | `font-size: 5vw` | `clamp()` の最小値と最大値をremにし、推奨値をremと `svi` の和にする | 挙動：文字サイズの設定が無視され、ズームしても大きくならないことがある | [`no-viewport-only-font-size`](/values/viewport-and-container-units/#rule-no-viewport-only-font-size)、[`clamp-rem-bounds`](/values/math-functions/#rule-clamp-rem-bounds) | AI |
 | `font-size: 14px` | `font-size: calc(14 / 16 * 1rem)` | 挙動：ブラウザの文字サイズの設定が効かない | [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)、[`px-to-rem-formula`](/values/px-and-rem/#rule-px-to-rem-formula) | AI |
 | `html { font-size: 62.5% }` | ルートの文字サイズはブラウザの設定のままにし、`calc(24 / 16 * 1rem)` の式で変換する | 挙動：16pxを前提にremで書かれた外部のCSSが崩れる | [`no-root-font-size-change`](/values/px-and-rem/#rule-no-root-font-size-change) | AI |
@@ -109,7 +109,7 @@ sidebar:
 | 条件なしの `position: sticky` のヘッダー | `@media (height >= calc(600 / 16 * 1rem))` の中で固定する | 挙動：高さの低い画面や拡大した画面で、ヘッダーが画面の多くを覆う | [`sticky-header-height-query`](/layout-practice/sticky-header/#rule-sticky-header-height-query) | AI |
 | `scroll` イベントで、ヘッダーが留まったときにクラスを付ける | `container-type: scroll-state` と `@container scroll-state(stuck: block-start)` | 本書の方針 | [`scroll-state-for-sticky-styles`](/layout-practice/sticky-header/#rule-scroll-state-for-sticky-styles) | AI |
 | ポップオーバーとボタンに `anchor-name` を付け、`top: anchor(bottom)` で配置する | `popovertarget` や `commandfor` の暗黙のアンカーと `position-area` | 本書の方針 | [`implicit-anchor-first`](/layout/anchor-basics/#rule-implicit-anchor-first) | AI |
-| `position-area: bottom right` | `position-area: block-end span-inline-end` | 本書の方針 | [`position-area-logical-keywords`](/layout/anchor-basics/#rule-position-area-logical-keywords) | AI |
+| `position-area: bottom right` | `position-area: block-end inline-end`（配置領域は同じ右下の1マス） | 本書の方針 | [`position-area-logical-keywords`](/layout/anchor-basics/#rule-position-area-logical-keywords) | AI |
 
 ## レスポンシブ
 

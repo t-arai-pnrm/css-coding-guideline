@@ -135,6 +135,7 @@ img {
   :scope {
     display: block grid;
     grid-template-areas: "--pile";
+    background-color: oklch(from currentColor sign(0.7 - l) 0 h);
     background-color: contrast-color(currentColor);
     color: oklch(100% 0 0deg);
 
@@ -156,7 +157,7 @@ img {
 
 <Demo title="画像を表示できなくても、背景色の上で白い文字が読める" html={heroHeaderHtml} css={heroHeaderCss} />
 
-背景色は、画像の平均的な色ではなく、文字色とのコントラストが取れる色にします。このコード例では、`contrast-color(currentColor)` で、白い文字に対して黒を敷いています。文字色を変えても背景色を書き直さずに済みます。`contrast-color()` に対応していない環境（Safari 18系）では背景色が付きませんが、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱います（「[15-3 背景から文字色を決める](/color-media/contrast-text/)」）。画像と本文は同じグリッドのエリアに重ね、画像の高さは前の項目と同じ方法で本文に合わせています。
+背景色は、画像の平均的な色ではなく、文字色とのコントラストが取れる色にします。このコード例では、白い文字に対して黒を敷いています。文字色を変えても背景色を書き直さずに済みます。`contrast-color(currentColor)` だけでは、対応していない環境（Safari 18系）で背景色が付かず、画像が表示されないときに白い文字が読めなくなります。そこで、`sign()` で書いた同じ意味の宣言を先に置いています（「[15-3 背景から文字色を決める](/color-media/contrast-text/)」）。画像と本文は同じグリッドのエリアに重ね、画像の高さは前の項目と同じ方法で本文に合わせています。
 
 ## 背景の写真も `<img>` で置く
 

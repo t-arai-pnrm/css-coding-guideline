@@ -11,6 +11,26 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.27.0（2026年10月7日）
+
+ドキュメントレビューの指摘を受けて、技術説明の誤りと本文間の不整合を直し、読みにくい箇所を整理しました。ルールを変えたため、マイナーバージョンを上げています。
+
+- 「[15-3 背景から文字色を決める](/color-media/contrast-text/)」と「[16-1 画像の配置と読み込み](/decoration/images/)」：画像が表示されなかったときの背景色を、`sign()` で先に書き、`contrast-color(currentColor)` で上書きする形にしました。`contrast-color()` だけでは、Safari 18系で背景色が付かず、白い文字が読めなくなるためです。デモも同じ形にしました。
+- 「[15-3](/color-media/contrast-text/)」と「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」：トーストの未対応環境の説明を、「文字は読めます」から「読めるかどうかはページの背景による」に改めました。Safari 18系に対応するときは `sign()` への置き換えを必須としました。15-3のトーストの完成例は15-2に集め、15-3は `contrast-color()` が受け持つ宣言だけを示す形にしました。
+- 「[8-1 壊さないリセット](/reset/kiso/)」：`reset` の `!important` を、「`reset` より後に宣言したレイヤーの `!important` より強い」と直しました。
+- 「[2-1 CSS設計のマインドセット](/design-mindset/what-is-css-design/)」：拡張性の例を、親の `gap` で要素の間の余白をまとめる書き方に改め、stackの現在の説明にそろえました。
+- 「[付録B モダンな書き方への置き換え表](/appendix/modernize/)」：`position-area: bottom right` の置き換え先を `block-end inline-end` にし、配置領域が変わらないようにしました。全幅背景の `100lvi` の式には、ルートで横方向のはみ出しをclipする前提を加えました。
+- 「[18-5 出現と退場](/motion/entry-and-exit/)」：ツールチップのデモを直しました。ホバーとフォーカスを別々に覚え、どちらもなくなったときに閉じます。ツールチップの上へポインターを動かせることと、Escで閉じることも加えました。
+- 「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」：BEMの例の前に、動作上の誤りではなく本書の方針であることを一文で添えました。
+- 「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」：`cqi` の段落を3つに分け、入れ子のコンテナの図を加えました。flexアイテムとgridアイテムの説明も分けました。
+- 「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」：判断の節を前にまとめ、`@supports`、フォールバックの書き方、`scripting` の詳細を「未対応の環境に備える書き方の詳細」にまとめて後ろへ移しました。
+- 「[16-7 印刷のスタイル](/decoration/print/)」：排他的な `<details>` を印刷時に開く手順へ、`name` を一時的に外して復元する前提を加えました。
+- ルールを変えました。
+  - [`contrast-color-for-image-fallback`](/color-media/contrast-text/#rule-contrast-color-for-image-fallback)：`sign()` の宣言を先に書き、`contrast-color(currentColor)` で上書きする形にしました。
+  - [`text-on-image-fallback-background`](/decoration/images/#rule-text-on-image-fallback-background)：補足を、未対応の環境で背景色が付かないと文字が読めなくなるという説明に改めました。
+  - [`position-area-logical-keywords`](/layout/anchor-basics/#rule-position-area-logical-keywords)：物理キーワードの置き換え例を `block-end inline-end` にしました。
+  - [`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula)：`100lvi` もスクロールバーの幅を含むので、横方向のはみ出しをclipする前提を補足に加えました。
+
 ## 0.26.1（2026年10月7日）
 
 著者の指摘を受けて、ページ後半の「コード例とデモ」の見出しを全章でなくしました。ルールは変えていないので、パッチバージョンを上げています。

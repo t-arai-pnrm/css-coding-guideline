@@ -61,7 +61,17 @@
       /* 遅延は表示した状態のルールに書く。非表示に戻るときは遅れずに消える */
       &:is(._item[data-open] *) {
         opacity: 1;
+        pointer-events: auto;
         transition-delay: var(--_tooltip-delay);
+      }
+
+      /* ボタンとの隙間もツールチップの一部にして、ポインターをツールチップの上へ動かせるようにする */
+      &::before {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        inset-block-start: 100%;
+        block-size: 8px;
       }
     }
   }

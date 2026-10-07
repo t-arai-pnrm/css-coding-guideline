@@ -63,8 +63,8 @@
 
 - id: contrast-color-for-image-fallback
   level: 推奨
-  rule: '画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、`background-color: contrast-color(currentColor)` で文字色から決める。'
-  reason: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color()` に未対応の環境では背景色が付かないだけで、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱えるため。
+  rule: '画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、文字色から決める。`background-color: oklch(from currentColor sign(0.7 - l) 0 h)` を先に書き、続けて `background-color: contrast-color(currentColor)` で上書きする。'
+  reason: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color(currentColor)` だけでは、未対応の環境（Safari 26 より前）で背景色が付かず、画像が表示されないときに白い文字が明るいページの背景に溶け込むため。
   note: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x と APCA で判定が分かれる中間の明度の色は、ふつう渡されません。
   aiProne: true
   page: color-media/contrast-text

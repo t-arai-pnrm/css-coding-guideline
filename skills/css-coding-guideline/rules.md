@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.26.1
+- バージョン: 0.27.0
 - 生成日: 2026-10-07
 - ルールの数: 567
 
@@ -333,7 +333,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
   - 補足: 暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。
   - 詳細: 7-10 アンカーポジショニングの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/anchor-basics.mdx）
-- 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
+- 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
   - 理由: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
   - 補足: 論理プロパティを使う規則は、第9章のルール `logical-properties` で扱います。
   - 詳細: 7-10 アンカーポジショニングの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/anchor-basics.mdx）
@@ -595,7 +595,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-4 重なりと全幅（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/layering.mdx）
 - 【必須】親の幅を超えて画面の端まで広げる量は、`calc((100lvi - 100%) / -2)` のように「画面の幅と親の幅の差の半分」の式で書き、`100vw` や `calc(50% - 50vw)` を使わない。（`full-bleed-offset-formula`）
   - 理由: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
-  - 補足: 横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第6章のルール `no-vw-vh` を参照してください。
+  - 補足: `100lvi` もクラシックなスクロールバーの幅を含むので、この式を使うときは、ルートで横方向のはみ出しを `overflow-x: clip` で切る前提にします。横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第6章のルール `no-vw-vh` を参照してください。
   - 詳細: 11-4 重なりと全幅（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/layering.mdx）
 - 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
   - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
@@ -871,8 +871,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 元の色を1か所直すだけで派生させた色も追従し、元の色との関係がコードに残るため。
   - 補足: `--color-primary-rgb: 228 161 83` のような、`rgb()` で不透明度を付けるためだけのトークンは作りません。
   - 詳細: 15-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
-- 【推奨】画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、`background-color: contrast-color(currentColor)` で文字色から決める。（`contrast-color-for-image-fallback`）
-  - 理由: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color()` に未対応の環境では背景色が付かないだけで、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱えるため。
+- 【推奨】画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、文字色から決める。`background-color: oklch(from currentColor sign(0.7 - l) 0 h)` を先に書き、続けて `background-color: contrast-color(currentColor)` で上書きする。（`contrast-color-for-image-fallback`）
+  - 理由: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color(currentColor)` だけでは、未対応の環境（Safari 26 より前）で背景色が付かず、画像が表示されないときに白い文字が明るいページの背景に溶け込むため。
   - 補足: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x と APCA で判定が分かれる中間の明度の色は、ふつう渡されません。
   - 詳細: 15-3 背景から文字色を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/contrast-text.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
@@ -1607,7 +1607,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: アンカーが要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要らないため。
   - 補足: 暗黙のアンカーを `anchor()` で使うときは、`position-anchor: auto` を明示します。初期値の `normal` は、`position-area` を指定したときだけ暗黙のアンカーを使います。
   - 詳細: 7-10 アンカーポジショニングの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/anchor-basics.mdx）
-- 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end span-inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
+- 【推奨】`position-area` の値は、`bottom right` のような物理キーワードではなく、`block-end inline-end` のような論理キーワードで書く。（`position-area-logical-keywords`）
   - 理由: 縦書きや右から左へ書く言語でも、文の流れに対して同じ側に表示され、論理プロパティとも書き方がそろうため。
   - 補足: 論理プロパティを使う規則は、第9章のルール `logical-properties` で扱います。
   - 詳細: 7-10 アンカーポジショニングの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/anchor-basics.mdx）
@@ -2197,7 +2197,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-4 重なりと全幅（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/layering.mdx）
 - 【必須】親の幅を超えて画面の端まで広げる量は、`calc((100lvi - 100%) / -2)` のように「画面の幅と親の幅の差の半分」の式で書き、`100vw` や `calc(50% - 50vw)` を使わない。（`full-bleed-offset-formula`）
   - 理由: 何をどれだけ広げているのかが式から読め、`vw` の曖昧さも避けられるため。
-  - 補足: 横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第6章のルール `no-vw-vh` を参照してください。
+  - 補足: `100lvi` もクラシックなスクロールバーの幅を含むので、この式を使うときは、ルートで横方向のはみ出しを `overflow-x: clip` で切る前提にします。横にスクロールする領域では、`100%` の代わりに名前付きのコンテナの `100cqi` を使います。`vw` を使わない理由は、第6章のルール `no-vw-vh` を参照してください。
   - 詳細: 11-4 重なりと全幅（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/layering.mdx）
 - 【推奨】ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。（`sticky-header-height-query`）
   - 理由: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
@@ -2749,8 +2749,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: `contrast-color(var(--_background))` と書けば、背景色を変えても文字色を見直さずに済み、式を読み解く必要もないため。`contrast-color()` に未対応の環境（Safari 26 より前）では `color` の宣言が無効になり、継承した文字色が背景に溶け込むので、その環境に対応するときは `sign()` で書く。
   - 補足: ブラウザは WCAG 2.x のコントラスト比で黒か白を選ぶので、中間の明度の色では APCA の評価と逆になることがあります（明度0.57の青では黒が選ばれますが、APCA では白のほうが適切です）。選ばれた色は実際の表示で確かめます。色味を加えるときは `color-mix(in oklab, contrast-color(var(--_background)) 85%, var(--_background))` のように混ぜます。`sign()` で書くときは `oklch(from var(--_background) sign(0.7 - l) 0 h)` とし、閾値の0.7は APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限ります。画像が表示されなかった場合の背景色は、`contrast-color-for-image-fallback` を参照してください。
   - 詳細: 15-3 背景から文字色を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/contrast-text.mdx）
-- 【推奨】画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、`background-color: contrast-color(currentColor)` で文字色から決める。（`contrast-color-for-image-fallback`）
-  - 理由: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color()` に未対応の環境では背景色が付かないだけで、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱えるため。
+- 【推奨】画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、文字色から決める。`background-color: oklch(from currentColor sign(0.7 - l) 0 h)` を先に書き、続けて `background-color: contrast-color(currentColor)` で上書きする。（`contrast-color-for-image-fallback`）
+  - 理由: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color(currentColor)` だけでは、未対応の環境（Safari 26 より前）で背景色が付かず、画像が表示されないときに白い文字が明るいページの背景に溶け込むため。
   - 補足: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x と APCA で判定が分かれる中間の明度の色は、ふつう渡されません。
   - 詳細: 15-3 背景から文字色を決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/contrast-text.mdx）
 - 【推奨】ダークモードの色はセマンティクスのトークンに `light-dark()` で持たせ、コンポーネントに `prefers-color-scheme` のメディアクエリを書かない。（`light-dark-in-semantic-tokens`）
@@ -2826,7 +2826,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 16-1 画像の配置と読み込み（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images.mdx）
 - 【必須】画像や動画の上に文字を載せるときは、画像が表示されなくても文字を読める背景色を指定する。（`text-on-image-fallback-background`）
   - 理由: 画像を読み込めないと、文字と背景の色が近くなり、文字を読めなくなることがあるため。
-  - 補足: 背景色は `contrast-color(currentColor)` で文字色から決めます（ルール `contrast-color-for-image-fallback`）。`contrast-color()` に対応していない環境では背景色が付きませんが、画像が表示されれば見た目は変わらないので許容します。
+  - 補足: 背景色は文字色から決めます。`sign()` の宣言を先に書き、`contrast-color(currentColor)` で上書きします（ルール `contrast-color-for-image-fallback`）。`contrast-color()` だけだと、対応していない環境で背景色が付かず、画像が表示されないときに文字が読めなくなります。
   - 詳細: 16-1 画像の配置と読み込み（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/images.mdx）
 - 【推奨】背景に写真を敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置く。（`img-over-background-image`）
   - 理由: `<picture>` や `srcset` と `sizes` で表示される幅に合った画像を読み込め、`opacity` やフィルターで画像だけを加工でき、`alt` で意味を伝えられるうえ、HTML を解析する段階でプリロードスキャナーに見つかり、LCP の候補でも表示が遅れないため。

@@ -31,7 +31,8 @@
       overflow: clip;
       border-radius: 8px;
 
-      /* 文字色が白なら黒、濃い色なら白になる。未対応の環境では背景色が付かない */
+      /* 文字色が白なら黒、濃い色なら白になる。Safari 26より前でも、sign() で文字色と対比する背景色が付く */
+      background-color: oklch(from currentColor sign(0.7 - l) 0 h);
       background-color: contrast-color(currentColor);
       color: var(--image-banner--foreground, oklch(100% 0 0deg));
 

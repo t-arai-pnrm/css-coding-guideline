@@ -19,14 +19,40 @@ const hide = (item) => {
   }, COOLDOWN);
 };
 
+// ホバーとフォーカスを別々に覚え、どちらもなくなったときに閉じる
+const states = new Map();
+
+const update = (item) => {
+  const state = states.get(item);
+  if (state.dismissed || (!state.hover && !state.focus)) hide(item);
+  else show(item);
+};
+
 for (const item of toolbar.querySelectorAll('._item')) {
   const button = item.querySelector('button');
-  item.addEventListener('pointerenter', () => show(item));
-  item.addEventListener('pointerleave', () => hide(item));
-  button.addEventListener('focus', () => {
-    if (button.matches(':focus-visible')) show(item);
+  const state = { hover: false, focus: false, dismissed: false };
+  states.set(item, state);
+
+  // ツールチップは item の子孫なので、ボタンからツールチップへ移っても pointerleave は起きない
+  item.addEventListener('pointerenter', () => {
+    state.hover = true;
+    state.dismissed = false;
+    update(item);
   });
-  button.addEventListener('blur', () => hide(item));
+  item.addEventListener('pointerleave', () => {
+    state.hover = false;
+    update(item);
+  });
+  button.addEventListener('focus', () => {
+    if (!button.matches(':focus-visible')) return;
+    state.focus = true;
+    state.dismissed = false;
+    update(item);
+  });
+  button.addEventListener('blur', () => {
+    state.focus = false;
+    update(item);
+  });
 
   // 遅延が明けて表示が始まったら、ウォームアップに入る
   item.querySelector('._tooltip').addEventListener('transitionstart', () => {
@@ -34,8 +60,11 @@ for (const item of toolbar.querySelectorAll('._item')) {
   });
 }
 
-// Esc キーで、表示しているツールチップを閉じる
+// Esc キーで、表示しているツールチップを閉じる。ホバーやフォーカスが続いていても、入り直すまで開かない
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
-  for (const opened of toolbar.querySelectorAll('._item[data-open]')) hide(opened);
+  for (const opened of toolbar.querySelectorAll('._item[data-open]')) {
+    states.get(opened).dismissed = true;
+    update(opened);
+  }
 });
