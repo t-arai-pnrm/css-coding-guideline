@@ -11,6 +11,17 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.26.0（2026年10月7日）
+
+著者の指示を受けて、背景色から文字色を決める方法を、`contrast-color()` を優先する方針に改めました。ルールを変えたため、マイナーバージョンを上げています。
+
+- 「[15-3 背景から文字色を決める](/color-media/contrast-text/)」は、`contrast-color()` を先に説明する構成へ書き直しました。対象の環境がSafari 26以上なら `contrast-color()` を使います。Safari 18系への対応が要るときや、切り替える明度や色を自分で決めたいときは、相対カラー構文と `sign()` で書きます。
+  - WCAG 2.xとAPCAで判定が分かれる例を、明度0.57の青で説明しました。
+  - `color-mix()` で色味を加える例を加え、トーストの例を `contrast-color()` にしました。
+  - デモを、`contrast-color()`、色味を加えたもの、`sign()` の3つの書き方を並べて比べる形にしました。
+- ルールを変えました。
+  - [`prefer-contrast-color`](/color-media/contrast-text/#rule-prefer-contrast-color)：旧 `prefer-sign-over-contrast-color` を置き換えました。Safari 26以上が対象なら `contrast-color()` で書き、そうでなければ `sign()` で書きます。
+
 ## 0.25.2（2026年10月7日）
 
 第4〜6章の各見出しの直下に、コード例とデモを置きました。第7章と同じ方針で、ルールは変えていないので、パッチバージョンを上げています。
@@ -57,7 +68,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`gap-decorations-progressive`](/decoration/separators/#rule-gap-decorations-progressive)：gap decorationsは、対応している環境の改善として足します。
   - [`gap-decorations-supports-condition`](/decoration/separators/#rule-gap-decorations-supports-condition)：対応を判定する `@supports` の条件には、`column-rule-inset` のような新しいプロパティを使います。
 - ルールを変えました。
-  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-sign-over-contrast-color)：理由を、Safari 18系で `color` の宣言が無効になることと、WCAG 2.xの計算の問題の2つに書き直しました。
+  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-contrast-color)：理由を、Safari 18系で `color` の宣言が無効になることと、WCAG 2.xの計算の問題の2つに書き直しました。
   - [`no-box-shadow-only-boundary`](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)：区切り線を `box-shadow` で描くときは、強制カラーモードで `outline` を描くという補足を加えました。
   - [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height)：インラインの要素の行ごとに座布団を敷くときは、`line-height` を長さで決めてよいという例外を、補足に書き加えました。
   - [`if-for-own-custom-property`](/values/if-and-attr/#rule-if-for-own-custom-property)：1つの長さを段階ごとの値に置き換える対応表では、条件を複数並べてよいという例外を、補足に書き加えました。
@@ -541,7 +552,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-flex-grid-props-in-flow`](/layout/normal-flow/#rule-no-flex-grid-props-in-flow)：`gap` や `align-items` のようにFlexboxやGridでだけ働くプロパティを、通常フローの要素に書きません。
   - [`overlap-detection-for-decoration-only`](/layout-practice/overlap-detection/#rule-overlap-detection-for-decoration-only)：アンカーポジショニングとスクロール駆動アニメーションで重なりを検出する技法は、装飾にだけ使い、`@supports` の中に書きます。
   - [`z-index-on-items-without-position`](/layout-practice/layering/#rule-z-index-on-items-without-position)：FlexboxとGridの子の重なり順を変えるだけなら、`position: relative` を足さずにz-indexを指定します。
-  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-sign-over-contrast-color)：背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書きます。
+  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-contrast-color)：背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書きます。
   - [`component-decision-tests`](/components/what-is-a-component/#rule-component-decision-tests)：コンポーネントにするかは、繰り返し使うか、全インスタンスで構造や振る舞いを制御したいか、既知の構造の拡張があるか、の順に判定します。
   - [`no-component-for-look-only`](/components/what-is-a-component/#rule-no-component-for-look-only)：見た目が共通だという理由だけで、コンポーネントを作りません。
   - [`no-component-for-future-guess`](/components/what-is-a-component/#rule-no-component-for-future-guess)：将来必要になりそうという予測だけで、コンポーネントを作りません。

@@ -2,6 +2,19 @@
   @scope (.scoped.contrast-demo) to (.scoped) {
     :scope {
       display: block grid;
+      gap: 8px;
+
+      & > ._row + ._label {
+        margin-block-start: 16px;
+      }
+    }
+
+    ._label {
+      font-weight: 700;
+    }
+
+    ._row {
+      display: block grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(120 / 16 * 1rem)), 1fr));
       gap: 8px;
     }
@@ -10,7 +23,7 @@
 
 @layer components {
   /**
-   * 背景色の明度から、文字色を黒か白に決める色見本。
+   * 背景色から、文字色を黒か白に決める色見本。
    *
    * @prop {color} --swatch-chip--background [oklch(50% 0 0deg)] - 背景色
    */
@@ -25,10 +38,20 @@
       border-radius: 8px;
       background-color: var(--_background);
 
-      /* 明度が0.7より低ければ白、0.7以上なら黒になる */
-      color: oklch(from var(--_background) sign(0.7 - l) 0 h);
+      /* ブラウザが背景色に対して黒か白を選ぶ（Safari 26以上） */
+      color: contrast-color(var(--_background));
       font-weight: 700;
       text-align: center;
+
+      &[data-method="tint"] {
+        /* 黒か白に、背景色を15%混ぜて色味を加える */
+        color: color-mix(in oklab, contrast-color(var(--_background)) 85%, var(--_background));
+      }
+
+      &[data-method="sign"] {
+        /* 明度が0.7より低ければ白、0.7以上なら黒になる */
+        color: oklch(from var(--_background) sign(0.7 - l) 0 h);
+      }
     }
   }
 }

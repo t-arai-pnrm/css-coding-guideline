@@ -53,11 +53,11 @@
   since: 0.25.0
 
 # 15-3 背景から文字色を決める
-- id: prefer-sign-over-contrast-color
+- id: prefer-contrast-color
   level: 推奨
-  rule: 背景色から文字色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書く。
-  reason: '`contrast-color()` に対応していない Safari 18系（本書の対象のブラウザに含まれる）では `color` の宣言が無効になり、継承した文字色が背景に溶け込むため。また `contrast-color()` は WCAG 2.x のコントラスト比で白か黒を選ぶので、中間の明度の色では読みにくいほうを選ぶことがあり、閾値や色味を変えられないため。'
-  note: '`oklch(from var(--_background) sign(0.7 - l) 0 h)` のように1行で書けます。Safari 18系を対象から外したあとも、閾値を自分で決めたい場合や、黒と白の代わりに色味のある色を使いたい場合は `sign()` で書きます。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限り、選ばれた色のコントラスト比は実際の組み合わせで確かめます。閾値の0.7は、WCAG 2.x で白と黒のコントラスト比が等しくなる明度（約0.56）ではなく、APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。画像が表示されなかった場合の背景色は、`contrast-color-for-image-fallback` を参照してください。'
+  rule: '背景色から文字色を黒か白に決めるときは、対象の環境が Safari 26 以上なら `contrast-color()` で書く。Safari 18系に対応するときや、切り替える明度や色を自分で決めたいときは、相対カラー構文と `sign()` で書く。'
+  reason: '`contrast-color(var(--_background))` と書けば、背景色を変えても文字色を見直さずに済み、式を読み解く必要もないため。`contrast-color()` に未対応の環境（Safari 26 より前）では `color` の宣言が無効になり、継承した文字色が背景に溶け込むので、その環境に対応するときは `sign()` で書く。'
+  note: 'ブラウザは WCAG 2.x のコントラスト比で黒か白を選ぶので、中間の明度の色では APCA の評価と逆になることがあります（明度0.57の青では黒が選ばれますが、APCA では白のほうが適切です）。選ばれた色は実際の表示で確かめます。色味を加えるときは `color-mix(in oklab, contrast-color(var(--_background)) 85%, var(--_background))` のように混ぜます。`sign()` で書くときは `oklch(from var(--_background) sign(0.7 - l) 0 h)` とし、閾値の0.7は APCA で白と黒の評価が入れ替わる明度（約0.72）に近い値です。どちらの書き方でも、使う背景色はコントラスト比を確認済みの候補に限ります。画像が表示されなかった場合の背景色は、`contrast-color-for-image-fallback` を参照してください。'
   page: color-media/contrast-text
   since: 0.12.0
 
@@ -65,7 +65,7 @@
   level: 推奨
   rule: '画像の上に文字を載せる部品で、画像が表示されなかった場合に備える背景色は、`background-color: contrast-color(currentColor)` で文字色から決める。'
   reason: 文字色と対比する白か黒が背景色になり、文字色を変えても背景色を書き直さずに済むため。`contrast-color()` に未対応の環境では背景色が付かないだけで、画像が表示されれば見た目は変わらないので、プログレッシブ・エンハンスメントとして扱えるため。
-  note: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x の計算が読みにくいほうを選ぶ中間の明度の色は、ふつう渡されません。
+  note: 画像の上の文字には白や黒に近い色を選ぶので、WCAG 2.x と APCA で判定が分かれる中間の明度の色は、ふつう渡されません。
   aiProne: true
   page: color-media/contrast-text
   since: 0.25.0
