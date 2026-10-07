@@ -5,8 +5,8 @@
     }
 
     ._body {
-      --_gap: 1.5rem;
-      --_column-min-width: 10rem;
+      --_gap: 24px;
+      --_column-min-width: calc(160 / 16 * 1rem);
       --_column-max-count: 8;
 
       display: block grid;
@@ -23,46 +23,46 @@
 
       /* 2列分の幅があれば、すべてのカードが2列分を占める */
       & > * {
-        @container --scoped (inline-size >= calc(10rem * 2 + 1.5rem)) {
+        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
           grid-column-end: span 2;
         }
       }
 
       /* 1行に2枚：最後の1枚が奇数番目なら、2列目から始める */
       & > :nth-child(2n + 1):nth-last-child(1) {
-        @container --scoped (calc(10rem * 6 + 1.5rem * 5) > inline-size >= calc(10rem * 4 + 1.5rem * 3)) {
+        @container --scoped (calc(160 / 16 * 1rem * 6 + 24px * 5) > inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
           grid-column-start: 2;
         }
       }
 
       /* 1行に3枚：2行目以降の行の先頭が、最後の1枚なら3列目から、最後から2枚目なら2列目から始める */
       & > :nth-child(3n + 4):nth-last-child(1) {
-        @container --scoped (calc(10rem * 8 + 1.5rem * 7) > inline-size >= calc(10rem * 6 + 1.5rem * 5)) {
+        @container --scoped (calc(160 / 16 * 1rem * 8 + 24px * 7) > inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
           grid-column-start: 3;
         }
       }
 
       & > :nth-child(3n + 4):nth-last-child(2) {
-        @container --scoped (calc(10rem * 8 + 1.5rem * 7) > inline-size >= calc(10rem * 6 + 1.5rem * 5)) {
+        @container --scoped (calc(160 / 16 * 1rem * 8 + 24px * 7) > inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
           grid-column-start: 2;
         }
       }
 
       /* 1行に4枚：2行目以降の行の先頭が、最後から1〜3枚目なら、4列目、3列目、2列目から始める */
       & > :nth-child(4n + 5):nth-last-child(1) {
-        @container --scoped (inline-size >= calc(10rem * 8 + 1.5rem * 7)) {
+        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
           grid-column-start: 4;
         }
       }
 
       & > :nth-child(4n + 5):nth-last-child(2) {
-        @container --scoped (inline-size >= calc(10rem * 8 + 1.5rem * 7)) {
+        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
           grid-column-start: 3;
         }
       }
 
       & > :nth-child(4n + 5):nth-last-child(3) {
-        @container --scoped (inline-size >= calc(10rem * 8 + 1.5rem * 7)) {
+        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
           grid-column-start: 2;
         }
       }
@@ -86,7 +86,7 @@
     }
 
     ._price {
-      font-weight: bold;
+      font-weight: 700;
     }
   }
 }

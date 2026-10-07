@@ -223,8 +223,11 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
       animation-name: --fade-in, --translate-from;
       animation-duration: var(--duration--base);
       animation-timing-function: var(--ease--out-quint);
-      animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
       animation-fill-mode: both;
+
+      @supports (z-index: sibling-index()) {
+        animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
+      }
     }
   }
 }
@@ -238,7 +241,7 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 
 <Baseline id="sibling-count" />
 
-`sibling-index()` は、2026年8月にBaselineの「新しく利用可能」になったばかりです。未対応の環境では `animation-delay` の宣言が無効になり、初期値の0になるので、すべての項目が同時に現れます。ずらすのは装飾なので、この違いは許容できます。古い環境でもずらしたいときは、`sibling-index()` の代わりに、テンプレートで各項目の `style` 属性に `--_index` を書き、`calc(var(--_index) * var(--_stagger))` で計算します。このときの `--_index` は、コンポーネントが自分の子に書く値なので、内部用の名前にしています。
+`sibling-index()` は、2026年8月にBaselineの「新しく利用可能」になったばかりです。未対応の環境では、`@supports` の中の `animation-delay` が適用されず、初期値の0になるので、すべての項目が同時に現れます。ずらすのは装飾なので、この違いは許容できます。古い環境でもずらしたいときは、`sibling-index()` の代わりに、テンプレートで各項目の `style` 属性に `--_index` を書き、`calc(var(--_index) * var(--_stagger))` で計算します。このときの `--_index` は、コンポーネントが自分の子に書く値なので、内部用の名前にしています。
 
 ## ツールチップの表示を遅らせる
 

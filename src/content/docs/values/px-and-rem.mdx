@@ -78,6 +78,10 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
     padding: 16px 24px;
     border: 1px solid oklch(85% 0 0deg);
     border-radius: 8px;
+
+    & > * + p {
+      margin-block-start: calc(12 / 16 * 1rem);
+    }
   }
 
   h2 {
@@ -90,10 +94,6 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
   ._icon {
     inline-size: 1em;
     aspect-ratio: 1;
-  }
-
-  * + p {
-    margin-block-start: calc(12 / 16 * 1rem);
   }
 }
 ```
@@ -128,10 +128,10 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
 @scope (.scoped.notice-card) to (.scoped) {
   :scope {
     padding-inline: calc(var(--spacing--md) * 1px);
-  }
 
-  * + p {
-    margin-block-start: calc(var(--spacing--sm) / 16 * 1rem);
+    & > * + p {
+      margin-block-start: calc(var(--spacing--sm) / 16 * 1rem);
+    }
   }
 }
 ```

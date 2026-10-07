@@ -10,15 +10,15 @@
       padding: 16px;
       border: 1px solid oklch(85% 0 0deg);
       border-radius: 8px;
+
+      /* 段落の折り返しは、kiso.css が :root に指定した overflow-wrap: anywhere に任せる */
+      & > h2 + p {
+        margin-block-start: 8px;
+      }
     }
 
     h2 {
       font-size: calc(18 / 16 * 1rem);
-    }
-
-    /* 段落の折り返しは、kiso.css が :root に指定した overflow-wrap: anywhere に任せる */
-    h2 + p {
-      margin-block-start: 8px;
     }
   }
 }

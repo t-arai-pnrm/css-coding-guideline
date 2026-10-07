@@ -15,6 +15,10 @@
       padding: 16px;
       border-radius: 8px;
       background-color: oklch(96% 0.01 250deg);
+
+      & > :is(h1, h2) + * {
+        margin-block-start: 8px;
+      }
     }
 
     h1,
@@ -25,10 +29,6 @@
     /* kiso.css が h1 に残す上下のマージンを消し、パディングの内側の上端にそろえる */
     h1 {
       margin-block: unset;
-    }
-
-    :is(h1, h2) + * {
-      margin-block-start: 8px;
     }
   }
 }

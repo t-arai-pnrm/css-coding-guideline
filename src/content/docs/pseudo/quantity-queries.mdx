@@ -173,7 +173,7 @@ li:nth-last-child(n + 3) ~ li {
 
 ## 最終行の端数を中央に寄せる
 
-最終行の端数を中央に寄せるときは、数えた子そのものの開始位置を変えるので、子の側で数えます。次のデモでは、列の最小幅が10rem、間隔が1.5remのグリッドに、2列分を占めるカードを並べています。1行に並ぶカードの数は、列の数の半分です。最終行に残ったカードの `grid-column-start` を、空いた列の半分だけ後ろにずらして中央に寄せます。
+最終行の端数を中央に寄せるときは、数えた子そのものの開始位置を変えるので、子の側で数えます。次のデモでは、列の最小幅が10rem、間隔が24pxのグリッドに、2列分を占めるカードを並べています。1行に並ぶカードの数は、列の数の半分です。最終行に残ったカードの `grid-column-start` を、空いた列の半分だけ後ろにずらして中央に寄せます。
 
 ```css title="🙆‍♂ Recommended: 最後のカードが奇数番目なら、2列目から始める（1行に2枚の場合）"
 @scope (.scoped.product-cards) to (.scoped) {
@@ -183,17 +183,17 @@ li:nth-last-child(n + 3) ~ li {
 
   ._body {
     display: block grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+    gap: 24px;
 
     & > * {
-      @container --scoped (inline-size >= calc(10rem * 2 + 1.5rem)) {
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
         grid-column-end: span 2;
       }
     }
 
     & > :nth-child(2n + 1):nth-last-child(1) {
-      @container --scoped (calc(10rem * 6 + 1.5rem * 5) > inline-size >= calc(10rem * 4 + 1.5rem * 3)) {
+      @container --scoped (calc(160 / 16 * 1rem * 6 + 24px * 5) > inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
         grid-column-start: 2;
       }
     }
@@ -201,7 +201,7 @@ li:nth-last-child(n + 3) ~ li {
 }
 ```
 
-コンテナサイズクエリの閾値は、「列の最小幅×列数＋間隔×（列数−1）」の式で書きます。`calc(10rem * 4 + 1.5rem * 3)` は4列が収まる幅で、6列が収まる幅の手前までは、1行にカードが2枚並びます。この範囲で最後のカードが奇数番目なら、最終行には1枚だけが残るので、2列目から始めて4列の中央に置きます。数値を `47rem` のように丸めず式で書けば、列の最小幅や間隔を変えたときに、どの値を直せばよいかが分かります。閾値を中身から導く考え方は、第13章「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。
+コンテナサイズクエリの閾値は、「列の最小幅×列数＋間隔×（列数−1）」の式で書きます。`calc(160 / 16 * 1rem * 4 + 24px * 3)` は4列が収まる幅で、6列が収まる幅の手前までは、1行にカードが2枚並びます。この範囲で最後のカードが奇数番目なら、最終行には1枚だけが残るので、2列目から始めて4列の中央に置きます。数値を `47rem` のように丸めず式で書けば、列の最小幅や間隔を変えたときに、どの値を直せばよいかが分かります。閾値を中身から導く考え方は、第13章「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。
 
 <Demo title="最終行に残ったカードが、コンテナの幅に応じて中央に寄る" html={centeredHtml} css={centeredCss} widths={[320, 480, 768, 1120, 1500]} />
 

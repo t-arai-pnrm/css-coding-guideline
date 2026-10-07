@@ -193,8 +193,10 @@ Selectors Level 4の草案では、空白だけを含む要素も空とみなす
     }
   }
 
-  * + ._error {
-    margin-block-start: 4px;
+  :scope {
+    & > * + ._error {
+      margin-block-start: 4px;
+    }
   }
 }
 ```

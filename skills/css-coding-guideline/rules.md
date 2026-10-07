@@ -48,7 +48,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
   - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
-  - 補足: 置換要素（`img` など）は、`stretch` では伸びず、明示的な高さが必要なので、`block-size: 100%` を例外として書いてよいです。
+  - 補足: 置換要素（`img` など）のように、`stretch` では伸びず、明示しないと広がらない要素には、`block-size: 100%` を書いてよいです。ただし、`stretch` で広がるなら `stretch` を優先し、`100%` は `stretch` に任せられない場合に限ります。
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
@@ -1157,7 +1157,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【推奨】子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。（`stretch-over-height-100`）
   - 理由: `height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。
-  - 補足: 置換要素（`img` など）は、`stretch` では伸びず、明示的な高さが必要なので、`block-size: 100%` を例外として書いてよいです。
+  - 補足: 置換要素（`img` など）のように、`stretch` では伸びず、明示しないと広がらない要素には、`block-size: 100%` を書いてよいです。ただし、`stretch` で広がるなら `stretch` を優先し、`100%` は `stretch` に任せられない場合に限ります。
   - 詳細: 2-3 保守しやすさを最優先にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/design-mindset/maintainability.mdx）
 - 【非推奨】CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。（`no-redundant-defaults`）
   - 理由: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。

@@ -149,8 +149,10 @@ pxをremに変換する関数は、`calc(24 / 16 * 1rem)` の式に置き換え�
     font-size: calc(32 / 16 * 1rem);
   }
 
-  h2 + * {
-    margin-block-start: calc(24 / 16 * 1rem);
+  :scope {
+    & > h2 + * {
+      margin-block-start: calc(24 / 16 * 1rem);
+    }
   }
 }
 ```

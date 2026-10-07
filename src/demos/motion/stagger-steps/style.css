@@ -73,8 +73,11 @@
         animation-name: --fade-in, --translate-from;
         animation-duration: var(--duration--base);
         animation-timing-function: var(--ease--out-quint);
-        animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
         animation-fill-mode: both;
+
+        @supports (z-index: sibling-index()) {
+          animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
+        }
       }
     }
 

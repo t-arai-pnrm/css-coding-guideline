@@ -1,5 +1,11 @@
 @layer components {
   @scope (.scoped.star-rating) to (.scoped) {
+    :scope {
+      & > legend + ._stars {
+        margin-block-start: 8px;
+      }
+    }
+
     legend {
       font-weight: 700;
     }
@@ -7,10 +13,6 @@
     ._stars {
       display: block flex;
       gap: 8px;
-    }
-
-    legend + ._stars {
-      margin-block-start: 8px;
     }
 
     label {

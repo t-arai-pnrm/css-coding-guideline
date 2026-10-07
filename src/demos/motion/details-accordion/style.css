@@ -16,13 +16,16 @@
 
 @layer components {
   @scope (.scoped.faq-list) to (.scoped) {
+    :scope {
+      & > h2 + * {
+        margin-block-start: 12px;
+      }
+    }
+
     h2 {
       font-size: calc(20 / 16 * 1rem);
     }
 
-    h2 + * {
-      margin-block-start: 12px;
-    }
 
     details {
       border-block-end: 1px solid oklch(80% 0 0deg);
