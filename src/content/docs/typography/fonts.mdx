@@ -105,6 +105,8 @@ AIにCSSを書かせたときも、OSごとのフォントを並べたスタッ�
 
 ## Webフォントを読み込む
 
+ここから先は、Webフォントを採用する場合の実装と表示の補正です。端末のフォントと `sans-serif` で足りるなら、読み飛ばして「[和文の斜体](#和文の斜体)」へ進めます。Webフォントの配信、プリロード、代わりのフォントの寸法補正、`font-size-adjust` の順に説明します。
+
 Webフォントを自分のサーバーから配信するときは、`@font-face` にいくつかの記述子を加えます。私が使っているテンプレートでは、形式をWOFF2だけにし、`unicode-range` で文字の範囲ごとにファイルを分け、`font-display` で読み込み中の表示を決めています。`@font-face` は、ベーススタイルと同じ `base` レイヤーに置きます（[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
 
 ```css title="🙆‍♂ Recommended: 本文用のWebフォントを定義する"
@@ -134,11 +136,13 @@ URLに `display=swap` を指定しておくと、Webフォントの読み込み�
 ```html title="Google Fontsの読み込みでページの描画を止めない"
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" fetchpriority="high" href="{fontのURL}" onload="this.onload=null;this.rel='stylesheet'" />
+<link rel="preload" as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
 <noscript>
-  <link rel="stylesheet" href={fontのURL}" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" />
 </noscript>
 ```
+
+この読み込み方は、インラインのイベントハンドラー（`onload` 属性）を実行できることが条件です。CSPの `script-src-attr 'none'` などで許可しないサイトでは、スタイルシートを取得できても `onload` が動かず、`rel` が `preload` のままで適用されません。`<noscript>` はJavaScriptが有効な環境では使われないので、救済になりません。許可しないサイトでは、通常の `<link rel="stylesheet">` を使うか、CSPで許可したスクリプトから `load` イベントを登録して `rel` を書き換えます。通常の `stylesheet` はレンダリングをブロックしますが、`preconnect` と `display=swap` は同じように使えるので、遅れは小さくできます。
 
 ### 代わりのフォントの寸法をWebフォントに近づける
 
