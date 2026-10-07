@@ -63,7 +63,7 @@ body {
 }
 ```
 
-ルート要素の `overflow` が `visible` ではないので、伝わるのはルート要素の値だけで、`body` の `overflow-x: hidden` は `body` 自身に残ります。さらに、片方の軸が `hidden` のとき、もう片方の軸の `visible` は `auto` として計算されます。そのため、`body` は縦方向のスクロールコンテナになります。高さが `100%` に固定されているので、内容は `body` の中でスクロールし、ビューポートはスクロールしなくなります。`height: 100%` がなければ、`body` は内容の高さまで伸びるのでスクロールはしません。それでも `body` はスクロールコンテナのままなので、中の `position: sticky` が留まらなくなります（「[7-9 positionの基礎](/layout/positioning/)」）。
+ルート要素の `overflow` が `visible` ではないので、伝わるのはルート要素の値だけで、`body` の `overflow-x: hidden` は `body` 自身に残ります。さらに、片方の軸が `hidden` のとき、もう片方の軸の `visible` は `auto` として計算されます。そのため、`body` は縦方向のスクロールコンテナになります。高さが `100%` に固定されているので、内容は `body` の中でスクロールし、ビューポートはスクロールしなくなります。`height: 100%` がなければ、`body` は内容の高さまで伸びるのでスクロールはしません。それでも `body` はスクロールコンテナのままなので、中の `position: sticky` が留まらなくなります（「[7-10 positionの基礎](/layout/positioning/)」）。
 
 ## ページがどこでスクロールしているかを確かめる
 
@@ -122,7 +122,7 @@ kiso.cssは、`body` に `min-block-size: 100dvb` を指定しています（kis
 }
 ```
 
-サイドバーに指定した `overflow-y: auto` は、サイドバーの中身が画面より長いときのためのもので、ページのスクロールには関わりません。`align-self: start` と高さの上限が必要な理由は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。ヘッダーを留めるなら、ビューポートの高さが十分なときだけにします（「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」）。
+サイドバーに指定した `overflow-y: auto` は、サイドバーの中身が画面より長いときのためのもので、ページのスクロールには関わりません。`align-self: start` と高さの上限が必要な理由は「[7-10 positionの基礎](/layout/positioning/)」で説明しています。ヘッダーを留めるなら、ビューポートの高さが十分なときだけにします（「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」）。
 
 ## はみ出しの切り取りとモーダルの背面
 

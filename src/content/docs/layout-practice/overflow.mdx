@@ -47,7 +47,7 @@ $$('*').forEach((el) => {
 
 <Baseline id="overflow-clip" />
 
-`overflow: clip` は、本書の対象のすべてのブラウザで使えます。論理プロパティの `overflow-inline` は、Safariでは26から対応したので、対応していない環境には `@supports` で `overflow-x` を指定しています（2026年9月確認）。はみ出しの対策に `contain: paint` を使う方法もありますが、中にある `position: fixed` の要素の基準が変わってしまうので使いません。この仕組みは「[7-9 positionの基礎](/layout/positioning/)」で説明します。
+`overflow: clip` は、本書の対象のすべてのブラウザで使えます。論理プロパティの `overflow-inline` は、Safariでは26から対応したので、対応していない環境には `@supports` で `overflow-x` を指定しています（2026年9月確認）。はみ出しの対策に `contain: paint` を使う方法もありますが、中にある `position: fixed` の要素の基準が変わってしまうので使いません。この仕組みは「[7-10 positionの基礎](/layout/positioning/)」で説明します。
 
 ルートでは、`clip` を選ぶ理由がもう1つあります。`html` と `body` の両方に `overflow-x: hidden` を指定すると、`body` がスクロールコンテナになり、ページのスクロールが `body` に移ることがあります（「[11-10 ページのスクロールとルートスクローラー](/layout-practice/root-scroller/)」）。
 
@@ -59,7 +59,7 @@ $$('*').forEach((el) => {
 
 スクロールコンテナを探す仕組みにも影響します。`scroll()` で作るスクロール駆動アニメーションのタイムラインは、デフォルトでいちばん近い祖先のスクロールコンテナを基準にします。祖先に `hidden` の要素があると、そこが基準になり、ページをスクロールしてもアニメーションが進みません。スクロール駆動アニメーションは「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で説明しています。
 
-同じ理由で、`position: sticky` も留まらなくなります。`sticky` の要素は、いちばん近い祖先のスクロールコンテナを基準に留まるからです。祖先が `hidden` だと、その要素は自身の中身の高さまで伸びているのでスクロールせず、ページをスクロールしても `sticky` の要素はその要素と一緒に流れていきます。`sticky` が動かない原因の切り分けは「[7-9 positionの基礎](/layout/positioning/)」にまとめています。
+同じ理由で、`position: sticky` も留まらなくなります。`sticky` の要素は、いちばん近い祖先のスクロールコンテナを基準に留まるからです。祖先が `hidden` だと、その要素は自身の中身の高さまで伸びているのでスクロールせず、ページをスクロールしても `sticky` の要素はその要素と一緒に流れていきます。`sticky` が動かない原因の切り分けは「[7-10 positionの基礎](/layout/positioning/)」にまとめています。
 
 ```css title="🙅‍♂ Not Recommended: はみ出した装飾を hidden で切り取る"
 /* 🙅‍♂ Not Recommended */

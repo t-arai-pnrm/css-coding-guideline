@@ -31,7 +31,7 @@ CSSには、DOMの順番を変えずに見た目の順番だけを変える指�
 
 ## まずDOMの順番を読む順に合わせる
 
-並べ替えの問題に対して最初にすることは、DOMの順番を、内容を読む順番に合わせることです。WCAGも、1.3.2を満たす方法として、DOMの順番を見た目の順番に合わせる方法（C27）を挙げています。見出し、本文、操作のように意味の通る順番でHTMLを書けば、CSSが効かなくても内容が伝わります。この考え方は、「[7-7 Gridの基礎](/layout/grid-basics/)」のルール [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading) と同じです。
+並べ替えの問題に対して最初にすることは、DOMの順番を、内容を読む順番に合わせることです。WCAGも、1.3.2を満たす方法として、DOMの順番を見た目の順番に合わせる方法（C27）を挙げています。見出し、本文、操作のように意味の通る順番でHTMLを書けば、CSSが効かなくても内容が伝わります。この考え方は、「[7-8 Gridの基礎](/layout/grid-basics/)」のルール [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading) と同じです。
 
 `reading-flow` を指定しても、DOMの順番を直さずに済むわけではありません。2026年10月の時点では、SafariとFirefoxは `reading-flow` に対応していないので、これらのブラウザの利用者にはDOMの順番で読まれます。DOMの順番と見た目の順番のどちらで読んでも、意味が通る状態にしておく必要があります。
 
@@ -106,7 +106,7 @@ Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方�
 
 `display: contents` の要素は箱を作らないので、その子が親のグリッドのアイテムとして並びます。Chromeの記事は、レイアウト上の親から `reading-flow` を継承した `display: contents` の要素も、`reading-flow` のコンテナになると説明しています。`reading-flow` は継承しないプロパティなので、継承させるには `reading-flow: inherit` を書きます。
 
-「[7-11 display: contentsで箱をなくす](/layout/display-contents/)」のサブグリッドの例のように、カードを包む `li` に `display: contents` を指定した一覧では、DOMの親子と見た目のアイテムが一致しません。こうした一覧に `reading-flow` を指定するときは、対応したブラウザで、Tabキーとスクリーンリーダーの順番を確かめます。{/* 要確認: 出典なし */}
+「[7-12 display: contentsで箱をなくす](/layout/display-contents/)」のサブグリッドの例のように、カードを包む `li` に `display: contents` を指定した一覧では、DOMの親子と見た目のアイテムが一致しません。こうした一覧に `reading-flow` を指定するときは、対応したブラウザで、Tabキーとスクリーンリーダーの順番を確かめます。{/* 要確認: 出典なし */}
 
 ## `order` と `reading-order` は1か-1だけを使う
 

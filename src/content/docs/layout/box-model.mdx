@@ -1,11 +1,10 @@
 ---
 title: "7-3 ボックスモデルの基礎"
-description: "要素は、内容、padding、border、margin の4つの領域を持つ箱として描かれます。box-sizing と border-box を取り消す場面、auto と中身に合わせた大きさ、% の基準、margin の負の値と auto、ボックスの大きさに含まれない outline と box-shadow、インライン要素での余白の効き方を説明します。"
+description: "要素は、内容、padding、border、margin の4つの領域を持つ箱として描かれます。box-sizing と border-box を取り消す場面、margin の負の値と auto、ボックスの大きさに含まれない outline と box-shadow、インライン要素での余白の効き方を説明します。"
 sidebar:
   order: 3
 ---
 
-import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import areasHtml from '../../../demos/layout/box-model-areas/index.html?raw';
@@ -16,20 +15,14 @@ import inlineHtml from '../../../demos/layout/box-model-inline/index.html?raw';
 import inlineCss from '../../../demos/layout/box-model-inline/style.css?raw';
 import outlineHtml from '../../../demos/layout/box-model-outline/index.html?raw';
 import outlineCss from '../../../demos/layout/box-model-outline/style.css?raw';
-import percentHtml from '../../../demos/layout/box-model-percent/index.html?raw';
-import percentCss from '../../../demos/layout/box-model-percent/style.css?raw';
 import marginAutoHtml from '../../../demos/layout/box-model-margin-auto/index.html?raw';
 import marginAutoCss from '../../../demos/layout/box-model-margin-auto/style.css?raw';
 import unsetHtml from '../../../demos/layout/box-model-unset-box-sizing/index.html?raw';
 import unsetCss from '../../../demos/layout/box-model-unset-box-sizing/style.css?raw';
-import intrinsicHtml from '../../../demos/layout/box-model-intrinsic/index.html?raw';
-import intrinsicCss from '../../../demos/layout/box-model-intrinsic/style.css?raw';
-import minMaxHtml from '../../../demos/layout/box-model-min-max/index.html?raw';
-import minMaxCss from '../../../demos/layout/box-model-min-max/style.css?raw';
 
 要素は、内側から順に、内容、`padding`、`border`、`margin` の4つの領域を持つ箱（ボックス）として描かれます。`inline-size` がどの領域までの幅を指すかは `box-sizing` で決まり、本書ではkiso.cssに合わせて、すべての要素を `border-box` にしています。指定した幅は、`border` の外周までの幅です。
 
-大きさを指定しないときの `auto` は、ブロックの幅なら横いっぱい、高さなら中身の高さを意味します。中身に合わせた幅には `fit-content` を使い、固定の長さは `min-inline-size` や `max-inline-size` で下限と上限として書きます。この節では、こうした大きさの決まり方に加えて、`%` の基準、`margin` の負の値と `auto`、インライン要素での余白の扱いを説明します。
+この節では、4つの領域と `box-sizing` に加えて、`margin` の負の値と `auto`、ボックスの大きさに含まれない `outline` と `box-shadow`、インライン要素での余白の扱いを説明します。大きさを指定しないときの `auto` や、中身に合わせた大きさ、下限と上限、`%` の基準、`stretch` は、「[7-4 大きさの決まり方](/layout/sizing/)」で説明します。
 
 ## 指定した幅と見た目の幅がずれる理由
 
@@ -57,7 +50,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 <Demo title="ボックスの4つの領域と、背景が描かれる範囲" html={areasHtml} css={areasCss} />
 
-`margin` の領域には、要素自身の背景は描かれず、クリックの対象にもなりません。ボタンの押せる範囲を広げるときに `margin` ではなく `padding` を使うのは、このためです。縦に並んだブロックの間では、上下の `margin` が足されずに大きいほうだけが残ることがあり、この現象は「[7-5 マージンの相殺](/layout/margin-collapse/)」で説明しています。
+`margin` の領域には、要素自身の背景は描かれず、クリックの対象にもなりません。ボタンの押せる範囲を広げるときに `margin` ではなく `padding` を使うのは、このためです。縦に並んだブロックの間では、上下の `margin` が足されずに大きいほうだけが残ることがあり、この現象は「[7-6 マージンの相殺](/layout/margin-collapse/)」で説明しています。
 
 `box-sizing` は、`inline-size` と `block-size` がどの領域の大きさを指すかを決めます。初期値の `content-box` では内容の領域を指し、`border-box` では `border` の外周までを指します。kiso.cssは、全称セレクタと `::before`、`::after` を `border-box` にしています（「[8-1 壊さないリセット](/reset/kiso/)」）。そのため、`inline-size: 50%` の要素は、`padding` をいくつにしても親の半分に収まります。
 
@@ -109,111 +102,6 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 `unset` は、継承するプロパティでは親の値を、継承しないプロパティでは初期値を使うキーワードで、継承しない `box-sizing` では初期値の `content-box` になります。本書で `content-box` と書かずに `unset` と書くのは、「ベーススタイルの `border-box` を取り消す」という意図を宣言で示すためです。`content-box` と書くと、その要素のためにボックスの数え方を選んだように読めます。同じ理由で、「[17-3 フォーム部品](/interaction/forms/)」でも、行数で高さを決めるテキストエリアに `box-sizing: unset` を書いています。
 
 `content-box` へ戻した要素で `inline-size: 100%` を指定すると、`padding` の分だけ親からはみ出します。幅は `auto` のままにし、上限だけを `max-inline-size` で決めます（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-no-redundant-width-100)」）。また、この方法は、画面幅いっぱいに広げる子要素を持たない要素に向いています。広げる子要素が混ざるページのレイアウトは、左右に余白の列を持つGridで組みます（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
-
-## `auto` と中身に合わせた大きさ
-
-`inline-size` と `block-size` の初期値は `auto` です。通常フローのブロックでは、`inline-size: auto` は包含ブロックの幅から左右の `margin` を引いた残りいっぱいの幅、`block-size: auto` は中身を収める高さを表します。一方、`float` の要素、`inline flow-root` の要素、左右の片側しか位置を指定していない絶対配置の要素、横に並ぶフレックスアイテムの `inline-size: auto` は、中身に合わせた幅を表します。絶対配置の要素でも `inset-inline` で左右の両方を指定すると、`auto` の幅は包含ブロックいっぱいに広がり、縦に並ぶフレックスアイテムも `align-items` の初期値（`stretch`）によってコンテナの幅まで広がります。`auto` の意味は、要素がどのレイアウトの方式の中にあるかと、位置や揃え方の指定で変わります（「[7-1 レイアウトの基礎](/layout/fundamentals/)」）。
-
-中身に合わせた幅は、キーワードで明示できます。`min-content` は、折り返せる位置ですべて折り返したときの幅で、英語なら最も長い単語の幅です。日本語は文字の間で折り返せるので、ほぼ1文字の幅になります。kiso.cssのように `overflow-wrap: anywhere` を指定していると、英単語の途中でも折り返せるので、英語でもほぼ1文字の幅になります。`max-content` は、一度も折り返さないときの幅です。
-
-`fit-content` は、使える幅の中で `max-content` まで広がり、使える幅が狭ければその幅に縮み、`min-content` より狭くはならない値です。ラベルやバッジのように、中身の幅だけを占め、親が狭いときは折り返してほしい要素に使います。
-
-```css title="🙆‍♂ Recommended: ブロックのまま、幅だけを中身に合わせる"
-.badge {
-  inline-size: fit-content;
-  padding-inline: 8px;
-  border-radius: 4px;
-  background-color: oklch(95% 0.03 250deg);
-}
-```
-
-次のデモでは、同じ文の要素を、中身より狭い120pxの枠に入れています。`min-content` は1文字ずつ折り返し、`max-content` は折り返さずに枠からはみ出し、`fit-content` は枠の幅まで広がってそこで折り返します。
-
-<Demo title="min-content、max-content、fit-content の幅の違い" html={intrinsicHtml} css={intrinsicCss} variant="neutral" widths={[]} />
-
-幅を中身に合わせる目的で `display: inline-block` や `float` に変えると、要素が前後の文字と同じ行に並ぶなど、外側の振る舞いまで変わります。`fit-content` なら、ブロックのまま幅だけが変わります。{/* 要確認: 出典なし */}2026年10月の時点で、すべての主要なブラウザが対応しています。
-
-<Baseline id="fit-content" />
-
-## 最小値と最大値による制約
-
-`min-inline-size` と `max-inline-size` は、計算した幅に下限と上限を付けるプロパティです。下限と上限が矛盾したときは、下限が優先されます。`min-inline-size` の初期値 `auto` は、通常のブロックでは0ですが、フレックスアイテムとグリッドアイテムでは中身の最小幅になり、長いURLを含むアイテムが縮まない原因になります。本書では、ベーススタイルで全要素に `min-inline-size: 0` を指定しています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。
-
-固定の幅は、`inline-size` ではなく `max-inline-size` で上限として書きます。上限なら、親がそれより狭い場所では親の幅まで縮みます（「[13-1 検討する順番](/responsive/escalation/#rule-max-inline-size-over-fixed-width)」）。逆に、固定の長さの下限は親より大きくなってはみ出すことがあるので、`min(100%, …)` で親の幅を上限にします。
-
-```css title="🙆‍♂ Recommended: 固定の下限は、親の幅を超えないようにする"
-.button {
-  display: inline flex;
-  justify-content: center;
-  align-items: center;
-  min-inline-size: min(100%, calc(240 / 16 * 1rem));
-  padding-block: 12px;
-  padding-inline: 24px;
-}
-```
-
-`min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)」）。
-
-次のデモでは、幅240pxの親の中に、`inline-size: fit-content` の要素を3つ置いています。1つ目は下限の320pxで親からはみ出し、`min(100%, …)` で書いた2つ目は親の240pxで止まります。3つ目は下限200pxと上限120pxが矛盾し、下限の200pxになります。
-
-<Demo title="固定の下限ははみ出し、下限と上限が矛盾すると下限が勝つ" html={minMaxHtml} css={minMaxCss} variant="neutral" widths={[]} />
-
-## `%` の基準
-
-`inline-size` の `%` は、包含ブロックの幅に対する割合です。包含ブロックは、通常フローの要素ならいちばん近いブロックの祖先の内容の領域で、絶対配置の要素なら `position` が `static` 以外のいちばん近い祖先の `padding` の領域です（「[7-9 positionの基礎](/layout/positioning/)」）。
-
-`block-size` の `%` は、包含ブロックの高さが決まっているときだけ計算されます。親の高さが中身から決まる場合、子の高さと親の高さが互いに依存して循環するので、`%` は `auto` として扱われます。子の高さを親にそろえるときは、`height: 100%` ではなく、親をGridにして伸ばします（「[幅いっぱいに広げる `stretch`](#幅いっぱいに広げる-stretch)」）。
-
-`padding` と `margin` の `%` は、上下と左右のどちらでも、包含ブロックのインライン方向の大きさ（横書きなら幅）に対する割合です。上下の余白の基準を高さにすると、`block-size` と同じ循環が起きるからです。次のデモでは、幅の違う2つの親の中で、子に同じ `padding-block: 10%` を指定しています。上下の `padding` は、親の幅が160pxなら16px、320pxなら32pxになります。
-
-<Demo title="上下の padding の % も、親の幅に対する割合になる" html={percentHtml} css={percentCss} variant="neutral" widths={[]} />
-
-かつてはこの性質を使い、`padding-top: 56.25%` で16:9の箱を作っていましたが、今は `aspect-ratio` で書きます（「[16-1 画像の配置と読み込み](/decoration/images/#rule-aspect-ratio-for-ratios)」）。
-
-```css title="🙅‍♂ Not Recommended: 上の padding の % で縦横の比率を作る"
-/* 🙅‍♂ Not Recommended */
-._video {
-  position: relative;
-  block-size: 0;
-  padding-top: 56.25%;
-}
-```
-
-```css title="🙆‍♂ Recommended: 縦横の比率は aspect-ratio で書く"
-._video {
-  aspect-ratio: 16 / 9;
-}
-```
-
-## 幅いっぱいに広げる `stretch`
-
-`<img>` やフォーム部品、行方向のフレックスアイテムのように、自然には幅いっぱいに広がらない要素を広げるときは、`100%` ではなく `stretch` を使います。`stretch` は、ブロックレベルの要素の `auto` と同じように、`margin` を含めた箱を利用できる幅にちょうど収めます。`100%` と違い、`margin` や `box-sizing: content-box` と組み合わせても親からはみ出しません。
-
-```css title="🙆‍♂ Recommended: 幅いっぱいに広げるなら stretch を使う"
-._input {
-  inline-size: -webkit-fill-available;
-  inline-size: stretch;
-}
-```
-
-`stretch` は比較的新しい値で、Chrome 138とSafari 27から使えます。それより前のバージョンでも、同じ働きの値を `-webkit-fill-available` という名前で使えます。Firefoxは2026年10月の時点で `stretch` に対応していませんが、`-webkit-fill-available` には対応しています。公開されている資料では、Firefoxの対応は `width` と `height` に限られていますが、2026年10月に最新版のFirefoxで確かめたところ、`inline-size` にも効きました。
-
-<Baseline id="stretch" />
-
-そのため、先に `-webkit-fill-available` を、後に `stretch` を書きます。`stretch` に対応したブラウザは後の宣言を使い、対応していないブラウザは理解できない後の宣言を捨てて、前の宣言を使います。Firefoxが以前に実装していた `-moz-available` は、いまのFirefoxが `-webkit-fill-available` を理解するので書きません。
-
-`stretch` と `100%` の結果が違うのは、子が `margin` を持つときと、`content-box` の要素を広げるときです。ただし、子の周りの余白は、子の `margin` ではなく、親の `padding` や `gap` で取ることを優先します。親が余白を持てば、子は `margin` を持たずに済みます。それでも、幅を広げる指定が要る要素は `stretch` で書いておきます。あとから子に `margin` が加わっても、はみ出さないからです。配置を親に任せる理由は、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明します。
-
-子要素を親の高さにそろえたいだけなら、親に `display: block grid` を指定すれば、`stretch` によって子要素が高さいっぱいに広がります。
-
-```css title="🙆‍♂ Recommended: 子要素を親の高さにそろえるなら、親をgridにする"
-._card {
-  display: block grid;
-  min-block-size: calc(240 / 16 * 1rem);
-}
-```
-
-この方法なら、親が `min-block-size` で最小値だけを決めている場合にも成り立ち、高さの固定を避けられます。何にでも `width: 100%` や `height: 100%` を付ける書き方を避ける理由は、「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#何にでも-width-100-を指定しない)」で説明しています。
 
 ## `margin` の負の値と `auto`
 
@@ -306,7 +194,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 `border-box` でも、指定した幅より大きくなることがあります。`padding` と `border` の合計が指定した幅を超えると、内容の領域は0で止まり、ボックスは `padding` と `border` の合計まで広がります。小さな `inline-size` の要素に大きな `padding` を付けるときは、この下限に気を付けます。
 
-この下限があるので、`padding` の違うフレックスアイテムは、`flex: 1` でも幅がそろいません（「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」の「`flex: 1` でも列の幅がそろわない場合」）。
+この下限があるので、`padding` の違うフレックスアイテムは、`flex: 1` でも幅がそろいません（「[7-7 Flexboxの基礎](/layout/flexbox-basics/)」の「`flex: 1` でも列の幅がそろわない場合」）。
 
 ## ガイドライン
 
@@ -315,11 +203,9 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 ## 参考リンク
 
 - [CSS Box Model Module Level 3](https://drafts.csswg.org/css-box-3/)（W3C）
-- [CSS Box Sizing Module Level 3](https://drafts.csswg.org/css-sizing-3/)（W3C）
 - [CSS Basic User Interface Module Level 4](https://drafts.csswg.org/css-ui-4/)（W3C、`box-sizing` と `outline`）
 - [CSS Backgrounds and Borders Module Level 3](https://drafts.csswg.org/css-backgrounds-3/)（W3C、`background-clip` と `box-shadow`）
 - [CSS の基本ボックスモデル入門 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model)
 - [box-sizing - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/box-sizing)
 - [包含ブロック - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Containing_block)
-- [fit-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/fit-content)
 - [Understanding the fundamentals of CSS layout](https://polypane.app/blog/understanding-the-fundamentals-of-css-layout/)（Polypane、2026年1月）

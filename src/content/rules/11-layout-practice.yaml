@@ -199,7 +199,7 @@
   kind: judgment
   rule: 'はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。'
   reason: '`hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなり、フォーカスやプログラムからのスクロールで中身がずれ、片方の軸だけ指定してももう一方が `auto` になるため。'
-  note: '`hidden` を使うのは、スクロールコンテナが要る場面に限ります（例：`grid-template-rows` を `0fr` と `1fr` で切り替えて開閉する中身。スクロールコンテナになると自動の最小サイズが0になり、`0fr` まで畳めます）。`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-9 を参照してください。'
+  note: '`hidden` を使うのは、スクロールコンテナが要る場面に限ります（例：`grid-template-rows` を `0fr` と `1fr` で切り替えて開閉する中身。スクロールコンテナになると自動の最小サイズが0になり、`0fr` まで畳めます）。`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-10 を参照してください。'
   aiProne: true
   page: layout-practice/overflow
   since: 0.1.0

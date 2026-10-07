@@ -1,8 +1,8 @@
 ---
-title: "7-8 Gridでアイテムをそろえる"
+title: "7-9 Gridでアイテムをそろえる"
 description: "Gridでアイテムの位置をそろえる方法を説明します。セルの中でそろえる *-items とトラックのまとまりをそろえる *-content の違い、サブグリッドでそろえるカードの行と一覧の列、列ごとに可変か不変かを決める列の幅、画像の幅に合わせる fit-content() の列を扱います。"
 sidebar:
-  order: 8
+  order: 9
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -20,7 +20,7 @@ import imageCardCss from '../../../demos/layout/image-card-fit-content/style.css
 
 Gridでアイテムをそろえる方法は、そろえる範囲で選びます。1つのセルの中やコンテナの中での位置は、配置のプロパティの `*-items` と `*-content` で、そろえる対象を区別して指定します。並べたカードの中の見出しやボタン、一覧の項目の中の列のように、別々のアイテムの中身をそろえるときは、サブグリッドで親のトラックを共有させます。列の幅は、列ごとに可変か不変かを決めてから、`max-content`、`fit-content()`、`1fr` で書きます。
 
-トラック、線、エリアといった用語と、`fr` や `minmax()` によるトラックの大きさの決め方は「[7-7 Gridの基礎](/layout/grid-basics/)」で説明しています。このページでは、それらを前提に、アイテムの位置と列の幅をそろえる方法を説明します。
+トラック、線、エリアといった用語と、`fr` や `minmax()` によるトラックの大きさの決め方は「[7-8 Gridの基礎](/layout/grid-basics/)」で説明しています。このページでは、それらを前提に、アイテムの位置と列の幅をそろえる方法を説明します。
 
 <Baseline id="grid" />
 
@@ -59,7 +59,7 @@ article {
 
 `*-content` が効くのは、トラックの合計がグリッドコンテナより小さく、余りがあるときだけです。`fr` のトラックは余りをすべて受け取るので、`fr` の列だけのグリッドに `justify-content: center` を指定しても、何も変わりません。トラックの大きさを固定の長さや `max-content` で決めたときに、`place-content: center` でまとまりを中央に寄せたり、`space-between` で両端に散らしたりできます。`*-content` の初期値 `normal` は、`auto` の大きさのトラックを余りの分だけ伸ばします。行を指定していないグリッドに高さを与えると各行が中身の高さより広がるのはこのためで、行を中身の高さのまま上に詰めたいなら、`align-content: start` を指定します。
 
-`place-items` と `place-content` は、`align-*` と `justify-*` をまとめて書くショートハンドです。値を2つ書くときは、ブロック方向の `align-*` が先、インライン方向の `justify-*` が後になります。値が1つなら、両方の方向に同じ値が入ります。なお、Flexboxには `justify-items` と `justify-self` がなく、指定しても無視されます（「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」）。
+`place-items` と `place-content` は、`align-*` と `justify-*` をまとめて書くショートハンドです。値を2つ書くときは、ブロック方向の `align-*` が先、インライン方向の `justify-*` が後になります。値が1つなら、両方の方向に同じ値が入ります。なお、Flexboxには `justify-items` と `justify-self` がなく、指定しても無視されます（「[7-7 Flexboxの基礎](/layout/flexbox-basics/)」）。
 
 次のデモは、固定の大きさの2列2行のトラックを、高さ200pxのコンテナに置いたものです。`place-items: center` ではトラックは左上に残り、アイテムがセルの中で縮みます。`place-content: center` ではアイテムはセルいっぱいのまま、トラックのまとまりが中央へ移ります。
 
@@ -214,7 +214,7 @@ article {
 
 <Baseline id="contain-inline-size" />
 
-狭い場所では、画像を上に置いて縦に積み、画像を `inline-size: 100%` で列の幅まで広げます。広い場所では、フラグ `--_density` が `--spacious` に切り替わり、画像の幅を `auto`（`width` 属性の幅）に戻します。HTMLには見出しを先に書き、見た目では画像を先に表示するので、`reading-flow: grid-rows` を指定しています。HTMLを文書構造の順番で書き、見た目の順番をエリアで変える書き方は「[7-7 Gridの基礎](/layout/grid-basics/#rule-source-order-for-reading)」で説明しています。
+狭い場所では、画像を上に置いて縦に積み、画像を `inline-size: 100%` で列の幅まで広げます。広い場所では、フラグ `--_density` が `--spacious` に切り替わり、画像の幅を `auto`（`width` 属性の幅）に戻します。HTMLには見出しを先に書き、見た目では画像を先に表示するので、`reading-flow: grid-rows` を指定しています。HTMLを文書構造の順番で書き、見た目の順番をエリアで変える書き方は「[7-8 Gridの基礎](/layout/grid-basics/#rule-source-order-for-reading)」で説明しています。
 
 次のデモでは、幅300px、400px、500pxの画像のカードを並べています。幅のボタンで1024pxを選ぶと、画像の列がそれぞれの画像の幅と480px相当の上限で決まり、長いキャプションを付けた2枚目も画像の幅のままです。
 
@@ -222,7 +222,7 @@ article {
 
 ## 補足と注意点
 
-サブグリッドにできるのは、グリッドの直接の子だけです。カードを `<li>` で包んでいるなど、グリッドとカードの間に別の要素があるときは、その要素に `display: contents` を指定して箱をなくします。箱をなくした要素はブラウザによって暗黙のロールを失うので、`<li>` や `<section>` なら `role` 属性でロールを明示します。使ってよい場面と注意点は「[7-11 display: contentsで箱をなくす](/layout/display-contents/)」で説明しています。
+サブグリッドにできるのは、グリッドの直接の子だけです。カードを `<li>` で包んでいるなど、グリッドとカードの間に別の要素があるときは、その要素に `display: contents` を指定して箱をなくします。箱をなくした要素はブラウザによって暗黙のロールを失うので、`<li>` や `<section>` なら `role` 属性でロールを明示します。使ってよい場面と注意点は「[7-12 display: contentsで箱をなくす](/layout/display-contents/)」で説明しています。
 
 サブグリッドを使うカードは、親がグリッドであることを前提にしています。そのため、カードを並べる側のグリッドまで含めて、1つのコンポーネントとして扱います。この考え方は「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 

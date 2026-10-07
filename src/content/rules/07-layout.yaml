@@ -52,16 +52,6 @@
   page: layout/box-model
   since: 0.20.0
 
-- id: box-fit-content-over-display-change
-  level: 推奨
-  kind: judgment
-  rule: '要素の幅を中身に合わせるときは、`display: inline-block` や `float` に変えず、`inline-size: fit-content` を指定する。'
-  reason: '`display` や `float` を変えると、前後の文字と同じ行に並ぶ、ベースラインにそろうといった外側の振る舞いまで変わるが、`fit-content` ならブロックのまま幅だけが変わるため。'
-  note: '親より長い中身は、`fit-content` なら親の幅で折り返します。折り返させたくない場合だけ `max-content` を使います。'
-  aiProne: true
-  page: layout/box-model
-  since: 0.5.0
-
 - id: box-state-border-without-shift
   level: 推奨
   kind: spec
@@ -72,26 +62,6 @@
   page: layout/box-model
   since: 0.5.0
 
-- id: stretch-over-width-100
-  level: 推奨
-  kind: spec
-  rule: '利用できる幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`inline-size: -webkit-fill-available` と `inline-size: stretch` をこの順に書く。'
-  reason: '`100%` は `margin` を含めずに包含ブロックの幅をそのまま当てはめるので、`margin` や `box-sizing: content-box` と組み合わさると親からはみ出すためです。`stretch` は `margin` を含めた箱を包含ブロックの幅に収めます。'
-  note: 'フォーム部品、行方向のフレックスアイテム、左右の位置を片方しか決めていない絶対配置の要素などが対象です。揃えを変えていないグリッドアイテムは、指定しなくても広がります。子の周りの余白は、子の `margin` ではなく親の `padding` や `gap` で取ることを優先します（ルール `parent-owns-child-placement`）。`-moz-available` は書きません。'
-  aiProne: true
-  page: layout/box-model
-  since: 0.11.0
-
-- id: stretch-over-height-100
-  level: 推奨
-  kind: spec
-  rule: '子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。'
-  reason: '`height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。'
-  note: '置換要素（`img` など）のように、`stretch` では伸びず、明示しないと広がらない要素には、`block-size: 100%` を書いてよいです。ただし、`stretch` で広がるなら `stretch` を優先し、`100%` は `stretch` に任せられない場合に限ります。'
-  aiProne: true
-  page: layout/box-model
-  since: 0.1.0
-
 - id: margin-inline-auto-centering
   level: 必須
   kind: spec
@@ -101,7 +71,38 @@
   page: layout/box-model
   since: 0.1.0
 
-# 7-4 marginの役割
+# 7-4 大きさの決まり方
+- id: box-fit-content-over-display-change
+  level: 推奨
+  kind: judgment
+  rule: '要素の幅を中身に合わせるときは、`display: inline-block` や `float` に変えず、`inline-size: fit-content` を指定する。'
+  reason: '`display` や `float` を変えると、前後の文字と同じ行に並ぶ、ベースラインにそろうといった外側の振る舞いまで変わるが、`fit-content` ならブロックのまま幅だけが変わるため。'
+  note: '親より長い中身は、`fit-content` なら親の幅で折り返します。折り返させたくない場合だけ `max-content` を使います。'
+  aiProne: true
+  page: layout/sizing
+  since: 0.5.0
+
+- id: stretch-over-width-100
+  level: 推奨
+  kind: spec
+  rule: '利用できる幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`inline-size: -webkit-fill-available` と `inline-size: stretch` をこの順に書く。'
+  reason: '`100%` は `margin` を含めずに包含ブロックの幅をそのまま当てはめるので、`margin` や `box-sizing: content-box` と組み合わさると親からはみ出すためです。`stretch` は `margin` を含めた箱を包含ブロックの幅に収めます。'
+  note: 'フォーム部品、行方向のフレックスアイテム、左右の位置を片方しか決めていない絶対配置の要素などが対象です。揃えを変えていないグリッドアイテムは、指定しなくても広がります。子の周りの余白は、子の `margin` ではなく親の `padding` や `gap` で取ることを優先します（ルール `parent-owns-child-placement`）。`-moz-available` は書きません。'
+  aiProne: true
+  page: layout/sizing
+  since: 0.11.0
+
+- id: stretch-over-height-100
+  level: 推奨
+  kind: spec
+  rule: '子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。'
+  reason: '`height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。'
+  note: '置換要素（`img` など）のように、`stretch` では伸びず、明示しないと広がらない要素には、`block-size: 100%` を書いてよいです。ただし、`stretch` で広がるなら `stretch` を優先し、`100%` は `stretch` に任せられない場合に限ります。'
+  aiProne: true
+  page: layout/sizing
+  since: 0.1.0
+
+# 7-5 marginの役割
 - id: margin-collapse-padding-for-inner-space
   level: 推奨
   kind: spec
@@ -112,7 +113,7 @@
   page: layout/margin-role
   since: 0.5.0
 
-# 7-5 マージンの相殺
+# 7-6 マージンの相殺
 - id: margin-collapse-no-empty-spacers
   level: 非推奨
   kind: spec
@@ -122,7 +123,7 @@
   page: layout/margin-collapse
   since: 0.5.0
 
-# 7-6 Flexboxの基礎
+# 7-7 Flexboxの基礎
 - id: flexbox-basis-zero-for-ratio
   level: 推奨
   kind: spec
@@ -162,7 +163,7 @@
   page: layout/flexbox-basics
   since: 0.25.0
 
-# 7-7 Gridの基礎
+# 7-8 Gridの基礎
 - id: grid-auto-rows-for-item-count
   level: 推奨
   kind: spec
@@ -228,7 +229,7 @@
   page: layout/grid-basics
   since: 0.4.0
 
-# 7-8 Gridでアイテムをそろえる
+# 7-9 Gridでアイテムをそろえる
 - id: subgrid-for-aligned-rows
   level: 推奨
   kind: judgment
@@ -264,7 +265,7 @@
   page: layout/grid-alignment
   since: 0.24.0
 
-# 7-9 positionの基礎
+# 7-10 positionの基礎
 - id: containing-block-inside-component
   level: 推奨
   kind: spec
@@ -319,7 +320,7 @@
   page: layout/positioning
   since: 0.4.0
 
-# 7-10 アンカーポジショニングの基礎
+# 7-11 アンカーポジショニングの基礎
 - id: implicit-anchor-first
   level: 推奨
   kind: judgment
@@ -350,7 +351,7 @@
   page: layout/anchor-basics
   since: 0.24.0
 
-# 7-11 display: contentsで箱をなくす
+# 7-12 display: contentsで箱をなくす
 - id: display-contents-with-reason
   level: 推奨
   kind: judgment

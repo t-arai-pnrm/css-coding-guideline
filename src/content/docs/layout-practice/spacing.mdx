@@ -46,7 +46,7 @@ import sectionSpacingCss from '../../../demos/layout-practice/section-spacing/st
 
 `margin` には、ブロック方向に隣り合う要素の間で大きいほうだけが残る「相殺」という仕組みもあります。上の要素の `margin-block-end` と下の要素の `margin-block-start` を両方指定すると、合計ではなく大きいほうの値だけが効きます。上下のどちらに付けるかをチームで決めておかないと、相殺と打ち消しが入り混じり、実際の間隔がどの指定で決まっているのかを追えなくなります。
 
-相殺は、親と最初の子、親と最後の子の間でも起き、子に付けた余白が親の外へ出て、親の背景が余白を含まなくなります。止めるなら、親に `display: flow-root` を指定します。相殺が起きる条件と起きない条件、負の値を含む計算は「[7-5 マージンの相殺](/layout/margin-collapse/)」で詳しく説明しています。
+相殺は、親と最初の子、親と最後の子の間でも起き、子に付けた余白が親の外へ出て、親の背景が余白を含まなくなります。止めるなら、親に `display: flow-root` を指定します。相殺が起きる条件と起きない条件、負の値を含む計算は「[7-6 マージンの相殺](/layout/margin-collapse/)」で詳しく説明しています。
 
 <Baseline id="display-flow-root" />
 
@@ -56,7 +56,7 @@ import sectionSpacingCss from '../../../demos/layout-practice/section-spacing/st
 }
 ```
 
-`overflow: auto` や、見えない `padding` と `border` でも相殺は止まりますが、使いません。`overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取ります（「[7-9 positionの基礎](/layout/positioning/)」）。FlexboxやGridにした要素の子も、親との間では相殺しません。余白を子と親の枠の間に取りたいだけなら、親の `padding` で足ります。
+`overflow: auto` や、見えない `padding` と `border` でも相殺は止まりますが、使いません。`overflow` はスクロールコンテナを作り、中の `position: sticky` を妨げるほか、影や絶対配置の要素を切り取ります（「[7-10 positionの基礎](/layout/positioning/)」）。FlexboxやGridにした要素の子も、親との間では相殺しません。余白を子と親の枠の間に取りたいだけなら、親の `padding` で足ります。
 
 ## 親の `gap` による間隔
 

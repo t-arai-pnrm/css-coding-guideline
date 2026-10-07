@@ -90,7 +90,7 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 <Demo title="スクロールすると、ヘッダーの真後ろにある色だけがぼかされて混ざる" html={frostedHtml} css={frostedCss} height="320px" />
 
-`-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[7-9 positionの基礎](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
+`-webkit-` の接頭辞は書きません。Safariは18から接頭辞なしで対応しています（2026年9月確認）。`backdrop-filter` は、固定配置の子孫の包含ブロックにもなるので、子に `position: fixed` を置くと、期待した位置になりません。詳しくは「[7-10 positionの基礎](/layout/positioning/)」で説明しています。祖先に `opacity` や `mask`、`clip-path` があると、ぼかしの対象がその祖先の内側に限られる点にも注意します。
 
 <Baseline id="backdrop-filter" />
 

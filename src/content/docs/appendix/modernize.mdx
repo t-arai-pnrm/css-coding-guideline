@@ -95,7 +95,7 @@ sidebar:
 | --- | --- | --- | --- | --- |
 | `grid-template-areas` や `flex-direction: row-reverse` だけで並べ替える | 同じルールに `reading-flow` を指定する。まずHTMLの順番を読む順に合わせる | 挙動：キーボードと読み上げの順が、見た目の順とずれる | [`reading-flow-when-reordered`](/layout-practice/reading-flow/#rule-reading-flow-when-reordered) | AI |
 | 何にでも `width: 100%` | 書かない。ブロックレベルの要素は親の幅いっぱいに広がる | 挙動：左右のマージンや `box-sizing: content-box` と組み合わさると、親からはみ出す | [`no-redundant-width-100`](/design-mindset/maintainability/#rule-no-redundant-width-100) | AI |
-| 子要素に `height: 100%` | 親を `display: block grid` にして `stretch` に任せる | 挙動：親の高さが明示されていないと効かない | [`stretch-over-height-100`](/layout/box-model/#rule-stretch-over-height-100) | AI |
+| 子要素に `height: 100%` | 親を `display: block grid` にして `stretch` に任せる | 挙動：親の高さが明示されていないと効かない | [`stretch-over-height-100`](/layout/sizing/#rule-stretch-over-height-100) | AI |
 | 子要素の `margin-bottom` と `:last-child { margin-bottom: 0; }` | 親の `gap` | 本書の方針 | [`gap-over-child-margin`](/layout-practice/spacing/#rule-gap-over-child-margin) | AI |
 | 見出しの `margin-bottom` と、段落の `margin-bottom` を `:last-child` で打ち消す書き方 | `& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` で選んだ後ろの要素の `margin-block-start` | 挙動：要素が欠けたり並びが変わったりすると、余計な余白が残る | [`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator) | AI |
 | `height: 400px` | 下限は `min-block-size`、上限は `max-block-size`、比率は `aspect-ratio` | 挙動：文字が増えたり大きくなったりすると、中身があふれる | [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height) | AI |

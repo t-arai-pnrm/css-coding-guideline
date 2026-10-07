@@ -1,8 +1,8 @@
 ---
-title: "7-9 positionの基礎"
+title: "7-10 positionの基礎"
 description: "position は、親の方式で置かれた位置を補正するか（relative、sticky）、要素を親の流れから外して置き直すか（absolute、fixed）を決めるプロパティです。static、relative、absolute、fixed、sticky の違い、包含ブロックの決まり方、絶対配置の要素を中央に置く方法、sticky が留まらない原因を説明します。"
 sidebar:
-  order: 9
+  order: 10
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -52,7 +52,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 この例の `._new` は、フレックスアイテムとして並ばず、`gap` の計算からも外れます。`inset` を指定していないので、一覧の先頭の位置に置かれ、最初のタグに重なって描かれます。
 
-この節では、まず5つの値がそれぞれ何を変えるかを説明し、次に位置の基準になる包含ブロックを扱います。最後に、つまずきやすい `sticky` が留まらない原因を説明します。重なり順（z-index）と、要素を画面幅いっぱいに広げる方法は、「[11-6 重なりと全幅](/layout-practice/layering/)」で扱います。留まったヘッダーの見た目の切り替えと固定ヘッダーの条件は「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」で、ツールチップのように別の要素を基準に置くアンカーポジショニングは「[7-10 アンカーポジショニングの基礎](/layout/anchor-basics/)」で扱います。
+この節では、まず5つの値がそれぞれ何を変えるかを説明し、次に位置の基準になる包含ブロックを扱います。最後に、つまずきやすい `sticky` が留まらない原因を説明します。重なり順（z-index）と、要素を画面幅いっぱいに広げる方法は、「[11-6 重なりと全幅](/layout-practice/layering/)」で扱います。留まったヘッダーの見た目の切り替えと固定ヘッダーの条件は「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」で、ツールチップのように別の要素を基準に置くアンカーポジショニングは「[7-11 アンカーポジショニングの基礎](/layout/anchor-basics/)」で扱います。
 
 ## positionの5つの値
 

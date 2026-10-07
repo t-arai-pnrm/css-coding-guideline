@@ -181,7 +181,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
 
 ### grid-template で書くとき
 
-`sidebar` が向いているのは、要素が2つで、横に並べるか縦に積むかの2通りしかない配置です。折り返す幅は中身の幅の指定から決まり、クエリは要りません。一方で、次のような配置は `sidebar` では組めないので、`grid-template` のエリアに名前を付けて書きます（「[7-7 Gridの基礎](/layout/grid-basics/)」。配置の構造が変わるレイアウトは、条件ごとにテンプレートだけを書き換えます）。
+`sidebar` が向いているのは、要素が2つで、横に並べるか縦に積むかの2通りしかない配置です。折り返す幅は中身の幅の指定から決まり、クエリは要りません。一方で、次のような配置は `sidebar` では組めないので、`grid-template` のエリアに名前を付けて書きます（「[7-8 Gridの基礎](/layout/grid-basics/)」。配置の構造が変わるレイアウトは、条件ごとにテンプレートだけを書き換えます）。
 
 1つ目は、要素が3つ以上ある配置です。見出し、本文、サイドの3つがあり、広いときはサイドを見出しと本文の2行にまたがらせたい場合、Flexboxの折り返しでは表現できません。2つ目は、折り返す幅を中身ではなくデザインの都合で決めたい場合です。3つ目は、横に並べたときと縦に積んだときで、見た目の順番を変えたい場合です。
 
@@ -230,7 +230,7 @@ import sidebarCss from '../../../demos/compositions/sidebar/style.css?raw';
 
 横に並んでいる間、サイドの高さはメインと同じになります。`align-items` の初期値（`normal`）では、フレックスアイテムが行の高さいっぱいに伸びるからです。この性質を使うと、目次をスクロールに合わせて留める配置が作れます。
 
-`position: sticky` は、`.side-column` そのものではなく、その中の要素に指定します。`.side-column` は行の高さまで伸びているので、中の要素はその範囲でずれる余地を持ちます。`.side-column` に直接指定するなら、`align-self: start` で伸びるのを止めます（「[7-9 positionの基礎](/layout/positioning/#rule-sticky-align-self-start)」。伸びた要素には、ずれる余地がありません）。縦に積んだあとは、サイドの行の高さは中身と同じになるので、`sticky` を指定しても留まりません。
+`position: sticky` は、`.side-column` そのものではなく、その中の要素に指定します。`.side-column` は行の高さまで伸びているので、中の要素はその範囲でずれる余地を持ちます。`.side-column` に直接指定するなら、`align-self: start` で伸びるのを止めます（「[7-10 positionの基礎](/layout/positioning/#rule-sticky-align-self-start)」。伸びた要素には、ずれる余地がありません）。縦に積んだあとは、サイドの行の高さは中身と同じになるので、`sticky` を指定しても留まりません。
 
 ## ガイドライン
 

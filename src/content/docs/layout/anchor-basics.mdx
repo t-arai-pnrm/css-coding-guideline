@@ -1,8 +1,8 @@
 ---
-title: "7-10 アンカーポジショニングの基礎"
+title: "7-11 アンカーポジショニングの基礎"
 description: "アンカーポジショニングは、絶対配置の要素を、包含ブロックの辺ではなく別の要素（アンカー）の辺を基準に置く仕組みです。anchor-name と position-anchor による結び付け、anchor() と anchor-size()、position-area の9マス、position-try-fallbacks による位置の切り替え、ポップオーバーの暗黙のアンカー、包含ブロックとの関係、未対応の環境への備えを説明します。"
 sidebar:
-  order: 10
+  order: 11
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -24,7 +24,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 本書では、ポップオーバーを開くボタンを基準にするなら、名前を付けずに暗黙のアンカーを使います。`position-area` の値は論理キーワードで書きます。対象のブラウザの一部が対応していないので、アンカーを基準にした指定は `@supports` の中に書き、その外に、未対応の環境でも内容を読めて操作できる配置を書きます。
 
-この節は、「[7-9 positionの基礎](/layout/positioning/)」の続きで、絶対配置と包含ブロックの仕組みを前提にしています。ツールチップやメニュー、ホバーした項目への背景の追従といった使い方は、「[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)」で扱います。
+この節は、「[7-10 positionの基礎](/layout/positioning/)」の続きで、絶対配置と包含ブロックの仕組みを前提にしています。ツールチップやメニュー、ホバーした項目への背景の追従といった使い方は、「[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)」で扱います。
 
 ## 絶対配置だけでは別の要素の隣に置けない
 
@@ -201,7 +201,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 ## 包含ブロックがマス目とはみ出しの範囲を決める
 
-アンカーポジショニングでも、包含ブロックの決まり方は「[7-9 positionの基礎](/layout/positioning/)」と同じです。変わるのは役割で、位置の基準ではなく、`position-area` のマス目の外枠と、はみ出したかどうかを判定する範囲になります。先のデモの枠に `position: relative` を指定しているのは、この範囲を枠に合わせるためです。
+アンカーポジショニングでも、包含ブロックの決まり方は「[7-10 positionの基礎](/layout/positioning/)」と同じです。変わるのは役割で、位置の基準ではなく、`position-area` のマス目の外枠と、はみ出したかどうかを判定する範囲になります。先のデモの枠に `position: relative` を指定しているのは、この範囲を枠に合わせるためです。
 
 カードの中で `position: absolute` を使い、カードに `position: relative` を指定すると、マス目もはみ出しの判定もカードの範囲になります。カードの下端に近いボタンの説明は、画面には十分な空きがあっても、カードからはみ出すので反転します。説明を画面の端まで使って表示したいなら、包含ブロックをビューポートにします。
 

@@ -157,7 +157,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 `block-size: 50%` のような高さの割合は、親の高さが中身で決まる（`auto` の）ときには解決できず、`auto` として扱われます。親の高さが子から決まり、子の高さが親から決まるという循環になるからです。{/* 要確認: 出典なし */}縦の大きさを親に合わせたいときは、親をGridにして行を決めるほうが確実です。
 
-`<span>` のような通常の非置換インラインボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。インラインレベルのボックスでも、`<img>` のような置換要素や、`display: inline flow-root` のボックスには大きさを指定できます。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[7-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。
+`<span>` のような通常の非置換インラインボックスには `inline-size` と `block-size` が適用されず、大きさは中身と `line-height` で決まります。インラインレベルのボックスでも、`<img>` のような置換要素や、`display: inline flow-root` のボックスには大きさを指定できます。大きさの指定、`box-sizing`、`auto` の `margin` による中央寄せは「[7-3 ボックスモデルの基礎](/layout/box-model/)」で、包含ブロックの決まり方は「[7-10 positionの基礎](/layout/positioning/)」で説明しています。
 
 ## ブロック整形コンテキストと `display: flow-root`
 
@@ -187,7 +187,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 }
 ```
 
-以前は、`float` を囲むために、親の `::after` に `clear: both` を指定するclearfixを書いていました。`display: flow-root` なら擬似要素なしに同じことができます（[`float-for-text-wrap`](/layout-practice/float/#rule-float-for-text-wrap)）。親子や兄弟の `margin` が相殺する条件は「[7-5 マージンの相殺](/layout/margin-collapse/)」で説明しています。
+以前は、`float` を囲むために、親の `::after` に `clear: both` を指定するclearfixを書いていました。`display: flow-root` なら擬似要素なしに同じことができます（[`float-for-text-wrap`](/layout-practice/float/#rule-float-for-text-wrap)）。親子や兄弟の `margin` が相殺する条件は「[7-6 マージンの相殺](/layout/margin-collapse/)」で説明しています。
 
 ## 通常フローで効かないプロパティ
 
@@ -212,7 +212,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 ここまでの規則から分かるように、プロパティの意味は、要素がどの方式の中にあるかで変わります。`inline-size` は、通常フローでは守られる値で、Flexboxでは縮む出発点です。`margin-block: auto` は、通常フローでは0として扱われ、FlexboxやGridでは余った空間を吸収して要素を寄せます。
 
-`min-inline-size: auto` も、通常フローのブロックでは0ですが、フレックスアイテムでは中身の最小幅として扱われ、アイテムが縮まない原因になります（「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」）。マージンの相殺は通常フローでだけ起き、フレックスアイテムとグリッドアイテムの間では起きません。
+`min-inline-size: auto` も、通常フローのブロックでは0ですが、フレックスアイテムでは中身の最小幅として扱われ、アイテムが縮まない原因になります（「[7-7 Flexboxの基礎](/layout/flexbox-basics/)」）。マージンの相殺は通常フローでだけ起き、フレックスアイテムとグリッドアイテムの間では起きません。
 
 方式を決めるのは、要素自身ではなく親の `display` の内側の値です。親を `flex` に変えると、子のすべてが通常フローの規則の代わりにFlexboxの規則で並び、子の指定の意味がまとめて変わります。
 
@@ -239,7 +239,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 親をFlexboxやGridにしても、変わるのは子の並べ方だけです。親自身は、外側の値に従って、祖先の通常フローの中にブロックとして積まれます。`display: block flex` の `block` は、この外側の振る舞いを表しています。
 
-`position: absolute` と `fixed` の要素、`float` した要素は、通常フローから外れます。`float` の要素は、後に続く行ボックスを横へ押しやります。位置指定の規則は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。
+`position: absolute` と `fixed` の要素、`float` した要素は、通常フローから外れます。`float` の要素は、後に続く行ボックスを横へ押しやります。位置指定の規則は「[7-10 positionの基礎](/layout/positioning/)」で説明しています。
 
 ## ガイドライン
 
