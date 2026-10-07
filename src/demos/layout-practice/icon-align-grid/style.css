@@ -2,6 +2,7 @@
   :root {
     --check: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L10 18L20 6" /></svg>');
     --chevron--rightward: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4L16 12L8 20" /></svg>');
+    --leading--relaxed: 1.75;
   }
 }
 
@@ -35,7 +36,7 @@
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
       gap: 24px;
-      line-height: 1.75;
+      line-height: var(--leading--relaxed);
     }
 
     section {

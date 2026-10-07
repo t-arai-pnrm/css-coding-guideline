@@ -2,6 +2,7 @@
   --foreground--base: oklch(25% 0 0deg);
   --foreground--muted: oklch(45% 0 0deg);
   --background--surface: oklch(97% 0.01 250deg);
+  --leading--snug: 1.4;
 }
 
 @scope (.scoped.demo-page) to (.scoped) {
@@ -58,12 +59,12 @@
 
   h2 {
     font-size: calc(22 / 16 * 1rem);
-    line-height: 1.4;
+    line-height: var(--leading--snug);
   }
 
   h3 {
     font-size: calc(18 / 16 * 1rem);
-    line-height: 1.4;
+    line-height: var(--leading--snug);
   }
 
   /* 本文では、リセットで消したリストのマーカーと字下げをブラウザのデフォルトに戻す */

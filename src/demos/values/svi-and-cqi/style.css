@@ -1,3 +1,9 @@
+@layer tokens {
+  :root {
+    --leading--snug: 1.4;
+  }
+}
+
 @layer pages {
   @scope (.scoped.demo-layout) to (.scoped) {
     :scope {
@@ -32,7 +38,7 @@
 
     p {
       font-weight: 700;
-      line-height: 1.4;
+      line-height: var(--leading--snug);
 
       /* 画面の幅 375px で 20px、1280px で 32px。置き場所に関係なく同じ大きさになる */
       &[data-unit="svi"] {

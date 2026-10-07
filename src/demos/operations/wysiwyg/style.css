@@ -2,6 +2,7 @@
   --color--lightest: oklch(97% 0.01 250deg);
   --color--darker: oklch(35% 0.03 250deg);
   --color--darkest: oklch(25% 0.04 250deg);
+  --leading--snug: 1.4;
 }
 
 @scope (.scoped.demo-page) to (.scoped) {
@@ -26,7 +27,7 @@
 
   @scope (:scope) to ([class|="cms"]) {
     :where(h1, h2, h3, h4, h5, h6) {
-      line-height: 1.4;
+      line-height: var(--leading--snug);
     }
 
     h2 {

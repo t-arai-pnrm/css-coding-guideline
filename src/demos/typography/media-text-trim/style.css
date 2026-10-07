@@ -1,3 +1,9 @@
+@layer tokens {
+  :root {
+    --leading--snug: 1.4;
+  }
+}
+
 @layer pages {
   @scope (.scoped.demo-stack) to (.scoped) {
     :scope {
@@ -56,7 +62,7 @@
 
     ._heading {
       font-size: calc(22 / 16 * 1rem);
-      line-height: 1.4;
+      line-height: var(--leading--snug);
 
       @container style(--_density: --spacious) {
         font-size: calc(28 / 16 * 1rem);

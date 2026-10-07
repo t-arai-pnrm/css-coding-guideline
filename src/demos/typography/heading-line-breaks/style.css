@@ -1,3 +1,9 @@
+@layer tokens {
+  :root {
+    --leading--snug: 1.4;
+  }
+}
+
 @layer base {
   :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
     &:lang(ja) {
@@ -34,7 +40,7 @@
 
     h2 {
       font-size: calc(26 / 16 * 1rem);
-      line-height: 1.4;
+      line-height: var(--leading--snug);
 
       /* 比較のために、文節での折り返しと行の長さの調整を取り除き、親の値を継承させる */
       &[data-phrase="off"] {

@@ -1,3 +1,9 @@
+@layer tokens {
+  :root {
+    --leading--loose: 2;
+  }
+}
+
 @layer components {
   @scope (.scoped.trim-compare) to (.scoped) {
     :scope {
@@ -34,7 +40,7 @@
 
     p {
       background-color: oklch(95% 0.03 90deg);
-      line-height: 2;
+      line-height: var(--leading--loose);
     }
   }
 }

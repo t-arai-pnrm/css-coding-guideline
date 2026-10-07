@@ -1,3 +1,9 @@
+@layer tokens {
+  :root {
+    --leading--relaxed: 1.75;
+  }
+}
+
 @layer components {
   @scope (.scoped.typesetting-compare) to (.scoped) {
     :scope {
@@ -24,7 +30,7 @@
       padding-inline-start: 12px;
       border-inline-start: 2px solid oklch(70% 0.1 250deg);
       font-size: calc(18 / 16 * 1rem);
-      line-height: 1.75;
+      line-height: var(--leading--relaxed);
 
       /* 比較のために、アキを入れず約物も詰めない値を指定する（CSS の初期値の normal に戻すと、ブラウザによってはアキが入る） */
       &[data-typesetting="off"] {

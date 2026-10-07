@@ -1,3 +1,9 @@
+@layer tokens {
+  :root {
+    --leading--snug: 1.4;
+  }
+}
+
 @layer components {
   @scope (.scoped.fluid-heading) to (.scoped) {
     h2 {
@@ -16,7 +22,7 @@
         var(--_slope) * 100svi + var(--_intercept) / 16 * 1rem,
         var(--_max-size) / 16 * 1rem
       );
-      line-height: 1.4;
+      line-height: var(--leading--snug);
     }
 
     :scope {

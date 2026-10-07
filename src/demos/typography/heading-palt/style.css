@@ -1,3 +1,10 @@
+@layer tokens {
+  :root {
+    --leading--snug: 1.4;
+    --leading--relaxed: 1.75;
+  }
+}
+
 @layer base {
   :root {
     &:lang(ja) {
@@ -34,7 +41,7 @@
 
     h2 {
       font-size: calc(28 / 16 * 1rem);
-      line-height: 1.4;
+      line-height: var(--leading--snug);
 
       /* 比較のために、見出しの詰めを取り除き、本文と同じく親の値を継承させる */
       &[data-palt="off"] {
@@ -44,7 +51,7 @@
     }
 
     ._body-text {
-      line-height: 1.75;
+      line-height: var(--leading--relaxed);
     }
   }
 }
