@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.34.0
+- バージョン: 0.35.0
 - 生成日: 2026-10-07
-- ルールの数: 571
+- ルールの数: 579
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -1068,10 +1068,14 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
   - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第10章のルール `utility-single-purpose`）。Vue の `<style scoped>` や Astro の `<style>` のように、フレームワークがスコープの仕組みを持つ場合は `@scope` だけをそれに置き換え、命名、レイヤー、コンテナ名の規約は残します。
   - 詳細: 19-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨・実装上の判断】宣言が効かないときは、詳細度を上げたり `!important` を付けたりする前に、開発者ツールで勝っている宣言と、差が付いた段階（レイヤー、詳細度、スコープの近さ、出現順）を確かめる。（`devtools-find-winning-declaration`）
+  - 理由: 負けた理由を確かめずに順位を引き上げると、レイヤーの順番の誤りなどの原因が残り、上書きが積み重なるため。
+  - 補足: 取り消し線のない宣言が効かないときは、条件を満たさない宣言か、未定義のカスタムプロパティの参照（計算値の時点で無効）を疑う。
+  - 詳細: 19-4 表示の崩れを開発者ツールで調べる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/devtools.mdx）
 - 【推奨・本書の規約】編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。（`wysiwyg-cms-prefix`）
   - 理由: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
   - 補足: `[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。
-  - 詳細: 19-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 19-5 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 
 ## すべてのルール
 
@@ -3263,19 +3267,49 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・実装上の判断】AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。（`ai-layout-with-grid-areas`）
   - 理由: 指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。
   - 詳細: 19-2 レビューとAIとの協働（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/review-and-ai.mdx）
+- 【推奨・実装上の判断】実装後は、長い見出し、折り返せない文字列、読み込めない画像、0件・1件・多数の項目を入れたテストページで表示を確かめる。（`verify-worst-case-content`）
+  - 理由: デザインカンプのダミーテキストは崩れる条件をほとんど含まず、実際の内容で初めてはみ出しや重なりが見つかるため。
+  - 補足: 幅は320px、480px、768px、1024px、1280pxで確かめ、その後に間の幅も連続して変えて見ます。
+  - 詳細: 19-3 表示と操作を確かめる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/verification.mdx）
+- 【必須・仕様上の制約】ブラウザのズームと文字サイズの設定をそれぞれ200%にしても、内容が欠けず、操作できることを確かめる。（`verify-text-resize-200`）
+  - 理由: WCAGの達成基準1.4.4が、支援技術なしで文字を200%まで拡大しても内容や機能が失われないことを求めているため。
+  - 詳細: 19-3 表示と操作を確かめる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/verification.mdx）
+- 【推奨・実装上の判断】キーボードだけで操作し、強制カラーモード、動きを減らす設定、グレースケールの表示を再現して確かめる。（`verify-keyboard-and-display-settings`）
+  - 理由: フォーカスの見え方と移動の順番、色に頼った表現、止まらない動きは、コードを読むだけでは見落としやすく、条件を再現すると見つかるため。
+  - 補足: 強制カラーモードと動きを減らす設定は、Chromeの開発者ツールの「Rendering」パネルで再現できます。
+  - 詳細: 19-3 表示と操作を確かめる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/verification.mdx）
+- 【推奨・実装上の判断】宣言が効かないときは、詳細度を上げたり `!important` を付けたりする前に、開発者ツールで勝っている宣言と、差が付いた段階（レイヤー、詳細度、スコープの近さ、出現順）を確かめる。（`devtools-find-winning-declaration`）
+  - 理由: 負けた理由を確かめずに順位を引き上げると、レイヤーの順番の誤りなどの原因が残り、上書きが積み重なるため。
+  - 補足: 取り消し線のない宣言が効かないときは、条件を満たさない宣言か、未定義のカスタムプロパティの参照（計算値の時点で無効）を疑う。
+  - 詳細: 19-4 表示の崩れを開発者ツールで調べる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/devtools.mdx）
+- 【推奨・実装上の判断】崩れを直すときは、開発者ツールで値を一時的に書き換えて原因の宣言を1つに絞り、その宣言をソースのCSSで直す。（`devtools-narrow-cause-then-fix-source`）
+  - 理由: 原因を絞らずに直すと、症状を消すだけの宣言が増え、開発者ツールでの変更は再読み込みで消えるため。
+  - 詳細: 19-4 表示の崩れを開発者ツールで調べる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/devtools.mdx）
 - 【推奨・実装上の判断】CMS の WYSIWYG が出力する本文エリアには `wysiwyg` クラスを付け、`@scope (.wysiwyg)` の中にタイプセレクタで書く。（`wysiwyg-scope-root`）
   - 理由: 編集者は要素にクラスを付けられず、子孫セレクタで書くと詳細度が上がり、独自ブロックの側に打ち消しが要るため。
   - 補足: 本文エリアは、`scoped <名前>` の規約（第4章）の例外です。`.scoped` のクラスを付けられるのは、コードを書く人だけだからです。
-  - 詳細: 19-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 19-5 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 - 【推奨・本書の規約】編集画面から挿入する独自のブロックには `cms-` で始まるクラスを `class` 属性の先頭に付け、本文エリアの `@scope` を `to ([class|="cms"])` で手前で止める。（`wysiwyg-cms-prefix`）
   - 理由: 本文エリアの見出しや段落のスタイルが、独自ブロックの中に漏れるのを防ぐため。
   - 補足: `[class|="cms"]` は、`class` 属性の値の全体が `cms` か `cms-` で始まるときだけ一致します。`class="foo cms-x"` には一致しません。
-  - 詳細: 19-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 19-5 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 - 【推奨・本書の規約】CMS の本文エリアに限り、`@scope` のネストと、独自ブロックの `@scope` での `to()` の省略を認める。（`wysiwyg-scope-exception`）
   - 理由: 本文エリアと独自ブロックの2段だけで、ブロックの中にコンポーネントを置かない前提が成り立てば、スタイルの漏れが起きにくいため。
   - 補足: ブロックの中にコンポーネントを入れるなら、通常の `@scope (.scoped.<名前>) to (.scoped)` に戻します。
-  - 詳細: 19-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 19-5 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
 - 【推奨・実装上の判断】本文のブロック間の余白は、2つ目以降の直下の子に `margin-block-start` を `rlh` で付け、見出しと独自ブロックの前だけ広げる。（`wysiwyg-flow-margin`）
   - 理由: 見出しや段落の行間が違っても、余白がルート要素の行の高さの倍数で揃うため。
   - 補足: 中にブロックを持つ `blockquote` などは、中の余白を `0.5rlh` に詰めます。
-  - 詳細: 19-3 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+  - 詳細: 19-5 CMSのWYSIWYG本文にスタイルを当てる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/wysiwyg.mdx）
+- 【推奨・実装上の判断】既存のサイトに本書の規約を入れるときは、全体を一度に書き換えず、新しく作るコンポーネントと、変更で手を入れるページやコンポーネントから適用する。（`adopt-new-components-first`）
+  - 理由: 書き換えのためだけに表示の確認を増やさず、規約の違う部分を変更のたびに減らせるため。
+  - 補足: 変更の予定がない箇所は、規約と違っていても書き換えない。
+  - 詳細: 19-8 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
+- 【推奨・実装上の判断】既存のサイトにレイヤーを入れるときは、既存のCSSを `@import url("…") layer(vendors);` で `vendors` レイヤーに入れ、新しいCSSを後ろのレイヤーに書く。（`legacy-css-into-vendors`）
+  - 理由: レイヤーの外に残った既存のCSSは、詳細度に関係なく新しいCSSに勝つため。`vendors` に入れれば、既存のページの表示を保ったまま、新しいコンポーネントを優先できる。
+  - 補足: 既存のCSSを読み込み直せない環境では、`no-layers-with-unlayered-css` に従う。リセットとベーススタイルは、既存のページの表示を確かめられる段階で足す。
+  - 詳細: 19-8 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
+- 【推奨・実装上の判断】Stylelint は新しいCSSを置くディレクトリから適用し、既存のCSSのディレクトリは `ignoreFiles` で外して、書き換えたファイルから検査の対象に戻す。（`lint-new-code-first`）
+  - 理由: 既存のCSSの大量の違反に、新しいコードの違反が埋もれないようにするため。`ignoreFiles` に残るパスが、規約で書かれていないCSSの一覧になる。
+  - 補足: 外すのは規約で書いていないコードだけで、新しいコードの違反を隠す目的では使わない（`no-disabling-to-silence`）。
+  - 詳細: 19-8 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）

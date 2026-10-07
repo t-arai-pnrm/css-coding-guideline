@@ -127,7 +127,7 @@ import stackCss from '../../../demos/compositions/stack/style.css?raw';
 
 CMSで編集者が入力する本文エリアの中には、どちらも使いません。本文エリアには種類の違う要素が続くので、間隔が一律の `stack` は向きません。`prose` も、編集者が子に `style` 属性を付けられないので、子ごとに値を渡す使い方ができません。
 
-本文エリアの中の余白は、「[19-3 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」の `.wysiwyg` で、要素の種類ごとに決めます。本文エリアと、その前後にあるタイトルや関連リンクなどを並べる外側には、`prose` を使えます。
+本文エリアの中の余白は、「[19-5 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」の `.wysiwyg` で、要素の種類ごとに決めます。本文エリアと、その前後にあるタイトルや関連リンクなどを並べる外側には、`prose` を使えます。
 
 横に並べたいなら、`stack` に `flex-direction: row` を上書きせず、別のコンポジションを使います。折り返すなら「[cluster](/compositions/cluster/)」を、両端に分けるなら「[apart](/compositions/apart/)」を選びます。幅に応じて縦積みと横並びを切り替えたいときも、`stack` にクエリを足すのではなく、幅が閾値を下回ると1列に切り替わる「[switcher](/compositions/switcher/)」を使います。
 

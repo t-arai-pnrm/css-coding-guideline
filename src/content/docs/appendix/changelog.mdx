@@ -11,6 +11,25 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.35.0（2026年10月8日）
+
+第19章に、実装したあとの確かめ方と、既存のサイトへの導入の節を加えました。ルールを追加したので、マイナーバージョンを上げています。
+
+- 節を加えました。
+  - 「[19-3 表示と操作を確かめる](/operations/verification/)」：崩れやすい内容を入れたテストページ、5つの幅、200%の拡大と文字サイズ、キーボードでの操作、強制カラーモードと動きを減らす設定とグレースケールの再現。
+  - 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」：表示が崩れたときの症状ごとに、開発者ツールで見る場所と、仕組みを説明している節。扱う症状は、宣言が効かないことや、`sticky` が留まらないことなど5つです。
+  - 「[19-8 既存のサイトに段階的に導入する](/operations/adoption/)」：規約を適用する範囲、先に入れるルール、既存のCSSとカスケードレイヤーでの共存、Stylelintの段階的な適用、規約を入れる順番。
+- 旧19-3〜19-5を、19-5〜19-7に繰り下げました。URLは変わりません。
+- ルールを追加しました。
+  - [`verify-worst-case-content`](/operations/verification/#rule-verify-worst-case-content)
+  - [`verify-text-resize-200`](/operations/verification/#rule-verify-text-resize-200)
+  - [`verify-keyboard-and-display-settings`](/operations/verification/#rule-verify-keyboard-and-display-settings)
+  - [`devtools-find-winning-declaration`](/operations/devtools/#rule-devtools-find-winning-declaration)
+  - [`devtools-narrow-cause-then-fix-source`](/operations/devtools/#rule-devtools-narrow-cause-then-fix-source)
+  - [`adopt-new-components-first`](/operations/adoption/#rule-adopt-new-components-first)
+  - [`legacy-css-into-vendors`](/operations/adoption/#rule-legacy-css-into-vendors)
+  - [`lint-new-code-first`](/operations/adoption/#rule-lint-new-code-first)
+
 ## 0.34.0（2026年10月7日）
 
 前から順に読んだときに同じ説明が繰り返されないように、複数の章に出てくる主張を整理しました。コード例のタイトルも、判断が分かる言葉に直しています。文章の構成を変えたので、マイナーバージョンを上げています。ルールは変えていません。

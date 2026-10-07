@@ -182,7 +182,53 @@
   page: operations/review-and-ai
   since: 0.5.0
 
-# 19-3 CMSのWYSIWYG本文にスタイルを当てる
+# 19-3 表示と操作を確かめる
+- id: verify-worst-case-content
+  level: 推奨
+  kind: judgment
+  rule: 実装後は、長い見出し、折り返せない文字列、読み込めない画像、0件・1件・多数の項目を入れたテストページで表示を確かめる。
+  reason: デザインカンプのダミーテキストは崩れる条件をほとんど含まず、実際の内容で初めてはみ出しや重なりが見つかるため。
+  note: 幅は320px、480px、768px、1024px、1280pxで確かめ、その後に間の幅も連続して変えて見ます。
+  page: operations/verification
+  since: 0.35.0
+
+- id: verify-text-resize-200
+  level: 必須
+  kind: spec
+  rule: ブラウザのズームと文字サイズの設定をそれぞれ200%にしても、内容が欠けず、操作できることを確かめる。
+  reason: 'WCAGの達成基準1.4.4が、支援技術なしで文字を200%まで拡大しても内容や機能が失われないことを求めているため。'
+  page: operations/verification
+  since: 0.35.0
+
+- id: verify-keyboard-and-display-settings
+  level: 推奨
+  kind: judgment
+  rule: キーボードだけで操作し、強制カラーモード、動きを減らす設定、グレースケールの表示を再現して確かめる。
+  reason: フォーカスの見え方と移動の順番、色に頼った表現、止まらない動きは、コードを読むだけでは見落としやすく、条件を再現すると見つかるため。
+  note: 強制カラーモードと動きを減らす設定は、Chromeの開発者ツールの「Rendering」パネルで再現できます。
+  page: operations/verification
+  since: 0.35.0
+
+# 19-4 表示の崩れを開発者ツールで調べる
+- id: devtools-find-winning-declaration
+  level: 推奨
+  kind: judgment
+  rule: '宣言が効かないときは、詳細度を上げたり `!important` を付けたりする前に、開発者ツールで勝っている宣言と、差が付いた段階（レイヤー、詳細度、スコープの近さ、出現順）を確かめる。'
+  reason: '負けた理由を確かめずに順位を引き上げると、レイヤーの順番の誤りなどの原因が残り、上書きが積み重なるため。'
+  note: '取り消し線のない宣言が効かないときは、条件を満たさない宣言か、未定義のカスタムプロパティの参照（計算値の時点で無効）を疑う。'
+  aiProne: true
+  page: operations/devtools
+  since: 0.35.0
+
+- id: devtools-narrow-cause-then-fix-source
+  level: 推奨
+  kind: judgment
+  rule: '崩れを直すときは、開発者ツールで値を一時的に書き換えて原因の宣言を1つに絞り、その宣言をソースのCSSで直す。'
+  reason: '原因を絞らずに直すと、症状を消すだけの宣言が増え、開発者ツールでの変更は再読み込みで消えるため。'
+  page: operations/devtools
+  since: 0.35.0
+
+# 19-5 CMSのWYSIWYG本文にスタイルを当てる
 - id: wysiwyg-scope-root
   level: 推奨
   kind: judgment
@@ -219,3 +265,31 @@
   note: 中にブロックを持つ `blockquote` などは、中の余白を `0.5rlh` に詰めます。
   page: operations/wysiwyg
   since: 0.4.0
+
+# 19-8 既存のサイトに段階的に導入する
+- id: adopt-new-components-first
+  level: 推奨
+  kind: judgment
+  rule: '既存のサイトに本書の規約を入れるときは、全体を一度に書き換えず、新しく作るコンポーネントと、変更で手を入れるページやコンポーネントから適用する。'
+  reason: 書き換えのためだけに表示の確認を増やさず、規約の違う部分を変更のたびに減らせるため。
+  note: '変更の予定がない箇所は、規約と違っていても書き換えない。'
+  page: operations/adoption
+  since: 0.35.0
+
+- id: legacy-css-into-vendors
+  level: 推奨
+  kind: judgment
+  rule: '既存のサイトにレイヤーを入れるときは、既存のCSSを `@import url("…") layer(vendors);` で `vendors` レイヤーに入れ、新しいCSSを後ろのレイヤーに書く。'
+  reason: 'レイヤーの外に残った既存のCSSは、詳細度に関係なく新しいCSSに勝つため。`vendors` に入れれば、既存のページの表示を保ったまま、新しいコンポーネントを優先できる。'
+  note: '既存のCSSを読み込み直せない環境では、`no-layers-with-unlayered-css` に従う。リセットとベーススタイルは、既存のページの表示を確かめられる段階で足す。'
+  page: operations/adoption
+  since: 0.35.0
+
+- id: lint-new-code-first
+  level: 推奨
+  kind: judgment
+  rule: 'Stylelint は新しいCSSを置くディレクトリから適用し、既存のCSSのディレクトリは `ignoreFiles` で外して、書き換えたファイルから検査の対象に戻す。'
+  reason: '既存のCSSの大量の違反に、新しいコードの違反が埋もれないようにするため。`ignoreFiles` に残るパスが、規約で書かれていないCSSの一覧になる。'
+  note: '外すのは規約で書いていないコードだけで、新しいコードの違反を隠す目的では使わない（`no-disabling-to-silence`）。'
+  page: operations/adoption
+  since: 0.35.0
