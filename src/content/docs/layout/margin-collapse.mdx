@@ -148,7 +148,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 相殺を止める必要があるのは、子の `margin` を残したまま、その余白を親の内側に収めたいときです。本文の領域を包む要素に背景を付けた場合や、CMSで入力された本文の最初の見出しが `margin-block-start` を持つ場合がこれにあたります。並べる間隔や背景の内側の余白を新しく作るだけなら、親の `gap` や `padding` で足ります（「[7-4 marginの役割](/layout/margin-role/)」）。
 
-その場合は、親に `display: block flow-root` を指定します（ルール「[`flow-root-for-margin-collapse`](/layout-practice/spacing/#rule-flow-root-for-margin-collapse)」）。`flow-root` は、スクロールコンテナや切り取りを作らずに、新しいブロック整形コンテキストを作れる値です。ただし、変わるのは相殺だけではありません。中の `float` した要素も、親の高さの計算に入ります。また、親の外にある `float` の横では、親のボックスは `float` と重ならないよう、幅を狭めるか `float` の下へ送られます（「[11-12 floatで文章を回り込ませる](/layout-practice/float/)」）。止まるのは親子の相殺で、`flow-root` の中の兄弟どうしは相殺したままです。
+その場合は、親に `display: block flow-root` を指定します（ルール「[`flow-root-for-margin-collapse`](/layout-practice/spacing/#rule-flow-root-for-margin-collapse)」）。`flow-root` は、スクロールコンテナや切り取りを作らずに、新しいブロック整形コンテキストを作れる値です。ただし、変わるのは相殺だけではありません。中の `float` した要素も、親の高さの計算に入ります。また、親の外にある `float` の横では、親のボックスは `float` と重ならないよう、幅を狭めるか `float` の下へ送られます（「[11-14 floatで文章を回り込ませる](/layout-practice/float/)」）。止まるのは親子の相殺で、`flow-root` の中の兄弟どうしは相殺したままです。
 
 <Baseline id="display-flow-root" />
 

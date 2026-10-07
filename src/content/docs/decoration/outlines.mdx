@@ -294,7 +294,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 <Demo title="割合に合わせて輪が伸び、中心の数値が数え上がるドーナツグラフ" html={donutHtml} css={donutCss} />
 
-割合は、読み手が知る必要のある情報です。生成コンテンツだけで表示すると、コピーやページ内検索、機械翻訳の対象にならず、CSSが読み込まれない環境では数値が消えます（「[5-9 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/#rule-no-meaningful-generated-content)」）。そこで、数値はHTMLの `span` に書いて `.-visually-hidden` で視覚的に隠し、中心で数え上げる `::after` の数値は、`content` の代替テキストを空にして装飾として扱います。読み上げではHTMLの「40%」だけが伝わり、数え上げの途中の値は読まれません。
+割合は、読み手が知る必要のある情報です。生成コンテンツだけで表示すると、コピーやページ内検索、機械翻訳の対象にならず、CSSが読み込まれない環境では数値が消えます（「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/#rule-no-meaningful-generated-content)」）。そこで、数値はHTMLの `span` に書いて `.-visually-hidden` で視覚的に隠し、中心で数え上げる `::after` の数値は、`content` の代替テキストを空にして装飾として扱います。読み上げではHTMLの「40%」だけが伝わり、数え上げの途中の値は読まれません。
 
 `min()` で上限を100%にしているので、100%を超える値が渡っても、輪が1周を超えて塗られることはありません。グラフの色は `--donut-chart--foreground` で変えられ、輪と中心の数値が同じ色になります。
 

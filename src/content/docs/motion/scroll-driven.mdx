@@ -195,7 +195,7 @@ window.addEventListener('scroll', () => {
 
 `--translate-to` は、「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」のサイト全体で使う `--translate-from` と対になる `@keyframes` です。`translate` だけを変え、`from` を省いて、もとの位置から `--translate-to--x-value` で渡した位置まで動かします。中間のフレームも、同時に動かすほかのプロパティもないので、コンポーネントの名前は付けず、`base/keyframes.css` に置きます。
 
-列は画面より広いので、`._body` ではみ出しを切り取ります。ここで `overflow: hidden` を使うと、`._body` がスクロールコンテナになり、`._list` はページではなく `._body` を基準に留まろうとします。`._body` は中身の高さまで伸びていてスクロールしないので、列は留まらずにページと一緒に流れていきます（2026年10月、Chrome 152で確認）。`overflow: clip` はスクロールコンテナを作らないので、`sticky` の基準をページのスクロールに保ったまま、はみ出しだけを切り取れます。`contain: paint` でも切り取れますが、中の `position: fixed` の基準を変えてしまうので使いません（「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」）。
+列は画面より広いので、`._body` ではみ出しを切り取ります。ここで `overflow: hidden` を使うと、`._body` がスクロールコンテナになり、`._list` はページではなく `._body` を基準に留まろうとします。`._body` は中身の高さまで伸びていてスクロールしないので、列は留まらずにページと一緒に流れていきます（2026年10月、Chrome 152で確認）。`overflow: clip` はスクロールコンテナを作らないので、`sticky` の基準をページのスクロールに保ったまま、はみ出しだけを切り取れます。`contain: paint` でも切り取れますが、中の `position: fixed` の基準を変えてしまうので使いません（「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」）。
 
 `._list` の高さは `min-block-size: 100svb` で、画面の高さを最小値にしています。コンポーネントの中でビューポート単位を使うのは例外ですが、この列は `sticky` で画面に留めるので、高さの基準も画面です。`dvb` を使うと、スクロール中にブラウザのUIが出入りするたびに高さが変わり、留めた列が上下にずれます（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
 

@@ -152,7 +152,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
-`min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[11-3 変化に強いレイアウト](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)」）。
+`min(100%, calc(240 / 16 * 1rem))` は、親の幅と240px相当のうち小さいほうを下限にします。広い場所では240px相当を保ち、狭い場所では親の幅まで縮みます。`minmax()` の最小値も同じ形で書きます（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)」）。
 
 次のデモでは、幅240pxの親の中に、`inline-size: fit-content` の要素を3つ置いています。1つ目は下限の320pxで親からはみ出し、`min(100%, …)` で書いた2つ目は親の240pxで止まります。3つ目は下限200pxと上限120pxが矛盾し、下限の200pxになります。
 
@@ -162,7 +162,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 `inline-size` の `%` は、包含ブロックの幅に対する割合です。包含ブロックは、通常フローの要素ならいちばん近いブロックの祖先の内容の領域で、絶対配置の要素なら `position` が `static` 以外のいちばん近い祖先の `padding` の領域です（「[7-9 positionの基礎](/layout/positioning/)」）。
 
-`block-size` の `%` は、包含ブロックの高さが決まっているときだけ計算されます。親の高さが中身から決まる場合、子の高さと親の高さが互いに依存して循環するので、`%` は `auto` として扱われます。子の高さを親にそろえるときは、`height: 100%` ではなく、親をGridにして伸ばします（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-stretch-over-height-100)」）。
+`block-size` の `%` は、包含ブロックの高さが決まっているときだけ計算されます。親の高さが中身から決まる場合、子の高さと親の高さが互いに依存して循環するので、`%` は `auto` として扱われます。子の高さを親にそろえるときは、`height: 100%` ではなく、親をGridにして伸ばします（「[幅いっぱいに広げる `stretch`](#幅いっぱいに広げる-stretch)」）。
 
 `padding` と `margin` の `%` は、上下と左右のどちらでも、包含ブロックのインライン方向の大きさ（横書きなら幅）に対する割合です。上下の余白の基準を高さにすると、`block-size` と同じ循環が起きるからです。次のデモでは、幅の違う2つの親の中で、子に同じ `padding-block: 10%` を指定しています。上下の `padding` は、親の幅が160pxなら16px、320pxなら32pxになります。
 
@@ -185,9 +185,39 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
+## 幅いっぱいに広げる `stretch`
+
+`<img>` やフォーム部品、行方向のフレックスアイテムのように、自然には幅いっぱいに広がらない要素を広げるときは、`100%` ではなく `stretch` を使います。`stretch` は、ブロックレベルの要素の `auto` と同じように、`margin` を含めた箱を利用できる幅にちょうど収めます。`100%` と違い、`margin` や `box-sizing: content-box` と組み合わせても親からはみ出しません。
+
+```css title="🙆‍♂ Recommended: 幅いっぱいに広げるなら stretch を使う"
+._input {
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
+}
+```
+
+`stretch` は比較的新しい値で、Chrome 138とSafari 27から使えます。それより前のバージョンでも、同じ働きの値を `-webkit-fill-available` という名前で使えます。Firefoxは2026年10月の時点で `stretch` に対応していませんが、`-webkit-fill-available` には対応しています。公開されている資料では、Firefoxの対応は `width` と `height` に限られていますが、2026年10月に最新版のFirefoxで確かめたところ、`inline-size` にも効きました。
+
+<Baseline id="stretch" />
+
+そのため、先に `-webkit-fill-available` を、後に `stretch` を書きます。`stretch` に対応したブラウザは後の宣言を使い、対応していないブラウザは理解できない後の宣言を捨てて、前の宣言を使います。Firefoxが以前に実装していた `-moz-available` は、いまのFirefoxが `-webkit-fill-available` を理解するので書きません。
+
+`stretch` と `100%` の結果が違うのは、子が `margin` を持つときと、`content-box` の要素を広げるときです。ただし、子の周りの余白は、子の `margin` ではなく、親の `padding` や `gap` で取ることを優先します。親が余白を持てば、子は `margin` を持たずに済みます。それでも、幅を広げる指定が要る要素は `stretch` で書いておきます。あとから子に `margin` が加わっても、はみ出さないからです。配置を親に任せる理由は、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明します。
+
+子要素を親の高さにそろえたいだけなら、親に `display: block grid` を指定すれば、`stretch` によって子要素が高さいっぱいに広がります。
+
+```css title="🙆‍♂ Recommended: 子要素を親の高さにそろえるなら、親をgridにする"
+._card {
+  display: block grid;
+  min-block-size: calc(240 / 16 * 1rem);
+}
+```
+
+この方法なら、親が `min-block-size` で最小値だけを決めている場合にも成り立ち、高さの固定を避けられます。何にでも `width: 100%` や `height: 100%` を付ける書き方を避ける理由は、「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#何にでも-width-100-を指定しない)」で説明しています。
+
 ## `margin` の負の値と `auto`
 
-`margin` には負の値を指定できます。`margin-block-start` を負にすると要素は前の要素に重なるように引き上げられ、幅が `auto` のブロックの `margin-inline` を負にすると、その分だけ横に広がります。負のマージンは、コンポジションの子に付いた余白を親の端で打ち消すといった、余白の調整に使います。要素を重ねる目的なら、Gridの同じエリアに置くほうが、重ねたどちらの大きさも親の高さに反映されます（「[11-4 重なりと全幅](/layout-practice/layering/#rule-grid-stack-before-absolute)」）。
+`margin` には負の値を指定できます。`margin-block-start` を負にすると要素は前の要素に重なるように引き上げられ、幅が `auto` のブロックの `margin-inline` を負にすると、その分だけ横に広がります。負のマージンは、コンポジションの子に付いた余白を親の端で打ち消すといった、余白の調整に使います。要素を重ねる目的なら、Gridの同じエリアに置くほうが、重ねたどちらの大きさも親の高さに反映されます（「[11-6 重なりと全幅](/layout-practice/layering/#rule-grid-stack-before-absolute)」）。
 
 次の例では、カードの画像の左右に、カードの `padding` と同じ大きさの負の `margin` を付けています。画像の幅は `auto` のままなので、左右の `padding` の分だけ広がり、カードの端まで届きます。
 
@@ -205,7 +235,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 }
 ```
 
-`margin` の `auto` は、余った空間を受け取る値です。通常フローのブロックでは、`inline-size`、左右の `margin`、`padding`、`border` の合計が包含ブロックの幅と等しくなるように決まります。左右を `auto` にすると、余りが等分されて中央に寄ります（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-margin-inline-auto-centering)」）。通常フローでは上下の `auto` は0として扱われ、上下の中央寄せには使えません。
+`margin` の `auto` は、余った空間を受け取る値です。通常フローのブロックでは、`inline-size`、左右の `margin`、`padding`、`border` の合計が包含ブロックの幅と等しくなるように決まります。左右を `auto` にすると、余りが等分されて中央に寄ります（「[2-3 保守しやすさを最優先にする](/layout/box-model/#rule-margin-inline-auto-centering)」）。通常フローでは上下の `auto` は0として扱われ、上下の中央寄せには使えません。
 
 フレックスアイテムとグリッドアイテムでは、上下の `auto` も余った空間を受け取ります。フレックスアイテムの1つに `margin-inline-start: auto` を付ければ、その要素から後ろが行の末尾に寄ります（「[11-1 レイアウト手法の選び方](/layout-practice/choosing/#rule-flex-auto-margin-for-end-items)」）。
 
@@ -277,10 +307,6 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 `border-box` でも、指定した幅より大きくなることがあります。`padding` と `border` の合計が指定した幅を超えると、内容の領域は0で止まり、ボックスは `padding` と `border` の合計まで広がります。小さな `inline-size` の要素に大きな `padding` を付けるときは、この下限に気を付けます。
 
 この下限があるので、`padding` の違うフレックスアイテムは、`flex: 1` でも幅がそろいません（「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」の「`flex: 1` でも列の幅がそろわない場合」）。
-
-`inline-size: stretch` は、`margin` を除いた使える幅いっぱいに広げる値で、フレックスアイテムや絶対配置の要素をブロックと同じように横いっぱいにできます。2026年10月の時点でFirefoxは `stretch` に対応していませんが、先に `-webkit-fill-available` を書いておけば、Firefoxを含む主要なブラウザで同じ結果になります。書き方と各ブラウザの対応状況は、「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-stretch-over-width-100)」で説明します。
-
-<Baseline id="stretch" />
 
 ## ガイドライン
 

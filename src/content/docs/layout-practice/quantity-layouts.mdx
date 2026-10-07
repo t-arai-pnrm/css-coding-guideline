@@ -1,21 +1,21 @@
 ---
-title: "5-6 件数と中身で配置を組み替える"
+title: "11-5 件数で配置を組み替える"
 description: "子要素の数や有無そのものが条件になるレイアウトは、数量クエリで組み替えます。最終行の端数は子の側で数えて中央に寄せ、区画（ゾーン）の有無と件数で配置を選ぶときは、親を起点にした :has() で grid-template を書き換えます。並べられるかどうかは幅で、どこに置くかは中身で判定します。"
 sidebar:
-  order: 6
+  order: 5
 ---
 
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
-import centeredHtml from '../../../demos/pseudo/centered-last-row/index.html?raw';
-import centeredCss from '../../../demos/pseudo/centered-last-row/style.css?raw';
-import zoneLayoutHtml from '../../../demos/pseudo/zone-layout/index.html?raw';
-import zoneLayoutCss from '../../../demos/pseudo/zone-layout/style.css?raw';
+import centeredHtml from '../../../demos/layout-practice/centered-last-row/index.html?raw';
+import centeredCss from '../../../demos/layout-practice/centered-last-row/style.css?raw';
+import zoneLayoutHtml from '../../../demos/layout-practice/zone-layout/index.html?raw';
+import zoneLayoutCss from '../../../demos/layout-practice/zone-layout/style.css?raw';
 
 子要素の数や有無そのものが条件になるレイアウトは、数量クエリで組み替えます。最終行に残った端数を中央に寄せるときは、数えた子の開始位置を、子の側の `:nth-child()` と `:nth-last-child()` で変えます。ページを区画に分け、引用がなければ特集を全幅に広げるように中身で配置を選ぶときは、親を起点にした `:has()` で `grid-template` を書き換えます。
 
-判定は、幅と中身で分けます。並べられるかどうかは幅で決まるのでコンテナサイズクエリで判定し、どの区画をどこに置くかは中身で決まるので `:has()` で判定します。数量クエリの書き方の基本と、起点と `>` を省かない理由は「[5-5 数量クエリ](/pseudo/quantity-queries/)」で説明しています。
+判定は、幅と中身で分けます。並べられるかどうかは幅で決まるのでコンテナサイズクエリで判定し、どの区画をどこに置くかは中身で決まるので `:has()` で判定します。この節は、3つの仕組みを組み合わせた実例です。何を数えてどの要素を選ぶかという数量クエリの書き方は「[5-5 数量クエリ](/pseudo/quantity-queries/)」で、列の開始位置と `grid-template` のエリアは「[7-7 Gridの基礎](/layout/grid-basics/)」で、コンテナサイズクエリは「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
 
 <Baseline id="has" name=":has()" />
 
@@ -142,7 +142,7 @@ import zoneLayoutCss from '../../../demos/pseudo/zone-layout/style.css?raw';
 
 幅と中身で、判定の役割を分けています。2列に並べられるかどうかは幅で決まるので、コンテナサイズクエリで判定します（閾値は、引用の列の最小幅200px相当と、その3倍の特集が並ぶ幅）。どのゾーンをどこに置くかは中身で決まるので、`:has()` で判定します。「[5-5 数量クエリ](/pseudo/quantity-queries/#列数は幅で件数は数量クエリで)」の「列数は幅で、件数は数量クエリで」と同じ分け方です。
 
-幅が足りない間は `display: block flex` で縦に積むので、`:has()` で書き換えたテンプレートは使われません。2列のときは、`:has()` のルールの詳細度（0.2.0と0.4.0）がクエリの中の指定（0.1.0）より高いので、書き換えたテンプレートが勝ちます。テンプレートを書いたルールには、どれにも `reading-flow` を指定します（「[11-10 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
+幅が足りない間は `display: block flex` で縦に積むので、`:has()` で書き換えたテンプレートは使われません。2列のときは、`:has()` のルールの詳細度（0.2.0と0.4.0）がクエリの中の指定（0.1.0）より高いので、書き換えたテンプレートが勝ちます。テンプレートを書いたルールには、どれにも `reading-flow` を指定します（「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
 
 <Demo title="引用の有無と新着記事の件数で、ゾーンの配置が変わる" html={zoneLayoutHtml} css={zoneLayoutCss} widths={[480, 1024]} />
 

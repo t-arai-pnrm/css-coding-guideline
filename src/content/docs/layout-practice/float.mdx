@@ -1,8 +1,8 @@
 ---
-title: "11-12 floatで文章を回り込ませる"
+title: "11-14 floatで文章を回り込ませる"
 description: "文章を要素のまわりに回り込ませる配置には float を使います。画像の横と下に文章を流す配置、閉じるボタンや装飾の画像を文章の角に置く配置が当てはまります。値は inline-start と inline-end の論理値で書き、float の要素を囲む要素には display: flow-root を指定します。"
 sidebar:
-  order: 12
+  order: 14
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -130,11 +130,11 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
 ## 補足と注意点
 
-HTMLでは、`float` の要素を、回り込む文章より先に書く必要があります。そのため、モーダルでは閉じるボタンが見出しより先に読み上げられ、フォーカスも先に移ります。見出しを先に読ませたいときは、本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定します。値を `-1` に限る理由と、`reading-flow` に対応したブラウザの状況は「[11-10 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
+HTMLでは、`float` の要素を、回り込む文章より先に書く必要があります。そのため、モーダルでは閉じるボタンが見出しより先に読み上げられ、フォーカスも先に移ります。見出しを先に読ませたいときは、本文の領域に `reading-flow: source-order` を、見出しに `reading-order: -1` を指定します。値を `-1` に限る理由と、`reading-flow` に対応したブラウザの状況は「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
 
 回り込みを途中で止め、ある要素から下を `float` の要素より下に置きたいときは、その要素に `clear` を指定します。値は `float` と同じく、`inline-start`、`inline-end`、`both` で書きます。ただし、記事の節ごとに回り込みを閉じたいだけなら、節を囲む要素に `display: flow-root` を指定するほうが、どの要素に `clear` が要るかを考えずに済みます。
 
-リストの行頭のアイコンも、中身に `strong` や複数の段落が入って項目をGridにできないときは、`float` で行の始端に置きます。`margin-block` に `1lh` を使った式で1行目の中央にそろえる書き方と、GridやFlexboxで置く場合との使い分けは、「[11-11 アイコンを配置する](/layout-practice/icon-alignment/)」で説明しています。
+リストの行頭のアイコンも、中身に `strong` や複数の段落が入って項目をGridにできないときは、`float` で行の始端に置きます。`margin-block` に `1lh` を使った式で1行目の中央にそろえる書き方と、GridやFlexboxで置く場合との使い分けは、「[11-13 アイコンを配置する](/layout-practice/icon-alignment/)」で説明しています。
 
 `float` は、要素を横へ並べる目的では使いません。横に並べるならGridかFlexboxを使い、要素の幅を中身に合わせたいなら `inline-size: fit-content` を使います（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。`float` を使うのは、文章を回り込ませたいときだけです。
 

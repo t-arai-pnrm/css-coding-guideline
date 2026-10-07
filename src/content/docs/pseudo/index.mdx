@@ -12,17 +12,16 @@ sidebar:
 
 一方で、擬似クラスには、意味を取り違えやすいものや、照合の対象を広げやすいものがあります。`:has()` と `:not()` は入れ子の順序で意味が逆になり、起点のない `:has()` はページのすべての要素を照合の対象にします。`:nth-child()` と `:nth-of-type()` も、数える対象が違います。この章では、どの条件のときに当てはまるかを例で確かめながら、取り違えにくい書き方をルールにします。
 
-この章は次の9つの節で構成しています。
+この章は次の8つの節で構成しています。
 
 - [5-1 擬似クラスと擬似要素の基本](/pseudo/basics/)：擬似クラスと擬似要素の違い、コロンの数、詳細度の数え方
 - [5-2 :is()・:where()・:not()](/pseudo/is-where-not/)：セレクタをまとめる、詳細度を0にする、条件を否定する擬似クラスの使い方と詳細度
 - [5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)：子の有無や状態で祖先を変える書き方と、起点と引数の範囲の絞り方
 - [5-4 子要素の位置で選ぶ](/pseudo/child-index/)：`:first-child`、`:nth-child()`、`:nth-child(… of S)` などで、兄弟の中の位置を条件にする書き方
 - [5-5 数量クエリ](/pseudo/quantity-queries/)：子の数に応じて、親や兄弟、数えた子のスタイルを切り替えるセレクタ
-- [5-6 件数と中身で配置を組み替える](/pseudo/quantity-layouts/)：最終行の端数を中央に寄せる書き方と、区画の有無と件数で `grid-template` を書き換える組み替え
-- [5-7 フォームの状態を表す擬似クラス](/pseudo/form-states/)：`:checked`、`:disabled`、`:user-invalid`、`:placeholder-shown` などが当てはまる条件の違い
-- [5-8 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)：`:open`、`:popover-open`、`:modal`、`:target` などが当てはまる条件の違い
-- [5-9 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)：`::before` と `::after` の使いどころ、`::first-letter` や `::selection` などの装飾の擬似要素
+- [5-6 フォームの状態を表す擬似クラス](/pseudo/form-states/)：`:checked`、`:disabled`、`:user-invalid`、`:placeholder-shown` などが当てはまる条件の違い
+- [5-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)：`:open`、`:popover-open`、`:modal`、`:target` などが当てはまる条件の違い
+- [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)：`::before` と `::after` の使いどころ、`::first-letter` や `::selection` などの装飾の擬似要素
 
 詳細度の設計の方針は、第4章「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。この章では、擬似クラスが「どの状態のときに当てはまるか」に絞り、それを使ったUIの実装は第17章「インタラクション」に渡します。`:hover`、`:focus-visible`、`:focus-within` によるフォーカスの表し方は「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で、ダイアログやアコーディオンの開閉は「[17-2 開閉するUI](/interaction/disclosure/)」で扱います。フォーム部品の作り方は「[17-3 フォーム部品](/interaction/forms/)」で、カルーセルは「[17-4 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。番号付きリストのマーカーを `::marker` で装飾する方法は、第16章「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明しています。
 

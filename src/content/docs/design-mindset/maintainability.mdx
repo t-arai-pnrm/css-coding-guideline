@@ -7,7 +7,6 @@ sidebar:
 
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
-import Baseline from '../../../components/Baseline.astro';
 import centeringHtml from '../../../demos/design-mindset/centering-shorthand/index.html?raw';
 import centeringCss from '../../../demos/design-mindset/centering-shorthand/style.css?raw';
 
@@ -125,33 +124,7 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 幅を広げる指定が要るのは、`display: block` にしても自然には広がらない `<img>` のような置換要素や、`<textarea>` や `<button>` のようなフォーム部品です。行方向のフレックスアイテムと、左右の位置を片方しか決めていない絶対配置の要素も、中身の幅に縮みます。`min(320px, 100%)` のように、はみ出しを防ぐための `100%` は問題ありません。`inline-block` の要素を幅いっぱいに広げたいなら、`width: 100%` を足す前に、外側の表示形式を `block` に変えられないかを検討します。そうすれば、`vertical-align` によって下にできる隙間もなくなります。
 
-幅を広げる指定が本当に要る場面では、`100%` ではなく `stretch` を使います。`stretch` は、ブロックレベルの要素の `auto` と同じように、`margin` を含めた箱を利用できる幅にちょうど収めます。`100%` と違い、`margin` や `box-sizing: content-box` と組み合わせても親からはみ出しません。
-
-```css title="🙆‍♂ Recommended: 幅いっぱいに広げるなら stretch を使う"
-._input {
-  inline-size: -webkit-fill-available;
-  inline-size: stretch;
-}
-```
-
-`stretch` は比較的新しい値で、Chrome 138とSafari 27から使えます。それより前のバージョンでも、同じ働きの値を `-webkit-fill-available` という名前で使えます。Firefoxは2026年10月の時点で `stretch` に対応していませんが、`-webkit-fill-available` には対応しています。公開されている資料では、Firefoxの対応は `width` と `height` に限られていますが、2026年10月に最新版のFirefoxで確かめたところ、`inline-size` にも効きました。
-
-<Baseline id="stretch" />
-
-そのため、先に `-webkit-fill-available` を、後に `stretch` を書きます。`stretch` に対応したブラウザは後の宣言を使い、対応していないブラウザは理解できない後の宣言を捨てて、前の宣言を使います。Firefoxが以前に実装していた `-moz-available` は、いまのFirefoxが `-webkit-fill-available` を理解するので書きません。
-
-`stretch` と `100%` の結果が違うのは、子が `margin` を持つときと、`content-box` の要素を広げるときです。ただし、子の周りの余白は、子の `margin` ではなく、親の `padding` や `gap` で取ることを優先します。親が余白を持てば、子は `margin` を持たずに済みます。それでも、幅を広げる指定が要る要素は `stretch` で書いておきます。あとから子に `margin` が加わっても、はみ出さないからです。配置を親に任せる理由は、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明します。
-
-子要素を親の高さにそろえたいだけなら、親に `display: block grid` を指定すれば、`stretch` によって子要素が高さいっぱいに広がります。
-
-```css title="🙆‍♂ Recommended: 子要素を親の高さにそろえるなら、親をgridにする"
-._card {
-  display: block grid;
-  min-block-size: calc(240 / 16 * 1rem);
-}
-```
-
-この方法なら、親が `min-block-size` で最小値だけを決めている場合にも成り立ち、高さの固定を避けられます。Tailwind CSSの `w-full` や `h-full` も同じで、生成AIの出力ではとくに乱用されがちです。生成されたコードにこれらがあったら、1つずつ必要かどうかを確かめます。
+幅を広げる指定が本当に要る場面では、`100%` ではなく `stretch` を使います。子要素を親の高さにそろえたいだけなら、`height: 100%` を書かずに、親をGridにして伸ばします。どちらも、`margin` が加わったときや親が最小値しか決めていないときに崩れない書き方です。書き方と各ブラウザの対応状況は「[7-2 ボックスモデル](/layout/box-model/#幅いっぱいに広げる-stretch)」で説明します。Tailwind CSSの `w-full` や `h-full` も同じで、生成AIの出力ではとくに乱用されがちです。生成されたコードにこれらがあったら、1つずつ必要かどうかを確かめます。
 
 ### デフォルト値を指定し直さない
 
@@ -178,7 +151,7 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 }
 ```
 
-`revert` はサイトのCSSの指定を取り除いた値（ユーザーのスタイルがなければブラウザのデフォルトスタイル）に、`revert-layer` は1つ前のカスケードレイヤーの値に戻します。`unset` は継承するプロパティなら親の値を、しないプロパティなら初期値を使い、`initial` は常にCSSの初期値を使います。キーワードで書けば「戻した」という意図が読み取れ、どの段階の値に戻るのかも明確です。ただし、`display` の初期値は要素によらず `inline` なので、`div` に `display: initial` を指定するとインライン要素になります。戻り先の違いは「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明します。
+キーワードで書けば「戻した」という意図が読み取れ、どの段階の値に戻るのかも明確になります。キーワードごとの戻り先の違いと、`display: initial` で `div` がインライン要素になるような落とし穴は、「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/#戻したい先をキーワードで選ぶ)」で説明しています。
 
 その文脈でブラウザが無視するプロパティも、デフォルト値の指定し直しと同じく消します。たとえば、`vertical-align` はインラインレベルの要素とテーブルのセルにしか効かないので、ブロックレベルの要素に付けても何も起きません。フレックスアイテムやグリッドアイテムに付けた `float` も、同じく無視されます。こうした宣言は、ほかの人が読んだときに「何かのために必要なのだろう」と残され続けます。レイアウトの方法を変えたときに残りやすいので、表示形式を変えたら、効かなくなった宣言がないかを確かめます。
 

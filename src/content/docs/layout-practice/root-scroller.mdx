@@ -1,8 +1,8 @@
 ---
-title: "11-8 ページのスクロールとルートスクローラー"
+title: "11-10 ページのスクロールとルートスクローラー"
 description: "ページ全体のスクロールは、ビューポートのスクロール（ルートスクローラー）に任せます。html や body の高さを固定して内側の要素をスクロールさせると、戻ったときの位置の復元やキーボードでの操作など、ブラウザがページのスクロールに用意した機能が使えなくなります。入れ子になる書き方と、その確かめ方、用途ごとの直し方をまとめます。"
 sidebar:
-  order: 8
+  order: 10
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -122,11 +122,11 @@ kiso.cssは、`body` に `min-block-size: 100dvb` を指定しています（kis
 }
 ```
 
-サイドバーに指定した `overflow-y: auto` は、サイドバーの中身が画面より長いときのためのもので、ページのスクロールには関わりません。`align-self: start` と高さの上限が必要な理由は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。ヘッダーを留めるなら、ビューポートの高さが十分なときだけにします（「[11-5 固定ヘッダー](/layout-practice/sticky-header/)」）。
+サイドバーに指定した `overflow-y: auto` は、サイドバーの中身が画面より長いときのためのもので、ページのスクロールには関わりません。`align-self: start` と高さの上限が必要な理由は「[7-9 positionの基礎](/layout/positioning/)」で説明しています。ヘッダーを留めるなら、ビューポートの高さが十分なときだけにします（「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」）。
 
 ## はみ出しの切り取りとモーダルの背面
 
-横のはみ出しを隠したいなら、`hidden` ではなく `clip` を使います。`clip` ははみ出した部分を切り取るだけで、スクロールコンテナを作りません。`html` と `body` の両方に `overflow-x: clip` を指定しても、ルート要素の値はビューポートに伝わり、ビューポートでは `hidden` として扱われます。`body` に残った `clip` はスクロールコンテナを作らないので、ページは引き続きビューポートでスクロールします。書き方は「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」のルール[`overflow-clip-over-hidden`](/layout-practice/defensive/#rule-overflow-clip-over-hidden)のとおりです。
+横のはみ出しを隠したいなら、`hidden` ではなく `clip` を使います。`clip` ははみ出した部分を切り取るだけで、スクロールコンテナを作りません。`html` と `body` の両方に `overflow-x: clip` を指定しても、ルート要素の値はビューポートに伝わり、ビューポートでは `hidden` として扱われます。`body` に残った `clip` はスクロールコンテナを作らないので、ページは引き続きビューポートでスクロールします。書き方は「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」のルール[`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)のとおりです。
 
 <Baseline id="overflow-clip" />
 
@@ -138,7 +138,7 @@ kiso.cssは、`body` に `min-block-size: 100dvb` を指定しています（kis
 
 ページのスクロールに関わるプロパティには、ルート要素に指定するとビューポートに適用されるものがあります。`scroll-behavior` は、CSSOM Viewで、ルート要素の値がビューポートに適用されると定められています。`scroll-padding` と `scroll-snap-type` も、CSS Scroll Snapで同じ扱いです。どれも、`overflow` と違い、`body` の値はビューポートに伝わりません。
 
-本書のほかの節の指定も、この仕組みを前提にしています。「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」では、スムーススクロールを `:root` に指定しています。「[11-5 固定ヘッダー](/layout-practice/sticky-header/)」では、固定ヘッダーの高さを `:root` の `scroll-padding-block-start` で除いています。ページを入れ子のスクロールコンテナでスクロールさせると、これらの指定も効かなくなります。
+本書のほかの節の指定も、この仕組みを前提にしています。「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」では、スムーススクロールを `:root` に指定しています。「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」では、固定ヘッダーの高さを `:root` の `scroll-padding-block-start` で除いています。ページを入れ子のスクロールコンテナでスクロールさせると、これらの指定も効かなくなります。
 
 ページを開いたときの最初のスクロール位置をCSSで決める `scroll-initial-target` も、CSS Scroll Snap Module Level 2で定義されています。要素に `scroll-initial-target: nearest` を指定すると、いちばん近い祖先のスクロールコンテナは、最初からその要素の位置までスクロールした状態で表示されます。間にほかのスクロールコンテナを挟まない要素なら、スクロールするのはルートスクローラーです。ただし、2026年10月の時点で対応しているのはChrome 133以降だけなので、本書では今のところ採用しません。ほかのブラウザではページが先頭から表示され、最初に見せる内容がブラウザによって変わるからです。ページの途中から見せたいときは、URLのフラグメント（`#` のあとのID）でその要素へ移動させます。
 

@@ -93,10 +93,10 @@ sidebar:
 ## 4. 不要な記述と副作用のある上書き
 
 - [ ] どの宣言も、なぜ必要かを説明できるか（[`explainable-declarations`](/design-mindset/maintainability/#rule-explainable-declarations)）
-- [ ] 何にでも `width: 100%` や `height: 100%` を指定していないか（[`no-redundant-width-100`](/design-mindset/maintainability/#rule-no-redundant-width-100)、[`stretch-over-height-100`](/design-mindset/maintainability/#rule-stretch-over-height-100)）
-- [ ] 幅いっぱいに広げる指定が要る要素に、`100%` ではなく `-webkit-fill-available` と `stretch` をこの順に書いているか（[`stretch-over-width-100`](/design-mindset/maintainability/#rule-stretch-over-width-100)）
+- [ ] 何にでも `width: 100%` や `height: 100%` を指定していないか（[`no-redundant-width-100`](/design-mindset/maintainability/#rule-no-redundant-width-100)、[`stretch-over-height-100`](/layout/box-model/#rule-stretch-over-height-100)）
+- [ ] 幅いっぱいに広げる指定が要る要素に、`100%` ではなく `-webkit-fill-available` と `stretch` をこの順に書いているか（[`stretch-over-width-100`](/layout/box-model/#rule-stretch-over-width-100)）
 - [ ] 初期値、デフォルトスタイル、リセットやベーススタイルで決まっている値を、指定し直していないか（[`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults)）
-- [ ] 中央寄せに `margin: 0 auto` ではなく `margin-inline: auto` を使っているか（[`margin-inline-auto-centering`](/design-mindset/maintainability/#rule-margin-inline-auto-centering)）
+- [ ] 中央寄せに `margin: 0 auto` ではなく `margin-inline: auto` を使っているか（[`margin-inline-auto-centering`](/layout/box-model/#rule-margin-inline-auto-centering)）
 - [ ] 一部だけを変えるのに、`background` のような影響範囲の広いショートハンドを使っていないか（[`longhand-for-partial-change`](/design-mindset/maintainability/#rule-longhand-for-partial-change)）
 - [ ] kiso.cssで0になっているマージンを、`margin: 0` や `margin-block: 8px 0` で打ち消していないか。片側だけ付けるならロングハンドで書いているか（[`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults)、[`longhand-for-partial-change`](/design-mindset/maintainability/#rule-longhand-for-partial-change)）
 - [ ] 値を戻すときに、戻したい先に合うキーワード（`revert` など）を選んでいるか（[`explicit-rollback-keyword`](/cascade/cascade-basics/#rule-explicit-rollback-keyword)）
@@ -129,8 +129,8 @@ sidebar:
 - [ ] 要素の数が変わるFlexboxに `flex-wrap: wrap` を指定しているか（[`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items)）
 - [ ] 列数を子要素の数ではなく、`auto-fit` やコンテナサイズクエリで切り替えているか（[`quantity-query-for-count-conditions`](/pseudo/quantity-queries/#rule-quantity-query-for-count-conditions)）
 - [ ] 理由のない `white-space: nowrap` がないか（[`no-nowrap-without-reason`](/layout-practice/defensive/#rule-no-nowrap-without-reason)）
-- [ ] はみ出しを切り取るのに、`hidden` ではなく `clip` を使っているか（[`overflow-clip-over-hidden`](/layout-practice/defensive/#rule-overflow-clip-over-hidden)）
-- [ ] 横スクロールを隠す前に、はみ出している要素を特定して直したか（[`find-overflow-source-first`](/layout-practice/defensive/#rule-find-overflow-source-first)）
+- [ ] はみ出しを切り取るのに、`hidden` ではなく `clip` を使っているか（[`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)）
+- [ ] 横スクロールを隠す前に、はみ出している要素を特定して直したか（[`find-overflow-source-first`](/layout-practice/overflow/#rule-find-overflow-source-first)）
 - [ ] 画像の上の文字に、画像が表示されなくても読める背景色があるか（[`text-on-image-fallback-background`](/decoration/images/#rule-text-on-image-fallback-background)）
 - [ ] ブラウザの文字サイズの設定を大きくして、表示を確かめたか（[`verify-with-text-scaling`](/values/px-and-rem/#rule-verify-with-text-scaling)）
 
@@ -201,7 +201,7 @@ AIが生成したCSSでは、Stylelintで検出できない誤りが残りやす
 - [ ] 名前のないコンテナや、コンテナにした要素そのものを条件にしたクエリがないか（[`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)）
 - [ ] ブレイクポイントが `768px` のような慣習の値ではなく、レイアウトが成り立つ条件から決めた値になっているか（[`breakpoint-from-content`](/responsive/breakpoints/#rule-breakpoint-from-content)、[`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)）
 - [ ] 閾値の式が「列の最小幅×列数」で終わらず、列数から決まる隙間（`gap`）の数や、`padding` と `border` まで含んでいるか（[`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)）
-- [ ] 何にでも付いた `width: 100%` や、中央寄せの `margin: 0 auto` がないか（[`no-redundant-width-100`](/design-mindset/maintainability/#rule-no-redundant-width-100)、[`margin-inline-auto-centering`](/design-mindset/maintainability/#rule-margin-inline-auto-centering)）
+- [ ] 何にでも付いた `width: 100%` や、中央寄せの `margin: 0 auto` がないか（[`no-redundant-width-100`](/design-mindset/maintainability/#rule-no-redundant-width-100)、[`margin-inline-auto-centering`](/layout/box-model/#rule-margin-inline-auto-centering)）
 - [ ] 上書きが効かない原因を調べずに足した `!important` がないか（[`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)）
 - [ ] `._list` や `._link` のように、要素の種類を言い換えただけの子クラスをすべての要素に付けていないか（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）
 - [ ] 宣言を1つずつ言い換えたコメントが付いていないか（[`comments-why-only`](/notation/comments/#rule-comments-why-only)）

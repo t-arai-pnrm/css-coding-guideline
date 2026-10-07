@@ -119,7 +119,7 @@
   page: layout-practice/spacing
   since: 0.3.0
 
-# 11-3 変化に強いレイアウト
+# 11-3 サイズと内容の変化に耐える
 - id: design-for-content-changes
   level: 推奨
   kind: judgment
@@ -185,12 +185,13 @@
   page: layout-practice/defensive
   since: 0.1.0
 
+# 11-4 はみ出しとスクロール
 - id: find-overflow-source-first
   level: 推奨
   kind: judgment
   rule: 横スクロールが起きたら、はみ出しを隠す前に、はみ出している要素を特定して原因を直す。
   reason: 隠すだけでは、はみ出した内容が切れて読めなくなることがあり、同じ原因の不具合がほかの場所でも残るため。
-  page: layout-practice/defensive
+  page: layout-practice/overflow
   since: 0.1.0
 
 - id: overflow-clip-over-hidden
@@ -200,7 +201,7 @@
   reason: '`hidden` は要素をスクロールコンテナにするので、中の `position: sticky` が効かなくなり、フォーカスやプログラムからのスクロールで中身がずれ、片方の軸だけ指定してももう一方が `auto` になるため。'
   note: '`hidden` を使うのは、スクロールコンテナが要る場面に限ります（例：`grid-template-rows` を `0fr` と `1fr` で切り替えて開閉する中身。スクロールコンテナになると自動の最小サイズが0になり、`0fr` まで畳めます）。`contain: paint` も、中の `position: fixed` の基準を変えてしまうので、はみ出しの対策には使いません。`sticky` が動かない原因の切り分けは、7-9 を参照してください。'
   aiProne: true
-  page: layout-practice/defensive
+  page: layout-practice/overflow
   since: 0.1.0
 
 - id: safe-center-for-scrollable
@@ -209,10 +210,20 @@
   rule: 'スクロールさせる要素の中身を `justify-content` や `align-content` で中央に寄せるときは、`safe center` と書く。'
   reason: '`center` のままでは、中身がはみ出したときに先頭側がスクロールで戻れない位置に置かれ、読めなくなるため。'
   aiProne: true
-  page: layout-practice/defensive
+  page: layout-practice/overflow
   since: 0.5.0
 
-# 11-4 重なりと全幅
+# 11-5 件数で配置を組み替える
+- id: zone-layout-by-content
+  level: 推奨
+  kind: judgment
+  rule: '区画（ゾーン）の有無と件数で配置を組み替えるときは、並べられるかどうかをコンテナサイズクエリで判定し、どの区画をどこに置くかを `&:not(:has(> ._quotes))` や `&:has(> ._quotes):has(> ._recent > :nth-child(6))` のように親を起点にした `:has()` で判定して、`grid-template` を書き換える。'
+  reason: 幅と中身の判定を分ければ、どちらかの条件を変えるときに片方だけを直せばよく、件数や有無を表すクラスをテンプレートで出力する必要もないため。
+  note: '「ない」は `:not(:has())` で書き、`:has(:not())` は使いません。2つの条件をどちらも満たすときは `:has()` を連結します（引数をカンマで区切ると、どちらか一方で当てはまります）。テンプレートを書き換えるルールには `reading-flow` を指定し、中身のない区画は出力しません。'
+  page: layout-practice/quantity-layouts
+  since: 0.28.0
+
+# 11-6 重なりと全幅
 - id: grid-stack-before-absolute
   level: 推奨
   kind: judgment
@@ -261,7 +272,7 @@
   page: layout-practice/layering
   since: 0.1.0
 
-# 11-5 固定ヘッダー
+# 11-7 固定ヘッダー
 - id: sticky-header-height-query
   level: 推奨
   kind: spec
@@ -282,7 +293,7 @@
   page: layout-practice/sticky-header
   since: 0.5.0
 
-# 11-6 アンカーポジショニング
+# 11-8 アンカーポジショニング
 - id: anchor-scope-for-repeated-components
   level: 推奨
   kind: spec
@@ -301,7 +312,7 @@
   page: layout-practice/anchor-positioning
   since: 0.23.0
 
-# 11-7 要素どうしの重なりを検出する
+# 11-9 要素どうしの重なりを検出する
 - id: overlap-detection-for-decoration-only
   level: 推奨
   kind: judgment
@@ -311,7 +322,7 @@
   page: layout-practice/overlap-detection
   since: 0.12.0
 
-# 11-8 ページのスクロールとルートスクローラー
+# 11-10 ページのスクロールとルートスクローラー
 - id: root-scroller-for-page-scroll
   level: 推奨
   kind: spec
@@ -337,11 +348,11 @@
   kind: judgment
   rule: '画面に残したいヘッダーやサイドバーは、本文だけをスクロールさせる構造ではなく、`position: sticky` で留める。'
   reason: 'ページ全体がビューポートでスクロールしたまま、留めたい要素だけが位置を保てるため。'
-  note: 'ヘッダーは、ビューポートの高さが十分なときだけ留めます（11-5）。'
+  note: 'ヘッダーは、ビューポートの高さが十分なときだけ留めます（11-7）。'
   page: layout-practice/root-scroller
   since: 0.5.0
 
-# 11-9 grid-lanesで石積みのレイアウトを組む
+# 11-11 grid-lanesで石積みのレイアウトを組む
 - id: grid-lanes-inside-supports
   level: 推奨
   kind: judgment
@@ -380,7 +391,7 @@
   page: layout-practice/masonry
   since: 0.5.0
 
-# 11-10 表示順と読み上げ順を合わせる
+# 11-12 表示順と読み上げ順を合わせる
 - id: reading-flow-when-reordered
   level: 必須
   kind: spec
@@ -403,7 +414,7 @@
   page: layout-practice/reading-flow
   since: 0.19.0
 
-# 11-11 アイコンを配置する
+# 11-13 アイコンを配置する
 - id: icon-grid-over-absolute
   level: 推奨
   kind: judgment
@@ -434,7 +445,7 @@
   page: layout-practice/icon-alignment
   since: 0.24.0
 
-# 11-12 floatで文章を回り込ませる
+# 11-14 floatで文章を回り込ませる
 - id: float-for-text-wrap
   level: 推奨
   kind: judgment
@@ -454,7 +465,7 @@
   page: layout-practice/float
   since: 0.19.0
 
-# 11-13 表を組む
+# 11-15 表を組む
 - id: table-min-size-with-scroller
   level: 推奨
   kind: judgment
@@ -513,7 +524,7 @@
   page: layout-practice/tables
   since: 0.21.0
 
-# 11-14 文字の切り詰めと読み込み中の表示
+# 11-16 文字の切り詰めと読み込み中の表示
 - id: ellipsis-with-nowrap-and-clip
   level: 推奨
   kind: spec

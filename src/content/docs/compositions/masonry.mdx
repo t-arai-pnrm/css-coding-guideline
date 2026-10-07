@@ -21,7 +21,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 
 記事の一覧を、本文の長さが違うカードのまま並べる場面を考えます。「[12-6 grid](/compositions/grid/)」（列の最小幅と最大数から列数を決めるコンポジション）を使うと、同じ行のカードは行の高さを共有します。行の高さはその行でいちばん高いカードに合わせて決まるので、短いカードの下には隙間ができます。
 
-この隙間を詰める仕組みが、`display: block grid-lanes` です。項目は、HTMLの順番に1つずつ、そのときいちばん短い列の下端へ置かれます。仕組みと、未対応の環境での振る舞い、並び順の注意は「[11-9 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」で詳しく説明しています。
+この隙間を詰める仕組みが、`display: block grid-lanes` です。項目は、HTMLの順番に1つずつ、そのときいちばん短い列の下端へ置かれます。仕組みと、未対応の環境での振る舞い、並び順の注意は「[11-11 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」で詳しく説明しています。
 
 ただし、`grid-lanes` を一覧のたびに書くと、書くべきことが多くなります。列の数を決める `grid-template-columns`、未対応の環境のための `@supports` の分岐、`flow-tolerance` の指定を、コンポーネントごとに毎回そろえる必要があります。どれか1つが抜けると、未対応の環境で1列に崩れたり、対応している環境と未対応の環境で列の数が変わったりします。
 
@@ -77,7 +77,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 }
 ```
 
-`grid-template-columns` と `gap` は `@supports` の外に書いています。`grid-lanes` はGridを拡張した仕様なので、列の指定と間隔は、通常のGridと `grid-lanes` のどちらでも同じ意味で使えるからです。分岐の中で変わるのは `display` の値だけで、`flow-tolerance` は `grid-lanes` のコンテナだけに適用されるプロパティなので、同じブロックに置いています。この書き方は、11-9のルール「[`grid-lanes` は `@supports` の中に書く](/layout-practice/masonry/#rule-grid-lanes-inside-supports)」に従ったものです。
+`grid-template-columns` と `gap` は `@supports` の外に書いています。`grid-lanes` はGridを拡張した仕様なので、列の指定と間隔は、通常のGridと `grid-lanes` のどちらでも同じ意味で使えるからです。分岐の中で変わるのは `display` の値だけで、`flow-tolerance` は `grid-lanes` のコンテナだけに適用されるプロパティなので、同じブロックに置いています。この書き方は、11-11のルール「[`grid-lanes` は `@supports` の中に書く](/layout-practice/masonry/#rule-grid-lanes-inside-supports)」に従ったものです。
 
 私が案件で使っているテンプレートの `masonry` は、これとは逆の形です。外側に `display: block grid-lanes` を書き、`@supports not (display: block grid-lanes)` の中でGridに戻しています。未対応の環境で通常のGridになる点は同じですが、本書はこの形を採りません。
 
@@ -94,7 +94,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 }
 ```
 
-この形では、外側の `display` が、2026年10月の時点ではSafari以外のすべてのブラウザで無効な宣言です。外側を読んでも、多くの環境で実際に効いている指定が分かりません。本書は、すべての対象のブラウザで効く指定を外側に書き、新しい機能を条件付きで重ねる順番にそろえます。条件式も11-9の例と同じ `@supports (display: block grid-lanes)` になるので、全ブラウザが対応した時点で、この文字列を検索すれば分岐をまとめて見つけられます。
+この形では、外側の `display` が、2026年10月の時点ではSafari以外のすべてのブラウザで無効な宣言です。外側を読んでも、多くの環境で実際に効いている指定が分かりません。本書は、すべての対象のブラウザで効く指定を外側に書き、新しい機能を条件付きで重ねる順番にそろえます。条件式も11-11の例と同じ `@supports (display: block grid-lanes)` になるので、全ブラウザが対応した時点で、この文字列を検索すれば分岐をまとめて見つけられます。
 
 ## 公開プロパティと渡し方
 
@@ -175,7 +175,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 
 値を渡すのは、デモや実際のデータで並べてみて、項目が左右へ飛んで見えるときだけです。そのときは `style="--masonry--tolerance: 3em"` のように、初期値より大きい長さを渡します。`em` は `masonry` の要素の文字サイズを基準にするので、文字サイズを大きくした環境でも、行の高さに比例した差を同じ高さとみなせます。
 
-`infinite` は渡しません。`infinite` は列の高さを一切見ずに項目を1列ずつ順に置くので、隣り合う項目が、縦に大きく離れた位置へ置かれます。この点は11-9のルール「[`flow-tolerance` に `infinite` を指定しない](/layout-practice/masonry/#rule-flow-tolerance-no-infinite)」で扱っています。並び順を厳密に保ちたい一覧は、`masonry` ではなく `grid` で並べます。
+`infinite` は渡しません。`infinite` は列の高さを一切見ずに項目を1列ずつ順に置くので、隣り合う項目が、縦に大きく離れた位置へ置かれます。この点は11-11のルール「[`flow-tolerance` に `infinite` を指定しない](/layout-practice/masonry/#rule-flow-tolerance-no-infinite)」で扱っています。並び順を厳密に保ちたい一覧は、`masonry` ではなく `grid` で並べます。
 
 ## 使う場面と使わない場面
 
@@ -189,7 +189,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 
 ## 補足と注意点
 
-`masonry` の子に `grid-column: span 2` や線の番号による配置を指定すると、見た目の順番とHTMLの順番のずれが大きくなります。複数の列にまたがる項目が空きに収まらず下へ回り、後の項目がその空きへ先に置かれるからです。この点は11-9のルール「[順序に意味のある項目に配置を指定しない](/layout-practice/masonry/#rule-grid-lanes-no-placement-for-ordered-items)」で扱っています。`masonry` を使うときは、子の配置を指定せず、コンポジションの自動配置に任せます。
+`masonry` の子に `grid-column: span 2` や線の番号による配置を指定すると、見た目の順番とHTMLの順番のずれが大きくなります。複数の列にまたがる項目が空きに収まらず下へ回り、後の項目がその空きへ先に置かれるからです。この点は11-11のルール「[順序に意味のある項目に配置を指定しない](/layout-practice/masonry/#rule-grid-lanes-no-placement-for-ordered-items)」で扱っています。`masonry` を使うときは、子の配置を指定せず、コンポジションの自動配置に任せます。
 
 写真を並べるときは、`<img>` に `width` と `height` の属性を書きます。属性があれば、ブラウザは画像を読み込む前から縦横比で高さを確保できます。高さが確保されていないと、画像を読み込むたびに列の高さが変わり、まだ置かれていない後続の項目の列が入れ替わって見える可能性があります。{/* 要検証: ブラウザ。画像の読み込みで grid-lanes の配置がやり直されるかは、Safari で未確認 */}属性の書き方は「[16-1 画像の配置と読み込み](/decoration/images/#rule-img-width-height-attributes)」で説明しています。
 

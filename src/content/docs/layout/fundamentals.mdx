@@ -129,7 +129,7 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 <Demo title="親がスタッキングコンテキストを作ると、子の z-index は親の外と比べられない" html={stackingHtml} css={stackingCss} variant="neutral" />
 
-`z-index` が効くかどうかも、方式で変わります。通常フローの要素は、`position` を指定しないと `z-index` が効きませんが、フレックスアイテムとグリッドアイテムは、`position` がなくても効きます。スタッキングコンテキストは、`opacity` が1未満の要素や、`transform` を持つ要素などでも作られます。意図して作るときは `isolation: isolate` を使います（「[11-4 重なりと全幅](/layout-practice/layering/)」）。
+`z-index` が効くかどうかも、方式で変わります。通常フローの要素は、`position` を指定しないと `z-index` が効きませんが、フレックスアイテムとグリッドアイテムは、`position` がなくても効きます。スタッキングコンテキストは、`opacity` が1未満の要素や、`transform` を持つ要素などでも作られます。意図して作るときは `isolation: isolate` を使います（「[11-6 重なりと全幅](/layout-practice/layering/)」）。
 
 ```css title="🙆‍♂ Recommended: z-index の数値を使わずにスタッキングコンテキストを作る"
 ._card {

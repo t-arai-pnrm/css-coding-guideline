@@ -1,8 +1,8 @@
 ---
-title: "11-11 アイコンを配置する"
+title: "11-13 アイコンを配置する"
 description: "文字に添えるアイコンは、GridかFlexboxで置き、position: absoluteで重ねません。折り返すおそれのある行頭や行末のアイコンは、margin-block: calc((1lh - アイコンの大きさ) / 2) で1行目の中央に置きます。中身の構造が決まらずGridにできないときはfloatで置き、位置を式で書きます。"
 sidebar:
-  order: 11
+  order: 13
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -145,7 +145,7 @@ CMSで入力した本文のリストのように、項目の中身に `strong` �
 }
 ```
 
-項目の `padding-inline-start` と擬似要素の負の `margin-inline-start` は、どちらも `--_icon-offset` から決めています。アイコンの大きさか間隔を変えれば、両方が一緒に変わります。擬似要素は項目の `padding` の中へ戻るので、2行目以降もアイコンの下へ回り込まずに1行目とそろいます。`display: block flow-root` は、`float` の擬似要素を項目の中に収めるための指定です（「[11-12 floatで文章を回り込ませる](/layout-practice/float/)」）。
+項目の `padding-inline-start` と擬似要素の負の `margin-inline-start` は、どちらも `--_icon-offset` から決めています。アイコンの大きさか間隔を変えれば、両方が一緒に変わります。擬似要素は項目の `padding` の中へ戻るので、2行目以降もアイコンの下へ回り込まずに1行目とそろいます。`display: block flow-root` は、`float` の擬似要素を項目の中に収めるための指定です（「[11-14 floatで文章を回り込ませる](/layout-practice/float/)」）。
 
 同じ配置は、`position: absolute` でも書けます。項目に `position: relative` を指定し、擬似要素を `inset-inline-start: 0` で `padding` の中に置きます。縦の位置は、`float` の版と同じ式を `inset-block-start` に書きます。擬似要素は項目の `line-height` を継承しているので、`1lh` は項目の1行の高さです。
 

@@ -11,6 +11,29 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.31.0（2026年10月7日）
+
+前提となる知識より先に応用が出てこないように、節の置き場所を見直しました。節を分けて移し、ルールの掲載先を変えたので、マイナーバージョンを上げています。ルールの内容は変えていません。
+
+- 節を分けて、移しました。
+  - 「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」（旧11-3「変化に強いレイアウト」）を2つに分けました。横スクロールの原因の特定、`overflow: hidden` と `clip` の使い分け、中央に寄せたスクロール領域の `safe` は、「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」に移しました。`table-layout` の見出しは「[11-15 表を組む](/layout-practice/tables/)」へ移し、補足にあった同じ話とまとめました。
+  - 旧5-6「件数と中身で配置を組み替える」は、Gridの基礎とコンテナサイズクエリを前提にする実例なので、第11章へ移して「[11-5 件数で配置を組み替える](/layout-practice/quantity-layouts/)」にしました。URLは `/pseudo/quantity-layouts/` から変わりました。何を数えてどの要素を選ぶかは、引き続き「[5-5 数量クエリ](/pseudo/quantity-queries/)」で扱います。
+  - 「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/)」の `stretch` の書き方と対応状況を、「[7-2 ボックスモデル](/layout/box-model/#幅いっぱいに広げる-stretch)」の見出しに移しました。リセット用のキーワードの使い分けは、「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」へのリンクに置き換えました。
+- 節の番号を変えました。URLは変わりません。
+  - 旧5-7〜5-9を、5-6〜5-8に繰り上げました。
+  - 旧11-4〜11-14を、11-6〜11-16に繰り下げました。
+- ルールの掲載先を変えました。
+  - 11-3から11-4へ移したルール
+    - [`find-overflow-source-first`](/layout-practice/overflow/#rule-find-overflow-source-first)
+    - [`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)
+    - [`safe-center-for-scrollable`](/layout-practice/overflow/#rule-safe-center-for-scrollable)
+  - 旧5-6から11-5へ移したルール
+    - [`zone-layout-by-content`](/layout-practice/quantity-layouts/#rule-zone-layout-by-content)
+  - 2-3から7-2へ移したルール
+    - [`stretch-over-width-100`](/layout/box-model/#rule-stretch-over-width-100)
+    - [`stretch-over-height-100`](/layout/box-model/#rule-stretch-over-height-100)
+    - [`margin-inline-auto-centering`](/layout/box-model/#rule-margin-inline-auto-centering)
+
 ## 0.30.0（2026年10月7日）
 
 「はじめに」のページを、本編に入る前の読者に合わせて絞り込み、詳しい比較を付録に移しました。付録を加えたので、マイナーバージョンを上げています。ルールは変えていません。

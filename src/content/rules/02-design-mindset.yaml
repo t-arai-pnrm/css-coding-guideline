@@ -36,41 +36,12 @@
   page: design-mindset/maintainability
   since: 0.1.0
 
-- id: stretch-over-width-100
-  level: 推奨
-  kind: spec
-  rule: '利用できる幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`inline-size: -webkit-fill-available` と `inline-size: stretch` をこの順に書く。'
-  reason: '`100%` は `margin` を含めずに包含ブロックの幅をそのまま当てはめるので、`margin` や `box-sizing: content-box` と組み合わさると親からはみ出すためです。`stretch` は `margin` を含めた箱を包含ブロックの幅に収めます。'
-  note: 'フォーム部品、行方向のフレックスアイテム、左右の位置を片方しか決めていない絶対配置の要素などが対象です。揃えを変えていないグリッドアイテムは、指定しなくても広がります。子の周りの余白は、子の `margin` ではなく親の `padding` や `gap` で取ることを優先します（ルール `parent-owns-child-placement`）。`-moz-available` は書きません。'
-  aiProne: true
-  page: design-mindset/maintainability
-  since: 0.11.0
-
-- id: stretch-over-height-100
-  level: 推奨
-  kind: spec
-  rule: '子要素の高さを親にそろえるときは、`height: 100%` ではなく、親を grid にして `stretch` に任せる。'
-  reason: '`height: 100%` は親の高さが明示されているときしか効かず、`min-block-size` で最小値だけを決めた親では成り立たないためです。高さのパーセント指定は、親の高さが中身から決まるときに循環して解決できず、`auto` として扱われます。'
-  note: '置換要素（`img` など）のように、`stretch` では伸びず、明示しないと広がらない要素には、`block-size: 100%` を書いてよいです。ただし、`stretch` で広がるなら `stretch` を優先し、`100%` は `stretch` に任せられない場合に限ります。'
-  aiProne: true
-  page: design-mindset/maintainability
-  since: 0.1.0
-
 - id: no-redundant-defaults
   level: 非推奨
   kind: judgment
   rule: CSS の初期値、ブラウザのデフォルトスタイル、リセット CSS、ベーススタイルで決まっている値を、理由なく指定し直さない。
   reason: 設計の一貫性が崩れ、デフォルト値の側を変えたときにも古い値が残り続けるため。
   note: 最初の要素だけマージンを打ち消すのではなく、`:not(:first-child)` や `* + *` で2つ目以降にだけ付けます。値を戻すときの書き方は「4-1 カスケード・詳細度・継承」のルールに従います。ブロックレベルの要素に付けた `vertical-align` や、フレックスアイテムに付けた `float` のように、その文脈でブラウザが無視するプロパティも消します。
-  aiProne: true
-  page: design-mindset/maintainability
-  since: 0.1.0
-
-- id: margin-inline-auto-centering
-  level: 必須
-  kind: spec
-  rule: 'ブロックの左右の中央寄せには、`margin: 0 auto` や `margin: auto` ではなく `margin-inline: auto` を使う。'
-  reason: '`margin: 0 auto` は上下のマージンまで上書きし、周りのレイアウトが子要素の間に入れた余白を消してしまうため。'
   aiProne: true
   page: design-mindset/maintainability
   since: 0.1.0

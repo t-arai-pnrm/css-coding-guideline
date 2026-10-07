@@ -106,7 +106,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 `<select>` は、長いあいだ見た目をほとんど変えられない部品でした。開いたときの選択肢の一覧はブラウザやOSの部品で描かれ、角丸や影を付けることも、選択肢に画像を入れることもできません。そのため、デザインに合わせたドロップダウンを、`<div>` とJavaScriptで作り直すことがよくありました。作り直した部品では、キーボードでの選択や読み上げを自分で実装することになり、その分だけ抜けが起きやすくなります。{/* 要確認: 出典なし */}
 
-`appearance: base-select` を `<select>` と、選択肢の一覧を表す `::picker(select)` の両方に指定すると、一覧まで含めてCSSで見た目を変えられるようになります（MDN）。部品は `<select>` のままなので、キーボードでの選択、フォームの送信、読み上げはブラウザが引き受けます。一覧はトップレイヤーに表示され、`<select>` を暗黙のアンカーにして配置されます（「[11-6 アンカーポジショニング](/layout-practice/anchor-positioning/)」）。
+`appearance: base-select` を `<select>` と、選択肢の一覧を表す `::picker(select)` の両方に指定すると、一覧まで含めてCSSで見た目を変えられるようになります（MDN）。部品は `<select>` のままなので、キーボードでの選択、フォームの送信、読み上げはブラウザが引き受けます。一覧はトップレイヤーに表示され、`<select>` を暗黙のアンカーにして配置されます（「[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)」）。
 
 <Baseline id="customizable-select" name="カスタマイズ可能な <select>" />
 
@@ -317,7 +317,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ①で `box-sizing` を `content-box` に戻すのは、高さを行数だけで書くためです。kiso.cssはすべての要素を `border-box` にしています。そのままでは `min-block-size` に `padding` と `border` が含まれるので、3行分の高さを `calc(3lh + 2em + 2px)` のような足し算で求めることになります。`content-box` なら `min-block-size` は内容の領域の高さなので、`3lh` がそのまま3行分になります。`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。
 
-②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。2026年10月の時点で `stretch` に対応していないFirefoxも、`-webkit-fill-available` で同じように広がります（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-stretch-over-width-100)」）。
+②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。2026年10月の時点で `stretch` に対応していないFirefoxも、`-webkit-fill-available` で同じように広がります（「[2-3 保守しやすさを最優先にする](/layout/box-model/#rule-stretch-over-width-100)」）。
 
 ③の `min-block-size` で、行数は `rows` 属性ではなく `--_rows` で決まります。`field-sizing: content` に対応した環境では、`rows` 属性はもともと高さに使われません（「[6-5 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」）。
 
