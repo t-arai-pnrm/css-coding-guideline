@@ -1,0 +1,189 @@
+---
+title: "20-2 カードを作る"
+description: "記事カードを、1つのファイルの @scope の中に作ります。カードには幅と外側の余白を持たせず、中の配置、画像の比率、文字の階層だけを決めます。外から変えたい値はまだ要件にないので、公開プロパティも作りません。"
+sidebar:
+  order: 2
+---
+
+import Demo from '../../../components/Demo.astro';
+import cardHtml from '../../../demos/exercise/card/index.html?raw';
+import cardCss from '../../../demos/exercise/card/style.css?raw';
+
+トップページの新着に置く記事カードを作ります。カードのCSSは `article-card.css` の1つのファイルに書き、`@scope (.scoped.article-card) to (.scoped)` の中に閉じ込めます。カードが決めるのは、中の配置、画像の比率、文字の階層だけです。幅と外側の余白は持たせず、置く側に任せます。外から変えたい値は、この時点の要件にはないので、公開プロパティもまだ作りません。
+
+この節で決めることは少なく、書くCSSも短くなります。それでも、ここで持たせなかったもの（幅、外側の余白、公開プロパティ）があるから、次の節以降で要件が変わっても、カードを直さずに済みます。
+
+## 完成形
+
+この節を終えた時点のカードです。デモでは、カードを置く側の要素を最大幅360px相当にして、新着の一覧の1列分に近い幅でカードを表示しています。
+
+<Demo title="20-2を終えた時点の記事カード：幅は置く側の要素で決まる" html={cardHtml} css={cardCss} />
+
+幅のボタンで320pxを選ぶと、カードは置かれた要素の幅いっぱいの288pxになり、480px以上では、置く側の上限の360pxで止まります。どの幅でも、画像は16:9の比率を保ち、画像の下にカテゴリー、見出し、日付、抜粋が同じ間隔で並びます。カードの幅を変えているのは、カード自身ではなく、置く側の最大幅と、デモの枠の幅です。
+
+## カードの範囲を決める
+
+カードのHTMLは、ルートの `article` に `scoped article-card` を付け、画像と、文字をまとめる `div` を並べます。見出しのリンクは記事のページへ移動するためのもので、見出しの `h3` の中に置きます。
+
+```html title="🙆‍♂ Recommended: ルートに scoped を付け、クラスは役割を区別する要素にだけ付ける"
+<article class="scoped article-card">
+  <img src="…" alt="" width="640" height="360">
+  <div class="_body">
+    <p class="_category">デザイン</p>
+    <h3><a href="/articles/…">公開プロパティで色を受け取る</a></h3>
+    <time datetime="2026-10-01">2026年10月1日</time>
+    <p class="_excerpt">置く側から色を渡し、カードの中では内部プロパティに受けて使います。</p>
+  </div>
+</article>
+```
+
+子要素は、`@scope` の中のタイプセレクタで選びます。クラスを付けたのは、2つある `p` の役割を区別する `_category` と `_excerpt`、そして役割を示す必要のある `div` の `_body` だけです（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」、「[9-1 命名規則](/notation/naming/)」）。`img`、`h3`、`time` は、カードの中に1つずつしかないので、クラスがなくても選べます。
+
+画像の `alt` は空にしています。カードの画像は記事の内容を表す写真ですが、すぐ隣の見出しが同じ内容を伝えているので、画像の説明を読み上げても情報は増えません。`width` と `height` の属性は、画像を読み込む前に縦横比の場所を確保するために書きます（「[16-1 画像の配置と読み込み](/decoration/images/)」）。
+
+CSSは、カードのファイルの1つの `@scope` に書きます。スコープの下限を `.scoped` にしているので、将来カードの中に別のコンポーネントを入れても、カードのタイプセレクタはその中に届きません（「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」）。
+
+## 外側の余白と幅を持たせない
+
+カードを作るときにやりがちなのは、カンプで見た幅と、カードの下の余白を、カード自身に書いてしまうことです。
+
+```css title="🙅‍♂ Not Recommended: カンプで見た幅と下の余白を、カードのルートに書く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    inline-size: calc(360 / 16 * 1rem);
+    margin-block-end: 24px;
+  }
+}
+```
+
+この書き方では、カードがトップページの新着に置かれることを前提にしています。サイドバーに置けば360px相当では入りきらず、関連記事の一覧に置けば、最後のカードの下にも24pxの余白が残ります。置き場所が増えるたびに、置く側がこの値を打ち消すことになります。
+
+カードのルートには、幅も外側の余白も書きません（`no-external-layout-on-root`）。カードはブロックレベルの要素なので、幅を書かなければ置かれた場所の幅いっぱいに広がります。カードとカードの間隔は、次の節で、並べる側の `gap` で作ります（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+## 中の配置を決める
+
+カードの中は、画像と文字のまとまりを縦に並べ、文字のまとまりの中では、カテゴリー、見出し、日付、抜粋を縦に並べます。どちらも、間隔は一律です。
+
+```css title="🙆‍♂ Recommended: 中の配置は、ルートと文字のまとまりの grid と gap で決める"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 16px;
+  }
+
+  ._body {
+    display: block grid;
+    gap: 8px;
+  }
+}
+```
+
+ルートの `gap` は、カードの外ではなく、カードの中の画像と文字の間の余白です。そのため、ルートに書いても、置き場所に依存しません。文字のまとまりの中の間隔も `gap` で作り、子要素の `margin` には頼りません（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
+
+`._body` の間隔を、`& > * + *` で後ろの要素の `margin-block-start` に付ける書き方もあります。種類の違う要素が続き、要素ごとに間隔を変えたい本文の流れなら、そちらが向いています。カードの文字のまとまりは、構成が決まっていて間隔も一律なので、`gap` のほうが短く書けます。
+
+## 画像の比率と文字の階層
+
+画像は、置かれた幅いっぱいに広げ、高さは縦横比から決めます。高さを `block-size` で固定しないので、カードの幅が変わっても比率は保たれます（「[16-1 画像の配置と読み込み](/decoration/images/)」）。
+
+```css title="🙆‍♂ Recommended: 画像は幅いっぱいに広げ、高さを縦横比で決める"
+@scope (.scoped.article-card) to (.scoped) {
+  img {
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--rounded--sm);
+    object-fit: cover;
+  }
+}
+```
+
+`img` は、グリッドのアイテムでも自然には幅いっぱいに広がらない置換要素なので、`stretch` で広げます（「[7-4 大きさの決まり方](/layout/sizing/)」）。比率の違う写真が入っても引き伸ばさないように、`object-fit: cover` で枠を埋めます。
+
+文字は、見出しを大きく、カテゴリー、日付、抜粋を小さく、日付と抜粋は控えめな色にします。色と角丸はトークンを参照し、数値や色を直接書きません（「[10-4 デザイントークン](/components/design-tokens/)」）。
+
+```css title="🙆‍♂ Recommended: 文字の階層は、大きさと色のトークンで付ける"
+@scope (.scoped.article-card) to (.scoped) {
+  ._category {
+    color: var(--foreground--accent);
+    font-size: calc(13 / 16 * 1rem);
+  }
+
+  h3 {
+    font-size: calc(18 / 16 * 1rem);
+    line-height: var(--leading--snug);
+  }
+
+  h3 a {
+    color: inherit;
+  }
+
+  time {
+    color: var(--foreground--muted);
+    font-size: calc(13 / 16 * 1rem);
+  }
+
+  ._excerpt {
+    color: var(--foreground--muted);
+    font-size: calc(14 / 16 * 1rem);
+  }
+}
+```
+
+見出しのリンクは、文字の色を見出しから継承させ、下線は残します。リンクであることが下線で分かるからです。カード全体を押せるようにする要件は、後の節で加わるので、そのときにリンクの見せ方を見直します。{/* 20-6 の執筆後にリンクする: /exercise/clickable-card/ */}
+
+## 公開プロパティはまだ作らない
+
+カードを作る段階で、見出しの大きさや背景の色を、外から変えられるように公開プロパティにしておきたくなるかもしれません。しかし、この時点の要件には、外から変えたい値がありません。
+
+公開プロパティは、作った時点で、カードの外との約束になります。使う側がいつ値を渡しているか分からないので、名前やデフォルト値を後から変えにくくなります（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。そのため、外から変える要件が実際に来てから足します。{/* 要確認: 出典なし。公開プロパティを要件が来てから足す方針（10-5 の採用のコストと同じ立場） */}この演習でも、関連記事の欄で色を変える要件が来たときに、初めて1つ足します。
+
+## 確かめる
+
+ここまでのCSSで、カードは置かれた幅に合わせて広がり、外側に余白を持たない部品になりました。デモの幅のボタンで、カードの幅が置く側の要素で決まっていることを確かめます。開発者ツールでカードのルートを選ぶと、`margin` がすべて0で、幅がカード自身のCSSではなく親から決まっていることも確かめられます（「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」）。
+
+この時点では、長い見出しや画像のない記事は確かめていません。高さを固定していないので、見出しが長くなってもカードは伸びるはずですが、その確認は、内容の変化を要件として扱う節でまとめて行います。{/* 20-5 の執筆後にリンクする: /exercise/content-changes/ */}
+
+## 判断の問い
+
+### 問い1
+
+デザイナーから、新着の一覧でカードとカードの間を縦に24px空けてほしいと言われました。カードの `margin-block-end` に24pxを書きますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+書きません。カードとカードの間隔は、カードを並べる一覧が決めることです。カードに書くと、最後のカードの下にも余白が残り、サイドバーのように間隔の違う場所に置いたときには、置く側で打ち消すことになります。間隔は、並べる側の `gap` で作ります（`no-external-layout-on-root`、`parent-owns-child-placement`）。
+
+</details>
+
+### 問い2
+
+見出しの文字の大きさを、将来の変更に備えて、公開プロパティ `--article-card--heading-size` で受け取れるようにしておきますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+まだ作りません。外から見出しの大きさを変える要件がないからです。公開プロパティは使う側との約束になるので、作ったあとは名前とデフォルト値を変えにくくなります。後の節で見出しの大きさを置き場所によって変える要件が来ますが、そのときは、外から値を渡すのではなく、カードが置かれた幅を見て自分で切り替えます。{/* 20-4 の執筆後にリンクする: /exercise/sidebar/ */}
+
+</details>
+
+## この節で使ったルール
+
+- [`one-component-per-file`](/components/boundaries/#rule-one-component-per-file)：コンポーネントのCSSは、コンポーネントごとに1つのファイルに書きます。
+- [`scoped-class-on-root`](/notation/scope-and-nesting/#rule-scoped-class-on-root)：スコープのルートになる要素には、必ず `scoped` クラスを付けます。
+- [`scope-root-with-scope-pseudo`](/notation/scope-and-nesting/#rule-scope-root-with-scope-pseudo)：スコープのルート要素は `:scope` で選びます。
+- [`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)：`@scope` の中の要素はタイプセレクタで選び、子クラスは役割を区別するときだけ付けます。
+- [`child-class-underscore`](/notation/naming/#rule-child-class-underscore)：子要素のクラス名は、`_` で始まるkebab-caseにします。
+- [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、外側の余白や配置の指定を書きません。
+- [`gap-over-child-margin`](/layout-practice/spacing/#rule-gap-over-child-margin)：FlexboxやGridの子要素の間隔は、親の `gap` で作ります。
+- [`stretch-over-width-100`](/layout/sizing/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`stretch` を使います。
+- [`aspect-ratio-for-ratios`](/decoration/images/#rule-aspect-ratio-for-ratios)：要素の縦横比は `aspect-ratio` で決めます。
+- [`object-fit-cover-or-contain`](/decoration/images/#rule-object-fit-cover-or-contain)：大きさを決めた画像には `object-fit` の `cover` か `contain` を指定します。
+- [`img-width-height-attributes`](/decoration/images/#rule-img-width-height-attributes)：`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。
+- [`use-defined-tokens`](/components/design-tokens/#rule-use-defined-tokens)：トークンとして定義されている値は、トークンを参照します。

@@ -45,6 +45,10 @@ export const PARTS = [
     label: '第V部 運用編',
     chapters: [{ number: 19, dir: 'operations', title: '実務での運用' }],
   },
+  {
+    label: '第VI部 演習編',
+    chapters: [{ number: 20, dir: 'exercise', title: '記事の一覧を作る' }],
+  },
 ];
 
 export const CHAPTERS = PARTS.flatMap((part) => part.chapters);
