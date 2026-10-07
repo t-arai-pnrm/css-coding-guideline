@@ -14,6 +14,13 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 import tabsHtml from '../../../demos/interaction/aria-selected-tabs/index.html?raw';
 import tabsCss from '../../../demos/interaction/aria-selected-tabs/style.css?raw';
 import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw';
+import hitPaddingHtml from '../../../demos/interaction/hit-area-padding/index.html?raw';
+import hitPaddingCss from '../../../demos/interaction/hit-area-padding/style.css?raw';
+import pseudoHitHtml from '../../../demos/interaction/pseudo-hit-area/index.html?raw';
+import pseudoHitCss from '../../../demos/interaction/pseudo-hit-area/style.css?raw';
+import safeTriangleHtml from '../../../demos/interaction/safe-triangle/index.html?raw';
+import safeTriangleCss from '../../../demos/interaction/safe-triangle/style.css?raw';
+import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?raw';
 
 ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書きます。同じ見た目は `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
 
@@ -203,6 +210,114 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 ```
 
 条件には、`pointer` ではなく `any-pointer` を使います。使える入力にタッチ操作がひとつでもあれば、広いほうの大きさにするためです。`pointer` と `any-pointer` の違いは、「[13-4 メディアクエリ](/responsive/media-queries/)」で説明しています。
+
+24pxに満たない要素を並べるときは、要素の間隔で例外の条件を満たします。達成基準2.5.8の「十分な間隔」とは、24pxに満たない要素それぞれの中心に直径24pxの円を描いたとき、その円がほかの要素にも、ほかの要素の円にも重ならないことです。たとえば16px四方のアイコンを横に並べるなら、中心どうしを24px以上離す必要があるので、`gap` は8px以上にします。
+
+### 余白を付ける要素
+
+押せる範囲を決めるのは、`<a>` や `<button>` のような操作する要素自身の大きさです。ナビゲーションの `<li>` やリストのような外側の要素に `padding` を付けても、見た目の上では項目が大きくなるだけで、押せるのは文字の部分に限られます。項目の端を押しても反応しないので、ユーザーは押し損じたと感じます。
+
+```css title="🙅‍♂ Not Recommended: 外側の li に padding を付ける"
+/* 🙅‍♂ Not Recommended */
+._item {
+  padding: 12px 16px;
+}
+```
+
+`padding` は、操作する要素自身に付けます。`<a>` は初期値でインラインなので、`display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。
+
+```css title="🙆‍♂ Recommended: 操作する要素自身に padding を付ける"
+@scope (.scoped.global-nav) to (.scoped) {
+  ._link {
+    display: block flow;
+    padding: 12px 16px;
+  }
+}
+
+@scope (.scoped.option-list) to (.scoped) {
+  ._option {
+    display: block flex;
+    gap: 8px;
+    align-items: center;
+    padding-block: 8px;
+  }
+}
+```
+
+チェックボックスとその文字も、同じ考え方で扱います。2つ目の例の `._option` は、チェックボックスと文字をまとめて包んだ `<label>` です。チェックボックスと文字の間の `gap` も、上下の `padding` も `<label>` の内側にあるので、どこを押してもチェックが切り替わります。チェックボックスと `<label>` を兄弟に並べて間を空けると、その隙間は押しても何も起きない領域になります。
+
+次のデモでは、押せる範囲に色を付け、外側の要素を破線で囲んでいます。上の例では、破線の内側でも色の付いていない部分を押すと何も起きません。下の例では、破線と色の範囲が一致し、どこを押しても反応します。
+
+<Demo title="余白を外側の要素に付けると押せる範囲は文字だけになり、操作する要素自身に付けると余白まで押せる" html={hitPaddingHtml} css={hitPaddingCss} variant="neutral" widths={[]} />
+
+### 見た目を変えずに押せる範囲を広げる
+
+ダイアログの閉じるボタンのように、デザインの都合で見た目を小さく保ちたい要素もあります。この場合は、擬似要素を要素の外にはみ出させて、押せる範囲だけを広げます。擬似要素は要素の一部なので、擬似要素を押せば要素を押したことになります。WCAGの「ターゲット」もポインターの操作を受け付ける領域を指すので、擬似要素で広げた範囲を大きさとして数えられます。
+
+```css title="🙆‍♂ Recommended: 擬似要素をはみ出させて、押せる範囲だけを広げる"
+@scope (.scoped.close-button) to (.scoped) {
+  :scope {
+    --_hit-size: max(24px, 24 / 16 * 1rem);
+
+    position: relative;
+    display: inline grid;
+    place-content: center;
+
+    @media (any-pointer: coarse) {
+      --_hit-size: max(44px, 44 / 16 * 1rem);
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: min(0px, (100% - var(--_hit-size)) / 2);
+    }
+  }
+}
+```
+
+`inset` のパーセンテージは、インライン方向の値なら基準のボックスの幅、ブロック方向の値なら高さを基準にします。`(100% - var(--_hit-size)) / 2` は、要素が `--_hit-size` より小さいぶんの半分を負の値で表すので、擬似要素は要素を中心に `--_hit-size` 四方へ広がります。`min()` で0pxを上限にしているのは、要素がもともと `--_hit-size` より大きいときに、擬似要素が要素より小さくならないようにするためです。
+
+広げた範囲が隣の要素に重なると、重なった部分を押したときにどちらが反応するかは、重なりの順序で決まります。ユーザーには、押した要素と違うものが反応したように見えます。擬似要素で広げるのは、周りに広げるだけの余白がある要素に限り、並べるときは広げたあとの大きさで間隔を確かめます。
+
+次のデモでは、2つの閉じるボタンの見た目は同じです。下のボタンは、破線で囲んだ範囲のどこにマウスを重ねても色が変わり、押せる範囲が擬似要素の分だけ広がっていることが分かります。
+
+<Demo title="擬似要素をはみ出させると、見た目を変えずに押せる範囲が広がる" html={pseudoHitHtml} css={pseudoHitCss} variant="neutral" widths={[]} />
+
+## サブメニューへ斜めに動かすときの当たり判定
+
+ホバーで横にサブメニューが開くメニューでは、カーソルをサブメニューへ斜めに動かす途中で、隣の項目の上を通ることがあります。すると隣の項目にホバーが移り、開いていたサブメニューが閉じて、隣の項目のサブメニューに切り替わります。サブメニューの中の項目を選ぶには、いったん真横に動かしてから縦に動かすしかありません。
+
+この問題は、項目とサブメニューの間に、カーソルが通っても隣の項目に移らない三角形の領域を置くと防げます。カーソルの位置を頂点の1つとし、サブメニューの項目側の辺の両端を残りの2つの頂点とする三角形です。この領域は「安全な三角形」（safe triangle）と呼ばれます。三角形はホバーを受けている項目の擬似要素として描き、`clip-path: polygon()` で切り抜きます。CSS Maskingの仕様では、`clip-path` で切り抜いた外側はポインターの操作を受けないので、三角形の内側だけが項目の一部として働きます。
+
+```css title="🙆‍♂ Recommended: ホバー中の項目の擬似要素を三角形に切り抜き、サブメニューへの通り道にする"
+@scope (.scoped.action-menu) to (.scoped) {
+  ._trigger {
+    &::before {
+      content: "";
+      position: fixed;
+      inset: var(--_safe-top) var(--_safe-right) var(--_safe-bottom) var(--_safe-left);
+      z-index: var(--z--forwards);
+      display: none;
+      clip-path: polygon(0 var(--_safe-y), 100% 0, 100% 100%);
+    }
+
+    &:enabled:hover::before {
+      @media (any-hover) {
+        display: block flow;
+      }
+    }
+  }
+}
+```
+
+この例は、サブメニューが右に開く場合です。擬似要素の矩形は、カーソルの位置からサブメニューの左の辺までの範囲で、高さはサブメニューにそろえます。`--_safe-y` は、矩形の上端からカーソルまでの距離です。これらの値は、JavaScriptで `pointermove` のたびに、カーソルの位置とサブメニューの `getBoundingClientRect()` から求めて設定します。画面上の座標から決まる値なので、`inset` は論理プロパティにせず、物理方向の4つの値で受けます。
+
+三角形の擬似要素は、`@media (any-hover)` の中でだけ表示します。タッチ操作ではホバーがなく、斜めの移動も起きないからです。キーボードの操作にも関わりません。サブメニューは、ホバーだけでなくボタンを押したときやキーボードでも開けるようにしておきます。
+
+次のデモは、マウスで操作して確かめます。「ファイル」の左寄りにカーソルを置き、開いたサブメニューの「書き出す」へ斜めに動かしてください。「三角形なし」のメニューでは、途中で「編集」や「表示」のサブメニューに切り替わります。「三角形あり」のメニューでは、色の付いた三角形の中を通るあいだ「ファイル」のサブメニューが開いたままです。
+
+<Demo title="安全な三角形の中を通ると、斜めに動かしてもサブメニューが切り替わらない" html={safeTriangleHtml} css={safeTriangleCss} js={safeTriangleJs} variant="neutral" widths={[]} />
 
 ## 連打や長押しで文字が選択される部品
 

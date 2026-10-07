@@ -2,7 +2,7 @@
 
 - バージョン: 0.27.1
 - 生成日: 2026-10-07
-- ルールの数: 567
+- ルールの数: 569
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -2965,6 +2965,14 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】操作する要素には 24px 相当の最小の大きさを確保し、`@media (any-pointer: coarse)` では 44px 相当にする。大きさは内部のカスタムプロパティの値だけを切り替える。（`hit-area-min-size`）
   - 理由: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
   - 補足: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。文字と一緒に大きくなるように `rem` で書き、`max(24px, 24 / 16 * 1rem)` のように CSS ピクセルの下限を併記します。
+  - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【推奨】押せる範囲を広げる `padding` は、`<li>` のような外側の要素ではなく、`<a>` や `<button>` のような操作する要素自身に付ける。チェックボックスやラジオボタンは `<label>` で文字と一緒に包む。（`padding-on-interactive-element`）
+  - 理由: 外側の要素に付けた `padding` は見た目を大きくするだけで、押せる範囲は文字の部分に限られ、項目の端を押しても反応しないため。
+  - 補足: `<a>` は `display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます。チェックボックスと `<label>` を兄弟に並べて間を空けると、その隙間は押しても何も起きない領域になります。
+  - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【推奨】見た目を変えずに押せる範囲を広げるときは、擬似要素を `inset: min(0px, (100% - var(--_hit-size)) / 2)` で要素の外にはみ出させ、広げた範囲を隣の操作する要素に重ねない。（`pseudo-hit-area-no-overlap`）
+  - 理由: 擬似要素は要素の一部として押せるので見た目を保ったまま範囲を広げられるが、隣の要素に重なると、押した要素と違うものが反応することがあるため。
+  - 補足: 要素がもともと `--_hit-size` より大きいときは、`min()` の上限の0pxで擬似要素が要素より小さくならないようにしています。並べるときは、広げたあとの大きさで間隔を確かめます。
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨】`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。（`user-select-none-for-controls`）
   - 理由: 初期値の `auto` は親の値が `none` なら `none` として扱われるので、広い範囲に指定すると、文章のコピーや、選択した文字を読み上げや翻訳の機能に渡す操作ができなくなるため。

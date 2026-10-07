@@ -1,0 +1,57 @@
+@layer components {
+  @scope (.scoped.hit-area-demo) to (.scoped) {
+    :scope {
+      /* デモでは、押せる範囲が分かるように色を付ける */
+      --_hit-area: oklch(48% 0.17 260deg / 16%);
+      --_border: oklch(70% 0 0deg);
+
+      display: block grid;
+      gap: 32px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 12px;
+      justify-items: start;
+    }
+
+    ._caption {
+      font-weight: 700;
+    }
+
+    ._nav {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    li {
+      outline: 1px dashed var(--_border);
+
+      &[data-padding] {
+        padding: 12px 16px;
+      }
+    }
+
+    a {
+      background-color: var(--_hit-area);
+
+      &[data-padding] {
+        display: block flow;
+        padding: 12px 16px;
+      }
+    }
+
+    ._option {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+      padding-block: 8px;
+      outline: 1px dashed var(--_border);
+    }
+
+    label {
+      background-color: var(--_hit-area);
+    }
+  }
+}

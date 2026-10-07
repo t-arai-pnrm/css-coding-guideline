@@ -1,0 +1,121 @@
+@layer tokens {
+  :root {
+    --z--forwards: 1;
+  }
+}
+
+@layer components {
+  @scope (.scoped.safe-triangle-demo) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+
+      /* 右に開くサブメニューの幅を空けておく */
+      padding-inline-end: calc(120 / 16 * 1rem);
+    }
+
+    ._caption {
+      font-weight: 700;
+    }
+  }
+
+  @scope (.scoped.action-menu) to (.scoped) {
+    :scope {
+      --_border: oklch(80% 0 0deg);
+      --_background--hocus: oklch(94% 0.03 260deg);
+      --_safe-triangle: --false;
+
+      position: relative;
+      display: block grid;
+      inline-size: calc(120 / 16 * 1rem);
+      border: 1px solid var(--_border);
+
+      &[data-safe-triangle] {
+        --_safe-triangle: --true;
+      }
+    }
+
+    ._item {
+      --_hocus: --false;
+
+      &:has(:focus-visible) {
+        --_hocus: --true;
+      }
+
+      &:has(> ._trigger:enabled:hover, > ._submenu:hover) {
+        @media (any-hover) {
+          --_hocus: --true;
+        }
+      }
+    }
+
+    ._trigger {
+      inline-size: 100%;
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-color: transparent;
+      text-align: start;
+
+      @container style(--_hocus: --true) {
+        background-color: var(--_background--hocus);
+      }
+
+      &::before {
+        content: "";
+        position: fixed;
+        inset: var(--_safe-top) var(--_safe-right) var(--_safe-bottom) var(--_safe-left);
+        z-index: var(--z--forwards);
+        display: none;
+        clip-path: polygon(0 var(--_safe-y), 100% 0, 100% 100%);
+
+        /* デモでは、三角形が分かるように色を付ける */
+        background-color: oklch(48% 0.17 260deg / 16%);
+      }
+
+      &:enabled:hover::before {
+        @media (any-hover) {
+          @container style(--_safe-triangle: --true) {
+            display: block flow;
+          }
+        }
+      }
+    }
+
+    ._submenu {
+      position: absolute;
+      inset-block-start: -1px;
+      inset-inline-start: 100%;
+      display: none;
+      inline-size: calc(120 / 16 * 1rem);
+      border: 1px solid var(--_border);
+      background-color: Canvas;
+
+      @container style(--_hocus: --true) {
+        display: block grid;
+      }
+    }
+
+    a {
+      display: block flow;
+      padding-block: 8px;
+      padding-inline: 12px;
+
+      &:focus-visible {
+        background-color: var(--_background--hocus);
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--_background--hocus);
+        }
+      }
+    }
+  }
+}

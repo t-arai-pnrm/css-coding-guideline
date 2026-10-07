@@ -1,0 +1,74 @@
+@layer components {
+  @scope (.scoped.close-demo) to (.scoped) {
+    :scope {
+      --_border: oklch(80% 0 0deg);
+      --_color--hocus: oklch(48% 0.17 260deg);
+
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._caption {
+      font-weight: 700;
+    }
+
+    ._header {
+      display: block flex;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border: 1px solid var(--_border);
+    }
+
+    ._close {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+
+      position: relative;
+      display: inline grid;
+      place-content: center;
+      padding: 0;
+
+      /* kiso.css の1px の枠線を透明にし、アイコンだけを見せる。強制カラーモードでは枠線が残る */
+      border-color: transparent;
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[data-hit-area]::before {
+        content: "";
+        position: absolute;
+        inset: min(0px, (100% - var(--_hit-size)) / 2);
+
+        /* デモでは、広げた範囲が分かるように破線で囲む */
+        outline: 1px dashed var(--_color--hocus);
+      }
+
+      &:focus-visible {
+        color: var(--_color--hocus);
+      }
+
+      &:enabled:hover {
+        @media (any-hover) {
+          color: var(--_color--hocus);
+        }
+      }
+    }
+
+    ._icon {
+      inline-size: 16px;
+      aspect-ratio: 1;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-width: 1.5;
+    }
+  }
+}

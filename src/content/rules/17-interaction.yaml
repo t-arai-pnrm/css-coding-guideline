@@ -83,6 +83,22 @@
   page: interaction/states-and-focus
   since: 0.4.0
 
+- id: padding-on-interactive-element
+  level: 推奨
+  rule: 押せる範囲を広げる `padding` は、`<li>` のような外側の要素ではなく、`<a>` や `<button>` のような操作する要素自身に付ける。チェックボックスやラジオボタンは `<label>` で文字と一緒に包む。
+  reason: 外側の要素に付けた `padding` は見た目を大きくするだけで、押せる範囲は文字の部分に限られ、項目の端を押しても反応しないため。
+  note: '`<a>` は `display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます。チェックボックスと `<label>` を兄弟に並べて間を空けると、その隙間は押しても何も起きない領域になります。'
+  page: interaction/states-and-focus
+  since: 0.28.0
+
+- id: pseudo-hit-area-no-overlap
+  level: 推奨
+  rule: '見た目を変えずに押せる範囲を広げるときは、擬似要素を `inset: min(0px, (100% - var(--_hit-size)) / 2)` で要素の外にはみ出させ、広げた範囲を隣の操作する要素に重ねない。'
+  reason: 擬似要素は要素の一部として押せるので見た目を保ったまま範囲を広げられるが、隣の要素に重なると、押した要素と違うものが反応することがあるため。
+  note: 要素がもともと `--_hit-size` より大きいときは、`min()` の上限の0pxで擬似要素が要素より小さくならないようにしています。並べるときは、広げたあとの大きさで間隔を確かめます。
+  page: interaction/states-and-focus
+  since: 0.28.0
+
 - id: user-select-none-for-controls
   level: 推奨
   rule: '`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。'
