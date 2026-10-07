@@ -17,8 +17,8 @@
     :scope {
       --_foreground: var(--toast--foreground, oklch(45% 0.12 250deg));
 
-      /* 文字色の明度が0.7より低ければ白、0.7以上なら黒になる */
-      --_contrast: oklch(from var(--_foreground) sign(0.7 - l) 0 h);
+      /* 文字色と対比する白か黒（Safari 26以上。Safari 18系では sign() に置き換える） */
+      --_contrast: contrast-color(var(--_foreground));
 
       padding: 16px;
       border: 1px solid currentColor;

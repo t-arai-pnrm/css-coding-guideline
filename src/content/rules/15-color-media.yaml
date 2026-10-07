@@ -46,9 +46,9 @@
 
 - id: variant-palette-from-one-color
   level: 推奨
-  rule: 種類ごとに色が変わるコンポーネントは、元の色1つを内部プロパティで差し替え、枠線は `currentColor`、背景は元の色と `sign()` で作った対比色を `color-mix()` で混ぜて作る。
+  rule: 種類ごとに色が変わるコンポーネントは、元の色1つを内部プロパティで差し替え、枠線は `currentColor`、背景は元の色と `contrast-color()` で作った対比色を `color-mix()` で混ぜて作る。
   reason: 種類を足すときに書くのが色1つで済み、枠線や背景の色を種類ごとに持たずに済むため。
-  note: 種類は `data-variant` 属性で、種類にない色は公開プロパティ（`--toast--foreground`）で渡します。文字色と背景の組み合わせごとにコントラスト比を確かめます。
+  note: 種類は `data-variant` 属性で、種類にない色は公開プロパティ（`--toast--foreground`）で渡します。文字色と背景の組み合わせごとにコントラスト比を確かめます。Safari 18系に対応するときは、対比色を `sign()` で作ります（ルール `prefer-contrast-color`）。
   page: color-media/relative-color
   since: 0.25.0
 

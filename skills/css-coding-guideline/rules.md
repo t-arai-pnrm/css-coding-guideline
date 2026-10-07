@@ -2741,9 +2741,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 背景色と文字色の中間のように、2つの色の関係で決まる色を、両方の色の変化に追従させられるため。
   - 補足: `currentColor` に不透明度を付けるときは、`color-mix(in oklab, currentColor 60%, transparent)` のように透明と混ぜます。
   - 詳細: 15-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
-- 【推奨】種類ごとに色が変わるコンポーネントは、元の色1つを内部プロパティで差し替え、枠線は `currentColor`、背景は元の色と `sign()` で作った対比色を `color-mix()` で混ぜて作る。（`variant-palette-from-one-color`）
+- 【推奨】種類ごとに色が変わるコンポーネントは、元の色1つを内部プロパティで差し替え、枠線は `currentColor`、背景は元の色と `contrast-color()` で作った対比色を `color-mix()` で混ぜて作る。（`variant-palette-from-one-color`）
   - 理由: 種類を足すときに書くのが色1つで済み、枠線や背景の色を種類ごとに持たずに済むため。
-  - 補足: 種類は `data-variant` 属性で、種類にない色は公開プロパティ（`--toast--foreground`）で渡します。文字色と背景の組み合わせごとにコントラスト比を確かめます。
+  - 補足: 種類は `data-variant` 属性で、種類にない色は公開プロパティ（`--toast--foreground`）で渡します。文字色と背景の組み合わせごとにコントラスト比を確かめます。Safari 18系に対応するときは、対比色を `sign()` で作ります（ルール `prefer-contrast-color`）。
   - 詳細: 15-2 相対カラー構文で派生色を作る（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/relative-color.mdx）
 - 【推奨】背景色から文字色を黒か白に決めるときは、対象の環境が Safari 26 以上なら `contrast-color()` で書く。Safari 18系に対応するときや、切り替える明度や色を自分で決めたいときは、相対カラー構文と `sign()` で書く。（`prefer-contrast-color`）
   - 理由: `contrast-color(var(--_background))` と書けば、背景色を変えても文字色を見直さずに済み、式を読み解く必要もないため。`contrast-color()` に未対応の環境（Safari 26 より前）では `color` の宣言が無効になり、継承した文字色が背景に溶け込むので、その環境に対応するときは `sign()` で書く。
