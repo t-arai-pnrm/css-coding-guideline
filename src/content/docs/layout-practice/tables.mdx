@@ -228,7 +228,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 子孫の要素では、縦に積む指定を `@container style(--_density: --compact)` の中に書いています。表は、表の形がブラウザの既定のスタイルで、縦に積む形のほうが指定の多い形です。縦積みの指定をクエリの外に書くと、広い幅ではその指定をひとつずつ打ち消して、表の形へ戻さなければなりません。狭いときの条件の中に書けば、広い幅では子孫の要素がブラウザの既定のスタイルのまま表の形になり、打ち消すのは `table` 自身の `display` だけで済みます。
 
-縦に積んだときは、各セルの値の前に列の名前を表示します。列の名前は、`::before` の `content` ではなく、HTMLの `<span class="_label" aria-hidden="true">` に書きます。意味のある文字はHTMLに書くという本書の方針に合わせるためです（「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」）。`aria-hidden` を付けるのは、`role` で残した列の見出しと重ねて読み上げないためです。`thead` を `display: none` で消すと、列の見出しとの関連づけまで失われるおそれがあります。そこで `thead` は、視覚的にだけ隠します。{/* 要確認: 出典なし */}
+縦に積んだときは、各セルの値の前に列の名前を表示します。列の名前は、`::before` の `content` ではなく、HTMLの `<span class="_label" aria-hidden="true">` に書きます。意味のある文字はHTMLに書くという本書の方針に合わせるためです（「[5-9 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」）。`aria-hidden` を付けるのは、`role` で残した列の見出しと重ねて読み上げないためです。`thead` を `display: none` で消すと、列の見出しとの関連づけまで失われるおそれがあります。そこで `thead` は、視覚的にだけ隠します。{/* 要確認: 出典なし */}
 
 <Demo title="狭い場所では、注文の表の行をカードのように縦に積む" html={stackHtml} css={stackCss} />
 

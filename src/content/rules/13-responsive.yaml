@@ -126,14 +126,6 @@
   page: responsive/container-size-queries
   since: 0.1.0
 
-- id: no-container-just-in-case
-  level: 非推奨
-  rule: '`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。'
-  reason: 'コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。'
-  aiProne: true
-  page: responsive/container-size-queries
-  since: 0.20.0
-
 - id: hide-label-visually-in-container-query
   level: 推奨
   rule: 'アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナサイズクエリの中で `display: none` ではなく視覚的に隠す指定を書く。'
@@ -141,49 +133,6 @@
   note: 隠し方は `.-visually-hidden` と同じ考え方です。ユーティリティのクラスはクエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書きます。
   page: responsive/container-size-queries
   since: 0.3.0
-
-- id: no-container-on-page-root
-  level: 禁止
-  rule: '`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。'
-  reason: 'ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。'
-  page: responsive/container-size-queries
-  since: 0.1.0
-
-- id: no-container-on-intrinsic-size
-  level: 禁止
-  rule: 幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。
-  reason: インライン方向のサイズの封じ込めが働き、幅が極端に小さく計算されるため。
-  page: responsive/container-size-queries
-  since: 0.1.0
-
-- id: no-padding-on-container
-  level: 非推奨
-  rule: コンテナにする要素には `padding` や `border` を指定せず、レイアウトは子要素で行う。
-  reason: コンテナの幅の計算がずれ、クエリの閾値や `cqi` の値が意図とずれるため。
-  page: responsive/container-size-queries
-  since: 0.1.0
-
-- id: cqi-needs-named-container
-  level: 必須
-  rule: '`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。'
-  reason: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
-  aiProne: true
-  page: responsive/container-size-queries
-  since: 0.1.0
-
-- id: no-container-type-size
-  level: 非推奨
-  rule: '`container-type: size` と、それを前提にした `cqb`、`cqh`、`cqmin`、`cqmax` は使わない。'
-  reason: コンテナの高さが確定していないと効かず、使える場面がほとんどないため。
-  page: responsive/container-size-queries
-  since: 0.1.0
-
-- id: no-container-utility-class
-  level: 禁止
-  rule: '`.container` のような汎用のクラスを作らない。`container` プロパティを持つ要素にだけ、`.sidebar-container` のように何のコンテナかが分かる名前を付ける。'
-  reason: '`container` が CSS で意味を持つ語になったので、ただのラッパーに使うと誤解を招くため。'
-  page: responsive/container-size-queries
-  since: 0.1.0
 
 - id: zoom-as-last-resort
   level: 非推奨
@@ -194,7 +143,59 @@
   page: responsive/container-size-queries
   since: 0.1.0
 
-# 13-4 メディアクエリ
+# 13-4 コンテナの副作用とコンテナ単位
+- id: no-container-just-in-case
+  level: 非推奨
+  rule: '`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。'
+  reason: 'コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。'
+  aiProne: true
+  page: responsive/container-units-and-side-effects
+  since: 0.20.0
+
+- id: no-container-on-page-root
+  level: 禁止
+  rule: '`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。'
+  reason: 'ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。'
+  page: responsive/container-units-and-side-effects
+  since: 0.1.0
+
+- id: no-container-on-intrinsic-size
+  level: 禁止
+  rule: 幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。
+  reason: インライン方向のサイズの封じ込めが働き、幅が極端に小さく計算されるため。
+  page: responsive/container-units-and-side-effects
+  since: 0.1.0
+
+- id: no-padding-on-container
+  level: 非推奨
+  rule: コンテナにする要素には `padding` や `border` を指定せず、レイアウトは子要素で行う。
+  reason: コンテナの幅の計算がずれ、クエリの閾値や `cqi` の値が意図とずれるため。
+  page: responsive/container-units-and-side-effects
+  since: 0.1.0
+
+- id: cqi-needs-named-container
+  level: 必須
+  rule: '`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。'
+  reason: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
+  aiProne: true
+  page: responsive/container-units-and-side-effects
+  since: 0.1.0
+
+- id: no-container-type-size
+  level: 非推奨
+  rule: '`container-type: size` と、それを前提にした `cqb`、`cqh`、`cqmin`、`cqmax` は使わない。'
+  reason: コンテナの高さが確定していないと効かず、使える場面がほとんどないため。
+  page: responsive/container-units-and-side-effects
+  since: 0.1.0
+
+- id: no-container-utility-class
+  level: 禁止
+  rule: '`.container` のような汎用のクラスを作らない。`container` プロパティを持つ要素にだけ、`.sidebar-container` のように何のコンテナかが分かる名前を付ける。'
+  reason: '`container` が CSS で意味を持つ語になったので、ただのラッパーに使うと誤解を招くため。'
+  page: responsive/container-units-and-side-effects
+  since: 0.1.0
+
+# 13-5 メディアクエリ
 - id: media-query-for-macro-layout
   level: 推奨
   rule: メディアクエリは、ページ全体の段組み、ビューポートに固定された要素、常に画面幅いっぱいに表示されるブロックに限って使う。
@@ -258,7 +259,7 @@
   page: responsive/media-queries
   since: 0.5.0
 
-# 13-5 375px未満の画面の扱い
+# 13-6 375px未満の画面の扱い
 - id: fixed-viewport-below-min-width
   level: 推奨
   rule: '375px 未満の画面でもカンプの配置を保つ要件があるときに限り、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。要件がなければ固定せず、自然に折り返した表示にする。'
@@ -268,7 +269,7 @@
   page: responsive/min-viewport-width
   since: 0.18.0
 
-# 13-6 カンプの幅で全体を拡大・縮小しない
+# 13-7 カンプの幅で全体を拡大・縮小しない
 - id: no-full-liquid-scaling
   level: 禁止
   rule: カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。
@@ -287,7 +288,7 @@
   page: responsive/design-comp-pattern
   since: 0.18.0
 
-# 13-7 セーフエリアに対応する
+# 13-8 セーフエリアに対応する
 - id: safe-area-inset-with-viewport-fit-cover
   level: 必須
   rule: '`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。'

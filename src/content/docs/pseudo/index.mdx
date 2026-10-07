@@ -19,9 +19,10 @@ sidebar:
 - [5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)：子の有無や状態で祖先を変える書き方と、起点と引数の範囲の絞り方
 - [5-4 子要素の位置で選ぶ](/pseudo/child-index/)：`:first-child`、`:nth-child()`、`:nth-child(… of S)` などで、兄弟の中の位置を条件にする書き方
 - [5-5 数量クエリ](/pseudo/quantity-queries/)：子の数に応じて、親や兄弟、数えた子のスタイルを切り替えるセレクタ
-- [5-6 フォームの状態を表す擬似クラス](/pseudo/form-states/)：`:checked`、`:disabled`、`:user-invalid`、`:placeholder-shown` などが当てはまる条件の違い
-- [5-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)：`:open`、`:popover-open`、`:modal`、`:target` などが当てはまる条件の違い
-- [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)：`::before` と `::after` の使いどころ、`::first-letter` や `::selection` などの装飾の擬似要素
+- [5-6 件数と中身で配置を組み替える](/pseudo/quantity-layouts/)：最終行の端数を中央に寄せる書き方と、区画の有無と件数で `grid-template` を書き換える組み替え
+- [5-7 フォームの状態を表す擬似クラス](/pseudo/form-states/)：`:checked`、`:disabled`、`:user-invalid`、`:placeholder-shown` などが当てはまる条件の違い
+- [5-8 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)：`:open`、`:popover-open`、`:modal`、`:target` などが当てはまる条件の違い
+- [5-9 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)：`::before` と `::after` の使いどころ、`::first-letter` や `::selection` などの装飾の擬似要素
 
 詳細度の設計の方針は、第4章「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。この章では、擬似クラスが「どの状態のときに当てはまるか」に絞り、それを使ったUIの実装は第17章「インタラクション」に渡します。`:hover`、`:focus-visible`、`:focus-within` によるフォーカスの表し方は「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で、ダイアログやアコーディオンの開閉は「[17-2 開閉するUI](/interaction/disclosure/)」で扱います。フォーム部品の作り方は「[17-3 フォーム部品](/interaction/forms/)」で、カルーセルは「[17-4 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。番号付きリストのマーカーを `::marker` で装飾する方法は、第16章「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明しています。
 
@@ -33,7 +34,7 @@ sidebar:
 
 `::picker(select)` と `::checkmark` は、`appearance: base-select` を指定した `<select>` のドロップダウンと、選んだ項目の印を選ぶ擬似要素です。対応しているのはChrome 135以降（`::checkmark` は133以降）とSafari 27で、Firefoxが対応していないためBaselineではありません。`<select>` の見た目を変える方法と、未対応の環境で標準の `<select>` に戻す書き方は、第17章「[17-3 フォーム部品](/interaction/forms/)」で説明します。
 
-`:state()` は、カスタム要素がJavaScriptで設定した独自の状態を選ぶ擬似クラスです。2024年5月にすべての主要なブラウザが対応し、Baseline Newly availableになっています。ただし、使うには `ElementInternals` で状態を管理する必要があります。本書ではカスタム要素の状態を、ブラウザの擬似クラス（`:popover-open` や `:checked`）と `data-*` 属性で選ぶので、`:state()` は扱いません（第10章「[10-7 Web Components](/components/web-components/)」）。
+`:state()` は、カスタム要素がJavaScriptで設定した独自の状態を選ぶ擬似クラスです。2024年5月にすべての主要なブラウザが対応し、Baseline Newly availableになっています。ただし、使うには `ElementInternals` で状態を管理する必要があります。本書ではカスタム要素の状態を、ブラウザの擬似クラス（`:popover-open` や `:checked`）と `data-*` 属性で選ぶので、`:state()` は扱いません（第10章「[10-8 Web Components](/components/web-components/)」）。
 
 `interestfor` 属性は、ボタンやリンクにホバーやフォーカスで「関心」を示したとき、ツールチップのような要素を表示する仕組みです。関連する擬似クラスとして `:interest-source` と `:interest-target` があります。対応しているのはChromeとEdgeの142以降だけで、Baselineではないので扱いません。
 

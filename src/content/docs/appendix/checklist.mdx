@@ -87,7 +87,7 @@ sidebar:
 - [ ] 対象のすべてが対応した機能のフォールバックが、残っていないか（[`remove-unneeded-fallbacks`](/principles/browser-support/#rule-remove-unneeded-fallbacks)）
 - [ ] JavaScriptで表示を切り替える前提のスタイルを、`@media (scripting: enabled)` の中に書いているか（[`scripting-for-js-dependent-styles`](/principles/browser-support/#rule-scripting-for-js-dependent-styles)）
 - [ ] ブロックレイアウトの要素に `justify-self` を指定していないか（[`no-justify-self-in-block-layout`](/principles/browser-support/#rule-no-justify-self-in-block-layout)）
-- [ ] 単位のついた値での割り算を、Firefoxの安定版で宣言が無効になっても内容を読める場面で使っているか（[`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)）
+- [ ] 単位のついた値での割り算を、Firefoxの安定版で宣言が無効になっても内容を読める場面で使っているか（[`typed-arithmetic-to-unitless`](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)）
 - [ ] Chromeだけでなく、Safari（iOSを含む）とFirefoxでも表示を確かめたか（[`no-chrome-only-check`](/principles/browser-support/#rule-no-chrome-only-check)）
 
 ## 4. 不要な記述と副作用のある上書き
@@ -153,7 +153,7 @@ sidebar:
 - [ ] 「静的 → イントリンシック → コンテナサイズクエリ → メディアクエリ」の順に検討し、不要なクエリを書いていないか（[`responsive-escalation-order`](/responsive/escalation/#rule-responsive-escalation-order)）
 - [ ] タグやアイコンのような固定サイズの要素を、レスポンシブにしていないか（[`no-responsive-for-static-elements`](/responsive/escalation/#rule-no-responsive-for-static-elements)）
 - [ ] コンテナに名前を付け、条件を `inline-size` で書いているか（[`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)、[`container-query-inline-size`](/responsive/container-size-queries/#rule-container-query-inline-size)）
-- [ ] `cqi` を、名前付きのコンテナがあると言い切れる要素でだけ使っているか（[`cqi-needs-named-container`](/responsive/container-size-queries/#rule-cqi-needs-named-container)）
+- [ ] `cqi` を、名前付きのコンテナがあると言い切れる要素でだけ使っているか（[`cqi-needs-named-container`](/responsive/container-units-and-side-effects/#rule-cqi-needs-named-container)）
 - [ ] クエリの条件を範囲構文で書き、ブレイクポイントをremの式にしているか（[`query-range-syntax`](/responsive/media-queries/#rule-query-range-syntax)、[`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem)）
 - [ ] ブレイクポイントを、デバイスの幅ではなくレイアウトが崩れる幅から決めているか（[`breakpoint-from-content`](/responsive/breakpoints/#rule-breakpoint-from-content)）
 - [ ] `sp` や `pc` のようなデバイスの名前を使っていないか（[`no-device-names`](/responsive/breakpoints/#rule-no-device-names)）

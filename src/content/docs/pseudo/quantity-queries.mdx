@@ -10,14 +10,12 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import pickupHtml from '../../../demos/pseudo/pickup-count/index.html?raw';
 import pickupCss from '../../../demos/pseudo/pickup-count/style.css?raw';
-import centeredHtml from '../../../demos/pseudo/centered-last-row/index.html?raw';
-import centeredCss from '../../../demos/pseudo/centered-last-row/style.css?raw';
 import hasDirectChildHtml from '../../../demos/pseudo/has-direct-child/index.html?raw';
 import hasDirectChildCss from '../../../demos/pseudo/has-direct-child/style.css?raw';
 
 数量クエリ（quantity queries）は、子要素の数に応じてスタイルを切り替える手法の総称です。専用の構文があるわけではなく、子要素の位置で選ぶ擬似クラスを組み合わせて「3つ以上ある」「最後の1つが奇数番目にある」といった条件を表します。書き方は、スタイルを変える対象で選びます。親や兄弟の見た目を変えるときは、`&:has(> :nth-child(3))` のように親を起点にした `:has()` で書きます。数えた子要素そのものの見た目を変えるときは、`& > :nth-child(2n + 1):nth-last-child(1)` のように子の側で `:nth-child()` と `:nth-last-child()` を組み合わせます。
 
-数量クエリを使う場面は限ります。列数のようなレイアウトの切り替えは、まず `auto-fit` やコンテナサイズクエリで行います。数量クエリを使うのは、「1件だけなら中央に置く」「最終行の端数を中央に寄せる」のように、子要素の数そのものが条件になるときだけです。
+数量クエリを使う場面は限ります。列数のようなレイアウトの切り替えは、まず `auto-fit` やコンテナサイズクエリで行います。数量クエリを使うのは、「1件だけなら中央に置く」「最終行の端数を中央に寄せる」「引用がなければ特集を全幅に広げる」のように、子要素の数や有無そのものが条件になるときだけです。最終行の端数と、区画の有無による配置の組み替えは、「[5-6 件数と中身で配置を組み替える](/pseudo/quantity-layouts/)」で扱います。
 
 <Baseline id="has" name=":has()" />
 
@@ -148,7 +146,7 @@ li:nth-last-child(n + 3) ~ li {
 
 列数は、`repeat()` の `auto-fit` と `minmax()` に任せます。`auto-fit` は列の最小幅を下回らない範囲で列を作り、項目のない列を幅0に畳むので、項目が2つなら2列に広がり、幅が足りなければ列は減ります。`auto-fit` と `auto-fill` の違いは第7章「[7-7 Gridの基礎](/layout/grid-basics/)」で、置かれた場所の幅で配置を組み替える方法は第13章「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
 
-一方、`auto-fit` でも解決できないのが、項目が1つだけの場合と、最終行が埋まらない場合です。`auto-fit` は残った1つの項目を行いっぱいに広げ、最終行の端数は行の先頭に寄せます。どちらも幅ではなく件数そのものが条件なので、数量クエリの出番です。
+一方、`auto-fit` でも解決できないのが、項目が1つだけの場合と、最終行が埋まらない場合です。`auto-fit` は残った1つの項目を行いっぱいに広げ、最終行の端数は行の先頭に寄せます。どちらも幅ではなく件数そのものが条件なので、数量クエリの出番です。この見出しでは1件の場合を扱い、最終行の端数を中央に寄せる方法は「[5-6 件数と中身で配置を組み替える](/pseudo/quantity-layouts/)」で説明します。
 
 次のデモは、同じピックアップの一覧に、項目を1件、2件、3件、5件入れて並べたものです。列の数は幅から決まり、最小幅は200px相当、多くても3列までにしています。項目が1件のときだけ、親を起点にした `:has()` で列の幅を400px相当に固定し、中央に置いています。変えるのは親の `grid-template-columns` なので、`:has()` で書きます。
 
@@ -171,62 +169,9 @@ li:nth-last-child(n + 3) ~ li {
 
 幅のボタンで1024pxを選ぶと、2件の一覧は2列に、3件と5件の一覧は3列に並びます。2件の一覧が2列いっぱいに広がるのは、`auto-fit` が3列目を畳んでいるからで、数量クエリは関わっていません。1件の一覧は、どの幅でも400px相当を超えず、中央に置かれます。デモの `grid-template-columns` には、列の最大数を3に抑える計算を加えています。第12章「[12-6 grid：列の最小幅と最大数から列数を決める](/compositions/grid/)」と同じ考え方で、コード例では省いています。
 
-## 最終行の端数を中央に寄せる
-
-最終行の端数を中央に寄せるときは、数えた子そのものの開始位置を変えるので、子の側で数えます。次のデモでは、列の最小幅が160px相当、間隔が24pxのグリッドに、2列分を占めるカードを並べています。1行に並ぶカードの数は、列の数の半分です。最終行に残ったカードの `grid-column-start` を、空いた列の半分だけ後ろにずらして中央に寄せます。
-
-```css title="🙆‍♂ Recommended: 最後のカードが奇数番目なら、2列目から始める（1行に2枚の場合）"
-@scope (.scoped.product-cards) to (.scoped) {
-  :scope {
-    container: --scoped / inline-size;
-  }
-
-  ._body {
-    --_columns: --one;
-
-    display: block grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
-    gap: 24px;
-
-    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
-      --_columns: --two;
-    }
-
-    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
-      --_columns: --four;
-    }
-
-    /* 6列以上の並びは省略 */
-    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
-      --_columns: --six;
-    }
-
-    & > * {
-      @container not style(--_columns: --one) {
-        grid-column-end: span 2;
-      }
-    }
-
-    & > :nth-child(2n + 1):nth-last-child(1) {
-      @container style(--_columns: --four) {
-        grid-column-start: 2;
-      }
-    }
-  }
-}
-```
-
-コンテナサイズクエリの閾値は、「列の最小幅×列数＋間隔×（列数−1）」の式で書きます。`calc(160 / 16 * 1rem * 4 + 24px * 3)` は4列が収まる幅で、6列が収まる幅の手前までは、1行にカードが2枚並びます。この範囲で最後のカードが奇数番目なら、最終行には1枚だけが残るので、2列目から始めて4列の中央に置きます。数値を `47rem` のように丸めず式で書けば、列の最小幅や間隔を変えたときに、どの値を直せばよいかが分かります。コンテナサイズクエリは `._body` のルールだけに書き、列の数をフラグ `--_columns` に立てます。カードの側は、そのフラグをスタイルクエリで読むので、閾値が散らばりません（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。閾値を中身から導く考え方は、第13章「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。
-
-<Demo title="最終行に残ったカードが、コンテナの幅に応じて中央に寄る" html={centeredHtml} css={centeredCss} widths={[320, 480, 768, 1120, 1500]} />
-
-デモでは、列の数を多くても8列に抑え、1行に3枚（6〜7列）と4枚（8列）の場合も書いています。1行に3枚なら、行の先頭は3n＋1番目です。`:nth-child(3n + 4):nth-last-child(1)` は「2行目以降の行の先頭で、かつ最後」のカードで、最終行に1枚だけ残った状態を表し、3列目から始めます。最後から2番目なら2枚残った状態なので、2列目から始めます。幅のボタンで768px、1120px、1500pxを選ぶと、5枚目、4〜5枚目、5枚目がそれぞれ中央に寄ります（2026年10月、Chrome 152で確認）。
-
-`3n + 4` と `4n + 5` で1行目を除いているのは、1行目だけで終わる場合は寄せる必要がないからです。カードが1行に収まると、`auto-fit` がカードのない列を幅0に畳み、残りの列が行いっぱいに広がります。1行に2枚の場合の `2n + 1` は1枚目も含みますが、カードが1枚だけのときも、空いた列が畳まれるので見た目は変わりません。ルート（`:scope`）をコンテナにして `._body` で判定しているのは、コンテナは自分のサイズを条件にしたスタイルを受け取れないからです。
-
 ## 補足と注意点
 
-`:has()` で数える数量クエリの詳細度は、引数の分だけ上がります。`:scope` の中で `&:has(> :only-child)` と書くと、`:scope`（0.1.0）に `:only-child`（0.1.0）が加わり、0.2.0になります。子の側の `& > :nth-child(2n + 1):nth-last-child(1)` も、`._body` に擬似クラス2つが加わって0.3.0です。どちらも元のスタイルより詳細度が高いので、書く順序によらず上書きできます。
+`:has()` で数える数量クエリの詳細度は、引数の分だけ上がります。`:scope` の中で `&:has(> :only-child)` と書くと、`:scope`（0.1.0）に `:only-child`（0.1.0）が加わり、0.2.0になります。子の側の `& > :nth-child(2n + 1):nth-last-child(1)` も、親のクラスに擬似クラス2つが加わって0.3.0です。どちらも元のスタイルより詳細度が高いので、書く順序によらず上書きできます。
 
 数えるのは要素だけです。テキストノードやコメントは数えず、`::before` などの擬似要素も子に含みません。一方、`hidden` 属性や `display: none` で見えなくなった要素は、DOMにある限り数えられます。絞り込みによって項目を隠す一覧では、`&:has(> :nth-child(3 of :not([hidden])))` のように `of S` 構文で数える対象を絞ります。
 
@@ -249,4 +194,3 @@ li:nth-last-child(n + 3) ~ li {
 - [Quantity Queries for CSS](https://alistapart.com/article/quantity-queries-for-css/)（Heydon Pickering、A List Apart、2015年3月）
 - [Quantity Queriesで要素数ごとに表示を切り替える](https://bcrikko.github.io/til/posts/2025-07-09/quantity-queries/)（ダーシノ、2025年7月）
 - [CSS セレクタのレシピ - 子要素インデックス編](https://griponminds.jp/blog/css-selectors-child-index/)（grip on minds）
-- [Product Cards Centering Bottom Row](https://codepen.io/tak-dcxi/pen/RNRGJev)（TAK、CodePen）

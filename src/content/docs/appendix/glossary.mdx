@@ -42,14 +42,14 @@ sidebar:
 | 寛容なセレクタリスト | 解釈できないセレクタがあっても、それだけを無視して残りを有効にするセレクタリストです。`:is()` と `:where()` の引数がこれに当たり、普通のセレクタリストと `:not()`・`:has()` の引数は当たりません。 | [5-1](/pseudo/basics/) |
 | 起点（`:has()` の） | `A:has(B)` の `A` のように、`:has()` の直前に書いてスタイルを当てる要素です。本書では起点のない `:has()` を禁止しています。 | [5-3](/pseudo/has/) |
 | 数量クエリ | 子要素の数に応じてスタイルを切り替える手法です。本書では、親や兄弟の見た目を変えるときは `&:has(> :nth-child(3))` のように親を起点にした `:has()` で書き、数えた子要素そのものを変えるときは `:nth-child()` と `:nth-last-child()` を組み合わせて書きます。 | [5-5](/pseudo/quantity-queries/) |
-| 生成コンテンツ | `::before` と `::after` の `content` プロパティで、CSSが要素の前後に入れる文字や箱です。 | [5-8](/pseudo/generated-content/) |
+| 生成コンテンツ | `::before` と `::after` の `content` プロパティで、CSSが要素の前後に入れる文字や箱です。 | [5-9](/pseudo/generated-content/) |
 
 ## 値と単位
 
 | 用語 | 意味 | 詳しい説明 |
 | --- | --- | --- |
 | スモールビューポート、ラージビューポート、ダイナミックビューポート | ブラウザのUIが表示されているときの最も小さい領域、UIが引っ込んだときの最も大きい領域、そのときどきで見えている領域です。単位は `sv*`、`lv*`、`dv*` で始まります。 | [6-2](/values/viewport-and-container-units/) |
-| コンテナ単位 | コンテナの大きさを基準にした単位です。本書で使うのは、コンテナのインライン方向のサイズの1%を表す `cqi` です。 | [6-2](/values/viewport-and-container-units/)、[13-3](/responsive/container-size-queries/) |
+| コンテナ単位 | コンテナの大きさを基準にした単位です。本書で使うのは、コンテナのインライン方向のサイズの1%を表す `cqi` です。 | [6-2](/values/viewport-and-container-units/)、[13-4](/responsive/container-units-and-side-effects/) |
 | 流体的な値 | `clamp()` などで、幅に応じて最小値と最大値の間を連続的に変わる値です。文字サイズに使うものを流体的な文字サイズと呼びます。 | [6-3](/values/math-functions/)、[14-4](/typography/size-and-line-breaks/) |
 
 ## リセットと記法
@@ -103,12 +103,12 @@ sidebar:
 | 検討の順番 | レスポンシブ対応を「静的 → イントリンシック → コンテナサイズクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わないという本書の原則です。 | [13-1](/responsive/escalation/) |
 | コンテナクエリ | `@container` で、祖先の要素（コンテナ）の状態を条件にするクエリの総称です。サイズを調べるコンテナサイズクエリ、カスタムプロパティの値を調べるスタイルクエリ、スクロールの状態を調べるスクロール状態クエリの3つを含みます。 | [13-3](/responsive/container-size-queries/) |
 | コンテナサイズクエリ | ビューポートではなく、コンテナの大きさで条件を判定するコンテナクエリです。`container: --scoped / inline-size` でコンポーネントのルートをコンテナにし、`@container --scoped (inline-size >= …)` のように書きます。 | [13-3](/responsive/container-size-queries/) |
-| スタイルクエリ | コンテナのカスタムプロパティの値を条件にするコンテナクエリです。`@container style(--color-scheme: --dark)` のように書きます。 | [6-4](/values/if-and-attr/)、[13-3](/responsive/container-size-queries/)、[15-4](/color-media/dark-mode/) |
+| スタイルクエリ | コンテナのカスタムプロパティの値を条件にするコンテナクエリです。`@container style(--color-scheme: --dark)` のように書きます。 | [6-5](/values/if-and-attr/)、[13-3](/responsive/container-size-queries/)、[15-4](/color-media/dark-mode/) |
 | スクロール状態クエリ | `sticky` の要素が留まっているか、スクロールスナップで止まっているかのような、スクロールの状態を条件にするコンテナクエリです。`@container scroll-state(stuck: block-start)` のように書きます。 | [11-5](/layout-practice/sticky-header/)、[17-4](/interaction/carousel/) |
 | ブレイクポイント | レイアウトを切り替える幅です。デバイスの幅ではなく、レイアウトが崩れる幅から決め、remの式で書きます。 | [13-2](/responsive/breakpoints/) |
-| 範囲構文 | `min-width` の代わりに、`(width >= …)` のように不等号でクエリの条件を書く構文です。 | [13-4](/responsive/media-queries/) |
-| モバイルファースト | 狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを `width >=` の条件の中に足す書き方です。 | [13-4](/responsive/media-queries/) |
-| フルリキッド | カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小する組み方です。本書では使わず、拡大・縮小させたい局所だけをコンテナ単位で組みます。 | [13-6](/responsive/design-comp-pattern/) |
+| 範囲構文 | `min-width` の代わりに、`(width >= …)` のように不等号でクエリの条件を書く構文です。 | [13-5](/responsive/media-queries/) |
+| モバイルファースト | 狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを `width >=` の条件の中に足す書き方です。 | [13-5](/responsive/media-queries/) |
+| フルリキッド | カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小する組み方です。本書では使わず、拡大・縮小させたい局所だけをコンテナ単位で組みます。 | [13-7](/responsive/design-comp-pattern/) |
 
 ## タイポグラフィ
 

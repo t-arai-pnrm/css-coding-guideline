@@ -1,0 +1,118 @@
+@layer tokens {
+  :root {
+    --foreground--accent: oklch(48% 0.17 260deg);
+    --foreground--on-accent: oklch(100% 0 0deg);
+    --foreground--muted: oklch(45% 0 0deg);
+    --background--accent: oklch(48% 0.17 260deg);
+    --background--surface: oklch(96% 0.01 250deg);
+    --background--accent-subtle: oklch(93% 0.04 260deg);
+    --leading--snug: 1.4;
+  }
+}
+
+@layer pages {
+  @scope (.scoped.demo-page) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 40px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.pickup-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ul {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    li {
+      /* カードが1枚だけのとき、カードの公開プロパティで特集を伝える */
+      &:only-child {
+        --product-card--featured: --true;
+      }
+    }
+  }
+
+  @scope (.scoped.product-card) to (.scoped) {
+    :scope {
+      /* 公開プロパティを内部プロパティに受け、デフォルト値をフォールバックに書く */
+      --_featured: var(--product-card--featured, --false);
+
+      container: --scoped / inline-size;
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._layout {
+      --_density: --compact;
+
+      display: block grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: var(--background--surface);
+
+      /* 画像の列 240px 相当・隙間 24px・本文の最小幅 280px 相当が並ぶ幅 */
+      @container --scoped (inline-size >= calc(240 / 16 * 1rem + 24px + 280 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        grid-template-columns: calc(240 / 16 * 1rem) 1fr;
+        gap: 24px;
+        align-items: center;
+
+        /* この要素自身の特集の見た目は、親（ルート）の --_featured を問い合わせる */
+        @container style(--_featured: --true) {
+          grid-template-columns: 1fr 1fr;
+          padding: 32px;
+          background-color: var(--background--accent-subtle);
+        }
+      }
+    }
+
+    ._thumbnail {
+      aspect-ratio: 16 / 9;
+      border-radius: 4px;
+      background-image: linear-gradient(135deg, oklch(80% 0.08 60deg), oklch(70% 0.1 20deg));
+
+      @container style(--_density: --spacious) {
+        aspect-ratio: 1;
+      }
+
+      @container style(--_density: --spacious) and style(--_featured: --true) {
+        aspect-ratio: 4 / 3;
+      }
+    }
+
+    ._body {
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+      line-height: var(--leading--snug);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(22 / 16 * 1rem);
+      }
+
+      @container style(--_density: --spacious) and style(--_featured: --true) {
+        color: var(--foreground--accent);
+        font-size: calc(32 / 16 * 1rem);
+      }
+    }
+
+    ._description {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

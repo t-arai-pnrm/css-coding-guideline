@@ -319,7 +319,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。2026年10月の時点で `stretch` に対応していないFirefoxも、`-webkit-fill-available` で同じように広がります（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-stretch-over-width-100)」）。
 
-③の `min-block-size` で、行数は `rows` 属性ではなく `--_rows` で決まります。`field-sizing: content` に対応した環境では、`rows` 属性はもともと高さに使われません（「[6-4 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」）。
+③の `min-block-size` で、行数は `rows` 属性ではなく `--_rows` で決まります。`field-sizing: content` に対応した環境では、`rows` 属性はもともと高さに使われません（「[6-5 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」）。
 
 ⑤から⑦は、`field-sizing` に対応した環境でだけ指定します。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（`resize`）は要りません。`resize` の初期値は `none` なので、`unset` でブラウザの既定の `resize` を打ち消せます。最大の高さも、自動で伸びる上限としてここでだけ指定します。未対応の環境では入力欄の右下のつまみで高さを変えられるので、最大の高さを付けると、手で広げられる範囲まで狭まるからです。`@supports` を使う理由とデモは、「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」にあります。
 

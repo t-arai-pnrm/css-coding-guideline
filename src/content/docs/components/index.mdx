@@ -20,7 +20,8 @@ sidebar:
 - [10-4 デザイントークン](/components/design-tokens/)：`--<分類>--<名前>` の命名と、余白・色・イージング・z-indexのトークンの設計
 - [10-5 公開プロパティと内部プロパティ](/components/custom-properties/)：カスタムプロパティの命名、状態を表す接尾辞、`style` 属性での受け渡し、`@property` の使いどころ
 - [10-6 スタイルクエリで状態を伝える](/components/style-queries/)：幅やホバーとフォーカスの状態を `--_density` や `--_hocus` のフラグとして1か所で立て、子孫を `@container style()` で切り替える書き方と、`:has()` との使い分け
-- [10-7 Web Components](/components/web-components/)：カスタム要素をコンポーネントのルートにする書き方、JavaScriptがなくても動くHTMLを先に作る順番、Light DOMとShadow DOMの使い分け
+- [10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)：置き場所の構造を公開プロパティのフラグで渡し、幅のフラグと組み合わせる書き方と、子の状態で親を変える `:has()`
+- [10-8 Web Components](/components/web-components/)：カスタム要素をコンポーネントのルートにする書き方、JavaScriptがなくても動くHTMLを先に作る順番、Light DOMとShadow DOMの使い分け
 
 コード例で使っている `@scope (.scoped.<名前>) to (.scoped)` の仕組みは「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、レイヤーの順序は「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。クラス名の付け方は「[9-1 命名規則](/notation/naming/)」で扱います。`gap` と `margin` の使い分けは「[11-2 余白を設計する](/layout-practice/spacing/)」で、スタッキングコンテキストの仕組みは「[11-4 重なりと全幅](/layout-practice/layering/)」で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
 

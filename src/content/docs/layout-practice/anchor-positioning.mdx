@@ -1,6 +1,6 @@
 ---
 title: "11-6 アンカーポジショニング"
-description: "ツールチップ、入力欄の説明、メニューのように、別の要素の近くに表示する部品をアンカーポジショニングで組みます。ポップオーバーは暗黙のアンカーと position-area で置き、名前を付けたアンカーを繰り返し置くときは anchor-scope で範囲を限り、ホバーした項目に背景を追従させる表現は、未対応の環境では表示されないだけの装飾として使います。"
+description: "ツールチップ、入力欄の説明、メニューのように、別の要素の近くに表示する部品をアンカーポジショニングで組みます。ポップオーバーは暗黙のアンカーと position-area で置き、名前を付けたアンカーを繰り返し置くときは anchor-scope で範囲を限ります。カードのタグのように、コンポーネントの中で子要素を別の子要素の角に重ねるときも、HTMLの順序のままアンカーを基準に置き、ホバーした項目に背景を追従させる表現は、未対応の環境では表示されないだけの装飾として使います。"
 sidebar:
   order: 6
 ---
@@ -10,8 +10,10 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import hoverIndicatorHtml from '../../../demos/layout-practice/hover-indicator/index.html?raw';
 import hoverIndicatorCss from '../../../demos/layout-practice/hover-indicator/style.css?raw';
+import cardTagHtml from '../../../demos/layout-practice/anchored-card-tag/index.html?raw';
+import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.css?raw';
 
-ツールチップやメニューのように、ボタンの近くに表示する部品は、ポップオーバーにして、開いたボタンを暗黙のアンカーとして置きます。入力欄の説明のように、名前を付けたアンカーを持つコンポーネントを繰り返し置くときは、ルートの `anchor-scope` で名前の範囲をコンポーネントの中に限ります。ホバーした項目を背景が追いかける表現のように、なくても困らない装飾なら、未対応の環境では表示されないだけの形で使えます。
+ツールチップやメニューのように、ボタンの近くに表示する部品は、ポップオーバーにして、開いたボタンを暗黙のアンカーとして置きます。入力欄の説明のように、名前を付けたアンカーを持つコンポーネントを繰り返し置くときは、ルートの `anchor-scope` で名前の範囲をコンポーネントの中に限ります。カードのタグを画像の角に重ねるように、コンポーネントの中で子要素どうしを重ねるときも、基準にする子要素をアンカーにすれば、HTMLの順序を変えずに位置を決められます。ホバーした項目を背景が追いかける表現のように、なくても困らない装飾なら、未対応の環境では表示されないだけの形で使えます。
 
 この節は、アンカーポジショニングの仕組みを前提にしています。アンカーとの結び付け方、`position-area` の9マス、`position-try-fallbacks` による位置の切り替え、包含ブロックとの関係は、「[7-10 アンカーポジショニングの基礎](/layout/anchor-basics/)」で説明しています。未対応の環境への備えも7-10で扱っており、要点は、アンカーを基準にした指定を `@supports` の中に書き、その外に未対応の環境でも読める配置を書くことです。
 
@@ -89,6 +91,104 @@ import hoverIndicatorCss from '../../../demos/layout-practice/hover-indicator/st
 
 <Baseline id="anchor-positioning" compatKey="css.properties.anchor-scope" name="anchor-scope" />
 
+## コンポーネントの中のレイアウトに使う
+
+記事カードのカテゴリーを示すタグを、画像の行末側の上の角に重ねる例で考えます。タグは記事についての情報なので、HTMLでは本文の中の見出しの前に置きます。カードは置き場所の幅によって、画像と本文を縦に積んだり横に並べたりします。カードを包含ブロックにしてタグを絶対配置すると、タグが付くのはカードの角で、画像の角ではありません。
+
+```css title="🙅‍♂ Not Recommended: タグをカードの角に置く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    position: relative;
+  }
+
+  ._tag {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+}
+```
+
+```html
+<article class="scoped article-card">
+  <div class="_body">
+    <img class="_thumbnail" src="..." alt="" />
+    <div class="_content">
+      <p class="_tag">コーヒー</p>
+      <h2 class="_title">...</h2>
+      <p class="_lead">...</p>
+    </div>
+  </div>
+</article>
+```
+
+縦に積んだときは、画像がカードの上端にあるので、2つの角はほぼ重なります。横に並べると、カードの行末側の上の角は本文の上にあり、タグは見出しに重なります。画像の角に合わせるには、並びごとに画像の幅や余白から位置を計算することになり、レイアウトを変えるたびに書き直しが要ります。
+
+画像をアンカーにすれば、タグをHTMLの位置に置いたまま、画像の角に重ねられます。画像に `anchor-name` を付け、タグの `inset-block-start` と `inset-inline-end` を、`anchor()` で画像の同じ側の辺にそろえます。`anchor()` の `start` と `end` は、書いたプロパティと同じ軸の、包含ブロックの書字方向から見た始まりと終わりの辺です（`self-start` と `self-end` は、配置する要素自身の書字方向で決まります）。カードは一覧で繰り返すので、前の見出しで説明したとおり、ルートの `anchor-scope` で名前の範囲をカードの中に限ります。
+
+```css title="🙆‍♂ Recommended: 画像をアンカーにして、タグを画像の角に重ねる"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    position: relative;
+    anchor-scope: --thumbnail;
+  }
+
+  ._thumbnail {
+    anchor-name: --thumbnail;
+  }
+
+  ._tag {
+    @supports (anchor-scope: --thumbnail) {
+      position: absolute;
+      inset-block-start: anchor(start);
+      inset-inline-end: anchor(end);
+      position-anchor: --thumbnail;
+      margin: 8px;
+    }
+  }
+}
+```
+
+次のデモでは、広い場所のカードは画像と本文が横に並び、狭い場所のカードは縦に積まれます。どちらでも、タグは画像の角に付きます。
+
+<Demo title="画像と本文の並びが変わっても、タグを画像の角に重ねるカード" html={cardTagHtml} css={cardTagCss} />
+
+見た目が変わっても、読み上げの順はHTMLのとおり、タグ、見出し、説明です。タグを画像と一緒に包めば、絶対配置だけでも重ねられます。ただし、記事についての情報が画像の側へ移るので、画像のない記事では同じHTMLを使えません。{/* 要確認: 出典なし */}
+
+`@supports` の条件を `anchor-scope` にしているのは、`anchor()` に対応していても `anchor-scope` に未対応のChrome 125〜130では、どのカードのタグも最後のカードの画像に集まるからです。未対応の環境では、タグは `position: absolute` ごと無視され、見出しの前の通常の位置に表示されます。画像に重ならないだけで内容は読めるので、アンカーポジショニングをレイアウトの要にしない方針にも反しません。
+
+<Baseline id="anchor-positioning" compatKey="css.properties.inset-block-start.anchor" name="inset-block-start の anchor()" />
+
+同じ書き方で、特集の表示のように、説明文を画像の下端に重ねることもできます。説明文の下端と行頭側・行末側の辺を、画像の同じ側の辺にそろえます。
+
+```css title="🙆‍♂ Recommended: 説明文を画像の下端に重ねる"
+@scope (.scoped.feature-card) to (.scoped) {
+  :scope {
+    position: relative;
+    anchor-scope: --thumbnail;
+  }
+
+  ._thumbnail {
+    anchor-name: --thumbnail;
+  }
+
+  ._lead {
+    @supports (anchor-scope: --thumbnail) {
+      position: absolute;
+      inset-inline: anchor(start) anchor(end);
+      inset-block-end: anchor(end);
+      position-anchor: --thumbnail;
+      padding: 16px;
+      background-color: oklch(0% 0 0deg / 60%);
+      color: oklch(100% 0 0deg);
+    }
+  }
+}
+```
+
+絶対配置の説明文はカードの高さに数えられないので、長くなると画像の上端を越えて伸びます。重ねるのは短い文章に限り、背景色で画像との間のコントラストを確保します。{/* 要確認: 出典なし */}
+
 ## メニューを上下の空きに合わせて開く
 
 ナビゲーションのメニューは、ボタンの位置によって、下に開くと画面の下端からはみ出すことがあります。候補を書いた順に試す既定の動作では、下に収まらないときだけ上に開きます。項目が多く、上下のどちらにも収まりきらないことがあるメニューなら、`position-try-order: most-block-size` で、元の位置と候補のうち空きの大きいほうを選ばせます。
@@ -149,3 +249,4 @@ import hoverIndicatorCss from '../../../demos/layout-practice/hover-indicator/st
 - [CSS Anchor Positioning Module Level 1 - Resolvable anchor() functions](https://drafts.csswg.org/css-anchor-position-1/#resolvable-anchor-function)（W3C）
 - [CSS Anchor Positioning Module Level 2](https://drafts.csswg.org/css-anchor-position-2/)（W3C、エディターズドラフト）
 - [column-menu](https://codepen.io/tak-dcxi/pen/pvbYooy)（CodePen）
+- [Building Smart Layouts（CSS Day 2025）](https://www.figma.com/deck/NewdIWNVLbsX8ipYOFZ4p8/Smart-Layouts---CSS-Day-2025)（講演のスライド）

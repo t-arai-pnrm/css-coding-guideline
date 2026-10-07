@@ -1,0 +1,202 @@
+---
+title: "10-7 置き場所と子の状態を伝える"
+description: "置き場所によってコンポーネントの見た目を変えるときは、置く側が子のルートを包む要素で公開プロパティのフラグを宣言し、子はそれを内部プロパティで受けて、自分の幅のフラグと and で組み合わせます。編集者が選ぶ特集は data-variant で指定します。子の状態で親自身を変えるときは :has() を使い、ほかの子孫にはフラグで伝えます。"
+sidebar:
+  order: 7
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import featuredHtml from '../../../demos/components/featured-product-card/index.html?raw';
+import featuredCss from '../../../demos/components/featured-product-card/style.css?raw';
+
+スタイルクエリのフラグは、コンポーネントの中で立てるだけでなく、外から渡すこともできます。セクションに商品カードが1枚だけ置かれたときに特集の見た目にするように、置き場所によって見た目を変えるときは、置く側がカードを包む要素で公開プロパティ `--product-card--featured: --true` を宣言します。カードはそれを内部プロパティに受け、自分の幅のフラグ `--_density` と `and` で組み合わせて切り替えます。
+
+反対に、子孫の状態で親自身の見た目を変えるときは、スタイルクエリではなく `:has()` を使います。スタイルクエリは、親から子孫への一方向にしか値を伝えないからです。フラグの立て方と、スタイルクエリがどの要素を問い合わせるかは、「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
+
+<Baseline id="container-style-queries" name="スタイルクエリ" />
+
+## 置く側のセレクタからカードの中を選ぶ問題
+
+{/* 要確認: 出典なし */}
+
+セクションに商品カードが1枚だけ置かれたときに、広い幅を生かした特集の見た目に切り替える場面を考えます。カードが2枚以上並ぶセクションや、1枚でも幅の狭いサイドバーでは、通常の見た目のままにします。特集にするかどうかは、置かれた場所の構造（カードが1枚だけか）と、カード自身の幅の2つの条件で決まります。
+
+従来は、カードを置く側のセレクタからカードの中を選んで、特集の見た目を書いていました。
+
+```css title="🙅‍♂ Not Recommended: 置く側のセレクタごとに、カードの中を選んで特集の見た目を書く"
+/* 🙅‍♂ Not Recommended */
+.pickup-section li:only-child .product-card ._title,
+.campaign-section li:only-child .product-card ._title {
+  font-size: calc(32 / 16 * 1rem);
+}
+```
+
+この書き方では、特集の見た目を使うセクションが増えるたびに、セレクタを書き足すことになります。カードの見た目はカードのファイルではなく置く側のセレクタに散らばり、ほかのコンポーネントの内部を選ばないという原則（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）にも反します。カードの幅も条件に入っていないので、1枚だけのセクションを狭いサイドバーに置くと、狭い幅に大きな見出しが入ります。
+
+## 置き場所を公開プロパティで渡す
+
+本書では、置く側はカードの公開プロパティ `--product-card--featured` で、特集として置いたことだけを伝えます。カードはそれを内部プロパティ `--_featured` に受け、自分の幅のフラグ `--_density` と組み合わせて見た目を決めます。カードを包む要素を名前付きのコンテナにして、カードからそのコンテナの幅とフラグを問い合わせる書き方も知られています。
+
+```css title="🙅‍♂ Not Recommended: カードを包む要素のコンテナの幅と、外で立てたフラグを問い合わせる"
+/* 🙅‍♂ Not Recommended */
+.card-wrapper {
+  container: --card / inline-size;
+}
+
+section:has(> .card-wrapper:only-child) {
+  --featured: true;
+}
+
+@container --card (inline-size >= 500px) and style(--featured: true) {
+  .card {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+```
+
+この形では、カードの見た目が、カードの外にある `.card-wrapper` のコンテナと、`section` で立てた名前空間のないフラグ `--featured` に依存します。`.card-wrapper` で包まずに置いた場所では、条件が成り立たないので特集になりません。`--featured` という名前は、どのコンポーネントのためのフラグかが分からず、ほかの部品の同じ名前のフラグと衝突します。値の `true` も、本書がそろえている `--true` と食い違います。そのため本書では、外側のコンテナを問い合わせず、コンポーネントの名前を含む公開プロパティで渡します（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
+
+```css title="🙆‍♂ Recommended: 置く側は公開プロパティでフラグを渡し、カードは幅のフラグと組み合わせる"
+@scope (.scoped.pickup-section) to (.scoped) {
+  li {
+    &:only-child {
+      --product-card--featured: --true;
+    }
+  }
+}
+
+@scope (.scoped.product-card) to (.scoped) {
+  :scope {
+    --_featured: var(--product-card--featured, --false);
+
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    --_density: --compact;
+
+    display: block grid;
+    gap: 12px;
+
+    @container --scoped (inline-size >= calc(240 / 16 * 1rem + 24px + 280 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      grid-template-columns: calc(240 / 16 * 1rem) 1fr;
+      gap: 24px;
+
+      @container style(--_featured: --true) {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
+
+  ._title {
+    font-size: calc(18 / 16 * 1rem);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(22 / 16 * 1rem);
+    }
+
+    @container style(--_density: --spacious) and style(--_featured: --true) {
+      font-size: calc(32 / 16 * 1rem);
+    }
+  }
+}
+```
+
+置く側の `pickup-section` は、`li` が唯一の子のときにだけ `--product-card--featured: --true` を宣言します。親のCSSからは子のコンポーネントのルートを選べないので、ルートを包む `li` に宣言し、継承でカードに渡します。カードは `:scope` で内部プロパティに受け、値が渡されなければフォールバックの `--false` を使います。値をほかの状態のフラグと同じ `--true` と `--false` にしておけば、`style(--_featured: true)` のような書き間違いを防げます。
+
+カードの側で、コンテナサイズクエリを書くのは、これまでどおりフラグを宣言する `._layout` だけです。子孫の `._title` は、2つのスタイルの条件を `and` でつなぎ、幅が広く、特集として置かれたときだけ見出しを大きくします。`._layout` 自身の列を特集で変えるときは、サイズクエリの中に `@container style(--_featured: --true)` を入れ子にします。この条件は `._layout` の親であるルートを問い合わせ、ルートは `--_featured` を宣言しているので成り立ちます。
+
+特集の見た目を使うセクションが増えても、カードのCSSは変わりません。新しいセクションは、自分の `li` で公開プロパティを宣言するだけで済みます。カードは、どのセクションに置かれたかを知らないまま、渡された値と自分の幅で見た目を決めます。
+
+置く側が渡すのは、`--true` のような状態だけにし、見出しの文字サイズや列の数のような見た目の値は渡しません。見た目の値を外から渡すと、特集の見た目の定義がカードの外に散らばり、カード自身の幅の条件とも組み合わせられなくなるからです。見た目の値を外から調整させたい場合は、それぞれを別の公開プロパティとして用意します（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。{/* 要確認: 出典なし */}
+
+次のデモでは、カードが1枚のセクションと2枚のセクションに、同じカードを置いています。幅を768にすると、1枚のカードだけが特集の見た目になります。1280では2枚のカードも画像を横に並べますが、特集の見た目にはなりません。480では、1枚のカードも幅が足りないので、通常の見た目に戻ります。
+
+<Demo title="1枚だけ置かれ、幅が足りるときに特集の見た目になる商品カード" html={featuredHtml} css={featuredCss} />
+
+## 置く側の条件を増やす
+
+特集にする条件は、置く側だけで変えられます。カードが4枚以上並ぶ一覧で、先頭の1枚を特集にしたいときは、数量クエリで選んだ `li` に公開プロパティを宣言します（「[5-5 数量クエリ](/pseudo/quantity-queries/)」）。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 4枚以上並ぶときは、先頭の1枚を特集として渡す"
+@scope (.scoped.pickup-section) to (.scoped) {
+  li {
+    &:first-child:nth-last-child(n + 4) {
+      --product-card--featured: --true;
+    }
+  }
+}
+```
+
+`:first-child:nth-last-child(n + 4)` は、先頭にあり、後ろから数えて4番目以降にもある子、つまり4枚以上並ぶときの先頭の1枚です。変えるのは数えた子そのものなので、親を起点にした `:has()` ではなく、子の側で数えます。条件を変えても、カードのCSSは1行も変わりません。特集として渡されたカードも、幅が足りない場所では通常の見た目のままです。
+
+## HTMLで選ぶ特集と、置き場所で決まる特集
+
+どの記事を特集にするかを編集者が選ぶ場合は、置き場所から導かず、HTMLの `data-variant="featured"` でバリエーションとして指定します（「[9-1 命名規則](/notation/naming/)」）。選んだ理由はHTMLの側にしかなく、CSSの条件では表せないからです。公開プロパティで渡すのは、「1枚だけ」「4枚以上の先頭」のように、置き場所の構造から決まる場合に限ります。{/* 要確認: 出典なし */}
+
+2つを併用するときは、カードの `:scope` で、どちらかが指定されていれば `--_featured` を `--true` にします。子孫は `--_featured` だけを問い合わせるので、特集になった理由がどちらでも、同じ見た目の指定で済みます。
+
+```css title="🙆‍♂ Recommended: data-variant と公開プロパティのどちらでも、同じ内部プロパティに受ける"
+@scope (.scoped.product-card) to (.scoped) {
+  :scope {
+    --_featured: var(--product-card--featured, --false);
+
+    &[data-variant="featured"] {
+      --_featured: --true;
+    }
+  }
+}
+```
+
+## 子の状態で親を変えるときの:has()
+
+スタイルクエリは、親から子孫への一方向にしか状態を伝えられません。カードの中のリンクにホバーしたとき、カード全体の影を濃くするように、子の状態で親自身の見た目を変えるときは、従来どおり `:has()` を使います。
+
+子孫のホバーとフォーカスを、親でまとめてほかの子孫に伝えたいときは、`:has()` とフラグを組み合わせます。ルートで `--_has-hocus: --true` を立て、伝えたい子孫は `@container style(--_has-hocus: --true)` で切り替えます。次の例では、カードの中のリンクにホバーするかフォーカスすると、リンクの外にある画像が拡大されます。
+
+```css title="🙆‍♂ Recommended: 子孫のホバーとフォーカスを :has() で受け、フラグでほかの子孫に伝える"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    --_has-hocus: --false;
+
+    &:has(:any-link:hover) {
+      @media (any-hover) {
+        --_has-hocus: --true;
+      }
+    }
+
+    &:has(:focus-visible) {
+      --_has-hocus: --true;
+    }
+  }
+
+  img {
+    @container style(--_has-hocus: --true) {
+      scale: 1.05;
+    }
+  }
+}
+```
+
+ここでもルート自身の見た目（影など）は、フラグではなく `&:has(…)` の中に直接書きます。ルートの子孫が読むだけなので、このフラグは `:scope` に置いてかまいません。`:scope` に置けないのは、サイズクエリでフラグを切り替える場合だけです。なお、`[open]` や `aria-expanded` のような属性で表す祖先の状態は、「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」の `&:is(:scope[open] *)` の形で子のルールの中に書けます。ホバーとフォーカスでフラグを使うのは、`@media (any-hover)` と `:focus-visible` の2つの条件を子ごとに書き写さないためです。
+
+## 補足と注意点
+
+公開プロパティは継承するので、特集のカードの中に同じ商品カードを入れ子にすると、内側のカードも `--true` を受け取ります。そうした構造がある場合は、カードの `:scope` の中に `& > * { --product-card--featured: initial; }` と書き、ルートの直下の要素で公開プロパティを未定義に戻します。内側のカードはフォールバックの `--false` を使い、ルート自身では宣言しないので、外から渡された値はこれまでどおり受け取れます。
+
+スタイルクエリに対応していない環境では、`--_featured` を問い合わせる指定が適用されず、カードは通常の見た目のまま表示されます。特集は見た目の強弱の違いなので、内容は欠けません。置く側の `li` が宣言する公開プロパティも、継承されるだけで、それ自体は何も表示を変えません。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS Conditional Rules Module Level 5: Style Container Queries](https://drafts.csswg.org/css-conditional-5/#style-container)（W3C）
+- [Using container size and style queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_size_and_style_queries)
+- [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
+- [Building Smart Layouts（CSS Day 2025）](https://www.figma.com/deck/NewdIWNVLbsX8ipYOFZ4p8/Smart-Layouts---CSS-Day-2025)（講演のスライド）

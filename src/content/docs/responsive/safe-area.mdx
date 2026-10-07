@@ -1,8 +1,8 @@
 ---
-title: 13-7 セーフエリアに対応する
+title: 13-8 セーフエリアに対応する
 description: viewport-fit=coverで画面の端まで描画するときは、env(safe-area-inset-*)をmax()で通常の余白と組み合わせ、背景は端まで、文字とボタンはセーフエリアの内側に置きます。画面の下に固定する要素には、下端のセーフエリアを足します。
 sidebar:
-  order: 7
+  order: 8
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -170,7 +170,7 @@ iframeの中では、実機のセーフエリアは再現できません。ifram
 
 セーフエリアの不具合は、パソコンのブラウザでは見つかりません。パソコンのブラウザではセーフエリアがすべて0で、Chromeの開発者ツールのデバイスモードも、切り欠きのある端末を選んでもセーフエリアを0として扱います。{/* 要確認: 出典なし */} 確認には、実機か、XcodeのiOSシミュレーターを使います。縦向きと横向きの両方で、文字とボタンが切り欠きやホームインジケーターに重ならないことを確かめます。
 
-375px未満の画面でビューポートの幅を固定するスクリプト（「[13-5 375px未満の画面の扱い](/responsive/min-viewport-width/)」）は、`<meta name="viewport">` の `content` を丸ごと書き換えます。`viewport-fit=cover` を指定するページでは、スクリプトが設定する2つの値にも `viewport-fit=cover` を加えます。加え忘れると、スクリプトが動いた時点で `auto` に戻り、端まで描画されなくなります。
+375px未満の画面でビューポートの幅を固定するスクリプト（「[13-6 375px未満の画面の扱い](/responsive/min-viewport-width/)」）は、`<meta name="viewport">` の `content` を丸ごと書き換えます。`viewport-fit=cover` を指定するページでは、スクリプトが設定する2つの値にも `viewport-fit=cover` を加えます。加え忘れると、スクリプトが動いた時点で `auto` に戻り、端まで描画されなくなります。
 
 ## ガイドライン
 

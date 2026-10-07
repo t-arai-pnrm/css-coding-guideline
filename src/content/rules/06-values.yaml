@@ -202,16 +202,17 @@
   page: values/math-functions
   since: 0.21.0
 
+# 6-4 計算関数を応用する
 - id: typed-arithmetic-to-unitless
   level: 推奨
   rule: '長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。'
   reason: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
   note: 'デザインカンプの値は、これまでどおり `calc(40 / 1280 * 100svi)` のように単位のない数値で割り、`40px / 1280px` とは書きません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していない（158で対応する予定）ので、宣言が無効になっても内容を読める場面で使います。Chromeでは、この割り算で定義した長さがブラウザのズームで拡大縮小されないので、文字サイズにはremの下限を付けます。'
   aiProne: true
-  page: values/math-functions
+  page: values/advanced-math-functions
   since: 0.11.0
 
-# 6-4 if()とattr()で条件と属性を値にする
+# 6-5 if()とattr()で条件と属性を値にする
 - id: attr-for-html-attributes
   level: 推奨
   rule: 型付きの `attr()` は、`<textarea>` の `rows` のように HTML がすでに持っている属性の値を CSS でも使うときに限り、コンポーネントに値を渡す手段は `style` 属性の公開プロパティのままにする。

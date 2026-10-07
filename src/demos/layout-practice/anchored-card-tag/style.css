@@ -1,0 +1,87 @@
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._narrow {
+      max-inline-size: calc(280 / 16 * 1rem);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.article-card) to (.scoped) {
+    :scope {
+      position: relative;
+
+      /* カードを一覧で繰り返しても、タグがほかのカードの画像を基準にしないようにする */
+      anchor-scope: --thumbnail;
+      container: --scoped / inline-size;
+    }
+
+    ._body {
+      /* 外側のコンポーネントの値を継承しないよう、クエリの外にもデフォルトの値を書く */
+      --_density: --compact;
+
+      display: block grid;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+
+      /* 画像 160px 相当・隙間 16px・本文の最小幅 240px 相当・左右の padding 32px が並ぶ幅 */
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem + 16px + 240 / 16 * 1rem + 32px)) {
+        --_density: --spacious;
+
+        grid-template-columns: calc(160 / 16 * 1rem) 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+    }
+
+    ._thumbnail {
+      anchor-name: --thumbnail;
+      aspect-ratio: 16 / 9;
+      border-radius: 4px;
+      background-image: linear-gradient(135deg, oklch(78% 0.06 70deg), oklch(52% 0.08 50deg));
+
+      @container style(--_density: --spacious) {
+        aspect-ratio: 1;
+      }
+    }
+
+    ._content {
+      display: block grid;
+      gap: 8px;
+      justify-items: start;
+    }
+
+    ._tag {
+      padding-block: 2px;
+      padding-inline: 8px;
+      border-radius: 4px;
+      background-color: oklch(30% 0.04 50deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(12 / 16 * 1rem);
+
+      /* 未対応の環境では、見出しの前の通常の位置に表示する */
+      @supports (anchor-scope: --thumbnail) {
+        position: absolute;
+        inset-block-start: anchor(start);
+        inset-inline-end: anchor(end);
+        position-anchor: --thumbnail;
+        margin: 8px;
+      }
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    ._lead {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

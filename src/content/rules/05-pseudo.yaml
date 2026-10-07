@@ -128,7 +128,16 @@
   page: pseudo/quantity-queries
   since: 0.9.0
 
-# 5-6 フォームの状態を表す擬似クラス
+# 5-6 件数と中身で配置を組み替える
+- id: zone-layout-by-content
+  level: 推奨
+  rule: '区画（ゾーン）の有無と件数で配置を組み替えるときは、並べられるかどうかをコンテナサイズクエリで判定し、どの区画をどこに置くかを `&:not(:has(> ._quotes))` や `&:has(> ._quotes):has(> ._recent > :nth-child(6))` のように親を起点にした `:has()` で判定して、`grid-template` を書き換える。'
+  reason: 幅と中身の判定を分ければ、どちらかの条件を変えるときに片方だけを直せばよく、件数や有無を表すクラスをテンプレートで出力する必要もないため。
+  note: '「ない」は `:not(:has())` で書き、`:has(:not())` は使いません。2つの条件をどちらも満たすときは `:has()` を連結します（引数をカンマで区切ると、どちらか一方で当てはまります）。テンプレートを書き換えるルールには `reading-flow` を指定し、中身のない区画は出力しません。'
+  page: pseudo/quantity-layouts
+  since: 0.28.0
+
+# 5-7 フォームの状態を表す擬似クラス
 - id: placeholder-shown-with-hint
   level: 推奨
   rule: '入力の有無で見た目を変えるときは、入力例を書いた `placeholder` 属性のある入力欄に `:placeholder-shown` を使い、`placeholder` 属性のない入力欄を `:not(:placeholder-shown)` で「入力済み」と判定しない。'
@@ -165,7 +174,7 @@
   page: pseudo/form-states
   since: 0.9.0
 
-# 5-7 開閉と表示の状態を表す擬似クラス
+# 5-8 開閉と表示の状態を表す擬似クラス
 - id: open-attribute-for-details-dialog
   level: 推奨
   rule: '`<details>` と `<dialog>` の開いた状態は `[open]` 属性セレクタで選び、対象のすべてのブラウザが対応するまで `:open` を使わない。'
@@ -202,7 +211,7 @@
   page: pseudo/open-states
   since: 0.9.0
 
-# 5-8 生成コンテンツと装飾の擬似要素
+# 5-9 生成コンテンツと装飾の擬似要素
 - id: no-meaningful-generated-content
   level: 禁止
   rule: '必須の印、単位、注意書き、副題のように、読み手が知る必要のある文字を、`::before` や `::after` の `content` で入れない（HTML に書く）。'

@@ -342,7 +342,16 @@
   page: components/style-queries
   since: 0.23.0
 
-# 10-7 Web Components
+# 10-7 置き場所と子の状態を伝える
+- id: placement-via-public-flag
+  level: 推奨
+  rule: '置き場所の構造によってコンポーネントの見た目を変えるときは、置く側が子のルートを包む要素で公開プロパティのフラグ（`--product-card--featured: --true`）を宣言し、子は `:scope` で内部プロパティ（`--_featured: var(--product-card--featured, --false)`）に受けて、自分の幅のフラグと `@container style(--_density: --spacious) and style(--_featured: --true)` のように組み合わせる。'
+  reason: 子の見た目が子のファイルにまとまり、置き場所が増えても子の CSS を変えずに済むため。置く側のセレクタから子の内部を選んだり、外側の要素のコンテナを問い合わせたりすると、子が置き場所の構造に依存する。
+  note: '置く側が渡すのは状態だけにし、文字サイズのような見た目の値は渡しません。編集者が選ぶ特集のように、置き場所の構造から決まらないものは、HTMLの `data-variant` で指定します。'
+  page: components/placement-and-child-states
+  since: 0.28.0
+
+# 10-8 Web Components
 - id: custom-element-as-scope-root
   level: 推奨
   rule: 'カスタム要素で作る部品は、カスタム要素そのものに `scoped` クラスを付けてルートにし、CSS は外部のファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書く。'
@@ -365,7 +374,7 @@
   level: 推奨
   rule: 'JavaScript がなくても動く HTML（`popover` 属性、`<dialog>` と `command` 属性など）を先に作り、カスタム要素は振る舞いを足すだけにする。'
   reason: スクリプトの読み込みが遅れたり失敗したりしても部品を操作でき、開閉やフォーカスの扱いを自作せずにブラウザに任せられるため。
-  note: 'ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（5-7）。'
+  note: 'ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（5-8）。'
   aiProne: true
   page: components/web-components
   since: 0.21.0

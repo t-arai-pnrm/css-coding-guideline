@@ -1,0 +1,204 @@
+---
+title: "6-4 計算関数を応用する"
+description: clamp() の範囲に負の値を含めると、幅によってはみ出すかどうかを切り替えられます。abs() と sibling-index() で並びの中央からの距離を求め、長さを単位のない数値に変えるときは単位のついた値で割ります。Chrome系のブラウザだけが対応する calc-size() と @function は、従来の書き方で足りる場面では使いません。
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import hangingHtml from '../../../demos/values/hanging-label/index.html?raw';
+import hangingCss from '../../../demos/values/hanging-label/style.css?raw';
+import arcHtml from '../../../demos/values/sibling-index-arc/index.html?raw';
+import arcCss from '../../../demos/values/sibling-index-arc/style.css?raw';
+
+計算関数は、根拠を式に残すだけでなく、クエリを書かずに値を切り替える手段にもなります。`clamp()` の最小値を負、最大値を0にすると、余白が広いときだけ要素を外へはみ出させる値を作れます。`abs()` で絶対値を取れば、兄弟の並びの中央からの距離を、項目の数に関係なく求められます。`calc()`、`min()`、`max()`、`clamp()` の基本と、推奨値の組み立て方は「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+
+長さを単位のない数値に変えるときは、三角関数の組み合わせではなく、単位のついた値で割ります。Chrome系のブラウザだけが対応する `calc-size()` と `@function` は、従来の書き方で足りる場面では使いません。
+
+## `clamp()` の範囲に負の値を含める
+
+`clamp()` の最小値には、負の値も書けます。最小値を負、最大値を0にすると、ある幅を境に「はみ出すか、はみ出さないか」が切り替わる値を、クエリを使わずに作れます。{/* 要確認: 出典なし */}たとえば、見出しの上に付けたラベルを、本文の外の余白が広いときだけ本文の行頭より左へはみ出させ、余白が狭くなったらはみ出しをなくす、という指定です。
+
+この指定を、画面の幅と結果の数値だけで書くと、次のようになります。`1170px` と `50px` が何の幅なのかは、式からは読み取れません。`vw` はスクロールバーの幅を含み、`left` は書字方向に従わないので、どちらも本書では使いません。
+
+```css title="🙅‍♂ Not Recommended: 幅の数値と vw だけで、はみ出しを切り替える"
+/* 🙅‍♂ Not Recommended */
+.section-label {
+  position: relative;
+  left: clamp(-30px, 1170px - 100vw + 50px, 0px);
+}
+```
+
+書き直すときは、式の部品に名前を付け、中央の式を「本文の外の余白が、最小の余白をどれだけ超えたか」として組み立てます。本文の幅を `--_content-width`、本文の外に必ず残す余白を `--_gutter`、はみ出させる量の上限を `--_overhang` とします。ラベルはコンポーネントの中にあるので、基準の幅にはルートのコンテナの `cqi` を使います。ページ全体の幅で決めてよい要素なら、`100cqi` を `100svi` に置き換えます（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
+
+```css title="🙆‍♂ Recommended: 余白が広い分だけ、ラベルを本文の外へ出す"
+@scope (.scoped.article-header) to (.scoped) {
+  :scope {
+    --_content-width: calc(640 / 16 * 1rem);
+    --_gutter: 16px;
+    --_overhang: 24px;
+
+    container: --scoped / inline-size;
+  }
+
+  ._inner {
+    inline-size: min(100% - 2 * var(--_gutter), var(--_content-width));
+    margin-inline: auto;
+  }
+
+  ._label {
+    inline-size: fit-content;
+
+    /* 本文の外の余白が最小の余白より広い分だけ、最大で --_overhang まで本文の外へ出す */
+    margin-inline-start: clamp(
+      -1 * var(--_overhang),
+      var(--_gutter) - (100cqi - var(--_content-width)) / 2,
+      0px
+    );
+  }
+}
+```
+
+この式は、中央の式が0になる幅を境に読みます。`(100cqi - var(--_content-width)) / 2` は本文の片側の余白なので、中央の式が0になるのは、コンテナの幅が「本文の幅＋最小の余白の2倍」（この例では672px）のときです。672pxより狭いと中央の式は正の値になり、最大値の0で止まるので、ラベルの位置は本文の行頭と同じです。
+
+672pxより広いと中央の式は負の値になり、ラベルは余白が広がった分だけ左へ動きます。最小値の `-1 * var(--_overhang)` に達する720px以上では、はみ出しは24pxで止まります。なお、最大値の `0px` には単位が要ります。単位のない `0` は数値として扱われ、長さと混ぜた `clamp()` 全体が無効になるからです。
+
+次のデモの破線の枠が本文の幅です。480pxではラベルが枠の左端にそろい、696pxでは12px、1024pxでは24px、枠の外へ出ます。
+
+<Demo title="clamp() の範囲に負の値を含め、余白が広いときだけラベルを本文の外へ出す" html={hangingHtml} css={hangingCss} widths={[480, 696, 1024]} />
+
+はみ出させる手段には、`inset-inline-start` ではなく `margin-inline-start` を選びます。`inset-inline-start` でずらすには `position: relative` が要り、ずらしても元の場所が空いたまま描画だけが動きます。負の `margin-inline-start` なら、ラベルはレイアウトの中で動き、位置を決めるための指定だと分かります。要素の間隔を作る `margin` とは役割が違うので、次兄弟結合子で付ける規則の対象にもなりません（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
+
+## `abs()` で並びの中央からの距離を求める
+
+`abs()` は、引数の絶対値を返す関数です。兄弟の中の位置を数値で返す `sibling-index()` と、兄弟の数を返す `sibling-count()` と組み合わせると、並びの中央からの距離を式で表せます（「[5-4 子要素の位置で選ぶ](/pseudo/child-index/)」）。中央の位置は `(sibling-count() + 1) / 2` で、自分の位置との差の絶対値を `abs()` で取れば、中央の項目が0、両端に近いほど大きい値になります。この値に一定の長さを掛けて項目を下げると、中央を頂点にして、両端へ下がる弧の形に並びます。{/* 要確認: 出典なし（abs() で中央からの距離を求め、弧の形に並べる例） */}
+
+```css title="🙆‍♂ Recommended: 対応した環境でだけ、中央から離れた項目ほど下げる"
+@scope (.scoped.badge-row) to (.scoped) {
+  :scope {
+    --_step: 12px;
+
+    display: block flex;
+    gap: 8px;
+
+    @supports (z-index: sibling-index()) {
+      /* 5枚のとき、両端の項目は中央から2枚分離れ、2段分下がる */
+      padding-block-end: calc(2 * var(--_step));
+    }
+  }
+
+  li {
+    @supports (z-index: sibling-index()) {
+      /* 中央の位置からの距離に比例して下げる */
+      translate: 0 calc(abs(sibling-index() - (sibling-count() + 1) / 2) * var(--_step));
+    }
+  }
+}
+```
+
+<Demo title="対応した環境では、中央の項目が高く、両端の項目が低い弧の形に並ぶ" html={arcHtml} css={arcCss} widths={[]} />
+
+項目を下げるには、`margin-block-start` ではなく `translate` を使います。弧の形は見た目だけの装飾なので、レイアウトを変えない変形が向いています。`margin-block-start` で下げると、下げた分だけ一覧の高さが変わり、要素の間隔を作る `margin` とも見分けが付きません。ただし、`translate` は後ろの内容を押し下げないので、いちばん下がる項目の分だけ、一覧の下に余白を取っておきます。
+
+中央の位置を `3` のような数値で書かず、`sibling-count()` から求めているので、項目の数を変えても、弧は左右対称のままです。`abs()` は2025年6月から主要なブラウザで使え、本書の対象のブラウザもすべて対応しています（2026年10月確認）。`sibling-index()` に対応したブラウザはどれも `abs()` にも対応しているので、`@supports` は `sibling-index()` の判定だけで足ります。
+
+<Baseline id="abs-sign" name="abs() と sign()" />
+
+## 長さを単位のない数値に変える割り算
+
+長さを単位のない数値に変えるときは、単位のついた値で割ります。`calc(100svi / 1px)` は、画面の幅をpxで数えた数値（幅375pxの画面なら375）を返します。単位のついた値どうしを割り、単位を打ち消して数値にする計算は、「typed arithmetic」と呼ばれる仕様です。
+
+この割り算が使えなかった時期には、`tan(atan2(長さ, 1px))` という三角関数の組み合わせで同じ数値を得ていました。`atan2()` が2つの長さから角度を求め、`tan()` がその角度から比を求めるので、結果は2つの長さの比になります。ただし、角度を経由する回り道なので、式を読んでも割り算だとは分かりません。既存のコードやAIの出力でこの形を見つけたら、割り算に書き換えます。
+
+```css title="🙅‍♂ Not Recommended: 三角関数で単位を外す"
+/* 🙅‍♂ Not Recommended */
+:root {
+  --window-width: tan(atan2(100svi, 1px));
+}
+```
+
+```css title="🙆‍♂ Recommended: 単位のついた値で割って単位を外す"
+:root {
+  --window-width: calc(100svi / 1px);
+}
+```
+
+2026年10月の時点で、この割り算に対応しているのはChrome 140以降とSafari 18.2以降です。本書の対象のブラウザ（Safari 18系の最終版以降と、ほかのブラウザの最新版）のうち、Firefoxだけは安定版が対応しておらず、158で対応する予定です。対応していない環境では、この式を含む宣言が無効になります。そのため、宣言が無効になっても内容を読めて操作できる場面で使います（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
+
+一方、デザインカンプの値を使う計算に、この割り算は要りません。`calc(40px / 1280px * 100svi)` と書かなくても、はじめから単位のない数値で割れば同じ結果になり、どのブラウザでも計算できます。「[6-1 pxとremを使い分ける](/values/px-and-rem/)」で説明したように、サイズのトークンを単位のない数値で持っておくと、こうした計算もしやすくなります。
+
+```css title="🙆‍♂ Recommended: デザインカンプの値は単位のない数値で割る"
+@scope (.scoped.page-section) to (.scoped) {
+  :scope {
+    padding-inline: calc(40 / 1280 * 100svi);
+  }
+}
+```
+
+単位のついた値で割って作った長さには、ズームについての注意があります。Chromeでは、`calc(24px / 1rem * 1rem)` のように長さどうしの割り算を含む式で定義した値が、ブラウザのズームで拡大縮小されません（2026年初めに確認）。式の値は24pxと同じ長さですが、表示を拡大しても大きさが変わらないので、文字サイズに使うとWCAGの達成基準1.4.4（テキストのサイズ変更）を満たせなくなるおそれがあります。この割り算から求めた値を文字サイズに使うときは、`max()` でremの下限を付けます。
+
+## Chrome系のブラウザだけが対応する `calc-size()` と `@function`
+
+`calc-size()` は、`auto` や `fit-content` のようなキーワードで決まる大きさを、計算で扱える値に変える関数です。`calc-size(auto, size + 16px)` の `size` が、`auto` で決まる大きさを表します。計算した値は数値の大きさと同じように補間されるので、`block-size: 0` から「内容の高さ＋余白」まで変わるトランジションも書けます。
+
+ただし、高さを `auto` まで動かすだけなら、`interpolate-size: allow-keywords` で足ります。本書はこの指定を、ベーススタイルの `:root` に1行で書いています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。MDNも、計算を伴わないなら `calc-size()` ではなく `interpolate-size` を使うよう勧めています。`calc-size()` が要るのは、内容の大きさに値を足したり掛けたりしたうえで動かす場面だけです。使うとしても、直前に `block-size: auto` のような普通の値を書きます。未対応の環境では `calc-size()` を含む宣言が捨てられ、前の値が残るからです。
+
+```css title="🙅‍♂ Not Recommended: 計算を伴わないのに calc-size() で auto まで動かす"
+/* 🙅‍♂ Not Recommended */
+.faq-item {
+  &[open]::details-content {
+    block-size: calc-size(auto, size);
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: auto への補間は、ベーススタイルの interpolate-size で有効にする"
+@layer base {
+  :root {
+    @media (prefers-reduced-motion: no-preference) {
+      interpolate-size: allow-keywords;
+    }
+  }
+}
+```
+
+`@function` は、引数を受け取って値を返す関数を、CSSで定義するアットルールです。「[6-3 計算関数で根拠を式に残す](/values/math-functions/#計算はcssに任せる)」の傾きと切片の計算も、基準の値を引数として受け取る関数にまとめれば、使う側は関数を呼ぶだけで済みます。ただし、未対応の環境では、関数を呼んだ宣言が無効になります。その環境のために従来の式も書くことになり、重複を減らすという目的が果たせません。
+
+```css title="🙅‍♂ Not Recommended: @function で定義した関数を、従来の式なしで呼ぶ"
+/* 🙅‍♂ Not Recommended */
+@function --fluid(--min-size <number>, --max-size <number>) returns <length> {
+  result: clamp(
+    var(--min-size) / 16 * 1rem,
+    (var(--max-size) - var(--min-size)) / 905 * 100svi + (var(--min-size) - (var(--max-size) - var(--min-size)) / 905 * 375) / 16 * 1rem,
+    var(--max-size) / 16 * 1rem
+  );
+}
+
+.fluid-heading h2 {
+  font-size: --fluid(24, 40);
+}
+```
+
+SafariとFirefoxでは `--fluid()` を含む宣言が無効になり、見出しは継承した文字サイズのままになります。それを避けるには、6-3の「計算はCSSに任せる」で示した式を前の宣言として書く必要があり、同じ計算を2か所で持つことになります。
+
+<Baseline id="calc-size" />
+
+<Baseline id="function" name="@function" />
+
+2026年10月の時点で、`calc-size()` はChrome 129以降、`@function` はChrome 139以降のChrome系のブラウザだけが対応しています。SafariとFirefoxでは使えないので、本書では、どちらも現状では採用しません。大きさのアニメーションは `interpolate-size` で、計算の重複はカスタムプロパティの式とユーティリティで扱います。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [clamp() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clamp)
+- [abs() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/abs)
+- [sibling-index() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sibling-index)
+- [calc-size() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/calc-size)
+- [@function - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@function)
+- [WebKit Features in Safari 18.2](https://webkit.org/blog/16301/webkit-features-in-safari-18-2/)（WebKit Blog、2024年12月）
+- [Building Smart Layouts（CSS Day 2025）](https://www.figma.com/deck/NewdIWNVLbsX8ipYOFZ4p8/Smart-Layouts---CSS-Day-2025)（講演のスライド）

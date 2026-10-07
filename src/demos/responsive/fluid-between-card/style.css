@@ -1,0 +1,72 @@
+@layer pages {
+  @scope (.scoped.demo-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.media-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._layout {
+      /* カードの幅が 400px で 120px、720px 以上で 200px */
+      --_thumbnail-size: clamp(120 / 16 * 1rem, 25cqi + 20 / 16 * 1rem, 200 / 16 * 1rem);
+      --_density: --compact;
+
+      display: block grid;
+      gap: 16px;
+
+      /* 画像の最小幅 120px 相当・隙間 16px・本文の最小幅 240px 相当が並ぶ幅 */
+      @container --scoped (inline-size >= calc(120 / 16 * 1rem + 16px + 240 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        grid-template-columns: var(--_thumbnail-size) 1fr;
+        align-items: start;
+      }
+
+      &:is(:scope[data-fluid="off"] *) {
+        /* 比較用：画像の幅を固定する */
+        --_thumbnail-size: calc(120 / 16 * 1rem);
+      }
+    }
+
+    ._thumbnail {
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+
+      @container style(--_density: --spacious) {
+        aspect-ratio: 1;
+      }
+    }
+
+    ._body {
+      & > ._title + ._lead {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._title {
+      /* カードの幅が 200px で 16px、500px 以上で 22px */
+      font-size: clamp(16 / 16 * 1rem, 2cqi + 12 / 16 * 1rem, 22 / 16 * 1rem);
+
+      &:is(:scope[data-fluid="off"] *) {
+        /* 比較用：フラグで2段階に切り替える */
+        font-size: calc(16 / 16 * 1rem);
+
+        @container style(--_density: --spacious) {
+          font-size: calc(20 / 16 * 1rem);
+        }
+      }
+    }
+
+    ._lead {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

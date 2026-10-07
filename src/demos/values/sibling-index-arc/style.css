@@ -1,0 +1,33 @@
+@layer components {
+  @scope (.scoped.badge-row) to (.scoped) {
+    :scope {
+      --_step: 12px;
+
+      display: block flex;
+      gap: 8px;
+      justify-content: center;
+      padding-block: 8px;
+
+      @supports (z-index: sibling-index()) {
+        /* 5枚のとき、両端のカードは中央から2枚分離れ、2段分下がる */
+        padding-block-end: calc(8px + 2 * var(--_step));
+      }
+    }
+
+    li {
+      display: block grid;
+      place-items: center;
+      inline-size: calc(56 / 16 * 1rem);
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background-color: oklch(92% 0.04 250deg);
+      font-size: calc(14 / 16 * 1rem);
+      font-weight: 700;
+
+      @supports (z-index: sibling-index()) {
+        /* 中央の位置からの距離に比例して下げる */
+        translate: 0 calc(abs(sibling-index() - (sibling-count() + 1) / 2) * var(--_step));
+      }
+    }
+  }
+}

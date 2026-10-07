@@ -1,0 +1,138 @@
+@layer components {
+  @scope (.scoped.zone-layout-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    /* 見出しの次のレイアウトは別のコンポーネントのルートで、このスコープからは選べないので、間隔は section の gap で空ける */
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h2 {
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+
+  @scope (.scoped.home-layout) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._body {
+      --_density: --compact;
+
+      /* 2列に並べられない幅では縦に積む。Flexbox なので、下の grid-template は使われない */
+      display: block flex;
+      flex-direction: column;
+      gap: 24px;
+
+      /* 引用の列の最小幅 200px 相当を1とし、特集と3：1で並ぶ幅 */
+      @container --scoped (inline-size >= calc(200 / 16 * 1rem * 4 + 24px)) {
+        --_density: --spacious;
+
+        display: block grid;
+        reading-flow: grid-rows;
+        grid-template:
+          "--feature --quotes"
+          "--recent --recent"
+          / 3fr 1fr;
+      }
+
+      /* 引用がなければ、特集を全幅に広げる */
+      &:not(:has(> ._quotes)) {
+        reading-flow: grid-rows;
+        grid-template:
+          "--feature"
+          "--recent";
+      }
+
+      /* 引用があり、新着記事が6件以上なら、引用の列を縦に通す */
+      &:has(> ._quotes):has(> ._recent > :nth-child(6)) {
+        reading-flow: grid-rows;
+        grid-template:
+          "--feature --quotes"
+          "--recent --quotes"
+          / 3fr 1fr;
+      }
+
+      & > ._feature {
+        grid-area: --feature;
+      }
+
+      & > ._quotes {
+        grid-area: --quotes;
+      }
+
+      & > ._recent {
+        grid-area: --recent;
+      }
+    }
+
+    ._feature {
+      display: block grid;
+      gap: 8px;
+      align-content: end;
+      min-block-size: calc(160 / 16 * 1rem);
+      padding: 24px;
+      border-radius: 8px;
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+    }
+
+    ._feature-title {
+      font-size: calc(20 / 16 * 1rem);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(28 / 16 * 1rem);
+      }
+    }
+
+    ._quotes {
+      --_ratio: 1;
+
+      container: --quotes / inline-size;
+      display: block grid;
+      gap: 16px;
+      align-content: start;
+
+      /* 引用が2件以上で縦に並ぶときは、文字を少し小さくする */
+      &:has(> :nth-child(2)) {
+        --_ratio: 0.9;
+      }
+    }
+
+    ._quote {
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    /* 引用の列の幅 192px で 16px、272px で 20px になる文字サイズに、比率を掛ける */
+    ._quote-text {
+      font-size: calc(clamp(16 / 16 * 1rem, 5cqi + 6.4 / 16 * 1rem, 20 / 16 * 1rem) * var(--_ratio));
+    }
+
+    ._quote-source {
+      color: oklch(45% 0 0deg);
+      font-size: calc(12 / 16 * 1rem);
+    }
+
+    ._recent {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+      gap: 12px;
+      align-content: start;
+
+      & > li {
+        padding: 12px;
+        border: 1px solid oklch(85% 0 0deg);
+        border-radius: 8px;
+      }
+    }
+  }
+}

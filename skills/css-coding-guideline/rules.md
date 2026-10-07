@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.27.1
+- バージョン: 0.28.0
 - 生成日: 2026-10-07
-- ルールの数: 569
+- ルールの数: 571
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -154,51 +154,51 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】入力の有無で見た目を変えるときは、入力例を書いた `placeholder` 属性のある入力欄に `:placeholder-shown` を使い、`placeholder` 属性のない入力欄を `:not(:placeholder-shown)` で「入力済み」と判定しない。（`placeholder-shown-with-hint`）
   - 理由: `:placeholder-shown` は `placeholder` 属性のない入力欄には当てはまらないので、`:not(:placeholder-shown)` は空の入力欄にも当てはまってしまうため。
   - 補足: 未入力の状態を `&:placeholder-shown` の側に書けば、`placeholder` 属性のない入力欄では何も起きません。`:not()` で書く必要があるときは、`&[placeholder]:not(:placeholder-shown)` のように属性の有無も条件にします。判定のためだけに空白1文字の `placeholder` を付ける書き方は使いません。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【推奨】同じ状態をネイティブの属性と ARIA 属性の両方で表すことがあるときは、`&:is(:disabled, [aria-disabled="true"])` や `&:is(:user-invalid, [aria-invalid="true"])` のように、擬似クラスと属性セレクタをまとめて指定する。（`native-and-aria-state-together`）
   - 理由: `aria-disabled="true"` を付けた要素は `:disabled` に、JavaScript で `aria-invalid="true"` を付けた要素は `:user-invalid` に当てはまらず、片方だけに指定すると、同じ状態なのに見た目が変わらない要素が出るため。
   - 補足: `disabled` 属性で表せる状態は `disabled` 属性を優先します。`aria-disabled="true"` は、フォーカスを残したまま無効であることを伝えたい場合に使い、操作を止める処理は JavaScript で書きます。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【推奨】読み取り専用の入力欄の見た目は `&[readonly]` に指定し、`input:read-only` のように、要素の種類を限らずに `:read-only` を使わない。（`readonly-attribute-for-text-field`）
   - 理由: `:read-only` は「編集できない要素」すべてに当てはまり、`input` に限っても、チェックボックス、ボタン、ファイルの選択、無効にした入力欄まで選ぶため。
   - 補足: `:read-write` は、`contenteditable` を付けた要素にも当てはまります。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【必須】`::placeholder` の文字は `color` で色を指定し、背景とのコントラスト比を 4.5:1 以上にする。`opacity` で薄くしない。（`placeholder-color-contrast`）
   - 理由: ブラウザの既定のプレースホルダーは薄い色で表示されることが多く、入力例を読めないユーザーが出るため。
   - 補足: Firefox は既定でプレースホルダーを半透明にするので、kiso.css は `::placeholder` の `opacity` を初期値に戻しています。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【推奨】`<details>` と `<dialog>` の開いた状態は `[open]` 属性セレクタで選び、対象のすべてのブラウザが対応するまで `:open` を使わない。（`open-attribute-for-details-dialog`）
   - 理由: `<details>` と `<dialog>` では `[open]` と `:open` の当てはまる条件が同じで、`:open` に対応していないブラウザ（Safari 26.4 以前）では、`:open` を含むルールがセレクタリストごと無効になるため。
   - 補足: `<select>` や `<input>` のピッカーを開いている状態は `:open` でしか選べないので、対応していない環境で見た目が変わらなくても困らない装飾に限り、ほかのセレクタと分けたルールに書きます。詳細度は `[open]` も `:open` も 0.1.0 です。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【必須】`popover` 属性の要素の表示中の状態は `:popover-open` で選び、`[open]`、`:open`、`.is-open` のようなクラスで選ばない。（`popover-open-for-popover`）
   - 理由: ポップオーバーには `open` 属性が付かず、`:open` も当てはまらないので、表示中かどうかをブラウザの状態のまま参照できるのは `:popover-open` だけであるため。
   - 補足: 閉じた状態は `:not(:popover-open)` で選びます。開くボタンの見た目を変えるときは、`&:has(+ :popover-open)` のように、ボタンから見た位置を結合子で絞ります。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【推奨】モーダルとして開いたダイアログだけに当てるスタイルは `:modal` で選び、`dialog[open]` で代用しない。（`modal-pseudo-for-modal-styles`）
   - 理由: `open` 属性は `show()` で開いたモーダルでないダイアログにも付くので、`dialog[open]` では開き方を区別できないため。
   - 補足: `:modal` は `requestFullscreen()` で全画面表示にした要素にも当てはまります。背面のスクロールを止める `:root:has(:modal)` は、第8章のルール `modal-scroll-lock-root` で定めています。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【推奨】`:empty` は、空白や改行が入らないことを確かめた要素にだけ使い、テンプレートや CMS が改行を出力しうる要素の判定に使わない。（`empty-without-whitespace`）
   - 理由: 2026年10月の時点のブラウザでは、空白や改行だけを含む要素にも `:empty` が当てはまらず、見た目では空の要素が空として扱われないため。
   - 補足: コメントだけを含む要素には `:empty` が当てはまります。Selectors Level 4 の草案は空白だけの要素も空とみなす定義に変わりましたが、その定義どおりに実装したブラウザはありません。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【禁止】必須の印、単位、注意書き、副題のように、読み手が知る必要のある文字を、`::before` や `::after` の `content` で入れない（HTML に書く）。（`no-meaningful-generated-content`）
   - 理由: 生成コンテンツは DOM に含まれず、機械翻訳、選択してのコピー、ページ内検索の対象にならないうえ、支援技術とブラウザの組み合わせによっては読み上げられず、スタイルを無効にした環境では表示もされないため。
   - 補足: 生成コンテンツに入れてよいのは、ほかの手段で意味が伝わっている装飾（リンクの文字の後ろの矢印、見出しの前の線など）だけです。印刷のときに外部リンクの URL を添えるような、HTML にある情報を紙の上で補う指定は例外です。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【推奨】装飾として文字や記号を生成コンテンツで入れるときは、`content: "→" / ""` のように代替テキストを空にする。（`empty-alt-for-decorative-content`）
   - 理由: 代替テキストがないと、装飾の記号の名前がスクリーンリーダーで読み上げられ、本文の読み上げを妨げるため。
   - 補足: `content: ""` で作る文字のない箱には、代替テキストは要りません。擬似要素そのものが操作の対象になる `::scroll-button()` のような場合は、空にせず、`content: "←" / "前の事例"` のように名前を書きます。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【推奨】`::marker` に指定するのは `color` と `font-size` だけにし、記号を変える、太くする、アイコンにするといった装飾は、`list-style-type: ""` でマーカーを空にして `::before` で描く。（`marker-color-and-font-size-only`）
   - 理由: Safari の `::marker` は `color` と `font-size` しか反映せず、ほかのプロパティや `content` を指定しても、Safari だけ見た目が変わらないため。
   - 補足: `list-style: none` でマーカーを消すと、Safari の VoiceOver がリストとして読み上げなくなるので、`list-style-type: ""` を使います。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【推奨】検索結果のページで検索語に付ける目印のように、内容の一部として読み手に伝える強調は `<mark>` で書き、`::highlight()` は、ページ内検索の一致や構文の色分けのように、操作に合わせて描き直す表示に使う。（`mark-over-highlight-for-meaning`）
   - 理由: ハイライトは DOM を変えないので、CSS や JavaScript が動かない環境では範囲が表示されず、支援技術への伝わり方も `Highlight` の `type` と環境の対応によって異なるため。
   - 補足: `::highlight()` に指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。範囲は色だけで区別せず、下線を組み合わせます（第15章のルール `no-color-only-information`）。強制カラーモードでは色が置き換わり、`text-shadow` は `none` になります。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【必須】単位は「ユーザーがブラウザの文字サイズを大きくしたとき、この値も一緒に大きくなるべきか」で選び、大きくなるべき値は rem（または em）、そうでない値は px にする。（`unit-by-text-scaling`）
   - 理由: 文字サイズの設定を尊重しつつ、余白や線まで大きくなって読みにくくなるのを防ぐため。
   - 補足: すべてを rem にする書き方も、すべてを px にする書き方も、この基準に合いません。
@@ -249,19 +249,19 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
   - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
   - 補足: デザインカンプの値は、これまでどおり `calc(40 / 1280 * 100svi)` のように単位のない数値で割り、`40px / 1280px` とは書きません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していない（158で対応する予定）ので、宣言が無効になっても内容を読める場面で使います。Chromeでは、この割り算で定義した長さがブラウザのズームで拡大縮小されないので、文字サイズにはremの下限を付けます。
-  - 詳細: 6-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
+  - 詳細: 6-4 計算関数を応用する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/advanced-math-functions.mdx）
 - 【必須】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）
   - 理由: 宣言に `var()` が含まれると、未対応の環境でも宣言は計算値の時点で無効になって前の宣言に戻らず、対応した環境でも属性がないか型として読めないと、宣言がプロパティの初期値に戻るため。
   - 補足: 第2引数は、対応した環境でしか使われないので、未対応の環境のフォールバックにはなりません。`@supports` の条件は `min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` のように型付きで書き、`var()` を含めません。
-  - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+  - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【推奨】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
   - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-4 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
-  - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+  - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【必須】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
   - 補足: 前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`var()` を含むと計算値の時点で無効になり、前の宣言に戻らないので、`@supports` の中に書くか、スタイルクエリや状態のセレクタで書きます。
-  - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+  - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【推奨】配置が思いどおりにならないときは、値を足したり `position` でずらしたりする前に、その要素がどのレイアウトの方式（通常フロー、Flexbox、Grid、位置指定）の中にあり、どの要素が包含ブロックとスタッキングコンテキストになっているかを確かめる。（`identify-layout-mode-first`）
   - 理由: 効かない指定の多くは、その方式の規則どおりの振る舞いで、値を足して見た目を合わせても原因が残り、内容や文字の大きさが変わったときに崩れるため。
   - 詳細: 7-1 レイアウトの基礎（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout/fundamentals.mdx）
@@ -524,23 +524,23 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】カスタム要素で作る部品は、カスタム要素そのものに `scoped` クラスを付けてルートにし、CSS は外部のファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書く。（`custom-element-as-scope-root`）
   - 理由: 要素名がコンポーネントの名前を受け持ち、`scoped` クラスが外側のスコープの下限になるので、ほかのコンポーネントと同じ規約で境界を作れるため。
   - 補足: 名前のクラス（`scoped <名前>` の `<名前>`）は付けません。カスタム要素の中に `<style>` を置いて前置きのない `@scope` で書く方法は、部品を置いた数だけ同じ `<style>` が出力され、CSS がコンポーネントごとのファイルにまとまらないので使いません。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【必須】カスタム要素のルートには、`display: block flow` のように `display` を明示する。（`custom-element-root-display`）
   - 理由: カスタム要素にはブラウザのデフォルトスタイルがなく、`display` が初期値の `inline` になるので、中にブロックの要素を置くと幅の指定が効かず、背景や枠線も中身を囲む形で描かれないため。
   - 補足: Shadow DOM で作る部品では、`:host` に書きます。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】JavaScript がなくても動く HTML（`popover` 属性、`<dialog>` と `command` 属性など）を先に作り、カスタム要素は振る舞いを足すだけにする。（`custom-element-enhances-html`）
   - 理由: スクリプトの読み込みが遅れたり失敗したりしても部品を操作でき、開閉やフォーカスの扱いを自作せずにブラウザに任せられるため。
-  - 補足: ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（5-7）。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 補足: ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（5-8）。
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】ページから子要素を受け取る部品は Light DOM で作り、Shadow DOM は中身をすべて自分で描く部品に限って使う。（`light-dom-for-received-children`）
   - 理由: 子要素を受け取る部品を Shadow DOM で作ると、子要素はページの DOM に残り、それを囲む要素だけが Shadow DOM に入るので、1つの部品の CSS がページの CSS ファイルと Shadow DOM の中に分かれるため。
   - 補足: Light DOM で作れば、部品の CSS は1つのファイルにまとまり、kiso.css のリセットやユーティリティもそのまま当たります。Shadow DOM の中には、ページのセレクタが当たらず、継承する値（カスタムプロパティを含む）だけが届きます。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】Shadow DOM の中では、ページのトークンをカスタムプロパティで参照し、kiso.css のリセットやユーティリティに頼っていた指定は中に書く。（`shadow-dom-restate-page-styles`）
   - 理由: カスタムプロパティは継承で境界を越えて届くが、ページのリセットとユーティリティのクラスは中の要素に当たらないため。
   - 補足: たとえば、ボタンの `font` と `color` はブラウザのデフォルトに戻るので `inherit` を指定し、`.-visually-hidden` と同じ指定は中の要素に直接書きます。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討する。（`grid-template-first`）
   - 理由: 配置が親の指定だけで完結し、子要素の側に幅の計算や個別の指定を書かずに済むため。
   - 補足: 「1次元なら Flexbox、2次元なら Grid」という分け方は正確ではありません。1列や1行の並びでも、Grid のほうが簡潔に書ける場面は多くあります。
@@ -782,51 +782,51 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】コンテナサイズクエリの条件では、`width` ではなく `inline-size` を使う。（`container-query-inline-size`）
   - 理由: 書字方向に依存しない、論理的な指定にそろえるため。
   - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【非推奨】`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。（`no-container-just-in-case`）
-  - 理由: コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【必須】`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。（`cqi-needs-named-container`）
-  - 理由: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
 - 【非推奨】`zoom` による縮小は最後の手段にとどめ、使うときは、ルートの直下で中身を包む要素に `@container --scoped (inline-size < 最小幅)` の条件を付けて、`zoom: min(progress(100cqi, 0px, 最小幅), 1)` と書く。（`zoom-as-last-resort`）
   - 理由: 文字も含めてすべてが縮小され、レイアウトの問題を解決せずに隠してしまうため。先にイントリンシックなレイアウトとコンテナサイズクエリで組み替え、それでも想定の最小幅を下回ると破綻するコンポーネントに限る。
   - 補足: `1` を上限にして、拡大には使いません。`progress()` に未対応の環境では縮小されないので、縮小しなくても読めて操作できる状態を保ちます（プログレッシブ・エンハンスメント）。文字サイズを縮める代わりにも使いません。
   - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
+- 【非推奨】`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。（`no-container-just-in-case`）
+  - 理由: コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
+- 【必須】`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。（`cqi-needs-named-container`）
+  - 理由: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
 - 【必須】メディアクエリとコンテナサイズクエリの条件は範囲構文（`>=` や `<`）で書き、`min-width` や `max-width` の書き方は使わない。（`query-range-syntax`）
   - 理由: 条件を不等式として読め、境界の値を含むかどうかも明確になるため。
   - 自動チェック: Stylelint: `media-feature-range-notation`（メディアクエリのみ）
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【禁止】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
   - 理由: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。（`any-pointer-not-width-for-input`）
   - 理由: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
   - 補足: `pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第17章）。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】375px 未満の画面でもカンプの配置を保つ要件があるときに限り、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。要件がなければ固定せず、自然に折り返した表示にする。（`fixed-viewport-below-min-width`）
   - 理由: 固定すると、幅 320px の端末では 16px の本文が約 13.6px に縮小されるため。320 CSS px で崩れない CSS なら固定しなくても内容は読めるので、固定で得られるのはカンプに近い配置だけである。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
   - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなります。ズームしたときの `outerWidth` はブラウザで違い、Chrome では変わりませんが、Firefox では小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
-  - 詳細: 13-5 375px未満の画面の扱い（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
+  - 詳細: 13-6 375px未満の画面の扱い（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
 - 【禁止】カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。（`no-full-liquid-scaling`）
   - 理由: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。
   - 補足: ブレイクポイントはデザインの段階で決めず、実装の段階でデザイナーと、保つもの（本文の読みやすさ、情報の量、画像の縦横比、CTA）と崩れとみなす基準（カラムの数を変える時点、余白を削る順番）をすり合わせて決めます（3-2）。コンポーネントの切り替えはコンテナサイズクエリで、ビューポートに密着する要素とページ全体の段組みはメディアクエリで書き、幅で連続的に変えたい値は値ごとに `clamp()` で範囲を決めます（6-3）。
-  - 詳細: 13-6 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
+  - 詳細: 13-7 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【推奨】ヒーローのように幅に合わせて拡大・縮小させたい局所は、その部分を名前付きのコンテナにして `cqi` で組み、ビューポート単位を使わない。（`local-liquid-with-cqi`）
   - 理由: 置かれた場所の幅に合わせて振る舞い、ページのほかの部分の文字サイズや余白を巻き込まないため。
   - 補足: 文字サイズは、最小値と最大値を rem にし、推奨値を `cqi` と rem の和にした `clamp()` で書きます（`clamp-rem-bounds`）。`cqi` を使うのは、コンテナの子孫の要素だけです（`cqi-needs-named-container`）。
-  - 詳細: 13-6 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
+  - 詳細: 13-7 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【必須】`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。（`safe-area-inset-with-viewport-fit-cover`）
   - 理由: `cover` を指定するとブラウザはページをセーフエリアの内側に寄せなくなり、余白を書かないと、ノッチやホームインジケーターのある端末でだけ内容が隠れるため。
   - 補足: 画面の端まで描画する必要がないページでは、`viewport-fit` をデフォルトの `auto` のままにします。パソコンのブラウザではセーフエリアがすべて0なので、実機か iOS シミュレーターで確かめます。
-  - 詳細: 13-7 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+  - 詳細: 13-8 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【推奨】セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。（`safe-area-combine-with-max`）
   - 理由: セーフエリアの値は切り欠きやシステムの UI が占める幅そのもので、長方形の画面では0になるため。比べるか足すかは、余白の一部をセーフエリアで兼ねてよいかで決まる。
   - 補足: `env()` の第2引数は、ブラウザがその名前の環境変数を知らないときだけ使われます。`env(safe-area-inset-bottom, 16px)` と書いても、セーフエリアのない画面では16pxではなく0になります。
-  - 詳細: 13-7 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+  - 詳細: 13-8 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【必須】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
   - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
   - 補足: 横向きの画面では左右にもセーフエリアがあるので、左右の端に接するバーやボタンには `env(safe-area-inset-left)` と `env(safe-area-inset-right)` も加えます。対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
-  - 詳細: 13-7 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+  - 詳細: 13-8 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【推奨】デザインで特に指定がなければ、`font-family` は総称ファミリーの `sans-serif` だけにする。（`font-family-sans-serif`）
   - 理由: 主要な OS に読みやすい和文フォントが入っており、ユーザーが自分で設定した読みやすいフォントも尊重できるため。
   - 補足: kiso.css で指定済みです。欧文のフォントを使うときも、最後に `sans-serif` を置き、和文は総称ファミリーに任せます。
@@ -1086,7 +1086,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 1-1 CSSはブラウザへの「提案」である（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-suggestion.mdx）
 - 【推奨】すべての環境でデザインカンプと同じ見た目にすること（ピクセルパーフェクト）ではなく、どの環境でもデザインの意図が伝わり、内容を読めて操作できることを目標にする。（`consensus-over-pixel-perfect`）
   - 理由: 表示を左右する変数は無数にあり、特定の環境に合わせて決め打ちした値は、ほかの環境で崩れる原因になるため。
-  - 補足: カンプの比率を保ってほしいと頼まれた場合も、カンプの幅に対する比率でページ全体を拡大・縮小せず、何を保つかをデザイナーとすり合わせます（13-6）。
+  - 補足: カンプの比率を保ってほしいと頼まれた場合も、カンプの幅に対する比率でページ全体を拡大・縮小せず、何を保つかをデザイナーとすり合わせます（13-7）。
   - 詳細: 1-1 CSSはブラウザへの「提案」である（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/principles/browser-suggestion.mdx）
 - 【推奨】カンプの幅以外での見せ方、文章量や要素の数が変わったときの見せ方、細部の再現の程度を、実装の前にデザイナーやクライアントと合意しておく。（`agree-on-responsive-behavior`）
   - 理由: どこまでを許容するかは実装者だけでは決められず、実装の後で食い違うと手戻りが大きいため。
@@ -1321,58 +1321,62 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 列数を決める本当の条件は、項目の数よりも、その一覧が使える幅であることが多いため。
   - 補足: 「3件以上なら3列」のように数で列数を決めると、狭い場所に置いたときに列が細くなりすぎます。項目が少ないときに列を行いっぱいに広げるだけなら、`auto-fit` が空の列を畳むので、数量クエリは要りません。
   - 詳細: 5-5 数量クエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/quantity-queries.mdx）
+- 【推奨】区画（ゾーン）の有無と件数で配置を組み替えるときは、並べられるかどうかをコンテナサイズクエリで判定し、どの区画をどこに置くかを `&:not(:has(> ._quotes))` や `&:has(> ._quotes):has(> ._recent > :nth-child(6))` のように親を起点にした `:has()` で判定して、`grid-template` を書き換える。（`zone-layout-by-content`）
+  - 理由: 幅と中身の判定を分ければ、どちらかの条件を変えるときに片方だけを直せばよく、件数や有無を表すクラスをテンプレートで出力する必要もないため。
+  - 補足: 「ない」は `:not(:has())` で書き、`:has(:not())` は使いません。2つの条件をどちらも満たすときは `:has()` を連結します（引数をカンマで区切ると、どちらか一方で当てはまります）。テンプレートを書き換えるルールには `reading-flow` を指定し、中身のない区画は出力しません。
+  - 詳細: 5-6 件数と中身で配置を組み替える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/quantity-layouts.mdx）
 - 【推奨】入力の有無で見た目を変えるときは、入力例を書いた `placeholder` 属性のある入力欄に `:placeholder-shown` を使い、`placeholder` 属性のない入力欄を `:not(:placeholder-shown)` で「入力済み」と判定しない。（`placeholder-shown-with-hint`）
   - 理由: `:placeholder-shown` は `placeholder` 属性のない入力欄には当てはまらないので、`:not(:placeholder-shown)` は空の入力欄にも当てはまってしまうため。
   - 補足: 未入力の状態を `&:placeholder-shown` の側に書けば、`placeholder` 属性のない入力欄では何も起きません。`:not()` で書く必要があるときは、`&[placeholder]:not(:placeholder-shown)` のように属性の有無も条件にします。判定のためだけに空白1文字の `placeholder` を付ける書き方は使いません。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【推奨】同じ状態をネイティブの属性と ARIA 属性の両方で表すことがあるときは、`&:is(:disabled, [aria-disabled="true"])` や `&:is(:user-invalid, [aria-invalid="true"])` のように、擬似クラスと属性セレクタをまとめて指定する。（`native-and-aria-state-together`）
   - 理由: `aria-disabled="true"` を付けた要素は `:disabled` に、JavaScript で `aria-invalid="true"` を付けた要素は `:user-invalid` に当てはまらず、片方だけに指定すると、同じ状態なのに見た目が変わらない要素が出るため。
   - 補足: `disabled` 属性で表せる状態は `disabled` 属性を優先します。`aria-disabled="true"` は、フォーカスを残したまま無効であることを伝えたい場合に使い、操作を止める処理は JavaScript で書きます。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【推奨】読み取り専用の入力欄の見た目は `&[readonly]` に指定し、`input:read-only` のように、要素の種類を限らずに `:read-only` を使わない。（`readonly-attribute-for-text-field`）
   - 理由: `:read-only` は「編集できない要素」すべてに当てはまり、`input` に限っても、チェックボックス、ボタン、ファイルの選択、無効にした入力欄まで選ぶため。
   - 補足: `:read-write` は、`contenteditable` を付けた要素にも当てはまります。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【必須】`::placeholder` の文字は `color` で色を指定し、背景とのコントラスト比を 4.5:1 以上にする。`opacity` で薄くしない。（`placeholder-color-contrast`）
   - 理由: ブラウザの既定のプレースホルダーは薄い色で表示されることが多く、入力例を読めないユーザーが出るため。
   - 補足: Firefox は既定でプレースホルダーを半透明にするので、kiso.css は `::placeholder` の `opacity` を初期値に戻しています。
-  - 詳細: 5-6 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
+  - 詳細: 5-7 フォームの状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/form-states.mdx）
 - 【推奨】`<details>` と `<dialog>` の開いた状態は `[open]` 属性セレクタで選び、対象のすべてのブラウザが対応するまで `:open` を使わない。（`open-attribute-for-details-dialog`）
   - 理由: `<details>` と `<dialog>` では `[open]` と `:open` の当てはまる条件が同じで、`:open` に対応していないブラウザ（Safari 26.4 以前）では、`:open` を含むルールがセレクタリストごと無効になるため。
   - 補足: `<select>` や `<input>` のピッカーを開いている状態は `:open` でしか選べないので、対応していない環境で見た目が変わらなくても困らない装飾に限り、ほかのセレクタと分けたルールに書きます。詳細度は `[open]` も `:open` も 0.1.0 です。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【必須】`popover` 属性の要素の表示中の状態は `:popover-open` で選び、`[open]`、`:open`、`.is-open` のようなクラスで選ばない。（`popover-open-for-popover`）
   - 理由: ポップオーバーには `open` 属性が付かず、`:open` も当てはまらないので、表示中かどうかをブラウザの状態のまま参照できるのは `:popover-open` だけであるため。
   - 補足: 閉じた状態は `:not(:popover-open)` で選びます。開くボタンの見た目を変えるときは、`&:has(+ :popover-open)` のように、ボタンから見た位置を結合子で絞ります。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【推奨】モーダルとして開いたダイアログだけに当てるスタイルは `:modal` で選び、`dialog[open]` で代用しない。（`modal-pseudo-for-modal-styles`）
   - 理由: `open` 属性は `show()` で開いたモーダルでないダイアログにも付くので、`dialog[open]` では開き方を区別できないため。
   - 補足: `:modal` は `requestFullscreen()` で全画面表示にした要素にも当てはまります。背面のスクロールを止める `:root:has(:modal)` は、第8章のルール `modal-scroll-lock-root` で定めています。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【推奨】`:empty` は、空白や改行が入らないことを確かめた要素にだけ使い、テンプレートや CMS が改行を出力しうる要素の判定に使わない。（`empty-without-whitespace`）
   - 理由: 2026年10月の時点のブラウザでは、空白や改行だけを含む要素にも `:empty` が当てはまらず、見た目では空の要素が空として扱われないため。
   - 補足: コメントだけを含む要素には `:empty` が当てはまります。Selectors Level 4 の草案は空白だけの要素も空とみなす定義に変わりましたが、その定義どおりに実装したブラウザはありません。
-  - 詳細: 5-7 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
+  - 詳細: 5-8 開閉と表示の状態を表す擬似クラス（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/open-states.mdx）
 - 【禁止】必須の印、単位、注意書き、副題のように、読み手が知る必要のある文字を、`::before` や `::after` の `content` で入れない（HTML に書く）。（`no-meaningful-generated-content`）
   - 理由: 生成コンテンツは DOM に含まれず、機械翻訳、選択してのコピー、ページ内検索の対象にならないうえ、支援技術とブラウザの組み合わせによっては読み上げられず、スタイルを無効にした環境では表示もされないため。
   - 補足: 生成コンテンツに入れてよいのは、ほかの手段で意味が伝わっている装飾（リンクの文字の後ろの矢印、見出しの前の線など）だけです。印刷のときに外部リンクの URL を添えるような、HTML にある情報を紙の上で補う指定は例外です。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【推奨】装飾として文字や記号を生成コンテンツで入れるときは、`content: "→" / ""` のように代替テキストを空にする。（`empty-alt-for-decorative-content`）
   - 理由: 代替テキストがないと、装飾の記号の名前がスクリーンリーダーで読み上げられ、本文の読み上げを妨げるため。
   - 補足: `content: ""` で作る文字のない箱には、代替テキストは要りません。擬似要素そのものが操作の対象になる `::scroll-button()` のような場合は、空にせず、`content: "←" / "前の事例"` のように名前を書きます。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【推奨】`::marker` に指定するのは `color` と `font-size` だけにし、記号を変える、太くする、アイコンにするといった装飾は、`list-style-type: ""` でマーカーを空にして `::before` で描く。（`marker-color-and-font-size-only`）
   - 理由: Safari の `::marker` は `color` と `font-size` しか反映せず、ほかのプロパティや `content` を指定しても、Safari だけ見た目が変わらないため。
   - 補足: `list-style: none` でマーカーを消すと、Safari の VoiceOver がリストとして読み上げなくなるので、`list-style-type: ""` を使います。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【推奨】`::selection` で選択範囲の色を変えるときは、`color` と `background-color` の両方を指定し、2つの色のコントラスト比を確かめる。（`selection-color-and-background`）
   - 理由: 片方だけを変えると、もう片方にはブラウザやユーザーの設定の色が残り、選択した文字が背景に埋もれることがあるため。
   - 補足: 文字と背景のコントラスト比の基準は、第15章のルール `text-contrast-aa` と同じです。iOS の Safari は `::selection` に対応していないので、選択範囲はシステムの色のままになります。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 - 【推奨】検索結果のページで検索語に付ける目印のように、内容の一部として読み手に伝える強調は `<mark>` で書き、`::highlight()` は、ページ内検索の一致や構文の色分けのように、操作に合わせて描き直す表示に使う。（`mark-over-highlight-for-meaning`）
   - 理由: ハイライトは DOM を変えないので、CSS や JavaScript が動かない環境では範囲が表示されず、支援技術への伝わり方も `Highlight` の `type` と環境の対応によって異なるため。
   - 補足: `::highlight()` に指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。範囲は色だけで区別せず、下線を組み合わせます（第15章のルール `no-color-only-information`）。強制カラーモードでは色が置き換わり、`text-shadow` は `none` になります。
-  - 詳細: 5-8 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
+  - 詳細: 5-9 生成コンテンツと装飾の擬似要素（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/pseudo/generated-content.mdx）
 
 ### 第6章 値と単位
 
@@ -1469,23 +1473,23 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
   - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
   - 補足: デザインカンプの値は、これまでどおり `calc(40 / 1280 * 100svi)` のように単位のない数値で割り、`40px / 1280px` とは書きません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していない（158で対応する予定）ので、宣言が無効になっても内容を読める場面で使います。Chromeでは、この割り算で定義した長さがブラウザのズームで拡大縮小されないので、文字サイズにはremの下限を付けます。
-  - 詳細: 6-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
+  - 詳細: 6-4 計算関数を応用する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/advanced-math-functions.mdx）
 - 【推奨】型付きの `attr()` は、`<textarea>` の `rows` のように HTML がすでに持っている属性の値を CSS でも使うときに限り、コンポーネントに値を渡す手段は `style` 属性の公開プロパティのままにする。（`attr-for-html-attributes`）
   - 理由: 型付きの `attr()` に未対応のブラウザがあり（2026年10月確認）、同じ値を属性と `style` 属性の2か所に書くことも避けられるため。
   - 補足: `data-variant` のように選択肢から1つを選ぶバリエーションは、属性セレクタで書きます。`attr()` の値は `url()` に使えないので、背景画像は `style` 属性の公開プロパティで渡します。
-  - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+  - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【必須】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）
   - 理由: 宣言に `var()` が含まれると、未対応の環境でも宣言は計算値の時点で無効になって前の宣言に戻らず、対応した環境でも属性がないか型として読めないと、宣言がプロパティの初期値に戻るため。
   - 補足: 第2引数は、対応した環境でしか使われないので、未対応の環境のフォールバックにはなりません。`@supports` の条件は `min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` のように型付きで書き、`var()` を含めません。
-  - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+  - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【推奨】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
   - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-4 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
-  - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+  - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【必須】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
   - 補足: 前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`var()` を含むと計算値の時点で無効になり、前の宣言に戻らないので、`@supports` の中に書くか、スタイルクエリや状態のセレクタで書きます。
-  - 詳細: 6-4 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
+  - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 
 ### 第7章 レイアウトの仕組み
 
@@ -2067,33 +2071,37 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: スタイルクエリは値が一致するかどうかだけを調べるので、`1` や `true` が混ざると、書き間違えても条件が成り立たないだけで誤りに気付けないため。`--` で始めれば、自分で付けた名前だと分かる。
   - 補足: `--color-scheme: --light` のように、2値でも状態の名前そのものを値にするフラグは、そのままにします。範囲の比較（`style(--_columns > 2)`）はSafariが対応していないので使いません（2026年10月確認）。
   - 詳細: 10-6 スタイルクエリで状態を伝える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/style-queries.mdx）
+- 【推奨】置き場所の構造によってコンポーネントの見た目を変えるときは、置く側が子のルートを包む要素で公開プロパティのフラグ（`--product-card--featured: --true`）を宣言し、子は `:scope` で内部プロパティ（`--_featured: var(--product-card--featured, --false)`）に受けて、自分の幅のフラグと `@container style(--_density: --spacious) and style(--_featured: --true)` のように組み合わせる。（`placement-via-public-flag`）
+  - 理由: 子の見た目が子のファイルにまとまり、置き場所が増えても子の CSS を変えずに済むため。置く側のセレクタから子の内部を選んだり、外側の要素のコンテナを問い合わせたりすると、子が置き場所の構造に依存する。
+  - 補足: 置く側が渡すのは状態だけにし、文字サイズのような見た目の値は渡しません。編集者が選ぶ特集のように、置き場所の構造から決まらないものは、HTMLの `data-variant` で指定します。
+  - 詳細: 10-7 置き場所と子の状態を伝える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/placement-and-child-states.mdx）
 - 【推奨】カスタム要素で作る部品は、カスタム要素そのものに `scoped` クラスを付けてルートにし、CSS は外部のファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書く。（`custom-element-as-scope-root`）
   - 理由: 要素名がコンポーネントの名前を受け持ち、`scoped` クラスが外側のスコープの下限になるので、ほかのコンポーネントと同じ規約で境界を作れるため。
   - 補足: 名前のクラス（`scoped <名前>` の `<名前>`）は付けません。カスタム要素の中に `<style>` を置いて前置きのない `@scope` で書く方法は、部品を置いた数だけ同じ `<style>` が出力され、CSS がコンポーネントごとのファイルにまとまらないので使いません。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【必須】カスタム要素のルートには、`display: block flow` のように `display` を明示する。（`custom-element-root-display`）
   - 理由: カスタム要素にはブラウザのデフォルトスタイルがなく、`display` が初期値の `inline` になるので、中にブロックの要素を置くと幅の指定が効かず、背景や枠線も中身を囲む形で描かれないため。
   - 補足: Shadow DOM で作る部品では、`:host` に書きます。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】JavaScript がなくても動く HTML（`popover` 属性、`<dialog>` と `command` 属性など）を先に作り、カスタム要素は振る舞いを足すだけにする。（`custom-element-enhances-html`）
   - 理由: スクリプトの読み込みが遅れたり失敗したりしても部品を操作でき、開閉やフォーカスの扱いを自作せずにブラウザに任せられるため。
-  - 補足: ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（5-7）。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 補足: ホバーで開く、フォーカスが外に出たら閉じる、View Transitions で開閉をつなぐ、設定を保存する、といった処理をカスタム要素が受け持ちます。定義前の表示を `:not(:defined)` で変えるときも、中身は隠しません（5-8）。
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】カスタム要素の設定は、振る舞いの設定を属性（`hoverable` など）で、見た目の設定を公開プロパティ（`--<要素名>--<プロパティ>`）で受け取る。（`custom-element-settings-attrs-and-props`）
   - 理由: 見た目の設定を公開プロパティにすれば、JavaScript が動く前から CSS だけで値が届き、親から継承でまとめて渡すこともできるため。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】ページから子要素を受け取る部品は Light DOM で作り、Shadow DOM は中身をすべて自分で描く部品に限って使う。（`light-dom-for-received-children`）
   - 理由: 子要素を受け取る部品を Shadow DOM で作ると、子要素はページの DOM に残り、それを囲む要素だけが Shadow DOM に入るので、1つの部品の CSS がページの CSS ファイルと Shadow DOM の中に分かれるため。
   - 補足: Light DOM で作れば、部品の CSS は1つのファイルにまとまり、kiso.css のリセットやユーティリティもそのまま当たります。Shadow DOM の中には、ページのセレクタが当たらず、継承する値（カスタムプロパティを含む）だけが届きます。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】Shadow DOM の CSS では、`:host` に `display` と内部プロパティを書き、中の要素はクラスや `@scope` を使わずに要素と属性のセレクタで選ぶ。（`shadow-dom-host-and-element-selectors`）
   - 理由: Shadow DOM の境界がスコープの役目を果たすので、短いセレクタでも外に漏れず、ページのセレクタも中に当たらないため。
   - 補足: CSS は `<template>` の中の `<style>` に書き、`attachShadow()` で作った Shadow DOM に複製します。ネスト、`@media (any-hover)` の中のホバー、`prefers-reduced-motion: no-preference` の中の動きは、Light DOM と同じ規約で書きます。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 - 【推奨】Shadow DOM の中では、ページのトークンをカスタムプロパティで参照し、kiso.css のリセットやユーティリティに頼っていた指定は中に書く。（`shadow-dom-restate-page-styles`）
   - 理由: カスタムプロパティは継承で境界を越えて届くが、ページのリセットとユーティリティのクラスは中の要素に当たらないため。
   - 補足: たとえば、ボタンの `font` と `color` はブラウザのデフォルトに戻るので `inherit` を指定し、`.-visually-hidden` と同じ指定は中の要素に直接書きます。
-  - 詳細: 10-7 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
+  - 詳細: 10-8 Web Components（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/web-components.mdx）
 
 ### 第11章 レイアウトを組む
 
@@ -2514,91 +2522,91 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】コンテナサイズクエリの条件では、`width` ではなく `inline-size` を使う。（`container-query-inline-size`）
   - 理由: 書字方向に依存しない、論理的な指定にそろえるため。
   - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【非推奨】`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。（`no-container-just-in-case`）
-  - 理由: コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
 - 【推奨】アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナサイズクエリの中で `display: none` ではなく視覚的に隠す指定を書く。（`hide-label-visually-in-container-query`）
   - 理由: アイコンを `aria-hidden="true"` にしている場合、ラベルまで消すとリンクやボタンの名前がなくなるため。幅の違う複数の場所に置いても、修飾クラスなしで切り替えられる。
   - 補足: 隠し方は `.-visually-hidden` と同じ考え方です。ユーティリティのクラスはクエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書きます。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【禁止】`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。（`no-container-on-page-root`）
-  - 理由: ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【禁止】幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。（`no-container-on-intrinsic-size`）
-  - 理由: インライン方向のサイズの封じ込めが働き、幅が極端に小さく計算されるため。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【非推奨】コンテナにする要素には `padding` や `border` を指定せず、レイアウトは子要素で行う。（`no-padding-on-container`）
-  - 理由: コンテナの幅の計算がずれ、クエリの閾値や `cqi` の値が意図とずれるため。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【必須】`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。（`cqi-needs-named-container`）
-  - 理由: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【非推奨】`container-type: size` と、それを前提にした `cqb`、`cqh`、`cqmin`、`cqmax` は使わない。（`no-container-type-size`）
-  - 理由: コンテナの高さが確定していないと効かず、使える場面がほとんどないため。
-  - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
-- 【禁止】`.container` のような汎用のクラスを作らない。`container` プロパティを持つ要素にだけ、`.sidebar-container` のように何のコンテナかが分かる名前を付ける。（`no-container-utility-class`）
-  - 理由: `container` が CSS で意味を持つ語になったので、ただのラッパーに使うと誤解を招くため。
   - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
 - 【非推奨】`zoom` による縮小は最後の手段にとどめ、使うときは、ルートの直下で中身を包む要素に `@container --scoped (inline-size < 最小幅)` の条件を付けて、`zoom: min(progress(100cqi, 0px, 最小幅), 1)` と書く。（`zoom-as-last-resort`）
   - 理由: 文字も含めてすべてが縮小され、レイアウトの問題を解決せずに隠してしまうため。先にイントリンシックなレイアウトとコンテナサイズクエリで組み替え、それでも想定の最小幅を下回ると破綻するコンポーネントに限る。
   - 補足: `1` を上限にして、拡大には使いません。`progress()` に未対応の環境では縮小されないので、縮小しなくても読めて操作できる状態を保ちます（プログレッシブ・エンハンスメント）。文字サイズを縮める代わりにも使いません。
   - 詳細: 13-3 コンテナサイズクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-size-queries.mdx）
+- 【非推奨】`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。（`no-container-just-in-case`）
+  - 理由: コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
+- 【禁止】`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。（`no-container-on-page-root`）
+  - 理由: ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
+- 【禁止】幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。（`no-container-on-intrinsic-size`）
+  - 理由: インライン方向のサイズの封じ込めが働き、幅が極端に小さく計算されるため。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
+- 【非推奨】コンテナにする要素には `padding` や `border` を指定せず、レイアウトは子要素で行う。（`no-padding-on-container`）
+  - 理由: コンテナの幅の計算がずれ、クエリの閾値や `cqi` の値が意図とずれるため。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
+- 【必須】`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。（`cqi-needs-named-container`）
+  - 理由: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
+- 【非推奨】`container-type: size` と、それを前提にした `cqb`、`cqh`、`cqmin`、`cqmax` は使わない。（`no-container-type-size`）
+  - 理由: コンテナの高さが確定していないと効かず、使える場面がほとんどないため。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
+- 【禁止】`.container` のような汎用のクラスを作らない。`container` プロパティを持つ要素にだけ、`.sidebar-container` のように何のコンテナかが分かる名前を付ける。（`no-container-utility-class`）
+  - 理由: `container` が CSS で意味を持つ語になったので、ただのラッパーに使うと誤解を招くため。
+  - 詳細: 13-4 コンテナの副作用とコンテナ単位（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/container-units-and-side-effects.mdx）
 - 【推奨】メディアクエリは、ページ全体の段組み、ビューポートに固定された要素、常に画面幅いっぱいに表示されるブロックに限って使う。（`media-query-for-macro-layout`）
   - 理由: それ以外の要素は、イントリンシックな手法やコンテナサイズクエリのほうが置き場所の変化に強いため。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【必須】メディアクエリとコンテナサイズクエリの条件は範囲構文（`>=` や `<`）で書き、`min-width` や `max-width` の書き方は使わない。（`query-range-syntax`）
   - 理由: 条件を不等式として読め、境界の値を含むかどうかも明確になるため。
   - 自動チェック: Stylelint: `media-feature-range-notation`（メディアクエリのみ）
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】メディアクエリでは狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを `width >=` の条件の中に書く。（`mobile-first-queries`）
   - 理由: 狭い画面のレイアウトのほうが単純なことが多く、打ち消すための指定が増えずに済むため。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【禁止】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
   - 理由: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【非推奨】レイアウトの切り替えを `orientation` で判定しない。使える幅は `width` で判定する。（`no-orientation-for-layout`）
   - 理由: `orientation` が比べるのはビューポートの幅と高さで、端末の向きではないため。縦向きの端末でもソフトウェアキーボードが出るとビューポートが横長になり、`landscape` と判定されることがある。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。（`any-pointer-not-width-for-input`）
   - 理由: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
   - 補足: `pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第17章）。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】薄い境界線や補助テキストの色で区別や意味を伝えている部品は、`@media (prefers-contrast: more)` の中で色を濃くする。（`prefers-contrast-more-for-faint-borders`）
   - 理由: OS でコントラストを上げる設定にしているユーザーが、薄い区切りや補助テキストを読み取れる状態を保つため。
   - 補足: `prefers-contrast: custom` は強制カラーモードの配色に対応する値で、色は上書きされるため指定しない。強制カラーモードの扱いは第15章で説明する。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】半透明の背景や `backdrop-filter` の上に文字を置く部品は、`@media (prefers-reduced-transparency: reduce)` の中で背景を不透明にする。（`reduced-transparency-opaque-background`）
   - 理由: OS で透明度を下げる設定にしているユーザーが、背景に左右されずに文字を読める状態を保つため。
   - 補足: 2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
-  - 詳細: 13-4 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
+  - 詳細: 13-5 メディアクエリ（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/media-queries.mdx）
 - 【推奨】375px 未満の画面でもカンプの配置を保つ要件があるときに限り、`<meta name="viewport">` の直後にインラインで置いたスクリプトで、`content` を `width=375` に書き換え、ビューポートの幅を固定する。要件がなければ固定せず、自然に折り返した表示にする。（`fixed-viewport-below-min-width`）
   - 理由: 固定すると、幅 320px の端末では 16px の本文が約 13.6px に縮小されるため。320 CSS px で崩れない CSS なら固定しなくても内容は読めるので、固定で得られるのはカンプに近い配置だけである。320 CSS px で内容が読めて操作できることは、スクリプトに頼らず CSS で保証する。
   - 補足: 判定には `window.innerWidth` ではなく `window.outerWidth` を使います。`innerWidth` はビューポートを固定すると 375 になって元に戻れなくなります。ズームしたときの `outerWidth` はブラウザで違い、Chrome では変わりませんが、Firefox では小さくなります。`maximum-scale` や `user-scalable=no` は書き加えず、固定した後もズームできる状態を保ちます。外部ファイルにすると、読み込みを待つ間に狭いレイアウトで描画され、固定したときにレイアウトシフトが起きます。
-  - 詳細: 13-5 375px未満の画面の扱い（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
+  - 詳細: 13-6 375px未満の画面の扱い（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/min-viewport-width.mdx）
 - 【禁止】カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小しない（フルリキッドにしない）。（`no-full-liquid-scaling`）
   - 理由: 1440px のカンプを幅 768px の画面に縮めると本文が約8.5px になるように、カンプの幅から離れるほど文字が読めなくなり、比率をビューポート単位から求めると文字サイズの設定やズームも効きにくくなるため。どの幅でも同じ配置を縮めるだけなので、画面に合わせて配置を変えるレスポンシブ対応にもならない。
   - 補足: ブレイクポイントはデザインの段階で決めず、実装の段階でデザイナーと、保つもの（本文の読みやすさ、情報の量、画像の縦横比、CTA）と崩れとみなす基準（カラムの数を変える時点、余白を削る順番）をすり合わせて決めます（3-2）。コンポーネントの切り替えはコンテナサイズクエリで、ビューポートに密着する要素とページ全体の段組みはメディアクエリで書き、幅で連続的に変えたい値は値ごとに `clamp()` で範囲を決めます（6-3）。
-  - 詳細: 13-6 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
+  - 詳細: 13-7 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【推奨】ヒーローのように幅に合わせて拡大・縮小させたい局所は、その部分を名前付きのコンテナにして `cqi` で組み、ビューポート単位を使わない。（`local-liquid-with-cqi`）
   - 理由: 置かれた場所の幅に合わせて振る舞い、ページのほかの部分の文字サイズや余白を巻き込まないため。
   - 補足: 文字サイズは、最小値と最大値を rem にし、推奨値を `cqi` と rem の和にした `clamp()` で書きます（`clamp-rem-bounds`）。`cqi` を使うのは、コンテナの子孫の要素だけです（`cqi-needs-named-container`）。
-  - 詳細: 13-6 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
+  - 詳細: 13-7 カンプの幅で全体を拡大・縮小しない（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/design-comp-pattern.mdx）
 - 【必須】`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。（`safe-area-inset-with-viewport-fit-cover`）
   - 理由: `cover` を指定するとブラウザはページをセーフエリアの内側に寄せなくなり、余白を書かないと、ノッチやホームインジケーターのある端末でだけ内容が隠れるため。
   - 補足: 画面の端まで描画する必要がないページでは、`viewport-fit` をデフォルトの `auto` のままにします。パソコンのブラウザではセーフエリアがすべて0なので、実機か iOS シミュレーターで確かめます。
-  - 詳細: 13-7 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+  - 詳細: 13-8 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【推奨】セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。（`safe-area-combine-with-max`）
   - 理由: セーフエリアの値は切り欠きやシステムの UI が占める幅そのもので、長方形の画面では0になるため。比べるか足すかは、余白の一部をセーフエリアで兼ねてよいかで決まる。
   - 補足: `env()` の第2引数は、ブラウザがその名前の環境変数を知らないときだけ使われます。`env(safe-area-inset-bottom, 16px)` と書いても、セーフエリアのない画面では16pxではなく0になります。
-  - 詳細: 13-7 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+  - 詳細: 13-8 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【推奨】セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。（`safe-area-background-to-edge`）
   - 理由: `viewport-fit=cover` を指定する目的は背景を端まで描くことで、`margin` や外側の要素の `padding` で空けると、背景が途切れた帯ができるため。
   - 補足: セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（12-10 `primary-layout` など）にセーフエリアを入れます。
-  - 詳細: 13-7 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+  - 詳細: 13-8 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 - 【必須】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
   - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
   - 補足: 横向きの画面では左右にもセーフエリアがあるので、左右の端に接するバーやボタンには `env(safe-area-inset-left)` と `env(safe-area-inset-right)` も加えます。対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
-  - 詳細: 13-7 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
+  - 詳細: 13-8 セーフエリアに対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/responsive/safe-area.mdx）
 
 ### 第14章 タイポグラフィと和文組版
 

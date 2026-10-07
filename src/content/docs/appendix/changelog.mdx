@@ -11,6 +11,32 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.28.0（2026年10月7日）
+
+中身や置き場所に応じて変わるレイアウトの書き方を加え、字数が規定を超えた節を分けました。ルールを2つ追加したので、マイナーバージョンを上げています。
+
+- 節を分けました。
+  - 「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」から、コンテナの副作用とコンテナ単位を「[13-4 コンテナの副作用とコンテナ単位](/responsive/container-units-and-side-effects/)」に分けました。13-4には、`@property` で登録した長さの内部プロパティで外側のルートの幅を渡す見出しと、閾値と閾値の間を `clamp()` と `cqi` で埋める見出しを加えました。旧13-4〜13-7は13-5〜13-8に繰り下げました。
+  - 「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」から、単位を外す割り算と `calc-size()`・`@function` を「[6-4 計算関数を応用する](/values/advanced-math-functions/)」に分けました。6-4には、`clamp()` の範囲に負の値を含める見出しと、`abs()` と `sibling-index()` で並びの中央からの距離を求める見出しを加えました。旧6-4は6-5に繰り下げました。
+  - 「[5-5 数量クエリ](/pseudo/quantity-queries/)」から、最終行の端数を中央に寄せる見出しを「[5-6 件数と中身で配置を組み替える](/pseudo/quantity-layouts/)」に分けました。5-6には、区画の有無と件数で `grid-template` を書き換える見出しと、件数で文字サイズの比率を変える見出しを加えました。旧5-6〜5-8は5-7〜5-9に繰り下げました。
+  - 「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」から、子から親へ伝えるときの `:has()` を「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」に分けました。10-7には、置く側が公開プロパティでフラグを渡し、カードが自分の幅のフラグと組み合わせて特集の見た目にする書き方を加えました。旧10-7は10-8に繰り下げました。
+- 「[11-6 アンカーポジショニング](/layout-practice/anchor-positioning/)」：カードのタグを画像の角に重ねるように、コンポーネントの中のレイアウトにアンカーを使う見出しとデモを加えました。
+- 第13章の概要に、対応する相手がビューポートの幅だけではないことを一文で添えました。
+- ルールを追加しました。
+  - [`zone-layout-by-content`](/pseudo/quantity-layouts/#rule-zone-layout-by-content)：区画の有無と件数で配置を組み替えるときは、並べられるかどうかをコンテナサイズクエリで、どこに置くかを親を起点にした `:has()` で判定します。
+  - [`placement-via-public-flag`](/components/placement-and-child-states/#rule-placement-via-public-flag)：置き場所の構造で見た目を変えるときは、置く側が公開プロパティのフラグを渡し、子は自分の幅のフラグと組み合わせます。
+- ルールの掲載先を変えました。ルールの内容は変えていません。
+  - 13-3から13-4へ移したルール
+    - [`no-container-just-in-case`](/responsive/container-units-and-side-effects/#rule-no-container-just-in-case)
+    - [`no-container-on-page-root`](/responsive/container-units-and-side-effects/#rule-no-container-on-page-root)
+    - [`no-container-on-intrinsic-size`](/responsive/container-units-and-side-effects/#rule-no-container-on-intrinsic-size)
+    - [`no-padding-on-container`](/responsive/container-units-and-side-effects/#rule-no-padding-on-container)
+    - [`cqi-needs-named-container`](/responsive/container-units-and-side-effects/#rule-cqi-needs-named-container)
+    - [`no-container-type-size`](/responsive/container-units-and-side-effects/#rule-no-container-type-size)
+    - [`no-container-utility-class`](/responsive/container-units-and-side-effects/#rule-no-container-utility-class)
+  - 6-3から6-4へ移したルール
+    - [`typed-arithmetic-to-unitless`](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)
+
 ## 0.27.1（2026年10月7日）
 
 再レビューの指摘を受けて、コード例のHTMLの誤りと、未対応の環境で失敗する段階の説明を直しました。ルールは変えていないので、パッチバージョンを上げています。
@@ -346,7 +372,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`not-ancestor-in-argument`](/pseudo/is-where-not/#rule-not-ancestor-in-argument)：「Xの中にない要素」は、`&:not(X *)` のように祖先を `:not()` の引数の中に書きます。
   - [`unset-box-sizing-for-content-max-width`](/layout/box-model/#rule-unset-box-sizing-for-content-max-width)：内容の幅を最大幅にそろえるときは、`calc()` で `padding` を足さず、`box-sizing: unset` で `content-box` に戻します。
   - [`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)：閾値の式には、`gap`、`padding`、`border` を省かずに含めます。
-  - [`no-container-just-in-case`](/responsive/container-size-queries/#rule-no-container-just-in-case)：`container` は、実際に問い合わせる要素にだけ指定します。
+  - [`no-container-just-in-case`](/responsive/container-units-and-side-effects/#rule-no-container-just-in-case)：`container` は、実際に問い合わせる要素にだけ指定します。
   - [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：同じ閾値を何度も使うときは、ルートの直下の要素で `--_density` を宣言し、子孫は `@container style()` で切り替えます。
   - [`no-orientation-for-layout`](/responsive/media-queries/#rule-no-orientation-for-layout)：レイアウトの切り替えを `orientation` で判定せず、`width` で判定します。
   - [`gradient-border-method`](/decoration/outlines/#rule-gradient-border-method)：グラデーションの枠線は `background-clip: border-area` で描き、どの環境でも必要なときだけ擬似要素と `mask-composite: exclude` を使います。
@@ -447,7 +473,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`nest-own-states-only`](/notation/nesting/#rule-nest-own-states-only)：状態の書き方と祖先の状態で変わるスタイルの書き方を、それぞれのルールに委ねる補足を加えました。
   - 次の4件は、比例スケールとルートの中の `<style>` に触れていた補足を直しました。
     - [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)
-    - [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)
+    - [`typed-arithmetic-to-unitless`](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)
     - [`state-suffix-for-custom-properties`](/components/custom-properties/#rule-state-suffix-for-custom-properties)
     - [`consensus-over-pixel-perfect`](/principles/browser-suggestion/#rule-consensus-over-pixel-perfect)
 - ルールを7件削除しました。
@@ -616,7 +642,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 - ルールを1件削除しました。
   - `no-typed-arithmetic`：単位のついた値どうしの割り算（typed arithmetic）を使わない
 - ルールを3件追加しました。
-  - [`typed-arithmetic-to-unitless`](/values/math-functions/#rule-typed-arithmetic-to-unitless)：長さを単位のない数値に変えるときは、`tan(atan2(長さ, 1px))` ではなく、`calc(100svi / 1px)` のように単位のついた値で割ります。
+  - [`typed-arithmetic-to-unitless`](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)：長さを単位のない数値に変えるときは、`tan(atan2(長さ, 1px))` ではなく、`calc(100svi / 1px)` のように単位のついた値で割ります。
   - [`stretch-over-width-100`](/design-mindset/maintainability/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書きます。
   - [`pattern-leaves-component-properties`](/components/compositions-and-utilities/#rule-pattern-leaves-component-properties)：パターンには重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は公開プロパティで受け取ります。
 - ルールの補足を3件更新しました。[`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults) には、その文脈でブラウザが無視するプロパティも消すことを加えました。[`composition-class-plain`](/notation/naming/#rule-composition-class-plain) には、パターンにも接頭辞を付けず、コンポジションは配置の名前、パターンは役割の名前で区別することを加えました。
@@ -731,7 +757,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 
 - 次の4件のルールは、意味を正しくするために文言を訂正しました。ルールの強さは変えていません。
   - [`no-var-in-query`](/responsive/breakpoints/#rule-no-var-in-query)：対象を、メディアクエリの条件と、コンテナクエリのサイズの条件に限りました。スタイルクエリでカスタムプロパティどうしを比べる条件は対象にしません。
-  - [`no-container-type-size`](/responsive/container-size-queries/#rule-no-container-type-size)：`size` を前提にする単位の `cqw` を `cqh` に直しました。
+  - [`no-container-type-size`](/responsive/container-units-and-side-effects/#rule-no-container-type-size)：`size` を前提にする単位の `cqw` を `cqh` に直しました。
   - [`forced-colors-svg-system-colors`](/color-media/forced-colors/#rule-forced-colors-svg-system-colors)：対象を管理している単色のアイコンに限り、塗りで描くものは `fill`、線で描くものは `stroke` だけを補正するようにしました。
   - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：`:focus-visible` が当てはまる条件を、キーボードの操作から、ブラウザがフォーカスの表示を必要と判断する場合に改めました。
 - 本文の例と説明を直しました。

@@ -293,7 +293,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 <Demo title="サイドの flex-shrink を変えて、縮める順番を決める" html={shrinkPriorityHtml} css={shrinkPriorityCss} widths={[960, 1120, 1280]} />
 
-デモの表示幅には `body` の左右の `padding`（16pxずつ）が含まれるので、コンテナの幅は表示幅より32px狭く、1280、1120、960では1248px、1088px、928pxになります。幅の表示には、各列をコンテナにして、`counter-reset: --px calc(100cqi / 1px)` で数えています。`100cqi` はコンテナの幅で、それを `1px` で割ると単位のない数値になり（「[6-3 計算関数で根拠を式に残す](/values/math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` で文字にできます。列は `flex-basis` で幅が決まるので、コンテナにしても幅は中身に左右されません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していないので、デモでは `@supports` で、対応するブラウザでだけ表示しています。
+デモの表示幅には `body` の左右の `padding`（16pxずつ）が含まれるので、コンテナの幅は表示幅より32px狭く、1280、1120、960では1248px、1088px、928pxになります。幅の表示には、各列をコンテナにして、`counter-reset: --px calc(100cqi / 1px)` で数えています。`100cqi` はコンテナの幅で、それを `1px` で割ると単位のない数値になり（「[6-3 計算関数で根拠を式に残す](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` で文字にできます。列は `flex-basis` で幅が決まるので、コンテナにしても幅は中身に左右されません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していないので、デモでは `@supports` で、対応するブラウザでだけ表示しています。
 
 この指定で、コンテナを広い幅から狭めていくと、3つの段階を順に通ります。まず、コンテナの幅が `flex-basis` と `gap` の合計（800＋400＋24で1224px）より広い間は、余りをすべてメインが受け取ります。サイドの `flex-grow` は0なので、サイドは400pxのままで、狭めるとメインだけが800pxに近づきます。この段階で働いているのは `flex-shrink` ではなく `flex-grow` で、伸びない側の `flex-basis` がそのまま最大幅になります。
 

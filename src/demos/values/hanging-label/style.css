@@ -1,0 +1,50 @@
+@layer tokens {
+  :root {
+    --leading--snug: 1.4;
+  }
+}
+
+@layer components {
+  @scope (.scoped.article-header) to (.scoped) {
+    :scope {
+      --_content-width: calc(640 / 16 * 1rem);
+      --_gutter: 16px;
+      --_overhang: 24px;
+
+      container: --scoped / inline-size;
+      padding-block: 24px;
+    }
+
+    ._inner {
+      inline-size: min(100% - 2 * var(--_gutter), var(--_content-width));
+      margin-inline: auto;
+      outline: 1px dashed oklch(60% 0 0deg);
+
+      & > * + * {
+        margin-block-start: calc(8 / 16 * 1rem);
+      }
+    }
+
+    ._label {
+      inline-size: fit-content;
+
+      /* 本文の外の余白が最小の余白より広い分だけ、最大で --_overhang まで本文の外へ出す */
+      margin-inline-start: clamp(
+        -1 * var(--_overhang),
+        var(--_gutter) - (100cqi - var(--_content-width)) / 2,
+        0px
+      );
+      padding: 2px 8px;
+      border-radius: 4px;
+      background-color: oklch(48% 0.17 260deg);
+      color: oklch(100% 0 0deg);
+      font-size: calc(12 / 16 * 1rem);
+      font-weight: 700;
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+      line-height: var(--leading--snug);
+    }
+  }
+}

@@ -1,0 +1,170 @@
+---
+title: 13-4 コンテナの副作用とコンテナ単位
+description: コンテナにした要素は幅を中身から決められなくなるので、container は実際に問い合わせる要素にだけ指定し、padding や border を付けません。cqi は最も近いコンテナを基準にするので、名前付きのコンテナがあると言い切れる子孫でだけ使い、ルートの幅が要るときは @property で長さにして渡します。閾値と閾値の間は clamp() と cqi で埋めます。
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
+import Guideline from '../../../components/Guideline.astro';
+import fluidHtml from '../../../demos/responsive/fluid-between-card/index.html?raw';
+import fluidCss from '../../../demos/responsive/fluid-between-card/style.css?raw';
+import rootCqiHtml from '../../../demos/responsive/root-cqi-card/index.html?raw';
+import rootCqiCss from '../../../demos/responsive/root-cqi-card/style.css?raw';
+
+コンテナにした要素は、幅を中身から決められなくなります。この副作用があるので、`container` はコンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、幅の基準に専念させるため `padding` や `border` を付けません。書き方の基本は「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
+
+コンテナの幅を基準にした単位 `cqi` は、名前に関係なく、最も近い祖先のコンテナを基準にします。そのため、名前付きのコンテナがあると言い切れる子孫の要素でだけ使います。内側に別のコンテナがあってもルートの幅を基準にしたいときは、`@property` で登録した長さの内部プロパティに `1cqi` を代入して渡します。クエリで切り替えた段階と段階の間は、`clamp()` と `cqi` の流体的な値で埋めます。
+
+<Baseline id="container-queries" name="コンテナサイズクエリ" />
+
+## コンテナの副作用
+
+`container-type: inline-size` を指定した要素には、インライン方向のサイズの封じ込め（`contain: inline-size`）が暗黙的に適用されます。これは「この要素の幅は、中身の大きさに影響されない」という指定です。中身の幅から自分の幅を決める要素に指定すると、中身が幅に反映されないため、幅が極端に小さく計算されてレイアウトが崩れます。
+
+そのため、インライン要素や、`fit-content` など中身から幅が決まる要素は、コンテナにしません。`flex-grow` や `flex-basis` を指定していないflexアイテムも同様です。
+
+gridアイテムで避けるのは、`auto`、`max-content`、`fit-content()` のトラックのように中身からトラックの幅を決める配置と、`justify-self: start` などでアイテムが中身の幅に縮む配置です。`grid-template-columns: repeat(3, 1fr)` のように幅の決まったトラックに引き伸ばされるアイテムは、コンテナにできます。自分に `inline-size` がなくても、トラックから幅を得るからです。
+
+カードを一覧に並べるときは、配置を変えたいカード自身をコンテナにしても、カード自身の配置は切り替わりません。カードのルートをコンテナにして、配置を変える要素を一段内側に置きます。
+
+副作用があるので、コンテナは、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定します。「あとで使うかもしれない」という理由で、すべてのルートや要素に `container` を付けることはしません。問い合わせないコンテナは、封じ込めの副作用だけを残すからです。`subgrid` も、サイズの封じ込めがある要素では無効になります。グリッドの親をコンテナにし、サブグリッドの側の切り替えには `calc()` で求めた値を使います。
+
+コンテナにした要素には `padding` や `border` も指定しません。クエリの条件やコンテナ単位が基準にするのは、コンテナのコンテンツボックスの幅です。`padding` や `border` があると、要素の幅からその分を引いた値で判定されるので、閾値やコンテナ単位の値が見た目の幅とずれます。余白などのレイアウトは子要素に指定し、コンテナは幅の基準に専念させます。
+
+`html`、`body`、ページ全体のレイアウト要素もコンテナにしません。ページ全体の切り替えはメディアクエリの役割だからです。コンテナクエリを提唱したMiriam Suzanneも、講演でこのやり方をアンチパターンとして挙げています。{/* 要確認: 講演の名前と URL */}また、以前の仕様では、コンテナにレイアウトの封じ込め（`contain: layout`）も暗黙的に適用され、中にある `position: fixed` の要素の包含ブロックになっていました。2024年7月にCSSワーキンググループがこの適用をやめると決め、Chrome 129（2024年9月）、Firefox 133（2024年11月）、Safari 18.4（2025年3月）で修正されています（2026年9月確認）。古い環境では従来の動作が残るので、`position: fixed` の要素を含むページ全体をコンテナにする理由はありません。
+
+`<picture>` の `<source>` にある `media` 属性は、コンテナサイズクエリを扱えません。画像の切り替えは、ビューポートを基準にする `media` だけで書きます。置き場所の幅によって、構図の違う画像へ替えたいときは、置き場所ごとにマークアップを分けるなど、HTMLの側で扱います。`container-type: size` は、インライン方向に加えてブロック方向にも封じ込めが起こり、高さを指定していない要素は高さが0に潰れるので、原則として使いません。
+
+## コンテナ単位とクラス名
+
+コンテナの幅を基準にした単位（`cqi` など）もあります。`cqi` は、基準にするコンテナのインライン方向のサイズの1%です。基準になるのは、`cqi` を書いた要素の祖先のうち、インライン方向のサイズを問い合わせられる最も近いコンテナです。コンテナの名前は、この選択に影響しません。
+
+<Figure src="responsive/cqi-nearest-container" alt="入れ子のコンテナと、cqi の基準を示した図。木は、.scoped.card（--scoped）を根とし、その子に ._body（--body）、その子に p がある。._body の子孫の p に書いた cqi は、最も近い祖先の ._body を基準にし、外側の --scoped は基準にならない。" />
+
+`@container --scoped` で外側のルートを名前で選んでいても、内側に `._body` のような別のコンテナ（`--body`）があれば、`._body` の子孫に書いた `cqi` は `._body` の幅を基準にします。
+
+有効な祖先のコンテナがないときは、小さいビューポートの単位（`svi`）として計算されます。そのため、`cqi` を使うのは、同じコンポーネントの中にコンテナがあると言い切れる子孫の要素だけにし、そのコンテナと書いた要素の間に別のコンテナがないことも確かめます。単位の選び方は「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」で説明しています。
+
+`cqh` と `cqb`、`cqmin` と `cqmax` は、`container-type: size` のコンテナがないとビューポートの値を含んで計算されます。本書は `size` を使わないので、これらの単位を使う場面はほとんどありません。`cqw` は横書きなら `inline-size` のコンテナでも使えますが、物理方向の単位なので、書字方向に追従する `cqi` を選びます。
+
+`container` プロパティが登場して、「container」はCSSの中で意味を持つ語になりました。`.container` という汎用のラッパーのクラスを作ると、コンテナサイズクエリのコンテナなのか、ただの幅の制限なのかが分かりません。`container` を含むクラス名は、`container` プロパティを持つ要素にだけ使います。ルートをコンテナにするならクラス名は要らず、子要素をコンテナにするなら、`._body` のように役割の名前を付け、コンテナの名前をそこから決めます。
+
+## 外側のコンテナの幅を基準にする単位
+
+内側にコンテナがあっても、ルートの幅を基準にした長さを使いたいときは、`@property` で `<length>` 型の内部プロパティを登録し、ルートの直下の要素で `1cqi` を代入します。登録した `<length>` 型のプロパティは、宣言した要素で絶対的な長さに計算されてから子孫に継承されます（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。そのため、内側のコンテナの子孫でも、受け取る値はルートの幅の1%のままです。{/* 要確認: 出典なし */}
+
+この方法が要るのは、子孫の一部だけをコンテナにしながら、別の値はカード全体の幅に合わせたい場面です。画像と本文を並べたカードで、本文の中の余白を本文の幅で決めるため、`._body` をコンテナにしているとします。このカードの見出しの文字サイズを `cqi` で書くと、基準は `._body` になります。`._body` の幅は、画像と本文が横に並んだ時点で画像と隙間の分だけ急に狭くなるので、カードが広くなったのに見出しの文字が小さくなります。
+
+```css title="🙆‍♂ Recommended: ルートの幅を、長さに計算してから内側のコンテナの子孫へ渡す"
+@property --_root-cqi {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    --_root-cqi: 1cqi;
+    --_density: --compact;
+
+    display: block grid;
+    gap: 16px;
+
+    @container --scoped (inline-size >= calc(160 / 16 * 1rem + 16px + 240 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      grid-template-columns: calc(160 / 16 * 1rem) 1fr;
+    }
+  }
+
+  ._body {
+    container: --body / inline-size;
+
+    & > ._title + ._lead {
+      margin-block-start: clamp(4px, 3cqi, 12px);
+    }
+  }
+
+  ._title {
+    font-size: clamp(18 / 16 * 1rem, var(--_root-cqi) * 2.5 + 10 / 16 * 1rem, 28 / 16 * 1rem);
+  }
+}
+```
+
+`--_root-cqi` を宣言している `._layout` にとって、最も近い祖先のコンテナはルートです。そのため `1cqi` はルートの幅の1%として計算され、たとえばルートが400pxなら4pxという長さで継承されます。`._title` は `._body` の中にありますが、受け取るのは計算済みの長さなので、`var(--_root-cqi) * 2.5` はルートの幅の2.5%になります。一方、`._body` の子に書いた `3cqi` は、これまでどおり `._body` の幅を基準にします。
+
+宣言する場所は、ルートの直下の要素にします。`cqi` の基準は、書いた要素の祖先にあるコンテナで、要素自身は含まれません。ルートの `:scope` で宣言すると、`1cqi` はさらに外側のコンテナを基準にし、外側にコンテナがなければ `svi` として計算されます（2026年10月、Chromeで確認）。「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/#想定より狭い場所に置かれたときのzoom)」で、`zoom` をルートに書かないのと同じ理由です。
+
+`@property` は、`@scope` の外のトップレベルに書きます。カスタムプロパティの登録は文書全体に適用され、`@scope` の範囲には収まらないからです。名前を登録すると、同じ名前を使うすべての要素に型が適用されるので、`--_root-cqi` は「そのコンポーネントのルートの幅の1%」という意味だけに使い、登録は共通のスタイルシートで1回にします。{/* 要確認: 出典なし */}`inherits: true` で登録しているので、内側のコンポーネントにも外側の値が届きます。内側のコンポーネントでこの値を使うときは、そのルートの直下で宣言し直します。
+
+<Baseline id="registered-custom-properties" name="@property" />
+
+`@property` に対応していない環境では、登録されないので、`1cqi` は `var()` を書いた要素で計算されます。上の例では、見出しの文字サイズの基準が `._body` の幅に変わるだけで、レイアウトは崩れません。次のデモでは、上のカードが `--_root-cqi`、下のカードが `cqi` で見出しの文字サイズを決めています。幅のボタンを400pxから480pxへ切り替えると、上のカードの見出しは大きくなり、下のカードの見出しは小さくなります。
+
+<Demo title="内側のコンテナがあっても、見出しの文字サイズをカード全体の幅に合わせる" html={rootCqiHtml} css={rootCqiCss} widths={[320, 400, 480, 640, 768]} />
+
+## 閾値と閾値の間の値
+
+コンテナサイズクエリで切り替えた値は、次の閾値までそのまま変わりません。閾値と閾値の間でもカードの幅に合わせて変えたい値は、`clamp()` と `cqi` で連続的に変えます。クエリは段階を切り替え、その間を `cqi` の流体的な値で埋めるという分担です。
+
+前の例のカードでは、画像の列を160px相当に固定していました。画像と本文が横に並ぶのは416px相当からで、カードが720pxに広がっても画像は同じ幅のままなので、伸びるのは本文だけです。見出しの文字サイズもフラグで2段階に切り替えると、閾値の前後で一度に大きくなり、その後はカードの幅が変わっても同じ大きさです。切り替わった直後と、次の閾値の直前とでは、画像と本文の釣り合いが大きく違います。
+
+```css title="🙆‍♂ Recommended: 閾値で配置を切り替え、その間の画像の幅と文字サイズを cqi で変える"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    --_density: --compact;
+
+    display: block grid;
+    gap: 16px;
+
+    /* 画像の最小幅 120px 相当・隙間 16px・本文の最小幅 240px 相当が並ぶ幅 */
+    @container --scoped (inline-size >= calc(120 / 16 * 1rem + 16px + 240 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      /* カードの幅が 400px で 120px、720px 以上で 200px */
+      grid-template-columns: clamp(120 / 16 * 1rem, 25cqi + 20 / 16 * 1rem, 200 / 16 * 1rem) 1fr;
+    }
+  }
+
+  ._title {
+    /* カードの幅が 200px で 16px、500px 以上で 22px */
+    font-size: clamp(16 / 16 * 1rem, 2cqi + 12 / 16 * 1rem, 22 / 16 * 1rem);
+  }
+}
+```
+
+画像の列の幅は、カードの幅が400pxのとき120px、720pxのとき200pxになる直線から、傾き（`25cqi`）と切片（`20 / 16 * 1rem`）を求めています。2点から式を組み立てる手順は、「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。`._layout` の `cqi` も `._title` の `cqi` も、間に別のコンテナがないので、ルートの幅を基準にします。見出しの文字サイズにはクエリを使っていないので、縦積みのときから横並びのときまで、カードの幅に合わせて少しずつ大きくなります。
+
+閾値の式とフラグの役割は変わりません。列の数や画像の縦横比のように、途中の値を取れない変化は、閾値の式で書いたコンテナサイズクエリとフラグ（`--_density`）で段階的に切り替えます。画像の幅や文字サイズのように、途中の値を取れる量は、`clamp()` で範囲を決めて `cqi` で埋めます。{/* 要確認: 出典なし */}閾値の式には、流体的な値の最小値（ここでは画像の120px相当）を使います。こうすると、切り替わった直後でも本文の最小幅が保たれます。
+
+流体的な値にする量は、1つずつ選びます。本文の文字サイズは、ほとんどの場合、幅で変えなくて済みます。文字サイズの最小値と最大値はremにし、推奨値をremと `cqi` の和にして、ユーザーの文字サイズの設定に追従させます。`vw` を使わないのはビューポートの幅を基準にしてしまうからで、`cqw` を使わないのは書字方向に追従しないからです。
+
+次のデモでは、上のカードが閾値の間を `cqi` で埋め、下のカードがクエリの段階だけで切り替えています。幅のボタンで480pxと768pxを比べると、下のカードは画像の幅と見出しの大きさが変わらず、上のカードはどちらも少しずつ大きくなります。
+
+<Demo title="閾値で配置を切り替え、その間の画像の幅と見出しの文字サイズを連続的に変えるカード" html={fluidHtml} css={fluidCss} widths={[320, 400, 480, 640, 768]} />
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [CSS Responsive Rules](https://gist.github.com/tak-dcxi/acd985cd8b7486a807f1c240731cc7e0)（TAK、gist）
+- [CSS コンテナクエリ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_containment/Container_queries)
+- [container - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/container)
+- [Weaker form of layout containment for container queries（csswg-drafts #10544）](https://github.com/w3c/csswg-drafts/issues/10544)（CSSワーキンググループ、2024年7月に決定）
+- [WebKit Features in Safari 18.4](https://webkit.org/blog/16574/webkit-features-in-safari-18-4/)（WebKit Blog、2025年3月）
+- [Using Container Query Units Relative to an Outer Container](https://frontendmasters.com/blog/using-container-query-units-relative-to-an-outer-container/)（Ana Tudor、Frontend Masters Blog、2025年5月）
+- [Building Smart Layouts（CSS Day 2025）](https://www.figma.com/deck/NewdIWNVLbsX8ipYOFZ4p8/Smart-Layouts---CSS-Day-2025)（講演のスライド）
+- [俺流レスポンシブコーディング 2025](https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025)（TAK、2025年11月）

@@ -1,0 +1,73 @@
+/* 登録はスコープの外に書く。カスタムプロパティの登録は文書全体に適用される */
+@property --_root-cqi {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer pages {
+  @scope (.scoped.demo-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.media-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._layout {
+      /* ルートの直下で宣言するので、1cqi はルートの幅の1%として計算され、長さのまま継承される */
+      --_root-cqi: 1cqi;
+      --_density: --compact;
+
+      display: block grid;
+      gap: 16px;
+
+      /* 画像 160px 相当・隙間 16px・本文の最小幅 240px 相当が並ぶ幅 */
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem + 16px + 240 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        grid-template-columns: calc(160 / 16 * 1rem) 1fr;
+        align-items: start;
+      }
+    }
+
+    ._thumbnail {
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+
+      @container style(--_density: --spacious) {
+        aspect-ratio: 1;
+      }
+    }
+
+    ._body {
+      /* 本文の中の隙間を、本文の幅に合わせるためのコンテナ */
+      container: --body / inline-size;
+
+      & > ._title + ._lead {
+        margin-block-start: clamp(4px, 3cqi, 12px);
+      }
+    }
+
+    ._title {
+      /* カード全体の幅が 320px で 18px、768px 以上で 28px */
+      font-size: clamp(18 / 16 * 1rem, var(--_root-cqi) * 2.5 + 10 / 16 * 1rem, 28 / 16 * 1rem);
+
+      &:is(:scope[data-unit="nearest"] *) {
+        /* 比較用：最も近いコンテナ（._body）の幅が基準になる */
+        font-size: clamp(18 / 16 * 1rem, 2.5cqi + 10 / 16 * 1rem, 28 / 16 * 1rem);
+      }
+    }
+
+    ._lead {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

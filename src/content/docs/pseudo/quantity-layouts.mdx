@@ -1,0 +1,194 @@
+---
+title: "5-6 件数と中身で配置を組み替える"
+description: "子要素の数や有無そのものが条件になるレイアウトは、数量クエリで組み替えます。最終行の端数は子の側で数えて中央に寄せ、区画（ゾーン）の有無と件数で配置を選ぶときは、親を起点にした :has() で grid-template を書き換えます。並べられるかどうかは幅で、どこに置くかは中身で判定します。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import centeredHtml from '../../../demos/pseudo/centered-last-row/index.html?raw';
+import centeredCss from '../../../demos/pseudo/centered-last-row/style.css?raw';
+import zoneLayoutHtml from '../../../demos/pseudo/zone-layout/index.html?raw';
+import zoneLayoutCss from '../../../demos/pseudo/zone-layout/style.css?raw';
+
+子要素の数や有無そのものが条件になるレイアウトは、数量クエリで組み替えます。最終行に残った端数を中央に寄せるときは、数えた子の開始位置を、子の側の `:nth-child()` と `:nth-last-child()` で変えます。ページを区画に分け、引用がなければ特集を全幅に広げるように中身で配置を選ぶときは、親を起点にした `:has()` で `grid-template` を書き換えます。
+
+判定は、幅と中身で分けます。並べられるかどうかは幅で決まるのでコンテナサイズクエリで判定し、どの区画をどこに置くかは中身で決まるので `:has()` で判定します。数量クエリの書き方の基本と、起点と `>` を省かない理由は「[5-5 数量クエリ](/pseudo/quantity-queries/)」で説明しています。
+
+<Baseline id="has" name=":has()" />
+
+## 中身の量が変わると、固定の配置が合わなくなる
+
+グリッドに並べるカードの数は、CMSの登録状況によって変わります。件数が列の数で割り切れないと、最終行に端数が残り、左に寄ったカードの右に空きができます。デザインのカンプは割り切れる件数で描かれることが多く、端数の行の見た目はカンプから読み取れません。{/* 要確認: 出典なし */}
+
+ページ全体の区画でも、同じことが起こります。トップページを、特集、利用者の声の引用、新着記事の3つの区画（以下、ゾーン）に分けたとします。CMSの登録状況によっては、引用が0件の日も、新着記事の多い日もあります。配置を1つに固定すると、中身の量と合わなくなります。引用を特集の右に置く配置のままでは、引用がない日に特集の右の列が空きます。新着記事が多い日は、全幅に並べた新着記事のゾーンだけが下に長く伸びます。
+
+どちらも、件数や有無を表すクラスをHTMLに付ければ切り替えられます。しかし、そのクラスはCMSのテンプレートで数えて出力することになり、同じ条件をテンプレートとCSSの両方に持ちます。数量クエリで書けば、条件はCSSの1か所にまとまり、項目を足したり消したりしてもクラスを付け直す処理は要りません。{/* 要確認: 出典なし */}
+
+## 最終行の端数を中央に寄せる
+
+最終行の端数を中央に寄せるときは、数えた子そのものの開始位置を変えるので、子の側で数えます（「[5-5 数量クエリ](/pseudo/quantity-queries/)」）。次のデモでは、列の最小幅が160px相当、間隔が24pxのグリッドに、2列分を占めるカードを並べています。1行に並ぶカードの数は、列の数の半分です。最終行に残ったカードの `grid-column-start` を、空いた列の半分だけ後ろにずらして中央に寄せます。
+
+```css title="🙆‍♂ Recommended: 最後のカードが奇数番目なら、2列目から始める（1行に2枚の場合）"
+@scope (.scoped.product-cards) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    --_columns: --one;
+
+    display: block grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+    gap: 24px;
+
+    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
+      --_columns: --two;
+    }
+
+    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
+      --_columns: --four;
+    }
+
+    /* 6列以上の並びは省略 */
+    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
+      --_columns: --six;
+    }
+
+    & > * {
+      @container not style(--_columns: --one) {
+        grid-column-end: span 2;
+      }
+    }
+
+    & > :nth-child(2n + 1):nth-last-child(1) {
+      @container style(--_columns: --four) {
+        grid-column-start: 2;
+      }
+    }
+  }
+}
+```
+
+コンテナサイズクエリの閾値は、「列の最小幅×列数＋間隔×（列数−1）」の式で書きます。`calc(160 / 16 * 1rem * 4 + 24px * 3)` は4列が収まる幅で、6列が収まる幅の手前までは、1行にカードが2枚並びます。この範囲で最後のカードが奇数番目なら、最終行には1枚だけが残るので、2列目から始めて4列の中央に置きます。数値を `47rem` のように丸めず式で書けば、列の最小幅や間隔を変えたときに、どの値を直せばよいかが分かります。コンテナサイズクエリは `._body` のルールだけに書き、列の数をフラグ `--_columns` に立てます。カードの側は、そのフラグをスタイルクエリで読むので、閾値が散らばりません（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。閾値を中身から導く考え方は、第13章「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」で説明しています。
+
+<Demo title="最終行に残ったカードが、コンテナの幅に応じて中央に寄る" html={centeredHtml} css={centeredCss} widths={[320, 480, 768, 1120, 1500]} />
+
+デモでは、列の数を多くても8列に抑え、1行に3枚（6〜7列）と4枚（8列）の場合も書いています。1行に3枚なら、行の先頭は3n＋1番目です。`:nth-child(3n + 4):nth-last-child(1)` は「2行目以降の行の先頭で、かつ最後」のカードで、最終行に1枚だけ残った状態を表し、3列目から始めます。最後から2番目なら2枚残った状態なので、2列目から始めます。幅のボタンで768px、1120px、1500pxを選ぶと、5枚目、4〜5枚目、5枚目がそれぞれ中央に寄ります（2026年10月、Chrome 152で確認）。
+
+`3n + 4` と `4n + 5` で1行目を除いているのは、1行目だけで終わる場合は寄せる必要がないからです。カードが1行に収まると、`auto-fit` がカードのない列を幅0に畳み、残りの列が行いっぱいに広がります。1行に2枚の場合の `2n + 1` は1枚目も含みますが、カードが1枚だけのときも、空いた列が畳まれるので見た目は変わりません。ルート（`:scope`）をコンテナにして `._body` で判定しているのは、コンテナは自分のサイズを条件にしたスタイルを受け取れないからです。
+
+## 中身の有無と件数で配置を組み替える
+
+ゾーンの配置は、`grid-template` のエリアに名前を付け、ゾーンの有無と件数でテンプレートを書き換えて選びます。引用があれば特集の右に置き、引用がなければ特集を全幅に広げます。引用があり、新着記事が6件以上あれば、引用の列を新着記事の横まで縦に通します。
+
+```css title="🙆‍♂ Recommended: ゾーンの有無と件数で、テンプレートを書き換える"
+@scope (.scoped.home-layout) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    --_density: --compact;
+
+    display: block flex;
+    flex-direction: column;
+    gap: 24px;
+
+    @container --scoped (inline-size >= calc(200 / 16 * 1rem * 4 + 24px)) {
+      --_density: --spacious;
+
+      display: block grid;
+      reading-flow: grid-rows;
+      grid-template:
+        "--feature --quotes"
+        "--recent --recent"
+        / 3fr 1fr;
+    }
+
+    &:not(:has(> ._quotes)) {
+      reading-flow: grid-rows;
+      grid-template:
+        "--feature"
+        "--recent";
+    }
+
+    &:has(> ._quotes):has(> ._recent > :nth-child(6)) {
+      reading-flow: grid-rows;
+      grid-template:
+        "--feature --quotes"
+        "--recent --quotes"
+        / 3fr 1fr;
+    }
+
+    & > ._feature {
+      grid-area: --feature;
+    }
+
+    & > ._quotes {
+      grid-area: --quotes;
+    }
+
+    & > ._recent {
+      grid-area: --recent;
+    }
+  }
+}
+```
+
+「引用がない」は、`&:not(:has(> ._quotes))` と書きます。`&:has(> :not(._quotes))` は、引用以外のゾーンを1つでも持てば当てはまるので、条件になりません（「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」）。2つの条件をどちらも満たすときは、`&:has(> ._quotes):has(> ._recent > :nth-child(6))` のように `:has()` を連結します。`:has()` の引数をカンマで区切ると、どちらか一方を持てば当てはまる条件になるからです。
+
+幅と中身で、判定の役割を分けています。2列に並べられるかどうかは幅で決まるので、コンテナサイズクエリで判定します（閾値は、引用の列の最小幅200px相当と、その3倍の特集が並ぶ幅）。どのゾーンをどこに置くかは中身で決まるので、`:has()` で判定します。「[5-5 数量クエリ](/pseudo/quantity-queries/#列数は幅で件数は数量クエリで)」の「列数は幅で、件数は数量クエリで」と同じ分け方です。
+
+幅が足りない間は `display: block flex` で縦に積むので、`:has()` で書き換えたテンプレートは使われません。2列のときは、`:has()` のルールの詳細度（0.2.0と0.4.0）がクエリの中の指定（0.1.0）より高いので、書き換えたテンプレートが勝ちます。テンプレートを書いたルールには、どれにも `reading-flow` を指定します（「[11-10 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
+
+<Demo title="引用の有無と新着記事の件数で、ゾーンの配置が変わる" html={zoneLayoutHtml} css={zoneLayoutCss} widths={[480, 1024]} />
+
+幅のボタンで1024pxを選ぶと、3つの状態の配置が分かれます。引用のない上の例は特集が全幅に広がり、引用が1件の中の例は特集の右に引用が並びます。引用が2件で新着記事が6件の下の例は、引用の列が新着記事の横まで続きます。480pxを選ぶと、どの例も縦に積まれます（2026年10月、Chromeで確認）。
+
+## 件数で文字サイズの比率を変える
+
+件数で切り替えられるのは、配置だけではありません。上のデモの引用は、2件以上あると狭い列で縦に並ぶので、文字を少し小さくして列の伸びを抑えます。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 引用が2件以上なら、文字サイズに掛ける比率を下げる"
+@scope (.scoped.home-layout) to (.scoped) {
+  ._quotes {
+    --_ratio: 1;
+
+    container: --quotes / inline-size;
+
+    &:has(> :nth-child(2)) {
+      --_ratio: 0.9;
+    }
+  }
+
+  ._quote-text {
+    font-size: calc(clamp(16 / 16 * 1rem, 5cqi + 6.4 / 16 * 1rem, 20 / 16 * 1rem) * var(--_ratio));
+  }
+}
+```
+
+件数の判定は `&:has(> :nth-child(2))` の1か所だけで、結果は内部用のカスタムプロパティ `--_ratio` の値として子孫に継承されます。「[5-5 数量クエリ](/pseudo/quantity-queries/)」で述べた、親で値を切り替えれば判定は1か所で済む、という形です。デフォルト値の1をクエリの外で宣言しているので、`var()` に代わりの値は要りません。
+
+元の文字サイズは、引用のゾーンを `--quotes` という名前のコンテナにし、その幅を基準にした `clamp()` です。列の幅が192pxで16px、272pxで20pxになるよう、推奨値を `cqi` とremの和にしています（「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」）。比率は `clamp()` の外で掛けるので、最小値と最大値も0.9倍になります。
+
+## 補足と注意点
+
+この例は、引用が0件の日に、CMSがゾーンそのものを出力しない前提です。空のゾーンを出力すると、`&:has(> ._quotes)` が中身のないゾーンにも当てはまり、空の列が残ります。{/* 要確認: 出典なし */}テンプレートを書き換えるときは、どの組み合わせでも各エリアが長方形になっているかを確かめます。エリアが長方形の範囲であることは、「[7-7 Gridの基礎](/layout/grid-basics/)」で説明しています。
+
+ゾーンを組み替えても、HTMLの順序は変わりません。見た目の順序と読み上げの順序をそろえるため、テンプレートを書き換えるルールには、どれにも `reading-flow` を指定します。数量クエリの詳細度は、`:has()` の引数の分だけ上がるので、テンプレートを書き換えるルールは、書く順序によらずクエリの中の指定に勝ちます。
+
+件数で文字サイズを変えるのは、件数によって配置が変わり、列の幅が狭くなる場合に限ります。配置が変わらないのに件数だけで文字を小さくすると、項目を1つ足しただけで、すべての項目が読みにくくなります。文字サイズの下限は、比率を掛けたあとも本文として読める大きさに保ちます。{/* 要確認: 出典なし */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
+- [grid-template - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template)
+- [Product Cards Centering Bottom Row](https://codepen.io/tak-dcxi/pen/RNRGJev)（TAK、CodePen）
+- [Building Smart Layouts（CSS Day 2025）](https://www.figma.com/deck/NewdIWNVLbsX8ipYOFZ4p8/Smart-Layouts---CSS-Day-2025)（Ahmad Shadeed、講演のスライド、2025年6月）
