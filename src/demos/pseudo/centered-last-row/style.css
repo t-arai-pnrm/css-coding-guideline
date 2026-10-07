@@ -9,6 +9,9 @@
       --_column-min-width: calc(160 / 16 * 1rem);
       --_column-max-count: 8;
 
+      /* 並べられる列の数をフラグにする。閾値は、最小幅160px相当の列と24pxの隙間から導く */
+      --_columns: --one;
+
       display: block grid;
 
       /* 列の最小幅を下回らず、多くても8列まで並べ、カードのない列は auto-fit で畳む */
@@ -21,48 +24,64 @@
       );
       gap: var(--_gap);
 
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
+        --_columns: --two;
+      }
+
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
+        --_columns: --four;
+      }
+
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
+        --_columns: --six;
+      }
+
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
+        --_columns: --eight;
+      }
+
       /* 2列分の幅があれば、すべてのカードが2列分を占める */
       & > * {
-        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
+        @container not style(--_columns: --one) {
           grid-column-end: span 2;
         }
       }
 
       /* 1行に2枚：最後の1枚が奇数番目なら、2列目から始める */
       & > :nth-child(2n + 1):nth-last-child(1) {
-        @container --scoped (calc(160 / 16 * 1rem * 6 + 24px * 5) > inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
+        @container style(--_columns: --four) {
           grid-column-start: 2;
         }
       }
 
       /* 1行に3枚：2行目以降の行の先頭が、最後の1枚なら3列目から、最後から2枚目なら2列目から始める */
       & > :nth-child(3n + 4):nth-last-child(1) {
-        @container --scoped (calc(160 / 16 * 1rem * 8 + 24px * 7) > inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
+        @container style(--_columns: --six) {
           grid-column-start: 3;
         }
       }
 
       & > :nth-child(3n + 4):nth-last-child(2) {
-        @container --scoped (calc(160 / 16 * 1rem * 8 + 24px * 7) > inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
+        @container style(--_columns: --six) {
           grid-column-start: 2;
         }
       }
 
       /* 1行に4枚：2行目以降の行の先頭が、最後から1〜3枚目なら、4列目、3列目、2列目から始める */
       & > :nth-child(4n + 5):nth-last-child(1) {
-        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
+        @container style(--_columns: --eight) {
           grid-column-start: 4;
         }
       }
 
       & > :nth-child(4n + 5):nth-last-child(2) {
-        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
+        @container style(--_columns: --eight) {
           grid-column-start: 3;
         }
       }
 
       & > :nth-child(4n + 5):nth-last-child(3) {
-        @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
+        @container style(--_columns: --eight) {
           grid-column-start: 2;
         }
       }

@@ -35,42 +35,67 @@
     }
 
     ._body {
-      /* 最小幅 10rem の列 2 つと隙間 1 つが並ぶ幅から、カードを2列分にする */
-      @container --scoped (inline-size >= calc(10rem * 2 + 1.5rem)) {
-        & > * {
+      /* 並べられる列の数をフラグにする。閾値は、最小幅160px相当の列と24pxの隙間から導く */
+      --_columns: --one;
+
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
+        --_columns: --two;
+      }
+
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
+        --_columns: --four;
+      }
+
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
+        --_columns: --six;
+      }
+
+      @container --scoped (inline-size >= calc(160 / 16 * 1rem * 8 + 24px * 7)) {
+        --_columns: --eight;
+      }
+
+      /* 2列分の幅があれば、すべてのカードが2列分を占める */
+      & > * {
+        @container not style(--_columns: --one) {
           grid-column-end: span 2;
         }
       }
 
-      /* 4〜5列（カードは1行に2枚）：最後の1枚を2列目から置く */
-      @container --scoped (calc(10rem * 4 + 1.5rem * 3) <= inline-size < calc(10rem * 6 + 1.5rem * 5)) {
-        & > :nth-child(2n + 1):nth-last-child(1) {
+      /* 1行に2枚：最後の1枚が奇数番目なら、2列目から始める */
+      & > :nth-child(2n + 1):nth-last-child(1) {
+        @container style(--_columns: --four) {
           grid-column-start: 2;
         }
       }
 
-      /* 6〜7列（カードは1行に3枚）：最後の行の1枚は3列目から、2枚なら2列目から置く */
-      @container --scoped (calc(10rem * 6 + 1.5rem * 5) <= inline-size < calc(10rem * 8 + 1.5rem * 7)) {
-        & > :nth-child(3n + 4):nth-last-child(1) {
+      /* 1行に3枚：2行目以降の行の先頭が、最後の1枚なら3列目から、最後から2枚目なら2列目から始める */
+      & > :nth-child(3n + 4):nth-last-child(1) {
+        @container style(--_columns: --six) {
           grid-column-start: 3;
         }
+      }
 
-        & > :nth-child(3n + 4):nth-last-child(2) {
+      & > :nth-child(3n + 4):nth-last-child(2) {
+        @container style(--_columns: --six) {
           grid-column-start: 2;
         }
       }
 
-      /* 8列（カードは1行に4枚）：最後の行の枚数に合わせて、先頭のカードを置く列をずらす */
-      @container --scoped (inline-size >= calc(10rem * 8 + 1.5rem * 7)) {
-        & > :nth-child(4n + 5):nth-last-child(1) {
+      /* 1行に4枚：2行目以降の行の先頭が、最後から1〜3枚目なら、4列目、3列目、2列目から始める */
+      & > :nth-child(4n + 5):nth-last-child(1) {
+        @container style(--_columns: --eight) {
           grid-column-start: 4;
         }
+      }
 
-        & > :nth-child(4n + 5):nth-last-child(2) {
+      & > :nth-child(4n + 5):nth-last-child(2) {
+        @container style(--_columns: --eight) {
           grid-column-start: 3;
         }
+      }
 
-        & > :nth-child(4n + 5):nth-last-child(3) {
+      & > :nth-child(4n + 5):nth-last-child(3) {
+        @container style(--_columns: --eight) {
           grid-column-start: 2;
         }
       }

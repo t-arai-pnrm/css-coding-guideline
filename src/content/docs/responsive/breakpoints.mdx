@@ -83,7 +83,7 @@ import productCss from '../../../demos/responsive/product-cards/style.css?raw';
 
 隙間を `32px` のまま足す理由は、後の「gapとpaddingを式から省かない」で説明します。このページ全体の段組みのデモは「[13-4 メディアクエリ](/responsive/media-queries/)」にあります。
 
-コンテナサイズクエリでも同じです。次の例は、最小幅10remの列を最大8列まで並べるグリッドに、2列分の幅のカードを並べた商品の一覧です。1行に並ぶカードの枚数は列の数の半分なので、カードが5枚のとき、4列なら最後の行に1枚だけ残ります。この1枚を中央に寄せたいとします。
+コンテナサイズクエリでも同じです。次の例は、最小幅160px相当の列を最大8列まで並べるグリッドに、2列分の幅のカードを並べた商品の一覧です。1行に並ぶカードの枚数は列の数の半分なので、カードが5枚のとき、4列なら最後の行に1枚だけ残ります。この1枚を中央に寄せたいとします。
 
 ```css title="🙆‍♂ Recommended: 列の最小幅と隙間から、カードが何枚並ぶかの範囲を式で書く"
 @scope (.scoped.product-cards) to (.scoped) {
@@ -92,16 +92,31 @@ import productCss from '../../../demos/responsive/product-cards/style.css?raw';
   }
 
   ._body {
-    /* 最小幅 10rem の列 2 つと隙間 1 つが並ぶ幅から、カードを2列分にする */
-    @container --scoped (inline-size >= calc(10rem * 2 + 1.5rem)) {
-      & > * {
+    --_columns: --one;
+
+    /* 最小幅160px相当の列が2つと隙間が1つ並ぶ幅から、カードを2列分にする */
+    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 2 + 24px)) {
+      --_columns: --two;
+    }
+
+    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 4 + 24px * 3)) {
+      --_columns: --four;
+    }
+
+    /* 6列以上の並びは省略 */
+    @container --scoped (inline-size >= calc(160 / 16 * 1rem * 6 + 24px * 5)) {
+      --_columns: --six;
+    }
+
+    & > * {
+      @container not style(--_columns: --one) {
         grid-column-end: span 2;
       }
     }
 
     /* 4〜5列（カードは1行に2枚）：最後の1枚を2列目から置く */
-    @container --scoped (calc(10rem * 4 + 1.5rem * 3) <= inline-size < calc(10rem * 6 + 1.5rem * 5)) {
-      & > :nth-child(2n + 1):nth-last-child(1) {
+    & > :nth-child(2n + 1):nth-last-child(1) {
+      @container style(--_columns: --four) {
         grid-column-start: 2;
       }
     }
@@ -113,16 +128,18 @@ import productCss from '../../../demos/responsive/product-cards/style.css?raw';
 <div class="scoped product-cards">
   <ul
     class="_body grid"
-    style="--grid--mode: auto-fit; --grid--column-min-width: 10rem; --grid--column-max-count: 8; --grid--gap: 1.5rem"
+    style="--grid--mode: auto-fit; --grid--column-min-width: calc(160 / 16 * 1rem); --grid--column-max-count: 8; --grid--gap: 24px"
   >
     <li class="_card">…</li>
   </ul>
 </div>
 ```
 
-並びは、列の最小幅と最大数から列数を決めるコンポジションの `grid`（「[12-6 grid](/compositions/grid/)」）に任せています。`calc(10rem * 4 + 1.5rem * 3)` は「最小幅10remの列4つと、1.5remの隙間3つ」が並ぶ幅で、`calc(10rem * 6 + 1.5rem * 5)` は6列の幅です。その間では列が4つか5つになり、カードは1行に2枚並びます。列が5つのときの余った1列は、`auto-fit` がアイテムのない列を幅0に畳むので、表示に影響しません。
+並びは、列の最小幅と最大数から列数を決めるコンポジションの `grid`（「[12-6 grid](/compositions/grid/)」）に任せています。`calc(160 / 16 * 1rem * 4 + 24px * 3)` は「最小幅160px相当の列4つと、24pxの隙間3つ」が並ぶ幅で、`calc(160 / 16 * 1rem * 6 + 24px * 5)` は6列の幅です。その間では列が4つか5つになり、カードは1行に2枚並びます。列が5つのときの余った1列は、`auto-fit` がアイテムのない列を幅0に畳むので、表示に影響しません。
 
-列の最小幅と隙間はremで渡しているので、閾値の式でもその値をそのまま使っています。カンプのピクセル値から決めた値なら、remで渡す値は変換の式で書き、pxで渡す値はpxのまま足します。隙間もremで渡すなら `calc(160 / 16 * 1rem * 4 + 24 / 16 * 1rem * 3)`、隙間をpxで渡すなら `calc(160 / 16 * 1rem * 4 + 24px * 3)` です。
+コンテナサイズクエリを書くのは、並べられる列の数をフラグ `--_columns` に立てる `._body` のルールだけです。カードの側は、`@container style(--_columns: --four)` のようにフラグを読んで置く列を変えます。カードごとにコンテナサイズクエリを書くと、閾値がカードの数だけ散らばり、直し忘れた箇所で、どの幅にも想定していない並びができます。フラグの書き方は「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
+
+列の最小幅はremの変換の式で、隙間はpxで渡しているので、閾値の式でも同じ単位で足しています。
 
 `:nth-child(2n + 1):nth-last-child(1)` は、奇数番目で、しかも最後の要素を選びます。最後の行に1枚だけ残ったカードを、2列目から置くことで中央に寄せています。子要素の位置と数で選ぶ書き方は「[5-5 数量クエリ](/pseudo/quantity-queries/)」で説明しています。次のデモでは、6列以上の範囲（1行に3枚）と8列の範囲（1行に4枚）にも、同じ形で条件を足しています。幅を変えると、最後の行の端数がどの幅でも中央に寄ります。
 
@@ -130,7 +147,7 @@ import productCss from '../../../demos/responsive/product-cards/style.css?raw';
 
 ## gapとpaddingを式から省かない
 
-閾値の式には、レイアウトが成り立つ条件に関わる `gap`、`padding`、`border` を省かずに含めます。上の例で隙間を省いて `calc(10rem * 6)` と書くと、閾値は60remになります。実際に6列が並ぶのは、隙間5つを足した67.5remからです。60remから67.5remの間では、列は5つしかないのに6列用の条件が当てはまり、カードが意図しない列に置かれて並びが崩れます。
+閾値の式には、レイアウトが成り立つ条件に関わる `gap`、`padding`、`border` を省かずに含めます。上の例で隙間を省いて `calc(160 / 16 * 1rem * 6)` と書くと、閾値は960pxになります。実際に6列が並ぶのは、隙間5つ（120px）を足した1080pxからです。960pxから1080pxの間では、列は5つしかないのに6列用の条件が当てはまり、カードが意図しない列に置かれて並びが崩れます。
 
 `padding` と `border` も同じです。コンテナの内側で並べる要素に左右の `padding` があるなら、その分も式に足します。ボタンのように中身の幅で閾値を決める部品なら、「アイコンの幅＋隙間＋ラベルの幅＋左右の `padding`」が閾値です。どれか1つを省くと、閾値は実際に並べられる幅より狭くなり、切り替わった直後の幅で中身がはみ出したり詰まったりします。
 
