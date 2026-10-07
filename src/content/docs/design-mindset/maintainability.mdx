@@ -161,16 +161,20 @@ CSSは、どれだけ丁寧に組んでも、運用するたびに少しずつ�
 
 ```css title="🙅‍♂ Not Recommended: デフォルト値を書き写して戻す"
 /* 🙅‍♂ Not Recommended */
-._prose :where(ul) {
-  padding-inline-start: 40px;
-  list-style-type: disc;
+@scope (.scoped.prose) to (.scoped) {
+  ul {
+    padding-inline-start: 40px;
+    list-style-type: disc;
+  }
 }
 ```
 
 ```css title="🙆‍♂ Recommended: 戻り先をキーワードで示す"
-._prose :where(ul) {
-  padding-inline-start: revert;
-  list-style-type: revert;
+@scope (.scoped.prose) to (.scoped) {
+  ul {
+    padding-inline-start: revert;
+    list-style-type: revert;
+  }
 }
 ```
 

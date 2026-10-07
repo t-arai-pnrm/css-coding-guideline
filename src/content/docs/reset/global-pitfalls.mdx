@@ -79,7 +79,7 @@ p {
 
 ```css title="🙆‍♂ Recommended: 本文の行の長さは、本文のコンポーネントで決める"
 @scope (.scoped.article-body) to (.scoped) {
-  :where(p) {
+  p {
     max-inline-size: 40ic;
   }
 }
@@ -114,8 +114,12 @@ ul {
 ```
 
 ```css title="🙆‍♂ Recommended: 空の文字列を指定してマーカーを消す"
-:where(ul, ol, menu) {
-  list-style-type: "";
+@layer base {
+  ul,
+  ol,
+  menu {
+    list-style-type: "";
+  }
 }
 ```
 

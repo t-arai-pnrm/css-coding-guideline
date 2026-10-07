@@ -126,7 +126,8 @@ kiso.cssは、ブラウザのデフォルトスタイルのうち、役に立つ
 
 ```css title="🙆‍♂ Recommended: 本文の中だけ、リストのマーカーを戻す"
 @scope (.scoped.article-body) to (.scoped) {
-  :where(ul, ol) {
+  ul,
+  ol {
     padding-inline-start: revert;
     list-style-type: revert;
   }
