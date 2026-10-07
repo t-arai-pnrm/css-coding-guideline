@@ -1,0 +1,42 @@
+@layer components {
+  @scope (.scoped.media-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._layout {
+      --_density: --compact;
+
+      display: block grid;
+      gap: 12px;
+
+      @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        grid-template-columns: calc(160 / 16 * 1rem) 1fr;
+      }
+    }
+
+    ._image {
+      aspect-ratio: 16 / 9;
+      background-color: oklch(85% 0.05 250deg);
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    ._title {
+      font-size: calc(18 / 16 * 1rem);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(24 / 16 * 1rem);
+      }
+    }
+  }
+}

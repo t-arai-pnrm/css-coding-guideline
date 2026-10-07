@@ -6,7 +6,18 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import sassSuffixHtml from '../../../demos/cascade/nesting-sass-suffix/index.html?raw';
+import sassSuffixCss from '../../../demos/cascade/nesting-sass-suffix/style.bad.css?raw';
+import isListHtml from '../../../demos/cascade/nesting-is-list/index.html?raw';
+import isListCss from '../../../demos/cascade/nesting-is-list/style.bad.css?raw';
+import nestingContainerHtml from '../../../demos/cascade/nesting-container/index.html?raw';
+import nestingContainerCss from '../../../demos/cascade/nesting-container/style.css?raw';
+import nestedDeclarationsHtml from '../../../demos/cascade/nested-declarations/index.html?raw';
+import nestedDeclarationsCss from '../../../demos/cascade/nested-declarations/style.bad.css?raw';
+import scopeAndNestingHtml from '../../../demos/cascade/scope-and-nesting/index.html?raw';
+import scopeAndNestingCss from '../../../demos/cascade/scope-and-nesting/style.css?raw';
 
 CSSのネストは、スタイルのルールの中に別のルールを書き、親のセレクタを `&` で参照する仕組みです。見た目はSassのネストと似ていますが、セレクタを文字列としてつなげる機能ではありません。`&` は、親のセレクタを `:is()` で包んだものとして要素に一致し、詳細度もそれに従って決まります。
 
@@ -17,6 +28,10 @@ CSSのネストは、スタイルのルールの中に別のルールを書き�
 ネストは、長くSassやLessのようなプリプロセッサーの機能でした。プリプロセッサーは、ネストしたセレクタを親のセレクタと文字列としてつなげ、普通のCSSに展開します。`.card { &__title { … } }` から `.card__title` を作れるのも、文字列の展開だからです。
 
 素のCSSのネストは、この展開をしません。ブラウザは、ネストしたルールを親のルールとの関係として解釈し、`&` を「親のセレクタに一致する要素」として扱います。そのため、Sassと同じ形で書いても、無効になるものや、当たる要素と詳細度の変わるものがあります。
+
+次のデモでは、1つ目の見出しをSassと同じ `&__title` で、2つ目の見出しを `& ._title` で指定しています。`&__title` のルールは無効なので捨てられ、1つ目の見出しには、色と大きさのどちらの指定も当たりません。
+
+<Demo title="Sass の &__title は、素の CSS では無効なルールになる" html={sassSuffixHtml} css={sassSuffixCss} variant="not-recommended" widths={[]} />
 
 この違いは、書いた人が気づきにくい形で表れます。`&__title` は無効なセレクタなので、ルールごと無視されますが、エラーは表示されません。詳細度や当たる要素の違いは、多くの場合は見た目に差が出ず、別のスタイルとぶつかったときに初めて表れます。Sassの書き方に慣れていると、素のCSSのネストも展開後のセレクタを想像して読んでしまい、こうした違いを見落とします。AIが生成するコードでも、`&__title` のようなSassの書き方を見かけます。
 
@@ -66,7 +81,11 @@ CSSのネストは、スタイルのルールの中に別のルールを書き�
 }
 ```
 
-Sassなら、このルールは `.news ._title, #pickup ._title` に展開され、`.news` の中の `._title` は0.2.0のままです。素のCSSでは、`.news` の中の `._title` にも1.1.0が付きます。Chrome 152で、このルールと後ろに書いた `.news ._title` を比べると、このルールが勝ちました（2026年10月確認）。詳細度の違うセレクタリストの中にネストしない規約は、第9章のルール `no-nesting-under-selector-list` です。
+Sassなら、このルールは `.news ._title, #pickup ._title` に展開され、`.news` の中の `._title` は0.2.0のままです。素のCSSでは、`.news` の中の `._title` にも1.1.0が付きます。Chrome 152で、このルールと後ろに書いた `.news ._title` を比べると、このルールが勝ちました（2026年10月確認）。次のデモでは、ネストしたルールで文字を灰色に、後ろのルールで青くしています。見出しは灰色になり、後ろのルールからは、ネストしたルールが指定していない文字の大きさだけが使われます。
+
+<Demo title="セレクタリストの中にネストすると、.news の中の見出しにも 1.1.0 が付く" html={isListHtml} css={isListCss} variant="not-recommended" widths={[]} />
+
+詳細度の違うセレクタリストの中にネストしない規約は、第9章のルール `no-nesting-under-selector-list` です。
 
 当たる要素が変わるのは、`&` を後ろに置いて祖先を足すときです。`.a .b { .c & { … } }` の `&` は `:is(.a .b)` になるので、全体は `.c :is(.a .b)` です。これは「`.c` の子孫で、かつ `.a` の子孫である `.b`」を意味し、`.c` と `.a` の上下を問いません。Sassの展開した `.c .a .b` と違い、`.a` の中に `.c` がある `.a .c .b` の並びにも当てはまります（2026年10月、Chrome 152で確認）。
 
@@ -78,34 +97,7 @@ Sassなら、このルールは `.news ._title, #pickup ._title` に展開され
 
 `@media`、`@container`、`@supports` は、スタイルのルールの中にも書けます。中に直接書いた宣言は、親のセレクタに当たります。条件を満たしたときの指定を、元の要素のルールの中に置けるので、ひとつの要素のスタイルが1か所にまとまります。
 
-```css title="🙆‍♂ Recommended: 条件付きのアットルールを、要素のルールの中に書く"
-@scope (.scoped.media-card) to (.scoped) {
-  :scope {
-    container: --scoped / inline-size;
-  }
-
-  ._layout {
-    --_density: --compact;
-
-    display: block grid;
-    gap: 12px;
-
-    @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
-      --_density: --spacious;
-
-      grid-template-columns: calc(160 / 16 * 1rem) 1fr;
-    }
-  }
-
-  ._title {
-    font-size: calc(18 / 16 * 1rem);
-
-    @container style(--_density: --spacious) {
-      font-size: calc(24 / 16 * 1rem);
-    }
-  }
-}
-```
+<Demo title="条件付きのアットルールを、要素のルールの中に書く" html={nestingContainerHtml} css={nestingContainerCss} widths={[320, 480, 768]} />
 
 `._layout` は、カードの幅をコンテナサイズクエリで問い合わせ、広いときにフラグ `--_density` を `--spacious` に切り替えます。子孫の `._title` は、そのフラグをスタイルクエリで読みます。どちらの `@container` も、スタイルを変える要素のルールの中に書いています（フラグの仕組みは「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明します）。
 
@@ -128,7 +120,9 @@ Sassなら、このルールは `.news ._title, #pickup ._title` に展開され
 }
 ```
 
-この動作は、2024年12月にすべての主要なブラウザが対応した、比較的新しいものです。それより前の実装（Chrome 129以前、Firefox 131以前、Safari 18.1以前）では、後ろに書いた宣言も親のルールの先頭に移されたものとして扱われ、上の例では `red` が勝ちました。Chrome 152では `green` になることを確かめました（2026年10月確認）。
+この動作は、2024年12月にすべての主要なブラウザが対応した、比較的新しいものです。それより前の実装（Chrome 129以前、Firefox 131以前、Safari 18.1以前）では、後ろに書いた宣言も親のルールの先頭に移されたものとして扱われ、上の例では `red` が勝ちました。Chrome 152では `green` になることを確かめました（2026年10月確認）。次のデモは、同じ順番で赤と緑を指定したものです。本書の並び順の規約には反する書き方なので、悪い例として示します。
+
+<Demo title="ネストしたルールの後ろに書いた宣言が、書いた位置の順番で勝つ" html={nestedDeclarationsHtml} css={nestedDeclarationsCss} variant="not-recommended" widths={[]} />
 
 <Baseline id="nesting" compatKey="api.CSSNestedDeclarations" name="ネストした宣言のルール（CSSNestedDeclarations）" />
 
@@ -138,25 +132,7 @@ Sassなら、このルールは `.news ._title, #pickup ._title` に展開され
 
 `@scope` とネストは、BEMの3つの単位のうち、違う関係を表します。BEMのblockは独立したコンポーネント、elementはその部品、modifierはblockやelementの状態や種類です。`@scope` は、ルートと下限でblockの範囲を区切り、その中の部品（element）を短いセレクタで選ぶ仕組みです。ネストは、ひとつの要素のルールの中に、その要素自身の状態や種類（modifier）を `&` でまとめる仕組みです。
 
-```css title="🙆‍♂ Recommended: @scope で部品を、ネストで状態や種類を表す"
-@scope (.scoped.news-card) to (.scoped) {
-  :scope {
-    padding: 16px;
-
-    &[data-variant="featured"] {
-      border: 2px solid;
-    }
-  }
-
-  h2 {
-    font-size: calc(20 / 16 * 1rem);
-
-    &:is(:scope[data-variant="featured"] *) {
-      font-size: calc(24 / 16 * 1rem);
-    }
-  }
-}
-```
+<Demo title="@scope で部品を、ネストで状態や種類を表す" html={scopeAndNestingHtml} css={scopeAndNestingCss} widths={[]} />
 
 BEMで書けば、`.news-card`、`.news-card__title`、`.news-card--featured` に当たる3つの関係が、それぞれ `@scope` のルート、スコープの中の `h2`、`&` を使ったネストで表されます。ネストで部品の階層をたどる書き方（`:scope { h2 { … } }`）もできますが、`@scope` があれば、部品はスコープの直下に並べられます。ネストを要素自身の状態に使い、部品の選択を `@scope` に任せる規約と、その理由は「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で説明します。`@scope` の仕様は「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
 

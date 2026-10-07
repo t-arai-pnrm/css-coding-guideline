@@ -1,0 +1,55 @@
+@layer components {
+  @scope (.scoped.read-only-scope) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    fieldset {
+      display: block grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+
+    legend {
+      padding-inline: 4px;
+      font-weight: 700;
+    }
+
+    label {
+      display: block grid;
+      gap: 4px;
+    }
+
+    ._check {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input {
+      padding: 4px 8px;
+      border-color: oklch(45% 0 0deg);
+      border-radius: 4px;
+
+      /* 比べるための悪い例：無効の入力欄とチェックボックスにも当たる */
+      &:is([data-pseudo] *):read-only {
+        background-color: oklch(93% 0 0deg);
+        outline: 3px solid oklch(70% 0.15 25deg);
+      }
+
+      &:is([data-fixed] *)[readonly] {
+        border-color: transparent;
+        background-color: oklch(95% 0.02 260deg);
+      }
+
+      &:is([data-fixed] *):disabled {
+        border-color: oklch(80% 0 0deg);
+        color: oklch(48% 0 0deg);
+      }
+    }
+  }
+}

@@ -11,6 +11,10 @@ import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import planHtml from '../../../demos/pseudo/plan-option/index.html?raw';
 import planCss from '../../../demos/pseudo/plan-option/style.css?raw';
+import hasCombinatorHtml from '../../../demos/pseudo/has-combinator/index.html?raw';
+import hasCombinatorCss from '../../../demos/pseudo/has-combinator/style.css?raw';
+import starHtml from '../../../demos/pseudo/star-rating/index.html?raw';
+import starCss from '../../../demos/pseudo/star-rating/style.css?raw';
 
 `:has()` は、引数のセレクタに当てはまる子孫や後ろの兄弟を持つ要素を選ぶ擬似クラスです。子の有無や状態によって祖先のスタイルを変える処理を、JavaScriptでクラスを付けずに書けます。本書では、`:has()` の直前に必ず起点のセレクタを書き、起点のない `:has()` は禁止します。
 
@@ -26,6 +30,19 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 この方法では、クラスと実際の状態がずれかねません。キーボードでラジオボタンの選択を変えたときや、CMSの編集で画像を消したときに、クラスを付け外す処理を書き漏らすと、見た目と中身が食い違います。状態を表す情報が、HTMLの状態とクラスの2か所に分かれているからです。
 
+```css title="🙅‍♂ Not Recommended: JavaScriptで付け外すクラスで、親の見た目を変える"
+/* 🙅‍♂ Not Recommended */
+.plan-option.is-checked {
+  /* ラジオボタンの選択が変わるたびに、スクリプトで is-checked を付け外す */
+  border-color: var(--border--accent);
+}
+
+.card.has-image {
+  /* 画像を消したときに has-image を外し忘れると、空の列が残る */
+  grid-template-columns: calc(160 / 16 * 1rem) 1fr;
+}
+```
+
 `:has()` を使うと、状態をHTMLの状態だけで表せます。ラジオボタンがチェックされているかどうかは `:checked` が、画像があるかどうかは要素そのものが表しているので、それを親から直接参照します。クラスを付け外す処理がなくなるので、ずれる原因もなくなります。
 
 ## `:has()` の仕組み
@@ -35,6 +52,10 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 <Figure src="pseudo/has-scope" alt=":has()の引数ごとに、起点の要素から見てどの要素が探索範囲に入るかを示した表。左は、起点の.cardを中心にしたHTMLの木で、上から、前の兄弟のh2、起点の.card、その子のimgとdiv、divの子のspan（.cardから見て孫）、直後の兄弟のp、その後ろの兄弟のpが並ぶ。右の4列は引数の書き方で、結合子を書かない場合は子孫、> は直接の子、+ は直後の兄弟、~ は後ろのすべての兄弟を探索する。子孫の列では、img、div、spanが探索範囲に入る。> の列では、直接の子のimgとdivだけが入る。+ の列では、直後の兄弟のpだけが入る。~ の列では、直後の兄弟のpと、その後ろの兄弟のpが入る。前の兄弟のh2は、どの列でも探索範囲に入らない。スタイルが当たるのは、探索される要素ではなく、起点の.cardである。" />
 
 スタイルが当たるのは、起点の要素です。`.card:has(> img)` のスタイルは `.card` に当たり、`img` には当たりません。引数は条件を表すだけで、選ぶ対象を変えないので、「`:has()` の前に書いたものが選ばれる」と読みます。
+
+次のデモでは、同じ3枚のカードに、左は `&:has(img)`、右は `&:has(> img)` で枠線と背景色を付けています。色が付くのはどちらもカードで、`img` ではありません。`figure` で包んだ画像は孫にあたるので、左のカードには当たり、右のカードには当たりません。
+
+<Demo title="結合子の有無で、画像を探す範囲が変わる" html={hasCombinatorHtml} css={hasCombinatorCss} variant="neutral" widths={[]} />
 
 詳細度は、`:is()` と同じく、引数でいちばん高いセレクタの詳細度になります。`.card:has(> img)` は、`.card` の0.1.0に `img` の0.0.1が加わり、0.1.1です。詳細度の数え方は「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で、`:is()` との共通点は「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
 
@@ -83,6 +104,10 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
   }
 }
 ```
+
+次のデモでは、3つ目の星を選んだ状態から始まります。ほかの星を選ぶと、その星より前の星だけが塗られます。
+
+<Demo title="選んだ星と、それより前の星だけを塗る" html={starHtml} css={starCss} widths={[]} />
 
 前の兄弟を選ぶセレクタは、読み手が意味を取り違えやすい書き方です。`&:has(~ label > input:checked)` の `~` は `label` から見た後ろの兄弟を、`>` はその兄弟の直接の子を指します。結合子が2つ続くときは、上の段落のように条件を文章にしたコメントを添えると、あとから読む人が式を追わずに済みます。
 

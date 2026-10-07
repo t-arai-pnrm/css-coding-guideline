@@ -1,0 +1,12 @@
+@layer components {
+  @scope (.scoped.notice) to (.scoped) {
+    :scope {
+      & {
+        color: oklch(55% 0.22 25deg);
+      }
+
+      /* 書いた位置の順番を保つので、こちらが勝つ */
+      color: oklch(50% 0.15 150deg);
+    }
+  }
+}

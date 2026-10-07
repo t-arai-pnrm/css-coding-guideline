@@ -13,6 +13,13 @@ import openStateCss from '../../../demos/pseudo/open-state-controls/style.css?ra
 import dialogModesHtml from '../../../demos/pseudo/dialog-modes/index.html?raw';
 import dialogModesCss from '../../../demos/pseudo/dialog-modes/style.css?raw';
 import dialogModesJs from '../../../demos/pseudo/dialog-modes/script.js?raw';
+import detailsOpenHtml from '../../../demos/pseudo/details-open/index.html?raw';
+import detailsOpenCss from '../../../demos/pseudo/details-open/style.css?raw';
+import targetFaqHtml from '../../../demos/pseudo/target-faq/index.html?raw';
+import targetFaqCss from '../../../demos/pseudo/target-faq/style.css?raw';
+import targetFaqJs from '../../../demos/pseudo/target-faq/script.js?raw';
+import emptyErrorHtml from '../../../demos/pseudo/empty-error/index.html?raw';
+import emptyErrorCss from '../../../demos/pseudo/empty-error/style.css?raw';
 
 開閉の状態は、JavaScriptで付け外しするクラスではなく、要素自身の状態をセレクタにして選びます。`<details>` と `<dialog>` は `[open]` 属性セレクタで、`popover` 属性の要素は `:popover-open` で、モーダルとして開いたダイアログは `:modal` で選びます。2026年5月にすべての主要なブラウザが対応した `:open` は、本書の対象のSafariが対応するまで使いません（2026年10月確認）。
 
@@ -74,6 +81,10 @@ details {
   }
 }
 ```
+
+次のデモは、`name` 属性で1つだけを開くアコーディオンです。開いている項目の枠線を、`[open]` でアクセントの色にしています。別の項目を開くと、ブラウザが元の項目の `open` 属性を外すので、枠線の色も一緒に移ります。
+
+<Demo title="name 属性のアコーディオンで、開いている項目だけを [open] で選ぶ" html={detailsOpenHtml} css={detailsOpenCss} widths={[]} />
 
 `<select>` のドロップダウンを開いている間は、`:open` でしか選べません。使うなら、未対応の環境で見た目が変わらなくても困らない装飾に限ります。ほかのセレクタとリストにせず、`&:open` だけのルールに書けば、解釈できないブラウザではそのルールだけが無効になります。`<details>` の開閉する部分を選ぶ `::details-content` と、それを使った開閉の動きは、第18章「[18-5 出現と退場](/motion/entry-and-exit/)」で説明しています。
 
@@ -143,6 +154,10 @@ details {
 }
 ```
 
+次のデモで上のリンクを押すと、移動先の項目の行頭側に線が引かれます。別のリンクを押すと、線はその移動先に移ります。デモの枠の中ではページ内リンクが本書のページのURLとして解決されるので、スクリプトでクリックをフラグメントの変更に置き換えています。
+
+<Demo title="ページ内リンクの移動先の項目に、:target で線を引く" html={targetFaqHtml} css={targetFaqCss} js={targetFaqJs} widths={[]} />
+
 <Baseline id="target" name=":target" />
 
 移動先の要素そのものではなく、それを含む祖先を選びたいこともあります。Selectors Level 4の草案には、そのための `:target-within` がありました。しかし、`:has(:target)` で同じことが書けるとして2023年に仕様から削除され、対応したブラウザもありません。祖先は、`&:has(:target)` のように起点を付けた `:has()` で選びます。ページに移動先があるときだけスムーススクロールを有効にする `:root:has(:target)` の指定は、第8章「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
@@ -183,6 +198,10 @@ Selectors Level 4の草案では、空白だけを含む要素も空とみなす
   }
 }
 ```
+
+次のデモは、エラーの領域に枠線を付け、`&:empty` のときだけ隠したものです。中身のない領域とコメントだけの領域は隠れ、改行だけの領域は、空に見えても枠線の箱が残ります。
+
+<Demo title=":empty は改行だけを含む要素には当てはまらない" html={emptyErrorHtml} css={emptyErrorCss} />
 
 `:defined` は、定義済みの要素に当てはまる擬似クラスです。HTMLの標準の要素は常にこの状態で、カスタム要素は `customElements.define()` で定義されてから当てはまります。スクリプトの読み込みを待つ間、`:not(:defined)` で定義前のカスタム要素の表示を変えられます。ただし、定義を待つ間は要素を隠さず、定義後と同じ大きさの領域を確保する程度にとどめます。隠してしまうと、スクリプトの読み込みが失敗したとき、中身が表示されないままになるからです。{/* 要確認: 出典なし */}
 

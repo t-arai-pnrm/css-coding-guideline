@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import unitsHtml from '../../../demos/values/svi-and-cqi/index.html?raw';
 import unitsCss from '../../../demos/values/svi-and-cqi/style.css?raw';
+import bandHtml from '../../../demos/values/full-bleed-band/index.html?raw';
+import bandCss from '../../../demos/values/full-bleed-band/style.css?raw';
 
 `vw` と `vh` は使いません。ビューポート単位が必要なときは、横方向は `svi`、縦方向は `svb` を優先し、スクロールで値が変わる `dvb` は避けます。`lvb` を使うのは、ブラウザのUIが出ていても引っ込んでいても高さいっぱいに広げたい、固定の背景などだけです。
 
@@ -93,11 +95,9 @@ import unitsCss from '../../../demos/values/svi-and-cqi/style.css?raw';
 
 コンポーネントの中で幅に応じて値を変えたいときは、コンテナの幅を基準にした `cqi` を使います。`cqi` はコンテナのインライン方向のサイズの1%で、コンテナクエリと対になる単位です。ただし、有効なコンテナがないと `svi` として計算されるので、使えるのは、その要素が名前付きのコンテナの中にあると確実に言える場合に限ります。この条件と、`cqb` などを使わない理由は「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
 
-## コード例とデモ
-
 次のデモでは、同じカードをメインエリアとサイドバーに置いています。どちらのカードにも、`svi` で文字サイズが変わる行と、`cqi` で変わる行があります。幅のボタンで768px以上を選ぶと2カラムになり、違いが分かります。
 
-<Demo title="svi と cqi で文字サイズを変えたときの、置き場所による違い" html={unitsHtml} css={unitsCss} variant="neutral" />
+<Demo title="svi と cqi で文字サイズを変えたときの、置き場所による違い" html={unitsHtml} css={unitsCss} variant="neutral" widths={[480, 768, 1024]} />
 
 `svi` の行は、メインエリアとサイドバーで同じ大きさです。サイドバーは幅が狭いのに文字が大きいままなので、途中で折り返しています。`cqi` の行は、カードが置かれた場所の幅に合わせて大きさが変わり、サイドバーでは小さく収まります。どちらの行も最小値と最大値をremにした `clamp()` で書いていて、その組み立て方は「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明します。
 
@@ -121,6 +121,24 @@ import unitsCss from '../../../demos/values/svi-and-cqi/style.css?raw';
 ビューポート単位は、ほかの方法では解決できないときにだけ使います。先ほど触れたとおり、Chrome系のブラウザではビューポート単位を直接使った値がズームで拡大されないことがあり、スクロールバーの幅の扱いもブラウザによって異なるからです。`%` やイントリンシックなレイアウトで解決できるなら、そちらを優先します。
 
 たとえば、`inline-size: 100vw` で要素を画面の幅いっぱいに広げる指定は、多くの場合なくても済みます。ブロック要素は、何も指定しなくても親の幅いっぱいに広がるからです。中央寄せのコンテンツから背景だけを画面の端まで広げたい場合も、グリッドの左右に余白の列を作る方法などで書けます。この方法は「[11-2 余白を設計する](/layout-practice/spacing/)」で扱います。
+
+```css title="🙆‍♂ Recommended: 左右の余白の列で、内容を中央に置き、背景は親の幅いっぱいに広げる"
+@scope (.scoped.feature-band) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-columns: minmax(16px, 1fr) minmax(0, calc(480 / 16 * 1rem)) minmax(16px, 1fr);
+    background-color: oklch(92% 0.04 250deg);
+
+    & > * {
+      grid-column: 2;
+    }
+  }
+}
+```
+
+次のデモでは、帯の背景が親の幅いっぱいに広がり、内容は最大480pxで中央に置かれます。幅を768pxにすると、左右の余白の列が広がります。`100vw` を使っていないので、スクロールバーが幅を取る環境でも横にはみ出しません。
+
+<Demo title="vw を使わずに、背景だけを親の幅いっぱいに広げる" html={bandHtml} css={bandCss} widths={[320, 768]} />
 
 プロジェクト全体でビューポート単位を使う流体的な値を多用するなら、その都度値を書かずに、トークンかユーティリティにまとめます。基準にする画面の幅や係数がコードのあちこちに散らばると、カンプの幅が変わったときに直しきれなくなるからです。流体的な文字サイズをユーティリティにまとめる考え方は、「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で紹介します。
 

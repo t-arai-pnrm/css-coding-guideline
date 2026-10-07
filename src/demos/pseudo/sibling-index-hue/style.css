@@ -1,0 +1,20 @@
+@layer components {
+  @scope (.scoped.topic-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+    }
+
+    li {
+      --_hue: 250deg;
+
+      padding: 8px 12px;
+      border-inline-start: 4px solid oklch(60% 0.12 var(--_hue));
+
+      @supports (z-index: sibling-index()) {
+        /* 1項目ごとに色相を40度ずつずらす */
+        --_hue: calc(210deg + sibling-index() * 40deg);
+      }
+    }
+  }
+}

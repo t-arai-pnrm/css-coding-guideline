@@ -1,0 +1,40 @@
+@layer utilities {
+  .-text-muted {
+    color: oklch(55% 0 0deg);
+  }
+}
+
+@layer components {
+  @scope (.scoped.layer-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+  }
+
+  @scope (.scoped.layered-card) to (.scoped) {
+    :scope {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._text {
+      color: oklch(50% 0.2 260deg);
+    }
+  }
+}
+
+/* @layer を書き忘れたので、すべてのレイヤーより強くなる */
+@scope (.scoped.unlayered-card) to (.scoped) {
+  :scope {
+    padding: 16px;
+    border: 1px solid oklch(85% 0 0deg);
+    border-radius: 8px;
+  }
+
+  ._text {
+    color: oklch(50% 0.2 260deg);
+  }
+}

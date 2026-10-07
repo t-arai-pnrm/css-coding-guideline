@@ -1,0 +1,27 @@
+@layer components {
+  /* ダークを先に書いても、ルートが近いので入れ子のリンクではこちらが勝つ */
+  @scope ([data-theme="dark"]) {
+    :scope {
+      margin-block-start: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: oklch(25% 0.02 250deg);
+    }
+
+    a {
+      color: oklch(80% 0.1 250deg);
+    }
+  }
+
+  @scope ([data-theme="light"]) {
+    :scope {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+    }
+
+    a {
+      color: oklch(45% 0.15 250deg);
+    }
+  }
+}

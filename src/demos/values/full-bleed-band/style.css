@@ -1,0 +1,23 @@
+@layer components {
+  @scope (.scoped.feature-band) to (.scoped) {
+    /* 左右の列が余白になり、中央の列に内容を置く */
+    :scope {
+      display: block grid;
+      grid-template-columns: minmax(16px, 1fr) minmax(0, calc(480 / 16 * 1rem)) minmax(16px, 1fr);
+      padding-block: 24px;
+      background-color: oklch(92% 0.04 250deg);
+
+      & > * {
+        grid-column: 2;
+      }
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+    }
+
+    * + p {
+      margin-block-start: calc(8 / 16 * 1rem);
+    }
+  }
+}

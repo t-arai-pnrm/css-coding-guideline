@@ -1,0 +1,33 @@
+@layer components {
+  @scope (.scoped.generated-box) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+    }
+
+    ._case {
+      padding: 8px 12px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+
+      /* 3つに共通の、四角を描くための指定 */
+      &::before {
+        inline-size: 1em;
+        aspect-ratio: 1;
+        margin-inline-end: 8px;
+        background-color: oklch(48% 0.17 260deg);
+        vertical-align: -0.125em;
+      }
+
+      /* content が none 以外になると、擬似要素が作られる。ただし、インラインの箱には大きさが効かない */
+      &[data-content]::before {
+        content: "";
+      }
+
+      /* 箱の種類を変えると、inline-size と aspect-ratio が効く */
+      &[data-display]::before {
+        display: inline flow-root;
+      }
+    }
+  }
+}

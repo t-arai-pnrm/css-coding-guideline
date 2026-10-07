@@ -1,0 +1,31 @@
+@layer components {
+  @scope (.scoped.star-rating) to (.scoped) {
+    legend {
+      font-weight: 700;
+    }
+
+    ._stars {
+      display: block flex;
+      gap: 8px;
+    }
+
+    legend + ._stars {
+      margin-block-start: 8px;
+    }
+
+    label {
+      display: block grid;
+      gap: 4px;
+      justify-items: center;
+      color: oklch(80% 0 0deg);
+      font-size: calc(32 / 16 * 1rem);
+      cursor: pointer;
+
+      /* 選んだ星と、後ろの兄弟にチェックされたラジオボタンを持つ label（選んだ星より前の星） */
+      &:has(> input:checked),
+      &:has(~ label > input:checked) {
+        color: oklch(70% 0.15 85deg);
+      }
+    }
+  }
+}

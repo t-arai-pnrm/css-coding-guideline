@@ -1,0 +1,46 @@
+@layer components {
+  @scope (.scoped.has-combinator-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._card {
+      display: block flex;
+      gap: 12px;
+      align-items: center;
+      min-block-size: calc(60 / 16 * 1rem);
+      padding: 8px 12px;
+      border: 2px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+
+      /* 左：子孫のどこかに img があるカード */
+      &:is([data-selector="descendant"] *):has(img) {
+        border-color: oklch(48% 0.17 260deg);
+        background-color: oklch(95% 0.03 260deg);
+      }
+
+      /* 右：直接の子に img があるカード */
+      &:is([data-selector="child"] *):has(> img) {
+        border-color: oklch(48% 0.17 260deg);
+        background-color: oklch(95% 0.03 260deg);
+      }
+    }
+
+    p {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

@@ -6,7 +6,12 @@ sidebar:
 ---
 
 import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import whereIsHtml from '../../../demos/pseudo/where-is-state/index.html?raw';
+import whereIsCss from '../../../demos/pseudo/where-is-state/style.css?raw';
+import notAncestorHtml from '../../../demos/pseudo/not-ancestor/index.html?raw';
+import notAncestorCss from '../../../demos/pseudo/not-ancestor/style.css?raw';
 
 `:is()` と `:where()` は、引数に並べたセレクタのどれかに当てはまる要素を選ぶ擬似クラスです。当てはまる要素は同じで、詳細度だけが違います。`:is()` は引数の中でいちばん高い詳細度を持ち、`:where()` は引数に関係なく0です。`:not()` は、引数のどのセレクタにも当てはまらない要素を選び、詳細度は `:is()` と同じく引数の最大で決まります。
 
@@ -16,6 +21,16 @@ import Guideline from '../../../components/Guideline.astro';
 
 複数の場所にある複数の要素に同じスタイルを当てるとき、セレクタリストは組み合わせの数だけ長くなります。記事とサイドバーの中の `h2` と `h3` を選ぶには、`article h2, article h3, aside h2, aside h3` の4つを並べる必要がありました。場所や要素が1つ増えるたびに、並べるセレクタは掛け算で増えます。
 
+```css title="🙅‍♂ Not Recommended: 場所と要素の組み合わせをすべて並べる"
+/* 🙅‍♂ Not Recommended */
+article h2,
+article h3,
+aside h2,
+aside h3 {
+  text-wrap: balance;
+}
+```
+
 セレクタの詳細度も、書いたセレクタの形のまま決まっていました。ベーススタイルの `a:link` は0.1.1になり、クラス1つでは上書きできません。詳細度を下げる手段はなく、上げる手段も、同じクラスを重ねるような技しかありませんでした。
 
 否定の条件も、単純なセレクタしか書けませんでした。Selectors Level 3の `:not()` は、引数に `.a` や `[hidden]` のような単純セレクタを1つしか取れません。「`._current` でも `._disabled` でもない」は `:not()` を重ねて書くしかなく、「`h2` の中にない」のような祖先の条件は表せませんでした。Selectors Level 4で加わった `:is()` と `:where()` も、拡張された `:not()` も、セレクタリストを引数として受け取ります。
@@ -23,6 +38,14 @@ import Guideline from '../../../components/Guideline.astro';
 ## `:is()` でセレクタをまとめる
 
 `:is()` を使うと、組み合わせを掛け算で書けます。`:is(article, aside) :is(h2, h3)` は、先に挙げた4つのセレクタと同じ要素を選びます。引数は、`._lead` のような単純セレクタだけでなく、`nav a` のような子孫結合子を含むセレクタも書けます。
+
+```css title="🙆‍♂ Recommended: 場所と要素をそれぞれ :is() にまとめる"
+@layer base {
+  :is(article, aside) :is(h2, h3) {
+    text-wrap: balance;
+  }
+}
+```
 
 詳細度は、引数の最大になります。`:is(article, aside) :is(h2, h3)` は、どの組み合わせでも0.0.2です。引数に1つだけ詳細度の高いセレクタを混ぜると、ほかの引数に当てはまった要素にも、その詳細度が付きます。引数の詳細度をそろえる理由は、「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
 
@@ -78,6 +101,10 @@ import Guideline from '../../../components/Guideline.astro';
 ```
 
 `:where()` で書いた例では、`data-variant="outline"` のボタンを押しても背景色が変わりません。`:is()` で書けば、状態のセレクタは属性1つ分の詳細度を持ち、バリエーションと同じ0.2.0になるので、後に書いた状態のスタイルが勝ちます。状態は既定の見た目を上書きする側なので、`:where()` で詳細度を消す対象ではありません。
+
+次のデモでは、どちらも `aria-pressed="true"` の付いた、押した状態のボタンを置いています。左の `:where()` で書いたボタンは背景が透明のままで、右の `:is()` で書いたボタンだけに、押した状態の背景色が付きます。
+
+<Demo title="押した状態の背景色は、:is() でまとめたボタンにだけ付く" html={whereIsHtml} css={whereIsCss} variant="neutral" widths={[]} />
 
 <Baseline id="where" name=":where()" />
 
@@ -142,6 +169,10 @@ Selectors Level 4の `:not()` には、子孫結合子を含むセレクタも�
   text-decoration-line: underline;
 }
 ```
+
+次のデモで2つの書き方を比べます。左の `&:not(:is(h2, h3) *)` は本文の中のリンクにだけ下線を引き、右の `:not(h2, h3) a` は、祖先の `section` が条件に当てはまるので、見出しの中のリンクにも下線を引きます。
+
+<Demo title="祖先を :not() の引数に書くと、見出しの中のリンクを除ける" html={notAncestorHtml} css={notAncestorCss} variant="neutral" widths={[]} />
 
 この取り違えは、`:has()` と `:not()` の入れ子と同じく、詳細度からは気づけません。`:not()` の引数の中に祖先を書けば、「〜の中にない」という否定がセレクタの形と一致します。「Xを持たない要素」を `:not(:has(X))` で書く理由は、「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
 

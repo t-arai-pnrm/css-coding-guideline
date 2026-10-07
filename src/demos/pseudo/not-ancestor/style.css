@@ -1,0 +1,46 @@
+@layer components {
+  @scope (.scoped.not-ancestor-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      padding: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._label {
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    h3 {
+      font-size: calc(18 / 16 * 1rem);
+    }
+
+    a {
+      color: oklch(48% 0.17 260deg);
+    }
+
+    [data-selector="not-inside"] a {
+      /* 左：h2 か h3 の子孫であるリンクを除く */
+      &:not(:is(h2, h3) *) {
+        text-decoration-line: underline;
+      }
+    }
+
+    /* 右：h2 でも h3 でもない祖先を持つリンク。section が当てはまるので、見出しの中のリンクも選ばれる */
+    :not(h2, h3) a {
+      &:is([data-selector="not-ancestor"] *) {
+        text-decoration-line: underline;
+      }
+    }
+  }
+}

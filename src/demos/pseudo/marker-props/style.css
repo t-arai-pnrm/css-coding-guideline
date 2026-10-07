@@ -1,0 +1,54 @@
+@layer components {
+  @scope (.scoped.marker-props) to (.scoped) {
+    :scope {
+      --_accent: oklch(48% 0.17 260deg);
+
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._list {
+      display: block grid;
+      gap: 4px;
+      padding-inline-start: 1.5em;
+
+      /* kiso.css が空にしたマーカーを、ブラウザのデフォルトスタイルの黒丸に戻す */
+      list-style-type: revert;
+
+      & > li::marker {
+        color: var(--_accent);
+        font-size: 1.25em;
+      }
+
+      /* 印の形を変えるときは、マーカーを空にして ::before で描く。list-style: none にしない */
+      &[data-custom] {
+        padding-inline-start: 0;
+        list-style-type: "";
+      }
+    }
+
+    li {
+      &:is([data-custom] > *) {
+        display: block grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+      }
+
+      &:is([data-custom] > *)::before {
+        content: "✓" / "";
+        color: var(--_accent);
+        font-weight: 700;
+      }
+    }
+  }
+}

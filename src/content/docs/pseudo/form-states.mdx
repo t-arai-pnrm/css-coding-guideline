@@ -16,6 +16,12 @@ import selectAllJs from '../../../demos/pseudo/select-all/script.js?raw';
 import ariaStatesHtml from '../../../demos/pseudo/aria-states/index.html?raw';
 import ariaStatesCss from '../../../demos/pseudo/aria-states/style.css?raw';
 import ariaStatesJs from '../../../demos/pseudo/aria-states/script.js?raw';
+import userInvalidHtml from '../../../demos/pseudo/user-invalid-timing/index.html?raw';
+import userInvalidCss from '../../../demos/pseudo/user-invalid-timing/style.css?raw';
+import readOnlyHtml from '../../../demos/pseudo/read-only-scope/index.html?raw';
+import readOnlyCss from '../../../demos/pseudo/read-only-scope/style.css?raw';
+import placeholderShownHtml from '../../../demos/pseudo/placeholder-shown-scope/index.html?raw';
+import placeholderShownCss from '../../../demos/pseudo/placeholder-shown-scope/style.css?raw';
 
 フォームの状態は、`:user-invalid`、`:checked`、`:disabled`、`:placeholder-shown` のような擬似クラスで選びます。ブラウザが管理する状態をそのまま参照するので、JavaScriptで状態のクラスを付け外しする必要はありません。ただし、どの擬似クラスも、名前から想像する範囲と、実際に当てはまる範囲が少しずつ違います。
 
@@ -27,7 +33,24 @@ import ariaStatesJs from '../../../demos/pseudo/aria-states/script.js?raw';
 
 `:read-only` も同じです。名前からは `readonly` 属性を付けた入力欄を選ぶように見えますが、仕様では「`:read-write` に当てはまらない、すべての要素」に当てはまります。段落も、チェックボックスも、ボタンも `:read-only` です。
 
-こうした違いは、見た目の不具合として表に出ます。ページを開いた直後にエラーの赤い枠が出る、読み取り専用の灰色の背景がチェックボックスにまで付く、といった不具合です。どれも、擬似クラスの書き方ではなく、当てはまる条件の理解の不足から起きます。以下では、検証、選択、操作の可否、入力の有無の順に、条件を確かめます。
+こうした違いは、見た目の不具合として表に出ます。ページを開いた直後にエラーの赤い枠が出る、読み取り専用の灰色の背景がチェックボックスにまで付く、といった不具合です。名前だけを見て次のように書くと、どちらも起きます。
+
+```css title="🙅‍♂ Not Recommended: 擬似クラスの名前から条件を推し量って書く"
+/* 🙅‍♂ Not Recommended */
+input {
+  /* 「誤った値を入力した」のつもりで、開いた時点の空の必須の欄にも当たる */
+  &:invalid {
+    border-color: oklch(50% 0.2 25deg);
+  }
+
+  /* 「readonly を付けた欄」のつもりで、チェックボックスにも当たる */
+  &:read-only {
+    background-color: oklch(93% 0 0deg);
+  }
+}
+```
+
+どれも、擬似クラスの書き方ではなく、当てはまる条件の理解の不足から起きます。以下では、検証、選択、操作の可否、入力の有無の順に、条件を確かめます。
 
 ## 検証の結果を表す擬似クラス
 
@@ -36,6 +59,24 @@ import ariaStatesJs from '../../../demos/pseudo/aria-states/script.js?raw';
 検証の対象にならない要素は、どちらにも当てはまりません。無効にした入力欄、`readonly` を付けた入力欄、`type="hidden"` の入力欄は、検証の対象から外れます。`required` と `readonly` を両方付けた空の入力欄は、`:invalid` になりません（Chrome 152で確認、2026年10月）。一方、`<form>` と `<fieldset>` は、中に `:invalid` の要素が1つでもあれば `:invalid` です。
 
 `:user-valid` と `:user-invalid` は、ユーザーが値を変えて入力欄を離れた後か、送信しようとした後にだけ当てはまります。エラーの見た目を `:invalid` ではなく `:user-invalid` に指定する理由と書き方は、第17章「[17-3 フォーム部品](/interaction/forms/)」のルール `user-invalid-for-errors` で説明しています。正しく入力できたことを示す見た目も、同じ理由で `:valid` ではなく `:user-valid` に指定します。
+
+```css title="🙆‍♂ Recommended: エラーと入力済みの見た目を、ユーザーの操作の後に限る"
+@scope (.scoped.contact-form) to (.scoped) {
+  input {
+    &:user-invalid {
+      border-color: oklch(50% 0.2 25deg);
+    }
+
+    &:user-valid {
+      border-color: oklch(50% 0.13 150deg);
+    }
+  }
+}
+```
+
+次のデモの2つの欄は、どちらも `required` を付けたメールアドレスの欄です。上の `:invalid` の欄は、何も操作していないうちからエラーの色になります。下の `:user-invalid` の欄は、不正な値を入れて欄を離れるか、空のまま「送信する」を押すまで、エラーの色になりません。
+
+<Demo title=":invalid は開いた時点で、:user-invalid は操作の後にエラーの見た目になる" html={userInvalidHtml} css={userInvalidCss} widths={[]} />
 
 <Baseline id="user-pseudos" name=":user-valid と :user-invalid" />
 
@@ -105,6 +146,10 @@ input {
 }
 ```
 
+次のデモは、同じ4つの部品を、1つ目の枠では `&:read-only` で、2つ目の枠では `&[readonly]` と `&:disabled` で選んだものです。1つ目では、灰色の背景と赤い輪郭が、会員番号の欄だけでなく、無効にした紹介コードの欄とチェックボックスにも付きます。2つ目では、読み取り専用の欄と無効の欄が、別々の見た目になります。
+
+<Demo title=":read-only は無効の欄とチェックボックスにも当たり、[readonly] は読み取り専用の欄だけに当たる" html={readOnlyHtml} css={readOnlyCss} />
+
 <Baseline id="read-write-pseudos" />
 
 ## 入力の有無を表す `:placeholder-shown`
@@ -133,6 +178,10 @@ input {
   }
 }
 ```
+
+次のデモは、`placeholder` 属性のある「表示名」と、ない「備考」を並べたものです。1つ目の枠の `&:not(:placeholder-shown)` では、空のままの「備考」が最初から入力済みの太い枠になります。2つ目の枠の `&:placeholder-shown` では、「表示名」だけが未入力の点線になり、文字を入力すると実線に変わります。
+
+<Demo title=":not(:placeholder-shown) は placeholder 属性のない空の欄も入力済みにする" html={placeholderShownHtml} css={placeholderShownCss} />
 
 ラベルを入力欄の中に重ね、入力すると上に移動させる「フローティングラベル」では、判定のためだけに `placeholder=" "` と空白1文字を書く方法が知られています。本書では、この方法を使いません。`placeholder` 属性は入力の手がかりを示すためのもので、見た目の判定のために値を入れると、入力例という本来の役割と混ざるからです。{/* 要確認: 出典なし */}ラベルは入力欄の外に置き、入力例を `placeholder` に書きます。
 

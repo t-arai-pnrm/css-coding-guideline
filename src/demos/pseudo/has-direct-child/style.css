@@ -1,0 +1,57 @@
+@layer components {
+  @scope (.scoped.has-direct-child) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._list {
+      display: block grid;
+      gap: 12px;
+
+      /* 直下の子が3つ以上あるときだけ、3列に並べる */
+      &:has(> :nth-child(3)) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      /* 比べるための悪い例：> を省くと、項目の中のタグの3つ目にも当てはまる */
+      &:is([data-loose] > *):has(:nth-child(3)) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    ._item {
+      display: block grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+    }
+
+    ._title {
+      font-weight: 700;
+    }
+
+    ._tags {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 4px;
+
+      & > li {
+        padding-inline: 8px;
+        border-radius: 999px;
+        background-color: oklch(94% 0.03 260deg);
+        font-size: calc(12 / 16 * 1rem);
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+@layer base {
+  /* 詳細度は 0.1.1 */
+  a {
+    &:any-link {
+      color: oklch(50% 0.2 260deg);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.link-row) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+  }
+
+  /* 詳細度は 0.1.0 でも、後ろのレイヤーなので base のリンクの色に勝つ */
+  @scope (.scoped.button) to (.scoped) {
+    :scope {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: 4px;
+      background-color: oklch(50% 0.2 260deg);
+      color: oklch(100% 0 0deg);
+      text-decoration: none;
+    }
+  }
+}

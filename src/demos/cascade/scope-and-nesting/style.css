@@ -1,0 +1,28 @@
+@layer components {
+  @scope (.scoped.card-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+  }
+
+  @scope (.scoped.news-card) to (.scoped) {
+    :scope {
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+
+      &[data-variant="featured"] {
+        border: 2px solid oklch(50% 0.2 260deg);
+      }
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+
+      &:is(:scope[data-variant="featured"] *) {
+        font-size: calc(24 / 16 * 1rem);
+      }
+    }
+  }
+}

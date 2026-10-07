@@ -1,0 +1,10 @@
+<div class="scoped specificity-compare">
+  <section class="scoped lead-not">
+    <h3>p:not(._note) と ._lead</h3>
+    <p class="_lead">p:not(._note) が 0.1.1 なので、後に書いた ._lead（0.1.0）の青は使われず、灰色のままです。</p>
+  </section>
+  <section class="scoped lead-where">
+    <h3>p:where(:not(._note)) と ._lead</h3>
+    <p class="_lead">:where() で包むと 0.0.1 になるので、後に書いた ._lead の青が使われます。</p>
+  </section>
+</div>

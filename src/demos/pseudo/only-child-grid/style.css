@@ -1,0 +1,39 @@
+@layer components {
+  @scope (.scoped.only-child-grid-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    /* 見出しの次の一覧は別のコンポーネントのルートで、このスコープからは選べないので、間隔は section の gap で空ける */
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+
+  @scope (.scoped.card-grid) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(120 / 16 * 1rem)), 1fr));
+      gap: 8px;
+    }
+
+    li {
+      padding: 16px;
+      border: 1px solid oklch(80% 0 0deg);
+      border-radius: 8px;
+      background-color: oklch(96% 0.02 260deg);
+
+      /* 兄弟のいないカードは、すべての列にまたがらせる */
+      &:only-child {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+}

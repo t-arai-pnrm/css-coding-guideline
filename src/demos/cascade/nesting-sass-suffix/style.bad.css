@@ -1,0 +1,20 @@
+@layer components {
+  .news-card {
+    display: block grid;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid oklch(85% 0 0deg);
+    border-radius: 8px;
+
+    /* Sass なら .news-card__title になるが、素の CSS では無効なルールとして捨てられる */
+    &__title {
+      color: oklch(50% 0.2 260deg);
+      font-size: calc(20 / 16 * 1rem);
+    }
+
+    & ._title {
+      color: oklch(50% 0.2 260deg);
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+}

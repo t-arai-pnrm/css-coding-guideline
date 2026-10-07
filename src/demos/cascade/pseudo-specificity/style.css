@@ -1,0 +1,57 @@
+@layer components {
+  @scope (.scoped.specificity-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+  }
+
+  @scope (.scoped.lead-not) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* :not() は引数の ._note の分が加わり、0.1.1 */
+    p {
+      &:not(._note) {
+        color: oklch(55% 0 0deg);
+      }
+    }
+
+    /* 0.1.0 */
+    ._lead {
+      color: oklch(50% 0.2 260deg);
+    }
+  }
+
+  @scope (.scoped.lead-where) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* :where() の中は数えないので、0.0.1 */
+    p {
+      &:where(:not(._note)) {
+        color: oklch(55% 0 0deg);
+      }
+    }
+
+    /* 0.1.0 */
+    ._lead {
+      color: oklch(50% 0.2 260deg);
+    }
+  }
+}

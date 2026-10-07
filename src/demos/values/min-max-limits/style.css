@@ -1,0 +1,29 @@
+@layer components {
+  @scope (.scoped.page-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+
+      /* 親の幅の 5% だが、16px より狭くしない */
+      padding-block: 16px;
+      padding-inline: max(16px, 5%);
+      background-color: oklch(96% 0.01 250deg);
+      outline: 1px dashed oklch(60% 0 0deg);
+    }
+
+    ._note {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 320px だが、親の幅は超えない */
+    ._thumbnail {
+      display: block grid;
+      place-items: center;
+      inline-size: min(100%, 320px);
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      background-color: oklch(85% 0.06 250deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

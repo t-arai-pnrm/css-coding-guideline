@@ -5,7 +5,10 @@ sidebar:
   order: 2
 ---
 
+import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import pseudoSpecificityHtml from '../../../demos/cascade/pseudo-specificity/index.html?raw';
+import pseudoSpecificityCss from '../../../demos/cascade/pseudo-specificity/style.css?raw';
 
 セレクタは、要素を選ぶと同時に、そのルールの詳細度を決めます。本書では、ベーススタイルを `base` レイヤーに素のセレクタで書き、コンポーネントの中はクラス1つ分（0.1.0）を基本にそろえます。ベーススタイルのセレクタを `:where()` で包んで詳細度を0にするのは、レイヤーを使えない場合に限ります。IDセレクタと、詳細度を上げるためだけのセレクタは使いません。
 
@@ -138,6 +141,10 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 `:is()`、`:not()`、`:has()` は、自分の0.1.0を持ちません。引数の最大がそのまま擬似クラス全体の詳細度になります。引数の最大は、要素に実際に一致したセレクタではなく、引数に書いたすべてのセレクタから選びます。そのため、`:is(#news, ._card)` は、`._card` に当てはまった要素でも1.0.0です。`:nth-last-child()` も、`of S` を付けたときは `:nth-child()` と同じく、0.1.0にSの最大を足します。`of S` を付けなければ、ほかの擬似クラスと同じ0.1.0です。
 
 `:not()` は否定の擬似クラスですが、詳細度は引数の分だけ加わります。`p:not(._note)` は0.1.1で、`p._note` と同じ詳細度です。引数をカンマで並べると、引数の最大の1つ分だけが加わります。`p:not(._note, ._lead)` は0.1.1、同じ要素を選ぶ `p:not(._note):not(._lead)` は0.2.1です。2020年の上書きの技 `:not(#_)` で詳細度を上げられたのも、この決まり方によるものでした。存在しないIDを引数に書くだけで、`:not()` の詳細度がIDセレクタと同じ1.0.0になるからです。
+
+次のデモの2つのカードでは、段落を灰色にするルールの後ろで、`._lead` を青くしています。`p:not(._note)` は0.1.1なので、後ろにある `._lead` のルールより強くなります。同じ条件を `:where()` で包むと詳細度は0.0.1まで下がり、`._lead` の青が使われます。
+
+<Demo title=":not() は引数の分だけ詳細度が上がり、後に書いたクラスに勝つ" html={pseudoSpecificityHtml} css={pseudoSpecificityCss} widths={[]} />
 
 詳細度が引数で決まるので、意味の違うセレクタが同じ詳細度になることがあります。`._card:has(:not(img))` と `._card:not(:has(img))` は、意味が逆なのに、どちらも0.1.1です。詳細度の差から誤りに気づくことはできないので、入れ子の順序は意味から確かめます。
 

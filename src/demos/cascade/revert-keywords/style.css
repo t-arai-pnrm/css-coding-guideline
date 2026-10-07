@@ -1,0 +1,31 @@
+@layer components {
+  @scope (.scoped.keyword-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ul {
+      /* kiso.css が消した字下げを、マーカーの置き場所として戻す */
+      padding-inline-start: 1.5em;
+
+      &[data-keyword="revert"] {
+        list-style-type: revert;
+      }
+
+      &[data-keyword="revert-layer"] {
+        list-style-type: revert-layer;
+      }
+    }
+  }
+}

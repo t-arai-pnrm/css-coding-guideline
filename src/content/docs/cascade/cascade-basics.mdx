@@ -5,8 +5,15 @@ sidebar:
   order: 1
 ---
 
+import Demo from '../../../components/Demo.astro';
 import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
+import layerOverSpecificityHtml from '../../../demos/cascade/layer-over-specificity/index.html?raw';
+import layerOverSpecificityCss from '../../../demos/cascade/layer-over-specificity/style.css?raw';
+import inheritRootHtml from '../../../demos/cascade/inherit-root/index.html?raw';
+import inheritRootCss from '../../../demos/cascade/inherit-root/style.css?raw';
+import revertKeywordsHtml from '../../../demos/cascade/revert-keywords/index.html?raw';
+import revertKeywordsCss from '../../../demos/cascade/revert-keywords/style.css?raw';
 
 同じ要素の同じプロパティに複数の値が指定されたとき、どの値を使うかは「カスケード」という手順で決まります。カスケードは、レイヤー、詳細度、スコープの近さ、書いた順番などを決まった順に比べ、最初に差がついたところで勝ち負けを決めます。
 
@@ -105,7 +112,11 @@ a:link {}               /* 0.1.1 */
 }
 ```
 
-このコードでは、ベースのリンクの色が0.0.0、ボタンの色が0.1.0です。仮に詳細度が逆だったとしても、`components` レイヤーが `base` レイヤーより後ろにあるので、ボタンの色が勝ちます。詳細度とレイヤーの両方で同じ向きの優先順位を作っておけば、上書きのための工夫は要りません。
+このコードでは、ベースのリンクの色が0.1.1、ボタンの色が0.1.0です。詳細度ではリンクの色のほうが高くても、`components` レイヤーが `base` レイヤーより後ろにあるので、ボタンの色が勝ちます。レイヤーで順番を決めておけば、上書きのために詳細度を上げる工夫は要りません。
+
+次のデモでは、リンクで作ったボタンの文字が白になり、`base` レイヤーのリンクの青は使われません。
+
+<Demo title="base の a:any-link（0.1.1）より、components のボタン（0.1.0）の色が勝つ" html={layerOverSpecificityHtml} css={layerOverSpecificityCss} widths={[]} />
 
 なお、この節のほかのコード例では、説明に関係しない `@layer` の記述を省略しています。
 
@@ -119,19 +130,7 @@ a:link {}               /* 0.1.1 */
 
 継承があるので、文字の色やサイズは `:root` やコンポーネントのルートでまとめて指定し、子要素では継承を使います。子要素ごとに同じ値を書き直すと、ルートの値を変えたときに直す場所が増えるからです。
 
-```css title="🙆‍♂ Recommended: 継承するプロパティはルートでまとめて指定する"
-@scope (.scoped.news-card) to (.scoped) {
-  :scope {
-    color: var(--foreground--muted);
-    font-size: calc(14 / 16 * 1rem);
-  }
-
-  h2 {
-    color: var(--foreground--base);
-    font-size: calc(18 / 16 * 1rem);
-  }
-}
-```
+<Demo title="継承するプロパティはルートでまとめて指定する" html={inheritRootHtml} css={inheritRootCss} widths={[]} />
 
 この例では、カードの中の文章はすべてルートの色とサイズを受け継ぎ、見出しだけが違う値を持ちます。本文の段落や日付にクラスを付けて、色を指定し直す必要はありません。
 
@@ -157,7 +156,9 @@ a:link {}               /* 0.1.1 */
 }
 ```
 
-ここで `revert-layer` を使うと、kiso.cssを入れた `reset` レイヤーの値（マーカーなし）に戻るので、マーカーは表示されません（2026年9月、Chrome 152で確認）。どちらのキーワードも「元に戻す」ものですが、戻る先が違います。
+ここで `revert-layer` を使うと、kiso.cssを入れた `reset` レイヤーの値（マーカーなし）に戻るので、マーカーは表示されません（2026年9月、Chrome 152で確認）。どちらのキーワードも「元に戻す」ものですが、戻る先が違います。次のデモでは、2つのリストの違いは `list-style-type` のキーワードだけです。
+
+<Demo title="revert はブラウザのデフォルトに、revert-layer は reset レイヤーの値に戻る" html={revertKeywordsHtml} css={revertKeywordsCss} widths={[]} />
 
 これらのキーワードは、`all` プロパティと組み合わせると、`direction`、`unicode-bidi`、カスタムプロパティを除くすべてのプロパティをまとめて戻せます。このとき `all: unset` は使いません。`unset` は、継承されないプロパティを初期値に戻すので、`display` は `inline` になり、ブラウザのデフォルトスタイルのうち必要なもの（`<ul>` の余白や `<button>` のフォーカスリングなど）まで消えます。どのプロパティの初期値が何かを覚えていないと、何が起きるのかを予測できません。まとめて戻すなら、レイヤーを使うプロジェクトでは `all: revert-layer`、使わないプロジェクトでは `all: revert` を指定します。戻る先がひとつ前のレイヤーや（ユーザーのスタイルがなければ）ブラウザのデフォルトスタイルなので、要素が本来の表示を保ったまま、上書きだけが消えます。
 

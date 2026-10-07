@@ -1,0 +1,58 @@
+@layer components {
+  @scope (.scoped.where-is-state-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      justify-items: start;
+    }
+
+    h3 {
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+
+  /* 左：状態のセレクタを :where() でまとめる */
+  @scope (.scoped.where-toggle) to (.scoped) {
+    :scope {
+      padding: 8px 16px;
+      border: 2px solid oklch(48% 0.17 260deg);
+      border-radius: 8px;
+      background-color: oklch(92% 0 0deg);
+
+      &[data-variant="outline"] {
+        background-color: transparent;
+      }
+
+      /* 詳細度は 0.1.0 で、上の 0.2.0 に負ける */
+      &:where([aria-pressed="true"], [aria-expanded="true"]) {
+        background-color: oklch(85% 0.08 260deg);
+      }
+    }
+  }
+
+  /* 右：状態のセレクタを :is() でまとめる */
+  @scope (.scoped.is-toggle) to (.scoped) {
+    :scope {
+      padding: 8px 16px;
+      border: 2px solid oklch(48% 0.17 260deg);
+      border-radius: 8px;
+      background-color: oklch(92% 0 0deg);
+
+      &[data-variant="outline"] {
+        background-color: transparent;
+      }
+
+      /* 詳細度は 0.2.0 で、後に書いたほうが勝つ */
+      &:is([aria-pressed="true"], [aria-expanded="true"]) {
+        background-color: oklch(85% 0.08 260deg);
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+@layer components {
+  @scope (.scoped.news-list) to (.scoped) {
+    li {
+      padding-block: 8px;
+      border-block-end: 1px solid oklch(85% 0 0deg);
+    }
+
+    time {
+      margin-inline-end: 8px;
+      color: oklch(45% 0 0deg);
+
+      /* 先頭から3件の項目の中 */
+      &:is(li:nth-child(-n + 3) *) {
+        color: oklch(48% 0.17 260deg);
+        font-weight: 700;
+      }
+    }
+  }
+}

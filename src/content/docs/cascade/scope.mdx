@@ -12,6 +12,12 @@ import Guideline from '../../../components/Guideline.astro';
 import donutHtml from '../../../demos/cascade/donut-scope/index.html?raw';
 import donutCss from '../../../demos/cascade/donut-scope/style.css?raw';
 import donutBadCss from '../../../demos/cascade/donut-scope/style.bad.css?raw';
+import preludeLessHtml from '../../../demos/cascade/scope-prelude-less/index.html?raw';
+import preludeLessCss from '../../../demos/cascade/scope-prelude-less/style.css?raw';
+import proximityHtml from '../../../demos/cascade/scope-proximity/index.html?raw';
+import proximityCss from '../../../demos/cascade/scope-proximity/style.css?raw';
+import outerStylesHtml from '../../../demos/cascade/scope-outer-styles/index.html?raw';
+import outerStylesCss from '../../../demos/cascade/scope-outer-styles/style.css?raw';
 
 コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書きます。`@scope` は、セレクタが当たる範囲を、スコープのルートから下限までの間に限る仕組みです。`to (.scoped)` を書くと、スコープは入れ子になった別のコンポーネントのルートで止まります。この形を「ドーナツスコープ」と呼びます。
 
@@ -142,6 +148,10 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 リンクから見ると、ダークのルートは1つ上、ライトのルートは2つ上にあります。ダークのルールは先に書かれていますが、ルートが近いので勝ち、リンクは明るい色になります。出現順で決まるなら、後に書いたライトの色になるところです（2026年10月、Chrome 152で確認）。
 
+次のデモは、この例に背景色と余白を足したものです。ダークの中のリンクは、後に書いたライトの濃い青ではなく、ダークの明るい青になります。
+
+<Demo title="詳細度が同じなら、ルートに近い @scope の指定が勝つ" html={proximityHtml} css={proximityCss} variant="neutral" widths={[]} />
+
 `@scope` の外に書いたルールは、近接度が無限大として扱われます。そのため、詳細度が同じなら、`@scope` の中のルールが、後に書いた `@scope` の外のルールにも勝ちます。`@scope (.s) { :scope { … } }` と、その後ろに書いた `.s { … }` は、どちらも0.1.0ですが、`:scope` の側が勝ちます（2026年10月、Chrome 152で確認）。
 
 ## `<style>` に前置きのない `@scope` を書く
@@ -167,6 +177,10 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 この例では、`<section>` がルートになり、`p` のスタイルはこの `<section>` の中にだけ当たります（2026年10月、Chrome 152で確認）。ルートを選ぶクラス名が要らないので、テンプレートの中にその場限りのスタイルを書く用途を想定した仕組みです。
 
+次のデモでは、2つの `<section>` のうち、1つ目にだけ `<style>` を置いています。2つ目の段落は、同じ `p` でも青くなりません。デモのCSSのタブは枠線を付けるためのもので、前置きのない `@scope` はHTMLのタブにあります。
+
+<Demo title="前置きのない @scope は、style 要素を置いた section の中にだけ当たる" html={preludeLessHtml} css={preludeLessCss} variant="neutral" widths={[]} />
+
 本書では、この書き方を規約として勧めません。コンポーネントのスタイルがテンプレートのHTMLに散らばると、コンポーネントごとのCSSファイルにまとまらず、Stylelintでも検証できなくなります。同じコンポーネントをページに3つ置けば、同じ内容の `<style>` も3つ出力されます。本書は、コンポーネントのCSSをファイルに分け、ルートに付けたクラスでスコープを作ります。
 
 ## 外から入ってくるスタイルは防げない
@@ -176,6 +190,10 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 この違いは、自分で書いていないCSSと共存するときに表れます。CMSが本文エリアに `.entry-content h2 { border-inline-start: 4px solid; }` のようなスタイルを出力していると、本文エリアに置いたコンポーネントの `h2` にも枠線が付きます。ライブラリのCSSが `.title` のような汎用的なクラス名にスタイルを指定していれば、同じ名前の子クラスにも当たります。子要素のクラス名がほかのコンポーネントと同じでもかまわないのは、ページのCSSがすべて `@scope` で範囲を閉じているときに限ります。
 
 外から入ってくるスタイルへの対処は、レイヤーとCSSの読み込み方の問題です。外部のCSSを自分で読み込めるなら、`vendors` レイヤーに入れ、コンポーネントの指定が勝つようにします（[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。ただし、レイヤーで決まるのは同じプロパティを指定したときの優劣なので、コンポーネントが指定していないプロパティには、外部のCSSが当たり続けます。CMSの本文エリアのように直せないCSSと共存する方法は、第19章「19-4 CMSと共存する」で説明します。{/* 第19章の執筆後にリンクする: /operations/cms/ */}
+
+次のデモでは、本文エリアのCSSを `vendors` レイヤーに入れ、`.entry-content h2` に色と線を指定しています。コンポーネントが指定した `color` はレイヤーの順番で勝ちますが、指定していない `border-inline-start` と `padding-inline-start` は、スコープの中の見出しにも当たります。
+
+<Demo title="@scope の中の見出しにも、外に書いたルールが当たる" html={outerStylesHtml} css={outerStylesCss} variant="neutral" widths={[]} />
 
 値の継承も、スコープの境界を越えます。`@scope` が制限するのはセレクタの適用範囲なので、外側の要素に指定した `color` や `font-size`、カスタムプロパティの値は、下限の内側にも継承されます。継承されるカスタムプロパティの扱いは「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
@@ -195,7 +213,18 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 一方、web-featuresは、`@scope` の機能全体を2026年3月に「新しく利用可能」になったものとして扱っています。MDNのブラウザ互換性データによると、Safari 26.0から26.3には、`@scope` の中のルールが `<input>` と `<textarea>` に当たらない不具合がありました。この不具合はSafari 26.4で直っています（2026年9月確認）。Safari 18系には、この不具合はありません。機能全体のChromeのバージョンが143になっているのは、`@scope` の直下の `&` を `:where(:scope)` として扱う動作を含むためです。
 
-Safari 26.0から26.3を使い続けているユーザーには、スコープの中で指定した入力欄のスタイルが当たりません。ただし、kiso.cssはスコープの外で入力欄に枠線を付けているので、入力欄が見えなくなるわけではありません。
+Safari 26.0から26.3を使い続けているユーザーには、スコープの中で指定した入力欄のスタイルが当たりません。次の例では、`input` の枠線の色と角の丸みが、これらのバージョンでは使われません。
+
+```css title="Safari 26.0〜26.3 で当たらない、スコープの中の入力欄の指定"
+@scope (.scoped.search-form) to (.scoped) {
+  input {
+    border-color: var(--border--accent);
+    border-radius: 4px;
+  }
+}
+```
+
+ただし、kiso.cssはスコープの外で入力欄に枠線を付けているので、入力欄が見えなくなるわけではありません。
 
 `@scope` は、プログレッシブ・エンハンスメントとしては使いにくい機能です。対応していないブラウザでは `@scope` の中のスタイルがすべて無視され、コンポーネントの見た目がまったく付かないからです。本書の対象のブラウザはすべて基本の動作に対応しているので、本書では前提の機能として使います。対象のブラウザの考え方は、第1章「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」で説明します。
 

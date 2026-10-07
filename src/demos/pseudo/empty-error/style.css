@@ -1,0 +1,35 @@
+@layer components {
+  @scope (.scoped.empty-error) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px dashed oklch(70% 0 0deg);
+    }
+
+    h3 {
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ._error {
+      /* 空の箱も見えるように、高さと枠線を付ける */
+      min-block-size: 1lh;
+      padding: 4px 8px;
+      border: 1px solid oklch(50% 0.2 25deg);
+      background-color: oklch(97% 0.02 25deg);
+      color: oklch(50% 0.2 25deg);
+
+      /* 子を持たないときだけ隠す。改行も子のテキストノードなので、改行だけの要素は隠れない */
+      &:empty {
+        display: none;
+      }
+    }
+  }
+}

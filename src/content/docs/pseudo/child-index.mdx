@@ -11,6 +11,14 @@ import Guideline from '../../../components/Guideline.astro';
 import tableHtml from '../../../demos/pseudo/striped-table/index.html?raw';
 import tableCss from '../../../demos/pseudo/striped-table/style.css?raw';
 import tableBadCss from '../../../demos/pseudo/striped-table/style.bad.css?raw';
+import onlyChildHtml from '../../../demos/pseudo/only-child-grid/index.html?raw';
+import onlyChildCss from '../../../demos/pseudo/only-child-grid/style.css?raw';
+import firstThreeHtml from '../../../demos/pseudo/nth-child-first-three/index.html?raw';
+import firstThreeCss from '../../../demos/pseudo/nth-child-first-three/style.css?raw';
+import nthOfTypeHtml from '../../../demos/pseudo/nth-of-type-vs-of/index.html?raw';
+import nthOfTypeCss from '../../../demos/pseudo/nth-of-type-vs-of/style.css?raw';
+import siblingHtml from '../../../demos/pseudo/sibling-index-hue/index.html?raw';
+import siblingCss from '../../../demos/pseudo/sibling-index-hue/style.css?raw';
 
 `:first-child` や `:nth-child()` は、兄弟の中で何番目にあるかによって要素を選ぶ擬似クラスです。表の縞模様や、一覧の先頭の数件だけを目立たせる処理を、HTMLにクラスを足さずに書けます。本書では、クラスや状態で絞った中での順番を `:nth-child(N of S)` で書き、`:nth-of-type()` を代わりに使いません。
 
@@ -53,6 +61,10 @@ tbody tr {
 }
 ```
 
+次のデモでは、同じCSSのグリッドを2つ並べています。カードが3枚の一覧では1枚ずつ列に収まり、1枚だけの一覧では、そのカードが `:only-child` に当たって行の幅いっぱいに広がります。
+
+<Demo title="兄弟のいないカードだけが、すべての列にまたがる" html={onlyChildHtml} css={onlyChildCss} widths={[375, 768]} />
+
 この3つには、`:first-of-type`、`:last-of-type`、`:only-of-type` という対になる擬似クラスがあります。こちらは、同じタグ名の兄弟だけを数えます。`p:first-of-type` は、前に見出しや画像があっても、兄弟の中で最初の `p` に当たります。
 
 詳細度は、どれも擬似クラス1つ分の0.1.0です。`li:first-child` なら、`li` の0.0.1を足して0.1.1になります。`@scope` の中でタイプセレクタに付けると、子クラスの0.1.0より高くなるので、子クラスで上書きするつもりの宣言が負けないかに気を付けます。詳細度の数え方は「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明しています。
@@ -78,6 +90,8 @@ tbody tr {
   }
 }
 ```
+
+<Demo title="先頭から3件の項目の日付だけを強調する" html={firstThreeHtml} css={firstThreeCss} widths={[]} />
 
 `:nth-last-child()` は、同じ式で末尾から数えます。`:nth-last-child(-n + 2)` は最後の2個、`:nth-last-child(n + 3)` は最後の2個を除いたすべてです。`:nth-child(-n + 3)` のような式は、書いた本人でも数か月後には読み直すのに時間がかかります。上の例のように、選ぶ範囲を文章にしたコメントを添えます。
 
@@ -139,6 +153,10 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 }
 ```
 
+次のデモでは、同じ3つの `li` に、左は `._post:nth-of-type(2)`、右は `:nth-child(2 of ._post)` で枠線と背景色を付けています。左はどの項目にも色が付かず、右は3つ目の「記事B」に色が付きます。
+
+<Demo title=":nth-of-type() はタグ名で数え、of S はクラスで絞って数える" html={nthOfTypeHtml} css={nthOfTypeCss} variant="neutral" widths={[]} />
+
 `:nth-of-type()` が適しているのは、種類の違う要素が混ざった並びで、ある種類の何番目かを選ぶときです。記事の本文で最初の `p` だけ文字を大きくする、といった場面では、`p:first-of-type` のほうが意図をそのまま表します。ただし、本書の規約ではタイプセレクタの順番に頼る場面自体が多くありません。
 
 ## 位置を値にする `sibling-index()` と `sibling-count()`
@@ -165,6 +183,8 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
   }
 }
 ```
+
+<Demo title="対応した環境では、項目ごとに線の色相がずれる" html={siblingHtml} css={siblingCss} widths={[]} />
 
 `@supports` を省くと、未対応の環境で線が消えます。カスタムプロパティは中身を検証せずに受け取るので、`--_hue` には解釈できない式がそのまま入り、それを使う `border-inline-start` が計算値の時点で無効になるからです。`@supports` の中に書けば、未対応の環境ではすべての項目が同じ色相の線になります。線の色は装飾なので、色相がそろっても、項目の内容は文字で伝わります。
 

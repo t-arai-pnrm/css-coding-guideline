@@ -1,0 +1,50 @@
+@layer components {
+  @scope (.scoped.nth-of-type-vs-of-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    ul {
+      display: block grid;
+      gap: 4px;
+    }
+
+    li {
+      padding: 8px 12px;
+      border: 2px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+
+      /* 右：._post だけを数えた中で2番目 */
+      &:is([data-selector="of-s"] *):nth-child(2 of ._post) {
+        border-color: oklch(48% 0.17 260deg);
+        background-color: oklch(95% 0.03 260deg);
+      }
+    }
+
+    ._post {
+      /* 左：同じタグ名の兄弟の中で2番目にあり、かつ ._post でもある要素（当てはまる要素はない） */
+      &:is([data-selector="nth-of-type"] *):nth-of-type(2) {
+        border-color: oklch(48% 0.17 260deg);
+        background-color: oklch(95% 0.03 260deg);
+      }
+    }
+
+    ._ad {
+      border-style: dashed;
+      color: oklch(45% 0 0deg);
+    }
+  }
+}

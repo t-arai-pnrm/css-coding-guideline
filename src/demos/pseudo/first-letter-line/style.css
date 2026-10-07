@@ -1,0 +1,23 @@
+@layer components {
+  @scope (.scoped.first-letter-line) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._letter {
+      /* 開き括弧で始まる段落では、括弧と次の1字が一緒に大きくなる */
+      &::first-letter {
+        color: oklch(48% 0.17 260deg);
+        font-size: 1.75em;
+      }
+    }
+
+    ._line {
+      /* 1行目の範囲は、要素の幅と文字の大きさで変わる */
+      &::first-line {
+        font-weight: 700;
+      }
+    }
+  }
+}

@@ -25,6 +25,20 @@ import targetCss from '../../../demos/pseudo/pseudo-target/style.css?raw';
 
 1コロンの習慣は、あとから加わった擬似要素で誤りを生みます。旧記法が認められているのは上の4つだけなので、`li:marker` や `input:placeholder` は無効なセレクタになり、ルール全体が無視されます（2026年10月、Chrome 152で確認）。すべての擬似要素を2コロンで書くと決めておけば、こうした誤りは起きません。本書のStylelintの設定では、`selector-pseudo-element-colon-notation` で1コロンの擬似要素を検出しています。
 
+```css title="🙅‍♂ Not Recommended: 擬似要素を1コロンで書く"
+/* 🙅‍♂ Not Recommended */
+a:hover,
+a:before {
+  /* :hover は擬似クラス、:before は擬似要素だが、形から見分けられない */
+  color: var(--foreground--accent);
+}
+
+li:marker {
+  /* 旧記法が認められていないので、ルール全体が無視される */
+  color: var(--foreground--muted);
+}
+```
+
 ## 擬似クラスは要素を、擬似要素は要素の一部を選ぶ
 
 擬似クラスが選ぶのは、DOMにある要素そのものです。条件には、兄弟の中の位置（`:first-child`）、フォーム部品の状態（`:checked`）、ユーザーの操作（`:hover`）、子孫の有無（`:has()`）などがあります。条件はHTMLのクラスとして書かれていませんが、当てはまったときにスタイルが当たるのは、クラスで選んだときと同じ要素の箱です。
@@ -88,6 +102,29 @@ import targetCss from '../../../demos/pseudo/pseudo-target/style.css?raw';
 ## 擬似クラスと擬似要素の詳細度
 
 擬似クラスの詳細度は、クラスや属性セレクタと同じ0.1.0です。擬似要素の詳細度は、タイプセレクタと同じ0.0.1です。`li::marker` は0.0.2、`._note::marker` は0.1.1になります。1コロンで書いた `:before` も擬似要素として数えるので、0.0.1です。
+
+```css title="🙆‍♂ Recommended: 擬似要素はタイプセレクタ、擬似クラスはクラスと同じ重さで数える"
+@scope (.scoped.notice-list) to (.scoped) {
+  li {
+    /* li::marker の詳細度は 0.0.2 */
+    &::marker {
+      color: var(--foreground--muted);
+    }
+
+    /* li:first-child の詳細度は 0.1.1 */
+    &:first-child {
+      font-weight: 700;
+    }
+  }
+
+  ._note {
+    /* ._note::marker の詳細度は 0.1.1 で、li::marker に勝つ */
+    &::marker {
+      color: var(--foreground--accent);
+    }
+  }
+}
+```
 
 擬似クラスの0.1.0は、`@scope` の中のタイプセレクタと組み合わせたときに影響します。`a:hover` の詳細度は0.1.1で、子クラス `._sub-link` の0.1.0より高くなります。共通の `a:hover` に書いた文字色が、子クラスで指定した文字色を上書きしてしまうので、役割ごとに違う状態のスタイルは `._sub-link:hover` のように子クラスの側に書きます。この書き分けは、第10章「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 

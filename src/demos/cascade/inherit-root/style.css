@@ -1,0 +1,21 @@
+@layer components {
+  @scope (.scoped.news-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding: 16px;
+      border: 1px solid oklch(85% 0 0deg);
+      border-radius: 8px;
+
+      /* 文字の色とサイズは、ルートでまとめて指定する */
+      color: oklch(45% 0 0deg);
+      font-size: calc(14 / 16 * 1rem);
+    }
+
+    /* 見出しだけが違う値を持つ */
+    h2 {
+      color: oklch(20% 0 0deg);
+      font-size: calc(18 / 16 * 1rem);
+    }
+  }
+}
