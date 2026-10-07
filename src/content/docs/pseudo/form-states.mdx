@@ -215,7 +215,7 @@ input {
 
 `aria-disabled="true"` を付けた要素は `:disabled` に、`aria-invalid="true"` を付けた要素は `:user-invalid` に当てはまりません。ARIA属性は支援技術に状態を伝えるだけで、ブラウザの状態は変えないからです（MDN）。片方にだけ見た目を指定すると、同じ「無効」や「エラー」の状態でも、見た目の変わらない要素が出ます。
 
-```css title="🙆‍♂ Recommended: 擬似クラスと属性セレクタをまとめて指定する"
+```css title="🙆‍♂ Recommended: ネイティブの状態と ARIA 属性の状態に、同じ見た目を当てる"
 @scope (.scoped.profile-form) to (.scoped) {
   input {
     &:is(:user-invalid, [aria-invalid="true"]) {

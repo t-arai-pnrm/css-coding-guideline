@@ -109,7 +109,7 @@ AIにCSSを書かせたときも、OSごとのフォントを並べたスタッ�
 
 Webフォントを自分のサーバーから配信するときは、`@font-face` にいくつかの記述子を加えます。私が使っているテンプレートでは、形式をWOFF2だけにし、`unicode-range` で文字の範囲ごとにファイルを分け、`font-display` で読み込み中の表示を決めています。`@font-face` は、ベーススタイルと同じ `base` レイヤーに置きます（[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
 
-```css title="🙆‍♂ Recommended: 本文用のWebフォントを定義する"
+```css title="🙆‍♂ Recommended: WOFF2だけを、文字の範囲ごとに分けて読み込む"
 @font-face {
   font-family: Inter;
   src: url("/fonts/inter-latin.woff2") format("woff2");

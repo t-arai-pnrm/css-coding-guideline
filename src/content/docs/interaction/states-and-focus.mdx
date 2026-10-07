@@ -217,7 +217,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 押せる範囲を決めるのは、`<a>` や `<button>` のような操作する要素自身の大きさです。ナビゲーションの `<li>` やリストのような外側の要素に `padding` を付けても、見た目の上では項目が大きくなるだけで、押せるのは文字の部分に限られます。項目の端を押しても反応しないので、ユーザーは押し損じたと感じます。
 
-```css title="🙅‍♂ Not Recommended: 外側の li に padding を付ける"
+```css title="🙅‍♂ Not Recommended: 外側の li に padding を付け、押せる範囲を文字だけにする"
 /* 🙅‍♂ Not Recommended */
 ._item {
   padding: 12px 16px;
@@ -370,7 +370,7 @@ body {
 
 ホバーの表現として手軽なのが、`opacity: 0.7` のように要素を透かす方法です。しかし、この方法はおすすめしません。背景だけでなく文字まで透けるので、コントラストが下がって読みにくくなります。背景に画像や別の色があると、それが透けて見えるのも問題です。
 
-```css title="🙅‍♂ Not Recommended: ホバーを透明度で表す"
+```css title="🙅‍♂ Not Recommended: ホバーを透明度で表し、文字まで薄くする"
 /* 🙅‍♂ Not Recommended */
 ._submit-button {
   &:hover {

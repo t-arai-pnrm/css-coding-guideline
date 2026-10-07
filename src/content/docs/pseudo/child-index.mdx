@@ -145,7 +145,7 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 
 「2番目の `._post`」を選ぶなら、`:nth-child(2 of ._post)` と書きます。`._post` だけを数えるので、間に広告の `li` が入っても、3つ目の `li` が選ばれます。クラス、属性、状態のどれで絞るときも同じ形で書けるので、本書では、絞った中での順番はすべて `of S` で書きます。
 
-```css title="🙆‍♂ Recommended: 2番目の ._post を選ぶ"
+```css title="🙆‍♂ Recommended: :nth-child(2 of ._post) で、2番目の ._post を選ぶ"
 @scope (.scoped.post-list) to (.scoped) {
   li {
     &:nth-child(2 of ._post) {

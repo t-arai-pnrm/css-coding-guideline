@@ -23,7 +23,7 @@ import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?r
 
 これまで、隙間を詰めるには2つの方法がありました。1つは `columns` による段組みです。段組みは、項目を1段目の上から下へ流し、段の下端に達したら2段目へ移ります。隙間は詰まりますが、並び順が縦になるので、新着順の一覧では、最新の記事が1段目の上から順に並び、2段目の先頭には中ほどの記事が来ます。
 
-```css title="🙅‍♂ Not Recommended: 新着順の一覧を columns で詰める"
+```css title="🙅‍♂ Not Recommended: 新着順の一覧を columns で詰め、順番を縦に流す"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.post-list) to (.scoped) {
   :scope {
@@ -101,7 +101,7 @@ import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?r
 
 フォールバックの書き方は2つあります。1つは最初のコード例のように、`@supports (display: block grid-lanes)` の中で切り替える方法です。もう1つは、同じルールに `display` を2つ並べ、未対応の環境では後の宣言が無効になることを利用する方法です。
 
-```css title="🙅‍♂ Not Recommended: display を2つ並べてフォールバックする"
+```css title="🙅‍♂ Not Recommended: display を2つ並べ、誤記に見えるフォールバックにする"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.post-list) to (.scoped) {
   :scope {

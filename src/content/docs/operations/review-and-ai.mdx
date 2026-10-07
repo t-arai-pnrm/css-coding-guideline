@@ -128,7 +128,7 @@ AIが生成するCSSには、よく見かける誤りがあります。本書で
 
 AIが生成したCSSは、必ずStylelintを実行してから、レビューで確かめます。次のコードは、カードの一覧をAIへ書かせたときにありがちな例として、私が作ったものです。
 
-```css title="🙅‍♂ Not Recommended: AIが生成しがちなカードの一覧"
+```css title="🙅‍♂ Not Recommended: lintを通っても、名前のないコンテナや !important が残る"
 /* 🙅‍♂ Not Recommended */
 .card-list {
   container-type: inline-size;
@@ -159,7 +159,7 @@ AIが生成したCSSは、必ずStylelintを実行してから、レビューで
 
 しかも、自動修正を使うと、`width: 100%` は `inline-size: 100%` に書き換わります。不要な宣言が、規約に沿った見た目のまま残るということです。lintが通ったことは、ルールを守っていることの証明にはなりません。lintで検出できないルールこそ、レビューで確かめます。
 
-```css title="🙆‍♂ Recommended: ルールに沿って書き直したカードの一覧"
+```css title="🙆‍♂ Recommended: ルートを名前付きのコンテナにし、グリッドを内側の ul に分ける"
 @scope (.scoped.card-list) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -176,7 +176,7 @@ AIが生成したCSSは、必ずStylelintを実行してから、レビューで
 }
 ```
 
-```html title="🙆‍♂ Recommended: 書き直したカードの一覧のHTML"
+```html title="🙆‍♂ Recommended: コンテナのルートと、グリッドにする ul を分けたHTML"
 <div class="scoped card-list">
   <ul>
     <li><!-- ... --></li>

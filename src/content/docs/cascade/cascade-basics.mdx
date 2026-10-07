@@ -181,7 +181,7 @@ a:link {}               /* 0.1.1 */
 
 本書では、詳細度や読み込み順の競争に勝つ目的で `!important` を使いません。どのような上書きにも負けてはいけない指定に限って使います。代表的なのは、kiso.cssの `hidden` 属性の指定です。
 
-```css title="🙆‍♂ Recommended: 状態を確実に反映するときに限って使う"
+```css title="🙆‍♂ Recommended: !important は、hidden 属性のように必ず反映する状態に限る"
 [hidden]:not([hidden="until-found" i]) {
   display: none !important;
 }

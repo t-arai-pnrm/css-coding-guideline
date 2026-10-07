@@ -72,7 +72,7 @@ CMSのように、レイヤーに入っていない外部のCSSと共存する�
 
 kiso.cssは、すべてのセレクタを `:where()` で包んでいます。`:where()` は、中に書いたセレクタの詳細度を0にする擬似クラスです。リセットの指定はどれも詳細度が0になるので、タイプセレクタ1つ、クラス1つで上書きできます。
 
-```css title="🙆‍♂ Recommended: kiso.cssのリストの指定（詳細度は0）"
+```css title="🙆‍♂ Recommended: リストのリセットを :where() で包み、詳細度を0にする"
 :where(ul, ol, menu) {
   padding-inline-start: unset;
   list-style-type: "";
@@ -91,7 +91,7 @@ kiso.cssが `:where()` を使うのは、カスケードレイヤーを導入で
 
 kiso.cssは、日本語のサイトのための初期値を `:root` に入れています。どれも継承されるプロパティなので、`:root` に1回書けば文書全体に適用されます。
 
-```css title="🙆‍♂ Recommended: kiso.cssが :root に入れている和文向けの初期値（抜粋）"
+```css title="🙆‍♂ Recommended: 継承する和文向けの初期値を、:root に1回だけ書く"
 :where(:root) {
   text-spacing-trim: trim-start;
   text-autospace: normal;

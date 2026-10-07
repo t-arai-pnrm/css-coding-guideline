@@ -18,7 +18,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 次のコードは、昔の記事やAIの出力でよく見かける書き方です。どれも動きますが、物理的な方向の指定、1値の `display`、`transform` の関数、カンマ区切りの `rgba()` が混ざっています。
 
-```css title="🙅‍♂ Not Recommended: 古い記法が混ざったコード"
+```css title="🙅‍♂ Not Recommended: 物理プロパティ、1値の display、transform の関数で書く"
 /* 🙅‍♂ Not Recommended */
 .modal {
   position: fixed;
@@ -195,7 +195,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 
 色の関数は、`rgb(0 0 0 / 80%)` のように値をスペースで区切り、不透明度は `/` の後ろに書きます。`rgba()` と `hsla()` は使わず、`rgb()` と `hsl()` にそろえます。色相には `210deg` のように単位を付けます。
 
-```css title="🙅‍♂ Not Recommended: カンマ区切りと rgba()"
+```css title="🙅‍♂ Not Recommended: 色の値をカンマで区切り、不透明度を rgba() で付ける"
 /* 🙅‍♂ Not Recommended */
 ._overlay {
   background-color: rgba(0, 0, 0, 0.6);
@@ -203,7 +203,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 }
 ```
 
-```css title="🙆‍♂ Recommended: スペース区切りと / の不透明度"
+```css title="🙆‍♂ Recommended: 値をスペースで区切り、不透明度を / の後ろに書く"
 ._overlay {
   background-color: rgb(0 0 0 / 60%);
   color: hsl(210deg 20% 98%);

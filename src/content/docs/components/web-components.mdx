@@ -61,7 +61,7 @@ Web Componentsは、カスタム要素、Shadow DOM、`<template>` 要素など�
 
 カスタム要素の中に `<style>` を置いて、前置きのない `@scope` で書く方法もありますが、本書では使いません。同じ部品をページに3つ置けば同じ `<style>` が3つ出力され、CSSがコンポーネントごとのファイルにまとまらないからです。前置きのない `@scope` の仕組みは「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
 
-```html title="🙅‍♂ Not Recommended: カスタム要素の中に style を置く"
+```html title="🙅‍♂ Not Recommended: カスタム要素ごとに style を置き、同じCSSを重複して出力する"
 <!-- 🙅‍♂ Not Recommended -->
 <popover-menu>
   <style>

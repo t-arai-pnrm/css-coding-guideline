@@ -95,7 +95,7 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
 
 記事カードのカテゴリーを示すタグを、画像の行末側の上の角に重ねる例で考えます。タグは記事についての情報なので、HTMLでは本文の中の見出しの前に置きます。カードは置き場所の幅によって、画像と本文を縦に積んだり横に並べたりします。カードを包含ブロックにしてタグを絶対配置すると、タグが付くのはカードの角で、画像の角ではありません。
 
-```css title="🙅‍♂ Not Recommended: タグをカードの角に置く"
+```css title="🙅‍♂ Not Recommended: タグをカードの角に置き、横並びで画像の角からずらす"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.article-card) to (.scoped) {
   :scope {
