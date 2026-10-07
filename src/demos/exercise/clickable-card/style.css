@@ -4,7 +4,6 @@
     --foreground--accent: oklch(48% 0.17 260deg);
     --leading--snug: 1.4;
     --rounded--sm: 4px;
-    --rounded--md: 8px;
     --z--forwards: 1;
   }
 }
@@ -79,17 +78,8 @@
     }
   }
 
-  /**
-   * 記事のカード。
-   * 置かれた場所の幅で形を変え、置く側から特集の見た目とアクセント色を受け取る。
-   *
-   * @prop {ident} --article-card--featured [--false]                 - 特集として置いたときに --true
-   * @prop {color} --article-card--accent   [var(--foreground--accent)] - タグと特集の背景に使う色
-   */
   @scope (.scoped.article-card) to (.scoped) {
     :scope {
-      --_featured: var(--article-card--featured, --false);
-      --_accent: var(--article-card--accent, var(--foreground--accent));
       --_has-hocus: --false;
 
       position: relative;
@@ -118,7 +108,6 @@
       grid-template-columns: calc(96 / 16 * 1rem) 1fr;
       gap: 12px;
       align-items: start;
-      border-radius: var(--rounded--md);
 
       /* サイドバーの幅（240px 相当）より広く、一覧の列の最小幅（280px 相当）より狭い幅 */
       @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
@@ -126,12 +115,6 @@
 
         grid-template-columns: 1fr;
         gap: 16px;
-
-        /* この要素自身の特集の見た目は、ルートの --_featured を問い合わせる */
-        @container style(--_featured: --true) {
-          padding: 16px;
-          background-color: oklch(from var(--_accent) 96% calc(c * 0.25) h);
-        }
       }
 
       &:not(:has(> img)) {
@@ -165,7 +148,7 @@
       & a {
         position: relative;
         z-index: var(--z--forwards);
-        color: var(--_accent);
+        color: var(--foreground--accent);
       }
     }
 

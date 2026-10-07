@@ -1,0 +1,171 @@
+---
+title: "20-7 特集の見た目を足す"
+description: "関連記事の欄に置いたカードだけを特集として見せます。特集として置いたことは置く側がフラグで、アクセント色は公開プロパティで渡します。カードは置かれた幅が広いときだけ、渡された色から作った淡い背景を付けます。"
+sidebar:
+  order: 7
+---
+
+import Demo from '../../../components/Demo.astro';
+import featuredHtml from '../../../demos/exercise/featured/index.html?raw';
+import featuredCss from '../../../demos/exercise/featured/style.css?raw';
+
+要件が変わります。記事ページの本文の下にある関連記事の欄では、カードを特集として見せることになりました。特集のカードは、背景を淡いアクセント色にし、タグの文字をアクセント色にします。アクセント色は、記事のカテゴリーごとに編集者が選びます。
+
+この変更は、性質の違う2つの情報に分けてカードへ渡します。「特集として置いた」という置き場所の情報は、置く側がフラグ `--article-card--featured: --true` で渡します。「どの色か」という値は、公開プロパティ `--article-card--accent` で渡します。カードは2つを内部プロパティに受け、置かれた幅が広いときだけ特集の見た目にします。直すのはカードのCSSと関連記事の一覧のHTMLで、新着とサイドバーの一覧は変えません。
+
+## 完成形
+
+この節を終えた時点の記事ページです。メインの列に本文と関連記事を、サイドの列に人気記事を置いています。
+
+<Demo title="20-7を終えた時点の記事ページ：関連記事の3件だけが、それぞれの色で特集の見た目になる" html={featuredHtml} css={featuredCss} />
+
+幅のボタンで1280pxを選ぶと、メインの列の関連記事の3件が、それぞれ違う色の淡い背景とタグの色を持ちます。背景は、渡されたアクセント色の明度を96%にした色です。サイドバーの人気記事は、同じカードでも特集の見た目になりません。768px以下では、サイドバーがメインの下に回り、人気記事のカードも画像が上の形（`--spacious`）に切り替わりますが、特集のフラグを渡していないので背景は付きません。
+
+## 置き場所の情報と色の値を分ける
+
+要件の文には、2つの情報が含まれています。1つは、関連記事の欄に置いたカードは特集になるという、置き場所の情報です。もう1つは、記事ごとのアクセント色という値です。
+
+置き場所の情報は、オンかオフかの2値なので、フラグにします。カードは、このフラグを自分の幅のフラグ `--_density` と組み合わせ、特集の見た目を出すかどうかを自分で決めます（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」）。一方、色は編集者が選ぶ値で、どの色が来るかを前もって決められません。色をフラグの値（`--red` や `--green`）として受けると、カテゴリーが増えるたびにカードのCSSに分岐を足すことになるので、値のまま公開プロパティで受けます（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
+
+カテゴリーごとの色を、サイト全体の色のトークンに加えることもしません。編集者が記事のカテゴリーに登録する色は、デザインで決めたトークンの一覧にはない固有の色で、グローバルなトークンにすると、使われる場所が分からないまま増えていきます（「[10-4 デザイントークン](/components/design-tokens/)」）。{/* 要確認: 著者の判断。カテゴリーの色をトークンにせず、値として渡すこと */}
+
+## 置く側から特集のフラグを渡す
+
+関連記事の一覧は、カードを並べる `ul` の `style` 属性でフラグを渡します。グリッドの列の指定と同じ場所に書くので、この一覧に置いたカードはすべて特集になるということが、テンプレートの1か所で読めます。色は記事ごとに違うので、各 `li` の `style` 属性で渡します。
+
+```html title="🙆‍♂ Recommended: 関連記事の ul でフラグを、各 li で色を渡す"
+<section class="scoped article-list">
+  <h2>関連記事</h2>
+  <ul class="grid" style="--grid--column-min-width: calc(280 / 16 * 1rem); --grid--column-max-count: 3; --grid--gap: 24px; --article-card--featured: --true">
+    <li style="--article-card--accent: oklch(50% 0.16 30deg)">
+      <article class="scoped article-card">…</article>
+    </li>
+    <!-- ... -->
+  </ul>
+</section>
+```
+
+カスタムプロパティは継承されるので、`ul` で宣言したフラグは `li` を通ってカードのルートに届きます。置く側のCSSから子のコンポーネントのルートは選ばないので、ルートを包む要素で宣言し、継承で渡します（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/#style-属性で値を渡す)」）。人気記事の一覧はフラグを渡していないので、同じカードを置いても特集になりません。
+
+## 公開プロパティを内部プロパティで受ける
+
+カードの側では、2つの公開プロパティを `:scope` で内部プロパティに受け、デフォルト値を `var()` のフォールバックに書きます。フラグのデフォルトは `--false`、色のデフォルトは、これまでタグに使っていたアクセント色のトークンです。
+
+```css title="🙆‍♂ Recommended: 2つの公開プロパティを :scope で受け、先頭の説明ブロックに @prop を並べる"
+/**
+ * 記事のカード。
+ * 置かれた場所の幅で形を変え、置く側から特集の見た目とアクセント色を受け取る。
+ *
+ * @prop {ident} --article-card--featured [--false]                   - 特集として置いたときに --true
+ * @prop {color} --article-card--accent   [var(--foreground--accent)] - タグと特集の背景に使う色
+ */
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    --_featured: var(--article-card--featured, --false);
+    --_accent: var(--article-card--accent, var(--foreground--accent));
+    --_has-hocus: --false;
+
+    /* ... */
+  }
+
+  ._tags {
+    /* ... */
+
+    & a {
+      /* ... */
+      color: var(--_accent);
+    }
+  }
+}
+```
+
+タグのリンクの色は、トークンを直接参照するのをやめ、`--_accent` を参照します。色が渡されなければフォールバックのトークンが使われるので、新着とサイドバーのタグの色は、この節の前と変わりません。公開プロパティの長い名前が出てくるのは、`:scope` で受ける2行だけです。
+
+カードに公開プロパティを足すのは、この節が初めてです。カードを作った節では、外から変えたい値が要件になかったので、1つも作りませんでした（「[20-2 カードを作る](/exercise/card/)」）。公開プロパティはカードの外との約束になるので、ファイルの先頭の説明ブロックに、`@prop` で型、デフォルト値、説明を書きます（「[9-9 コメントの書き方](/notation/comments/)」）。使う側は、CSSの中身を読まなくても、渡せる名前と、渡さなければどうなるかが分かります。この一覧は、呼び出し側が書いた名前の綴りを照らし合わせるときにも使えます（「[20-8 確かめて、レビューする](/exercise/review/)」）。
+
+## 幅が広いときだけ特集にする
+
+特集の見た目は、`._layout` のコンテナサイズクエリの中に、スタイルクエリを入れ子にして書きます。置かれた幅が閾値以上で、しかも特集のフラグが `--true` のときだけ、内側に余白を取り、淡い背景を付けます。
+
+```css title="🙆‍♂ Recommended: 幅のクエリの中で特集のフラグを問い合わせ、広いときだけ背景を付ける"
+@scope (.scoped.article-card) to (.scoped) {
+  ._layout {
+    --_density: --compact;
+
+    /* ... */
+    border-radius: var(--rounded--md);
+
+    @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      /* ... */
+
+      @container style(--_featured: --true) {
+        padding: 16px;
+        background-color: oklch(from var(--_accent) 96% calc(c * 0.25) h);
+      }
+    }
+  }
+}
+```
+
+入れ子にしたスタイルクエリは、`._layout` の親であるカードのルートを問い合わせます。ルートは `:scope` で `--_featured` を宣言しているので、置く側から渡したフラグを `._layout` で読めます。コンテナサイズクエリを書くのは、これまでどおりフラグを宣言する `._layout` の1か所だけで、特集のための閾値は増えていません（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。
+
+幅の条件を付けたのは、狭い場所に特集を置いたときに崩さないためです。サイドバーのような240px相当の幅に特集のフラグが渡された場合、カードは画像が左の小さな形（`--compact`）のままで、背景と余白は付きません。小さな形に16pxの余白を足すと、もともと狭い見出しの幅がさらに削られます。特集にするかどうかは置く側が決め、特集の見た目を出せる幅かどうかはカードが決めます。
+
+角丸の `border-radius` は、特集でないときにも `._layout` に付けています。背景のない要素の角丸は見た目に表れないので、特集のときだけに書き分ける必要がありません。
+
+## 淡い背景を渡された色から作る
+
+背景の色は、相対カラー構文で、渡されたアクセント色から作ります。`oklch(from var(--_accent) 96% calc(c * 0.25) h)` は、元の色の色相 `h` をそのまま使い、明度を96%に固定し、彩度 `c` を4分の1にします（「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」）。そのため、背景用の淡い色を、カテゴリーごとに別の値として渡してもらう必要はありません。
+
+明度を元の色からの差ではなく96%に固定したのは、編集者がどの明るさの色を選んでも、背景が淡くなるようにするためです。背景が必ず淡くなるので、見出しや日付の文字色は変えずに済みます。濃い色を背景にする要件なら、背景から文字色を決める書き方が要りますが（「[15-3 背景から文字色を決める](/color-media/contrast-text/)」）、この要件では使いません。{/* 要確認: 著者の判断。特集の背景を淡い色に固定し、文字色を背景から決める書き方までは入れないこと */}
+
+ただし、タグの文字は、渡された色そのもので描きます。明るい黄色のような色が選ばれると、淡い背景の上のタグは読みにくくなります。カテゴリーの色を登録するときに、その色と、明度を96%にした背景との間で、文字のコントラスト比を確かめる必要があります（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#コントラスト比を確かめる)」）。
+
+## 直した箇所と直さずに済んだ箇所
+
+直したのは、カードのCSSと、関連記事の一覧のHTMLです。カードでは、`:scope` で2つの公開プロパティを受け、タグの色を `--_accent` に替え、`._layout` のコンテナサイズクエリの中に特集の見た目を足しました。先頭の説明ブロックにも、`@prop` を2行足しています。一覧のHTMLでは、`ul` にフラグを、各 `li` に色を書きました。
+
+直さずに済んだのは、新着とサイドバーの一覧、`grid` と `sidebar` のコンポジション、そしてカードのHTMLです。カードは幅も外側の余白も持たず、形を置かれた幅で切り替えているので、特集という新しい条件を足しても、ほかの置き場所の見た目は変わりません（「[20-4 サイドバーにも置く](/exercise/sidebar/)」）。カード全体を押せるようにした指定もそのままです（「[20-6 カード全体を押せるようにする](/exercise/clickable-card/)」）。`--_has-hocus`、`--_density`、`--_featured` は互いに独立したフラグなので、組み合わせても、既存の切り替えを書き換える必要がありません。
+
+## 判断の問い
+
+### 問い1
+
+特集の見た目を、カードのHTMLに `data-variant="featured"` を付けて切り替えるのと、置く側が `--article-card--featured: --true` を渡すのとでは、どちらを選びますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+置く側がフラグを渡します。どちらでも動きますが、この要件の特集は、記事そのものの種類ではなく、関連記事の欄に置いたことから決まる見た目だからです。`data-variant` は、編集者が記事を選んで特集にするときのように、特集にする理由がHTMLの側にしかない場合に使います（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/#htmlで選ぶ特集と置き場所で決まる特集)」）。フラグなら、関連記事の欄に置いた記事はすべて特集になるという要件を、一覧の `ul` の1か所で表せます。
+
+</details>
+
+### 問い2
+
+アクセント色も、フラグと同じように `--article-card--accent: --red` のような識別子で渡し、カードの中で色を選ぶようにしないのはなぜですか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+色は編集者がカテゴリーごとに選ぶ値で、どの色が来るかを前もって決められないからです。識別子で受けると、カードの中に識別子と色の対応を書くことになり、カテゴリーが1つ増えるたびにカードのCSSを直します。値は公開プロパティでそのまま受け、オンとオフで切り替える見た目はフラグで受けます（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」、「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。
+
+</details>
+
+## この節で使ったルール
+
+- [`placement-via-public-flag`](/components/placement-and-child-states/#rule-placement-via-public-flag)：置き場所によって見た目を変えるときは、置く側が子のルートを包む要素で公開プロパティのフラグを宣言し、子は内部プロパティに受けて、自分の幅のフラグと組み合わせます。
+- [`public-property-naming`](/components/custom-properties/#rule-public-property-naming)：外から変えてよい値は、`--<コンポーネント>--<プロパティ>` の公開プロパティにします。
+- [`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)：公開プロパティは `:scope` で内部プロパティに受け、デフォルト値を `var()` のフォールバックに書きます。
+- [`internal-property-prefix`](/components/custom-properties/#rule-internal-property-prefix)：コンポーネントの中だけで使う値は、`--_` で始まる内部プロパティにします。
+- [`pass-values-via-style-attribute`](/components/custom-properties/#rule-pass-values-via-style-attribute)：公開プロパティの値は、できるだけ呼び出し側の `style` 属性で渡します。
+- [`prop-tag-for-public-properties`](/notation/comments/#rule-prop-tag-for-public-properties)：公開プロパティを持つファイルでは、説明ブロックの `@prop` に、型、デフォルト値、説明を書きます。
+- [`state-flag-values`](/components/style-queries/#rule-state-flag-values)：フラグの値は `--` で始まる識別子にし、オンとオフの2値の状態は `--true` と `--false` にそろえます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリは、コンポーネントの中で、フラグを宣言する1つの要素のルールだけに書きます。
+- [`relative-color-for-single-color`](/color-media/relative-color/#rule-relative-color-for-single-color)：1つの色の明度や不透明度だけを変えるときは、相対カラー構文で書きます。
+- [`color-token-two-layers`](/components/design-tokens/#rule-color-token-two-layers)：色のトークンはプリミティブとセマンティクスの2層で定義し、デザインにない固有の色はグローバルなトークンにしません。

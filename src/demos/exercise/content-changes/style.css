@@ -4,8 +4,6 @@
     --foreground--accent: oklch(48% 0.17 260deg);
     --leading--snug: 1.4;
     --rounded--sm: 4px;
-    --rounded--md: 8px;
-    --z--forwards: 1;
   }
 }
 
@@ -79,35 +77,9 @@
     }
   }
 
-  /**
-   * 記事のカード。
-   * 置かれた場所の幅で形を変え、置く側から特集の見た目とアクセント色を受け取る。
-   *
-   * @prop {ident} --article-card--featured [--false]                 - 特集として置いたときに --true
-   * @prop {color} --article-card--accent   [var(--foreground--accent)] - タグと特集の背景に使う色
-   */
   @scope (.scoped.article-card) to (.scoped) {
     :scope {
-      --_featured: var(--article-card--featured, --false);
-      --_accent: var(--article-card--accent, var(--foreground--accent));
-      --_has-hocus: --false;
-
-      position: relative;
       container: --scoped / inline-size;
-      isolation: isolate;
-
-      &:has(h3 a:any-link:hover) {
-        @media (any-hover) {
-          --_has-hocus: --true;
-        }
-      }
-
-      &:has(h3 a:focus-visible) {
-        --_has-hocus: --true;
-
-        outline: 3px solid CanvasText;
-        outline-offset: 3px;
-      }
     }
 
     /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
@@ -118,7 +90,6 @@
       grid-template-columns: calc(96 / 16 * 1rem) 1fr;
       gap: 12px;
       align-items: start;
-      border-radius: var(--rounded--md);
 
       /* サイドバーの幅（240px 相当）より広く、一覧の列の最小幅（280px 相当）より狭い幅 */
       @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
@@ -126,12 +97,6 @@
 
         grid-template-columns: 1fr;
         gap: 16px;
-
-        /* この要素自身の特集の見た目は、ルートの --_featured を問い合わせる */
-        @container style(--_featured: --true) {
-          padding: 16px;
-          background-color: oklch(from var(--_accent) 96% calc(c * 0.25) h);
-        }
       }
 
       &:not(:has(> img)) {
@@ -145,10 +110,6 @@
       aspect-ratio: 16 / 9;
       border-radius: var(--rounded--sm);
       object-fit: cover;
-
-      @container style(--_has-hocus: --true) {
-        filter: brightness(1.08);
-      }
     }
 
     ._body {
@@ -163,9 +124,7 @@
       font-size: calc(13 / 16 * 1rem);
 
       & a {
-        position: relative;
-        z-index: var(--z--forwards);
-        color: var(--_accent);
+        color: var(--foreground--accent);
       }
     }
 
@@ -180,22 +139,6 @@
 
     h3 a {
       color: inherit;
-
-      @container style(--_has-hocus: --true) {
-        text-decoration-line: underline;
-      }
-
-      /* 見出しのリンクの ::after をカードいっぱいに広げ、カードのどこを押しても記事へ移動する */
-      &::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-      }
-
-      /* フォーカスリングはカードの外周に出すので、リンク自身の outline は色だけを透明にする */
-      &:focus-visible {
-        outline-color: transparent;
-      }
     }
 
     time {

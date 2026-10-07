@@ -1,0 +1,186 @@
+---
+title: "20-5 内容の変化に耐える"
+description: "CMSの運用が始まり、長い見出し、画像のない記事、複数のタグが入ってきます。最悪の内容で確かめると、高さを固定していないカードの多くは直さずに済みます。直すのは、画像がないときの列と、カテゴリーをタグのリストに変える箇所だけです。"
+sidebar:
+  order: 5
+---
+
+import Demo from '../../../components/Demo.astro';
+import contentChangesHtml from '../../../demos/exercise/content-changes/index.html?raw';
+import contentChangesCss from '../../../demos/exercise/content-changes/style.css?raw';
+
+CMSの運用が始まり、デザインカンプになかった記事が入ってきます。見出しがカンプの2倍の長さの記事と、画像のない記事があり、1つだったカテゴリーは最大5つのタグに増えます。タグはそれぞれのタグのページへのリンクで、Internationalizationのような長い英単語も入ります。
+
+この変更で直すのは、カードの2か所だけです。1つは、画像のない記事のための `._layout` のルールです。もう1つは、カテゴリーの `p` を、タグのリンクのリスト（`ul._tags.cluster`）に変えることです。長い見出しと長い英単語は、何も直さずに収まります。見出しと日付は、切り詰めません。
+
+## 最悪の内容を入れて確かめる
+
+直す場所を探す前に、何も変えないまま、崩れやすい内容をカードに入れて確かめます。カンプのダミーテキストは崩れる条件をほとんど含まないので、どこが崩れるかは、実際に近い内容を入れないと分かりません（「[19-3 表示と操作を確かめる](/operations/verification/#最悪の内容を入れたテストページを用意する)」）。
+
+入れる内容は、要件に挙がった4つです。カンプの2倍の長さの見出し、画像のない記事、5つのタグ、長い英単語のタグを、関連記事とサイドバーの人気記事の両方に入れます。両方に入れるのは、同じカードが置かれた幅によって `--compact` と `--spacious` の2つの形に切り替わるからです（「[20-4 サイドバーにも置く](/exercise/sidebar/)」）。片方の形でしか崩れない内容があるので、2つの形をどちらも確かめます。
+
+## 直さずに済んだ見出しと長い英単語
+
+カンプの2倍の長さの見出しは、どちらの形でも複数行に折り返し、カードはその分だけ高くなります。カードのどこにも高さを書いていないからです。「[20-2 カードを作る](/exercise/card/)」で画像の高さを `aspect-ratio` で決め、カードと文字のまとまりの高さは中身に任せたので、見出しが何行になっても、中身はカードの外へあふれません（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#要素の高さの決め方)」）。
+
+```css title="🙅‍♂ Not Recommended: カンプの3枚の高さをそろえるために、カードの高さを固定する"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    block-size: calc(360 / 16 * 1rem);
+  }
+}
+```
+
+カンプの3枚の高さをそろえようとして、このように高さを固定していたら、2倍の見出しはカードの下へあふれ、次の行のカードに重なっていたはずです。高さを書かなかったので、関連記事のグリッドでは、行の高さがその行でいちばん高いカードに合わせて決まり、次の行はその下から始まります。サイドバーの人気記事も、カードが高くなった分だけ一覧が縦に伸びます。一覧とページの値は、カードの高さに合わせて変える必要がありません。
+
+長い英単語のタグも直しません。kiso.cssが `:root` に指定している `overflow-wrap: anywhere` によって、列に入りきらない単語は途中で折り返します。`anywhere` は要素の最小幅の計算にも反映されるので、長い単語がグリッドの列やフレックスアイテムを押し広げることもありません（「[8-1 壊さないリセット](/reset/kiso/)」）。カードのCSSに、長い単語のための指定を足す必要はありません。
+
+## 画像のない記事の列をなくす
+
+画像のない記事は、関連記事では文字だけのカードとして収まりますが、サイドバーでは崩れます。`--compact` の形の `._layout` は、画像の列（96px相当）と文字の列を並べる2列のグリッドだからです。画像がないと `._body` が唯一の子になり、グリッドの自動配置によって1列目の96px相当の列に入ります。文字は細い列に押し込まれ、2列目は空いたままになります。（2026年10月、Chromeで確認）
+
+```css title="🙆‍♂ Recommended: 画像を持たない ._layout は、1列にする"
+@scope (.scoped.article-card) to (.scoped) {
+  ._layout {
+    /* ... */
+
+    &:not(:has(> img)) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+```
+
+「画像を持たない」は、`:not(:has(> img))` と書きます。入れ子の順序を逆にした `:has(> :not(img))` は「画像でない子を持つ」という意味になり、`._body` を持つすべてのカードに当てはまります（「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/#has-と-not-を組み合わせる)」）。引数を `>` で直下の子に絞っているので、将来 `._body` の中に画像が入っても、この条件は変わりません。
+
+このルールは、20-4のコンテナサイズクエリと同じ `._layout` のルールに書きますが、クエリの中には入れません。画像があるかどうかは置かれた幅と関係なく決まる、`--_density` のフラグとは別の条件だからです。画像のないカードもサイドバーでは `--compact` のままで、見出しは小さく、抜粋は表示されません。画像の有無で変わるのは、列の数だけです。
+
+CMSのテンプレートは、画像のない記事では `img` 要素そのものを出力しないようにします。`src` の空の `img` や、代わりの画像を出力すると、`:has(> img)` が当てはまり、2列のままになります。
+
+```html title="🙆‍♂ Recommended: 画像のない記事では、img 要素を出力しない"
+<article class="scoped article-card">
+  <div class="_layout">
+    <div class="_body">
+      <!-- タグ、見出し、日付、抜粋 -->
+    </div>
+  </div>
+</article>
+```
+
+## カテゴリーをタグのリストにする
+
+1つのカテゴリーを表示していた `p` は、タグの数だけリンクを並べるリストに変えます。HTMLを変えるのは、内容が、1つの文字からリンクの並びに変わったからです。20-4で `._layout` を足したのはコンテナの仕組みのためでしたが、ここで変えるのはCSSの都合ではありません（「[20-4 サイドバーにも置く](/exercise/sidebar/)」）。
+
+```html title="🙆‍♂ Recommended: タグは、リンクのリストにして cluster で並べる"
+<ul class="_tags cluster">
+  <li><a href="/tags/css/">CSS</a></li>
+  <li><a href="/tags/layout/">レイアウト</a></li>
+</ul>
+```
+
+同じ種類の項目が並ぶので、`div` ではなく `ul` にします。スクリーンリーダーはリストの項目の数を伝えるので、タグがいくつあるかが分かります。リストのマーカーと左の余白は、kiso.cssが `ul` に指定している `list-style-type: ""` と `padding-inline-start: unset` で消えます。カードのCSSに書き足す指定はありません（「[12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)」）。
+
+タグを横に並べるとき、カードの中で `display: block flex` を書きたくなるかもしれません。
+
+```css title="🙅‍♂ Not Recommended: タグの横並びをカードの中で組み、折り返しを指定しない"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  ._tags {
+    display: block flex;
+    gap: 4px 12px;
+  }
+}
+```
+
+この書き方は、カンプのようにタグが1つか2つのうちは問題なく見えます。しかし、`flex-wrap` を指定していないので、タグは次の行へ移れません。サイドバーの細い列に5つのタグが入ると、各タグが1行の中で縮み、単語の途中で改行されます。（2026年10月、Chromeで確認）
+
+```css title="🙆‍♂ Recommended: 並びは cluster に任せ、カードは間隔と文字だけを決める"
+@scope (.scoped.article-card) to (.scoped) {
+  ._tags {
+    --cluster--row-gap: 4px;
+    --cluster--column-gap: 12px;
+
+    font-size: calc(13 / 16 * 1rem);
+
+    & a {
+      color: var(--foreground--accent);
+    }
+  }
+}
+```
+
+並び方は、コンポジションの `cluster` に任せます。`cluster` は `flex-wrap: wrap` を含むので、タグが増えて入りきらなければ次の行へ折り返します。使う場所ごとに折り返しを指定しなくて済み、HTMLのクラス名から「並べて折り返す」という意図が読めます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。デモでは、この節で `compositions` のレイヤーに `cluster` を足しています。
+
+間隔の値は、`style` 属性ではなく、カードのCSSの `._tags` のルールで `cluster` の公開プロパティに渡しています。タグのリストはカードのテンプレートの一部で、どの記事でも同じ値を渡すからです。{/* 要確認: 著者の判断。cluster の間隔を style 属性ではなくカードの CSS で渡すこと */}文字の大きさとアクセント色は、`._category` に書いていたものを、`._tags` とその中のリンクに移しました。
+
+## 見出しと日付を切り詰めない
+
+サイドバーの人気記事では、長い見出しのカードだけが高くなり、カードの高さがそろわなくなります。見出しを2行で打ち切れば、長い見出しのカードだけが高くなることは避けられますが、この演習では切り詰めません。{/* 要確認: 著者の判断。サイドバーの見出しを行数で切り詰めないこと */}
+
+```css title="🙅‍♂ Not Recommended: 高さをそろえるために、見出しを2行で打ち切る"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  h3 {
+    display: -webkit-box;
+    overflow-block: clip;
+    -webkit-box-orient: block-axis;
+    -webkit-line-clamp: 2;
+  }
+}
+```
+
+見出しは、記事を開くかどうかを決めるための情報で、カードのリンクのテキストでもあります。切り詰めた部分は画面の上では読めなくなるので、切り詰めるなら、全文を読める手段が要ります（「[11-16 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/#切り詰めた文字を読める手段)」）。カードの見出しなら、リンク先の記事に全文があります。それでも、開く前に読めない部分は、開くかどうかの判断に使えません。カードが伸びても一覧が伸びるだけで、崩れるものはないので、高さをそろえるために見出しを削る理由がありません。
+
+日付も切り詰めません。日付や金額のような数値は、一部だけが見えても値として読めず、読み違えるおそれがあります（「[11-16 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/#数値は切り詰めない)」）。1行で収めようとして `white-space: nowrap` を付けることもしません。文字を200%まで拡大したときのように、列の幅が文字より狭くなると、折り返せない日付は列からはみ出すからです。
+
+## 直したあとに確かめる
+
+次のデモは、この節を終えた時点の記事ページです。関連記事とサイドバーの人気記事の両方に、長い見出し、画像のない記事、5つのタグ、長い英単語のタグを入れています。
+
+<Demo title="20-5を終えた時点：長い見出し、画像のない記事、5つのタグを入れた記事ページ" html={contentChangesHtml} css={contentChangesCss} />
+
+幅のボタンで1280pxを選ぶと、画像のない記事は、関連記事とサイドバーのどちらでも画像の列がなくなり、文字だけの1列になります。サイドバーの5つのタグを持つカードでは、タグが複数行に折り返し、どのカードの中身もカードからはみ出しません。長い見出しのカードは、ほかのカードより高くなります。320pxを選んでも、横スクロールは出ません。
+
+この節で直したのは、カードのCSSの `._layout` に足した1つのルールと `._tags` のルール、それにタグのHTMLです。一覧の `article-list`、`grid` と `sidebar` のコンポジション、20-4で決めたフラグと閾値は、どれも変えていません。このテストページは残しておき、カードを変えるたびに同じ内容で確かめます。最後の節では、このページを使って、幅、拡大、キーボード、表示の設定を順に確かめます（「[20-8 確かめて、レビューする](/exercise/review/)」）。
+
+## 判断の問い
+
+### 問い1
+
+画像のない記事を切り替えるために、CMSのテンプレートで、画像がないときにカードのルートへ `data-no-image` 属性を付ける方法もあります。`:has()` で判定する方法と、どちらを選びますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`:has()` を選びます。画像があるかどうかは、HTMLに `img` があるかどうかで決まる事実なので、CSSから直接判定できます。属性で切り替えると、テンプレートは、`img` を出力するかどうかと、属性を付けるかどうかの2か所で同じ条件を持ちます。片方を直し忘れると、画像のあるカードを1列で表示したり、画像のないカードを2列のまま残したりする食い違いが起きます。`:has()` なら、条件を書くのはCSSの1か所だけです（「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」、「[11-5 件数で配置を組み替える](/layout-practice/quantity-layouts/#中身の有無と件数で配置を組み替える)」）。
+
+</details>
+
+### 問い2
+
+Internationalizationのような長い英単語のタグに備えて、カードのCSSに `word-break: break-all` を足しますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+足しません。kiso.cssの `overflow-wrap: anywhere` が、列に入りきらない単語だけを途中で折り返すからです。`word-break: break-all` は、次の行に移せば収まる英単語まで、行末で途中から分けます。タグや見出しの英単語が、収まる幅でも切れて読みにくくなります（`overflow-wrap-over-word-break`）。
+
+</details>
+
+## この節で使ったルール
+
+- [`design-for-content-changes`](/layout-practice/defensive/#rule-design-for-content-changes)：テキストが2倍の長さになったら、画像がなかったら、要素の数が変わったらと考え、そのパターンで表示を確かめます。
+- [`verify-worst-case-content`](/operations/verification/#rule-verify-worst-case-content)：実装後は、長い見出し、折り返せない文字列、読み込めない画像、項目の数を変えたテストページで表示を確かめます。
+- [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは `block-size` で固定しません。
+- [`overflow-wrap-over-word-break`](/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break)：長い単語やURLのはみ出しは、`word-break` ではなく `overflow-wrap: anywhere` で防ぎます。
+- [`not-has-for-absence`](/pseudo/has/#rule-not-has-for-absence)：「Xを持たない要素」は `:not(:has(X))` で書きます。
+- [`compositions-for-layout-patterns`](/components/compositions-and-utilities/#rule-compositions-for-layout-patterns)：並べて折り返すといった、コンポーネントに依存しない配置は、コンポジションで書きます。
+- [`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items)：要素の数が変わる可能性のあるFlexboxには、`flex-wrap: wrap` を指定します。
+- [`truncate-with-full-text-access`](/layout-practice/truncation-and-skeletons/#rule-truncate-with-full-text-access)：文字を切り詰めるときは、全文を読める手段を用意します。
+- [`no-truncate-numbers`](/layout-practice/truncation-and-skeletons/#rule-no-truncate-numbers)：金額、数量、日付、型番のような数値を切り詰めません。
+- [`no-nowrap-without-reason`](/layout-practice/defensive/#rule-no-nowrap-without-reason)：明確な理由がない限り、`white-space: nowrap` を指定しません。

@@ -1,0 +1,159 @@
+---
+title: "20-3 一覧に並べる"
+description: "新着の6件を、一覧のコンポーネント article-list と grid コンポジションで、最大3列に並べます。カードは1行も直しません。記事が7件に増えて最終行に1件だけ残っても、カードと grid は直さずに済みます。端数を中央に寄せるかどうかは、一覧の側で決めます。"
+sidebar:
+  order: 3
+---
+
+import Demo from '../../../components/Demo.astro';
+import listHtml from '../../../demos/exercise/list/index.html?raw';
+import listCss from '../../../demos/exercise/list/style.css?raw';
+
+前の節で作った記事カードを、トップページの新着として6件並べます。要件は、列の最小幅を280px相当とし、多くても3列にすることです。見出しとカードの並びを一覧のコンポーネント `article-list` にまとめ、列の数は `grid` コンポジションに `style` 属性で値を渡して決めます。カードのCSSは1行も変えません。
+
+節の後半で要件が1つ変わり、新着が7件になります。3列で並べると最終行に1件だけが残りますが、カードと `grid` は直さずに済みます。最終行の1件を中央に寄せるかどうかは、並べる側の判断です。デザイナーが求めたときに、一覧の側に書き足します。
+
+## 完成形
+
+この節を終えた時点のトップページです。新着の一覧を縦に2つ並べ、1つ目に6件、2つ目に7件を入れています。2つの一覧は、HTMLの記事の数が違うだけで、CSSは同じです。
+
+<Demo title="20-3を終えた時点の新着：6件と7件を同じCSSで並べる" html={listHtml} css={listCss} />
+
+幅のボタンで1280pxを選ぶと、どちらの一覧も3列になり、カードの幅は400pxです。7件の一覧では、3行目の左端に7件目が1件だけ置かれ、その幅もほかのカードと同じ400pxです。768pxでは2列（カードの幅356px）、320pxでは1列（288px）になります。どの幅でも、横スクロールは起きません。
+
+## 一覧のコンポーネントを分ける
+
+新着の一覧は、見出しの `h2` と、カードを並べる `ul` をまとめたコンポーネント `article-list` にします。カードは、`ul` の中に1件ずつ `li` で入れます。
+
+```html title="🙆‍♂ Recommended: 見出しと並びを article-list にまとめ、列は grid に任せる"
+<section class="scoped article-list">
+  <h2>新着記事</h2>
+  <ul class="grid" style="--grid--column-min-width: calc(280 / 16 * 1rem); --grid--column-max-count: 3; --grid--gap: 24px">
+    <li>
+      <article class="scoped article-card">…</article>
+    </li>
+    <!-- ... -->
+  </ul>
+</section>
+```
+
+カードとは別に一覧のコンポーネントを作るのは、並べる責任を持つ要素が要るからです。カードは、自分が何件目で、何列目に置かれ、隣に何があるかを知りません。カードとカードの間隔や列の数は、カードを子に持つ一覧が決めます（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+`article-list` のCSSが受け持つのは、見出しと並びの間隔と、見出しの文字の大きさだけです。列の数、列の幅、カードとカードの間隔は、ここには書きません。
+
+```css title="🙆‍♂ Recommended: 一覧のCSSには、見出しと並びの関係だけを書く"
+@scope (.scoped.article-list) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 16px;
+  }
+
+  h2 {
+    font-size: calc(20 / 16 * 1rem);
+  }
+}
+```
+
+スコープの下限を `.scoped` にしているので、一覧のタイプセレクタはカードの中に届きません。一覧のCSSに `p` や `time` を選ぶ指定を足しても、カードの中の `p` や `time` には当たりません。
+
+## 列の数を grid コンポジションに任せる
+
+カードの列数を、画面の幅ごとにメディアクエリで切り替えたくなるかもしれません。カンプはデスクトップとスマートフォンの2つの幅で描かれているので、間にもう1つ閾値を置けば、1列、2列、3列を書き分けられます。
+
+```css title="🙅‍♂ Not Recommended: 画面の幅ごとに、一覧の列数を切り替える"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-list) to (.scoped) {
+  ul {
+    display: block grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+
+    @media (width >= calc(640 / 16 * 1rem)) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (width >= calc(1024 / 16 * 1rem)) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+```
+
+この書き方は、一覧が画面の幅いっぱいに置かれることを前提にしています。この演習では、同じ一覧を記事ページの本文の下にも置き、そこではサイドバーの分だけ一覧が狭くなります。画面の幅が1024pxあっても、一覧の幅は3列のカードを並べるのに足りるとは限りません。`1fr` の列には下限もないので、カードがどこまで狭くなるかを一覧の側で決められません。
+
+一覧の `ul` には `grid` を付け、列の最小幅、列の最大数、間隔を `style` 属性で渡します（「[12-6 grid：列の最小幅と最大数から列数を決める](/compositions/grid/)」）。列の数は画面ではなく一覧自身の幅から決まり、280px相当を下回らない範囲で、3列まで1列ずつ増えます。`grid` のコードは12-6のものをそのまま使い、この一覧のために変えません。
+
+値を `style` 属性で渡すのは、列の最小幅、最大数、間隔が、この一覧に固有の設定だからです。修飾のクラス（`.grid.-three-columns` など）を増やさずに、一覧ごとに違う値を同じ `grid` に渡せます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。カードとカードの間隔24pxも、ここで `--grid--gap` として渡します。前の節でカードに `margin` を持たせなかったので、この間隔を一覧の側だけで決められます。
+
+## 狭い幅で列がはみ出さないか
+
+320pxの表示では、デモの枠の左右の余白を除いた一覧の幅が288pxです。列の最小幅の280px相当を上回るので、カードは1列に並び、幅は288pxになります。
+
+一覧がこれより狭い場所に置かれても、列ははみ出しません。`grid` は、列の幅を `min(100%, …)` で一覧の幅に抑えているからです（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#幅の上限と最小の長さ)」）。この指定はコンポジションの中で済んでいるので、一覧の側で書き足すものはありません。一覧の幅が列の最小幅を下回る場面は、サイドバーに置く節で実際に出てきます（「[20-4 サイドバーにも置く](/exercise/sidebar/)」）。
+
+## 記事が7件になったとき
+
+ここで要件が変わります。新着の件数が7件に増えました。3列で並べると、1行目と2行目は3件ずつで、3行目には1件だけが残ります。
+
+直す箇所はありません。デモの2つ目の一覧のとおり、7件目は3行目の左端に置かれ、幅はほかのカードと同じです。グリッドの列は、すべての行で共通の幅を持つからです。7件目は1列目のセルに入るので、1行目と2行目の1列目と同じ幅になります。Flexboxの折り返しで並べ、子に `flex-grow` を付けていたら、余った幅は行ごとに分けられるので、最後の1件が行いっぱいに広がっていたはずです。
+
+`--grid--mode` は渡さず、デフォルトの `auto-fill` のままにしています。`auto-fill` と `auto-fit` の違いが出るのは、件数が1行に入る列の数より少ないときです。新着が2件しかない日に `auto-fit` を渡していると、2件のカードが行の半分ずつまで広がり、6件の日とカードの幅が変わります。新着のように件数が変わる一覧では、`auto-fill` のままにしておきます（「[12-6 grid：列の最小幅と最大数から列数を決める](/compositions/grid/)」）。
+
+## 最終行の1件を中央に寄せるなら
+
+最終行の1件は、左に寄ったままでもカードの幅がそろっているので、一覧として崩れてはいません。ただし、カンプが6件のような割り切れる件数で描かれているなら、端数の行の見た目はカンプから読み取れません。左に寄せたままでよいかは、デザイナーに確かめます。
+
+中央に寄せてほしいと言われたら、指定は `article-list` に書きます。最終行に何件残るかは、件数と列の数で決まる並べ方の問題で、カードは自分が何件目かを知らないからです。`grid` コンポジションにも書きません。`grid` はほかの一覧でも使う部品なので、新着の一覧だけの要件を入れると、左に寄せたい一覧まで中央に寄ります。
+
+書き方は、「[11-5 件数で配置を組み替える](/layout-practice/quantity-layouts/#最終行の端数を中央に寄せる)」のものを使います。1件のカードに2列分を使わせ、最終行に残ったカードの開始位置を、空いた列の半分だけ後ろにずらす方法です。一覧の幅から列の数を判定するために、一覧はコンテナになり、列の数をフラグに立て、件数を数えるセレクタを持つことになります。一覧のCSSはその分だけ増えるので、中央に寄せる要件が実際に来てから書きます。
+
+## 直した箇所と、直さずに済んだ箇所
+
+6件を並べる要件で足したのは、一覧のコンポーネント `article-list` と、12-6の `grid` コンポジション、新着のHTMLです。`article-list` のCSSは、見出しの大きさと、見出しと並びの間隔だけの短いものです。
+
+7件に増える変更では、CSSもHTMLの構造も直していません。変わったのは、記事のデータが1件増えたことだけです。
+
+カードのCSSとHTMLは、この節を通して1行も直していません。前の節でカードのルートに幅と外側の余白を書かなかったので、列の幅がそのままカードの幅になり、カードとカードの間隔は一覧の `gap` で決まります。デモのCSSのタブを開くと、`article-card` のスコープの中身が前の節と同じだと確かめられます。
+
+## 判断の問い
+
+### 問い1
+
+デザイナーから、7件目を3行目の中央に寄せてほしいと言われました。中央に寄せる指定は、`article-card`、`grid` コンポジション、`article-list` のどれに書きますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`article-list` に書きます。最終行に何件残るかは、件数と列の数で決まる並べ方の問題で、それを知っているのはカードを並べる一覧です（`parent-owns-child-placement`）。
+
+カードに書くと、カードのルートに `grid-column-start` のような配置の指定を持たせることになります。カードは自分が何件目かを知らないうえに、サイドバーのような別の置き場所でも同じ指定が当たります（`no-external-layout-on-root`）。`grid` コンポジションに書くと、`grid` を使うほかの一覧まで中央に寄ります。コンポジションは特定の一覧の要件を持たない部品として、12-6のまま使います（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。
+
+</details>
+
+### 問い2
+
+7件目だけが左に残るのを避けるために、一覧の `style` 属性に `--grid--mode: auto-fit` を足すことにしました。これで、7件目は3行目いっぱいに広がりますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+広がりません。`auto-fit` が幅0に畳むのは、どの行にもアイテムが置かれていない列だけです。7件を3列に並べると、2列目と3列目にも1行目と2行目のカードが入っているので、列は畳まれず、7件目は1列目の幅のままです。（2026年10月、Chromeで確認）
+
+`auto-fit` で見た目が変わるのは、件数が1行の列の数より少ないときです。そのときはカードが行いっぱいに広がり、件数によってカードの幅が変わります。新着のように件数が変わる一覧には、`auto-fill` のままが合っています（`grid-mode-auto-fill-default`）。最終行の端数の見せ方を変えたいなら、問い1のとおり、一覧の側で書き足します。
+
+</details>
+
+## この節で使ったルール
+
+- [`compositions-for-layout-patterns`](/components/compositions-and-utilities/#rule-compositions-for-layout-patterns)：コンポーネントに依存しない配置は、コンポジションで書きます。
+- [`composition-configurable-via-props`](/components/compositions-and-utilities/#rule-composition-configurable-via-props)：コンポジションの間隔や列数は、修飾のクラスを増やさず、公開プロパティで受け取ります。
+- [`pass-values-via-style-attribute`](/components/custom-properties/#rule-pass-values-via-style-attribute)：公開プロパティの値は、できるだけ呼び出し側の `style` 属性で渡します。
+- [`grid-max-count-over-queries`](/compositions/grid/#rule-grid-max-count-over-queries)：列の数に上限がある一覧は、メディアクエリで切り替えず、`grid` に列の最小幅と最大数を渡します。
+- [`grid-mode-auto-fill-default`](/compositions/grid/#rule-grid-mode-auto-fill-default)：件数が変わる一覧では、`--grid--mode` をデフォルトの `auto-fill` のままにします。
+- [`minmax-min-capped-at-100-percent`](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)：`minmax()` の最小値に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にします。
+- [`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)：子のコンポーネントの配置と外側の余白は、親の `gap` やグリッドで指定します。
+- [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、外側の余白や配置の指定を書きません。

@@ -1,0 +1,93 @@
+@layer tokens {
+  :root {
+    --foreground--muted: oklch(45% 0 0deg);
+    --foreground--accent: oklch(48% 0.17 260deg);
+    --leading--snug: 1.4;
+    --rounded--sm: 4px;
+  }
+}
+
+@layer compositions {
+  /* 12-6 grid：列の最小幅と最大数から列数を決める */
+  .grid {
+    --_c--mode: var(--grid--mode, auto-fill);
+    --_c--row-gap: var(--grid--gap, var(--grid--row-gap, 0px));
+    --_c--column-gap: var(--grid--gap, var(--grid--column-gap, 0px));
+    --_c--column-max-count: var(--grid--column-max-count, 5);
+    --_c--column-min-width: var(--grid--column-min-width, calc(320 / 16 * 1rem));
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-max-count) - 1)) / var(--_c--column-max-count)
+    );
+    --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-preferred-width)));
+
+    display: block grid;
+    grid-template-columns: repeat(var(--_c--mode), minmax(var(--_c--column-width), 1fr));
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-top) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 40px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.article-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+
+  @scope (.scoped.article-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    img {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--sm);
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._category {
+      color: var(--foreground--accent);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    h3 {
+      font-size: calc(18 / 16 * 1rem);
+      line-height: var(--leading--snug);
+    }
+
+    h3 a {
+      color: inherit;
+    }
+
+    time {
+      color: var(--foreground--muted);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

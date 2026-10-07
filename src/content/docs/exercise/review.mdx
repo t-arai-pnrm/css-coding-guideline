@@ -1,0 +1,255 @@
+---
+title: "20-8 確かめて、レビューする"
+description: "完成した記事カードと一覧を、19-3の順番（内容、幅、拡大、キーボード、表示の設定）でブラウザで確かめます。続けて、同じ時期に書かれたお知らせの一覧のプルリクエストを19-2の順番でレビューし、6つの誤りにMUST、IMO、Qのラベルと、理由と解決策を付けます。"
+sidebar:
+  order: 8
+---
+
+import Demo from '../../../components/Demo.astro';
+import reviewHtml from '../../../demos/exercise/review/index.html?raw';
+import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
+
+演習の最後に、完成した記事カードと一覧を公開前に確かめ、同じ時期にチームの別の人が書いたプルリクエストをレビューします。要件は変わりません。確かめる手順は「[19-3 表示と操作を確かめる](/operations/verification/)」の順番（内容、幅、拡大、キーボード、表示の設定）に、レビューの手順は「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」の順番に従います。
+
+確かめた結果、記事カードと一覧のCSSに直す箇所はありません。強制カラーモードでの特集の見え方だけは、手を入れるかどうかの判断が残ります。一方、お知らせの一覧のプルリクエストには6つの誤りがあり、どれも、記事カードが規約に従って避けてきたものです。
+
+## 完成したカードと一覧を確かめる
+
+最初は内容です。最悪の内容を入れたテストページ（カンプの2倍の見出し、画像のない記事、5つのタグ、長い英単語 `Internationalization`）を、1280pxで見ます。画像のない記事は、関連記事とサイドバーのどちらに置いても画像の列がなくなり、文字だけの1列になります。タグが5つのカードではタグが複数行に折り返し、長い見出しのカードはほかより高くなります。どのカードの子もカードからはみ出さず、幅を320pxにしたときも横スクロールは出ません（「[20-5 内容の変化に耐える](/exercise/content-changes/)」）。
+
+次は幅です。完成形の記事ページを1280pxで見ると2カラムになり、関連記事は3列（1枚307px）の特集の形、人気記事は240pxの小さな形（画像が左、抜粋なし）です。1024pxでも2カラムのままで、関連記事が2列になります。768px以下では1カラムになり、人気記事は約360pxの2列で、画像が上の形に切り替わります。320pxでは、どのカードも288pxの1列です。
+
+拡大では、1280pxの画面でズームを200%にすると、ページから見た幅は640pxで、768px以下と同じ1カラムの形が表示されるはずです。{/* 要検証: ブラウザ。1280pxの画面で200%に拡大したときの記事ページの形 */}文字サイズの設定を200%に上げたときは、カードの閾値、列の最小幅、サイドバーの幅をどれもremで書いているので、切り替わる幅も文字と同じ割合で大きくなります。文字が大きくなった分だけ、狭い幅のときの形へ早く切り替わります（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。{/* 要検証: ブラウザ。文字サイズを200%に上げたとき、カードと記事ページが切り替わる幅 */}
+
+キーボードでは、`Tab` キーで移動すると、各カードの中でタグのリンク、見出しのリンクの順にフォーカスが移ります。見出しのリンクにフォーカスすると、カードの外周に3pxの輪郭が出て、見出しに下線が付きます（「[20-6 カード全体を押せるようにする](/exercise/clickable-card/)」）。
+
+表示の設定では、まず動きを減らす設定を見ます。記事カードには、ホバーとフォーカスの変化も含めて、トランジションやアニメーションがないので、この設定で変わるものはありません。グレースケールでも、ホバーとフォーカスの状態は下線と輪郭で分かります。
+
+強制カラーモードでは、特集の背景色がシステムの背景色に置き換わり、特集のカードとほかのカードの見分けが付かなくなります。{/* 要検証: ブラウザ。強制カラーモードで特集の背景が消えること */}特集であることは、欄の見出しの「関連記事」で伝わるので、情報は失われません。カードの範囲も示したいなら、特集の `._layout` に透明な色の `border` を持たせる書き方があります（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#枠線は消さずに透明にする)」）。{/* 要確認: 著者の判断。特集を背景色以外でも示すか */}
+
+## レビューするプルリクエスト
+
+同じ時期に、トップページに「お知らせ」の一覧を足すプルリクエストが出ました。お知らせのカード（`notice-card`）と一覧（`notice-list`）を足し、トップページのCSSと一覧のテンプレートを変えています。次のデモは、プルリクエストのコードをそのまま表示したものです。
+
+<Demo title="レビューするプルリクエスト：お知らせの一覧に6つの誤りがある" html={reviewHtml} css={reviewBadCss} variant="not-recommended" />
+
+幅のボタンで320pxを選ぶと、カードとカードの間が、一覧の `gap` の16pxにカードの `margin-block-end` の24pxが足されて、40px空きます。タグの色は、一覧から赤を渡しているはずなのに、デフォルトの青のままです。見出しは、ページのCSSの `!important` で15pxに固定されています。画像が明るくなるのはマウスでホバーしたときだけで、キーボードでフォーカスしても変わりません。
+
+3件目のカードの5つのタグは、折り返さずに縮み、「重/要」「Infrastruc/ture」のように単語の途中で改行されます。はみ出す代わりに縮んで現れるのは、デモの土台のCSSがすべての要素の `min-inline-size` を0にしているからです。
+
+レビューは、19-2の順番（規約から始まり、コメントで終わる9つの段階）で進めます（「[19-2 レビューとAIとの協働](/operations/review-and-ai/#確認する順番)」）。5つの誤りは、規約、上書き、内容の変化、境界の段階で見つかります。残りの1つは、コードを読んでも見つからず、画面で確かめて初めて見つかります。
+
+## コンテナとホバーの書き方
+
+規約の段階では、2つの誤りが見つかります。1つ目（誤り2）は、カードのコンテナです。ルートに `container-type: inline-size` を単体で書き、`._body` で、名前のない `@container (width >= 300px)` を問い合わせています。名前のないクエリはいちばん近い祖先のコンテナを参照するので、コンテナが入れ子になると、参照先がコードから読み取れなくなります。条件は書字方向に依存しない `inline-size` で、閾値は文字サイズの設定に追従するremの式で書きます（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
+
+```css title="🙆‍♂ Recommended: ルートを名前付きのコンテナにし、フラグを宣言する要素だけがクエリを書く"
+@scope (.scoped.notice-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+    display: block grid;
+    gap: 12px;
+  }
+
+  ._body {
+    --_density: --compact;
+
+    display: block grid;
+    gap: 8px;
+
+    @container --scoped (inline-size >= calc(300 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      gap: 12px;
+    }
+  }
+}
+```
+
+直した形では、`._body` がフラグ `--_density` を宣言し、コンテナサイズクエリはこのルールにだけ書きます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。300pxという値の根拠は、コードから読み取れないので、`Q` のラベルで尋ねます。列の最小幅などから決めた値なら、その条件を式に書いてもらいます（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
+
+2つ目（誤り3）は、ホバーです。カードのスコープの外に `.notice-card:hover img { filter: brightness(1.08); }` と書いています。カードのどこにポインターを置いても画像が明るくなりますが、押せるのは見出しのリンクだけです。ホバーを `@media (any-hover)` の中に書いておらず、キーボードでフォーカスしたときの変化もありません（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。スコープの外にあるので、カードの中に別のコンポーネントを入れると、その中の画像まで選びます。
+
+```css title="🙆‍♂ Recommended: 見出しのリンクのホバーとフォーカスで --_has-hocus を立て、画像はフラグで切り替える"
+@scope (.scoped.notice-card) to (.scoped) {
+  :scope {
+    --_has-hocus: --false;
+
+    &:has(h3 a:any-link:hover) {
+      @media (any-hover) {
+        --_has-hocus: --true;
+      }
+    }
+
+    &:has(h3 a:focus-visible) {
+      --_has-hocus: --true;
+    }
+  }
+
+  img {
+    /* ... */
+
+    @container style(--_has-hocus: --true) {
+      filter: brightness(1.08);
+    }
+  }
+}
+```
+
+状態の判定はルートの1か所にまとまり、画像はフラグを読むだけです。記事カードで、カード全体を押せるようにしたときと同じ形です（「[20-6 カード全体を押せるようにする](/exercise/clickable-card/)」）。
+
+## ページのCSSからの上書き
+
+不要な記述や副作用のある上書きの段階では、トップページのCSSが目に留まります（誤り4）。`pages` のレイヤーに、`.page-top .notice-card h3` を選ぶルールがあります。ページがお知らせのカードの内部を選び、見出しの大きさを `font-size: calc(15 / 16 * 1rem) !important` で上書きしています。カードの見出しを直す人は、カードのファイルを読んでも、15pxになる理由を見つけられません（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+`!important` が要ったのは、本書のレイヤーの順番では `pages` が `components` より前にあり、ページの宣言は詳細度に関わらずカードの宣言に負けるからです。重要な宣言ではレイヤーの順位が逆になるので勝てますが、ページからカードの内部を変えているという問題はそのまま残ります（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
+
+見出しの大きさは、カードのCSSで決めます。狭い列で18pxでは大きすぎることが理由なら、カードが置かれた幅で切り替えます。誤り2を直したときに `._body` で宣言した `--_density` を、見出しが読みます。
+
+```css title="🙆‍♂ Recommended: 見出しの大きさはカードが幅のフラグで決め、ページからは選ばない"
+@scope (.scoped.notice-card) to (.scoped) {
+  h3 {
+    font-size: calc(15 / 16 * 1rem);
+    line-height: var(--leading--snug);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(18 / 16 * 1rem);
+    }
+  }
+}
+```
+
+ただし、15pxにした理由がほかにあるかは、コードからは分かりません。この指摘には、理由を尋ねる質問を添えます（後述の指摘の見本）。
+
+## タグの並びと内容の変化
+
+内容の変化の段階では、タグの並び（誤り6）を見ます。`._tags` は `display: block flex` と `gap` だけで、`flex-wrap` がありません。タグの数は記事ごとに変わるので、入りきらなくなったときに折り返す指定が要ります（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」）。
+
+直すときは、`flex-wrap: wrap` を足すより、記事カードと同じ `cluster` コンポジションを使います。タグの `ul` を `<ul class="_tags cluster">` にし、カードは間隔だけを公開プロパティで渡します（「[12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)」）。`display: flex` の1値の構文はStylelintでも見つかるので、レビューの前にlintを通してもらいます。
+
+```css title="🙆‍♂ Recommended: タグの並びは cluster に任せ、カードは間隔だけを渡す"
+@scope (.scoped.notice-card) to (.scoped) {
+  ._tags {
+    --cluster--row-gap: 4px;
+    --cluster--column-gap: 12px;
+
+    font-size: calc(13 / 16 * 1rem);
+  }
+}
+```
+
+この誤りは、表示が崩れているので `MUST` です。ただし、本書の規約を採用していないプロジェクトなら、`MUST` で求めるのは折り返すことまでで、`cluster` に替えるのは `IMO` の提案です。{/* 要確認: 著者の判断。誤り6の深刻度（設計書ではIMO。デモでは単語の途中で改行されるのでMUSTとした） */}
+
+## カードのルートの外側の余白
+
+コンポーネントの境界の段階では、カードのルートの `margin-block-end: 24px`（誤り1）を見ます。カードとカードの間隔は一覧の `gap` が持っているので、ルートの余白がそこに足され、320pxでは40px空いています。カードを別の場所に置けば、置く側がこの余白を打ち消すことになります（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+ルートの余白は消します。24pxの間隔がデザインで必要なら、一覧のテンプレートで `ul` の `style` 属性の `--grid--gap` を24pxにします。記事カードでは、カードを作った最初の節から、ルートに幅も外側の余白も書いていません（「[20-2 カードを作る](/exercise/card/)」）。
+
+## 色が変わらない原因をたどる
+
+最後の誤り（誤り5）は、CSSを読んでも見つかりません。カードのCSSは `:scope` で `--notice-card--accent` を正しく受けていて、誤りは一覧のテンプレートの側にあるからです。画面で、赤を渡したはずのタグが青いことに気付いたら、「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/#宣言が効かない)」の「宣言が効かない」の手順で原因をたどります。
+
+開発者ツールでタグのリンクを選ぶと、`color: var(--_accent)` には取り消し線がなく、宣言は勝っています。宣言が勝っていても表示が思った色と違うので、参照しているカスタムプロパティの値を確かめます。`--_accent` はフォールバックのトークンの色で、`--notice-card--accent` を宣言した祖先は見つかりません。祖先の `li` の `style` 属性を見ると、宣言されていたのは綴りの違う `--notice-card--acent` でした。{/* 要検証: ブラウザ。継承したカスタムプロパティが、スタイルペインで宣言した祖先の要素の欄に表示されること */}
+
+テンプレートの名前を `--notice-card--accent` に直します。あわせて、カードのファイルの先頭に、公開プロパティを `@prop` で並べた説明ブロックを足してもらいます。記事カードでも、公開プロパティを足したときに同じ一覧を書きました（「[20-7 特集の見た目を足す](/exercise/featured/)」）。
+
+```css title="🙆‍♂ Recommended: 公開プロパティを説明ブロックの @prop に並べ、使う側が名前を照らし合わせられるようにする"
+/**
+ * お知らせのカード。
+ *
+ * @prop {color} --notice-card--accent [var(--foreground--accent)] - タグの色
+ */
+@scope (.scoped.notice-card) to (.scoped) {
+  :scope {
+    --_accent: var(--notice-card--accent, var(--foreground--accent));
+
+    /* ... */
+  }
+
+  ._tags {
+    /* ... */
+
+    & a {
+      color: var(--_accent);
+    }
+  }
+}
+```
+
+## 指摘の見本
+
+指摘には、ラベル、理由、解決策をセットで書き、当てはまるルールのIDを添えます（「[19-2 レビューとAIとの協働](/operations/review-and-ai/#レビューの指摘に書く内容)」）。誤り4と誤り5の指摘を、見本として示します。
+
+```md title="🙆‍♂ Recommended: 境界を越えた上書きに、理由と解決策を書き、意図を尋ねる"
+[MUST] トップページのCSSの `.page-top .notice-card h3 { font-size: … !important; }` は削除してください。ページがお知らせのカードの内部を選んでいるので、カードの見出しを直す人は、カードのファイルだけでは15pxになる理由を見つけられません（`no-other-component-internals`）。`!important` は、`pages` のレイヤーで負けていた宣言の順位を逆にしているだけです（`no-important-for-specificity`）。見出しの大きさはカードのCSSで決め、狭い列で大きすぎることが理由なら、`--_density` が `--spacious` のときだけ18pxにしてください（`density-via-style-query`）。
+
+[Q] 15pxにしたのは、どの幅で見出しが大きすぎたからでしょうか。トップページに置いたときだけ小さくしたい事情があれば、カードの公開プロパティにするかを相談させてください。
+```
+
+```md title="🙆‍♂ Recommended: 画面で見つけた誤りに、たどった手順と解決策を書く"
+[MUST] お知らせの一覧のテンプレートで `li` に渡している `--notice-card--acent` は、`--notice-card--accent` の綴りの誤りです。カードはこの名前を読まないので、タグの色が赤ではなく、デフォルトの青のままです。開発者ツールでタグのリンクを選ぶと、`--_accent` がフォールバックの `--foreground--accent` になっていました。テンプレートの名前を直してください。あわせて、カードのCSSの先頭に `@prop` の説明ブロックを足し、公開プロパティの名前を照らし合わせられるようにしてください（`prop-tag-for-public-properties`）。
+```
+
+1つ目は、`MUST` の指摘に `Q` を添えています。15pxにした理由によって、カードの中で幅から切り替えるか、公開プロパティにするかが変わるからです。2つ目は、原因をたどった手順を書いているので、レビュイーが同じ手順で確かめられます。
+
+## 直した箇所と直さずに済んだ箇所
+
+確かめた記事カードと一覧には、直した箇所がありません。強制カラーモードで特集を背景色以外でも示すかどうかだけが、判断として残ります。
+
+プルリクエストで直すのは、お知らせのカードのCSS、トップページのCSS（上書きの削除）、一覧のテンプレート（公開プロパティの名前と `cluster` のクラス）です。一覧の `notice-list` と `grid` コンポジションは直さずに済みます。6つの誤りは、記事カードが節ごとに守ってきた規約と1つずつ対応します。誤り1から3は、外側の余白を持たないこと、名前付きのコンテナとフラグ、`--_has-hocus` で伝えるホバーとフォーカスに当たります。誤り4から6は、置く側から内部を選ばないこと、`@prop` の一覧、`cluster` で並べるタグに当たります。
+
+これで演習は終わりです。章の概要の「[この章で判断できるようになること](/exercise/#この章で判断できるようになること)」に戻り、要件の変更を受け持つのがカード、一覧、置く側のどれかを見分けられるようになったかを振り返ってください。この節のレビューで見た項目は、付録D「[レビューのチェックリスト](/appendix/checklist/)」に、19-2の順番で並んでいます。
+
+## 判断の問い
+
+### 問い1
+
+誤り5の綴りの誤り（`--notice-card--acent`）は、Stylelintで見つけられますか。見つけられないなら、何で防ぎますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+見つけられません。どのカスタムプロパティを宣言しても構文としては正しく、しかもこの宣言はCSSのファイルではなく、テンプレートの `style` 属性にあるからです。防ぐのは、レビューと、画面での確認です。カードのファイルの先頭に `@prop` で公開プロパティを並べておけば、レビュアーはテンプレートの名前と照らし合わせられます（「[9-9 コメントの書き方](/notation/comments/)」）。{/* 要確認: 出典なし。公開プロパティの綴りの誤りを、@prop の一覧との照合とレビューで防ぐこと */}
+
+</details>
+
+### 問い2
+
+誤り4の指摘に、トップページの担当者から「お知らせの見出しは、どこに置いても15pxにしたい」と返事が来ました。どこに書きますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+カードのCSSの `h3` に、15pxとして書きます。どこに置いても同じ大きさなら、それはカード自身の文字の階層の決定で、置き場所の判断ではないからです。幅のフラグで切り替える必要もなくなります。トップページに置いたときだけ15pxにしたいという返事だったなら、置き場所で決まる見た目なので、置く側からフラグか公開プロパティで渡します（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」）。
+
+</details>
+
+## この節で使ったルール
+
+- [`verify-worst-case-content`](/operations/verification/#rule-verify-worst-case-content)：実装後は、長い見出し、折り返せない文字列、読み込めない画像、0件・1件・多数の項目を入れたテストページで表示を確かめます。
+- [`verify-text-resize-200`](/operations/verification/#rule-verify-text-resize-200)：ブラウザのズームと文字サイズの設定をそれぞれ200%にしても、内容が欠けず、操作できることを確かめます。
+- [`verify-keyboard-and-display-settings`](/operations/verification/#rule-verify-keyboard-and-display-settings)：キーボードだけで操作し、強制カラーモード、動きを減らす設定、グレースケールの表示を再現して確かめます。
+- [`review-check-order`](/operations/review-and-ai/#rule-review-check-order)：レビューは、規約、トークン、ブラウザ対応、不要な記述、グローバルのCSS、内容の変化への耐性、コンポーネントの境界、レスポンシブ、コメントの順に確認します。
+- [`review-reason-and-solution`](/operations/review-and-ai/#rule-review-reason-and-solution)：レビューの指摘には、理由と解決策を必ずセットで書きます。
+- [`review-severity-labels`](/operations/review-and-ai/#rule-review-severity-labels)：レビューの指摘には `MUST`、`IMO`、`Q` のラベルを付けて、深刻度を区別します。
+- [`devtools-find-winning-declaration`](/operations/devtools/#rule-devtools-find-winning-declaration)：宣言が効かないときは、詳細度を上げたり `!important` を付けたりする前に、開発者ツールで勝っている宣言と、差が付いた段階を確かめます。
+- [`container-shorthand`](/responsive/container-size-queries/#rule-container-shorthand)：コンテナは `container` ショートハンドで、名前と種類をまとめて指定します。
+- [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)：コンポーネントのルートをコンテナにするときは `container: --scoped / inline-size` と書き、`@container --scoped (…)` で問い合わせます。
+- [`container-query-inline-size`](/responsive/container-size-queries/#rule-container-query-inline-size)：コンテナサイズクエリの条件では、`width` ではなく `inline-size` を使います。
+- [`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem)：ブレイクポイントはremで指定し、ピクセル値からの変換を式で書きます。
+- [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を `calc()` の式で書きます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリは、フラグを宣言する1つの要素のルールだけに書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーのスタイルは操作できる状態に限定し、`@media (any-hover)` の中に書きます。
+- [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
+- [`hocus-via-style-query`](/components/style-queries/#rule-hocus-via-style-query)：ホバーとフォーカスで子要素の見た目を変えるときは、フラグを立てて `@container style()` で切り替えます。子孫の状態をほかの子孫に伝えるときは、`&:has()` で `--_has-hocus` を立てます。
+- [`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)：ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしません。
+- [`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)：詳細度や読み込み順の競争に勝つ目的で `!important` を使いません。
+- [`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items)：要素の数が変わる可能性のあるFlexboxには、`flex-wrap: wrap` を指定します。
+- [`compositions-for-layout-patterns`](/components/compositions-and-utilities/#rule-compositions-for-layout-patterns)：並べて折り返すといった、コンポーネントに依存しない配置は、コンポジションで書きます。
+- [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、外側の余白や配置の指定を書きません。
+- [`prop-tag-for-public-properties`](/notation/comments/#rule-prop-tag-for-public-properties)：公開プロパティを持つファイルでは、説明ブロックの `@prop` に、型、デフォルト値、説明を書きます。
