@@ -70,7 +70,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`gap-decorations-progressive`](/decoration/separators/#rule-gap-decorations-progressive)：gap decorationsは、対応している環境の改善として足します。
   - [`gap-decorations-supports-condition`](/decoration/separators/#rule-gap-decorations-supports-condition)：対応を判定する `@supports` の条件には、`column-rule-inset` のような新しいプロパティを使います。
 - ルールを変えました。
-  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-contrast-color)：理由を、Safari 18系で `color` の宣言が無効になることと、WCAG 2.xの計算の問題の2つに書き直しました。
+  - `prefer-sign-over-contrast-color`：0.26.0で [`prefer-contrast-color`](/color-media/contrast-text/#rule-prefer-contrast-color) に置き換えたルールです。この版では、理由をSafari 18系で `color` の宣言が無効になることと、WCAG 2.xの計算の問題の2つに書き直しました。
   - [`no-box-shadow-only-boundary`](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)：区切り線を `box-shadow` で描くときは、強制カラーモードで `outline` を描くという補足を加えました。
   - [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height)：インラインの要素の行ごとに座布団を敷くときは、`line-height` を長さで決めてよいという例外を、補足に書き加えました。
   - [`if-for-own-custom-property`](/values/if-and-attr/#rule-if-for-own-custom-property)：1つの長さを段階ごとの値に置き換える対応表では、条件を複数並べてよいという例外を、補足に書き加えました。
@@ -554,7 +554,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-flex-grid-props-in-flow`](/layout/normal-flow/#rule-no-flex-grid-props-in-flow)：`gap` や `align-items` のようにFlexboxやGridでだけ働くプロパティを、通常フローの要素に書きません。
   - [`overlap-detection-for-decoration-only`](/layout-practice/overlap-detection/#rule-overlap-detection-for-decoration-only)：アンカーポジショニングとスクロール駆動アニメーションで重なりを検出する技法は、装飾にだけ使い、`@supports` の中に書きます。
   - [`z-index-on-items-without-position`](/layout-practice/layering/#rule-z-index-on-items-without-position)：FlexboxとGridの子の重なり順を変えるだけなら、`position: relative` を足さずにz-indexを指定します。
-  - [`prefer-sign-over-contrast-color`](/color-media/contrast-text/#rule-prefer-contrast-color)：背景色や文字色から対比する色を決めるときは、`contrast-color()` ではなく相対カラー構文と `sign()` で書きます。
+  - `prefer-sign-over-contrast-color`：0.26.0で [`prefer-contrast-color`](/color-media/contrast-text/#rule-prefer-contrast-color) に置き換えたルールです。当時は、対比する色を `contrast-color()` ではなく `sign()` で決めていました。
   - [`component-decision-tests`](/components/what-is-a-component/#rule-component-decision-tests)：コンポーネントにするかは、繰り返し使うか、全インスタンスで構造や振る舞いを制御したいか、既知の構造の拡張があるか、の順に判定します。
   - [`no-component-for-look-only`](/components/what-is-a-component/#rule-no-component-for-look-only)：見た目が共通だという理由だけで、コンポーネントを作りません。
   - [`no-component-for-future-guess`](/components/what-is-a-component/#rule-no-component-for-future-guess)：将来必要になりそうという予測だけで、コンポーネントを作りません。
