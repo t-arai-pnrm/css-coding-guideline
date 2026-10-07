@@ -3,6 +3,7 @@
 # 16-1 画像の配置と読み込み
 - id: aspect-ratio-for-ratios
   level: 必須
+  kind: judgment
   rule: 要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作らない。
   reason: 比率のための擬似要素や絶対配置が要らず、比率の指定だとコードから読み取れるため。
   note: '正方形や正円は `aspect-ratio: 1` で作ります。'
@@ -11,6 +12,7 @@
 
 - id: object-fit-cover-or-contain
   level: 推奨
+  kind: spec
   rule: 大きさを決めた画像や動画には `object-fit` の `cover` か `contain` を指定し、初期値の `fill` で引き伸ばさない。
   reason: 比率の違う画像が入っても歪まないようにするため。
   note: '写真のように枠を埋めたい画像は `cover`、ロゴのように切り取られると困る画像は `contain` にします。ベーススタイルで `img` と `video` を `cover` にしておく方法もあります。'
@@ -19,6 +21,7 @@
 
 - id: img-width-height-attributes
   level: 必須
+  kind: spec
   rule: '`<img>` には、画像の実際の大きさを `width` と `height` の属性で書く。'
   reason: ブラウザが読み込む前から縦横比を計算して場所を確保し、読み込んだときにレイアウトがずれるのを防ぐため。
   aiProne: true
@@ -27,6 +30,7 @@
 
 - id: text-on-image-fallback-background
   level: 必須
+  kind: spec
   rule: 画像や動画の上に文字を載せるときは、画像が表示されなくても文字を読める背景色を指定する。
   reason: 画像を読み込めないと、文字と背景の色が近くなり、文字を読めなくなることがあるため。
   note: '背景色は文字色から決めます。`sign()` の宣言を先に書き、`contrast-color(currentColor)` で上書きします（ルール `contrast-color-for-image-fallback`）。`contrast-color()` だけだと、対応していない環境で背景色が付かず、画像が表示されないときに文字が読めなくなります。'
@@ -35,6 +39,7 @@
 
 - id: img-over-background-image
   level: 推奨
+  kind: judgment
   rule: 背景に写真を敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置く。
   reason: '`<picture>` や `srcset` と `sizes` で表示される幅に合った画像を読み込め、`opacity` やフィルターで画像だけを加工でき、`alt` で意味を伝えられるうえ、HTML を解析する段階でプリロードスキャナーに見つかり、LCP の候補でも表示が遅れないため。'
   note: '`background-image` は、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に使います。単色やグラデーションだけの背景も `background-image` で足ります。装飾の写真なら `alt=""` にします。重ねるだけの入れ物には、コンポジションの `pile` を使えます。'
@@ -44,6 +49,7 @@
 
 - id: sizes-by-tool
   level: 推奨
+  kind: judgment
   rule: '`srcset` と `sizes` の値は、手で計算せず、RespImageLint などのツールで確かめて決める。'
   reason: 表示される幅は余白や段組みの切り替えによって変わり、手で計算すると誤りやすいため。
   page: decoration/images
@@ -51,6 +57,7 @@
 
 - id: no-lazy-loading-first-view
   level: 禁止
+  kind: spec
   rule: 'ファーストビューに表示される画像に、`loading="lazy"` を指定しない。'
   reason: ページでいちばん大きな要素の表示が遅れるため。
   note: '`fetchpriority="high"` は、LCP の候補になる画像（ファーストビューでいちばん大きく表示される画像）にだけ指定します。ファーストビューの画像すべてに指定すると、優先する画像どうしで帯域を奪い合うためです。`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。'
@@ -60,6 +67,7 @@
 
 - id: no-decoding-async
   level: 推奨
+  kind: judgment
   rule: '`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せる。'
   reason: キャッシュのない通常の読み込みでは `sync` と `async` に目立った性能の差がなく、キャッシュがあるときに `async` だと、画像以外が先に表示されて画像があとから現れ、画面がちらつくため。
   aiProne: true
@@ -68,6 +76,7 @@
 
 - id: avif-for-photos
   level: 推奨
+  kind: judgment
   rule: 写真のような画像は、AVIF で書き出す。
   reason: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
   note: AVIF への変換は WebP より時間がかかるので、画像の多いサイトではビルドの時間を見積もります。
@@ -77,6 +86,7 @@
 # 16-2 アイコン・SVG・マスク
 - id: clip-path-shape-tokens
   level: 推奨
+  kind: judgment
   rule: 三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。
   reason: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
   aiProne: true
@@ -85,6 +95,7 @@
 
 - id: scroll-edge-fade-with-mask
   level: 推奨
+  kind: judgment
   rule: スクロールできる領域の端を薄くして続きを示すときは、端に線や背景と同じ色のグラデーションを重ねず、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定する。
   reason: 中身そのものが端で薄れるので、背景が写真や別の色でも帯が浮かず、線のように区切りとして読まれることもないため。
   note: '`linear-gradient()` の向きには論理方向のキーワードがないので、両端を同じ幅で薄くして書字方向に左右されない形にします。マスクは要素の外側に描く `outline` も切り取るので、スクロールコンテナがフォーカスを受けるときは、リングを親の `:has(:focus-visible)` に出します。'
@@ -93,6 +104,7 @@
 
 - id: icon-current-color
   level: 推奨
+  kind: judgment
   rule: 単色のアイコンの色は `currentColor` で文字色に合わせ、状態ごとにアイコンの色を指定し直さない。
   reason: 文字色を切り替えるだけでアイコンも追従し、色を2か所に書く必要がなくなるため。
   note: '`border` の色も、省略すれば `currentColor` になります。'
@@ -101,6 +113,7 @@
 
 - id: inline-svg-hidden-with-text
   level: 推奨
+  kind: judgment
   rule: '意味を持つインライン SVG のアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。'
   reason: '`<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。'
   page: decoration/icons-and-masks
@@ -109,6 +122,7 @@
 # 16-3 表面と文字の装飾
 - id: shadow-black-in-dark-mode
   level: 推奨
+  kind: judgment
   rule: 影の色は、ライトモードでは背景の色相に寄せた色にし、ダークモードでは黒にして不透明度を上げて奥行きを表す。
   reason: 黒に近い影は色のある背景をくすませ、暗い背景に白い影を付けると、影ではなく光って見えるため。
   note: '`--shadow--color: light-dark(oklch(30% 0.05 250deg / 14%), oklch(0% 0 0deg / 30%))` のように、影の色のトークンに `light-dark()` を使います。背景が無彩色のサイトでは、ライトモードも黒で構いません。'
@@ -117,6 +131,7 @@
 
 - id: shadow-tokens-light-source
   level: 推奨
+  kind: judgment
   rule: 影のトークンは光源の向きをそろえ、段階が上がるほどオフセットとぼかしを大きくし、不透明度を下げる。
   reason: 影の向きや強さがばらつくと、要素の高さの関係が読み取れず、画面に光源が複数あるように見えるため。
   page: decoration/surfaces
@@ -124,6 +139,7 @@
 
 - id: no-animate-layered-shadow
   level: 非推奨
+  kind: judgment
   rule: 重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。
   reason: 描画の計算量が影の数に比例して増え、古い端末ではコマ落ちしやすいため。
   note: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
@@ -132,6 +148,7 @@
 
 - id: marker-for-list-number-style
   level: 推奨
+  kind: judgment
   rule: '番号付きリストの番号を装飾するときは、`list-style: none` と `::before` ではなく、`::marker` で色やフォントを指定する。'
   reason: 'リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。'
   note: '`::marker` には `background` や `border` を指定できません。円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。'
@@ -140,6 +157,7 @@
 
 - id: text-stroke-paint-order
   level: 推奨
+  kind: spec
   rule: '文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。'
   reason: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
   note: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
@@ -148,6 +166,7 @@
 
 - id: inline-decoration-clone-with-prefix
   level: 推奨
+  kind: spec
   rule: '行ごとに背景や枠線を敷く装飾は、インラインの要素に `-webkit-box-decoration-break: clone` と `box-decoration-break: clone` を併記して描く。'
   reason: 初期値の `slice` では折り返した位置の `padding` と枠線がなくなり、Safari は接頭辞付きの宣言にしか対応していないため。
   note: '上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。'
@@ -158,6 +177,7 @@
 # 16-4 角の形を変える
 - id: corner-shape-guard-when-broken
   level: 推奨
+  kind: spec
   rule: '`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。'
   reason: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
   note: '錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。'
@@ -167,6 +187,7 @@
 
 - id: full-bleed-radius-with-sign
   level: 推奨
+  kind: judgment
   rule: '画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。'
   reason: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
   note: '`/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。'
@@ -176,6 +197,7 @@
 
 - id: squircle-larger-radius
   level: 推奨
+  kind: spec
   rule: '角丸を `corner-shape: squircle` に置き換えるときは、見た目の大きさが合うように `border-radius` を大きくし、その指定を `@supports` の中に書く。'
   reason: スクワークルは同じ半径でも円弧の角丸より角が小さく見え、倍率を `if()` で決めるカスタムプロパティは、未対応の環境では `border-radius` ごと無効にするため。
   note: '倍率は半径によって変わります（著者の CodePen では、8px 以上が2倍、24px 以上が1.67倍で `superellipse(1.75)`、32px 以上が1.5倍で `superellipse(1.5)`）。錠剤型のボタンに `squircle` を1行足すだけの場合は、ルール `corner-shape-guard-when-broken` に従います。'
@@ -185,6 +207,7 @@
 # 16-5 輪郭と枠線を描く
 - id: guard-new-shapes-with-supports
   level: 推奨
+  kind: spec
   rule: '`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。'
   reason: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
   note: '未対応の環境では、単色の枠線や中心まで塗った円グラフのように、意味の読み取れる形に縮退させます。'
@@ -194,6 +217,7 @@
 
 - id: gradient-border-method
   level: 推奨
+  kind: judgment
   rule: 'グラデーションの枠線は `background-clip: border-area` で描いて未対応の環境では単色の枠線に戻し、どの環境でもグラデーションが必要なときだけ、擬似要素の透明な枠線にグラデーションを敷いて `mask-composite: exclude` で内側をくり抜く。'
   reason: '`border-area` なら2つの宣言で描けて形がコードから読み取れ、装飾の枠線は単色でも境界を示せるため。'
   note: 'マスクの書き方では、ルートに `position: relative` と `isolation: isolate` を指定し、擬似要素を `z-index: var(--z--backwards)` で背面に回して、ルートの `padding` に枠線の太さを足します。`contain: content` でも配置の基準とスタッキングコンテキストは作れますが、はみ出した子孫の影やポップアップが切り取られます。'
@@ -203,6 +227,7 @@
 
 - id: shape-function-with-custom-properties
   level: 推奨
+  kind: judgment
   rule: '`clip-path: shape()` の座標は、半径などをカスタムプロパティに入れて、そこから計算する。'
   reason: '`shape()` の値は長く、数値を直接並べると形が読み取れず、大きさを変えるたびにすべての座標を書き直すことになるため。'
   note: '`shape()` に対応していない環境には、`@supports not` で `border-radius` の形に戻します。'
@@ -211,6 +236,7 @@
 
 - id: shared-shape-for-border-shape
   level: 推奨
+  kind: spec
   rule: '吹き出しのように枠線を輪郭に沿わせる形は、`shape()` を1つのカスタムプロパティに入れて `clip-path` と `border-shape` で共有し、`border` と `border-shape` は `@supports (border-shape: …)` の中に書く。'
   reason: '同じ輪郭を2か所に書くと片方だけ直したときに塗りと枠線がずれ、`@supports` の外の `border` は未対応の環境で `clip-path` に切り落とされて欠けた枠になるため。'
   note: 'しっぽの高さは `半幅 * tan(60deg)` で正三角形にし、下の `padding` にしっぽの高さを足します。'
@@ -221,6 +247,7 @@
 # 16-6 区切り線を引く
 - id: separators-in-gap
   level: 推奨
+  kind: spec
   rule: 並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描く。
   reason: 折り返しや列数の変化で行の末尾に来る要素はセレクタで選べず、要素に線を持たせると、行の端に区切る相手のいない線が残ったり、隣り合う線が二重になったりするため。
   note: 'gap decorations（`column-rule`、`row-rule`）を使うか、`gap` を線の太さにして各要素の `box-shadow` を重ねます。表の枠線は `border-collapse` で共有します（11-13）。'
@@ -230,6 +257,7 @@
 
 - id: no-last-child-border-reset
   level: 非推奨
+  kind: spec
   rule: '区切り線のために各要素に `border` を付け、`:last-child` や `:nth-child()` で末尾の要素の `border` を打ち消さない。'
   reason: 打ち消せるのは並び全体の最後の要素だけで、折り返した行の末尾や、列数が変わるグリッドの末尾の列には線が残るため。
   aiProne: true
@@ -238,6 +266,7 @@
 
 - id: gap-decorations-progressive
   level: 推奨
+  kind: judgment
   rule: gap decorations は、線がなくても内容を読める区切りに使い、線がないと境界が分からないときは `box-shadow` で同じ位置に線を描いたうえで、対応している環境の改善として足す。
   reason: 2026年10月時点で対応しているのは Chrome と Edge だけで、未対応の環境では線が描かれないため。
   note: 'Grid と Flexbox の `column-rule` は、未対応の環境では無視されるだけなので、線を足すだけなら `@supports` は要りません。`box-shadow` の線と切り替えるときは `@supports not` の中に `box-shadow` を書き、強制カラーモードでは `outline` に切り替えます（ルール `no-box-shadow-only-boundary`）。'
@@ -246,6 +275,7 @@
 
 - id: gap-decorations-supports-condition
   level: 必須
+  kind: spec
   rule: 'gap decorations の対応を `@supports` で判定するときは、`column-rule` ではなく `column-rule-inset` のような gap decorations で加わったプロパティを条件にする。'
   reason: '`column-rule` はマルチカラムのプロパティとしてすべてのブラウザが対応しているので、gap decorations に未対応の環境でも条件が真になるため。'
   aiProne: true

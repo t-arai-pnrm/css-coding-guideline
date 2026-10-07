@@ -93,7 +93,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 列の見出しを留めたいときは、ラッパーに `max-block-size` を指定し、ラッパーの中で縦にもスクロールさせます。縦の上限を設けたくない表では、列の見出しは留めず、行の見出し（先頭の列）だけを `inset-inline-start: 0` で横方向に留めます。ラッパーには `scrollbar-gutter: stable` も指定します。スクロールバーが幅を取る環境では、行が増えて縦のスクロールバーが現れたときに表の幅が変わるからです。仕様上、`scrollbar-gutter` が確保するのは行の始めと終わりの辺の領域で、横のスクロールバーの領域は確保できません。
 
-次に、枠線の持たせ方を変えます。kiso.cssは `table` に `border-collapse: collapse` を指定しています。`collapse` では、隣り合うセルが1本の枠線を共有するので、枠線はどちらか一方のセルのものではありません。留めたセルを動かしても、共有の枠線は元の位置に残ります。2026年10月にChrome 152で確かめたところ、列の見出しを留めてスクロールすると、見出しの上下の枠線が見出しと一緒に動かず、見出しの下の線が消えたように見えました。{/* 要確認: Firefox と Safari での見え方 */}
+次に、枠線の持たせ方を変えます。kiso.cssは `table` に `border-collapse: collapse` を指定しています。`collapse` では、隣り合うセルが1本の枠線を共有するので、枠線はどちらか一方のセルのものではありません。留めたセルを動かしても、共有の枠線は元の位置に残ります。2026年10月にChrome 152で確かめたところ、列の見出しを留めてスクロールすると、見出しの上下の枠線が見出しと一緒に動かず、見出しの下の線が消えたように見えました。{/* 要検証: ブラウザ。Firefox と Safari での見え方 */}
 
 そこで、表に `border-collapse: separate` と `border-spacing: 0` を指定し、枠線を各セルに持たせます。`separate` では、セルの枠線はそのセルのボックスの一部なので、留めたセルと一緒に動きます。隣り合うセルの枠線が二重にならないよう、各セルには `border-block-end` のように1辺ずつ指定します。
 
@@ -174,7 +174,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 1行ごとに完結した記録を並べる表は、狭い幅で行をカードのように縦に積めます。表が複数の場所に置かれることを考え、切り替えはコンテナサイズクエリで書きます。ルートを `container: --scoped / inline-size` のコンテナにし、閾値には、各列の中身の最小の幅とセルの `padding` を足した式を書きます（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
 
-縦に積むには、`table`、`tbody`、`tr`、`td` の `display` を変える必要があります。先に挙げたとおり、`display` を変えた表を表として扱わなくなるブラウザがあります。MDNは、`display: grid` などで表の意味が上書きされる場合に、ARIAの表の `role` を書いて意味を加え直す方法を挙げています。そこで、HTMLの各要素に `role` を書きます。`table` には `role="table"`、`thead` と `tbody` には `role="rowgroup"`、`tr` には `role="row"` を書きます。見出しのセルには `role="columnheader"` か `role="rowheader"` を、データのセルには `role="cell"` を書きます。{/* 要確認: 2026年10月時点で、display を変えた表の意味が失われるブラウザ */}
+縦に積むには、`table`、`tbody`、`tr`、`td` の `display` を変える必要があります。先に挙げたとおり、`display` を変えた表を表として扱わなくなるブラウザがあります。MDNは、`display: grid` などで表の意味が上書きされる場合に、ARIAの表の `role` を書いて意味を加え直す方法を挙げています。そこで、HTMLの各要素に `role` を書きます。`table` には `role="table"`、`thead` と `tbody` には `role="rowgroup"`、`tr` には `role="row"` を書きます。見出しのセルには `role="columnheader"` か `role="rowheader"` を、データのセルには `role="cell"` を書きます。{/* 要検証: ブラウザ。2026年10月時点で、display を変えた表の意味が失われるブラウザ */}
 
 ```css title="🙆‍♂ Recommended: 狭いときだけ、行をカードのように縦に積む"
 @scope (.scoped.order-table) to (.scoped) {

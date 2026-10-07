@@ -61,7 +61,7 @@ window.addEventListener('scroll', () => {
 
 2026年10月の時点で、Firefoxはスクロール駆動アニメーションに対応していません。対応していない環境では `animation-timeline` が無視され、時間で進む普通のアニメーションとして扱われます。再生時間が0なので、一瞬で終わった状態になります。そこで、`@supports` で対応している環境に限って指定します。
 
-`@supports` の条件には、`animation-timeline` だけでなく `animation-range` も加えます。2つは別々のプロパティなので、`animation-timeline` にだけ対応した実装では、範囲の指定が無視されてタイムラインの全体で動き、見せたいタイミングとずれます。{/* 要確認: 出典なし（animation-range に対応しない実装の有無） */}条件には、実際に使う値を書きます。`view()` のタイムラインなら `(animation-timeline: view()) and (animation-range: entry)` です。`scroll()` のタイムラインで長さの範囲を使うなら、`(animation-timeline: scroll()) and (animation-range: 0 80px)` と書きます。
+`@supports` の条件には、`animation-timeline` だけでなく `animation-range` も加えます。2つは別々のプロパティなので、`animation-timeline` にだけ対応した実装では、範囲の指定が無視されてタイムラインの全体で動き、見せたいタイミングとずれます。{/* 要検証: ブラウザ。animation-range に対応しない実装の有無 */}条件には、実際に使う値を書きます。`view()` のタイムラインなら `(animation-timeline: view()) and (animation-range: entry)` です。`scroll()` のタイムラインで長さの範囲を使うなら、`(animation-timeline: scroll()) and (animation-range: 0 80px)` と書きます。
 
 次の例は、ページを80pxスクロールするまでの間に、ヘッダーの背景をフェードインさせます。背景は擬似要素に描き、その `opacity` をスクロール量に合わせて変えます。
 

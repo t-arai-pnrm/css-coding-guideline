@@ -3,6 +3,7 @@
 # 14-1 フォントを指定する
 - id: font-family-sans-serif
   level: 推奨
+  kind: judgment
   rule: デザインで特に指定がなければ、`font-family` は総称ファミリーの `sans-serif` だけにする。
   reason: 主要な OS に読みやすい和文フォントが入っており、ユーザーが自分で設定した読みやすいフォントも尊重できるため。
   note: kiso.css で指定済みです。欧文のフォントを使うときも、最後に `sans-serif` を置き、和文は総称ファミリーに任せます。
@@ -12,6 +13,7 @@
 
 - id: no-system-ui-for-japanese
   level: 非推奨
+  kind: spec
   rule: 日本語のサイトでは、`font-family` に `system-ui` を使わない。
   reason: Windows では Noto Sans JP ではなく、游ゴシックの画面表示用の書体が使われるため。
   note: 海外製のフレームワークやリセット CSS（Tailwind CSS の初期設定など）が `system-ui` を指定していることがあるので、導入時に確かめます。
@@ -21,6 +23,7 @@
 
 - id: local-first-font-face
   level: 推奨
+  kind: judgment
   rule: どの環境でも Noto Sans JP を表示するときは、`local()` だけを `src` に書いた `@font-face` をフォントスタックの先頭に置き、端末に入っているフォントを優先する。
   reason: フォントが入っている Windows と Android で、同じフォントを Web フォントとして読み込まずに済むため。
   note: 端末のフォントで表示してよいかを、先にデザイナーに確かめます。明朝体の Noto Serif JP でも同じ書き方をします。
@@ -29,6 +32,7 @@
 
 - id: font-display-by-role
   level: 推奨
+  kind: judgment
   rule: Web フォントの `@font-face` には `font-display` を指定し、本文のフォントは `swap`、装飾のフォントは `optional` にする。
   reason: 本文はフォントの読み込みを待たずに表示でき、装飾のフォントは表示の途中で切り替わってレイアウトがずれるのを防げるため。
   page: typography/fonts
@@ -36,6 +40,7 @@
 
 - id: no-italic-for-japanese
   level: 非推奨
+  kind: judgment
   rule: 和文に斜体を使わず、強調は太字で表す。
   reason: 日本語では斜体を使う習慣がなく、文字を傾けて作った斜体は読みにくいため。
   note: kiso.css は、日本語の文書（`:lang(ja)`）で `em`、`i`、`cite`、`dfn`、`address` の斜体を解除し、`em` を太字にしています。
@@ -44,6 +49,7 @@
 
 - id: font-weight-numeric
   level: 推奨
+  kind: convention
   rule: '`font-weight` は `bold` のようなキーワードではなく数値で指定し、トークンにする。'
   reason: キーワードでは 400 と 700 しか表せず、太さの多いフォントやデザインカンプの指定と対応させにくいため。
   note: kiso.css はブラウザのデフォルトに合わせて `bolder` を使っているので、太さをそろえたいときは `base` レイヤーで上書きします。
@@ -52,6 +58,7 @@
 
 - id: fallback-font-metric-overrides
   level: 推奨
+  kind: judgment
   rule: '本文の Web フォントを `font-display: swap` で使うときは、`local()` で参照する代わりのフォントの `@font-face` に `size-adjust` などの補正を指定し、Web フォントの直後に置く。'
   reason: 代わりのフォントから Web フォントに切り替わるときの、字幅や行の高さの違いによるレイアウトのずれを小さくできるため。
   note: '値はフォントのファイルの寸法から、Capsize や fontaine のようなツールで計算します。`ascent-override`、`descent-override`、`line-gap-override` は Safari が対応していません（2026年9月）。'
@@ -60,6 +67,7 @@
 
 - id: no-font-size-adjust-for-japanese
   level: 非推奨
+  kind: spec
   rule: '和文を含む要素に `font-size-adjust` を指定しない。'
   reason: '和文の文字も欧文のフォントの x-height などの比に合わせて拡大・縮小され、デザインで決めた文字サイズから外れることがあるため。'
   note: '欧文だけのページで書体の字面をそろえるときは、`:root` に `font-size-adjust: from-font` を一度だけ指定します。`ic-width` と `ic-height` は和文のフォントでは比がほぼ1になり、補正されません。Web フォントの読み込みの前後のずれは、`@font-face` の `size-adjust` で抑えます（`fallback-font-metric-overrides`）。'
@@ -70,6 +78,7 @@
 # 14-2 和文組版を整える
 - id: lang-for-typesetting
   level: 必須
+  kind: spec
   rule: '`html` 要素と、ほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替える。'
   reason: 和文と欧文では適した組版が異なり、`lang` がないと言語に合った指定を当て分けられないため。
   note: ブラウザの翻訳機能で言語が変わると、`:lang(ja)` の指定は外れます。
@@ -78,6 +87,7 @@
 
 - id: no-manual-space-for-autospace
   level: 推奨
+  kind: judgment
   rule: '和文と英数字の間に空白を手で入れず、`text-autospace: normal` に任せる。'
   reason: 空白を原稿に入れると表示の側で調整できず、書く人によって表記もそろわないため。
   note: kiso.css で指定済みです。指定しないとアキを入れないブラウザもあるので、値は明示します。
@@ -86,6 +96,7 @@
 
 - id: no-autospace-for-fixed-text
   level: 推奨
+  kind: judgment
   rule: '`pre`、`time`、入力欄では `text-autospace: no-autospace` にし、`pre` には `text-spacing-trim: space-all` も指定する。'
   reason: 等幅のそろい、日付の表記、入力中の文字にアキが入ると不自然になるため。
   note: kiso.css で指定済みです。
@@ -94,6 +105,7 @@
 
 - id: solid-setting-for-body-text
   level: 非推奨
+  kind: judgment
   rule: '和文の本文に `font-feature-settings: "palt"` やカーニングを指定せず、ベタ組みにする。'
   reason: 文字が等間隔に並ぶベタ組みのほうが、長い文章を読み進めやすいため。
   aiProne: true
@@ -102,6 +114,7 @@
 
 - id: kerning-none-on-root
   level: 推奨
+  kind: judgment
   rule: '日本語の文書では `:root` に `font-kerning: none` を指定し、英語の要素には `font-kerning: normal` を指定する。'
   reason: 初期値の `auto` ではカーニングの有無がブラウザに任され、和文の本文にもカーニングが掛かることがあるため。
   note: '`:lang(ja)` のすべての要素に指定すると、見出しで指定した `normal` が子要素に継承されなくなります。'
@@ -110,6 +123,7 @@
 
 - id: palt-for-headings
   level: 推奨
+  kind: judgment
   rule: '見出しと `caption` には `font-kerning: normal` を指定し、日本語のときは `font-feature-settings: "palt"` で文字を詰める。'
   reason: 大きな文字では約物や仮名の周りのアキが目立ち、詰めたほうが引き締まって読みやすいため。
   note: 縦書きでは `"vpal"` を使います。見出し以外を詰めたいときは `.-kerning` のようなユーティリティを使います。
@@ -118,6 +132,7 @@
 
 - id: hanging-punctuation-with-padding
   level: 推奨
+  kind: spec
   rule: '`hanging-punctuation` は段落にだけ指定し、インライン方向の `padding` と組み合わせる。'
   reason: ぶら下げた約物は要素の幅の外に出るので、余白がないと親からはみ出し、横スクロールの原因になるため。
   page: typography/japanese-typesetting
@@ -126,6 +141,7 @@
 # 14-3 行の高さとハーフレディング
 - id: base-line-height-min
   level: 必須
+  kind: spec
   rule: ベースの `line-height` は 1.5 以上にして、各要素に継承させる。
   reason: 行の間が狭いと、認知に障害のある人を含め、読んでいる行を目で追いにくくなるため。
   note: WCAG 2.1 の達成基準 1.4.8 は 1.5 倍以上の行送りを達成できる仕組みを求める基準で、初期値を 1.5 以上にするのは本書の方針です。kiso.css は 1.5 を指定しています。見出しは、ベースより狭い値を個別に指定します。ユーザーが行の高さを 1.5 倍に上書きしても中身が切れないことも求められます（WCAG 2.1 の達成基準 1.4.12）。
@@ -134,6 +150,7 @@
 
 - id: no-line-height-one
   level: 禁止
+  kind: spec
   rule: '`line-height: 1` を指定しない。'
   reason: 文言の変更、画面の幅、文字サイズの設定、機械翻訳で改行が起きたとき、行が重なって読めなくなることがあるため。
   note: 上下の余白を詰めたいときは、`text-box-trim` でハーフレディングを取り除きます。
@@ -144,6 +161,7 @@
 
 - id: leading-tokens
   level: 推奨
+  kind: convention
   rule: 行の高さのトークンは、`tight`、`snug`、`normal`、`relaxed`、`loose` のような段階の名前で定義し、要素ごとに選ぶ。
   reason: 数値ではなく名前で選ぶことで、本文や見出しに使う値がサイトの中でそろうため。
   note: 目安は、和文の本文が 1.7〜2、英文の本文が 1.5〜1.8、和文の見出しが 1.25〜1.5、英文の見出しが 1.2〜1.4 です。
@@ -152,6 +170,7 @@
 
 - id: text-box-trim-for-half-leading
   level: 推奨
+  kind: judgment
   rule: ハーフレディングを取り除くときは `text-box-trim` を使い、`text-box-edge` は和文ではデフォルト値のまま、英文では `cap alphabetic` にする。
   reason: '`line-height` を小さくせずに、1行目の上と最後の行の下の余白だけを削れるため。'
   note: 和文に `cap alphabetic` を使うと詰まりすぎます。対象のすべてのブラウザが対応しているので、フォールバックは書きません。
@@ -160,6 +179,7 @@
 
 - id: trim-start-beside-media
   level: 推奨
+  kind: judgment
   rule: '画像と文章を2カラムで横に並べるときは、文章の側の先頭の要素に `text-box-trim: trim-start` を指定し、画像の上端と文字の上端をそろえる。'
   reason: 1行目の上のハーフレディングがなくなり、行の高さを変えずに、文字の上端が画像の上端と同じ高さになるため。
   note: '`trim-both` にすると、見出しと本文の間が `gap` より狭く見えます。英文では `text-box-edge: cap alphabetic` にします。'
@@ -169,6 +189,7 @@
 # 14-4 文字サイズと改行
 - id: auto-phrase-for-headings
   level: 推奨
+  kind: judgment
   rule: '和文の見出しには、`@supports (word-break: auto-phrase)` の中で `word-break: auto-phrase` と `text-wrap: balance` を指定する。'
   reason: 文節の区切りで折り返し、各行の長さもそろうので、見出しが読みやすくなるため。
   note: '2026年9月の時点で対応しているのは Chrome 系のブラウザだけで、ほかのブラウザでは通常の折り返しになります。英文の見出しには `text-wrap: balance` を指定します。'
@@ -177,6 +198,7 @@
 
 - id: no-auto-phrase-for-body
   level: 非推奨
+  kind: judgment
   rule: '本文の段落には、`word-break: auto-phrase`、`text-wrap: balance`、手動の改行を使わない。'
   reason: 段落の中に不自然なすき間ができ、画面の幅が変わると改行の位置も崩れて読みにくくなるため。
   page: typography/size-and-line-breaks
@@ -184,6 +206,7 @@
 
 - id: no-text-wrap-pretty-for-japanese
   level: 非推奨
+  kind: spec
   rule: '和文には `text-wrap: pretty` を指定しない。'
   reason: Safari で、和文の `pretty` が `balance` と似た折り返しになる不具合があるため。
   note: '英文の段落には `text-wrap: pretty` を指定します（kiso.css で指定済み）。'
@@ -193,6 +216,7 @@
 
 - id: center-with-balance
   level: 推奨
+  kind: judgment
   rule: '`text-align: center` を指定するときは、`text-wrap: balance` と組み合わせる。'
   reason: 中央揃えで行の長さがばらつくと、最後の行だけが短く残り、見栄えが悪くなるため。
   note: '枠線や背景のある左揃えの要素には `text-wrap: balance` を指定しません（行の幅が縮んでも要素の幅は変わらず、枠の中で右にすき間が偏るため）。全称セレクタで、すべての要素に指定することもしません。'
@@ -201,6 +225,7 @@
 
 - id: no-text-align-justify
   level: 非推奨
+  kind: judgment
   rule: '段落に `text-align: justify` を指定しない。'
   reason: 英単語や URL が混ざると、両端をそろえるために行の中に大きなすき間ができるため。
   note: '1行で収まる表の見出しを均等に割り付けるなら、`text-align-last: justify` を使えます。'
@@ -209,6 +234,7 @@
 
 - id: overflow-wrap-over-word-break
   level: 推奨
+  kind: spec
   rule: '`word-break` は初期値のままにし、長い単語や URL のはみ出しは `overflow-wrap: anywhere` で防ぐ。'
   reason: '`word-break: break-all` は次の行に移せば収まる英単語まで途中で分けてしまうが、`overflow-wrap: anywhere` は収まらない単語だけを折り返すため。'
   note: 'kiso.css は `:root` に `overflow-wrap: anywhere` を指定しています。'
@@ -218,6 +244,7 @@
 
 - id: wbr-for-long-urls
   level: 推奨
+  kind: judgment
   rule: 本文に長い URL やファイルパスをそのまま表示するときは、`.` や `/` のような区切りの記号の前に `<wbr>` を入れる。
   reason: '`overflow-wrap: anywhere` は区切りと関係のない文字の間で折り返すので、どこまでが1つの語なのか分かりにくくなるため。'
   note: '原稿を書く人が `<wbr>` を入れられない CMS の本文などでは、`overflow-wrap: anywhere` に任せます。`word-break: break-all` は使いません。'
@@ -226,6 +253,7 @@
 
 - id: no-br-for-visual-breaks
   level: 非推奨
+  kind: judgment
   rule: 見た目を整えるための改行に `<br>` を使わない。
   reason: どの画面の幅でも同じ位置で改行され、狭い画面で自然な折り返しと重なって短い行が生まれるため。
   note: 詩のように、文章の構造として意味のある改行には `<br>` を使います。
@@ -235,6 +263,7 @@
 
 - id: line-break-utilities-for-japanese
   level: 推奨
+  kind: judgment
   rule: '見出しの改行を手で制御するときは、`:lang(ja)` のときだけ効く `.-br` と `.-wbr` のユーティリティを使い、ほかの言語では `display: contents` にする。'
   reason: 手動の改行は日本語の都合なので、翻訳で言語が変わったときには通常の折り返しに戻すため。
   page: typography/size-and-line-breaks
@@ -242,6 +271,7 @@
 
 - id: line-clamp-with-overflow-clip
   level: 推奨
+  kind: spec
   rule: '行数を制限するときは、`-webkit-line-clamp` に `display: -webkit-box` と `-webkit-box-orient: block-axis` を組み合わせ、はみ出しは `overflow-block: clip` で隠す。'
   reason: '接頭辞のない `line-clamp` はまだ使えず、`overflow: hidden` ではぶら下げた約物が切れたり、スクロールバーが出たりするため。'
   note: '`overflow-block` に対応していない Safari 18 のために、`@supports not (overflow-block: clip)` の中で `overflow-y: clip` を指定します。'

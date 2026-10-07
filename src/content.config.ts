@@ -16,6 +16,8 @@ export const ruleSchema = z.object({
   /** 章の構成に依存しない英語のスラッグ。一度公開したら変えない。 */
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   level: z.enum(['必須', '推奨', '非推奨', '禁止']),
+  /** ルールの性質。表示名は src/lib/rule-kinds.mjs にある。 */
+  kind: z.enum(['spec', 'judgment', 'convention']),
   /** ルール本文。1文で書く。 */
   rule: z.string(),
   /** そのルールを守る理由。 */

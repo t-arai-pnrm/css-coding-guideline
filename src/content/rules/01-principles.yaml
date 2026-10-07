@@ -3,6 +3,7 @@
 # 1-1 CSSはブラウザへの「提案」である
 - id: css-as-suggestion
   level: 推奨
+  kind: judgment
   rule: 寸法は1つの値に決めつけず、上限・下限・比率などの制約を示して、具体的な値の計算はブラウザに任せる。
   reason: 画面の幅、文字サイズの設定、文章量など、実装者には決められない条件が変わっても崩れないため。
   note: 幅と高さの具体的な指定のしかたは「13-1 検討する順番」にあります。アイコンのように本質的に大きさが決まった要素は、固定値でかまいません。
@@ -12,6 +13,7 @@
 
 - id: delegate-to-browser
   level: 推奨
+  kind: judgment
   rule: 画像の切り抜き、テキストの折り返し、列数の決定のようにブラウザが計算できる処理は、自前で作り込まずに CSS の機能に任せる。
   reason: 表示する環境を知っているのはブラウザであり、どの大きさや条件でも同じ仕組みで対応できるため。
   note: '画像の切り抜きは `object-fit: cover`、装飾のグラデーションは CSS のグラデーションで描きます。'
@@ -20,6 +22,7 @@
 
 - id: consensus-over-pixel-perfect
   level: 推奨
+  kind: judgment
   rule: すべての環境でデザインカンプと同じ見た目にすること（ピクセルパーフェクト）ではなく、どの環境でもデザインの意図が伝わり、内容を読めて操作できることを目標にする。
   reason: 表示を左右する変数は無数にあり、特定の環境に合わせて決め打ちした値は、ほかの環境で崩れる原因になるため。
   note: カンプの比率を保ってほしいと頼まれた場合も、カンプの幅に対する比率でページ全体を拡大・縮小せず、何を保つかをデザイナーとすり合わせます（13-7）。
@@ -28,6 +31,7 @@
 
 - id: agree-on-responsive-behavior
   level: 推奨
+  kind: judgment
   rule: カンプの幅以外での見せ方、文章量や要素の数が変わったときの見せ方、細部の再現の程度を、実装の前にデザイナーやクライアントと合意しておく。
   reason: どこまでを許容するかは実装者だけでは決められず、実装の後で食い違うと手戻りが大きいため。
   page: principles/browser-suggestion
@@ -36,6 +40,7 @@
 # 1-2 ブラウザサポートとプログレッシブ・エンハンスメント
 - id: browser-support-target
   level: 必須
+  kind: convention
   rule: 対象のブラウザは、Safari は現行のメジャーバージョンから2つ前の最終版以降、Chrome、Edge、Firefox は最新版とする。
   reason: 古いバージョンが残りやすい Safari が最も保守的な基準になり、ここで使える機能ならほかのブラウザでも使えることが多いため。
   note: 2026年9月時点では Safari 27 が最新なので、Safari 18 系の最終版（18.6）以降が対象です。番号は 18 の次が 26 なので、実際に出たメジャーバージョンを数えます。案件で動作環境が決まっている場合は、そちらに従います。
@@ -44,6 +49,7 @@
 
 - id: check-safari-support-first
   level: 推奨
+  kind: judgment
   rule: 新しい機能を使うときは、最初に対象の Safari で使えるかを確認する。
   reason: 対象のブラウザの中で、新しい機能への対応が最も遅れやすいのが Safari であるため。
   note: 本書では、対応状況を web-features のデータ（Baseline）で示しています。
@@ -53,6 +59,7 @@
 
 - id: progressive-enhancement-if-harmless
   level: 必須
+  kind: judgment
   rule: 対象のブラウザの一部しか対応していない機能は、未対応の環境でも内容を読めて操作できる場合に限って、プログレッシブ・エンハンスメントとして使う。
   reason: 対応した環境の体験を良くしつつ、未対応の環境のユーザーを切り捨てないため。
   note: '2026年9月時点では、`text-wrap: pretty`、`word-break: auto-phrase`、`field-sizing`、`text-box`、ドキュメント間のビュートランジションが使いやすい例です。'
@@ -61,6 +68,7 @@
 
 - id: verify-fallback-by-removal
   level: 推奨
+  kind: judgment
   rule: プログレッシブ・エンハンスメントとして使う機能は、その宣言を外した表示を確かめてから使う。同じ機能を複数の箇所で使うときは、箇所ごとに確かめる。
   reason: 未対応の環境では宣言が無視されるだけなので、宣言を外した表示を見れば、読めて操作できるかを、未対応のブラウザなしで判断できるため。
   note: 宣言のコメントアウトか、開発者ツールでの無効化で確かめます。案件の基準を決めるときは、未対応の環境での体験、自サイトのアクセス解析のブラウザ分布、使えなかったときの害の大きさを合わせて見ます。
@@ -69,6 +77,7 @@
 
 - id: no-unsupported-layout-features
   level: 禁止
+  kind: spec
   rule: 対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。
   reason: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
   note: 2026年10月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
@@ -78,6 +87,7 @@
 
 - id: supports-for-dependent-declarations
   level: 推奨
+  kind: spec
   rule: 新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。
   reason: 未対応の環境で、従来の手段まで取り上げてしまうのを防ぐため。
   note: '例：`field-sizing: content` を使うときの `resize: none` と `max-block-size`。新しいプロパティそのものは、未対応の環境で無視されるので `@supports` で囲む必要はありません。'
@@ -86,6 +96,7 @@
 
 - id: remove-unneeded-fallbacks
   level: 推奨
+  kind: judgment
   rule: 対象のブラウザがすべて対応している機能には、フォールバックや `@supports` の分岐を書かず、残っていれば消す。
   reason: 使われないコードが残り、読む人に「まだ対応していないブラウザがある」と誤解させるため。
   note: '例：`lh` 単位は Safari 16.4 で対応しているので、`@supports not (top: 1lh)` の分岐は不要です。'
@@ -94,6 +105,7 @@
 
 - id: fallback-method-by-invalidation
   level: 推奨
+  kind: spec
   rule: 'フォールバックは、新しいプロパティならそのまま書き、`var()` を含まない新しい値なら従来の宣言を前に書くか `@supports` の中に書き、`var()` を含む宣言と、ほかの宣言もまとめて切り替える宣言は必ず `@supports` の中に書く。'
   reason: '`var()` を含む宣言は計算値の時点で無効になり、前に書いた宣言に戻らないため。まとめて切り替える宣言は、`@supports` の条件で意図が読め、不要になったときに検索して消せるため。'
   note: 従来の宣言を前に書くときは、同じプロパティの重複が誤記に見えないように、未対応の環境で使う値であることをコメントで書きます。
@@ -103,6 +115,7 @@
 
 - id: scripting-for-js-dependent-styles
   level: 必須
+  kind: spec
   rule: 'JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。'
   reason: 'JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。'
   aiProne: true
@@ -111,6 +124,7 @@
 
 - id: no-chrome-only-check
   level: 必須
+  kind: judgment
   rule: 表示の確認は Chrome だけで済ませず、Safari（iOS を含む）と Firefox でも行う。
   reason: 既存のプロパティの新しい仕様を Chrome が先に実装することが多く、Chrome だけで確認すると、ほかのブラウザとの差に気づけないため。
   page: principles/browser-support
@@ -118,6 +132,7 @@
 
 - id: no-justify-self-in-block-layout
   level: 禁止
+  kind: spec
   rule: ブロックレイアウトの要素に、`justify-self` や `justify-items` を指定しない。
   reason: 2026年9月時点で対応しているのは Chrome だけで、Safari と Firefox では無視されるため。
   note: 'ブロックの中央寄せには `margin-inline: auto` を使います。`display` を grid からブロックに戻すときは、指定が残っていないかを確かめます。'

@@ -32,7 +32,7 @@ import columnsCss from '../../../demos/compositions/columns/style.css?raw';
 }
 ```
 
-この書き方には問題が3つあります。1つ目は、段の上端のそろわない環境があることです。仕様では、段の境目に接する `margin` は切り捨てられるので、2段目以降の先頭の項目の `margin-block-start` は消え、上端はそろうはずです。しかし、Safariでは段組みの中のマージンが正しく解決されないという報告があり、私が使っているテンプレートでも、この不具合を避けるために `margin` を使っていません。{/* 要確認: Safari の不具合の再現条件と、修正されたバージョン */}
+この書き方には問題が3つあります。1つ目は、段の上端のそろわない環境があることです。仕様では、段の境目に接する `margin` は切り捨てられるので、2段目以降の先頭の項目の `margin-block-start` は消え、上端はそろうはずです。しかし、Safariでは段組みの中のマージンが正しく解決されないという報告があり、私が使っているテンプレートでも、この不具合を避けるために `margin` を使っていません。{/* 要検証: ブラウザ。Safari の不具合の再現条件と、修正されたバージョン */}
 
 2つ目は、項目が段の境目で分かれることです。`break-inside: avoid` がないと、2行にわたる項目の1行目が1段目の下端に、2行目が2段目の上端に表示されることがあります。3つ目は、段の間隔が書かれていないことです。`column-gap` の初期値は `normal` で、段組みでは `1em` として扱われます。間隔をコードに書かないと、文字の大きさを変えたときに段の間隔まで変わることに気付きにくくなります。
 
@@ -148,7 +148,7 @@ import columnsCss from '../../../demos/compositions/columns/style.css?raw';
 
 ## 参考リンク
 
-- [Issue with Safari](https://stackoverflow.com/questions/50932324/issue-with-safari)（Stack Overflow）{/* 要確認: 質問の内容と日付 */}
+- [Issue with Safari](https://stackoverflow.com/questions/50932324/issue-with-safari)（Stack Overflow）{/* 要確認: 著者の判断。質問の内容と日付 */}
 - [CSS Multi-column Layout Module Level 1](https://www.w3.org/TR/css-multicol-1/)（W3C）
 - [CSS Fragmentation Module Level 3](https://www.w3.org/TR/css-break-3/)（W3C）
 - [columns - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/columns)

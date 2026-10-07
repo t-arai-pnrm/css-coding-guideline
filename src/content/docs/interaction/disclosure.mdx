@@ -271,7 +271,7 @@ Safariは、2026年9月の時点で `hidden="until-found"` に対応していま
 | 動きを減らす設定 | ダイアログと `<details>` を開閉する | `<details>` の高さと不透明度は動かず、ダイアログのフェードだけが残る |
 | 強制カラーモード | ダイアログを開き、開閉の状態を見比べる | ダイアログの範囲と、開いている項目が見分けられる |
 
-JavaScriptの無効は、Chromeの開発者ツールのコマンドメニューで「Disable JavaScript」を実行すると再現できます。初期化の失敗は、ネットワークパネルでスクリプトのリクエストをブロックするか、パネルのIDを書き換えて再現します。動きを減らす設定と強制カラーモードは、「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。強制カラーモードでのダイアログと背景の見え方は、このページでは確かめていません。{/* 要確認: 強制カラーモードでの dialog と ::backdrop の見え方は未検証 */}
+JavaScriptの無効は、Chromeの開発者ツールのコマンドメニューで「Disable JavaScript」を実行すると再現できます。初期化の失敗は、ネットワークパネルでスクリプトのリクエストをブロックするか、パネルのIDを書き換えて再現します。動きを減らす設定と強制カラーモードは、「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。強制カラーモードでのダイアログと背景の見え方は、このページでは確かめていません。{/* 要検証: ブラウザ。強制カラーモードでの dialog と ::backdrop の見え方は未検証 */}
 
 ## ガイドライン
 

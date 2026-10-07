@@ -6,6 +6,7 @@
  */
 import { getCollection } from 'astro:content';
 import { inlineCode } from '../lib/inline-code';
+import { RULE_KINDS } from '../lib/rule-kinds.mjs';
 
 interface Props {
   /** 表示するページの ID。省略すると現在のページ。 */
@@ -32,6 +33,10 @@ if (rules.length === 0) {
           <span set:html={inlineCode(data.rule)} />
         </p>
         <dl class="_meta">
+          <div class="_row">
+            <dt>性質</dt>
+            <dd>{RULE_KINDS[data.kind]}</dd>
+          </div>
           <div class="_row">
             <dt>ID</dt>
             <dd>

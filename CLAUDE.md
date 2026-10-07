@@ -9,6 +9,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `pnpm lint:css`: サイトの CSS とデモの CSS を Stylelint で検証する。
 - `pnpm lint:examples`: 原稿の 🙆‍♂ Recommended の CSS コード例を Stylelint で検証する。
 - `pnpm lint:text`: 原稿を textlint で検証する。
+- `pnpm list:markers`: 刊行前に解消する印（`要確認`、`要検証`）を種類ごとに一覧にする。`--summary` で件数だけを出す。
 - `pnpm gen:ai`: ルールから AI 向けのルール集とスキル（`skills/css-coding-guideline/`）を生成する。ルールを変えたら必ず実行する。
 
 ## ファイルの配置
@@ -17,7 +18,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 章の中にサブディレクトリを作らない。まとまりが大きくなったら、章を分ける。
   - `index.mdx` は章の概要ページ（`sidebar.order: 0`）。
   - 節は `sidebar.order` で並べる。
-- `src/content/rules/*.yaml`: ルールの定義。書式は同じディレクトリの `README.md` を見る。
+- `src/content/rules/*.yaml`: ルールの定義。書式は同じディレクトリの `README.md` を見る。各ルールに性質の `kind`（`spec`／`judgment`／`convention`）を付ける。
 - `src/demos/<章のディレクトリ>/<デモ名>/`: デモの `index.html` と `style.css`。
   - 🙅‍♂ Not Recommended のデモは `style.bad.css` という名前にする（Stylelint の対象外になる）。
   - 悪い例と良い例、値の違いなどを比べるデモは、1つのデモの中に並べる（`data-*` 属性で片方だけ指定を変える）。比べる2つを別々のデモに分けない。

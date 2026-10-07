@@ -164,9 +164,9 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 
 gap decorationsに対応しているかを `@supports` で判定するときは、条件に `column-rule` を使いません。`column-rule` はマルチカラムのプロパティとして、FirefoxとSafariも以前から対応しているので、`@supports (column-rule: 1px solid)` は未対応の環境でも真になります。条件には、`column-rule-inset` のような、gap decorationsで加わったプロパティを書きます。
 
-強制カラーモードでは、`box-shadow` が `none` になり、影で描いた線は消えます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)」）。そこで、2つ目と3つ目の例では、`@media (forced-colors: active)` の中で同じ太さの `outline` を描いています。`outline` は広げた影と同じく、ボックスの外側に描かれるので、線の位置は変わりません。2つ目の例では、`outline` も `clip-path` で上下を切り取られ、縦線だけが残ります（2026年10月、Chrome 152で確認）。`outline-color` はシステムカラーに置き換わるので、色は指定しません。{/* 要確認: Firefox の強制カラーモードで、outline に置き換えた線の表示を確認していない */}
+強制カラーモードでは、`box-shadow` が `none` になり、影で描いた線は消えます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)」）。そこで、2つ目と3つ目の例では、`@media (forced-colors: active)` の中で同じ太さの `outline` を描いています。`outline` は広げた影と同じく、ボックスの外側に描かれるので、線の位置は変わりません。2つ目の例では、`outline` も `clip-path` で上下を切り取られ、縦線だけが残ります（2026年10月、Chrome 152で確認）。`outline-color` はシステムカラーに置き換わるので、色は指定しません。{/* 要検証: ブラウザ。Firefox の強制カラーモードで、outline に置き換えた線の表示を確認していない */}
 
-gap decorationsの線の色は、`column-rule-color` が強制カラーモードで置き換わるプロパティに含まれているので、システムカラーで描かれます。{/* 要確認: row-rule-color が強制カラーモードで置き換わるか */}1つ目の例の点も、強制カラーモードではシステムカラーの点として残ります。
+gap decorationsの線の色は、`column-rule-color` が強制カラーモードで置き換わるプロパティに含まれているので、システムカラーで描かれます。{/* 要検証: ブラウザ。row-rule-color が強制カラーモードで置き換わるか */}1つ目の例の点も、強制カラーモードではシステムカラーの点として残ります。
 
 gap decorationsを使ったら、その宣言を開発者ツールで外し、未対応の環境での見え方を確かめます（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/#rule-verify-fallback-by-removal)」）。点の区切りのように、線がなくても間隔で区切りが読み取れるなら、そのまま使えます。線がないと境界が分からないデザインなら、`box-shadow` で線を描いておき、gap decorationsは対応している環境での改善として足します。
 

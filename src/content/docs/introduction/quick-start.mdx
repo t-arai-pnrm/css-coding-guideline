@@ -157,7 +157,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
 @import url("https://cdn.jsdelivr.net/npm/kiso.css@1.2.4/kiso.css") layer(reset);
 ```
 
-npmでインストールする場合（`npm install kiso.css`）は、CSSの `@import` でパッケージ名を解決するビルドツールが必要です。Viteは、CSSの `@import` を `postcss-import` で展開し、その過程で `node_modules` の中のパッケージも探します。{/* 要確認: Vite と postcss-import の解決順（相対パスを先に探す）を公式ドキュメントで確認する */} この場合は、エントリーポイントの `@import url("kiso.css") layer(reset);` が、パッケージに含まれる `kiso.css` を指します。
+npmでインストールする場合（`npm install kiso.css`）は、CSSの `@import` でパッケージ名を解決するビルドツールが必要です。Viteは、CSSの `@import` を `postcss-import` で展開し、その過程で `node_modules` の中のパッケージも探します。{/* 要確認: 出典なし。Vite と postcss-import の解決順（相対パスを先に探す）を公式ドキュメントで確認する */} この場合は、エントリーポイントの `@import url("kiso.css") layer(reset);` が、パッケージに含まれる `kiso.css` を指します。
 
 同じ `@import url("kiso.css")` でも、ブラウザが直接読むときは隣にあるファイルを、ビルドツールが処理するときはパッケージを指します。手元で試すときに `kiso.css` が読み込まれていないようなら、開発者ツールのネットワークのパネルで、どのURLを読みにいったのかを確かめてください。
 

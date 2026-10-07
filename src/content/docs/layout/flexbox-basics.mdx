@@ -190,7 +190,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 ずれる原因は、Flexboxが余りを配る先が内容の領域だからです。`border-box` で `flex-basis` が0なら、`border` の外周までの幅を0にしようとします。しかし、内容の領域の幅は0より小さくならないので、アイテムは `padding` と `border` の合計の幅から始まります（「[7-3 ボックスモデルの基礎](/layout/box-model/)」の補足）。余りは、コンテナの幅からこの大きさを引いて求められ、各アイテムの内容の領域に1：1で足されるので、最初の `padding` と `border` の差がそのまま残ります。この計算の手順は、仕様の「[Determine the flex base size and hypothetical main size of each item](https://drafts.csswg.org/css-flexbox-1/#algo-main-item)」に定められています。
 
-仕様の編集者草案は、この点を改めています（CSSWGの議論は「[[css-flexbox] Flex basis and box-sizing #316](https://github.com/w3c/csswg-drafts/issues/316)」）。`flex-basis` の大きさを決める段階では内容の領域の幅が0より小さくなるのを許し、`border-box` で0を指定したアイテムは、`padding` を含めた外側の大きさを0として扱います。この規則なら、余りが配られた後の外側の幅はそろいます。しかし、2026年10月にChrome 152で確かめた限りでは、内容の領域を0で止める従来の計算のままで、幅は `padding` の差の分だけずれます。{/* 要確認: Safari と Firefox の挙動 */}
+仕様の編集者草案は、この点を改めています（CSSWGの議論は「[[css-flexbox] Flex basis and box-sizing #316](https://github.com/w3c/csswg-drafts/issues/316)」）。`flex-basis` の大きさを決める段階では内容の領域の幅が0より小さくなるのを許し、`border-box` で0を指定したアイテムは、`padding` を含めた外側の大きさを0として扱います。この規則なら、余りが配られた後の外側の幅はそろいます。しかし、2026年10月にChrome 152で確かめた限りでは、内容の領域を0で止める従来の計算のままで、幅は `padding` の差の分だけずれます。{/* 要検証: ブラウザ。Safari と Firefox の挙動 */}
 
 列の幅を確実にそろえたいときは、Gridで親が列を決めます。`grid-template-columns: repeat(3, 1fr)` は、先にコンテナの幅を3等分して列を作り、アイテムをその列の中に置きます。`padding` は列の内側に収まるので、`padding` の大きいアイテムは、幅ではなく内容の領域が狭くなります。`minmax(0, 1fr)` ではなく `1fr` と書く理由は、「[11-3 変化に強いレイアウト](/layout-practice/defensive/)」で説明しています。
 

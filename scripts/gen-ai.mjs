@@ -9,6 +9,7 @@ import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { CHAPTERS, chapterLabel } from '../src/lib/book.mjs';
+import { RULE_KINDS } from '../src/lib/rule-kinds.mjs';
 
 const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const RULES_DIR = join(ROOT, 'src/content/rules');
@@ -37,13 +38,17 @@ const pageInfo = async (page) => {
   throw new Error(`ルールの掲載ページ「${page}」が見つかりません。`);
 };
 
+for (const rule of rules) {
+  if (!RULE_KINDS[rule.kind]) throw new Error(`ルール「${rule.id}」の kind がありません。`);
+}
+
 const pages = new Map();
 for (const rule of rules) {
   if (!pages.has(rule.page)) pages.set(rule.page, await pageInfo(rule.page));
 }
 
 const formatRule = (rule) => {
-  const lines = [`- 【${rule.level}】${rule.rule}（\`${rule.id}\`）`, `  - 理由: ${rule.reason}`];
+  const lines = [`- 【${rule.level}・${RULE_KINDS[rule.kind]}】${rule.rule}（\`${rule.id}\`）`, `  - 理由: ${rule.reason}`];
   if (rule.note) lines.push(`  - 補足: ${rule.note}`);
   if (rule.lint) lines.push(`  - 自動チェック: ${rule.lint}`);
   lines.push(`  - 詳細: ${pages.get(rule.page).title}（${pages.get(rule.page).path}）`);
@@ -64,6 +69,7 @@ const rulesMd = `# CSSコーディングガイドライン ルール集
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
+性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 各ルールの背景とコード例は、「詳細」に書いたページを読んでください。
 
 ## AIが誤りやすいルール

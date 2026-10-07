@@ -200,7 +200,7 @@ Chrome系のブラウザでは、スクロールバーが消え、ボタンと�
 | 強制カラーモード | 点の並びと現在位置の点を見比べる | 表示しているスライドの点を、ほかの点と見分けられる |
 | 200%に拡大した状態 | ボタンとスライドの中身の重なりを見る | ボタンが文字やリンクを覆い、読めない部分ができていない |
 
-動きを減らす設定と強制カラーモードは、Chromeの開発者ツールの「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。点の現在位置は、色に加えて形の違いでも示しているので、強制カラーモードで色が置き換わっても、横長の点で見分けられるはずです。{/* 要確認: 強制カラーモードでの ::scroll-marker の枠線と CanvasText の見え方は未検証。Chrome のエミュレーションで確かめてから、確認した年月を書く */}
+動きを減らす設定と強制カラーモードは、Chromeの開発者ツールの「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。点の現在位置は、色に加えて形の違いでも示しているので、強制カラーモードで色が置き換わっても、横長の点で見分けられるはずです。{/* 要検証: ブラウザ。強制カラーモードでの ::scroll-marker の枠線と CanvasText の見え方は未検証。Chrome のエミュレーションで確かめてから、確認した年月を書く */}
 
 ## 発展：ページ内リンクを現在位置の印にする `scroll-target-group`
 
@@ -210,7 +210,7 @@ Chrome 152で、目次の `<ol>` に `scroll-target-group: auto` を指定して
 
 <Baseline id="scroll-target-group" />
 
-2026年10月の時点で、`scroll-target-group` に対応しているのはChrome系のブラウザ（140以降）だけなので、本書は現状では採用しません。カルーセルのボタンと点はなくても横スクロールで同じ内容を読めますが、目次の強調は、デザインで求められているならすべてのブラウザで出す必要があります。Chrome系のブラウザだけをCSSで強調すると、ほかのブラウザのためにJavaScriptの実装を残すことになり、同じ表示を2つの方法で保守することになります。{/* 要確認: 出典なし（採用の判断は著者に確認） */}いまはIntersectionObserverなどのJavaScriptで強調し、SafariとFirefoxが対応してから、CSSに切り替えます。
+2026年10月の時点で、`scroll-target-group` に対応しているのはChrome系のブラウザ（140以降）だけなので、本書は現状では採用しません。カルーセルのボタンと点はなくても横スクロールで同じ内容を読めますが、目次の強調は、デザインで求められているならすべてのブラウザで出す必要があります。Chrome系のブラウザだけをCSSで強調すると、ほかのブラウザのためにJavaScriptの実装を残すことになり、同じ表示を2つの方法で保守することになります。{/* 要確認: 著者の判断。採用の判断は著者に確認 */}いまはIntersectionObserverなどのJavaScriptで強調し、SafariとFirefoxが対応してから、CSSに切り替えます。
 
 ## ガイドライン
 

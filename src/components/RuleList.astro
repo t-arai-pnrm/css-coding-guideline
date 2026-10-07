@@ -5,6 +5,7 @@
 import { getCollection } from 'astro:content';
 import { CHAPTERS, chapterLabel } from '../lib/book.mjs';
 import { inlineCode } from '../lib/inline-code';
+import { RULE_KINDS } from '../lib/rule-kinds.mjs';
 
 const rules = (await getCollection('rules')).sort((a, b) => a.data.order - b.data.order);
 const docs = await getCollection('docs');
@@ -26,6 +27,7 @@ const groups = CHAPTERS.map((chapter) => ({
           <thead>
             <tr>
               <th scope="col">強度</th>
+              <th scope="col">性質</th>
               <th scope="col">ルール</th>
               <th scope="col">ID</th>
               <th scope="col">掲載ページ</th>
@@ -35,6 +37,7 @@ const groups = CHAPTERS.map((chapter) => ({
             {group.rules.map(({ data }) => (
               <tr>
                 <td>{data.level}</td>
+                <td>{RULE_KINDS[data.kind]}</td>
                 <td set:html={inlineCode(data.rule)} />
                 <td>
                   <code>{data.id}</code>
@@ -79,7 +82,7 @@ const groups = CHAPTERS.map((chapter) => ({
         text-align: start;
       }
 
-      td:first-child {
+      td:is(:nth-child(1), :nth-child(2)) {
         white-space: nowrap;
       }
     }
