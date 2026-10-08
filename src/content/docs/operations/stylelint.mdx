@@ -180,7 +180,7 @@ npm install --save-dev stylelint stylelint-config-standard stylelint-order taks-
 export default {
   // 本書の悪い例のデモを外す指定。消して、dist/** はビルドの出力先に合わせる
   ignoreFiles: ['dist/**', 'node_modules/**', 'src/demos/**/*.bad.css'],
-  // Astroを使わないなら消すか、**/*.vue のように自分のフレームワークのファイルに変える
+  // CSSのファイルだけなら消す。Vueも使うなら ['**/*.astro', '**/*.vue'] のように足す
   overrides: [{ files: ['**/*.astro'], customSyntax: 'postcss-html' }],
   rules: {
     // 先頭の @layer 文で宣言した名前に置き換える。starlight はこのサイトだけが使う
@@ -193,13 +193,24 @@ export default {
 };
 ```
 
-続いて、`package.json` の `scripts` に実行コマンドを足します。対象のパターンは、CSSを置くディレクトリに合わせます。パターンをダブルクォートで囲むのは、シェルに展開させず、Stylelintに `**` を解釈させるためです。
+続いて、`package.json` の `scripts` に実行コマンドを足します。対象のパターンは、CSSを置くディレクトリと、スタイルを書くファイルの種類に合わせます。パターンをダブルクォートで囲むのは、シェルに展開させず、Stylelintに `**` を解釈させるためです。CSSのファイルだけのプロジェクトなら、次のように `.css` だけを対象にします。
 
-```json title="package.json（抜粋）"
+```json title="package.json（抜粋）：CSSのファイルだけのとき"
 {
   "scripts": {
     "lint:css": "stylelint \"src/**/*.css\"",
     "lint:css:fix": "stylelint \"src/**/*.css\" --fix"
+  }
+}
+```
+
+AstroやVueのコンポーネントの `<style>` にもCSSを書くなら、その拡張子もパターンに入れます。`overrides` で `customSyntax` を指定するのは、対象になったファイルの読み方だけです。パターンに `.astro` や `.vue` が入っていなければ、そのファイルは検査されません。検査が何も報告せずに終わっても、コンポーネントの中のCSSを見落としていることがあるので、対象の拡張子と `overrides` の `files` を組でそろえます。
+
+```json title="package.json（抜粋）：AstroやVueのコンポーネントも検査するとき"
+{
+  "scripts": {
+    "lint:css": "stylelint \"src/**/*.{css,astro,vue}\"",
+    "lint:css:fix": "stylelint \"src/**/*.{css,astro,vue}\" --fix"
   }
 }
 ```

@@ -44,9 +44,26 @@ $card-radius: 8px !default;
 }
 ```
 
-```css title="🙆‍♂ Recommended: Sassの変数を、トークンとフォールバック付きの公開プロパティに置き換える"
+まず、変数をカスタムプロパティに移すだけの段階を示します。名前の付け方と値の参照の仕方は、Sassのときのままです。
+
+```css title="Sassの変数を、そのままカスタムプロパティに移す（規約にはまだ合わせていない）"
 :root {
   --color--accent--500: oklch(52% 0.16 250deg);
+  --card--radius: 8px;
+}
+
+.card {
+  border-radius: var(--card--radius);
+  background-color: var(--color--accent--500);
+}
+```
+
+この段階でも値はブラウザの中で使えますが、コンポーネントが色の段階（`500`）を直接参照しているので、ダークモードのように色の役割ごとに値を切り替えたいとき、使う場所をすべて探すことになります。`!default` の意味も失われ、半径の値が `:root` に出ています。本書の設計に整えると、次のようになります。
+
+```css title="🙆‍♂ Recommended: 色はセマンティクスのトークンを通し、半径はフォールバック付きの公開プロパティで受ける"
+:root {
+  --color--accent--500: oklch(52% 0.16 250deg);
+  --background--accent: var(--color--accent--500);
 }
 
 @scope (.scoped.card) to (.scoped) {
@@ -54,10 +71,12 @@ $card-radius: 8px !default;
     --_radius: var(--card--radius, 8px);
 
     border-radius: var(--_radius);
-    background-color: var(--color--accent--500);
+    background-color: var(--background--accent);
   }
 }
 ```
+
+変えたのは3点です。色は、プリミティブの `--color--accent--500` をセマンティクスの `--background--accent` で参照し、コンポーネントからはセマンティクスだけを使います（「[10-4 デザイントークン](/components/design-tokens/#色のトークンの層)」）。`!default` だった半径は、`:root` に置かず、公開プロパティ `--card--radius` を内部プロパティで受けて、デフォルト値を `var()` のフォールバックに書きます。セレクタは `@scope` で閉じ、ルートを `.scoped.card` にします。
 
 Sassの変数はビルドの時点で値に置き換わりますが、カスタムプロパティはブラウザの中で継承され、使う場所で値が決まります。そのため、状態やクエリによって値を切り替えられます。`--_background--hocus` のような接尾辞で状態ごとの値を持つ書き方は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
