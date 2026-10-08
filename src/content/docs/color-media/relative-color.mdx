@@ -50,15 +50,15 @@ import toastCss from '../../../demos/color-media/toast-palette/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: 元の色から、不透明度や明度を変えた色を作る"
 ._divider {
-  border-block-end: 1px solid oklch(from var(--color--accent--500) l c h / 10%);
+  border-block-end: 1px solid oklch(from var(--background--accent) l c h / 10%);
 }
 
 ._tag {
-  background-color: oklch(from var(--color--accent--500) calc(l - 0.15) c h);
+  background-color: oklch(from var(--background--accent) calc(l - 0.15) c h);
 }
 ```
 
-1つ目は、アクセントカラーの不透明度を10%にした区切り線です。2つ目は、明度だけを0.15下げた、少し暗いアクセントカラーです。どちらも元の色のトークンを参照しているので、アクセントカラーを変えれば、区切り線とタグの色も一緒に変わります。
+1つ目は、アクセントカラーの不透明度を10%にした区切り線です。2つ目は、明度だけを0.15下げた、少し暗いアクセントカラーです。どちらも元の色のトークンを参照しているので、アクセントカラーを変えれば、区切り線とタグの色も一緒に変わります。元の色には、色の段階（`--color--accent--500` のようなプリミティブ）ではなく、役割を表すセマンティクスのトークンを使います。ダークモードで値が切り替わっても、派生させた色が同じ役割のまま追従するからです（「[10-4 デザイントークン](/components/design-tokens/#色のトークンの層)」）。
 
 元の色の書き方は問いません。16進数のトークンでも、`oklch(from #e4a153 l c h / 20%)` と書けば、ブラウザが `oklch()` の成分に変換してから書き換えます。相対カラー構文は `rgb()` や `hsl()` でも使えますが、本書では `oklch()` にそろえます。HSLの明度は見た目の明るさと一致しないので、`calc(l - 10)` で暗くしても、色相によって暗くなり方が変わるからです。
 
@@ -71,7 +71,7 @@ import toastCss from '../../../demos/color-media/toast-palette/style.css?raw';
 ```css title="🙆‍♂ Recommended: 状態ごとの色を、元の色の成分を書き換えて作る"
 @scope (.scoped.button) to (.scoped) {
   :scope {
-    --_accent: var(--button--accent, var(--color--accent--600));
+    --_accent: var(--button--accent, var(--background--accent));
     --_background: var(--_accent);
 
     border-color: transparent;
@@ -97,11 +97,11 @@ import toastCss from '../../../demos/color-media/toast-palette/style.css?raw';
 
 カードの背景は元の色の不透明度を6%に、枠線は30%に、バッジの背景は15%にしています。ボタンにマウスを重ねるか、Tabキーでフォーカスを移すと、明度を0.1下げた色に変わります。2枚目と3枚目は、`style` 属性で `--derived-card--accent` を渡しているだけで、CSSの側には色ごとのルールがありません。
 
-相対カラー構文は、元の色の色相を回すこともできます。`oklch(from var(--color--accent--500) l c calc(h + 180))` は、明度と彩度を保ったまま、色相環の反対側の色を作ります。ただし、こうして作った色がデザインで使えるかどうかは別の問題です。配色のための色は、デザインで決めたトークンから選びます。{/* 要確認: 出典なし */}
+相対カラー構文は、元の色の色相を回すこともできます。`oklch(from var(--background--accent) l c calc(h + 180))` は、明度と彩度を保ったまま、色相環の反対側の色を作ります。ただし、こうして作った色がデザインで使えるかどうかは別の問題です。配色のための色は、デザインで決めたトークンから選びます。{/* 要確認: 出典なし */}
 
 ### alpha() 関数
 
-不透明度だけを変える場合は、`alpha()` 関数でも書けます。`alpha(from var(--color--accent--500) / 10%)` は `oklch(from var(--color--accent--500) l c h / 10%)` と同じ色です。成分をそのまま並べる `l c h` を省けます。相対カラー構文の結果は `oklch()` の色空間になりますが、`alpha()` の結果は元の色の色空間のままです（2026年10月、Chrome 152で確認）。
+不透明度だけを変える場合は、`alpha()` 関数でも書けます。`alpha(from var(--background--accent) / 10%)` は `oklch(from var(--background--accent) l c h / 10%)` と同じ色です。成分をそのまま並べる `l c h` を省けます。相対カラー構文の結果は `oklch()` の色空間になりますが、`alpha()` の結果は元の色の色空間のままです（2026年10月、Chrome 152で確認）。
 
 `alpha()` が主要なブラウザで使えるようになったのは2026年9月で、Safariは27から対応しています。本書の対象のブラウザでは使えないので、当面は相対カラー構文で書きます（2026年10月確認）。
 

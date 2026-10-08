@@ -237,9 +237,16 @@ pxをremに変換する関数は、`calc(24 / 16 * 1rem)` の式に置き換え�
 ._tag {
   border-color: oklch(from var(--background--accent) l c h / 10%);
   background-color: oklch(from var(--background--accent) calc(l - 0.15) c h);
-  color: color-mix(in oklab, var(--foreground--base) 60%, transparent);
+  color: var(--foreground--on-accent);
+}
+
+._badge {
+  background-color: color-mix(in oklab, var(--background--accent) 12%, var(--background--base));
+  color: var(--foreground--base);
 }
 ```
+
+`._tag` は、相対カラー構文で1つの色の成分を変えています。`._badge` は、`color-mix()` でアクセントカラーとページの背景の間を取り、淡い背景を作っています。混ぜる2つの色がどちらも不透明なので、結果も不透明な色になり、重ねる面によって色が変わりません。文字色は、半透明の色で薄くせず、背景に合わせた不透明なセマンティクスのトークンから選びます（「[14-5 文字の役割と色](/typography/text-roles/)」）。
 
 Sassの色の関数はビルドの時点で値を計算しますが、相対カラー構文と `color-mix()` はブラウザの中で計算されます。元の色のトークンを1か所直せば、派生させた色もすべて追従し、`light-dark()` で切り替わる色からも派生色を作れます。なお、Sassの `darken()` はHSLの明度を変える関数なので、同じ数値を書いても同じ色にはなりません。見た目はブラウザで確かめます。
 
