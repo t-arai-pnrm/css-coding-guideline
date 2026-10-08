@@ -145,7 +145,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 {/* 要確認: 出典なし */}`display-mode` は、ホーム画面に追加したWebアプリの表示のされ方を調べるメディア特性です。本書が対象にするコーポレートサイトやLPでは分岐が要らず、`fullscreen` の値はSafariとデスクトップのFirefoxが対応していません。`color-gamut` と `dynamic-range` は対応がそろっていますが、`oklch()` で書いた色が画面で表示できる範囲を超えると、ブラウザが近い色に置き換えて描画するので、通常は分岐を書かずに済みます。
 
-`@custom-media` は、`@custom-media --wide (width >= calc(768 / 16 * 1rem));` のように条件に名前を付けて使い回す仕様です。ブラウザが対応すれば、条件の中に `var()` を書けない問題（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）を解決できますが、2026年10月の時点ではどのブラウザも対応していません。
+`@custom-media` は、`@custom-media --wide (width >= calc(768 / 16 * 1rem));` のように条件に名前を付けて使い回す仕様です。ブラウザが対応すれば、メディアクエリの条件に `var()` を書けない問題（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）を解決できますが、2026年10月の時点ではどのブラウザも対応していません。
 
 <Baseline id="custom-media-queries" name="@custom-media" />
 

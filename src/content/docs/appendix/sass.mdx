@@ -80,7 +80,7 @@ $card-radius: 8px !default;
 
 Sassの変数はビルドの時点で値に置き換わりますが、カスタムプロパティはブラウザの中で継承され、使う場所で値が決まります。そのため、状態やクエリによって値を切り替えられます。`--_background--hocus` のような接尾辞で状態ごとの値を持つ書き方は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
-反対に、メディアクエリとコンテナクエリのサイズ条件の値には、カスタムプロパティを使えません。`@container style(--theme: dark)` のようなスタイルクエリはカスタムプロパティを条件にできますが、比べられるのはプロパティの値で、幅の閾値の代わりにはなりません。本書では、サイズ条件の閾値にリテラル値を書き、ブレイクポイントのmapは変数に置き換えず、後の「メディアクエリのmixinは、条件をそのまま書く」のように書きます。z-indexの一覧を変数のリストで管理していた場合は、100刻みの絶対的な値と、`--z--forwards` と `--z--backwards` の相対的な値のトークンに置き換えます。
+反対に、サイズの条件の閾値には、カスタムプロパティを使いません。メディアクエリの条件は、仕様上 `var()` を受け付けません。コンテナサイズクエリの条件は、仕様の草案では `var()` を認めていますが、対象のブラウザで実装がそろっていないので、本書では使いません（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/#rule-no-var-in-query)」）。`@container style(--theme: dark)` のようなスタイルクエリはカスタムプロパティを条件にできますが、比べられるのはプロパティの値で、幅の閾値の代わりにはなりません。本書では、サイズ条件の閾値にリテラル値を書き、ブレイクポイントのmapは変数に置き換えず、後の「メディアクエリのmixinは、条件をそのまま書く」のように書きます。z-indexの一覧を変数のリストで管理していた場合は、100刻みの絶対的な値と、`--z--forwards` と `--z--backwards` の相対的な値のトークンに置き換えます。
 
 ## ネストはネイティブのネストで書く
 
@@ -127,7 +127,7 @@ Sassと大きく違うのは、`&__title` のように `&` に文字をつなげ
     border: 1px solid transparent;
 
     &[data-variant="featured"] {
-      border-color: var(--color--accent--500);
+      border-color: var(--border--base);
     }
   }
 
@@ -137,9 +137,11 @@ Sassと大きく違うのは、`&__title` のように `&` に文字をつなげ
 }
 ```
 
-変えたのは4点です。1つ目に、ブロックのクラスを `.scoped.media-card` にして、スタイルの範囲を `@scope` で閉じ込めました。2つ目に、`__title` の要素にはクラスを付けず、`@scope` の中で `h2` のタイプセレクタで選ぶようにしました。同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ、`._main-link` のような短いクラス名を付けます。
+変えたのは5点です。1つ目に、ブロックのクラスを `.scoped.media-card` にして、スタイルの範囲を `@scope` で閉じ込めました。2つ目に、`__title` の要素にはクラスを付けず、`@scope` の中で `h2` のタイプセレクタで選ぶようにしました。同じ種類の要素を役割で区別するときと、`div` と `span` に役割を示すときだけ、`._main-link` のような短いクラス名を付けます。
 
 3つ目に、`--featured` の修飾子を `data-variant="featured"` の属性に置き換え、バリエーションで色だけを変えられるように、ルートに透明な枠線を置きました。BEMの修飾子で表していたほかのバリエーションも、`data-variant` のような属性か、公開プロパティで表します。4つ目に、`font-weight: 700` は書き写さず、`h2` のルールには見出しの文字の大きさだけを書きました。`h2` はブラウザのデフォルトスタイルで太字になるので、同じ値を指定し直す必要がないからです（[`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults)）。
+
+5つ目に、移行途中の例で直接参照していたプリミティブの `--color--accent--500` を、枠線の役割を表すセマンティクスの `--border--base` に置き換えました。前の見出しで整理したとおり、コンポーネントからはセマンティクスだけを使います。
 
 HTMLの階層をそのままネストで写す書き方も、Sassからよく持ち込まれます。ネストが深くなるほど詳細度が上がり、HTMLの構造を変えただけでスタイルが当たらなくなります。独自のスタイルを持つ子要素は、親のルールに入れず、同じ階層に並べます。スコープの考え方は「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、子要素の命名は「[9-1 命名規則](/notation/naming/)」で説明しています。
 
@@ -153,13 +155,13 @@ mixinは、置き換え先が用途によって分かれます。要素を積む
 <p class="_excerpt -line-clamp" style="--line-clamp--limit: 2">…</p>
 ```
 
-ホバーのmixinは、置き換えるというより、書き方そのものを変えます。以前の私のmixinは、`(hover: hover) and (pointer: fine)` で判定していました。本書では `@media (any-hover)` の中にホバーを書き、同じ見た目を `:focus-visible` にも指定します。条件はmixinにまとめず、各セレクタの中に直接書きます（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+ホバーのmixinは、置き換えるというより、書き方そのものを変えます。以前の私のmixinは、`(hover: hover) and (pointer: fine)` で判定していました。本書では `@media (any-hover)` の中にホバーを書き、同じ見た目を `:focus-visible` にも指定します。条件はmixinにまとめず、各セレクタの中に直接書きます（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。色は、プリミティブの段階（`600`、`700`）を使い分けず、セマンティクスの `--background--accent` から相対カラー構文で明るさを下げた色をホバーとフォーカスに使います。
 
 ```css title="🙆‍♂ Recommended: ホバーのmixinの代わりに、条件をセレクタの中に書く"
 @scope (.scoped.save-button) to (.scoped) {
   :scope {
-    --_background: var(--color--accent--600);
-    --_background--hocus: var(--color--accent--700);
+    --_background: var(--background--accent);
+    --_background--hocus: oklch(from var(--background--accent) calc(l - 0.1) c h);
 
     background-color: var(--_background);
 
@@ -233,8 +235,8 @@ pxをremに変換する関数は、`calc(24 / 16 * 1rem)` の式に置き換え�
 
 ```css title="🙆‍♂ Recommended: 相対カラー構文と color-mix() で、元の色から作る"
 ._tag {
-  border-color: oklch(from var(--color--accent--500) l c h / 10%);
-  background-color: oklch(from var(--color--accent--500) calc(l - 0.15) c h);
+  border-color: oklch(from var(--background--accent) l c h / 10%);
+  background-color: oklch(from var(--background--accent) calc(l - 0.15) c h);
   color: color-mix(in oklab, var(--foreground--base) 60%, transparent);
 }
 ```
@@ -259,7 +261,7 @@ Sassの `@use` や `@import` で分けていたパーシャルは、CSSの `@imp
 
 ## メディアクエリのmixinは、条件をそのまま書く
 
-ブレイクポイントのmapとmixinは、各セレクタの中へ条件をそのまま書く形に置き換えます。条件は `min-width` ではなく範囲構文で書き、値は `calc(768 / 16 * 1rem)` のようにremへの変換の式にします。カスタムプロパティは条件の中で使えないので、ブレイクポイントを変数にまとめることはできません。
+ブレイクポイントのmapとmixinは、各セレクタの中へ条件をそのまま書く形に置き換えます。条件は `min-width` ではなく範囲構文で書き、値は `calc(768 / 16 * 1rem)` のようにremへの変換の式にします。メディアクエリの条件では仕様上カスタムプロパティを参照できないので、ブレイクポイントを変数にまとめることはできません。
 
 ```scss title="Sass：ブレイクポイントの mixin"
 .layout {
