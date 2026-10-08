@@ -10,6 +10,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `pnpm lint:examples`: 原稿の 🙆‍♂ Recommended の CSS コード例を Stylelint で検証する。
 - `pnpm lint:text`: 原稿を textlint で検証する。
 - `pnpm list:markers`: 刊行前に解消する印（`要確認`、`要検証`）を種類ごとに一覧にする。`--summary` で件数だけを出す。
+- `pnpm gen:exercise`: 第20章のデモから、演習を手元で進めるためのファイル（`public/exercise-files/`）を生成する。
 - `pnpm gen:ai`: ルールから AI 向けのルール集とスキル（`skills/css-coding-guideline/`）を生成する。ルールを変えたら必ず実行する。
 
 ## ファイルの配置
@@ -58,7 +59,10 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 「補足と注意点」と、判断や使い分けだけを述べる見出しには、サンプルを求めない。冒頭の問題提起は、問題がコードに関わるなら Not Recommended の例を置く。
   - コード例とデモは字数に数えない。
 - 字数は、一度に理解してほしい判断のまとまりで決める。下限は置かず、8,000字を超えるときは分けるかを著者に確かめる。各見出しの段落数（3〜5段落）は目安とする。章の概要ページ、「はじめに」のページ（`introduction/` 以下）、ルールを置かない考え方の節（1-3〜1-7、2-1、2-2、3-1、3-2）は、字数の規定の対象外。考え方の節には `## ガイドライン` を置かない。
-- 第20章（演習編、`exercise/`）の節は、新しいルールを置かない。`## ガイドライン` の代わりに `## この節で使ったルール` を置き、使ったルールのIDを掲載ページへのリンク付きで並べる（例：`` [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query) ``）。2節目以降は冒頭で要件を1つ変え、本文には変更した箇所だけのコード例を置き、デモはその節を終えた時点の全体を1つ置く。末尾に判断を問う問題を答えと解説付きで置く。題材のカードは `article-card`、一覧は `article-list`。
+- 第20章（演習編、`exercise/`）の節は、新しいルールを置かない。`## ガイドライン` の代わりに `## この節で使ったルール` を置き、使ったルールのIDを掲載ページへのリンク付きで並べる（例：`` [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query) ``）。2節目以降は冒頭で要件を1つ変え、本文には変更した箇所だけのコード例を置き、デモはその節を終えた時点の全体を1つ置く。末尾に判断を問う問題を答えと解説付きで置く。
+  - 演習の節は、本編の結論先行の例外として、要件 → `## 予想する` → `## 合格条件`（その節を終えた時点のデモ）→ 解説 → `## 振り返り` → 判断の問いの順にする。冒頭と `description` で直す箇所を言わない。振り返りでは、直す場所の数だけでなく、変更を受け持つ場所が予測できるか、影響範囲を確かめられるか、条件分岐が複雑になっていないかを問う。
+  - 各節の冒頭に、`public/exercise-files/` の開始版と完成版へのリンクを置く（ファイル名まで書く）。演習のデモを変えたら `pnpm gen:exercise` を実行する。
+  - 題材のカードは `article-card`、一覧は `article-list`。
 - 各ページが単体で意味が通るように書く。ほかのページに触れるときは、リンクと一言の要約を添える。
 - 通読の流れもつなぐ。章の概要ページの末尾に `## この章で判断できるようになること` と `## 次の章へ` を数文ずつ置く。複数の章に出てくる主張（内容は変わる、保守性を優先する、AI の出力を検証する、など）は、同じ説明を繰り返さず、その章が担う役割（なぜ／どこが受け持つか／どう耐えるか／どう確認するか）で書く。
 - デモは操作しなくても結論が分かるように、直前か直後の本文に「何を変えると、どこがどう変わるか」を書く（AI は本文だけを読む）。
@@ -100,7 +104,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 色：プリミティブ（`--color--neutral--*`、`--color--accent--*`、`--color--red--*`）は直接参照せず、セマンティクスを使う。面は `--background--base`／`surface`／`raised`／`overlay` の4段階を役割で選ぶ。枠線は `--border--base`。選んだ状態や範囲の淡い青は `--background--accent-subtle`、成功とエラーの文字は `--foreground--success` と `--foreground--danger`。
   - 文字色は `--foreground--base` と `--foreground--muted` の2つだけにし、`opacity` や半透明の色で薄くしない。青（accent）はリンク、フォーカスリング、選択した状態にだけ使い、主ボタンは文字色で塗る。
   - 背景が透明な項目のホバーと押下は、`background-color` に `--background--hover` と `--background--active` を指定する。背景色のあるボタンは相対カラー構文で明るさを変える。文字色で塗ったボタン（`--background--inverse`）は、`color-mix(in oklab, var(--background--inverse) 80%, var(--background--base))` でページの背景に寄せる。
-  - 文字は役割のトークン（`--text--<役割>--font-size` と `--text--<役割>--leading`。役割は display、title、subtitle、body、caption）で指定する。太さは `--font-weight--regular` と `--font-weight--bold` の2段階。
+  - 文字は役割のトークン（`--text--<役割>--font-size` と `--text--<役割>--leading`。役割は display、title、subtitle、body、body-compact、caption）で指定する。太さは `--font-weight--regular` と `--font-weight--bold` の2段階。
   - 角丸は `--rounded--sm`／`md`／`lg`／`full`（外側のパネルは `lg`、内側の項目は `md`）、影は `--shadow--*`、再生時間は `--duration--fast`（80ms）／`base`（160ms）／`slow`（240ms）。
   - 項目の間を移る背景を付けるリストは、項目の間に隙間を作らない。間隔は項目の内側の余白で作る。
 

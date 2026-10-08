@@ -1,0 +1,215 @@
+@layer tokens {
+  :root {
+    --foreground--muted: oklch(45% 0 0deg);
+    --foreground--accent: oklch(48% 0.17 260deg);
+    --leading--snug: 1.4;
+    --rounded--sm: 4px;
+    --rounded--md: 8px;
+    --z--forwards: 1;
+  }
+}
+
+@layer compositions {
+  /* 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む */
+  .sidebar {
+    --_c--row-gap: var(--sidebar--gap, var(--sidebar--row-gap, 0px));
+    --_c--column-gap: var(--sidebar--gap, var(--sidebar--column-gap, 0px));
+    --_c--main-min-width: var(--sidebar--main-min-width, calc(480 / 16 * 1rem));
+    --_c--side-width: var(--sidebar--side-width, calc(320 / 16 * 1rem));
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+
+    & > .main-column {
+      flex-grow: 9999;
+      flex-basis: var(--_c--main-min-width);
+    }
+
+    & > .side-column {
+      flex-grow: 1;
+      flex-basis: var(--_c--side-width);
+    }
+  }
+
+  /* 12-6 grid：列の最小幅と最大数から列数を決める */
+  .grid {
+    --_c--mode: var(--grid--mode, auto-fill);
+    --_c--row-gap: var(--grid--gap, var(--grid--row-gap, 0px));
+    --_c--column-gap: var(--grid--gap, var(--grid--column-gap, 0px));
+    --_c--column-max-count: var(--grid--column-max-count, 5);
+    --_c--column-min-width: var(--grid--column-min-width, calc(320 / 16 * 1rem));
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-max-count) - 1)) / var(--_c--column-max-count)
+    );
+    --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-preferred-width)));
+
+    display: block grid;
+    grid-template-columns: repeat(var(--_c--mode), minmax(var(--_c--column-width), 1fr));
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+
+  /* 12-2 cluster：子を横に並べ、入りきらなければ折り返す */
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-article) to (.scoped) {
+    ._content {
+      display: block grid;
+      gap: 40px;
+      align-content: start;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.article-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    h2 {
+      font-size: calc(20 / 16 * 1rem);
+    }
+  }
+
+  /**
+   * 記事のカード。
+   * 置かれた場所の幅で形を変え、置く側から特集の見た目とアクセント色を受け取る。
+   *
+   * @prop {ident} --article-card--featured [--false]                 - 特集として置いたときに --true
+   * @prop {color} --article-card--accent   [var(--foreground--accent)] - タグと特集の背景に使う色
+   */
+  @scope (.scoped.article-card) to (.scoped) {
+    :scope {
+      --_featured: var(--article-card--featured, --false);
+      --_accent: var(--article-card--accent, var(--foreground--accent));
+      --_has-hocus: --false;
+
+      position: relative;
+      container: --scoped / inline-size;
+      isolation: isolate;
+
+      &:has(h3 a:any-link:hover) {
+        @media (any-hover) {
+          --_has-hocus: --true;
+        }
+      }
+
+      &:has(h3 a:focus-visible) {
+        --_has-hocus: --true;
+
+        outline: 3px solid CanvasText;
+        outline-offset: 3px;
+      }
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._layout {
+      --_density: --compact;
+
+      display: block grid;
+      grid-template-columns: calc(96 / 16 * 1rem) 1fr;
+      gap: 12px;
+      align-items: start;
+      border-radius: var(--rounded--md);
+
+      /* サイドバーの幅（240px 相当）より広く、一覧の列の最小幅（280px 相当）より狭い幅 */
+      @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        grid-template-columns: 1fr;
+        gap: 16px;
+
+        /* この要素自身の特集の見た目は、ルートの --_featured を問い合わせる */
+        @container style(--_featured: --true) {
+          padding: 16px;
+          background-color: oklch(from var(--_accent) 96% calc(c * 0.25) h);
+        }
+      }
+
+      &:not(:has(> img)) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    img {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--sm);
+      object-fit: cover;
+
+      @container style(--_has-hocus: --true) {
+        filter: brightness(1.08);
+      }
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._tags {
+      --cluster--row-gap: 4px;
+      --cluster--column-gap: 12px;
+
+      font-size: calc(13 / 16 * 1rem);
+
+      & a {
+        position: relative;
+        z-index: var(--z--forwards);
+        color: var(--_accent);
+      }
+    }
+
+    h3 {
+      font-size: calc(16 / 16 * 1rem);
+      line-height: var(--leading--snug);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(18 / 16 * 1rem);
+      }
+    }
+
+    h3 a {
+      color: inherit;
+
+      @container style(--_has-hocus: --true) {
+        text-decoration-line: underline;
+      }
+
+      /* 見出しのリンクの ::after をカードいっぱいに広げ、カードのどこを押しても記事へ移動する */
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+
+      /* フォーカスリングはカードの外周に出すので、リンク自身の outline は色だけを透明にする */
+      &:focus-visible {
+        outline-color: transparent;
+      }
+    }
+
+    time {
+      color: var(--foreground--muted);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+
+      @container style(--_density: --compact) {
+        display: none;
+      }
+    }
+  }
+}

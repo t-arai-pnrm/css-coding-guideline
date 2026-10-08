@@ -1,8 +1,8 @@
 ---
-title: "19-8 既存のサイトに段階的に導入する"
+title: "19-6 既存のサイトに段階的に導入する"
 description: "一度に書き換えられない既存のサイトには、新しく作るコンポーネントと変更で手を入れる箇所から本書の規約を適用します。既存のCSSは読み込み方を変えられるなら vendors レイヤーに入れ、Stylelintは新しいディレクトリから適用します。"
 sidebar:
-  order: 8
+  order: 6
 ---
 
 import Guideline from '../../../components/Guideline.astro';
@@ -75,7 +75,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 レイヤーが守るのは、コンポーネントが宣言したプロパティだけです。既存のCSSに `.content li { margin-block-end: 20px; }` のような指定があるとします。新しいコンポーネントをその `.content` の中に置くと、コンポーネントが `margin-block-end` を宣言していない限り、既存の値が当たります。こうした流れ込みは、表示を確かめて、コンポーネントの側で値を宣言して防ぎます。
 
-既存のCSSを読み込み直せない場合もあります。CMSの本体やプラグインのCSS、ほかのチームが管理するテンプレートの `<link>` のように、自分で読み込み方を変えられないCSSです。この場合は、レイヤーを使わず、読み込む順番で9つの分類を保ちます（ルール `no-layers-with-unlayered-css`）。考え方は、19-6「CMSと共存する」で説明します。{/* 19-6 の公開後にリンクする: /operations/cms/ */}既存のCSSが強いセレクタや `!important` で新しいコンポーネントに流れ込み、直せない場合だけ、4-3の例外の書き方（`all: revert-layer !important` で遮断する方法）を使います。
+既存のCSSを読み込み直せない場合もあります。CMSの本体やプラグインのCSS、ほかのチームが管理するテンプレートの `<link>` のように、自分で読み込み方を変えられないCSSです。この場合は、レイヤーを使わず、読み込む順番で9つの分類を保ちます（ルール [`no-layers-with-unlayered-css`](/cascade/layers/#rule-no-layers-with-unlayered-css)）。考え方は「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。{/* CMSの節を公開したらリンクする: /operations/cms/ */}既存のCSSが強いセレクタや `!important` で新しいコンポーネントに流れ込み、直せない場合だけ、4-3の例外の書き方（`all: revert-layer !important` で遮断する方法）を使います。
 
 ## Stylelintを新しいコードから適用し、例外を記録する
 

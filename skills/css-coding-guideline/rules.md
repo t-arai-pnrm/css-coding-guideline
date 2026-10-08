@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.38.0
+- バージョン: 0.38.1
 - 生成日: 2026-10-08
 - ルールの数: 585
 
@@ -3342,12 +3342,12 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・実装上の判断】既存のサイトに本書の規約を入れるときは、全体を一度に書き換えず、新しく作るコンポーネントと、変更で手を入れるページやコンポーネントから適用する。（`adopt-new-components-first`）
   - 理由: 書き換えのためだけに表示の確認を増やさず、規約の違う部分を変更のたびに減らせるため。
   - 補足: 変更の予定がない箇所は、規約と違っていても書き換えない。
-  - 詳細: 19-8 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
+  - 詳細: 19-6 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
 - 【推奨・実装上の判断】既存のサイトにレイヤーを入れるときは、既存のCSSを `@import url("…") layer(vendors);` で `vendors` レイヤーに入れ、新しいCSSを後ろのレイヤーに書く。（`legacy-css-into-vendors`）
   - 理由: レイヤーの外に残った既存のCSSは、詳細度に関係なく新しいCSSに勝つため。`vendors` に入れれば、既存のページの表示を保ったまま、新しいコンポーネントを優先できる。
   - 補足: 既存のCSSを読み込み直せない環境では、`no-layers-with-unlayered-css` に従う。リセットとベーススタイルは、既存のページの表示を確かめられる段階で足す。
-  - 詳細: 19-8 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
+  - 詳細: 19-6 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
 - 【推奨・実装上の判断】Stylelint は新しいCSSを置くディレクトリから適用し、既存のCSSのディレクトリは `ignoreFiles` で外して、書き換えたファイルから検査の対象に戻す。（`lint-new-code-first`）
   - 理由: 既存のCSSの大量の違反に、新しいコードの違反が埋もれないようにするため。`ignoreFiles` に残るパスが、規約で書かれていないCSSの一覧になる。
   - 補足: 外すのは規約で書いていないコードだけで、新しいコードの違反を隠す目的では使わない（`no-disabling-to-silence`）。
-  - 詳細: 19-8 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
+  - 詳細: 19-6 既存のサイトに段階的に導入する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/operations/adoption.mdx）
