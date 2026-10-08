@@ -23,7 +23,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 🙅‍♂ Not Recommended のデモは `style.bad.css` という名前にする（Stylelint の対象外になる）。
   - 悪い例と良い例、値の違いなどを比べるデモは、1つのデモの中に並べる（`data-*` 属性で片方だけ指定を変える）。比べる2つを別々のデモに分けない。
   - 状態の切り替えに JavaScript が要るデモは、`script.js` を置いて `<Demo js={…}>` に渡す。JavaScript のタブは出さない。CSS と HTML だけで作れるデモには使わない。
-- `src/demos/tokens.css`: すべてのデモに `@layer tokens` として読み込まれる共通トークン。デモの CSS では宣言し直さずに参照する。デモはサイトのテーマ（ライトとダーク）に追従するので、色はセマンティクスのトークンで書く。特定の色を見せるデモだけは `<Demo scheme="light">` で固定し、値を直接書いてよい。
+- `src/demos/tokens/*.css`: すべてのデモに `@layer tokens` として読み込まれる共通トークン。デモの CSS では宣言し直さずに参照する。デモはサイトのテーマ（ライトとダーク）に追従するので、色はセマンティクスのトークンで書く。特定の色を見せるデモだけは `<Demo scheme="light">` で固定し、値を直接書いてよい。
 - `src/components/`
   - `Demo`：ライブデモ
   - `Guideline`：そのページのルール
@@ -96,7 +96,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `border-box` を取り消すときは `box-sizing: unset` と書く。
 - 要素の間のブロック方向の `margin` は、`& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` のように次兄弟結合子で選んだ後ろの要素の `margin-block-start` に付ける。要素自身に条件なしの `margin-block-end` を付けたり、`:last-child` で打ち消したりしない。
 - 高さは `block-size` で固定せず、`min-block-size`、`max-block-size`、`aspect-ratio` で決める。正方形は `inline-size` と `aspect-ratio: 1` で書く。
-- デモの見た目は、共通トークン（`src/demos/tokens.css`）で統一する。詳細と経緯は `DECISIONS.md` の「デモの共通トークンと見た目で決めたこと」にある。
+- デモの見た目は、共通トークン（`src/demos/tokens/`）で統一する。詳細と経緯は `DECISIONS.md` の「デモの共通トークンと見た目で決めたこと」にある。
   - 色：プリミティブ（`--color--neutral--*`、`--color--accent--*`、`--color--red--*`）は直接参照せず、セマンティクスを使う。面は `--background--base`／`surface`／`raised`／`overlay` の4段階を役割で選ぶ。枠線は `--border--base`。
   - 文字色は `--foreground--base` と `--foreground--muted` の2つだけにし、`opacity` や半透明の色で薄くしない。青（accent）はリンク、フォーカスリング、選択した状態にだけ使い、主ボタンは文字色で塗る。
   - 背景が透明な項目のホバーと押下は、`background-color` に `--background--hover` と `--background--active` を指定する。背景色のあるボタンは相対カラー構文で明るさを変える。

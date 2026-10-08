@@ -120,20 +120,40 @@
   since: 0.1.0
 
 # 16-3 表面と文字の装飾
+- id: surface-levels-by-role
+  level: 推奨
+  kind: judgment
+  rule: 面の背景は、ページ、カード、ダイアログ、メニューの役割で決めた段階のトークンから選び、置かれた面からの相対的な高さで決めない。
+  reason: 役割で固定すれば、どこに置かれても同じトークンを参照するだけで済み、祖先の値をスタイルクエリで読む例外を作らずに済むため。
+  note: '本書のデモでは `--background--base`（ページ）、`--background--surface`（カード）、`--background--overlay`（ダイアログ）、`--background--raised`（メニューやポップオーバー）の4段階です。メニューはダイアログの中でも開くので、ダークモードでは `raised` を `overlay` より明るくします。'
+  page: decoration/surfaces
+  since: 0.38.0
+
+- id: lighter-surface-in-dark-mode
+  level: 推奨
+  kind: judgment
+  rule: ダークモードでは、高い面ほど背景を明るくし、面の高さを影だけで表さない。
+  reason: 暗い背景の上では影がほとんど見えず、影だけでは面の重なりが読み取れないため。
+  note: '明るい背景は、ページの背景のプリミティブから `oklch(from var(--color--neutral--900) calc(l + 0.085) c h)` のように相対カラー構文で作ります。ライトモードでは、ページ以外の面を白にし、高さを影で表します。'
+  aiProne: true
+  page: decoration/surfaces
+  since: 0.38.0
+
 - id: shadow-black-in-dark-mode
   level: 推奨
   kind: judgment
-  rule: 影の色は、ライトモードでは背景の色相に寄せた色にし、ダークモードでは黒にして不透明度を上げて奥行きを表す。
-  reason: 黒に近い影は色のある背景をくすませ、暗い背景に白い影を付けると、影ではなく光って見えるため。
-  note: '`--shadow--color: light-dark(oklch(30% 0.05 250deg / 14%), oklch(0% 0 0deg / 30%))` のように、影の色のトークンに `light-dark()` を使います。背景が無彩色のサイトでは、ライトモードも黒で構いません。'
+  rule: 影の色は `light-dark()` で切り替える色のトークンにし、ダークモードでも黒のまま不透明度を上げる。
+  reason: '`box-shadow` の値は `light-dark()` で書き分けられず、暗い背景に白い影を付けると、影ではなく光って見えるため。'
+  note: '影の形は1組だけ定義し、各層の色に `--shadow--color` などのトークンを使います。ダークモードで面の端を見せる上辺のハイライトと内側の縁取りは、ライトモードでは `transparent` にします。色のある背景に落とす影は、背景の色相に寄せると背景がくすみません。'
   page: decoration/surfaces
   since: 0.1.0
 
 - id: shadow-tokens-light-source
   level: 推奨
   kind: judgment
-  rule: 影のトークンは光源の向きをそろえ、段階が上がるほどオフセットとぼかしを大きくし、不透明度を下げる。
-  reason: 影の向きや強さがばらつくと、要素の高さの関係が読み取れず、画面に光源が複数あるように見えるため。
+  rule: 影のトークンは光源の向きをそろえ、段階が上がるほど、オフセットとぼかしを倍にした層を足す。
+  reason: 各層の不透明度が同じでも、要素の近くほど層が重なって濃くなり、段階が高いほど影が遠くまで落ちるので、段階ごとに調整しなくても高さの関係が一貫して読み取れるため。
+  note: '本書のデモでは、層のオフセットとぼかしを1、3、6、12、24、48pxとし、広がりをその半分の負の値にしています。最も低い段階は1pxの縁取りだけで、枠線の代わりに使えます。'
   page: decoration/surfaces
   since: 0.4.0
 
@@ -141,7 +161,7 @@
   level: 非推奨
   kind: judgment
   rule: 重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。
-  reason: 描画の計算量が影の数に比例して増え、古い端末ではコマ落ちしやすいため。
+  reason: 描画の計算量が層の数に比例して増え、段階の高い影ほど層が多いので、古い端末ではコマ落ちしやすいため。
   note: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
   page: decoration/surfaces
   since: 0.4.0

@@ -1,0 +1,60 @@
+---
+title: 付録I デモの共通トークン
+description: "本書のデモがすべて読み込んでいるデザイントークンの全文です。デモの CSS に出てくる var(--background--surface) や var(--text--body--font-size) の値は、このページで確かめられます。"
+sidebar:
+  order: 9
+---
+
+import { Code } from '@astrojs/starlight/components';
+import colors from '../../../demos/tokens/colors.css?raw';
+import shadows from '../../../demos/tokens/shadows.css?raw';
+import sizes from '../../../demos/tokens/sizes.css?raw';
+import typography from '../../../demos/tokens/typography.css?raw';
+import motion from '../../../demos/tokens/motion.css?raw';
+import zIndex from '../../../demos/tokens/z-index.css?raw';
+
+本書のデモは、このページに載せたトークンをすべて読み込んでいます。デモのCSSタブには、`var(--background--surface)` のようにトークンを参照する箇所だけが出てくるので、値はこのページで確かめてください。トークンは `@layer tokens` に入れて読み込んでいて、デモのCSSより先に、kiso.cssと同じ扱いで適用されます。
+
+トークンの考え方は「[10-4 デザイントークン](/components/design-tokens/)」で説明しています。このページのトークンは、その考え方で作った一例です。自分のプロジェクトでは、デザインに合わせて値と段階を決めてください。
+
+## 色
+
+色は、プリミティブとセマンティクスの2層に分けています。デモから参照するのはセマンティクスだけです。デモは本のページのテーマに追従するので、セマンティクスには `light-dark()` でライトとダークの両方の値を持たせています。
+
+面の色は、ページ（`base`）、カード（`surface`）、ダイアログ（`overlay`）、メニューやポップオーバー（`raised`）の4段階です。ライトでは `base` 以外を白にし、高さは影で表します。ダークでは影が見えにくいので、高い面ほど背景を明るくします。メニューはダイアログの中でも開くので、`raised` を `overlay` より明るくしています。
+
+枠線は文字色を12%に薄めた色で、ホバーと押下は半透明の重ね色です。どちらも、どの面の上に置いても同じように見えます。文字色は `base` と `muted` の2つだけで、青（accent）はリンク、フォーカスリング、選択した状態にだけ使います。
+
+<Code code={colors} lang="css" title="src/demos/tokens/colors.css" />
+
+## 影
+
+影は、段階が上がるほど、オフセットとぼかしを倍にした層を足していきます。どの層も不透明度が同じなので、重なった部分ほど濃くなり、高い要素ほど影が遠くまで落ちます。いちばん低い `xs` は1pxの縁取りだけで、枠線の代わりに使えます。
+
+影の色は、色のトークン（`--shadow--color` など）を参照しています。`box-shadow` の値は `light-dark()` で切り替えられないので、形は1つだけ定義し、各層の色をライトとダークで切り替えています。ダークでは、上辺の白いハイライトと内側の縁取りで面の端を見せます。
+
+<Code code={shadows} lang="css" title="src/demos/tokens/shadows.css" />
+
+## 余白と角丸
+
+余白は単位のない数値で、使う場所で `calc(var(--spacing--md) * 1px)` や `calc(var(--spacing--md) / 16 * 1rem)` のように単位を付けます。角丸は、外側のパネルに `lg`、内側の項目に `md` を使います。
+
+<Code code={sizes} lang="css" title="src/demos/tokens/sizes.css" />
+
+## 文字
+
+文字は、サイズの段階（プリミティブ）と、見出しや本文といった役割（セマンティクス）の2層に分けています。デモから参照するのは役割のほうです。`font-size: calc(var(--text--body--font-size) / 16 * 1rem)` と `line-height: var(--text--body--leading)` を組にして使います。UIの密度を上げるときは `body-compact` を使います。太さは400と700の2段階で、見出しの階層はサイズで付けます。
+
+<Code code={typography} lang="css" title="src/demos/tokens/typography.css" />
+
+## 動き
+
+再生時間は、ホバーとフォーカスに `fast`（80ms）、メニューとタブに `base`（160ms）、ダイアログに `slow`（240ms）を使います。
+
+<Code code={motion} lang="css" title="src/demos/tokens/motion.css" />
+
+## 重なり順
+
+ヘッダーやフッターのような絶対的な値は100刻みで、コンポーネントの中で前後を入れ替える相対的な値は1と-1だけです。
+
+<Code code={zIndex} lang="css" title="src/demos/tokens/z-index.css" />

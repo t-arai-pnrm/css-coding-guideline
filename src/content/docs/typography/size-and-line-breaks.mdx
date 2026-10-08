@@ -1,6 +1,6 @@
 ---
 title: "14-4 文字サイズと改行"
-description: "画面の幅で変える文字サイズはclamp()のユーティリティにまとめます。和文の見出しはword-break: auto-phraseとtext-wrap: balanceで文節ごとに折り返し、見た目のための改行に<br>を使いません。行数の制限は-webkit-line-clampとoverflow-block: clipで書きます。"
+description: "画面の幅で変える文字サイズはclamp()のユーティリティにまとめ、文字のサイズと行の高さは6つの役割の組から選びます。文字色はbaseとmutedの2つから選び、opacityで薄くしません。和文の見出しはword-break: auto-phraseとtext-wrap: balanceで文節ごとに折り返し、見た目のための改行に<br>を使いません。行数の制限は-webkit-line-clampとoverflow-block: clipで書きます。"
 sidebar:
   order: 4
 ---
@@ -11,8 +11,12 @@ import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import breakHtml from '../../../demos/typography/heading-line-breaks/index.html?raw';
 import breakCss from '../../../demos/typography/heading-line-breaks/style.css?raw';
+import rolesHtml from '../../../demos/typography/type-roles/index.html?raw';
+import rolesCss from '../../../demos/typography/type-roles/style.css?raw';
 
 画面の幅に合わせて変えたい文字サイズは、クエリで段階的に切り替えず、`clamp()` で最小値と最大値の間をなめらかに変えます。サイト全体で使うなら、計算をまとめたユーティリティを用意します。改行は、和文の見出しを `word-break: auto-phrase` と `text-wrap: balance` で文節ごとに折り返し、本文は通常の折り返しのままにします。見た目を整えるための `<br>` は使いません。
+
+固定のサイズは、本文や見出しといった役割を数個に絞り、役割ごとに決めたサイズと行の高さの組から選びます。文字色は、通常の色と控えめな色の2つから選びます。
 
 `clamp()` の式の組み立て方は、「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
 
@@ -91,6 +95,133 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 比例させる基準は、`--fluid-text--relative-unit` で切り替えます。サイト全体で文字の大きさの調和をとるなら、デフォルトの `100svi`（画面の幅）を使います。置かれた場所の幅に合わせたいコンポーネントでは `100cqi` を渡し、コンテナの幅を基準にします。`cqi` が参照するのは、インライン方向のサイズクエリに対応する、最も近い祖先のコンテナです。名前は関係しないので、名前付きの `@container` が問い合わせるコンテナと、`cqi` の参照先は一致するとは限りません。間に別のコンテナが入れば、基準の幅も変わります。`cqi` はコンテナが見つからないと `svi` として計算されるので、デフォルトを `svi` にそろえています。コンテナの書き方は「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」で説明しています。
 
 流体的にするのは、見出しやリード文のように、画面の幅によって大きさを変えたい文字だけです。タグやラベルのように大きさを変える必要のない文字には使いません。カンプの比率を保ってほしいと頼まれた場合も、本文まで含めた文字サイズ全体を画面の幅に比例させることはしません。狭い画面で本文が読めないほど小さくなるからです（「[13-7 カンプの幅で全体を拡大・縮小しない](/responsive/design-comp-pattern/)」）。
+
+## 文字の役割とトークン
+
+文字のサイズは、見出しや本文といった役割を数個に絞り、役割ごとにサイズと行の高さを組で決めます。デザインカンプのサイズをそのまま並べると、14pxと15pxのような差の小さい値が増え、使う値を要素ごとに選び直す手間が生じるからです。役割で選ぶようにすれば、新しいコンポーネントでも「これは本文か、注記か」を決めるだけで、サイズと行の高さが一緒に決まります。
+
+本書のデモでは、次の6つの役割を使っています。太さは役割のトークンに含めず、見出しの3つの役割で700、ほかで400を指定します。
+
+| 役割 | サイズ | 行の高さ | 太さ | 使う場所 |
+| --- | --- | --- | --- | --- |
+| `display` | 28 | `tight`（1.25） | 700 | ページの見出し |
+| `title` | 20 | `snug`（1.4） | 700 | 節やカードの見出し |
+| `subtitle` | 16 | `snug`（1.4） | 700 | 小見出し |
+| `body` | 16 | `relaxed`（1.75） | 400 | 本文 |
+| `body-compact` | 14 | `normal`（1.6） | 400 | 項目の多いUIの本文 |
+| `caption` | 12 | `normal`（1.6） | 400 | 図の説明、日付、注記 |
+
+トークンは2層に分けます。サイズの段階（`--font-size--sm` など）をプリミティブにし、役割は `--text--<役割>--font-size` と `--text--<役割>--leading` の組でプリミティブを参照します。コンポーネントから参照するのは役割のほうだけです。プリミティブとセマンティクスに分ける考え方は「[10-4 デザイントークン](/components/design-tokens/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: サイズと行の高さを役割の組で定義し、コンポーネントは役割を参照する"
+:root {
+  --font-size--xs: 12;
+  --font-size--sm: 14;
+  --font-size--md: 16;
+  --font-size--xl: 20;
+  --font-size--xxxl: 28;
+  --text--title--font-size: var(--font-size--xl);
+  --text--title--leading: var(--leading--snug);
+  --text--body--font-size: var(--font-size--md);
+  --text--body--leading: var(--leading--relaxed);
+
+  /* ... */
+}
+
+@scope (.scoped.article-body) to (.scoped) {
+  :scope {
+    font-size: calc(var(--text--body--font-size) / 16 * 1rem);
+    line-height: var(--text--body--leading);
+  }
+
+  h2 {
+    font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    line-height: var(--text--title--leading);
+  }
+}
+```
+
+サイズのトークンは、余白のトークンと同じく単位のないpx相当の数値にし、使う場所で `calc(var(--text--body--font-size) / 16 * 1rem)` のようにremへ変換します。カンプのピクセル値をそのまま書けるうえに、remに変換するので、ユーザーが文字サイズの設定を大きくすれば文字も大きくなります。行の高さには、「[14-3 行の高さとハーフレディング](/typography/line-height/)」で定義した単位のない倍率のトークンを使い、`24px` のような固定の値は使いません。行の高さを固定すると、ユーザーが文字を大きくしたときに行の間だけが元のまま残り、行どうしが詰まって重なります。
+
+行の高さは、文字が大きい役割ほど小さい倍率にしています。28pxの `display` を本文と同じ1.75倍で組むと、行の間は約21pxまで広がり、2行で折り返した見出しの行どうしが離れて、1つの見出しとしてのまとまりが弱く見えるからです。`body` の `relaxed` は和文の本文の目安（1.7〜2）の範囲で、`body-compact` と `caption` は `normal` です。設定の一覧の項目や図の説明は1〜2行で終わることが多く、行の間を広げるより、項目を詰めて一覧できるほうを優先するためです。どちらもベースの値の1.5は下回りません。
+
+太さは `--font-weight--regular`（400）と `--font-weight--bold`（700）の2段階だけにします。メイリオのように400と700の字形しか持たないフォントでは、600を指定しても700で表示され、600と700の違いが見えなくなるからです。見出しの階層は、太さではなくサイズの違いで付けます。本文と同じサイズの `subtitle` だけは、太さで本文と区別します。`font-weight` を数値のトークンで指定する理由は「[14-1 フォントを指定する](/typography/fonts/)」で説明しています。
+
+次のデモは、6つの役割を大きい順に並べたものです。幅を320pxにすると `display` と `body` が2行以上に折り返し、`display` の行の間が詰まり、`body` の行の間が広く取られていることを比べられます。
+
+<Demo title="6つの文字の役割を、サイズと行の高さの組で並べたもの" html={rolesHtml} css={rolesCss} variant="neutral" />
+
+役割のサイズは固定の値です。画面の幅で大きさを変える見出しには、前の見出しで定義した流体的な文字サイズのユーティリティを使います。そのとき、役割のサイズを最大値として渡します（`--fluid-text--max-font-size: var(--text--display--font-size)`）。{/* 要確認: 著者の判断。役割のトークンと流体的な文字サイズのユーティリティの組み合わせ方 */}
+
+### 項目の多いUIでbody-compactに切り替える
+
+`body-compact` は、設定の一覧やサイドバーのように、限られた幅に多くの項目を並べるUIで使います。こうしたコンポーネントでは、密度のフラグ `--_density` で本文の役割を切り替えます。コンテナサイズクエリを書くのは、フラグを宣言する1つのルールだけにし、文字の要素はスタイルクエリでフラグを読みます。
+
+```css title="🙆‍♂ Recommended: 密度のフラグで body-compact と body を切り替える"
+@scope (.scoped.setting-list) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._items {
+    --_density: --compact;
+
+    @container --scoped (inline-size >= calc(480 / 16 * 1rem)) {
+      --_density: --spacious;
+    }
+  }
+
+  ._label-text {
+    font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+    line-height: var(--text--body-compact--leading);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(var(--text--body--font-size) / 16 * 1rem);
+      line-height: var(--text--body--leading);
+    }
+  }
+}
+```
+
+狭い場所に置いたときは14pxと `normal` で項目を詰め、幅が480px以上あれば本文と同じ16pxと `relaxed` に戻ります。サイズだけでなく行の高さも組で切り替えるのは、14pxの文字に `relaxed` を残すと、項目の間が文字の大きさに比べて空きすぎるからです。フラグの書き方は「[10-6 スタイルクエリで状態を伝える](/components/style-queries/#rule-density-via-style-query)」で説明しています。
+
+## 文字色の段階
+
+補足や日付のように目立たせたくない文字を、`opacity` や半透明の色で薄くする書き方をよく見かけます。黒の文字を薄くすれば、どの背景の上でもそれらしい灰色になるように思えるからです。
+
+```css title="🙅‍♂ Not Recommended: 文字を不透明度で薄くする"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.news-item) to (.scoped) {
+  ._date-text {
+    opacity: 0.6;
+  }
+
+  ._note-text {
+    color: rgb(0 0 0 / 50%);
+  }
+}
+```
+
+半透明の文字は、下にある背景と混ざった色で表示されます。同じ `rgb(0 0 0 / 50%)` でも、白いカードの上と、灰色の面や画像の上とでは実際の色が変わり、コントラスト比も変わります。コードを見ても表示される色が分からないので、どの面に置けば読める濃さを保てるのかを、トークンの値から確かめられません。ダークモードでは、黒を薄くした文字は暗い背景にほぼ溶け込みます。`opacity` は、要素の中のアイコンや枠線まで一緒に薄くし、`1` 未満の値でスタッキングコンテキストも作ります。そのうえ、`opacity: 0.6` からは、補足として控えめにしたいのか、無効の状態を示したいのかという意図が読み取れません。
+
+文字色は、`--foreground--base` と `--foreground--muted` の2つのセマンティクスから選びます。どちらも不透明な色にし、置く面の色ごとにコントラスト比を確かめておけば、使う側はどちらを選んでも読める濃さを保てます。ダークモードの値も、`light-dark()` でセマンティクスの側に持たせます。
+
+```css title="🙆‍♂ Recommended: 控えめな文字は muted のセマンティクスを選ぶ"
+@scope (.scoped.news-item) to (.scoped) {
+  :scope {
+    color: var(--foreground--base);
+  }
+
+  ._date-text {
+    color: var(--foreground--muted);
+  }
+}
+```
+
+段階を2つに絞るのは、灰色を3段階以上にすると、隣り合う段階の差が見分けにくくなり、いちばん薄い段階がコントラスト比の基準を下回りやすくなるからです。本書のデモの `--foreground--muted` は、ライトの `--background--base` の上で約4.54:1と、本文の文字に求められる4.5:1をわずかに上回る濃さです（2026年10月、WCAG 2のコントラスト比で計算）。これより薄い段階を足す余地はありません。リンクやエラーのように意味を持つ文字には、`--foreground--accent` や `--foreground--danger` のような別のトークンを使います。これらは重要度の段階ではなく、文字の意味を表す色です。
+
+無効にしたボタンのように、コントラスト比の基準の対象外になる要素の見せ方は、このルールでは扱いません。{/* 要確認: 著者の判断。無効の状態を opacity で表すのを認めるか */}背景色ごとに文字色を選ぶ方法は「[15-3 背景から文字色を決める](/color-media/contrast-text/)」で、ホバーを `opacity` で表さない理由は「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/#rule-no-opacity-for-hover)」で説明しています。
 
 ## 和文の見出しの折り返し
 

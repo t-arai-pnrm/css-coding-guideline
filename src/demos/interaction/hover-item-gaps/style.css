@@ -1,0 +1,65 @@
+@layer components {
+  @scope (.scoped.gap-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    ._caption {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+
+  @scope (.scoped.item-menu) to (.scoped) {
+    :scope {
+      --_item-gap: 0px;
+      --_item-padding-block: 10px;
+
+      display: block grid;
+      gap: var(--_item-gap);
+      padding: 4px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+
+      /* 比較のため、項目の間を gap で空け、同じ間隔になるように項目の padding を減らす */
+      &[data-spacing="gap"] {
+        --_item-gap: 8px;
+        --_item-padding-block: 6px;
+      }
+    }
+
+    ._link {
+      display: block flow;
+      padding-block: var(--_item-padding-block);
+      padding-inline: 12px;
+      border-radius: var(--rounded--md);
+      color: var(--foreground--base);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+
+      &:focus-visible {
+        background-color: var(--background--hover);
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+
+      &:any-link:active {
+        background-color: var(--background--active);
+      }
+    }
+  }
+}

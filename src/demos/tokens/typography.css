@@ -1,0 +1,35 @@
+/*
+ * 文字のトークン。文字サイズは単位なしの px 相当の数値で、使う場所で rem に変換する。
+ * デモからは役割（--text--<役割>--*）を参照する。
+ */
+:root {
+  /* プリミティブ */
+  --font-size--xs: 12;
+  --font-size--sm: 14;
+  --font-size--md: 16;
+  --font-size--lg: 18;
+  --font-size--xl: 20;
+  --font-size--xxl: 24;
+  --font-size--xxxl: 28;
+  --leading--tight: 1.25;
+  --leading--snug: 1.4;
+  --leading--normal: 1.6;
+  --leading--relaxed: 1.75;
+  --leading--loose: 2;
+  --font-weight--regular: 400;
+  --font-weight--bold: 700;
+
+  /* 役割 */
+  --text--display--font-size: var(--font-size--xxxl);
+  --text--display--leading: var(--leading--tight);
+  --text--title--font-size: var(--font-size--xl);
+  --text--title--leading: var(--leading--snug);
+  --text--subtitle--font-size: var(--font-size--md);
+  --text--subtitle--leading: var(--leading--snug);
+  --text--body--font-size: var(--font-size--md);
+  --text--body--leading: var(--leading--relaxed);
+  --text--body-compact--font-size: var(--font-size--sm);
+  --text--body-compact--leading: var(--leading--normal);
+  --text--caption--font-size: var(--font-size--xs);
+  --text--caption--leading: var(--leading--normal);
+}

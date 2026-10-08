@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.37.1
-- 生成日: 2026-10-07
-- ルールの数: 579
+- バージョン: 0.38.0
+- 生成日: 2026-10-08
+- ルールの数: 585
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -840,6 +840,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 和文の文字も欧文のフォントの x-height などの比に合わせて拡大・縮小され、デザインで決めた文字サイズから外れることがあるため。
   - 補足: 欧文だけのページで書体の字面をそろえるときは、`:root` に `font-size-adjust: from-font` を一度だけ指定します。`ic-width` と `ic-height` は和文のフォントでは比がほぼ1になり、補正されません。Web フォントの読み込みの前後のずれは、`@font-face` の `size-adjust` で抑えます（`fallback-font-metric-overrides`）。
   - 詳細: 14-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
+- 【推奨・実装上の判断】カウンター、価格、タイマーのように表示したまま値が変わる数字には、`font-variant-numeric: tabular-nums` を指定する。（`tabular-nums-for-changing-numbers`）
+  - 理由: 数字の幅が字ごとに違う書体では、値が変わるたびに数字の列の幅が変わり、数字とその後ろに続く単位やボタンが左右に揺れるため。
+  - 補足: 等幅の数字は、フォントが OpenType の `tnum` 機能を持っているときだけ表示されます。表や一覧で数値を縦に並べる列は `tabular-nums-for-number-columns` で扱います。
+  - 詳細: 14-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
 - 【非推奨・実装上の判断】和文の本文に `font-feature-settings: "palt"` やカーニングを指定せず、ベタ組みにする。（`solid-setting-for-body-text`）
   - 理由: 文字が等間隔に並ぶベタ組みのほうが、長い文章を読み進めやすいため。
   - 詳細: 14-2 和文組版を整える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/japanese-typesetting.mdx）
@@ -848,6 +852,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: 上下の余白を詰めたいときは、`text-box-trim` でハーフレディングを取り除きます。
   - 自動チェック: Stylelint: `declaration-property-value-disallowed-list`（警告）
   - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
+- 【推奨・実装上の判断】文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
+  - 理由: 半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。
+  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。
+  - 詳細: 14-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
 - 【非推奨・仕様上の制約】和文には `text-wrap: pretty` を指定しない。（`no-text-wrap-pretty-for-japanese`）
   - 理由: Safari で、和文の `pretty` が `balance` と似た折り返しになる不具合があるため。
   - 補足: 英文の段落には `text-wrap: pretty` を指定します（kiso.css で指定済み）。
@@ -915,6 +923,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・実装上の判断】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
   - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
   - 詳細: 16-2 アイコン・SVG・マスク（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/icons-and-masks.mdx）
+- 【推奨・実装上の判断】ダークモードでは、高い面ほど背景を明るくし、面の高さを影だけで表さない。（`lighter-surface-in-dark-mode`）
+  - 理由: 暗い背景の上では影がほとんど見えず、影だけでは面の重なりが読み取れないため。
+  - 補足: 明るい背景は、ページの背景のプリミティブから `oklch(from var(--color--neutral--900) calc(l + 0.085) c h)` のように相対カラー構文で作ります。ライトモードでは、ページ以外の面を白にし、高さを影で表します。
+  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・仕様上の制約】行ごとに背景や枠線を敷く装飾は、インラインの要素に `-webkit-box-decoration-break: clone` と `box-decoration-break: clone` を併記して描く。（`inline-decoration-clone-with-prefix`）
   - 理由: 初期値の `slice` では折り返した位置の `padding` と枠線がなくなり、Safari は接頭辞付きの宣言にしか対応していないため。
   - 補足: 上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。
@@ -958,7 +970,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【非推奨・実装上の判断】ホバーやフォーカスの変化を `opacity` で表さない。（`no-opacity-for-hover`）
   - 理由: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
-  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。
+  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨・実装上の判断】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
   - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
@@ -2015,7 +2027,11 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 10-4 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
 - 【推奨・実装上の判断】色のトークンはプリミティブとセマンティクスの2層で定義し、デザインにない固有の色はグローバルなトークンにしない。（`color-token-two-layers`）
   - 理由: 配色の変更やダークモードをセマンティクスの層で吸収でき、トークンの一覧もデザインの取り決めだけに保てるため。
-  - 補足: 固有の色は、コンポーネントの内部プロパティか、直接書いた値で扱います。
+  - 補足: 固有の色は、コンポーネントの内部プロパティか、直接書いた値で扱います。影は形をスケールのトークンにし、各層の色だけをセマンティクスにします（`box-shadow` の値全体は `light-dark()` で切り替えられないため）。
+  - 詳細: 10-4 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
+- 【推奨・実装上の判断】文字のトークンは、プリミティブの `--font-size--*` と、役割ごとの `--text--<役割>--font-size` と `--text--<役割>--leading` の組の2層で定義し、コンポーネントからは役割を参照する。（`typography-token-two-layers`）
+  - 理由: 同じ文字サイズを複数の役割が使うので、役割ごとに大きさを変えられ、文字サイズと行の高さも役割を選ぶだけでそろうため。
+  - 補足: 文字サイズは単位なしのピクセル相当の数値で持ち、`calc(var(--text--body--font-size) / 16 * 1rem)` のように使う場所で変換します。余白、角丸、影の形、モーションは1層のスケールのままにします。役割の層を作ると、1つのコンポーネントでしか使わない名前が増えるためです（`no-single-use-token`）。
   - 詳細: 10-4 デザイントークン（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/components/design-tokens.mdx）
 - 【禁止・実装上の判断】1回しか使わない値や、特定のコンポーネントだけで使う値を、グローバルなトークンにしない。（`no-single-use-token`）
   - 理由: トークンがサイト全体の取り決めではなくなり、一覧から選ぶだけで取り決めに沿えるという利点が失われるため。
@@ -2226,7 +2242,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-8 アンカーポジショニング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/anchor-positioning.mdx）
 - 【推奨・実装上の判断】ホバーやフォーカスした項目へ背景が移る表現は、リストの擬似要素を `inset: anchor(inside)` で状態のある項目に合わせて作り、指定を `@supports` の中に書いて、未対応の環境では背景が付かないだけになる装飾として扱う。（`anchor-indicator-as-decoration`）
   - 理由: 項目ごとの背景では項目の間を移動させられない一方、アンカーポジショニングは対象のブラウザの一部が対応していないので、なくても内容と操作に影響しない形でだけ使えるため。
-  - 補足: アンカーの名前は、`&:any-link:hover`（`@media (any-hover)` の中）と `&:focus-visible` のときだけリンクに付けます。どの項目も状態を持たない間は `anchor()` を解決できないので、リストに立てた `--_has-hocus` のフラグを擬似要素のスタイルクエリで読み、`opacity: 0` にします。トランジションは `prefers-reduced-motion: no-preference` の中に書き、フォーカスしたリンクがある間は外します。ルートには `anchor-scope` を指定します（`anchor-scope-for-repeated-components`）。
+  - 補足: アンカーの名前は、`&:any-link:hover`（`@media (any-hover)` の中）と `&:focus-visible` のときだけリンクに付けます。どの項目も状態を持たない間は `anchor()` を解決できないので、リストに立てた `--_has-hocus` のフラグを擬似要素のスタイルクエリで読み、`opacity: 0` にします。使うのは、すべての項目が押せ、項目が隙間なく並び、ホバーしている間に項目が動かない部品に限ります。項目の間を移動させる `inset` のトランジションは `prefers-reduced-motion: no-preference` の中に書き、`opacity` のトランジションはその外に書いて、動きを減らす設定でも薄れる変化は残します。フォーカスしたリンクがある間は、どちらのトランジションも外します。ルートには `anchor-scope` を指定します（`anchor-scope-for-repeated-components`）。
   - 詳細: 11-8 アンカーポジショニング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/anchor-positioning.mdx）
 - 【推奨・実装上の判断】アンカーポジショニングとスクロール駆動アニメーションで要素どうしの重なりを検出する技法は、隠れても内容と操作に影響しない装飾にだけ使い、指定はすべて `@supports` の中に書く。（`overlap-detection-for-decoration-only`）
   - 理由: Firefox などの未対応の環境では検出が働かないので、隠す対象が本文や操作の部品だと、環境によって読める内容が変わるため。
@@ -2646,6 +2662,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 和文の文字も欧文のフォントの x-height などの比に合わせて拡大・縮小され、デザインで決めた文字サイズから外れることがあるため。
   - 補足: 欧文だけのページで書体の字面をそろえるときは、`:root` に `font-size-adjust: from-font` を一度だけ指定します。`ic-width` と `ic-height` は和文のフォントでは比がほぼ1になり、補正されません。Web フォントの読み込みの前後のずれは、`@font-face` の `size-adjust` で抑えます（`fallback-font-metric-overrides`）。
   - 詳細: 14-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
+- 【推奨・実装上の判断】カウンター、価格、タイマーのように表示したまま値が変わる数字には、`font-variant-numeric: tabular-nums` を指定する。（`tabular-nums-for-changing-numbers`）
+  - 理由: 数字の幅が字ごとに違う書体では、値が変わるたびに数字の列の幅が変わり、数字とその後ろに続く単位やボタンが左右に揺れるため。
+  - 補足: 等幅の数字は、フォントが OpenType の `tnum` 機能を持っているときだけ表示されます。表や一覧で数値を縦に並べる列は `tabular-nums-for-number-columns` で扱います。
+  - 詳細: 14-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
 - 【必須・仕様上の制約】`html` 要素と、ほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替える。（`lang-for-typesetting`）
   - 理由: 和文と欧文では適した組版が異なり、`lang` がないと言語に合った指定を当て分けられないため。
   - 補足: ブラウザの翻訳機能で言語が変わると、`:lang(ja)` の指定は外れます。
@@ -2693,6 +2713,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 1行目の上のハーフレディングがなくなり、行の高さを変えずに、文字の上端が画像の上端と同じ高さになるため。
   - 補足: `trim-both` にすると、見出しと本文の間が `gap` より狭く見えます。英文では `text-box-edge: cap alphabetic` にします。
   - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
+- 【推奨・実装上の判断】文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
+  - 理由: 半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。
+  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。
+  - 詳細: 14-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
 - 【推奨・実装上の判断】和文の見出しには、`@supports (word-break: auto-phrase)` の中で `word-break: auto-phrase` と `text-wrap: balance` を指定する。（`auto-phrase-for-headings`）
   - 理由: 文節の区切りで折り返し、各行の長さもそろうので、見出しが読みやすくなるため。
   - 補足: 2026年9月の時点で対応しているのは Chrome 系のブラウザだけで、ほかのブラウザでは通常の折り返しになります。英文の見出しには `text-wrap: balance` を指定します。
@@ -2873,15 +2897,24 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・実装上の判断】意味を持つインライン SVG のアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。（`inline-svg-hidden-with-text`）
   - 理由: `<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。
   - 詳細: 16-2 アイコン・SVG・マスク（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/icons-and-masks.mdx）
-- 【推奨・実装上の判断】影の色は、ライトモードでは背景の色相に寄せた色にし、ダークモードでは黒にして不透明度を上げて奥行きを表す。（`shadow-black-in-dark-mode`）
-  - 理由: 黒に近い影は色のある背景をくすませ、暗い背景に白い影を付けると、影ではなく光って見えるため。
-  - 補足: `--shadow--color: light-dark(oklch(30% 0.05 250deg / 14%), oklch(0% 0 0deg / 30%))` のように、影の色のトークンに `light-dark()` を使います。背景が無彩色のサイトでは、ライトモードも黒で構いません。
+- 【推奨・実装上の判断】面の背景は、ページ、カード、ダイアログ、メニューの役割で決めた段階のトークンから選び、置かれた面からの相対的な高さで決めない。（`surface-levels-by-role`）
+  - 理由: 役割で固定すれば、どこに置かれても同じトークンを参照するだけで済み、祖先の値をスタイルクエリで読む例外を作らずに済むため。
+  - 補足: 本書のデモでは `--background--base`（ページ）、`--background--surface`（カード）、`--background--overlay`（ダイアログ）、`--background--raised`（メニューやポップオーバー）の4段階です。メニューはダイアログの中でも開くので、ダークモードでは `raised` を `overlay` より明るくします。
   - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
-- 【推奨・実装上の判断】影のトークンは光源の向きをそろえ、段階が上がるほどオフセットとぼかしを大きくし、不透明度を下げる。（`shadow-tokens-light-source`）
-  - 理由: 影の向きや強さがばらつくと、要素の高さの関係が読み取れず、画面に光源が複数あるように見えるため。
+- 【推奨・実装上の判断】ダークモードでは、高い面ほど背景を明るくし、面の高さを影だけで表さない。（`lighter-surface-in-dark-mode`）
+  - 理由: 暗い背景の上では影がほとんど見えず、影だけでは面の重なりが読み取れないため。
+  - 補足: 明るい背景は、ページの背景のプリミティブから `oklch(from var(--color--neutral--900) calc(l + 0.085) c h)` のように相対カラー構文で作ります。ライトモードでは、ページ以外の面を白にし、高さを影で表します。
+  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+- 【推奨・実装上の判断】影の色は `light-dark()` で切り替える色のトークンにし、ダークモードでも黒のまま不透明度を上げる。（`shadow-black-in-dark-mode`）
+  - 理由: `box-shadow` の値は `light-dark()` で書き分けられず、暗い背景に白い影を付けると、影ではなく光って見えるため。
+  - 補足: 影の形は1組だけ定義し、各層の色に `--shadow--color` などのトークンを使います。ダークモードで面の端を見せる上辺のハイライトと内側の縁取りは、ライトモードでは `transparent` にします。色のある背景に落とす影は、背景の色相に寄せると背景がくすみません。
+  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+- 【推奨・実装上の判断】影のトークンは光源の向きをそろえ、段階が上がるほど、オフセットとぼかしを倍にした層を足す。（`shadow-tokens-light-source`）
+  - 理由: 各層の不透明度が同じでも、要素の近くほど層が重なって濃くなり、段階が高いほど影が遠くまで落ちるので、段階ごとに調整しなくても高さの関係が一貫して読み取れるため。
+  - 補足: 本書のデモでは、層のオフセットとぼかしを1、3、6、12、24、48pxとし、広がりをその半分の負の値にしています。最も低い段階は1pxの縁取りだけで、枠線の代わりに使えます。
   - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【非推奨・実装上の判断】重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。（`no-animate-layered-shadow`）
-  - 理由: 描画の計算量が影の数に比例して増え、古い端末ではコマ落ちしやすいため。
+  - 理由: 描画の計算量が層の数に比例して増え、段階の高い影ほど層が多いので、古い端末ではコマ落ちしやすいため。
   - 補足: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
   - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・実装上の判断】番号付きリストの番号を装飾するときは、`list-style: none` と `::before` ではなく、`::marker` で色やフォントを指定する。（`marker-for-list-number-style`）
@@ -2954,7 +2987,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【非推奨・実装上の判断】ホバーやフォーカスの変化を `opacity` で表さない。（`no-opacity-for-hover`）
   - 理由: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
-  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。
+  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨・実装上の判断】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
   - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
@@ -2982,6 +3015,10 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・仕様上の制約】押せる範囲を広げる `padding` は、`<li>` のような外側の要素ではなく、`<a>` や `<button>` のような操作する要素自身に付ける。チェックボックスやラジオボタンは `<label>` で文字と一緒に包む。（`padding-on-interactive-element`）
   - 理由: 外側の要素に付けた `padding` は見た目を大きくするだけで、押せる範囲は文字の部分に限られ、項目の端を押しても反応しないため。
   - 補足: `<a>` は `display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます。チェックボックスと `<label>` を兄弟に並べて間を空けると、その隙間は押しても何も起きない領域になります。
+  - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
+- 【推奨・仕様上の制約】ホバーで背景が付く項目を並べるメニュー、リスト、タブでは、項目の間を `gap` や `margin` で空けず、間隔を各項目の内側の `padding` で作る。（`no-gaps-between-hover-items`）
+  - 理由: カーソルが項目の間の隙間を通るあいだはどの項目にもホバーが当たらず、背景が消えてから次の項目に付き直して点滅して見え、隙間を押しても何も起きないため。
+  - 補足: 背景の帯どうしを離して見せたいときも、項目は隙間なく並べ、背景を項目の擬似要素に描いて `inset` で内側に寄せます。カーソルに最も近い項目に背景を付ける作り方や、隙間のクリックを背景の付いた項目に渡す作り方は JavaScript が要るので、採りません。ホバーした項目へ背景が移る表現（`anchor-indicator-as-decoration`）でも、隙間では背景が薄れてから戻ります。
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨・仕様上の制約】見た目を変えずに押せる範囲を広げるときは、擬似要素を `inset: min(0px, (100% - var(--_hit-size)) / 2)` で要素の外にはみ出させ、広げた範囲を隣の操作する要素に重ねない。（`pseudo-hit-area-no-overlap`）
   - 理由: 擬似要素は要素の一部として押せるので見た目を保ったまま範囲を広げられるが、隣の要素に重なると、押した要素と違うものが反応することがあるため。

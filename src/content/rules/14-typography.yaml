@@ -75,6 +75,16 @@
   page: typography/fonts
   since: 0.21.0
 
+- id: tabular-nums-for-changing-numbers
+  level: 推奨
+  kind: judgment
+  rule: 'カウンター、価格、タイマーのように表示したまま値が変わる数字には、`font-variant-numeric: tabular-nums` を指定する。'
+  reason: '数字の幅が字ごとに違う書体では、値が変わるたびに数字の列の幅が変わり、数字とその後ろに続く単位やボタンが左右に揺れるため。'
+  note: '等幅の数字は、フォントが OpenType の `tnum` 機能を持っているときだけ表示されます。表や一覧で数値を縦に並べる列は `tabular-nums-for-number-columns` で扱います。'
+  aiProne: true
+  page: typography/fonts
+  since: 0.38.0
+
 # 14-2 和文組版を整える
 - id: lang-for-typesetting
   level: 必須
@@ -187,6 +197,16 @@
   since: 0.25.0
 
 # 14-4 文字サイズと改行
+- id: two-text-colors
+  level: 推奨
+  kind: judgment
+  rule: '文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。'
+  reason: '半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。'
+  note: 'どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。'
+  aiProne: true
+  page: typography/size-and-line-breaks
+  since: 0.38.0
+
 - id: auto-phrase-for-headings
   level: 推奨
   kind: judgment

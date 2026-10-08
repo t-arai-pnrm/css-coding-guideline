@@ -239,9 +239,18 @@
   kind: judgment
   rule: 色のトークンはプリミティブとセマンティクスの2層で定義し、デザインにない固有の色はグローバルなトークンにしない。
   reason: 配色の変更やダークモードをセマンティクスの層で吸収でき、トークンの一覧もデザインの取り決めだけに保てるため。
-  note: 固有の色は、コンポーネントの内部プロパティか、直接書いた値で扱います。
+  note: '固有の色は、コンポーネントの内部プロパティか、直接書いた値で扱います。影は形をスケールのトークンにし、各層の色だけをセマンティクスにします（`box-shadow` の値全体は `light-dark()` で切り替えられないため）。'
   page: components/design-tokens
   since: 0.1.0
+
+- id: typography-token-two-layers
+  level: 推奨
+  kind: judgment
+  rule: '文字のトークンは、プリミティブの `--font-size--*` と、役割ごとの `--text--<役割>--font-size` と `--text--<役割>--leading` の組の2層で定義し、コンポーネントからは役割を参照する。'
+  reason: 同じ文字サイズを複数の役割が使うので、役割ごとに大きさを変えられ、文字サイズと行の高さも役割を選ぶだけでそろうため。
+  note: '文字サイズは単位なしのピクセル相当の数値で持ち、`calc(var(--text--body--font-size) / 16 * 1rem)` のように使う場所で変換します。余白、角丸、影の形、モーションは1層のスケールのままにします。役割の層を作ると、1つのコンポーネントでしか使わない名前が増えるためです（`no-single-use-token`）。'
+  page: components/design-tokens
+  since: 0.38.0
 
 - id: no-single-use-token
   level: 禁止

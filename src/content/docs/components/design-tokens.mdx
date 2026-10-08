@@ -1,6 +1,6 @@
 ---
 title: "10-4 デザイントークン"
-description: "サイト全体で意味を持つ値は、--<分類>--<名前> の形のカスタムプロパティにして :root に置きます。余白は単位なしの数値で持ち、1回しか使わない値や特定のコンポーネント専用の値はトークンにしません。"
+description: "サイト全体で意味を持つ値は、--<分類>--<名前> の形のカスタムプロパティにして :root に置きます。色と文字の役割はプリミティブとセマンティクスの2層に分け、余白は単位なしの数値で持ちます。1回しか使わない値や特定のコンポーネント専用の値はトークンにしません。"
 sidebar:
   order: 4
 ---
@@ -9,7 +9,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 色、余白、イージング、z-indexのように、サイト全体で意味を持つ値は「デザイントークン」として名前を付け、`:root` のカスタムプロパティにまとめます。名前は `--color--neutral--500` や `--spacing--md` のように `--<分類>--<名前>` の形にします。
 
-余白のトークンは単位なしのピクセル相当の数値で持ち、使う場所で `px` や `rem` に変換します。反対に、1回しか使わない値や、特定のコンポーネント専用の値はトークンにしません。トークンは、CSSから参照できるデザインの取り決めです。何でもトークンにすると、取り決めとしての意味が薄れます。
+色と文字の役割のトークンだけは、生の値のプリミティブと、役割を表すセマンティクスの2層に分けます。余白のトークンは単位なしのピクセル相当の数値で持ち、使う場所で `px` や `rem` に変換します。反対に、1回しか使わない値や、特定のコンポーネント専用の値はトークンにしません。何でもトークンにすると、CSSから参照できるデザインの取り決めとしての意味が薄れます。
 
 ## 値に名前がないと起きること
 
@@ -38,29 +38,30 @@ import Guideline from '../../../components/Guideline.astro';
 
 ## トークンの名前の付け方
 
-トークンの名前は、先頭に分類を置いた `--<分類>--<名前>` の形にします。分類には、`color`（色）、`spacing`（余白）、`rounded`（角丸）、`shadow`（影）などを使います。行の高さの `leading`、文字の太さの `font-weight`、イージングの `ease`、再生時間の `duration`、重なり順の `z` も分類の例です。
+トークンの名前は、先頭に分類を置いた `--<分類>--<名前>` の形にします。分類には、`color`（色）、`spacing`（余白）、`rounded`（角丸）、`shadow`（影）などを使います。文字サイズの `font-size`、行の高さの `leading`、文字の太さの `font-weight`、イージングの `ease`、再生時間の `duration`、重なり順の `z` も分類の例です。
 
 ```css title="🙆‍♂ Recommended: 分類を先頭に置いて名前を付ける"
 :root {
   --color--neutral--100: oklch(97% 0 0deg);
   --color--neutral--900: oklch(20.5% 0 0deg);
-  --color--accent--600: oklch(52% 0.16 250deg);
+  --color--accent--600: oklch(54% 0.22 260deg);
   --spacing--xxs: 8;
   --spacing--sm: 16;
   --spacing--md: 24;
   --spacing--xxl: 64;
   --rounded--md: 8px;
   --rounded--full: calc(infinity * 1px);
-  --font-weight--semibold: 600;
+  --font-size--md: 16;
+  --font-weight--bold: 700;
   --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration--base: 240ms;
+  --duration--base: 160ms;
   --z--header: 200;
 }
 ```
 
-区切りに `--` を使うのは、`font-weight` や `quint-out` のように、分類や名前そのものにハイフンが入るからです。`--` で区切っておけば、どこまでが分類でどこからが名前なのかを見分けられます。分類を先頭に置くと、エディタの入力補完でも同じ分類のトークンがまとまって表示されます。サイズの段階には、`xxxs`、`xxs`、`xs`、`sm`、`md`、`lg`、`xl`、`xxl`、`xxxl` の名前を使っています。
+区切りに `--` を使うのは、`font-weight` や `out-quint` のように、分類や名前そのものにハイフンが入るからです。`--` で区切っておけば、どこまでが分類でどこからが名前なのかを見分けられます。分類を先頭に置くと、エディタの入力補完でも同じ分類のトークンがまとまって表示されます。サイズの段階には、`xxxs`、`xxs`、`xs`、`sm`、`md`、`lg`、`xl`、`xxl`、`xxxl` の名前を使っています。
 
-色のように、デザインの中での役割を表すトークンは、`--<役割>--<バリエーション>` の形にします。`--background--base` や `--foreground--muted` のように、先頭に `background`（背景）や `foreground`（文字やアイコン）といった役割を置きます。コンポーネントの公開プロパティも `--card--radius` のように `--` で区切りますが、こちらは先頭がコンポーネントの名前です。公開プロパティの命名は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
+色のように、デザインの中での役割を表すトークンは、`--<役割>--<バリエーション>` の形にします。`--background--base` や `--foreground--muted` のように、先頭に `background`（背景）や `foreground`（文字やアイコン）といった役割を置きます。文字の役割は、`--text--body--font-size` のように `--text--<役割>--<プロパティ>` の形にします（後の「文字のトークンの層」）。コンポーネントの公開プロパティも `--card--radius` のように `--` で区切りますが、こちらは先頭がコンポーネントの名前です。公開プロパティの命名は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明します。
 
 ## 余白のトークン
 
@@ -88,19 +89,102 @@ import Guideline from '../../../components/Guideline.astro';
 
 グローバルなトークンとして定義するのは、プリミティブとセマンティクスの2層だけです。デザインで定義されていない固有の色（ユニーク）は、コンポーネントの内部プロパティか、直接書いた値で扱います。
 
+次の例は、本書のデモで使っている色のトークンの一部です。プリミティブのneutralには、Tailwind CSSのneutralの50〜950と同じoklchの値を使っています。セマンティクスは、背景の `--background--*`、文字の `--foreground--*`、枠線の `--border--*` に分け、それぞれがプリミティブを参照します。
+
 ```css title="🙆‍♂ Recommended: セマンティクスのトークンから、プリミティブを参照する"
 :root {
   --color--neutral--50: oklch(98.5% 0 0deg);
+  --color--neutral--100: oklch(97% 0 0deg);
   --color--neutral--400: oklch(70.8% 0 0deg);
   --color--neutral--500: oklch(55.6% 0 0deg);
-  --color--neutral--950: oklch(14.5% 0 0deg);
-  --background--base: light-dark(var(--color--neutral--50), var(--color--neutral--950));
-  --foreground--base: light-dark(var(--color--neutral--950), var(--color--neutral--50));
+  --color--neutral--900: oklch(20.5% 0 0deg);
+  --background--base: light-dark(var(--color--neutral--50), var(--color--neutral--900));
+  --background--surface: light-dark(oklch(100% 0 0deg), oklch(from var(--color--neutral--900) calc(l + 0.05) c h));
+  --foreground--base: light-dark(var(--color--neutral--900), var(--color--neutral--100));
   --foreground--muted: light-dark(var(--color--neutral--500), var(--color--neutral--400));
+  --border--base: color-mix(in oklab, var(--foreground--base) 12%, transparent);
 }
 ```
 
 セマンティクスの層があると、ライトモードとダークモードのような切り替えを、`light-dark()` を使ってトークンの側で吸収できます。コンポーネントからは、意味の分かるセマンティクスのトークンを参照するのが基本です。こうしておけば、配色を変えるときもトークンの定義を直すだけで済みます。色の書き方は「[15-1 色の形式と色空間](/color-media/color/)」で、`light-dark()` は「[15-4 ダークモード](/color-media/dark-mode/)」で扱います。
+
+背景のセマンティクスは、面の役割ごとに固定した4段階です。ページの `--background--base`、カードの `--background--surface`、メニューやポップオーバーの `--background--raised`、ダイアログの `--background--overlay` です。面の段階と影の組み合わせ方は「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明します。
+
+枠線の `--border--base` は、プリミティブを選ばずに、`color-mix()` で文字色を12%だけ混ぜた半透明の色にしています。半透明の枠線は、下にある面の色と重なって見えるので、`--background--base` の上でも `--background--surface` の上でも、背景より少し濃い線になります。文字色がライトとダークで切り替われば枠線も追従するので、枠線のために面ごと、テーマごとの値を用意する必要がありません。
+
+## 文字のトークンの層
+
+文字の大きさと行の高さも、色と同じくプリミティブとセマンティクスの2層に分けます。プリミティブは `--font-size--*` と `--leading--*` の段階で、文字サイズは余白のトークンと同じく、単位なしのピクセル相当の数値で持ちます。セマンティクスは、`--text--<役割>--font-size` と `--text--<役割>--leading` の組です。役割には、display、title、subtitle、body、body-compact、captionの6つを使っています。
+
+```css title="🙆‍♂ Recommended: 文字の役割ごとに、文字サイズと行の高さを組にする"
+:root {
+  --font-size--xs: 12;
+  --font-size--sm: 14;
+  --font-size--md: 16;
+  --font-size--xl: 20;
+  --font-size--xxxl: 28;
+  --leading--tight: 1.25;
+  --leading--snug: 1.4;
+  --leading--normal: 1.6;
+  --leading--relaxed: 1.75;
+  --text--display--font-size: var(--font-size--xxxl);
+  --text--display--leading: var(--leading--tight);
+  --text--title--font-size: var(--font-size--xl);
+  --text--title--leading: var(--leading--snug);
+  --text--subtitle--font-size: var(--font-size--md);
+  --text--subtitle--leading: var(--leading--snug);
+  --text--body--font-size: var(--font-size--md);
+  --text--body--leading: var(--leading--relaxed);
+  --text--body-compact--font-size: var(--font-size--sm);
+  --text--body-compact--leading: var(--leading--normal);
+  --text--caption--font-size: var(--font-size--xs);
+  --text--caption--leading: var(--leading--normal);
+}
+```
+
+コンポーネントからは役割のトークンを参照し、文字サイズは使う場所で `rem` に変換します。文字サイズと行の高さは、同じ役割の組から取ります。
+
+```css title="🙆‍♂ Recommended: 役割のトークンを参照し、文字サイズを使う場所で rem に変換する"
+@scope (.scoped.notice) to (.scoped) {
+  ._title {
+    font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    line-height: var(--text--title--leading);
+  }
+
+  ._body {
+    font-size: calc(var(--text--body--font-size) / 16 * 1rem);
+    line-height: var(--text--body--leading);
+  }
+}
+```
+
+役割の層を挟むのは、1つの文字サイズを複数の役割が使うからです。上の例では、subtitleとbodyがどちらも16の大きさで、行の高さだけが違います。コンポーネントが `--font-size--md` を直接参照していると、本文だけを15に変えたいとき、見出しの側まで変わってしまいます。役割を参照していれば、`--text--body--font-size` の参照先を変えるだけで済みます。大きな文字ほど行の高さを詰めるので、文字サイズと行の高さを組にしておくと、役割を選ぶだけで両方がそろいます。
+
+文字サイズを単位なしにするのは、余白と同じく、使う場所で単位を選べるようにするためです。`clamp()` で流体的な文字サイズを作るときも、最小値と最大値を数値のまま計算できます。それぞれの役割をどこに使うか、和文の見出しと本文の大きさの決め方は、第14章「[タイポグラフィと和文組版](/typography/)」で扱います。
+
+## 層を分けるトークンと分けないトークン
+
+プリミティブとセマンティクスの2層に分けるのは、色（面、文字、枠線、重ね色、影の色）と文字の役割だけです。この2つには、層を分ける理由が2つあります。1つは、同じプリミティブを複数の役割が使うことです。neutralの900は、ライトモードの文字色にもダークモードの背景色にも使われます。もう1つは、ライトモードとダークモードの切り替えを、セマンティクスの側の `light-dark()` で吸収できることです。
+
+余白、角丸、影の形、モーションは、1層のスケールのままにします。これらに役割の層を作ると、`--spacing--card-padding` や `--rounded--dialog` のように、1つのコンポーネントでしか使わない名前が増えます。1回しか使わない値をトークンにしないという基準（この節の後の「トークンにするもの、しないもの」）に反し、一覧から選ぶだけで取り決めに沿えるという利点も失われます。角丸なら、外側のパネルには `--rounded--lg`、内側の項目には `--rounded--md` を使う、という選び方の取り決めで足ります。
+
+影は、形と色で扱いを分けます。`light-dark()` は色の値にしか使えないので、`box-shadow` の値全体をライトとダークで切り替えることはできません。そこで、オフセットとぼかしの形をスケールのトークンにし、各層の色だけをセマンティクスのトークンにして、形のトークンから参照します。次の例は、ダークモードで足す上辺のハイライトを省いて示しています。
+
+```css title="🙆‍♂ Recommended: 影の形はスケールにし、各層の色だけをセマンティクスにする"
+:root {
+  --shadow--color: light-dark(oklch(0% 0 0deg / 6%), oklch(0% 0 0deg / 18%));
+  --shadow--ring-color: light-dark(oklch(0% 0 0deg / 6%), oklch(0% 0 0deg / 24%));
+  --shadow--sm:
+    0 0 0 1px var(--shadow--ring-color),
+    0 1px 1px -0.5px var(--shadow--color),
+    0 3px 3px -1.5px var(--shadow--color);
+}
+```
+
+色の値が `light-dark()` で切り替わるので、形のトークンはライトとダークで書き分けずに済みます。段階ごとに層を足していく影の作り方は「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明します。
+
+本書のデモは、この節で示した値のトークンを共通で読み込んで使っています。トークンの全文は「[付録I デモの共通トークン](/appendix/demo-tokens/)」にあります。
 
 ## イージングと再生時間
 
@@ -114,15 +198,15 @@ import Guideline from '../../../components/Guideline.astro';
   --ease--in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
   --ease--in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
   --duration--instant: 50ms;
+  --duration--fast: 80ms;
   --duration--press: 120ms;
-  --duration--fast: 200ms;
-  --duration--base: 240ms;
-  --duration--slow: 300ms;
+  --duration--base: 160ms;
+  --duration--slow: 240ms;
   --duration--reveal: 600ms;
 }
 ```
 
-再生時間も、`--duration--fast`、`--duration--base`、`--duration--slow` のような段階のトークンにします。サイトの中で動きの速さがそろい、「全体的にもう少しゆっくりにしたい」という調整もトークンの値を変えるだけで済みます。画面に現れる動きと出ていく動きには `out` 系、画面の上にあるものの移動には `in-out` 系を使います（「[18-3 イージングと再生時間](/motion/easing-and-duration/)」）。`--duration--instant` は動きを減らす設定で再生時間を短くするとき、`--duration--press` はボタンを押したときの縮小に使います。`--duration--reveal` は、要素が画面に入った時点で一度だけ再生する演出のための、長めの値です。弾むような動きのように `cubic-bezier()` で表せないイージングは、`linear()` 関数で定義し、再生時間とセットでトークンにします。
+再生時間も、`--duration--fast`、`--duration--base`、`--duration--slow` のような段階のトークンにします。サイトの中で動きの速さがそろい、「全体的にもう少しゆっくりにしたい」という調整もトークンの値を変えるだけで済みます。本書では、`--duration--fast`（80ms）をホバーとフォーカス、`--duration--base`（160ms）をメニューとタブ、`--duration--slow`（240ms）をダイアログに使います。画面に現れる動きと出ていく動きには `out` 系、画面の上にあるものの移動には `in-out` 系を使います（「[18-3 イージングと再生時間](/motion/easing-and-duration/)」）。`--duration--instant` は動きを減らす設定で再生時間を短くするとき、`--duration--press` はボタンを押したときの縮小に使います。`--duration--reveal` は、要素が画面に入った時点で一度だけ再生する演出のための、長めの値です。弾むような動きのように `cubic-bezier()` で表せないイージングは、`linear()` 関数で定義し、再生時間とセットでトークンにします。
 
 ドロワーやボトムシートのように、画面の端から大きく滑り込むUIには、専用のイージングを1つ用意します。`--ease--out-drawer: cubic-bezier(0.32, 0.72, 0, 1)` のように、出だしが速く、終わりにかけて長く減速する曲線にすると、移動する距離が長くても、操作にすぐ応じて動き出したように見えます。名前の種類の部分には、強さの代わりに用途を入れています。{/* 要確認: 著者の判断。値は iOS のシートの動きに近い曲線。トークン名も仮 */}
 
@@ -173,7 +257,7 @@ z-indexのトークンについては、`inherits: false` の `@property` で登
 
 ## 補足と注意点
 
-トークンの規約を採用すると、CSSを書く人は、名前の2つの形（`--<分類>--<名前>` と `--<役割>--<バリエーション>`）、色の3つの層のうちどれをグローバルに置くか、サイズの段階の名前を覚えることになります。単位なしの余白のトークンは、使うたびに `calc()` で単位を付ける手間も増えます。`gap: var(--spacing--md)` のように単位を付け忘れると、値が `24` になって宣言が無効になり、`gap` は初期値に戻ります。
+トークンの規約を採用すると、CSSを書く人は、名前の2つの形（`--<分類>--<名前>` と `--<役割>--<バリエーション>`）、色の3つの層のうちどれをグローバルに置くか、サイズの段階の名前を覚えることになります。2層に分けるのが色と文字の役割だけであることも、覚えておく必要があります。単位なしの余白のトークンは、使うたびに `calc()` で単位を付ける手間も増えます。`gap: var(--spacing--md)` のように単位を付け忘れると、値が `24` になって宣言が無効になり、`gap` は初期値に戻ります。
 
 トークンは `:root` にだけ定義するので、宣言は `tokens/` のファイルを `--spacing--md:` で、参照は `var(--spacing--md` で検索すれば見つかります。色はセマンティクスのトークンからプリミティブを参照しているので、実際の値に行き着くまで2回たどります。ブラウザの開発者ツールでは、スタイルの欄の `var()` から、参照しているカスタムプロパティの値を確かめられます。{/* 要検証: ブラウザ。Chrome、Firefox、Safariの開発者ツールで、var() の参照先の値をスタイルの欄から確認できること */}
 

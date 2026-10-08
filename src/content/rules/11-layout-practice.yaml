@@ -308,7 +308,7 @@
   kind: judgment
   rule: 'ホバーやフォーカスした項目へ背景が移る表現は、リストの擬似要素を `inset: anchor(inside)` で状態のある項目に合わせて作り、指定を `@supports` の中に書いて、未対応の環境では背景が付かないだけになる装飾として扱う。'
   reason: '項目ごとの背景では項目の間を移動させられない一方、アンカーポジショニングは対象のブラウザの一部が対応していないので、なくても内容と操作に影響しない形でだけ使えるため。'
-  note: 'アンカーの名前は、`&:any-link:hover`（`@media (any-hover)` の中）と `&:focus-visible` のときだけリンクに付けます。どの項目も状態を持たない間は `anchor()` を解決できないので、リストに立てた `--_has-hocus` のフラグを擬似要素のスタイルクエリで読み、`opacity: 0` にします。トランジションは `prefers-reduced-motion: no-preference` の中に書き、フォーカスしたリンクがある間は外します。ルートには `anchor-scope` を指定します（`anchor-scope-for-repeated-components`）。'
+  note: 'アンカーの名前は、`&:any-link:hover`（`@media (any-hover)` の中）と `&:focus-visible` のときだけリンクに付けます。どの項目も状態を持たない間は `anchor()` を解決できないので、リストに立てた `--_has-hocus` のフラグを擬似要素のスタイルクエリで読み、`opacity: 0` にします。使うのは、すべての項目が押せ、項目が隙間なく並び、ホバーしている間に項目が動かない部品に限ります。項目の間を移動させる `inset` のトランジションは `prefers-reduced-motion: no-preference` の中に書き、`opacity` のトランジションはその外に書いて、動きを減らす設定でも薄れる変化は残します。フォーカスしたリンクがある間は、どちらのトランジションも外します。ルートには `anchor-scope` を指定します（`anchor-scope-for-repeated-components`）。'
   page: layout-practice/anchor-positioning
   since: 0.23.0
 

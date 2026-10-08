@@ -1,0 +1,25 @@
+/*
+ * 影の形のトークン。段階が上がるほど、オフセットとぼかしを倍にした層を足す。
+ * 各層の不透明度は同じで、重なるほど濃く、遠くまで落ちる。
+ * 色は colors.css のセマンティクスを参照するので、ライトとダークで形を書き分けない。
+ */
+:root {
+  --shadow--xs:
+    inset 0 1px 0 0 var(--shadow--highlight-color),
+    inset 0 0 0 1px var(--shadow--highlight-color),
+    0 0 0 1px var(--shadow--ring-color);
+  --shadow--sm:
+    var(--shadow--xs),
+    0 1px 1px -0.5px var(--shadow--color),
+    0 3px 3px -1.5px var(--shadow--color);
+  --shadow--md:
+    var(--shadow--sm),
+    0 6px 6px -3px var(--shadow--color),
+    0 12px 12px -6px var(--shadow--color);
+  --shadow--lg:
+    var(--shadow--md),
+    0 24px 24px -12px var(--shadow--color);
+  --shadow--xl:
+    var(--shadow--lg),
+    0 48px 48px -24px var(--shadow--color);
+}

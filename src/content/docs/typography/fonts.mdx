@@ -1,6 +1,6 @@
 ---
 title: "14-1 フォントを指定する"
-description: "和文のフォントは、特に指定がなければ総称ファミリーのsans-serifだけで十分です。Noto Sans JPを必ず表示するときは端末のフォントを優先し、和文には斜体を使わず、font-weightは数値のトークンで指定します。"
+description: "和文のフォントは、特に指定がなければ総称ファミリーのsans-serifだけで十分です。Noto Sans JPを必ず表示するときは端末のフォントを優先し、和文には斜体を使わず、font-weightは400と700の2段階のトークンで指定します。値が変わる数字にはtabular-numsを指定します。"
 sidebar:
   order: 1
 ---
@@ -241,21 +241,47 @@ kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体�
 
 数値は、コンポーネントに直接書かず、トークンにします。太さの名前を決めておけば、デザインで使う太さがそろい、トークンにない中途半端な値も紛れ込みにくくなります。トークンの命名は「[10-4 デザイントークン](/components/design-tokens/)」で説明します。
 
-```css title="🙆‍♂ Recommended: 太さを数値のトークンで指定する"
+```css title="🙆‍♂ Recommended: 太さを regular と bold の2段階のトークンで指定する"
 :root {
   --font-weight--regular: 400;
-  --font-weight--medium: 500;
   --font-weight--bold: 700;
 }
 
 @scope (.scoped.news-card) to (.scoped) {
   h2 {
-    font-weight: var(--font-weight--medium);
+    font-weight: var(--font-weight--bold);
   }
 }
 ```
 
+トークンは、400の `regular` と700の `bold` の2段階だけにします。メイリオのように400と700の字形しか持たないフォントでは、500や600を指定しても、近いほうの太さで表示されます。Windowsでメイリオが使われる環境では、600の見出しと700の見出しが同じ太さに見え、500と400も区別できなくなります。どの環境でも違いが見える太さは、この2つだけです。{/* 要検証: ブラウザ。メイリオで 500 と 600 を指定したときに表示される太さ */}
+
+見出しの階層は、太さの段階を増やすのではなく、文字サイズの違いで付けます。サイズと行の高さを役割の組で決める方法は、「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」で説明しています。デザインカンプで500や600が指定されていたら、2段階のどちらに寄せるかをデザイナーと相談します。
+
 kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定しています。ブラウザのデフォルトスタイルに合わせるためです。`bolder` は親より一段太くする相対的なキーワードなので、プロジェクトで太さをそろえたいときは、`base` レイヤーで数値のトークンに上書きします。kiso.cssの値を上書きする方法は、「[8-1 壊さないリセット](/reset/kiso/)」で説明しています。
+
+## 値が変わる数字の幅
+
+カウンター、価格、タイマーのように、表示したまま値が変わる数字には、`font-variant-numeric: tabular-nums` を指定します。多くの書体では、「1」が「0」より狭いというように、数字の幅が字ごとに違います。そのままでは、値が変わるたびに数字の列の幅が変わり、中央や末尾に揃えた数字と、その後ろに続く単位やボタンが左右に揺れます。
+
+```css title="🙆‍♂ Recommended: 値が変わる数字の幅を等幅にそろえる"
+@scope (.scoped.cart-summary) to (.scoped) {
+  ._quantity-text,
+  ._total-price {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@scope (.scoped.countdown) to (.scoped) {
+  ._time-text {
+    font-variant-numeric: tabular-nums;
+  }
+}
+```
+
+`tabular-nums` は、数字をすべて同じ幅にする指定です。数量を1から2に増やしたときも、残り時間が「10:11」から「10:10」に変わったときも、数字の列の幅が変わらないので、文字の位置が動きません。等幅の数字は、フォントがOpenTypeの `tnum` 機能を持っているときだけ表示されます。持っていないフォントでは、指定しても字ごとの幅のままです。{/* 要検証: ブラウザ。sans-serif で表示される和文フォント（游ゴシック、ヒラギノ角ゴシック、Noto Sans JP）での tabular-nums の効き方 */}
+
+本文の中の数字や、一度表示したら変わらない日付には指定しません。値が変わらなければ文字は揺れず、字ごとの幅のほうが文章の中で自然に並ぶからです。{/* 要確認: 出典なし */}表や一覧で数値を縦に並べる列は、「[11-16 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/#rule-tabular-nums-for-number-columns)」で扱います。この指定をユーティリティにした `.-tabular-nums` は「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で紹介しています。
 
 ## ガイドライン
 

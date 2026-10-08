@@ -29,7 +29,7 @@
       gap: 12px;
       padding: 16px;
       border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
 
       /* 画像 160px 相当・隙間 16px・本文の最小幅 240px 相当・左右の padding 32px が並ぶ幅 */
       @container --scoped (inline-size >= calc(160 / 16 * 1rem + 16px + 240 / 16 * 1rem + 32px)) {
@@ -44,7 +44,7 @@
     ._thumbnail {
       anchor-name: --thumbnail;
       aspect-ratio: 16 / 9;
-      border-radius: 4px;
+      border-radius: var(--rounded--sm);
       background-image: linear-gradient(135deg, oklch(78% 0.06 70deg), oklch(52% 0.08 50deg));
 
       @container style(--_density: --spacious) {
@@ -61,7 +61,7 @@
     ._tag {
       padding-block: 2px;
       padding-inline: 8px;
-      border-radius: 4px;
+      border-radius: var(--rounded--sm);
       background-color: oklch(30% 0.04 50deg);
       color: oklch(100% 0 0deg);
       font-size: calc(12 / 16 * 1rem);

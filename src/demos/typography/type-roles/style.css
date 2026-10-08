@@ -1,0 +1,60 @@
+@layer components {
+  @scope (.scoped.type-roles) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: calc(var(--spacing--md) * 1px);
+    }
+
+    ._role {
+      & > ._name-text + ._sample-text {
+        margin-block-start: calc(var(--spacing--xxxs) * 1px);
+      }
+    }
+
+    ._name-text {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._sample-text {
+      color: var(--foreground--base);
+
+      &[data-role="display"] {
+        font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--bold);
+        line-height: var(--text--display--leading);
+      }
+
+      &[data-role="title"] {
+        font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--bold);
+        line-height: var(--text--title--leading);
+      }
+
+      &[data-role="subtitle"] {
+        font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--bold);
+        line-height: var(--text--subtitle--leading);
+      }
+
+      &[data-role="body"] {
+        font-size: calc(var(--text--body--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--regular);
+        line-height: var(--text--body--leading);
+      }
+
+      &[data-role="body-compact"] {
+        font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--regular);
+        line-height: var(--text--body-compact--leading);
+      }
+
+      &[data-role="caption"] {
+        font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--regular);
+        line-height: var(--text--caption--leading);
+      }
+    }
+  }
+}

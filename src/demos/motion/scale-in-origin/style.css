@@ -1,12 +1,3 @@
-@layer tokens {
-  :root {
-    --duration--fast: 200ms;
-    --duration--base: 240ms;
-    --duration--slow: 300ms;
-    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
-
 @layer components {
   @scope (.scoped.scale-in-demo) to (.scoped) {
     :scope {
@@ -56,8 +47,6 @@
 
     /* ボタンの上に出し、下端の中央（ボタンのある側）から広げる */
     ._tooltip {
-      --_duration: var(--duration--fast);
-
       margin: revert;
       padding-block: 4px;
       padding-inline: 8px;

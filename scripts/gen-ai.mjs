@@ -2,6 +2,7 @@
  * ルールの定義（src/content/rules/*.yaml）から、AI 向けのルール集とスキルを生成する。
  * - skills/css-coding-guideline/rules.md: AI が誤りやすいルールを先頭に置いたルール集
  * - skills/css-coding-guideline/SKILL.md: Claude Code のスキル
+ * - skills/css-coding-guideline/tokens.md: 本書のデモが読み込んでいる共通トークン（src/demos/tokens/*.css）
  * スキルは `~/.claude/skills/css-coding-guideline` からこのディレクトリへシンボリックリンクを張って使う。
  * 公開 URL が決まるまでは、詳細ページをローカルのファイルパスで参照する。
  */
@@ -15,6 +16,8 @@ const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const RULES_DIR = join(ROOT, 'src/content/rules');
 const DOCS_DIR = join(ROOT, 'src/content/docs');
 const OUT_DIR = join(ROOT, 'skills/css-coding-guideline');
+const TOKENS_DIR = join(ROOT, 'src/demos/tokens');
+const TOKEN_FILES = ['colors.css', 'shadows.css', 'sizes.css', 'typography.css', 'motion.css', 'z-index.css'];
 
 const { version } = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
 const today = new Date().toISOString().slice(0, 10);
@@ -129,6 +132,10 @@ description: 「CSSコーディングガイドライン」に従ってCSSを書�
 - [ ] 「必須」と「禁止」のルールに違反していないか
 - [ ] Stylelint（本書の設定）で検出できる違反が残っていないか
 
+## トークンの例
+
+同じディレクトリの \`tokens.md\` は、本書のデモが使っているトークンの全文である。プロジェクトにトークンがないときに、分け方（色と文字の役割はプリミティブとセマンティクスの2層、ほかは1層のスケール）と名前の付け方の手本にする。プロジェクトに定義済みのトークンがあれば、そちらを使う。
+
 ## 返答フォーマット
 
 ### 新しくCSSを書くとき
@@ -147,4 +154,20 @@ description: 「CSSコーディングガイドライン」に従ってCSSを書�
 await mkdir(OUT_DIR, { recursive: true });
 await writeFile(join(OUT_DIR, 'rules.md'), rulesMd);
 await writeFile(join(OUT_DIR, 'SKILL.md'), skillMd);
+
+const tokenSections = [];
+for (const file of TOKEN_FILES) {
+  const css = (await readFile(join(TOKENS_DIR, file), 'utf8')).trim();
+  tokenSections.push(`## ${file}\n\n\`\`\`css\n${css}\n\`\`\``);
+}
+const tokensMd = `# 本書のデモの共通トークン
+
+- ガイドラインのバージョン: ${version}（${today} 生成）
+- 元のファイル: src/demos/tokens/*.css（付録I）
+
+本書のデモは、次のトークンを \`@layer tokens\` に入れて読み込んでいる。デモからは、色はセマンティクス（\`--background--*\`、\`--foreground--*\`、\`--border--*\`）だけを、文字は役割（\`--text--<役割>--font-size\` と \`--text--<役割>--leading\`）を参照する。
+
+${tokenSections.join('\n\n')}
+`;
+await writeFile(join(OUT_DIR, 'tokens.md'), tokensMd);
 console.log(`${rules.length} 件のルールから skills/css-coding-guideline を生成しました（v${version}）。`);

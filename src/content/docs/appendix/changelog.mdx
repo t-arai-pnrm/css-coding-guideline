@@ -11,6 +11,30 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.38.0（2026年10月8日）
+
+デモの見た目とトークンを共通にし、面の段階、層を足す影、文字の役割のトークン、ホバーの重ね色を本文とルールに加えました。ルールを加えたので、マイナーバージョンを上げています。
+
+- すべてのデモが読み込む共通トークンを用意し、「[付録I デモの共通トークン](/appendix/demo-tokens/)」に全文を載せました。デモの背景と文字の色もトークンで指定し、テーマへ追従できる形にしました。
+- ルールを加えました。
+  - [`typography-token-two-layers`](/components/design-tokens/#rule-typography-token-two-layers)
+  - [`two-text-colors`](/typography/size-and-line-breaks/#rule-two-text-colors)
+  - [`tabular-nums-for-changing-numbers`](/typography/fonts/#rule-tabular-nums-for-changing-numbers)
+  - [`surface-levels-by-role`](/decoration/surfaces/#rule-surface-levels-by-role)
+  - [`lighter-surface-in-dark-mode`](/decoration/surfaces/#rule-lighter-surface-in-dark-mode)
+  - [`no-gaps-between-hover-items`](/interaction/states-and-focus/#rule-no-gaps-between-hover-items)
+- ルールを変えました。
+  - [`shadow-tokens-light-source`](/decoration/surfaces/#rule-shadow-tokens-light-source)：段階ごとに不透明度を下げる作り方から、オフセットとぼかしを倍にした層を足す作り方に変えました。
+  - [`shadow-black-in-dark-mode`](/decoration/surfaces/#rule-shadow-black-in-dark-mode)：影の色を `light-dark()` で切り替えるトークンにすることを、ルールの本文に入れました。
+  - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：理由を、層の数に比例して描画の計算が増えることに直しました。
+  - [`color-token-two-layers`](/components/design-tokens/#rule-color-token-two-layers)、[`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover)、[`anchor-indicator-as-decoration`](/layout-practice/anchor-positioning/#rule-anchor-indicator-as-decoration)：補足に、影の色の扱い、半透明の重ね色、動きを減らす設定でもフェードを残すことを足しました。
+- 再生時間のトークンを、`fast` 80ms、`base` 160ms、`slow` 240msに改めました（「[10-4 デザイントークン](/components/design-tokens/)」「[18-3 イージングと再生時間](/motion/easing-and-duration/)」）。
+- 文字の太さのトークンを、400と700の2段階にしました（「[14-1 フォントを指定する](/typography/fonts/)」）。
+
+## 0.37.2（2026年10月8日）
+
+「[19-8 既存のサイトに段階的に導入する](/operations/adoption/)」で著者の確認を待っていた判断を確定しました。本文の内容は変えていないので、パッチバージョンを上げています。
+
 ## 0.37.1（2026年10月8日）
 
 第20章で著者の確認を待っていた判断を確定し、ブラウザで確かめた記述を直しました。文章の修正だけなので、パッチバージョンを上げています。

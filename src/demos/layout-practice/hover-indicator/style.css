@@ -1,11 +1,3 @@
-@layer tokens {
-  :root {
-    --duration--base: 240ms;
-    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-    --z--backwards: -1;
-  }
-}
-
 @layer components {
   @scope (.scoped.link-menu) to (.scoped) {
     :scope {
@@ -32,8 +24,8 @@
 
           /* 強制カラーモードでは、背景色が消える代わりに枠線に色が付く */
           border: 1px solid transparent;
-          border-radius: 8px;
-          background-color: oklch(from currentColor l c h / 10%);
+          border-radius: var(--rounded--md);
+          background-color: var(--background--hover);
 
           @container style(--_has-hocus: --false) {
             opacity: 0;
@@ -43,11 +35,19 @@
 
       /* キーボードで移動しているときは、背景を動かさずに移す */
       &:not(:has(> li > :focus-visible))::after {
-        @media (prefers-reduced-motion: no-preference) {
-          transition-duration: var(--duration--base);
+        transition-duration: var(--duration--base);
+        transition-property: opacity;
+        transition-timing-function: var(--ease--out-quint);
+        transition-behavior: allow-discrete;
+
+        /* マウスを外したあとは、薄れ終わるまで最後の項目の位置に留める */
+        @container style(--_has-hocus: --false) {
           transition-property: inset, opacity;
-          transition-timing-function: var(--ease--out-quint);
-          transition-behavior: allow-discrete;
+        }
+
+        /* 項目の間を移動させるのは、動きを減らす設定がないときだけにする */
+        @media (prefers-reduced-motion: no-preference) {
+          transition-property: inset, opacity;
         }
       }
 

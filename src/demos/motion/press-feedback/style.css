@@ -1,11 +1,3 @@
-@layer tokens {
-  :root {
-    --duration--press: 120ms;
-    --duration--fast: 200ms;
-    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
-
 @layer components {
   @scope (.scoped.press-demo) to (.scoped) {
     :scope {
@@ -37,7 +29,7 @@
         --_background: var(--_accent--hocus);
       }
 
-      /* 色はホバーの目安（150〜200ms）、縮小は押下の目安（100〜150ms）で動かす */
+      /* 色はホバーの目安（100ms以下）、縮小は押下の目安（100〜150ms）で動かす */
       &:not(:focus-visible) {
         @media (prefers-reduced-motion: no-preference) {
           transition-duration: var(--duration--fast), var(--duration--press);

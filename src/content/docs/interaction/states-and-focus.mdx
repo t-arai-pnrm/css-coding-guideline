@@ -1,6 +1,6 @@
 ---
 title: "17-1 状態とフォーカスを表す"
-description: "ホバーのスタイルは操作できる状態に限り、@media (any-hover)の中に書いて、:focus-visibleにも同じ見た目を指定します。変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。user-select: noneとtouch-actionは、それを必要とする操作部品にだけ指定します。"
+description: "ホバーのスタイルは操作できる状態に限り、@media (any-hover)の中に書いて、:focus-visibleにも同じ見た目を指定します。ホバーで背景が付く項目は隙間を空けずに並べ、変化は透明度ではなく色で示し、状態はクラスではなく、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討して表します。user-select: noneとtouch-actionは、それを必要とする操作部品にだけ指定します。"
 sidebar:
   order: 1
 ---
@@ -16,13 +16,17 @@ import tabsCss from '../../../demos/interaction/aria-selected-tabs/style.css?raw
 import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw';
 import hitPaddingHtml from '../../../demos/interaction/hit-area-padding/index.html?raw';
 import hitPaddingCss from '../../../demos/interaction/hit-area-padding/style.css?raw';
+import itemGapsHtml from '../../../demos/interaction/hover-item-gaps/index.html?raw';
+import itemGapsCss from '../../../demos/interaction/hover-item-gaps/style.css?raw';
 import pseudoHitHtml from '../../../demos/interaction/pseudo-hit-area/index.html?raw';
 import pseudoHitCss from '../../../demos/interaction/pseudo-hit-area/style.css?raw';
 import safeTriangleHtml from '../../../demos/interaction/safe-triangle/index.html?raw';
 import safeTriangleCss from '../../../demos/interaction/safe-triangle/style.css?raw';
 import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?raw';
 
-ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書きます。同じ見た目は `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。
+ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書きます。同じ見た目は `:focus-visible` にも指定します。キーボードでフォーカスを移したときはトランジションを掛けず、一度で切り替えます。変化を表すときも `opacity` で透かさず、背景色や文字色を別の色に変えます。背景が透明な項目には、半透明の重ね色を背景色として指定します。
+
+ホバーで背景が付く項目を並べるメニュー、リスト、タブでは、項目の間に隙間を作らず、間隔を各項目の内側の `padding` で作ります。隙間ではホバーが外れ、背景が消えてしまうからです。
 
 選択中や展開中といった状態は、`.is-active` のような状態クラスを使わず、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に検討して、セレクタにします。
 
@@ -250,6 +254,57 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 <Demo title="余白を外側の要素に付けると押せる範囲は文字だけになり、操作する要素自身に付けると余白まで押せる" html={hitPaddingHtml} css={hitPaddingCss} variant="neutral" widths={[]} />
 
+### ホバーで背景が付く項目の間隔
+
+メニュー、リスト、タブのように、ホバーした項目に背景が付く部品では、項目の間を `gap` や `margin` で空けません。間隔は、各項目の内側の `padding` で作ります。カーソルが項目の間の隙間を通るあいだは、どの項目にもホバーが当たらず、背景がいったん消えてから次の項目に付き直すからです。カーソルを縦に動かすと背景が点滅して見え、隙間で手を止めれば、背景の付いた項目が1つもなくなります。
+
+```css title="🙅‍♂ Not Recommended: 項目の間を gap で空け、隙間でホバーが外れる"
+/* 🙅‍♂ Not Recommended */
+._list {
+  display: block grid;
+  gap: 8px;
+}
+
+._link {
+  padding-block: 6px;
+}
+```
+
+隙間は、押せる範囲の外でもあります。隙間を押しても何も起きないので、ユーザーには押し損じたように見えます。項目の上下の `padding` を隙間のぶん増やせば、項目の並ぶ間隔は変えずに、隙間をなくせます。
+
+```css title="🙆‍♂ Recommended: 項目を隙間なく並べ、間隔を項目の padding で作る"
+@scope (.scoped.account-menu) to (.scoped) {
+  ._list {
+    display: block grid;
+  }
+
+  ._link {
+    display: block flow;
+    padding-block: 10px;
+    padding-inline: 12px;
+    border-radius: var(--rounded--md);
+
+    &:focus-visible {
+      background-color: var(--background--hover);
+    }
+
+    &:any-link:hover {
+      @media (any-hover) {
+        background-color: var(--background--hover);
+      }
+    }
+  }
+}
+```
+
+背景の色の `--background--hover` は、半透明の重ね色のトークンです。後述の「ホバーの変化を透明度で表す方法」で説明します。背景の帯どうしを離して見せたいデザインでも、項目は隙間なく並べたままにします。背景を項目の擬似要素に描き、`inset` で内側に寄せれば、帯の間に隙間が見えても、ホバーを受ける範囲と押せる範囲は項目の全体に残ります。
+
+隙間を残したまま、カーソルから最も近い項目へ背景を付けたり、隙間を押した操作を背景の付いた項目へ渡したりする作り方もあります。どちらもカーソルの位置から項目を選ぶ処理が要り、CSSだけでは書けないので、本書では隙間をなくすほうを選びます。ホバーした項目へ1枚の背景が移っていく表現でも、隙間では背景が薄れてから戻ります（「[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)」）。
+
+次のデモの2つのメニューは、項目の並ぶ間隔が同じです。`gap` で項目の間を空けたメニューでカーソルを上から下へゆっくり動かすと、項目の間の8pxを通るたびに背景が消え、次の項目で付き直します。項目の `padding` で間隔を作ったメニューでは、背景が隣の項目へすぐに移り、どの位置で止めてもいずれかの項目に背景が付いています。
+
+<Demo title="項目の間に隙間があると背景が点滅し、項目の padding で間隔を作ると背景が途切れずに移る" html={itemGapsHtml} css={itemGapsCss} variant="neutral" scheme="auto" widths={[]} />
+
 ### 見た目を変えずに押せる範囲を広げる
 
 ダイアログの閉じるボタンのように、デザインの都合で見た目を小さく保ちたい要素もあります。この場合は、擬似要素を要素の外にはみ出させて、押せる範囲だけを広げます。擬似要素は要素の一部なので、擬似要素を押せば要素を押したことになります。WCAGの「ターゲット」もポインターの操作を受け付ける領域を指すので、擬似要素で広げた範囲を大きさとして数えられます。
@@ -382,6 +437,35 @@ body {
 もうひとつの問題は、意図が伝わらないことです。コードを読んだ人には、「ホバーしたら暗くしたい」のか「目立たなくしたい」のかが分かりません。デザインで別の色が指定されているなら、その色をそのまま書いたほうが、意図とコードが一致します。
 
 背景色や文字色を変えるときは、状態ごとの値を `--_background--hocus` のような接尾辞を付けた内部プロパティにまとめます。値には、デザインで決まっている色のトークンを使います。専用の色がない場合は、`oklch(from var(--_background) calc(l - 0.1) c h)` のように、相対カラー構文で元の色から明るさだけを変えた色を作ります。接尾辞の付け方は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で、相対カラー構文は「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」で扱います。
+
+メニューの項目、リストの行、選択していないタブのように背景が透明な項目には、明るさを変える元の色がありません。こうした項目には、半透明の重ね色のトークン `--background--hover` と `--background--active` を、`background-color` に直接指定します。値はライトのテーマで黒の4%と7%、ダークのテーマで白の6%と10%で、下にある面をわずかに暗く、または明るく見せます。ページ、カード、メニューのどの面に置いても同じ見え方になるので、面ごとにホバーの色を決めずに済みます。
+
+```css title="🙆‍♂ Recommended: 背景が透明な項目には、半透明の重ね色を背景色として指定する"
+:root {
+  --background--hover: light-dark(oklch(0% 0 0deg / 4%), oklch(100% 0 0deg / 6%));
+  --background--active: light-dark(oklch(0% 0 0deg / 7%), oklch(100% 0 0deg / 10%));
+}
+
+@scope (.scoped.option-menu) to (.scoped) {
+  ._item {
+    &:focus-visible {
+      background-color: var(--background--hover);
+    }
+
+    &:enabled:hover {
+      @media (any-hover) {
+        background-color: var(--background--hover);
+      }
+    }
+
+    &:enabled:active {
+      background-color: var(--background--active);
+    }
+  }
+}
+```
+
+重ね色は、`opacity` で要素を透かす方法とは別のものです。半透明なのは背景に指定した色だけで、項目の文字や枠線は透けないので、コントラストは下がりません。トークンの名前から、ホバーと押下のための色だと読み取れます。背景色のあるボタンには重ね色を使わず、相対カラー構文で明るさを変えます。`background-color` に重ね色を指定すると、ボタンの塗りが半透明の色に置き換わってしまうからです。デモが読み込んでいるトークンの値は、「[付録I デモの共通トークン](/appendix/demo-tokens/)」に載せています。前述の「ホバーで背景が付く項目の間隔」のデモも、この重ね色を使っています。
 
 次のデモでは、ボタンとリンクにマウスを重ねたときと、Tabキーでフォーカスを移したときに、同じように色が変わります。無効にしたボタンと、`href` のない現在のページのリンクは反応しません。
 

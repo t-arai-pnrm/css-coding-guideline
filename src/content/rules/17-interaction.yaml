@@ -34,7 +34,7 @@
   kind: judgment
   rule: ホバーやフォーカスの変化を `opacity` で表さない。
   reason: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
-  note: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。
+  note: '背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。'
   aiProne: true
   page: interaction/states-and-focus
   since: 0.1.0
@@ -101,6 +101,15 @@
   note: '`<a>` は `display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます。チェックボックスと `<label>` を兄弟に並べて間を空けると、その隙間は押しても何も起きない領域になります。'
   page: interaction/states-and-focus
   since: 0.28.0
+
+- id: no-gaps-between-hover-items
+  level: 推奨
+  kind: spec
+  rule: 'ホバーで背景が付く項目を並べるメニュー、リスト、タブでは、項目の間を `gap` や `margin` で空けず、間隔を各項目の内側の `padding` で作る。'
+  reason: カーソルが項目の間の隙間を通るあいだはどの項目にもホバーが当たらず、背景が消えてから次の項目に付き直して点滅して見え、隙間を押しても何も起きないため。
+  note: '背景の帯どうしを離して見せたいときも、項目は隙間なく並べ、背景を項目の擬似要素に描いて `inset` で内側に寄せます。カーソルに最も近い項目に背景を付ける作り方や、隙間のクリックを背景の付いた項目に渡す作り方は JavaScript が要るので、採りません。ホバーした項目へ背景が移る表現（`anchor-indicator-as-decoration`）でも、隙間では背景が薄れてから戻ります。'
+  page: interaction/states-and-focus
+  since: 0.38.0
 
 - id: pseudo-hit-area-no-overlap
   level: 推奨

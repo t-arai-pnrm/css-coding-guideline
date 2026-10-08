@@ -1,6 +1,6 @@
 ---
 title: "16-3 表面と文字の装飾"
-description: "影と角丸はトークンから選び、影は光源の向きをそろえて、色はライトモードでは背景の色相に寄せ、ダークモードでは黒にします。すりガラスの背景は backdrop-filter で作り、番号付きリストの番号は ::marker で装飾し、文字の縁取りは paint-order で塗りの下に描きます。見出しの行ごとに敷く背景は、インラインの要素に box-decoration-break: clone を指定して描きます。"
+description: "面の背景は役割で決めた4段階のトークンから選び、影は光源の向きをそろえて、段階ごとにオフセットとぼかしを倍にした層を足します。ダークモードでは高い面ほど背景を明るくします。すりガラスの背景は backdrop-filter で作り、番号付きリストの番号は ::marker で装飾し、文字の縁取りは paint-order で塗りの下に描きます。見出しの行ごとに敷く背景は、インラインの要素に box-decoration-break: clone を指定して描きます。"
 sidebar:
   order: 3
 ---
@@ -8,6 +8,8 @@ sidebar:
 import Baseline from '../../../components/Baseline.astro';
 import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
+import surfaceHtml from '../../../demos/decoration/surface-levels/index.html?raw';
+import surfaceCss from '../../../demos/decoration/surface-levels/style.css?raw';
 import shadowHtml from '../../../demos/decoration/shadow-tokens/index.html?raw';
 import shadowCss from '../../../demos/decoration/shadow-tokens/style.css?raw';
 import nestedRadiusHtml from '../../../demos/decoration/nested-radius/index.html?raw';
@@ -21,46 +23,96 @@ import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
 import cushionHtml from '../../../demos/decoration/text-cushion/index.html?raw';
 import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
-影と角丸は、段階を決めたトークンから選びます。影のトークンは光源の向きをそろえ、高いほどオフセットとぼかしを大きく、不透明度を低くします。影の色は、ライトモードでは背景の色相に寄せ、ダークモードでは黒にして不透明度を上げます。
+面の背景は、ページ、カード、ダイアログ、メニューの役割で決めた4段階のトークンから選びます。影は、光源の向きをそろえ、段階が上がるほどオフセットとぼかしを倍にした層を足して作ります。ライトモードでは面の高さを影だけで表し、影の見えにくいダークモードでは、高い面ほど背景を明るくします。角丸も、段階を決めたトークンから選びます。
 
 すりガラスの背景は、半透明の背景に `backdrop-filter: blur()` を重ねて作ります。番号付きリストの番号は `::marker` で装飾し、文字の縁取りは `-webkit-text-stroke` で描いて、`paint-order: stroke fill` で塗りの下に置きます。見出しの行ごとに敷く背景は、インラインの要素に `box-decoration-break: clone` を指定して描きます。
 
 どれも要素の表面と文字に付ける装飾なので、作るものに合わせて必要な見出しだけを読めば足ります。画像の比率と読み込みは「[16-1 画像の配置と読み込み](/decoration/images/)」で、アイコンと図形は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で説明しています。
 
-## 影と角丸はトークンから選ぶ
+## 面の背景は役割で4段階に分ける
 
-影は、段階的に強くなる「高さ」のスケールとしてトークンにします。画面の光源は1つに決め、どのトークンも同じ向きの影にします。本書の例は真上からの光なので、水平方向のオフセットは0です。斜めの光にするなら、水平と垂直のオフセットの比を、すべてのトークンでそろえます。要素が高く浮くほど、オフセットとぼかしを大きくし、不透明度は下げます。浮いた要素ほど、影が遠くまで広がって薄くなるからです。
+画面には、高さの違う面が重なります。本書のデモでは、面の背景を4つの役割ごとのセマンティクスのトークンにしています。ページは `--background--base`、カードは `--background--surface` です。ダイアログは `--background--overlay`、メニューやポップオーバーは `--background--raised` です。コンポーネントは、自分の役割に合うトークンを1つ選んで背景に指定します。
 
-```css title="🙆‍♂ Recommended: 光源をそろえ、高いほどオフセットとぼかしを大きく、不透明度を低くする"
+ライトモードでは、`--background--base` 以外をすべて白にし、面の高さは影だけで表します。ダークモードでは、暗い背景の上で影がほとんど見えないので、高い面ほど背景を明るくします。明るい背景は、ページの背景のプリミティブ（`--color--neutral--900`）から、相対カラー構文で明度を足して作ります。
+
+```css title="🙆‍♂ Recommended: 面の背景を役割で決め、ダークモードでは高い面ほど明るくする"
 :root {
-  --shadow--hue: 250deg;
-  --shadow--color: light-dark(oklch(30% 0.05 var(--shadow--hue) / 14%), oklch(0% 0 0deg / 30%));
-  --shadow--sm: 0 2px 4px -1px var(--shadow--color);
-  --shadow--md:
-    0 4px 8px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent),
-    0 2px 4px -2px var(--shadow--color);
-  --shadow--lg:
-    0 8px 16px -4px color-mix(in oklab, var(--shadow--color) 60%, transparent),
-    0 4px 6px -2px color-mix(in oklab, var(--shadow--color) 80%, transparent);
+  --color--neutral--50: oklch(98.5% 0 0deg);
+  --color--neutral--900: oklch(20.5% 0 0deg);
+  --background--base: light-dark(var(--color--neutral--50), var(--color--neutral--900));
+  --background--surface: light-dark(oklch(100% 0 0deg), oklch(from var(--color--neutral--900) calc(l + 0.05) c h));
+  --background--overlay: light-dark(oklch(100% 0 0deg), oklch(from var(--color--neutral--900) calc(l + 0.085) c h));
+  --background--raised: light-dark(oklch(100% 0 0deg), oklch(from var(--color--neutral--900) calc(l + 0.12) c h));
 }
 ```
 
+`--background--raised` を `--background--overlay` より明るくしているのは、メニューがダイアログの中でも開くからです。2つが同じ背景なら、ダイアログの中で開いたメニューは、ダークモードでダイアログと見分けがつかなくなります。メニューを最も明るくしておけば、ページの上でもダイアログの上でも、メニューは置かれた面より明るく表示されます。
+
+置かれた面より1段上の背景を選ぶ、相対的な高さの作り方もあります。祖先が宣言した高さの値をスタイルクエリで読み、1段上の値に切り替える方法です。本書はこの方法を採りません。コンポーネントが外側のコンポーネントの値を問い合わせることになり、外側のコンポーネントのコンテナを問い合わせないという本書の約束（[`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)）に例外が増えるからです。役割で固定すれば、どこに置かれても同じトークンを参照するだけで済みます。
+
+<Demo title="ページ、カード、ダイアログ、ダイアログの中のメニューを重ねたとき" html={surfaceHtml} css={surfaceCss} scheme="auto" />
+
+デモでは、ページの上にカードとダイアログを置き、ダイアログの中にメニューを開いています。影は、カードに `--shadow--sm`、メニューに `--shadow--lg`、ダイアログに `--shadow--xl` を付けています。デモは本のページのテーマに合わせて切り替わります。ライトモードでは、カード、ダイアログ、メニューはどれも白い背景で、影の大きさだけが違います。ダークモードでは、カード、ダイアログ、メニューの順に背景が明るくなり、ダイアログの中のメニューも、ダイアログより明るい面として見分けられます。
+
+## 影は層を足して高さを表す
+
+影も、段階的に高くなるスケールとしてトークンにします。画面の光源は1つに決め、どのトークンも同じ向きの影にします。本書の例は真上からの光なので、水平方向のオフセットは0です。斜めの光にするなら、水平と垂直のオフセットの比を、すべての層でそろえます。
+
+段階が上がるごとに、前の段階の影に層を足します。足す層のオフセットとぼかしは1、3、6、12、24、48pxと、おおむね倍にしていき、広がり（4つ目の値）はその半分を負の値で指定します。負の広がりで影を要素より小さくすると、下にずらした影が要素の左右からはみ出しません。どの層も不透明度は同じです。要素の近くほど層が重なって影が濃くなり、段階が高いほど薄い影が遠くまで落ちるので、段階ごとに不透明度を調整しなくても、高さの違いが読み取れます。
+
+```css title="🙆‍♂ Recommended: 段階が上がるごとに、オフセットとぼかしを倍にした層を足す"
+:root {
+  --shadow--xs:
+    inset 0 1px 0 0 var(--shadow--highlight-color),
+    inset 0 0 0 1px var(--shadow--highlight-color),
+    0 0 0 1px var(--shadow--ring-color);
+  --shadow--sm:
+    var(--shadow--xs),
+    0 1px 1px -0.5px var(--shadow--color),
+    0 3px 3px -1.5px var(--shadow--color);
+  --shadow--md:
+    var(--shadow--sm),
+    0 6px 6px -3px var(--shadow--color),
+    0 12px 12px -6px var(--shadow--color);
+  --shadow--lg:
+    var(--shadow--md),
+    0 24px 24px -12px var(--shadow--color);
+  --shadow--xl:
+    var(--shadow--lg),
+    0 48px 48px -24px var(--shadow--color);
+}
+```
+
+最も低い `--shadow--xs` は、ぼかしのない1pxの縁取りです。`border` と違って要素の大きさに加わらないので、カードの枠線の代わりに使えます。上の段階はどれも `--shadow--xs` を含むので、影を付けた面には必ず縁取りが付きます。枠線を `border` で引くときは、`--border--base` の色を使います。値は `color-mix(in oklab, var(--foreground--base) 12%, transparent)` です。文字色を透明と混ぜているので、どの面の上でも同じようになじみます（「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」）。
+
 <Demo title="同じ影のトークンを、ライトモードとダークモードの背景に置いたとき" html={shadowHtml} css={shadowCss} />
 
-デモでは、ライトモードとダークモードの背景に、`--shadow--sm`、`--shadow--md`、`--shadow--lg` の影を付けたカードを3枚ずつ置いています。ライトモードの影は背景と同じ青みを帯び、ダークモードの影は不透明度を上げた黒で描かれます。
+デモでは、ライトモードとダークモードの背景に、`--shadow--xs` から `--shadow--xl` までの影を付けたカードを並べています。ライトモードでは、段階が上がるほど影が濃く、下に長く伸びます。ダークモードでは段階の違いがほとんど見えず、カードの端は、内側の縁取りと上辺の細いハイライトで分かります。ダークモードで高さを背景の明るさで表すのは、このためです。{/* 要検証: ブラウザ。ダークモードで影の段階とハイライトがどう見えるか */}
 
-ライトモードの影は、背景の色相に寄せます。灰色がかった黒の影を色のある背景に重ねると、背景がくすんで見えるからです。背景の色相に合わせ、明度と彩度を下げた色にすると、背景と自然になじみます。上の例では、背景のアクセントカラーの色相を `--shadow--hue` に持たせています。背景が無彩色のサイトでは、彩度が0の黒のままでも構いません。
+影の色は、色のトークン（`--shadow--color`、`--shadow--ring-color`、`--shadow--highlight-color`）にして、`light-dark()` でライトとダークの値を持たせます。`light-dark()` は色の値しか切り替えられず、`box-shadow` の値そのものをライトとダークで書き分けられないからです。影の形は1組だけ定義し、各層の色だけをテーマで切り替えます。ダークモードで足す上辺のハイライトと内側の縁取りは、ライトモードでは使わないので `transparent` にしています。
 
-影の色は、ダークモードでは黒のままにします。暗い背景で白い影を付けると、影ではなく光って見えてしまうからです。代わりに、ダークモードでは黒の不透明度を上げて、暗い背景の上でも奥行きが分かるようにします。影は強制カラーモードでは消えるので、要素の境界は影だけで表しません。
+```css title="🙆‍♂ Recommended: 影の形は1組にし、各層の色を light-dark() で切り替える"
+:root {
+  --shadow--color: light-dark(oklch(0% 0 0deg / 6%), oklch(0% 0 0deg / 18%));
+  --shadow--ring-color: light-dark(oklch(0% 0 0deg / 6%), oklch(0% 0 0deg / 24%));
+  --shadow--highlight-color: light-dark(transparent, oklch(100% 0 0deg / 4%));
+}
+```
 
-複数の影を重ねたトークンは、描画の計算量が影の数に比例して増えます。`transition` や `animation` で影そのものを動かすと、古い端末ではコマ落ちしやすくなります。影を動かしたいときは、影を付けた擬似要素の `opacity` だけを動かします。{/* 要確認: 出典なし */}透明な部分の輪郭に沿わせたいときは、`box-shadow` ではなく `filter: drop-shadow()` を使います。
+影の色は、ダークモードでも黒のままにし、不透明度を上げます。暗い背景で白い影を付けると、影ではなく光って見えるからです。上辺のハイライトは白ですが、外に落ちる影ではなく、光の当たる面の縁として内側に1pxだけ描くものです。影は強制カラーモードでは消えるので、要素の境界は影だけで表しません。
 
-角丸も、`--rounded--sm` から `--rounded--xl` までの段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[16-4 角の形を変える](/decoration/shapes/)」で説明しています。
+本書のデモの背景は無彩色なので、ライトモードの影も黒です。色のある背景に影を落とすなら、影の色を背景の色相に寄せ、明度と彩度を下げた色にします。灰色がかった黒の影を色のある背景に重ねると、背景がくすんで見えるからです。
+
+層を重ねた影は、描画の計算量が層の数に比例して増えます。段階が高い影ほど層が多いので、`transition` や `animation` で影そのものを動かすと、古い端末ではコマ落ちしやすくなります。影を動かしたいときは、影を付けた擬似要素の `opacity` だけを動かします。{/* 要確認: 出典なし */}透明な部分の輪郭に沿わせたいときは、`box-shadow` ではなく `filter: drop-shadow()` を使います。
+
+## 角丸はトークンから選ぶ
+
+角丸は、`--rounded--sm`（4px）、`--rounded--md`（8px）、`--rounded--lg`（12px）の段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[16-4 角の形を変える](/decoration/shapes/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする"
 @scope (.scoped.account-menu) to (.scoped) {
   :scope {
-    --_radius: var(--rounded--md);
+    --_radius: var(--rounded--lg);
     --_padding: 4px;
 
     padding: var(--_padding);
@@ -77,7 +129,7 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 デモの1つ目は内側にも外側と同じ16pxを、2つ目は16pxから余白の8pxを引いた8pxを指定したメニューです。選んでいる項目の背景の角を見比べると、1つ目では外側の角との間が辺の部分より広く空き、2つ目では同じ幅にそろいます。
 
-角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。影や角丸の値をpxで指定する理由は、「[6-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
+角丸の要素の中に、角丸の要素を入れ子にする場合は、内側の角丸を「外側の角丸から間の余白を引いた値」にします。外側と内側に同じ値を指定すると、角の部分だけ余白が広く見えてしまいます。本書のデモでは、外側のパネルに `--rounded--lg` を、余白4pxの内側の項目に `--rounded--md` を使っていて、12pxから4pxを引いた8pxになります。影や角丸の値をpxで指定する理由は、「[6-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
 
 ## すりガラスの背景は、真後ろの色だけが混ざる
 
@@ -109,8 +161,8 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 ```css title="🙆‍♂ Recommended: マーカーの色と太さを ::marker で変える"
 ._step {
   &::marker {
-    color: var(--color--accent--500);
-    font-weight: 700;
+    color: var(--foreground--accent);
+    font-weight: var(--font-weight--bold);
   }
 }
 ```
