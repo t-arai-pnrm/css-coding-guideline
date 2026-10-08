@@ -136,9 +136,9 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 <Demo title="親の padding が挟まると、子の margin は親の外へ出ない" html={blockedHtml} css={blockedCss} variant="neutral" />
 
-高さの指定は、片側にだけ影響します。親に `block-size` や0でない `min-block-size` を指定すると、最後の子の `margin-block-end` は親の外へ出なくなります。一方で、最初の子の `margin-block-start` は、親の高さに関係なく親の外へ出ます。空の要素も、0より大きい `block-size` か `min-block-size` を指定すると上下の `margin` が隣り合わなくなり、通り抜けは起きません（値が0なら、指定していても通り抜けます）。
+高さの指定は、片側にだけ影響します。親に `block-size` を指定すると、最後の子の `margin-block-end` は親の外へ出なくなります。`min-block-size` は、CSS 2.2の注記では0でなければ外へ出るのを止めるとされていますが、2026年10月にChrome 152で確かめたところ、止めたのは値が中身の高さを超えて親の高さを変えたときだけでした。中身より小さい `min-block-size: 1px` では、`margin-block-end` は親の外へ出ました。最後の子の `margin` を確実に親の中に留めたいときは、`min-block-size` に頼らず、`padding` か `border` を挟みます。{/* 要検証: ブラウザ。Firefox と Safari で、中身より小さい min-block-size の親から最後の子の margin-block-end が外へ出るか */}
 
-{/* 要検証: ブラウザ。親の min-block-size が下の端の相殺を止める挙動は CSS 2.2 の 8.3.1 の注記にもとづく。ブラウザでは未確認 */}
+一方で、最初の子の `margin-block-start` は、親の高さに関係なく親の外へ出ます。空の要素も、0より大きい `block-size` か `min-block-size` を指定すると上下の `margin` が隣り合わなくなり、通り抜けは起きません（値が0なら、指定していても通り抜けます）。
 
 `gap` は、通常フローのブロックコンテナには効きません。`gap` が働くのはFlexbox、Grid、段組みで、FlexboxとGridではそもそも相殺が起きません。フレックスアイテムとグリッドアイテムの `margin` は、隣のアイテムや親の `margin` と相殺せず、`gap` に足されます。`gap: 16px` の中で要素に `margin-block-start: 24px` を付けると、間は40pxになります。
 

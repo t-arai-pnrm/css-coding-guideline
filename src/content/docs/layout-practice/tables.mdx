@@ -15,7 +15,7 @@ import stackCss from '../../../demos/layout-practice/table-stack/style.css?raw';
 
 表は、置かれた場所の幅に合わせて縮めません。`min-inline-size` で表の最小の幅を決め、それより狭い場所では、表を包む要素（スクロールのラッパー）の中で横にスクロールさせます。見出しのセルを `position: sticky` で留めるときは、表に `border-collapse: separate` を指定して、枠線をセルごとに持たせます。数値の列は、`font-variant-numeric: tabular-nums` で数字の幅をそろえ、末尾に揃えます。
 
-行どうしを比べる必要がなく、1行ごとに完結した記録を並べる表は、狭い幅で縦に積む方法もあります。その場合は、`display` を変えた表が表として扱われなくなるブラウザがあるので、HTMLに `role` を書いて表の意味を残します。この節では、表が崩れる理由、スクロールのラッパー、見出しのセルの留め方、数値の列のそろえ方、縦に積む方法、`table-layout: fixed` で列の幅を決める方法を順に説明します。
+行どうしを比べる必要がなく、1行ごとに完結した記録を並べる表は、狭い幅で縦に積む方法もあります。その場合は、`display` を変えた表が表として扱われなくなるブラウザが以前はあったので、古い環境に備えてHTMLに `role` を書き、表の意味を残します。この節では、表が崩れる理由、スクロールのラッパー、見出しのセルの留め方、数値の列のそろえ方、縦に積む方法、`table-layout: fixed` で列の幅を決める方法を順に説明します。
 
 ## 狭い場所で表が崩れる理由
 
@@ -49,7 +49,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 }
 ```
 
-表そのものの `display` を `block` に変えて、表自体をスクロールさせる書き方も見かけます。ラッパーが要らないので手軽ですが、MDNによれば、`table` の `display` を `block`、`grid`、`flex` に変えると、ブラウザによってはアクセシビリティツリーでの扱いが変わります。その結果、スクリーンリーダーが表として正しく読み上げなくなります。表の構造はHTMLのまま残し、スクロールは外側の要素に任せます。
+表そのものの `display` を `block` に変えて、表自体をスクロールさせる書き方も見かけます。ラッパーが要らないので手軽ですが、MDNによれば、`table` の `display` を `block`、`grid`、`flex` に変えると、ブラウザによってはアクセシビリティツリーでの扱いが変わります。その結果、スクリーンリーダーが表として正しく読み上げなくなることがあります。この不具合は主要なブラウザで修正されましたが（縦に積む方法の見出しを参照）、修正前の環境では表の意味が失われます。表の構造はHTMLのまま残し、スクロールは外側の要素に任せます。
 
 ```css title="🙅‍♂ Not Recommended: 表の display を変えて、表自体をスクロールさせる"
 /* 🙅‍♂ Not Recommended */
@@ -174,7 +174,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 1行ごとに完結した記録を並べる表は、狭い幅で行をカードのように縦に積めます。表が複数の場所に置かれることを考え、切り替えはコンテナサイズクエリで書きます。ルートを `container: --scoped / inline-size` のコンテナにし、閾値には、各列の中身の最小の幅とセルの `padding` を足した式を書きます（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
 
-縦に積むには、`table`、`tbody`、`tr`、`td` の `display` を変える必要があります。先に挙げたとおり、`display` を変えた表を表として扱わなくなるブラウザがあります。MDNは、`display: grid` などで表の意味が上書きされる場合に、ARIAの表の `role` を書いて意味を加え直す方法を挙げています。そこで、HTMLの各要素に `role` を書きます。`table` には `role="table"`、`thead` と `tbody` には `role="rowgroup"`、`tr` には `role="row"` を書きます。見出しのセルには `role="columnheader"` か `role="rowheader"` を、データのセルには `role="cell"` を書きます。{/* 要検証: ブラウザ。2026年10月時点で、display を変えた表の意味が失われるブラウザ */}
+縦に積むには、`table`、`tbody`、`tr`、`td` の `display` を変える必要があります。`display` を変えた表は、以前は表として扱われなくなるブラウザがありました。この不具合は、Chromeは80、Firefoxは2022年、Safariは17で修正されています（2026年10月、表と `display` の不具合を追跡している記事で確認）。しかし、修正前のブラウザや、それと組み合わせた支援技術では、表の意味が失われます。MDNは、`display: grid` などで表の意味が上書きされる場合に、ARIAの表の `role` を書いて意味を加え直す方法を挙げています。そこで、HTMLの各要素に `role` を書きます。`table` には `role="table"`、`thead` と `tbody` には `role="rowgroup"`、`tr` には `role="row"` を書きます。見出しのセルには `role="columnheader"` か `role="rowheader"` を、データのセルには `role="cell"` を書きます。{/* 要確認: 著者の判断。主要なブラウザで修正された後も、縦積みの表に role を書く方針を残すか */}
 
 ```css title="🙆‍♂ Recommended: 狭いときだけ、行をカードのように縦に積む"
 @scope (.scoped.order-table) to (.scoped) {
@@ -274,6 +274,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 - [font-variant-numeric - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric)
 - [display - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/display#tables)（表の `display` を変えたときのアクセシビリティ）
 - [ARIA: table role - Accessibility | MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/table_role)
+- [Tables, CSS Display Properties, and ARIA](https://adrianroselli.com/2018/02/tables-css-display-properties-and-aria.html)（2023年10月更新。各ブラウザで不具合が修正された版）
 - [CSS Table Module Level 3](https://drafts.csswg.org/css-tables-3/)（W3C）
 - [CSS Overflow Module Level 3 - scrollbar-gutter](https://drafts.csswg.org/css-overflow-3/#scrollbar-gutter-property)（W3C）
 - [CSS Positioned Layout Module Level 3 - Sticky positioning](https://drafts.csswg.org/css-position-3/#stickypos-insets)（W3C）

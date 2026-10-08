@@ -205,7 +205,7 @@ URLに `display=swap` を指定しておくと、Webフォントの読み込み�
 }
 ```
 
-和文どうしの大きさをそろえる目的でも、`ic-width` と `ic-height` は役に立ちません。和文のフォントの漢字は送り幅がほぼ1em（全角）なので、どのフォントでも比が1になり、補正が掛からないからです。ヒラギノ角ゴシックで試すと、どちらの比も1でした。「水」を持たない欧文のフォントでも、比は1として扱われます。和文のフォントごとの字面の大きさの違いは、送り幅ではなく、1emの枠の中で字面が占める大きさの違いなので、これらの寸法では測れません。{/* 要検証: ブラウザ。和文のフォントでの ic-width と ic-height の比は、macOS の Chrome 152 とヒラギノ角ゴシックだけで確認 */}
+和文どうしの大きさをそろえる目的でも、`ic-width` と `ic-height` は役に立ちません。和文のフォントの漢字は送り幅がほぼ1em（全角）なので、どのフォントでも比が1になり、補正が掛からないからです。ヒラギノ角ゴシック、游ゴシック体、Osakaで試すと、どちらの比も1でした（2026年10月、macOSのChrome 152で確認）。「水」を持たない欧文のフォントでも、比は1として扱われます。和文のフォントごとの字面の大きさの違いは、送り幅ではなく、1emの枠の中で字面が占める大きさの違いなので、これらの寸法では測れません。
 
 <Baseline id="font-size-adjust" />
 
@@ -254,7 +254,7 @@ kiso.cssは、日本語の文書（`:lang(ja)`）でこれらの要素の斜体�
 }
 ```
 
-トークンは、400の `regular` と700の `bold` の2段階だけにします。メイリオのように400と700の字形しか持たないフォントでは、500や600を指定しても、近いほうの太さで表示されます。Windowsでメイリオが使われる環境では、600の見出しと700の見出しが同じ太さに見え、500と400も区別できなくなります。どの環境でも違いが見える太さは、この2つだけです。{/* 要検証: ブラウザ。メイリオで 500 と 600 を指定したときに表示される太さ */}
+トークンは、400の `regular` と700の `bold` の2段階だけにします。メイリオのように400と700の字形しか持たないフォントでは、CSSの太さの照合の規則により、500を指定すると400、600を指定すると700で表示されます（CSS Fonts Module Level 4）。Windowsでメイリオが使われる環境では、600の見出しと700の見出しが同じ太さに見え、500と400も区別できなくなります。どの環境でも違いが見える太さは、この2つだけです。
 
 見出しの階層は、太さの段階を増やすのではなく、文字サイズの違いで付けます。サイズと行の高さを役割の組で決める方法は、「[14-5 文字の役割と色](/typography/text-roles/)」で説明しています。デザインカンプで500や600が指定されていたら、2段階のどちらに寄せるかをデザイナーと相談します。
 
@@ -279,7 +279,9 @@ kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定し�
 }
 ```
 
-`tabular-nums` は、数字をすべて同じ幅にする指定です。数量を1から2に増やしたときも、残り時間が「10:11」から「10:10」に変わったときも、数字の列の幅が変わらないので、文字の位置が動きません。等幅の数字は、フォントがOpenTypeの `tnum` 機能を持っているときだけ表示されます。持っていないフォントでは、指定しても字ごとの幅のままです。{/* 要検証: ブラウザ。sans-serif で表示される和文フォント（游ゴシック、ヒラギノ角ゴシック、Noto Sans JP）での tabular-nums の効き方 */}
+`tabular-nums` は、数字をすべて同じ幅にする指定です。数量を1から2に増やしたときも、残り時間が「10:11」から「10:10」に変わったときも、数字の列の幅が変わらないので、文字の位置が動きません。等幅の数字は、フォントがOpenTypeの `tnum` 機能を持っているときだけ表示されます。持っていないフォントでは、指定しても字ごとの幅のままです。
+
+macOSのヒラギノ角ゴシック、游ゴシック体、Osakaでは、指定しても数字の幅は変わりません（ヒラギノ角ゴシックは `tnum` 機能を持ちません）。ただし、どれも数字の幅がもともとほぼそろっているので、数字が変わっても位置はほとんど動きません（2026年10月、macOSのChrome 152で確認）。欧文のフォントで数字を表示する場合や、数字の幅がそろっていないフォントに備えて、指定しておきます。
 
 本文の中の数字や、一度表示したら変わらない日付には指定しません。値が変わらなければ文字は揺れず、字ごとの幅のほうが文章の中で自然に並ぶからです。{/* 要確認: 出典なし */}表や一覧で数値を縦に並べる列は、「[11-16 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/#rule-tabular-nums-for-number-columns)」で扱います。この指定をユーティリティにした `.-tabular-nums` は「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で紹介しています。
 
@@ -296,6 +298,7 @@ kiso.cssは、`dt` と日本語の `em` に `font-weight: bolder` を指定し�
 - [size-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/size-adjust)
 - [ascent-override - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@font-face/ascent-override)
 - [font-size-adjust - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-size-adjust)
+- [CSS Fonts Module Level 4: Font matching algorithm](https://drafts.csswg.org/css-fonts-4/#font-style-matching)（指定した太さの字形がないときに選ぶ太さの順序）
 - [CSS Fonts Module Level 5: font-size-adjust](https://drafts.csswg.org/css-fonts-5/#font-size-adjust-prop)
 - [Improved font fallbacks](https://developer.chrome.com/blog/font-fallbacks)（Chrome for Developers、2023年2月更新）
 - [【令和最新版】Google Fontsの読み込み最適化の結論](https://www.tak-dcxi.com/article/optimization-of-google-font-loading/)（TAKLOG、2024年3月）

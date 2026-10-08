@@ -98,7 +98,7 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 
 ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示している `img` に限り、`::before` と `::after` が表示されます。しかし、Safariでは表示されず（WebKitのバグ155227。2016年に報告され、2026年10月の時点で未解決）、CSS 2.1も置換要素と擬似要素の関係を十分には定めていません。そのため本書では、壊れた画像の表示を擬似要素で整える書き方に頼りません。
 
-`input` も、テキストの入力欄などでは擬似要素が表示されません。{/* 要検証: ブラウザ。テキストの入力欄で擬似要素が表示されないこと */}例外は、`appearance: none` を指定したチェックボックスとラジオボタンです。第17章「[17-3 フォーム部品](/interaction/forms/)」では、`input` 自体に `appearance: none` を指定し、`::before` でチェックマークを描いています。
+`input` も、テキストの入力欄などでは擬似要素が表示されません（2026年10月、Chrome 152で確認）。例外は、`appearance: none` を指定したチェックボックスとラジオボタンです。第17章「[17-3 フォーム部品](/interaction/forms/)」では、`input` 自体に `appearance: none` を指定し、`::before` でチェックマークを描いています。
 
 ## 装飾の記号は代替テキストを空にする
 

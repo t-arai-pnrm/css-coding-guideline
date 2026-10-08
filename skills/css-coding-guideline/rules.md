@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.40.0
+- バージョン: 0.41.0
 - 生成日: 2026-10-08
 - ルールの数: 586
 
@@ -233,8 +233,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: 基準の幅と値は、カスタムプロパティを使った式にするか、少なくともコメントに残します。
   - 詳細: 6-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【推奨・仕様上の制約】文字サイズを `clamp()` で流体的にするときは、最大値を最小値の2.5倍以内にする。（`fluid-font-size-max-ratio`）
-  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。
-  - 補足: 2.5倍は、ズームの最大を500%として導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
+  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、Chrome と Firefox のデスクトップ版では最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。
+  - 補足: 2.5倍は、Chrome と Firefox のズームの最大の500%から導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
   - 詳細: 6-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【推奨・本書の規約】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
   - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
@@ -650,7 +650,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-14 floatで文章を回り込ませる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/float.mdx）
 - 【推奨・実装上の判断】表は置かれた場所の幅に合わせて縮めず、`min-inline-size` で最小の幅を決め、表を包む要素に `overflow-x: auto` を指定して、それより狭い場所では横にスクロールさせる。（`table-min-size-with-scroller`）
   - 理由: 表は列の最小の幅の合計までしか縮まないので、`overflow-wrap: anywhere` のもとでは列が1〜2文字の幅まで縮んで数値の途中でも折り返し、折り返せない中身があればページ全体が横にはみ出すため。
-  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、表として読み上げられなくなるブラウザがあるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（2026年10月時点、ルール `physical-only-where-no-logical`）。
+  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、修正前のブラウザでは表として読み上げられなくなるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（2026年10月時点、ルール `physical-only-where-no-logical`）。
   - 詳細: 11-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/tables.mdx）
 - 【必須・仕様上の制約】スクロールのラッパーで包んだ表の列の見出しを `position: sticky` で留めるときは、ラッパーに `max-block-size` を指定して、ラッパーの中で縦にスクロールさせる。（`sticky-table-header-needs-block-limit`）
   - 理由: `overflow-x: auto` を指定すると `overflow-y` も `auto` として計算され、ラッパーが縦方向でも基準のスクロールコンテナになるので、ページをスクロールしても見出しは留まらないため。
@@ -1473,8 +1473,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: 基準の幅と値は、カスタムプロパティを使った式にするか、少なくともコメントに残します。
   - 詳細: 6-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【推奨・仕様上の制約】文字サイズを `clamp()` で流体的にするときは、最大値を最小値の2.5倍以内にする。（`fluid-font-size-max-ratio`）
-  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。
-  - 補足: 2.5倍は、ズームの最大を500%として導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
+  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、Chrome と Firefox のデスクトップ版では最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。
+  - 補足: 2.5倍は、Chrome と Firefox のズームの最大の500%から導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
   - 詳細: 6-3 計算関数で根拠を式に残す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/math-functions.mdx）
 - 【推奨・本書の規約】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
   - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
@@ -2312,7 +2312,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 11-14 floatで文章を回り込ませる（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/float.mdx）
 - 【推奨・実装上の判断】表は置かれた場所の幅に合わせて縮めず、`min-inline-size` で最小の幅を決め、表を包む要素に `overflow-x: auto` を指定して、それより狭い場所では横にスクロールさせる。（`table-min-size-with-scroller`）
   - 理由: 表は列の最小の幅の合計までしか縮まないので、`overflow-wrap: anywhere` のもとでは列が1〜2文字の幅まで縮んで数値の途中でも折り返し、折り返せない中身があればページ全体が横にはみ出すため。
-  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、表として読み上げられなくなるブラウザがあるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（2026年10月時点、ルール `physical-only-where-no-logical`）。
+  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、修正前のブラウザでは表として読み上げられなくなるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（2026年10月時点、ルール `physical-only-where-no-logical`）。
   - 詳細: 11-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/tables.mdx）
 - 【推奨・仕様上の制約】表には `caption` で名前を付け、見出しのセルは `th` にして、列の見出しには `scope="col"`、行の見出しには `scope="row"` を付ける。（`table-caption-and-scope`）
   - 理由: 支援技術が、表の名前と、各セルがどの見出しに属するかを伝えられるため。
@@ -2331,7 +2331,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: `tabular-nums` は、フォントに等幅の数字（OpenType の `tnum` 機能）があるときだけ反映されます。スクロールのラッパーで包んだ表では、数値の途中で折り返さないよう、数値のセルに `white-space: nowrap` を指定してかまいません。単位は各セルに繰り返さず、`caption` か列の見出しにまとめます。
   - 詳細: 11-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/tables.mdx）
 - 【推奨・仕様上の制約】狭い幅で表の要素の `display` を変えて縦に積むときは、HTML の各要素に `role`（`table`、`rowgroup`、`row`、`columnheader`、`rowheader`、`cell`）を書く。（`stacked-table-aria-roles`）
-  - 理由: `display` を変えた表を表として扱わなくなるブラウザがあり、明示した `role` で表の意味を残せるため。
+  - 理由: `display` を変えた表を表として扱わなくなる不具合が以前のブラウザにあり、明示した `role` で、修正前の環境でも表の意味を残せるため。
   - 補足: 縦に積むのは、1行ごとに完結した記録を並べる表に限り、行どうしを比べる表はスクロールのラッパーで包みます。縦に積んだときに表示する列の名前は HTML に書いて `aria-hidden="true"` を付け、`thead` は `display: none` ではなく視覚的にだけ隠します。切り替えは `--_density` で行い、表の形はブラウザのデフォルトのスタイルに任せて、縦に積む指定を `@container style(--_density: --compact)` の中に書きます。
   - 詳細: 11-15 表を組む（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/tables.mdx）
 - 【推奨・仕様上の制約】1行で打ち切るときは、`text-overflow: ellipsis` に `white-space: nowrap` と `overflow-inline: clip` を組み合わせる。（`ellipsis-with-nowrap-and-clip`）

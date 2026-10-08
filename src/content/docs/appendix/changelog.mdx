@@ -11,6 +11,20 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.41.0（2026年10月8日）
+
+ブラウザで確かめていなかった記述を、仕様や資料、Chrome 152での確認と照らし合わせ、誤りと古い情報を直しました。ルールの理由と補足を変えたので、マイナーバージョンを上げています。
+
+- ルールを変えました。
+  - [`fluid-font-size-max-ratio`](/values/math-functions/#rule-fluid-font-size-max-ratio)：ズームの最大を500%とするのは、ChromeとFirefoxのデスクトップ版の値だと明記しました。
+  - [`stacked-table-aria-roles`](/layout-practice/tables/#rule-stacked-table-aria-roles)、[`table-min-size-with-scroller`](/layout-practice/tables/#rule-table-min-size-with-scroller)：`display` を変えた表が表として扱われなくなる不具合は、以前のブラウザのものだと書きました。
+- 誤りを直しました。
+  - 「[16-5 角の形を変える](/decoration/shapes/)」：スタイルクエリの範囲の比較に対応しているかは `@supports` では判定できないので、説明とデモの条件を直しました。
+  - 「[7-6 マージンの相殺](/layout/margin-collapse/)」：`min-block-size` で相殺が止まる条件を、確かめた結果に合わせました。
+  - 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」：`scroll` のバッジは `overflow: hidden` の要素には付かないことを書きました。
+- 古い情報を直しました。表の不具合（「[11-15 表を組む](/layout-practice/tables/)」）、スクリーンリーダーの読み上げの不具合（「[18-7 動きの負荷を抑える](/motion/performance/)」）は、修正された版を書きました。
+- 確かめた記述では、仕様や資料で確かめたことと、2026年10月にChrome 152で確かめたことを書き分けました。
+
 ## 0.40.0（2026年10月8日）
 
 章をまたぐ説明の食い違いを直し、学習の順番と節の構成を整えました。ルールを加え、変えたので、マイナーバージョンを上げています。

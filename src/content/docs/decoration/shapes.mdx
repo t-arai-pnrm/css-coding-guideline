@@ -77,8 +77,8 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
   border-radius: calc(var(--_u--radius) * var(--_u--radius-ratio));
 
-  /* corner-shape、if()、スタイルクエリの範囲の比較に対応した環境だけ */
-  @supports (corner-shape: if(style(--test = 1): squircle)) {
+  /* corner-shape と if() に対応した環境だけ */
+  @supports (corner-shape: if(style(--test: 1): squircle)) {
     --_u--radius-ratio: if(
       style(--_u--radius >= 32px): 1.5;
       style(--_u--radius >= 24px): 1.67;
@@ -92,7 +92,8 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
     corner-shape: if(
       style(--_u--radius >= 32px): superellipse(1.5);
       style(--_u--radius >= 24px): superellipse(1.75);
-      else: squircle
+      style(--_u--radius >= 0): squircle;
+      else: round
     );
   }
 }
@@ -104,7 +105,9 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 使う側は、角丸の半径を `--corner-squircle--radius` に渡します。半径が8px以上24px未満のときは2倍の `squircle`、24px以上32px未満のときは1.67倍の `superellipse(1.75)`、32px以上のときは1.5倍の `superellipse(1.5)` になります。大きい半径では、倍率を下げるのと合わせて、`squircle`（`superellipse(2)`）より円弧に近い値へ切り替えています。`if()` は条件を上から順に調べるので、大きい半径の条件から書きます。
 
-`@supports` の条件には、`corner-shape`、`if()`、スタイルクエリの範囲の比較の3つをすべて使った値を書きます。カスタムプロパティは、どんな値でも構文の誤りにならないので、`if()` に未対応の環境でも `--_u--radius-ratio` に `if(…)` の文字列がそのまま入ります。それを `calc()` で使うと `border-radius` の宣言が無効になり、角丸が消えます。`@supports` で囲めば、未対応の環境では倍率が1のままになり、ふつうの角丸で表示されます。{/* 要検証: ブラウザ。範囲の比較に未対応で if() に対応した環境で、この条件が成り立たないこと */}
+`@supports` の条件には、`corner-shape` と `if()` を使った値を書きます。カスタムプロパティは、どんな値でも構文の誤りにならないので、`if()` に未対応の環境でも `--_u--radius-ratio` に `if(…)` の文字列がそのまま入ります。それを `calc()` で使うと `border-radius` の宣言が無効になり、角丸が消えます。`@supports` で囲めば、未対応の環境では倍率が1のままになり、ふつうの角丸で表示されます。
+
+スタイルクエリの範囲の比較に対応しているかは、`@supports` では判定できません。`if()` の条件は、解釈できない中身も未知の条件として受け付け、偽として評価するからです（CSS Values and Units Module Level 5）。2026年10月にChrome 152で確かめたところ、`style()` の中に解釈できない式を書いても、`@supports` の条件は真になりました。そこで、範囲の比較に未対応の環境では、`if()` の中で `else` の値が選ばれることを使います。倍率の `else` は1です。角の形は、どの半径でも真になる `style(--_u--radius >= 0)` で `squircle` を選び、`else` には通常の角丸の `round` を書きます。範囲の比較を解釈できない環境では、すべての条件が偽になるので、倍率が1の通常の角丸で表示されます（Chrome 152で、`style()` の中を解釈できない式にして確認）。{/* 要検証: ブラウザ。if() と corner-shape に対応し、範囲の比較に未対応の Chrome 139〜141 で、通常の角丸になること */}
 
 「[6-5 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」では、`if()` を、要素自身のカスタムプロパティを `style()` で調べる場面に限り、条件1つと `else` の形で使うとしています。このユーティリティは、要素自身の半径を調べる点では6-5の範囲に収まりますが、条件は複数です。1つの長さを倍率に置き換える対応表で、状態の分岐ではないので、例外として扱っています。
 
@@ -223,3 +226,4 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 - [Rounded Tab](https://codepen.io/tak-dcxi/pen/MYaaQwv)（CodePen、2025年7月。マスクと `corner-shape: scoop` の2つの方式）
 - [corner-shape - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/corner-shape)
 - [sign() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sign)
+- [CSS Values and Units Module Level 5: Boolean Expression Multiplier](https://drafts.csswg.org/css-values-5/#boolean)（`if()` の条件で、解釈できない中身を偽として扱う規定）

@@ -121,7 +121,7 @@ import arcCss from '../../../demos/values/sibling-index-arc/style.css?raw';
 
 <Demo title="対応した環境では、中央の項目が高く、両端の項目が低い弧の形に並ぶ" html={arcHtml} css={arcCss} widths={[]} />
 
-`sibling-index()` に対応したブラウザでは、5つの項目のうち中央の「JS」がいちばん高く、隣の「CSS」と「a11y」が12px、両端の「HTML」と「SVG」が24px下がります。対応していないブラウザでは、5つの項目が同じ高さで横に並びます。{/* 要検証: ブラウザ。sibling-index() に対応したブラウザと版 */}
+`sibling-index()` に対応したブラウザでは、5つの項目のうち中央の「JS」がいちばん高く、隣の「CSS」と「a11y」が12px、両端の「HTML」と「SVG」が24px下がります。対応していないブラウザでは、5つの項目が同じ高さで横に並びます。`sibling-index()` は、Chrome 138、Firefox 154、Safari 26.2で使えます（2026年10月確認）。
 
 項目を下げるには、`margin-block-start` ではなく `translate` を使います。弧の形は見た目だけの装飾なので、レイアウトを変えない変形が向いています。`margin-block-start` で下げると、下げた分だけ一覧の高さが変わり、要素の間隔を作る `margin` とも見分けが付きません。ただし、`translate` は後ろの内容を押し下げないので、いちばん下がる項目の分だけ、一覧の下に余白を取っておきます。
 

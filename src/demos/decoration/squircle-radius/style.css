@@ -38,8 +38,8 @@
 
     border-radius: calc(var(--_u--radius) * var(--_u--radius-ratio));
 
-    /* corner-shape、if()、スタイルクエリの範囲の比較に対応した環境だけ */
-    @supports (corner-shape: if(style(--test = 1): squircle)) {
+    /* corner-shape と if() に対応した環境だけ */
+    @supports (corner-shape: if(style(--test: 1): squircle)) {
       --_u--radius-ratio: if(
         style(--_u--radius >= 32px): 1.5;
         style(--_u--radius >= 24px): 1.67;
@@ -53,7 +53,8 @@
       corner-shape: if(
         style(--_u--radius >= 32px): superellipse(1.5);
         style(--_u--radius >= 24px): superellipse(1.75);
-        else: squircle
+        style(--_u--radius >= 0): squircle;
+        else: round
       );
     }
   }

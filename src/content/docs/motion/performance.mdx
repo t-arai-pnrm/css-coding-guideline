@@ -275,7 +275,7 @@ button.addEventListener('click', () => {
 
 最初の画面に入る要素には指定しません。最初の描画で画面の中にあると判断された要素は、そのまま描画されるので、描画を省く効果がありません。また、`content-visibility: auto` は、描画を省いていない間も、レイアウト、スタイル、ペイントの封じ込めを掛けたままにします。`contain: content` と同じく、はみ出した影が切り取られ、スタッキングコンテキストと固定配置の包含ブロックが作られます（「[7-10 positionの基礎](/layout/positioning/)」）。
 
-仕様では、描画を省いた中身も、ページ内検索、Tabキーでのフォーカスの移動、アクセシビリティツリーの対象に残ります。ただし、スクリーンリーダーで読まれない場合があるという報告もあるので、指定したら、ページ内検索、Tabキー、スクリーンリーダーの読み上げで中身に届くかを確かめます。{/* 要検証: ブラウザ。スクリーンリーダーで読まれない場合の具体的な環境 */}
+仕様では、描画を省いた中身も、ページ内検索、Tabキーでのフォーカスの移動、アクセシビリティツリーの対象に残ります。Chrome 85〜89には、描画を省いた中の見出しがスクリーンリーダーの見出しの一覧に出ない不具合があり、Chrome 90で修正されました（2026年10月、不具合の報告の記事で確認）。指定したら、ページ内検索、Tabキー、スクリーンリーダーの見出しの一覧で中身に届くかを確かめます。
 
 閉じたアコーディオンのパネルのように、ユーザーが開くまで隠しておく中身には、`content-visibility: auto` ではなく `hidden="until-found"` を使います。`hidden="until-found"` は中身を隠したまま、ページ内検索で見つかったときに表示する仕組みです。`content-visibility: auto` は、見えている内容の描画の順番を変えるだけで、何も隠しません。使い分けは「[17-2 開閉するUI](/interaction/disclosure/)」で説明しています。
 
@@ -304,6 +304,7 @@ Renderingパネルでは、描き直しと合成レイヤーを画面の上で�
 - [content-visibility - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/content-visibility)
 - [contain-intrinsic-block-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/contain-intrinsic-block-size)
 - [CSS Containment Module Level 2](https://drafts.csswg.org/css-contain-2/#content-visibility)（W3C）
+- [Content-visibility and Accessible Semantics](https://marcysutton.com/content-visibility-accessible-semantics)（2020年12月。2021年3月の追記で、Chrome 90での修正を報告）
 - [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)
 - [Analyze runtime performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance)
 - [Discover issues with rendering performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/rendering/performance)
