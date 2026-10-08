@@ -1,0 +1,56 @@
+name: Publish MCP server to npm
+
+# main に push したとき、packages/mcp/package.json の版がまだ npm になければ公開する。
+# 版は本のバージョンと同じで、pnpm gen:ai がそろえる。
+# npm の Trusted Publishing（OIDC）を使うので、トークンは置かない。
+# npm 側の設定が済むまでは動かさない。済んだら、リポジトリの変数 PUBLISH_MCP を true にする。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-mcp
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: vars.PUBLISH_MCP == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+      - id: check
+        working-directory: packages/mcp
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION は公開済みです。"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+      # データ（ルールと本文）を作り、ツールがすべて応答するかを確かめてから公開する
+      - if: steps.check.outputs.publish == 'true'
+        run: pnpm gen:ai
+      - if: steps.check.outputs.publish == 'true'
+        run: pnpm test:mcp
+      # Trusted Publishing には npm 11.5.1 以降が要る。pnpm publish は OIDC に対応していないので npm で公開する
+      - if: steps.check.outputs.publish == 'true'
+        working-directory: packages/mcp
+        run: |
+          npm --version
+          npm publish --access public

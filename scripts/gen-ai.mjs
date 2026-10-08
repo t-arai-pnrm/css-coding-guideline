@@ -1,99 +1,131 @@
 /**
- * ルールの定義（src/content/rules/*.yaml）から、AI 向けのルール集とスキルを生成する。
- * - skills/css-coding-guideline/rules.md: AI が誤りやすいルールを先頭に置いたルール集
- * - skills/css-coding-guideline/SKILL.md: Claude Code のスキル
- * - skills/css-coding-guideline/tokens.md: 本書のデモが読み込んでいる共通トークン（src/demos/tokens/*.css）
- * スキルは `~/.claude/skills/css-coding-guideline` からこのディレクトリへシンボリックリンクを張って使う。
- * 公開 URL が決まるまでは、詳細ページをローカルのファイルパスで参照する。
+ * ルールの定義（src/content/rules/*.yaml）と原稿から、AI 向けの配布物を生成する。
+ *
+ * コミットするもの（GitHub から入れるため）
+ * - plugin/skills/css-coding-guideline/: Agent Skill。SKILL.md と、章ごとのルール集（references/）
+ * - plugin/.claude-plugin/plugin.json、plugin/.mcp.json: Claude Code のプラグイン
+ * - .claude-plugin/marketplace.json: プラグインのマーケットプレイス
+ * - packages/mcp/package.json の version: 本のバージョンにそろえる
+ *
+ * コミットしないもの（npm に公開するときに作る）
+ * - packages/mcp/data/: MCP サーバーが読むルールと本文、本書の Stylelint 設定の写し
  */
-import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parse } from 'yaml';
-import { CHAPTERS, chapterLabel } from '../src/lib/book.mjs';
-import { RULE_KINDS } from '../src/lib/rule-kinds.mjs';
+import { BASE, pageUrl, REPOSITORY, SITE } from '../src/lib/site.mjs';
+import {
+  buildOutline,
+  CHAPTERS,
+  chapterLabel,
+  formatRule,
+  loadPages,
+  loadRules,
+  ROOT,
+  RULE_KINDS,
+} from './lib/guideline-data.mjs';
 
-const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
-const RULES_DIR = join(ROOT, 'src/content/rules');
-const DOCS_DIR = join(ROOT, 'src/content/docs');
-const OUT_DIR = join(ROOT, 'skills/css-coding-guideline');
+const SKILL_NAME = 'css-coding-guideline';
+const PLUGIN_DIR = join(ROOT, 'plugin');
+const SKILL_DIR = join(PLUGIN_DIR, 'skills', SKILL_NAME);
+const MCP_DIR = join(ROOT, 'packages/mcp');
+const MCP_DATA_DIR = join(MCP_DIR, 'data');
+const MCP_PACKAGE = 'css-coding-guideline-mcp';
 const TOKENS_DIR = join(ROOT, 'src/demos/tokens');
 const TOKEN_FILES = ['colors.css', 'shadows.css', 'sizes.css', 'typography.css', 'motion.css', 'z-index.css'];
 
-const { version } = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
+const { version, description } = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
 const today = new Date().toISOString().slice(0, 10);
+const HOME = pageUrl('');
+const GUIDE = pageUrl('appendix/ai-tools');
 
-const rules = [];
-for (const file of (await readdir(RULES_DIR)).filter((name) => name.endsWith('.yaml')).sort()) {
-  rules.push(...parse(await readFile(join(RULES_DIR, file), 'utf8')));
-}
-
-/** ページ ID（例: responsive/escalation）からタイトルとファイルの場所を引く。 */
-const pageInfo = async (page) => {
-  for (const candidate of [`${page}.mdx`, `${page}/index.mdx`]) {
-    try {
-      const source = await readFile(join(DOCS_DIR, candidate), 'utf8');
-      const title = source.match(/^title:\s*"?(.+?)"?\s*$/m)?.[1] ?? page;
-      return { title, path: join(DOCS_DIR, candidate) };
-    } catch {
-      // 次の候補を試す
-    }
-  }
-  throw new Error(`ルールの掲載ページ「${page}」が見つかりません。`);
-};
-
-for (const rule of rules) {
-  if (!RULE_KINDS[rule.kind]) throw new Error(`ルール「${rule.id}」の kind がありません。`);
-}
-
-const pages = new Map();
-for (const rule of rules) {
-  if (!pages.has(rule.page)) pages.set(rule.page, await pageInfo(rule.page));
-}
-
-const formatRule = (rule) => {
-  const lines = [`- 【${rule.level}・${RULE_KINDS[rule.kind]}】${rule.rule}（\`${rule.id}\`）`, `  - 理由: ${rule.reason}`];
-  if (rule.note) lines.push(`  - 補足: ${rule.note}`);
-  if (rule.lint) lines.push(`  - 自動チェック: ${rule.lint}`);
-  lines.push(`  - 詳細: ${pages.get(rule.page).title}（${pages.get(rule.page).path}）`);
-  return lines.join('\n');
-};
-
+const rules = await loadRules();
+const pages = await loadPages(rules);
+const outline = buildOutline(pages, rules);
+const pageById = new Map(pages.map((page) => [page.id, page]));
 const aiProne = rules.filter((rule) => rule.aiProne);
-const byChapter = CHAPTERS.map((chapter) => ({
+
+const pad = (number) => String(number).padStart(2, '0');
+const chapterFile = (chapter) => `references/${pad(chapter.number)}-${chapter.dir}.md`;
+const chapters = CHAPTERS.map((chapter) => ({
+  ...chapter,
   label: chapterLabel(chapter),
+  file: chapterFile(chapter),
+  pages: pages.filter((page) => page.section === chapter.dir).sort((a, b) => a.order - b.order),
   rules: rules.filter((rule) => rule.page.split('/')[0] === chapter.dir),
-})).filter((group) => group.rules.length > 0);
+}));
+const outsideChapters = rules.filter((rule) => !CHAPTERS.some((chapter) => rule.page.split('/')[0] === chapter.dir));
+if (outsideChapters.length > 0) {
+  throw new Error(`章の外のページに掲載したルールがあります: ${outsideChapters.map((rule) => rule.id).join(', ')}`);
+}
 
-const rulesMd = `# CSSコーディングガイドライン ルール集
+const writeJson = (path, data) => writeFile(path, `${JSON.stringify(data, null, 2)}\n`);
 
-- バージョン: ${version}
-- 生成日: ${today}
-- ルールの数: ${rules.length}
+const LEVELS_AND_KINDS = `強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
+性質は3種類です。「${RULE_KINDS.spec}」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「${RULE_KINDS.judgment}」は状況とトレードオフで決まり、適用する条件があります。「${RULE_KINDS.convention}」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。`;
+
+// ── スキル ──────────────────────────────────────────────────────────────
+
+const chapterReference = (chapter) => {
+  const sections = chapter.pages
+    .filter((page) => chapter.rules.some((rule) => rule.page === page.id))
+    .map((page) => {
+      const pageRules = chapter.rules.filter((rule) => rule.page === page.id);
+      return `## ${page.title}\n\n${page.url}\n\n${pageRules.map((rule) => formatRule(rule)).join('\n')}`;
+    });
+  return `# ${chapter.label}：ルール
+
+- ガイドラインのバージョン: ${version}（${today} 生成）
+- ルールの数: ${chapter.rules.length}
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
-強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-各ルールの背景とコード例は、「詳細」に書いたページを読んでください。
+${LEVELS_AND_KINDS}
+背景とコード例は、各節の URL のページにあります。
 
-## AIが誤りやすいルール
+${sections.join('\n\n')}
+`;
+};
 
-AIが生成するコードで特に誤りやすいルールです。CSSを書く前とレビューの前に、必ず確認してください。
+const aiProneReference = `# AIが誤りやすいルール
 
-${aiProne.map(formatRule).join('\n') || '（まだありません）'}
+- ガイドラインのバージョン: ${version}（${today} 生成）
+- ルールの数: ${aiProne.length}
 
-## すべてのルール
+AIが生成するコードで特に誤りやすいルールです。CSSを書く前とレビューの前に、必ず確認してください。1件1行で、強度とルールの本文と ID だけを並べています。理由と補足は、章ごとのファイル（\`references/<章>.md\`）を ID で検索して読んでください。
 
-${byChapter.map((group) => `### ${group.label}\n\n${group.rules.map(formatRule).join('\n')}`).join('\n\n')}
+${chapters
+  .filter((chapter) => chapter.rules.some((rule) => rule.aiProne))
+  .map(
+    (chapter) =>
+      `## ${chapter.label}（${chapter.file}）\n\n${chapter.rules
+        .filter((rule) => rule.aiProne)
+        .map((rule) => `- 【${rule.level}】${rule.rule}（\`${rule.id}\`）`)
+        .join('\n')}`,
+  )
+  .join('\n\n')}
 `;
 
+const chapterIndex = chapters
+  .filter((chapter) => chapter.rules.length > 0)
+  .map(
+    (chapter) =>
+      `| ${chapter.label} | \`${chapter.file}\` | ${chapter.rules.length} | ${chapter.pages
+        .filter((page) => page.order > 0)
+        .map((page) => page.title)
+        .join('、')} |`,
+  )
+  .join('\n');
+
 const skillMd = `---
-name: css-coding-guideline
+name: ${SKILL_NAME}
 description: 「CSSコーディングガイドライン」に従ってCSSを書く・直す・レビューする。CSSの記法、命名、カスケードとレイヤー、@scope、単位、レスポンシブ、タイポグラフィと和文組版、色、モーション、CMSでの運用などを扱うタスクで使う。
+license: CC-BY-4.0
 ---
 
 # CSSコーディングガイドライン Skill
 
 - ガイドラインのバージョン: ${version}（${today} 生成）
+- ルールの数: ${rules.length}（うち AI が誤りやすいもの ${aiProne.length}）
+- 本書: ${HOME}
 
 以下のようなタスクでこの Skill を使うこと。
 
@@ -112,29 +144,45 @@ description: 「CSSコーディングガイドライン」に従ってCSSを書�
 4. 古い書き方を使わない。とくに「AIが誤りやすいルール」は生成のたびに確認する
 5. 根拠のない数値を書かない。値の根拠は \`calc()\` の式やトークンで残す
 
+## ルールの強度と性質
+
+${LEVELS_AND_KINDS}
+
 ## 必須の手順
 
-### Step 1: ルール集を読む
+MCP サーバー \`css-coding-guideline\`（npm の \`${MCP_PACKAGE}\`）が使える環境では、ファイルを読む代わりにそのツールを使ってよい。\`search_rules\` で語句や章、\`aiProne\` で絞り込み、\`get_rule\` で ID からルールを、\`get_page\` で節の本文を引き、\`lint_css\` で本書の Stylelint 設定で検査する。
 
-同じディレクトリの \`rules.md\` を読み、とくに「AIが誤りやすいルール」を確認する。
+### Step 1: AIが誤りやすいルールを確認する
 
-### Step 2: 関係する章の詳細を読む
+\`references/ai-prone.md\` を読む。
 
-タスクに関係するルールの「詳細」に書かれたページを読み、背景とコード例を確認する。
+### Step 2: 関係する章のルールを読む
 
-### Step 3: 書く・直す
+下の「章の索引」から、タスクに関係する章のファイルを選んで読む。各ルールに理由、補足、自動チェックの手段、掲載ページの URL がある。
+
+### Step 3: 背景とコード例を確かめる
+
+ルールの理由と補足だけで判断できないときは、掲載ページの本文を読む（MCP の \`get_page\`、または URL の取得）。本文を取得できない環境では、ルールの理由と補足で判断し、その旨を明示する。
+
+### Step 4: 書く・直す
 
 ルールに従ってCSSを書く。ガイドラインに書かれていない判断が必要な場合は、その旨を明示する。
 
-### Step 4: 最終確認
+### Step 5: 最終確認
 
 - [ ] 「AIが誤りやすいルール」に違反していないか
 - [ ] 「必須」と「禁止」のルールに違反していないか
-- [ ] Stylelint（本書の設定）で検出できる違反が残っていないか
+- [ ] 本書の Stylelint 設定で検出できる違反が残っていないか（MCP の \`lint_css\`）。lint で検出できるルールは一部なので、通っても Step 1 と Step 2 の確認を省かない
+
+## 章の索引
+
+| 章 | ファイル | ルールの数 | 節 |
+| --- | --- | --- | --- |
+${chapterIndex}
 
 ## トークンの例
 
-同じディレクトリの \`tokens.md\` は、本書のデモが使っているトークンの全文である。プロジェクトにトークンがないときに、分け方（色と文字の役割はプリミティブとセマンティクスの2層、ほかは1層のスケール）と名前の付け方の手本にする。プロジェクトに定義済みのトークンがあれば、そちらを使う。
+\`references/tokens.md\` は、本書のデモが使っているトークンの全文である。プロジェクトにトークンがないときに、分け方（色と文字の役割はプリミティブとセマンティクスの2層、ほかは1層のスケール）と名前の付け方の手本にする。プロジェクトに定義済みのトークンがあれば、そちらを使う。
 
 ## 返答フォーマット
 
@@ -151,10 +199,6 @@ description: 「CSSコーディングガイドライン」に従ってCSSを書�
 3. **補足**: ルールに書かれていないが気になる点
 `;
 
-await mkdir(OUT_DIR, { recursive: true });
-await writeFile(join(OUT_DIR, 'rules.md'), rulesMd);
-await writeFile(join(OUT_DIR, 'SKILL.md'), skillMd);
-
 const tokenSections = [];
 for (const file of TOKEN_FILES) {
   const css = (await readFile(join(TOKENS_DIR, file), 'utf8')).trim();
@@ -163,11 +207,93 @@ for (const file of TOKEN_FILES) {
 const tokensMd = `# 本書のデモの共通トークン
 
 - ガイドラインのバージョン: ${version}（${today} 生成）
-- 元のファイル: src/demos/tokens/*.css（付録I）
+- 元のファイル: src/demos/tokens/*.css（${pageUrl('appendix/demo-tokens')}）
 
 本書のデモは、次のトークンを \`@layer tokens\` に入れて読み込んでいる。デモからは、色はセマンティクス（\`--background--*\`、\`--foreground--*\`、\`--border--*\`）だけを、文字は役割（\`--text--<役割>--font-size\` と \`--text--<役割>--leading\`）を参照する。
 
 ${tokenSections.join('\n\n')}
 `;
-await writeFile(join(OUT_DIR, 'tokens.md'), tokensMd);
-console.log(`${rules.length} 件のルールから skills/css-coding-guideline を生成しました（v${version}）。`);
+
+await rm(SKILL_DIR, { recursive: true, force: true });
+await mkdir(join(SKILL_DIR, 'references'), { recursive: true });
+await writeFile(join(SKILL_DIR, 'SKILL.md'), skillMd);
+await writeFile(join(SKILL_DIR, 'references/ai-prone.md'), aiProneReference);
+await writeFile(join(SKILL_DIR, 'references/tokens.md'), tokensMd);
+for (const chapter of chapters.filter((entry) => entry.rules.length > 0)) {
+  await writeFile(join(SKILL_DIR, chapter.file), chapterReference(chapter));
+}
+
+// ── プラグインとマーケットプレイス ─────────────────────────────────────
+
+const pluginDescription = '「CSSコーディングガイドライン」に従ってCSSを書き、レビューするためのスキルと MCP サーバー';
+const author = { name: 'TAK', url: 'https://www.tak-dcxi.com/' };
+
+await mkdir(join(PLUGIN_DIR, '.claude-plugin'), { recursive: true });
+await writeJson(join(PLUGIN_DIR, '.claude-plugin/plugin.json'), {
+  name: SKILL_NAME,
+  displayName: 'CSSコーディングガイドライン',
+  version,
+  description: pluginDescription,
+  author,
+  homepage: GUIDE,
+  repository: `https://github.com/${REPOSITORY}`,
+  license: 'CC-BY-4.0',
+  keywords: ['css', 'stylelint', 'guideline', 'japanese'],
+});
+// MCP サーバーはプラグインと同じ版に固定する
+await writeJson(join(PLUGIN_DIR, '.mcp.json'), {
+  mcpServers: {
+    [SKILL_NAME]: { command: 'npx', args: ['-y', `${MCP_PACKAGE}@${version}`] },
+  },
+});
+await mkdir(join(ROOT, '.claude-plugin'), { recursive: true });
+await writeJson(join(ROOT, '.claude-plugin/marketplace.json'), {
+  name: SKILL_NAME,
+  owner: author,
+  description: `${description.replace(/（.*）$/, '')}のスキルと MCP サーバー`,
+  plugins: [{ name: SKILL_NAME, source: './plugin', description: pluginDescription }],
+});
+
+// ── MCP サーバー ─────────────────────────────────────────────────────────
+
+const mcpPackagePath = join(MCP_DIR, 'package.json');
+const mcpPackage = JSON.parse(await readFile(mcpPackagePath, 'utf8'));
+if (mcpPackage.version !== version) {
+  mcpPackage.version = version;
+  await writeJson(mcpPackagePath, mcpPackage);
+}
+// README の設定例も、版を固定した形で最新にする
+const readmePath = join(MCP_DIR, 'README.md');
+const readme = await readFile(readmePath, 'utf8');
+const pinned = readme.replace(new RegExp(`${MCP_PACKAGE}@\\d+\\.\\d+\\.\\d+`, 'g'), `${MCP_PACKAGE}@${version}`);
+if (pinned !== readme) await writeFile(readmePath, pinned);
+
+await rm(MCP_DATA_DIR, { recursive: true, force: true });
+await mkdir(MCP_DATA_DIR, { recursive: true });
+await writeJson(join(MCP_DATA_DIR, 'guideline.json'), {
+  version,
+  generatedAt: today,
+  site: `${SITE}${BASE}/`,
+  outline,
+  rules: rules.map(({ id, level, kind, rule, reason, note, lint, aiProne: prone, page, since }) => ({
+    id,
+    level,
+    kind,
+    rule,
+    reason,
+    note,
+    lint,
+    aiProne: Boolean(prone),
+    page,
+    pageTitle: pageById.get(page).title,
+    since,
+  })),
+  pages: pages.map(({ id, title, description: summary, url, markdown }) => ({ id, title, description: summary, url, markdown })),
+});
+// 本書の Stylelint 設定と独自ルールを、そのままの相対パスで写す
+await cp(join(ROOT, 'stylelint.config.mjs'), join(MCP_DATA_DIR, 'stylelint/stylelint.config.mjs'));
+await cp(join(ROOT, 'stylelint'), join(MCP_DATA_DIR, 'stylelint/stylelint'), { recursive: true });
+
+console.log(
+  `${rules.length} 件のルールと ${pages.length} ページから、plugin/ と packages/mcp/data/ を生成しました（v${version}）。`,
+);

@@ -3,9 +3,11 @@ import starlight from '@astrojs/starlight';
 import { satteri } from '@astrojs/markdown-satteri';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
+import starlightLlmsTxt from 'starlight-llms-txt';
 import { readdirSync, readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { chapterLabel, PARTS } from './src/lib/book.mjs';
+import { BASE, SITE } from './src/lib/site.mjs';
 
 /**
  * ルールへのリンク（`/<page>/#rule-<id>`）は、見出しではなく `<Guideline />` が出力する id を指す。
@@ -18,8 +20,6 @@ const rulePages = new Map(
     .flatMap((file) => parse(readFileSync(`${RULES_DIR}/${file}`, 'utf8')))
     .map((rule) => [rule.id, rule.page]),
 );
-/** GitHub Pages のプロジェクトサイトとして、サブパスで公開する。 */
-const BASE = '/css-coding-guideline';
 
 const isValidRuleLink = ({ link }) => {
   const match = link.slice(BASE.length).match(/^\/(.+?)\/?#rule-([a-z0-9-]+)$/);
@@ -44,8 +44,7 @@ const prefixBaseToLinks = {
 };
 
 export default defineConfig({
-  // starlight-llms-txt は、正式な公開 URL が決まったら追加する。
-  site: 'https://t-arai-pnrm.github.io',
+  site: SITE,
   base: BASE,
   markdown: {
     processor: satteri({
@@ -95,7 +94,16 @@ export default defineConfig({
           items: [{ autogenerate: { directory: 'appendix' } }],
         },
       ],
-      plugins: [starlightLinksValidator({ exclude: isValidRuleLink })],
+      plugins: [
+        starlightLinksValidator({ exclude: isValidRuleLink }),
+        // AI のツールに渡す本文（/llms.txt、/llms-full.txt、/llms-small.txt）。使い方は付録J。
+        starlightLlmsTxt({
+          details:
+            'ルールには「必須」「推奨」「非推奨」「禁止」の強度と、英語のID（例: `query-range-syntax`）が付いています。ルールだけを引くなら、MCPサーバー `css-coding-guideline-mcp` かスキルを使ってください（付録J「AIツールで使う」）。',
+          // 版ごとの変更点は長いので、要約版からは外す
+          exclude: ['appendix/changelog'],
+        }),
+      ],
     }),
   ],
 });

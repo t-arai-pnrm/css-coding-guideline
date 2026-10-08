@@ -1,7 +1,7 @@
 {
   "name": "css-coding-guideline",
   "type": "module",
-  "version": "0.42.3",
+  "version": "0.43.0",
   "private": true,
   "description": "CSSコーディングガイドライン（Astro Starlight）",
   "author": "TAK",
@@ -17,7 +17,8 @@
     "lint:css": "stylelint 'src/**/*.{css,astro}'",
     "lint:examples": "node scripts/lint-examples.mjs",
     "lint:text": "textlint 'src/content/docs/**/*.mdx'",
-    "list:markers": "node scripts/list-markers.mjs"
+    "list:markers": "node scripts/list-markers.mjs",
+    "test:mcp": "pnpm --filter css-coding-guideline-mcp smoke"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.2",
@@ -26,6 +27,7 @@
     "kiso.css": "^1.2.4",
     "sharp": "^0.35.4",
     "starlight-links-validator": "^0.26.0",
+    "starlight-llms-txt": "^0.12.0",
     "web-features": "^3.40.0",
     "yaml": "^2.9.1"
   },

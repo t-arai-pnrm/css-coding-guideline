@@ -131,9 +131,9 @@
 - id: ai-read-rules-first
   level: 推奨
   kind: judgment
-  rule: AI に CSS を書かせるときやレビューさせるときは、先に本書のルール集（またはスキル）を読ませる。
+  rule: AI に CSS を書かせるときやレビューさせるときは、先に本書のルールを、スキルか MCP サーバーで読ませる。
   reason: AI が誤りやすいルールを、書く前に確認させられるため。
-  note: Claude Code では `skills/css-coding-guideline/` をスキルとして登録し、ほかのツールでは `AGENTS.md` や `CLAUDE.md` から `rules.md` を参照させます。
+  note: Claude Code では本書のプラグインを入れ、ほかのツールではスキルと MCP サーバーを設定します。どちらも使えないツールでは、`AGENTS.md` からスキルのルール集の URL を参照させます（付録J「AIツールで使う」）。
   page: operations/review-and-ai
   since: 0.1.0
 

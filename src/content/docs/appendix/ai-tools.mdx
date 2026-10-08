@@ -1,0 +1,152 @@
+---
+title: 付録J AIツールで使う
+description: 本書のルールを、ほかのプロジェクトのAIツールから参照するための設定をまとめたページです。Claude Codeのプラグイン、MCPサーバー、スキル、llms.txtの入れ方を、ツールごとに説明します。
+sidebar:
+  order: 10
+---
+
+本書のルールは、ほかのプロジェクトで使うAIツールからも参照できます。配布しているのは、スキル、MCPサーバー、`llms.txt` の3つです。Claude Codeなら、プラグインを1つ入れるだけで、スキルとMCPサーバーの両方が使えます。ほかのツールでは、スキルとMCPサーバーを別々に設定します。
+
+AIに読ませても、生成されたコードがルールに沿うとは限りません。生成されたCSSをlintとレビューで確かめる手順は、「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」で説明しています。このページの設定方法は、2026年10月時点の各ツールの公式ドキュメントにもとづいています。
+
+## 配布しているもの
+
+スキルは、Agent Skillsの形式（`SKILL.md` と参照用のファイル）でまとめたルールです。`SKILL.md` には、手順と章の索引だけを書いています。AIが誤りやすいルールの一覧と、章ごとのルール集は `references/` に分けているので、AIは必要な章のファイルだけを開きます。各ルールには、掲載しているページのURLを添えています。
+
+MCPサーバーは、npmで公開している `css-coding-guideline-mcp` です。ルールと本文のデータを同梱しているので、起動したあとはネットワークに接続しません。動かすにはNode.js 20.19以降が要ります。提供するツールは次の5つです。
+
+| ツール | 返すもの |
+| --- | --- |
+| `search_rules` | 語句、章、強度、性質、AIが誤りやすいかで絞り込んだルールの一覧 |
+| `get_rule` | IDで指定したルールの理由、補足、自動チェックの手段、掲載ページ |
+| `get_page` | 節の本文。デモはCSSとHTMLのコードに、図は代替テキストに置き換えている |
+| `list_chapters` | 部、章、節の目次と、章ごとのルールの数 |
+| `lint_css` | 本書のStylelintの設定で検査した結果と、対応するルールのID |
+
+`lint_css` は、本書のリポジトリにだけ当てはまる指定を外した設定で検査します。レイヤー名の制限は、プロジェクトで宣言したレイヤー名を `layers` に渡したときだけ検査します。本書のレイヤーの名前が、そのプロジェクトのものと同じとは限らないからです。
+
+`llms.txt` は、本文をAIに読ませるためのテキストです。MCPサーバーとスキルのどちらも使えないツールでは、URLを渡して本文を読ませます。
+
+## Claude Code
+
+Claude Codeでは、プラグインを入れます。プラグインには、スキルと、MCPサーバーを起動する設定が入っています。先に本書のリポジトリをマーケットプレイスとして登録し、そこからプラグインを入れます。
+
+```sh title="プラグインを入れる"
+claude plugin marketplace add t-arai-pnrm/css-coding-guideline
+claude plugin install css-coding-guideline@css-coding-guideline
+```
+
+セッションの中では、コマンドの先頭の `claude plugin` を `/plugin` に替えて実行します。既定では自分のすべてのプロジェクトに入ります。チームで同じ設定を使うときは、プロジェクトの `.claude/settings.json` に次の設定をコミットし、そのプロジェクトを開いたメンバーに、同じマーケットプレイスとプラグインを使うよう促します。
+
+```json title=".claude/settings.json"
+{
+  "extraKnownMarketplaces": {
+    "css-coding-guideline": {
+      "source": { "source": "github", "repo": "t-arai-pnrm/css-coding-guideline" }
+    }
+  },
+  "enabledPlugins": {
+    "css-coding-guideline@css-coding-guideline": true
+  }
+}
+```
+
+プラグインは、入れたときの版に固定されます。ほかの人が公開しているマーケットプレイスは、自動では更新されません。付録F「[更新履歴](/appendix/changelog/)」で変更点を確かめてから、`claude plugin update css-coding-guideline@css-coding-guideline` で更新します。MCPサーバーだけを使う場合は、`claude mcp add --scope user css-coding-guideline -- npx -y css-coding-guideline-mcp` で登録します。
+
+## Claude DesktopとClaude.ai
+
+Claude DesktopとClaude.aiでは、スキルだけが使えます。チャットは、手元で起動するMCPサーバーを読み込まないからです。設定の「Customize」から「Plugins」を開き、マーケットプレイスの追加で `t-arai-pnrm/css-coding-guideline` を指定して、プラグインを入れます。スキルを使うには、「Settings」の「Capabilities」で、コードの実行とファイルの作成を有効にしておく必要があります。
+
+Claude Desktopのチャットでも検索や検査を使いたいときは、MCPサーバーを設定ファイルに登録します。「Settings」の「Developer」にある「Edit Config」で `claude_desktop_config.json` を開き、次の設定を足してから、アプリを再起動します。この方法では、手元にNode.jsが入っている必要があります。
+
+```json title="claude_desktop_config.json"
+{
+  "mcpServers": {
+    "css-coding-guideline": {
+      "command": "npx",
+      "args": ["-y", "css-coding-guideline-mcp"]
+    }
+  }
+}
+```
+
+## Cursor、Codex、GitHub Copilot
+
+Claude Code以外のツールには、スキルを `skills` コマンドで入れます。コマンドを実行すると、入れる先のツールを尋ねられます。CursorとCodexとGitHub Copilotは、プロジェクトの `.agents/skills/` からスキルを読み込みます。`-g` を付けると、自分のすべてのプロジェクトで使えるように入れます。`skills` コマンドを動かすには、Node.js 22.20以降が要ります。
+
+```sh title="スキルを入れる"
+npx skills add t-arai-pnrm/css-coding-guideline
+```
+
+MCPサーバーは、ツールごとの設定ファイルに登録します。Cursorでは、プロジェクトの `.cursor/mcp.json` か、自分の `~/.cursor/mcp.json` に書きます。
+
+```json title=".cursor/mcp.json"
+{
+  "mcpServers": {
+    "css-coding-guideline": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "css-coding-guideline-mcp"]
+    }
+  }
+}
+```
+
+Codexでは、`codex mcp add css-coding-guideline -- npx -y css-coding-guideline-mcp` で登録します。設定は `~/.codex/config.toml` に書き込まれ、CLIとIDEの拡張機能で共有されます。
+
+```toml title="~/.codex/config.toml"
+[mcp_servers.css-coding-guideline]
+command = "npx"
+args = ["-y", "css-coding-guideline-mcp"]
+```
+
+VS CodeのGitHub Copilotでは、プロジェクトのルートの `.mcp.json` に、Cursorと同じ形の設定を書きます。この形のファイルは、Claude Codeのプロジェクト用の設定とも共通です。VS Codeは、Claude Codeの形式のプラグインもそのまま扱えます。設定の `chat.plugins.marketplaces` に `t-arai-pnrm/css-coding-guideline` を加えると、拡張機能のビューの `@agentPlugins` からプラグインを入れられます。
+
+GitHub上で動くCopilotのコーディングエージェントは、リポジトリの「Settings」の「Copilot」にある、MCPサーバーの設定欄から登録します。ファイルからは読み込まれません。この設定では、使うツールを `tools` に並べる必要があります。どのツールも、同梱のデータを読むだけで、ファイルの書き込みやネットワークへの接続をしないので、5つすべてを許可してかまいません。
+
+```json title="Copilotのコーディングエージェントの設定"
+{
+  "mcpServers": {
+    "css-coding-guideline": {
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "css-coding-guideline-mcp"],
+      "tools": ["search_rules", "get_rule", "get_page", "list_chapters", "lint_css"]
+    }
+  }
+}
+```
+
+## MCPもスキルも使えない場合
+
+MCPサーバーとスキルのどちらも読み込めないツールでは、本文のテキストかルール集のURLを、プロジェクトの `AGENTS.md` から参照させます。本文は `llms.txt` の形で、目次（`llms.txt`）、全文（`llms-full.txt`）、要約版（`llms-small.txt`）の3つを用意しています。どれも本書のURLの直下にあります（例：`https://t-arai-pnrm.github.io/css-coding-guideline/llms.txt`）。
+
+ルールだけを読ませるときは、スキルに入っているルール集を、GitHubのURLで指定します。AIが誤りやすいルールの一覧（`references/ai-prone.md`）を毎回読ませ、ほかの章のファイルは必要なときに開かせます。
+
+```md title="AGENTS.md（抜粋）"
+## CSS
+
+- CSSを書く前とレビューの前に、https://raw.githubusercontent.com/t-arai-pnrm/css-coding-guideline/main/plugin/skills/css-coding-guideline/references/ai-prone.md を読む。
+- 関係する章のルールは、同じディレクトリの章ごとのファイルを読む。章の一覧は、1つ上の SKILL.md の「章の索引」にある。
+- 判断の根拠には、ルールのIDを添える。
+```
+
+## 版をそろえる
+
+スキル、プラグイン、MCPサーバーには、本書と同じバージョン番号を付けています。プラグインは、自分と同じ版のMCPサーバーを起動するので、スキルとMCPサーバーの内容がずれません。プラグインを使わずにMCPサーバーを設定する場合も、チームで共有する設定では `css-coding-guideline-mcp@0.43.0` のように版を固定します。版を書かないと、起動するたびに最新の版を使うので、知らないうちにルールの内容まで変わりうるからです。
+
+バージョン番号の上げ方は、付録F「[更新履歴](/appendix/changelog/)」の冒頭で説明しています。ルールを変えたり削除したりした版に上げるときは、更新履歴で変わったルールを確かめてから、プロジェクトの設定の版を書き換えます。
+
+## 参考リンク
+
+- [Plugins reference - Claude Code Docs](https://code.claude.com/docs/en/plugins-reference)
+- [Connect Claude Code to tools via MCP - Claude Code Docs](https://code.claude.com/docs/en/mcp)
+- [Agent Skills Specification](https://agentskills.io/specification)
+- [Model Context Protocol](https://modelcontextprotocol.io/)
+- [Model Context Protocol - Cursor Docs](https://cursor.com/docs/context/mcp)
+- [Agent Skills - Cursor Docs](https://cursor.com/docs/skills)
+- [Model Context Protocol - Codex](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)
+- [Add and manage MCP servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
+- [Extending GitHub Copilot coding agent with the Model Context Protocol (MCP) - GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/extend-coding-agent-with-mcp)
+- [vercel-labs/skills - GitHub](https://github.com/vercel-labs/skills)
+- [The /llms.txt file](https://llmstxt.org/)

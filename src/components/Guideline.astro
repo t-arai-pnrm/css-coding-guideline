@@ -13,15 +13,34 @@ interface Props {
   page?: string;
 }
 
-const page = Astro.props.page ?? Astro.locals.starlightRoute.id;
-const rules = (await getCollection('rules', ({ data }) => data.page === page)).sort(
-  (a, b) => a.data.order - b.data.order,
-);
-if (rules.length === 0) {
+/**
+ * starlight-llms-txt が llms-full.txt などを作るときは、Starlight のページの外で本文を描画するので、
+ * 現在のページが分からない（`starlightRoute` を読むとエラーになる）。そのときはルールの代わりに参照先を示す。
+ */
+const currentPage = () => {
+  try {
+    return Astro.locals.starlightRoute.id;
+  } catch {
+    return undefined;
+  }
+};
+const page = Astro.props.page ?? currentPage();
+const rules = page
+  ? (await getCollection('rules', ({ data }) => data.page === page)).sort((a, b) => a.data.order - b.data.order)
+  : [];
+if (page && rules.length === 0) {
   throw new Error(`「${page}」に掲載するルールが src/content/rules/*.yaml にありません。`);
 }
 ---
 
+{
+  !page && (
+    <p>
+      この節のルールは、本書の各ページか、MCPサーバーの <code>search_rules</code> で参照してください。
+    </p>
+  )
+}
+{page && (
 <ul class="scoped guideline not-content">
   {
     rules.map(({ data }) => (
@@ -70,6 +89,7 @@ if (rules.length === 0) {
     ))
   }
 </ul>
+)}
 
 <style is:global>
   @layer starlight, base, components;

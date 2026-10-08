@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン
 
-CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight で作っている。著者は TAK。本書は AI に参照させるドキュメントも兼ねる。方針の詳細と経緯は `DECISIONS.md` にある。方針を変えるときは、先に著者に確認する。
+CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight で作っている。著者は TAK。本書は AI に参照させるドキュメントも兼ねる。方針の詳細と経緯は `DECISIONS.md` にある（git の管理外なので、著者の手元のチェックアウトにだけある。新しいクローンやワークツリーにはない）。方針を変えるときは、先に著者に確認する。
 
 ## コマンド
 
@@ -11,7 +11,10 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `pnpm lint:text`: 原稿を textlint で検証する。
 - `pnpm list:markers`: 刊行前に解消する印（`要確認`、`要検証`）を種類ごとに一覧にする。`--summary` で件数だけを出す。
 - `pnpm gen:exercise`: 第20章のデモから、演習を手元で進めるためのファイル（`public/exercise-files/`）を生成する。
-- `pnpm gen:ai`: ルールから AI 向けのルール集とスキル（`skills/css-coding-guideline/`）を生成する。ルールを変えたら必ず実行する。
+- `pnpm gen:ai`: ルールと原稿から、AI 向けの配布物を生成する。ルールか原稿を変えたら必ず実行する。
+  - コミットするもの：スキルとプラグイン（`plugin/`）、マーケットプレイス（`.claude-plugin/marketplace.json`）、MCP サーバーの `package.json` と README の版
+  - コミットしないもの：MCP サーバーが同梱するデータ（`packages/mcp/data/`）
+- `pnpm test:mcp`: MCP サーバーを stdio で起動し、すべてのツールを1回ずつ呼んで確かめる（先に `pnpm gen:ai` を実行する）。
 
 ## ファイルの配置
 
@@ -33,6 +36,10 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - `Figure`：図（SVG）をインラインで埋め込み、ライトとダークのテーマに色を追従させる。SVG は `src/assets/figures/<章>/<名前>.svg` に置き、`<Figure src="<章>/<名前>" alt="…" />` で読み込む。SVG の中では色を直接書かず、`Figure.astro` のクラス（`_box`、`_box -accent`、`_text`、`_text-muted`、`_text-accent`、`_arrow`、`_arrowhead`）を使う
   - `ImagePlaceholder`：用意できていない画像
 - `src/lib/book.mjs`: 部と章の構成。サイドバーと生成スクリプトが使う。
+- `src/lib/site.mjs`: 公開先の URL。公開先を変えたら、ここを直して `pnpm gen:ai` を実行する。
+- `scripts/lib/guideline-data.mjs`: ルールと原稿を読み、AI 向けの形にする（MDX のコンポーネントを Markdown に置き換える）。新しいコンポーネントを原稿で使うときは、ここにも置き換え方を足す。
+- `plugin/`、`.claude-plugin/marketplace.json`: Claude Code のプラグインとスキル。`pnpm gen:ai` が生成するので、直接編集しない。
+- `packages/mcp/`: npm に公開する MCP サーバー（`css-coding-guideline-mcp`）。版は本のバージョンと同じで、`.github/workflows/publish-mcp.yml` が、npm にまだない版を公開する（リポジトリの変数 `PUBLISH_MCP` が `true` のときだけ動く）。
 - `astro.config.mjs`: ルールへのリンク（`/<page>/#rule-<id>`）は、ルールの定義と照らして正しいものだけをリンク検証から外している。
 - `stylelint.config.mjs`、`stylelint/`: 本書の Stylelint 設定。本文で説明するルールと一致させる。
 

@@ -1,7 +1,7 @@
 # 本書のデモの共通トークン
 
-- ガイドラインのバージョン: 0.42.3（2026-10-08 生成）
-- 元のファイル: src/demos/tokens/*.css（付録I）
+- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- 元のファイル: src/demos/tokens/*.css（https://t-arai-pnrm.github.io/css-coding-guideline/appendix/demo-tokens/）
 
 本書のデモは、次のトークンを `@layer tokens` に入れて読み込んでいる。デモからは、色はセマンティクス（`--background--*`、`--foreground--*`、`--border--*`）だけを、文字は役割（`--text--<役割>--font-size` と `--text--<役割>--leading`）を参照する。
 
