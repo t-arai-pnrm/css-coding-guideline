@@ -2,8 +2,8 @@
   @scope (.scoped.contact-section) to (.scoped) {
     :scope {
       container: --scoped / inline-size;
-      border-radius: 8px;
-      background-color: oklch(96% 0.01 250deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
     }
 
     ._layout {
@@ -55,16 +55,17 @@
     }
 
     ._subtitle {
-      color: oklch(45% 0.05 260deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._contact-link {
       padding-block: 12px;
       padding-inline: 32px;
-      border-radius: 4px;
-      background-color: oklch(45% 0.15 260deg);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
   }
 }

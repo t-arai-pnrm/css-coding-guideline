@@ -5,7 +5,7 @@
       display: block grid;
       grid-template-columns: minmax(16px, 1fr) minmax(0, calc(480 / 16 * 1rem)) minmax(16px, 1fr);
       padding-block: 24px;
-      background-color: oklch(92% 0.04 250deg);
+      background-color: var(--background--active);
 
       & > * {
         grid-column: 2;
@@ -17,7 +17,8 @@
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 }

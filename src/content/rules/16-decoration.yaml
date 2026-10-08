@@ -169,9 +169,9 @@
 - id: marker-for-list-number-style
   level: 推奨
   kind: judgment
-  rule: '番号付きリストの番号を装飾するときは、`list-style: none` と `::before` ではなく、`::marker` で色やフォントを指定する。'
+  rule: '番号付きリストの番号の色や大きさを変えるときは、`list-style: none` と `::before` ではなく、`::marker` に `color` と `font-size` を指定する。'
   reason: 'リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。'
-  note: '`::marker` には `background` や `border` を指定できません。円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。'
+  note: '`::marker` には `background` や `border` を指定できず、Safari は `color` と `font-size` しか反映しません（`marker-color-and-font-size-only`）。太くする、円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。'
   page: decoration/surfaces
   since: 0.4.0
 

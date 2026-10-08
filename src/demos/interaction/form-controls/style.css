@@ -1,15 +1,8 @@
-@layer tokens {
-  :root {
-    --duration--fast: 200ms;
-    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
-
 @layer components {
   @scope (.scoped.contact-form) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
-      --_error: oklch(50% 0.2 25deg);
+      --_accent: var(--background--accent);
+      --_error: var(--foreground--danger);
 
       display: block grid;
       gap: 20px;
@@ -27,13 +20,13 @@
     }
 
     ._label {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     ._email-input {
       padding: 8px;
-      border-color: oklch(62% 0 0deg);
-      border-radius: 4px;
+      border-color: var(--foreground--muted);
+      border-radius: var(--rounded--sm);
 
       /* 入力して離れた後や、送信しようとした後にだけエラーの色にする */
       &:user-invalid {
@@ -42,12 +35,13 @@
     }
 
     p {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       &:is(._field:has(:user-invalid) *) {
         color: var(--_error);
-        font-weight: 700;
+        font-weight: var(--font-weight--bold);
       }
     }
 
@@ -63,14 +57,14 @@
 
     /* switch 属性に対応していない環境でも、同じ見た目のスイッチにする */
     ._switch {
-      --_background: oklch(70% 0 0deg);
+      --_background: var(--border--strong);
 
       display: inline flex;
       inline-size: calc(1lh * 2);
       block-size: 1lh;
       padding: 2px;
       border-color: transparent;
-      border-radius: calc(infinity * 1px);
+      border-radius: var(--rounded--full);
       background-color: var(--_background);
       appearance: none;
 
@@ -96,7 +90,7 @@
         block-size: 100%;
         aspect-ratio: 1;
         border-radius: inherit;
-        background-color: oklch(100% 0 0deg);
+        background-color: var(--foreground--on-accent);
 
         /* 強制カラーモードでは、背景色で描いたつまみが消えるので、システムカラーで描く */
         @media (forced-colors: active) {
@@ -115,8 +109,8 @@
       place-content: center;
       inline-size: 1lh;
       block-size: 1lh;
-      border-color: oklch(45% 0 0deg);
-      border-radius: 4px;
+      border-color: var(--foreground--muted);
+      border-radius: var(--rounded--sm);
       appearance: none;
 
       &:checked {
@@ -128,8 +122,8 @@
         content: "";
         inline-size: 0.3lh;
         block-size: 0.55lh;
-        border-block-end: 2px solid oklch(100% 0 0deg);
-        border-inline-end: 2px solid oklch(100% 0 0deg);
+        border-block-end: 2px solid var(--foreground--on-accent);
+        border-inline-end: 2px solid var(--foreground--on-accent);
         rotate: 45deg;
       }
     }
@@ -138,9 +132,9 @@
       padding-block: 8px;
       padding-inline: 20px;
       border-color: transparent;
-      border-radius: 4px;
-      background-color: var(--_accent);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
   }
 }

@@ -1,9 +1,3 @@
-@layer tokens {
-  :root {
-    --leading--snug: 1.4;
-  }
-}
-
 @layer pages {
   @scope (.scoped.demo-layout) to (.scoped) {
     :scope {
@@ -28,8 +22,8 @@
       display: block grid;
       gap: 8px;
       padding: 16px;
-      border-radius: 8px;
-      background-color: oklch(96% 0.01 250deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
     }
 
     h2 {
@@ -37,7 +31,7 @@
     }
 
     p {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
       line-height: var(--leading--snug);
 
       /* 画面の幅 375px で 20px、1280px で 32px。置き場所に関係なく同じ大きさになる */

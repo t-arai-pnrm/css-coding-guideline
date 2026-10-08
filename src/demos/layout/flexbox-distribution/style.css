@@ -12,7 +12,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._flexbox {
@@ -20,7 +21,7 @@
 
       /* 計算を追いやすいよう、コンテナの幅を 480px に固定する */
       inline-size: 480px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       &[data-case="grow"] > * {
         flex-grow: 1;
@@ -44,12 +45,12 @@
     ._item {
       /* 縮む量の計算に影響しないよう、インライン方向の padding と border は付けない */
       padding-block: 8px;
-      background-color: oklch(70% 0.12 250deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
       text-align: center;
 
       &:nth-child(even) {
-        background-color: oklch(55% 0.12 250deg);
+        background-color: oklch(from var(--background--accent) calc(l - 0.12) c h);
       }
     }
   }

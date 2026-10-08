@@ -37,7 +37,7 @@
 
     ._thumbnail {
       aspect-ratio: 16 / 9;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
 
       @container style(--_density: --spacious) {
@@ -46,18 +46,22 @@
     }
 
     ._title {
-      font-size: calc(16 / 16 * 1rem);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
 
       @container style(--_density: --spacious) {
-        font-size: calc(20 / 16 * 1rem);
+        font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+        line-height: var(--text--title--leading);
       }
     }
 
     ._lead {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       @container style(--_density: --spacious) {
-        font-size: calc(16 / 16 * 1rem);
+        font-size: calc(var(--text--body--font-size) / 16 * 1rem);
+        line-height: var(--text--body--leading);
       }
     }
 

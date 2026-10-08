@@ -1,7 +1,8 @@
 @layer components {
   @scope (.scoped.hover-demo) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--foreground--accent);
+      --_fill: var(--background--inverse);
 
       display: block grid;
       gap: 24px;
@@ -16,14 +17,14 @@
     }
 
     button {
-      --_background: var(--_accent);
+      --_background: var(--_fill);
 
       padding-block: 8px;
       padding-inline: 20px;
       border-color: transparent;
       border-radius: var(--rounded--sm);
       background-color: var(--_background);
-      color: oklch(100% 0 0deg);
+      color: var(--foreground--inverse);
 
       @media (prefers-reduced-motion: no-preference) {
         transition-duration: var(--duration--fast);
@@ -32,7 +33,9 @@
       }
 
       &:disabled {
-        --_background: oklch(60% 0 0deg);
+        --_background: var(--background--active);
+
+        color: var(--foreground--muted);
       }
 
       /* ホバーを透明度で表し、フォーカスには何も指定していない */

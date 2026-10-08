@@ -9,16 +9,17 @@
   @scope (.scoped.news-card) to (.scoped) {
     :scope {
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
 
       &[data-variant="featured"] {
-        border: 2px solid oklch(50% 0.2 260deg);
+        border: 2px solid var(--foreground--accent);
       }
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
 
       &:is(:scope[data-variant="featured"] *) {
         font-size: calc(24 / 16 * 1rem);

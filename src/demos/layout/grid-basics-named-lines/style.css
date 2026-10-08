@@ -11,7 +11,7 @@
         [--full-end];
       row-gap: 8px;
       padding-block: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       & > * {
         grid-column: --content;
@@ -26,16 +26,18 @@
     ._item {
       padding-block: 8px;
       padding-inline: 8px;
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._hero {
-      background-color: oklch(55% 0.15 30deg);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
 
     ._item {
-      background-color: oklch(70% 0.12 250deg);
+      background-color: var(--background--accent);
     }
   }
 }

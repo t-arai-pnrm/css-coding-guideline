@@ -12,7 +12,8 @@
     }
 
     figcaption {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       text-align: center;
     }
   }
@@ -24,7 +25,7 @@
       display: block grid;
       grid-template-areas: "--pile";
       overflow: clip;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-color: oklch(from currentColor sign(0.7 - l) 0 h);
       background-color: contrast-color(currentColor);
       color: oklch(100% 0 0deg);

@@ -1,11 +1,3 @@
-@layer tokens {
-  :root {
-    --color--neutral--50: oklch(98.5% 0 0deg);
-    --z--forwards: 1;
-    --z--backwards: -1;
-  }
-}
-
 @layer base {
   @keyframes --fade-in {
     from {
@@ -43,8 +35,8 @@
         position: absolute;
         inset: 0;
         z-index: var(--z--backwards);
-        box-shadow: 0 1px 0 oklch(0% 0 0deg / 12%);
-        background-color: var(--color--neutral--50);
+        box-shadow: 0 1px 0 var(--border--base);
+        background-color: var(--background--base);
 
         @supports (animation-timeline: scroll()) and (animation-range: 0 80px) {
           animation-name: --fade-in;
@@ -57,7 +49,7 @@
     }
 
     ._logo {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
   }
 }

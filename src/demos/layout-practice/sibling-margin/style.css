@@ -15,8 +15,8 @@
   @scope (.scoped.notice-card) to (.scoped) {
     :scope {
       padding: 16px;
-      border-radius: 8px;
-      background-color: oklch(96% 0.02 250deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
 
       /* 余白は、前に要素があるときだけ、後ろの要素の上に付ける */
       & > * + * {
@@ -32,7 +32,7 @@
     h2,
     p,
     ul {
-      outline: 1px dashed oklch(70% 0.08 250deg);
+      outline: 1px dashed var(--border--strong);
     }
 
     h2 {

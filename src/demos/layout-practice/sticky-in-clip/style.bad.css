@@ -9,7 +9,7 @@
       overflow: hidden;
       padding-block-end: 24px;
       padding-inline: 16px;
-      background-color: oklch(96% 0.01 250deg);
+      background-color: var(--background--active);
 
       /* セクションの外へはみ出す装飾 */
       &::before {
@@ -20,7 +20,7 @@
         inline-size: calc(160 / 16 * 1rem);
         aspect-ratio: 1;
         border-radius: 50%;
-        background-color: oklch(85% 0.08 250deg);
+        background-color: oklch(from var(--foreground--accent) l c h / 30%);
       }
     }
 
@@ -28,9 +28,10 @@
       position: sticky;
       inset-block-start: 0;
       padding-block: 12px;
-      background-color: oklch(30% 0.05 260deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(20 / 16 * 1rem);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
       text-align: center;
     }
   }

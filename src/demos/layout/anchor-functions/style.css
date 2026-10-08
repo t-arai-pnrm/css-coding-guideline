@@ -14,16 +14,18 @@
       max-inline-size: 100%;
       padding-block: 4px;
       padding-inline: 8px;
-      border: 1px solid oklch(60% 0 0deg);
-      border-radius: 4px;
+      border: 1px solid var(--border--strong);
+      border-radius: var(--rounded--sm);
     }
 
     ._note {
       padding-block: 4px;
       padding-inline: 8px;
-      border-radius: 4px;
-      background-color: oklch(92% 0.08 85deg);
-      font-size: calc(14 / 16 * 1rem);
+      border-radius: var(--rounded--sm);
+      box-shadow: var(--shadow--sm);
+      background-color: var(--background--raised);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* input の下端と行頭側の辺にそろえ、幅を input と同じにする */
       @supports (anchor-name: --field-note) {

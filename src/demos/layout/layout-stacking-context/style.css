@@ -8,7 +8,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     section {
@@ -34,8 +35,8 @@
     ._parent {
       inline-size: 70%;
       padding: 16px;
-      border: 1px dashed oklch(60% 0 0deg);
-      background-color: oklch(97% 0.01 250deg);
+      border: 1px dashed var(--border--strong);
+      background-color: var(--background--hover);
 
       /* グリッドアイテムは、position なしで z-index が効き、スタッキングコンテキストを作る */
       &[data-context] {
@@ -48,8 +49,8 @@
       z-index: 99;
       min-block-size: 64px;
       padding: 8px;
-      background-color: oklch(45% 0.15 260deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
     }
 
     ._sibling {
@@ -61,7 +62,8 @@
       min-block-size: 64px;
       margin-block-start: 40px;
       padding: 8px;
-      background-color: oklch(85% 0.12 80deg);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
       text-align: end;
     }
   }

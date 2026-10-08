@@ -1,12 +1,3 @@
-@layer tokens {
-  :root {
-    --color--neutral--400: oklch(70.8% 0 0deg);
-    --color--neutral--600: oklch(43.9% 0 0deg);
-    --color--accent--600: oklch(48% 0.17 260deg);
-    --color--error--600: oklch(50% 0.2 25deg);
-  }
-}
-
 @layer components {
   @scope (.scoped.profile-form) to (.scoped) {
     :scope {
@@ -25,30 +16,31 @@
     }
 
     label {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     ._field input {
       padding: 8px;
-      border-color: var(--color--neutral--600);
-      border-radius: 4px;
+      border-color: var(--foreground--muted);
+      border-radius: var(--rounded--sm);
 
       /* ネイティブの検証のエラーと、ARIA属性で伝えるエラーを同じ見た目にする */
       &:is(:user-invalid, [aria-invalid="true"]) {
-        border-color: var(--color--error--600);
+        border-color: var(--foreground--danger);
       }
     }
 
     ._error {
-      color: var(--color--error--600);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--danger);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._agree {
       display: block flex;
       gap: 8px;
       align-items: center;
-      font-weight: 400;
+      font-weight: var(--font-weight--regular);
     }
 
     ._actions {
@@ -61,21 +53,23 @@
       padding-block: 8px;
       padding-inline: 24px;
       border-color: transparent;
-      border-radius: 4px;
-      background-color: var(--color--accent--600);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
 
       /* disabled 属性で止めたボタンと、aria-disabled で無効を伝えるボタンを同じ見た目にする */
       &:is(:disabled, [aria-disabled="true"]) {
-        background-color: var(--color--neutral--400);
+        background-color: var(--background--active);
+        color: var(--foreground--muted);
       }
     }
 
     ._server {
-      border-color: var(--color--neutral--600);
+      border-color: var(--border--strong);
       background-color: transparent;
       color: inherit;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

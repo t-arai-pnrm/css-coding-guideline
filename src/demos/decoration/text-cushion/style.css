@@ -14,13 +14,14 @@
 
     h2 {
       padding: 24px;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-image: linear-gradient(in oklch 135deg, oklch(70% 0.12 200deg), oklch(55% 0.15 280deg));
       font-size: calc(24 / 16 * 1rem);
     }
 
     figcaption {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       text-align: center;
     }
   }
@@ -35,8 +36,7 @@
 
       padding: var(--_padding);
       border: var(--_border-width) solid currentColor;
-      background-color: oklch(98% 0.01 90deg);
-      color: oklch(25% 0.02 280deg);
+      background-color: var(--background--base);
 
       /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年10月） */
       /* stylelint-disable-next-line property-no-vendor-prefix */

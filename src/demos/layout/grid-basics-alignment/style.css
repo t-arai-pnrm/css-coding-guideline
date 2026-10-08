@@ -12,7 +12,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._grid {
@@ -23,8 +24,8 @@
       grid-template-rows: repeat(2, 56px);
       gap: 4px;
       min-block-size: 200px;
-      border: 1px dashed oklch(60% 0 0deg);
-      background-color: oklch(97% 0.01 250deg);
+      border: 1px dashed var(--border--strong);
+      background-color: var(--background--hover);
 
       &[data-place="items"] {
         place-items: center;
@@ -42,9 +43,10 @@
     ._item {
       padding-block: 2px;
       padding-inline: 8px;
-      background-color: oklch(70% 0.12 250deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

@@ -13,14 +13,15 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 枠の中は通常フローのまま、子の margin が枠の外へ出ないようにする */
     ._frame {
       display: block flow-root;
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       &[data-pair="positive"] {
         --_upper: 24px;
@@ -40,19 +41,20 @@
 
     p {
       padding: 12px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 相殺を見せるため、兄弟の両方に margin を付けている */
     ._upper {
       margin-block-end: var(--_upper);
-      background-color: oklch(85% 0.08 250deg);
+      background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
     }
 
     /* 重なりが見えるよう、下の要素を半透明にする */
     ._lower {
       margin-block-start: var(--_lower);
-      background-color: oklch(70% 0.12 30deg / 70%);
+      background-color: color-mix(in oklab, var(--foreground--base) 30%, transparent);
     }
   }
 }

@@ -6,15 +6,16 @@
       grid-template-columns: 100%;
       gap: 12px;
       inline-size: min(100%, calc(240 / 16 * 1rem));
-      outline: 1px dashed oklch(60% 0 0deg);
+      outline: 1px dashed var(--border--strong);
     }
 
     ._button {
       inline-size: fit-content;
       padding-block: 8px;
       padding-inline: 12px;
-      background-color: oklch(85% 0.08 250deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* 固定の下限は、親より広いとはみ出す */
       &[data-limit="fixed"] {

@@ -29,17 +29,18 @@
       justify-items: start;
       padding: 16px;
       border: 1px solid oklch(from var(--_accent) l c h / 30%);
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-color: oklch(from var(--_accent) l c h / 6%);
     }
 
     ._badge {
       padding-inline: 8px;
-      border-radius: calc(infinity * 1px);
+      border-radius: var(--rounded--full);
       background-color: oklch(from var(--_accent) l c h / 15%);
       color: var(--_accent--hocus);
-      font-size: calc(12 / 16 * 1rem);
-      font-weight: 700;
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--caption--leading);
     }
 
     h2 {
@@ -52,7 +53,7 @@
       padding-block: 8px;
       padding-inline: 16px;
       border-color: transparent;
-      border-radius: 4px;
+      border-radius: var(--rounded--sm);
       background-color: var(--_background);
       color: oklch(100% 0 0deg);
 

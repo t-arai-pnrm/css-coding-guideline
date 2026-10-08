@@ -39,7 +39,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.info-card) to (.scoped) {
   :scope {
-    --info-card--accent: var(--color--neutral--500);
+    --info-card--accent: var(--foreground--muted);
 
     border: 2px solid var(--info-card--accent);
   }
@@ -54,12 +54,12 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 /**
  * 情報カード。
  *
- * @prop {color}  --info-card--accent [var(--color--neutral--500)] - 枠線と見出しの色
+ * @prop {color}  --info-card--accent [var(--foreground--muted)]   - 枠線と見出しの色
  * @prop {length} --info-card--radius [8px]                         - 角丸の半径
  */
 @scope (.scoped.info-card) to (.scoped) {
   :scope {
-    --_accent: var(--info-card--accent, var(--color--neutral--500));
+    --_accent: var(--info-card--accent, var(--foreground--muted));
     --_radius: var(--info-card--radius, 8px);
 
     padding: 16px;

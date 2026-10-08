@@ -5,22 +5,23 @@
       display: block grid;
       gap: 12px;
       padding: 16px;
-      border-radius: 8px;
-      background-color: oklch(96% 0.01 250deg);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--active);
     }
 
     p {
-      color: oklch(50% 0.2 260deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 
   @scope (.scoped.contact-form) to (.scoped) {
     :scope {
       padding: 12px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
-      background-color: oklch(100% 0 0deg);
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
     }
   }
 
@@ -31,7 +32,8 @@
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 }

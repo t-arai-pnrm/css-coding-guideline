@@ -15,10 +15,10 @@
 
   @scope (.scoped.filter-details) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--foreground--accent);
 
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
 
       /* 開いている間は、枠線をアクセントの色にする */
       &[open] {
@@ -29,11 +29,11 @@
     summary {
       padding-block: 8px;
       padding-inline: 16px;
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
 
       /* ルートの details が開いている間だけ、見出しの部分に背景を付ける */
       &:is(:scope[open] *) {
-        background-color: oklch(96% 0.03 260deg);
+        background-color: var(--background--accent-subtle);
       }
     }
 
@@ -47,20 +47,20 @@
 
   @scope (.scoped.sort-menu) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--foreground--accent);
     }
 
     button {
       padding-block: 8px;
       padding-inline: 16px;
-      border-color: oklch(80% 0 0deg);
-      border-radius: 8px;
-      font-weight: 700;
+      border-color: var(--border--strong);
+      border-radius: var(--rounded--md);
+      font-weight: var(--font-weight--bold);
 
       /* 直後のポップオーバーを表示している間は、押された見た目にする */
       &:has(+ :popover-open) {
         border-color: var(--_accent);
-        background-color: oklch(96% 0.03 260deg);
+        background-color: var(--background--accent-subtle);
       }
     }
 
@@ -68,8 +68,11 @@
     [popover] {
       margin: revert;
       padding: 16px;
-      border: 1px solid var(--_accent);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--md);
+      background-color: var(--background--raised);
+      color: var(--foreground--base);
 
       /* popover="auto" のポップオーバーにも ::backdrop が生成される */
       &::backdrop {
@@ -87,7 +90,7 @@
     }
 
     legend {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
   }
 }

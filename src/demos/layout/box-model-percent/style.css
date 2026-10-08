@@ -8,7 +8,7 @@
     }
 
     ._parent {
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       &[data-size="narrow"] {
         inline-size: calc(160 / 16 * 1rem);
@@ -22,8 +22,9 @@
     /* 上下の padding の % も、親の幅に対する割合になる */
     ._child {
       padding-block: 10%;
-      background-color: oklch(85% 0.08 250deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       text-align: center;
     }
   }

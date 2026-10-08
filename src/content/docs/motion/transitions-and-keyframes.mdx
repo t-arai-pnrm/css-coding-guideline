@@ -57,7 +57,7 @@ import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
 ```css title="🙆‍♂ Recommended: 動かすプロパティを絞り、トークンで書く"
 @scope (.scoped.menu-button) to (.scoped) {
   ._icon {
-    color: var(--color--neutral--500);
+    color: var(--foreground--muted);
 
     @media (prefers-reduced-motion: no-preference) {
       transition-duration: var(--duration--base);
@@ -66,7 +66,7 @@ import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
     }
 
     &:is(:scope[aria-expanded="true"] *) {
-      color: var(--color--accent--600);
+      color: var(--foreground--accent);
       rotate: 0.5turn;
     }
   }

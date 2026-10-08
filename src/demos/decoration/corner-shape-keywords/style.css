@@ -10,14 +10,15 @@
       display: block grid;
       gap: 8px;
       justify-items: center;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._box {
       inline-size: 72px;
       aspect-ratio: 1;
       border-radius: 24px;
-      background-color: oklch(52% 0.16 250deg);
+      background-color: var(--background--inverse);
 
       &[data-shape="squircle"] {
         corner-shape: squircle;

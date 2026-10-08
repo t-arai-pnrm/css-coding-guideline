@@ -19,10 +19,11 @@
       place-items: center;
       inline-size: calc(56 / 16 * 1rem);
       aspect-ratio: 1;
-      border-radius: 8px;
-      background-color: oklch(92% 0.04 250deg);
-      font-size: calc(14 / 16 * 1rem);
-      font-weight: 700;
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
 
       @supports (z-index: sibling-index()) {
         /* 中央の位置からの距離に比例して下げる */

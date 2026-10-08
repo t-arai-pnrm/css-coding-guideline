@@ -22,6 +22,8 @@
   --color--red--400: oklch(70.4% 0.191 22.216deg);
   --color--red--500: oklch(63.7% 0.237 25.331deg);
   --color--red--600: oklch(57.7% 0.245 27.325deg);
+  --color--green--400: oklch(79.2% 0.209 151.711deg);
+  --color--green--700: oklch(52.7% 0.154 150.069deg);
 
   /*
    * 面。ライトでは base 以外を白にし、高さは影で表す。
@@ -40,10 +42,14 @@
   /* 主ボタンのように、文字色で塗る面 */
   --background--inverse: light-dark(var(--color--neutral--900), var(--color--neutral--100));
   --background--accent: light-dark(var(--color--accent--600), var(--color--accent--500));
+
+  /* 選んだ状態や範囲を示す淡い青。半透明にして、どの面の上でもなじませる */
+  --background--accent-subtle: color-mix(in oklab, var(--foreground--accent) 12%, transparent);
   --foreground--base: light-dark(var(--color--neutral--900), var(--color--neutral--100));
   --foreground--muted: light-dark(var(--color--neutral--500), var(--color--neutral--400));
   --foreground--accent: light-dark(var(--color--accent--600), var(--color--accent--400));
   --foreground--danger: light-dark(var(--color--red--600), var(--color--red--400));
+  --foreground--success: light-dark(var(--color--green--700), var(--color--green--400));
   --foreground--inverse: light-dark(var(--color--neutral--50), var(--color--neutral--900));
   --foreground--on-accent: oklch(100% 0 0deg);
 

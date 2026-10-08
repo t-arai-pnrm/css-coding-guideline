@@ -13,7 +13,8 @@
     }
 
     ._heading {
-      font-size: calc(16 / 16 * 1rem);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
     }
   }
 }
@@ -31,8 +32,7 @@
 
     ._step {
       &::marker {
-        color: oklch(52% 0.16 250deg);
-        font-weight: 700;
+        color: var(--foreground--accent);
       }
     }
   }
@@ -57,11 +57,12 @@
         place-items: center;
         inline-size: 1.75em;
         aspect-ratio: 1;
-        border-radius: calc(infinity * 1px);
-        background-color: oklch(52% 0.16 250deg);
-        color: oklch(100% 0 0deg);
-        font-size: calc(14 / 16 * 1rem);
-        font-weight: 700;
+        border-radius: var(--rounded--full);
+        background-color: var(--background--accent);
+        color: var(--foreground--on-accent);
+        font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--bold);
+        line-height: var(--text--body-compact--leading);
       }
     }
   }

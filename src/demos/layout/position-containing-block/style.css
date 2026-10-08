@@ -11,7 +11,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 
@@ -21,8 +22,8 @@
       position: relative;
       padding-block: 16px;
       padding-inline: 16px 80px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
 
       /* 比較のため、1つ目のカードだけ包含ブロックを作らない */
       &[data-demo="without-containing-block"] {
@@ -35,7 +36,8 @@
     }
 
     h4 {
-      font-size: calc(16 / 16 * 1rem);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
     }
 
     ._badge {
@@ -44,10 +46,11 @@
       inset-inline-end: 8px;
       padding-block: 2px;
       padding-inline: 8px;
-      border-radius: 4px;
-      background-color: oklch(55% 0.18 25deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(12 / 16 * 1rem);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
     }
   }
 }

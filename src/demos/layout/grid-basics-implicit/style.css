@@ -12,7 +12,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._grid {
@@ -20,7 +21,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       /* 明示的な行は2行だけ。3行目は暗黙の行になり、高さは grid-auto-rows（初期値 auto）で決まる */
       &[data-rows="template"] {
@@ -36,14 +37,16 @@
     ._item {
       padding-block: 4px;
       padding-inline: 8px;
-      background-color: oklch(70% 0.12 250deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       &[data-side] {
         grid-column: 1;
         grid-row: 1 / -1;
-        background-color: oklch(55% 0.15 30deg);
+        background-color: var(--background--inverse);
+        color: var(--foreground--inverse);
       }
     }
   }

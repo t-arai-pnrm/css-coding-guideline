@@ -2,8 +2,8 @@
 @layer vendors {
   .entry-content h2 {
     padding-inline-start: 8px;
-    border-inline-start: 4px solid oklch(65% 0.2 25deg);
-    color: oklch(55% 0.22 25deg);
+    border-inline-start: 4px solid var(--foreground--danger);
+    color: var(--foreground--danger);
   }
 }
 
@@ -13,14 +13,15 @@
       display: block grid;
       gap: 8px;
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     /* color は指定しているので勝つが、border と padding は指定していない */
     h2 {
-      color: oklch(50% 0.2 260deg);
-      font-size: calc(20 / 16 * 1rem);
+      color: var(--foreground--accent);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 }

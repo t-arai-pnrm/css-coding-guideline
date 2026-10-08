@@ -2,7 +2,7 @@
 @layer utilities {
   /* 詳細度は 0.1.0 */
   .-text-muted {
-    color: oklch(55% 0 0deg);
+    color: var(--foreground--muted);
   }
 }
 
@@ -12,13 +12,13 @@
       display: block grid;
       gap: 8px;
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     /* 詳細度は同じ 0.1.0 で、後ろに書いている */
     ._text {
-      color: oklch(50% 0.2 260deg);
+      color: var(--foreground--accent);
       font-size: calc(18 / 16 * 1rem);
     }
   }

@@ -1,7 +1,7 @@
 @layer components {
   @scope (.scoped.pseudo-target) to (.scoped) {
     :scope {
-      --_highlight: oklch(93% 0.08 95deg);
+      --_highlight: var(--background--accent-subtle);
 
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
@@ -10,8 +10,8 @@
 
     section {
       padding: 16px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
 
       & > * + * {
         margin-block-start: 8px;
@@ -19,7 +19,8 @@
     }
 
     h3 {
-      font-size: calc(16 / 16 * 1rem);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
     }
 
     p {

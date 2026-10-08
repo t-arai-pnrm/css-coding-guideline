@@ -122,7 +122,7 @@ Sassなら、このルールは `.news ._title, #pickup ._title` に展開され
 
 この動作は、2024年12月にすべての主要なブラウザが対応した、比較的新しいものです。それより前の実装（Chrome 129以前、Firefox 131以前、Safari 18.1以前）では、後ろに書いた宣言も親のルールの先頭に移されたものとして扱われ、上の例では `red` が勝ちました。Chrome 152では `green` になることを確かめました（2026年10月確認）。次のデモは、同じ順番で赤と緑を指定したものです。本書の並び順の規約には反する書き方なので、悪い例として示します。新しい動作に対応したブラウザでは段落の文字が緑になり、古い実装では赤になります。
 
-<Demo title="ネストしたルールの後ろに書いた宣言が、書いた位置の順番で勝つ" html={nestedDeclarationsHtml} css={nestedDeclarationsCss} variant="not-recommended" widths={[]} />
+<Demo title="ネストしたルールの後ろに書いた宣言が、書いた位置の順番で勝つ" html={nestedDeclarationsHtml} css={nestedDeclarationsCss} scheme="light" variant="not-recommended" widths={[]} />
 
 <Baseline id="nesting" compatKey="api.CSSNestedDeclarations" name="ネストした宣言のルール（CSSNestedDeclarations）" />
 

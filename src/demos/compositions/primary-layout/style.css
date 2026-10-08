@@ -1,9 +1,3 @@
-@layer tokens {
-  :root {
-    --spacing--sm: 16;
-  }
-}
-
 @layer base {
   /* デモの枠が base レイヤーで付けた左右の余白を取り消し、フル幅の列を枠の端まで届かせる */
   body {
@@ -121,8 +115,9 @@
     p {
       padding-block: 12px;
       padding-inline: 16px;
-      background-color: oklch(92% 0.03 250deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--active);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

@@ -143,17 +143,28 @@ import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: ホバーとフォーカスでフラグを立て、子と擬似要素で問い合わせる"
 @scope (.scoped.link-menu) to (.scoped) {
+  :scope {
+    --_background: transparent;
+    --_background--hocus: var(--background--hover);
+  }
+
   a {
     --_hocus: --false;
+
+    background-color: var(--_background);
 
     &:any-link:hover {
       @media (any-hover) {
         --_hocus: --true;
+
+        background-color: var(--_background--hocus);
       }
     }
 
     &:focus-visible {
       --_hocus: --true;
+
+      background-color: var(--_background--hocus);
     }
 
     &::after {

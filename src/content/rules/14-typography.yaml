@@ -51,7 +51,7 @@
   level: 推奨
   kind: convention
   rule: '`font-weight` は `bold` のようなキーワードではなく数値で指定し、トークンにする。'
-  reason: キーワードでは 400 と 700 しか表せず、太さの多いフォントやデザインカンプの指定と対応させにくいため。
+  reason: '数値ならデザインカンプの指定とトークンの値をそのまま照らし合わせられ、`bolder` や `lighter` のような相対的なキーワードは継承した太さによって表示が変わるため。'
   note: kiso.css はブラウザのデフォルトに合わせて `bolder` を使っているので、太さをそろえたいときは `base` レイヤーで上書きします。
   page: typography/fonts
   since: 0.1.0
@@ -196,15 +196,15 @@
   page: typography/line-height
   since: 0.25.0
 
-# 14-4 文字サイズと改行
+# 14-5 文字の役割と色
 - id: two-text-colors
   level: 推奨
   kind: judgment
   rule: '文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。'
   reason: '半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。'
-  note: 'どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。'
+  note: 'どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。'
   aiProne: true
-  page: typography/size-and-line-breaks
+  page: typography/text-roles
   since: 0.38.0
 
 - id: auto-phrase-for-headings

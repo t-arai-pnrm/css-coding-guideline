@@ -1,7 +1,6 @@
 @layer tokens {
   :root {
     --check: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L10 18L20 6" /></svg>');
-    --leading--relaxed: 1.75;
   }
 }
 
@@ -25,7 +24,7 @@
     }
 
     ._list {
-      border-block-start: 1px solid oklch(85% 0 0deg);
+      border-block-start: 1px solid var(--border--base);
     }
 
     ._float-item {
@@ -38,7 +37,7 @@
       display: block flow-root;
       padding-block: var(--_padding-block);
       padding-inline-start: var(--_icon-offset);
-      border-block-end: 1px solid oklch(85% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
 
       & > * + p {
         margin-block-start: 0.5em;
@@ -79,7 +78,7 @@
       position: relative;
       padding-block: var(--_padding-block);
       padding-inline-start: var(--_icon-offset);
-      border-block-end: 1px solid oklch(85% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
 
       & > * + p {
         margin-block-start: 0.5em;

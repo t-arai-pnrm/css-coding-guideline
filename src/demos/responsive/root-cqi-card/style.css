@@ -39,7 +39,7 @@
 
     ._thumbnail {
       aspect-ratio: 16 / 9;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
 
       @container style(--_density: --spacious) {
@@ -67,7 +67,8 @@
     }
 
     ._lead {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

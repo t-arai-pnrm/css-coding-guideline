@@ -1,16 +1,10 @@
-@layer tokens {
-  :root {
-    --background--surface: oklch(96% 0.01 250deg);
-    --border--base: oklch(80% 0 0deg);
-  }
-}
-
 @layer components {
   @scope (.scoped.shipping-section) to (.scoped) {
     :scope {
       overflow: clip;
       border: 1px solid var(--border--base);
-      border-radius: 8px;
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
     }
 
     h2 {
@@ -38,7 +32,7 @@
       display: block grid;
       gap: 8px;
       padding: 16px;
-      background-color: var(--background--surface);
+      background-color: var(--background--hover);
     }
   }
 }

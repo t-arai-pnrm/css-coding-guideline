@@ -15,10 +15,10 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 デモの見た目とトークンを共通にし、面の段階、層を足す影、文字の役割のトークン、ホバーの重ね色を本文とルールに加えました。ルールを加えたので、マイナーバージョンを上げています。
 
-- すべてのデモが読み込む共通トークンを用意し、「[付録I デモの共通トークン](/appendix/demo-tokens/)」に全文を載せました。デモの背景と文字の色もトークンで指定し、テーマへ追従できる形にしました。
+- すべてのデモが読み込む共通トークンを用意し、「[付録I デモの共通トークン](/appendix/demo-tokens/)」に全文を載せました。すべてのデモを共通トークンに移し、本のページのテーマ（ライトとダーク）に追従させました。色そのものを見せるデモは、ライトに固定しています。
 - ルールを加えました。
   - [`typography-token-two-layers`](/components/design-tokens/#rule-typography-token-two-layers)
-  - [`two-text-colors`](/typography/size-and-line-breaks/#rule-two-text-colors)
+  - [`two-text-colors`](/typography/text-roles/#rule-two-text-colors)
   - [`tabular-nums-for-changing-numbers`](/typography/fonts/#rule-tabular-nums-for-changing-numbers)
   - [`surface-levels-by-role`](/decoration/surfaces/#rule-surface-levels-by-role)
   - [`lighter-surface-in-dark-mode`](/decoration/surfaces/#rule-lighter-surface-in-dark-mode)
@@ -27,9 +27,13 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`shadow-tokens-light-source`](/decoration/surfaces/#rule-shadow-tokens-light-source)：段階ごとに不透明度を下げる作り方から、オフセットとぼかしを倍にした層を足す作り方に変えました。
   - [`shadow-black-in-dark-mode`](/decoration/surfaces/#rule-shadow-black-in-dark-mode)：影の色を `light-dark()` で切り替えるトークンにすることを、ルールの本文に入れました。
   - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：理由を、層の数に比例して描画の計算が増えることに直しました。
+  - [`tabular-nums-for-number-columns`](/layout-practice/truncation-and-skeletons/#rule-tabular-nums-for-number-columns)：対象を、表や一覧で数値を縦に並べる列だけにしました。値が変わる数字は [`tabular-nums-for-changing-numbers`](/typography/fonts/#rule-tabular-nums-for-changing-numbers) で扱います。
+  - [`font-weight-numeric`](/typography/fonts/#rule-font-weight-numeric)：太さを2段階にしたので、理由を、デザインカンプの指定やトークンと照らし合わせられることと、相対的なキーワードでは継承した太さで表示が変わることに直しました。
+  - [`marker-for-list-number-style`](/decoration/surfaces/#rule-marker-for-list-number-style)：`::marker` に指定するのを `color` と `font-size` に限り、5-8のルールと合わせました。
   - [`color-token-two-layers`](/components/design-tokens/#rule-color-token-two-layers)、[`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover)、[`anchor-indicator-as-decoration`](/layout-practice/anchor-positioning/#rule-anchor-indicator-as-decoration)：補足に、影の色の扱い、半透明の重ね色、動きを減らす設定でもフェードを残すことを足しました。
 - 再生時間のトークンを、`fast` 80ms、`base` 160ms、`slow` 240msに改めました（「[10-4 デザイントークン](/components/design-tokens/)」「[18-3 イージングと再生時間](/motion/easing-and-duration/)」）。
 - 文字の太さのトークンを、400と700の2段階にしました（「[14-1 フォントを指定する](/typography/fonts/)」）。
+- 「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」から文字の役割のトークンと文字色の段階を分け、「[14-5 文字の役割と色](/typography/text-roles/)」を加えました。
 
 ## 0.37.2（2026年10月8日）
 

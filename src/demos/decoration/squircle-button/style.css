@@ -13,7 +13,8 @@
     }
 
     figcaption {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }
@@ -24,11 +25,11 @@
       padding-block: 16px;
       padding-inline: 48px;
       border-color: transparent;
-      border-radius: calc(infinity * 1px);
+      border-radius: var(--rounded--full);
       corner-shape: squircle;
-      background-color: oklch(52% 0.16 250deg);
-      color: oklch(100% 0 0deg);
-      font-weight: 700;
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+      font-weight: var(--font-weight--bold);
 
       /* 比べるための指定。corner-shape を初期値に戻す */
       &[data-shape="round"] {

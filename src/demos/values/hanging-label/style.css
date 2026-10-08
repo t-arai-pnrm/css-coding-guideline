@@ -1,9 +1,3 @@
-@layer tokens {
-  :root {
-    --leading--snug: 1.4;
-  }
-}
-
 @layer components {
   @scope (.scoped.article-header) to (.scoped) {
     :scope {
@@ -18,7 +12,7 @@
     ._inner {
       inline-size: min(100% - 2 * var(--_gutter), var(--_content-width));
       margin-inline: auto;
-      outline: 1px dashed oklch(60% 0 0deg);
+      outline: 1px dashed var(--border--strong);
 
       & > * + * {
         margin-block-start: calc(8 / 16 * 1rem);
@@ -35,16 +29,17 @@
         0px
       );
       padding: 2px 8px;
-      border-radius: 4px;
-      background-color: oklch(48% 0.17 260deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(12 / 16 * 1rem);
-      font-weight: 700;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--caption--leading);
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
-      line-height: var(--leading--snug);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 }

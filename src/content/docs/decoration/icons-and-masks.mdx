@@ -118,8 +118,8 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
   ._highlight {
     clip-path: xywh(calc(var(--_index) * 100% / var(--_count)) 0 calc(100% / var(--_count)) 100% round calc(infinity * 1px));
-    background-color: var(--color--accent--600);
-    color: var(--color--neutral--50);
+    background-color: var(--background--accent);
+    color: var(--foreground--on-accent);
     pointer-events: none;
   }
 }
@@ -161,7 +161,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 <Demo title="マスクで描いた矢印が、背景色に合わせた文字色で塗られる" html={maskIconHtml} css={maskIconCss} />
 
-デモの1つ目は明るい背景に濃い文字、2つ目は濃い背景に白い文字のセクションです。どちらのセクションでも、リンクの後ろの矢印は、リンクの文字と同じ色で塗られます。
+デモの1つ目はページと同じ配色、2つ目は背景と文字の明暗を反転させたセクションです。どちらのセクションでも、リンクの後ろの矢印は、リンクの文字と同じ色で塗られます。
 
 `display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定がなくても描けます。
 

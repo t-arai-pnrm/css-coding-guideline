@@ -1,8 +1,8 @@
 @layer components {
   @scope (.scoped.user-invalid-timing) to (.scoped) {
     :scope {
-      --_error: oklch(50% 0.2 25deg);
-      --_valid: oklch(50% 0.13 150deg);
+      --_error: var(--foreground--danger);
+      --_valid: var(--foreground--success);
 
       display: block grid;
       gap: 24px;
@@ -20,24 +20,24 @@
     }
 
     label {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     input {
       padding: 8px;
-      border-color: oklch(45% 0 0deg);
-      border-radius: 4px;
+      border-color: var(--foreground--muted);
+      border-radius: var(--rounded--sm);
 
       /* 比べるための悪い例：ページを開いた時点で、空の必須の欄がエラーになる */
       &:is([data-invalid] *):invalid {
         border-color: var(--_error);
-        background-color: oklch(97% 0.02 25deg);
+        background-color: color-mix(in oklab, var(--foreground--danger) 8%, transparent);
       }
 
       /* 入力して欄を離れた後か、送信しようとした後にだけエラーにする */
       &:is([data-fixed] *):user-invalid {
         border-color: var(--_error);
-        background-color: oklch(97% 0.02 25deg);
+        background-color: color-mix(in oklab, var(--foreground--danger) 8%, transparent);
       }
 
       &:is([data-fixed] *):user-valid {
@@ -48,9 +48,9 @@
     button {
       padding: 8px 16px;
       border-color: transparent;
-      border-radius: 4px;
-      background-color: oklch(48% 0.17 260deg);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
   }
 }

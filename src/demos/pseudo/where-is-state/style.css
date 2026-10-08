@@ -13,8 +13,9 @@
     }
 
     h3 {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 
@@ -22,9 +23,9 @@
   @scope (.scoped.where-toggle) to (.scoped) {
     :scope {
       padding: 8px 16px;
-      border: 2px solid oklch(48% 0.17 260deg);
-      border-radius: 8px;
-      background-color: oklch(92% 0 0deg);
+      border: 2px solid var(--foreground--accent);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
 
       &[data-variant="outline"] {
         background-color: transparent;
@@ -32,7 +33,7 @@
 
       /* 詳細度は 0.1.0 で、上の 0.2.0 に負ける */
       &:where([aria-pressed="true"], [aria-expanded="true"]) {
-        background-color: oklch(85% 0.08 260deg);
+        background-color: color-mix(in oklab, var(--foreground--accent) 24%, transparent);
       }
     }
   }
@@ -41,9 +42,9 @@
   @scope (.scoped.is-toggle) to (.scoped) {
     :scope {
       padding: 8px 16px;
-      border: 2px solid oklch(48% 0.17 260deg);
-      border-radius: 8px;
-      background-color: oklch(92% 0 0deg);
+      border: 2px solid var(--foreground--accent);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
 
       &[data-variant="outline"] {
         background-color: transparent;
@@ -51,7 +52,7 @@
 
       /* 詳細度は 0.2.0 で、後に書いたほうが勝つ */
       &:is([aria-pressed="true"], [aria-expanded="true"]) {
-        background-color: oklch(85% 0.08 260deg);
+        background-color: color-mix(in oklab, var(--foreground--accent) 24%, transparent);
       }
     }
   }

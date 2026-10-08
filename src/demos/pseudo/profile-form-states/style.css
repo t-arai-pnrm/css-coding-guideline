@@ -1,8 +1,7 @@
 @layer components {
   @scope (.scoped.profile-form) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
-      --_error: oklch(50% 0.2 25deg);
+      --_error: var(--foreground--danger);
 
       display: block grid;
       gap: 16px;
@@ -19,45 +18,45 @@
     }
 
     label {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     input {
       padding: 8px;
-      border-color: oklch(45% 0 0deg);
-      border-radius: 4px;
-      background-color: oklch(100% 0 0deg);
+      border-color: var(--foreground--muted);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--surface);
 
-      /* 白の背景に対して、コントラスト比が 4.5:1 を超える灰色にする */
+      /* 入力欄の背景に対して、コントラスト比が 4.5:1 を超える灰色にする */
       &::placeholder {
-        color: oklch(48% 0 0deg);
+        color: var(--foreground--muted);
       }
 
       /* 未入力の状態は placeholder 属性のある入力欄にだけ当たる */
       &:placeholder-shown {
         border-style: dashed;
-        background-color: oklch(97% 0 0deg);
+        background-color: var(--background--hover);
       }
 
       /* readonly は値を送信するので、無効とは別の見た目にする */
       &[readonly] {
         border-color: transparent;
-        background-color: oklch(95% 0.02 260deg);
+        background-color: var(--background--accent-subtle);
       }
 
       /* 未入力の破線を、前のレイヤー（kiso.css）の実線に戻す */
       &:disabled {
         border-style: revert-layer;
-        border-color: oklch(80% 0 0deg);
-        background-color: oklch(93% 0 0deg);
-        color: oklch(48% 0 0deg);
+        border-color: var(--border--strong);
+        background-color: var(--background--active);
+        color: var(--foreground--muted);
       }
 
       /* 入力して離れた後や、送信しようとした後にだけエラーの見た目にする */
       &:user-invalid {
         border-style: revert-layer;
         border-color: var(--_error);
-        background-color: oklch(97% 0.02 25deg);
+        background-color: color-mix(in oklab, var(--foreground--danger) 8%, transparent);
       }
 
       /* ファイルの入力欄は、文字の入力欄に付けた余白と背景を外し、ボタンだけを見せる */
@@ -69,19 +68,19 @@
       &::file-selector-button {
         margin-inline-end: 12px;
         padding: 6px 12px;
-        border-color: var(--_accent);
-        border-radius: 4px;
-        background-color: oklch(100% 0 0deg);
-        color: var(--_accent);
+        border-color: var(--border--strong);
+        border-radius: var(--rounded--sm);
+        background-color: var(--background--surface);
+        color: var(--foreground--base);
       }
     }
 
     button {
       padding: 8px 24px;
       border-color: transparent;
-      border-radius: 4px;
-      background-color: var(--_accent);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
   }
 }

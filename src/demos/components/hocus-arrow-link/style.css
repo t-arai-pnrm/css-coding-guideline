@@ -1,28 +1,17 @@
-@layer tokens {
-  :root {
-    --duration--fast: 200ms;
-    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-    --foreground--base: oklch(25% 0 0deg);
-    --foreground--accent: oklch(48% 0.17 260deg);
-    --background--base: oklch(100% 0 0deg);
-    --background--surface: oklch(96% 0.01 250deg);
-  }
-}
-
 @layer components {
   @scope (.scoped.link-menu) to (.scoped) {
     :scope {
-      --_background: var(--background--base);
-      --_background--hocus: var(--background--surface);
+      --_background: transparent;
+      --_background--hocus: var(--background--hover);
     }
 
     ul {
       max-inline-size: calc(400 / 16 * 1rem);
-      border-block-start: 1px solid oklch(85% 0 0deg);
+      border-block-start: 1px solid var(--border--base);
     }
 
     li {
-      border-block-end: 1px solid oklch(85% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
     }
 
     a {

@@ -11,8 +11,9 @@
     }
 
     h2 {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._badges {
@@ -27,13 +28,13 @@
     ._badge {
       padding-block: 6px;
       padding-inline: 12px;
-      border-radius: 4px;
-      background-color: oklch(92% 0.04 250deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--active);
       font-size: calc(14 / 16 * 1rem);
     }
 
     p {
-      background-color: oklch(95% 0.03 90deg);
+      background-color: var(--background--active);
       line-height: var(--leading--loose);
     }
   }

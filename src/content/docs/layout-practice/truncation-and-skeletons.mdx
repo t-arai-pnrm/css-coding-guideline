@@ -79,9 +79,9 @@ import Guideline from '../../../components/Guideline.astro';
 
 金額の要素は、`min-inline-size: fit-content` で中身の幅より縮まないようにしています（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」の「縮ませたくない要素を守る」）。名前の要素は最小幅が0なので、行に収まらない分だけ縮み、末尾が「…」になります。
 
-`font-variant-numeric: tabular-nums` は、数字をすべて同じ幅で表示する指定です。書体によっては、「1」が「0」より狭いというように、数字の幅が字ごとに違います。そのまま金額を縦に並べると、桁の位置がずれて大小を比べにくくなります。カウントダウンのように値が変わり続ける数字は、変わるたびに左右へ揺れます。
+`font-variant-numeric: tabular-nums` は、数字をすべて同じ幅で表示する指定です。書体によっては、「1」が「0」より狭いというように、数字の幅が字ごとに違います。そのまま金額を縦に並べると、桁の位置がずれて大小を比べにくくなります。
 
-表や一覧の数値の列と、値が変わり続ける数字には、`tabular-nums` を指定します。本書では、この指定をユーティリティ `.-tabular-nums` にもしています（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。表の数値の列を末尾にそろえる書き方は、「[11-15 表を組む](/layout-practice/tables/)」で説明します。
+表や一覧の数値の列には、`tabular-nums` を指定します。カウントダウンのように表示したまま値が変わる数字にも同じ指定をし、値が変わるたびに数字が左右に揺れるのを防ぎます（「[14-1 フォントを指定する](/typography/fonts/#rule-tabular-nums-for-changing-numbers)」）。本書では、この指定をユーティリティ `.-tabular-nums` にもしています（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。表の数値の列を末尾にそろえる書き方は、「[11-15 表を組む](/layout-practice/tables/)」で説明します。
 
 ## 2行以上で打ち切る
 

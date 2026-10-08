@@ -78,7 +78,7 @@ export const buildSrcdoc = ({
   html,
   css,
   base = 'kiso',
-  scheme = 'light',
+  scheme = 'auto',
   js,
 }: {
   html: string;

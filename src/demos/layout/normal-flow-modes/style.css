@@ -13,13 +13,14 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._parent {
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
-      background-color: oklch(97% 0.01 250deg);
+      border: 1px dashed var(--border--strong);
+      background-color: var(--background--hover);
 
       &[data-mode="flex"] {
         display: block flex;
@@ -35,13 +36,13 @@
     ._inline {
       margin-block: 8px;
       padding-inline: 4px;
-      background-color: oklch(85% 0.1 250deg);
+      background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
     }
 
     ._block {
       padding-inline: 4px;
-      background-color: oklch(45% 0.15 260deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
     }
   }
 }

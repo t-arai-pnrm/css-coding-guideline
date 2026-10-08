@@ -1,11 +1,3 @@
-@layer tokens {
-  :root {
-    --spacing--xxs: 8;
-    --spacing--sm: 16;
-    --spacing--lg: 32;
-  }
-}
-
 @layer compositions {
   /**
    * 列の最小幅と最大数から、列の数を自動で決める。
@@ -80,7 +72,8 @@
     }
 
     h2 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     section {
@@ -91,8 +84,8 @@
 
     li {
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
   }
 }

@@ -11,14 +11,15 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._tags {
       display: block flex;
       gap: 8px;
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       &[data-wrap="wrap"] {
         flex-wrap: wrap;
@@ -30,9 +31,10 @@
       min-inline-size: fit-content;
       padding-block: 4px;
       padding-inline: 12px;
-      border-radius: calc(infinity * 1px);
-      background-color: oklch(90% 0.05 250deg);
-      font-size: calc(14 / 16 * 1rem);
+      border-radius: var(--rounded--full);
+      background-color: var(--background--accent-subtle);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       white-space: nowrap;
     }
   }

@@ -1,12 +1,3 @@
-@layer tokens {
-  :root {
-    --foreground--base: oklch(25% 0 0deg);
-    --foreground--accent: oklch(48% 0.17 260deg);
-    --foreground--on-accent: oklch(100% 0 0deg);
-    --background--accent: oklch(48% 0.17 260deg);
-  }
-}
-
 @layer components {
   @scope (.scoped.global-nav) to (.scoped) {
     :scope {
@@ -16,8 +7,9 @@
       justify-content: space-between;
       align-items: center;
       padding: 16px;
-      border-radius: 8px;
-      background-color: oklch(97% 0.01 250deg);
+      border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--xs);
+      background-color: var(--background--surface);
     }
 
     /* ul と li は役割が1つなので、タイプセレクタで選ぶ */
@@ -32,7 +24,7 @@
       display: block flow;
       padding-block: 8px;
       padding-inline: 16px;
-      border-radius: 4px;
+      border-radius: var(--rounded--md);
 
       /* 共通の状態には、どちらのリンクにも同じ意味を持つ指定だけを書く。下線は kiso.css が消したものを戻す */
       &:focus-visible {
@@ -48,7 +40,7 @@
 
     ._main-link {
       color: var(--foreground--base);
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
 
       &:focus-visible {
         color: var(--foreground--accent);
@@ -64,7 +56,8 @@
     ._sub-link {
       background-color: var(--background--accent);
       color: var(--foreground--on-accent);
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* 詳細度は 0.2.0 と 0.3.0 なので、a:focus-visible（0.1.1）と a:any-link:hover（0.2.1）に勝つ */
       &:focus-visible {

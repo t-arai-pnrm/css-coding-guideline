@@ -12,7 +12,8 @@
 
     h3,
     ._note {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._columns {
@@ -26,7 +27,7 @@
         position: absolute;
         inset-block: -4px;
         inset-inline-start: calc(800 / 16 * 1rem - 1px);
-        border-inline-start: 2px dashed oklch(55% 0.2 25deg);
+        border-inline-start: 2px dashed var(--foreground--danger);
       }
 
       & > ._main {
@@ -46,24 +47,25 @@
     ._main {
       /* 幅の表示に使う cqi の基準にする */
       container: --main / inline-size;
-      background-color: oklch(90% 0.05 250deg);
+      background-color: var(--background--accent-subtle);
     }
 
     ._side {
       container: --side / inline-size;
       min-inline-size: calc(240 / 16 * 1rem);
-      background-color: oklch(90% 0.05 160deg);
+      background-color: var(--background--active);
     }
 
     ._body {
       padding-block: 12px;
       padding-inline: 16px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._width {
       display: none;
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
       font-variant-numeric: tabular-nums;
 
       /* 長さを長さで割れるブラウザでだけ、列の幅を px の整数で表示する */

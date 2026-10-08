@@ -13,8 +13,9 @@
     }
 
     h3 {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ul {
@@ -24,27 +25,27 @@
 
     li {
       padding: 8px 12px;
-      border: 2px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 2px solid var(--border--base);
+      border-radius: var(--rounded--md);
 
       /* 右：._post だけを数えた中で2番目 */
       &:is([data-selector="of-s"] *):nth-child(2 of ._post) {
-        border-color: oklch(48% 0.17 260deg);
-        background-color: oklch(95% 0.03 260deg);
+        border-color: var(--foreground--accent);
+        background-color: var(--background--accent-subtle);
       }
     }
 
     ._post {
       /* 左：同じタグ名の兄弟の中で2番目にあり、かつ ._post でもある要素（当てはまる要素はない） */
       &:is([data-selector="nth-of-type"] *):nth-of-type(2) {
-        border-color: oklch(48% 0.17 260deg);
-        background-color: oklch(95% 0.03 260deg);
+        border-color: var(--foreground--accent);
+        background-color: var(--background--accent-subtle);
       }
     }
 
     ._ad {
       border-style: dashed;
-      color: oklch(45% 0 0deg);
+      color: var(--foreground--muted);
     }
   }
 }

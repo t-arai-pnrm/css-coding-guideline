@@ -12,7 +12,8 @@
     }
 
     figcaption {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       text-align: center;
     }
   }
@@ -29,7 +30,7 @@
       display: block grid;
       grid-template-areas: "--pile";
       overflow: clip;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
 
       /* 文字色が白なら黒、濃い色なら白になる。Safari 26より前でも、sign() で文字色と対比する背景色が付く */
       background-color: oklch(from currentColor sign(0.7 - l) 0 h);
@@ -58,7 +59,8 @@
     }
 
     ._title {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 }

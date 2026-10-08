@@ -7,8 +7,8 @@
       grid-template-rows: 1fr 1fr;
       min-block-size: calc(240 / 16 * 1rem);
       padding: 16px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     ._item {
@@ -25,9 +25,9 @@
       display: inline flow-root;
       padding-block: 8px;
       padding-inline: 16px;
-      border-radius: 4px;
-      background-color: oklch(45% 0.12 250deg);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
     }
 
     ._tip {
@@ -35,9 +35,11 @@
       inline-size: fit-content;
       padding-block: 4px;
       padding-inline: 8px;
-      border-radius: 4px;
-      background-color: oklch(92% 0.08 85deg);
-      font-size: calc(14 / 16 * 1rem);
+      border-radius: var(--rounded--sm);
+      box-shadow: var(--shadow--sm);
+      background-color: var(--background--raised);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       @supports (position-area: block-end span-inline-end) {
         position: absolute;

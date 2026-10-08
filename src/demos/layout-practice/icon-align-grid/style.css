@@ -2,7 +2,6 @@
   :root {
     --check: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L10 18L20 6" /></svg>');
     --chevron--rightward: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4L16 12L8 20" /></svg>');
-    --leading--relaxed: 1.75;
   }
 }
 
@@ -80,11 +79,11 @@
     }
 
     ._menu {
-      border-block-start: 1px solid oklch(85% 0 0deg);
+      border-block-start: 1px solid var(--border--base);
     }
 
     ._menu-item {
-      border-block-end: 1px solid oklch(85% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
     }
 
     ._link {
@@ -110,7 +109,7 @@
 
       &::before {
         border: 1px solid;
-        border-radius: calc(infinity * 1px);
+        border-radius: var(--rounded--full);
       }
 
       &::after {
@@ -132,9 +131,9 @@
       min-block-size: calc(48 / 16 * 1rem);
       padding-inline: 16px;
       border: 1px solid transparent;
-      border-radius: 8px;
-      background-color: oklch(35% 0.08 250deg);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
 
       /* 左の列を埋める空の擬似要素 */
       &::before {

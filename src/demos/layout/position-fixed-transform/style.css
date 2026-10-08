@@ -11,7 +11,7 @@
     ._panel {
       min-block-size: calc(240 / 16 * 1rem);
       padding: 16px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       /* フェードインの演出などで変形を指定すると、fixed の子孫の包含ブロックになる */
       &[data-demo="translate"] {
@@ -24,7 +24,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._fixed {
@@ -33,9 +34,9 @@
       inset-inline-end: 8px;
       padding-block: 4px;
       padding-inline: 8px;
-      border-radius: 4px;
-      background-color: oklch(45% 0.15 260deg);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
     }
   }
 }

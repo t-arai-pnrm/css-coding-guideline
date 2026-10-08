@@ -1,17 +1,12 @@
-@layer tokens {
-  :root {
-    --z--forwards: 1;
-  }
-}
-
 @layer components {
   @scope (.scoped.sales-table) to (.scoped) {
     :scope {
       /* 縦にもスクロールさせ、見出しの行をこの枠の上端に留める */
       overflow: auto;
       max-block-size: calc(320 / 16 * 1rem);
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
       isolation: isolate;
       scrollbar-gutter: stable;
     }
@@ -34,35 +29,35 @@
     caption {
       padding-block: 8px;
       padding-inline: 12px;
-      font-weight: bold;
+      font-weight: var(--font-weight--bold);
     }
 
     th,
     td {
       padding-block: 8px;
       padding-inline: 12px;
-      border-block-end: 1px solid oklch(88% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
     }
 
     thead th {
       position: sticky;
       inset-block-start: 0;
-      border-block-end: 2px solid oklch(55% 0 0deg);
-      background-color: oklch(96% 0.01 250deg);
+      border-block-end: 2px solid var(--border--strong);
+      background-color: var(--background--base);
 
       /* 左上の角のセルは、縦にも横にも留めて、ほかの留めたセルより前に出す */
       &:first-child {
         inset-inline-start: 0;
         z-index: var(--z--forwards);
-        border-inline-end: 1px solid oklch(85% 0 0deg);
+        border-inline-end: 1px solid var(--border--base);
       }
     }
 
     tbody th {
       position: sticky;
       inset-inline-start: 0;
-      border-inline-end: 1px solid oklch(85% 0 0deg);
-      background-color: oklch(100% 0 0deg);
+      border-inline-end: 1px solid var(--border--base);
+      background-color: var(--background--surface);
     }
 
     td {

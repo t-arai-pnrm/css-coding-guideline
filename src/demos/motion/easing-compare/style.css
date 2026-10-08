@@ -21,7 +21,8 @@
 
       display: block grid;
       gap: 4px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       &.-ease-in {
         --_ease: ease-in;
@@ -39,8 +40,8 @@
     ._track {
       container: --track / inline-size;
       padding: 4px;
-      border-radius: calc(infinity * 1px);
-      background-color: oklch(94% 0 0deg);
+      border-radius: var(--rounded--full);
+      background-color: var(--background--active);
     }
 
     ._dot {
@@ -48,7 +49,7 @@
       inline-size: 24px;
       aspect-ratio: 1;
       border-radius: 50%;
-      background-color: oklch(48% 0.17 260deg);
+      background-color: var(--background--accent);
 
       /* 動きを比べるためのデモなので、動きを減らす設定でも動かす。違いが見えやすいよう、長めの240msにする */
       transition-duration: var(--duration--slow);

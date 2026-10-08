@@ -1,16 +1,10 @@
-@layer tokens {
-  :root {
-    --z--forwards: 1;
-    --z--backwards: -1;
-  }
-}
-
 @layer components {
   @scope (.scoped.feature-section) to (.scoped) {
     :scope {
       padding: 24px;
-      border-radius: 12px;
-      background-color: oklch(94% 0.02 250deg);
+      border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--xs);
+      background-color: var(--background--surface);
     }
   }
 
@@ -20,8 +14,9 @@
       position: relative;
       overflow: clip;
       padding: 24px;
-      border-radius: 8px;
-      background-color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--md);
+      box-shadow: var(--shadow--md);
+      background-color: var(--background--raised);
 
       &::before {
         content: "";
@@ -32,12 +27,13 @@
         inline-size: 160px;
         aspect-ratio: 1;
         border-radius: 50%;
-        background-color: oklch(88% 0.07 250deg);
+        background-color: color-mix(in oklab, var(--foreground--accent) 24%, var(--background--raised));
       }
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
 
     h2 + p {

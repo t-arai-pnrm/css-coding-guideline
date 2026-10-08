@@ -12,7 +12,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._flexbox {
@@ -21,15 +22,15 @@
 
       /* 縦にも余りを作るため、高さの下限を決める */
       min-block-size: 200px;
-      border: 1px dashed oklch(60% 0 0deg);
-      background-color: oklch(97% 0.01 250deg);
+      border: 1px dashed var(--border--strong);
+      background-color: var(--background--hover);
     }
 
     ._item {
       padding-block: 4px;
       padding-inline: 12px;
-      background-color: oklch(70% 0.12 250deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
     }
 
     [data-case="row"] {

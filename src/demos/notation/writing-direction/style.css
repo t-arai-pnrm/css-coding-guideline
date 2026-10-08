@@ -11,12 +11,13 @@
     }
 
     h2 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     div {
       padding: 16px;
-      border: 1px dashed oklch(70% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       &[data-writing-mode="vertical"] {
         inline-size: calc(400 / 16 * 1rem);
@@ -33,8 +34,8 @@
       margin-inline: auto;
       padding-block: 12px;
       padding-inline: 16px;
-      border-inline-start: 4px solid oklch(55% 0.15 250deg);
-      background-color: oklch(96% 0.02 250deg);
+      border-inline-start: 4px solid var(--foreground--accent);
+      background-color: var(--background--accent-subtle);
 
       & > a {
         justify-self: start;

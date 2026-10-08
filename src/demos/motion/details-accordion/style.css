@@ -1,10 +1,3 @@
-@layer tokens {
-  :root {
-    --duration--slow: 300ms;
-    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
-
 @layer base {
   /* キーワードで決まる大きさ（auto）へのトランジションを有効にする（第6章のベーススタイル） */
   :root {
@@ -23,12 +16,13 @@
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
 
 
     details {
-      border-block-end: 1px solid oklch(80% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
 
       /* 開閉する部分。包む要素を足さずに、高さと不透明度を動かす */
       &::details-content {
@@ -54,7 +48,7 @@
       gap: 16px;
       align-items: center;
       padding-block: 12px;
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
 
       /* 開閉を示す矢印 */
       &::after {

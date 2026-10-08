@@ -5,8 +5,9 @@
       display: block grid;
       gap: 24px;
       padding: 24px;
-      border-radius: 8px;
-      background-color: oklch(96% 0.02 250deg);
+      border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--sm);
+      background-color: var(--background--surface);
     }
 
     ._header {
@@ -15,8 +16,9 @@
     }
 
     ._meta {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._title {

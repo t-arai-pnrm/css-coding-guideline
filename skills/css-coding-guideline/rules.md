@@ -854,8 +854,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
 - 【推奨・実装上の判断】文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
   - 理由: 半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。
-  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。
-  - 詳細: 14-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
+  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。
+  - 詳細: 14-5 文字の役割と色（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/text-roles.mdx）
 - 【非推奨・仕様上の制約】和文には `text-wrap: pretty` を指定しない。（`no-text-wrap-pretty-for-japanese`）
   - 理由: Safari で、和文の `pretty` が `balance` と似た折り返しになる不具合があるため。
   - 補足: 英文の段落には `text-wrap: pretty` を指定します（kiso.css で指定済み）。
@@ -970,7 +970,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【非推奨・実装上の判断】ホバーやフォーカスの変化を `opacity` で表さない。（`no-opacity-for-hover`）
   - 理由: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
-  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。
+  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。文字色で塗るボタン（`--background--inverse`）は、テーマによって明るくするか暗くするかが逆になるので、`color-mix()` でページの背景色に寄せます。
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨・実装上の判断】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
   - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
@@ -2342,8 +2342,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 一部が見えていても値として正しく読めず、「12,800円」が「12…」になると12円と読み違えるおそれがあるため。
   - 補足: 数値と名前が1行に並ぶなら、名前のほうを切り詰め、数値の要素は `min-inline-size: fit-content` で縮ませません。
   - 詳細: 11-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/truncation-and-skeletons.mdx）
-- 【推奨・実装上の判断】表や一覧で数値を縦に並べる列と、値が変わり続ける数字には、`font-variant-numeric: tabular-nums` を指定する。（`tabular-nums-for-number-columns`）
-  - 理由: 数字の幅が字ごとに違う書体では、縦に並べた数値の桁の位置がずれて大小を比べにくくなり、値が変わるたびに文字が左右に揺れるため。
+- 【推奨・実装上の判断】表や一覧で数値を縦に並べる列には、`font-variant-numeric: tabular-nums` を指定する。（`tabular-nums-for-number-columns`）
+  - 理由: 数字の幅が字ごとに違う書体では、縦に並べた数値の桁の位置がずれ、大小を比べにくくなるため。
+  - 補足: カウンターやタイマーのように表示したまま値が変わる数字は、`tabular-nums-for-changing-numbers` で扱います。
   - 詳細: 11-16 文字の切り詰めと読み込み中の表示（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/layout-practice/truncation-and-skeletons.mdx）
 - 【推奨・実装上の判断】読み込み中の表示（スケルトン）は読み込み後の内容と同じ寸法にし、画像の枠は `aspect-ratio`、文字の行は `lh` 単位で場所を取る。（`skeleton-matches-final-size`）
   - 理由: 寸法が違うと、内容に差し替わったときに後ろの要素が動き、読んでいた位置や押そうとしたボタンがずれるため。
@@ -2651,7 +2652,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: kiso.css は、日本語の文書（`:lang(ja)`）で `em`、`i`、`cite`、`dfn`、`address` の斜体を解除し、`em` を太字にしています。
   - 詳細: 14-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
 - 【推奨・本書の規約】`font-weight` は `bold` のようなキーワードではなく数値で指定し、トークンにする。（`font-weight-numeric`）
-  - 理由: キーワードでは 400 と 700 しか表せず、太さの多いフォントやデザインカンプの指定と対応させにくいため。
+  - 理由: 数値ならデザインカンプの指定とトークンの値をそのまま照らし合わせられ、`bolder` や `lighter` のような相対的なキーワードは継承した太さによって表示が変わるため。
   - 補足: kiso.css はブラウザのデフォルトに合わせて `bolder` を使っているので、太さをそろえたいときは `base` レイヤーで上書きします。
   - 詳細: 14-1 フォントを指定する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/fonts.mdx）
 - 【推奨・実装上の判断】本文の Web フォントを `font-display: swap` で使うときは、`local()` で参照する代わりのフォントの `@font-face` に `size-adjust` などの補正を指定し、Web フォントの直後に置く。（`fallback-font-metric-overrides`）
@@ -2715,8 +2716,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
 - 【推奨・実装上の判断】文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
   - 理由: 半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。
-  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。
-  - 詳細: 14-4 文字サイズと改行（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/size-and-line-breaks.mdx）
+  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。
+  - 詳細: 14-5 文字の役割と色（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/text-roles.mdx）
 - 【推奨・実装上の判断】和文の見出しには、`@supports (word-break: auto-phrase)` の中で `word-break: auto-phrase` と `text-wrap: balance` を指定する。（`auto-phrase-for-headings`）
   - 理由: 文節の区切りで折り返し、各行の長さもそろうので、見出しが読みやすくなるため。
   - 補足: 2026年9月の時点で対応しているのは Chrome 系のブラウザだけで、ほかのブラウザでは通常の折り返しになります。英文の見出しには `text-wrap: balance` を指定します。
@@ -2917,9 +2918,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 描画の計算量が層の数に比例して増え、段階の高い影ほど層が多いので、古い端末ではコマ落ちしやすいため。
   - 補足: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
   - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
-- 【推奨・実装上の判断】番号付きリストの番号を装飾するときは、`list-style: none` と `::before` ではなく、`::marker` で色やフォントを指定する。（`marker-for-list-number-style`）
+- 【推奨・実装上の判断】番号付きリストの番号の色や大きさを変えるときは、`list-style: none` と `::before` ではなく、`::marker` に `color` と `font-size` を指定する。（`marker-for-list-number-style`）
   - 理由: リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。
-  - 補足: `::marker` には `background` や `border` を指定できません。円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。
+  - 補足: `::marker` には `background` や `border` を指定できず、Safari は `color` と `font-size` しか反映しません（`marker-color-and-font-size-only`）。太くする、円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。
   - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・仕様上の制約】文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。（`text-stroke-paint-order`）
   - 理由: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
@@ -2987,7 +2988,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【非推奨・実装上の判断】ホバーやフォーカスの変化を `opacity` で表さない。（`no-opacity-for-hover`）
   - 理由: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
-  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。
+  - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。文字色で塗るボタン（`--background--inverse`）は、テーマによって明るくするか暗くするかが逆になるので、`color-mix()` でページの背景色に寄せます。
   - 詳細: 17-1 状態とフォーカスを表す（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/interaction/states-and-focus.mdx）
 - 【推奨・実装上の判断】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
   - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。

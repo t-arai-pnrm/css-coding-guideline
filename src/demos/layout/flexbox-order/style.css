@@ -13,7 +13,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._card {
@@ -21,7 +22,7 @@
       flex-direction: column;
       gap: 8px;
       padding: 12px;
-      border: 1px solid oklch(80% 0 0deg);
+      border: 1px solid var(--border--base);
 
       &[data-image-first] > ._image {
         order: -1;
@@ -29,19 +30,22 @@
     }
 
     ._title {
-      font-size: 1rem;
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
     }
 
     ._text {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._image {
       display: block grid;
       place-items: center;
       aspect-ratio: 16 / 9;
-      background-color: oklch(90% 0.05 160deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--active);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

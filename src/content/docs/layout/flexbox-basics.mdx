@@ -235,7 +235,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 }
 ```
 
-次のデモは、この2つのコード例を並べたものです。内容の領域を薄い色、`padding` の領域を濃い色で塗っています。`flex: 1` の段では真ん中のアイテムだけが広く、Gridの段では3つの列の幅がそろい、真ん中のアイテムは内容の領域が狭くなっています。
+次のデモは、この2つのコード例を並べたものです。内容の領域と `padding` の領域を別の色で塗り分けています。`flex: 1` の段では真ん中のアイテムだけが広く、Gridの段では3つの列の幅がそろい、真ん中のアイテムは内容の領域が狭くなっています。
 
 <Demo title="padding の違うアイテムを、flex: 1 と Grid で等分する" html={equalColumnsHtml} css={equalColumnsCss} />
 
@@ -258,7 +258,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 次のデモは、ベーススタイルを使わない環境で、アイコンと長いURLを幅280pxまでのコンテナに並べたものです。1段目では本文が自動の最小幅で止まり、URLがコンテナの外へはみ出します。2段目では、本文が最小幅0まで縮み、URLが行の途中で折り返します。
 
-<Demo title="自動の最小幅で縮まない本文と、min-inline-size: 0 で縮む本文" html={minSizeHtml} css={minSizeCss} base="none" widths={[]} />
+<Demo title="自動の最小幅で縮まない本文と、min-inline-size: 0 で縮む本文" html={minSizeHtml} css={minSizeCss} base="none" scheme="light" widths={[]} />
 
 `flex-direction: column` では、同じことが高さで起き、`min-block-size: auto` が中身の高さとして扱われます。高さを決めた縦のFlexboxで、スクロールさせたいアイテムがはみ出すときは、そのアイテムに `overflow: auto` か `min-block-size: 0` を指定します。
 

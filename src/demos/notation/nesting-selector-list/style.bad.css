@@ -12,18 +12,19 @@
       padding-block: 8px;
       padding-inline: 16px;
       border-color: transparent;
-      border-radius: 4px;
-      background-color: oklch(70% 0 0deg);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--active);
+      color: var(--foreground--muted);
 
       &:enabled {
-        background-color: oklch(50% 0.15 250deg);
+        background-color: var(--background--inverse);
+        color: var(--foreground--inverse);
       }
     }
 
     button {
       &[data-variant="danger"] {
-        background-color: oklch(55% 0.2 25deg);
+        background-color: var(--foreground--danger);
       }
     }
   }

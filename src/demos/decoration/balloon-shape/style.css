@@ -15,8 +15,8 @@
       --_padding-block: var(--balloon--padding-block, 24px);
       --_padding-inline: var(--balloon--padding-inline, clamp(16px, 5%, 32px));
       --_border-width: var(--balloon--border-width, 4px);
-      --_border-color: var(--balloon--border-color, oklch(72% 0.08 20deg));
-      --_radius: var(--balloon--radius, 12px);
+      --_border-color: var(--balloon--border-color, var(--border--strong));
+      --_radius: var(--balloon--radius, var(--rounded--lg));
       --_arrow-half-width: calc(var(--balloon--arrow-width, 24px) / 2);
       --_arrow-height: calc(var(--_arrow-half-width) * tan(60deg)); /* 正三角形の高さ */
       --_arrow-position: var(--balloon--arrow-position, 50%);
@@ -39,8 +39,7 @@
       clip-path: var(--_shape);
       padding-block: var(--_padding-block) calc(var(--_padding-block) + var(--_arrow-height));
       padding-inline: var(--_padding-inline);
-      background-color: oklch(96% 0.02 20deg);
-      color: oklch(25% 0.02 20deg);
+      background-color: var(--background--active);
 
       @supports (border-shape: shape(from 0 0, hline to 0)) {
         border: var(--_border-width) solid var(--_border-color);

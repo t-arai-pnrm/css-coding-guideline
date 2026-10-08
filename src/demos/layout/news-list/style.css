@@ -25,7 +25,7 @@
       row-gap: 4px;
       align-items: baseline;
       padding-block: 1rlh;
-      border-block-end: 1px solid oklch(85% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
 
       & > ._category {
         justify-self: start;
@@ -45,9 +45,10 @@
     ._category {
       padding-block: 2px;
       padding-inline: 8px;
-      border-radius: 4px;
-      background-color: oklch(94% 0.02 250deg);
-      font-size: calc(12 / 16 * 1rem);
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--active);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
     }
   }
 }

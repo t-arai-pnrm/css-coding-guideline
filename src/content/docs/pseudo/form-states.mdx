@@ -97,8 +97,8 @@ input {
   input {
     &:checked,
     &[type="checkbox"]:indeterminate {
-      border-color: var(--color--accent--600);
-      background-color: var(--color--accent--600);
+      border-color: var(--background--accent);
+      background-color: var(--background--accent);
     }
   }
 }
@@ -106,7 +106,7 @@ input {
 
 上の例で `&:indeterminate` と書かずに `[type="checkbox"]` を加えているのは、ラジオボタンを除くためです。スコープの中にラジオボタンがあると、まだ何も選んでいないグループのラジオボタンが、すべて `:indeterminate` に当てはまります。中間の状態の印は、未選択のラジオボタンに付けるものではありません。
 
-次のデモでは、お知らせの一部だけを選ぶと、スクリプトが「すべて選ぶ」の `indeterminate` を `true` にし、横線の印が付きます。下の「配信の頻度」のラジオボタンは、どれも選んでいないので `:indeterminate` に当てはまりますが、`[type="checkbox"]` で除いているので印は付きません。チェックと中間の状態は背景色が同じなので、白い余白と横線の形で区別しています。
+次のデモでは、お知らせの一部だけを選ぶと、スクリプトが「すべて選ぶ」の `indeterminate` を `true` にし、横線の印が付きます。下の「配信の頻度」のラジオボタンは、どれも選んでいないので `:indeterminate` に当てはまりますが、`[type="checkbox"]` で除いているので印は付きません。チェックと中間の状態は背景色が同じなので、内側の余白と横線の形で区別しています。
 
 <Demo title="一部だけを選んだときに、「すべて選ぶ」のチェックボックスを中間の状態にする" html={selectAllHtml} css={selectAllCss} js={selectAllJs} widths={[]} />
 
@@ -136,11 +136,11 @@ input {
   input {
     &[readonly] {
       border-color: transparent;
-      background-color: var(--color--neutral--100);
+      background-color: var(--background--accent-subtle);
     }
 
     &:disabled {
-      color: var(--color--neutral--600);
+      color: var(--foreground--muted);
     }
   }
 }
@@ -162,7 +162,7 @@ input {
 /* 🙅‍♂ Not Recommended */
 input {
   &:not(:placeholder-shown) {
-    border-color: var(--color--accent--600);
+    border-color: var(--foreground--accent);
   }
 }
 ```
@@ -219,13 +219,13 @@ input {
 @scope (.scoped.profile-form) to (.scoped) {
   input {
     &:is(:user-invalid, [aria-invalid="true"]) {
-      border-color: var(--color--error--600);
+      border-color: var(--foreground--danger);
     }
   }
 
   button {
     &:is(:disabled, [aria-disabled="true"]) {
-      background-color: var(--color--neutral--400);
+      background-color: var(--background--active);
     }
   }
 }

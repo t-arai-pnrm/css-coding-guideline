@@ -13,8 +13,8 @@
     main,
     aside {
       padding: 16px;
-      border-radius: 8px;
-      background-color: oklch(96% 0.01 250deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
 
       & > :is(h1, h2) + * {
         margin-block-start: 8px;
@@ -23,7 +23,8 @@
 
     h1,
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
 
     /* kiso.css が h1 に残す上下のマージンを消し、パディングの内側の上端にそろえる */

@@ -77,7 +77,7 @@ window.addEventListener('scroll', () => {
       position: absolute;
       inset: 0;
       z-index: var(--z--backwards);
-      background-color: var(--color--neutral--50);
+      background-color: var(--background--base);
 
       @supports (animation-timeline: scroll()) and (animation-range: 0 80px) {
         animation-name: --fade-in;
@@ -95,7 +95,7 @@ window.addEventListener('scroll', () => {
 
 次のデモでは、枠の中をスクロールすると、80pxまでの間にヘッダーの背景が現れ、上へ戻すと薄くなります。スクロール駆動アニメーションに対応していない環境では、アニメーションが当たらないので、背景は最初から表示されています。
 
-<Demo title="スクロールした量に合わせて、ヘッダーの背景をフェードインする" html={headerHtml} css={headerCss} height="320px" />
+<Demo title="スクロールした量に合わせて、ヘッダーの背景をフェードインする" html={headerHtml} css={headerCss} scheme="light" height="320px" />
 
 `view()` では、範囲を名前で指定できます。`entry` は要素が画面に入る間、`exit` は出ていく間、`contain` は要素の全体が画面に収まっている間です。`animation-range: entry 0% entry 100%` のように、名前と割合を組み合わせて細かく絞ることもできます。範囲を絞ると、その前後にアニメーションの当たらない区間が生まれるので、ここでも `animation-fill-mode: both` を指定します。
 

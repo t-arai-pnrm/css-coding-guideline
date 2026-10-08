@@ -15,7 +15,7 @@
       inline-size: -webkit-fill-available;
       inline-size: stretch;
       aspect-ratio: 16 / 9;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       object-fit: cover;
     }
 
@@ -23,13 +23,14 @@
       display: block flex;
       gap: 8px;
       align-items: center;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._avatar {
       inline-size: 32px;
       aspect-ratio: 1;
-      border-radius: calc(infinity * 1px);
+      border-radius: var(--rounded--full);
       object-fit: cover;
     }
   }

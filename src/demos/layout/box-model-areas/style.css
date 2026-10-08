@@ -28,7 +28,8 @@
     ul {
       display: block grid;
       gap: 4px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     li {
@@ -41,7 +42,7 @@
         flex-shrink: 0;
         inline-size: 1em;
         aspect-ratio: 1;
-        border: 1px solid oklch(60% 0 0deg);
+        border: 1px solid var(--border--strong);
         background-color: var(--_swatch);
       }
 

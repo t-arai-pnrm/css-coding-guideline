@@ -13,12 +13,13 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._flow,
     ._grid {
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
     }
 
     ._flow {
@@ -36,8 +37,9 @@
 
     ._paragraph {
       padding: 8px;
-      background-color: oklch(92% 0.04 250deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--accent-subtle);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 区切り線は自分の上下に 24px の余白を持つ */

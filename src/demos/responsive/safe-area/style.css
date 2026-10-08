@@ -44,13 +44,14 @@
 
     header {
       padding-block: 24px;
-      background-color: oklch(45% 0.12 250deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
 
     ._title {
-      font-size: calc(20 / 16 * 1rem);
-      font-weight: 700;
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--title--leading);
     }
 
     ._body {
@@ -64,12 +65,12 @@
       gap: 4px;
       padding-block: 12px;
       padding-inline: 16px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     legend {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     ._bar {
@@ -79,8 +80,8 @@
       display: block flex;
       justify-content: center;
       padding-block: 12px max(12px, var(--_inset-bottom));
-      border-block-start: 1px solid oklch(85% 0 0deg);
-      background-color: oklch(97% 0.01 250deg);
+      border-block-start: 1px solid var(--border--base);
+      background-color: var(--background--surface);
     }
 
     a {
@@ -91,14 +92,14 @@
       inline-size: stretch;
       min-block-size: calc(48 / 16 * 1rem);
       max-inline-size: calc(400 / 16 * 1rem);
-      border-radius: calc(infinity * 1px);
-      background-color: oklch(45% 0.12 250deg);
-      color: oklch(100% 0 0deg);
+      border-radius: var(--rounded--full);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
 
     ._unsafe {
       position: fixed;
-      background-image: repeating-linear-gradient(45deg, oklch(55% 0.2 25deg / 40%) 0 4px, transparent 4px 10px);
+      background-image: repeating-linear-gradient(45deg, oklch(from var(--foreground--danger) l c h / 40%) 0 4px, transparent 4px 10px);
       pointer-events: none;
     }
 

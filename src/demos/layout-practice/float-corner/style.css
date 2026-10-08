@@ -12,8 +12,8 @@
     ._panel {
       overflow-y: auto;
       max-block-size: calc(240 / 16 * 1rem);
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     ._body {
@@ -53,8 +53,8 @@
     ._close {
       display: block grid;
       border-color: transparent;
-      background-color: oklch(35% 0 0deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
 
       &::before,
       &::after {
@@ -77,8 +77,8 @@
     ._card {
       display: block flow-root;
       padding: 24px;
-      border-radius: 8px;
-      background-color: oklch(96% 0.02 250deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
 
       & > * + p {
         margin-block-start: 1em;
@@ -94,7 +94,7 @@
     }
 
     ._decoration {
-      fill: oklch(70% 0.12 250deg);
+      fill: var(--border--strong);
     }
   }
 }

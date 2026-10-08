@@ -36,12 +36,13 @@
       gap: 12px;
       align-content: start;
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     h2 {
-      font-size: calc(16 / 16 * 1rem);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
     }
 
     a {
@@ -57,13 +58,14 @@
     ._field {
       display: block grid;
       gap: 4px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._email-input {
       padding: 8px;
       border-color: oklch(60% 0 0deg);
-      border-radius: 4px;
+      border-radius: var(--rounded--sm);
 
       &[aria-invalid="true"] {
         border-color: var(--_danger);
@@ -76,7 +78,7 @@
 
     ._error {
       color: var(--_danger);
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
   }
 }

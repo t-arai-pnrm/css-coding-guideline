@@ -156,22 +156,21 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 ## 番号付きリストのマーカーは ::marker で装飾する
 
-`<ol>` の番号の色や太さを変えたいときは、`::marker` を使います。リストの意味を保ったまま、`color`、`font-*`、`content` を指定できます。
+`<ol>` の番号の色や大きさを変えたいときは、`::marker` を使います。リストの意味を保ったまま、`color`、`font-*`、`content` を指定できます。ただし、Safariが反映するのは `color` と `font-size` だけなので、指定はこの2つに限ります（「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」）。
 
-```css title="🙆‍♂ Recommended: マーカーの色と太さを ::marker で変える"
+```css title="🙆‍♂ Recommended: マーカーの色を ::marker で変える"
 ._step {
   &::marker {
     color: var(--foreground--accent);
-    font-weight: var(--font-weight--bold);
   }
 }
 ```
 
-`::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲むような装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
+`::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲む、太くするといった装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
 
-<Demo title="::marker で番号の色と太さを変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
+<Demo title="::marker で番号の色を変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
 
-デモの1つ目は `::marker` で番号を青の太字にしたリスト、2つ目は `::before` で番号を青い円で囲んだリストです。
+デモの1つ目は `::marker` で番号を青にしたリスト、2つ目は `::before` で番号を青い円で囲んだリストです。
 
 kiso.cssは、リストのマーカーを `list-style-type: ""` で空にしています。`::marker` で装飾するリストでは、`list-style-type: revert` でブラウザのデフォルトの番号に戻し、マーカーを置く余白を `padding-inline-start` で確保します。円で囲むリストでは、空のマーカーをそのまま使い、`counter-reset` と `counter-increment` で数えた番号を描きます。
 
@@ -209,7 +208,7 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 }
 ```
 
-<Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} variant="neutral" />
+<Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} variant="neutral" scheme="light" />
 
 デモの1つ目は `paint-order` の指定なし、2つ目は `paint-order: stroke fill` です。1つ目では8pxの線が白い文字の内側にも重なって文字が細く見え、2つ目では文字の太さを保ったまま外側に縁取りが付きます。
 

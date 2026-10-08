@@ -7,7 +7,7 @@
 
     ._section {
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       & > * + * {
         margin-block-start: 1rlh;
@@ -21,9 +21,10 @@
       inset-block-start: 0;
       padding-block: 4px;
       padding-inline: 8px;
-      background-color: oklch(45% 0.15 260deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* 比較のため、1つ目の見出しだけ inset を指定しない */
       &[data-demo="without-inset"] {

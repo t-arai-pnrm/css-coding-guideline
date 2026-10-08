@@ -14,7 +14,7 @@
 @layer components {
   @scope (.scoped.spring-demo) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--background--accent);
 
       display: block grid;
       gap: 16px;
@@ -32,7 +32,7 @@
     }
 
     input {
-      --_background: oklch(70% 0 0deg);
+      --_background: var(--border--strong);
       --_duration: var(--duration--base);
       --_ease: var(--ease--in-out-quint);
 
@@ -41,7 +41,7 @@
       block-size: 1lh;
       padding: 2px;
       border-color: transparent;
-      border-radius: calc(infinity * 1px);
+      border-radius: var(--rounded--full);
       background-color: var(--_background);
       appearance: none;
 
@@ -60,7 +60,7 @@
         block-size: 100%;
         aspect-ratio: 1;
         border-radius: inherit;
-        background-color: oklch(100% 0 0deg);
+        background-color: var(--foreground--on-accent);
 
         @media (prefers-reduced-motion: no-preference) {
           transition-duration: var(--_duration);

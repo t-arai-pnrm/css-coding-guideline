@@ -5,8 +5,8 @@
       display: block grid;
       gap: 12px;
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     h2 {
@@ -14,7 +14,7 @@
     }
 
     p {
-      color: oklch(50% 0.2 260deg);
+      color: var(--foreground--accent);
       font-size: calc(18 / 16 * 1rem);
     }
   }
@@ -24,12 +24,13 @@
       display: block grid;
       gap: 4px;
       padding: 12px;
-      border-radius: 8px;
-      background-color: oklch(96% 0.01 250deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
     }
 
     p {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

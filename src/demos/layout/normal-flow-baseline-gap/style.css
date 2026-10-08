@@ -7,7 +7,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     section {
@@ -18,7 +19,7 @@
 
     /* 背景色で、画像の下に残る空きを見えるようにする */
     ._frame {
-      background-color: oklch(85% 0.12 80deg);
+      background-color: var(--background--active);
     }
 
     ._image {

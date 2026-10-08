@@ -15,7 +15,7 @@
 
     ._bar {
       min-block-size: calc(48 / 16 * 1rem);
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
 
       /* 色空間の指定に対応していない環境でも、帯が消えないようにする */
       background-color: var(--_from);
@@ -35,7 +35,8 @@
     }
 
     figcaption {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

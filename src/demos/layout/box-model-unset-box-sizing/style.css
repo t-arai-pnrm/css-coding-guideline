@@ -3,15 +3,16 @@
     :scope {
       display: block grid;
       gap: 12px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 指定した最大幅の目安として、同じ幅の帯を置く */
     ._ruler {
       inline-size: min(100%, calc(240 / 16 * 1rem));
       padding-block: 4px;
-      background-color: oklch(45% 0.12 250deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
       text-align: center;
     }
 
@@ -19,7 +20,7 @@
     ._container {
       max-inline-size: calc(240 / 16 * 1rem);
       padding-inline: 20px;
-      background-color: oklch(85% 0.08 250deg);
+      background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
 
       &[data-sizing="unset"] {
         box-sizing: unset;

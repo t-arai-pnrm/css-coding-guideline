@@ -15,11 +15,11 @@
       padding-block: 8px;
       padding-inline: 16px;
       border-inline-start: 4px solid transparent;
-      background-color: oklch(97% 0 0deg);
+      background-color: var(--background--active);
 
       /* ページ内リンクの移動先になっている間だけ、線を引く */
       &:target {
-        border-inline-start-color: oklch(48% 0.17 260deg);
+        border-inline-start-color: var(--foreground--accent);
       }
 
       & > h3 + p {
@@ -28,7 +28,8 @@
     }
 
     h3 {
-      font-size: calc(16 / 16 * 1rem);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
     }
   }
 }

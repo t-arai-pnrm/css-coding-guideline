@@ -66,8 +66,9 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 ```css title="🙆‍♂ Recommended: ホバーを操作できる状態に絞って any-hover の中に書き、:focus-visible にも同じ見た目を指定する"
 @scope (.scoped.text-link) to (.scoped) {
   :scope {
-    --_color: var(--color--accent--600);
-    --_color--hocus: var(--color--accent--700);
+    /* 状態の色は文字色に寄せ、ライトでもダークでもコントラストを上げる */
+    --_color: var(--foreground--accent);
+    --_color--hocus: color-mix(in oklab, var(--foreground--accent) 70%, var(--foreground--base));
 
     color: var(--_color);
 
@@ -85,10 +86,12 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 @scope (.scoped.save-button) to (.scoped) {
   :scope {
-    --_background: var(--color--accent--600);
-    --_background--hocus: var(--color--accent--700);
+    /* 文字色で塗るボタンは、状態の色をページの背景色に寄せて作る（後述の「ホバーの変化を透明度で表す方法」） */
+    --_background: var(--background--inverse);
+    --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
 
     background-color: var(--_background);
+    color: var(--foreground--inverse);
 
     &:focus-visible {
       background-color: var(--_background--hocus);
@@ -467,7 +470,31 @@ body {
 
 重ね色は、`opacity` で要素を透かす方法とは別のものです。半透明なのは背景に指定した色だけで、項目の文字や枠線は透けないので、コントラストは下がりません。トークンの名前から、ホバーと押下のための色だと読み取れます。背景色のあるボタンには重ね色を使わず、相対カラー構文で明るさを変えます。`background-color` に重ね色を指定すると、ボタンの塗りが半透明の色に置き換わってしまうからです。デモが読み込んでいるトークンの値は、「[付録I デモの共通トークン](/appendix/demo-tokens/)」に載せています。前述の「ホバーで背景が付く項目の間隔」のデモも、この重ね色を使っています。
 
-次のデモでは、ボタンとリンクにマウスを重ねたときと、Tabキーでフォーカスを移したときに、同じように色が変わります。無効にしたボタンと、`href` のない現在のページのリンクは反応しません。
+ただし、主ボタンのように文字色で塗るボタンは、相対カラー構文で明るさを変えられません。塗りに使う `--background--inverse` の値は `light-dark()` で、ライトのテーマでは黒寄り、ダークのテーマでは白寄りの色です。黒寄りの塗りは明るくしないと、白寄りの塗りは暗くしないと、変化が見えにくくなります。`calc(l - 0.1)` のように明るさを一方向へ変える式では、片方のテーマで変化がほとんど見えません。そこで、`color-mix()` でページの背景色 `--background--base` に寄せます。ページの背景色は、文字色とコントラストを取るために塗りと反対側の明るさにあるので、1つの式で、ライトでは明るく、ダークでは暗くなります。
+
+```css title="🙆‍♂ Recommended: 文字色で塗るボタンは、ページの背景色に寄せてホバーの色を作る"
+@scope (.scoped.primary-button) to (.scoped) {
+  :scope {
+    --_background: var(--background--inverse);
+    --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+
+    background-color: var(--_background);
+    color: var(--foreground--inverse);
+
+    &:focus-visible {
+      --_background: var(--_background--hocus);
+    }
+
+    &:enabled:hover {
+      @media (any-hover) {
+        --_background: var(--_background--hocus);
+      }
+    }
+  }
+}
+```
+
+次のデモでは、ボタンとリンクにマウスを重ねたときと、Tabキーでフォーカスを移したときに、同じように色が変わります。ボタンは文字色で塗り、状態の色を上の例と同じくページの背景色に寄せて作っています。無効にしたボタンと、`href` のない現在のページのリンクは反応しません。
 
 <Demo title="ホバーとフォーカスで同じように色が変わり、操作できないものは反応しない" html={hoverHtml} css={hoverCss} />
 

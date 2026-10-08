@@ -150,7 +150,7 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 次のデモは、この例に背景色と余白を足したものです。ダークの中のリンクは、後に書いたライトの濃い青ではなく、ダークの明るい青になります。
 
-<Demo title="詳細度が同じなら、ルートに近い @scope の指定が勝つ" html={proximityHtml} css={proximityCss} variant="neutral" widths={[]} />
+<Demo title="詳細度が同じなら、ルートに近い @scope の指定が勝つ" html={proximityHtml} css={proximityCss} scheme="light" variant="neutral" widths={[]} />
 
 `@scope` の外に書いたルールは、近接度が無限大として扱われます。そのため、詳細度が同じなら、`@scope` の中のルールが、後に書いた `@scope` の外のルールにも勝ちます。`@scope (.s) { :scope { … } }` と、その後ろに書いた `.s { … }` は、どちらも0.1.0ですが、`:scope` の側が勝ちます（2026年10月、Chrome 152で確認）。
 

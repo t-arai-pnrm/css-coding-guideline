@@ -10,7 +10,7 @@
     }
 
     ._label {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     ._row {
@@ -35,12 +35,12 @@
       place-content: center;
       min-block-size: calc(72 / 16 * 1rem);
       padding: 8px;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-color: var(--_background);
 
       /* ブラウザが背景色に対して黒か白を選ぶ（Safari 26以上） */
       color: contrast-color(var(--_background));
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
       text-align: center;
 
       &[data-method="tint"] {

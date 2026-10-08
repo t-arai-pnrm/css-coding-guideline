@@ -1,6 +1,7 @@
 @layer tokens {
   :root {
-    --background--muted: oklch(90% 0.08 260deg);
+    /* 光の色。アクセントの文字色を薄めて、ライトでもダークでも面になじませる */
+    --background--muted: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
   }
 }
 
@@ -33,9 +34,10 @@
       gap: 8px;
       max-inline-size: calc(400 / 16 * 1rem);
       padding: 24px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
       background-image: radial-gradient(circle 160px at var(--spotlight--x) var(--spotlight--y), var(--background--muted), transparent);
+      background-color: var(--background--surface);
     }
 
     h2 {

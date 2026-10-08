@@ -1,6 +1,6 @@
 @layer utilities {
   .-text-muted {
-    color: oklch(55% 0 0deg);
+    color: var(--foreground--muted);
   }
 }
 
@@ -16,12 +16,12 @@
   @scope (.scoped.layered-card) to (.scoped) {
     :scope {
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     ._text {
-      color: oklch(50% 0.2 260deg);
+      color: var(--foreground--accent);
     }
   }
 }
@@ -30,11 +30,11 @@
 @scope (.scoped.unlayered-card) to (.scoped) {
   :scope {
     padding: 16px;
-    border: 1px solid oklch(85% 0 0deg);
-    border-radius: 8px;
+    border: 1px solid var(--border--base);
+    border-radius: var(--rounded--md);
   }
 
   ._text {
-    color: oklch(50% 0.2 260deg);
+    color: var(--foreground--accent);
   }
 }

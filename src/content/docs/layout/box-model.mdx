@@ -48,7 +48,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 次のデモは、ボックスの4つの領域を色分けしたものです。内容の領域は緑、`padding` の領域は青、`margin` の領域は親の斜線で表しています。
 
-<Demo title="ボックスの4つの領域と、背景が描かれる範囲" html={areasHtml} css={areasCss} />
+<Demo title="ボックスの4つの領域と、背景が描かれる範囲" html={areasHtml} css={areasCss} scheme="light" />
 
 `margin` の領域には、要素自身の背景は描かれず、クリックの対象にもなりません。ボタンの押せる範囲を広げるときに `margin` ではなく `padding` を使うのは、このためです。縦に並んだブロックの間では、上下の `margin` が足されずに大きいほうだけが残ることがあり、この現象は「[7-6 マージンの相殺](/layout/margin-collapse/)」で説明しています。
 
@@ -97,7 +97,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 次のデモでは、`max-inline-size` が240px相当で左右に20pxの `padding` を持つ2つの要素を比べています。緑が内容の領域です。`border-box` のままの要素では内容の幅が200pxに減り、`box-sizing: unset` の要素では内容の幅が240pxのまま、`padding` を含めた全体が280pxになります。
 
-<Demo title="box-sizing を unset にすると、最大幅が内容の幅になる" html={unsetHtml} css={unsetCss} variant="neutral" />
+<Demo title="box-sizing を unset にすると、最大幅が内容の幅になる" html={unsetHtml} css={unsetCss} variant="neutral" scheme="light" />
 
 `unset` は、継承するプロパティでは親の値を、継承しないプロパティでは初期値を使うキーワードで、継承しない `box-sizing` では初期値の `content-box` になります。本書で `content-box` と書かずに `unset` と書くのは、「ベーススタイルの `border-box` を取り消す」という意図を宣言で示すためです。`content-box` と書くと、その要素のためにボックスの数え方を選んだように読めます。同じ理由で、「[17-3 フォーム部品](/interaction/forms/)」でも、行数で高さを決めるテキストエリアに `box-sizing: unset` を書いています。
 

@@ -6,7 +6,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     section {
@@ -17,14 +18,14 @@
 
     ._parent {
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
     }
 
     /* 上下の padding が行の高さに加わるかどうかで、内側の振る舞いの違いを見せる */
     ._box {
       padding-block: 8px;
       padding-inline: 8px;
-      background-color: oklch(85% 0.1 250deg);
+      background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
 
       &[data-display="block"] {
         display: block flow;

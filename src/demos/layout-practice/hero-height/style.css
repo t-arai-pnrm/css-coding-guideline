@@ -8,8 +8,8 @@
       /* 高さは下限だけを決め、中身が収まらなければ帯のほうを伸ばす */
       min-block-size: calc(320 / 16 * 1rem);
       padding: 24px;
-      background-color: oklch(30% 0.05 260deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
 
       & > a {
         justify-self: start;
@@ -29,7 +29,8 @@
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 }

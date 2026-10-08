@@ -15,8 +15,8 @@
       inline-size: -webkit-fill-available;
       inline-size: stretch;
       aspect-ratio: 1;
-      border-radius: 8px;
-      background-color: oklch(92% 0 0deg);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
 
       &[data-fit="cover"] {
         object-fit: cover;
@@ -28,7 +28,8 @@
     }
 
     figcaption {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       text-align: center;
     }
   }

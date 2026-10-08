@@ -7,7 +7,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 位置指定された祖先。カードが包含ブロックにならないと、バッジはここを基準にする */
@@ -15,7 +16,7 @@
       position: relative;
       padding: 8px;
       padding-block-end: 40px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       & > * + * {
         margin-block-start: 8px;
@@ -25,7 +26,7 @@
     ._card {
       padding: 16px;
       padding-block-end: 40px;
-      background-color: oklch(92% 0.04 250deg);
+      background-color: var(--background--accent-subtle);
 
       &[data-positioned] {
         position: relative;
@@ -37,8 +38,8 @@
       inset-block-end: 8px;
       inset-inline-end: 8px;
       padding-inline: 8px;
-      background-color: oklch(55% 0.2 25deg);
-      color: oklch(100% 0 0deg);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
     }
   }
 }

@@ -1,7 +1,7 @@
 @layer components {
   @scope (.scoped.marker-props) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--foreground--accent);
 
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
@@ -14,7 +14,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._list {
@@ -47,7 +48,7 @@
       &:is([data-custom] > *)::before {
         content: "✓" / "";
         color: var(--_accent);
-        font-weight: 700;
+        font-weight: var(--font-weight--bold);
       }
     }
   }

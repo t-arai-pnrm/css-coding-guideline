@@ -28,7 +28,7 @@
       /* 狭いときは、順位（不変）と記事の情報（残りすべて）の 2 列 */
       grid-template-columns: max-content 1fr;
       column-gap: 16px;
-      border-block-end: 1px solid oklch(88% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
 
       /* 広いときは、順位（不変）・タイトル（残りすべて）・著者（120px 相当まで）・日付（不変）の 4 列 */
       @container style(--_density: --spacious) {
@@ -48,7 +48,7 @@
       display: contents;
 
       &:nth-child(odd of :not([hidden])) {
-        --_background-color: oklch(97% 0.01 250deg);
+        --_background-color: var(--background--hover);
       }
     }
 
@@ -60,7 +60,7 @@
       align-items: start;
       padding-block: 12px;
       padding-inline: 16px;
-      border-block-start: 1px solid oklch(88% 0 0deg);
+      border-block-start: 1px solid var(--border--base);
       background-color: var(--_background-color);
 
       @container style(--_density: --spacious) {
@@ -69,8 +69,7 @@
     }
 
     ._rank {
-      color: oklch(55% 0.18 25deg);
-      font-weight: bold;
+      font-weight: var(--font-weight--bold);
       font-variant-numeric: tabular-nums;
     }
 
@@ -110,7 +109,7 @@
     }
 
     a {
-      color: oklch(45% 0.15 260deg);
+      color: var(--foreground--accent);
 
       &:any-link:hover {
         @media (any-hover) {
@@ -121,7 +120,7 @@
 
     ._author,
     time {
-      color: oklch(45% 0 0deg);
+      color: var(--foreground--muted);
       font-size: calc(13 / 16 * 1rem);
     }
 

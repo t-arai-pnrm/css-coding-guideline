@@ -8,8 +8,8 @@
 
     section {
       padding: 16px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
 
       & > * + * {
         margin-block-start: 8px;
@@ -17,8 +17,9 @@
     }
 
     ._label {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     h3 {
@@ -26,7 +27,7 @@
     }
 
     a {
-      color: oklch(48% 0.17 260deg);
+      color: var(--foreground--accent);
     }
 
     [data-selector="not-inside"] a {

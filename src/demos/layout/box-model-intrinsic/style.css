@@ -15,19 +15,21 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 中身より狭い枠に入れ、枠線で使える幅を見せる */
     ._frame {
       inline-size: calc(120 / 16 * 1rem);
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
     }
 
     ._box {
       padding-inline: 8px;
-      background-color: oklch(85% 0.08 250deg / 80%);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* 折り返せる位置ですべて折り返し、ほぼ1文字の幅になる */
       &[data-size="min-content"] {

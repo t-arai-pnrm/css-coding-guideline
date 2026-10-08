@@ -12,7 +12,7 @@
     ._dialog button {
       padding-block: 8px;
       padding-inline: 16px;
-      border-radius: 4px;
+      border-radius: var(--rounded--sm);
     }
 
     [popover] {
@@ -20,9 +20,10 @@
       --_scale-from: 1;
       --_duration: var(--duration--base);
 
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
-      box-shadow: 0 8px 24px oklch(0% 0 0deg / 16%);
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      box-shadow: var(--shadow--lg);
+      background-color: var(--background--raised);
       transition-duration: var(--_duration);
       transition-property: opacity, scale, display, overlay;
 
@@ -50,7 +51,8 @@
       margin: revert;
       padding-block: 4px;
       padding-inline: 8px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       transform-origin: 50% 100%;
 
       @supports (position-area: block-start) {
@@ -99,6 +101,8 @@
       max-inline-size: calc(360 / 16 * 1rem);
       margin: revert;
       padding: 24px;
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--overlay);
 
       @media (prefers-reduced-motion: no-preference) {
         --_scale-from: 0.9;

@@ -21,13 +21,13 @@
     /* :not() は引数の ._note の分が加わり、0.1.1 */
     p {
       &:not(._note) {
-        color: oklch(55% 0 0deg);
+        color: var(--foreground--muted);
       }
     }
 
     /* 0.1.0 */
     ._lead {
-      color: oklch(50% 0.2 260deg);
+      color: var(--foreground--accent);
     }
   }
 
@@ -45,13 +45,13 @@
     /* :where() の中は数えないので、0.0.1 */
     p {
       &:where(:not(._note)) {
-        color: oklch(55% 0 0deg);
+        color: var(--foreground--muted);
       }
     }
 
     /* 0.1.0 */
     ._lead {
-      color: oklch(50% 0.2 260deg);
+      color: var(--foreground--accent);
     }
   }
 }

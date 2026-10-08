@@ -12,7 +12,8 @@
     }
 
     figcaption {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       text-align: center;
     }
   }
@@ -29,8 +30,8 @@
       gap: 4px;
       padding: var(--_padding);
       border-radius: var(--_radius);
-      background-color: oklch(30% 0.02 250deg);
-      color: oklch(100% 0 0deg);
+      box-shadow: var(--shadow--md);
+      background-color: var(--background--raised);
 
       /* 比べるための指定。内側にも外側と同じ値を使う */
       &[data-radius="same"] {
@@ -44,7 +45,8 @@
       border-radius: var(--_inner-radius);
 
       &[data-current] {
-        background-color: oklch(52% 0.16 250deg);
+        background-color: var(--background--accent);
+        color: var(--foreground--on-accent);
       }
     }
   }

@@ -22,8 +22,9 @@
     }
 
     ._label-text {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     section {
@@ -33,8 +34,8 @@
     }
 
     h2 {
-      font-size: calc(28 / 16 * 1rem);
-      line-height: var(--leading--snug);
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      line-height: var(--text--display--leading);
 
       /* 比較のために、見出しの詰めを取り除き、本文と同じく親の値を継承させる */
       &[data-palt="off"] {

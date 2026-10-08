@@ -7,7 +7,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     section {
@@ -17,8 +18,8 @@
     }
 
     ._parent {
-      border: 1px dashed oklch(60% 0 0deg);
-      background-color: oklch(92% 0.04 250deg);
+      border: 1px dashed var(--border--strong);
+      background-color: var(--background--accent-subtle);
 
       &[data-mode="flow-root"] {
         display: block flow-root;
@@ -30,11 +31,11 @@
       inline-size: 64px;
       aspect-ratio: 1;
       margin-inline-end: 8px;
-      background-color: oklch(45% 0.15 260deg);
+      background-color: var(--background--accent);
     }
 
     ._next {
-      background-color: oklch(95% 0.03 80deg);
+      background-color: var(--background--active);
     }
   }
 }

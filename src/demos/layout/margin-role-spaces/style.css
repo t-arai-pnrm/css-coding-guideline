@@ -5,16 +5,17 @@
       display: block grid;
       gap: 16px;
       padding: 16px;
-      border: 1px dashed oklch(60% 0 0deg);
-      background-color: oklch(96% 0.02 250deg);
+      border: 1px dashed var(--border--strong);
+      background-color: var(--background--active);
     }
 
     ._item {
       padding: 12px;
-      border: 2px solid oklch(35% 0.12 260deg);
-      background-color: oklch(45% 0.15 260deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      border: 2px solid oklch(from var(--background--accent) calc(l - 0.12) c h);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* margin は gap に足され、その領域には親の背景が見える */
       &[data-margin] {

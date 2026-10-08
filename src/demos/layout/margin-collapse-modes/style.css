@@ -13,16 +13,17 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 枠線で、親の外に抜けた余白が見えるようにする */
     ._frame {
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
     }
 
     ._parent {
-      background-color: oklch(92% 0.04 250deg);
+      background-color: var(--background--accent-subtle);
 
       &[data-mode="flow-root"] {
         display: block flow-root;
@@ -35,9 +36,10 @@
 
     p {
       padding: 8px;
-      background-color: oklch(45% 0.15 260deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     /* 相殺を見せるため、子の margin で間隔を作っている */

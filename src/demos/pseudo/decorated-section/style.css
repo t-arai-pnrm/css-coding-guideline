@@ -1,7 +1,7 @@
 @layer components {
   @scope (.scoped.feature-section) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--foreground--accent);
 
       display: block grid;
       gap: 16px;
@@ -11,7 +11,8 @@
       display: block flex;
       gap: 12px;
       align-items: center;
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
 
       /* 見出しの前の縦線。空の擬似要素はフレックスアイテムになり、高さが効く。幅は線の太さで決まる */
       &::before {
@@ -35,7 +36,7 @@
       &::before {
         content: "✓" / "";
         color: var(--_accent);
-        font-weight: 700;
+        font-weight: var(--font-weight--bold);
       }
     }
 

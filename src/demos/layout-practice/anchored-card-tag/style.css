@@ -28,7 +28,7 @@
       display: block grid;
       gap: 12px;
       padding: 16px;
-      border: 1px solid oklch(85% 0 0deg);
+      border: 1px solid var(--border--base);
       border-radius: var(--rounded--md);
 
       /* 画像 160px 相当・隙間 16px・本文の最小幅 240px 相当・左右の padding 32px が並ぶ幅 */
@@ -64,7 +64,8 @@
       border-radius: var(--rounded--sm);
       background-color: oklch(30% 0.04 50deg);
       color: oklch(100% 0 0deg);
-      font-size: calc(12 / 16 * 1rem);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
 
       /* 未対応の環境では、見出しの前の通常の位置に表示する */
       @supports (anchor-scope: --thumbnail) {
@@ -81,7 +82,8 @@
     }
 
     ._lead {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

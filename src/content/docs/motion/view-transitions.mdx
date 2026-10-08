@@ -100,7 +100,7 @@ if (document.startViewTransition) {
 
 次のデモでは、ボタンでテーマを切り替えます。ボタンを押すと、`types` に `theme-toggle` を渡して `document.startViewTransition()` を呼び、ルートの `data-theme` 属性を書き換えます。新しいテーマの画面が、上から塗り替えるように現れます。View Transitionsに対応していない環境では、テーマが一瞬で切り替わります。
 
-<Demo title="テーマの切り替えだけ、新しい画面を上から塗り替えるように表示する" html={themeHtml} css={themeCss} js={themeJs} widths={[]} />
+<Demo title="テーマの切り替えだけ、新しい画面を上から塗り替えるように表示する" html={themeHtml} css={themeCss} js={themeJs} scheme="light" widths={[]} />
 
 ## 並んだ要素に名前を付ける
 
@@ -163,7 +163,7 @@ if (document.startViewTransition) {
 
 次のデモでは、ボタンを押すと、`document.startViewTransition()` の中で項目をランダムに並べ替えます。CSSでは項目に連番の名前を振っていませんが、各項目は前の位置から新しい位置へ移動します。動きを減らす設定のときは名前が付かないので、一覧全体がフェードで切り替わります。
 
-<Demo title="match-element と view-transition-class で、並べ替えた項目を新しい位置へ移動させる" html={shuffleHtml} css={shuffleCss} js={shuffleJs} />
+<Demo title="match-element と view-transition-class で、並べ替えた項目を新しい位置へ移動させる" html={shuffleHtml} css={shuffleCss} js={shuffleJs} scheme="light" />
 
 <Baseline id="view-transitions" compatKey="css.properties.view-transition-name.match-element" name="view-transition-name: match-element" />
 

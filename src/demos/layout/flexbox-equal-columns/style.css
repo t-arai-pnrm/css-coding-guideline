@@ -11,7 +11,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._columns {
@@ -30,11 +31,12 @@
     ._item {
       padding-block: 1rlh;
 
-      /* 内容の領域を薄い色、padding の領域を濃い色で塗り分ける */
-      background-image: linear-gradient(oklch(90% 0.05 250deg) 0 0), none;
+      /* 内容の領域と padding の領域を別の色で塗り分ける */
+      background-image: linear-gradient(var(--background--surface) 0 0), none;
       background-clip: content-box, border-box;
-      background-color: oklch(55% 0.12 250deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: oklch(from var(--background--accent) calc(l - 0.12) c h);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
       text-align: center;
 
       &:is(._columns[data-method="flex"] > *) {

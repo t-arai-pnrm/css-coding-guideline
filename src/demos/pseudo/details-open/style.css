@@ -1,15 +1,15 @@
 @layer components {
   @scope (.scoped.faq-accordion) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--foreground--accent);
 
       display: block grid;
       gap: 8px;
     }
 
     details {
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
 
       /* 開いている項目だけ、枠線をアクセントの色にする。name 属性で別の項目を開くと、ブラウザが open 属性を外す */
       &[open] {
@@ -20,7 +20,7 @@
     summary {
       padding-block: 8px;
       padding-inline: 16px;
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     p {

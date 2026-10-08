@@ -12,8 +12,9 @@
     }
 
     h3 {
-      color: oklch(45% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 
@@ -26,9 +27,9 @@
 
     li {
       padding: 16px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
-      background-color: oklch(96% 0.02 260deg);
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--active);
 
       /* 兄弟のいないカードは、すべての列にまたがらせる */
       &:only-child {

@@ -139,7 +139,7 @@ HTMLは、エントリーポイントの `style.css` だけを読み込みます
 
 次のデモは、この構成と同じCSSで、カードを2枚並べたものです。2枚目のカードにだけ、`style` 属性で `--news-card--accent` に値を渡しています。1枚目の見出しはトークンの青、2枚目の見出しは渡した色で表示されます。
 
-<Demo title="最小の構成で表示したお知らせのカード" html={quickStartHtml} css={quickStartCss} widths={[]} />
+<Demo title="最小の構成で表示したお知らせのカード" html={quickStartHtml} css={quickStartCss} widths={[]} scheme="light" />
 
 `--news-card--accent` は、このカードが外から値を受け取るために用意した入り口です。値を渡さなかった1枚目は、コンポーネントに書いたデフォルトの色を使います。入り口を用意した値だけを外から変え、それ以外の見た目はコンポーネントの中で決めるのが、本書の部品の作り方です（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。
 

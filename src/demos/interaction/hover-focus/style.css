@@ -1,8 +1,13 @@
 @layer components {
   @scope (.scoped.hover-demo) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
-      --_accent--hocus: oklch(from var(--_accent) calc(l - 0.14) c h);
+      /* リンクの色。状態の色は文字色に寄せ、ライトでもダークでもコントラストを上げる */
+      --_accent: var(--foreground--accent);
+      --_accent--hocus: color-mix(in oklab, var(--_accent) 70%, var(--foreground--base));
+
+      /* 主ボタンは文字色で塗る。状態の色はページの背景色に寄せる */
+      --_fill: var(--background--inverse);
+      --_fill--hocus: color-mix(in oklab, var(--_fill) 80%, var(--background--base));
 
       display: block grid;
       gap: 24px;
@@ -17,22 +22,24 @@
     }
 
     button {
-      --_background: var(--_accent);
+      --_background: var(--_fill);
 
       padding-block: 8px;
       padding-inline: 20px;
       border-color: transparent;
       border-radius: var(--rounded--sm);
       background-color: var(--_background);
-      color: oklch(100% 0 0deg);
+      color: var(--foreground--inverse);
 
       &:disabled {
-        --_background: oklch(60% 0 0deg);
+        --_background: var(--background--active);
+
+        color: var(--foreground--muted);
       }
 
       /* キーボードでフォーカスしたときも、ホバーと同じ見た目にする */
       &:focus-visible {
-        --_background: var(--_accent--hocus);
+        --_background: var(--_fill--hocus);
       }
 
       /* キーボードでフォーカスを移したときは、一度で切り替える */
@@ -47,7 +54,7 @@
       /* 無効にしたボタンは、ホバーしても反応させない */
       &:enabled:hover {
         @media (any-hover) {
-          --_background: var(--_accent--hocus);
+          --_background: var(--_fill--hocus);
         }
       }
     }

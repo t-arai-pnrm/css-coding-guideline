@@ -1,7 +1,7 @@
 @layer components {
   @scope (.scoped.placeholder-shown-scope) to (.scoped) {
     :scope {
-      --_accent: oklch(48% 0.17 260deg);
+      --_accent: var(--foreground--accent);
 
       display: block grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
@@ -12,13 +12,13 @@
       display: block grid;
       gap: 8px;
       padding: 12px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     legend {
       padding-inline: 4px;
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     label {
@@ -28,11 +28,11 @@
 
     input {
       padding: 4px 8px;
-      border-color: oklch(45% 0 0deg);
-      border-radius: 4px;
+      border-color: var(--foreground--muted);
+      border-radius: var(--rounded--sm);
 
       &::placeholder {
-        color: oklch(48% 0 0deg);
+        color: var(--foreground--muted);
       }
 
       /* 比べるための悪い例：placeholder 属性のない空の欄も、入力済みの見た目になる */
@@ -44,7 +44,7 @@
       /* 未入力の見た目は、placeholder 属性のある欄にだけ当たる */
       &:is([data-fixed] *):placeholder-shown {
         border-style: dashed;
-        background-color: oklch(97% 0 0deg);
+        background-color: var(--background--hover);
       }
     }
   }

@@ -557,8 +557,9 @@
 - id: tabular-nums-for-number-columns
   level: 推奨
   kind: judgment
-  rule: '表や一覧で数値を縦に並べる列と、値が変わり続ける数字には、`font-variant-numeric: tabular-nums` を指定する。'
-  reason: 数字の幅が字ごとに違う書体では、縦に並べた数値の桁の位置がずれて大小を比べにくくなり、値が変わるたびに文字が左右に揺れるため。
+  rule: '表や一覧で数値を縦に並べる列には、`font-variant-numeric: tabular-nums` を指定する。'
+  reason: 数字の幅が字ごとに違う書体では、縦に並べた数値の桁の位置がずれ、大小を比べにくくなるため。
+  note: 'カウンターやタイマーのように表示したまま値が変わる数字は、`tabular-nums-for-changing-numbers` で扱います。'
   page: layout-practice/truncation-and-skeletons
   since: 0.21.0
 

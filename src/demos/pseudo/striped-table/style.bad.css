@@ -11,13 +11,14 @@
 
     caption {
       padding-block-end: 8px;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     th,
     td {
       padding: 8px 12px;
-      border-block-end: 1px solid oklch(85% 0 0deg);
+      border-block-end: 1px solid var(--border--base);
     }
 
     thead th {
@@ -27,7 +28,7 @@
     tbody tr {
       /* 隠した行も数えるので、見えている行の縞が崩れる */
       &:nth-child(even) {
-        background-color: oklch(96% 0.02 260deg);
+        background-color: var(--background--active);
       }
     }
   }

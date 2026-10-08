@@ -7,7 +7,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._grid {
@@ -39,16 +40,18 @@
     ._item {
       padding-block: 4px;
       padding-inline: 8px;
-      background-color: oklch(70% 0.12 250deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._rest {
       padding-block: 4px;
       padding-inline: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      border: 1px dashed var(--border--strong);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

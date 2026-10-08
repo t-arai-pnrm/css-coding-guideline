@@ -10,13 +10,13 @@
       display: block grid;
       gap: 8px;
       padding: 12px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     legend {
       padding-inline: 4px;
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     label {
@@ -32,23 +32,23 @@
 
     input {
       padding: 4px 8px;
-      border-color: oklch(45% 0 0deg);
-      border-radius: 4px;
+      border-color: var(--foreground--muted);
+      border-radius: var(--rounded--sm);
 
       /* 比べるための悪い例：無効の入力欄とチェックボックスにも当たる */
       &:is([data-pseudo] *):read-only {
-        background-color: oklch(93% 0 0deg);
-        outline: 3px solid oklch(70% 0.15 25deg);
+        background-color: var(--background--active);
+        outline: 3px solid var(--foreground--danger);
       }
 
       &:is([data-fixed] *)[readonly] {
         border-color: transparent;
-        background-color: oklch(95% 0.02 260deg);
+        background-color: var(--background--accent-subtle);
       }
 
       &:is([data-fixed] *):disabled {
-        border-color: oklch(80% 0 0deg);
-        color: oklch(48% 0 0deg);
+        border-color: var(--border--strong);
+        color: var(--foreground--muted);
       }
     }
   }

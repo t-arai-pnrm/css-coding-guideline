@@ -1,9 +1,3 @@
-@layer tokens {
-  :root {
-    --background--base: oklch(100% 0 0deg);
-  }
-}
-
 @layer base {
   body {
     /* デモの枠が base レイヤーで付けた余白を取り除き、ヘッダーを枠の上端に付ける */
@@ -18,9 +12,9 @@
       inset-block-start: 0;
       padding-block: 16px;
       padding-inline: 16px;
-      border-block-end: 1px solid oklch(0% 0 0deg / 10%);
+      border-block-end: 1px solid var(--border--base);
       background-color: oklch(from var(--background--base) l c h / 70%);
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
       backdrop-filter: blur(12px);
     }
 
@@ -32,7 +26,7 @@
 
     ._swatch {
       min-block-size: 120px;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
 
       &[data-tone="1"] {
         background-color: oklch(70% 0.18 30deg);

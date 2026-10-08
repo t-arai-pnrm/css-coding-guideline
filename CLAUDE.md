@@ -97,9 +97,9 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - 要素の間のブロック方向の `margin` は、`& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` のように次兄弟結合子で選んだ後ろの要素の `margin-block-start` に付ける。要素自身に条件なしの `margin-block-end` を付けたり、`:last-child` で打ち消したりしない。
 - 高さは `block-size` で固定せず、`min-block-size`、`max-block-size`、`aspect-ratio` で決める。正方形は `inline-size` と `aspect-ratio: 1` で書く。
 - デモの見た目は、共通トークン（`src/demos/tokens/`）で統一する。詳細と経緯は `DECISIONS.md` の「デモの共通トークンと見た目で決めたこと」にある。
-  - 色：プリミティブ（`--color--neutral--*`、`--color--accent--*`、`--color--red--*`）は直接参照せず、セマンティクスを使う。面は `--background--base`／`surface`／`raised`／`overlay` の4段階を役割で選ぶ。枠線は `--border--base`。
+  - 色：プリミティブ（`--color--neutral--*`、`--color--accent--*`、`--color--red--*`）は直接参照せず、セマンティクスを使う。面は `--background--base`／`surface`／`raised`／`overlay` の4段階を役割で選ぶ。枠線は `--border--base`。選んだ状態や範囲の淡い青は `--background--accent-subtle`、成功とエラーの文字は `--foreground--success` と `--foreground--danger`。
   - 文字色は `--foreground--base` と `--foreground--muted` の2つだけにし、`opacity` や半透明の色で薄くしない。青（accent）はリンク、フォーカスリング、選択した状態にだけ使い、主ボタンは文字色で塗る。
-  - 背景が透明な項目のホバーと押下は、`background-color` に `--background--hover` と `--background--active` を指定する。背景色のあるボタンは相対カラー構文で明るさを変える。
+  - 背景が透明な項目のホバーと押下は、`background-color` に `--background--hover` と `--background--active` を指定する。背景色のあるボタンは相対カラー構文で明るさを変える。文字色で塗ったボタン（`--background--inverse`）は、`color-mix(in oklab, var(--background--inverse) 80%, var(--background--base))` でページの背景に寄せる。
   - 文字は役割のトークン（`--text--<役割>--font-size` と `--text--<役割>--leading`。役割は display、title、subtitle、body、caption）で指定する。太さは `--font-weight--regular` と `--font-weight--bold` の2段階。
   - 角丸は `--rounded--sm`／`md`／`lg`／`full`（外側のパネルは `lg`、内側の項目は `md`）、影は `--shadow--*`、再生時間は `--duration--fast`（80ms）／`base`（160ms）／`slow`（240ms）。
   - 項目の間を移る背景を付けるリストは、項目の間に隙間を作らない。間隔は項目の内側の余白で作る。

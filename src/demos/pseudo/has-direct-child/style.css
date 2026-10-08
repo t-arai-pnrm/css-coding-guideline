@@ -11,7 +11,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._list {
@@ -33,12 +34,12 @@
       display: block grid;
       gap: 8px;
       padding: 12px;
-      border: 1px solid oklch(80% 0 0deg);
-      border-radius: 8px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
     }
 
     ._title {
-      font-weight: 700;
+      font-weight: var(--font-weight--bold);
     }
 
     ._tags {
@@ -48,9 +49,10 @@
 
       & > li {
         padding-inline: 8px;
-        border-radius: calc(infinity * 1px);
-        background-color: oklch(94% 0.03 260deg);
-        font-size: calc(12 / 16 * 1rem);
+        border-radius: var(--rounded--full);
+        background-color: var(--background--accent-subtle);
+        font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+        line-height: var(--text--caption--leading);
       }
     }
   }

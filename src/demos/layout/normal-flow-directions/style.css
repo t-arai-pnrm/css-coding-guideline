@@ -14,12 +14,13 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._parent {
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       & > * + * {
         margin-block-start: 8px;
@@ -35,8 +36,8 @@
     /* 同じ論理プロパティが、書字方向に合わせて向きを変える */
     ._block {
       padding-inline-start: 8px;
-      border-inline-start: 4px solid oklch(45% 0.15 260deg);
-      background-color: oklch(92% 0.04 250deg);
+      border-inline-start: 4px solid var(--foreground--accent);
+      background-color: var(--background--accent-subtle);
     }
   }
 }

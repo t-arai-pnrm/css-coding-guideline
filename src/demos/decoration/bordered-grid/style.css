@@ -2,7 +2,7 @@
   @scope (.scoped.feature-grid) to (.scoped) {
     :scope {
       --_rule-width: 1px;
-      --_rule-color: oklch(70% 0 0deg);
+      --_rule-color: var(--border--strong);
 
       display: block grid;
       grid-template-columns: repeat(auto-fill, minmax(min(calc(240 / 16 * 1rem), 100%), 1fr));
@@ -28,7 +28,8 @@
     }
 
     p {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

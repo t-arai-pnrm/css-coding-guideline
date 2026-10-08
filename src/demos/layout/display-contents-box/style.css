@@ -11,7 +11,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._grid {
@@ -22,11 +23,11 @@
 
     ._wrapper {
       padding: 8px;
-      border: 2px solid oklch(55% 0.18 25deg);
-      background-color: oklch(95% 0.03 25deg);
+      border: 2px solid var(--foreground--accent);
+      background-color: var(--background--accent-subtle);
 
       /* 継承されるプロパティは、箱をなくしても子に届く */
-      color: oklch(45% 0.18 25deg);
+      color: var(--foreground--accent);
 
       /* 箱だけをなくし、2 と 3 を ._grid のグリッドアイテムにする。枠線、背景、padding は描かれない */
       &[data-demo="contents"] {
@@ -36,8 +37,8 @@
 
     ._item {
       padding: 8px;
-      border: 1px solid oklch(80% 0 0deg);
-      font-weight: 700;
+      border: 1px solid var(--border--base);
+      font-weight: var(--font-weight--bold);
       text-align: center;
     }
   }

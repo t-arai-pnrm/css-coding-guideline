@@ -22,8 +22,8 @@
 
   @scope (.scoped.action-menu) to (.scoped) {
     :scope {
-      --_border: oklch(80% 0 0deg);
-      --_background--hocus: oklch(94% 0.03 260deg);
+      --_border: var(--border--base);
+      --_background--hocus: var(--background--hover);
       --_safe-triangle: --false;
 
       position: relative;
@@ -70,7 +70,7 @@
         clip-path: polygon(0 var(--_safe-y), 100% 0, 100% 100%);
 
         /* デモでは、三角形が分かるように色を付ける */
-        background-color: oklch(48% 0.17 260deg / 16%);
+        background-color: var(--background--accent-subtle);
       }
 
       &:enabled:hover::before {
@@ -89,7 +89,7 @@
       display: none;
       inline-size: calc(120 / 16 * 1rem);
       border: 1px solid var(--_border);
-      background-color: Canvas;
+      background-color: var(--background--raised);
 
       @container style(--_hocus: --true) {
         display: block grid;

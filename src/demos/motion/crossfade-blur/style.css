@@ -1,10 +1,3 @@
-@layer tokens {
-  :root {
-    --duration--fast: 200ms;
-    --ease--out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
-
 @layer pages {
   @scope (.scoped.crossfade-demo) to (.scoped) {
     :scope {
@@ -17,7 +10,8 @@
       display: block grid;
       gap: 8px;
       justify-items: center;
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* 比べるために、片方だけぼかしを消す */
       &.-no-blur {
@@ -34,7 +28,7 @@
 
       display: inline grid;
       padding: 12px;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
 
       /* 2つのアイコンを、グリッドの同じセルに重ねる */
       & > ._copy-icon,

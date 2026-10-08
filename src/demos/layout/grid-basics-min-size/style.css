@@ -7,7 +7,8 @@
     }
 
     h3 {
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
 
     ._grid {
@@ -16,7 +17,7 @@
       gap: 8px;
       margin-block-start: 8px;
       padding: 8px;
-      border: 1px dashed oklch(60% 0 0deg);
+      border: 1px dashed var(--border--strong);
 
       /* デモの環境はベーススタイルで min-inline-size: 0 を指定しているので、初期値に戻して比べる */
       &[data-min="auto"] > ._item {
@@ -27,9 +28,10 @@
     ._item {
       padding-block: 4px;
       padding-inline: 8px;
-      background-color: oklch(70% 0.12 250deg);
-      color: oklch(100% 0 0deg);
-      font-size: calc(14 / 16 * 1rem);
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       /* kiso.css の anywhere は最小幅を小さくするので、URL を折り返さない単語として扱う break-word に戻す */
       overflow-wrap: break-word;

@@ -214,8 +214,8 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 ```css title="🙅‍♂ Not Recommended: var() を含む if() を前の宣言に頼って書き、else も書かない"
 /* 🙅‍♂ Not Recommended */
 .status-badge {
-  color: var(--color--neutral--700);
-  color: if(style(--_status: --error): var(--color--error--600));
+  color: var(--foreground--base);
+  color: if(style(--_status: --error): var(--foreground--danger));
 }
 ```
 
@@ -224,10 +224,10 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
   :scope {
     --_status: --default;
 
-    color: var(--color--neutral--700);
+    color: var(--foreground--base);
 
     @supports (color: if(style(--_status: --error): red; else: blue)) {
-      color: if(style(--_status: --error): var(--color--error--600); else: var(--color--neutral--700));
+      color: if(style(--_status: --error): var(--foreground--danger); else: var(--foreground--base));
     }
   }
 }

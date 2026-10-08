@@ -1,13 +1,5 @@
 @layer tokens {
   :root {
-    --color--neutral--50: oklch(98.5% 0 0deg);
-    --color--neutral--100: oklch(97% 0 0deg);
-    --color--neutral--400: oklch(70.8% 0 0deg);
-    --color--neutral--600: oklch(43.9% 0 0deg);
-    --color--neutral--900: oklch(20.5% 0 0deg);
-    --color--neutral--950: oklch(14.5% 0 0deg);
-    --color--accent--400: oklch(70% 0.14 250deg);
-    --color--accent--600: oklch(52% 0.16 250deg);
     --background--base: light-dark(var(--color--neutral--100), var(--color--neutral--900));
     --background--accent: light-dark(var(--color--accent--600), var(--color--accent--400));
     --foreground--base: light-dark(var(--color--neutral--950), var(--color--neutral--50));
@@ -27,7 +19,7 @@
       display: block grid;
       gap: 8px;
       padding: 16px;
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-color: var(--background--base);
       color: var(--foreground--base);
 
@@ -43,7 +35,8 @@
 
     p {
       color: var(--foreground--muted);
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }
@@ -58,16 +51,17 @@
       justify-items: start;
       padding: 16px;
       border: 1px solid oklch(from var(--foreground--base) l c h / 15%);
-      border-radius: 8px;
+      border-radius: var(--rounded--md);
       background-color: color-mix(in oklab, var(--background--base), var(--foreground--base) 5%);
     }
 
     ._badge {
       padding-inline: 8px;
-      border-radius: calc(infinity * 1px);
+      border-radius: var(--rounded--full);
       background-color: oklch(from var(--_accent) l c h / 20%);
-      font-size: calc(12 / 16 * 1rem);
-      font-weight: 700;
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--caption--leading);
     }
 
     h2 {
@@ -82,7 +76,7 @@
       padding-block: 8px;
       padding-inline: 16px;
       border-color: transparent;
-      border-radius: 4px;
+      border-radius: var(--rounded--sm);
       background-color: var(--_accent);
 
       /* アクセントカラーを差し替えても、文字色を選び直さずに済むようにする */
