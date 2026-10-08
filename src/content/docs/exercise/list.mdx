@@ -45,7 +45,7 @@ import listCss from '../../../demos/exercise/list/style.css?raw';
 
 カードとは別に一覧のコンポーネントを作るのは、並べる責任を持つ要素が要るからです。カードは、自分が何件目で、何列目に置かれ、隣に何があるかを知りません。カードとカードの間隔や列の数は、カードを子に持つ一覧が決めます（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
 
-`article-list` のCSSが受け持つのは、見出しと並びの間隔と、見出しの文字の大きさだけです。列の数、列の幅、カードとカードの間隔は、ここには書きません。
+`article-list` のCSSが受け持つのは、見出しと並びの間隔と、見出しの文字の役割だけです。列の数、列の幅、カードとカードの間隔は、ここには書きません。
 
 ```css title="🙆‍♂ Recommended: 一覧のCSSには、見出しと並びの関係だけを書く"
 @scope (.scoped.article-list) to (.scoped) {
@@ -55,7 +55,8 @@ import listCss from '../../../demos/exercise/list/style.css?raw';
   }
 
   h2 {
-    font-size: calc(20 / 16 * 1rem);
+    font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+    line-height: var(--text--title--leading);
   }
 }
 ```

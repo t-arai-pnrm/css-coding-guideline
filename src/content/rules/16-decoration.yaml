@@ -119,7 +119,7 @@
   page: decoration/icons-and-masks
   since: 0.1.0
 
-# 16-3 表面と文字の装飾
+# 16-3 面・影・角丸
 - id: surface-levels-by-role
   level: 推奨
   kind: judgment
@@ -166,13 +166,14 @@
   page: decoration/surfaces
   since: 0.4.0
 
+# 16-4 文字とリストの装飾
 - id: marker-for-list-number-style
   level: 推奨
   kind: judgment
   rule: '番号付きリストの番号の色や大きさを変えるときは、`list-style: none` と `::before` ではなく、`::marker` に `color` と `font-size` を指定する。'
   reason: 'リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。'
   note: '`::marker` には `background` や `border` を指定できず、Safari は `color` と `font-size` しか反映しません（`marker-color-and-font-size-only`）。太くする、円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。'
-  page: decoration/surfaces
+  page: decoration/text-ornaments
   since: 0.4.0
 
 - id: text-stroke-paint-order
@@ -181,7 +182,7 @@
   rule: '文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。'
   reason: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
   note: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
-  page: decoration/surfaces
+  page: decoration/text-ornaments
   since: 0.3.0
 
 - id: inline-decoration-clone-with-prefix
@@ -191,10 +192,10 @@
   reason: 初期値の `slice` では折り返した位置の `padding` と枠線がなくなり、Safari は接頭辞付きの宣言にしか対応していないため。
   note: '上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。'
   aiProne: true
-  page: decoration/surfaces
+  page: decoration/text-ornaments
   since: 0.25.0
 
-# 16-4 角の形を変える
+# 16-5 角の形を変える
 - id: corner-shape-guard-when-broken
   level: 推奨
   kind: spec
@@ -224,7 +225,7 @@
   page: decoration/shapes
   since: 0.25.0
 
-# 16-5 輪郭と枠線を描く
+# 16-6 輪郭と枠線を描く
 - id: guard-new-shapes-with-supports
   level: 推奨
   kind: spec
@@ -264,7 +265,7 @@
   page: decoration/outlines
   since: 0.25.0
 
-# 16-6 区切り線を引く
+# 16-7 区切り線を引く
 - id: separators-in-gap
   level: 推奨
   kind: spec
@@ -302,4 +303,4 @@
   page: decoration/separators
   since: 0.25.0
 
-# 16-7 印刷のスタイル
+# 16-8 印刷のスタイル

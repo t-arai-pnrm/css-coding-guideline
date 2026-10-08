@@ -1,0 +1,147 @@
+---
+title: "16-4 文字とリストの装飾"
+description: "番号付きリストの番号は ::marker で色と大きさを変え、それ以上の装飾が要るときだけ ::before と counter() で描きます。文字の縁取りは -webkit-text-stroke で描き、paint-order: stroke fill で塗りの下に置きます。見出しの行ごとに敷く背景は、インラインの要素に box-decoration-break: clone を接頭辞付きと併記して描きます。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import markerHtml from '../../../demos/decoration/list-marker/index.html?raw';
+import markerCss from '../../../demos/decoration/list-marker/style.css?raw';
+import strokeHtml from '../../../demos/decoration/text-stroke/index.html?raw';
+import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
+import cushionHtml from '../../../demos/decoration/text-cushion/index.html?raw';
+import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
+
+番号付きリストの番号は `::marker` で色と大きさを変え、番号を円で囲むような装飾が要るときだけ、`::before` に `counter()` で番号を描きます。文字の縁取りは `-webkit-text-stroke` で描いて、`paint-order: stroke fill` で塗りの下に置きます。見出しの行ごとに敷く背景は、インラインの要素に `box-decoration-break: clone` を指定して描きます。
+
+どれも、組み終えた文字やリストに付ける装飾です。フォント、行の高さ、改行の位置といった文字の組み方は第14章「[タイポグラフィと和文組版](/typography/)」で決め、この節では、その文字の見た目に足す指定だけを扱います。面の背景、影、角丸のような要素の表面の装飾は「[16-3 面・影・角丸](/decoration/surfaces/)」で説明しています。3つの装飾は互いに独立しているので、作るものに合わせて必要な見出しだけを読めば足ります。
+
+## 番号付きリストのマーカーは ::marker で装飾する
+
+`<ol>` の番号の色や大きさを変えたいときは、`::marker` を使います。リストの意味を保ったまま、`color`、`font-*`、`content` を指定できます。ただし、Safariが反映するのは `color` と `font-size` だけなので、指定はこの2つに限ります（「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」）。
+
+```css title="🙆‍♂ Recommended: マーカーの色を ::marker で変える"
+._step {
+  &::marker {
+    color: var(--foreground--accent);
+  }
+}
+```
+
+`::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲む、太くするといった装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
+
+<Demo title="::marker で番号の色を変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
+
+デモの1つ目は `::marker` で番号を青にしたリスト、2つ目は `::before` で番号を青い円で囲んだリストです。
+
+kiso.cssは、リストのマーカーを `list-style-type: ""` で空にしています。`::marker` で装飾するリストでは、`list-style-type: revert` でブラウザのデフォルトの番号に戻し、マーカーを置く余白を `padding-inline-start` で確保します。円で囲むリストでは、空のマーカーをそのまま使い、`counter-reset` と `counter-increment` で数えた番号を描きます。
+
+<Baseline id="marker" />
+
+## 文字の縁取りは塗りの下に描く
+
+写真の上の見出しやバナーの文字に、縁取りを付けたいことがあります。文字の縁取りは `-webkit-text-stroke` で描きます。接頭辞が付いていますが、WHATWGのCompatibility Standardで定義され、すべての主要なブラウザが対応しています。接頭辞のない書き方はないので、理由のコメントを添えて、Stylelintの警告を無効にします。
+
+<Baseline id="text-stroke-fill" name="-webkit-text-stroke" />
+
+ただし、縁取りの線は字形の輪郭を中心に、内側と外側へ半分ずつ描かれます。初期値では塗りの上に線を重ねるので、線を太くするほど、内側の半分が塗りを覆って文字が細くなります。画数の多い漢字では、字の中のすき間が線で埋まり、読めなくなることもあります。
+
+```css title="🙅‍♂ Not Recommended: 太い縁取りを塗りの上に重ねる"
+/* 🙅‍♂ Not Recommended */
+._title {
+  color: oklch(100% 0 0deg);
+
+  /* 文字の縁取りは、接頭辞付きの指定でしか書けない（2026年9月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-text-stroke: 8px oklch(25% 0 0deg);
+}
+```
+
+`paint-order: stroke fill` を指定すると、線を先に描き、その上に塗りを重ねます。線の内側の半分は塗りに隠れ、外側の半分だけが縁取りとして見えます。字の形が崩れないので、縁取りを太くしても読みやすさを保てます。
+
+```css title="🙆‍♂ Recommended: 縁取りを塗りの下に描く"
+._title {
+  color: oklch(100% 0 0deg);
+
+  /* 文字の縁取りは、接頭辞付きの指定でしか書けない（2026年9月） */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-text-stroke: 8px oklch(25% 0 0deg);
+  paint-order: stroke fill;
+}
+```
+
+<Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} variant="neutral" scheme="light" />
+
+デモの1つ目は `paint-order` の指定なし、2つ目は `paint-order: stroke fill` です。1つ目では8pxの線が白い文字の内側にも重なって文字が細く見え、2つ目では文字の太さを保ったまま外側に縁取りが付きます。
+
+見えるのは線の外側の半分なので、線の幅は、見せたい縁取りの2倍を指定します。上の例では、8pxの線で4pxの縁取りになります。`paint-order` はもともとSVGのプロパティで、HTMLの文字には、2024年3月にすべての主要なブラウザで使えるようになりました。対応していない環境では、縁取りが塗りの上に重なるだけです。
+
+<Baseline id="paint-order" />
+
+縁取りは、読みやすさを補う装飾として使います。`-webkit-text-fill-color: transparent` で塗りを消して、縁取りだけの文字にすると、細い線だけで字の形を読み取ることになり、背景とのコントラストも確かめにくくなります。本文や長い見出しには使わず、短い装飾の文字に限ります。{/* 要確認: 出典なし */}
+
+## 見出しの行ごとに背景を敷く
+
+キービジュアルの上の見出しでは、文字の後ろに行ごとの帯（座布団）を敷くデザインがよくあります。座布団は、見出しの中のインラインの要素に `padding`、`border`、背景色を付け、`box-decoration-break: clone` を指定して描きます。行の数だけ要素を分けたり、擬似要素で帯を重ねたりする必要はありません。
+
+インラインの要素が複数の行にまたがると、背景と `border` は行ごとの断片に分けて描かれます。初期値の `slice` では、1本の帯を行の端で切ったように描かれるので、折り返した位置の `padding` と `border` がなくなります。`clone` を指定すると、断片ごとに `padding` と `border` が付き、各行が独立した座布団になります。ブロックやインラインブロックの要素は、行をまたいでも1つの箱のままなので、行ごとには描けません。座布団は、必ずインラインの要素に付けます。
+
+```css title="🙆‍♂ Recommended: インラインの要素に clone を指定し、行の間隔を座布団の高さから決める"
+@scope (.scoped.text-cushion) to (.scoped) {
+  :scope {
+    --_space: var(--text-cushion--space, 8px);
+    --_padding: var(--text-cushion--padding, 0.5em);
+    --_border-width: var(--text-cushion--border-width, 2px);
+
+    padding: var(--_padding);
+    border: var(--_border-width) solid currentColor;
+    background-color: var(--background--base);
+
+    /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年10月） */
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+
+    /* 座布団の高さと間隔から、行の間隔を長さで決める。中に子要素を置かない */
+    /* stylelint-disable-next-line declaration-property-unit-allowed-list */
+    line-height: calc(1cap + (var(--_padding) + var(--_border-width) + var(--_space)) * 2);
+  }
+}
+```
+
+改行の位置は、「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」の `.-br` ユーティリティで決めます。日本語のときだけ `span` をブロックにして改行するユーティリティで、`<br>` と違い、機械翻訳で言語が変わると改行がなくなります。座布団の要素は、`.-br` の `span` の内側に置きます。
+
+```html title="改行する位置で .-br の span を分け、その内側に座布団を置く"
+<h2>
+  <span class="-br"><span class="scoped text-cushion">春の特別展は、</span></span>
+  <span class="-br"><span class="scoped text-cushion">3月31日まで開催しています</span></span>
+</h2>
+```
+
+<Demo title="幅が足りずに折り返した行にも、clone なら padding と枠線が付く" html={cushionHtml} css={cushionCss} />
+
+デモの1つ目は `box-decoration-break` の指定なし、2つ目は `clone` です。幅のボタンで320pxにすると「3月31日まで開催しています」の行が折り返し、1つ目では折り返した位置の行の端に `padding` と枠線が付かず、2つ目では折り返したどの行にも付きます。
+
+Safariは、接頭辞付きの `-webkit-box-decoration-break` にしか対応していません（2026年10月確認）。接頭辞なしの宣言だけでは、Safariで座布団が行の端で切れるので、接頭辞付きの宣言を前に併記します。ベンダープレフィックスを書く場面と、理由のコメントの残し方は、「[9-7 モダンな記法にそろえる](/notation/modern-syntax/)」で説明しています。
+
+<Baseline id="box-decoration-break" />
+
+行の間隔には注意が要ります。インラインの要素の上下の `padding` と `border` は、行の高さに加わらず、上下の行へはみ出して描かれます（「[7-2 通常フローの基礎](/layout/normal-flow/)」）。行の間隔が座布団の高さより狭いと、上下の座布団が重なります。座布団の高さは、文字の内容領域の高さに、上下の `padding` と `border` を足した値です。そこで `line-height` を、文字の高さに `padding`、`border`、座布団の間隔を上下の分だけ足した長さにしています。この `line-height` は長さで書くので、本書の「`line-height` は単位のない数値で指定する」ルールの例外です。長さの `line-height` は子要素にそのまま継承されるので、座布団の中には文字サイズの違う子要素を置かないようにし、理由をコメントに残して警告を無効にします。
+
+式の文字の高さには、大文字の高さの `1cap` を使っています。ただし、背景が描かれる内容領域の高さは、フォントのアセントとディセントで決まり、`1cap` や `1em` と一致するとは限りません。Chrome 152で測ると、ヒラギノ角ゴシックの内容領域は `1em`、macOSの `system-ui` は約 `1.18em` でした（2026年10月確認）。座布団の間の実際のすき間は、`--_space` の2倍から、内容領域と `1cap` の差を引いた長さになります。`--_space` はすき間そのものではないので、使うフォントで表示を確かめて値を決めます。{/* 要確認: 出典なし。1em ではなく 1cap を使う根拠 */}
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [box-decoration-break: clone](https://codepen.io/tak-dcxi/pen/myEBWRK)（CodePen）
+- [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)
+- [-webkit-text-stroke - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-text-stroke)
+- [paint-order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/paint-order)
+- [Compatibility Standard: -webkit-text-stroke](https://compat.spec.whatwg.org/#the-webkit-text-stroke)（WHATWG）
+- [box-decoration-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/box-decoration-break)

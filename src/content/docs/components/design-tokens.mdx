@@ -108,7 +108,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 セマンティクスの層があると、ライトモードとダークモードのような切り替えを、`light-dark()` を使ってトークンの側で吸収できます。コンポーネントからは、意味の分かるセマンティクスのトークンを参照するのが基本です。こうしておけば、配色を変えるときもトークンの定義を直すだけで済みます。色の書き方は「[15-1 色の形式と色空間](/color-media/color/)」で、`light-dark()` は「[15-4 ダークモード](/color-media/dark-mode/)」で扱います。
 
-背景のセマンティクスは、面の役割ごとに固定した4段階です。ページの `--background--base`、カードの `--background--surface`、メニューやポップオーバーの `--background--raised`、ダイアログの `--background--overlay` です。面の段階と影の組み合わせ方は「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明します。
+背景のセマンティクスは、面の役割ごとに固定した4段階です。ページの `--background--base`、カードの `--background--surface`、メニューやポップオーバーの `--background--raised`、ダイアログの `--background--overlay` です。面の段階と影の組み合わせ方は「[16-3 面・影・角丸](/decoration/surfaces/)」で説明します。
 
 枠線の `--border--base` は、プリミティブを選ばずに、`color-mix()` で文字色を12%だけ混ぜた半透明の色にしています。半透明の枠線は、下にある面の色と重なって見えるので、`--background--base` の上でも `--background--surface` の上でも、背景より少し濃い線になります。文字色がライトとダークで切り替われば枠線も追従するので、枠線のために面ごと、テーマごとの値を用意する必要がありません。
 
@@ -182,7 +182,7 @@ import Guideline from '../../../components/Guideline.astro';
 }
 ```
 
-色の値が `light-dark()` で切り替わるので、形のトークンはライトとダークで書き分けずに済みます。段階ごとに層を足していく影の作り方は「[16-3 表面と文字の装飾](/decoration/surfaces/)」で説明します。
+色の値が `light-dark()` で切り替わるので、形のトークンはライトとダークで書き分けずに済みます。段階ごとに層を足していく影の作り方は「[16-3 面・影・角丸](/decoration/surfaces/)」で説明します。
 
 本書のデモは、この節で示した値のトークンを共通で読み込んで使っています。トークンの全文は「[付録I デモの共通トークン](/appendix/demo-tokens/)」にあります。
 

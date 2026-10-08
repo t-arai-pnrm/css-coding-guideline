@@ -11,6 +11,24 @@ AI向けのルール集やスキルには、生成したときのバージョン
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.40.0（2026年10月8日）
+
+章をまたぐ説明の食い違いを直し、学習の順番と節の構成を整えました。ルールを加え、変えたので、マイナーバージョンを上げています。
+
+- ルールを加えました。
+  - [`simplify-large-motion-when-reduced`](/motion/reduced-motion/#rule-simplify-large-motion-when-reduced)
+- ルールを変えました。
+  - [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)：装飾的な動きだけを扱うルールにし、根拠をWCAG 2.3.3にしました。機能的な動きの大きな変動は、新しいルールに分けました。
+  - [`marker-for-list-number-style`](/decoration/text-ornaments/#rule-marker-for-list-number-style)、[`text-stroke-paint-order`](/decoration/text-ornaments/#rule-text-stroke-paint-order)、[`inline-decoration-clone-with-prefix`](/decoration/text-ornaments/#rule-inline-decoration-clone-with-prefix)：掲載先を新しい16-4に移しました。
+- 「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」を、WCAG 2.3.3が求めること、本書の実装方針、本書の目安の数値の3層で書き直しました。
+- 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」で、コンテナが重なりコンテキストを作るという古い仕様の記述を直し、旧実装のブラウザだけで起きることとして書きました。
+- 第20章の演習のデモと本文で、文字を役割のトークンで指定するようにしました。
+- 16-3を「[16-3 面・影・角丸](/decoration/surfaces/)」と「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」に分け、旧16-4〜16-6を16-5〜16-7に繰り下げました。
+- 「[1-3 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」は見方を変えるところまでに絞りました。方式ごとの幅の比較と調べる順番は、「[7-1 レイアウトの基礎](/layout/fundamentals/)」へ移しました。
+- 「[6-4 計算関数を応用する](/values/advanced-math-functions/)」の冒頭で、読む順番を案内しました。6-4の最初の比較と付録Cのネストの比較は、説明対象だけを変える段階と、本書の設計で整える段階の2つに分けました。
+- 「[19-1 Stylelintでルールを守る](/operations/stylelint/)」に、自分のプロジェクトに入れる手順を足しました。
+- 「[本書の読み方](/introduction/how-to-read/)」に初めて読むときの順番を足し、ページの構成とAIの説明を今の原稿に合わせました。
+
 ## 0.39.1（2026年10月8日）
 
 演習の配布ファイルを、本文で説明しているファイルの分け方にそろえました。ルールは変えていないので、パッチバージョンを上げています。
@@ -57,7 +75,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：理由を、層の数に比例して描画の計算が増えることに直しました。
   - [`tabular-nums-for-number-columns`](/layout-practice/truncation-and-skeletons/#rule-tabular-nums-for-number-columns)：対象を、表や一覧で数値を縦に並べる列だけにしました。値が変わる数字は [`tabular-nums-for-changing-numbers`](/typography/fonts/#rule-tabular-nums-for-changing-numbers) で扱います。
   - [`font-weight-numeric`](/typography/fonts/#rule-font-weight-numeric)：太さを2段階にしたので、理由を、デザインカンプの指定やトークンと照らし合わせられることと、相対的なキーワードでは継承した太さで表示が変わることに直しました。
-  - [`marker-for-list-number-style`](/decoration/surfaces/#rule-marker-for-list-number-style)：`::marker` に指定するのを `color` と `font-size` に限り、5-8のルールと合わせました。
+  - [`marker-for-list-number-style`](/decoration/text-ornaments/#rule-marker-for-list-number-style)：`::marker` に指定するのを `color` と `font-size` に限り、5-8のルールと合わせました。
   - [`color-token-two-layers`](/components/design-tokens/#rule-color-token-two-layers)、[`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover)、[`anchor-indicator-as-decoration`](/layout-practice/anchor-positioning/#rule-anchor-indicator-as-decoration)：補足に、影の色の扱い、半透明の重ね色、動きを減らす設定でもフェードを残すことを足しました。
 - 再生時間のトークンを、`fast` 80ms、`base` 160ms、`slow` 240msに改めました（「[10-4 デザイントークン](/components/design-tokens/)」「[18-3 イージングと再生時間](/motion/easing-and-duration/)」）。
 - 文字の太さのトークンを、400と700の2段階にしました（「[14-1 フォントを指定する](/typography/fonts/)」）。
@@ -301,7 +319,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - 「[7-6 Flexboxの基礎](/layout/flexbox-basics/)」：大きな `flex-shrink` と最小幅で先に縮める列を決め、中間の幅でメインの幅を保つ書き方を加えました。
   - 「[14-3 行の高さとハーフレディング](/typography/line-height/)」：画像と並べた文章の上端を `text-box-trim: trim-start` でそろえる例を加えました。`text-box-edge` の初期値の説明を、仕様に合わせて `auto` に直しています。
   - 「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」：文字色1つからトーストの枠線と背景の色を作る例を加えました。
-  - 「[16-3 表面と文字の装飾](/decoration/surfaces/)」：`box-decoration-break: clone` で見出しの行ごとに背景を敷く例を加えました。
+  - 「[16-3 表面と文字の装飾](/decoration/text-ornaments/)」：`box-decoration-break: clone` で見出しの行ごとに背景を敷く例を加えました。
   - 「[16-4 角の形を変える](/decoration/shapes/)」：`corner-shape: squircle` のときに `border-radius` を大きくする例を加えました。
   - 「[16-5 輪郭と枠線を描く](/decoration/outlines/)」：吹き出しの例を、`shape()` を `clip-path` と `border-shape` で共有する書き方に具体化しました。
   - 「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」：縦のスクロールで横に流れるセクションの例を加えました。「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」の `@keyframes` の一覧には `--translate-to` を加えています。
@@ -310,7 +328,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
   - [`variant-palette-from-one-color`](/color-media/relative-color/#rule-variant-palette-from-one-color)：種類ごとに色が変わる部品は、元の色1つから枠線と背景を作ります。
   - [`large-flex-shrink-for-shrink-order`](/layout/flexbox-basics/#rule-large-flex-shrink-for-shrink-order)：先に縮める列には、大きな `flex-shrink` と最小幅を指定します。
   - [`trim-start-beside-media`](/typography/line-height/#rule-trim-start-beside-media)：画像と並べた文章の先頭に `text-box-trim: trim-start` を指定します。
-  - [`inline-decoration-clone-with-prefix`](/decoration/surfaces/#rule-inline-decoration-clone-with-prefix)：行ごとの装飾は、`box-decoration-break: clone` を接頭辞付きと併記します。
+  - [`inline-decoration-clone-with-prefix`](/decoration/text-ornaments/#rule-inline-decoration-clone-with-prefix)：行ごとの装飾は、`box-decoration-break: clone` を接頭辞付きと併記します。
   - [`squircle-larger-radius`](/decoration/shapes/#rule-squircle-larger-radius)：`squircle` にするときは `border-radius` を大きくします。
   - [`shared-shape-for-border-shape`](/decoration/outlines/#rule-shared-shape-for-border-shape)：`shape()` を1つのカスタムプロパティに入れ、`clip-path` と `border-shape` で共有します。
   - [`separators-in-gap`](/decoration/separators/#rule-separators-in-gap)：並んだ要素の間の区切り線は、要素の `border` ではなく `gap` に描きます。
@@ -1128,7 +1146,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`transparent-outline-for-custom-focus`](/color-media/forced-colors/#rule-transparent-outline-for-custom-focus)：フォーカスリングを描き直すときは透明な `outline` を残す
   - [`shadow-tokens-light-source`](/decoration/surfaces/#rule-shadow-tokens-light-source)：影のトークンは光源の向きをそろえる
   - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：重ねた影そのものを動かさない
-  - [`marker-for-list-number-style`](/decoration/surfaces/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
+  - [`marker-for-list-number-style`](/decoration/text-ornaments/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
   - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：キーボードのフォーカスに限るときは `:has(:focus-visible)` を使う
   - [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーを受ける要素は動かさない
   - [`hit-area-min-size`](/interaction/states-and-focus/#rule-hit-area-min-size)：操作する要素の最小の大きさを確保する
@@ -1162,7 +1180,7 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
   - [`framework-breakpoint-variables`](/responsive/breakpoints/#rule-framework-breakpoint-variables)：フレームワークを使うときは、その変数でブレイクポイントを書く
   - [`fallback-font-metric-overrides`](/typography/fonts/#rule-fallback-font-metric-overrides)：代わりのフォントの寸法を補正する
   - [`wbr-for-long-urls`](/typography/size-and-line-breaks/#rule-wbr-for-long-urls)：長いURLには `<wbr>` を入れる
-  - [`text-stroke-paint-order`](/decoration/surfaces/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く
+  - [`text-stroke-paint-order`](/decoration/text-ornaments/#rule-text-stroke-paint-order)：縁取りを塗りの下に置く
   - [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：モーダルの中のスクロールの連鎖を止める
   - [`view-transition-name-unique`](/motion/view-transitions/#rule-view-transition-name-unique)：同じ `view-transition-name` を複数の要素に付けない
   - [`view-transition-match-element`](/motion/view-transitions/#rule-view-transition-match-element)：並んだ要素には `match-element` を使う

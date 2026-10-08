@@ -64,7 +64,8 @@
     }
 
     h2 {
-      font-size: calc(20 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 
@@ -112,7 +113,8 @@
       --cluster--row-gap: 4px;
       --cluster--column-gap: 12px;
 
-      font-size: calc(13 / 16 * 1rem);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
 
       & a {
         color: var(--foreground--accent);
@@ -120,11 +122,12 @@
     }
 
     h3 {
-      font-size: calc(16 / 16 * 1rem);
-      line-height: var(--leading--snug);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
 
       @container style(--_density: --spacious) {
-        font-size: calc(18 / 16 * 1rem);
+        font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+        line-height: var(--text--title--leading);
       }
     }
 
@@ -134,12 +137,14 @@
 
     time {
       color: var(--foreground--muted);
-      font-size: calc(13 / 16 * 1rem);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
     }
 
     ._excerpt {
       color: var(--foreground--muted);
-      font-size: calc(14 / 16 * 1rem);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
 
       @container style(--_density: --compact) {
         display: none;

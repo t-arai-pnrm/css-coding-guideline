@@ -68,7 +68,7 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 }
 ```
 
-印刷のときにだけ、外部リンクの後ろへ `attr(href)` でURLを添える指定は例外です。URLは `href` 属性としてHTMLにあり、画面では読み上げもリンクの操作もできます。紙の上で行き先が分からなくなる分だけを、生成コンテンツで補っています。この書き方は第16章の「印刷のスタイル」で説明します。{/* 16-7の執筆後にリンクする: /decoration/print/ */}
+印刷のときにだけ、外部リンクの後ろへ `attr(href)` でURLを添える指定は例外です。URLは `href` 属性としてHTMLにあり、画面では読み上げもリンクの操作もできます。紙の上で行き先が分からなくなる分だけを、生成コンテンツで補っています。この書き方は第16章の「印刷のスタイル」で説明します。{/* 16-8の執筆後にリンクする: /decoration/print/ */}
 
 ## `::before` と `::after` が作られる条件
 
@@ -139,7 +139,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 <Baseline id="marker" />
 
-そのため、`::marker` に指定するのは `color` と `font-size` だけにします。印の記号を変える、番号を太くする、印をアイコンにするといった装飾は、Safariだけ元の見た目のまま残ります。こうした装飾が必要なときは、`list-style-type: ""` でマーカーを空にし、`::before` で描きます。`list-style: none` で消すと、SafariのVoiceOverがリストとして読み上げなくなるからです（第8章「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。番号を円で囲む例は第16章「[16-3 表面と文字の装飾](/decoration/surfaces/)」にあります。
+そのため、`::marker` に指定するのは `color` と `font-size` だけにします。印の記号を変える、番号を太くする、印をアイコンにするといった装飾は、Safariだけ元の見た目のまま残ります。こうした装飾が必要なときは、`list-style-type: ""` でマーカーを空にし、`::before` で描きます。`list-style: none` で消すと、SafariのVoiceOverがリストとして読み上げなくなるからです（第8章「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。番号を円で囲む例は第16章「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」にあります。
 
 ```css title="🙆‍♂ Recommended: ::marker には color と font-size だけを指定する"
 @scope (.scoped.point-list) to (.scoped) {

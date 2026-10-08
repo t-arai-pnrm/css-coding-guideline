@@ -1,0 +1,46 @@
+@layer components {
+  @scope (.scoped.layout-inline-size-by-mode) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 24px 16px;
+    }
+
+    section {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h3 {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    /* 親の幅を200pxにそろえ、280pxの指定がどう読まれるかを比べる */
+    ._parent {
+      inline-size: 200px;
+      padding: 8px;
+      border: 1px dashed var(--border--strong);
+      background-color: var(--background--hover);
+
+      &[data-mode="flex"] {
+        display: block flex;
+      }
+
+      &[data-mode="grid"] {
+        display: block grid;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    ._item {
+      inline-size: 280px;
+      padding-block: 8px;
+      background-color: var(--background--accent);
+      color: var(--foreground--on-accent);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}

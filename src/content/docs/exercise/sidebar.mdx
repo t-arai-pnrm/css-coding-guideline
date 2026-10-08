@@ -140,17 +140,19 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 ```css title="🙆‍♂ Recommended: 見出しと抜粋は、閾値を書かずにフラグを読む"
 @scope (.scoped.article-card) to (.scoped) {
   h3 {
-    font-size: calc(16 / 16 * 1rem);
-    line-height: var(--leading--snug);
+    font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+    line-height: var(--text--subtitle--leading);
 
     @container style(--_density: --spacious) {
-      font-size: calc(18 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 
   ._excerpt {
     color: var(--foreground--muted);
-    font-size: calc(14 / 16 * 1rem);
+    font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+    line-height: var(--text--body-compact--leading);
 
     @container style(--_density: --compact) {
       display: none;
@@ -159,7 +161,7 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 }
 ```
 
-見出しは、狭い形の16px相当をデフォルトに書き、広い形の18px相当を `--spacious` の中に書きます。広い形の見出しは前の節までと同じ大きさなので、新着のカードの見た目は変わりません。
+見出しは、狭い形のsubtitleの役割（16px相当）をデフォルトに書き、広い形のtitleの役割（20px相当）を `--spacious` の中に書きます。広い形の見出しは前の節までと同じ大きさなので、新着のカードの見た目は変わりません。
 
 抜粋だけは、`--compact` の側に `display: none` を書いています。抜粋をデフォルトで隠し、`--spacious` の中で表示に戻す書き方では、`display: block` のように元へ戻す宣言が要ります。隠すスタイルを `--compact` の側に書けば、戻す宣言は要りません（ルール `density-via-style-query` の補足）。
 

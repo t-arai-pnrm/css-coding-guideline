@@ -32,7 +32,8 @@
     ._tags {
       display: block flex;
       gap: 12px;
-      font-size: calc(13 / 16 * 1rem);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
 
       & a {
         color: var(--_accent);
@@ -40,13 +41,14 @@
     }
 
     h3 {
-      font-size: calc(18 / 16 * 1rem);
-      line-height: var(--leading--snug);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
 
     time {
       color: var(--foreground--muted);
-      font-size: calc(13 / 16 * 1rem);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
     }
   }
 

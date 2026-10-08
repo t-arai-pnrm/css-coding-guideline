@@ -176,7 +176,8 @@ sidebar:
 - [ ] ホバーを `&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限り、`@media (any-hover)` の中に書いているか（[`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)）。`:focus-visible` にも同じ見た目を指定しているか（[`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）
 - [ ] 状態を `.is-active` のようなクラスではなく、擬似クラスやARIA属性で表しているか（[`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)）
 - [ ] 動きに目的があり、高い頻度で触るUIに装飾的な動きを足していないか（[`motion-needs-purpose`](/motion/purpose/#rule-motion-needs-purpose)）
-- [ ] 装飾的な動きのうちフェード以外を `@media (prefers-reduced-motion: no-preference)` の中で指定し、大きな変動を動きを減らす設定で簡素化しているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして確かめたか（[`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)）
+- [ ] 装飾的な動きのうちフェード以外を `@media (prefers-reduced-motion: no-preference)` の中で指定しているか（[`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)）
+- [ ] 機能的な動きの大きな変動を、動きを減らす設定でフェードに簡素化するか短くしているか。DevToolsで `prefers-reduced-motion: reduce` をエミュレートして確かめたか（[`simplify-large-motion-when-reduced`](/motion/reduced-motion/#rule-simplify-large-motion-when-reduced)）
 - [ ] 機能的な動きの再生時間が300ms以下（大きなUIでも500ms以下）か。イージングは標準のキーワードではなくトークンで、現れる動きと出ていく動きは `ease-out` 系、画面の上にあるものの移動は `ease-in-out` 系か。`ease-in` 系を使っていないか（[`functional-motion-under-300ms`](/motion/easing-and-duration/#rule-functional-motion-under-300ms)、[`no-ease-in-for-ui`](/motion/easing-and-duration/#rule-no-ease-in-for-ui)）
 - [ ] 拡大して現れる動きを `scale: 0` から始めず、`transform-origin` をトリガーのある側に向けているか（[`scale-in-from-near-one`](/motion/easing-and-duration/#rule-scale-in-from-near-one)）
 - [ ] キーボードのフォーカスの移動に動きを付けていないか（[`no-motion-on-focus-visible`](/interaction/states-and-focus/#rule-no-motion-on-focus-visible)）

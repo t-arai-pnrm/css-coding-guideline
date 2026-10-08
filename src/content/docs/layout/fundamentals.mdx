@@ -11,20 +11,22 @@ import alignmentHtml from '../../../demos/layout/alignment-items-content/index.h
 import alignmentCss from '../../../demos/layout/alignment-items-content/style.css?raw';
 import parentDisplayHtml from '../../../demos/layout/layout-parent-display/index.html?raw';
 import parentDisplayCss from '../../../demos/layout/layout-parent-display/style.css?raw';
+import inlineSizeHtml from '../../../demos/layout/layout-inline-size-by-mode/index.html?raw';
+import inlineSizeCss from '../../../demos/layout/layout-inline-size-by-mode/style.css?raw';
 import containingBlockHtml from '../../../demos/layout/layout-containing-block/index.html?raw';
 import containingBlockCss from '../../../demos/layout/layout-containing-block/style.css?raw';
 import stackingHtml from '../../../demos/layout/layout-stacking-context/index.html?raw';
 import stackingCss from '../../../demos/layout/layout-stacking-context/style.css?raw';
 
-CSSのレイアウトは、1つの仕組みではなく、通常フロー、Flexbox、Grid、位置指定（`position`）といった複数の方式の組み合わせでできています。同じ `margin` や `align-items` でも、要素がどの方式の中に置かれているかで、効き方が変わります。指定が思いどおりに効かないときは、値を足す前に、その要素がどの方式の中にあるかを確かめます。
+CSSのレイアウトは、1つの仕組みではなく、通常フロー、Flexbox、Grid、位置指定（`position`）といった複数の方式の組み合わせでできています。同じ `margin` や `inline-size` でも、要素がどの方式の中に置かれているかで、効き方が変わります。指定が思いどおりに効かないときは、値を足す前に、その要素がどの方式の中にあり、大きさや位置の基準になる要素（包含ブロック）と、重なり順を決める範囲（スタッキングコンテキスト）がどれかを確かめます。
 
-あわせて確かめるのは、大きさや位置の基準になる要素（包含ブロック）と、重なり順を決める範囲（スタッキングコンテキスト）です。この節では、方式の全体像と、どの方式にも共通するこれらの仕組みを説明します。各方式の規則は、続く7-2〜7-10でそれぞれ説明します。
+この節で新しく判断するのは、効かない指定の原因を方式の規則、包含ブロック、スタッキングコンテキストのどれかから特定し、規則どおりの直し方を選ぶことです。CSSを方式ごとのアルゴリズムの集まりとして捉え、プロパティをその入力として読む見方は、「[1-3 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」で説明しています。各方式の詳しい規則は、続く7-2〜7-10で説明します。
 
 ## 「効かない」指定はどこから来るのか
 
-レイアウトの不具合を直すとき、値を少しずつ変えて見た目を合わせる人は少なくありません。インライン要素に `margin-block` を付けても上下が空かない、ブロックの親に `gap` を書いても子の間が空かない、`position: sticky` が留まらない、といった場面です。こうした指定は、壊れているわけではなく、その方式の規則どおりに振る舞っています。
+インライン要素に付けた `margin-block`、ブロックの親に書いた `gap`、留まらない `position: sticky` のように効かない指定は、壊れているわけではなく、その方式の規則どおりに振る舞っています。規則を知らないまま値を足すと、不具合は見た目の上では消えても、原因は残ります。
 
-規則を知らないまま値を足すと、不具合は見た目の上では消えても、原因は残ります。たとえば、インライン要素の上下の余白を `position: relative` と `top` でずらして作ると、その要素だけが行から浮き、文字の大きさを変えたときに重なります。正しい直し方は、要素を `inline flow-root` にして、ブロックの規則で余白を持たせることです。直し方を選ぶには、どの方式の規則が働いているかを知る必要があります。
+たとえば、インライン要素の上下の余白を `position: relative` と `top` でずらして作ると、その要素だけが行から浮き、文字の大きさを変えたときに重なります。正しい直し方は、要素を `inline flow-root` にして、ブロックの規則で余白を持たせることです。直し方を選ぶには、どの方式の規則が働いているかを知る必要があります。
 
 ```css title="🙅‍♂ Not Recommended: インライン要素を位置指定でずらして余白に見せる"
 /* 🙅‍♂ Not Recommended */
@@ -96,6 +98,44 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 <Demo title="親の display を変えると、子の同じ指定の効き方が変わる" html={parentDisplayHtml} css={parentDisplayCss} variant="neutral" />
 
 例外は、要素自身の指定で方式から外れる場合です。`position: absolute` と `fixed` の要素は、親がどの方式でも、その流れから外れます。`float` した要素も通常フローからは外れますが、フレックスアイテムとグリッドアイテムでは `float` が無視され、ほかの子と同じように並びます。不具合を調べるときは、親の `display` と、要素自身の `position` と `float` の両方を確かめます。
+
+## 同じ `inline-size` が方式ごとに違う意味を持つ
+
+方式が変わると、同じプロパティが別の入力として読まれます。ここでは幅の指定で比べます。本書のコードでは論理プロパティの `inline-size` で書きますが、横書きでは `width` と同じ向きの大きさです。
+
+通常フローの、置換要素でないインラインボックス（`<span>` や `<a>`）には、幅の指定が適用されません。行の中を文字と一緒に流れる箱で、幅は中身の文字から決まるからです。画像のような置換要素や、`display: inline flow-root` の要素は、インラインでも幅を持てます。通常フローのブロックでは、幅の指定は守られる値です。親の幅が足りなくても縮まず、親からはみ出します。指定が親の幅と合わないとき、通常フローは幅ではなく行末側の `margin` を計算し直して帳尻を合わせるからです。
+
+フレックスアイテムでは、同じ指定が伸び縮みの出発点になります。`flex-basis` が初期値の `auto` なら、Flexboxは幅の指定をアイテムの仮の大きさとして使い、並べて足りなければ `flex-shrink` の比で縮めます。デフォルトでは、中身の最小幅より小さくはなりません（「[7-7 Flexboxの基礎](/layout/flexbox-basics/)」）。
+
+`%` の幅の基準になる包含ブロックも、方式で変わります。グリッドアイテムでは、アイテムを置いたグリッドエリアが包含ブロックになるので、`inline-size: 50%` は親ではなく、そのエリアの幅の半分です（「[7-8 Gridの基礎](/layout/grid-basics/)」）。`position: absolute` の要素は、`position` が `static` 以外のいちばん近い祖先の `padding` の領域を基準にします。幅を指定しなければ、左右の両方の位置を決めない限り、中身に合わせて縮みます（「[7-10 positionの基礎](/layout/positioning/)」）。
+
+| 要素が置かれた方式 | `inline-size: 1000px` | `inline-size: 50%` の基準 |
+|---|---|---|
+| 通常フロー（置換要素でないインライン） | 適用されない | 適用されない |
+| 通常フロー（ブロック） | 1000pxのまま。親より広ければはみ出す | 親の内容の領域 |
+| Flexbox（横に並べるフレックスアイテム） | 伸び縮みの出発点。足りなければ縮む | フレックスコンテナの内容の領域 |
+| Grid（グリッドアイテム） | 1000pxのまま | アイテムが置かれたグリッドエリア |
+| 位置指定（`absolute`） | 1000pxのまま | `static` 以外のいちばん近い祖先の `padding` の領域 |
+
+次のデモでは、幅200pxの親の中に、`inline-size: 280px` を指定した子を置いています。通常フローのインラインでは指定が無視され、子は文字の幅になります。通常フローのブロックとグリッドアイテムでは280pxのまま親からはみ出し、フレックスアイテムでは親の幅まで縮みます。
+
+<Demo title="同じ inline-size: 280px が、置かれた方式によって無視される、はみ出す、縮む" html={inlineSizeHtml} css={inlineSizeCss} variant="neutral" />
+
+直し方も、方式の規則に合わせて選びます。リンクに幅を持たせたいなら、値を変えずに `display: inline flow-root` を指定して、幅を持てる種類の箱へ変えます。フレックスアイテムが縮みすぎるときは、縮む量を決めているのは幅ではなく `flex-shrink` と最小幅なので、そちらで守ります（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」）。
+
+```css title="🙆‍♂ Recommended: 方式の規則に合わせて、幅を決める指定を選ぶ"
+/* 通常フローのインライン：幅を持てる種類の箱に変える */
+._link {
+  display: inline flow-root;
+  inline-size: calc(160 / 16 * 1rem);
+}
+
+/* フレックスアイテム：幅を出発点のまま保ち、縮ませない */
+._thumbnail {
+  flex-shrink: 0;
+  inline-size: calc(96 / 16 * 1rem);
+}
+```
 
 ## 包含ブロック
 
@@ -176,6 +216,12 @@ Flexboxは、アイテムの中身の大きさから出発して、余った空�
 }
 ```
 
+## 効かない指定を調べる順番
+
+ここまでの仕組みを、効かない指定を調べる順番にまとめます。まず親の `display` の内側の値を見て、要素が通常フロー、Flexbox、Gridのどれで並ぶかを確かめます。次に要素自身の `position` と `float` を見て、その流れから外れていないかを確かめます。最後に、そのプロパティがその方式で何を意味するか、包含ブロックとスタッキングコンテキストがどの要素かを確かめます（ルール [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)）。プロパティの意味は、7-2〜7-10の各節や、MDNのプロパティのページ（冒頭の説明と、公式定義の「適用対象」）で確かめられます。
+
+ブラウザの開発者ツールも、この確認に使えます。Chromeの開発者ツールは、正しい宣言でもほかの指定の都合で効いていないものを薄い文字で表示し、横のアイコンにその理由を示します（Chrome 108から）。Firefoxの開発者ツールにも、同じように効いていない宣言を示す機能があり（Firefox 70から）、インライン要素に書いた `width` には、インライン要素には効かないという理由が表示されます。
+
 ## ガイドライン
 
 <Guideline />
@@ -189,3 +235,7 @@ Flexboxは、アイテムの中身の大きさから出発して、余った空�
 - [CSS Box Sizing Module Level 3](https://drafts.csswg.org/css-sizing-3/)（W3C）
 - [包含ブロック - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Containing_block)
 - [align-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/align-content)
+- [10.3 Calculating widths and margins - CSS 2.2](https://www.w3.org/TR/CSS22/visudet.html#Computing_widths_and_margins)（W3C。インライン要素、ブロック、絶対配置の要素の幅の決まり方）
+- [CSS Flexible Box Layout Module Level 1](https://drafts.csswg.org/css-flexbox-1/)（W3C）
+- [CSS Grid Layout Module Level 1 - Grid Areas](https://www.w3.org/TR/css-grid-1/#grid-area-concept)（W3C。グリッドエリアがアイテムの包含ブロックになること）
+- [Find invalid, overridden, inactive, and other CSS](https://developer.chrome.com/docs/devtools/css/issues)（Chrome DevTools）

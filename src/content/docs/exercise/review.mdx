@@ -118,16 +118,17 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 
 `!important` が要ったのは、本書のレイヤーの順番では `pages` が `components` より前にあり、ページの宣言は詳細度に関わらずカードの宣言に負けるからです。重要な宣言ではレイヤーの順位が逆になるので勝てますが、ページからカードの内部を変えているという問題はそのまま残ります（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
 
-見出しの大きさは、カードのCSSで決めます。狭い列で18pxでは大きすぎることが理由なら、カードが置かれた幅で切り替えます。誤り2を直したときに `._body` で宣言した `--_density` を、見出しが読みます。
+見出しの大きさは、カードのCSSで決めます。狭い列でtitleの役割（20px）では大きすぎることが理由なら、カードが置かれた幅で文字の役割を切り替えます。誤り2を直したときに `._body` で宣言した `--_density` を、見出しが読みます。狭い列ではsubtitle（16px）、広い列ではtitleにします（「[14-5 文字の役割と色](/typography/text-roles/)」）。
 
 ```css title="🙆‍♂ Recommended: 見出しの大きさはカードが幅のフラグで決め、ページからは選ばない"
 @scope (.scoped.notice-card) to (.scoped) {
   h3 {
-    font-size: calc(15 / 16 * 1rem);
-    line-height: var(--leading--snug);
+    font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+    line-height: var(--text--subtitle--leading);
 
     @container style(--_density: --spacious) {
-      font-size: calc(18 / 16 * 1rem);
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
     }
   }
 }
@@ -147,7 +148,8 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
     --cluster--row-gap: 4px;
     --cluster--column-gap: 12px;
 
-    font-size: calc(13 / 16 * 1rem);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    line-height: var(--text--caption--leading);
   }
 }
 ```
@@ -198,7 +200,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 指摘には、ラベル、理由、解決策をセットで書き、当てはまるルールのIDを添えます（「[19-2 レビューとAIとの協働](/operations/review-and-ai/#レビューの指摘に書く内容)」）。誤り4と誤り5の指摘を、見本として示します。
 
 ```md title="🙆‍♂ Recommended: 境界を越えた上書きに、理由と解決策を書き、意図を尋ねる"
-[MUST] トップページのCSSの `.page-top .notice-card h3 { font-size: … !important; }` は削除してください。ページがお知らせのカードの内部を選んでいるので、カードの見出しを直す人は、カードのファイルだけでは15pxになる理由を見つけられません（`no-other-component-internals`）。`!important` は、`pages` のレイヤーで負けていた宣言の順位を逆にしているだけです（`no-important-for-specificity`）。見出しの大きさはカードのCSSで決め、狭い列で大きすぎることが理由なら、`--_density` が `--spacious` のときだけ18pxにしてください（`density-via-style-query`）。
+[MUST] トップページのCSSの `.page-top .notice-card h3 { font-size: … !important; }` は削除してください。ページがお知らせのカードの内部を選んでいるので、カードの見出しを直す人は、カードのファイルだけでは15pxになる理由を見つけられません（`no-other-component-internals`）。`!important` は、`pages` のレイヤーで負けていた宣言の順位を逆にしているだけです（`no-important-for-specificity`）。見出しの大きさはカードのCSSで決め、狭い列で大きすぎることが理由なら、`--_density` が `--spacious` のときだけtitleの役割（20px）にしてください（`density-via-style-query`）。
 
 [Q] 15pxにしたのは、どの幅で見出しが大きすぎたからでしょうか。トップページに置いたときだけ小さくしたい事情があれば、カードの公開プロパティにするかを相談させてください。
 ```
@@ -241,7 +243,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-カードのCSSの `h3` に、15pxとして書きます。どこに置いても同じ大きさなら、それはカード自身の文字の階層の決定で、置き場所の判断ではないからです。幅のフラグで切り替える必要もなくなります。トップページに置いたときだけ15pxにしたいという返事だったなら、置き場所で決まる見た目なので、置く側からフラグか公開プロパティで渡します（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」）。
+カードのCSSの `h3` に書きます。どこに置いても同じ大きさなら、それはカード自身の文字の階層の決定で、置き場所の判断ではないからです。幅のフラグで切り替える必要もなくなります。ただし、15pxに当たる文字の役割はないので、役割を足すか、近いsubtitle（16px）で足りるかを担当者と決めます（「[14-5 文字の役割と色](/typography/text-roles/)」）。トップページに置いたときだけ15pxにしたいという返事だったなら、置き場所で決まる見た目なので、置く側からフラグか公開プロパティで渡します（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」）。
 
 </details>
 

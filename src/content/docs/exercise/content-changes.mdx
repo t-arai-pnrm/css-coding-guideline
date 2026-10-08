@@ -117,7 +117,8 @@ CMSのテンプレートは、画像のない記事では `img` 要素そのも�
     --cluster--row-gap: 4px;
     --cluster--column-gap: 12px;
 
-    font-size: calc(13 / 16 * 1rem);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    line-height: var(--text--caption--leading);
 
     & a {
       color: var(--foreground--accent);
@@ -128,7 +129,7 @@ CMSのテンプレートは、画像のない記事では `img` 要素そのも�
 
 並び方は、コンポジションの `cluster` に任せます。`cluster` は `flex-wrap: wrap` を含むので、タグが増えて入りきらなければ次の行へ折り返します。使う場所ごとに折り返しを指定しなくて済み、HTMLのクラス名から「並べて折り返す」という意図が読めます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。この節で、`compositions.css`（デモのCSSでは `compositions` のレイヤー）に `cluster` を足しています。
 
-間隔の値は、`style` 属性ではなく、`article-card.css` の `._tags` のルールで `cluster` の公開プロパティに渡しています。タグのリストはカードのテンプレートの一部で、どの記事でも同じ値を渡すからです。文字の大きさとアクセント色は、`._category` に書いていたものを、`._tags` とその中のリンクに移しました。
+間隔の値は、`style` 属性ではなく、`article-card.css` の `._tags` のルールで `cluster` の公開プロパティに渡しています。タグのリストはカードのテンプレートの一部で、どの記事でも同じ値を渡すからです。文字の役割とアクセント色は、`._category` に書いていたものを、`._tags` とその中のリンクに移しました。
 
 ## 見出しと日付を切り詰めない
 

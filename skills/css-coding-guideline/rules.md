@@ -1,8 +1,8 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.39.1
+- バージョン: 0.40.0
 - 生成日: 2026-10-08
-- ルールの数: 585
+- ルールの数: 586
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -205,7 +205,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【必須・仕様上の制約】`line-height` は単位のない数値で指定する。（`unitless-line-height`）
   - 理由: 単位のある値は計算後の長さのまま子要素に継承され、文字サイズの違う子要素で行が重なったり空きすぎたりするため。
-  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-3）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
+  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-4）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
   - 自動チェック: Stylelint: `declaration-property-unit-allowed-list`
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【禁止・仕様上の制約】`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` を使わない。（`no-vw-vh`）
@@ -246,7 +246,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【推奨・実装上の判断】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
-  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-4 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
+  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-5 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
   - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【必須・仕様上の制約】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
@@ -926,41 +926,41 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・実装上の判断】ダークモードでは、高い面ほど背景を明るくし、面の高さを影だけで表さない。（`lighter-surface-in-dark-mode`）
   - 理由: 暗い背景の上では影がほとんど見えず、影だけでは面の重なりが読み取れないため。
   - 補足: 明るい背景は、ページの背景のプリミティブから `oklch(from var(--color--neutral--900) calc(l + 0.085) c h)` のように相対カラー構文で作ります。ライトモードでは、ページ以外の面を白にし、高さを影で表します。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-3 面・影・角丸（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・仕様上の制約】行ごとに背景や枠線を敷く装飾は、インラインの要素に `-webkit-box-decoration-break: clone` と `box-decoration-break: clone` を併記して描く。（`inline-decoration-clone-with-prefix`）
   - 理由: 初期値の `slice` では折り返した位置の `padding` と枠線がなくなり、Safari は接頭辞付きの宣言にしか対応していないため。
   - 補足: 上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-4 文字とリストの装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/text-ornaments.mdx）
 - 【推奨・仕様上の制約】`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。（`corner-shape-guard-when-broken`）
   - 理由: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
   - 補足: 錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。
-  - 詳細: 16-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
+  - 詳細: 16-5 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
 - 【推奨・実装上の判断】画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。（`full-bleed-radius-with-sign`）
   - 理由: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
   - 補足: `/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。
-  - 詳細: 16-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
+  - 詳細: 16-5 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
 - 【推奨・仕様上の制約】`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。（`guard-new-shapes-with-supports`）
   - 理由: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
   - 補足: 未対応の環境では、単色の枠線や中心まで塗った円グラフのように、意味の読み取れる形に縮退させます。
-  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+  - 詳細: 16-6 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 - 【推奨・実装上の判断】グラデーションの枠線は `background-clip: border-area` で描いて未対応の環境では単色の枠線に戻し、どの環境でもグラデーションが必要なときだけ、擬似要素の透明な枠線にグラデーションを敷いて `mask-composite: exclude` で内側をくり抜く。（`gradient-border-method`）
   - 理由: `border-area` なら2つの宣言で描けて形がコードから読み取れ、装飾の枠線は単色でも境界を示せるため。
   - 補足: マスクの書き方では、ルートに `position: relative` と `isolation: isolate` を指定し、擬似要素を `z-index: var(--z--backwards)` で背面に回して、ルートの `padding` に枠線の太さを足します。`contain: content` でも配置の基準とスタッキングコンテキストは作れますが、はみ出した子孫の影やポップアップが切り取られます。
-  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+  - 詳細: 16-6 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 - 【推奨・仕様上の制約】吹き出しのように枠線を輪郭に沿わせる形は、`shape()` を1つのカスタムプロパティに入れて `clip-path` と `border-shape` で共有し、`border` と `border-shape` は `@supports (border-shape: …)` の中に書く。（`shared-shape-for-border-shape`）
   - 理由: 同じ輪郭を2か所に書くと片方だけ直したときに塗りと枠線がずれ、`@supports` の外の `border` は未対応の環境で `clip-path` に切り落とされて欠けた枠になるため。
   - 補足: しっぽの高さは `半幅 * tan(60deg)` で正三角形にし、下の `padding` にしっぽの高さを足します。
-  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+  - 詳細: 16-6 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 - 【推奨・仕様上の制約】並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描く。（`separators-in-gap`）
   - 理由: 折り返しや列数の変化で行の末尾に来る要素はセレクタで選べず、要素に線を持たせると、行の端に区切る相手のいない線が残ったり、隣り合う線が二重になったりするため。
   - 補足: gap decorations（`column-rule`、`row-rule`）を使うか、`gap` を線の太さにして各要素の `box-shadow` を重ねます。表の枠線は `border-collapse` で共有します（11-15）。
-  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+  - 詳細: 16-7 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 - 【非推奨・仕様上の制約】区切り線のために各要素に `border` を付け、`:last-child` や `:nth-child()` で末尾の要素の `border` を打ち消さない。（`no-last-child-border-reset`）
   - 理由: 打ち消せるのは並び全体の最後の要素だけで、折り返した行の末尾や、列数が変わるグリッドの末尾の列には線が残るため。
-  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+  - 詳細: 16-7 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 - 【必須・仕様上の制約】gap decorations の対応を `@supports` で判定するときは、`column-rule` ではなく `column-rule-inset` のような gap decorations で加わったプロパティを条件にする。（`gap-decorations-supports-condition`）
   - 理由: `column-rule` はマルチカラムのプロパティとしてすべてのブラウザが対応しているので、gap decorations に未対応の環境でも条件が真になるため。
-  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+  - 詳細: 16-7 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 - 【必須・仕様上の制約】ホバーのスタイルは、リンクなら `&:any-link:hover`、ボタンやフォームのコントロールなら `&:enabled:hover` のように操作できる状態に限定し、`@media (any-hover)` の中に書く。（`hover-operable-in-any-hover`）
   - 理由: `href` のない現在のページのリンクや無効にしたボタンが押せるかのように反応するのと、タッチ操作の端末でホバーの状態が残り続けるのを防ぎつつ、タブレットにマウスをつないだ場合のように、ホバーできる入力がひとつでもあればホバーを有効にできるため。
   - 補足: 条件は `(any-hover: hover)` と値まで書かず、`(any-hover)` と書きます。値なしの `(any-hover)` は、値が `none` のときだけ偽になるので、`(any-hover: hover)` と同じ意味です。`(hover: hover)` や画面の幅では判定しません。`<summary>` と `<label>` には無効の状態がないので、`:hover` に操作できる状態の条件を付けません。
@@ -1013,9 +1013,13 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: キーを押す操作は素早く続けて行われることが多く、動きが終わるのを待つと、入力と表示がずれて反応が遅く感じられるため。
   - 補足: クリックとショートカットのどちらでも開く UI は、ショートカットで開いたときに JavaScript で属性を付け、その属性があるときは `transition-duration` を0にします。キーボードでのフォーカスの移動は `no-motion-on-focus-visible` で扱います。
   - 詳細: 18-1 動かすかどうかを決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/purpose.mdx）
-- 【必須・仕様上の制約】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定し、機能的な動きでも大きな変動は、動きを減らす設定ではフェードに簡素化するか短くする。（`motion-only-with-no-preference`）
-  - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せず、状態の変化は伝え続けるため。
-  - 補足: 大きな変動とは、画面の3分の1以上を占める要素の移動、回転、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときは50ms以下にします。スピナー、プログレスバー、フォーカスリングの表示は変えません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。
+- 【必須・仕様上の制約】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定する。（`motion-only-with-no-preference`）
+  - 理由: WCAG 2.2 の達成基準2.3.3（レベル AAA）は、操作をきっかけに起きる本質的でない動きのアニメーションを無効にできることを求めており、装飾的な動きはなくても情報が欠けないため。設定がないときにだけ動きを付ければ、動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せずに済むため。
+  - 補足: WCAG の「動きのアニメーション」には、要素の大きさ、形、位置が変わって見えない色や不透明度の変化は含まれないので、位置と大きさの変わらないフェードは条件の外に書いてかまいません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。機能的な動きの扱いは `simplify-large-motion-when-reduced` で定めます。
+  - 詳細: 18-2 動きを減らす設定に対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/reduced-motion.mdx）
+- 【必須・実装上の判断】機能的な動きでも大きな変動は、動きを減らす設定のときにフェードへ簡素化するか、再生時間を短くする。（`simplify-large-motion-when-reduced`）
+  - 理由: 状態の変化や操作の結果を伝える動きでも、多くは WCAG 2.3.3 の「本質的な動き」（その動きがないと機能や情報が成り立たないもの）にあたらず、フェードや短い動きでも同じ情報を伝えられるため。
+  - 補足: 大きな変動は、本書の目安では、画面の3分の1以上を占める要素の移動、回転を伴う動き、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときの本書の目安は50ms以下です。どちらも WCAG が定める基準ではなく、目安を下回れば配慮が要らないという意味でもありません。スピナー、プログレスバー、フォーカスリングの表示は変えません。
   - 詳細: 18-2 動きを減らす設定に対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/reduced-motion.mdx）
 - 【必須・実装上の判断】拡大して現れる動きは `scale: 0` から始めず、ツールチップとポップオーバーは0.95〜0.98、ドロップダウンメニューは0.92〜0.96、ダイアログやドロワーは0.85〜0.92から始め、`transform-origin` をトリガーのある側に向ける。（`scale-in-from-near-one`）
   - 理由: 何もないところから膨らむ動きは物理的に不自然で、起点が中央のままだと、どこから現れたのかが伝わらないため。
@@ -1409,7 +1413,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【必須・仕様上の制約】`line-height` は単位のない数値で指定する。（`unitless-line-height`）
   - 理由: 単位のある値は計算後の長さのまま子要素に継承され、文字サイズの違う子要素で行が重なったり空きすぎたりするため。
-  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-3）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
+  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-4）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
   - 自動チェック: Stylelint: `declaration-property-unit-allowed-list`
   - 詳細: 6-1 pxとremを使い分ける（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/px-and-rem.mdx）
 - 【推奨・本書の規約】サイズのトークンは単位のない数値（px 相当）で持ち、使う場所で `calc(var(--spacing--md) / 16 * 1rem)` や `calc(var(--spacing--md) * 1px)` に変換する。（`unitless-size-tokens`）
@@ -1486,7 +1490,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【推奨・実装上の判断】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
-  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-4 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
+  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-5 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
   - 詳細: 6-5 if()とattr()で条件と属性を値にする（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/values/if-and-attr.mdx）
 - 【必須・仕様上の制約】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
@@ -2818,7 +2822,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 詳細: 15-5 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
 - 【禁止・仕様上の制約】要素の境界や区切りを、`box-shadow` だけで描かない。（`no-box-shadow-only-boundary`）
   - 理由: 強制カラーモードでは `box-shadow` が `none` になり、境界が消えるため。
-  - 補足: フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。区切り線や枠線を `box-shadow` で描くときは、`@media (forced-colors: active)` の中で同じ太さの `outline` を描きます（16-6）。
+  - 補足: フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。区切り線や枠線を `box-shadow` で描くときは、`@media (forced-colors: active)` の中で同じ太さの `outline` を描きます（16-7）。
   - 詳細: 15-5 強制カラーモードとコントラスト（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/color-media/forced-colors.mdx）
 - 【必須・仕様上の制約】`mask-image` や `clip-path` で切り抜き、`background-color` で塗る図形は、`currentColor` を直接指定せず、強制カラーモードでシステムカラーに切り替わるカスタムプロパティ（`--background-current`）から色を受け取る。（`background-current-for-shapes`）
   - 理由: 強制カラーモードでは `background-color` がページの背景色に置き換わり、図形が見えなくなるため。
@@ -2901,77 +2905,77 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・実装上の判断】面の背景は、ページ、カード、ダイアログ、メニューの役割で決めた段階のトークンから選び、置かれた面からの相対的な高さで決めない。（`surface-levels-by-role`）
   - 理由: 役割で固定すれば、どこに置かれても同じトークンを参照するだけで済み、祖先の値をスタイルクエリで読む例外を作らずに済むため。
   - 補足: 本書のデモでは `--background--base`（ページ）、`--background--surface`（カード）、`--background--overlay`（ダイアログ）、`--background--raised`（メニューやポップオーバー）の4段階です。メニューはダイアログの中でも開くので、ダークモードでは `raised` を `overlay` より明るくします。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-3 面・影・角丸（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・実装上の判断】ダークモードでは、高い面ほど背景を明るくし、面の高さを影だけで表さない。（`lighter-surface-in-dark-mode`）
   - 理由: 暗い背景の上では影がほとんど見えず、影だけでは面の重なりが読み取れないため。
   - 補足: 明るい背景は、ページの背景のプリミティブから `oklch(from var(--color--neutral--900) calc(l + 0.085) c h)` のように相対カラー構文で作ります。ライトモードでは、ページ以外の面を白にし、高さを影で表します。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-3 面・影・角丸（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・実装上の判断】影の色は `light-dark()` で切り替える色のトークンにし、ダークモードでも黒のまま不透明度を上げる。（`shadow-black-in-dark-mode`）
   - 理由: `box-shadow` の値は `light-dark()` で書き分けられず、暗い背景に白い影を付けると、影ではなく光って見えるため。
   - 補足: 影の形は1組だけ定義し、各層の色に `--shadow--color` などのトークンを使います。ダークモードで面の端を見せる上辺のハイライトと内側の縁取りは、ライトモードでは `transparent` にします。色のある背景に落とす影は、背景の色相に寄せると背景がくすみません。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-3 面・影・角丸（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・実装上の判断】影のトークンは光源の向きをそろえ、段階が上がるほど、オフセットとぼかしを倍にした層を足す。（`shadow-tokens-light-source`）
   - 理由: 各層の不透明度が同じでも、要素の近くほど層が重なって濃くなり、段階が高いほど影が遠くまで落ちるので、段階ごとに調整しなくても高さの関係が一貫して読み取れるため。
   - 補足: 本書のデモでは、層のオフセットとぼかしを1、3、6、12、24、48pxとし、広がりをその半分の負の値にしています。最も低い段階は1pxの縁取りだけで、枠線の代わりに使えます。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-3 面・影・角丸（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【非推奨・実装上の判断】重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。（`no-animate-layered-shadow`）
   - 理由: 描画の計算量が層の数に比例して増え、段階の高い影ほど層が多いので、古い端末ではコマ落ちしやすいため。
   - 補足: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-3 面・影・角丸（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
 - 【推奨・実装上の判断】番号付きリストの番号の色や大きさを変えるときは、`list-style: none` と `::before` ではなく、`::marker` に `color` と `font-size` を指定する。（`marker-for-list-number-style`）
   - 理由: リストの意味を保ったまま番号の見た目を変えられ、`list-style: none` の問題も避けられるため。
   - 補足: `::marker` には `background` や `border` を指定できず、Safari は `color` と `font-size` しか反映しません（`marker-color-and-font-size-only`）。太くする、円で囲むなど、それ以上の装飾が必要なときだけ、`list-style-type: ""` でマーカーを空にして `::before` に `counter()` で番号を描きます。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-4 文字とリストの装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/text-ornaments.mdx）
 - 【推奨・仕様上の制約】文字の縁取りは `-webkit-text-stroke` で描き、`paint-order: stroke fill` で塗りの下に置く。（`text-stroke-paint-order`）
   - 理由: 線は字形の輪郭を中心に描かれるので、塗りの上に重ねると内側の半分が塗りを覆い、文字が細く読みにくくなるため。
   - 補足: 見えるのは線の外側の半分なので、線の幅は見せたい縁取りの2倍にします。`-webkit-text-stroke` には接頭辞のない書き方がないので、理由のコメントを添えて Stylelint の警告を無効にします。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-4 文字とリストの装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/text-ornaments.mdx）
 - 【推奨・仕様上の制約】行ごとに背景や枠線を敷く装飾は、インラインの要素に `-webkit-box-decoration-break: clone` と `box-decoration-break: clone` を併記して描く。（`inline-decoration-clone-with-prefix`）
   - 理由: 初期値の `slice` では折り返した位置の `padding` と枠線がなくなり、Safari は接頭辞付きの宣言にしか対応していないため。
   - 補足: 上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。
-  - 詳細: 16-3 表面と文字の装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/surfaces.mdx）
+  - 詳細: 16-4 文字とリストの装飾（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/text-ornaments.mdx）
 - 【推奨・仕様上の制約】`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。（`corner-shape-guard-when-broken`）
   - 理由: 未対応の環境では `corner-shape` が無視されて通常の角丸になり、擬似要素で作った反り返りが外側へ出っ張るため。
   - 補足: 錠剤型のボタンに足す `corner-shape: squircle` は、無視されても錠剤型のままなので、`@supports` で囲みません。`@supports` の条件には、使うキーワードまで書きます。
-  - 詳細: 16-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
+  - 詳細: 16-5 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
 - 【推奨・実装上の判断】画面いっぱいのときだけ角丸を消すときは、`calc(sign(100lvi - 100% - 許容幅) * 半径) / 半径` のように、要素の幅とビューポートの幅を比べて水平方向の半径だけを切り替える。（`full-bleed-radius-with-sign`）
   - 理由: 余白や最大幅を変えても、要素が画面いっぱいになったときに角丸が消え、ブレイクポイントを別に管理しなくて済むため。
   - 補足: `/` を省くと、垂直方向の半径の `%` が要素の高さを基準にするので、縦に長い要素では角丸が常に消えます。許容幅は、スクロールバーの幅の分です。`vw` ではなく `lvi` を使います。
-  - 詳細: 16-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
+  - 詳細: 16-5 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
 - 【推奨・仕様上の制約】角丸を `corner-shape: squircle` に置き換えるときは、見た目の大きさが合うように `border-radius` を大きくし、その指定を `@supports` の中に書く。（`squircle-larger-radius`）
   - 理由: スクワークルは同じ半径でも円弧の角丸より角が小さく見え、倍率を `if()` で決めるカスタムプロパティは、未対応の環境では `border-radius` ごと無効にするため。
   - 補足: 倍率は半径によって変わります（著者の CodePen では、8px 以上が2倍、24px 以上が1.67倍で `superellipse(1.75)`、32px 以上が1.5倍で `superellipse(1.5)`）。錠剤型のボタンに `squircle` を1行足すだけの場合は、ルール `corner-shape-guard-when-broken` に従います。
-  - 詳細: 16-4 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
+  - 詳細: 16-5 角の形を変える（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/shapes.mdx）
 - 【推奨・仕様上の制約】`background-clip: border-area` の透明な枠線のように、未対応の環境で宣言ごと無効になって何も描かれなくなる指定は `@supports` の中に書く。（`guard-new-shapes-with-supports`）
   - 理由: 未対応の環境では、背景の宣言ごと無効になって枠線やグラフが消えたり、枠線だけが透明になったりするため。
   - 補足: 未対応の環境では、単色の枠線や中心まで塗った円グラフのように、意味の読み取れる形に縮退させます。
-  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+  - 詳細: 16-6 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 - 【推奨・実装上の判断】グラデーションの枠線は `background-clip: border-area` で描いて未対応の環境では単色の枠線に戻し、どの環境でもグラデーションが必要なときだけ、擬似要素の透明な枠線にグラデーションを敷いて `mask-composite: exclude` で内側をくり抜く。（`gradient-border-method`）
   - 理由: `border-area` なら2つの宣言で描けて形がコードから読み取れ、装飾の枠線は単色でも境界を示せるため。
   - 補足: マスクの書き方では、ルートに `position: relative` と `isolation: isolate` を指定し、擬似要素を `z-index: var(--z--backwards)` で背面に回して、ルートの `padding` に枠線の太さを足します。`contain: content` でも配置の基準とスタッキングコンテキストは作れますが、はみ出した子孫の影やポップアップが切り取られます。
-  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+  - 詳細: 16-6 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 - 【推奨・実装上の判断】`clip-path: shape()` の座標は、半径などをカスタムプロパティに入れて、そこから計算する。（`shape-function-with-custom-properties`）
   - 理由: `shape()` の値は長く、数値を直接並べると形が読み取れず、大きさを変えるたびにすべての座標を書き直すことになるため。
   - 補足: `shape()` に対応していない環境には、`@supports not` で `border-radius` の形に戻します。
-  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+  - 詳細: 16-6 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 - 【推奨・仕様上の制約】吹き出しのように枠線を輪郭に沿わせる形は、`shape()` を1つのカスタムプロパティに入れて `clip-path` と `border-shape` で共有し、`border` と `border-shape` は `@supports (border-shape: …)` の中に書く。（`shared-shape-for-border-shape`）
   - 理由: 同じ輪郭を2か所に書くと片方だけ直したときに塗りと枠線がずれ、`@supports` の外の `border` は未対応の環境で `clip-path` に切り落とされて欠けた枠になるため。
   - 補足: しっぽの高さは `半幅 * tan(60deg)` で正三角形にし、下の `padding` にしっぽの高さを足します。
-  - 詳細: 16-5 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
+  - 詳細: 16-6 輪郭と枠線を描く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/outlines.mdx）
 - 【推奨・仕様上の制約】並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描く。（`separators-in-gap`）
   - 理由: 折り返しや列数の変化で行の末尾に来る要素はセレクタで選べず、要素に線を持たせると、行の端に区切る相手のいない線が残ったり、隣り合う線が二重になったりするため。
   - 補足: gap decorations（`column-rule`、`row-rule`）を使うか、`gap` を線の太さにして各要素の `box-shadow` を重ねます。表の枠線は `border-collapse` で共有します（11-15）。
-  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+  - 詳細: 16-7 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 - 【非推奨・仕様上の制約】区切り線のために各要素に `border` を付け、`:last-child` や `:nth-child()` で末尾の要素の `border` を打ち消さない。（`no-last-child-border-reset`）
   - 理由: 打ち消せるのは並び全体の最後の要素だけで、折り返した行の末尾や、列数が変わるグリッドの末尾の列には線が残るため。
-  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+  - 詳細: 16-7 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 - 【推奨・実装上の判断】gap decorations は、線がなくても内容を読める区切りに使い、線がないと境界が分からないときは `box-shadow` で同じ位置に線を描いたうえで、対応している環境の改善として足す。（`gap-decorations-progressive`）
   - 理由: 2026年10月時点で対応しているのは Chrome と Edge だけで、未対応の環境では線が描かれないため。
   - 補足: Grid と Flexbox の `column-rule` は、未対応の環境では無視されるだけなので、線を足すだけなら `@supports` は要りません。`box-shadow` の線と切り替えるときは `@supports not` の中に `box-shadow` を書き、強制カラーモードでは `outline` に切り替えます（ルール `no-box-shadow-only-boundary`）。
-  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+  - 詳細: 16-7 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 - 【必須・仕様上の制約】gap decorations の対応を `@supports` で判定するときは、`column-rule` ではなく `column-rule-inset` のような gap decorations で加わったプロパティを条件にする。（`gap-decorations-supports-condition`）
   - 理由: `column-rule` はマルチカラムのプロパティとしてすべてのブラウザが対応しているので、gap decorations に未対応の環境でも条件が真になるため。
-  - 詳細: 16-6 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
+  - 詳細: 16-7 区切り線を引く（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/decoration/separators.mdx）
 
 ### 第17章 インタラクション
 
@@ -3130,9 +3134,13 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨・実装上の判断】動きは CSS のトランジション、アニメーション、View Transitions、スクロール駆動アニメーションで作り、JavaScript のアニメーションライブラリは、CSS だけでは作れない動きにだけ使う。（`css-before-js-animation`）
   - 理由: 合成だけで動かせる CSS の動きはメインスレッドが忙しいときにも影響を受けにくいことが多く、ライブラリの読み込みと保守の負担も要らないため。
   - 詳細: 18-1 動かすかどうかを決める（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/purpose.mdx）
-- 【必須・仕様上の制約】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定し、機能的な動きでも大きな変動は、動きを減らす設定ではフェードに簡素化するか短くする。（`motion-only-with-no-preference`）
-  - 理由: 動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せず、状態の変化は伝え続けるため。
-  - 補足: 大きな変動とは、画面の3分の1以上を占める要素の移動、回転、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときは50ms以下にします。スピナー、プログレスバー、フォーカスリングの表示は変えません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。
+- 【必須・仕様上の制約】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定する。（`motion-only-with-no-preference`）
+  - 理由: WCAG 2.2 の達成基準2.3.3（レベル AAA）は、操作をきっかけに起きる本質的でない動きのアニメーションを無効にできることを求めており、装飾的な動きはなくても情報が欠けないため。設定がないときにだけ動きを付ければ、動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せずに済むため。
+  - 補足: WCAG の「動きのアニメーション」には、要素の大きさ、形、位置が変わって見えない色や不透明度の変化は含まれないので、位置と大きさの変わらないフェードは条件の外に書いてかまいません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。機能的な動きの扱いは `simplify-large-motion-when-reduced` で定めます。
+  - 詳細: 18-2 動きを減らす設定に対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/reduced-motion.mdx）
+- 【必須・実装上の判断】機能的な動きでも大きな変動は、動きを減らす設定のときにフェードへ簡素化するか、再生時間を短くする。（`simplify-large-motion-when-reduced`）
+  - 理由: 状態の変化や操作の結果を伝える動きでも、多くは WCAG 2.3.3 の「本質的な動き」（その動きがないと機能や情報が成り立たないもの）にあたらず、フェードや短い動きでも同じ情報を伝えられるため。
+  - 補足: 大きな変動は、本書の目安では、画面の3分の1以上を占める要素の移動、回転を伴う動き、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。短くするときの本書の目安は50ms以下です。どちらも WCAG が定める基準ではなく、目安を下回れば配慮が要らないという意味でもありません。スピナー、プログレスバー、フォーカスリングの表示は変えません。
   - 詳細: 18-2 動きを減らす設定に対応する（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/motion/reduced-motion.mdx）
 - 【必須・実装上の判断】拡大して現れる動きは `scale: 0` から始めず、ツールチップとポップオーバーは0.95〜0.98、ドロップダウンメニューは0.92〜0.96、ダイアログやドロワーは0.85〜0.92から始め、`transform-origin` をトリガーのある側に向ける。（`scale-in-from-near-one`）
   - 理由: 何もないところから膨らむ動きは物理的に不自然で、起点が中央のままだと、どこから現れたのかが伝わらないため。

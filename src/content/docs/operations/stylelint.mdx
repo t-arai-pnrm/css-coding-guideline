@@ -1,6 +1,6 @@
 ---
 title: "19-1 Stylelintでルールを守る"
-description: "機械的に判断できる規約はStylelintに任せます。本書の設定の全体像、著者のプラグイン、独自ルール、代わりの書き方を示す禁止リスト、エラーと警告の使い分け、コード例の自動検証を説明します。"
+description: "機械的に判断できる規約はStylelintに任せます。本書の設定の全体像、著者のプラグイン、独自ルール、代わりの書き方を示す禁止リスト、エラーと警告の使い分け、コード例の自動検証、自分のプロジェクトへの導入手順を説明します。"
 sidebar:
   order: 1
 ---
@@ -11,7 +11,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 禁止リストのルールには、違反したときに代わりの書き方を示すメッセージを付けます。置き換え先を人が選ぶ必要のあるルールは警告に、機械的に直せるルールはエラーにして、警告も放置しません。本書の推奨のコード例とデモも、同じ設定で検証しています。
 
-設定の全体は、本書のリポジトリの `stylelint.config.mjs` にあります。
+設定の全体は、本書のリポジトリの `stylelint.config.mjs` にあります。自分のプロジェクトに入れる手順は、このページの最後の「自分のプロジェクトに入れる」で説明します。
 
 ## 人の目による確認の限界
 
@@ -56,7 +56,7 @@ export default {
 
 プロパティの並び順は、著者が公開しているtaks-stylelint-orderに従います。CSSの仕様のモジュールを単位に、プロパティを47のグループに分けて並べた設定です。これとは別に、ブロックの中の並び（カスタムプロパティ、宣言、`@supports`、`@container`、`@media`、ネストしたルール）を `order/order` で決めています。どちらも `stylelint --fix` で自動で並べ替えられるので、並び順を覚える必要はありません。並び順の規約は「[9-6 プロパティの並び順](/notation/property-order/)」で説明しています。
 
-stylelint-plugin-display-multi-keyword-syntaxも、著者が公開しているプラグインです。`display: flex` のような1値の構文を見つけ、`block flex` のような2値構文で書くように求めます。`none` や `contents` のように、2値構文のない値は対象外です。プラグインには自動修正のオプション（`fix`）もありますが、本書の設定では有効にしていません。
+stylelint-plugin-display-multi-keyword-syntaxも、著者が公開しているプラグインです。`display: flex` のような1値の構文を見つけ、`block flex` のような2値構文で書くように求めます。`none` や `contents` のように、2値構文のない値は対象外です。プラグインの自動修正のオプション（`fix`）は本書の設定では指定していませんが、`stylelint --fix` で実行すると、このルールの違反も2値構文に書き換わります（2026年10月、0.1.1で確認）。
 
 stylelint-plugin-logical-cssは、論理プロパティと論理的な単位を求めるプラグインです。本書では、物理プロパティ（`width` や `margin-top`）を見つける `require-logical-properties` を、警告として有効にしています。物理的な単位（`svw` や `cqw`）を見つける `require-logical-units` も、同じく警告です。`float: left` のような値のキーワードを見つける `require-logical-keywords` は、有効にしていません。`overflow-x` と `overflow-y` は、対応する論理プロパティがまだ使いにくいため、対象から外しています。
 
@@ -161,6 +161,78 @@ body {
 コード例を検証するのは、ガイドラインのコード例が自分のルールに違反していたら、ガイドラインそのものが信用されなくなるからです。AIに本書を読ませる場合、コード例はそのまま手本として真似されます。実際に、本書の執筆中にも、`@layer` の中の `@scope` がネストの1段に数えられることや、`currentColor` の大文字と小文字の扱いのように、検証して初めて気づいたことがありました。
 
 この仕組みは、本書に限らず使えます。プロジェクトの設計のドキュメントや、AI向けの規約に載せたコード例も、同じ設定で検証しておくと、ドキュメントとコードが食い違いません。
+
+## 自分のプロジェクトに入れる
+
+本書の設定は、設定ファイルだけをコピーしても動きません。独自ルールを `stylelint/` ディレクトリのファイルから読み込んでいるので、ディレクトリも一緒にコピーし、設定と独自ルールが読み込むパッケージを入れる必要があります。
+
+最初に、パッケージを開発用の依存として入れます。stylelint-orderは、taks-stylelint-orderが前提とするパッケージで、設定の `plugins` でも直接読み込んでいます。postcss-selector-parserは、独自ルールの `book/no-unanchored-has` がセレクタを解析するのに使います。pnpmやyarnを使う場合も、入れるパッケージは同じです。
+
+```sh title="パッケージを入れる"
+npm install --save-dev stylelint stylelint-config-standard stylelint-order taks-stylelint-order stylelint-plugin-logical-css stylelint-plugin-display-multi-keyword-syntax postcss-selector-parser
+```
+
+`.astro` や `.vue` のファイルの `<style>` も検査する場合は、postcss-htmlも入れます。本書の設定は、Stylelint 17.15.0で動くことを確認しています（2026年10月）。
+
+次に、本書のリポジトリから [`stylelint.config.mjs`](https://github.com/t-arai-pnrm/css-coding-guideline/blob/main/stylelint.config.mjs) と [`stylelint/` ディレクトリ](https://github.com/t-arai-pnrm/css-coding-guideline/tree/main/stylelint)を、プロジェクトのルートにコピーします。独自ルールは `./stylelint/…` という相対パスで読み込むので、ディレクトリは設定ファイルと同じ階層に置きます。設定のうち、次の3か所は本書のリポジトリに固有なので、自分のプロジェクトに合わせて直します。
+
+```js title="stylelint.config.mjs（直す箇所）"
+export default {
+  // 本書の悪い例のデモを外す指定。消して、dist/** はビルドの出力先に合わせる
+  ignoreFiles: ['dist/**', 'node_modules/**', 'src/demos/**/*.bad.css'],
+  // Astroを使わないなら消すか、**/*.vue のように自分のフレームワークのファイルに変える
+  overrides: [{ files: ['**/*.astro'], customSyntax: 'postcss-html' }],
+  rules: {
+    // 先頭の @layer 文で宣言した名前に置き換える。starlight はこのサイトだけが使う
+    'layer-name-pattern': [
+      '^(tokens|reset|base|vendors|compositions|pages|components|patterns|utilities|starlight)$',
+      /* ... */
+    ],
+    /* ... */
+  },
+};
+```
+
+続いて、`package.json` の `scripts` に実行コマンドを足します。対象のパターンは、CSSを置くディレクトリに合わせます。パターンをダブルクォートで囲むのは、シェルに展開させず、Stylelintに `**` を解釈させるためです。
+
+```json title="package.json（抜粋）"
+{
+  "scripts": {
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "lint:css:fix": "stylelint \"src/**/*.css\" --fix"
+  }
+}
+```
+
+`npm run lint:css` で検査し、`npm run lint:css:fix` で自動で直せる違反を書き換えます。本書の設定を初めて入れたプロジェクトでよく報告されるのは、`display` の1値構文と物理プロパティです。次のCSSを検査すると、2件が報告されます。
+
+```css title="🙅‍♂ Not Recommended: 1値構文の display と物理プロパティで書く"
+/* 🙅‍♂ Not Recommended */
+.card {
+  display: flex;
+  margin-top: 16px;
+}
+```
+
+```text title="Stylelintの出力"
+3:3  ✖  Use multi-keyword syntax `block flex` instead of `flex`.  plugin/display-multi-keyword-syntax
+4:3  ⚠  Unexpected physical CSS property margin-top. Please use the logical equivalent — margin-block-start  logical-css/require-logical-properties
+
+✖ 2 problems (1 error, 1 warning)
+```
+
+出力の各行には、左から位置（行:列）、重大度、メッセージ、ルール名が並びます。`✖` はエラー、`⚠` は警告です。この例ではエラーが1件あるので、Stylelintは失敗の終了コードを返します。プラグインのメッセージは英語のままです。本書の設定で日本語のメッセージを出すのは、禁止リストと許可リスト、名前のパターン、独自ルールに限られます。メッセージで直し方が分からないときは、末尾のルール名で設定とプラグインの説明を探します。
+
+直し方は、どちらもメッセージが示すとおりです。`display` は `block flex` に、`margin-top` は `margin-block-start` に書き換えます。この2件は、`npm run lint:css:fix` でも書き換わります。自動で直したときは、書き換わった箇所を差分で確かめます。そのあと、もう一度 `npm run lint:css` を実行し、何も出力されずに終われば、検査を通っています。
+
+```css title="🙆‍♂ Recommended: 2値構文と論理プロパティで書く"
+.card {
+  display: block flex;
+  margin-block-start: 16px;
+}
+```
+
+既存のCSSが多いプロジェクトでは、最初の実行で数百件の違反が報告されることもあります。その場合は、全体を一度に直さず、新しいCSSを置くディレクトリから適用します。進め方は「[19-6 既存のサイトに段階的に導入する](/operations/adoption/)」の「Stylelintを新しいコードから適用し、例外を記録する」で説明しています。
 
 ## ガイドライン
 

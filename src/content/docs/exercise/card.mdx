@@ -109,18 +109,19 @@ CSSは、カードのファイルの1つの `@scope` に書きます。スコー
 
 `img` は、グリッドのアイテムでも自然には幅いっぱいに広がらない置換要素なので、`stretch` で広げます（「[7-4 大きさの決まり方](/layout/sizing/)」）。比率の違う写真が入っても引き伸ばさないように、`object-fit: cover` で枠を埋めます。
 
-文字は、見出しを大きく、カテゴリー、日付、抜粋を小さく、日付と抜粋は控えめな色にします。色と角丸はトークンを参照し、数値や色を直接書きません（「[10-4 デザイントークン](/components/design-tokens/)」）。
+文字は、見出しを大きく、カテゴリー、日付、抜粋を小さく、日付と抜粋は控えめな色にします。大きさと行の高さは、文字の役割のトークンを組で参照します。役割は、用途ごとの文字サイズと行の高さを組にしたトークンです（「[14-5 文字の役割と色](/typography/text-roles/)」）。見出しはtitle、カテゴリーと日付はcaption、抜粋はbody-compactにします。色と角丸もトークンを参照し、数値や色を直接書きません（「[10-4 デザイントークン](/components/design-tokens/)」）。
 
-```css title="🙆‍♂ Recommended: 文字の階層は、大きさと色のトークンで付ける"
+```css title="🙆‍♂ Recommended: 文字の階層は、文字の役割と色のトークンで付ける"
 @scope (.scoped.article-card) to (.scoped) {
   ._category {
     color: var(--foreground--accent);
-    font-size: calc(13 / 16 * 1rem);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    line-height: var(--text--caption--leading);
   }
 
   h3 {
-    font-size: calc(18 / 16 * 1rem);
-    line-height: var(--leading--snug);
+    font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+    line-height: var(--text--title--leading);
   }
 
   h3 a {
@@ -129,12 +130,14 @@ CSSは、カードのファイルの1つの `@scope` に書きます。スコー
 
   time {
     color: var(--foreground--muted);
-    font-size: calc(13 / 16 * 1rem);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    line-height: var(--text--caption--leading);
   }
 
   ._excerpt {
     color: var(--foreground--muted);
-    font-size: calc(14 / 16 * 1rem);
+    font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+    line-height: var(--text--body-compact--leading);
   }
 }
 ```
@@ -155,7 +158,7 @@ CSSは、カードのファイルの1つの `@scope` に書きます。スコー
 
 ## 振り返り
 
-この節で書いたのは、`index.html` のカードのHTMLと、1つの `@scope` に収めた `article-card.css` です。CSSが決めているのは、ルートと `._body` の `grid` と `gap`、画像の幅と縦横比、文字の大きさと色だけです。
+この節で書いたのは、`index.html` のカードのHTMLと、1つの `@scope` に収めた `article-card.css` です。CSSが決めているのは、ルートと `._body` の `grid` と `gap`、画像の幅と縦横比、文字の役割と色だけです。
 
 書かなかったのは、カードの幅、カードの下の余白、公開プロパティの3つです。カンプの360px相当は置く側の要素の最大幅として `demo-page.css` に、24pxの間隔は次の節で一覧の `gap` として書きます。カードのCSSには、置き場所を前提にした値が1つも入っていません。次の節以降で置き場所や要件が変わっても、カードを直す量が少なくて済むのは、この3つを持たせなかったからです。
 
