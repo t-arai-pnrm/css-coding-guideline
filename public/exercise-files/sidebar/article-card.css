@@ -1,0 +1,70 @@
+@layer components {
+  @scope (.scoped.article-card) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._layout {
+      --_density: --compact;
+
+      display: block grid;
+      grid-template-columns: calc(96 / 16 * 1rem) 1fr;
+      gap: 12px;
+      align-items: start;
+
+      /* サイドバーの幅（240px 相当）より広く、一覧の列の最小幅（280px 相当）より狭い幅 */
+      @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
+        --_density: --spacious;
+
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    img {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--sm);
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._category {
+      color: var(--foreground--accent);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    h3 {
+      font-size: calc(16 / 16 * 1rem);
+      line-height: var(--leading--snug);
+
+      @container style(--_density: --spacious) {
+        font-size: calc(18 / 16 * 1rem);
+      }
+    }
+
+    h3 a {
+      color: inherit;
+    }
+
+    time {
+      color: var(--foreground--muted);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+
+      @container style(--_density: --compact) {
+        display: none;
+      }
+    }
+  }
+}

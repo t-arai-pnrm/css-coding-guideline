@@ -1,0 +1,8 @@
+@layer pages {
+  /* デモの置く側。カードの幅は、置かれた場所の幅で決まる */
+  @scope (.scoped.demo-page) to (.scoped) {
+    :scope {
+      max-inline-size: calc(360 / 16 * 1rem);
+    }
+  }
+}

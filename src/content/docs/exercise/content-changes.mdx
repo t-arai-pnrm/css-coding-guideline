@@ -11,13 +11,13 @@ import contentChangesCss from '../../../demos/exercise/content-changes/style.css
 
 CMSの運用が始まり、デザインカンプになかった記事が入ってきます。見出しがカンプの2倍の長さの記事と、画像のない記事があり、1つだったカテゴリーは最大5つのタグに増えます。タグはそれぞれのタグのページへのリンクで、Internationalizationのような長い英単語も入ります。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/sidebar/index.html)、[style.css](/exercise-files/sidebar/style.css)）から始め、完成版（[index.html](/exercise-files/content-changes/index.html)、[style.css](/exercise-files/content-changes/style.css)）と見比べます。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/sidebar/index.html)、[article.html](/exercise-files/sidebar/article.html)）から始め、完成版（[index.html](/exercise-files/content-changes/index.html)、[article.html](/exercise-files/content-changes/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
 
 ## 予想する
 
 本文を読む前に、4つの内容（長い見出し、画像のない記事、5つのタグ、長い英単語のタグ）のそれぞれで、カードがどう崩れるかを考えてみてください。前の節でカードは、広い形（画像が上）と狭い形（画像が左）の2つを持つようになりました。どの内容が、どちらの形で崩れそうでしょうか。
 
-そのうえで、直すファイルと箇所を見積もります。何も直さずに収まる内容はどれか、カードのCSSを直すならどのルールに何行足すか、HTMLを変える必要があるかを予想します。見出しが長くなってカードの高さがそろわなくなることを、直すべき崩れと見るかどうかも決めておきます。
+そのうえで、直すファイルと箇所を見積もります。何も直さずに収まる内容はどれか、カードの `article-card.css` を直すならどのルールに何行足すか、`index.html` と `article.html` のカードのHTMLを変える必要があるかを予想します。見出しが長くなってカードの高さがそろわなくなることを、直すべき崩れと見るかどうかも決めておきます。
 
 ## 合格条件
 
@@ -25,7 +25,9 @@ CMSの運用が始まり、デザインカンプになかった記事が入っ�
 
 <Demo scheme="light" title="20-5を終えた時点：長い見出し、画像のない記事、5つのタグを入れた記事ページ" html={contentChangesHtml} css={contentChangesCss} />
 
-幅のボタンで1280pxを選ぶと、画像のない記事は、関連記事とサイドバーのどちらでも画像の列がなくなり、文字だけの1列になります。サイドバーの5つのタグを持つカードでは、タグが複数行に折り返し、どのカードの中身もカードからはみ出しません。長い見出しは切り詰められずに全文が表示され、そのカードはほかのカードより高くなります。320pxを選んでも横スクロールが出なければ完成です。
+幅のボタンで1280pxを選ぶと、画像のない記事は、関連記事とサイドバーのどちらでも画像の列がなくなり、文字だけの1列になります。サイドバーの5つのタグを持つカードでは、タグが複数行に折り返し、どのカードの中身もカードからはみ出しません。長い見出しは切り詰められずに全文が表示され、そのカードはほかのカードより高くなります。320pxを選んでも横スクロールが出なければ、記事ページは完成です。
+
+この節でもカードのCSSを変えるので、トップページも確かめます。この節の完成版の[index.html](/exercise-files/content-changes/index.html)（トップページ）を開き、カテゴリーの表示がタグ1つのリストに変わった新着が、前の節の[index.html](/exercise-files/sidebar/index.html)と同じ見た目であることも条件です。
 
 ## 最悪の内容を入れて確かめる
 
@@ -88,8 +90,8 @@ CMSのテンプレートは、画像のない記事では `img` 要素そのも�
 
 ```html title="🙆‍♂ Recommended: タグは、リンクのリストにして cluster で並べる"
 <ul class="_tags cluster">
-  <li><a href="/tags/css/">CSS</a></li>
-  <li><a href="/tags/layout/">レイアウト</a></li>
+  <li><a href="#tag-css">CSS</a></li>
+  <li><a href="#tag-layout">レイアウト</a></li>
 </ul>
 ```
 
@@ -124,9 +126,9 @@ CMSのテンプレートは、画像のない記事では `img` 要素そのも�
 }
 ```
 
-並び方は、コンポジションの `cluster` に任せます。`cluster` は `flex-wrap: wrap` を含むので、タグが増えて入りきらなければ次の行へ折り返します。使う場所ごとに折り返しを指定しなくて済み、HTMLのクラス名から「並べて折り返す」という意図が読めます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。デモでは、この節で `compositions` のレイヤーに `cluster` を足しています。
+並び方は、コンポジションの `cluster` に任せます。`cluster` は `flex-wrap: wrap` を含むので、タグが増えて入りきらなければ次の行へ折り返します。使う場所ごとに折り返しを指定しなくて済み、HTMLのクラス名から「並べて折り返す」という意図が読めます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。この節で、`compositions.css`（デモのCSSでは `compositions` のレイヤー）に `cluster` を足しています。
 
-間隔の値は、`style` 属性ではなく、カードのCSSの `._tags` のルールで `cluster` の公開プロパティに渡しています。タグのリストはカードのテンプレートの一部で、どの記事でも同じ値を渡すからです。文字の大きさとアクセント色は、`._category` に書いていたものを、`._tags` とその中のリンクに移しました。
+間隔の値は、`style` 属性ではなく、`article-card.css` の `._tags` のルールで `cluster` の公開プロパティに渡しています。タグのリストはカードのテンプレートの一部で、どの記事でも同じ値を渡すからです。文字の大きさとアクセント色は、`._category` に書いていたものを、`._tags` とその中のリンクに移しました。
 
 ## 見出しと日付を切り詰めない
 
@@ -150,9 +152,9 @@ CMSのテンプレートは、画像のない記事では `img` 要素そのも�
 
 ## 振り返り
 
-直したのは、カードの2か所とタグのHTMLです。カードのCSSでは、画像を持たない `._layout` を1列にするルールを足し、カテゴリーの `._category` を、`cluster` に間隔を渡す `._tags` のルールに置き換えました。HTMLでは、カテゴリーの `p` をタグのリンクのリストに変え、画像のない記事では `img` を出力しないようにしています。
+直したのは、カードの2か所とタグのHTMLです。`article-card.css` では、画像を持たない `._layout` を1列にするルールを足し、カテゴリーの `._category` を、`cluster` に間隔を渡す `._tags` のルールに置き換えました。`index.html` と `article.html` のカードのHTMLでは、カテゴリーの `p` をタグのリンクのリストに変え、画像のない記事では `img` を出力しないようにしています。
 
-直さずに済んだのは、長い見出しと長い英単語です。カードに高さを書いていないので、長い見出しはカードを伸ばし、長い英単語はkiso.cssの `overflow-wrap: anywhere` で折り返します。一覧の `article-list`、`grid` と `sidebar` のコンポジション、20-4で決めたフラグと閾値も、どれも変えていません。
+直さずに済んだのは、長い見出しと長い英単語です。カードに高さを書いていないので、長い見出しはカードを伸ばし、長い英単語はkiso.cssの `overflow-wrap: anywhere` で折り返します。`article-list.css`、`compositions.css` の `grid` と `sidebar`、20-4で決めたフラグと閾値も、どれも変えていません（`compositions.css` には `cluster` を足しただけです）。
 
 このテストページは残しておき、カードを変えるたびに同じ内容で確かめます。最後の節では、このページを使って、幅、拡大、キーボード、表示の設定を順に確かめます（「[20-8 確かめて、レビューする](/exercise/review/)」）。
 

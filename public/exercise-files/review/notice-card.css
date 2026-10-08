@@ -1,0 +1,57 @@
+@layer components {
+  @scope (.scoped.notice-card) to (.scoped) {
+    :scope {
+      --_accent: var(--notice-card--accent, var(--foreground--accent));
+
+      display: block grid;
+      gap: 12px;
+      container-type: inline-size;
+      /* 誤り1：カードのルートに外側の余白を書いている */
+      margin-block-end: 24px;
+    }
+
+    img {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--sm);
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+
+      /* 誤り2：コンテナに名前がなく、条件が width で、閾値が px のまま */
+      @container (width >= 300px) {
+        gap: 12px;
+      }
+    }
+
+    /* 誤り6：タグの並びが折り返さない */
+    ._tags {
+      display: block flex;
+      gap: 12px;
+      font-size: calc(13 / 16 * 1rem);
+
+      & a {
+        color: var(--_accent);
+      }
+    }
+
+    h3 {
+      font-size: calc(18 / 16 * 1rem);
+      line-height: var(--leading--snug);
+    }
+
+    time {
+      color: var(--foreground--muted);
+      font-size: calc(13 / 16 * 1rem);
+    }
+  }
+
+  /* 誤り3：ホバーを any-hover で絞らず、フォーカスにも同じ変化を付けていない */
+  .notice-card:hover img {
+    filter: brightness(1.08);
+  }
+}

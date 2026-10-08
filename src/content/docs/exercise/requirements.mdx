@@ -49,21 +49,25 @@ import featuredCss from '../../../demos/exercise/featured/style.css?raw';
 
 ## 手元で進める準備
 
-演習のファイルは、このサイトの `/exercise-files/` に置いてあります。全節で共通の [base.css](/exercise-files/base.css) と、版ごとのディレクトリに入った `index.html` と `style.css` です。`base.css` には、レイヤーの順序の宣言、本書のデモと同じ共通トークン、リセットCSSのkiso.css、ベーススタイルが入っていて、演習では変えません。
+演習のファイルは、このサイトの `/exercise-files/` に置いてあります。全節で共通の [base.css](/exercise-files/base.css) と、版ごとのディレクトリに入ったHTMLとCSSです。`base.css` には、レイヤーの順序の宣言、本書のデモと同じ共通トークン、リセットCSSのkiso.css、ベーススタイルが入っていて、演習では変えません。
 
-手元に保存するときは、`base.css` を親のディレクトリに置き、版のディレクトリをその下に置きます。20-2の開始版なら、`exercise-files/base.css`、`exercise-files/card-start/index.html`、`exercise-files/card-start/style.css` の構成です。`index.html` は、`../base.css` と同じディレクトリの `style.css` を読み込みます。画像は `index.html` に `data:` URIのSVGとして埋め込んであるので、用意する画像のファイルはありません。
+版のディレクトリのCSSは、本文の説明と同じく、責任ごとにファイルを分けています。コンポーネントのファイルは、記事カードの `article-card.css` と、一覧の `article-list.css` です。ほかに、コンポジションの `compositions.css`、トップページの `page-top.css`、記事ページの `page-article.css`、20-2でカードを置く側の `demo-page.css` があります。各版には、この6つのうち、その段階で要るものだけを置いています。各ファイルの中身は、本書のデモと同じ `@layer`（`components`、`compositions`、`pages`）で包んであります。レイヤーの順序は `base.css` の先頭で宣言しているので、ファイルを読み込む順序によってレイヤーの間の優先順位が変わることはありません。
 
-`index.html` はブラウザで直接開けるので、開発用のサーバーは要りません。最初に開く20-2の開始版（[index.html](/exercise-files/card-start/index.html)、[style.css](/exercise-files/card-start/style.css)）では、記事カードにまだスタイルが当たっていません。画像が置く側の要素の幅いっぱいに広がり、その下にカテゴリー、見出し、日付、抜粋が並びます。置く側の要素が幅を最大360px相当に絞っているので、広い画面でもカードはそれより広がりません。
+HTMLは、`<link>` で `../base.css` を読み込んだあと、そのページで使うCSSのファイルを読み込みます。20-2と20-3の版にあるHTMLは、トップページの `index.html` だけです。20-4以降の版には、トップページの `index.html` と記事ページの `article.html` があり、どちらも同じ `article-card.css` と `article-list.css` を読み込みます。カードのCSSを直したときは、2つのHTMLを開けば、もう一方の置き場所への影響も確かめられます。画像はHTMLに `data:` URIのSVGとして埋め込んであるので、用意する画像のファイルはありません。
 
-各節の開始版は1つ前の節の完成版で、各節の冒頭に、その節の開始版と完成版へのリンクを置いています。完成版は、`/exercise-files/` の下の、節のURLの末尾と同じ名前のディレクトリ（`card`、`list`、`sidebar`、`content-changes`、`clickable-card`、`featured`）にあります。たとえば20-2の完成版は、[index.html](/exercise-files/card/index.html) と [style.css](/exercise-files/card/style.css) です。幅による切り替えは、ブラウザのウィンドウの幅を変えるか、開発者ツールのデバイスモードで幅を指定して確かめます。
+手元に保存するときは、`base.css` を親のディレクトリに置き、その下に版のディレクトリを作って、中のファイルをすべて保存します。20-2の開始版なら、親のディレクトリに `base.css` を、その下の `card-start` のディレクトリに `index.html`、`demo-page.css`、`article-card.css` を置きます。ディレクトリの一覧のページはないので、HTMLの `<link>` に書かれたファイル名で、HTMLと同じディレクトリのURLを開いて保存します。たとえば20-2の開始版のカードのCSSは、[article-card.css](/exercise-files/card-start/article-card.css) です。読み込むCSSのファイルが1つでも欠けると、そのファイルが受け持つ部分にスタイルが当たりません。
+
+HTMLはブラウザで直接開けるので、開発用のサーバーは要りません。最初に開く20-2の開始版（[index.html](/exercise-files/card-start/index.html)）では、`article-card.css` が空の `@layer components` だけなので、記事カードにまだスタイルが当たっていません。画像が置く側の要素の幅いっぱいに広がり、その下にカテゴリー、見出し、日付、抜粋が並びます。置く側の要素は `demo-page.css` で幅を最大360px相当に絞っているので、広い画面でもカードはそれより広がりません。
+
+各節の開始版は1つ前の節の完成版で、各節の冒頭に、その節の開始版と完成版のHTMLへのリンクを置いています。完成版は、`/exercise-files/` の下の、節のURLの末尾と同じ名前のディレクトリ（`card`、`list`、`sidebar`、`content-changes`、`clickable-card`、`featured`）にあります。たとえば20-2の完成版は [index.html](/exercise-files/card/index.html) で、同じディレクトリに `demo-page.css` と `article-card.css` があります。20-8でレビューするプルリクエストの版は、`review` のディレクトリにあります。その[index.html](/exercise-files/review/index.html)は、お知らせのカードの `notice-card.css`、お知らせの一覧の `notice-list.css`、`page-top.css`、`compositions.css` を読み込みます。幅による切り替えは、ブラウザのウィンドウの幅を変えるか、開発者ツールのデバイスモードで幅を指定して確かめます。
 
 ## 演習の進め方
 
-20-2以降の各節は、要件、予想する、合格条件、解説、振り返りの順に進みます。冒頭で要件が変わったら、解説を読み進める前に、自分ならどのファイルのどこを直すかを書き出してみてください。カードのCSS、一覧のCSS、ページのHTMLのどれを直すのか、何行くらいになりそうかを予想します。合格条件には、その節を終えた時点のデモと、何が満たされれば完成かを書いています。
+20-2以降の各節は、要件、予想する、合格条件、解説、振り返りの順に進みます。冒頭で要件が変わったら、解説を読み進める前に、自分ならどのファイルのどこを直すかを書き出してみてください。カードの `article-card.css`、一覧の `article-list.css`、コンポジションの `compositions.css`、ページのCSSとHTMLのどれを直すのか、何行くらいになりそうかを予想します。合格条件には、その節を終えた時点のデモと、何が満たされれば完成かを書いています。
 
 解説を読んだら、振り返りで自分の予想と見比べます。見比べるのは、直す場所の数だけではありません。変更を受け持つ場所を変更の内容から予測できたか、直したときに影響が及ぶ範囲を確かめられたか、直した結果として条件分岐が複雑になっていないかも確かめます。予想とずれたところがあれば、その差がどの規約から来ているのかを、リンク先の節で確かめます。
 
-本文のコード例は、変えた箇所だけを抜き出しています。省いた部分は `/* ... */` と書き、どのルールの中を変えたのかが分かるようにしています。各節のデモは、その節を終えた時点の全体なので、差分の前後をつなげて読みたいときは、デモのCSSのタブを開いてください。デモのCSSは、`@layer` と `@scope` も省略せずに書いています。
+本文のコード例は、変えた箇所だけを抜き出しています。省いた部分は `/* ... */` と書き、どのルールの中を変えたのかが分かるようにしています。各節のデモは、その節を終えた時点の全体なので、差分の前後をつなげて読みたいときは、デモのCSSのタブを開いてください。デモのCSSは、配布版で分けたファイルの中身を1つにまとめたもので、`@layer` と `@scope` も省略せずに書いています。
 
 ## 判断の問い
 

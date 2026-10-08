@@ -11,13 +11,13 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 
 要件が変わります。記事ページを作り、メインの列に本文と関連記事の3件を、サイドの列に人気記事の5件を置くことになりました。メインの列の最小幅は480px相当、サイドの列の幅は240px相当、列の間は40pxで、画面が狭いときはサイドの列をメインの下に回します。関連記事と人気記事のカードは、新着と同じ `article-card` を使います。ただし、カンプのサイドバーのカードは、小さな画像が左に、見出しと日付が右に並び、抜粋はありません。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/list/index.html)、[style.css](/exercise-files/list/style.css)）から始め、完成版（[index.html](/exercise-files/sidebar/index.html)、[style.css](/exercise-files/sidebar/style.css)）と見比べます。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/list/index.html)）から始め、完成版（[index.html](/exercise-files/sidebar/index.html)、[article.html](/exercise-files/sidebar/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
 
 ## 予想する
 
 本文を読む前に、カードの形を切り替える条件を考えてみてください。広い画面では、メインの列の関連記事のカードと、サイドバーの人気記事のカードが同時に表示されます。この2種類のカードを区別できる条件は何でしょうか。その条件を読むのは、ページとカードのどちらでしょうか。
 
-直すファイルも予想します。候補は、カードのCSSとHTML、一覧のCSS、トップページと記事ページのHTMLです。置き場所で変わるのは、画像の位置、見出しの大きさ、抜粋の表示の3つです。この3つを切り替えるための閾値を何か所で書くことになるか、閾値をいくつにするかを見積もってから読み進めます。
+直すファイルも予想します。候補は、カードの `article-card.css` とHTML、一覧の `article-list.css`、コンポジションの `compositions.css`、トップページの `index.html` です。記事ページは、`article.html` と `page-article.css` を新しく作ります。置き場所で変わるのは、画像の位置、見出しの大きさ、抜粋の表示の3つです。この3つを切り替えるための閾値を何か所で書くことになるか、閾値をいくつにするかを見積もってから読み進めます。
 
 ## 合格条件
 
@@ -27,7 +27,9 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 
 幅のボタンで1280pxを選ぶと、メインとサイドの2カラムになります。関連記事は3列（カードの幅307px）で、画像が上にある形です。サイドバーの人気記事は幅240pxの1列で、96px相当の画像が左に、見出しと日付が右に並び、抜粋は表示されません。1024pxでも2カラムのままで、関連記事は2列になります。
 
-768pxでは、サイドの列がメインの下に回り、1カラムになります。人気記事の一覧は表示の幅いっぱいまで広がって約360pxの2列になり、カードは関連記事と同じく画像が上にある形へ切り替わります。320pxでは、関連記事と人気記事のどちらも1列（288px）で、すべてのカードで画像が上にある形です。トップページの新着は、どの幅でも前の節と同じ見た目のままであることも条件です。
+768pxでは、サイドの列がメインの下に回り、1カラムになります。人気記事の一覧は表示の幅いっぱいまで広がって約360pxの2列になり、カードは関連記事と同じく画像が上にある形へ切り替わります。320pxでは、関連記事と人気記事のどちらも1列（288px）で、すべてのカードで画像が上にある形です。
+
+この節ではカードのCSSを変えるので、記事ページのデモに加えて、トップページも確かめます。この節の完成版の[index.html](/exercise-files/sidebar/index.html)（トップページ）は、`article.html` と同じ `article-card.css` を読み込んでいます。その新着が、どの幅でも前の節の[index.html](/exercise-files/list/index.html)と同じ見た目であることも条件です。
 
 ## ページの2カラムを sidebar で組む
 
@@ -173,9 +175,9 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 
 ## 振り返り
 
-直したのは、カードのCSSとHTMLです。CSSでは、ルートをコンテナにし、グリッドをルートから `._layout` に移して、フラグとコンテナサイズクエリを足しました。見出しと抜粋には、フラグを読むスタイルクエリを1つずつ足しています。HTMLでは、`._layout` を1段足しました。
+直したのは、カードの `article-card.css` とHTMLです。`article-card.css` では、ルートをコンテナにし、グリッドをルートから `._layout` に移して、フラグとコンテナサイズクエリを足しました。見出しと抜粋には、フラグを読むスタイルクエリを1つずつ足しています。HTMLでは、`._layout` を1段足しました。記事ページは、`article.html` と `page-article.css` を新しく作り、`compositions.css` に `sidebar` を足して組んでいます。
 
-直さずに済んだのは、`article-list`、`grid` コンポジション、トップページの新着です。新着の列は、一覧が十分に広ければ280px相当以上なので、カードは閾値を上回って広い形になり、前の節と同じ見た目のままです。画像の比率、文字のまとまりの中の間隔、カテゴリーと日付の文字も、前の節のまま変えていません。
+直さずに済んだのは、`article-list.css`、`compositions.css` の `grid`、トップページの `index.html` と `page-top.css` です。新着の列は、一覧が十分に広ければ280px相当以上なので、カードは閾値を上回って広い形になり、前の節と同じ見た目のままです。画像の比率、文字のまとまりの中の間隔、カテゴリーと日付の文字も、前の節のまま変えていません。
 
 カードが2つ目の置き場所に対応できたのは、前の節でカードのルートに幅と外側の余白を持たせなかったからです。カードの幅は置かれた列の幅で決まり、カードはその幅を見て形だけを選びます。サイドバーの幅を知っているのはページで、カードはサイドバーという置き場所を知りません。
 
@@ -189,7 +191,7 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 
 ### 問い1
 
-サイドバーのときだけ抜粋を消そうと、記事ページのCSSへ `.side-column .article-card ._excerpt { display: none; }` を書きました。この書き方の問題はどこにありますか。
+サイドバーのときだけ抜粋を消そうと、記事ページのCSS（`page-article.css`）へ `.side-column .article-card ._excerpt { display: none; }` を書きました。この書き方の問題はどこにありますか。
 
 <details>
 {/* textlint-disable ja-technical-writing/ja-no-mixed-period */}

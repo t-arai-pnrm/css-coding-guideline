@@ -1,0 +1,49 @@
+@layer components {
+  /**
+   * 記事のカード。
+   * 幅と外側の余白は、置く側が決める。
+   */
+  @scope (.scoped.article-card) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    img {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--sm);
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._category {
+      color: var(--foreground--accent);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    h3 {
+      font-size: calc(18 / 16 * 1rem);
+      line-height: var(--leading--snug);
+    }
+
+    h3 a {
+      color: inherit;
+    }
+
+    time {
+      color: var(--foreground--muted);
+      font-size: calc(13 / 16 * 1rem);
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}
