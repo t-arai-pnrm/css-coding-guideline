@@ -1,6 +1,6 @@
 # CSSコーディングガイドライン ルール集
 
-- バージョン: 0.38.1
+- バージョン: 0.39.0
 - 生成日: 2026-10-08
 - ルールの数: 585
 
@@ -852,9 +852,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 補足: 上下の余白を詰めたいときは、`text-box-trim` でハーフレディングを取り除きます。
   - 自動チェック: Stylelint: `declaration-property-value-disallowed-list`（警告）
   - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
-- 【推奨・実装上の判断】文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
+- 【推奨・実装上の判断】文字色は、重要度の段階を表す不透明なセマンティクスのトークンから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
   - 理由: 半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。
-  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。
+  - 補足: 本書のデモでは、`--foreground--base` と `--foreground--muted` の2段階に絞っています。段階を足すのは、隣の段階と見分けられる差があり、いちばん薄い段階でも置く面のすべてでコントラスト比 4.5:1 以上を保てるときだけです。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。
   - 詳細: 14-5 文字の役割と色（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/text-roles.mdx）
 - 【非推奨・仕様上の制約】和文には `text-wrap: pretty` を指定しない。（`no-text-wrap-pretty-for-japanese`）
   - 理由: Safari で、和文の `pretty` が `balance` と似た折り返しになる不具合があるため。
@@ -2714,9 +2714,9 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
   - 理由: 1行目の上のハーフレディングがなくなり、行の高さを変えずに、文字の上端が画像の上端と同じ高さになるため。
   - 補足: `trim-both` にすると、見出しと本文の間が `gap` より狭く見えます。英文では `text-box-edge: cap alphabetic` にします。
   - 詳細: 14-3 行の高さとハーフレディング（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/line-height.mdx）
-- 【推奨・実装上の判断】文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
+- 【推奨・実装上の判断】文字色は、重要度の段階を表す不透明なセマンティクスのトークンから選び、`opacity` や半透明の色で文字を薄くしない。（`two-text-colors`）
   - 理由: 半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。
-  - 補足: どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。
+  - 補足: 本書のデモでは、`--foreground--base` と `--foreground--muted` の2段階に絞っています。段階を足すのは、隣の段階と見分けられる差があり、いちばん薄い段階でも置く面のすべてでコントラスト比 4.5:1 以上を保てるときだけです。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。
   - 詳細: 14-5 文字の役割と色（/Users/araitakahiro/dev/css-coding-guideline/src/content/docs/typography/text-roles.mdx）
 - 【推奨・実装上の判断】和文の見出しには、`@supports (word-break: auto-phrase)` の中で `word-break: auto-phrase` と `text-wrap: balance` を指定する。（`auto-phrase-for-headings`）
   - 理由: 文節の区切りで折り返し、各行の長さもそろうので、見出しが読みやすくなるため。

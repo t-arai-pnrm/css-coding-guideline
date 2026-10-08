@@ -200,9 +200,9 @@
 - id: two-text-colors
   level: 推奨
   kind: judgment
-  rule: '文字色は `--foreground--base` と `--foreground--muted` の2つのセマンティクスから選び、`opacity` や半透明の色で文字を薄くしない。'
+  rule: '文字色は、重要度の段階を表す不透明なセマンティクスのトークンから選び、`opacity` や半透明の色で文字を薄くしない。'
   reason: '半透明の文字は下にある背景と混ざった色で表示され、置く面やテーマによってコントラスト比が変わるうえ、薄くした意図（補足として控えめにしたいのか、無効の状態なのか）もコードから読み取れないため。'
-  note: 'どちらの色も不透明にし、置く面の色ごとにコントラスト比が 4.5:1 以上になることを確かめます。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。'
+  note: '本書のデモでは、`--foreground--base` と `--foreground--muted` の2段階に絞っています。段階を足すのは、隣の段階と見分けられる差があり、いちばん薄い段階でも置く面のすべてでコントラスト比 4.5:1 以上を保てるときだけです。リンクやエラーの文字は、意味を表す別のトークン（`--foreground--accent`、`--foreground--danger`）を使います。無効の状態も `opacity` で表さず、文字を `--foreground--muted` にし、ホバーと押下の変化をなくして示します。'
   aiProne: true
   page: typography/text-roles
   since: 0.38.0
