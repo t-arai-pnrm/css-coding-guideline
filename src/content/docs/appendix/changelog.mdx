@@ -174,12 +174,12 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - 節を分けました。
   - 「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」から、コンテナの副作用とコンテナ単位を「[13-4 コンテナの副作用とコンテナ単位](/responsive/container-units-and-side-effects/)」に分けました。13-4には、`@property` で登録した長さの内部プロパティで外側のルートの幅を渡す見出しと、閾値と閾値の間を `clamp()` と `cqi` で埋める見出しを加えました。旧13-4〜13-7は13-5〜13-8に繰り下げました。
   - 「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」から、単位を外す割り算と `calc-size()`・`@function` を「[6-4 計算関数を応用する](/values/advanced-math-functions/)」に分けました。6-4には、`clamp()` の範囲に負の値を含める見出しと、`abs()` と `sibling-index()` で並びの中央からの距離を求める見出しを加えました。旧6-4は6-5に繰り下げました。
-  - 「[5-5 数量クエリ](/pseudo/quantity-queries/)」から、最終行の端数を中央に寄せる見出しを「[5-6 件数と中身で配置を組み替える](/pseudo/quantity-layouts/)」に分けました。5-6には、区画の有無と件数で `grid-template` を書き換える見出しと、件数で文字サイズの比率を変える見出しを加えました。旧5-6〜5-8は5-7〜5-9に繰り下げました。
+  - 「[5-5 数量クエリ](/pseudo/quantity-queries/)」から、最終行の端数を中央に寄せる見出しを「[5-6 件数と中身で配置を組み替える](/layout-practice/quantity-layouts/)」に分けました。5-6には、区画の有無と件数で `grid-template` を書き換える見出しと、件数で文字サイズの比率を変える見出しを加えました。旧5-6〜5-8は5-7〜5-9に繰り下げました。
   - 「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」から、子から親へ伝えるときの `:has()` を「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」に分けました。10-7には、置く側が公開プロパティでフラグを渡し、カードが自分の幅のフラグと組み合わせて特集の見た目にする書き方を加えました。旧10-7は10-8に繰り下げました。
 - 「[11-6 アンカーポジショニング](/layout-practice/anchor-positioning/)」：カードのタグを画像の角に重ねるように、コンポーネントの中のレイアウトにアンカーを使う見出しとデモを加えました。
 - 第13章の概要に、対応する相手がビューポートの幅だけではないことを一文で添えました。
 - ルールを追加しました。
-  - [`zone-layout-by-content`](/pseudo/quantity-layouts/#rule-zone-layout-by-content)：区画の有無と件数で配置を組み替えるときは、並べられるかどうかをコンテナサイズクエリで、どこに置くかを親を起点にした `:has()` で判定します。
+  - [`zone-layout-by-content`](/layout-practice/quantity-layouts/#rule-zone-layout-by-content)：区画の有無と件数で配置を組み替えるときは、並べられるかどうかをコンテナサイズクエリで、どこに置くかを親を起点にした `:has()` で判定します。
   - [`placement-via-public-flag`](/components/placement-and-child-states/#rule-placement-via-public-flag)：置き場所の構造で見た目を変えるときは、置く側が公開プロパティのフラグを渡し、子は自分の幅のフラグと組み合わせます。
 - ルールの掲載先を変えました。ルールの内容は変えていません。
   - 13-3から13-4へ移したルール
@@ -324,7 +324,7 @@ AI向けのルール集やスキルには、生成したときのバージョン
 - ルールを変えました。
   - [`display-contents-keep-role`](/layout/display-contents/#rule-display-contents-keep-role)：対象をサブグリッドの場面に限らず、ロールを持たない要素に `span` を加えて、7-11に移しました。
   - [`implicit-anchor-first`](/layout/anchor-basics/#rule-implicit-anchor-first) と [`position-area-logical-keywords`](/layout/anchor-basics/#rule-position-area-logical-keywords)：掲載するページを7-10に移しました。`implicit-anchor-first` には、`anchor()` で暗黙のアンカーを使うときは `position-anchor: auto` を明示する補足を加えています。
-  - [`overflow-clip-over-hidden`](/layout-practice/defensive/#rule-overflow-clip-over-hidden)：理由を広げ、`hidden` を使うのはスクロールコンテナが要る場面に限るという補足を加えました。
+  - [`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)：理由を広げ、`hidden` を使うのはスクロールコンテナが要る場面に限るという補足を加えました。
   - [`column-width-by-variability`](/layout/grid-alignment/#rule-column-width-by-variability)：`fit-content()` の列の隣の `fr` の列には、`minmax()` で下限を付けるという補足を加えました。
   - `subgrid-for-aligned-rows` など4件：掲載するページを7-8に移しました。ほかの3件は `subgrid-span-rows`、`column-width-by-variability`、`contain-caption-in-intrinsic-track` です。
 
@@ -799,7 +799,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - `no-typed-arithmetic`：単位のついた値どうしの割り算（typed arithmetic）を使わない
 - ルールを3件追加しました。
   - [`typed-arithmetic-to-unitless`](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)：長さを単位のない数値に変えるときは、`tan(atan2(長さ, 1px))` ではなく、`calc(100svi / 1px)` のように単位のついた値で割ります。
-  - [`stretch-over-width-100`](/design-mindset/maintainability/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書きます。
+  - [`stretch-over-width-100`](/layout/sizing/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`inline-size: 100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書きます。
   - [`pattern-leaves-component-properties`](/components/compositions-and-utilities/#rule-pattern-leaves-component-properties)：パターンには重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は公開プロパティで受け取ります。
 - ルールの補足を3件更新しました。[`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults) には、その文脈でブラウザが無視するプロパティも消すことを加えました。[`composition-class-plain`](/notation/naming/#rule-composition-class-plain) には、パターンにも接頭辞を付けず、コンポジションは配置の名前、パターンは役割の名前で区別することを加えました。
 - 「[4-3 計算関数で根拠を式に残す](/values/math-functions/)」で、typed arithmeticの対応状況を「Safari 26以降」から「Safari 18.2以降」に正しました。あわせて、Chromeでは割り算で定義した長さがブラウザのズームで拡大縮小されない注意を加えました。9-4の式とデモも、単位のついた値での割り算に書き換えています（[9-4 実践パターン：2サイズのデザインカンプを再現する](/responsive/design-comp-pattern/)）。
@@ -993,7 +993,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`if-for-own-custom-property`](/values/if-and-attr/#rule-if-for-own-custom-property)
   - [`if-fallback-and-else`](/values/if-and-attr/#rule-if-fallback-and-else)
   - [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit)
-  - [`safe-center-for-scrollable`](/layout-practice/defensive/#rule-safe-center-for-scrollable)
+  - [`safe-center-for-scrollable`](/layout-practice/overflow/#rule-safe-center-for-scrollable)
   - [`scroll-state-for-sticky-styles`](/layout-practice/sticky-header/#rule-scroll-state-for-sticky-styles)
   - [`grid-lanes-inside-supports`](/layout-practice/masonry/#rule-grid-lanes-inside-supports)
   - [`grid-lanes-no-placement-for-ordered-items`](/layout-practice/masonry/#rule-grid-lanes-no-placement-for-ordered-items)
@@ -1051,7 +1051,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`prose-nested-inner-space`](/compositions/prose/#rule-prose-nested-inner-space)
   - [`prose-not-on-cms-body`](/compositions/prose/#rule-prose-not-on-cms-body)
   - [`box-sizing-border-box-base`](/layout/box-model/#rule-box-sizing-border-box-base)
-  - [`box-fit-content-over-display-change`](/layout/box-model/#rule-box-fit-content-over-display-change)
+  - [`box-fit-content-over-display-change`](/layout/sizing/#rule-box-fit-content-over-display-change)
   - [`box-state-border-without-shift`](/layout/box-model/#rule-box-state-border-without-shift)
   - [`margin-collapse-padding-for-inner-space`](/layout/margin-role/#rule-margin-collapse-padding-for-inner-space)
   - [`margin-collapse-no-empty-spacers`](/layout/margin-collapse/#rule-margin-collapse-no-empty-spacers)
