@@ -58,10 +58,14 @@ try {
   await call('search_rules', { chapter: 13, level: '必須', limit: 3 }, { expect: /件中/ });
   await call('search_rules', { chapter: 'nothing' }, { expectError: true });
   await call('get_rule', { ids: ['query-range-syntax', 'no-vw-vh-typo'] }, { expect: /理由: .*\n[\s\S]*近いID/ });
-  await call('get_page', { page: '13-5', heading: '範囲構文' }, { expect: /## 範囲構文で書く/ });
-  await call('get_page', { page: 'https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/' }, { expect: /4-3/ });
+  await call('get_page', { page: '13-5', heading: '範囲構文' }, { expect: /部分だけ[\s\S]*## 範囲構文で書く/ });
+  await call(
+    'get_page',
+    { page: 'https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/' },
+    { expect: /4-3[\s\S]*この節の全文[\s\S]*この節の終わり/ },
+  );
   await call('get_page', { page: '存在しないページ' }, { expectError: true });
-  await call('list_chapters', {}, { expect: /第13章 レスポンシブデザイン/ });
+  await call('list_chapters', {}, { expect: /第9章 記法の規約[\s\S]*読む条件: 常に読む[\s\S]*第13章 レスポンシブデザイン/ });
   await call(
     'lint_css',
     {

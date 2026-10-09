@@ -35,7 +35,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - `RuleList`：付録A
   - `Figure`：図（SVG）をインラインで埋め込み、ライトとダークのテーマに色を追従させる。SVG は `src/assets/figures/<章>/<名前>.svg` に置き、`<Figure src="<章>/<名前>" alt="…" />` で読み込む。SVG の中では色を直接書かず、`Figure.astro` のクラス（`_box`、`_box -accent`、`_text`、`_text-muted`、`_text-accent`、`_arrow`、`_arrowhead`）を使う
   - `ImagePlaceholder`：用意できていない画像
-- `src/lib/book.mjs`: 部と章の構成。サイドバーと生成スクリプトが使う。
+- `src/lib/book.mjs`: 部と章の構成。サイドバーと生成スクリプトが使う。章の `review` は、AI がレビューで読む章を選ぶ条件（スキルと MCP に出る）。章で扱う話題を変えたら、これも直す。
 - `src/lib/site.mjs`: 公開先の URL。公開先を変えたら、ここを直して `pnpm gen:ai` を実行する。
 - `scripts/lib/guideline-data.mjs`: ルールと原稿を読み、AI 向けの形にする（MDX のコンポーネントを Markdown に置き換える）。新しいコンポーネントを原稿で使うときは、ここにも置き換え方を足す。
 - `plugin/`、`.claude-plugin/marketplace.json`: Claude Code のプラグインとスキル。`pnpm gen:ai` が生成するので、直接編集しない。

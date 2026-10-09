@@ -46,13 +46,21 @@ const aiProne = rules.filter((rule) => rule.aiProne);
 
 const pad = (number) => String(number).padStart(2, '0');
 const chapterFile = (chapter) => `references/${pad(chapter.number)}-${chapter.dir}.md`;
-const chapters = CHAPTERS.map((chapter) => ({
-  ...chapter,
-  label: chapterLabel(chapter),
-  file: chapterFile(chapter),
-  pages: pages.filter((page) => page.section === chapter.dir).sort((a, b) => a.order - b.order),
-  rules: rules.filter((rule) => rule.page.split('/')[0] === chapter.dir),
-}));
+const chapters = CHAPTERS.map((chapter) => {
+  const chapterPages = pages.filter((page) => page.section === chapter.dir).sort((a, b) => a.order - b.order);
+  return {
+    ...chapter,
+    label: chapterLabel(chapter),
+    file: chapterFile(chapter),
+    pages: chapterPages,
+    chars: chapterPages.reduce((sum, page) => sum + page.markdown.length, 0),
+    rules: rules.filter((rule) => rule.page.split('/')[0] === chapter.dir),
+  };
+});
+/** レビューで1つのサブエージェントに割り当てる本文の上限（字）。 */
+const READ_BUDGET = 80_000;
+const formatChars = (chars) =>
+  chars >= 10_000 ? `約${(Math.round(chars / 1000) / 10).toLocaleString('ja-JP')}万字` : `約${(Math.round(chars / 100) * 100).toLocaleString('ja-JP')}字`;
 const outsideChapters = rules.filter((rule) => !CHAPTERS.some((chapter) => rule.page.split('/')[0] === chapter.dir));
 if (outsideChapters.length > 0) {
   throw new Error(`章の外のページに掲載したルールがあります: ${outsideChapters.map((rule) => rule.id).join(', ')}`);
@@ -76,10 +84,16 @@ const chapterReference = (chapter) => {
 
 - ガイドラインのバージョン: ${version}（${today} 生成）
 - ルールの数: ${chapter.rules.length}
+- 本文: ${formatChars(chapter.chars)}
+- 読む条件: ${chapter.review}${chapter.always ? '（常に読む）' : ''}
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 ${LEVELS_AND_KINDS}
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の \`get_page\`（ページID）か、URL で読みます。
+
+## この章の節
+
+${chapter.pages.map((page) => `- \`${page.id}\` ${page.title}（${formatChars(page.markdown.length)}）${page.url}`).join('\n')}
 
 ${sections.join('\n\n')}
 `;
@@ -108,16 +122,13 @@ const chapterIndex = chapters
   .filter((chapter) => chapter.rules.length > 0)
   .map(
     (chapter) =>
-      `| ${chapter.label} | \`${chapter.file}\` | ${chapter.rules.length} | ${chapter.pages
-        .filter((page) => page.order > 0)
-        .map((page) => page.title)
-        .join('、')} |`,
+      `| ${chapter.label} | \`${chapter.file}\` | ${chapter.rules.length} | ${formatChars(chapter.chars)} | ${chapter.always ? '**常に読む**。' : ''}${chapter.review} |`,
   )
   .join('\n');
 
 const skillMd = `---
 name: ${SKILL_NAME}
-description: 「CSSコーディングガイドライン」に従ってCSSを書く・直す・レビューする。CSSの記法、命名、カスケードとレイヤー、@scope、単位、レスポンシブ、タイポグラフィと和文組版、色、モーション、CMSでの運用などを扱うタスクで使う。
+description: 「CSSコーディングガイドライン」に従ってCSSを書く・直す・レビューする。レビューでは関係する章を通読し、指摘をルールと照合してから報告する。CSSの記法、命名、カスケードとレイヤー、@scope、単位、レスポンシブ、タイポグラフィと和文組版、色、モーション、CMSでの運用などを扱うタスクで使う。
 license: CC-BY-4.0
 ---
 
@@ -126,15 +137,6 @@ license: CC-BY-4.0
 - ガイドラインのバージョン: ${version}（${today} 生成）
 - ルールの数: ${rules.length}（うち AI が誤りやすいもの ${aiProne.length}）
 - 本書: ${HOME}
-
-以下のようなタスクでこの Skill を使うこと。
-
-- CSSを新しく書く、または既存のCSSを直す
-- CSSのコードレビューをする
-- CSSの設計（レイヤー、命名、コンポーネントの分け方、トークン）を決める
-- AIが生成したCSSを、ガイドラインに沿っているか確認する
-
----
 
 ## 基本原則
 
@@ -148,55 +150,126 @@ license: CC-BY-4.0
 
 ${LEVELS_AND_KINDS}
 
-## 必須の手順
+## ルールと本文の読み方
 
-MCP サーバー \`css-coding-guideline\`（npm の \`${MCP_PACKAGE}\`）が使える環境では、ファイルを読む代わりにそのツールを使ってよい。\`search_rules\` で語句や章、\`aiProne\` で絞り込み、\`get_rule\` で ID からルールを、\`get_page\` で節の本文を引き、\`lint_css\` で本書の Stylelint 設定で検査する。
+- MCP サーバー \`css-coding-guideline\`（npm の \`${MCP_PACKAGE}\`）が使えるときは、そのツールで読む。\`list_chapters\` で章と節と字数、\`get_page\` で節の本文、\`get_rule\` でルールを引き、\`lint_css\` で本書の Stylelint の設定で検査する。使えないときは、\`references/\` のファイルと、節の URL の本文を読む。
+- 節は全文で読む。\`get_page\` は \`heading\` を付けずに呼ぶ。\`heading\` と \`search_rules\` は、一度読んだ節やルールに戻って確かめるときに使う。
+- ルールを当てはめる前に、補足まで読む。補足には、適用範囲と例外が書いてある。
+- プロジェクトに独自の規約（\`CLAUDE.md\`、\`AGENTS.md\` など）があれば、そちらを優先する。本書のルールと違う点は「食い違い」として示す。
+
+## CSSを書く・直すとき
 
 ### Step 1: AIが誤りやすいルールを確認する
 
 \`references/ai-prone.md\` を読む。
 
-### Step 2: 関係する章のルールを読む
+### Step 2: 関係する節を読む
 
-下の「章の索引」から、タスクに関係する章のファイルを選んで読む。各ルールに理由、補足、自動チェックの手段、掲載ページの URL がある。
+「章の索引」の読む条件から、書く内容に関係する章を選び、その章のルール（\`references/<章>.md\`）を読む。書く内容に直接関わる節は、本文を全文で読む。
 
-### Step 3: 背景とコード例を確かめる
+### Step 3: 書く
 
-ルールの理由と補足だけで判断できないときは、掲載ページの本文を読む（MCP の \`get_page\`、または URL の取得）。本文を取得できない環境では、ルールの理由と補足で判断し、その旨を明示する。
+ルールに従って書く。ガイドラインに書かれていない判断をしたときは、その旨を明示する。
 
-### Step 4: 書く・直す
-
-ルールに従ってCSSを書く。ガイドラインに書かれていない判断が必要な場合は、その旨を明示する。
-
-### Step 5: 最終確認
+### Step 4: 最終確認
 
 - [ ] 「AIが誤りやすいルール」に違反していないか
 - [ ] 「必須」と「禁止」のルールに違反していないか
-- [ ] 本書の Stylelint 設定で検出できる違反が残っていないか（MCP の \`lint_css\`）。lint で検出できるルールは一部なので、通っても Step 1 と Step 2 の確認を省かない
+- [ ] 本書の Stylelint の設定で検出できる違反が残っていないか（MCP の \`lint_css\`）。lint で検出できるルールは一部なので、通っても Step 1 と Step 2 の確認は省かない
+
+返答には、1. ガイドラインに沿ったコード、2. 判断の根拠にしたルールの ID、3. ガイドラインに書かれていない判断をした箇所、を書く。
+
+## レビューするとき
+
+レビューは、関係する章を通読してから指摘する。指摘は、自分のものもサブエージェントのものも、すべてルールと照合してから報告する。
+
+### Step 1: 範囲を決める
+
+対象のファイルを列挙する。1回のレビューの対象は、1つのコンポーネントか数ファイルにする。それより大きいときは、コンポーネントごとに分け、Step 1 から繰り返す。
+
+「章の索引」の読む条件を対象のCSSに当て、関係する章を決める。「常に読む」の章は必ず含める。外した章には、外した理由を1行ずつ書く。
+
+完了条件: 索引のすべての章が、「読む」か「外す（理由）」のどちらかになっている。
+
+### Step 2: 読了表を作る
+
+関係する章のすべての節を、ページID、タイトル、字数とともに読了表に並べる（\`list_chapters\`、または \`references/<章>.md\` の「この章の節」）。
+
+完了条件: 関係する章の節が、1つ残らず読了表にある。
+
+### Step 3: 通読する
+
+読了表の節を、すべて全文で読む。
+
+- サブエージェントを使えるときは、節を合計${formatChars(READ_BUDGET).replace('約', '')}以内のまとまりに分け、まとまりごとに1つのサブエージェントへ割り当てる。章の途中で分けてよい。依頼文は \`references/review.md\` の形で書く。
+- サブエージェントを使えないときは、節を1つずつ読む。1つ読み終えるたびに、その節のルールIDと、適用の条件と例外をメモしてから、次の節に進む。
+
+完了条件: 読了表のすべての節が「読了」になっている。サブエージェントが返した「読んだ節」が割り当てと一致しないときは、足りない節を割り当て直す。
+
+### Step 4: 照合する
+
+指摘を1件ずつ、次の順に確かめる。
+
+1. ルールの本文、強度、補足を読み（\`get_rule\` か \`references/<章>.md\`）、補足の適用範囲と例外に当たらないかを確かめる。
+2. 指摘したファイルと行を開き、そのコードがルールの対象に当たることを確かめる。
+3. プロジェクトの規約と比べ、本書のルールと違うときは「食い違い」にする。
+4. 「確認済み」「却下（理由）」「食い違い」のどれかに振り分ける。
+
+lint の結果（\`lint_css\`、またはプロジェクトの Stylelint）も、同じ手順で振り分ける。
+
+完了条件: すべての指摘が3つのどれかに振り分けられ、確認済みの指摘に、ルールIDと根拠の節がある。
+
+### Step 5: 報告する
+
+\`references/review.md\` の報告の形で書く。読了表、確認済みの違反、食い違い、却下した指摘を、すべて載せる。
 
 ## 章の索引
 
-| 章 | ファイル | ルールの数 | 節 |
-| --- | --- | --- | --- |
+| 章 | ファイル | ルールの数 | 本文 | 読む条件 |
+| --- | --- | --- | --- | --- |
 ${chapterIndex}
 
 ## トークンの例
 
 \`references/tokens.md\` は、本書のデモが使っているトークンの全文である。プロジェクトにトークンがないときに、分け方（色と文字の役割はプリミティブとセマンティクスの2層、ほかは1層のスケール）と名前の付け方の手本にする。プロジェクトに定義済みのトークンがあれば、そちらを使う。
+`;
 
-## 返答フォーマット
+const reviewMd = `# レビューの依頼文と報告の形
 
-### 新しくCSSを書くとき
+- ガイドラインのバージョン: ${version}（${today} 生成）
 
-1. **コード**: ガイドラインに沿ったCSS
-2. **根拠**: 判断の根拠になったルールの ID
-3. **注意点**: ガイドラインに書かれていない判断をした箇所
+\`SKILL.md\` の「レビューするとき」で使う。
 
-### レビューするとき
+## サブエージェントへの依頼文
 
-1. **違反**: ルールの ID、強度、該当箇所
-2. **修正案**: 具体的なコード
-3. **補足**: ルールに書かれていないが気になる点
+山かっこの部分を埋めて、まとまりごとに1つずつ渡す。
+
+\`\`\`md
+「CSSコーディングガイドライン」の次の節を通読し、対象のCSSをレビューしてください。
+
+- 対象のCSS: <ファイルのパスを並べる>
+- 読む節（すべて全文で読む）:
+  - <ページID> <タイトル>（<字数>）
+- 読み方: MCP の get_page を heading を付けずに呼んで、節を1つずつ全文で読む（MCP がなければ、節の URL を取得する）。1つの節を読み終えてから、その節のルールに照らして対象のCSSを見る。
+- 指摘の範囲: 割り当てた節のルールに当たるものだけを指摘する。ほかの節は、別の担当が読んでいる。
+- プロジェクトの規約: <CLAUDE.md などのパス>。本書のルールと違う点は、指摘ではなく「食い違い」として返す。
+
+次の形だけで返してください。
+
+1. 読んだ節: 読み終えたページIDの一覧。読めなかった節があれば、その理由
+2. 指摘: 1件ごとに、ファイル:行、ルールID、強度、根拠の節と見出し、該当するコード、直し方
+3. 食い違い: プロジェクトの規約と本書のルールが違う点
+4. 判断に迷った点: ルールの補足に例外があり、当てはまるかを決められないもの
+\`\`\`
+
+## 報告の形
+
+1. **範囲**: 対象のファイル、読んだ章、外した章とその理由
+2. **読了表**: 節ごとに、ページID、タイトル、字数、読んだ担当（自分か、どのサブエージェントか）、読了
+3. **確認済みの違反**: 「必須」と「禁止」、AIが誤りやすいもの、「推奨」と「非推奨」の順に並べる。1件ごとに、ファイル:行、ルールID、強度、根拠の節、直し方
+4. **食い違い**: プロジェクトの規約と本書のルールが違う点と、どちらに従うか
+5. **却下した指摘**: 指摘した担当、ルールID、却下した理由（補足の例外に当たる、コードがルールの対象に当たらない、など）
+6. **lint の結果**: \`lint_css\` かプロジェクトの Stylelint の結果と、その振り分け
 `;
 
 const tokenSections = [];
@@ -219,6 +292,7 @@ await mkdir(join(SKILL_DIR, 'references'), { recursive: true });
 await writeFile(join(SKILL_DIR, 'SKILL.md'), skillMd);
 await writeFile(join(SKILL_DIR, 'references/ai-prone.md'), aiProneReference);
 await writeFile(join(SKILL_DIR, 'references/tokens.md'), tokensMd);
+await writeFile(join(SKILL_DIR, 'references/review.md'), reviewMd);
 for (const chapter of chapters.filter((entry) => entry.rules.length > 0)) {
   await writeFile(join(SKILL_DIR, chapter.file), chapterReference(chapter));
 }

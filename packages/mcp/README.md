@@ -16,7 +16,7 @@ claude plugin install css-coding-guideline@css-coding-guideline
   "mcpServers": {
     "css-coding-guideline": {
       "command": "npx",
-      "args": ["-y", "css-coding-guideline-mcp@0.43.0"]
+      "args": ["-y", "css-coding-guideline-mcp@0.43.1"]
     }
   }
 }
@@ -36,7 +36,7 @@ claude plugin install css-coding-guideline@css-coding-guideline
 
 ## 版
 
-パッケージの版は、本書のバージョンと同じです。チームで共有する設定では、`css-coding-guideline-mcp@0.43.0` のように版を固定してください。変更点は付録F「[更新履歴](https://t-arai-pnrm.github.io/css-coding-guideline/appendix/changelog/)」にあります。
+パッケージの版は、本書のバージョンと同じです。チームで共有する設定では、`css-coding-guideline-mcp@0.43.1` のように版を固定してください。変更点は付録F「[更新履歴](https://t-arai-pnrm.github.io/css-coding-guideline/appendix/changelog/)」にあります。
 
 ## 開発
 

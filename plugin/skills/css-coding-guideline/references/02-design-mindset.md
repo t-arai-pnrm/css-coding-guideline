@@ -1,12 +1,21 @@
 # 第2章 CSS設計の考え方：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 7
+- 本文: 約2.5万字
+- 読む条件: コンポーネントの分け方、共通化、上書きの多い設計
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `design-mindset` 第2章 CSS設計の考え方（約2,400字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/
+- `design-mindset/what-is-css-design` 2-1 CSS設計のマインドセット（約3,000字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/what-is-css-design/
+- `design-mindset/css-mindset` 2-2 CSSで考えるための6つの視点（約7,700字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/css-mindset/
+- `design-mindset/maintainability` 2-3 保守しやすさを最優先にする（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainability/
 
 ## 2-3 保守しやすさを最優先にする
 

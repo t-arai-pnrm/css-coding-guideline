@@ -1,12 +1,24 @@
 # 第19章 実務での運用：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 33
+- 本文: 約6.7万字
+- 読む条件: Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `operations` 第19章 実務での運用（約3,200字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/
+- `operations/stylelint` 19-1 Stylelintでルールを守る（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/stylelint/
+- `operations/review-and-ai` 19-2 レビューとAIとの協働（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/
+- `operations/verification` 19-3 表示と操作を確かめる（約8,700字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/verification/
+- `operations/devtools` 19-4 表示の崩れを開発者ツールで調べる（約9,200字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/devtools/
+- `operations/wysiwyg` 19-5 CMSのWYSIWYG本文にスタイルを当てる（約8,400字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/wysiwyg/
+- `operations/adoption` 19-6 既存のサイトに段階的に導入する（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/adoption/
 
 ## 19-1 Stylelintでルールを守る
 

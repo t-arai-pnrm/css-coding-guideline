@@ -1,12 +1,23 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 22
+- 本文: 約7.3万字
+- 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `cascade` 第4章 カスケードを制御する（約3,200字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/
+- `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/
+- `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/
+- `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/
+- `cascade/scope` 4-4 @scopeでスタイルを閉じ込める（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/
+- `cascade/nesting` 4-5 CSSネストの基礎（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/
 
 ## 4-1 カスケード・詳細度・継承
 

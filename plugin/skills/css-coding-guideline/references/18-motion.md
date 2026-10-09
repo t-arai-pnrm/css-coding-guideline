@@ -1,12 +1,26 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 31
+- 本文: 約16.1万字
+- 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `motion` 第18章 モーション（約4,500字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/
+- `motion/purpose` 18-1 動かすかどうかを決める（約8,800字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/purpose/
+- `motion/reduced-motion` 18-2 動きを減らす設定に対応する（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/
+- `motion/easing-and-duration` 18-3 イージングと再生時間（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/
+- `motion/transitions-and-keyframes` 18-4 トランジションと@keyframes（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
+- `motion/entry-and-exit` 18-5 出現と退場（約2.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
+- `motion/scroll-driven` 18-6 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
+- `motion/performance` 18-7 動きの負荷を抑える（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
+- `motion/view-transitions` 18-8 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/
 
 ## 18-1 動かすかどうかを決める
 

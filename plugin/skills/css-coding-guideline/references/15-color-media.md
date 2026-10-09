@@ -1,12 +1,23 @@
 # 第15章 色：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 23
+- 本文: 約8.7万字
+- 読む条件: 色の指定（oklch()、color-mix()、相対カラー構文）、ダークモード、強制カラーモード、コントラスト
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `color-media` 第15章 色（約3,600字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/
+- `color-media/color` 15-1 色の形式と色空間（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/color/
+- `color-media/relative-color` 15-2 相対カラー構文で派生色を作る（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/relative-color/
+- `color-media/contrast-text` 15-3 背景から文字色を決める（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/contrast-text/
+- `color-media/dark-mode` 15-4 ダークモード（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/dark-mode/
+- `color-media/forced-colors` 15-5 強制カラーモードとコントラスト（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/forced-colors/
 
 ## 15-1 色の形式と色空間
 

@@ -1,12 +1,30 @@
 # 第7章 レイアウトの仕組み：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 39
+- 本文: 約26.6万字
+- 読む条件: display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `layout` 第7章 レイアウトの仕組み（約4,900字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/
+- `layout/fundamentals` 7-1 レイアウトの基礎（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/
+- `layout/normal-flow` 7-2 通常フローの基礎（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/
+- `layout/box-model` 7-3 ボックスモデルの基礎（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/
+- `layout/sizing` 7-4 大きさの決まり方（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/sizing/
+- `layout/margin-role` 7-5 marginの役割（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/
+- `layout/margin-collapse` 7-6 マージンの相殺（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/
+- `layout/flexbox-basics` 7-7 Flexboxの基礎（約3.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/
+- `layout/grid-basics` 7-8 Gridの基礎（約2.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/
+- `layout/grid-alignment` 7-9 Gridでアイテムをそろえる（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-alignment/
+- `layout/positioning` 7-10 positionの基礎（約2.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/
+- `layout/anchor-basics` 7-11 アンカーポジショニングの基礎（約2.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/anchor-basics/
+- `layout/display-contents` 7-12 display: contentsで箱をなくす（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/display-contents/
 
 ## 7-1 レイアウトの基礎
 

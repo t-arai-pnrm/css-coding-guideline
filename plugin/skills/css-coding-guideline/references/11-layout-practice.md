@@ -1,12 +1,34 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 59
+- 本文: 約24.2万字
+- 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `layout-practice` 第11章 レイアウトを組む（約6,300字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/
+- `layout-practice/choosing` 11-1 レイアウト手法の選び方（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/choosing/
+- `layout-practice/spacing` 11-2 余白を設計する（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/
+- `layout-practice/defensive` 11-3 サイズと内容の変化に耐える（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/
+- `layout-practice/overflow` 11-4 はみ出しとスクロール（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overflow/
+- `layout-practice/quantity-layouts` 11-5 件数で配置を組み替える（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/quantity-layouts/
+- `layout-practice/layering` 11-6 重なりと全幅（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/layering/
+- `layout-practice/sticky-header` 11-7 固定ヘッダー（約7,800字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/sticky-header/
+- `layout-practice/anchor-positioning` 11-8 アンカーポジショニング（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/anchor-positioning/
+- `layout-practice/overlap-detection` 11-9 要素どうしの重なりを検出する（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overlap-detection/
+- `layout-practice/root-scroller` 11-10 ページのスクロールとルートスクローラー（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/root-scroller/
+- `layout-practice/masonry` 11-11 grid-lanesで石積みのレイアウトを組む（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/masonry/
+- `layout-practice/reading-flow` 11-12 表示順と読み上げ順を合わせる（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/reading-flow/
+- `layout-practice/icon-alignment` 11-13 アイコンを配置する（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/icon-alignment/
+- `layout-practice/float` 11-14 floatで文章を回り込ませる（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/float/
+- `layout-practice/tables` 11-15 表を組む（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/
+- `layout-practice/truncation-and-skeletons` 11-16 文字の切り詰めと読み込み中の表示（約8,200字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/truncation-and-skeletons/
 
 ## 11-1 レイアウト手法の選び方
 

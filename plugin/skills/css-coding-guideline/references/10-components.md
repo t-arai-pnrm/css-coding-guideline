@@ -1,12 +1,26 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 50
+- 本文: 約15.1万字
+- 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `components` 第10章 コンポーネントとカスタムプロパティ（約6,800字）https://t-arai-pnrm.github.io/css-coding-guideline/components/
+- `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-component/
+- `components/boundaries` 10-2 コンポーネントの境界を守る（約2.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/
+- `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/compositions-and-utilities/
+- `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/design-tokens/
+- `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/custom-properties/
+- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/
+- `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/placement-and-child-states/
+- `components/web-components` 10-8 Web Components（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/web-components/
 
 ## 10-1 何をコンポーネントにするか
 

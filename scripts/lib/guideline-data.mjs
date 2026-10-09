@@ -290,13 +290,16 @@ export const loadPages = async (rules) => {
   return pages.sort((a, b) => a.section.localeCompare(b.section) || a.order - b.order || a.id.localeCompare(b.id));
 };
 
-/** 部と章の構成に、各章のページとルールの数を付ける。「はじめに」と付録は章の外に置く。 */
+/**
+ * 部と章の構成に、各章のページとルールの数を付ける。「はじめに」と付録は章の外に置く。
+ * ページの `chars` は本文（Markdown）の字数で、AI が1回に読む量を決めるのに使う。
+ */
 export const buildOutline = (pages, rules) => {
   const pagesOf = (section) =>
     pages
       .filter((page) => page.section === section)
       .sort((a, b) => a.order - b.order)
-      .map(({ id, title, url }) => ({ id, title, url }));
+      .map(({ id, title, url, markdown }) => ({ id, title, url, chars: markdown.length }));
   const countRules = (section) => rules.filter((rule) => rule.page.split('/')[0] === section).length;
   return {
     introduction: { label: 'はじめに', pages: pagesOf('introduction') },
@@ -306,6 +309,8 @@ export const buildOutline = (pages, rules) => {
         number: chapter.number,
         dir: chapter.dir,
         label: chapterLabel(chapter),
+        review: chapter.review ?? '',
+        always: Boolean(chapter.always),
         ruleCount: countRules(chapter.dir),
         pages: pagesOf(chapter.dir),
       })),

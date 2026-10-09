@@ -1,12 +1,23 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 29
+- 本文: 約7.5万字
+- 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `values` 第6章 値と単位（約3,300字）https://t-arai-pnrm.github.io/css-coding-guideline/values/
+- `values/px-and-rem` 6-1 pxとremを使い分ける（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/
+- `values/viewport-and-container-units` 6-2 ビューポート単位とコンテナ単位（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/viewport-and-container-units/
+- `values/math-functions` 6-3 計算関数で根拠を式に残す（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/math-functions/
+- `values/advanced-math-functions` 6-4 計算関数を応用する（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-functions/
+- `values/if-and-attr` 6-5 if()とattr()で条件と属性を値にする（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/
 
 ## 6-1 pxとremを使い分ける
 

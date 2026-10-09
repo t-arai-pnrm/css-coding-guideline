@@ -1,12 +1,29 @@
 # 第12章 レイアウトコンポジション：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 37
+- 本文: 約17万字
+- 読む条件: 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `compositions` 第12章 レイアウトコンポジション（約3,200字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/
+- `compositions/stack` 12-1 stack：子要素を縦に積み、間隔をそろえる（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/stack/
+- `compositions/cluster` 12-2 cluster：子を横に並べ、入りきらなければ折り返す（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/cluster/
+- `compositions/apart` 12-3 apart：子要素を両端に分ける（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/apart/
+- `compositions/switcher` 12-4 switcher：n列と1列を幅で切り替える（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/switcher/
+- `compositions/sidebar` 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/sidebar/
+- `compositions/grid` 12-6 grid：列の最小幅と最大数から列数を決める（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/grid/
+- `compositions/columns` 12-7 columns：上から下へ読むリストを段に分ける（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/columns/
+- `compositions/masonry` 12-8 masonry：高さの違う子を短い列へ詰めて並べる（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/masonry/
+- `compositions/pile` 12-9 pile：子要素を同じセルに重ねる（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/pile/
+- `compositions/primary-layout` 12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/primary-layout/
+- `compositions/prose` 12-11 prose：子ごとに変えられる間隔で、本文の流れを作る（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/prose/
 
 ## 12-1 stack：子要素を縦に積み、間隔をそろえる
 

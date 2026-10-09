@@ -1,12 +1,23 @@
 # 第14章 タイポグラフィと和文組版：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 32
+- 本文: 約7.4万字
+- 読む条件: font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `typography` 第14章 タイポグラフィと和文組版（約3,400字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/
+- `typography/fonts` 14-1 フォントを指定する（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/fonts/
+- `typography/japanese-typesetting` 14-2 和文組版を整える（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/japanese-typesetting/
+- `typography/line-height` 14-3 行の高さとハーフレディング（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/line-height/
+- `typography/size-and-line-breaks` 14-4 文字サイズと改行（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/size-and-line-breaks/
+- `typography/text-roles` 14-5 文字の役割と色（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/text-roles/
 
 ## 14-1 フォントを指定する
 

@@ -1,12 +1,25 @@
 # 第1章 CSSのマインドセット：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 15
+- 本文: 約5.4万字
+- 読む条件: 新しい機能、ブラウザの対応状況、フォールバック、@supports
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `principles` 第1章 CSSのマインドセット（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/
+- `principles/browser-suggestion` 1-1 CSSはブラウザへの「提案」である（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-suggestion/
+- `principles/browser-support` 1-2 ブラウザサポートとプログレッシブ・エンハンスメント（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/
+- `principles/layout-algorithms` 1-3 CSSはレイアウトのアルゴリズムの集まりである（約3,400字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/layout-algorithms/
+- `principles/fundamentals` 1-4 基礎を固める（約3,100字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/fundamentals/
+- `principles/no-memorizing` 1-5 解決策を丸暗記しない（約5,700字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/no-memorizing/
+- `principles/tips` 1-6 Tipsとの付き合い方（約5,900字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/tips/
+- `principles/options` 1-7 選択肢を多く持つ（約5,500字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/options/
 
 ## 1-1 CSSはブラウザへの「提案」である
 

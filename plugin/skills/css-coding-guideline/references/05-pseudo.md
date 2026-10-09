@@ -1,12 +1,26 @@
 # 第5章 擬似クラスと擬似要素：ルール
 
-- ガイドラインのバージョン: 0.43.0（2026-10-08 生成）
+- ガイドラインのバージョン: 0.43.1（2026-10-09 生成）
 - ルールの数: 28
+- 本文: 約15.3万字
+- 読む条件: :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
 性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
-背景とコード例は、各節の URL のページにあります。
+背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
+
+## この章の節
+
+- `pseudo` 第5章 擬似クラスと擬似要素（約5,300字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/
+- `pseudo/basics` 5-1 擬似クラスと擬似要素の基本（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/basics/
+- `pseudo/is-where-not` 5-2 :is()・:where()・:not()（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/is-where-not/
+- `pseudo/has` 5-3 :has() で祖先と前の兄弟を選ぶ（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/has/
+- `pseudo/child-index` 5-4 子要素の位置で選ぶ（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/
+- `pseudo/quantity-queries` 5-5 数量クエリ（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/quantity-queries/
+- `pseudo/form-states` 5-6 フォームの状態を表す擬似クラス（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/form-states/
+- `pseudo/open-states` 5-7 開閉と表示の状態を表す擬似クラス（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/
+- `pseudo/generated-content` 5-8 生成コンテンツと装飾の擬似要素（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/generated-content/
 
 ## 5-1 擬似クラスと擬似要素の基本
 

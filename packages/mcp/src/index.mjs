@@ -33,11 +33,15 @@ const formatRule = (rule) => {
 };
 
 const INSTRUCTIONS = `「CSSコーディングガイドライン」（v${guideline.version}、${guideline.site}）のルールと本文を返し、CSSを本書のStylelint設定で検査するサーバーです。
-- CSSを書く前とレビューの前に、search_rules で関係するルールを探し、aiProne: true で「AIが誤りやすいルール」を確認してください。
-- ルールの背景やコード例が要るときは get_page で節の本文を読みます。本文は長いので、heading で見出しを1つに絞れます。
-- 書いた後は lint_css で検査します。lint で検出できるのはルールの一部（${lintedRuleCount}件）なので、通ってもルールの確認は省かないでください。
-- 判断の根拠には、ルールのID（例: query-range-syntax）を添えてください。
-- ルールの強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、補足に書いた適用範囲と例外を除いて必ず守ります。`;
+- CSSを書く前に、search_rules の aiProne: true で「AIが誤りやすいルール」を確認し、書く内容に関係する節を get_page で読んでください。
+- レビューでは、関係する章を通読してから指摘します。list_chapters の「読む条件」で章を選び（「常に読む」の章は必ず含める）、その章のすべての節を get_page で heading を付けずに全文で読みます。heading と search_rules は、読んだ節やルールに戻って確かめるときに使います。
+- 指摘は、自分のものもサブエージェントのものも、get_rule でルールの補足（適用範囲と例外）まで照合し、「確認済み」「却下（理由）」「食い違い」に振り分けてから報告します。報告には、読んだ節の一覧を付けます。
+- 書いた後とレビューでは lint_css で検査します。lint で検出できるのはルールの一部（${lintedRuleCount}件）なので、通ってもルールの確認は省けません。
+- 判断の根拠には、ルールのID（例: query-range-syntax）を添えてください。強度は「必須」「推奨」「非推奨」「禁止」の4段階で、「必須」と「禁止」は、補足に書いた適用範囲と例外を除いて必ず守ります。
+- プロジェクトに独自の規約があれば、そちらを優先し、本書のルールと違う点は「食い違い」として示します。
+- スキル css-coding-guideline があれば、その「レビューするとき」の手順に従ってください。`;
+
+const formatChars = (chars) => `約${chars.toLocaleString('ja-JP')}字`;
 
 const server = () => {
   const mcp = new McpServer({ name: 'css-coding-guideline', version }, { instructions: INSTRUCTIONS });
@@ -104,7 +108,7 @@ const server = () => {
     {
       title: '節の本文を読む',
       description:
-        '本書のページ（節）の本文をMarkdownで返します。デモはCSSとHTMLのコードに、図は代替テキストに置き換えています。ページはID（例: responsive/media-queries）、公開URL、タイトルや番号（例: 13-5）で指定します。heading を渡すと、その見出しの部分だけを返します。',
+        '本書のページ（節）の本文をMarkdownで返します。デモはCSSとHTMLのコードに、図は代替テキストに置き換えています。ページはID（例: responsive/media-queries）、公開URL、タイトルや番号（例: 13-5）で指定します。節を読むとき（とくにレビューの前）は heading を付けずに全文を読みます。heading は、読んだ節の見出し1つに戻って確かめるときに使います。',
       inputSchema: z.object({
         page: z.string().describe('ページのID、公開URL、タイトルか番号'),
         heading: z.string().optional().describe('返す見出し（## の見出しの一部でよい）'),
@@ -119,15 +123,18 @@ const server = () => {
           `ページ「${reference}」を1つに絞れません。次のIDで指定してください。\n\n${candidates.map((candidate) => `- \`${candidate.id}\` ${candidate.title}`).join('\n')}`,
         );
       }
-      const header = `# ${page.title}\n\n${page.url}\n\n${page.description ? `> ${page.description}\n\n` : ''}`;
+      const header = (scope) =>
+        `# ${page.title}\n\n${page.url}\n\n（${scope}）\n\n${page.description ? `> ${page.description}\n\n` : ''}`;
       if (heading) {
         const section = sectionOf(page.markdown, heading);
         if (!section) {
           return failure(`見出し「${heading}」がありません。このページの見出し:\n\n${headingsOf(page.markdown).map((entry) => `- ${entry}`).join('\n')}`);
         }
-        return text(`${header}${section.trim()}`);
+        return text(
+          `${header(`見出し「${section.split('\n')[0].replace(/^## /, '')}」の部分だけ。この節を通読するときは heading を付けずに呼ぶ`)}${section.trim()}`,
+        );
       }
-      return text(`${header}${page.markdown}`);
+      return text(`${header(`この節の全文、${formatChars(page.markdown.length)}`)}${page.markdown}\n\n（この節の終わり）`);
     },
   );
 
@@ -135,22 +142,28 @@ const server = () => {
     'list_chapters',
     {
       title: '目次を見る',
-      description: '本書の部、章、節（ページのIDとタイトル）と、章ごとのルールの数を返します。',
+      description:
+        '本書の部、章、節（ページのID、タイトル、字数）と、章ごとのルールの数、レビューで読む条件を返します。レビューで読む章と節を決めるときに使います。',
       inputSchema: z.object({}),
       annotations: { title: '目次を見る', ...READ_ONLY },
     },
     async () => {
       const { introduction, parts, appendix } = guideline.outline;
-      const pageLines = (pages) => pages.map((page) => `  - \`${page.id}\` ${page.title}`).join('\n');
+      const pageLines = (pages) => pages.map((page) => `  - \`${page.id}\` ${page.title}（${formatChars(page.chars)}）`).join('\n');
+      const total = (pages) => pages.reduce((sum, page) => sum + page.chars, 0);
+      const chapterLine = (chapter) =>
+        [
+          `- ${chapter.label}（章: ${chapter.number} / ${chapter.dir}、ルール ${chapter.ruleCount} 件、本文 ${formatChars(total(chapter.pages))}）`,
+          chapter.review ? `  - 読む条件: ${chapter.always ? '常に読む。' : ''}${chapter.review}` : '',
+          pageLines(chapter.pages),
+        ]
+          .filter(Boolean)
+          .join('\n');
       const body = [
         `CSSコーディングガイドライン v${guideline.version}（${guideline.generatedAt} 生成）\n${guideline.site}`,
+        'レビューでは、「読む条件」に当たる章と「常に読む」の章を選び、その章のすべての節を get_page で全文読む。1回に読む量は、合計8万字ほどを目安にまとまりに分ける。',
         `## ${introduction.label}\n\n${pageLines(introduction.pages)}`,
-        ...parts.map(
-          (part) =>
-            `## ${part.label}\n\n${part.chapters
-              .map((chapter) => `- ${chapter.label}（章: ${chapter.number} / ${chapter.dir}、ルール ${chapter.ruleCount} 件）\n${pageLines(chapter.pages)}`)
-              .join('\n')}`,
-        ),
+        ...parts.map((part) => `## ${part.label}\n\n${part.chapters.map(chapterLine).join('\n')}`),
         `## ${appendix.label}\n\n${pageLines(appendix.pages)}`,
       ];
       return text(body.join('\n\n'));
