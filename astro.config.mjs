@@ -99,7 +99,7 @@ export default defineConfig({
         // AI のツールに渡す本文（/llms.txt、/llms-full.txt、/llms-small.txt）。使い方は付録J。
         starlightLlmsTxt({
           details:
-            'ルールには「必須」「推奨」「非推奨」「禁止」の強度と、英語のID（例: `query-range-syntax`）が付いています。ルールだけを引くなら、MCPサーバー `css-coding-guideline-mcp` かスキルを使ってください（付録J「AIツールで使う」）。',
+            'ルールには「必須」「推奨」「非推奨」「禁止」の強度と、英語のID（例: `query-range-syntax`）が付いています。ルールだけを引くためのMCPサーバーとスキルは、提供に向けて対応中です（付録J「AIツールで使う」）。',
           // 版ごとの変更点は長いので、要約版からは外す
           exclude: ['appendix/changelog'],
         }),

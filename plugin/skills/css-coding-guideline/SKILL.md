@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # CSSコーディングガイドライン Skill
 
-- ガイドラインのバージョン: 0.43.2（2026-10-09 生成）
+- ガイドラインのバージョン: 0.43.3（2026-10-09 生成）
 - ルールの数: 586（うち AI が誤りやすいもの 280）
 - 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
 
