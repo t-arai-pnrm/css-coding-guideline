@@ -11,13 +11,21 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.44.1（2026年10月9日）
+
+Figma MCPの実際の出力と見比べて、第20章の説明を直しました。ルールは変えていないので、パッチバージョンを上げています。
+
+- 「[20-3 MCPサーバーを役割で使い分ける](/ai-coding/mcp-servers/)」の出力の例を、実際の出力の形に差し替えました。オートレイアウトの部分はFlexboxと `gap` で出力されること、崩れの原因は固定の幅と高さ、折り返しを止める指定、値そのものの色、Figmaのスタイル名のままのフォントにあることを書きました。`clientLanguages` に `html,css` を渡しても出力はReactとTailwind CSSのままで、素のHTMLとCSSへの書き換えはAIが行うことも書きました。
+- 「[20-5 Figmaのデザインから計画を立てる](/ai-coding/from-figma/)」に、Figmaの変数に結び付いた値の出力の形と、同じ部品が並ぶフレームでは1つのノードだけを読ませることを書きました。
+- 「[20-7 AIが誤りやすいパターン](/ai-coding/pitfalls/)」の、デザインツールの出力に由来する誤りの説明を、実際の出力に合わせました。
+
 ## 0.44.0（2026年10月9日）
 
 第V部に第20章「[AIにコーディングさせる](/ai-coding/)」を加え、演習編を第21章に繰り下げました。ルールを追加したので、マイナーバージョンを上げています。
 
 - 第20章を加えました。AIに規約を読ませる準備、MCPサーバーの使い分け、人が書くbriefとAIが書くplanでタスクを進める方法、Figmaのデザインから計画を立てる方法、手順ごとの検証と完了の報告、生成したコードの確かめ方を扱います。
 - 第20章で使うひな形（タスクを進める4つのスキル、briefとplan、フック、`.mcp.json`、テストの例）を、[`/ai-coding-files/`](/ai-coding-files/README.md) に置きました。
-- 「19-2 レビューとAIとの協働」を「[19-2 レビューの進め方](/operations/review/)」に改め、URLを変えました。AIについての説明とルールは、第20章へ移しました。
+- 旧19-2「レビューとAIとの協働」を「[19-2 レビューの進め方](/operations/review/)」に改め、URLを変えました。AIについての説明とルールは、第20章へ移しました。
 - 演習編の「[記事の一覧を作る](/exercise/)」を第21章にしました。URLは変わりません。
 - ルールを第20章へ移しました。ルールの内容は変えていません。
   - [`verify-ai-output`](/ai-coding/roles/#rule-verify-ai-output)
@@ -30,7 +38,7 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
   - [`no-verbatim-design-output`](/ai-coding/mcp-servers/#rule-no-verbatim-design-output)：デザインツールが出力したクラス、絶対配置の座標、固定の幅と高さを、そのまま写さない
   - [`compare-at-design-width`](/ai-coding/mcp-servers/#rule-compare-at-design-width)：デザインと見比べるときは、同じ幅で撮ったスクリーンショットを並べる
   - [`no-guessing-missing-design`](/ai-coding/tasks/#rule-no-guessing-missing-design)：デザインと指示にない値や振る舞いを、推測で作って完成として扱わない
-  - [`figma-values-to-tokens`](/ai-coding/from-figma/#rule-figma-values-to-tokens)：デザインの値は、書く前にトークンに対応づけ、当たらない値は例外として書き出す
+  - [`figma-values-to-tokens`](/ai-coding/from-figma/#rule-figma-values-to-tokens)：デザインの値は、書く前にトークンへ対応づけ、当たらない値は例外として書き出す
   - [`escalate-shared-changes`](/ai-coding/from-figma/#rule-escalate-shared-changes)：全ページに及ぶ変更は、コンポーネントの変更と分け、着手する前に人が確かめる
   - [`verify-applied-styles`](/ai-coding/implementation/#rule-verify-applied-styles)：lintとビルドが通っても、宣言が適用されているかを計算値で確かめる
   - [`report-unverified-honestly`](/ai-coding/implementation/#rule-report-unverified-honestly)：実行していない検査と、人が判定する項目は「未確認」と報告する

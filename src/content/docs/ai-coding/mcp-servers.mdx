@@ -32,7 +32,7 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 
 CSSを書くときに使うツールは、主に4つです。`get_design_context` は、フレームやレイヤーのデザインを、コードの形で返します。`get_variable_defs` は、そのフレームで使っている変数（色、余白、文字のスタイル）の名前と値を返し、`get_screenshot` は画像を返します。`get_metadata` は、レイヤーの名前、位置、大きさだけを返すので、大きなフレームをノードに分けて読むときに使います。
 
-`get_design_context` の出力は、既定ではReactとTailwind CSSのコードです。素のHTMLとCSSで返してほしいときは、指示の文で頼みます。出力の形を指定する専用の引数はありません。ただし、どちらの形で受け取っても、出力はそのまま写すコードではありません。理由は、この節の後半で説明します。
+`get_design_context` の出力は、ReactとTailwind CSSのコードです。プロジェクトの言語を伝える引数（`clientLanguages`）に `html,css` を渡しても、出力の形は変わりませんでした（2026年10月確認）。出力の末尾には、プロジェクトの技術と書き方に合わせて変換するよう求める指示が添えられています。素のHTMLとCSSに書き換えるのは、ツールを呼んだAIの仕事です。ただし、書き換えても、出力はそのまま写すコードではありません。理由は、この節の後半で説明します。
 
 ツールを呼べる回数は、Figmaのシートの種類で制限されています。閲覧用のシート（View、Collab）では月20回まで、開発用のシート（Dev、Full）でもプランごとに1日あたりの上限があります。AIが読み直すたびに回数を使うので、デザインを読むのは計画の段階だけにし、読んだ値は計画のファイルに書き残します。進め方は「[20-5 Figmaのデザインから計画を立てる](/ai-coding/from-figma/)」（値の対応表とノードの対応表を作り、実装は計画だけを見て進める）で説明します。
 
@@ -48,21 +48,37 @@ Figmaの公式プラグインには、デザインからコードを書くとき
 
 ## 出力をそのまま写さない
 
-`get_design_context` の出力は、カンプの1つの幅と1つの内容を再現した試作です。次のコードは、記事のカードのデザインを読ませたときの出力の形を模して、私が作ったものです。{/* 要確認: 出典なし。Figma MCPの実際の出力と形を見比べる */}
+`get_design_context` の出力は、カンプの1つの幅と1つの内容を再現した試作です。次のコードは、記事の一覧のデザインを読ませたときの出力から、カードの1枚分を抜き出したものです（2026年10月確認）。文言と色の値を一般的なものに置き換え、説明に関わらないクラスと属性を省いています。
 
-```html title="🙅‍♂ Not Recommended: 出力のクラスと座標をそのまま写す"
-<!-- 🙅‍♂ Not Recommended -->
-<div class="relative h-[312px] w-[320px]">
-  <img class="absolute left-0 top-0 h-[180px] w-[320px] rounded-[4px] object-cover" src="..." alt="">
-  <p class="absolute left-0 top-[196px] text-[12px] leading-[18px] text-[#2563eb]">デザイン</p>
-  <h3 class="absolute left-0 top-[222px] w-[320px] text-[20px] font-bold leading-[30px] text-[#171717]">公開プロパティで色を受け取る</h3>
-  <p class="absolute left-0 top-[260px] text-[12px] leading-[18px] text-[#737373]">2026年10月1日</p>
+```jsx title="🙅‍♂ Not Recommended: 出力のクラスと値をそのまま写す"
+/* 🙅‍♂ Not Recommended */
+const imgRectangle = "https://www.figma.com/api/mcp/asset/…";
+
+<div className="border-[#171717] border-b flex flex-col gap-[20px] pb-[30px] relative w-[380px]" data-node-id="1:2">
+  <div className="aspect-[278/156] relative w-full">
+    <img alt="" className="absolute inset-0 object-cover size-full" src={imgRectangle} />
+  </div>
+  <div className="flex flex-col gap-[15px] w-full">
+    <div className="flex gap-[10px] items-center w-full">
+      <p className="font-['Helvetica_Neue:Regular'] text-[14px] text-black whitespace-nowrap">2026.10.01</p>
+      <div className="bg-[#171717] px-[7px] py-[6px] rounded-[14px]">
+        <p className="font-['Noto_Sans_JP:Medium'] text-[#eee] text-[10px] whitespace-nowrap">お知らせ</p>
+      </div>
+    </div>
+    <p className="font-['Noto_Sans_CJK_JP:Regular'] h-[45px] leading-[1.4] overflow-hidden text-[#171717] text-[16px] text-ellipsis w-full">
+      公開プロパティで色を受け取る
+    </p>
+  </div>
 </div>
 ```
 
-この出力をそのまま写すと、カンプと同じ幅と内容のときだけ正しく表示されます。各要素の位置を上端からの座標で決めているので、見出しが2行になると、下の日付と重なります。幅と高さも固定しているので、サイドバーのような狭い置き場所でははみ出します。色と文字の大きさも、トークンではなくカンプの値そのものです（`no-verbatim-design-output`）。
+Figmaのオートレイアウトで組んだ部分は、`flex flex-col gap-[20px]` のように、Flexboxと `gap` で出力されます。並び方と間隔は、ここから読み取れます。問題は、カンプの幅と内容でしか成り立たない指定が、並び方と同じ形で混ざっていることです。
 
-出力から読み取るのは、要素の並び方と、余白、文字の大きさ、色の値です。並び方は、画像、タグ、見出し、日付が縦に積まれ、それぞれの間が16pxや8pxであることです。値はトークンに対応づけてから書きます。
+カードの幅は `w-[380px]` で固定され、一覧では、この幅のカードを `flex-wrap` と `justify-between` で3列に並べていました。置き場所の幅が変わると、列の数は変わらずにはみ出すか、端数の行で間隔が開きます。見出しは `h-[45px]` と `overflow-hidden` で、カンプの2行分の高さに固定されているので、3行になる見出しは途中で切れます。日付とタグには `whitespace-nowrap` が付いていて、狭い幅でも折り返しません。
+
+値も、そのままでは使えません。色は `#171717` のような値そのもので、Figmaの変数に結び付いた色だけが `var(--変数名, 値)` の形で出ます。フォントは `Noto_Sans_CJK_JP:Regular` のようなFigmaのスタイル名で、CSSの `font-family` には使えない名前です。画像のURLは7日で期限が切れる一時的なものです。一覧の外側の要素は、ページ上の座標（`absolute left-[40px] top-[536px]`）で置かれていました（`no-verbatim-design-output`）。
+
+出力から読み取るのは、要素の並び方と、余白、文字の大きさ、色の値です。この例の並び方は、画像の下に、日付とタグの行と見出しが縦に積まれていることです。値は、トークンに対応づけてから書きます。トークンに当たらない値や、トークンに近いがずれる値の扱いは、「[20-5 Figmaのデザインから計画を立てる](/ai-coding/from-figma/)」で説明します。
 
 ```css title="🙆‍♂ Recommended: 並び方をグリッドで、値をトークンで書く"
 @scope (.scoped.article-card) to (.scoped) {
@@ -84,7 +100,7 @@ Figmaの公式プラグインには、デザインからコードを書くとき
 }
 ```
 
-書き直したコードでは、要素を通常のフローとグリッドで積んでいるので、見出しが何行になっても、下の要素は見出しの下に続きます。幅と高さは置き場所と内容で決まり、狭い置き場所での形は、コンテナサイズクエリで切り替えます。カードの全体は、演習の「[21-2 カードを作る](/exercise/card/)」で作っています。
+書き直したコードでは、幅と高さを固定していないので、カードの幅は置き場所で、高さは内容で決まります。見出しが3行になっても切れずに、カードがその分だけ高くなります。狭い置き場所での形は、コンテナサイズクエリで切り替えます。カードの全体は、演習の「[21-2 カードを作る](/exercise/card/)」で作っています。
 
 ## ブラウザで確かめる
 
