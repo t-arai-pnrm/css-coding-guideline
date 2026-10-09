@@ -37,6 +37,16 @@
   page: notation/naming
   since: 0.1.0
 
+- id: group-classes-with-pipe
+  level: 推奨
+  kind: convention
+  rule: 1つの要素に種類の違うクラスを付けるときは、ルート、子要素、コンポジション、パターン、ユーティリティの順に並べ、種類の境目を `|` で区切る（例：`class="_tags | cluster"`）。
+  reason: 要素がどのコンポーネントの何であるかと、外から何を重ねているかを、`class` 属性の中の位置で読み取れるため。並びが決まっていれば、増えたユーティリティや崩れた並びにレビューで気付ける。
+  note: 種類が1つだけなら `|` を書きません。ルートと親の子要素のクラスは同じ要素に付けないので（`parent-owns-child-placement`）、2つが並ぶことはありません。CMSが出力するブロックのクラスは、ルートのグループの先頭に置きます。
+  aiProne: true
+  page: notation/naming
+  since: 0.45.0
+
 - id: name-by-role
   level: 必須
   kind: judgment

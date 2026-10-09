@@ -152,7 +152,7 @@ mixinは、置き換え先が用途によって分かれます。要素を積む
 視覚的に隠す、行数を制限するといった単機能のmixinは、`.-visually-hidden` や `.-line-clamp` のようなユーティリティにします。行数のような値は、`style="--line-clamp--limit: 2"` のように公開プロパティで渡します。どちらも「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
 
 ```html title="🙆‍♂ Recommended: mixin の代わりに、ユーティリティのクラスと公開プロパティを使う"
-<p class="_excerpt -line-clamp" style="--line-clamp--limit: 2">…</p>
+<p class="_excerpt | -line-clamp" style="--line-clamp--limit: 2">…</p>
 ```
 
 ホバーのmixinは、置き換えるというより、書き方そのものを変えます。以前の私のmixinは、`(hover: hover) and (pointer: fine)` で判定していました。本書では `@media (any-hover)` の中にホバーを書き、同じ見た目を `:focus-visible` にも指定します。条件はmixinにまとめず、各セレクタの中に直接書きます（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。色は、プリミティブの段階（`600`、`700`）を使い分けず、セマンティクスの `--background--accent` から相対カラー構文で明るさを下げた色をホバーとフォーカスに使います。

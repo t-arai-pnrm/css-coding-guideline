@@ -83,7 +83,7 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 
 ```html title="段階のクラスを付けるか、style 属性で値を渡す"
 <h2 class="-fluid-text--lg">お知らせ</h2>
-<p class="_lead -fluid-text" style="--fluid-text--min-font-size: 18; --fluid-text--max-font-size: 22">…</p>
+<p class="_lead | -fluid-text" style="--fluid-text--min-font-size: 18; --fluid-text--max-font-size: 22">…</p>
 ```
 
 公開プロパティは `--fluid-text--` で始め、内部で使う値は `--_u--` で始めています。コンポーネントの内部プロパティと名前がぶつからないようにするためです。公開プロパティと内部プロパティの考え方は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。

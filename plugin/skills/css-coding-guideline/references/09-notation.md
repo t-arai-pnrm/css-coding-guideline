@@ -1,8 +1,8 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.44.7（2026-10-09 生成）
-- ルールの数: 48
-- 本文: 約11.1万字
+- ガイドラインのバージョン: 0.45.0（2026-10-09 生成）
+- ルールの数: 49
+- 本文: 約11.3万字
 - 読む条件: すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,7 +13,7 @@
 ## この章の節
 
 - `notation` 第9章 記法の規約（約4,200字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/
-- `notation/naming` 9-1 命名規則（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
+- `notation/naming` 9-1 命名規則（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
 - `notation/terminology` 9-2 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/
 - `notation/scope-and-nesting` 9-3 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/
 - `notation/nesting` 9-4 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/
@@ -42,6 +42,10 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
   - 理由: 配置のパターンの名前をそのまま使え、接頭辞の付いたほかの種類のクラスと並べたときに役割の違いが分かるため。
   - 補足: パターンにも接頭辞を付けません。コンポジションは `stack` や `sidebar` のような配置の名前に、パターンは `section-heading` や `icon` のような役割の名前（`name-by-role`）にして、名前の種類で区別します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/#rule-composition-class-plain
+- 【推奨・本書の規約】1つの要素に種類の違うクラスを付けるときは、ルート、子要素、コンポジション、パターン、ユーティリティの順に並べ、種類の境目を `|` で区切る（例：`class="_tags | cluster"`）。（`group-classes-with-pipe`）
+  - 理由: 要素がどのコンポーネントの何であるかと、外から何を重ねているかを、`class` 属性の中の位置で読み取れるため。並びが決まっていれば、増えたユーティリティや崩れた並びにレビューで気付ける。
+  - 補足: 種類が1つだけなら `|` を書きません。ルートと親の子要素のクラスは同じ要素に付けないので（`parent-owns-child-placement`）、2つが並ぶことはありません。CMSが出力するブロックのクラスは、ルートのグループの先頭に置きます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/#rule-group-classes-with-pipe
 - 【必須・実装上の判断】コンポーネント、子要素、パターンの名前は、見た目ではなく役割で付ける（`._big-title` ではなく `._heading`）。（`name-by-role`）
   - 理由: 見た目の名前はデザインが変わると実態とずれるが、役割の名前なら見た目を変えても名前を変えずに済むため。
   - 補足: ユーティリティは1つのことしかしないので、`.-text-center` のように効果をそのまま名前にします。

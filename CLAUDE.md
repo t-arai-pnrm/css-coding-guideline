@@ -8,6 +8,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `pnpm build`: 本番ビルド。下書きは除かれ、内部リンクが検証される。
 - `pnpm lint:css`: サイトの CSS とデモの CSS を Stylelint で検証する。
 - `pnpm lint:examples`: 原稿の 🙆‍♂ Recommended の CSS コード例を Stylelint で検証する。
+- `pnpm lint:classes`: デモ、ひな形、原稿の `class` 属性が、種類ごとに `|` で区切られ、決まった順に並んでいるかを検証する（ルール `group-classes-with-pipe`）。
 - `pnpm lint:text`: 原稿を textlint で検証する。
 - `pnpm list:markers`: 刊行前に解消する印（`要確認`、`要検証`）を種類ごとに一覧にする。`--summary` で件数だけを出す。
 - `pnpm gen:exercise`: 第21章のデモから、演習を手元で進めるためのファイル（`public/exercise-files/`）を生成する。
@@ -102,6 +103,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - ネストは1段で、先頭に `&` を書く。`@media` と `@container` は各セレクタの中に書く。
 - 命名
   - ルートは `scoped <名前>`、子要素は `._kebab`、ユーティリティは `.-kebab`。
+  - 1つの要素に種類の違うクラスを付けるときは、「ルート | 子要素 | コンポジション | パターン | ユーティリティ」の順に `|` で区切る（例：`class="_tags | cluster"`）。
   - カスタムプロパティは、公開用が `--<コンポーネント>--<プロパティ>`、内部用が `--_<プロパティ>`。
 - スコープは `@scope (.scoped.<名前>) to (.scoped)`。
 - コンテナは、ルートで `container: --scoped / inline-size` とし、`@container --scoped (…)` で問い合わせる。子要素をコンテナにするときは、クラス名から下線を除いた名前（`._body` → `--body`）にする。外側のコンポーネントのコンテナは問い合わせない。

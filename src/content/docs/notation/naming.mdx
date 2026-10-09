@@ -1,6 +1,6 @@
 ---
 title: "9-1 命名規則"
-description: クラス名は、ルート（scoped <名前>）、子要素（._名前）、ユーティリティ（.-名前）、コンポジションとパターン（接頭辞なし）の5種類を、接頭辞と名前の種類で見分けます。自分で付けて値として使う名前は -- で始めます。
+description: クラス名は、ルート（scoped <名前>）、子要素（._名前）、ユーティリティ（.-名前）、コンポジションとパターン（接頭辞なし）の5種類を、接頭辞と名前の種類で見分け、1つの要素に並べるときは種類ごとに | で区切ります。自分で付けて値として使う名前は -- で始めます。
 sidebar:
   order: 1
 ---
@@ -69,11 +69,33 @@ CSSのクラス名は、ページ全体で共有される1つの名前空間に�
       </article>
     </li>
   </ul>
-  <p class="_note -text-center">掲載から1年が過ぎたお知らせは削除します。</p>
+  <p class="_note | -text-center">掲載から1年が過ぎたお知らせは削除します。</p>
 </section>
 ```
 
 このHTMLは、`class` 属性を見るだけで読み解けます。`_lead` と `_note` は `news-section` の子要素、`-text-center` はユーティリティ、`stack` はコンポジション、`section-heading` はパターンです。`stack` と `section-heading` はどちらも接頭辞がありませんが、配置の名前と役割の名前なので取り違えません。2つの `p` は役割が違うので子要素のクラスで区別し、1つしかない `h2` と `ul` には子要素のクラスを付けていません。`scoped news-card` から先は別のコンポーネントなので、`news-section` のスタイルは届きません。`news-card` の中に `news-section` と同じ名前の子要素や同じ種類の要素があっても衝突しません。
+
+## `class` 属性の中で種類ごとに区切る
+
+1つの要素に種類の違うクラスを付けるときは、種類ごとにまとめて `|` で区切ります。並べる順番は、コンポーネントのルート、子要素、コンポジション、パターン、ユーティリティです。種類が1つだけなら、`|` は書きません。
+
+```html title="🙆‍♂ Recommended: 種類ごとにまとめて、| で区切る"
+<section class="scoped news-section | stack">
+  <h2 class="section-heading">お知らせ</h2>
+  <p class="_lead | -fluid-text">店舗からのお知らせです。</p>
+  <ul class="_tags | cluster">
+    <li><a href="/tags/notice/">お知らせ</a></li>
+    <li><a href="/tags/event/">イベント</a></li>
+  </ul>
+  <p class="_note | -text-center">掲載から1年が過ぎたお知らせは削除します。</p>
+</section>
+```
+
+`|` は、クラスの種類の境目を示すための文字で、スタイルは持ちません。区切りがあれば、`_tags | cluster` の前半がこの要素の正体（`news-section` の中のタグの一覧）で、後半が外から重ねた配置だと、位置で読み取れます。記号で種類を見分けられるクラスでも、3つ、4つと並ぶと、どこまでが要素の正体で、どこからが重ねたものなのかを1つずつ確かめることになります。
+
+順番は、要素の正体に近いものから並べます。ルートと子要素のクラスは、その要素がどのコンポーネントの何であるかを決めます。コンポジションは子の並べ方を、パターンは重ねる見た目の断片を、ユーティリティは例外的な調整を受け持ちます。後ろのクラスほど、外しても要素の正体は変わりません。並びが決まっていれば、レビューでは末尾を見るだけで、ユーティリティが増えていないかを確かめられます。AIが書いたHTMLで並びが崩れていれば、それにも気付けます。
+
+ルートと子要素のクラスが同じ `class` 属性に並ぶことはありません。親のコンポーネントの中に子のコンポーネントを置くときは、子のルートに親の子要素のクラスを付けず、親の子要素の要素で包むからです（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」のルール `parent-owns-child-placement`）。CMSが出力するブロックのクラス（`wp-block-group` など）は、ルートのグループの先頭に置きます（「[19-5 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」）。
 
 ## 階層を名前に映さない
 
@@ -305,6 +327,8 @@ BEMなどの命名規則と、本書の命名が分かれるところもあり�
 
 チームに導入するときは、`@scope` を書くのに欠かせないルートの `scoped <名前>` と子要素の `_` から始めます。ユーティリティの `-` と、コンポジションとパターンの区別は、それぞれのクラスを作るときに足せます。値として使う名前の `--` は、Stylelintの `keyframes-name-pattern` のように機械で検証できるものから守らせると、レビューで指摘する手間が減ります。{/* 要確認: 出典なし */}
 
+`class` 属性を `|` で区切る約束は、HTMLを書く人とテンプレートを組み立てるコードに手間を足します。`|` はクラスの1つとして `classList` にも入るので、`className` を文字列のまま比べるJavaScriptがあれば、書き直しが要ります。StylelintはHTMLを読まないので、並び順は本書の `pnpm lint:classes` のような別のスクリプトで確かめます。区切りがなくても5種類は記号と名前で見分けられます。この約束で得るものが大きいのは、1つの要素に3つ以上のクラスを並べることの多いプロジェクトです。
+
 ## ガイドライン
 
 <Guideline />
@@ -316,4 +340,5 @@ BEMなどの命名規則と、本書の命名が分かれるところもあり�
 - [&lt;custom-ident&gt; - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/custom-ident)
 - [grid-template-areas - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-areas)
 - [anchor-name - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/anchor-name)
+- [Grouping | CUBE CSS](https://cube.fyi/grouping.html)（`class` 属性の中で関連するクラスをまとめ、`[ ]` や `|` で区切る書き方）
 - [細かすぎるけど伝わってほしい私的BEMプラクティス30（ぐらい）](https://necomesi.jp/blog/tsmd/posts/152)（necomesi。名前を日本語で説明してから付ける手順、省略しない、階層を名前に映さない、`l-` 接頭辞と修飾クラスの考え方）

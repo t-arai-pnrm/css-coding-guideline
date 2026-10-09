@@ -140,7 +140,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 
 内容の変化の段階では、タグの並び（誤り6）を見ます。`._tags` は `display: block flex` と `gap` だけで、`flex-wrap` がありません。タグの数は記事ごとに変わるので、入りきらなくなったときに折り返す指定が要ります（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」）。
 
-直すときは、`flex-wrap: wrap` を足すより、記事カードと同じ `cluster` コンポジションを使います。タグの `ul` を `<ul class="_tags cluster">` にし、カードは間隔だけを公開プロパティで渡します（「[12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)」）。配布版の `review` の `compositions.css` には、記事カードで使っている `cluster` も入っています。`display: flex` の1値の構文はStylelintでも見つかるので、レビューの前にlintを通してもらいます。
+直すときは、`flex-wrap: wrap` を足すより、記事カードと同じ `cluster` コンポジションを使います。タグの `ul` を `<ul class="_tags | cluster">` にし、カードは間隔だけを公開プロパティで渡します（「[12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)」）。配布版の `review` の `compositions.css` には、記事カードで使っている `cluster` も入っています。`display: flex` の1値の構文はStylelintでも見つかるので、レビューの前にlintを通してもらいます。
 
 ```css title="🙆‍♂ Recommended: タグの並びは cluster に任せ、カードは間隔だけを渡す"
 @scope (.scoped.notice-card) to (.scoped) {
