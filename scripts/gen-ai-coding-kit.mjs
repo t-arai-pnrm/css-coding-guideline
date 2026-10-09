@@ -38,4 +38,13 @@ for (const file of files) {
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, readFileSync(file));
 }
-console.log(`${files.length} 個のファイルを public/ai-coding-files/ に写した`);
+// テストページが読み込む CSS は、演習の 21-7 を終えた時点の配布ファイル（pnpm gen:exercise が作る）から写す
+const EXERCISE_CSS = {
+  'base.css': 'public/exercise-files/base.css',
+  'compositions.css': 'public/exercise-files/featured/compositions.css',
+  'article-card.css': 'public/exercise-files/featured/article-card.css',
+};
+for (const [name, from] of Object.entries(EXERCISE_CSS)) {
+  writeFileSync(join(outDir, 'tests/pages/article-card', name), readFileSync(join(root, from)));
+}
+console.log(`${files.length + Object.keys(EXERCISE_CSS).length} 個のファイルを public/ai-coding-files/ に写した`);

@@ -7,10 +7,10 @@ import { test, expect } from '@playwright/test';
  * 値に % や em を含む行は、比較用の要素と大きさの基準が変わるので、この方法では比べない。
  */
 
-// 最悪の内容を入れたテストページ。カードを、幅の違う2つの置き場所に並べている。
+// 最悪の内容を入れたテストページ（tests/pages/article-card/index.html）。カードを、幅の違う2つの置き場所に並べている。
 // コンテナサイズクエリで切り替わる値は、画面の幅ではなく置き場所の幅で決まるので、
-// #narrow は幅240px相当に固定し、#wide は幅いっぱい（最大400px相当）にして、どの画面の幅でも同じ値を期待できるようにする
-const PAGE = '/test/article-card/';
+// #narrow は幅240px相当に固定し、#wide は最大400px相当にして、どの画面の幅でも同じ値を期待できるようにする
+const PAGE = '/tests/pages/article-card/';
 const WIDTHS = [320, 480, 768, 1024, 1280];
 
 // plan の値の対応表から写す

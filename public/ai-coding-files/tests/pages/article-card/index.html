@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>article-card のテストページ</title>
+  <!-- 演習の 21-7 を終えた時点の CSS。自分のプロジェクトでは、プロジェクトの CSS を読み込む -->
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="compositions.css">
+  <link rel="stylesheet" href="article-card.css">
+  <style>
+    @layer pages {
+      /* カードを置く場所の幅を固定し、画面の幅に左右されずに同じ値を期待できるようにする */
+      @scope (.scoped.test-page) to (.scoped) {
+        :scope {
+          display: block grid;
+          gap: 40px;
+        }
+
+        ._wide {
+          max-inline-size: calc(400 / 16 * 1rem);
+        }
+
+        ._narrow {
+          inline-size: calc(240 / 16 * 1rem);
+        }
+
+        ._wide,
+        ._narrow {
+          display: block grid;
+          gap: 24px;
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+<main class="scoped test-page">
+  <!-- 広い置き場所（最大400px相当）。カードは広い形になる -->
+  <section class="_wide" id="wide" aria-label="広い置き場所">
+    <article class="scoped article-card">
+      <div class="_layout">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%238fa8d8'/%3E%3C/svg%3E" alt="" width="640" height="360">
+        <div class="_body">
+          <ul class="_tags cluster">
+            <li><a href="#tag-design">デザイン</a></li>
+            <li><a href="#tag-css">CSS</a></li>
+            <li><a href="#tag-accessibility">アクセシビリティ</a></li>
+            <li><a href="#tag-performance">パフォーマンス</a></li>
+            <li><a href="#tag-typography">タイポグラフィ</a></li>
+          </ul>
+          <h3><a href="#article-long-title">カンプの2倍の長さの見出しが入ったときに、カードの高さと下の要素の位置がどう変わるかを確かめるための記事</a></h3>
+          <time datetime="2026-10-01">2026年10月1日</time>
+          <p class="_excerpt">抜粋も長めにして、広い形で抜粋が表示されることを確かめます。</p>
+        </div>
+      </div>
+    </article>
+    <article class="scoped article-card">
+      <div class="_layout">
+        <div class="_body">
+          <ul class="_tags cluster">
+            <li><a href="#tag-css">CSS</a></li>
+          </ul>
+          <h3><a href="#article-no-image">画像のない記事</a></h3>
+          <time datetime="2026-09-30">2026年9月30日</time>
+          <p class="_excerpt">画像がないときは、本文だけで1列になります。</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 狭い置き場所（240px相当）。カードは狭い形になる -->
+  <section class="_narrow" id="narrow" aria-label="狭い置き場所">
+    <article class="scoped article-card">
+      <div class="_layout">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%23d99a7a'/%3E%3C/svg%3E" alt="" width="640" height="360">
+        <div class="_body">
+          <ul class="_tags cluster">
+            <li><a href="#tag-design">デザイン</a></li>
+          </ul>
+          <h3><a href="#article-long-word">Supercalifragilisticexpialidociousのような長い英単語を含む見出し</a></h3>
+          <time datetime="2026-09-25">2026年9月25日</time>
+          <p class="_excerpt">狭い形では、抜粋を表示しません。</p>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+</body>
+</html>

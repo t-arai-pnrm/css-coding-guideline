@@ -58,9 +58,9 @@ claude plugin install css-coding-guideline@css-coding-guideline
 
 ## Claude DesktopとClaude.ai
 
-Claude DesktopとClaude.aiでは、スキルだけが使えます。チャットは、手元で起動するMCPサーバーを読み込まないからです。設定の「Customize」から「Plugins」を開き、マーケットプレイスの追加で `t-arai-pnrm/css-coding-guideline` を指定して、プラグインを入れます。スキルを使うには、「Settings」の「Capabilities」で、コードの実行とファイルの作成を有効にしておく必要があります。
+Claude DesktopとClaude.aiのチャットでは、プラグインを入れると、スキルが使えます。プラグインに入っているMCPサーバーの設定は、チャットでは使われません。設定の「Customize」から「Plugins」を開き、マーケットプレイスの追加で `t-arai-pnrm/css-coding-guideline` を指定して、プラグインを入れます。スキルを使うには、「Settings」の「Capabilities」で、コードの実行とファイルの作成を有効にしておく必要があります。
 
-Claude Desktopのチャットでも検索や検査を使いたいときは、MCPサーバーを設定ファイルに登録します。「Settings」の「Developer」にある「Edit Config」で `claude_desktop_config.json` を開き、次の設定を足してから、アプリを再起動します。この方法では、手元にNode.jsが入っている必要があります。
+MCPサーバーの検索や検査は、Claude Desktopでだけ、プラグインとは別に設定すれば使えます。Claude.aiは、手元で起動するMCPサーバーを使えません。Claude Desktopでは、MCPサーバーを設定ファイルに登録します。「Settings」の「Developer」にある「Edit Config」で `claude_desktop_config.json` を開き、次の設定を足してから、アプリを再起動します。この方法では、手元にNode.jsが入っている必要があります。
 
 ```json title="claude_desktop_config.json"
 {
@@ -119,6 +119,23 @@ GitHub上で動くCopilotのコーディングエージェントは、リポジ�
   }
 }
 ```
+
+## 入ったことを確かめる
+
+MCPサーバーを設定したら、3つのことを確かめます。1つ目は、ツールが5つ見えることです。Claude Codeでは、`/mcp` で `css-coding-guideline` を選ぶと、`search_rules`、`get_rule`、`get_page`、`list_chapters`、`lint_css` の5つが表示されます。ほかのツールでは、MCPサーバーの設定の画面で、ツールの一覧を確かめます。
+
+2つ目は、ルールを引けることです。AIに「`get_rule` で `query-range-syntax` を引いて」と頼むと、強度が「必須」であること、範囲構文で書くというルールの本文と理由、掲載しているページ（13-5「メディアクエリ」）のURLが返ります。
+
+3つ目は、CSSを検査できることです。次のCSSを `lint_css` で検査させると、`display: flex` の1値の構文が1件の違反として返り、本書のルール `display-two-value-syntax` が添えられます（2026年10月確認）。
+
+```css title="🙅‍♂ Not Recommended: lint_css で検査する、1値の構文の display"
+/* 🙅‍♂ Not Recommended */
+.card {
+  display: flex;
+}
+```
+
+3つとも期待どおりなら、MCPサーバーは動いています。どれかが返らないときは、Node.jsの版（20.19以降）と、設定ファイルの場所を確かめます。
 
 ## MCPもスキルも使えない場合
 

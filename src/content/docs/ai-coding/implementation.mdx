@@ -8,6 +8,7 @@ sidebar:
 import { Code } from '@astrojs/starlight/components';
 import Guideline from '../../../components/Guideline.astro';
 import valuesSpec from '../../../kits/ai-coding/tests/design-values.spec.ts?raw';
+import playwrightConfig from '../../../kits/ai-coding/playwright.config.ts?raw';
 
 承認されたplanで実装するとき、AIには手順を1つずつ実装させ、その手順の検証が通ってから完了の印（`[x]`）を付けさせます。検証は、planを書く段階で手順ごとに決めておいた、実行するコマンドと期待する結果です。通らなければ直し、直せなければ止まります。
 
@@ -105,6 +106,30 @@ getComputedStyle(layout).rowGap; // '12px'（対応表では 16px）
 このテストには、2つの限界があります。1つは、値に `%` や `em` を含む行は比べられないことです。比較用の要素と対象の要素で、大きさの基準が変わるからです。もう1つは、作る手間がかかることです。テストにするのは、幅や置き場所で切り替わるコンポーネントのような大きなタスクだけにし、小さなタスクでは、計算値を読む確認で済ませます。
 
 テストページには、「[19-3 表示と操作を確かめる](/operations/verification/)」の最悪の内容（長い見出し、画像のない記事、多数のタグ）を入れておきます。確かめる中で崩れる内容が見つかったら、その内容をテストページに足し、以後のタスクでも同じ内容で確かめます。
+
+## この例を試すための最小構成
+
+上のテストは、ひな形の配布物（[`/ai-coding-files/`](/ai-coding-files/README.md)）に、そのまま動かせる形で入れています。動かすのに要るのは、テスト、テストページ、Playwrightの設定の3つです。
+
+| 配布ファイル | 役割 |
+| --- | --- |
+| `playwright.config.ts` | テストページを配信するサーバー、`baseURL`、確かめるブラウザの設定 |
+| `tests/design-values.spec.ts` | 値の対応表を計算値と照合するテスト |
+| `tests/pages/article-card/` | テストページ（`index.html`）と、演習の21-7を終えた時点のCSS |
+
+テストページには、広い置き場所（`#wide`、最大400px相当）と狭い置き場所（`#narrow`、240px相当）を置き、長い見出し、画像のない記事、5つのタグ、長い英単語を入れたカードを並べています。CSSは、演習の配布ファイルと同じものです。
+
+<Code code={playwrightConfig} lang="ts" title="playwright.config.ts" />
+
+設定では、テストページを静的なファイルのサーバーで配信し、ChromeとSafariのエンジンで確かめます。自分のプロジェクトで使うときは、`webServer` と `baseURL` を、プロジェクトの開発サーバーのコマンドとURLに書き換え、テストページも開発サーバーで配信します。
+
+```sh title="Playwrightを入れて、テストを実行する"
+npm install --save-dev @playwright/test
+npx playwright install chromium webkit
+npx playwright test
+```
+
+配布物の3つのファイルをプロジェクトのルートに置き、この3つのコマンドを実行すると、ChromeとSafariのエンジンで、確かめる5つの幅のテストが実行されます。私が試したときは、10件がすべて通りました（2026年10月、Playwright 1.61.1）。{/* 要確認: 著者の判断。確認は配信のコマンドを python3 -m http.server に替えて行った。serve での配信でも一度実行して確かめる */}テストの値を1つ誤らせると、そのテストは、期待した値と実際の計算値を並べて失敗します。
 
 ## デザインと同じ幅で見比べる
 
