@@ -10,6 +10,7 @@
 | `skills/task-start/` | `.claude/skills/task-start/` |
 | `skills/task-approve/` | `.claude/skills/task-approve/` |
 | `skills/task-done/` | `.claude/skills/task-done/` |
+| `skills/confirm-request/` | `.claude/skills/confirm-request/` |
 | `hooks/protect-task-inputs.mjs` | `.claude/hooks/protect-task-inputs.mjs` |
 | `settings.json` | `.claude/settings.json`（`hooks` を足す） |
 | `mcp.json` | `.mcp.json` |
@@ -17,6 +18,6 @@
 | `CLAUDE.md` | `CLAUDE.md`（CSS に関わる部分の例） |
 | `tests/design-values.spec.ts` | Playwright のテストのディレクトリ |
 
-Codex、Cursor、GitHub Copilot では、`skills/` の4つを `.agents/skills/` に置きます。フックと `settings.json` は Claude Code の仕組みなので、ほかのツールでは使えません。
+Codex、Cursor、GitHub Copilot では、`skills/` の5つを `.agents/skills/` に置きます。フックと `settings.json` は Claude Code の仕組みなので、ほかのツールでは使えません。
 
 ライセンスは MIT-0 です。

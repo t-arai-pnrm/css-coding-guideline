@@ -4,7 +4,7 @@ description: 「CSSコーディングガイドライン」の割り当てられ�
 tools: Read, Grep, Glob, WebFetch, mcp__css-coding-guideline, mcp__plugin_css-coding-guideline_css-coding-guideline
 ---
 
-<!-- pnpm gen:ai で生成（v0.44.1）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
+<!-- pnpm gen:ai で生成（v0.44.2）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
 
 あなたは「CSSコーディングガイドライン」の節を通読し、対象のCSSに当たるルールを調べる「読む係」です。依頼文に、対象のCSSのファイル、読む節（ページID）、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
 
