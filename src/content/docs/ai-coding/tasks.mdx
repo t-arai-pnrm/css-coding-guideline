@@ -55,7 +55,7 @@ Claude Codeのプランモードも、実装の前に計画を書かせる機能
 
 `/task-approve` は、planの `status` を `approved` にし、承認した日付を書きます。承認は、このスキルでしか記録しません。チャットで「よさそうです」と伝えても、AIは承認として扱いません。`/task-done` は、完了の報告を確かめてから、教訓を書き、タスクを `archive/` に移します。
 
-4つのスキルと `/confirm-request` には、どれもスキルの設定に `disable-model-invocation: true` を書き、利用者だけが呼べるようにしています。この設定のスキルは、AIが自分の判断で呼び出せません（2026年10月確認）。とくに `/task-approve` は、モデルから呼べないことで、承認の経路が利用者の操作に限られます。
+4つのスキルと `/confirm-request` には、どれもスキルの設定に `disable-model-invocation: true` を書き、利用者だけが呼べるようにしています。この設定のスキルは、AIが自分の判断で呼び出せません（2026年10月確認）。とくに `/task-approve` は、モデルから呼べないことで、承認の経路が利用者の操作に限られます。この設定のスキルは、メッセージの先頭に `/task-start` のように書いたときだけ呼ばれ、文の途中に書いても呼ばれません。また、別のスキルからも呼べないので、`/task-start` は `/confirm-request` を呼び出すのではなく、その `SKILL.md` を読んで同じ手順に従います。
 
 ## briefに書くこと
 
@@ -119,3 +119,4 @@ Codex、Cursor、GitHub Copilotでも、5つのスキルは、プロジェクト
 - [Automate actions with hooks - Claude Code Docs](https://code.claude.com/docs/en/hooks-guide)
 - [Choose a permission mode - Claude Code Docs](https://code.claude.com/docs/en/permission-modes)
 - [Agent Skills Specification](https://agentskills.io/specification)
+- [カスタムスラッシュコマンドはスキルに置き換えるべき - Zenn](https://zenn.dev/cureapp/articles/fd00f58b065c7a)（2026年3月）
