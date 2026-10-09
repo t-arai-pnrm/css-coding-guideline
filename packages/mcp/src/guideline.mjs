@@ -44,15 +44,20 @@ export const createGuideline = (data) => {
     return chapters.find((chapter) => String(chapter.number) === text || chapter.dir === text);
   };
 
-  const searchRules = ({ query = '', chapter, level, kind, aiProne, limit = 30 } = {}) => {
+  const searchRules = ({ query = '', chapter, page, level, kind, aiProne, limit = 30 } = {}) => {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
     const target = chapter === undefined || chapter === '' ? undefined : findChapter(chapter);
     if (chapter !== undefined && chapter !== '' && !target) {
       return { error: `章「${chapter}」が見つかりません。list_chapters で章の番号とディレクトリ名を確かめてください。` };
     }
+    const targetPage = page ? findPage(page).page : undefined;
+    if (page && !targetPage) {
+      return { error: `節「${page}」を1つに絞れません。list_chapters でページIDを確かめてください。` };
+    }
     const matched = [];
     data.rules.forEach((rule, order) => {
       if (target && chapterOf(rule)?.dir !== target.dir) return;
+      if (targetPage && rule.page !== targetPage.id) return;
       if (level && rule.level !== level) return;
       if (kind && rule.kind !== kind) return;
       if (aiProne !== undefined && rule.aiProne !== aiProne) return;

@@ -39,6 +39,7 @@ const INSTRUCTIONS = `「CSSコーディングガイドライン」（v${guideli
 - 書いた後とレビューでは lint_css で検査します。lint で検出できるのはルールの一部（${lintedRuleCount}件）なので、通ってもルールの確認は省けません。
 - 判断の根拠には、ルールのID（例: query-range-syntax）を添えてください。強度は「必須」「推奨」「非推奨」「禁止」の4段階で、「必須」と「禁止」は、補足に書いた適用範囲と例外を除いて必ず守ります。
 - プロジェクトに独自の規約があれば、そちらを優先し、本書のルールと違う点は「食い違い」として示します。
+- レビューは、本文を通読する「読む係」（軽いモデル）と、ルールと照合して判断する「判断する係」（高性能なモデル）に分けられます。ユーザーやプロジェクトがモデルを指定していれば、それに従います。判断する係は、search_rules に page と detail: true を渡して、読む係のチェック表に欠けがないかを確かめます。
 - スキル css-coding-guideline があれば、その「レビューするとき」の手順に従ってください。`;
 
 const formatChars = (chars) => `約${chars.toLocaleString('ja-JP')}字`;
@@ -51,13 +52,15 @@ const server = () => {
     {
       title: 'ルールを探す',
       description:
-        'CSSコーディングガイドラインのルールを、語句、章、強度、性質、AIが誤りやすいかで絞り込みます。語句は空白で区切るとすべてを含むものに絞り、ルールのID、本文、理由、補足、掲載ページのタイトルから探します。結果はルールの1行の要約で、理由は get_rule で引きます。',
+        'CSSコーディングガイドラインのルールを、語句、章、節、強度、性質、AIが誤りやすいかで絞り込みます。語句は空白で区切るとすべてを含むものに絞り、ルールのID、本文、理由、補足、掲載ページのタイトルから探します。結果は既定ではルールの1行の要約で、detail: true で理由と補足まで返します。節や章のルールを漏れなく読むときは、page か chapter に detail: true と limit: 200 を組み合わせます。',
       inputSchema: z.object({
         query: z.string().optional().describe('探す語句（例: "コンテナ クエリ"、"vh"、"focus"）。空白区切りはAND。'),
         chapter: z
           .union([z.number().int(), z.string()])
           .optional()
           .describe('章の番号（13）かディレクトリ名（responsive）。list_chapters で確かめられる。'),
+        page: z.string().optional().describe('節のページID（例: responsive/media-queries）。その節に載っているルールだけにする。'),
+        detail: z.boolean().optional().describe('true で、理由、補足、自動チェック、掲載ページまで返す。'),
         level: z.enum(LEVELS).optional().describe('強度'),
         kind: z
           .enum(['spec', 'judgment', 'convention'])
@@ -74,8 +77,8 @@ const server = () => {
       if (result.total === 0) {
         return text('当てはまるルールはありません。語句を減らすか、短い語句（例: 「コンテナ」）に変えてください。');
       }
-      const lines = result.rules.map(
-        (rule) => `- ${headline(rule)} — ${rule.pageTitle}${rule.aiProne ? '（AIが誤りやすい）' : ''}`,
+      const lines = result.rules.map((rule) =>
+        input.detail ? formatRule(rule) : `- ${headline(rule)} — ${rule.pageTitle}${rule.aiProne ? '（AIが誤りやすい）' : ''}`,
       );
       const more = result.total > result.rules.length ? `\n\n残りの ${result.total - result.rules.length} 件は、limit を増やすか条件を足して絞ってください。` : '';
       return text(`${result.total} 件中 ${result.rules.length} 件\n\n${lines.join('\n')}${more}`);

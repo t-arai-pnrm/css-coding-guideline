@@ -57,6 +57,11 @@ try {
   await call('search_rules', { query: 'コンテナ', aiProne: true, limit: 5 }, { expect: /件中/ });
   await call('search_rules', { chapter: 13, level: '必須', limit: 3 }, { expect: /件中/ });
   await call('search_rules', { chapter: 'nothing' }, { expectError: true });
+  await call(
+    'search_rules',
+    { page: 'responsive/media-queries', detail: true, limit: 200 },
+    { expect: /件中[\s\S]*理由: [\s\S]*掲載: 13-5 メディアクエリ/ },
+  );
   await call('get_rule', { ids: ['query-range-syntax', 'no-vw-vh-typo'] }, { expect: /理由: .*\n[\s\S]*近いID/ });
   await call('get_page', { page: '13-5', heading: '範囲構文' }, { expect: /部分だけ[\s\S]*## 範囲構文で書く/ });
   await call(

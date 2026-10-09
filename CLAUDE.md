@@ -38,7 +38,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `src/lib/book.mjs`: 部と章の構成。サイドバーと生成スクリプトが使う。章の `review` は、AI がレビューで読む章を選ぶ条件（スキルと MCP に出る）。章で扱う話題を変えたら、これも直す。
 - `src/lib/site.mjs`: 公開先の URL。公開先を変えたら、ここを直して `pnpm gen:ai` を実行する。
 - `scripts/lib/guideline-data.mjs`: ルールと原稿を読み、AI 向けの形にする（MDX のコンポーネントを Markdown に置き換える）。新しいコンポーネントを原稿で使うときは、ここにも置き換え方を足す。
-- `plugin/`、`.claude-plugin/marketplace.json`: Claude Code のプラグインとスキル。`pnpm gen:ai` が生成するので、直接編集しない。
+- `plugin/`、`.claude-plugin/marketplace.json`: Claude Code のプラグインとスキル。レビューを分担するサブエージェントの定義（`plugin/agents/`、Codex 用は `plugin/codex/agents/`）も含む。どれも `pnpm gen:ai` が生成するので、直接編集しない（手順は `scripts/gen-ai.mjs` の `READER_BODY` と `JUDGE_BODY` にある）。定義にモデルは書かない。
 - `packages/mcp/`: npm に公開する MCP サーバー（`css-coding-guideline-mcp`）。版は本のバージョンと同じで、`.github/workflows/publish-mcp.yml` が、npm にまだない版を公開する（リポジトリの変数 `PUBLISH_MCP` が `true` のときだけ動く）。
 - `astro.config.mjs`: ルールへのリンク（`/<page>/#rule-<id>`）は、ルールの定義と照らして正しいものだけをリンク検証から外している。
 - `stylelint.config.mjs`、`stylelint/`: 本書の Stylelint 設定。本文で説明するルールと一致させる。
