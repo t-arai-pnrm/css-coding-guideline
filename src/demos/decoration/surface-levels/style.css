@@ -2,16 +2,16 @@
   @scope (.scoped.surface-demo) to (.scoped) {
     :scope {
       display: block grid;
-      gap: 24px;
+      gap: calc(var(--spacing--md) * 1px);
     }
 
-    ._label {
+    :is(p, li) {
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
     }
 
     ._card {
-      padding: 16px;
+      padding: calc(var(--spacing--sm) * 1px);
       border-radius: var(--rounded--lg);
       box-shadow: var(--shadow--sm);
       background-color: var(--background--surface);
@@ -19,26 +19,26 @@
 
     ._dialog {
       display: block grid;
-      gap: 16px;
-      padding: 24px;
+      gap: calc(var(--spacing--sm) * 1px);
+      padding: calc(var(--spacing--md) * 1px);
       border-radius: var(--rounded--lg);
       box-shadow: var(--shadow--xl);
       background-color: var(--background--overlay);
     }
 
-    ._menu {
+    ul {
       display: block grid;
       justify-self: start;
-      padding: 4px;
+      padding: calc(var(--spacing--xxxs) * 1px);
       border-radius: var(--rounded--lg);
       box-shadow: var(--shadow--lg);
       background-color: var(--background--raised);
+    }
 
-      & > * {
-        padding-block: 8px;
-        padding-inline: 12px;
-        border-radius: var(--rounded--md);
-      }
+    li {
+      padding-block: calc(var(--spacing--xxs) * 1px);
+      padding-inline: calc(var(--spacing--xs) * 1px);
+      border-radius: var(--rounded--md);
     }
   }
 }
