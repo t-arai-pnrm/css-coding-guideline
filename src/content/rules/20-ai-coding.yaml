@@ -1,0 +1,140 @@
+# 第20章 AIにコーディングさせる
+
+# 20-1 AIに任せる範囲と人が担う範囲
+- id: verify-ai-output
+  level: 必須
+  kind: judgment
+  rule: AI が生成した CSS は、Stylelint とレビューの両方で確かめてから採用する。
+  reason: Stylelint で検出できるのはルールの一部で、lint が通っても規約を守っているとは限らないため。
+  note: レビューでは、lint で検出できない「AI が誤りやすい」ルールを重点的に確かめます。
+  page: ai-coding/roles
+  since: 0.1.0
+
+# 20-2 AIに読ませる規約を用意する
+- id: ai-read-rules-first
+  level: 推奨
+  kind: judgment
+  rule: AI に CSS を書かせるときやレビューさせるときは、先に本書のルールを、スキルか MCP サーバーで読ませる。
+  reason: AI が誤りやすいルールを、書く前に確認させられるため。
+  note: Claude Code では本書のプラグインを入れ、ほかのツールではスキルと MCP サーバーを設定します。どちらも使えないツールでは、`AGENTS.md` からスキルのルール集の URL を参照させます（付録J「AIツールで使う」）。
+  page: ai-coding/setup
+  since: 0.1.0
+
+# 20-3 MCPサーバーを役割で使い分ける
+- id: no-verbatim-design-output
+  level: 禁止
+  kind: judgment
+  rule: Figma などのデザインツールが出力したコードの、Tailwind のクラス、絶対配置の座標、固定の幅と高さを、そのまま CSS に写さない。
+  reason: 出力はカンプの1つの幅と内容を再現した試作で、幅や内容が変わったときの振る舞いを含まず、プロジェクトのトークンと規約にも沿わないため。
+  note: 出力は、余白、文字の大きさ、色などの値と、要素の並び方を読み取るために使います。値はトークンに対応づけてから書きます（`figma-values-to-tokens`）。
+  aiProne: true
+  page: ai-coding/mcp-servers
+  since: 0.44.0
+
+- id: compare-at-design-width
+  level: 推奨
+  kind: judgment
+  rule: 実装をデザインと見比べるときは、デザインと同じ幅で撮ったスクリーンショットを並べる。
+  reason: 幅が違うと、折り返す位置やコンテナサイズクエリの状態が変わり、不具合ではない差と本当の差を見分けられないため。
+  note: スクリーンショットの一致は合否の基準にしません。カンプのない幅での振る舞いは、brief の完了条件で確かめます。
+  page: ai-coding/mcp-servers
+  since: 0.44.0
+
+# 20-4 タスクの単位で進める
+- id: no-guessing-missing-design
+  level: 必須
+  kind: judgment
+  rule: デザインと指示にない値や振る舞い（カンプのない幅、状態の見た目、内容が増えたときの見せ方）を、推測で作って完成として扱わない。
+  reason: 推測で作った見た目は、デザインの意図と食い違っていても確かめられないまま残り、後から作り直しになるため。
+  note: AI に書かせるときは、推測が要る点で作業を止めさせ、選択肢と推奨を示して確かめます。仮の値で書き進める場合は、報告に「未確認」として残します。
+  aiProne: true
+  page: ai-coding/tasks
+  since: 0.44.0
+
+# 20-5 Figmaのデザインから計画を立てる
+- id: figma-values-to-tokens
+  level: 推奨
+  kind: judgment
+  rule: デザインの値は、CSS を書く前にトークンに対応づけ、トークンに当たらない値は例外として理由とともに書き出す。
+  reason: カンプの値を1つずつ写すと、トークンと少しずつ違う値が増え、デザインの共通のルールがコードから読み取れなくなるため。
+  note: トークンに近いがずれる値は、どちらで書くかをデザイナーに確かめます。
+  aiProne: true
+  page: ai-coding/from-figma
+  since: 0.44.0
+
+- id: escalate-shared-changes
+  level: 推奨
+  kind: judgment
+  rule: AI に CSS を書かせるときは、トークン、ベーススタイル、レイヤーの順番、コンポジションのように全ページに及ぶ変更を、コンポーネントの中で閉じる変更と分け、着手する前に人が確かめる。
+  reason: 全ページに及ぶ変更は、対象のコンポーネントでは正しく見えても、ほかのページの表示を変えることがあり、コンポーネントの確認では見落とすため。
+  aiProne: true
+  page: ai-coding/from-figma
+  since: 0.44.0
+
+# 20-6 実装と検証を回す
+- id: verify-applied-styles
+  level: 推奨
+  kind: judgment
+  rule: lint とビルドが通っても、書いた宣言が適用されているかを、ブラウザの計算値で確かめる。
+  reason: 自分自身を問い合わせるスタイルクエリのように、構文が正しくても条件が成り立たず適用されない宣言は、lint では検出できないため。
+  note: '`getComputedStyle` で計算値を読むか、開発者ツールでどの宣言が勝ったかを確かめます。'
+  aiProne: true
+  page: ai-coding/implementation
+  since: 0.44.0
+
+- id: report-unverified-honestly
+  level: 必須
+  kind: judgment
+  rule: 実行していない検査と、人が判定する項目は、完了の報告で「未確認」と書き、「問題なし」と書かない。
+  reason: 未確認の項目が「問題なし」と報告されると、人が確かめる機会がなくなり、崩れが公開まで残るため。
+  aiProne: true
+  page: ai-coding/implementation
+  since: 0.44.0
+
+- id: no-baseline-update-to-pass
+  level: 禁止
+  kind: judgment
+  rule: VRT の基準画像を、差分の原因を確かめずに、テストを通すためだけに更新しない。
+  reason: 原因の分からない差分を基準画像に取り込むと、崩れが正しい表示として固定され、以後のテストで検出できなくなるため。
+  note: 基準画像を更新するのは、意図した変更で表示が変わったことを、変わった箇所ごとに確かめたときだけです。
+  aiProne: true
+  page: ai-coding/implementation
+  since: 0.44.0
+
+# 20-7 AIが誤りやすいパターン
+- id: verify-support-claims
+  level: 推奨
+  kind: judgment
+  rule: 「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。
+  reason: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
+  note: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
+  aiProne: true
+  page: ai-coding/pitfalls
+  since: 0.3.0
+
+- id: no-unrequested-css-framework
+  level: 推奨
+  kind: convention
+  rule: プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。
+  reason: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
+  note: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第10章のルール `utility-single-purpose`）。Vue の `<style scoped>` や Astro の `<style>` のように、フレームワークがスコープの仕組みを持つ場合は `@scope` だけをそれに置き換え、命名、レイヤー、コンテナ名の規約は残します。
+  aiProne: true
+  page: ai-coding/pitfalls
+  since: 0.3.0
+
+- id: ai-layout-with-grid-areas
+  level: 推奨
+  kind: judgment
+  rule: AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。
+  reason: '指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。'
+  page: ai-coding/pitfalls
+  since: 0.5.0
+
+# 20-8 生成したコードを確かめ、教訓を残す
+- id: record-ai-corrections
+  level: 推奨
+  kind: judgment
+  rule: AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。
+  reason: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
+  page: ai-coding/verify-output
+  since: 0.1.0

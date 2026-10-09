@@ -11,6 +11,32 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.44.0（2026年10月9日）
+
+第V部に第20章「[AIにコーディングさせる](/ai-coding/)」を加え、演習編を第21章に繰り下げました。ルールを追加したので、マイナーバージョンを上げています。
+
+- 第20章を加えました。AIに規約を読ませる準備、MCPサーバーの使い分け、人が書くbriefとAIが書くplanでタスクを進める方法、Figmaのデザインから計画を立てる方法、手順ごとの検証と完了の報告、生成したコードの確かめ方を扱います。
+- 第20章で使うひな形（タスクを進める4つのスキル、briefとplan、フック、`.mcp.json`、テストの例）を、[`/ai-coding-files/`](/ai-coding-files/README.md) に置きました。
+- 「19-2 レビューとAIとの協働」を「[19-2 レビューの進め方](/operations/review/)」に改め、URLを変えました。AIについての説明とルールは、第20章へ移しました。
+- 演習編の「[記事の一覧を作る](/exercise/)」を第21章にしました。URLは変わりません。
+- ルールを第20章へ移しました。ルールの内容は変えていません。
+  - [`verify-ai-output`](/ai-coding/roles/#rule-verify-ai-output)
+  - [`ai-read-rules-first`](/ai-coding/setup/#rule-ai-read-rules-first)
+  - [`verify-support-claims`](/ai-coding/pitfalls/#rule-verify-support-claims)
+  - [`no-unrequested-css-framework`](/ai-coding/pitfalls/#rule-no-unrequested-css-framework)
+  - [`ai-layout-with-grid-areas`](/ai-coding/pitfalls/#rule-ai-layout-with-grid-areas)
+  - [`record-ai-corrections`](/ai-coding/verify-output/#rule-record-ai-corrections)
+- ルールを加えました。
+  - [`no-verbatim-design-output`](/ai-coding/mcp-servers/#rule-no-verbatim-design-output)：デザインツールが出力したクラス、絶対配置の座標、固定の幅と高さを、そのまま写さない
+  - [`compare-at-design-width`](/ai-coding/mcp-servers/#rule-compare-at-design-width)：デザインと見比べるときは、同じ幅で撮ったスクリーンショットを並べる
+  - [`no-guessing-missing-design`](/ai-coding/tasks/#rule-no-guessing-missing-design)：デザインと指示にない値や振る舞いを、推測で作って完成として扱わない
+  - [`figma-values-to-tokens`](/ai-coding/from-figma/#rule-figma-values-to-tokens)：デザインの値は、書く前にトークンに対応づけ、当たらない値は例外として書き出す
+  - [`escalate-shared-changes`](/ai-coding/from-figma/#rule-escalate-shared-changes)：全ページに及ぶ変更は、コンポーネントの変更と分け、着手する前に人が確かめる
+  - [`verify-applied-styles`](/ai-coding/implementation/#rule-verify-applied-styles)：lintとビルドが通っても、宣言が適用されているかを計算値で確かめる
+  - [`report-unverified-honestly`](/ai-coding/implementation/#rule-report-unverified-honestly)：実行していない検査と、人が判定する項目は「未確認」と報告する
+  - [`no-baseline-update-to-pass`](/ai-coding/implementation/#rule-no-baseline-update-to-pass)：VRTの基準画像を、差分の原因を確かめずに更新しない
+- スキルの書く手順に、Figmaのデザインから書くときは20-5と20-6を読むこと、ブラウザで確かめていない項目を「未確認」と返答に書くことを加えました。
+
 ## 0.43.3（2026年10月9日）
 
 付録Jに注意書きを加えました。ルールは変えていないので、パッチバージョンを上げています。
@@ -31,7 +57,7 @@ AIによるレビューで、本文の通読と判断を、別々のサブエー
 AIにレビューさせるときの手順を直しました。ルールは変えていないので、パッチバージョンを上げています。
 
 - スキルとMCPサーバーで、レビューの前に関係する章を通読させるようにしました。章ごとに読む条件を付け、読んだ節を読了表に記録させます。サブエージェントに分担させたときは、返ってきた指摘をルールの補足まで照合してから報告させます。
-- 「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」に、通読させてから指摘させる理由を書きました。
+- 「[19-2 レビューとAIとの協働](/ai-coding/verify-output/)」に、通読させてから指摘させる理由を書きました。
 
 ## 0.43.0（2026年10月8日）
 
@@ -41,8 +67,8 @@ AIにレビューさせるときの手順を直しました。ルールは変え
 - スキルを作り直しました。最初に読む `SKILL.md` には手順と章の索引だけを置き、ルールは章ごとのファイルに分けています。各ルールの詳細は、公開しているページのURLで示します。
 - 本文をAIに読ませるための `llms.txt`、`llms-full.txt`、`llms-small.txt` を公開しました。
 - ルールを変えました。
-  - [`ai-read-rules-first`](/operations/review-and-ai/#rule-ai-read-rules-first)：読ませる手段を「ルール集（またはスキル）」から「スキルかMCPサーバー」にし、補足の設定方法を付録Jに合わせました。
-- 「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」の配布物の説明を、付録Jへの案内と、AIにさせることの説明に絞りました。
+  - [`ai-read-rules-first`](/ai-coding/setup/#rule-ai-read-rules-first)：読ませる手段を「ルール集（またはスキル）」から「スキルかMCPサーバー」にし、補足の設定方法を付録Jに合わせました。
+- 「[19-2 レビューとAIとの協働](/ai-coding/setup/)」の配布物の説明を、付録Jへの案内と、AIにさせることの説明に絞りました。
 
 ## 0.42.3（2026年10月8日）
 
@@ -216,7 +242,7 @@ AIにレビューさせるときの手順を直しました。ルールは変え
 前から順に読んだときに同じ説明が繰り返されないように、複数の章に出てくる主張を整理しました。コード例のタイトルも、判断が分かる言葉に直しています。文章の構成を変えたので、マイナーバージョンを上げています。ルールは変えていません。
 
 - 「内容は変わる」「保守しやすさを優先する」「AIの出力を検証する」「CSSはブラウザへの提案である」などの主張について、論証を1つのページにまとめ、ほかのページでは一文の要約とリンクにするか、そのページが担う役割に絞りました。
-  - 内容が変わる前提は「[2-2 CSSで考えるための6つの視点](/design-mindset/css-mindset/)」に、保守しやすさを優先する理由は「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/)」に、AIに任せる範囲は「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」にまとめました。
+  - 内容が変わる前提は「[2-2 CSSで考えるための6つの視点](/design-mindset/css-mindset/)」に、保守しやすさを優先する理由は「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/)」に、AIに任せる範囲は「[19-2 レビューとAIとの協働](/ai-coding/roles/)」にまとめました。
   - 第11章の概要は、内容の変化を種類ごとにどの節で扱うかを示す役割にしました。
   - 1-1にあった、手動の改行と、2つの幅の比率で拡大・縮小する依頼の段落を、「[3-2 実装の前にデザイナーと確かめること](/design-reproduction/designer-questions/)」へ移しました。カンプを重ねて確かめる道具の段落は、「[3-1 ピクセルではなく意図を再現する](/design-reproduction/intent/)」へ移しました。
 - コード例37件のタイトルを、何が問題か、何を解決したかが分かる言葉に直しました。
@@ -277,12 +303,12 @@ AIにレビューさせるときの手順を直しました。ルールは変え
 
 「はじめに」のページを、本編に入る前の読者に合わせて絞り込み、詳しい比較を付録に移しました。付録を加えたので、マイナーバージョンを上げています。ルールは変えていません。
 
-- 「[はじめに](/introduction/preface/)」：実務の困りごと、本書の方針、読み終えたときにできること、CSSを取り巻く環境の変化の順に組み直しました。AIに丸投げしない理由は「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」へ移しました。
+- 「[はじめに](/introduction/preface/)」：実務の困りごと、本書の方針、読み終えたときにできること、CSSを取り巻く環境の変化の順に組み直しました。AIに丸投げしない理由は「[19-2 レビューとAIとの協働](/ai-coding/roles/)」へ移しました。
 - 「[本書について](/introduction/about/)」：読み終えて判断できるようになることと、それを各部で身につける流れを加えました。ルールの性質の説明を、3つの性質に合わせて改めました。
 - 「[素のCSSで書く理由](/introduction/why-plain-css/)」：静的なサイトとCMSで同じ書き方を使えること、どの道具を使う現場でも役に立つ知識であること、採用していない道具は持ち込まないことの3点に絞りました。
 - 付録H「[CSS-in-JSと素のCSSの比較](/appendix/css-in-js/)」を加えました。「素のCSSで書く理由」にあったStyleXの仕組み、型安全性、スコープ、公開プロパティ、見た目のロジックの分担の比較を移しています。
 - 「[最小の構成で始める](/introduction/quick-start/)」：前半を「カードを表示する」「見出しの色を1つ変える」の2つの課題にし、レイヤーやトークンの構成の説明は、本編を読んだ後に戻る後半へまとめました。
-- 「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」：AIに任せる範囲と、人が担う範囲を説明する見出しを加えました。
+- 「[19-2 レビューとAIとの協働](/ai-coding/roles/)」：AIに任せる範囲と、人が担う範囲を説明する見出しを加えました。
 
 ## 0.29.0（2026年10月7日）
 
@@ -1060,7 +1086,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - 「[10-2 強制カラーモードとコントラスト](/color-media/forced-colors/)」「[10-3 画像と装飾](/decoration/icons-and-masks/)」：寸法を持つ擬似要素に `display` を加え、単独で写しても描けるようにしました。
   - 「[11-1 状態とフォーカスを表す](/interaction/states-and-focus/)」：`:focus-visible` はキーボードの操作に限らないことを説明しました。
   - 「[7-13 コンポジション集](/compositions/)」：CMSの本文の中では `stack` と `prose` を使わず、`wysiwyg` を使うことに統一しました。
-  - 「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」：スキルを登録する前に、自分の環境で `pnpm gen:ai` を実行する手順を加えました。
+  - 「[12-2 レビューとAIとの協働](/ai-coding/setup/)」：スキルを登録する前に、自分の環境で `pnpm gen:ai` を実行する手順を加えました。
   - 第12章の概要に12-3を加え、サイドバーの順番を節の番号にそろえました。
   - 第2章のカスケードの説明（`all`、`!important` とトランジション、`revert` の戻り先）を、仕様に合わせて正確にしました。
   - `rlh` の基準、マージンの相殺、段組みの切れ目、絶対配置とFlexboxの幅、`cubic-bezier()` の行き過ぎの説明を、仕様に合わせて正確にしました。
@@ -1088,7 +1114,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - 「[8-3 メディアクエリとブレイクポイント](/responsive/media-queries/)」：`prefers-reduced-transparency`
   - 「[10-1 色とダークモード](/color-media/color/)」：`alpha()` 関数
   - 「[11-2 モーションを実装する](/motion/scroll-driven/)」：`timeline-trigger` と `animation-trigger` の位置づけ
-  - 「[12-2 レビューとAIとの協働](/operations/review-and-ai/)」：AIのレイアウトの手法の偏りと、その指示の仕方
+  - 「[12-2 レビューとAIとの協働](/ai-coding/pitfalls/)」：AIのレイアウトの手法の偏りと、その指示の仕方
 - 第7章の先頭に「[7-1 レイアウトの基礎](/layout/fundamentals/)」を加え、既存の7-1〜7-11を7-6〜7-12に繰り下げました。通常フローの2つの方向、`display` の外側と内側、包含ブロック、インラインの行とベースライン、配置の方式、`align-items` と `align-content` の違いを説明しています。
 - 第7章に、基礎の節を4つと、スクロールの節を1つ加えました。第7章の節の番号は、これに合わせて繰り下げています。
   - 「[7-2 ボックスモデルの基礎](/layout/box-model/)」：4つの領域、`box-sizing`、大きさの決まり方、`%` の基準
@@ -1138,7 +1164,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`carousel-controls-in-supports`](/interaction/carousel/#rule-carousel-controls-in-supports)
   - [`carousel-inert-unsnapped`](/interaction/carousel/#rule-carousel-inert-unsnapped)
   - [`inert-attribute-for-background`](/interaction/disclosure/#rule-inert-attribute-for-background)
-  - [`ai-layout-with-grid-areas`](/operations/review-and-ai/#rule-ai-layout-with-grid-areas)
+  - [`ai-layout-with-grid-areas`](/ai-coding/pitfalls/#rule-ai-layout-with-grid-areas)
   - [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)
   - [`no-inline-block-for-rows`](/layout/normal-flow/#rule-no-inline-block-for-rows)
   - [`fallback-method-by-invalidation`](/principles/browser-support/#rule-fallback-method-by-invalidation)
@@ -1264,8 +1290,8 @@ CSSの新しい仕様と注意点を、各章に加えました。話題は外�
   - [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：モーダルの中のスクロールの連鎖を止める
   - [`view-transition-name-unique`](/motion/view-transitions/#rule-view-transition-name-unique)：同じ `view-transition-name` を複数の要素に付けない
   - [`view-transition-match-element`](/motion/view-transitions/#rule-view-transition-match-element)：並んだ要素には `match-element` を使う
-  - [`verify-support-claims`](/operations/review-and-ai/#rule-verify-support-claims)：「未対応」という判断は対応状況を確かめてから受け入れる
-  - [`no-unrequested-css-framework`](/operations/review-and-ai/#rule-no-unrequested-css-framework)：採用していないCSSフレームワークを持ち込まない
+  - [`verify-support-claims`](/ai-coding/pitfalls/#rule-verify-support-claims)：「未対応」という判断は対応状況を確かめてから受け入れる
+  - [`no-unrequested-css-framework`](/ai-coding/pitfalls/#rule-no-unrequested-css-framework)：採用していないCSSフレームワークを持ち込まない
 - ルールを一時的に17件外しました。WordPressに関するルール16件（`cms-*`、`content-area-*`、`block-style-*` など）と、`token-size-names-without-digits` です。後者は、理由がWordPressの `theme.json` だけでした。
 - z-indexの数値は、1と-1も書かずに `--z--forwards` と `--z--backwards` を使うことにしました。本書のStylelintの設定も、すべての整数を警告するように変えました。
 - 「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」で目指すものを、登壇資料どおり「合意点」から「合格点」に直しました。

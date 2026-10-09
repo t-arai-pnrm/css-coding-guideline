@@ -237,7 +237,9 @@ const mdxBodyToMarkdown = (body, context) => {
       .replace(/\]\((\/[^)\s]*)\)/g, (_, path) => {
         const [pathname, hash = ''] = path.split('#');
         const id = pathname.replace(/^\/|\/$/g, '');
-        return `](${pageUrl(id)}${hash ? `#${hash}` : ''})`;
+        // 配布ファイル（/exercise-files/…/index.html など）は、ページではないので末尾に / を付けない
+        const url = /\.\w+$/.test(id) ? pageUrl('').concat(id) : pageUrl(id);
+        return `](${url}${hash ? `#${hash}` : ''})`;
       });
     return replaced.replace(/\u0000(\d+)\u0000/g, (_, index) => codes[Number(index)]);
   })

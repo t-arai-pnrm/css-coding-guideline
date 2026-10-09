@@ -1,8 +1,8 @@
 # 第19章 実務での運用：ルール
 
-- ガイドラインのバージョン: 0.43.3（2026-10-09 生成）
-- ルールの数: 33
-- 本文: 約6.7万字
+- ガイドラインのバージョン: 0.44.0（2026-10-09 生成）
+- ルールの数: 27
+- 本文: 約5.8万字
 - 読む条件: Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,8 +14,8 @@
 
 - `operations` 第19章 実務での運用（約3,200字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/
 - `operations/stylelint` 19-1 Stylelintでルールを守る（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/stylelint/
-- `operations/review-and-ai` 19-2 レビューとAIとの協働（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/
-- `operations/verification` 19-3 表示と操作を確かめる（約8,700字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/verification/
+- `operations/review` 19-2 レビューの進め方（約4,700字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/
+- `operations/verification` 19-3 表示と操作を確かめる（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/verification/
 - `operations/devtools` 19-4 表示の崩れを開発者ツールで調べる（約9,200字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/devtools/
 - `operations/wysiwyg` 19-5 CMSのWYSIWYG本文にスタイルを当てる（約8,400字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/wysiwyg/
 - `operations/adoption` 19-6 既存のサイトに段階的に導入する（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/adoption/
@@ -53,54 +53,32 @@ https://t-arai-pnrm.github.io/css-coding-guideline/operations/stylelint/
   - 理由: コード例が自分のルールに違反していると、ドキュメントが信用されず、AI にもそのまま手本として真似されるため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/stylelint/#rule-lint-documented-examples
 
-## 19-2 レビューとAIとの協働
+## 19-2 レビューの進め方
 
-https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/
+https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/
 
 - 【必須・実装上の判断】レビューの指摘には、理由と解決策を必ずセットで書く。（`review-reason-and-solution`）
   - 理由: 何が問題で、どう直せばよいかが伝わらないと、書いた人が調べ直すことになり、同じ誤りを繰り返すため。
   - 補足: 本書のルールに当てはまる指摘には、ルールの ID を添えます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-review-reason-and-solution
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/#rule-review-reason-and-solution
 - 【推奨・本書の規約】レビューの指摘には `MUST`、`IMO`、`Q` のラベルを付けて、深刻度を区別する。（`review-severity-labels`）
   - 理由: 直さなければならない指摘と、好みの提案と、質問が混ざらないようにするため。
   - 補足: `MUST` は、仕様や規約への違反、バグ、将来の深刻な問題、使いやすさやアクセシビリティの阻害です。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-review-severity-labels
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/#rule-review-severity-labels
 - 【推奨・実装上の判断】挙動に問題がなく、合意のない好みが入る指摘は `IMO` にとどめ、修正を強制しない。（`review-preferences-as-imo`）
   - 理由: 教義的なレビューは、ユーザーやクライアントのメリットにならない修正を増やすため。
   - 補足: 規約として合意したルールへの違反は、`MUST` として指摘します。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-review-preferences-as-imo
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/#rule-review-preferences-as-imo
 - 【推奨・実装上の判断】意図が読み取れない記述は、誤りと決めつけずに `Q` で質問する。（`review-ask-unclear-intent`）
   - 理由: 書いた人にしか分からない事情がある場合があり、理由が分かればコメントとして残せるため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-review-ask-unclear-intent
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/#rule-review-ask-unclear-intent
 - 【推奨・本書の規約】レビューは、規約、トークン、ブラウザ対応、不要な記述、グローバルの CSS、内容の変化への耐性、コンポーネントの境界、レスポンシブ、コメントの順に確認する。（`review-check-order`）
   - 理由: 影響の大きい問題から確かめ、細部の指摘に埋もれて重大な問題を見逃すのを防ぐため。
   - 補足: インデントや並び順のような整形は、ツールが機能していないときだけ指摘します。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-review-check-order
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/#rule-review-check-order
 - 【推奨・本書の規約】レビューのコメントと AI への指示では、ルールを ID で引用する（例：`no-vw-vh`）。（`cite-rule-ids`）
   - 理由: ID は章の構成が変わっても変わらず、どのルールのことかが正確に伝わるため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-cite-rule-ids
-- 【推奨・実装上の判断】AI に CSS を書かせるときやレビューさせるときは、先に本書のルールを、スキルか MCP サーバーで読ませる。（`ai-read-rules-first`）
-  - 理由: AI が誤りやすいルールを、書く前に確認させられるため。
-  - 補足: Claude Code では本書のプラグインを入れ、ほかのツールではスキルと MCP サーバーを設定します。どちらも使えないツールでは、`AGENTS.md` からスキルのルール集の URL を参照させます（付録J「AIツールで使う」）。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-ai-read-rules-first
-- 【必須・実装上の判断】AI が生成した CSS は、Stylelint とレビューの両方で確かめてから採用する。（`verify-ai-output`）
-  - 理由: Stylelint で検出できるのはルールの一部で、lint が通っても規約を守っているとは限らないため。
-  - 補足: レビューでは、lint で検出できない「AI が誤りやすい」ルールを重点的に確かめます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-verify-ai-output
-- 【推奨・実装上の判断】AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。（`record-ai-corrections`）
-  - 理由: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-record-ai-corrections
-- 【推奨・実装上の判断】「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。（`verify-support-claims`）
-  - 理由: AI の知識は学習した時点で止まっていて、`@scope`、アンカーポジショニング、View Transitions のように対応が進んだ機能を、未対応とみなすことがあるため。
-  - 補足: 対象の一部のブラウザが未対応でも、未対応の環境向けの表示を CSS で用意すれば、プログレッシブ・エンハンスメントとして使えます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-verify-support-claims
-- 【推奨・本書の規約】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
-  - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
-  - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第10章のルール `utility-single-purpose`）。Vue の `<style scoped>` や Astro の `<style>` のように、フレームワークがスコープの仕組みを持つ場合は `@scope` だけをそれに置き換え、命名、レイヤー、コンテナ名の規約は残します。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-no-unrequested-css-framework
-- 【推奨・実装上の判断】AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。（`ai-layout-with-grid-areas`）
-  - 理由: 指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review-and-ai/#rule-ai-layout-with-grid-areas
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/#rule-cite-rule-ids
 
 ## 19-3 表示と操作を確かめる
 

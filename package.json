@@ -1,7 +1,7 @@
 {
   "name": "css-coding-guideline",
   "type": "module",
-  "version": "0.43.3",
+  "version": "0.44.0",
   "private": true,
   "description": "CSSコーディングガイドライン（Astro Starlight）",
   "author": "TAK",
@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "check:mdx": "node scripts/check-mdx.mjs",
-    "gen:ai": "node scripts/gen-ai.mjs",
+    "gen:ai": "node scripts/gen-ai.mjs && node scripts/gen-ai-coding-kit.mjs",
+    "gen:ai-kit": "node scripts/gen-ai-coding-kit.mjs",
     "gen:exercise": "node scripts/gen-exercise-files.mjs",
     "lint": "pnpm lint:css && pnpm lint:examples && pnpm lint:text",
     "lint:css": "stylelint 'src/**/*.{css,astro}'",

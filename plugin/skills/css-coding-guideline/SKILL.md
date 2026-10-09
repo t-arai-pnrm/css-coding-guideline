@@ -6,8 +6,8 @@ license: CC-BY-4.0
 
 # CSSコーディングガイドライン Skill
 
-- ガイドラインのバージョン: 0.43.3（2026-10-09 生成）
-- ルールの数: 586（うち AI が誤りやすいもの 280）
+- ガイドラインのバージョン: 0.44.0（2026-10-09 生成）
+- ルールの数: 594（うち AI が誤りやすいもの 287）
 - 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
 
 ## 基本原則
@@ -40,6 +40,8 @@ license: CC-BY-4.0
 
 「章の索引」の読む条件から、書く内容に関係する章を選び、その章のルール（`references/<章>.md`）を読む。書く内容に直接関わる節は、本文を全文で読む。
 
+Figma などのデザインツールのデザインから書くときは、「20-5 Figmaのデザインから計画を立てる」（`ai-coding/from-figma`）と「20-6 実装と検証を回す」（`ai-coding/implementation`）も全文で読む。デザインの値は、書く前にトークンに対応づける。
+
 ### Step 3: 書く
 
 ルールに従って書く。ガイドラインに書かれていない判断をしたときは、その旨を明示する。
@@ -50,7 +52,7 @@ license: CC-BY-4.0
 - [ ] 「必須」と「禁止」のルールに違反していないか
 - [ ] 本書の Stylelint の設定で検出できる違反が残っていないか（MCP の `lint_css`）。lint で検出できるルールは一部なので、通っても Step 1 と Step 2 の確認は省かない
 
-返答には、1. ガイドラインに沿ったコード、2. 判断の根拠にしたルールの ID、3. ガイドラインに書かれていない判断をした箇所、を書く。
+返答には、1. ガイドラインに沿ったコード、2. 判断の根拠にしたルールの ID、3. ガイドラインに書かれていない判断をした箇所、4. ブラウザで確かめていない項目（「未確認」と書き、「問題なし」と書かない）、を書く。
 
 ## レビューするとき
 
@@ -114,7 +116,8 @@ license: CC-BY-4.0
 | 第16章 画像・装飾 | `references/16-decoration.md` | 32 | 約14.2万字 | 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷 |
 | 第17章 インタラクション | `references/17-interaction.md` | 39 | 約11.5万字 | ホバー、フォーカス、状態の表示、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル |
 | 第18章 モーション | `references/18-motion.md` | 31 | 約16.1万字 | transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions |
-| 第19章 実務での運用 | `references/19-operations.md` | 33 | 約6.7万字 | Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入 |
+| 第19章 実務での運用 | `references/19-operations.md` | 27 | 約5.8万字 | Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入 |
+| 第20章 AIにコーディングさせる | `references/20-ai-coding.md` | 14 | 約6.3万字 | AIが書いたCSS、Figmaなどのデザインツールから書いたCSS |
 
 ## トークンの例
 

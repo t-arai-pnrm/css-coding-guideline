@@ -1,5 +1,5 @@
 ---
-title: "20-6 カード全体を押せるようにする"
+title: "21-6 カード全体を押せるようにする"
 description: "カードのどこを押しても記事へ移動できるようにし、ホバーとフォーカスの見た目を足します。タグを押せるまま、マウスとキーボードのどちらでも記事へ移動できる合図が出るかを確かめる節です。"
 sidebar:
   order: 6
@@ -11,7 +11,7 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 カードのどこを押しても、記事へ移動できるようにする要件が加わります。ホバーとフォーカスのときは、見出しに下線を出し、画像を少し明るくして（`filter: brightness(1.08)`）、キーボードで操作したときはカード全体にフォーカスリングを出します。タグは、これまでどおり、それぞれのタグのページへのリンクとして押せるままにします。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/content-changes/index.html)、[article.html](/exercise-files/content-changes/article.html)）から始め、完成版（[index.html](/exercise-files/clickable-card/index.html)、[article.html](/exercise-files/clickable-card/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/content-changes/index.html)、[article.html](/exercise-files/content-changes/article.html)）から始め、完成版（[index.html](/exercise-files/clickable-card/index.html)、[article.html](/exercise-files/clickable-card/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[21-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
 
 ## 予想する
 
@@ -23,7 +23,7 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 次のデモが、この節を終えた時点の記事ページです。
 
-<Demo scheme="light" title="20-6を終えた時点：カードのどこを押しても記事へ移動し、タグはそれぞれ押せる" html={clickableCardHtml} css={clickableCardCss} />
+<Demo scheme="light" title="21-6を終えた時点：カードのどこを押しても記事へ移動し、タグはそれぞれ押せる" html={clickableCardHtml} css={clickableCardCss} />
 
 画像、見出し、日付、抜粋など、カードのどこにポインターを置いても、見出しに下線が付き、画像が少し明るくなります。タグにポインターを置いたときは、見出しの下線も画像の変化も出ません。
 
@@ -117,7 +117,7 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 ## 見出しの下線と画像の明るさ
 
-「[20-2 カードを作る](/exercise/card/)」では、見出しのリンクの色を見出しから継承させただけで、下線はkiso.cssが消したままにしていました。カード全体を押せるようになったので、ホバーとフォーカスのときだけ見出しに下線を出し、カードを押せば記事へ移動するという合図にします。
+「[21-2 カードを作る](/exercise/card/)」では、見出しのリンクの色を見出しから継承させただけで、下線はkiso.cssが消したままにしていました。カード全体を押せるようになったので、ホバーとフォーカスのときだけ見出しに下線を出し、カードを押せば記事へ移動するという合図にします。
 
 ```css title="🙆‍♂ Recommended: 見出しの下線と画像の明るさを、--_has-hocus で切り替える"
 @scope (.scoped.article-card) to (.scoped) {
@@ -188,7 +188,7 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 直したのは、カードの `article-card.css` だけです。見出しのリンクの `::after` をカードいっぱいに広げ、タグのリンクを `z-index` で手前に出しました。ルートでは `--_has-hocus` のフラグとフォーカスリングを足し、見出しのリンクと画像はそのフラグを問い合わせて下線と明るさを切り替えます。
 
-HTMLは1行も変えていません。`article-list.css`、`compositions.css`、置く側のページの `page-top.css` と `page-article.css` も変えていません。カードの中でも、20-4の `--_density` のフラグと、「[20-5 内容の変化に耐える](/exercise/content-changes/)」で足した画像がないときのルールはそのままです（「[20-4 サイドバーにも置く](/exercise/sidebar/)」）。`--_density` は置かれた幅、`--_has-hocus` は操作の状態という独立した軸なので、2つのフラグを組み合わせても、どちらの書き方も変えずに済みます。画像のない記事では、ホバーしたときに見出しの下線だけが出ます。
+HTMLは1行も変えていません。`article-list.css`、`compositions.css`、置く側のページの `page-top.css` と `page-article.css` も変えていません。カードの中でも、21-4の `--_density` のフラグと、「[21-5 内容の変化に耐える](/exercise/content-changes/)」で足した画像がないときのルールはそのままです（「[21-4 サイドバーにも置く](/exercise/sidebar/)」）。`--_density` は置かれた幅、`--_has-hocus` は操作の状態という独立した軸なので、2つのフラグを組み合わせても、どちらの書き方も変えずに済みます。画像のない記事では、ホバーしたときに見出しの下線だけが出ます。
 
 予想と見比べたら、自分の変更を次の3つの点で見直します。
 

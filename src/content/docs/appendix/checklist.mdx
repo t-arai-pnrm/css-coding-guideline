@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[19-2 レビューとAIとの協働](/operations/review-and-ai/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
+この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「[19-2 レビューの進め方](/operations/review/)」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。
 
 各項目には、関係するルールのIDを添えています。指摘するときは、IDを引用すると、理由と詳しい説明をすぐに示せます。項目に当てはまらない記述でも、意図が読み取れないものは誤りと決めつけずに `Q` で質問します。反対に、プロジェクトで合意していない規約を求める指摘は `IMO` にとどめます。
 
@@ -19,15 +19,15 @@ sidebar:
 - [ ] エラーや警告を消すためだけに、ルールを無効にしていないか（[`no-disabling-to-silence`](/operations/stylelint/#rule-no-disabling-to-silence)）
 - [ ] ルールを無効にする場合は、1行と1つのルールに絞り、理由を書いているか（[`disable-one-line-with-reason`](/operations/stylelint/#rule-disable-one-line-with-reason)）
 - [ ] 警告を放置していないか（[`resolve-warnings`](/operations/stylelint/#rule-resolve-warnings)）
-- [ ] AIが生成したCSSを、lintとレビューの両方で確かめたか（[`verify-ai-output`](/operations/review-and-ai/#rule-verify-ai-output)）
+- [ ] AIが生成したCSSを、lintとレビューの両方で確かめたか（[`verify-ai-output`](/ai-coding/roles/#rule-verify-ai-output)）
 
 ## 指摘の書き方
 
-- [ ] 指摘に、理由と解決策をセットで書いているか（[`review-reason-and-solution`](/operations/review-and-ai/#rule-review-reason-and-solution)）
-- [ ] `MUST`、`IMO`、`Q` のラベルで深刻度を分けているか（[`review-severity-labels`](/operations/review-and-ai/#rule-review-severity-labels)）
-- [ ] 合意のない好みの指摘を、`IMO` にとどめているか（[`review-preferences-as-imo`](/operations/review-and-ai/#rule-review-preferences-as-imo)）
-- [ ] 意図が読み取れない記述を、`Q` で質問しているか（[`review-ask-unclear-intent`](/operations/review-and-ai/#rule-review-ask-unclear-intent)）
-- [ ] 本書のルールに関わる指摘で、ルールのIDを添えているか（[`cite-rule-ids`](/operations/review-and-ai/#rule-cite-rule-ids)）
+- [ ] 指摘に、理由と解決策をセットで書いているか（[`review-reason-and-solution`](/operations/review/#rule-review-reason-and-solution)）
+- [ ] `MUST`、`IMO`、`Q` のラベルで深刻度を分けているか（[`review-severity-labels`](/operations/review/#rule-review-severity-labels)）
+- [ ] 合意のない好みの指摘を、`IMO` にとどめているか（[`review-preferences-as-imo`](/operations/review/#rule-review-preferences-as-imo)）
+- [ ] 意図が読み取れない記述を、`Q` で質問しているか（[`review-ask-unclear-intent`](/operations/review/#rule-review-ask-unclear-intent)）
+- [ ] 本書のルールに関わる指摘で、ルールのIDを添えているか（[`cite-rule-ids`](/operations/review/#rule-cite-rule-ids)）
 
 `MUST` は、仕様やコーディング規約に反するもの、バグが起きているもの、将来深刻な問題になりそうなもの、使いやすさやアクセシビリティを損なうものに付けます。レビューを通したコードには、レビュアーも責任を負います。承認するときは、自分が書いたコードと同じ基準で見ます。
 
@@ -208,4 +208,4 @@ AIが生成したCSSでは、Stylelintで検出できない誤りが残りやす
 - [ ] 上書きが効かない原因を調べずに足した `!important` がないか（[`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)）
 - [ ] `._list` や `._link` のように、要素の種類を言い換えただけの子クラスをすべての要素に付けていないか（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）
 - [ ] 宣言を1つずつ言い換えたコメントが付いていないか（[`comments-why-only`](/notation/comments/#rule-comments-why-only)）
-- [ ] AIの出力を直した内容を、プロジェクトの規約の文書に書き足したか（[`record-ai-corrections`](/operations/review-and-ai/#rule-record-ai-corrections)）
+- [ ] AIの出力を直した内容を、プロジェクトの規約の文書に書き足したか（[`record-ai-corrections`](/ai-coding/verify-output/#rule-record-ai-corrections)）

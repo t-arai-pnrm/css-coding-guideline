@@ -10,10 +10,11 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `pnpm lint:examples`: 原稿の 🙆‍♂ Recommended の CSS コード例を Stylelint で検証する。
 - `pnpm lint:text`: 原稿を textlint で検証する。
 - `pnpm list:markers`: 刊行前に解消する印（`要確認`、`要検証`）を種類ごとに一覧にする。`--summary` で件数だけを出す。
-- `pnpm gen:exercise`: 第20章のデモから、演習を手元で進めるためのファイル（`public/exercise-files/`）を生成する。
+- `pnpm gen:exercise`: 第21章のデモから、演習を手元で進めるためのファイル（`public/exercise-files/`）を生成する。
 - `pnpm gen:ai`: ルールと原稿から、AI 向けの配布物を生成する。ルールか原稿を変えたら必ず実行する。
-  - コミットするもの：スキルとプラグイン（`plugin/`）、マーケットプレイス（`.claude-plugin/marketplace.json`）、MCP サーバーの `package.json` と README の版
+  - コミットするもの：スキルとプラグイン（`plugin/`）、マーケットプレイス（`.claude-plugin/marketplace.json`）、MCP サーバーの `package.json` と README の版、第20章のひな形の配布ファイル（`public/ai-coding-files/`）
   - コミットしないもの：MCP サーバーが同梱するデータ（`packages/mcp/data/`）
+- `pnpm gen:ai-kit`: 第20章のひな形（`src/kits/ai-coding/`）を、配布用に `public/ai-coding-files/` へ写す。`mcp.json` の本書の MCP サーバーの版を本のバージョンにそろえる。`pnpm gen:ai` の後にも実行される。ひな形を変えたら実行する。
 - `pnpm test:mcp`: MCP サーバーを stdio で起動し、すべてのツールを1回ずつ呼んで確かめる（先に `pnpm gen:ai` を実行する）。
 
 ## ファイルの配置
@@ -39,6 +40,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `src/lib/site.mjs`: 公開先の URL。公開先を変えたら、ここを直して `pnpm gen:ai` を実行する。
 - `scripts/lib/guideline-data.mjs`: ルールと原稿を読み、AI 向けの形にする（MDX のコンポーネントを Markdown に置き換える）。新しいコンポーネントを原稿で使うときは、ここにも置き換え方を足す。
 - `plugin/`、`.claude-plugin/marketplace.json`: Claude Code のプラグインとスキル。レビューを分担するサブエージェントの定義（`plugin/agents/`、Codex 用は `plugin/codex/agents/`）も含む。どれも `pnpm gen:ai` が生成するので、直接編集しない（手順は `scripts/gen-ai.mjs` の `READER_BODY` と `JUDGE_BODY` にある）。定義にモデルは書かない。
+- `src/kits/ai-coding/`: 第20章のひな形（タスクのスキル、brief と plan、フック、`.mcp.json`、テストの例）。本文では、ここから Starlight の `<Code>` に `?raw` で読み込み、本文に同じ内容を書き写さない。配布用のファイルは `pnpm gen:ai-kit` が作る。
 - `packages/mcp/`: npm に公開する MCP サーバー（`css-coding-guideline-mcp`）。版は本のバージョンと同じで、`.github/workflows/publish-mcp.yml` が、npm にまだない版を公開する（リポジトリの変数 `PUBLISH_MCP` が `true` のときだけ動く）。
 - `astro.config.mjs`: ルールへのリンク（`/<page>/#rule-<id>`）は、ルールの定義と照らして正しいものだけをリンク検証から外している。
 - `stylelint.config.mjs`、`stylelint/`: 本書の Stylelint 設定。本文で説明するルールと一致させる。
@@ -66,10 +68,10 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 「補足と注意点」と、判断や使い分けだけを述べる見出しには、サンプルを求めない。冒頭の問題提起は、問題がコードに関わるなら Not Recommended の例を置く。
   - コード例とデモは字数に数えない。
 - 字数は、一度に理解してほしい判断のまとまりで決める。下限は置かず、8,000字を超えるときは分けるかを著者に確かめる。各見出しの段落数（3〜5段落）は目安とする。章の概要ページ、「はじめに」のページ（`introduction/` 以下）、ルールを置かない考え方の節（1-3〜1-7、2-1、2-2、3-1、3-2）は、字数の規定の対象外。考え方の節には `## ガイドライン` を置かない。
-- 第20章（演習編、`exercise/`）の節は、新しいルールを置かない。`## ガイドライン` の代わりに `## この節で使ったルール` を置き、使ったルールのIDを掲載ページへのリンク付きで並べる（例：`` [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query) ``）。2節目以降は冒頭で要件を1つ変え、本文には変更した箇所だけのコード例を置き、デモはその節を終えた時点の全体を1つ置く。末尾に判断を問う問題を答えと解説付きで置く。
+- 第21章（演習編、`exercise/`）の節は、新しいルールを置かない。`## ガイドライン` の代わりに `## この節で使ったルール` を置き、使ったルールのIDを掲載ページへのリンク付きで並べる（例：`` [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query) ``）。2節目以降は冒頭で要件を1つ変え、本文には変更した箇所だけのコード例を置き、デモはその節を終えた時点の全体を1つ置く。末尾に判断を問う問題を答えと解説付きで置く。
   - 演習の節は、本編の結論先行の例外として、要件 → `## 予想する` → `## 合格条件`（その節を終えた時点のデモ）→ 解説 → `## 振り返り` → 判断の問いの順にする。冒頭と `description` で直す箇所を言わない。振り返りでは、直す場所の数だけでなく、変更を受け持つ場所が予測できるか、影響範囲を確かめられるか、条件分岐が複雑になっていないかを問う。
   - 各節の冒頭に、`public/exercise-files/` の開始版と完成版へのリンクを置く（ファイル名まで書く）。演習のデモを変えたら `pnpm gen:exercise` を実行する。
-  - 配布版は、デモの `style.css` を `@scope` ごとのファイル（`article-card.css` など）と `compositions.css` に分けて生成する。20-4以降の各段階には、記事ページとトップページを置く。トップページのソースは、デモのディレクトリの `top.html`（配布専用。カードのマークアップはその段階の `index.html` とそろえる）。
+  - 配布版は、デモの `style.css` を `@scope` ごとのファイル（`article-card.css` など）と `compositions.css` に分けて生成する。21-4以降の各段階には、記事ページとトップページを置く。トップページのソースは、デモのディレクトリの `top.html`（配布専用。カードのマークアップはその段階の `index.html` とそろえる）。
   - 演習デモのリンクは `href="#"` にせず、記事は `#article-<スラッグ>`、タグは `#tag-<スラッグ>` にする。
   - 題材のカードは `article-card`、一覧は `article-list`。
 - 各ページが単体で意味が通るように書く。ほかのページに触れるときは、リンクと一言の要約を添える。

@@ -1,18 +1,18 @@
 /**
- * 第20章の演習を手元で進めるためのファイルを、演習のデモから生成する。
+ * 第21章の演習を手元で進めるためのファイルを、演習のデモから生成する。
  * 出力先は `public/exercise-files/` で、サイトの `/exercise-files/` から読める。
  *
  * - `base.css`：レイヤーの順序宣言、共通トークン（tokens レイヤー）、kiso.css（reset レイヤー）、デモのベーススタイル
- * - `card-start/`：20-2の開始版。カードの HTML と、置く側のスタイルだけ
+ * - `card-start/`：21-2の開始版。カードの HTML と、置く側のスタイルだけ
  * - `<節のスラッグ>/`：各節を終えた時点の完成版。節 N の開始版は、節 N−1 の完成版
- * - `review/`：20-8でレビューするプルリクエストの版
+ * - `review/`：21-8でレビューするプルリクエストの版
  *
  * 本のデモは1つの `style.css` にまとめているが、配布版では本文のとおり、責任ごとにファイルを分ける。
  * `@scope (.scoped.<名前>)` のブロックを `<名前>.css` に、コンポジションのレイヤーを `compositions.css` に切り出し、
  * それぞれ元の `@layer` で包み直す。レイヤーの順序は `base.css` で宣言しているので、読み込む順番には左右されない。
  *
- * 20-4以降は、トップページ（`index.html`）と記事ページ（`article.html`）の両方を置き、同じカードと一覧の CSS を読ませる。
- * トップページの HTML は、各デモのディレクトリの `top.html`（配布専用）から、`page-top` のスタイルは20-3のデモから取る。
+ * 21-4以降は、トップページ（`index.html`）と記事ページ（`article.html`）の両方を置き、同じカードと一覧の CSS を読ませる。
+ * トップページの HTML は、各デモのディレクトリの `top.html`（配布専用）から、`page-top` のスタイルは21-3のデモから取る。
  *
  * 土台のスタイルは `src/lib/demo.ts` のデモと同じものを使う。演習のデモを変えたら、このスクリプトを実行し直す。
  */
@@ -28,12 +28,12 @@ const read = (path) => readFileSync(join(root, path), 'utf8');
 
 /** 演習の節（スラッグ）。並びは節の順番。 */
 const SECTIONS = [
-  { slug: 'card', title: '20-2 カードを作る' },
-  { slug: 'list', title: '20-3 一覧に並べる' },
-  { slug: 'sidebar', title: '20-4 サイドバーにも置く' },
-  { slug: 'content-changes', title: '20-5 内容の変化に耐える' },
-  { slug: 'clickable-card', title: '20-6 カード全体を押せるようにする' },
-  { slug: 'featured', title: '20-7 特集の見た目を足す' },
+  { slug: 'card', title: '21-2 カードを作る' },
+  { slug: 'list', title: '21-3 一覧に並べる' },
+  { slug: 'sidebar', title: '21-4 サイドバーにも置く' },
+  { slug: 'content-changes', title: '21-5 内容の変化に耐える' },
+  { slug: 'clickable-card', title: '21-6 カード全体を押せるようにする' },
+  { slug: 'featured', title: '21-7 特集の見た目を足す' },
 ];
 
 /* ---------- 土台 ---------- */
@@ -141,7 +141,7 @@ const splitDemoCss = (css, source) => {
         pending.push(child.text);
         continue;
       }
-      // @scope の外に書いたルール（20-8のレビューの悪い例）は、セレクタの最初のクラスのファイルに入れる
+      // @scope の外に書いたルール（21-8のレビューの悪い例）は、セレクタの最初のクラスのファイルに入れる
       const name =
         child.prelude?.match(/^@scope\s*\(\.scoped\.([\w-]+)\)/)?.[1] ?? child.prelude?.match(/\.([\w-]+)/)?.[1];
       if (!name) throw new Error(`${source}: @layer ${layer} の中に、どのファイルに入れるか決められない項目があります`);
@@ -216,24 +216,24 @@ for (const { slug, title } of SECTIONS) {
   }
 }
 
-// 20-2の開始版は、カードのスタイルを書く前の状態。置く側のスタイルと、空のカードのファイルを置く
+// 21-2の開始版は、カードのスタイルを書く前の状態。置く側のスタイルと、空のカードのファイルを置く
 const cardFiles = splitDemoCss(read(`${demoDir}/card/style.css`), 'card/style.css');
 cardFiles.set('article-card.css', '@layer components {\n  /* ここに記事カード（.scoped.article-card）のスタイルを書く */\n}\n');
 write(
   'card-start',
-  { 'index.html': page({ title: '20-2 カードを作る（開始版）', html: read(`${demoDir}/card/index.html`), files: cardFiles }) },
+  { 'index.html': page({ title: '21-2 カードを作る（開始版）', html: read(`${demoDir}/card/index.html`), files: cardFiles }) },
   cardFiles,
 );
 
-// 20-8でレビューするプルリクエスト。デモでは使うコンポジションだけを書いているが、配布版ではプロジェクトの全体を置く
+// 21-8でレビューするプルリクエスト。デモでは使うコンポジションだけを書いているが、配布版ではプロジェクトの全体を置く
 const reviewFiles = splitDemoCss(read(`${demoDir}/review/style.bad.css`), 'review/style.bad.css');
-// コンポジションはプロジェクトで共有するファイルなので、20-7を終えた時点のもの（cluster を含む）を使う
+// コンポジションはプロジェクトで共有するファイルなので、21-7を終えた時点のもの（cluster を含む）を使う
 reviewFiles.set('compositions.css', splitDemoCss(read(`${demoDir}/featured/style.css`), 'featured/style.css').get('compositions.css'));
 write(
   'review',
   {
     'index.html': page({
-      title: '20-8 レビューするプルリクエスト',
+      title: '21-8 レビューするプルリクエスト',
       html: read(`${demoDir}/review/index.html`),
       files: reviewFiles,
     }),

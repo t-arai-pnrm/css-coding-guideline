@@ -145,11 +145,17 @@ export const PARTS = [
         title: '実務での運用',
         review: 'Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入',
       },
+      {
+        number: 20,
+        dir: 'ai-coding',
+        title: 'AIにコーディングさせる',
+        review: 'AIが書いたCSS、Figmaなどのデザインツールから書いたCSS',
+      },
     ],
   },
   {
     label: '第VI部 演習編',
-    chapters: [{ number: 20, dir: 'exercise', title: '記事の一覧を作る' }],
+    chapters: [{ number: 21, dir: 'exercise', title: '記事の一覧を作る' }],
   },
 ];
 

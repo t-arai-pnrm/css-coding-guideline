@@ -1,5 +1,5 @@
 ---
-title: "20-3 一覧に並べる"
+title: "21-3 一覧に並べる"
 description: "前の節で作った記事カードを、トップページの新着として6件並べます。途中で新着が7件に増えたとき、最終行に残る1件がどう表示されるかまで確かめる節です。"
 sidebar:
   order: 3
@@ -11,7 +11,7 @@ import listCss from '../../../demos/exercise/list/style.css?raw';
 
 前の節で作った記事カードを、トップページの新着として6件並べます。一覧には「新着記事」の見出しを付け、その下にカードを並べます。列の最小幅は280px相当で、多くても3列にし、カードとカードの間は24px空けます。節の後半で要件が1つ変わり、新着が7件に増えます。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/card/index.html)）から始め、完成版（[index.html](/exercise-files/list/index.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/card/index.html)）から始め、完成版（[index.html](/exercise-files/list/index.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[21-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
 
 ## 予想する
 
@@ -23,7 +23,7 @@ import listCss from '../../../demos/exercise/list/style.css?raw';
 
 次のデモが、この節を終えた時点のトップページです。新着の一覧を縦に2つ並べ、1つ目に6件、2つ目に7件を入れています。
 
-<Demo scheme="light" title="20-3を終えた時点の新着：6件と7件を同じCSSで並べる" html={listHtml} css={listCss} />
+<Demo scheme="light" title="21-3を終えた時点の新着：6件と7件を同じCSSで並べる" html={listHtml} css={listCss} />
 
 幅のボタンで1280pxを選ぶと、どちらの一覧も3列になり、カードの幅は400pxです。7件の一覧では、3行目の左端に7件目が1件だけ置かれ、その幅もほかのカードと同じ400pxです。768pxでは2列（カードの幅356px）、320pxでは1列（288px）になります。どの幅でも横スクロールが起きず、2つの一覧がHTMLの記事の数だけを変えた同じCSSで表示されれば完成です。
 
@@ -96,7 +96,7 @@ import listCss from '../../../demos/exercise/list/style.css?raw';
 
 320pxの表示では、デモの枠の左右の余白を除いた一覧の幅が288pxです。列の最小幅の280px相当を上回るので、カードは1列に並び、幅は288pxになります。
 
-一覧がこれより狭い場所に置かれても、列ははみ出しません。`grid` は、列の幅を `min(100%, …)` で一覧の幅に抑えているからです（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#幅の上限と最小の長さ)」）。この指定はコンポジションの中で済んでいるので、一覧の側で書き足すものはありません。一覧の幅が列の最小幅を下回る場面は、サイドバーに置く節で実際に出てきます（「[20-4 サイドバーにも置く](/exercise/sidebar/)」）。
+一覧がこれより狭い場所に置かれても、列ははみ出しません。`grid` は、列の幅を `min(100%, …)` で一覧の幅に抑えているからです（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#幅の上限と最小の長さ)」）。この指定はコンポジションの中で済んでいるので、一覧の側で書き足すものはありません。一覧の幅が列の最小幅を下回る場面は、サイドバーに置く節で実際に出てきます（「[21-4 サイドバーにも置く](/exercise/sidebar/)」）。
 
 ## 記事が7件になったとき
 
@@ -116,7 +116,7 @@ import listCss from '../../../demos/exercise/list/style.css?raw';
 
 ## 振り返り
 
-6件を並べる要件で足したのは、一覧のコンポーネント `article-list`（`article-list.css`）と、12-6の `grid` コンポジション（`compositions.css`）、`index.html` の新着のHTMLです。デモのように2つの一覧を縦に並べる間隔は、トップページの `page-top.css` に書き、20-2で置く側を受け持っていた `demo-page.css` はなくなりました。`article-list` のCSSは、見出しの大きさと、見出しと並びの間隔だけの短いものです。
+6件を並べる要件で足したのは、一覧のコンポーネント `article-list`（`article-list.css`）と、12-6の `grid` コンポジション（`compositions.css`）、`index.html` の新着のHTMLです。デモのように2つの一覧を縦に並べる間隔は、トップページの `page-top.css` に書き、21-2で置く側を受け持っていた `demo-page.css` はなくなりました。`article-list` のCSSは、見出しの大きさと、見出しと並びの間隔だけの短いものです。
 
 7件に増える変更では、CSSもHTMLの構造も直していません。変わったのは、記事のデータが1件増えたことだけです。
 

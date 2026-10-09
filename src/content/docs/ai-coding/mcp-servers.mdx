@@ -1,0 +1,136 @@
+---
+title: "20-3 MCPサーバーを役割で使い分ける"
+description: "AIにCSSを書かせるときのMCPサーバーは、デザインを読む、ブラウザで確かめる、原因を調べる、ルールを引くの4つの役割で使い分けます。Figma MCPの出力は値を読むために使い、そのまま写しません。デザインと見比べるときは、同じ幅で撮ったスクリーンショットを並べます。"
+sidebar:
+  order: 3
+---
+
+import { Code } from '@astrojs/starlight/components';
+import Guideline from '../../../components/Guideline.astro';
+import mcpJson from '../../../kits/ai-coding/mcp.json?raw';
+
+AIにCSSを書かせるときに用意するMCPサーバーは、役割で使い分けます。役割は、デザインを読む、ブラウザで確かめる、原因を調べる、ルールを引くの4つです。MCPサーバーは、AIのツールに外部の機能をつなぐ仕組み（Model Context Protocol）で、つないだ機能をAIが自分で呼び出せるようになります。
+
+| 役割 | 使うもの | 使う段階 |
+| --- | --- | --- |
+| デザインを読む | Figma MCP | 計画を立てるとき。完了を確かめるときは画像だけ |
+| ブラウザで確かめる | `@playwright/test`、Playwright MCP | 手順ごとの検証と、完了を確かめるとき |
+| 原因を調べる | Chrome DevTools MCP | 宣言が効かない、崩れの原因が分からないとき |
+| ルールを引く | 本書のMCPサーバー | 書く前、書いた後、レビューのとき |
+
+Figma MCPの出力は、値と要素の並び方を読むために使い、コードとしては写しません。デザインと見比べるときは、デザインと同じ幅で撮ったスクリーンショットを並べます。この節のツール名と機能は、2026年10月時点の各ツールのドキュメントにもとづいています。
+
+## Figma MCPでデザインを読む
+
+Figma MCPは、Figmaが公式に提供しているMCPサーバーです。Claude Codeでは、Figmaの公式プラグインを入れると、MCPサーバーの設定と、使い方を指示するスキルがまとめて入ります。プラグインを使わない場合は、リモートのサーバー（`https://mcp.figma.com/mcp`）を登録します。どちらの場合も、初回は `/mcp` からFigmaのアカウントで認可します。
+
+```sh title="Figma MCPを入れる"
+claude plugin install figma@claude-plugins-official
+# プラグインを使わない場合
+claude mcp add --transport http figma https://mcp.figma.com/mcp
+```
+
+CSSを書くときに使うツールは、主に4つです。`get_design_context` は、フレームやレイヤーのデザインを、コードの形で返します。`get_variable_defs` は、そのフレームで使っている変数（色、余白、文字のスタイル）の名前と値を返し、`get_screenshot` は画像を返します。`get_metadata` は、レイヤーの名前、位置、大きさだけを返すので、大きなフレームをノードに分けて読むときに使います。
+
+`get_design_context` の出力は、既定ではReactとTailwind CSSのコードです。素のHTMLとCSSで返してほしいときは、指示の文で頼みます。出力の形を指定する専用の引数はありません。ただし、どちらの形で受け取っても、出力はそのまま写すコードではありません。理由は、この節の後半で説明します。
+
+ツールを呼べる回数は、Figmaのシートの種類で制限されています。閲覧用のシート（View、Collab）では月20回まで、開発用のシート（Dev、Full）でもプランごとに1日あたりの上限があります。AIが読み直すたびに回数を使うので、デザインを読むのは計画の段階だけにし、読んだ値は計画のファイルに書き残します。進め方は「[20-5 Figmaのデザインから計画を立てる](/ai-coding/from-figma/)」（値の対応表とノードの対応表を作り、実装は計画だけを見て進める）で説明します。
+
+## 公式のFigmaスキルとの関係
+
+Figmaの公式プラグインには、デザインからコードを書くときの手順を指示するスキル（`figma-design-to-code`）が入っています。このスキルは、Figmaのデザインを実装する依頼をすると、自動で読み込まれます（2026年10月、v2.2.127で確認）。
+
+スキルの指示の多くは、本書の考え方と同じ方向です。スキルは、返されたコードを操作できない試作として扱うこと、絶対配置をプロジェクトのレイアウトの書き方に置き換えること、既存の部品とトークンを探して使い、値を直接書いて作り直さないことを求めています。画像をすべてダウンロードし、Figmaの一時的なURLを残さないことも求めています。これらの指示には、そのまま従ってかまいません。
+
+食い違うのは2点です。1つは「`get_design_context` の結果だけから実装する」という指示で、実装の段階でも毎回Figmaを読むことになります。もう1つは「スクリーンショットと見た目を一致させる」という指示で、合否をカンプとの一致で決めることになります。カンプは特定の幅と内容で描かれた1つの例なので、一致を合否の基準にはしません（「[3-1 ピクセルではなく意図を再現する](/design-reproduction/intent/)」）。
+
+この2点は、プロジェクトの指示で優先順位を決めます。`CLAUDE.md` とタスクを進めるスキルに、「承認された計画で実装するときは `get_design_context` を呼ばず、計画の値の対応表に従う」「スクリーンショットは見比べる目安で、合否は完了条件で決める」と書きます。指示の例は「[20-2 AIに読ませる規約を用意する](/ai-coding/setup/)」に、タスクを進めるスキルは「[20-4 タスクの単位で進める](/ai-coding/tasks/)」にあります。
+
+## 出力をそのまま写さない
+
+`get_design_context` の出力は、カンプの1つの幅と1つの内容を再現した試作です。次のコードは、記事のカードのデザインを読ませたときの出力の形を模して、私が作ったものです。{/* 要確認: 出典なし。Figma MCPの実際の出力と形を見比べる */}
+
+```html title="🙅‍♂ Not Recommended: 出力のクラスと座標をそのまま写す"
+<!-- 🙅‍♂ Not Recommended -->
+<div class="relative h-[312px] w-[320px]">
+  <img class="absolute left-0 top-0 h-[180px] w-[320px] rounded-[4px] object-cover" src="..." alt="">
+  <p class="absolute left-0 top-[196px] text-[12px] leading-[18px] text-[#2563eb]">デザイン</p>
+  <h3 class="absolute left-0 top-[222px] w-[320px] text-[20px] font-bold leading-[30px] text-[#171717]">公開プロパティで色を受け取る</h3>
+  <p class="absolute left-0 top-[260px] text-[12px] leading-[18px] text-[#737373]">2026年10月1日</p>
+</div>
+```
+
+この出力をそのまま写すと、カンプと同じ幅と内容のときだけ正しく表示されます。各要素の位置を上端からの座標で決めているので、見出しが2行になると、下の日付と重なります。幅と高さも固定しているので、サイドバーのような狭い置き場所でははみ出します。色と文字の大きさも、トークンではなくカンプの値そのものです（`no-verbatim-design-output`）。
+
+出力から読み取るのは、要素の並び方と、余白、文字の大きさ、色の値です。並び方は、画像、タグ、見出し、日付が縦に積まれ、それぞれの間が16pxや8pxであることです。値はトークンに対応づけてから書きます。
+
+```css title="🙆‍♂ Recommended: 並び方をグリッドで、値をトークンで書く"
+@scope (.scoped.article-card) to (.scoped) {
+  ._layout {
+    display: block grid;
+    gap: calc(var(--spacing--sm) * 1px);
+  }
+
+  h3 {
+    font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+    line-height: var(--text--title--leading);
+  }
+
+  time {
+    color: var(--foreground--muted);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    line-height: var(--text--caption--leading);
+  }
+}
+```
+
+書き直したコードでは、要素を通常のフローとグリッドで積んでいるので、見出しが何行になっても、下の要素は見出しの下に続きます。幅と高さは置き場所と内容で決まり、狭い置き場所での形は、コンテナサイズクエリで切り替えます。カードの全体は、演習の「[21-2 カードを作る](/exercise/card/)」で作っています。
+
+## ブラウザで確かめる
+
+ブラウザで確かめる道具は、繰り返す確認と、その場の確認で使い分けます。繰り返す確認には、テストのフレームワークの `@playwright/test` を使います。決まった幅で開いてスクリーンショットを撮る、計算値を読んで期待する値と比べる、前回の画像との差を調べる（VRT）といった確認を、コードに書いておけば毎回同じ条件で実行できます。
+
+その場の確認には、Playwright MCPを使います。AIがブラウザを開き、幅を変え、要素を押し、スクリーンショットを撮って、結果を自分で読めます。`browser_emulate_media` で、動きを減らす設定、強制カラーモード、ダークモードを切り替えられるので、「[19-3 表示と操作を確かめる](/operations/verification/)」の表示の設定もAIに再現させられます。起動するブラウザには、Chromeのほか、FirefoxとWebKitも選べます。
+
+{/* 要確認: 出典なし。Playwright MCPとChrome DevTools MCPを実務で使い分けた経験にもとづいて書き直す */}
+使い分けの目安は、同じ確認を2回以上するかです。初めての状態を探るときはPlaywright MCPで試し、繰り返す価値のある確認が見つかったら、`@playwright/test` のテストに書き移します。テストに書いた確認は、AIが変更を加えるたびに、人の手を借りずに実行できます。テストの例は「[20-6 実装と検証を回す](/ai-coding/implementation/)」で示します。
+
+## デザインと同じ幅で見比べる
+
+実装をデザインと見比べるときは、デザインと同じ幅で撮ったスクリーンショットを並べます（`compare-at-design-width`）。カンプが375pxと1280pxで描かれていれば、ブラウザもその2つの幅で撮ります。Figmaの画像は、`get_screenshot` で取ります。
+
+幅をそろえるのは、幅が違うと、差の原因を見分けられないからです。幅が違えば、見出しを折り返す位置も、コンテナサイズクエリで切り替わる形も変わります。この差は不具合でないのに、本当の崩れと同じように画像の上に現れます。幅をそろえれば、残った差は、値、要素の構造、画像、フォントのどれかに原因があると絞れます。
+
+ただし、同じ幅でのスクリーンショットの一致は、合否の基準にはしません。フォントの描画やブラウザの違いで、正しい実装でも数ピクセルの差は出ます。カンプのない幅での振る舞いも、画像の比較では確かめられません。合否は、タスクの完了条件で決めます。
+
+## 原因を調べる
+
+Chrome DevTools MCPは、Googleが提供している、Chromeの開発者ツールの機能をAIに使わせるMCPサーバーです。CSSで役に立つのは、要素に当たったルールを、カスケードで優先される順に返す `get_css_styles` です（2026年9月の1.10.0で追加）。どのルールの宣言が勝ち、どの宣言が負けたかが、`@layer`、`@scope`、`@container` の包みと、ソースの行番号付きで分かります。
+
+宣言が効かないとき、AIに直させると、`!important` や詳細度を上げるセレクタで症状を消そうとすることがあります。そこで、先に `get_css_styles` で負けた宣言と勝った宣言を確かめさせ、原因の宣言を直すよう指示します。人が開発者ツールで行う手順は「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」で説明していて、AIにさせる手順も同じです。
+
+計算値は `evaluate_script` で `getComputedStyle` を呼んで読み、処理の重さは性能のトレースで調べます。一方で、動きを減らす設定や強制カラーモードを切り替える機能はなく、対象のブラウザもChromeだけです。表示の設定やほかのブラウザでの確認は、Playwright MCPに任せます。
+
+## `.mcp.json` にまとめる
+
+チームで同じMCPサーバーを使うときは、プロジェクトのルートの `.mcp.json` に設定を書いてコミットします。Claude Codeは、`.mcp.json` のサーバーを初めて使う前に、使ってよいかを確かめます。ほかのツールの設定ファイルの書き方は、付録J「[AIツールで使う](/appendix/ai-tools/)」で説明しています。
+
+<Code code={mcpJson} lang="json" title=".mcp.json" />
+
+この例には、本書のMCPサーバー、Playwright MCP、Chrome DevTools MCPを書いています。Figma MCPは、Claude Codeでは公式プラグインで入れるので、ここには書きません。両方に書くと、同じサーバーが2つ登録されます。2つのブラウザのMCPサーバーへ `--isolated` を付け、ブラウザの履歴やログインの状態を作業ごとに捨てさせています。
+
+どのサーバーも、版を書いて固定しています。版を書かないと、起動するたびに最新の版を使うので、ツールの名前や引数が知らないうちに変わることがあります。本書のMCPサーバーの使い方は「[20-2 AIに読ませる規約を用意する](/ai-coding/setup/)」で説明しています。{/* 要確認: 著者の判断。配布物の提供を始めたら、次の文を消す */}本書のMCPサーバーは、提供に向けて対応中のため、まだ利用できません（2026年10月時点）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Figma MCP server - Figma Developer Docs](https://developers.figma.com/docs/figma-mcp-server/)
+- [Tools and prompts - Figma Developer Docs](https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/)
+- [Rate limits and access - Figma Developer Docs](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)
+- [microsoft/playwright-mcp - GitHub](https://github.com/microsoft/playwright-mcp)
+- [ChromeDevTools/chrome-devtools-mcp - GitHub](https://github.com/ChromeDevTools/chrome-devtools-mcp)
+- [Connect Claude Code to tools via MCP - Claude Code Docs](https://code.claude.com/docs/en/mcp)
+- [Playwright](https://playwright.dev/)

@@ -1,5 +1,5 @@
 ---
-title: "20-1 要件と完成形"
+title: "21-1 要件と完成形"
 description: "演習で作る記事カードの3つの置き場所と、最初の要件を示します。完成形のデモを先に見て、カードが自分で決めることと、置く側が決めることを分けておきます。"
 sidebar:
   order: 1
@@ -43,27 +43,27 @@ import featuredCss from '../../../demos/exercise/featured/style.css?raw';
 
 ## 要件の変わり方
 
-2つ目以降の節は、冒頭で要件を1つ変えます。「[20-2 カードを作る](/exercise/card/)」でカードを作ったあと、「[20-3 一覧に並べる](/exercise/list/)」では、記事が7件に増え、最終行の端数を扱います。その後、「[20-4 サイドバーにも置く](/exercise/sidebar/)」で、サイドバーの人気記事として同じカードを置く要件が加わります。
+2つ目以降の節は、冒頭で要件を1つ変えます。「[21-2 カードを作る](/exercise/card/)」でカードを作ったあと、「[21-3 一覧に並べる](/exercise/list/)」では、記事が7件に増え、最終行の端数を扱います。その後、「[21-4 サイドバーにも置く](/exercise/sidebar/)」で、サイドバーの人気記事として同じカードを置く要件が加わります。
 
-続いて、CMSの運用が始まり、カンプの2倍の長さの見出し、画像のない記事、増えていくタグが入ってきます（「[20-5 内容の変化に耐える](/exercise/content-changes/)」）。カードのどこを押しても記事へ移動できる要件（「[20-6 カード全体を押せるようにする](/exercise/clickable-card/)」）と、関連記事の欄だけを特集として見せる要件（「[20-7 特集の見た目を足す](/exercise/featured/)」）も加わります。最後の「[20-8 確かめて、レビューする](/exercise/review/)」では、完成したカードと一覧を第19章の手順で確かめ、同じ時期に書かれた別の一覧のコードをレビューします。
+続いて、CMSの運用が始まり、カンプの2倍の長さの見出し、画像のない記事、増えていくタグが入ってきます（「[21-5 内容の変化に耐える](/exercise/content-changes/)」）。カードのどこを押しても記事へ移動できる要件（「[21-6 カード全体を押せるようにする](/exercise/clickable-card/)」）と、関連記事の欄だけを特集として見せる要件（「[21-7 特集の見た目を足す](/exercise/featured/)」）も加わります。最後の「[21-8 確かめて、レビューする](/exercise/review/)」では、完成したカードと一覧を第19章の手順で確かめ、同じ時期に書かれた別の一覧のコードをレビューします。
 
 ## 手元で進める準備
 
 演習のファイルは、このサイトの `/exercise-files/` に置いてあります。全節で共通の [base.css](/exercise-files/base.css) と、版ごとのディレクトリに入ったHTMLとCSSです。`base.css` には、レイヤーの順序の宣言、本書のデモと同じ共通トークン、リセットCSSのkiso.css、ベーススタイルが入っていて、演習では変えません。
 
-版のディレクトリのCSSは、本文の説明と同じく、責任ごとにファイルを分けています。コンポーネントのファイルは、記事カードの `article-card.css` と、一覧の `article-list.css` です。ほかに、コンポジションの `compositions.css`、トップページの `page-top.css`、記事ページの `page-article.css`、20-2でカードを置く側の `demo-page.css` があります。各版には、この6つのうち、その段階で要るものだけを置いています。各ファイルの中身は、本書のデモと同じ `@layer`（`components`、`compositions`、`pages`）で包んであります。レイヤーの順序は `base.css` の先頭で宣言しているので、ファイルを読み込む順序によってレイヤーの間の優先順位が変わることはありません。
+版のディレクトリのCSSは、本文の説明と同じく、責任ごとにファイルを分けています。コンポーネントのファイルは、記事カードの `article-card.css` と、一覧の `article-list.css` です。ほかに、コンポジションの `compositions.css`、トップページの `page-top.css`、記事ページの `page-article.css`、21-2でカードを置く側の `demo-page.css` があります。各版には、この6つのうち、その段階で要るものだけを置いています。各ファイルの中身は、本書のデモと同じ `@layer`（`components`、`compositions`、`pages`）で包んであります。レイヤーの順序は `base.css` の先頭で宣言しているので、ファイルを読み込む順序によってレイヤーの間の優先順位が変わることはありません。
 
-HTMLは、`<link>` で `../base.css` を読み込んだあと、そのページで使うCSSのファイルを読み込みます。20-2と20-3の版にあるHTMLは、トップページの `index.html` だけです。20-4以降の版には、トップページの `index.html` と記事ページの `article.html` があり、どちらも同じ `article-card.css` と `article-list.css` を読み込みます。カードのCSSを直したときは、2つのHTMLを開けば、もう一方の置き場所への影響も確かめられます。画像はHTMLに `data:` URIのSVGとして埋め込んであるので、用意する画像のファイルはありません。
+HTMLは、`<link>` で `../base.css` を読み込んだあと、そのページで使うCSSのファイルを読み込みます。21-2と21-3の版にあるHTMLは、トップページの `index.html` だけです。21-4以降の版には、トップページの `index.html` と記事ページの `article.html` があり、どちらも同じ `article-card.css` と `article-list.css` を読み込みます。カードのCSSを直したときは、2つのHTMLを開けば、もう一方の置き場所への影響も確かめられます。画像はHTMLに `data:` URIのSVGとして埋め込んであるので、用意する画像のファイルはありません。
 
-手元に保存するときは、`base.css` を親のディレクトリに置き、その下に版のディレクトリを作って、中のファイルをすべて保存します。20-2の開始版なら、親のディレクトリに `base.css` を、その下の `card-start` のディレクトリに `index.html`、`demo-page.css`、`article-card.css` を置きます。ディレクトリの一覧のページはないので、HTMLの `<link>` に書かれたファイル名で、HTMLと同じディレクトリのURLを開いて保存します。たとえば20-2の開始版のカードのCSSは、[article-card.css](/exercise-files/card-start/article-card.css) です。読み込むCSSのファイルが1つでも欠けると、そのファイルが受け持つ部分にスタイルが当たりません。
+手元に保存するときは、`base.css` を親のディレクトリに置き、その下に版のディレクトリを作って、中のファイルをすべて保存します。21-2の開始版なら、親のディレクトリに `base.css` を、その下の `card-start` のディレクトリに `index.html`、`demo-page.css`、`article-card.css` を置きます。ディレクトリの一覧のページはないので、HTMLの `<link>` に書かれたファイル名で、HTMLと同じディレクトリのURLを開いて保存します。たとえば21-2の開始版のカードのCSSは、[article-card.css](/exercise-files/card-start/article-card.css) です。読み込むCSSのファイルが1つでも欠けると、そのファイルが受け持つ部分にスタイルが当たりません。
 
-HTMLはブラウザで直接開けるので、開発用のサーバーは要りません。最初に開く20-2の開始版（[index.html](/exercise-files/card-start/index.html)）では、`article-card.css` が空の `@layer components` だけなので、記事カードにまだスタイルが当たっていません。画像が置く側の要素の幅いっぱいに広がり、その下にカテゴリー、見出し、日付、抜粋が並びます。置く側の要素は `demo-page.css` で幅を最大360px相当に絞っているので、広い画面でもカードはそれより広がりません。
+HTMLはブラウザで直接開けるので、開発用のサーバーは要りません。最初に開く21-2の開始版（[index.html](/exercise-files/card-start/index.html)）では、`article-card.css` が空の `@layer components` だけなので、記事カードにまだスタイルが当たっていません。画像が置く側の要素の幅いっぱいに広がり、その下にカテゴリー、見出し、日付、抜粋が並びます。置く側の要素は `demo-page.css` で幅を最大360px相当に絞っているので、広い画面でもカードはそれより広がりません。
 
-各節の開始版は1つ前の節の完成版で、各節の冒頭に、その節の開始版と完成版のHTMLへのリンクを置いています。完成版は、`/exercise-files/` の下の、節のURLの末尾と同じ名前のディレクトリ（`card`、`list`、`sidebar`、`content-changes`、`clickable-card`、`featured`）にあります。たとえば20-2の完成版は [index.html](/exercise-files/card/index.html) で、同じディレクトリに `demo-page.css` と `article-card.css` があります。20-8でレビューするプルリクエストの版は、`review` のディレクトリにあります。その[index.html](/exercise-files/review/index.html)は、お知らせのカードの `notice-card.css`、お知らせの一覧の `notice-list.css`、`page-top.css`、`compositions.css` を読み込みます。幅による切り替えは、ブラウザのウィンドウの幅を変えるか、開発者ツールのデバイスモードで幅を指定して確かめます。
+各節の開始版は1つ前の節の完成版で、各節の冒頭に、その節の開始版と完成版のHTMLへのリンクを置いています。完成版は、`/exercise-files/` の下の、節のURLの末尾と同じ名前のディレクトリ（`card`、`list`、`sidebar`、`content-changes`、`clickable-card`、`featured`）にあります。たとえば21-2の完成版は [index.html](/exercise-files/card/index.html) で、同じディレクトリに `demo-page.css` と `article-card.css` があります。21-8でレビューするプルリクエストの版は、`review` のディレクトリにあります。その[index.html](/exercise-files/review/index.html)は、お知らせのカードの `notice-card.css`、お知らせの一覧の `notice-list.css`、`page-top.css`、`compositions.css` を読み込みます。幅による切り替えは、ブラウザのウィンドウの幅を変えるか、開発者ツールのデバイスモードで幅を指定して確かめます。
 
 ## 演習の進め方
 
-20-2以降の各節は、要件、予想する、合格条件、解説、振り返りの順に進みます。冒頭で要件が変わったら、解説を読み進める前に、自分ならどのファイルのどこを直すかを書き出してみてください。カードの `article-card.css`、一覧の `article-list.css`、コンポジションの `compositions.css`、ページのCSSとHTMLのどれを直すのか、何行くらいになりそうかを予想します。合格条件には、その節を終えた時点のデモと、何が満たされれば完成かを書いています。
+21-2以降の各節は、要件、予想する、合格条件、解説、振り返りの順に進みます。冒頭で要件が変わったら、解説を読み進める前に、自分ならどのファイルのどこを直すかを書き出してみてください。カードの `article-card.css`、一覧の `article-list.css`、コンポジションの `compositions.css`、ページのCSSとHTMLのどれを直すのか、何行くらいになりそうかを予想します。合格条件には、その節を終えた時点のデモと、何が満たされれば完成かを書いています。
 
 解説を読んだら、振り返りで自分の予想と見比べます。見比べるのは、直す場所の数だけではありません。変更を受け持つ場所を変更の内容から予測できたか、直したときに影響が及ぶ範囲を確かめられたか、直した結果として条件分岐が複雑になっていないかも確かめます。予想とずれたところがあれば、その差がどの規約から来ているのかを、リンク先の節で確かめます。
 

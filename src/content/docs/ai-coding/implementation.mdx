@@ -1,0 +1,150 @@
+---
+title: "20-6実装と検証を回す"
+description: "AIにはplanの手順を1つずつ実装させ、手順ごとの検証が通ってから完了の印を付けさせます。lintとビルドが通っても宣言が適用されているとは限らないので、計算値で確かめます。完了の報告は、完了条件ごとに合格、不合格、未確認と証拠を書かせ、実行していない検査を問題なしと書かせません。"
+sidebar:
+  order: 6
+---
+
+import { Code } from '@astrojs/starlight/components';
+import Guideline from '../../../components/Guideline.astro';
+import valuesSpec from '../../../kits/ai-coding/tests/design-values.spec.ts?raw';
+
+承認されたplanで実装するとき、AIには手順を1つずつ実装させ、その手順の検証が通ってから完了の印（`[x]`）を付けさせます。検証は、planを書く段階で手順ごとに決めておいた、実行するコマンドと期待する結果です。通らなければ直し、直せなければ止まります。
+
+lintとビルドが通っても、書いた宣言がブラウザで適用されているとは限りません。宣言が効いているかは、計算値で確かめます。完了の報告は、完了条件ごとに合格、不合格、未確認と、その証拠を書かせます。実行していない検査と、人が判定する項目は「未確認」と書かせ、「問題なし」とは書かせません。
+
+## 手順ごとに検証する
+
+planの各手順は、1回のコミットで収まる大きさにします。広い形のスタイルを書く、狭い形への切り替えを書く、ホバーとフォーカスを書く、のように分ければ、各手順の結果を1つの検証で確かめられます。手順が大きいと、検証が通らなかったときに、どの変更が原因かを絞れません。
+
+検証は、手順の結果を確かめられるものにします。「広い形のスタイルを書く」の検証が `pnpm lint:css` だけなら、lintに通る誤ったスタイルも合格になります。値の対応表の値が、テストページの計算値と一致することまでを、検証に含めます。
+
+AIは、検証が通ってから `[x]` を付けます。検証の前に印を付けさせると、セッションが途中で切れたときに、確かめていない手順が完了として残ります。次のセッションのAIは、印の付いていない最初の手順から再開するので、印は「検証が通った」ことの記録として扱います。
+
+## lintが通っても、宣言が効いているとは限らない
+
+次のコードは、構文に誤りがなく、本書のStylelintの設定でも1件も報告されません（2026年10月、Stylelint 17.15.0で確認）。しかし、カードが広い置き場所に置かれても、`gap` は12px相当のままです。
+
+```css title="🙅‍♂ Not Recommended: フラグを宣言した要素が、自分のフラグを問い合わせる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    --_density: --compact;
+
+    display: block grid;
+    gap: calc(var(--spacing--xs) * 1px);
+
+    @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
+      --_density: --spacious;
+    }
+
+    @container style(--_density: --spacious) {
+      gap: calc(var(--spacing--sm) * 1px);
+    }
+  }
+}
+```
+
+スタイルクエリは、問い合わせる要素自身ではなく、祖先の要素のカスタムプロパティを調べます。`._layout` の `--_density` は `--spacious` に切り替わっていますが、`._layout` のスタイルクエリが調べるのは親のルートの値で、ルートには `--_density` がありません。条件が成り立たないので、`gap` の宣言は適用されません（Chrome 152で確認）。
+
+```css title="🙆‍♂ Recommended: 要素自身の値はコンテナサイズクエリの中に書き、子孫がフラグを問い合わせる"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._layout {
+    --_density: --compact;
+
+    display: block grid;
+    gap: calc(var(--spacing--xs) * 1px);
+
+    @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      gap: calc(var(--spacing--sm) * 1px);
+    }
+  }
+
+  h3 {
+    font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+    }
+  }
+}
+```
+
+フラグを宣言した要素自身の値は、フラグを切り替えるコンテナサイズクエリの中に書き、子孫の `h3` がフラグを問い合わせます。この書き方は「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
+
+このような誤りは、lintでは見つかりません。宣言が適用されているかは、ブラウザの計算値で確かめます（`verify-applied-styles`）。開発者ツールのコンソールか、Playwright MCPの `browser_evaluate` で、次のように読みます。
+
+```js title="計算値を読む"
+const layout = document.querySelector('#wide .article-card ._layout');
+getComputedStyle(layout).getPropertyValue('--_density'); // '--spacious'
+getComputedStyle(layout).rowGap; // '12px'（対応表では 16px）
+```
+
+フラグは `--spacious` なのに、`row-gap` は12pxのままです。計算値と対応表が食い違えば、AIはどの宣言が勝ったかを調べます。調べ方は「[20-3 MCPサーバーを役割で使い分ける](/ai-coding/mcp-servers/)」（Chrome DevTools MCPの `get_css_styles` で、勝った宣言と負けた宣言を確かめる）で説明しています。
+
+## 値の対応表をテストにする
+
+複数の幅や置き場所で切り替わるコンポーネントでは、計算値の確認を、`@playwright/test` のテストにしておきます。planの値の対応表を、要素、プロパティ、書く値の行としてテストに写し、確かめる幅のすべてで計算値と照合します。手順を進めるたびに同じテストを実行すれば、後の手順で前の手順の値を壊したことにも気付けます。
+
+<Code code={valuesSpec} lang="ts" title="tests/design-values.spec.ts" />
+
+テストは、対応表の「書く値」を、対象と同じ親の中に置いた比較用の要素に指定し、2つの計算値を比べます。トークンを参照する値は、ブラウザが解決した値どうしで比べるので、テストにトークンの実際の値を書き写す必要はありません。演習の記事ページで試すと、正しい値の行は一致し、見出しの大きさをわざと誤らせた行だけが不一致になりました。
+
+置き場所は、テストページで幅を固定します。コンテナサイズクエリで切り替わる値は、画面の幅ではなく置き場所の幅で決まるからです。たとえば、記事ページのサイドバーは、狭い画面では本文の下に回って広くなります。サイドバーに置いたカードを狭い形と期待するテストは、その幅では失敗します。
+
+このテストには、2つの限界があります。1つは、値に `%` や `em` を含む行は比べられないことです。比較用の要素と対象の要素で、大きさの基準が変わるからです。もう1つは、作る手間がかかることです。テストにするのは、幅や置き場所で切り替わるコンポーネントのような大きなタスクだけにし、小さなタスクでは、計算値を読む確認で済ませます。
+
+テストページには、「[19-3 表示と操作を確かめる](/operations/verification/)」の最悪の内容（長い見出し、画像のない記事、多数のタグ）を入れておきます。確かめる中で崩れる内容が見つかったら、その内容をテストページに足し、以後のタスクでも同じ内容で確かめます。
+
+## デザインと同じ幅で見比べる
+
+すべての手順を終えたら、デザインと同じ幅で撮ったスクリーンショットと、Figmaの `get_screenshot` の画像を並べて見比べます（「[20-3 MCPサーバーを役割で使い分ける](/ai-coding/mcp-servers/)」の `compare-at-design-width`）。差が見つかったら、AIには、原因を値、要素の構造、素材、フォントのどれかに分けさせます。
+
+分けさせるのは、原因によって直す場所が違うからです。値の差なら、対応表と計算値を照らします。構造の差なら、HTMLの要素の並びを見直します。素材の差なら、書き出した画像を確かめます。フォントの差は、フォントの読み込みと、ブラウザとFigmaの描画の違いのどちらかです。
+
+原因を分けずに直させると、AIは差を埋めるために、`margin` を1px足すような調整を重ねがちです。その調整は、その幅のその内容でしか成り立たず、別の幅で新しい差を生みます。推測で位置を足さず、原因の場所を直させます。
+
+## VRTの基準画像を更新するとき
+
+VRT（ビジュアルリグレッションテスト）は、前回の画像と今回の画像を比べて、表示の変化を見つける仕組みです。`@playwright/test` では、`toHaveScreenshot` で撮った画像を基準画像として保存し、次回から差を報告します。差が出たときに `--update-snapshots` を付けて実行すると、今回の画像が新しい基準画像になります。
+
+AIにテストを通させようとすると、差の原因を調べずに基準画像を更新することがあります。原因の分からない差を基準画像に取り込むと、崩れた表示が正しい表示として固定され、以後のテストでは見つかりません（`no-baseline-update-to-pass`）。私の案件でも、原因の分からないVRTの差を、基準画像に取り込んでしまったことがありました。
+
+基準画像を更新するのは、意図した変更で表示が変わったことを、変わった箇所ごとに確かめたときだけです。`/task-start` の止まる条件にも、基準画像の更新を入れています（「[20-4 タスクの単位で進める](/ai-coding/tasks/)」）。
+
+## 完了の報告
+
+完了の報告は、briefの完了条件ごとに、判定と証拠を書かせます。判定は、合格、不合格、未確認の3つです。
+
+```md title="完了の報告の例"
+| 完了条件 | 判定 | 証拠 |
+| --- | --- | --- |
+| lint とビルドがエラーなしで通る | 合格 | `pnpm lint:css` と `pnpm build` が終了コード0 |
+| 確かめる幅のすべてで、横スクロールが出ない | 合格 | tests/design-values.spec.ts を5つの幅で実行 |
+| plan の値の対応表の値が、計算値と一致する | 合格 | tests/design-values.spec.ts の6行がすべて一致 |
+| css-coding-guideline スキルのレビューで、「必須」と「禁止」の違反が0件 | 合格 | 第9章、第10章、第13章を通読してレビュー。「推奨」の指摘2件は決定ログに記録 |
+| デザインと同じ幅のスクリーンショットで、意図が再現できている | 未確認 | 375px と 1280px の画像を並べた。人が判定する項目 |
+| Safari で表示が崩れない | 未確認 | WebKit での確認を実行していない |
+```
+
+実行していない検査と、人が判定する項目は「未確認」と書かせます（`report-unverified-honestly`）。AIは、確かめられなかった項目を、ほかの項目の結果から推して「問題なし」とまとめることがあります。そう報告されると、人はその項目を確かめる機会を失い、崩れが公開まで残ります。未確認の項目は、`/task-done` の前に人が確かめます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Window: getComputedStyle() method - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)
+- [Visual comparisons - Playwright](https://playwright.dev/docs/test-snapshots)
+- [CSS Conditional Rules Module Level 5 - W3C](https://www.w3.org/TR/css-conditional-5/)

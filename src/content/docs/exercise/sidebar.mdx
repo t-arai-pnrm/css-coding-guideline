@@ -1,5 +1,5 @@
 ---
-title: "20-4 サイドバーにも置く"
+title: "21-4 サイドバーにも置く"
 description: "同じ記事カードを、記事ページのサイドバーに人気記事として置きます。同じ画面に幅の違うカードが並んだとき、それぞれがカンプどおりの形になるか、トップページの新着が前の節のままかを確かめる節です。"
 sidebar:
   order: 4
@@ -11,7 +11,7 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 
 要件が変わります。記事ページを作り、メインの列に本文と関連記事の3件を、サイドの列に人気記事の5件を置くことになりました。メインの列の最小幅は480px相当、サイドの列の幅は240px相当、列の間は40pxで、画面が狭いときはサイドの列をメインの下に回します。関連記事と人気記事のカードは、新着と同じ `article-card` を使います。ただし、カンプのサイドバーのカードは、小さな画像が左に、見出しと日付が右に並び、抜粋はありません。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/list/index.html)）から始め、完成版（[index.html](/exercise-files/sidebar/index.html)、[article.html](/exercise-files/sidebar/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/list/index.html)）から始め、完成版（[index.html](/exercise-files/sidebar/index.html)、[article.html](/exercise-files/sidebar/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[21-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
 
 ## 予想する
 
@@ -23,7 +23,7 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 
 次のデモが、この節を終えた時点の記事ページです。メインの列に本文の代わりの段落と関連記事の3件を、サイドの列に人気記事の5件を置いています。
 
-<Demo scheme="light" title="20-4を終えた時点の記事ページ：同じカードが、置かれた幅で形を変える" html={sidebarHtml} css={sidebarCss} />
+<Demo scheme="light" title="21-4を終えた時点の記事ページ：同じカードが、置かれた幅で形を変える" html={sidebarHtml} css={sidebarCss} />
 
 幅のボタンで1280pxを選ぶと、メインとサイドの2カラムになります。関連記事は3列（カードの幅307px）で、画像が上にある形です。サイドバーの人気記事は幅240pxの1列で、96px相当の画像が左に、見出しと日付が右に並び、抜粋は表示されません。1024pxでも2カラムのままで、関連記事は2列になります。
 
@@ -217,7 +217,7 @@ import sidebarCss from '../../../demos/exercise/sidebar/style.css?raw';
 
 幅の判断です。抜粋を消すのは、置かれた場所が狭くて読める分量が入らないからで、そこがサイドバーだからではありません。そのため、カードが自分の幅を見て、`--_density` で切り替えます。
 
-これに対して、関連記事の欄に置いたカードを特集として見せる要件は、幅では決まりません。新着と関連記事は、どちらも広い形のカードを並べる一覧ですが、特集の見た目にするのは関連記事だけだからです。その要件は、置く側からカードへ情報を渡す別の仕組みで扱います（「[20-7 特集の見た目を足す](/exercise/featured/)」）。
+これに対して、関連記事の欄に置いたカードを特集として見せる要件は、幅では決まりません。新着と関連記事は、どちらも広い形のカードを並べる一覧ですが、特集の見た目にするのは関連記事だけだからです。その要件は、置く側からカードへ情報を渡す別の仕組みで扱います（「[21-7 特集の見た目を足す](/exercise/featured/)」）。
 
 </details>
 

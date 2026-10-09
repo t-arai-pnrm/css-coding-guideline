@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 500" width="520" height="500">
+  <title>タスクの状態の移り方</title>
+  <!-- /task-new で brief を書く -->
+  <path class="_arrow" d="M260 2 V21"/>
+  <polygon class="_arrowhead" points="260,30 255,21 265,21"/>
+  <text class="_text-muted" x="272" y="20" font-size="13">/task-new</text>
+  <rect class="_box" x="150" y="30" width="220" height="44" rx="8"/>
+  <text class="_text" x="260" y="57" font-size="15" font-weight="700" text-anchor="middle">brief.md（人が書く）</text>
+  <!-- /task-start で plan を書く -->
+  <path class="_arrow" d="M260 74 V105"/>
+  <polygon class="_arrowhead" points="260,114 255,105 265,105"/>
+  <text class="_text-muted" x="272" y="98" font-size="13">/task-start（計画を書く）</text>
+  <rect class="_box" x="150" y="114" width="220" height="44" rx="8"/>
+  <text class="_text" x="260" y="141" font-size="15" font-weight="700" text-anchor="middle">plan.md：draft</text>
+  <path class="_arrow" d="M370 128 H392 V144 H379"/>
+  <polygon class="_arrowhead" points="370,144 379,139 379,149"/>
+  <text class="_text-muted" x="400" y="141" font-size="12">修正を反映</text>
+  <!-- /task-approve で承認する -->
+  <path class="_arrow" d="M260 158 V189"/>
+  <polygon class="_arrowhead" points="260,198 255,189 265,189"/>
+  <text class="_text-accent" x="272" y="182" font-size="13">/task-approve（利用者だけ）</text>
+  <rect class="_box -accent" x="150" y="198" width="220" height="44" rx="8"/>
+  <text class="_text-accent" x="260" y="225" font-size="15" font-weight="700" text-anchor="middle">plan.md：approved</text>
+  <!-- /task-start で手順ごとに実装する -->
+  <path class="_arrow" d="M260 242 V273"/>
+  <polygon class="_arrowhead" points="260,282 255,273 265,273"/>
+  <text class="_text-muted" x="272" y="266" font-size="13">/task-start（未完了の手順から）</text>
+  <rect class="_box" x="150" y="282" width="220" height="44" rx="8"/>
+  <text class="_text" x="260" y="309" font-size="15" font-weight="700" text-anchor="middle">手順を実装し、検証する</text>
+  <path class="_arrow" d="M370 296 H392 V312 H379"/>
+  <polygon class="_arrowhead" points="370,312 379,307 379,317"/>
+  <text class="_text-muted" x="400" y="309" font-size="12">次の手順へ</text>
+  <!-- 範囲が変わったら draft に戻す -->
+  <path class="_arrow" d="M150 304 H20 V136 H141" stroke-dasharray="4 3"/>
+  <polygon class="_arrowhead" points="150,136 141,131 141,141"/>
+  <text class="_text-muted" x="28" y="204" font-size="12">範囲が変わったら</text>
+  <text class="_text-muted" x="28" y="220" font-size="12">draft に戻して止まる</text>
+  <!-- 完了の報告 -->
+  <path class="_arrow" d="M260 326 V357"/>
+  <polygon class="_arrowhead" points="260,366 255,357 265,357"/>
+  <text class="_text-muted" x="272" y="350" font-size="13">完了条件を確かめる</text>
+  <rect class="_box" x="120" y="366" width="280" height="44" rx="8"/>
+  <text class="_text" x="260" y="393" font-size="15" font-weight="700" text-anchor="middle">完了の報告（合格／不合格／未確認）</text>
+  <!-- /task-done でアーカイブする -->
+  <path class="_arrow" d="M260 410 V441"/>
+  <polygon class="_arrowhead" points="260,450 255,441 265,441"/>
+  <text class="_text-muted" x="272" y="434" font-size="13">/task-done</text>
+  <rect class="_box" x="150" y="450" width="220" height="44" rx="8"/>
+  <text class="_text" x="260" y="477" font-size="15" font-weight="700" text-anchor="middle">done（archive/ へ移す）</text>
+</svg>

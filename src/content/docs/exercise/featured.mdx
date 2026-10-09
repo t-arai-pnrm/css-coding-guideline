@@ -1,5 +1,5 @@
 ---
-title: "20-7 特集の見た目を足す"
+title: "21-7 特集の見た目を足す"
 description: "関連記事の欄に置いたカードに、特集の装飾を付けます。記事ごとに違う色の装飾が関連記事の欄だけに付き、ほかの置き場所のカードと小さな形のカードが変わらないかを確かめる節です。"
 sidebar:
   order: 7
@@ -13,7 +13,7 @@ import featuredCss from '../../../demos/exercise/featured/style.css?raw';
 
 ただし、カードが小さな形（画像が左）になる狭い幅では、特集の背景を付けません。小さな形のカードは見出しの幅がもともと狭く、背景のための内側の余白を取ると、見出しの幅がさらに削られるからです。新着と人気記事の欄は、これまでどおり特集にしません。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/clickable-card/index.html)、[article.html](/exercise-files/clickable-card/article.html)）から始め、完成版（[index.html](/exercise-files/featured/index.html)、[article.html](/exercise-files/featured/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[20-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/clickable-card/index.html)、[article.html](/exercise-files/clickable-card/article.html)）から始め、完成版（[index.html](/exercise-files/featured/index.html)、[article.html](/exercise-files/featured/article.html)）と見比べます。CSSのファイルは、それぞれのHTMLと同じディレクトリにあります。準備は「[21-1 要件と完成形](/exercise/requirements/#手元で進める準備)」で説明しています。
 
 ## 予想する
 
@@ -25,7 +25,7 @@ import featuredCss from '../../../demos/exercise/featured/style.css?raw';
 
 次のデモが、この節を終えた時点の記事ページです。メインの列に本文と関連記事を、サイドの列に人気記事を置いています。
 
-<Demo scheme="light" title="20-7を終えた時点の記事ページ：関連記事の3件だけが、それぞれの色で特集の見た目になる" html={featuredHtml} css={featuredCss} />
+<Demo scheme="light" title="21-7を終えた時点の記事ページ：関連記事の3件だけが、それぞれの色で特集の見た目になる" html={featuredHtml} css={featuredCss} />
 
 幅のボタンで1280pxを選ぶと、メインの列の関連記事の3件が、それぞれ違う色の淡い背景とタグの色を持ちます。背景は、渡されたアクセント色の明度を96%にした色です。サイドバーの人気記事は、同じカードでも特集の見た目になりません。768px以下では、サイドバーがメインの下に回り、人気記事のカードは画像が上の形に切り替わりますが、背景は付きません。320pxでは関連記事が1列（288px）になり、カードは画像が上の形のまま特集の背景を保ちます。
 
@@ -91,7 +91,7 @@ import featuredCss from '../../../demos/exercise/featured/style.css?raw';
 
 タグのリンクの色は、トークンを直接参照するのをやめ、`--_accent` を参照します。色が渡されなければフォールバックのトークンが使われるので、新着とサイドバーのタグの色は、この節の前と変わりません。公開プロパティの長い名前が出てくるのは、`:scope` で受ける2行だけです。
 
-カードに公開プロパティを足すのは、この節が初めてです。カードを作った節では、外から変えたい値が要件になかったので、1つも作りませんでした（「[20-2 カードを作る](/exercise/card/)」）。公開プロパティはカードの外との約束になるので、ファイルの先頭の説明ブロックに、`@prop` で型、デフォルト値、説明を書きます（「[9-9 コメントの書き方](/notation/comments/)」）。使う側は、CSSの中身を読まなくても、渡せる名前と、渡さなければどうなるかが分かります。この一覧は、呼び出し側が書いた名前の綴りを照らし合わせるときにも使えます（「[20-8 確かめて、レビューする](/exercise/review/)」）。
+カードに公開プロパティを足すのは、この節が初めてです。カードを作った節では、外から変えたい値が要件になかったので、1つも作りませんでした（「[21-2 カードを作る](/exercise/card/)」）。公開プロパティはカードの外との約束になるので、ファイルの先頭の説明ブロックに、`@prop` で型、デフォルト値、説明を書きます（「[9-9 コメントの書き方](/notation/comments/)」）。使う側は、CSSの中身を読まなくても、渡せる名前と、渡さなければどうなるかが分かります。この一覧は、呼び出し側が書いた名前の綴りを照らし合わせるときにも使えます（「[21-8 確かめて、レビューする](/exercise/review/)」）。
 
 ## 幅が広いときだけ特集にする
 
@@ -137,7 +137,7 @@ import featuredCss from '../../../demos/exercise/featured/style.css?raw';
 
 直したのは、カードの `article-card.css` と、`article.html` の関連記事の一覧のHTMLです。`article-card.css` では、`:scope` で2つの公開プロパティを受け、タグの色を `--_accent` に替え、`._layout` のコンテナサイズクエリの中に特集の見た目を足しました。先頭の説明ブロックにも、`@prop` を2行足しています。一覧のHTMLでは、`ul` にフラグを、各 `li` に色を書きました。
 
-直さずに済んだのは、`index.html` の新着と `article.html` のサイドバーの一覧、`article-list.css`、`compositions.css`、そしてカードのHTMLです。カードは幅も外側の余白も持たず、形を置かれた幅で切り替えているので、特集という新しい条件を足しても、ほかの置き場所の見た目は変わりません（「[20-4 サイドバーにも置く](/exercise/sidebar/)」）。カード全体を押せるようにした指定もそのままです（「[20-6 カード全体を押せるようにする](/exercise/clickable-card/)」）。`--_has-hocus`、`--_density`、`--_featured` は互いに独立したフラグなので、組み合わせても、既存の切り替えを書き換える必要がありません。
+直さずに済んだのは、`index.html` の新着と `article.html` のサイドバーの一覧、`article-list.css`、`compositions.css`、そしてカードのHTMLです。カードは幅も外側の余白も持たず、形を置かれた幅で切り替えているので、特集という新しい条件を足しても、ほかの置き場所の見た目は変わりません（「[21-4 サイドバーにも置く](/exercise/sidebar/)」）。カード全体を押せるようにした指定もそのままです（「[21-6 カード全体を押せるようにする](/exercise/clickable-card/)」）。`--_has-hocus`、`--_density`、`--_featured` は互いに独立したフラグなので、組み合わせても、既存の切り替えを書き換える必要がありません。
 
 予想と見比べたら、自分の変更を次の3つの点で見直します。
 
