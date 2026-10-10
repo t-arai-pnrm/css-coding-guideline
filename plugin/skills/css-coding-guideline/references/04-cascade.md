@@ -1,8 +1,8 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.2（2026-10-10 生成）
 - ルールの数: 22
-- 本文: 約7.3万字
+- 本文: 約7.7万字
 - 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,10 +13,10 @@
 ## この章の節
 
 - `cascade` 第4章 カスケードを制御する（約3,300字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/
-- `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/
-- `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/
-- `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/
-- `cascade/scope` 4-4 @scopeでスタイルを閉じ込める（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/
+- `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/
+- `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/
+- `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/
+- `cascade/scope` 4-4 @scopeでスタイルを閉じ込める（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/
 - `cascade/nesting` 4-5 CSSネストの基礎（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/
 
 ## 4-1 カスケード・詳細度・継承

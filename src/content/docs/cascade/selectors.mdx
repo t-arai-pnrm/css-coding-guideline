@@ -14,6 +14,8 @@ import pseudoSpecificityCss from '../../../demos/cascade/pseudo-specificity/styl
 
 `:is()`、`:not()`、`:has()`、`of S` を付けた `:nth-child()` は、引数によって詳細度が変わります。詳細度の数え方と、カスケードの中での位置付けは「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」で説明しています。
 
+この節のコード例も、詳細度の仕組みを見せるために素のクラスで書いています。コンポーネントのスタイルを `@scope` に閉じ込める本書の書き方は、「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で示します。
+
 ## 詳細度がばらばらなセレクタ
 
 詳細度の問題は、多くの場合、上書きしたい側ではなく、上書きされる側の書き方から始まります。次の例では、フォームのボタンと見出しのスタイルを上書きしようとして、うまくいきません。
@@ -106,20 +108,18 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 私が作ったリセットCSSのkiso.cssも、すべてのセレクタを `:where()` で書いています。kiso.cssは配布物なので、カスケードレイヤーを使えない環境でも、どのクラスやタイプセレクタからでも上書きできるようにしています。反対に、`:where()` を使っていないリセットCSSをレイヤーなしで読み込むと、リセットCSSのタイプセレクタの詳細度が上回り、ベーススタイルの指定を打ち消すことがあります。リセットCSSを選ぶときも、詳細度が下げられているかを確認します。kiso.cssの設計は、第8章「[8-1 壊さないリセット](/reset/kiso/)」で説明します。
 
-`:where()` は、コンポーネントの中でも使えます。親のルールの中にネストして直下の子を選ぶと、詳細度は0.2.0に上がります。`& > :where(._heading)` と書けば、子を選ぶ部分の詳細度が0になり、全体は0.1.0のままです。子の要素のルールと詳細度がそろうので、書いた順番どおりに上書きが効きます。
+`:where()` は、コンポーネントの中でも使えます。親のルールの中にネストして直下の子を選ぶと、詳細度は0.2.0に上がります。`& > :where(.contact-heading)` と書けば、子を選ぶ部分の詳細度が0になり、全体は0.1.0のままです。子の要素のルールと詳細度がそろうので、書いた順番どおりに上書きが効きます。
 
 ```css title="🙆‍♂ Recommended: 直下の子を選ぶときに詳細度を上げない"
-@scope (.scoped.contact-section) to (.scoped) {
-  ._layout {
-    display: block grid;
-    reading-flow: grid-rows;
-    grid-template-areas:
-      "--heading"
-      "--body";
+.contact-layout {
+  display: block grid;
+  reading-flow: grid-rows;
+  grid-template-areas:
+    "--heading"
+    "--body";
 
-    & > :where(._heading) {
-      grid-area: --heading;
-    }
+  & > :where(.contact-heading) {
+    grid-area: --heading;
   }
 }
 ```
@@ -170,21 +170,19 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 `:is()` が特に役立つのは、祖先の状態によって変わるスタイルを、子のルールの中に書くときです。次の例では、`<details>` が開いているときだけ、中のアイコンを回転させています。
 
 ```css title="🙆‍♂ Recommended: 祖先の状態による変化を、子のルールの中に書く"
-@scope (.scoped.faq-item) to (.scoped) {
-  ._icon {
-    inline-size: 1em;
-    aspect-ratio: 1;
+.faq-icon {
+  inline-size: 1em;
+  aspect-ratio: 1;
 
-    &:is(:scope[open] *) {
-      rotate: 180deg;
-    }
+  &:is(.faq-item[open] *) {
+    rotate: 180deg;
   }
 }
 ```
 
-`&:is(:scope[open] *)` は、「開いているスコープのルートの子孫である、この要素」という意味です。スコープのルートは `<details class="scoped faq-item">` で、開いているときだけ `open` 属性を持ちます（2026年9月、Chrome 152で確認）。アイコンのスタイルが `._icon` のルールにまとまるので、状態による変化を探しやすくなります。
+`&:is(.faq-item[open] *)` は、「開いている `.faq-item` の子孫である、この要素」という意味です。`.faq-item` は `<details class="faq-item">` で、開いているときだけ `open` 属性を持ちます（2026年9月、Chrome 152で確認）。アイコンのスタイルが `.faq-icon` のルールにまとまるので、状態による変化を探しやすくなります。`@scope` の中では、`.faq-item[open]` の代わりにスコープのルートを指す `:scope[open]` と書けます（「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」）。
 
-同じ指定は、`:scope[open] ._icon` という別のルールとしても書けます。しかし、`._icon` のルールの中にネストして書くなら、ネストしたセレクタを `&` で始めるという本書の規約から、この形になります。ネストの仕組みは「[4-5 CSSネストの基礎](/cascade/nesting/)」で、規約は第9章「[9-4 ネストの書き方](/notation/nesting/)」で説明します。
+同じ指定は、`.faq-item[open] .faq-icon` という別のルールとしても書けます。しかし、`.faq-icon` のルールの中にネストして書くなら、ネストしたセレクタを `&` で始めるという本書の規約から、この形になります。ネストの仕組みは「[4-5 CSSネストの基礎](/cascade/nesting/)」で、規約は第9章「[9-4 ネストの書き方](/notation/nesting/)」で説明します。
 
 ## ガイドライン
 

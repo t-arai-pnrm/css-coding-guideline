@@ -19,7 +19,9 @@ import proximityCss from '../../../demos/cascade/scope-proximity/style.css?raw';
 import outerStylesHtml from '../../../demos/cascade/scope-outer-styles/index.html?raw';
 import outerStylesCss from '../../../demos/cascade/scope-outer-styles/style.css?raw';
 
-コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書きます。`@scope` は、セレクタが当たる範囲を、スコープのルートから下限までの間に限る仕組みです。`to (.scoped)` を書くと、スコープは入れ子になった別のコンポーネントのルートで止まります。この形を「ドーナツスコープ」と呼びます。
+`@scope` は、セレクタが当たる範囲を、スコープのルートから下限までの間に限る仕組みです。`@scope (.media-card) to (.author-note)` と書くと、スタイルは `.media-card` の中に当たり、入れ子にした `.author-note` の手前で止まります。この形を「ドーナツスコープ」と呼びます。
+
+本書では、この仕組みを `@scope (.scoped.<名前>) to (.scoped)` の形で使います。すべてのコンポーネントのルートに `scoped` のクラスを付けておけば、下限に `.scoped` と書くだけで、何を入れ子にしてもスコープが止まるからです。この規約は、仕組みを説明したあとの「本書の書き方：下限を `.scoped` にする」で示します。
 
 この節では、`@scope` の仕様上の動作を説明します。下限の有無による違い、ネストや `:where()` との比較、詳細度が同じときに勝つ側を決める「スコープの近接度」、`<style>` 要素に書く前置きのない `@scope`、`@scope` が防がないものを順に扱います。ルートと子要素の名前の付け方や、`:scope` と `&` の使い分けのような規約は、第9章「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で説明します。
 
@@ -41,10 +43,10 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 ## `@scope` の基本形
 
-`@scope` の後ろの括弧にスコープのルートを、`to` の後ろの括弧にスコープの下限を書きます。
+`@scope` の後ろの括弧に、スコープのルートを書きます。下限は `to` の後ろの括弧に書きますが、次の見出しで説明します。
 
-```css title="🙆‍♂ Recommended: コンポーネントのスタイルを @scope に閉じ込める"
-@scope (.scoped.news-card) to (.scoped) {
+```css title="スコープのルートだけを書いた @scope"
+@scope (.news-card) {
   :scope {
     display: block grid;
     gap: 8px;
@@ -62,7 +64,7 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 ```
 
 ```html title="index.html"
-<article class="scoped news-card">
+<article class="news-card">
   <h2>お知らせの見出し</h2>
   <time datetime="2026-09-25">2026年9月25日</time>
 </article>
@@ -74,11 +76,50 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 ## ドーナツスコープで入れ子のコンポーネントを除く
 
-`to (.scoped)` は、スコープの下限です。ルートの子孫のうち、`.scoped` に当てはまる要素とその中身は、スコープから外れます。下限の要素そのものも、スコープの外です。ルートから下限までの間だけにスタイルが当たるので、穴の開いたドーナツにたとえて「ドーナツスコープ」と呼ばれます。
+`to` の後ろの括弧に書くのは、スコープの下限です。ルートの子孫のうち、下限のセレクタに当てはまる要素とその中身は、スコープから外れます。下限の要素そのものも、スコープの外です。ルートから下限までの間だけにスタイルが当たるので、穴の開いたドーナツにたとえて「ドーナツスコープ」と呼ばれます。
+
+```css title="入れ子にしたコンポーネントを、下限でスコープから外す"
+@scope (.media-card) to (.author-note) {
+  p {
+    color: var(--foreground--accent);
+  }
+}
+```
+
+この例では、`.media-card` の中の `p` が青くなり、入れ子にした `.author-note` の中の `p` は青くなりません。タイプセレクタで選んだスタイルも、下限で止まります。
+
+## 本書の書き方：下限を `.scoped` にする
+
+ここからは、本書の規約です。下限に入れ子のコンポーネントの名前を並べると、カードの中に置く部品が増えるたびに、外側の `@scope` を書き直すことになります。そこで本書では、すべてのコンポーネントのルートに `scoped` のクラスを付け、`@scope (.scoped.<名前>) to (.scoped)` と書きます。下限の `.scoped` は、ルートの内側にある別のコンポーネントのルートすべてに当てはまるので、何を入れ子にしても、外側のスタイルはそこで止まります。
+
+```css title="🙆‍♂ Recommended: すべてのコンポーネントを、下限を .scoped にした @scope で書く"
+@scope (.scoped.media-card) to (.scoped) {
+  p {
+    color: var(--foreground--accent);
+  }
+}
+
+@scope (.scoped.author-note) to (.scoped) {
+  p {
+    font-size: calc(14 / 16 * 1rem);
+  }
+}
+```
+
+```html title="index.html"
+<article class="scoped media-card">
+  <p>外側のコンポーネントの段落</p>
+  <aside class="scoped author-note">
+    <p>入れ子のコンポーネントの段落</p>
+  </aside>
+</article>
+```
+
+この書き方で範囲が閉じるのは、入れ子にするコンポーネントのルートにも `scoped` が付いているときです。既存のサイトに `@scope` を少しずつ入れる段階では、`scoped` の付いていない古い部品の中まで外側のスタイルが届きます。導入の順番は「[19-6 既存のサイトに段階的に導入する](/operations/adoption/)」で説明しています。ルートを `.scoped.<名前>` とクラス2つで選ぶ理由と、`:scope` と `&` の使い分けは、第9章「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で説明します。
 
 <Figure src="cascade/donut-scope" alt="入れ子のコンポーネントを含むHTMLの木と、外側の@scopeの範囲に各要素が入るかを示した表。木は、article.scoped.media-cardを根とし、その子にh2、p、aside.scoped.author-noteがあり、asideの子にh3とpがある。右の2列は、to (.scoped) で下限を書いた場合と、省いた場合。下限ありでは、articleとh2とpだけが範囲に入り、aside、h3、その中のpは範囲から外れる。下限なしでは、6つの要素すべてが範囲に入る。.scopedを持つarticleとasideは、色を付けて強調している。" />
 
-次のデモでは、`.media-card` の中に、別のコンポーネントの `.author-note` を入れ子にしています。どちらのコンポーネントにも、段落の `p` があります。外側のスコープでは `p` を大きな青い文字にしていますが、入れ子のコンポーネントの段落には届いていません。タイプセレクタで選んだスタイルも、下限で止まります。
+次のデモでは、本書の書き方で、`.media-card` の中に別のコンポーネントの `.author-note` を入れ子にしています。どちらのコンポーネントにも、段落の `p` があります。外側のスコープでは `p` を大きな青い文字にしていますが、入れ子のコンポーネントの段落には届いていません。タイプセレクタで選んだスタイルも、下限で止まります。
 
 <Demo title="to (.scoped) があるので、入れ子のコンポーネントの p に外側のスタイルが届かない" html={donutHtml} css={donutCss} />
 
