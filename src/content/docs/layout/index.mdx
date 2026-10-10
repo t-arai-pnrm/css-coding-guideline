@@ -50,18 +50,31 @@ sidebar:
 
 ## 判断の問い
 
-この章の内容で答えられる問いを1つ置きます。答えを開く前に、はみ出す理由を予想してください。
+この章の内容で答えられる問いを1つ置きます。答えを開く前に、列の幅がどうなるかを予想してください。
 
-`grid-template-columns: 1fr 1fr` のグリッドに入力欄を置くと、ページの中では2つの列が等分になりました。ところが、同じHTMLとCSSをWeb ComponentsのShadow DOMの中に置くと、入力欄のある列だけが広がり、グリッドが親からはみ出しました。なぜでしょうか。
+幅320pxの親の中に、`grid-template-columns: 1fr 1fr` のグリッドを2つ置きます。どちらも、左の列に幅の大きい入力欄（`<input size="40">`）を、右の列に短い文字を入れています。違いは、Bのグリッドだけ、アイテムに `min-inline-size: 0` を指定していることです。2つの列が等分にならないのは、AとBのどちらでしょうか。
+
+```css
+.form-grid {
+  display: block grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* B のグリッドのアイテムにだけ指定する */
+.form-grid-b-item {
+  min-inline-size: 0;
+}
+```
 
 <details>
 {/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-グリッドアイテムの `min-inline-size` の初期値 `auto` が、Shadow DOMの中では効いているからです。単独の `1fr` は `minmax(auto, 1fr)` で、下限が `auto` の列は、置かれたアイテムの最小幅より狭くなりません。`<input>` はブラウザが最小幅を決めているので、その幅まで列が押し広げられます（「[7-8 Gridの基礎](/layout/grid-basics/)」）。
+Aです。単独の `1fr` は `minmax(auto, 1fr)` で、下限が `auto` の列は、置かれたアイテムの最小幅より狭くなりません。グリッドアイテムの `min-inline-size` の初期値 `auto` は0ではなく、中身から決まる最小幅として扱われます。入力欄の最小幅はブラウザが `size` 属性から決めるので、左の列はその幅まで広がり、右の列が押しつぶされます。Chrome 152では、左の列が280px、右の列が約22pxになりました（2026年10月確認）。
 
-ページの中で起きなかったのは、本書のベーススタイルが全称セレクタで全要素に `min-inline-size: 0` を指定しているからです。文書の全称セレクタは、Shadow DOMの中の要素を選びません。直すときは、`minmax(0, 1fr)` を列ごとに書き足すより、Shadow DOMのスタイルにも全称セレクタの `min-inline-size: 0` を書き、ページと同じ前提をそろえます（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-fr-without-minmax-zero)」）。
+Bでは、アイテムの最小幅が0なので、列の下限も0になり、2つの列は151pxずつに等分されます。入力欄は列の幅に合わせて縮みます（「[7-8 Gridの基礎](/layout/grid-basics/)」）。本書では、この `min-inline-size: 0` を次の章のベーススタイルとして全要素に指定し、列ごとに `minmax(0, 1fr)` と書かずに済ませます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。
 
 </details>
 

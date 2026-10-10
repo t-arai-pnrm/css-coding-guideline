@@ -86,7 +86,7 @@ body {
 
 方向の呼び方も、同じ基準で考えます。`justify-content: flex-end` は、フレックスコンテナの主軸の終わりに寄せる指定です。横書きで左から右へ書き、`flex-direction: row` で並べる場合は右に寄るので、これを「右揃え」と呼ぶことがよくあります。同じように、横書きのサイトでは、`margin-inline` と `padding-inline` を左右の余白として読んでかまいません。
 
-私がブロックの中央寄せに `margin-inline: auto` を選ぶのは、短く書けるからではありません。`margin: 0 auto` や `margin: auto` は、左右のマージンと一緒に上下のマージンも上書きします。周りのレイアウトが `* + *` のセレクタ（フクロウセレクタ）で子の間に入れた余白も、`0` で消してしまいます。`margin-inline` はインライン方向のマージンだけを指定するので、この副作用がありません（「[2-3 保守しやすさを最優先にする](/layout/box-model/#rule-margin-inline-auto-centering)」）。
+私がブロックの中央寄せに `margin-inline: auto` を選ぶのは、短く書けるからではありません。`margin: 0 auto` や `margin: auto` は、左右のマージンと一緒に上下のマージンも上書きします。周りのレイアウトが `* + *` のセレクタ（フクロウセレクタ）で子の間に入れた余白も、`0` で消してしまいます。`margin-inline` はインライン方向のマージンだけを指定するので、この副作用がありません（「[7-3 ボックスモデルの基礎](/layout/box-model/#rule-margin-inline-auto-centering)」）。
 
 ```css title="🙅‍♂ Not Recommended: 上下のマージンまで 0 にする"
 /* 🙅‍♂ Not Recommended */

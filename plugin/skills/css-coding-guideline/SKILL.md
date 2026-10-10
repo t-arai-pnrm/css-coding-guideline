@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # CSSコーディングガイドライン Skill
 
-- ガイドラインのバージョン: 0.50.1（2026-10-10 生成）
+- ガイドラインのバージョン: 0.50.2（2026-10-10 生成）
 - ルールの数: 602（うち AI が誤りやすいもの 289）
 - 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
 
@@ -101,7 +101,7 @@ Figma などのデザインツールのデザインから書くときは、「20
 | --- | --- | --- | --- | --- |
 | 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.4万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
 | 第2章 CSS設計の考え方 | `references/02-design-mindset.md` | 7 | 約2.6万字 | コンポーネントの分け方、共通化、上書きの多い設計 |
-| 第4章 カスケードを制御する | `references/04-cascade.md` | 23 | 約7.9万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
+| 第4章 カスケードを制御する | `references/04-cascade.md` | 23 | 約8万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
 | 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.3万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |
 | 第6章 値と単位 | `references/06-values.md` | 29 | 約7.5万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
 | 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約27.6万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |

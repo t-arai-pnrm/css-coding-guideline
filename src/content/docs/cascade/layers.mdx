@@ -124,35 +124,41 @@ import forgottenLayerCss from '../../../demos/cascade/forgotten-layer/style.bad.
 
 Astro（Vite）は、ビルド時に `@import` の読み込み先の中身をエントリーポイントのファイルに埋め込み、`layer()` の指定を `@layer` のブロックに置き換えます（2026年10月、Vite 8で確認）。フレームワークを使わない環境では、postcss-importのようなPostCSSのプラグインで同じように展開できます。展開した後もレイヤーの順番とファイルの割り当ては変わらないので、ソースのファイルでは、上の例のように `@import … layer()` で書けます。CMSの案件でも、自分で書いたCSSはビルドを通してから配信します。例外は、「[最小の構成で始める](/introduction/quick-start/)」のように、学習や検証のため、ビルドせずに手元で試す場合だけです。
 
-学習用の構成から実務の配信へ移るときは、ビルドの道具を1つ通すだけで足ります。Viteを例にすると、手順は次のとおりです。まず、上の例と同じ形のエントリーポイントを `src/styles/global.css` に作ります。次に、HTMLの `<head>` で、`<link rel="stylesheet" href="/src/styles/global.css">` と読み込みます。Viteは、HTMLから読み込んだCSSも処理の対象にします。
+学習用の構成から実務の配信へ移るときは、ビルドの道具を1つ通すだけで足ります。ここでは、「[最小の構成で始める](/introduction/quick-start/)」のお知らせのカードを、ファイルを変えずにViteでビルドします。ファイルの配置、`index.html`、`css/style.css` とそこから読み込む4つのファイルは、そのページのとおりです。`css/style.css` では、9つのレイヤーの順番を宣言し、kiso.css、2つのトークンのファイル、`news-card.css` を `@import … layer()` で割り当てています。
+
+Viteは、HTMLの `<link>` から読み込んだCSSも処理の対象にします。`index.html` のある場所で、Viteを入れてからビルドします。
+
+```bash
+npm install --save-dev vite
+```
 
 ```bash
 npx vite build
 ```
 
-ビルドすると、`dist/assets/` に1つのCSSファイルができ、HTMLの `<link>` はそのファイルを指すように書き換わります。出力の中には `@import` が残らず、読み込んだ各ファイルの中身が、`layer()` で指定したレイヤーのブロックに入ります。次の出力は、`tokens`、`base`、`components` の3つのファイルを読み込んだ例です。読みやすく改行しています（2026年10月、Vite 8.3で確認）。
+ビルドすると、`dist/index.html` と、`dist/assets/` に1つのCSSファイルができます。`dist/index.html` の `<link>` は、`css/style.css` ではなく、このファイルを指すように書き換わります。出力の中には `@import` が残らず、読み込んだ各ファイルの中身が、`layer()` で指定したレイヤーのブロックに入ります。次の出力は、骨組みが分かるように改行し、中身の一部を省略したものです（2026年10月、Vite 8.3で確認）。
 
 ```css
 @layer tokens {
   :root {
-    --foreground--muted: oklch(50% 0 0);
+    --color--neutral--100: oklch(97% 0 0);
+    /* ... colors.css と sizes.css の残りのトークン */
+    --rounded--md: 8px;
   }
 }
-@layer reset;
-@layer base {
-  body {
-    margin: 0;
-  }
+@layer reset {
+  /* ... kiso.css の中身 */
 }
+@layer base, vendors, compositions, pages;
 @layer components {
-  .notice {
-    color: var(--foreground--muted);
+  @scope (.scoped.news-card) to (.scoped) {
+    /* ... news-card.css の中身 */
   }
 }
-@layer utilities;
+@layer patterns, utilities;
 ```
 
-先頭の `@layer` 文は、最小化のときに、各レイヤーのブロックと、中身のないレイヤーの宣言に分けて書き直されます。それでも、レイヤーが最初に現れる順番は宣言のとおりなので、優先順位は変わりません。ビルドの後は、出力のCSSを開いて `@import` が残っていないことと、レイヤーの並びが宣言どおりであることを確かめます。
+2つのトークンのファイルは1つの `:root` にまとまり、中身のないレイヤーは名前の宣言だけが残ります。先頭の `@layer` 文は、最小化のときにこうして書き直されますが、レイヤーが最初に現れる順番は宣言のとおりなので、優先順位は変わりません。最小化では、`display: block grid` が `display: grid` に、`calc(20 / 16 * 1rem)` が `1.25rem` になるような、意味を変えない書き換えも起きます。ビルドの後は、`npx vite preview` で `dist/` を配信し、ソースと同じカードが表示されることを確かめます。`dist/index.html` はCSSを `/assets/…` のようにサイトのルートから参照するので、ファイルを直接ブラウザで開くとCSSが読み込まれません。そのうえで、出力のCSSに `@import` が残っていないことと、レイヤーの並びが宣言どおりであることを確かめます。
 
 `<head>` の中の `<style>` のように `@import` で読み込まないCSSには、`@layer components { … }` の形でレイヤーを自分で書きます。
 

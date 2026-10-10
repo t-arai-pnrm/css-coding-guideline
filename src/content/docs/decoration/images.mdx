@@ -79,7 +79,7 @@ import heroHeaderCss from '../../../demos/decoration/hero-header/style.css?raw';
 
 デモには、元の比率が16:9、3:4、3:1の3枚の画像を並べています。どの画像も、サムネイルは16:9の枠に、キャプションの横のアバターは正円に収まり、枠からはみ出した部分は切り取られます。
 
-サムネイルの幅は、`100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書いて親の幅いっぱいに広げます（「[2-3 保守しやすさを最優先にする](/layout/sizing/#rule-stretch-over-width-100)」）。正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)」でも取り上げています。
+サムネイルの幅は、`100%` ではなく、`-webkit-fill-available` と `stretch` をこの順に書いて親の幅いっぱいに広げます（「[7-4 大きさの決まり方](/layout/sizing/#rule-stretch-over-width-100)」）。正方形や正円にしたいときは、`aspect-ratio: 1` と書きます。`aspect-ratio` は `<img>` だけでなく、動画や `<iframe>`、背景を持つ `<div>` のような、縦横比が決まっている要素なら何にでも使えます。高さを固定したくなったら、まず `aspect-ratio` で表せないかを考えます。高さの決め方は「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)」でも取り上げています。
 
 `<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。ブラウザは、この2つの属性から縦横比を計算し、画像を読み込む前から表示する場所を確保します。属性がないと、画像が読み込まれた瞬間に高さが決まり、下にある文章がずれて、読んでいた位置を見失います。
 

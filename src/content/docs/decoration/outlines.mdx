@@ -21,7 +21,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 要素の輪郭は `clip-path` の `shape()` で、枠線の塗りは `background-clip: border-area` で描きます。どちらも、以前は複数の擬似要素やマスクの重ね合わせで作っていた形を、1つか2つの宣言で書けるようにする機能です。`shape()` はすべての主要なブラウザが対応していますが、`border-area` は対応が分かれています。
 
-`border-area` は、未対応の環境で宣言全体が無効になり、何も描かれなくなることがあります。そのため、未対応の環境での見え方を先に確かめ、`@supports` で従来の書き方に切り替えます。角の形だけを変える `corner-shape` は「[16-4 角の形を変える](/decoration/shapes/)」で扱います。`polygon()` で図形を切り抜く書き方と、`mask-image` の基本は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で説明しています。
+`border-area` は、未対応の環境で宣言全体が無効になり、何も描かれなくなることがあります。そのため、未対応の環境での見え方を先に確かめ、`@supports` で従来の書き方に切り替えます。角の形だけを変える `corner-shape` は「[16-5 角の形を変える](/decoration/shapes/)」で扱います。`polygon()` で図形を切り抜く書き方と、`mask-image` の基本は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で説明しています。
 
 ## 輪郭を描く方法の違い
 
@@ -33,7 +33,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 `shape()` は、`clip-path` などで使う図形の関数です。`polygon()` は頂点を直線でつなぐことしかできず、`path()` はSVGのパスの文字列なので、`%` や `calc()`、カスタムプロパティが使えませんでした。`shape()` は、直線と曲線の命令をCSSの値で書けるので、要素の大きさに合わせて伸び縮みする輪郭を描けます。
 
-次の例は、「[16-4 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
+次の例は、「[16-5 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
 
 ```css title="🙆‍♂ Recommended: 反り返るタブを、擬似要素1つの shape() で描く"
 @scope (.scoped.tab-list) to (.scoped) {
@@ -300,7 +300,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 `::before` が輪です。前の例のグラデーションの枠線と同じく、透明な枠線を付け、`padding-box` と `border-box` に切り抜いた2枚のマスクを `exclude` で合成して、枠線の部分だけを残しています。そこに枠線の外側から（`background-origin: border-box`）`conic-gradient()` を敷くので、枠線の太さがそのまま輪の太さになります。
 
-`::after` が中心の数値です。`calc(var(--count-up--value) / 1%)` は、割合を1%で割った単位のない数値を返し（「[6-3 計算関数で根拠を式に残す](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` がその数値を文字にします。`counter-reset` は整数を受け取るので、`calc()` の結果は整数に丸められます。{/* 要確認: counter-reset に @property で登録した値の calc() を渡す書き方の対応状況 */}文字の大きさは、コンテナの幅（`100cqi`）に、グラフの幅が `--_basis-width`（200px）のとき32pxとなる比を掛けて決めています。グラフをどの大きさで置いても、輪と数値の大きさの比が変わりません。`tabular-nums` で数字の幅をそろえるのは、数値が増える間も文字の位置を左右に揺らさないためです。
+`::after` が中心の数値です。`calc(var(--count-up--value) / 1%)` は、割合を1%で割った単位のない数値を返し（「[6-4 計算関数を応用する](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` がその数値を文字にします。`counter-reset` は整数を受け取るので、`calc()` の結果は整数に丸められます。{/* 要確認: counter-reset に @property で登録した値の calc() を渡す書き方の対応状況 */}文字の大きさは、コンテナの幅（`100cqi`）に、グラフの幅が `--_basis-width`（200px）のとき32pxとなる比を掛けて決めています。グラフをどの大きさで置いても、輪と数値の大きさの比が変わりません。`tabular-nums` で数字の幅をそろえるのは、数値が増える間も文字の位置を左右に揺らさないためです。
 
 割合は、0%から数え上げて表示します。`--count-up--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。`@keyframes` には `from` だけを書き、終わりの値は擬似要素で指定した値を使います（「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。輪と数値は同じ `@keyframes` で動くので、輪が伸びるのに合わせて数値も増えます。トランジションではなく `@keyframes` を使うのは、トランジションは値が変わったときにしか動かず、ページを開いたときの表示では何も起きないからです。数値が一定の速さで増えるように、イージングは `linear` にしています。動かすのは、`prefers-reduced-motion: no-preference` のときだけです。
 

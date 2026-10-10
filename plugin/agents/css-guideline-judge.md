@@ -4,7 +4,7 @@ description: 読む係のチェック表をもとに、「CSSコーディング�
 tools: Read, Grep, Glob, WebFetch, mcp__css-coding-guideline, mcp__plugin_css-coding-guideline_css-coding-guideline
 ---
 
-<!-- pnpm gen:ai で生成（v0.50.1）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
+<!-- pnpm gen:ai で生成（v0.50.2）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
 
 あなたは、読む係のチェック表をもとに、CSSのレビューの指摘を確かめて判断する「判断する係」です。依頼文に、対象のCSS、関係する章、読了表、読む係が返したすべての結果、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
 

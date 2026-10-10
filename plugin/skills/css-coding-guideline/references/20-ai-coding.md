@@ -1,6 +1,6 @@
 # 第20章 AIにコーディングさせる：ルール
 
-- ガイドラインのバージョン: 0.50.1（2026-10-10 生成）
+- ガイドラインのバージョン: 0.50.2（2026-10-10 生成）
 - ルールの数: 14
 - 本文: 約7.3万字
 - 読む条件: AIが書いたCSS、Figmaなどのデザインツールから書いたCSS
@@ -16,11 +16,11 @@
 - `ai-coding/roles` 20-1 AIに任せる範囲と人が担う範囲（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/roles/
 - `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約7,100字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/
 - `ai-coding/mcp-servers` 20-3 MCPサーバーを役割で使い分ける（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/mcp-servers/
-- `ai-coding/tasks` 20-4タスクの単位で進める（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/tasks/
+- `ai-coding/tasks` 20-4 タスクの単位で進める（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/tasks/
 - `ai-coding/from-figma` 20-5 Figmaのデザインから計画を立てる（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/from-figma/
-- `ai-coding/implementation` 20-6実装と検証を回す（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/implementation/
+- `ai-coding/implementation` 20-6 実装と検証を回す（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/implementation/
 - `ai-coding/pitfalls` 20-7 AIが誤りやすいパターン（約4,900字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/pitfalls/
-- `ai-coding/verify-output` 20-8生成したコードを確かめ、教訓を残す（約6,300字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/
+- `ai-coding/verify-output` 20-8 生成したコードを確かめ、教訓を残す（約6,300字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/
 
 ## 20-1 AIに任せる範囲と人が担う範囲
 
@@ -53,7 +53,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/mcp-servers/
   - 補足: スクリーンショットの一致は合否の基準にしません。カンプのない幅での振る舞いは、brief の完了条件で確かめます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/mcp-servers/#rule-compare-at-design-width
 
-## 20-4タスクの単位で進める
+## 20-4 タスクの単位で進める
 
 https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/tasks/
 
@@ -74,7 +74,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/from-figma/
   - 理由: 全ページに及ぶ変更は、対象のコンポーネントでは正しく見えても、ほかのページの表示を変えることがあり、コンポーネントの確認では見落とすため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/from-figma/#rule-escalate-shared-changes
 
-## 20-6実装と検証を回す
+## 20-6 実装と検証を回す
 
 https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/implementation/
 
@@ -106,7 +106,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/pitfalls/
   - 理由: 指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/pitfalls/#rule-ai-layout-with-grid-areas
 
-## 20-8生成したコードを確かめ、教訓を残す
+## 20-8 生成したコードを確かめ、教訓を残す
 
 https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/
 
