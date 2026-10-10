@@ -277,6 +277,52 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
 
 `:hover` やフォーカスで色や背景が変わる見た目は、パターンにせず、コンポーネントにします。パターンに状態のスタイルを書くと、状態ごとの値もコンポーネントから変えられなくなるからです。状態を持つ時点で、静的な見た目の断片というパターンの定義からも外れます。また、パターンのセレクタを `:where()` で包んで詳細度を0にする必要はありません。強弱はレイヤーの順番で決まるので、詳細度を下げてもコンポーネントに対する強さは変わりません。
 
+## パターンにするか、コンポーネントにするか
+
+繰り返し使う見た目を、パターンにするかコンポーネントにするかは、次の3つの問いを順にたどって決めます。1つ目は、HTMLの構造を持つかです。子要素の並びや使う要素の種類まで決めたいなら、コンポーネントにします。2つ目は、ホバーやフォーカス、ARIA属性のような状態で見た目が変わるかです。変わるなら、コンポーネントにします。3つ目は、置かれた場所で変えたい値があるかです。あっても、公開プロパティで受け取れる値なら、パターンのままで足ります。
+
+1つ目と2つ目の問いを「いいえ」で抜けた、構造と状態を持たない見た目だけが、パターンになります。`section-heading` は見出しの要素に重ねるだけで、状態で変わらず、大きさだけを公開プロパティで受け取るので、パターンです。反対に、押せる見た目は、ホバーとフォーカスで変わるので、要素を選ばずに付けたいものであってもパターンにしません。
+
+たとえば、画像を選ぶ入力欄の `<label>` を、送信の `<button>` と同じ押せる見た目にしたい場面です。見た目を `.button-look` のようなパターンにすると、ホバーとフォーカスの指定が `patterns` レイヤーに入り、置かれたコンポーネントから状態の色を変えられなくなります。そこで、ルートに付ける要素を固定しないコンポーネントにします。
+
+```html title="🙆‍♂ Recommended: 同じコンポーネントのルートを、button にも label にも付ける"
+<button class="scoped action-control" type="submit">送信する</button>
+
+<label class="scoped action-control">
+  画像を選ぶ
+  <input class="-visually-hidden" type="file" accept="image/*">
+</label>
+```
+
+```css title="🙆‍♂ Recommended: 状態のスタイルを、要素を固定しないコンポーネントの中で完結させる"
+@scope (.scoped.action-control) to (.scoped) {
+  :scope {
+    --_background: var(--background--inverse);
+    --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+
+    display: inline flex;
+    align-items: center;
+    padding-block: 8px;
+    padding-inline: 16px;
+    border-radius: var(--rounded--md);
+    background-color: var(--_background);
+    color: var(--foreground--inverse);
+
+    &:is(:focus-visible, :has(:focus-visible)) {
+      background-color: var(--_background--hocus);
+    }
+
+    &:is(:enabled, label):hover {
+      @media (any-hover) {
+        background-color: var(--_background--hocus);
+      }
+    }
+  }
+}
+```
+
+コンポーネントにしても、ルートに付ける要素は選べます。`<button>`、`<a>`、`<label>` のどれに付けても、ボタンとしての送信、リンクとしての移動、入力欄を開く動作のような、要素本来の意味と動作はそのまま残ります。ホバーは、ボタンなら `:enabled` に絞り、無効の状態がない `<label>` は条件を付けずに当てます（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。`<label>` の中の入力欄は視覚的に隠しているので、フォーカスはルートの `:has(:focus-visible)` で表します。名前を `button` にしないのは、`<button>` 以外の要素にも付けるからです（「[9-1 命名規則](/notation/naming/)」）。
+
 ## コラム：ユーティリティファーストとの付き合い方
 
 本書は、素のCSSで書くことを前提にしています。私が使っているテンプレートの規約にも、「明示的な要求がない限り、Tailwind CSSやCSS-in-JSは使わない」と書いています。Web標準の機能だけで書いておけば、この本で説明しているカスケードレイヤーや `@scope` などの仕組みを、そのまま使えるからです。

@@ -1,6 +1,6 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.49.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.49.1（2026-10-10 生成）
 - ルールの数: 31
 - 本文: 約16.1万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions

@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # CSSコーディングガイドライン Skill
 
-- ガイドラインのバージョン: 0.49.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.49.1（2026-10-10 生成）
 - ルールの数: 600（うち AI が誤りやすいもの 289）
 - 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
 
@@ -100,15 +100,15 @@ Figma などのデザインツールのデザインから書くときは、「20
 | 章 | ファイル | ルールの数 | 本文 | 読む条件 |
 | --- | --- | --- | --- | --- |
 | 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.4万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
-| 第2章 CSS設計の考え方 | `references/02-design-mindset.md` | 7 | 約2.5万字 | コンポーネントの分け方、共通化、上書きの多い設計 |
+| 第2章 CSS設計の考え方 | `references/02-design-mindset.md` | 7 | 約2.6万字 | コンポーネントの分け方、共通化、上書きの多い設計 |
 | 第4章 カスケードを制御する | `references/04-cascade.md` | 22 | 約7.8万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
 | 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.3万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |
 | 第6章 値と単位 | `references/06-values.md` | 29 | 約7.5万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
 | 第7章 レイアウトの仕組み | `references/07-layout.md` | 40 | 約27.3万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
 | 第8章 リセットとベーススタイル | `references/08-reset.md` | 23 | 約4.7万字 | リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル |
 | 第9章 記法の規約 | `references/09-notation.md` | 49 | 約11.4万字 | **常に読む**。すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法） |
-| 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 51 | 約15.6万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
-| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 61 | 約24.6万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
+| 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 51 | 約15.8万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
+| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 61 | 約24.7万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
 | 第12章 レイアウトコンポジション | `references/12-compositions.md` | 37 | 約17.1万字 | 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン |
 | 第13章 レスポンシブデザイン | `references/13-responsive.md` | 39 | 約11.2万字 | @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area |
 | 第14章 タイポグラフィと和文組版 | `references/14-typography.md` | 32 | 約7.4万字 | font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割 |
