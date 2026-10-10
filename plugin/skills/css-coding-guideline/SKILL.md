@@ -6,8 +6,8 @@ license: CC-BY-4.0
 
 # CSSコーディングガイドライン Skill
 
-- ガイドラインのバージョン: 0.48.0（2026-10-10 生成）
-- ルールの数: 597（うち AI が誤りやすいもの 289）
+- ガイドラインのバージョン: 0.49.0（2026-10-10 生成）
+- ルールの数: 600（うち AI が誤りやすいもの 289）
 - 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
 
 ## 基本原則
@@ -108,12 +108,12 @@ Figma などのデザインツールのデザインから書くときは、「20
 | 第8章 リセットとベーススタイル | `references/08-reset.md` | 23 | 約4.7万字 | リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル |
 | 第9章 記法の規約 | `references/09-notation.md` | 49 | 約11.4万字 | **常に読む**。すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法） |
 | 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 51 | 約15.6万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
-| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 59 | 約24.4万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
+| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 61 | 約24.6万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
 | 第12章 レイアウトコンポジション | `references/12-compositions.md` | 37 | 約17.1万字 | 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン |
 | 第13章 レスポンシブデザイン | `references/13-responsive.md` | 39 | 約11.2万字 | @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area |
 | 第14章 タイポグラフィと和文組版 | `references/14-typography.md` | 32 | 約7.4万字 | font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割 |
 | 第15章 色 | `references/15-color-media.md` | 23 | 約8.7万字 | 色の指定（oklch()、color-mix()、相対カラー構文）、ダークモード、強制カラーモード、コントラスト |
-| 第16章 画像・装飾 | `references/16-decoration.md` | 32 | 約14.2万字 | 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷 |
+| 第16章 画像・装飾 | `references/16-decoration.md` | 33 | 約14.4万字 | 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷 |
 | 第17章 インタラクション | `references/17-interaction.md` | 39 | 約11.7万字 | ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル |
 | 第18章 モーション | `references/18-motion.md` | 31 | 約16.1万字 | transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions |
 | 第19章 実務での運用 | `references/19-operations.md` | 27 | 約6万字 | Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入 |

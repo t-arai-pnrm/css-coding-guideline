@@ -1,8 +1,8 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.48.0（2026-10-10 生成）
-- ルールの数: 32
-- 本文: 約14.2万字
+- ガイドラインのバージョン: 0.49.0（2026-10-10 生成）
+- ルールの数: 33
+- 本文: 約14.4万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,7 +13,7 @@
 ## この章の節
 
 - `decoration` 第16章 画像・装飾（約3,600字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
-- `decoration/images` 16-1 画像の配置と読み込み（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
+- `decoration/images` 16-1 画像の配置と読み込み（約2.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
 - `decoration/icons-and-masks` 16-2 アイコン・SVG・マスク（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
 - `decoration/surfaces` 16-3 面・影・角丸（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
 - `decoration/text-ornaments` 16-4 文字とリストの装飾（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
@@ -40,9 +40,13 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
   - 理由: 画像を読み込めないと、文字と背景の色が近くなり、文字を読めなくなることがあるため。
   - 補足: 背景色は文字色から決めます。`sign()` の宣言を先に書き、`contrast-color(currentColor)` で上書きします（ルール `contrast-color-for-image-fallback`）。`contrast-color()` だけだと、対応していない環境で背景色が付かず、画像が表示されないときに文字が読めなくなります。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-text-on-image-fallback-background
+- 【推奨・仕様上の制約】白い背景の画像が入りうる場所では、画像に負の `outline-offset` を付けた `outline` で内側に線を引き、縁を示す。`box-shadow: inset` や `border` では描かない。（`outline-for-image-edge`）
+  - 理由: 内側の影は画像の下に描かれて見えず、`border` は `border-box` の画像を線の分だけ小さくするため。`outline` は中身より手前に描かれ、大きさを変えない。
+  - 補足: 線の色は枠線のトークンから選びます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-outline-for-image-edge
 - 【推奨・実装上の判断】背景に写真を敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置く。（`img-over-background-image`）
   - 理由: `<picture>` や `srcset` と `sizes` で表示される幅に合った画像を読み込め、`opacity` やフィルターで画像だけを加工でき、`alt` で意味を伝えられるうえ、HTML を解析する段階でプリロードスキャナーに見つかり、LCP の候補でも表示が遅れないため。
-  - 補足: `background-image` は、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に使います。単色やグラデーションだけの背景も `background-image` で足ります。装飾の写真なら `alt=""` にします。重ねるだけの入れ物には、コンポジションの `pile` を使えます。
+  - 補足: `background-image` は、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に使います。1枚だけ置く装飾には、`background-repeat: no-repeat` を明示します。単色やグラデーションだけの背景も `background-image` で足ります。装飾の写真なら `alt=""` にします。重ねるだけの入れ物には、コンポジションの `pile` を使えます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-img-over-background-image
 - 【推奨・実装上の判断】`srcset` と `sizes` の値は、手で計算せず、RespImageLint などのツールで確かめて決める。（`sizes-by-tool`）
   - 理由: 表示される幅は余白や段組みの切り替えによって変わり、手で計算すると誤りやすいため。

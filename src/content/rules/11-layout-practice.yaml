@@ -158,6 +158,15 @@
   page: layout-practice/defensive
   since: 0.22.0
 
+- id: no-stretched-media-in-flex
+  level: 推奨
+  kind: spec
+  rule: 'Flexbox で画像や動画を文章と横に並べるときは、メディアに `align-self: start` などを指定し、`stretch` で交差軸に引き伸ばさない。'
+  reason: '`align-items` の初期値は `stretch` なので、`aspect-ratio` を指定した画像も隣の文章の高さまで伸び、文章の長さで比率が変わるため。'
+  note: 'Grid では、縦横比を持つアイテムは引き伸ばされず始点に置かれるので、この指定は要りません。'
+  page: layout-practice/defensive
+  since: 0.49.0
+
 - id: flex-wrap-for-variable-items
   level: 推奨
   kind: judgment
@@ -204,6 +213,15 @@
   aiProne: true
   page: layout-practice/overflow
   since: 0.1.0
+
+- id: overflow-auto-over-scroll
+  level: 推奨
+  kind: spec
+  rule: 'はみ出したときだけスクロールさせる要素には、`overflow: scroll` ではなく `overflow: auto` を指定する。'
+  reason: '`scroll` は、中身が収まっていてもスクロールバーを常に表示し、スクロールバーを常に表示する環境では使えない帯が残るため。'
+  note: 'スクロールバーが現れたときの中身の幅の揺れを防ぐなら、`scrollbar-gutter: stable` を合わせて指定します。'
+  page: layout-practice/overflow
+  since: 0.49.0
 
 - id: safe-center-for-scrollable
   level: 推奨

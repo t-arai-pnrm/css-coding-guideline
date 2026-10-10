@@ -165,6 +165,21 @@ img {
 
 背景色は、画像の平均的な色ではなく、文字色とのコントラストが取れる色にします。このコード例では、白い文字に対して黒を敷いています。文字色を変えても背景色を書き直さずに済みます。`contrast-color(currentColor)` だけでは、対応していない環境（Safari 18系）で背景色が付かず、画像が表示されないときに白い文字が読めなくなります。そこで、`sign()` で書いた同じ意味の宣言を先に置いています（「[15-3 背景から文字色を決める](/color-media/contrast-text/)」）。画像と本文は同じグリッドのエリアに重ね、画像の高さは前の項目と同じ方法で本文に合わせています。
 
+## 白い背景の画像に縁を付ける
+
+商品の写真やスクリーンショットのように、背景が白い画像を白いページに置くと、画像の縁が背景に溶けて、どこまでが画像なのかが分からなくなります。CMSで画像を差し替えられる場所では、どの画像が入るかを前もって決められないので、画像の内側に細い線を引いておきます。線は、負の `outline-offset` を付けた `outline` で描きます。
+
+```css title="🙆‍♂ Recommended: 画像の内側に outline で線を引き、白い背景の画像の縁を示す"
+._thumbnail {
+  outline: 1px solid var(--border--base);
+  outline-offset: -1px;
+}
+```
+
+`box-shadow: inset` では、この線を描けません。内側の影は要素の背景の上、中身の下に描かれるので、`<img>` の画像に覆われて見えなくなります。`outline` は中身より手前に描かれ、`outline-offset` を負の値にすれば、画像の大きさを変えずに内側へ引けます。Chrome 152で、不透明な画像に指定した `box-shadow: inset` は見えず、`outline` の線は画像の上に表示されることを確かめました（2026年10月確認）。{/* 要検証: ブラウザ。Safari と Firefox で、負の outline-offset の outline が img の画像の上に描かれること */}`border` で描くと、`box-sizing: border-box` の画像では線の分だけ画像が小さくなるので、使いません。
+
+線の色は、枠線のトークンから選びます。濃い色にすると、白くない画像では枠が目立ちすぎます。強制カラーモードでは、`outline` の色はシステムカラーに置き換わります（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
+
 ## 背景の写真も `<img>` で置く
 
 前の項目のヒーローのように写真を背景に敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を背景に置きます。`background-image` を使うのは、小さな画像を繰り返して敷き詰めるパターン画像や、内容と関係のない細かな装飾に限ります。
@@ -205,6 +220,16 @@ img {
 ._section {
   background-image: url("dots.svg");
   background-size: 24px;
+}
+```
+
+1枚だけ置く装飾の画像には、`background-repeat: no-repeat` を明示します。初期値の `repeat` のままだと、要素が画像より大きくなったとき、画像が繰り返して並びます。カンプの大きさでは繰り返しが見えなくても、文字が増えて要素が伸びると現れます。
+
+```css title="🙆‍♂ Recommended: 1枚だけ置く装飾は、繰り返しを止める"
+._notice {
+  background-image: url("corner-ornament.svg");
+  background-repeat: no-repeat;
+  background-size: 48px;
 }
 ```
 

@@ -37,12 +37,21 @@
   page: decoration/images
   since: 0.1.0
 
+- id: outline-for-image-edge
+  level: 推奨
+  kind: spec
+  rule: '白い背景の画像が入りうる場所では、画像に負の `outline-offset` を付けた `outline` で内側に線を引き、縁を示す。`box-shadow: inset` や `border` では描かない。'
+  reason: '内側の影は画像の下に描かれて見えず、`border` は `border-box` の画像を線の分だけ小さくするため。`outline` は中身より手前に描かれ、大きさを変えない。'
+  note: '線の色は枠線のトークンから選びます。'
+  page: decoration/images
+  since: 0.49.0
+
 - id: img-over-background-image
   level: 推奨
   kind: judgment
   rule: 背景に写真を敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置く。
   reason: '`<picture>` や `srcset` と `sizes` で表示される幅に合った画像を読み込め、`opacity` やフィルターで画像だけを加工でき、`alt` で意味を伝えられるうえ、HTML を解析する段階でプリロードスキャナーに見つかり、LCP の候補でも表示が遅れないため。'
-  note: '`background-image` は、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に使います。単色やグラデーションだけの背景も `background-image` で足ります。装飾の写真なら `alt=""` にします。重ねるだけの入れ物には、コンポジションの `pile` を使えます。'
+  note: '`background-image` は、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に使います。1枚だけ置く装飾には、`background-repeat: no-repeat` を明示します。単色やグラデーションだけの背景も `background-image` で足ります。装飾の写真なら `alt=""` にします。重ねるだけの入れ物には、コンポジションの `pile` を使えます。'
   aiProne: true
   page: decoration/images
   since: 0.18.0
