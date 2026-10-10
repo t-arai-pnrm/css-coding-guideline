@@ -1,8 +1,8 @@
 # 第7章 レイアウトの仕組み：ルール
 
-- ガイドラインのバージョン: 0.47.4（2026-10-10 生成）
-- ルールの数: 39
-- 本文: 約26.8万字
+- ガイドラインのバージョン: 0.48.0（2026-10-10 生成）
+- ルールの数: 40
+- 本文: 約27.3万字
 - 読む条件: display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -19,7 +19,7 @@
 - `layout/sizing` 7-4 大きさの決まり方（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/sizing/
 - `layout/margin-role` 7-5 marginの役割（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/
 - `layout/margin-collapse` 7-6 マージンの相殺（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/
-- `layout/flexbox-basics` 7-7 Flexboxの基礎（約3.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/
+- `layout/flexbox-basics` 7-7 Flexboxの基礎（約4.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/
 - `layout/grid-basics` 7-8 Gridの基礎（約2.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/
 - `layout/grid-alignment` 7-9 Gridでアイテムをそろえる（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-alignment/
 - `layout/positioning` 7-10 positionの基礎（約2.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/
@@ -106,6 +106,10 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/
 
 https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/
 
+- 【推奨・実装上の判断】フレックスアイテムの大きさは `inline-size` や `block-size` で指定し、`flex-basis` は `auto` のままにする。`flex-basis` を書くのは、`flex: 1` のように伸び縮みの起点を決めるときと、折り返しの閾値のように主軸の大きさとして計算に使わせるときだけにする。（`flexbox-size-with-inline-size`）
+  - 理由: `flex-basis` は主軸の大きさなので、`flex-direction` を `column` に変えると、幅のつもりで書いた値が高さになるため。`inline-size` なら、並べる向きを変えても意味が変わらない。
+  - 補足: `flex-basis` と `inline-size` は伸び縮みの前の仮の大きさで、最後は `min-*` と `max-*` の範囲に収められます。優先順位は `min-*`、`max-*`、`flex-basis` と `inline-size` の順です。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/#rule-flexbox-size-with-inline-size
 - 【推奨・仕様上の制約】Flexbox のアイテムを中身にかかわらず比率で分けるときは `flex: 1` のように `flex-basis` も0にし、中身の大きさに余りを足して伸ばすときは `flex-grow` だけを指定して、2つを区別する。（`flexbox-basis-zero-for-ratio`）
   - 理由: `flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと中身の大きさの差が残り、同じ値を指定しても同じ幅にならないため。
   - 補足: `flex: 1` は `flex-basis` を `0%` にします（仕様の定義は `1 1 0` ですが、ブラウザの算出値は `0%` です）。高さの決まっていない縦の Flexbox で0を起点にするなら、`flex: 1 1 0` と書きます。`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（第1章のルール `longhand-for-partial-change`）。アイテムの `padding` や `border` が違うと `flex: 1` でも幅はそろわないので、列の幅を確実にそろえるなら Grid で列を決めます。

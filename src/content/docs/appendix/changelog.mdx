@@ -11,6 +11,17 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.48.0（2026年10月10日）
+
+Flexboxの折り返しと `flex-basis` についての説明とルールを補いました。ルールを追加し、変えたので、マイナーバージョンを上げています。
+
+- 「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」に、見出し「Flexboxでは折り返しを既定にする」を加えました。折り返した後の行の間隔を `gap` の1つ目の値で決めることと、`nowrap` のままにする並びの条件を書いています。
+- 「[7-7 Flexboxの基礎](/layout/flexbox-basics/)」に、見出し「大きさは `inline-size` で決め、`flex-basis` は `auto` のままにする」を加えました。`flex-direction: column` で `flex-basis` が高さになることと、`min-*`、`max-*`、`flex-basis` の優先順位を、デモで示しています。
+- ルールを変えました。
+  - [`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items)：対象を「要素の数が変わる場所」から、Flexboxで要素を並べるとき全般に広げ、`nowrap` のままにする条件を補足に書きました。
+- ルールを追加しました。
+  - [`flexbox-size-with-inline-size`](/layout/flexbox-basics/#rule-flexbox-size-with-inline-size)
+
 ## 0.47.4（2026年10月10日）
 
 中盤で判断を確かめる問いと、本文へ入る入口を加えました。ルールは変えていないので、パッチバージョンを上げています。

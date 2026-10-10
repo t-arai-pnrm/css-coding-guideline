@@ -124,6 +124,15 @@
   since: 0.5.0
 
 # 7-7 Flexboxの基礎
+- id: flexbox-size-with-inline-size
+  level: 推奨
+  kind: judgment
+  rule: 'フレックスアイテムの大きさは `inline-size` や `block-size` で指定し、`flex-basis` は `auto` のままにする。`flex-basis` を書くのは、`flex: 1` のように伸び縮みの起点を決めるときと、折り返しの閾値のように主軸の大きさとして計算に使わせるときだけにする。'
+  reason: '`flex-basis` は主軸の大きさなので、`flex-direction` を `column` に変えると、幅のつもりで書いた値が高さになるため。`inline-size` なら、並べる向きを変えても意味が変わらない。'
+  note: '`flex-basis` と `inline-size` は伸び縮みの前の仮の大きさで、最後は `min-*` と `max-*` の範囲に収められます。優先順位は `min-*`、`max-*`、`flex-basis` と `inline-size` の順です。'
+  page: layout/flexbox-basics
+  since: 0.48.0
+
 - id: flexbox-basis-zero-for-ratio
   level: 推奨
   kind: spec

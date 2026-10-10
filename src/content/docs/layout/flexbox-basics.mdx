@@ -26,6 +26,8 @@ import wrapGapHtml from '../../../demos/layout/flexbox-wrap-gap/index.html?raw';
 import wrapGapCss from '../../../demos/layout/flexbox-wrap-gap/style.css?raw';
 import orderHtml from '../../../demos/layout/flexbox-order/index.html?raw';
 import orderCss from '../../../demos/layout/flexbox-order/style.css?raw';
+import basisSizeHtml from '../../../demos/layout/flexbox-basis-size/index.html?raw';
+import basisSizeCss from '../../../demos/layout/flexbox-basis-size/style.css?raw';
 
 Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配るレイアウトの方式です。アイテムを並べる向きを主軸、それに直交する向きを交差軸と呼び、`justify-content` は主軸の配置を、`align-items` は交差軸の配置を決めます。伸び縮みの量は、`flex-grow`、`flex-shrink`、`flex-basis` の3つから計算で決まります。
 
@@ -137,6 +139,43 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
   aspect-ratio: 1;
 }
 ```
+
+## 大きさは `inline-size` で決め、`flex-basis` は `auto` のままにする
+
+フレックスアイテムの大きさは、`flex-basis` ではなく `inline-size` で指定し、`flex-basis` は初期値の `auto` のままにします。横に並べている間は、`flex-basis: 200px` と `inline-size: 200px` は同じ幅になります。前の見出しのとおり、`auto` の `flex-basis` は `inline-size` の値を使うからです。
+
+違いが出るのは、並べる向きを変えたときです。`flex-basis` は主軸の大きさなので、`flex-direction: column` にすると、幅のつもりで書いた200pxが高さになります。`inline-size` は、並べる向きに関係なく、インライン方向（横書きなら横）の大きさです。狭い場所では縦に積み、広い場所では横に並べる部品でも、`inline-size` で書いておけば、向きを変えたときに値の意味が変わりません。
+
+```css title="🙅‍♂ Not Recommended: 幅のつもりで flex-basis を書き、縦に積むと高さになる"
+/* 🙅‍♂ Not Recommended */
+._media {
+  display: block flex;
+  flex-direction: column;
+
+  & > ._thumbnail {
+    flex-basis: 200px;
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: 大きさは inline-size で書き、向きを変えても幅のままにする"
+._media {
+  display: block flex;
+  flex-direction: column;
+}
+
+._thumbnail {
+  inline-size: 200px;
+}
+```
+
+`inline-size` は子自身の大きさなので、親のルールの中にネストせず、子のルールに書きます（「[9-5 ネストの判断基準](/notation/nesting-criteria/)」）。`flex-basis` を書くのは、`flex: 1` のように伸び縮みの起点を0にするときと、「[12-5 sidebar](/compositions/sidebar/)」のように主軸の大きさを折り返しの閾値として計算に使わせるときです。どちらも主軸の大きさとして書く値なので、向きを変えても意図はずれません。
+
+`flex-basis` と `inline-size` は、最終的な大きさではなく、伸び縮みを計算する前の仮の大きさです。計算した大きさは、最後に `min-inline-size` と `max-inline-size` の範囲に収められます。`max-inline-size` が `flex-basis` より小さければ、`max-inline-size` の大きさになります。`min-inline-size` と `max-inline-size` が矛盾すれば、`min-inline-size` が勝ちます。優先順位は、`min-*`、`max-*`、`flex-basis` と `inline-size` の順です（「[7-4 大きさの決まり方](/layout/sizing/)」）。
+
+次のデモは、幅320pxのコンテナに、`flex-basis: 200px` のアイテムを1つずつ置いたものです。上の3つは横に並べていて、`flex-basis` だけなら200px、`max-inline-size: 120px` を足すと120px、さらに `min-inline-size: 160px` を足すと160pxになります。下の2つは縦に並べていて、`flex-basis: 200px` のアイテムは高さが200pxになり、`inline-size: 200px` のアイテムは幅が200pxのままです。
+
+<Demo title="flex-basis は min と max の範囲に収められ、縦に並べると高さになる" html={basisSizeHtml} css={basisSizeCss} widths={[]} />
 
 ## `flex: 1` は `flex-basis` も変える
 

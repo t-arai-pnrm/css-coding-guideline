@@ -161,8 +161,9 @@
 - id: flex-wrap-for-variable-items
   level: 推奨
   kind: judgment
-  rule: '要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。'
-  reason: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。
+  rule: 'Flexbox で要素を並べるときは、`flex-wrap: wrap` を既定にし、`nowrap` のままにするのは1行に収める理由がある並びだけにする。'
+  reason: 要素が増えたとき、文字が長くなったとき、狭い場所に置かれたときに、折り返せずに縮みすぎたりはみ出したりするのを防ぐため。折り返しなら、ブレイクポイントを決めずに実際の幅で並びが組み替わる。
+  note: '折り返した後の行の間隔は `gap` の1つ目の値で決まるので、`gap: 8px 16px` のように行と要素の間隔を分けて書きます。ボタンの中のアイコンとラベルのように、折り返すと意味が崩れる並びは `nowrap` のままにし、理由をコメントに残します。'
   aiProne: true
   page: layout-practice/defensive
   since: 0.1.0

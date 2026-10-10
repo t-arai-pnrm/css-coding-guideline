@@ -1,6 +1,6 @@
 # AIが誤りやすいルール
 
-- ガイドラインのバージョン: 0.47.4（2026-10-10 生成）
+- ガイドラインのバージョン: 0.48.0（2026-10-10 生成）
 - ルールの数: 289
 
 AIが生成するコードで特に誤りやすいルールです。CSSを書く前とレビューの前に、必ず確認してください。1件1行で、強度とルールの本文と ID だけを並べています。理由と補足は、章ごとのファイル（`references/<章>.md`）を ID で検索して読んでください。
@@ -177,7 +177,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】要素の高さは `block-size` で固定しない。一定の高さが要るときは `min-block-size` で下限を、上限が要るときは `max-block-size` で上限を決め、縦横比が決まっている要素（画像、動画、擬似要素で描くアイコンなど）は `aspect-ratio` で決める。（`min-block-size-over-fixed-height`）
 - 【必須】`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にする。（`minmax-min-capped-at-100-percent`）
 - 【推奨】列を均等や比率で分けるときは、`minmax(0, 1fr)` ではなく `1fr` と書く。（`fr-without-minmax-zero`）
-- 【推奨】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
+- 【推奨】Flexbox で要素を並べるときは、`flex-wrap: wrap` を既定にし、`nowrap` のままにするのは1行に収める理由がある並びだけにする。（`flex-wrap-for-variable-items`）
 - 【非推奨】明確な理由がない限り、`white-space: nowrap` を指定しない。（`no-nowrap-without-reason`）
 - 【必須】はみ出しを切り取るだけなら、`overflow: hidden`（`overflow-x: hidden`）ではなく `clip` を使う。（`overflow-clip-over-hidden`）
 - 【推奨】スクロールさせる要素の中身を `justify-content` や `align-content` で中央に寄せるときは、`safe center` と書く。（`safe-center-for-scrollable`）

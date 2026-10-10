@@ -1,8 +1,8 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.47.4（2026-10-10 生成）
+- ガイドラインのバージョン: 0.48.0（2026-10-10 生成）
 - ルールの数: 59
-- 本文: 約24.2万字
+- 本文: 約24.4万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,7 +15,7 @@
 - `layout-practice` 第11章 レイアウトを組む（約6,700字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/
 - `layout-practice/choosing` 11-1 レイアウト手法の選び方（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/choosing/
 - `layout-practice/spacing` 11-2 余白を設計する（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/
-- `layout-practice/defensive` 11-3 サイズと内容の変化に耐える（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/
+- `layout-practice/defensive` 11-3 サイズと内容の変化に耐える（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/
 - `layout-practice/overflow` 11-4 はみ出しとスクロール（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overflow/
 - `layout-practice/quantity-layouts` 11-5 件数で配置を組み替える（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/quantity-layouts/
 - `layout-practice/layering` 11-6 重なりと全幅（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/layering/
@@ -107,8 +107,9 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/
   - 理由: ベーススタイルの全称セレクタの `min-inline-size: 0` でグリッドアイテムの最小幅が0になっており、`1fr` の列も中身に押し広げられないため。`minmax(0, 1fr)` は同じ守りを重ねるだけで、意図して下限を決めた `minmax()` との区別もつかなくなる。
   - 補足: 列を比率で分けるときに `%` を使わない理由は、`%` が `gap` を除かない親の幅を基準にし、列の合計が `gap` の分だけ親を超えるためです。`fr` は `gap` を除いた残りを分けます。ベーススタイルの届かない Shadow DOM の中では、Shadow DOM のスタイルにも全称セレクタの `min-inline-size: 0`（第8章のルール `global-min-inline-size-zero`）を書きます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/#rule-fr-without-minmax-zero
-- 【推奨・実装上の判断】要素の数が変わる可能性のある Flexbox には、`flex-wrap: wrap` を指定する。（`flex-wrap-for-variable-items`）
-  - 理由: 要素が増えたときや画面が狭いときに、折り返せずにはみ出すのを防ぐため。
+- 【推奨・実装上の判断】Flexbox で要素を並べるときは、`flex-wrap: wrap` を既定にし、`nowrap` のままにするのは1行に収める理由がある並びだけにする。（`flex-wrap-for-variable-items`）
+  - 理由: 要素が増えたとき、文字が長くなったとき、狭い場所に置かれたときに、折り返せずに縮みすぎたりはみ出したりするのを防ぐため。折り返しなら、ブレイクポイントを決めずに実際の幅で並びが組み替わる。
+  - 補足: 折り返した後の行の間隔は `gap` の1つ目の値で決まるので、`gap: 8px 16px` のように行と要素の間隔を分けて書きます。ボタンの中のアイコンとラベルのように、折り返すと意味が崩れる並びは `nowrap` のままにし、理由をコメントに残します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/#rule-flex-wrap-for-variable-items
 - 【推奨・実装上の判断】文字を含む flex アイテムが縮みすぎないようにするときは、`flex-shrink: 0` ではなく `min-inline-size: fit-content` を使う。（`fit-content-over-flex-shrink-zero`）
   - 理由: `flex-shrink: 0` の要素は親より長くても縮まずにはみ出すが、`fit-content` なら親の幅を超えるときだけ折り返すため。
