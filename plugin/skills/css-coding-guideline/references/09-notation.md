@@ -1,6 +1,6 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.50.2（2026-10-10 生成）
+- ガイドラインのバージョン: 0.50.3（2026-10-10 生成）
 - ルールの数: 49
 - 本文: 約11.4万字
 - 読む条件: すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法）（常に読む）
@@ -162,7 +162,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/
 
 - 【推奨・実装上の判断】直下の子へネストしたルール（`& > ._icon`）には、`flex-shrink`、`grid-area`、`align-self` のように親のレイアウトによって意味が決まる宣言だけを書き、子自身の大きさや見た目は子のルールに書く。（`nest-child-placement-only`）
   - 理由: 親のレイアウトを変えるときに一緒に見直す宣言が親のルールの中にまとまり、子を別の親に移しても子自身の見た目が失われないため。
-  - 補足: 子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第10章のルール `parent-owns-child-placement` で扱います。親が `display: contents` にした要素を挟んでいても、その箱がないので子は実質的な直下の子です。サブグリッドの `article` の `grid-column` は、親の `ul` のルールに `& article` と書きます。
+  - 補足: `float`、`shape-outside`、`position` と `inset`、`scroll-snap-align`、`break-inside`、要素の間の `margin` も、親のレイアウトや親のスクロールによって意味が決まるので、直下の子へのネストに書けます。子の大きさ（`inline-size`、`aspect-ratio`）や色、`padding`、`border` は子のルールに書きます。コンポジションは子にクラスを付けられないので、直下の子を選んで配置を書きます。子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第10章のルール `parent-owns-child-placement` で扱います。親が `display: contents` にした要素を挟んでいても、その箱がないので子は実質的な直下の子です。サブグリッドの `article` の `grid-column` は、親の `ul` のルールに `& article` と書きます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/#rule-nest-child-placement-only
 - 【推奨・仕様上の制約】詳細度の違うセレクタを並べたセレクタリスト（`button, ._selected-count`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。（`no-nesting-under-selector-list`）
   - 理由: `&` の詳細度は親のセレクタリストを `:is()` で包んだものと同じになり、詳細度の低いほうのセレクタで一致した要素にも、リストの中でいちばん高い詳細度が付くため。

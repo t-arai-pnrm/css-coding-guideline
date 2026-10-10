@@ -64,9 +64,12 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
   & > ._figure {
     float: inline-end;
-    inline-size: min(50%, calc(320 / 16 * 1rem));
     margin-inline-start: 16px;
   }
+}
+
+._figure {
+  inline-size: min(50%, calc(320 / 16 * 1rem));
 }
 ```
 
@@ -82,14 +85,17 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
   & > ._avatar {
     float: inline-start;
-    inline-size: calc(160 / 16 * 1rem);
-    aspect-ratio: 1;
     margin-inline-end: 16px;
-    border-radius: calc(infinity * 1px);
     shape-margin: 16px;
     shape-outside: circle(50%) border-box;
-    object-fit: cover;
   }
+}
+
+._avatar {
+  inline-size: calc(160 / 16 * 1rem);
+  aspect-ratio: 1;
+  border-radius: calc(infinity * 1px);
+  object-fit: cover;
 }
 ```
 
@@ -114,11 +120,14 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
     position: sticky;
     inset-block-start: 0;
     float: inline-end;
-    inline-size: calc(44 / 16 * 1rem);
-    aspect-ratio: 1;
     margin-block-start: calc(var(--_padding-block) * -1);
     margin-inline: 16px calc(var(--_padding-inline) * -1);
   }
+}
+
+._close {
+  inline-size: calc(44 / 16 * 1rem);
+  aspect-ratio: 1;
 }
 ```
 

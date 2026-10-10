@@ -26,11 +26,6 @@
       /* kiso.css が空にしたマーカーを、ブラウザのデフォルトスタイルの黒丸に戻す */
       list-style-type: revert;
 
-      & > li::marker {
-        color: var(--_accent);
-        font-size: 1.25em;
-      }
-
       /* 印の形を変えるときは、マーカーを空にして ::before で描く。list-style: none にしない */
       &[data-custom] {
         padding-inline-start: 0;
@@ -39,6 +34,11 @@
     }
 
     li {
+      &::marker {
+        color: var(--_accent);
+        font-size: 1.25em;
+      }
+
       &:is([data-custom] > *) {
         display: block grid;
         grid-template-columns: auto 1fr;

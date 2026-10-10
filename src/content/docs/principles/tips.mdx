@@ -42,25 +42,30 @@ h2 {
 見出しと、それに添える副題や英語の表記は、HTMLの `<hgroup>` 要素でまとめられます。日本語と英語が別の要素になるので、それぞれに直接スタイルを指定でき、間隔も `gap` で決められます。
 
 ```html
-<hgroup class="_section-heading">
-  <h2>私たちについて</h2>
-  <p lang="en">About</p>
-</hgroup>
+<section class="scoped about-section">
+  <hgroup class="_section-heading">
+    <h2>私たちについて</h2>
+    <p class="_heading-en" lang="en">About</p>
+  </hgroup>
+  <!-- ... -->
+</section>
 ```
 
 ```css title="🙆‍♂ Recommended: hgroup で見出しと英語の表記を別の要素にする"
-._section-heading {
-  display: block grid;
-  gap: 8px;
-  text-align: center;
+@scope (.scoped.about-section) to (.scoped) {
+  ._section-heading {
+    display: block grid;
+    gap: 8px;
+    text-align: center;
+  }
 
-  & > h2 {
+  h2 {
     color: var(--foreground--accent);
     font-size: calc(32 / 16 * 1rem);
     text-wrap: balance;
   }
 
-  & > p {
+  ._heading-en {
     color: var(--foreground--muted);
   }
 }
