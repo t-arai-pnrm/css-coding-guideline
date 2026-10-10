@@ -9,7 +9,7 @@
     }
 
     :scope > button,
-    ._dialog button {
+    ._close-button {
       padding-block: 8px;
       padding-inline: 16px;
       border-radius: var(--rounded--sm);
@@ -82,13 +82,14 @@
         --_scale-from: 0.94;
       }
 
-      & button {
-        inline-size: -webkit-fill-available;
-        inline-size: stretch;
-        padding-block: 8px;
-        padding-inline: 16px;
-        border-color: transparent;
-      }
+    }
+
+    ._item-button {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-color: transparent;
     }
 
     /* 画面の中央に出すので、起点も中央（デフォルトの transform-origin）のままにする */
@@ -108,7 +109,7 @@
         --_scale-from: 0.9;
       }
 
-      & p {
+      & > p {
         justify-self: stretch;
       }
     }

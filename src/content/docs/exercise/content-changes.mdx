@@ -90,8 +90,8 @@ CMSのテンプレートは、画像のない記事では `img` 要素そのも�
 
 ```html title="🙆‍♂ Recommended: タグは、リンクのリストにして cluster で並べる"
 <ul class="_tags | cluster">
-  <li><a href="#tag-css">CSS</a></li>
-  <li><a href="#tag-layout">レイアウト</a></li>
+  <li><a class="_tag-link" href="#tag-css">CSS</a></li>
+  <li><a class="_tag-link" href="#tag-layout">レイアウト</a></li>
 </ul>
 ```
 
@@ -119,17 +119,17 @@ CMSのテンプレートは、画像のない記事では `img` 要素そのも�
 
     font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
     line-height: var(--text--caption--leading);
+  }
 
-    & a {
-      color: var(--foreground--accent);
-    }
+  ._tag-link {
+    color: var(--foreground--accent);
   }
 }
 ```
 
 並び方は、コンポジションの `cluster` に任せます。`cluster` は `flex-wrap: wrap` を含むので、タグが増えて入りきらなければ次の行へ折り返します。使う場所ごとに折り返しを指定しなくて済み、HTMLのクラス名から「並べて折り返す」という意図が読めます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」）。この節で、`compositions.css`（デモのCSSでは `compositions` のレイヤー）に `cluster` を足しています。
 
-間隔の値は、`style` 属性ではなく、`article-card.css` の `._tags` のルールで `cluster` の公開プロパティに渡しています。タグのリストはカードのテンプレートの一部で、どの記事でも同じ値を渡すからです。文字の役割とアクセント色は、`._category` に書いていたものを、`._tags` とその中のリンクに移しました。
+間隔の値は、`style` 属性ではなく、`article-card.css` の `._tags` のルールで `cluster` の公開プロパティに渡しています。タグのリストはカードのテンプレートの一部で、どの記事でも同じ値を渡すからです。`._category` に書いていた文字の役割とアクセント色は、`._tags` と、リンクの `._tag-link` へ移しました。リンクの色は、`._tags` のルールの中へネストせず、リンク自身のクラスで指定します。`._tags` の下の `a` を選ぶと、カードの中の見出しのリンクと見分ける手がかりが、HTMLの入れ子だけになるからです（「[10-2 コンポーネントの境界を守る](/components/boundaries/#rule-no-type-under-child-class)」）。
 
 ## 見出しと日付を切り詰めない
 

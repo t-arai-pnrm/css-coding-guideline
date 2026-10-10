@@ -1,8 +1,8 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.45.0（2026-10-09 生成）
-- ルールの数: 50
-- 本文: 約15.1万字
+- ガイドラインのバージョン: 0.46.0（2026-10-09 生成）
+- ルールの数: 51
+- 本文: 約15.3万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,7 +14,7 @@
 
 - `components` 第10章 コンポーネントとカスタムプロパティ（約6,800字）https://t-arai-pnrm.github.io/css-coding-guideline/components/
 - `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-component/
-- `components/boundaries` 10-2 コンポーネントの境界を守る（約2.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/
+- `components/boundaries` 10-2 コンポーネントの境界を守る（約3万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/
 - `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/compositions-and-utilities/
 - `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/design-tokens/
 - `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/custom-properties/
@@ -73,6 +73,10 @@ https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/
   - 理由: `@scope` の中のタイプセレクタはそのコンポーネントの範囲にしか当たらず、要素の種類を繰り返すだけのクラス名は情報を増やさずに記述量を増やすため。`div` と `span` は要素そのものが意味を持たず、要素の種類から役割を読み取れないため、1つしかなくてもクラスで補う。
   - 補足: `div` と `span` に付けるクラスは、`._body` や `._badge` のように役割の名前にします。役割を区別するクラスは `._main-link` と `._sub-link` のように要素の役割の語まで含めて名付け、共通のスタイルはタイプセレクタに、固有のスタイルは子クラスに書きます。スコープの中のタイプセレクタは詳細度が 0.0.1 なので `:where()` で包みません（ベーススタイルの `:where()` は第4章のルール `where-for-base-selectors`）。`a:focus-visible` や `a:any-link:hover` のように擬似クラスを付けると 0.1.1 や 0.2.1 になり子クラスに勝つので、役割ごとに違う状態のスタイルは `._sub-link:focus-visible` や `._sub-link:any-link:hover` のように子クラスの側に書きます。同じコンポーネントの中で同じ種類の要素が入れ子になるときは役割が分かれるので子クラスを付け、任意の HTML が入る領域は別のコンポーネントにします。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/#rule-type-selector-in-scope
+- 【推奨・実装上の判断】子要素のクラスの下にある要素を、子孫結合子のタイプセレクタ（`._summary p`）で選ばない。同じ種類の要素を領域ごとに変えたいときは、その要素にクラスを付ける。（`no-type-under-child-class`）
+  - 理由: 子孫結合子は深さを問わないので、領域の中に後から足した同じ種類の要素にも当たり、どの要素が対象かを HTML の入れ子から確かめることになるため。詳細度も 0.1.1 に上がり、クラス1つのセレクタでは上書きできなくなる。
+  - 補足: 領域の直下の要素を配置や余白のために選ぶときは、子要素のクラスのルールの中にネストして `& > p` と子結合子で書きます。ネストに書くのは、要素の間の余白や `grid-area` のように親のレイアウトで決まる宣言だけで、色や大きさは直下の要素でもクラスを付けて書きます（`nest-child-placement-only`）。ネストしても子孫結合子（`& p`）は使わず、`._summary > p` のように1つのセレクタに並べても書きません。CMSが出力する本文のように、マークアップにクラスを付けられない領域は例外です。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/#rule-no-type-under-child-class
 - 【禁止・実装上の判断】ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしない。（`no-other-component-internals`）
   - 理由: 詳細度の競争が起き、子の構造を変えたときに親の CSS も直す必要が出るため。
   - 補足: 値を変えたいときは、子のコンポーネントが用意した公開プロパティに値を渡します。ページの CSS から子のルートを選ぶしかない場合も、指定するのは公開プロパティの値と配置だけにします。

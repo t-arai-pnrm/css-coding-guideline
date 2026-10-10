@@ -101,6 +101,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - 論理プロパティ、`display` の2値構文（`block flex`）、変形の個別プロパティ（`translate` など）を使う。
 - クエリは範囲構文で書き、閾値は `calc(640 / 16 * 1rem)` の形にする。幅を足し合わせる式では、各項をその値を宣言した単位で書く（rem の幅は `… / 16 * 1rem`、px の `gap` や `padding` は px のまま。例：`calc(560 / 16 * 1rem + 240 / 16 * 1rem + 32px)`）。`vw` と `vh` は使わない。
 - ネストは1段で、先頭に `&` を書く。`@media` と `@container` は各セレクタの中に書く。
+- 子要素のクラスの下の要素を、タイプセレクタで選ばない（`._section p` は不可、要素にクラスを付ける）。直下の要素を選ぶときは、子要素のクラスのルールの中にネストして `& > p` と書く（`._section > p` と並べて書かない）。ネストに書くのは親のレイアウトで決まる宣言だけ。
 - 命名
   - ルートは `scoped <名前>`、子要素は `._kebab`、ユーティリティは `.-kebab`。
   - 1つの要素に種類の違うクラスを付けるときは、「ルート | 子要素 | コンポジション | パターン | ユーティリティ」の順に `|` で区切る（例：`class="_tags | cluster"`）。
@@ -144,6 +145,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
    - `node node_modules/stylelint/bin/stylelint.mjs "src/demos/<章>/**/*.css"`：デモの CSS（`pnpm exec` は権限で拒否される）
    - `node node_modules/textlint/bin/textlint.js <MDX ファイル>`：原稿
    - `node scripts/find-unnested-states.mjs <MDX や CSS のファイル>`：要素自身の状態をネストせずに連結しているセレクタ（ルール `nest-own-states`）。詳細度の説明などで連結を見せる例は、意図して残してよい
+   - `node scripts/find-type-under-child.mjs <MDX や CSS のファイル>`：子要素のクラスの下をタイプセレクタで選んでいるセレクタ（ルール `no-type-under-child-class`）。CMSの本文のようにクラスを付けられない領域は、意図して残してよい
    - YAML の構文：`node -e "require('yaml').parse(require('fs').readFileSync('<ファイル>','utf8'))"`
 7. 共有のファイル（コンポーネント、設定、ほかの章、`CLAUDE.md`、`DECISIONS.md`）は変えない。変える必要があれば報告する。
 

@@ -105,6 +105,16 @@
   page: components/boundaries
   since: 0.7.0
 
+- id: no-type-under-child-class
+  level: 推奨
+  kind: judgment
+  rule: 子要素のクラスの下にある要素を、子孫結合子のタイプセレクタ（`._summary p`）で選ばない。同じ種類の要素を領域ごとに変えたいときは、その要素にクラスを付ける。
+  reason: 子孫結合子は深さを問わないので、領域の中に後から足した同じ種類の要素にも当たり、どの要素が対象かを HTML の入れ子から確かめることになるため。詳細度も 0.1.1 に上がり、クラス1つのセレクタでは上書きできなくなる。
+  note: 領域の直下の要素を配置や余白のために選ぶときは、子要素のクラスのルールの中にネストして `& > p` と子結合子で書きます。ネストに書くのは、要素の間の余白や `grid-area` のように親のレイアウトで決まる宣言だけで、色や大きさは直下の要素でもクラスを付けて書きます（`nest-child-placement-only`）。ネストしても子孫結合子（`& p`）は使わず、`._summary > p` のように1つのセレクタに並べても書きません。CMSが出力する本文のように、マークアップにクラスを付けられない領域は例外です。
+  aiProne: true
+  page: components/boundaries
+  since: 0.46.0
+
 - id: no-other-component-internals
   level: 禁止
   kind: judgment
