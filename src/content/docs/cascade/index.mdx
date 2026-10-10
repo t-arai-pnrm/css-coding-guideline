@@ -42,6 +42,43 @@ sidebar:
 
 この章を読むと、宣言が適用されないときに、レイヤー、詳細度、スコープの近接度、出現順のどれで負けているかを切り分けられるようになります。上書きが要るときは、詳細度を上げる代わりに、書くレイヤーを変えるか、`@scope` で範囲を絞るかを選べます。CMSのようにレイヤーに入っていない外部のCSSと共存する環境では、`@layer` を使わないと判断でき、`!important` を使ってよい場面かどうかも見分けられます。
 
+## 判断の問い
+
+この章の内容で答えられる問いを1つ置きます。答えを開く前に、どの宣言が勝つかを予想してください。
+
+次のCSSで、`<article class="card"><h2 class="title | -text-muted">…</h2></article>` の見出しは何色になりますか。
+
+```css
+@layer base, components, utilities;
+
+@layer components {
+  .card .title {
+    color: var(--foreground--accent);
+  }
+}
+
+@layer utilities {
+  .-text-muted {
+    color: var(--foreground--muted);
+  }
+}
+
+h2 {
+  color: var(--foreground--danger);
+}
+```
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+最後の `h2` の色（`--foreground--danger`）になります。`h2` のルールはどのレイヤーにも入っていないので、すべてのレイヤーより後ろの「暗黙の最後のレイヤー」として扱われます。`!important` のない宣言どうしでは、レイヤーの順番が詳細度より先に比べられます。そのため、詳細度0.0.1の `h2` が、0.2.0の `.card .title` にも、`utilities` の `.-text-muted` にも勝ちます（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
+
+`h2` のルールを `@layer base { … }` に入れると、答えは `--foreground--muted` に変わります。3つのレイヤーのうち最も後ろにある `utilities` が勝つからです。ユーティリティクラスが効かないときに、まずレイヤーの書き忘れを疑うのは、このためです。
+
+</details>
+
 ## 次の章へ
 
 この章で、詳細度を低く一定に保ち、優先順位をレイヤーとスコープで決める方針を立てました。セレクタのうち擬似クラスは、詳細度の数え方が種類ごとに違い、`:has()` と `:not()` のように入れ子の順序で意味が逆になるものもあります。次は、状態や位置、子の数を条件に要素を選ぶ擬似クラスと、要素の一部や生成した箱を選ぶ擬似要素を、第5章「[擬似クラスと擬似要素](/pseudo/)」で整理します。

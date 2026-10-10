@@ -1,0 +1,57 @@
+---
+title: 付録K 困りごとから引く
+description: 「宣言が効かない」「狭い場所で崩れる」のような困りごとから、原因を調べる節と、関係するルールへ案内する索引です。
+sidebar:
+  order: 11
+---
+
+このページは、実装中に出会う困りごとから、本書の説明へたどるための索引です。症状ごとに、最初に読む節と、関係するルールを並べています。原因の調べ方そのものは「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」で説明しているので、どの節を読めばよいか分からないときは、まずそこから始めてください。
+
+ルールの全体は付録A「[ルール一覧](/appendix/rules/)」に、レビューで確かめる項目は付録D「[レビューのチェックリスト](/appendix/checklist/)」に、古い書き方からの置き換えは付録B「[モダンな書き方への置き換え表](/appendix/modernize/)」にまとめています。このページは、それらへの入口です。
+
+## 宣言と優先順位
+
+| 困りごと | 最初に読む節 | 関係するルール |
+|---|---|---|
+| 書いた宣言が効かない | 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/#宣言が効かない)」「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」 | [`order-by-layer-not-specificity`](/cascade/cascade-basics/#rule-order-by-layer-not-specificity) |
+| ユーティリティクラスが効かない | 「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/#レイヤーの外に書いたスタイルの扱い)」 | [`layer-order-declaration`](/cascade/layers/#rule-layer-order-declaration) |
+| 上書きのために詳細度を上げたくなる | 「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」 | [`no-specificity-hacks`](/cascade/selectors/#rule-no-specificity-hacks) |
+| ほかのコンポーネントにスタイルが漏れる | 「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」「[10-2 コンポーネントの境界を守る](/components/boundaries/)」 | [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)、[`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals) |
+
+## 幅とはみ出し
+
+| 困りごと | 最初に読む節 | 関係するルール |
+|---|---|---|
+| 幅が縮まない、親からはみ出す | 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」 | [`fr-without-minmax-zero`](/layout-practice/defensive/#rule-fr-without-minmax-zero) |
+| ページに横スクロールが出る | 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/#横スクロールが出る)」「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」 | [`find-overflow-source-first`](/layout-practice/overflow/#rule-find-overflow-source-first) |
+| 狭い場所に置くと部品が崩れる | 「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」 | [`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items) |
+| 長いURLや英単語がはみ出す | 「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」 | [`overflow-wrap-over-word-break`](/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break) |
+| コンテナクエリが効かない、コンテナにした要素の幅が0になる | 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/#コンテナクエリが効かない)」「[13-4 コンテナの副作用とコンテナ単位](/responsive/container-units-and-side-effects/)」 | [`no-container-on-intrinsic-size`](/responsive/container-units-and-side-effects/#rule-no-container-on-intrinsic-size) |
+
+## 余白と重なり
+
+| 困りごと | 最初に読む節 | 関係するルール |
+|---|---|---|
+| 要素の間の余白が思ったとおりにならない | 「[7-5 marginの役割](/layout/margin-role/)」「[7-6 マージンの相殺](/layout/margin-collapse/)」「[11-2 余白を設計する](/layout-practice/spacing/)」 | [`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator) |
+| `position: sticky` が留まらない | 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」 | [`sticky-header-height-query`](/layout-practice/sticky-header/#rule-sticky-header-height-query) |
+| `z-index` を上げても手前に出ない | 「[11-6 重なりと全幅](/layout-practice/layering/)」 | [`check-stacking-context-first`](/layout-practice/layering/#rule-check-stacking-context-first) |
+
+## 操作と状態
+
+| 困りごと | 最初に読む節 | 関係するルール |
+|---|---|---|
+| タッチ操作の端末で、ホバーの見た目が残る | 「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」 | [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover) |
+| ボタンやリンクが押しにくい | 「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」 | [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size) |
+| 選択中や展開中の見た目が、実際の状態とずれる | 「[17-3 状態を属性で表す](/interaction/state-attributes/)」 | [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria) |
+| 動きを減らす設定のユーザーに配慮したい | 「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」 | [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference) |
+
+## 色
+
+| 困りごと | 最初に読む節 | 関係するルール |
+|---|---|---|
+| ダークモードで文字や枠線が見えにくい | 「[15-4 ダークモード](/color-media/dark-mode/)」 | [`light-dark-in-semantic-tokens`](/color-media/dark-mode/#rule-light-dark-in-semantic-tokens) |
+| 強制カラーモードで枠線やアイコンが消える | 「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」 | [`forced-colors-system-colors`](/color-media/forced-colors/#rule-forced-colors-system-colors) |
+
+## 表にない困りごと
+
+表にない症状は、まず開発者ツールで、問題の要素にどの宣言が当たり、どの宣言が負けているかを確かめます。負けている宣言が分かれば、その宣言のプロパティから付録A「[ルール一覧](/appendix/rules/)」を引けます。崩れが特定の幅や内容でだけ起きるなら、「[19-3 表示と操作を確かめる](/operations/verification/)」の手順で、幅と内容を変えながら再現する条件を絞ります。

@@ -48,6 +48,23 @@ sidebar:
 
 この章を読むと、配置が思いどおりにならないとき、値を足す前に、要素がどの方式の中にあり、大きさが何で決まっているかから原因を特定できるようになります。フレックスアイテムがはみ出すなら自動の最小幅を、GridやFlexboxの子で `position: sticky` が留まらないなら `align-self` を確かめる、というように、症状に合った規則から調べられます。余白を `margin`、`padding`、`gap` のどれに受け持たせるか、マージンの相殺が起きる条件にあるか、`display: contents` で箱をなくしてよいかも判断できます。
 
+## 判断の問い
+
+この章の内容で答えられる問いを1つ置きます。答えを開く前に、はみ出す理由を予想してください。
+
+`grid-template-columns: 1fr 1fr` のグリッドに入力欄を置くと、ページの中では2つの列が等分になりました。ところが、同じHTMLとCSSをWeb ComponentsのShadow DOMの中に置くと、入力欄のある列だけが広がり、グリッドが親からはみ出しました。なぜでしょうか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+グリッドアイテムの `min-inline-size` の初期値 `auto` が、Shadow DOMの中では効いているからです。単独の `1fr` は `minmax(auto, 1fr)` で、下限が `auto` の列は、置かれたアイテムの最小幅より狭くなりません。`<input>` はブラウザが最小幅を決めているので、その幅まで列が押し広げられます（「[7-8 Gridの基礎](/layout/grid-basics/)」）。
+
+ページの中で起きなかったのは、本書のベーススタイルが全称セレクタで全要素に `min-inline-size: 0` を指定しているからです。文書の全称セレクタは、Shadow DOMの中の要素を選びません。直すときは、`minmax(0, 1fr)` を列ごとに書き足すより、Shadow DOMのスタイルにも全称セレクタの `min-inline-size: 0` を書き、ページと同じ前提をそろえます（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-fr-without-minmax-zero)」）。
+
+</details>
+
 ## 次の章へ
 
 ここまでで、CSSが値とレイアウトの方式から表示を決める仕組みを一通り確認しました。第III部では、この仕組みの上で、書いた本人以外が触っても壊れにくいCSSをどう書くかを決めます。最初に決めるのは、後から書くすべてのコンポーネントに影響する土台のスタイルなので、第8章「[リセットとベーススタイル](/reset/)」から始めます。
