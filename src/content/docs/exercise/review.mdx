@@ -82,7 +82,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 
 直した形では、`._body` がフラグ `--_density` を宣言し、コンテナサイズクエリはこのルールにだけ書きます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。300pxという値の根拠は、コードから読み取れないので、`Q` のラベルで尋ねます。列の最小幅などから決めた値なら、その条件を式に書いてもらいます（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
 
-2つ目（誤り3）は、ホバーです。カードのスコープの外に `.notice-card:hover img { filter: brightness(1.08); }` と書いています。カードのどこにポインターを置いても画像が明るくなりますが、押せるのは見出しのリンクだけです。ホバーを `@media (any-hover)` の中に書いておらず、キーボードでフォーカスしたときの変化もありません（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。スコープの外にあるので、カードの中に別のコンポーネントを入れると、その中の画像まで選びます。
+2つ目（誤り3）は、ホバーです。カードのスコープの外に `.notice-card:hover img { filter: brightness(1.08); }` と書いています。カードのどこにポインターを置いても画像が明るくなりますが、押せるのは見出しのリンクだけです。ホバーを `@media (any-hover)` の中に書いておらず、キーボードでフォーカスしたときの変化もありません（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。スコープの外にあるので、カードの中に別のコンポーネントを入れると、その中の画像まで選びます。
 
 ```css title="🙆‍♂ Recommended: 見出しのリンクのホバーとフォーカスで --_has-hocus を立て、画像はフラグで切り替える"
 @scope (.scoped.notice-card) to (.scoped) {

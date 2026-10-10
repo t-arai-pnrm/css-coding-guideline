@@ -1,6 +1,6 @@
 # 第19章 実務での運用：ルール
 
-- ガイドラインのバージョン: 0.46.0（2026-10-09 生成）
+- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
 - ルールの数: 27
 - 本文: 約5.8万字
 - 読む条件: Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入
@@ -15,7 +15,7 @@
 - `operations` 第19章 実務での運用（約3,200字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/
 - `operations/stylelint` 19-1 Stylelintでルールを守る（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/stylelint/
 - `operations/review` 19-2 レビューの進め方（約4,700字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/review/
-- `operations/verification` 19-3 表示と操作を確かめる（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/verification/
+- `operations/verification` 19-3 表示と操作を確かめる（約8,700字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/verification/
 - `operations/devtools` 19-4 表示の崩れを開発者ツールで調べる（約9,200字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/devtools/
 - `operations/wysiwyg` 19-5 CMSのWYSIWYG本文にスタイルを当てる（約8,500字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/wysiwyg/
 - `operations/adoption` 19-6 既存のサイトに段階的に導入する（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/operations/adoption/

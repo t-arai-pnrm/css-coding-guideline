@@ -99,7 +99,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 <Demo title="box-sizing を unset にすると、最大幅が内容の幅になる" html={unsetHtml} css={unsetCss} variant="neutral" scheme="light" />
 
-`unset` は、継承するプロパティでは親の値を、継承しないプロパティでは初期値を使うキーワードで、継承しない `box-sizing` では初期値の `content-box` になります。本書で `content-box` と書かずに `unset` と書くのは、「ベーススタイルの `border-box` を取り消す」という意図を宣言で示すためです。`content-box` と書くと、その要素のためにボックスの数え方を選んだように読めます。同じ理由で、「[17-3 フォーム部品](/interaction/forms/)」でも、行数で高さを決めるテキストエリアに `box-sizing: unset` を書いています。
+`unset` は、継承するプロパティでは親の値を、継承しないプロパティでは初期値を使うキーワードで、継承しない `box-sizing` では初期値の `content-box` になります。本書で `content-box` と書かずに `unset` と書くのは、「ベーススタイルの `border-box` を取り消す」という意図を宣言で示すためです。`content-box` と書くと、その要素のためにボックスの数え方を選んだように読めます。同じ理由で、「[17-6 フォーム部品](/interaction/forms/)」でも、行数で高さを決めるテキストエリアに `box-sizing: unset` を書いています。
 
 `content-box` へ戻した要素で `inline-size: 100%` を指定すると、`padding` の分だけ親からはみ出します。幅は `auto` のままにし、上限だけを `max-inline-size` で決めます（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#rule-no-redundant-width-100)」）。また、この方法は、画面幅いっぱいに広げる子要素を持たない要素に向いています。広げる子要素が混ざるページのレイアウトは、左右に余白の列を持つGridで組みます（「[11-2 余白を設計する](/layout-practice/spacing/)」）。
 

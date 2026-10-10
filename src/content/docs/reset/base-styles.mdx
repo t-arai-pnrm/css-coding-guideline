@@ -103,7 +103,7 @@ kiso.cssは、リンクの下線をデフォルトで消し、下線の太さを
 
 <Demo title="アクセントカラーの1色のリングは、同じ色の背景の上で見えなくなる" html={ringHtml} css={ringBadCss} scheme="light" variant="not-recommended" />
 
-kiso.cssは `outline-offset: 3px` を指定しているだけで、リングの色や太さはベーススタイルで決めます。コンポーネントごとのフォーカスの見せ方は、「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で扱います。
+kiso.cssは `outline-offset: 3px` を指定しているだけで、リングの色や太さはベーススタイルで決めます。コンポーネントごとのフォーカスの見せ方は、「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」で扱います。
 
 ## スムーススクロールの有効化
 
@@ -194,7 +194,7 @@ window.addEventListener("load", () => {
 
 スクロールを止めるとスクロールバーが消え、その幅の分だけコンテンツが横にずれます。kiso.cssが `:root` に指定している `scrollbar-gutter: stable` は、スクロールバーの有無にかかわらずその幅の領域を確保するので、ダイアログを開閉してもレイアウトはずれません。
 
-`overflow: hidden` の代わりに `overflow: clip` を使う方法もありますが、2025年5月の時点ではFirefoxで背面を固定できなかったので使いません。{/* 要検証: ブラウザ。2026年10月の時点の Firefox でも背面を固定できないか、実機で確かめる */}また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[17-2 開閉するUI](/interaction/disclosure/)」で扱います。
+`overflow: hidden` の代わりに `overflow: clip` を使う方法もありますが、2025年5月の時点ではFirefoxで背面を固定できなかったので使いません。{/* 要検証: ブラウザ。2026年10月の時点の Firefox でも背面を固定できないか、実機で確かめる */}また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。
 
 ## スクロールバーの領域と見た目
 

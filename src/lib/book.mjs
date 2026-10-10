@@ -126,7 +126,7 @@ export const PARTS = [
         number: 17,
         dir: 'interaction',
         title: 'インタラクション',
-        review: 'ホバー、フォーカス、状態の表示、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル',
+        review: 'ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル',
       },
       {
         number: 18,

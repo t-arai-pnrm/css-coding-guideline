@@ -1,6 +1,6 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.46.0（2026-10-09 生成）
+- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
 - ルールの数: 59
 - 本文: 約24.2万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
@@ -97,7 +97,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/#rule-design-for-content-changes
 - 【推奨・仕様上の制約】要素の高さは `block-size` で固定しない。一定の高さが要るときは `min-block-size` で下限を、上限が要るときは `max-block-size` で上限を決め、縦横比が決まっている要素（画像、動画、擬似要素で描くアイコンなど）は `aspect-ratio` で決める。（`min-block-size-over-fixed-height`）
   - 理由: 内容が増えたときや、ユーザーが文字サイズを大きくしたときにも、中身があふれないため。`aspect-ratio` なら幅に応じて高さが決まり、どの幅でも比率が保たれる。
-  - 補足: `inline-size` と `block-size` に同じ値を書いて正方形を作らず、`inline-size` と `aspect-ratio: 1` で書きます。行の高さに合わせる `1lh`、読み込み中の表示の `2lh` のように、高さそのものが行数で決まる指定は対象外です。`appearance: none` で描き直す `input` 要素は、`aspect-ratio` で大きさを決めると Safari で比率を保てずに潰れることがあるので、`inline-size` と `block-size` の両方で指定します（17-3）。画面全体を覆う `position: fixed` の背景やダイアログのように、高さが画面の大きさで決まる指定（`100lvb`、`100%`）も対象外です。
+  - 補足: `inline-size` と `block-size` に同じ値を書いて正方形を作らず、`inline-size` と `aspect-ratio: 1` で書きます。行の高さに合わせる `1lh`、読み込み中の表示の `2lh` のように、高さそのものが行数で決まる指定は対象外です。`appearance: none` で描き直す `input` 要素は、`aspect-ratio` で大きさを決めると Safari で比率を保てずに潰れることがあるので、`inline-size` と `block-size` の両方で指定します（17-6）。画面全体を覆う `position: fixed` の背景やダイアログのように、高さが画面の大きさで決まる指定（`100lvb`、`100%`）も対象外です。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/#rule-min-block-size-over-fixed-height
 - 【必須・仕様上の制約】`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にする。（`minmax-min-capped-at-100-percent`）
   - 理由: 親がその長さより狭くなったときに、はみ出すのを防ぐため。

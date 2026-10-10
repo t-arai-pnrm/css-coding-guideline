@@ -37,7 +37,7 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 カード全体を押せるようにするいちばん簡単な方法は、カードを `<a>` で包むことです。しかし、そうするとカードの中身すべてがリンクのテキストになり、スクリーンリーダーはタグや日付や抜粋まで続けてリンクとして読み上げます。リンクの中にリンクは入れられないので、タグをリンクのまま残すこともできません。
 
-そこで、リンクは見出しの `<a>` だけのままにし、その `::after` をカードいっぱいに広げます（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/#カード全体をリンクにする)」）。
+そこで、リンクは見出しの `<a>` だけのままにし、その `::after` をカードいっぱいに広げます（「[17-4 カード全体をリンクにする](/interaction/card-link/)」）。
 
 ```css title="🙆‍♂ Recommended: 見出しのリンクの ::after をカードいっぱいに広げる"
 @scope (.scoped.article-card) to (.scoped) {
@@ -109,7 +109,7 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 }
 ```
 
-ポインターがカードのどこにあっても、その下にあるのは見出しのリンクの `::after` なので、`h3 a:any-link:hover` が当てはまります。ホバーは `:any-link` で押せるリンクに絞り、タッチ操作の端末でホバーの状態が残らないように `@media (any-hover)` の中に書きます。キーボードで操作する人にも同じ変化を見せるため、`:focus-visible` でも同じフラグを立てます（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/#any-hover-と-focus-visible-を組み合わせる)」）。
+ポインターがカードのどこにあっても、その下にあるのは見出しのリンクの `::after` なので、`h3 a:any-link:hover` が当てはまります。ホバーは `:any-link` で押せるリンクに絞り、タッチ操作の端末でホバーの状態が残らないように `@media (any-hover)` の中に書きます。キーボードで操作する人にも同じ変化を見せるため、`:focus-visible` でも同じフラグを立てます（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/#any-hover-と-focus-visible-を組み合わせる)」）。
 
 `:has()` の引数は、`:has(:any-link:hover)` ではなく、見出しのリンクに絞っています。カードの中にはタグのリンクもあるので、どのリンクでも当てはまる条件にすると、タグにホバーしただけで見出しに下線が出て、記事へ移動するように見えてしまいます。タグのリンクの上では、手前にあるタグのリンクがホバーを受けるので、`--_has-hocus` は `--false` のままです。（2026年10月、Chromeで確認）
 
@@ -143,9 +143,9 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 普段の下線を消す指定は書きません。kiso.cssがリンクの下線を消しているので、カードの中で `text-decoration-line: none` と書き直すのは、デフォルト値の指定し直しになるからです（「[2-3 保守しやすさを最優先にする](/design-mindset/maintainability/#デフォルト値を指定し直さない)」）。見出しのリンクと画像は、それぞれ自分のルールの中で `@container style(--_has-hocus: --true)` を問い合わせるだけなので、状態の条件はルートの1か所にしかありません。
 
-ホバーで変えるのは画像の明るさで、カード自身の位置や大きさは変えません。ホバーを受けているのはカードを覆う `::after` なので、カードを動かすと当たり判定も一緒に動き、縁にポインターがあるときにホバーが付いたり外れたりします（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/#ホバーで動く要素の当たり判定)」）。画像を拡大する見せ方もありますが、拡大した画像を元の枠で切り取るには、画像を包む要素をHTMLに足すか、`._layout` ではみ出しを切り取る必要があります。明るさを変えるだけなら、画像の大きさと配置は変わらないので、HTMLと `._layout` は今のままで済みます。
+ホバーで変えるのは画像の明るさで、カード自身の位置や大きさは変えません。ホバーを受けているのはカードを覆う `::after` なので、カードを動かすと当たり判定も一緒に動き、縁にポインターがあるときにホバーが付いたり外れたりします（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/#ホバーで動く要素の当たり判定)」）。画像を拡大する見せ方もありますが、拡大した画像を元の枠で切り取るには、画像を包む要素をHTMLに足すか、`._layout` ではみ出しを切り取る必要があります。明るさを変えるだけなら、画像の大きさと配置は変わらないので、HTMLと `._layout` は今のままで済みます。
 
-明るさは、トランジションを掛けずに一度で切り替えます。このフラグは見出しのリンクへのフォーカスでも立つので、トランジションを掛けると、キーボードでフォーカスを移すたびに画像がゆっくり変わります。キーボード操作によるフォーカスの移動には動きを付けないという約束（`no-motion-on-focus-visible`）があるからです（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。ホバーのときだけ動きを付けたいなら、`&:has(h3 a:focus-visible)` で `--_focus-visible: --true` のような2つ目のフラグを立て、そのフラグが立っている間はトランジションを外します。この演習では、明るさの小さな変化のために2つ目のフラグを足すことはしません。
+明るさは、トランジションを掛けずに一度で切り替えます。このフラグは見出しのリンクへのフォーカスでも立つので、トランジションを掛けると、キーボードでフォーカスを移すたびに画像がゆっくり変わります。キーボード操作によるフォーカスの移動には動きを付けないという約束（`no-motion-on-focus-visible`）があるからです（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。ホバーのときだけ動きを付けたいなら、`&:has(h3 a:focus-visible)` で `--_focus-visible: --true` のような2つ目のフラグを立て、そのフラグが立っている間はトランジションを外します。この演習では、明るさの小さな変化のために2つ目のフラグを足すことはしません。
 
 ## フォーカスリングをカードの外周に出す
 
@@ -176,13 +176,13 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 リングはルート自身の見た目なので、フラグを問い合わせるのではなく、フラグを立てる状態のセレクタに直接書きます。`:focus-within` ではなく `:has(:focus-visible)` の形にしているのは、マウスでクリックしたときのように、ブラウザがフォーカスリングを出さない場面でカードを囲まないためです。リングの範囲もタグには広げず、見出しのリンクに絞っています。タグのリンクにフォーカスしたときは、カードは囲まれず、タグのリンク自身のフォーカスリングが出ます。
 
-見出しのリンク自身のリングは、`outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります（「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。ベーススタイルで `:focus-visible` に `box-shadow` のリングも描いているサイトでは、17-1の例のとおり、見出しのリンクの `box-shadow` も初期値に戻します。
+見出しのリンク自身のリングは、`outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります（「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。ベーススタイルで `:focus-visible` に `box-shadow` のリングも描いているサイトでは、「[17-4 カード全体をリンクにする](/interaction/card-link/)」の例のとおり、見出しのリンクの `box-shadow` も初期値に戻します。
 
 ## フォーカスの順番と文字の選択
 
 キーボードでは、フォーカスはタグのリンク、見出しのリンクの順に移ります。カードの中でタグが見出しの上に表示されているので、フォーカスの順番と見た目の順番が一致します。
 
-`::after` がカードの上に重なるので、カードの中の文字をドラッグして選択できなくなります。抜粋を選択してコピーしたい、という要件が来たときは、`::after` を広げる方法そのものを見直すことになります（「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」）。
+`::after` がカードの上に重なるので、カードの中の文字をドラッグして選択できなくなります。抜粋を選択してコピーしたい、という要件が来たときは、`::after` を広げる方法そのものを見直すことになります（「[17-4 カード全体をリンクにする](/interaction/card-link/)」）。
 
 ## 振り返り
 
@@ -235,7 +235,7 @@ HTMLは1行も変えていません。`article-list.css`、`compositions.css`、
 
 ## この節で使ったルール
 
-- [`stretched-link-for-card`](/interaction/states-and-focus/#rule-stretched-link-for-card)：カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げます。
+- [`stretched-link-for-card`](/interaction/card-link/#rule-stretched-link-for-card)：カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げます。
 - [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、外側の余白や配置の指定を書きません。
 - [`z-index-absolute-root-relative-inside`](/components/boundaries/#rule-z-index-absolute-root-relative-inside)：ルートには絶対的なz-indexだけを、内部の要素には相対的なz-indexだけを指定します。
 - [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：z-indexの値は、数値を直接書かずにトークンで指定します。
@@ -245,7 +245,7 @@ HTMLは1行も変えていません。`article-list.css`、`compositions.css`、
 - [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーのスタイルは、操作できる状態に限定し、`@media (any-hover)` の中に書きます。
 - [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
 - [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーを受ける要素は動かさず、子要素や擬似要素を変えます。
-- [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：フォーカスの表示が必要な場合に限って親の見た目を変えるときは、`&:has(:focus-visible)` を使います。
+- [`focus-visible-over-focus-within`](/interaction/state-attributes/#rule-focus-visible-over-focus-within)：フォーカスの表示が必要な場合に限って親の見た目を変えるときは、`&:has(:focus-visible)` を使います。
 - [`no-outline-none`](/reset/global-pitfalls/#rule-no-outline-none)：`outline: none` や `outline: 0` で、フォーカスリングを消しません。
 - [`no-motion-on-focus-visible`](/interaction/states-and-focus/#rule-no-motion-on-focus-visible)：キーボード操作によるフォーカスの移動に、トランジションやアニメーションを掛けません。
 - [`no-redundant-defaults`](/design-mindset/maintainability/#rule-no-redundant-defaults)：初期値やリセットCSSが決めている値を、指定し直しません。

@@ -1,9 +1,9 @@
 # 第17章 インタラクション：ルール
 
-- ガイドラインのバージョン: 0.46.0（2026-10-09 生成）
+- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
 - ルールの数: 39
-- 本文: 約11.5万字
-- 読む条件: ホバー、フォーカス、状態の表示、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル
+- 本文: 約11.6万字
+- 読む条件: ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -12,13 +12,16 @@
 
 ## この章の節
 
-- `interaction` 第17章 インタラクション（約3,200字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/
-- `interaction/states-and-focus` 17-1 状態とフォーカスを表す（約5万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/
-- `interaction/disclosure` 17-2 開閉するUI（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
-- `interaction/forms` 17-3 フォーム部品（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
-- `interaction/carousel` 17-4 CSSでカルーセルを作る（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
+- `interaction` 第17章 インタラクション（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/
+- `interaction/states-and-focus` 17-1 ホバーとフォーカスを表す（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/
+- `interaction/hit-area-and-touch` 17-2 押せる範囲とタッチ操作（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/
+- `interaction/state-attributes` 17-3 状態を属性で表す（約6,700字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/
+- `interaction/card-link` 17-4 カード全体をリンクにする（約2,300字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/
+- `interaction/disclosure` 17-5 開閉するUI（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
+- `interaction/forms` 17-6 フォーム部品（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
+- `interaction/carousel` 17-7 CSSでカルーセルを作る（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
 
-## 17-1 状態とフォーカスを表す
+## 17-1 ホバーとフォーカスを表す
 
 https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/
 
@@ -37,51 +40,66 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/
   - 理由: 文字まで透けてコントラストが下がり、「なぜ透けるのか」という意図もコードから読み取れないため。
   - 補足: 背景色や文字色を、トークンや相対カラー構文で作った別の色に変えます。背景が透明な項目（メニュー、リスト、タブ）には、半透明の重ね色のトークン `--background--hover` と `--background--active` を `background-color` に指定します。半透明なのは重ねた背景の色だけで、文字は透けないので、`opacity` で透かす方法とは違います。背景色のあるボタンは、相対カラー構文で明るさを変えます。文字色で塗るボタン（`--background--inverse`）は、テーマによって明るくするか暗くするかが逆になるので、`color-mix()` でページの背景色に寄せます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-no-opacity-for-hover
-- 【推奨・実装上の判断】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
-  - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
-  - 補足: `:required` と `required` 属性のように、擬似クラスと属性のどちらでも選べる状態は、擬似クラスで選びます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria
-- 【推奨・本書の規約】HTML の属性にも ARIA 属性にもない状態（スクロールで縮んだヘッダーや演出の進み具合など）だけを、`data-compact-mode` のような `data-*` 属性で表す。（`data-attribute-for-other-states`）
-  - 理由: 見た目のためだけの状態を、支援技術に伝わる意味と混ぜずに済むため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-data-attribute-for-other-states
-- 【推奨・実装上の判断】カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げ、フォーカスリングはカードの `:has(:focus-visible)` に出す。（`stretched-link-for-card`）
-  - 理由: リンクのテキストが見出しだけになり、スクリーンリーダーでカードの中身をすべて読み上げるような冗長さを避けられるため。
-  - 補足: カードの中にほかのリンクやボタンを置くときは、それらを `::after` より手前に重ねます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-stretched-link-for-card
-- 【推奨・仕様上の制約】ブラウザがフォーカスの表示を必要と判断する場合に限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。（`focus-visible-over-focus-within`）
-  - 理由: `:focus-within` は、ボタンをマウスでクリックしたときのように、ブラウザがフォーカスリングを出さない場面にも当てはまるため。
-  - 補足: `:focus-visible` は入力の手段を判定しません。テキストの入力欄は、クリックでフォーカスしたときにも当てはまります。入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-focus-visible-over-focus-within
 - 【推奨・仕様上の制約】ホバーで位置や大きさが変わる要素は、ホバーを受ける要素を動かさず、子要素（または擬似要素）を動かす。（`hover-target-stays-still`）
   - 理由: ホバーを受ける要素自身が動くと、カーソルが要素の外に出てホバーが外れ、戻るとまた当たるという繰り返しで、ちらつくため。
   - 補足: ホバーを受ける要素の `&:any-link:hover`／`&:enabled:hover` と `&:focus-visible` で `--_hocus: --true` を立て、動かす子要素や擬似要素は `@container style(--_hocus: --true)` の中で動かします。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-hover-target-stays-still
+
+## 17-2 押せる範囲とタッチ操作
+
+https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/
+
 - 【推奨・仕様上の制約】操作する要素には 24px 相当の最小の大きさを確保し、`@media (any-pointer: coarse)` では 44px 相当にする。大きさは内部のカスタムプロパティの値だけを切り替える。（`hit-area-min-size`）
   - 理由: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
   - 補足: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。文字と一緒に大きくなるように `rem` で書き、`max(24px, 24 / 16 * 1rem)` のように CSS ピクセルの下限を併記します。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-hit-area-min-size
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-hit-area-min-size
 - 【推奨・仕様上の制約】押せる範囲を広げる `padding` は、`<li>` のような外側の要素ではなく、`<a>` や `<button>` のような操作する要素自身に付ける。チェックボックスやラジオボタンは `<label>` で文字と一緒に包む。（`padding-on-interactive-element`）
   - 理由: 外側の要素に付けた `padding` は見た目を大きくするだけで、押せる範囲は文字の部分に限られ、項目の端を押しても反応しないため。
   - 補足: `<a>` は `display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます。チェックボックスと `<label>` を兄弟に並べて間を空けると、その隙間は押しても何も起きない領域になります。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-padding-on-interactive-element
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-padding-on-interactive-element
 - 【推奨・仕様上の制約】ホバーで背景が付く項目を並べるメニュー、リスト、タブでは、項目の間を `gap` や `margin` で空けず、間隔を各項目の内側の `padding` で作る。（`no-gaps-between-hover-items`）
   - 理由: カーソルが項目の間の隙間を通るあいだはどの項目にもホバーが当たらず、背景が消えてから次の項目に付き直して点滅して見え、隙間を押しても何も起きないため。
   - 補足: 背景の帯どうしを離して見せたいときも、項目は隙間なく並べ、背景を項目の擬似要素に描いて `inset` で内側に寄せます。カーソルに最も近い項目に背景を付ける作り方や、隙間のクリックを背景の付いた項目に渡す作り方は JavaScript が要るので、採りません。ホバーした項目へ背景が移る表現（`anchor-indicator-as-decoration`）でも、隙間では背景が薄れてから戻ります。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-no-gaps-between-hover-items
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-no-gaps-between-hover-items
 - 【推奨・仕様上の制約】見た目を変えずに押せる範囲を広げるときは、擬似要素を `inset: min(0px, (100% - var(--_hit-size)) / 2)` で要素の外にはみ出させ、広げた範囲を隣の操作する要素に重ねない。（`pseudo-hit-area-no-overlap`）
   - 理由: 擬似要素は要素の一部として押せるので見た目を保ったまま範囲を広げられるが、隣の要素に重なると、押した要素と違うものが反応することがあるため。
   - 補足: 要素がもともと `--_hit-size` より大きいときは、`min()` の上限の0pxで擬似要素が要素より小さくならないようにしています。並べるときは、広げたあとの大きさで間隔を確かめます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-pseudo-hit-area-no-overlap
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-pseudo-hit-area-no-overlap
 - 【推奨・仕様上の制約】`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。（`user-select-none-for-controls`）
   - 理由: 初期値の `auto` は親の値が `none` なら `none` として扱われるので、広い範囲に指定すると、文章のコピーや、選択した文字を読み上げや翻訳の機能に渡す操作ができなくなるため。
   - 補足: Safari は接頭辞なしの `user-select` に対応していないので（2026年10月）、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome 152 で確認）。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-user-select-none-for-controls
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-user-select-none-for-controls
 - 【禁止・仕様上の制約】`html`、`body`、全称セレクタのようにページ全体に及ぶセレクタに `touch-action: none` を指定しない。（`no-global-touch-action-none`）
   - 理由: ブラウザは触れた要素からスクロールする祖先までの `touch-action` を重ね合わせて許す操作を決めるので、ページ全体でスクロールとピンチでの拡大が止まるため。
   - 補足: `touch-action` は、ドラッグやスワイプを自分で処理する部品にだけ、`pan-y pinch-zoom` のように残す操作を明示して指定します。ボタンなどの `touch-action: manipulation` は kiso.css が指定しているので、書き直しません。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/#rule-no-global-touch-action-none
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-no-global-touch-action-none
 
-## 17-2 開閉するUI
+## 17-3 状態を属性で表す
+
+https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/
+
+- 【推奨・実装上の判断】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
+  - 理由: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
+  - 補足: `:required` と `required` 属性のように、擬似クラスと属性のどちらでも選べる状態は、擬似クラスで選びます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria
+- 【推奨・本書の規約】HTML の属性にも ARIA 属性にもない状態（スクロールで縮んだヘッダーや演出の進み具合など）だけを、`data-compact-mode` のような `data-*` 属性で表す。（`data-attribute-for-other-states`）
+  - 理由: 見た目のためだけの状態を、支援技術に伝わる意味と混ぜずに済むため。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/#rule-data-attribute-for-other-states
+- 【推奨・仕様上の制約】ブラウザがフォーカスの表示を必要と判断する場合に限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。（`focus-visible-over-focus-within`）
+  - 理由: `:focus-within` は、ボタンをマウスでクリックしたときのように、ブラウザがフォーカスリングを出さない場面にも当てはまるため。
+  - 補足: `:focus-visible` は入力の手段を判定しません。テキストの入力欄は、クリックでフォーカスしたときにも当てはまります。入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/#rule-focus-visible-over-focus-within
+
+## 17-4 カード全体をリンクにする
+
+https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/
+
+- 【推奨・実装上の判断】カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げ、フォーカスリングはカードの `:has(:focus-visible)` に出す。（`stretched-link-for-card`）
+  - 理由: リンクのテキストが見出しだけになり、スクリーンリーダーでカードの中身をすべて読み上げるような冗長さを避けられるため。
+  - 補足: カードの中にほかのリンクやボタンを置くときは、それらを `::after` より手前に重ねます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/#rule-stretched-link-for-card
+
+## 17-5 開閉するUI
 
 https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
 
@@ -127,7 +145,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
   - 補足: 余白や背景は、内側の要素に指定します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/#rule-no-box-style-on-until-found
 
-## 17-3 フォーム部品
+## 17-6 フォーム部品
 
 https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
 
@@ -162,7 +180,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
   - 理由: 拡大して読む必要のあるユーザーが、ページを拡大できなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/#rule-no-maximum-scale
 
-## 17-4 CSSでカルーセルを作る
+## 17-7 CSSでカルーセルを作る
 
 https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
 

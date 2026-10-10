@@ -1,0 +1,67 @@
+---
+title: "17-4 カード全体をリンクにする"
+description: "カード全体を押せるようにするときは、カードを<a>で包まず、見出しのリンクの::afterをカードいっぱいに広げます。フォーカスリングは:has()でカードの外周に出し、カードの中のほかのリンクはz-indexで手前に重ねます。"
+sidebar:
+  order: 4
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+カードのどこを押しても記事へ移動させたいときは、カードを `<a>` で包まず、見出しのリンクの `::after` をカードいっぱいに広げます。リンクのテキストは見出しだけのまま、押せる範囲だけがカード全体に広がります。
+
+## カードを `<a>` で包む方法の問題
+
+記事の一覧のカードでは、見出しだけでなくカードのどこを押しても記事へ移動させたいことがよくあります。いちばん簡単なのは、カード全体を `<a>` で包む方法です。しかし、この方法ではカードの中身すべてがリンクのテキストになり、スクリーンリーダーは日付やカテゴリーまで続けて読み上げます。カードの中にカテゴリーへのリンクを置きたくても、リンクの中にリンクは入れられません。
+
+## 見出しのリンクを広げる
+
+そこで、リンクは見出しの `<a>` だけにし、その `::after` をカードいっぱいに広げます。見た目の上ではカードのどこを押してもリンクが反応しますが、リンクのテキストは見出しだけです。
+
+```css title="🙆‍♂ Recommended: 見出しのリンクの ::after をカードいっぱいに広げる"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    position: relative;
+    isolation: isolate;
+
+    &:has(._heading-link:focus-visible) {
+      outline: 3px solid CanvasText;
+      outline-offset: 3px;
+    }
+  }
+
+  ._heading-link {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    /* フォーカスリングはカードの外周に出すので、ベーススタイルの box-shadow を初期値に戻し、outline は色だけを透明にする */
+    &:focus-visible {
+      box-shadow: initial;
+      outline-color: transparent;
+    }
+  }
+
+  ._category-link {
+    position: relative;
+    z-index: var(--z--forwards);
+  }
+}
+```
+
+カードに `position: relative` を指定し、`::after` の配置の基準にします。フォーカスリングは、リンクの周りではなく `:has(._heading-link:focus-visible)` でカードの外周に出します。見出しのリンクにフォーカスしたとき、押せる範囲（カード全体）とリングの範囲が一致するからです。カードの中にほかのリンクを置くときは、`position: relative` と `z-index: var(--z--forwards)` で `::after` より手前に重ねます。
+
+リンク自身のリングのうち、ベーススタイルで内側に描いた `box-shadow` は、`initial` で初期値の `none` に戻します。`outline` は `outline: none` で消さずに、色だけを透明にします。強制カラーモードでは `outline` の色がシステムカラーに置き換わるので、リングの形が残ります。私の案件のコードでは `outline: none` で消していましたが、本書のルール（「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」の `no-outline-none`）に合わせて、この書き方にしました。
+
+## 補足と注意点
+
+この方法にも弱点があります。`::after` がカードの上に重なるので、カードの中の文章をドラッグして選択できません。以前の私は、この問題を避けるためにJavaScriptでカードのクリックを拾っていました。現在は、実装の手軽さとJavaScriptのない環境でも動くことを優先して、`::after` を広げる方法を使っています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [カード型コンポーネントの実装例](https://www.tak-dcxi.com/article/card-component-implementation-example/)（TAKLOG、2024年5月。本書と一部の方針が異なります）

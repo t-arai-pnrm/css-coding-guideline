@@ -93,7 +93,7 @@ sidebar:
 | ディフェンシブCSS | テキストが長くなったら、画像がなかったら、要素の数が変わったらと考え、想定外の内容が入っても崩れないように書くCSSです。 | [11-3](/layout-practice/defensive/) |
 | 包含ブロック | 要素の大きさや位置を計算するときの基準になる領域です。`inset` やパーセントの値も、この領域を基準に解決されます。絶対配置では、包含ブロックを形成する最も近い祖先が基準です。`position` が `static` 以外の祖先や、`transform` などを指定した祖先が該当します。該当する祖先がなければ初期包含ブロックが基準になります。 | [7-10](/layout/positioning/) |
 | スタッキングコンテキスト | 重なり順を決める単位です。z-indexは、同じスタッキングコンテキストの中の要素どうしでしか比べられません。 | [11-6](/layout-practice/layering/) |
-| トップレイヤー | `<dialog>` のモーダルや `popover` 属性の要素が表示される層です。本来は、z-indexと関係なく最前面に描かれます。 | [10-2](/components/boundaries/)、[17-2](/interaction/disclosure/) |
+| トップレイヤー | `<dialog>` のモーダルや `popover` 属性の要素が表示される層です。本来は、z-indexと関係なく最前面に描かれます。 | [10-2](/components/boundaries/)、[17-5](/interaction/disclosure/) |
 | アンカーポジショニング | ある要素（アンカー）の位置を基準に、別の要素を配置する仕組みです。本書の対象のブラウザではまだレイアウトの要にしません（2026年9月確認）。 | [7-11](/layout/anchor-basics/) |
 
 ## レスポンシブ
@@ -104,7 +104,7 @@ sidebar:
 | コンテナクエリ | `@container` で、祖先の要素（コンテナ）の状態を条件にするクエリの総称です。サイズを調べるコンテナサイズクエリ、カスタムプロパティの値を調べるスタイルクエリ、スクロールの状態を調べるスクロール状態クエリの3つを含みます。 | [13-3](/responsive/container-size-queries/) |
 | コンテナサイズクエリ | ビューポートではなく、コンテナの大きさで条件を判定するコンテナクエリです。`container: --scoped / inline-size` でコンポーネントのルートをコンテナにし、`@container --scoped (inline-size >= …)` のように書きます。 | [13-3](/responsive/container-size-queries/) |
 | スタイルクエリ | コンテナのカスタムプロパティの値を条件にするコンテナクエリです。`@container style(--color-scheme: --dark)` のように書きます。 | [6-5](/values/if-and-attr/)、[13-3](/responsive/container-size-queries/)、[15-4](/color-media/dark-mode/) |
-| スクロール状態クエリ | `sticky` の要素が留まっているか、スクロールスナップで止まっているかのような、スクロールの状態を条件にするコンテナクエリです。`@container scroll-state(stuck: block-start)` のように書きます。 | [11-7](/layout-practice/sticky-header/)、[17-4](/interaction/carousel/) |
+| スクロール状態クエリ | `sticky` の要素が留まっているか、スクロールスナップで止まっているかのような、スクロールの状態を条件にするコンテナクエリです。`@container scroll-state(stuck: block-start)` のように書きます。 | [11-7](/layout-practice/sticky-header/)、[17-7](/interaction/carousel/) |
 | ブレイクポイント | レイアウトを切り替える幅です。デバイスの幅ではなく、レイアウトが崩れる幅から決め、remの式で書きます。 | [13-2](/responsive/breakpoints/) |
 | 範囲構文 | `min-width` の代わりに、`(width >= …)` のように不等号でクエリの条件を書く構文です。 | [13-5](/responsive/media-queries/) |
 | モバイルファースト | 狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを `width >=` の条件の中に足す書き方です。 | [13-5](/responsive/media-queries/) |

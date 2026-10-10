@@ -1,0 +1,96 @@
+---
+title: "17-3 状態を属性で表す"
+description: "選択中や展開中といった状態は、.is-activeのような状態クラスを使わず、擬似クラス、HTML要素の属性、ARIA属性、data-*属性の順に検討してセレクタにします。子のフォーカスで親の見た目を変えるときは、:focus-withinと:has(:focus-visible)を使い分けます。"
+sidebar:
+  order: 3
+---
+
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import tabsHtml from '../../../demos/interaction/aria-selected-tabs/index.html?raw';
+import tabsCss from '../../../demos/interaction/aria-selected-tabs/style.css?raw';
+import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw';
+
+選択中のタブや開いているメニューのような状態は、JavaScriptで付け外しするクラスではなく、状態そのものを表す擬似クラスや属性をセレクタにします。検討する順番は、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性です。見た目と、ブラウザや支援技術に伝わる状態が同じ属性から決まるので、両者がずれません。
+
+## 状態を表すセレクタ
+
+選択中のタブ、開いているメニュー、現在のページのリンクのような状態は、BEMのModifierのように、JavaScriptでクラスを付け外しして表すことがよくあります。しかし、こうした状態の多くは、アクセシビリティのためにARIA属性でも表す必要があります。クラスと属性の両方を切り替えると、同じ状態を2か所で管理することになります。
+
+```css title="🙅‍♂ Not Recommended: ARIA属性と別に、状態のクラスを付ける"
+/* 🙅‍♂ Not Recommended */
+._tab.is-active {
+  border-color: currentColor;
+}
+```
+
+本書では、状態を表すのに原則としてクラスを使いません。次の優先順位で、状態を表すセレクタを選びます。
+
+1. 擬似クラス（`:disabled`、`:any-link`、`:checked` など）
+2. HTML要素の属性（`target` 属性、`<details>` の `open` 属性など）
+3. ARIA属性（`aria-expanded`、`aria-readonly`、`aria-selected` など）
+4. `data-*` 属性
+
+最初に検討するのは、擬似クラスです。`:checked`、`:disabled`、`:popover-open`、`:modal`、`:user-invalid` などは、ブラウザが状態を判定して付け外しするので、JavaScriptで管理する必要がありません。`required` 属性と `:required` のように、属性と擬似クラスのどちらでも選べる状態は、擬似クラスで選びます。
+
+擬似クラスがない状態は、HTML要素の属性をセレクタにします。新しいタブで開くリンクを示す `[target="_blank"]` や、開いた `<details>` を示す `[open]` がこれにあたります。これらの属性は、ブラウザの動作を決めるためにHTMLへ書くものです。見た目も同じ属性から決めれば、動作と見た目が食い違いません。
+
+HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`aria-current`、`aria-pressed` のようなARIA属性をセレクタにします。タブの選択やメニューの展開は、HTMLの要素だけでは表せず、ARIA属性で支援技術に伝える状態です。
+
+```css title="🙆‍♂ Recommended: ARIA属性をそのままセレクタにする"
+@scope (.scoped.tab-list) to (.scoped) {
+  ._tab {
+    border-block-end: 2px solid transparent;
+
+    &[aria-selected="true"] {
+      border-color: currentColor;
+    }
+
+    &:enabled:not([aria-selected="true"]):hover {
+      @media (any-hover) {
+        border-color: var(--border--base);
+      }
+    }
+  }
+}
+```
+
+ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た目の状態が同じ属性から決まるので、両者がずれません。JavaScriptが属性の更新を忘れたら見た目も変わらないので、不具合にもすぐ気づけます。私は2020年ごろから、状態の管理は原則としてARIA属性とdata属性で行うと決めています。
+
+次のデモでは、スクリプトはタブの `aria-selected` 属性を書き換えるだけで、クラスは付け外ししていません。タブを押すか、タブにフォーカスして左右の矢印キーを押すと、`aria-selected="true"` になったタブへ下線が移ります。選択していないタブにマウスを重ねると、薄い色の下線が出ます。
+
+<Demo title='aria-selected="true" のタブに下線が付き、選択を移すと下線も移る' html={tabsHtml} css={tabsCss} js={tabsJs} widths={[]} />
+
+子孫の状態によって祖先の見た目を変えるときは、`label:has(:checked)` や `:has(:focus-visible)` のように `:has()` を使います。状態のクラスを祖先に付けるJavaScriptは要りません。`:has()` の使い方は、第5章「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。
+
+フォーカスを受けた子に応じて親の見た目を変えるときは、`:focus-within` と `:has(:focus-visible)` を使い分けます。`:focus-within` は、子孫のどれかが `:focus` に当てはまれば当てはまるので、ボタンをマウスでクリックしたときにも親が強調されます（MDN）。子のどれかにフォーカスした時点でグループ全体を強調してよいなら、これで足ります。ブラウザがフォーカスの表示を必要と判断する場合だけ親を強調したいなら、`&:has(:focus-visible)` と書きます。
+
+ただし、`:focus-visible` は入力の手段を判定する擬似クラスではありません。仕様が示す目安では、ボタンをマウスでクリックしたときには当てはまりませんが、テキストの入力欄はクリックやタッチでフォーカスしたときにも当てはまります（Selectors Level 4）。入力欄の多いグループでは、`:has(:focus-visible)` と `:focus-within` の差はほとんどありません。ユーザーがフォーカスの常時表示を選んでいる場合は、クリックでフォーカスした要素も `:focus-visible` に当てはまるとされています。
+
+HTMLの属性とARIA属性のどちらでも表せない状態だけを、`data-*` 属性で表します。たとえば、ページをスクロールしたらヘッダーの高さを縮める場合、縮んでいるかどうかは見た目のためだけにある状態で、支援技術に伝える意味はありません。こうした状態は `data-compact-mode` のような属性で定義し、JavaScriptで付け外しします。支援技術に伝える意味のない値を、ARIA属性にするわけにはいきません。
+
+```css title="🙆‍♂ Recommended: HTMLの属性とARIA属性のどちらでも表せない状態は、data-* 属性で表す"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    min-block-size: 80px;
+
+    &[data-compact-mode] {
+      min-block-size: 56px;
+    }
+  }
+}
+```
+
+画面に入ったことを示す `data-revealed` や、ポップオーバーを開いた向きを示す `data-placement="top"` も、同じく見た目のためだけにある状態です。一方、コンポーネントのバリエーションを表す `data-variant` は、状態ではありません。HTMLを書いた時点で決まり、操作によって変わらない値です。BEMのModifierは状態とバリエーションの両方を表していましたが、本書では、状態はこの節の優先順位で、バリエーションは `data-variant` で表します。バリエーションの書き方は、第9章「[9-1 命名規則](/notation/naming/)」で説明しています。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [アクセシビリティに配慮したタブメニューの実装例](https://www.tak-dcxi.com/article/accessibility-conscious-tab-menu/)（TAKLOG、2024年4月）
+- [The Undeniable Utility Of CSS :has | Josh W. Comeau](https://www.joshwcomeau.com/css/has/)
+- [:focus-within - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-within)
+- [:focus-visible - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:focus-visible)
+- [Selectors Level 4 — The Focus-Indicated Pseudo-class: :focus-visible](https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo)（W3C、仕様が示すブラウザの判断の目安）

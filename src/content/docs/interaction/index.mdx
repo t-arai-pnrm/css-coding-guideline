@@ -1,6 +1,6 @@
 ---
 title: "第17章 インタラクション"
-description: "ホバーとフォーカスの状態の表し方、ダイアログやアコーディオンのような開閉するUI、フォーム部品、CSSで作るカルーセルを扱う章です。操作の振る舞いはできるだけブラウザの機能に任せます。"
+description: "ホバーとフォーカスの表し方、押せる範囲、状態を表す属性、カード全体のリンク、ダイアログやアコーディオンのような開閉するUI、フォーム部品、CSSで作るカルーセルを扱う章です。操作の振る舞いはできるだけブラウザの機能に任せます。"
 sidebar:
   label: "概要"
   order: 0
@@ -12,12 +12,15 @@ sidebar:
 
 私自身、少し前まではモーダルの開閉や背景のクリックの判定をJavaScriptで書いていました。入力エラーの表示も、`:invalid` ではページを開いた時点でエラーが出てしまうので、JavaScriptで管理していました。どちらも、いまはブラウザの機能で置き換えられます。
 
-この章は次の4つの節で構成しています。
+この章は次の7つの節で構成しています。17-1から17-4は、どの部品にも関わる操作の基本で、17-5から17-7は、部品ごとの作り方です。
 
-- [17-1 状態とフォーカスを表す](/interaction/states-and-focus/)：`any-hover` によるホバーの書き方、`:focus-visible` との対応、ARIA属性による状態の表し方、カード全体をリンクにする方法
-- [17-2 開閉するUI](/interaction/disclosure/)：`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` の使い分け、ドロワーの背面に付ける `inert` 属性
-- [17-3 フォーム部品](/interaction/forms/)：`accent-color`、`input` 自体に描くチェックボックス、`switch` 属性、`:user-invalid`、入力欄の文字サイズ
-- [17-4 CSSでカルーセルを作る](/interaction/carousel/)：スクロールスナップを土台にした `::scroll-button()` と `::scroll-marker`、隠れているスライドを外す `interactivity: inert`、自動再生をしない判断
+- [17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)：`any-hover` によるホバーの書き方、`:focus-visible` との対応、キーボード操作とトランジション、透明度ではなく色で表す変化
+- [17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)：操作する要素の最小の大きさ、余白を付ける要素、項目の間に隙間を作らない並べ方、`user-select` と `touch-action` を指定する範囲
+- [17-3 状態を属性で表す](/interaction/state-attributes/)：擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順で選ぶ状態のセレクタ、`:focus-within` と `:has(:focus-visible)` の使い分け
+- [17-4 カード全体をリンクにする](/interaction/card-link/)：見出しのリンクの `::after` を広げる方法と、フォーカスリングの出し方
+- [17-5 開閉するUI](/interaction/disclosure/)：`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` の使い分け、ドロワーの背面に付ける `inert` 属性
+- [17-6 フォーム部品](/interaction/forms/)：`accent-color`、`input` 自体に描くチェックボックス、`switch` 属性、`:user-invalid`、入力欄の文字サイズ
+- [17-7 CSSでカルーセルを作る](/interaction/carousel/)：スクロールスナップを土台にした `::scroll-button()` と `::scroll-marker`、隠れているスライドを外す `interactivity: inert`、自動再生をしない判断
 
 トランジションとアニメーション、開閉するUIの出現と退場の動き、View Transitionsによる画面の切り替えは、第18章「[モーション](/motion/)」で扱います。フォーカスリングの定義、スムーススクロール、モーダル表示中の背面の固定は、ベーススタイルに書くものとして「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で扱います。強制カラーモードでの部品の見え方は「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
 

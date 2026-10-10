@@ -11,6 +11,30 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.47.0（2026年10月10日）
+
+第17章の最初の節を、読者が判断する単位で4つの節に分けました。ルールの掲載ページが変わったので、マイナーバージョンを上げています。ルールの内容は変えていません。
+
+- 旧17-1「状態とフォーカスを表す」を、次の4つの節に分けました。
+  - 「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」：URLは変わりません。
+  - 「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」：操作する領域の大きさ、サブメニューへの当たり判定、`user-select`、`touch-action`
+  - 「[17-3 状態を属性で表す](/interaction/state-attributes/)」：状態を表すセレクタと、`:focus-within` と `:has(:focus-visible)` の使い分け
+  - 「[17-4 カード全体をリンクにする](/interaction/card-link/)」
+- 旧17-2〜17-4を、「[17-5 開閉するUI](/interaction/disclosure/)」「[17-6 フォーム部品](/interaction/forms/)」「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」に繰り下げました。URLは変わりません。
+- ルールの掲載ページを移しました。
+  - 17-2へ
+    - [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)
+    - [`padding-on-interactive-element`](/interaction/hit-area-and-touch/#rule-padding-on-interactive-element)
+    - [`no-gaps-between-hover-items`](/interaction/hit-area-and-touch/#rule-no-gaps-between-hover-items)
+    - [`pseudo-hit-area-no-overlap`](/interaction/hit-area-and-touch/#rule-pseudo-hit-area-no-overlap)
+    - [`user-select-none-for-controls`](/interaction/hit-area-and-touch/#rule-user-select-none-for-controls)
+    - [`no-global-touch-action-none`](/interaction/hit-area-and-touch/#rule-no-global-touch-action-none)
+  - 17-3へ
+    - [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria)
+    - [`data-attribute-for-other-states`](/interaction/state-attributes/#rule-data-attribute-for-other-states)
+    - [`focus-visible-over-focus-within`](/interaction/state-attributes/#rule-focus-visible-over-focus-within)
+  - 17-4へ：[`stretched-link-for-card`](/interaction/card-link/#rule-stretched-link-for-card)
+
 ## 0.46.0（2026年10月9日）
 
 子要素のクラスの下にある要素を、タイプセレクタで選ばない約束を加えました。ルールを追加したので、マイナーバージョンを上げています。
@@ -249,7 +273,7 @@ AIにレビューさせるときの手順を直しました。ルールは変え
   - [`tabular-nums-for-changing-numbers`](/typography/fonts/#rule-tabular-nums-for-changing-numbers)
   - [`surface-levels-by-role`](/decoration/surfaces/#rule-surface-levels-by-role)
   - [`lighter-surface-in-dark-mode`](/decoration/surfaces/#rule-lighter-surface-in-dark-mode)
-  - [`no-gaps-between-hover-items`](/interaction/states-and-focus/#rule-no-gaps-between-hover-items)
+  - [`no-gaps-between-hover-items`](/interaction/hit-area-and-touch/#rule-no-gaps-between-hover-items)
 - ルールを変えました。
   - [`shadow-tokens-light-source`](/decoration/surfaces/#rule-shadow-tokens-light-source)：段階ごとに不透明度を下げる作り方から、オフセットとぼかしを倍にした層を足す作り方に変えました。
   - [`shadow-black-in-dark-mode`](/decoration/surfaces/#rule-shadow-black-in-dark-mode)：影の色を `light-dark()` で切り替えるトークンにすることを、ルールの本文に入れました。
@@ -713,8 +737,8 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-font-size-adjust-for-japanese`](/typography/fonts/#rule-no-font-size-adjust-for-japanese)：和文を含む要素に `font-size-adjust` を指定しません。
   - [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：コンポーネントに `color-scheme` を指定するときは、`color` と `background-color` を指定し直します。
   - [`scroll-edge-fade-with-mask`](/decoration/icons-and-masks/#rule-scroll-edge-fade-with-mask)：スクロールできる領域の端は、`mask-image` のグラデーションで薄くします。
-  - [`user-select-none-for-controls`](/interaction/states-and-focus/#rule-user-select-none-for-controls)：`user-select: none` は、文字が選択されて困る操作部品にだけ指定します。
-  - [`no-global-touch-action-none`](/interaction/states-and-focus/#rule-no-global-touch-action-none)：ページ全体に `touch-action: none` を指定しません。
+  - [`user-select-none-for-controls`](/interaction/hit-area-and-touch/#rule-user-select-none-for-controls)：`user-select: none` は、文字が選択されて困る操作部品にだけ指定します。
+  - [`no-global-touch-action-none`](/interaction/hit-area-and-touch/#rule-no-global-touch-action-none)：ページ全体に `touch-action: none` を指定しません。
   - [`base-select-in-supports`](/interaction/forms/#rule-base-select-in-supports)：`appearance: base-select` の指定は、`@supports` の中に書きます。
   - [`no-motion-on-keyboard-shortcut`](/motion/purpose/#rule-no-motion-on-keyboard-shortcut)：キーボードショートカットで開閉するUIに、出現と退場の動きを付けません。
   - [`no-ease-in-for-ui`](/motion/easing-and-duration/#rule-no-ease-in-for-ui)：UIの動きには、原則として `in` 系のイージングを使いません。
@@ -1046,7 +1070,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 状態を表すセレクタの優先順位に、HTML要素の属性を加えました。ルールの内容が変わったため、マイナーバージョンを上げています。
 
 - 「[12-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で、状態を表すセレクタを、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の優先順位で選ぶことにしました。あわせて、BEMのModifierのうち、状態とバリエーションをどう書き分けるかを説明しています。
-  - [`state-by-pseudo-class-or-aria`](/interaction/states-and-focus/#rule-state-by-pseudo-class-or-aria)、[`data-attribute-for-other-states`](/interaction/states-and-focus/#rule-data-attribute-for-other-states)
+  - [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria)、[`data-attribute-for-other-states`](/interaction/state-attributes/#rule-data-attribute-for-other-states)
 
 ## 0.9.0（2026年10月2日）
 
@@ -1146,7 +1170,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-var-in-query`](/responsive/breakpoints/#rule-no-var-in-query)：対象を、メディアクエリの条件と、コンテナクエリのサイズの条件に限りました。スタイルクエリでカスタムプロパティどうしを比べる条件は対象にしません。
   - [`no-container-type-size`](/responsive/container-units-and-side-effects/#rule-no-container-type-size)：`size` を前提にする単位の `cqw` を `cqh` に直しました。
   - [`forced-colors-svg-system-colors`](/color-media/forced-colors/#rule-forced-colors-svg-system-colors)：対象を管理している単色のアイコンに限り、塗りで描くものは `fill`、線で描くものは `stroke` だけを補正するようにしました。
-  - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：`:focus-visible` が当てはまる条件を、キーボードの操作から、ブラウザがフォーカスの表示を必要と判断する場合に改めました。
+  - [`focus-visible-over-focus-within`](/interaction/state-attributes/#rule-focus-visible-over-focus-within)：`:focus-visible` が当てはまる条件を、キーボードの操作から、ブラウザがフォーカスの表示を必要と判断する場合に改めました。
 - 本文の例と説明を直しました。
   - 「[11-2 モーションを実装する](/motion/scroll-driven/)」：画面に入ったら動かす演出の待機を、`data-motion-mode="motion"` と `scripting: enabled` の両方を条件にしました。スクリプトの初期化に失敗しても、本文が透明のまま残りません。
   - 「[11-4 フォーム部品](/interaction/forms/)」：チェックマークを選択したときだけ作るようにし、強制カラーモードで未選択にも見える問題と、未選択の枠線が見えない色だった問題を直しました。デモにも同じチェックボックスを加えました。
@@ -1328,9 +1352,9 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`shadow-tokens-light-source`](/decoration/surfaces/#rule-shadow-tokens-light-source)：影のトークンは光源の向きをそろえる
   - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：重ねた影そのものを動かさない
   - [`marker-for-list-number-style`](/decoration/text-ornaments/#rule-marker-for-list-number-style)：番号の装飾には `::marker` を使う
-  - [`focus-visible-over-focus-within`](/interaction/states-and-focus/#rule-focus-visible-over-focus-within)：キーボードのフォーカスに限るときは `:has(:focus-visible)` を使う
+  - [`focus-visible-over-focus-within`](/interaction/state-attributes/#rule-focus-visible-over-focus-within)：キーボードのフォーカスに限るときは `:has(:focus-visible)` を使う
   - [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーを受ける要素は動かさない
-  - [`hit-area-min-size`](/interaction/states-and-focus/#rule-hit-area-min-size)：操作する要素の最小の大きさを確保する
+  - [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素の最小の大きさを確保する
   - `ease-in-for-exit`：出ていく動きには `ease-in` 系を使う
   - [`transition-duration-per-direction`](/motion/transitions-and-keyframes/#rule-transition-duration-per-direction)：入るときと外れるときで再生時間を変える
   - [`starting-style-not-overridden`](/motion/entry-and-exit/#rule-starting-style-not-overridden)：`@starting-style` で動かすプロパティを上書きしない

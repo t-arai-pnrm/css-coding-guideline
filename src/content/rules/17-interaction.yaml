@@ -1,6 +1,6 @@
 # 第17章 インタラクション
 
-# 17-1 状態とフォーカスを表す
+# 17-1 ホバーとフォーカスを表す
 - id: hover-operable-in-any-hover
   level: 必須
   kind: spec
@@ -39,42 +39,6 @@
   page: interaction/states-and-focus
   since: 0.1.0
 
-- id: state-by-pseudo-class-or-aria
-  level: 推奨
-  kind: judgment
-  rule: 状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。
-  reason: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
-  note: '`:required` と `required` 属性のように、擬似クラスと属性のどちらでも選べる状態は、擬似クラスで選びます。'
-  aiProne: true
-  page: interaction/states-and-focus
-  since: 0.1.0
-
-- id: data-attribute-for-other-states
-  level: 推奨
-  kind: convention
-  rule: HTML の属性にも ARIA 属性にもない状態（スクロールで縮んだヘッダーや演出の進み具合など）だけを、`data-compact-mode` のような `data-*` 属性で表す。
-  reason: 見た目のためだけの状態を、支援技術に伝わる意味と混ぜずに済むため。
-  page: interaction/states-and-focus
-  since: 0.1.0
-
-- id: stretched-link-for-card
-  level: 推奨
-  kind: judgment
-  rule: カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げ、フォーカスリングはカードの `:has(:focus-visible)` に出す。
-  reason: リンクのテキストが見出しだけになり、スクリーンリーダーでカードの中身をすべて読み上げるような冗長さを避けられるため。
-  note: カードの中にほかのリンクやボタンを置くときは、それらを `::after` より手前に重ねます。
-  page: interaction/states-and-focus
-  since: 0.1.0
-
-- id: focus-visible-over-focus-within
-  level: 推奨
-  kind: spec
-  rule: ブラウザがフォーカスの表示を必要と判断する場合に限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。
-  reason: '`:focus-within` は、ボタンをマウスでクリックしたときのように、ブラウザがフォーカスリングを出さない場面にも当てはまるため。'
-  note: '`:focus-visible` は入力の手段を判定しません。テキストの入力欄は、クリックでフォーカスしたときにも当てはまります。入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。'
-  page: interaction/states-and-focus
-  since: 0.4.0
-
 - id: hover-target-stays-still
   level: 推奨
   kind: spec
@@ -84,13 +48,14 @@
   page: interaction/states-and-focus
   since: 0.4.0
 
+# 17-2 押せる範囲とタッチ操作
 - id: hit-area-min-size
   level: 推奨
   kind: spec
   rule: '操作する要素には 24px 相当の最小の大きさを確保し、`@media (any-pointer: coarse)` では 44px 相当にする。大きさは内部のカスタムプロパティの値だけを切り替える。'
   reason: 指で操作する環境では、小さな操作領域が押し間違いの原因になり、値だけを切り替えれば `min-block-size` と `min-inline-size` の指定を1か所にできるため。
   note: 24px は WCAG 2.2 の達成基準 2.5.8（AA）、44px は 2.5.5（AAA）に由来します。周囲に十分な間隔がある場合や文章中のリンクは、2.5.8 の例外です。文字と一緒に大きくなるように `rem` で書き、`max(24px, 24 / 16 * 1rem)` のように CSS ピクセルの下限を併記します。
-  page: interaction/states-and-focus
+  page: interaction/hit-area-and-touch
   since: 0.4.0
 
 - id: padding-on-interactive-element
@@ -99,7 +64,7 @@
   rule: 押せる範囲を広げる `padding` は、`<li>` のような外側の要素ではなく、`<a>` や `<button>` のような操作する要素自身に付ける。チェックボックスやラジオボタンは `<label>` で文字と一緒に包む。
   reason: 外側の要素に付けた `padding` は見た目を大きくするだけで、押せる範囲は文字の部分に限られ、項目の端を押しても反応しないため。
   note: '`<a>` は `display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます。チェックボックスと `<label>` を兄弟に並べて間を空けると、その隙間は押しても何も起きない領域になります。'
-  page: interaction/states-and-focus
+  page: interaction/hit-area-and-touch
   since: 0.28.0
 
 - id: no-gaps-between-hover-items
@@ -108,7 +73,7 @@
   rule: 'ホバーで背景が付く項目を並べるメニュー、リスト、タブでは、項目の間を `gap` や `margin` で空けず、間隔を各項目の内側の `padding` で作る。'
   reason: カーソルが項目の間の隙間を通るあいだはどの項目にもホバーが当たらず、背景が消えてから次の項目に付き直して点滅して見え、隙間を押しても何も起きないため。
   note: '背景の帯どうしを離して見せたいときも、項目は隙間なく並べ、背景を項目の擬似要素に描いて `inset` で内側に寄せます。カーソルに最も近い項目に背景を付ける作り方や、隙間のクリックを背景の付いた項目に渡す作り方は JavaScript が要るので、採りません。ホバーした項目へ背景が移る表現（`anchor-indicator-as-decoration`）でも、隙間では背景が薄れてから戻ります。'
-  page: interaction/states-and-focus
+  page: interaction/hit-area-and-touch
   since: 0.38.0
 
 - id: pseudo-hit-area-no-overlap
@@ -117,7 +82,7 @@
   rule: '見た目を変えずに押せる範囲を広げるときは、擬似要素を `inset: min(0px, (100% - var(--_hit-size)) / 2)` で要素の外にはみ出させ、広げた範囲を隣の操作する要素に重ねない。'
   reason: 擬似要素は要素の一部として押せるので見た目を保ったまま範囲を広げられるが、隣の要素に重なると、押した要素と違うものが反応することがあるため。
   note: 要素がもともと `--_hit-size` より大きいときは、`min()` の上限の0pxで擬似要素が要素より小さくならないようにしています。並べるときは、広げたあとの大きさで間隔を確かめます。
-  page: interaction/states-and-focus
+  page: interaction/hit-area-and-touch
   since: 0.28.0
 
 - id: user-select-none-for-controls
@@ -126,7 +91,7 @@
   rule: '`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。'
   reason: '初期値の `auto` は親の値が `none` なら `none` として扱われるので、広い範囲に指定すると、文章のコピーや、選択した文字を読み上げや翻訳の機能に渡す操作ができなくなるため。'
   note: 'Safari は接頭辞なしの `user-select` に対応していないので（2026年10月）、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome 152 で確認）。'
-  page: interaction/states-and-focus
+  page: interaction/hit-area-and-touch
   since: 0.21.0
 
 - id: no-global-touch-action-none
@@ -135,10 +100,48 @@
   rule: '`html`、`body`、全称セレクタのようにページ全体に及ぶセレクタに `touch-action: none` を指定しない。'
   reason: 'ブラウザは触れた要素からスクロールする祖先までの `touch-action` を重ね合わせて許す操作を決めるので、ページ全体でスクロールとピンチでの拡大が止まるため。'
   note: '`touch-action` は、ドラッグやスワイプを自分で処理する部品にだけ、`pan-y pinch-zoom` のように残す操作を明示して指定します。ボタンなどの `touch-action: manipulation` は kiso.css が指定しているので、書き直しません。'
-  page: interaction/states-and-focus
+  page: interaction/hit-area-and-touch
   since: 0.21.0
 
-# 17-2 開閉する UI
+# 17-3 状態を属性で表す
+- id: state-by-pseudo-class-or-aria
+  level: 推奨
+  kind: judgment
+  rule: 状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。
+  reason: ブラウザの動作や支援技術に伝わる状態と同じ情報から見た目が決まるのでずれず、クラスと属性を二重に管理せずに済むため。
+  note: '`:required` と `required` 属性のように、擬似クラスと属性のどちらでも選べる状態は、擬似クラスで選びます。'
+  aiProne: true
+  page: interaction/state-attributes
+  since: 0.1.0
+
+- id: data-attribute-for-other-states
+  level: 推奨
+  kind: convention
+  rule: HTML の属性にも ARIA 属性にもない状態（スクロールで縮んだヘッダーや演出の進み具合など）だけを、`data-compact-mode` のような `data-*` 属性で表す。
+  reason: 見た目のためだけの状態を、支援技術に伝わる意味と混ぜずに済むため。
+  page: interaction/state-attributes
+  since: 0.1.0
+
+- id: focus-visible-over-focus-within
+  level: 推奨
+  kind: spec
+  rule: ブラウザがフォーカスの表示を必要と判断する場合に限って親の見た目を変えるときは、`:focus-within` ではなく `&:has(:focus-visible)` を使う。
+  reason: '`:focus-within` は、ボタンをマウスでクリックしたときのように、ブラウザがフォーカスリングを出さない場面にも当てはまるため。'
+  note: '`:focus-visible` は入力の手段を判定しません。テキストの入力欄は、クリックでフォーカスしたときにも当てはまります。入力欄をクリックした時点でグループ全体を強調してよいなら、`:focus-within` で足ります。'
+  page: interaction/state-attributes
+  since: 0.4.0
+
+# 17-4 カード全体をリンクにする
+- id: stretched-link-for-card
+  level: 推奨
+  kind: judgment
+  rule: カード全体をリンクにするときは、`<a>` でカードを包まず、見出しのリンクの `::after` をカードいっぱいに広げ、フォーカスリングはカードの `:has(:focus-visible)` に出す。
+  reason: リンクのテキストが見出しだけになり、スクリーンリーダーでカードの中身をすべて読み上げるような冗長さを避けられるため。
+  note: カードの中にほかのリンクやボタンを置くときは、それらを `::after` より手前に重ねます。
+  page: interaction/card-link
+  since: 0.1.0
+
+# 17-5 開閉する UI
 - id: native-disclosure-elements
   level: 推奨
   kind: judgment
@@ -244,7 +247,7 @@
   page: interaction/disclosure
   since: 0.1.0
 
-# 17-3 フォーム部品
+# 17-6 フォーム部品
 - id: accent-color-for-color-only
   level: 推奨
   kind: judgment
@@ -324,7 +327,7 @@
   page: interaction/forms
   since: 0.1.0
 
-# 17-4 CSS でカルーセルを作る
+# 17-7 CSS でカルーセルを作る
 - id: no-autoplay-carousel
   level: 禁止
   kind: judgment

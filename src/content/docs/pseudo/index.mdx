@@ -23,15 +23,15 @@ sidebar:
 - [5-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)：`:open`、`:popover-open`、`:modal`、`:target` などが当てはまる条件の違い
 - [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)：`::before` と `::after` の使いどころ、`::first-letter` や `::selection` などの装飾の擬似要素
 
-詳細度の設計の方針は、第4章「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。この章では、擬似クラスが「どの状態のときに当てはまるか」に絞り、それを使ったUIの実装は第17章「インタラクション」に渡します。`:hover`、`:focus-visible`、`:focus-within` によるフォーカスの表し方は「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で、ダイアログやアコーディオンの開閉は「[17-2 開閉するUI](/interaction/disclosure/)」で扱います。フォーム部品の作り方は「[17-3 フォーム部品](/interaction/forms/)」で、カルーセルは「[17-4 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。番号付きリストのマーカーを `::marker` で装飾する方法は、第16章「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
+詳細度の設計の方針は、第4章「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。この章では、擬似クラスが「どの状態のときに当てはまるか」に絞り、それを使ったUIの実装は第17章「インタラクション」に渡します。`:hover` と `:focus-visible` によるフォーカスの表し方は「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」で、`:focus-within` と `:has()` で親に状態を伝える書き方は「[17-3 状態を属性で表す](/interaction/state-attributes/)」で、ダイアログやアコーディオンの開閉は「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。フォーム部品の作り方は「[17-6 フォーム部品](/interaction/forms/)」で、カルーセルは「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。番号付きリストのマーカーを `::marker` で装飾する方法は、第16章「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
 
 ## この章で扱わない擬似要素と擬似クラス
 
 この章では、主要なブラウザの一部でしか使えないものと、サイト制作の範囲から外れるものは扱いません。次に挙げるものは、名前と対応状況（2026年10月確認）と、扱わない理由だけを示します。{/* 要確認: 出典なし */}
 
-`::scroll-marker` と `::scroll-button()` は、スクロールコンテナにインジケーターとページ送りのボタンを生成する擬似要素です。対応しているのはChromeとEdgeの135以降だけで、Baselineではありません。カルーセルを作るときにだけ使うものなので、使い方と未対応の環境への備えは、第17章「[17-4 CSSでカルーセルを作る](/interaction/carousel/)」でまとめて説明します。段組みの列ごとに箱を生成する `::column` も、同じくChromeとEdgeの135以降だけが対応しており、現時点ではカルーセルの列ごとにスクロールマーカーやスナップ位置を指定するためのものなので扱いません。
+`::scroll-marker` と `::scroll-button()` は、スクロールコンテナにインジケーターとページ送りのボタンを生成する擬似要素です。対応しているのはChromeとEdgeの135以降だけで、Baselineではありません。カルーセルを作るときにだけ使うものなので、使い方と未対応の環境への備えは、第17章「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」でまとめて説明します。段組みの列ごとに箱を生成する `::column` も、同じくChromeとEdgeの135以降だけが対応しており、現時点ではカルーセルの列ごとにスクロールマーカーやスナップ位置を指定するためのものなので扱いません。
 
-`::picker(select)` と `::checkmark` は、`appearance: base-select` を指定した `<select>` のドロップダウンと、選んだ項目の印を選ぶ擬似要素です。対応しているのはChrome 135以降（`::checkmark` は133以降）とSafari 27で、Firefoxが対応していないためBaselineではありません。`<select>` の見た目を変える方法と、未対応の環境で標準の `<select>` に戻す書き方は、第17章「[17-3 フォーム部品](/interaction/forms/)」で説明します。
+`::picker(select)` と `::checkmark` は、`appearance: base-select` を指定した `<select>` のドロップダウンと、選んだ項目の印を選ぶ擬似要素です。対応しているのはChrome 135以降（`::checkmark` は133以降）とSafari 27で、Firefoxが対応していないためBaselineではありません。`<select>` の見た目を変える方法と、未対応の環境で標準の `<select>` に戻す書き方は、第17章「[17-6 フォーム部品](/interaction/forms/)」で説明します。
 
 `:state()` は、カスタム要素がJavaScriptで設定した独自の状態を選ぶ擬似クラスです。2024年5月にすべての主要なブラウザが対応し、Baseline Newly availableになっています。ただし、使うには `ElementInternals` で状態を管理する必要があります。本書ではカスタム要素の状態を、ブラウザの擬似クラス（`:popover-open` や `:checked`）と `data-*` 属性で選ぶので、`:state()` は扱いません（第10章「[10-8 Web Components](/components/web-components/)」）。
 

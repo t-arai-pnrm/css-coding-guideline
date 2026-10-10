@@ -1,8 +1,8 @@
 ---
-title: "17-2 開閉するUI"
+title: "17-5 開閉するUI"
 description: "モーダルは<dialog>をcommand属性とclosedby属性で開閉し、小さな表示にはpopover属性を使います。アコーディオンは<details>とname属性で作り、見出しの構造が必要なパネルやタブはhidden=\"until-found\"で隠します。ヘッダーのボタンで開閉するドロワーでは、背面の要素にinert属性を付けます。"
 sidebar:
-  order: 2
+  order: 5
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -145,7 +145,7 @@ CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります�
 
 <Baseline id="interactivity" name="interactivity" />
 
-`interactivity: inert` は、カルーセルで隠れているスライドを読み上げとフォーカスから外すときにも使います。この使い方は「[17-4 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。
+`interactivity: inert` は、カルーセルで隠れているスライドを読み上げとフォーカスから外すときにも使います。この使い方は「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。
 
 ## スクロールの連鎖を止める
 
@@ -235,7 +235,7 @@ const initializeDisclosure = (link) => {
 };
 ```
 
-ページ内検索などで自動で開いたときには `beforematch` イベントが発生するので、`aria-expanded` を更新します。見た目の状態は、「[17-1 状態とフォーカスを表す](/interaction/states-and-focus/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
+ページ内検索などで自動で開いたときには `beforematch` イベントが発生するので、`aria-expanded` を更新します。見た目の状態は、「[17-3 状態を属性で表す](/interaction/state-attributes/)」で説明したように、`[aria-expanded="true"]` や `[aria-selected="true"]` をセレクタにして表します。
 
 `hidden="until-found"` に対応したブラウザは、要素を `display: none` ではなく `content-visibility: hidden` で隠します。中身だけが隠れて要素自体は描画されるので、その要素の余白、枠線、背景は、閉じていても表示されます。これらは内側の要素に指定します。
 
