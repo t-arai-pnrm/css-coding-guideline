@@ -8,7 +8,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - `pnpm build`: 本番ビルド。下書きは除かれ、内部リンクが検証される。
 - `pnpm lint:css`: サイトの CSS とデモの CSS を Stylelint で検証する。
 - `pnpm lint:examples`: 原稿の 🙆‍♂ Recommended の CSS コード例を Stylelint で検証する。
-- `pnpm lint:classes`: デモ、ひな形、原稿の `class` 属性が、種類ごとに `|` で区切られ、決まった順に並んでいるかを検証する（ルール `group-classes-with-pipe`）。
+- `pnpm lint:classes`: デモ、ひな形、原稿、サイトのコンポーネントの `class` 属性が、種類ごとに `|` で区切られ、決まった順に並んでいるかを検証する（ルール `group-classes-with-pipe`）。
 - `pnpm lint:text`: 原稿を textlint で検証する。
 - `pnpm list:markers`: 刊行前に解消する印（`要確認`、`要検証`）を種類ごとに一覧にする。`--summary` で件数だけを出す。
 - `pnpm gen:exercise`: 第21章のデモから、演習を手元で進めるためのファイル（`public/exercise-files/`）を生成する。

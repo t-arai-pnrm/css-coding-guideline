@@ -3,7 +3,8 @@
  * 順番：ルート（`scoped <名前>`）| 子要素（`_`）| コンポジション | パターン | ユーティリティ（`-`）
  *
  * 使い方: node scripts/lint-classes.mjs [ファイル…]
- * 引数がなければ、デモとひな形の HTML と、原稿の MDX をすべて調べる。
+ * 引数がなければ、デモとひな形の HTML、原稿の MDX、サイトのコンポーネント（.astro）をすべて調べる。
+ * Starlight の `not-content` のような外部のクラスは、接頭辞のないクラスとして末尾のグループに置く。
  */
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative } from 'node:path';
@@ -67,6 +68,7 @@ const files = process.argv.slice(2).length
       ...(await listFiles(join(ROOT, 'src/demos'), '.html')),
       ...(await listFiles(join(ROOT, 'src/kits'), '.html')),
       ...(await listFiles(join(ROOT, 'src/content/docs'), '.mdx')),
+      ...(await listFiles(join(ROOT, 'src/components'), '.astro')),
     ];
 
 let count = 0;
