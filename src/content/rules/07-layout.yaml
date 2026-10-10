@@ -113,6 +113,15 @@
   page: layout/margin-role
   since: 0.5.0
 
+- id: text-elements-text-styles-only
+  level: 推奨
+  kind: judgment
+  rule: '段落や見出しのような文字の要素には文字のスタイルだけを書き、横方向の `margin` と `padding` を付けず、`display` も構造上の理由なく変えない。文字を左右から離す余白は、包む要素の `padding` か親の `gap` で作る。'
+  reason: '文字の要素ごとに横の余白を付けると、同じ領域のほかの要素と左右の端がそろわず、要素の種類が増えるたびに同じ値を書き足すことになるため。`display` を変えると、`margin` の相殺や行の折り返し方が変わり、余白の書き分けが成り立たなくなる。'
+  note: '押せる範囲を広げるために `<a>` を `display: block flow` にして `padding` を付ける場合（17-2）と、`code` やバッジのように背景や枠線を持つインラインの要素が `padding-inline` を持つ場合は対象外です。'
+  page: layout/margin-role
+  since: 0.50.0
+
 # 7-6 マージンの相殺
 - id: margin-collapse-no-empty-spacers
   level: 非推奨

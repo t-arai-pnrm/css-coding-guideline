@@ -1,8 +1,8 @@
 # 第7章 レイアウトの仕組み：ルール
 
-- ガイドラインのバージョン: 0.49.1（2026-10-10 生成）
-- ルールの数: 40
-- 本文: 約27.3万字
+- ガイドラインのバージョン: 0.50.0（2026-10-10 生成）
+- ルールの数: 41
+- 本文: 約27.6万字
 - 読む条件: display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -17,7 +17,7 @@
 - `layout/normal-flow` 7-2 通常フローの基礎（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/
 - `layout/box-model` 7-3 ボックスモデルの基礎（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/
 - `layout/sizing` 7-4 大きさの決まり方（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/sizing/
-- `layout/margin-role` 7-5 marginの役割（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/
+- `layout/margin-role` 7-5 marginの役割（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/
 - `layout/margin-collapse` 7-6 マージンの相殺（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/
 - `layout/flexbox-basics` 7-7 Flexboxの基礎（約4.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/
 - `layout/grid-basics` 7-8 Gridの基礎（約2.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/
@@ -92,6 +92,10 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/
   - 理由: 通常フローでは、親に `padding` や `border` がないと子の `margin` が親の `margin` と相殺して親の外へ出て、背景の外に余白ができるため。
   - 補足: コンポーネントのルートに外側の `margin` を持たせない方針（第10章）も、子の `margin` が外へ出ると守れなくなります。相殺そのものを止めたいときは、親に `display: block flow-root` を指定します（ルール `flow-root-for-margin-collapse`）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/#rule-margin-collapse-padding-for-inner-space
+- 【推奨・実装上の判断】段落や見出しのような文字の要素には文字のスタイルだけを書き、横方向の `margin` と `padding` を付けず、`display` も構造上の理由なく変えない。文字を左右から離す余白は、包む要素の `padding` か親の `gap` で作る。（`text-elements-text-styles-only`）
+  - 理由: 文字の要素ごとに横の余白を付けると、同じ領域のほかの要素と左右の端がそろわず、要素の種類が増えるたびに同じ値を書き足すことになるため。`display` を変えると、`margin` の相殺や行の折り返し方が変わり、余白の書き分けが成り立たなくなる。
+  - 補足: 押せる範囲を広げるために `<a>` を `display: block flow` にして `padding` を付ける場合（17-2）と、`code` やバッジのように背景や枠線を持つインラインの要素が `padding-inline` を持つ場合は対象外です。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/#rule-text-elements-text-styles-only
 
 ## 7-6 マージンの相殺
 

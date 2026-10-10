@@ -11,6 +11,18 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.50.0（2026年10月10日）
+
+要素の役割と、セレクタや余白の書き方についての約束を補いました。ルールを追加したので、マイナーバージョンを上げています。
+
+- 「[7-5 marginの役割](/layout/margin-role/)」に、見出し「文字の要素には文字のスタイルだけを書く」とデモを加えました。文字の要素に横方向の `margin` と `padding` を付けず、`display` も構造上の理由なく変えません。
+- 「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」に、見出し「セレクタには、要素を選ぶのに必要な部分だけを書く」を加えました。
+- 「[11-2 余白を設計する](/layout-practice/spacing/)」に、極端に大きな余白を構成を見直す合図として扱う説明を加えました。
+- 「[10-2 コンポーネントの境界を守る](/components/boundaries/)」に、1つの要素に1つの役割を持たせ、役割のある `div` は増えてよいという説明を加えました。ルール [`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement) の補足にも書いています。
+- ルールを追加しました。
+  - [`text-elements-text-styles-only`](/layout/margin-role/#rule-text-elements-text-styles-only)
+  - [`minimal-selectors`](/cascade/selectors/#rule-minimal-selectors)
+
 ## 0.49.1（2026年10月10日）
 
 コードの質が要る理由と、パターンとコンポーネントの線引きを補いました。ルールは変えていないので、パッチバージョンを上げています。

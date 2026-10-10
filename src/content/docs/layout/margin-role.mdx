@@ -11,6 +11,8 @@ import cardHtml from '../../../demos/layout/margin-role/index.html?raw';
 import cardCss from '../../../demos/layout/margin-role/style.css?raw';
 import spacesHtml from '../../../demos/layout/margin-role-spaces/index.html?raw';
 import spacesCss from '../../../demos/layout/margin-role-spaces/style.css?raw';
+import textSpacingHtml from '../../../demos/layout/text-element-spacing/index.html?raw';
+import textSpacingCss from '../../../demos/layout/text-element-spacing/style.css?raw';
 
 `margin` は、要素と前後の要素の間に「最低これだけ離したい」という距離を表すプロパティです。HTMLが縦に長い文書を書くための言語として生まれたことと結び付いた考え方です。ブロック方向で隣り合う `margin` が足し算にならず、大きいほうが採られる仕組み（マージンの相殺）も、この捉え方から説明できます。
 
@@ -133,6 +135,33 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 <Demo title="背景の内側は padding、ブロックの間隔は gap、本文の要素の間は後ろの要素の margin-block-start で作る" html={cardHtml} css={cardCss} variant="recommended" />
 
 3種類の余白は、それぞれ別の要素のルールに書かれています。カードの余白を変えたいときは `:scope` の `padding` を、見出しと本文の間隔を変えたいときは `gap` を、本文の段落の間を変えたいときは `._body` のルールを見れば足ります。本文から段落を1つ消しても、残った要素の間にだけ余白が付き、最後の要素の下に余白が残ることはありません。
+
+## 文字の要素には文字のスタイルだけを書く
+
+段落、見出し、リストの項目の中の文字のような文字の要素には、文字の大きさや色、行の高さのような文字のスタイルだけを書きます。横方向の `margin` と `padding` は付けず、`display` も構造上の理由なく変えません。文字を左右から離したいときは、文字の要素ではなく、それを包む要素の `padding` か、親の `gap` で作ります。
+
+```css title="🙅‍♂ Not Recommended: 段落に横の margin を付けて、文字を内側へ寄せる"
+/* 🙅‍♂ Not Recommended */
+._body {
+  & > p {
+    margin-inline: 16px;
+  }
+}
+```
+
+段落にだけ横の `margin` を付けると、同じ領域の見出しや画像とは左右の端がそろわなくなります。そろえるには、要素の種類ごとに同じ値を書き足すことになり、新しい種類の要素が入るたびに漏れが出ます。包む要素の `padding` にすれば、中に何が入っても左右の端は1か所で決まります。
+
+```css title="🙆‍♂ Recommended: 文字を左右から離す余白は、包む要素の padding で作る"
+._body {
+  padding-inline: 16px;
+}
+```
+
+次のデモの上のカードは、段落にだけ横の `margin` を付けたものです。見出しと区切り線はカードの端に接し、段落だけが内側に寄っています。下のカードは、包む要素に `padding-inline` を付けたもので、見出し、段落、区切り線の左右の端がそろっています。
+
+<Demo title="段落の横の margin では端がそろわず、包む要素の padding ではそろう" html={textSpacingHtml} css={textSpacingCss} widths={[]} />
+
+`display` を変えないのも、同じ理由です。段落を `inline-block` にすると、前後の要素との `margin` の相殺がなくなり、行の折り返し方も変わるので、この節の余白の書き分けが成り立たなくなります。例外は、変える理由を構造から説明できる場合です。リンクの押せる範囲を広げるために `<a>` を `display: block flow` にして `padding` を付けるのは、押せる要素の大きさを決めるためなので、文字の要素の余白には当たりません（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。`code` やバッジのように背景や枠線を持つインラインの要素も、背景の内側に文字との距離を取るために `padding-inline` を持ちます。
 
 ## 補足と注意点
 

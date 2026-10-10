@@ -1,8 +1,8 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.49.1（2026-10-10 生成）
-- ルールの数: 22
-- 本文: 約7.8万字
+- ガイドラインのバージョン: 0.50.0（2026-10-10 生成）
+- ルールの数: 23
+- 本文: 約7.9万字
 - 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,7 +14,7 @@
 
 - `cascade` 第4章 カスケードを制御する（約4,200字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/
 - `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/
-- `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/
+- `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/
 - `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/
 - `cascade/scope` 4-4 @scopeでスタイルを閉じ込める（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/
 - `cascade/nesting` 4-5 CSSネストの基礎（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/
@@ -58,6 +58,10 @@ https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/
   - 理由: 意図がコードから読み取れず、次の上書きでさらに詳細度を上げる必要が生まれるため。
   - 補足: 上書きが必要になったら、レイヤーの順番、`:where()`、公開カスタムプロパティで解決できないかを先に検討します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/#rule-no-specificity-hacks
+- 【推奨・実装上の判断】セレクタには、外すと選ぶ要素が変わる部分だけを書く。クラスで選べる要素にタイプセレクタを連結したり（`a.nav-link`）、選ぶ要素が変わらない祖先を足したりしない。（`minimal-selectors`）
+  - 理由: 要素を選ぶ役に立たない部分は、詳細度を上げ、HTML の構造への依存を増やすだけで、要素の種類や置き場所を変えたときにセレクタが当たらなくなるため。
+  - 補足: 状態の擬似クラスや、同じクラスの要素を置き場所で区別する祖先のように、外すと意味が変わる部分は必要な部分です。上書きのために部分を足す書き方は、ルール `no-specificity-hacks` で禁じています。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/#rule-minimal-selectors
 - 【必須・仕様上の制約】`@layer` を使えない場合に限り、ベーススタイルのセレクタを `:where()` で包み、詳細度を 0 にする（例：`:where(a:any-link)`）。（`where-for-base-selectors`）
   - 理由: レイヤーがなければ優先順位が読み込む順番と詳細度だけで決まり、`a:any-link`（0.1.1）のような指定をクラス1つでは上書きできなくなるため。
   - 補足: `@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。上書きされる前提のデフォルト値（リセットで消した `list-style-type` を戻す `:where(ul, ol)` など）は、`@layer` や `@scope` の中でも `:where()` で詳細度を 0 にしてかまいません（`is-for-state-selectors`）。

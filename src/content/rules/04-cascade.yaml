@@ -76,6 +76,15 @@
   page: cascade/selectors
   since: 0.1.0
 
+- id: minimal-selectors
+  level: 推奨
+  kind: judgment
+  rule: 'セレクタには、外すと選ぶ要素が変わる部分だけを書く。クラスで選べる要素にタイプセレクタを連結したり（`a.nav-link`）、選ぶ要素が変わらない祖先を足したりしない。'
+  reason: '要素を選ぶ役に立たない部分は、詳細度を上げ、HTML の構造への依存を増やすだけで、要素の種類や置き場所を変えたときにセレクタが当たらなくなるため。'
+  note: '状態の擬似クラスや、同じクラスの要素を置き場所で区別する祖先のように、外すと意味が変わる部分は必要な部分です。上書きのために部分を足す書き方は、ルール `no-specificity-hacks` で禁じています。'
+  page: cascade/selectors
+  since: 0.50.0
+
 - id: where-for-base-selectors
   level: 必須
   kind: spec

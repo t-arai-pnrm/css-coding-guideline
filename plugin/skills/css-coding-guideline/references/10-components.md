@@ -1,6 +1,6 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.49.1（2026-10-10 生成）
+- ガイドラインのバージョン: 0.50.0（2026-10-10 生成）
 - ルールの数: 51
 - 本文: 約15.8万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
@@ -64,7 +64,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/#rule-no-external-layout-on-root
 - 【推奨・実装上の判断】子のコンポーネントの配置と外側の余白は、親の `gap` やグリッドか、親の子要素として置く Outer の要素で指定する。（`parent-owns-child-placement`）
   - 理由: 配置を決める責任を置く側にまとめれば、子のコンポーネントはどこに置かれても同じように振る舞えるため。
-  - 補足: Outer は親のコンポーネントの子要素として扱い、単独のコンポーネントにはしません。
+  - 補足: Outer は親のコンポーネントの子要素として扱い、単独のコンポーネントにはしません。要素の数を減らすために、子のコンポーネントのルートに親の子要素のクラスを付けて配置と見た目の2つの役割を持たせることはせず、Outer で包みます。役割のある `div` や `span` は、数が増えてもかまいません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/#rule-parent-owns-child-placement
 - 【非推奨・実装上の判断】子のコンポーネントに `class` 属性を渡して、親から見た目や配置を変えない。（`no-class-to-child-component`）
   - 理由: 親が子のルートに自由にスタイルを当てられるようになり、どこまでが子の責任なのかが曖昧になるため。

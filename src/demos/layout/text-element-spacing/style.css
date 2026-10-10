@@ -1,0 +1,46 @@
+@layer components {
+  /**
+   * 文字を左右から離す余白を、段落の margin で作る場合と、包む要素の padding で作る場合を比べる。
+   */
+  @scope (.scoped.text-element-spacing) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+      gap: 16px;
+    }
+
+    ._body {
+      padding-block: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
+
+      & > * + * {
+        margin-block-start: 12px;
+      }
+
+      &[data-spacing="wrapper-padding"] {
+        padding-inline: 16px;
+      }
+    }
+
+    /* 比べるために、段落にだけ横の margin を付ける */
+    ._indented-text {
+      margin-inline: 16px;
+    }
+
+    h3 {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    p {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    hr {
+      border-block-start: 1px solid var(--border--strong);
+    }
+  }
+}
