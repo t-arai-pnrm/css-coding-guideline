@@ -1,8 +1,8 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.47.2（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.3（2026-10-10 生成）
 - ルールの数: 51
-- 本文: 約15.4万字
+- 本文: 約15.5万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -18,8 +18,8 @@
 - `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/compositions-and-utilities/
 - `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/design-tokens/
 - `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/custom-properties/
-- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/
-- `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/placement-and-child-states/
+- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/
+- `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/placement-and-child-states/
 - `components/web-components` 10-8 Web Components（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/web-components/
 
 ## 10-1 何をコンポーネントにするか

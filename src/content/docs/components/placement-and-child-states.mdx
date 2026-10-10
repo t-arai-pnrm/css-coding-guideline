@@ -15,6 +15,8 @@ import featuredCss from '../../../demos/components/featured-product-card/style.c
 
 反対に、子孫の状態で親自身の見た目を変えるときは、スタイルクエリではなく `:has()` を使います。スタイルクエリは、親から子孫への一方向にしか値を伝えないからです。フラグの立て方と、スタイルクエリがどの要素を問い合わせるかは、「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
 
+外からフラグを渡すのは、置き場所によってコンポーネントの中の複数の要素が変わるときです。置き場所で変わるのがカードの外側の配置だけなら、置く側のレイアウトで決めれば足り、フラグは要りません。この節は、「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」と第13章の「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」を前提にしています。
+
 <Baseline id="container-style-queries" name="スタイルクエリ" />
 
 ## 置く側のセレクタからカードの中を選ぶ問題

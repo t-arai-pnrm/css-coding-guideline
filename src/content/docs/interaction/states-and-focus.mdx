@@ -215,6 +215,8 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ホバーを受ける要素は動かさず、動かすのは子要素（または擬似要素）にします。ホバーを受ける側は、動かない当たり判定として働きます。
 
+次の例では、ボタンの状態を子へ伝えるため、フラグのカスタムプロパティ `--_hocus` を使います。フラグを使うのは、このように子要素や擬似要素を変えるときです。要素自身の色や背景だけを変えるなら、前の見出しまでの例のように、状態のセレクタに直接書けば足ります。
+
 ```css title="🙆‍♂ Recommended: ホバーを受ける要素は動かさず、子要素を動かす"
 @scope (.scoped.lift-button) to (.scoped) {
   :scope {

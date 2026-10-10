@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # CSSコーディングガイドライン Skill
 
-- ガイドラインのバージョン: 0.47.2（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.3（2026-10-10 生成）
 - ルールの数: 596（うち AI が誤りやすいもの 289）
 - 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
 
@@ -106,8 +106,8 @@ Figma などのデザインツールのデザインから書くときは、「20
 | 第6章 値と単位 | `references/06-values.md` | 29 | 約7.5万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
 | 第7章 レイアウトの仕組み | `references/07-layout.md` | 39 | 約26.7万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
 | 第8章 リセットとベーススタイル | `references/08-reset.md` | 23 | 約4.7万字 | リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル |
-| 第9章 記法の規約 | `references/09-notation.md` | 49 | 約11.3万字 | **常に読む**。すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法） |
-| 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 51 | 約15.4万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
+| 第9章 記法の規約 | `references/09-notation.md` | 49 | 約11.4万字 | **常に読む**。すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法） |
+| 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 51 | 約15.5万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
 | 第11章 レイアウトを組む | `references/11-layout-practice.md` | 59 | 約24.2万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
 | 第12章 レイアウトコンポジション | `references/12-compositions.md` | 37 | 約17.1万字 | 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン |
 | 第13章 レスポンシブデザイン | `references/13-responsive.md` | 39 | 約11.1万字 | @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area |
