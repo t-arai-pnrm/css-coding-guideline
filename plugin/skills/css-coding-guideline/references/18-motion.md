@@ -1,6 +1,6 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
 - ルールの数: 31
 - 本文: 約16.1万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `motion` 第18章 モーション（約4,500字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/
+- `motion` 第18章 モーション（約4,700字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/
 - `motion/purpose` 18-1 動かすかどうかを決める（約8,800字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/purpose/
 - `motion/reduced-motion` 18-2 動きを減らす設定に対応する（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/
 - `motion/easing-and-duration` 18-3 イージングと再生時間（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/

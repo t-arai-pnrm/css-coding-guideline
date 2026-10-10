@@ -1,6 +1,6 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
 - ルールの数: 32
 - 本文: 約14.2万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `decoration` 第16章 画像・装飾（約3,500字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
+- `decoration` 第16章 画像・装飾（約3,600字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
 - `decoration/images` 16-1 画像の配置と読み込み（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
 - `decoration/icons-and-masks` 16-2 アイコン・SVG・マスク（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
 - `decoration/surfaces` 16-3 面・影・角丸（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/

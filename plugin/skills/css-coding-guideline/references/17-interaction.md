@@ -1,8 +1,8 @@
 # 第17章 インタラクション：ルール
 
-- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
 - ルールの数: 39
-- 本文: 約11.6万字
+- 本文: 約11.7万字
 - 読む条件: ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `interaction` 第17章 インタラクション（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/
+- `interaction` 第17章 インタラクション（約4,200字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/
 - `interaction/states-and-focus` 17-1 ホバーとフォーカスを表す（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/
 - `interaction/hit-area-and-touch` 17-2 押せる範囲とタッチ操作（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/
 - `interaction/state-attributes` 17-3 状態を属性で表す（約6,700字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/

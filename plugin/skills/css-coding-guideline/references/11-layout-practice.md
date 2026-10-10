@@ -1,6 +1,6 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
 - ルールの数: 59
 - 本文: 約24.2万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `layout-practice` 第11章 レイアウトを組む（約6,300字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/
+- `layout-practice` 第11章 レイアウトを組む（約6,700字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/
 - `layout-practice/choosing` 11-1 レイアウト手法の選び方（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/choosing/
 - `layout-practice/spacing` 11-2 余白を設計する（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/
 - `layout-practice/defensive` 11-3 サイズと内容の変化に耐える（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/

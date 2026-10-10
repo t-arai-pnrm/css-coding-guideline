@@ -1,8 +1,8 @@
 # 第20章 AIにコーディングさせる：ルール
 
-- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
 - ルールの数: 14
-- 本文: 約7.2万字
+- 本文: 約7.3万字
 - 読む条件: AIが書いたCSS、Figmaなどのデザインツールから書いたCSS
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `ai-coding` 第20章AIにコーディングさせる（約3,700字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/
+- `ai-coding` 第20章AIにコーディングさせる（約3,900字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/
 - `ai-coding/roles` 20-1 AIに任せる範囲と人が担う範囲（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/roles/
 - `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約7,100字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/
 - `ai-coding/mcp-servers` 20-3 MCPサーバーを役割で使い分ける（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/mcp-servers/

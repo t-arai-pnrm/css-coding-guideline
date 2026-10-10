@@ -15,6 +15,21 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 
 レビューするのは、トップページにお知らせの一覧を足すプルリクエストです。19-2の段階ごとに誤りを探し、見つけた誤りに、ラベル、理由、解決策をそろえた指摘を書きます。
 
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)
+- [9-9 コメントの書き方](/notation/comments/)
+- [10-2 コンポーネントの境界を守る](/components/boundaries/)
+- [10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)
+- [10-6 スタイルクエリで状態を伝える](/components/style-queries/)
+- [11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)
+- [13-2 ブレイクポイントの決め方](/responsive/breakpoints/)
+- [13-3 コンテナサイズクエリ](/responsive/container-size-queries/)
+- [17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)
+- [19-2 レビューの進め方](/operations/review/)
+- [19-3 表示と操作を確かめる](/operations/verification/)
+- [19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)
+
 ## 完成したカードと一覧を確かめる
 
 最初は内容です。最悪の内容を入れたテストページ（カンプの2倍の見出し、画像のない記事、5つのタグ、長い英単語 `Internationalization`）を、1280pxで見ます。画像のない記事は、関連記事とサイドバーのどちらに置いても画像の列がなくなり、文字だけの1列になります。タグが5つのカードではタグが複数行に折り返し、長い見出しのカードはほかより高くなります。どのカードの子もカードからはみ出さず、幅を320pxにしたときも横スクロールは出ません（「[21-5 内容の変化に耐える](/exercise/content-changes/)」）。

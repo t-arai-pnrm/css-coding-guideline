@@ -1,8 +1,8 @@
 # 第12章 レイアウトコンポジション：ルール
 
-- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
 - ルールの数: 37
-- 本文: 約17万字
+- 本文: 約17.1万字
 - 読む条件: 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `compositions` 第12章 レイアウトコンポジション（約3,200字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/
+- `compositions` 第12章 レイアウトコンポジション（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/
 - `compositions/stack` 12-1 stack：子要素を縦に積み、間隔をそろえる（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/stack/
 - `compositions/cluster` 12-2 cluster：子を横に並べ、入りきらなければ折り返す（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/cluster/
 - `compositions/apart` 12-3 apart：子要素を両端に分ける（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/apart/

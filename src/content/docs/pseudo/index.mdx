@@ -23,7 +23,7 @@ sidebar:
 - [5-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)：`:open`、`:popover-open`、`:modal`、`:target` などが当てはまる条件の違い
 - [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)：`::before` と `::after` の使いどころ、`::first-letter` や `::selection` などの装飾の擬似要素
 
-詳細度の設計の方針は、第4章「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。この章では、擬似クラスが「どの状態のときに当てはまるか」に絞り、それを使ったUIの実装は第17章「インタラクション」に渡します。`:hover` と `:focus-visible` によるフォーカスの表し方は「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」で、`:focus-within` と `:has()` で親に状態を伝える書き方は「[17-3 状態を属性で表す](/interaction/state-attributes/)」で、ダイアログやアコーディオンの開閉は「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。フォーム部品の作り方は「[17-6 フォーム部品](/interaction/forms/)」で、カルーセルは「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。番号付きリストのマーカーを `::marker` で装飾する方法は、第16章「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
+詳細度の設計の方針は、第4章「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。この章では、擬似クラスが「どの状態のときに当てはまるか」に絞り、それを使ったUIの実装は第17章「インタラクション」に渡します。`:hover` と `:focus-visible` によるフォーカスの表し方は「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」で扱います。`:focus-within` と `:has()` で親に状態を伝える書き方は「[17-3 状態を属性で表す](/interaction/state-attributes/)」で、ダイアログやアコーディオンの開閉は「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。フォーム部品の作り方は「[17-6 フォーム部品](/interaction/forms/)」で、カルーセルは「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。番号付きリストのマーカーを `::marker` で装飾する方法は、第16章「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
 
 ## この章で扱わない擬似要素と擬似クラス
 
@@ -36,6 +36,10 @@ sidebar:
 `:state()` は、カスタム要素がJavaScriptで設定した独自の状態を選ぶ擬似クラスです。2024年5月にすべての主要なブラウザが対応し、Baseline Newly availableになっています。ただし、使うには `ElementInternals` で状態を管理する必要があります。本書ではカスタム要素の状態を、ブラウザの擬似クラス（`:popover-open` や `:checked`）と `data-*` 属性で選ぶので、`:state()` は扱いません（第10章「[10-8 Web Components](/components/web-components/)」）。
 
 `interestfor` 属性は、ボタンやリンクにホバーやフォーカスで「関心」を示したとき、ツールチップのような要素を表示する仕組みです。関連する擬似クラスとして `:interest-source` と `:interest-target` があります。対応しているのはChromeとEdgeの142以降だけで、Baselineではないので扱いません。
+
+## 初めて読むとき
+
+初めて読むときは、「[5-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」「[5-2 :is()・:where()・:not()](/pseudo/is-where-not/)」「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」を読みます。5-4以降は、子の位置や数、フォームや開閉の状態で選ぶ場面が来てから読んでください。
 
 ## 最初に押さえるルール
 

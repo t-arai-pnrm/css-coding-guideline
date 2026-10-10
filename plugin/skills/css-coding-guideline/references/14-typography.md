@@ -1,6 +1,6 @@
 # 第14章 タイポグラフィと和文組版：ルール
 
-- ガイドラインのバージョン: 0.47.0（2026-10-10 生成）
+- ガイドラインのバージョン: 0.47.1（2026-10-10 生成）
 - ルールの数: 32
 - 本文: 約7.4万字
 - 読む条件: font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `typography` 第14章 タイポグラフィと和文組版（約3,400字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/
+- `typography` 第14章 タイポグラフィと和文組版（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/
 - `typography/fonts` 14-1 フォントを指定する（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/fonts/
 - `typography/japanese-typesetting` 14-2 和文組版を整える（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/japanese-typesetting/
 - `typography/line-height` 14-3 行の高さとハーフレディング（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/line-height/
