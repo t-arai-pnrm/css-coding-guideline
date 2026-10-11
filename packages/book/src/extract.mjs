@@ -88,14 +88,14 @@ export const extractPage = async (page, ctx) => {
     if (setting?.print) {
       const srcdoc = figure.querySelector('iframe')?.getAttribute('srcdoc') ?? '';
       const shots = [];
-      for (const width of widthsOf(figure, setting, call.mentioned)) shots.push({ width, file: await ctx.capture(srcdoc, width) });
+      for (const width of widthsOf(figure, setting, call.mentioned)) shots.push({ width, ...(await ctx.capture(srcdoc, width)) });
       const number = ctx.nextFigure(figureKey(page));
       const out = doc.createElement('figure');
       out.className = 'print-demo';
       // 幅の違う図を同じ縮尺で縦に積む。最も広い図を紙の幅いっぱいにする
       const widest = Math.max(...shots.map((shot) => shot.width));
       out.innerHTML = `<div class="shots">${shots
-        .map((shot) => `<div class="shot" style="inline-size: ${((shot.width / widest) * 100).toFixed(2)}%"><img src="img/${shot.file}" alt=""><p class="shot-label">幅 ${shot.width}px</p></div>`)
+        .map((shot) => `<div class="shot" style="inline-size: ${((shot.width / widest) * 100).toFixed(2)}%"><img src="img/${shot.file}" alt=""><p class="shot-label">幅 ${shot.width}px${shot.cropped ? '（上の部分）' : ''}</p></div>`)
         .join('')}</div>`;
       const caption = doc.createElement('figcaption');
       caption.textContent = `図${number}　${title}`;

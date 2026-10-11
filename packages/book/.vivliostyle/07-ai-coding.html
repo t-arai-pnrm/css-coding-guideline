@@ -1,0 +1,1197 @@
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="utf-8">
+<title>CSSコーディングガイドライン 巻3 実装（2）・運用・演習</title>
+<link rel="stylesheet" href="paper.css">
+</head>
+<body>
+<section class="chapter-opener" id="page-ai-coding" data-title="第20章AIにコーディングさせる">
+<h1>第20章AIにコーディングさせる</h1>
+<p>この章では、AIにCSSを書かせるときの準備と進め方を扱います。AIに書かせると、書く速さは上がりますが、確かめる前の段階で手戻りが生まれます。デザインにない値を推測で埋める、Figmaの出力の座標やクラスをそのまま写す、lintが通ったことを完了の根拠にする、といった形です。</p>
+<p>手戻りの多くは、AIの性能だけでは説明できません。AIに読ませる情報、AIの作業を止める地点、何をもって完了とするかが決まっていないことから起きます。この章では、それらを作業の前に決めておく進め方を示します。規約とツールを用意し、Figmaのデザインから計画を立てさせ、人が承認した計画に沿って、手順ごとに検証させます。</p>
+<p>私は直近の案件で、計画をAIとの対話で詰め、デザインの値をすべて変換表にしてから、実装をAIに任せました。それでも、lintとVRTが通っていたのに、宣言が適用されていなかったことがあります。この章の進め方には、そうした失敗から加えた確かめ方も含めています。</p>
+<h2 id="ai-coding--この章で判断できるようになること">この章で判断できるようになること</h2>
+<p>この章を読むと、AIに書かせる作業のうち、何をAIに任せ、何を人が決めるかを分けられるようになります。完了の条件を、AIが判定できる数値と人が判定する項目に分けて書き、AIが止まるべき地点を計画の中に決められます。Figmaのデザインから値の対応表を作らせ、トークンに当たらない値やずれる値を、実装の前に人が判断できます。AIが「完了しました」と報告したときに、その報告がどの検査に支えられ、何が未確認のままなのかを読み取れます。失敗したときは、原因をコンテキスト不足、権限不足、性能不足に分け、次に同じ失敗を防ぐために手を入れる場所を決められます。</p>
+<h2 id="ai-coding--この章の節">この章の節</h2>
+<p>この章は次の8つの節で構成します。</p>
+<ul>
+<li><a href="#page-ai-coding_roles" class="xref">20-1 AIに任せる範囲と人が担う範囲</a>：完了の条件の決め方、うまくいかない原因の3つの分類、計画と実装でのモデルの使い分け</li>
+<li><a href="#page-ai-coding_setup" class="xref">20-2 AIに読ませる規約を用意する</a>：本書のスキルとMCPサーバー、<code dir="auto">CLAUDE.md</code> に書く判断基準、既存のプロジェクトで最初にすること、許可とフック</li>
+<li><a href="#page-ai-coding_mcp-servers" class="xref">20-3 MCPサーバーを役割で使い分ける</a>：Figma MCP、<code dir="auto">@playwright/test</code>、Playwright MCP、Chrome DevTools MCPの役割と、出力をそのまま写さない理由</li>
+<li><a href="#page-ai-coding_tasks" class="xref">20-4 タスクの単位で進める</a>：人が書くbriefとAIが書くplan、4つのスキルと状態の移り方、推測で埋めずに止める条件</li>
+<li><a href="#page-ai-coding_from-figma" class="xref">20-5 Figmaのデザインから計画を立てる</a>：値の対応表とノードの対応表、トークンへの対応づけ、全ページに及ぶ変更の分け方、デザイナーへの確認依頼</li>
+<li><a href="#page-ai-coding_implementation" class="xref">20-6 実装と検証を回す</a>：手順ごとの検証、計算値での確認、値の対応表のテスト、完了の報告</li>
+<li><a href="#page-ai-coding_pitfalls" class="xref">20-7 AIが誤りやすいパターン</a>：書き方の誤り、古い知識、レイアウトの手法の偏り、デザインツールの出力に由来する誤り</li>
+<li><a href="#page-ai-coding_verify-output" class="xref">20-8 生成したコードを確かめ、教訓を残す</a>：lintを通っても残る誤り、本書のスキルによるレビュー、教訓の記録と規約の見直し、監査と移行</li>
+</ul>
+<p>この章で使うひな形（タスクのスキル、briefとplan、フック、<code dir="auto">.mcp.json</code>、テストの例）は、<a href="/css-coding-guideline/ai-coding-files/README.md"><code dir="auto">/ai-coding-files/</code></a> に置いています。本書のスキルとMCPサーバーをツールに入れる手順は、付録J「<a class="xref-out">AIツールで使う</a>（巻3）」にあります<span class="note-ref">※1</span>。</p>
+<h2 id="ai-coding--初めて読むとき">初めて読むとき</h2>
+<p>AIを使う読者は、初めて読むときに「<a href="#page-ai-coding_roles" class="xref">20-1 AIに任せる範囲と人が担う範囲</a>」と「<a href="#page-ai-coding_setup" class="xref">20-2 AIに読ませる規約を用意する</a>」を読みます。この章は、AIを使わない読者には前提になりません。AIを使う読者は、20-3以降を、タスクを任せる段階で読んでください。</p>
+<h2 id="ai-coding--最初に押さえるルール">最初に押さえるルール</h2>
+<p>次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「<a class="xref-out">ルール一覧</a>（巻3）」から引けば足ります。並びは、実務で出てくる順です。</p>
+<ul>
+<li><a href="#ai-coding_tasks--rule-no-guessing-missing-design" class="xref-rule" data-label="20-4"><code dir="auto">no-guessing-missing-design</code></a>：デザインと指示にない値や振る舞いを、推測で作って完成として扱いません。</li>
+<li><a href="#ai-coding_mcp-servers--rule-no-verbatim-design-output" class="xref-rule" data-label="20-3"><code dir="auto">no-verbatim-design-output</code></a>：デザインツールが出力したクラス、絶対配置の座標、固定の幅と高さを、そのまま写しません。</li>
+<li><a href="#ai-coding_implementation--rule-verify-applied-styles" class="xref-rule" data-label="20-6"><code dir="auto">verify-applied-styles</code></a>：lintとビルドが通っても、宣言が適用されているかを計算値で確かめます。</li>
+<li><a href="#ai-coding_roles--rule-verify-ai-output" class="xref-rule" data-label="20-1"><code dir="auto">verify-ai-output</code></a>：AIが生成したCSSは、Stylelintとレビューの両方で確かめてから採用します。</li>
+<li><a href="#ai-coding_implementation--rule-report-unverified-honestly" class="xref-rule" data-label="20-6"><code dir="auto">report-unverified-honestly</code></a>：実行していない検査と、人が判定する項目は、「未確認」と報告します。</li>
+</ul>
+<h2 id="ai-coding--次の章へ">次の章へ</h2>
+<p>ここまでの章で、CSSの仕組み、部品の設計、配置と表現、確かめ方と運用、AIへの任せ方を、それぞれの節で扱いました。ただ、規約の効き目は、1つの部品に要件の変更が重なっていく場面で初めて実感できます。第21章「<a href="08-exercise.html#page-exercise" class="xref">記事の一覧を作る</a>」では、記事のカードと一覧を題材に、要件を1つずつ変えながら、直す場所と直さずに済む場所を確かめます。</p><aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>デザインカンプとの向き合い方は第3章「<a class="xref-out">デザインを再現する</a>（巻1）」で、ブラウザでの確かめ方は第19章「<a href="06-operations.html#page-operations" class="xref">実務での運用</a>」</li></ol></aside>
+</section>
+<section class="page" id="page-ai-coding_roles" data-title="20-1 AIに任せる範囲と人が担う範囲">
+<h1>20-1 AIに任せる範囲と人が担う範囲</h1>
+
+<p>AIが速くするのは、決まった構造に沿ってコードを書く作業です。何を作るか、どういう構造にするか、何をもって完了とするかは、人が決めます。AIが生成したCSSは、人が書いたCSSと同じ基準で、lintとレビューを通してから採用します。</p>
+<p>人が決めることのうち、手戻りに最も響くのは完了の条件です。条件を、AIがコマンドや数値で判定できるものと、人が見て判定するものに分けておけば、AIは自分で確かめられる範囲を確かめ終えてから、人に判定を渡せます。うまくいかなかったときは、原因をコンテキスト不足、権限不足、性能不足の3つに分けて、対処する場所を決めます。</p>
+<h2 id="ai-coding_roles--aiが速くする作業">AIが速くする作業</h2>
+<p>AIが速くするのは、決まった構造に沿ってコードを書く構築の作業です。何を作るか、どういう構造にするか、出力を採用するかどうかは、人が決めます。AIの出力は、参照できるパターンが多いほど安定するので、サイトはページ単位ではなく、セクション、レイアウト、コンポーネント、デザイントークンのパターンとして作ります。パターンが決まっていれば、AIは新しいページを既存の部品の組み合わせとして書けます。</p>
+<p>Tailwind CSSがAIと相性が良いと言われるのも、使えるクラスと値の段階があらかじめ決まっていて、出力がその範囲に収まるからだと私は考えています。本書の規約で書く場合も同じで、トークン、コンポーネントの境界、命名が決まっているほど、AIの出力はその範囲に収まります<span class="note-ref">※1</span>。</p>
+<h2 id="ai-coding_roles--丸投げの3つの問題">丸投げの3つの問題</h2>
+<p>AIに書かせたコードを自分で理解しないまま使う「丸投げ」には、3つの問題があります。1つ目は、AIが詰まったときに自分で直せないことです。CSSはブラウザによって解釈や対応状況に差があり、特定のブラウザだけで崩れる表示をAIに何度直させても直らないとき、原因を突き止められるのは仕組みを知っている人だけです。</p>
+<p>2つ目は、納品したコードについて、なぜそう書いたのかを説明する責任を負えないことです。不具合を指摘されたときに、「AIが解決できないので分かりません」と答えるわけにはいきません。</p>
+<p>3つ目は、判断に必要な知識が少しずつ失われることです。自分で書かず、出力を読まずに使い続けると、毎年加わる新しい機能を評価できなくなります<span class="note-ref">※2</span>。この3つを避けるために、AIに書かせたコードも、人が書いたコードと同じ基準でレビューします（<code dir="auto">verify-ai-output</code>）。</p>
+<h2 id="ai-coding_roles--完了の条件を決める">完了の条件を決める</h2>
+<p>AIに書かせて手戻りが起きる典型は、AIが「完了しました」と報告した後に、人が見て崩れを見つける場面です。原因の多くは、AIの側にあるのではなく、何をもって完了とするかが決まっていなかったことにあります。条件が決まっていなければ、AIは自分が確かめた範囲で問題がないことを、完了の根拠にするしかありません。</p>
+<p>そこで、完了の条件は、AIが判定できるものと、人が判定するものに分けて書きます。AIが判定できるのは、コマンドの結果や数値で確かめられるものです。lintとビルドがエラーなしで通る、確かめる幅のすべてで横スクロールが出ない、書いた値がブラウザの計算値と一致する、本書のスキルによるレビューで「必須」と「禁止」のルールの違反が0件である、といった条件です。</p>
+<p>人が判定するのは、デザインの意図が再現できているか、動きの印象が合っているかのように、見た人が決めるものです。こうした項目をAIに判定させると、AIは自分で合格にするか、判断のたびに人を呼ぶかのどちらかになります。人が判定する項目は、AIの報告では「未確認」として残させ、人が見てから完了にします<span class="note-ref">※3</span>。</p>
+<p>AIの判定できる条件が多いほど、AIは人を呼ばずに作業を進められます。人が判定する項目のうち、数値に置き換えられるものは置き換えます。たとえば「カードの見出しがデザインと同じ大きさになっている」は、見出しの <code dir="auto">font-size</code> の計算値をトークンの値と比べる条件にできます。</p>
+<h2 id="ai-coding_roles--うまくいかない原因を3つに分ける">うまくいかない原因を3つに分ける</h2>
+<p>AIに書かせてうまくいかなかったときは、原因を3つに分けます。分けておくと、同じ失敗を防ぐために手を入れる場所が決まります。</p>
+<p>1つ目はコンテキスト不足で、AIが知るべきことを知らせていなかった場合です。プロジェクトのブレイクポイントや、本書と違う独自の規約を知らせていなければ、AIは一般的な書き方で埋めます。対処は、<code dir="auto">CLAUDE.md</code> のようなプロジェクトの指示、Stylelintの設定、テストに書き足すことです。</p>
+<p>2つ目は権限不足で、AIに確かめる手段がなかった場合です。たとえば、FigmaのMCPサーバーが認可されていなければ、AIはデザインと突き合わせられません。閲覧用のシート（View、Collab）では、FigmaのMCPサーバーの呼び出しが月20回までに制限されています（2026年10月確認）。ブラウザを操作するツールがなければ、幅を変えた表示も確かめられません。対処は、MCPサーバーの認可やツールの許可を見直すことです。</p>
+<p>3つ目は性能不足で、知らせて手段も渡したのに守れなかった場合です。長いページを一度に書かせると、途中から規約に沿わない書き方が混ざることもあります。対処は、計画の手順を細かく分けるか、その部分を人が書くことです。モデルの性能は版が上がるたびに変わるので、性能不足として人が書いていた作業を、次の版で任せ直せることもあります。</p>
+<p>失敗をどう記録し、規約にどう反映するかは「<a href="#page-ai-coding_verify-output" class="xref">20-8 生成したコードを確かめ、教訓を残す</a>」（原因の分類とともに教訓に残し、規約に昇格させるかを見直す）で説明します。</p>
+<h2 id="ai-coding_roles--計画と実装でモデルを分ける">計画と実装でモデルを分ける</h2>
+<p>1つのタスクの中でも、求められる性能は作業によって違います。デザインを読んで値をトークンに対応づける、手順を分ける、例外を見つけるといった計画の作業は、判断の量が多い作業です。一方で、承認された計画に沿って、決まった値でCSSを書く作業は、計画が細かいほど判断が要らなくなります。</p>
+<p>そのため、計画と判断には高性能なモデルを使い、計画が十分に細かければ、実装は中位のモデルに任せます。Claude Codeでは、計画を <code dir="auto">opus</code>、承認した計画の実装を <code dir="auto">sonnet</code> で動かす、のように分けられます（2026年10月時点のモデルの別名）。中位のモデルで規約が崩れるなら、性能不足として計画をさらに細かくするか、そこだけ高性能なモデルに戻します。</p>
+<p>本書のスキルによるレビューも、同じ考え方で分担しています。本文を通読する作業を軽いモデルに、ルールと照合して判断する作業を高性能なモデルに任せます<span class="note-ref">※4</span>。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>規約をAIに読ませる方法は「<a href="#page-ai-coding_setup" class="xref">20-2 AIに読ませる規約を用意する</a>」（書く前に本書のルールとプロジェクトの判断基準を読ませる）</li><li><span class="note-mark">※2</span>基礎の知識がAIを使う場面でも要る理由は、「<a class="xref-out">1-4 基礎を固める</a>（巻1）」</li><li><span class="note-mark">※3</span>報告の書き方は「<a href="#page-ai-coding_implementation" class="xref">20-6 実装と検証を回す</a>」（完了条件ごとに合格、不合格、未確認と証拠を書かせる）</li><li><span class="note-mark">※4</span>分担の設定は、付録J「<a class="xref-out">AIツールで使う</a>（巻3）」</li></ol></aside><h2 id="ai-coding_roles--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_roles--rule-verify-ai-output"><p class="_statement"><span class="_level" data-level="必須">必須</span><span>AI が生成した CSS は、Stylelint とレビューの両方で確かめてから採用する。</span></p><p class="_id"><code>verify-ai-output</code></p></li></ul>
+<h2 id="ai-coding_roles--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://x.com/tak_dcxi/status/2029063669435515083">AI時代のWeb制作メモ書き</a>（X、2026年3月4日）</li>
+<li><a href="https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/">Rate limits and access - Figma Developer Docs</a></li>
+</ul>
+</section>
+<section class="page" id="page-ai-coding_setup" data-title="20-2 AIに読ませる規約を用意する">
+<h1>20-2 AIに読ませる規約を用意する</h1>
+
+<p>AIにCSSを書かせる前に、2種類の規約を読ませます。1つは本書のルールで、スキルかMCPサーバーで読ませます。もう1つはプロジェクトの判断基準で、<code dir="auto">CLAUDE.md</code> のような、AIが作業のたびに読む指示のファイルに書きます。</p>
+<p>指示のファイルには、本書のルールを写しません。本書のルールはIDで参照し、書くのは、選択肢があるときにこのプロジェクトがどちらを選ぶかと、本書と違う独自の規約だけです。既存のプロジェクトでは、書き足す前に、AIにCSSの構成を説明させ、自分の理解とのずれを直します。</p>
+<h2 id="ai-coding_setup--書く前にルールを読ませる理由">書く前にルールを読ませる理由</h2>
+<p>AIが学習した知識は、学習した時点で止まっています。「<code dir="auto">@scope</code> はまだ使えない」のように、その後に対応が進んだ機能を未対応とみなすことがあります<span class="note-ref">※1</span>。また、<code dir="auto">scoped</code> のルートのクラスや <code dir="auto">--_density</code> のフラグのような本書の規約は、学習したコードにほとんど含まれていません。</p>
+<p>本書の規約とプロジェクトの判断基準を伝えるため、AIには書く前に関係するルールを読ませます（<code dir="auto">ai-read-rules-first</code>）。読ませなければ、AIは本書の規約を知らないまま書きます。</p>
+<h2 id="ai-coding_setup--本書のスキルとmcpサーバー">本書のスキルとMCPサーバー</h2>
+
+<p>この節で説明するスキル、MCPサーバー、プラグインは、提供に向けて対応中のため、まだ利用できません（2026年10月時点）。</p>
+<p>本書は、AIのコーディングエージェントに参照させるドキュメントを兼ねています。そのために、ルールはすべて1か所のデータ（YAMLのファイル）で管理しています。各ページの「ガイドライン」、付録A「<a class="xref-out">ルール一覧</a>（巻3）」、AI向けのスキルとMCPサーバーは、どれも同じデータから作られます。人が読むルールとAIに渡すルールは食い違いません。</p>
+<p>AIが古い書き方や誤った書き方をしがちなルールには、印を付けています。ページのガイドラインでは「AIが生成するコードで誤りやすいルールです」という注意が表示されます。スキルでは、こうしたルールを1件1行の一覧にまとめ、CSSを書く前に必ず読ませています。</p>
+<p>本文の書き方にも、AIが読むことを前提にした約束があります。各ページは単体で意味が通るように書き、ほかのページに触れるときはリンクと一言の要約を添えます。ブラウザの対応状況のように時間で変わる記述には、確認した年月を書きます。コードを省略するときは <code dir="auto">/* ... */</code> と書き、推奨のコード例はすべて<span class="ix" id="ai-coding_setup--ix-t132"></span>Stylelintで検証しています。</p>
+<p>配布しているのは、スキル、MCPサーバー、<code dir="auto">llms.txt</code> の3つです。Claude Codeでは、プラグインを1つ入れると、スキルとMCPサーバーの両方が使えます。Cursor、Codex、GitHub Copilotのようなほかのツールにも、スキルとMCPサーバーを設定できます<span class="note-ref">※2</span>。</p>
+<p>どの形で読ませても、AIにさせることは同じです。書く前に関係するルールを引き、書いた後に検査し、判断の根拠をルールのIDで示させます。スキルは、手順と章の索引を最初に読み込み、ルールは必要な章のファイルだけを開きます。MCPサーバーがあれば、AIはルールを語句や章で検索し、書いたCSSを本書のStylelintの設定で検査できます。</p>
+<p>ただし、MCPサーバーの検査で見つかるのは、Stylelintで確かめられるルールの違反だけです。検査を通ったことは、ルールを守っていることの証明にはなりません<span class="note-ref">※3</span>。AIへの指示でも、「<code dir="auto">no-vw-vh</code> に従って」のようにルールのIDで伝えると、どのルールのことかが正確に伝わります。</p>
+<h2 id="ai-coding_setup--claudemd-に書くこと"><code dir="auto">CLAUDE.md</code> に書くこと</h2>
+<p>プロジェクトの事情は、本書のスキルとは別の文書に書きます。Claude Codeは、プロジェクトの <code dir="auto">CLAUDE.md</code> を作業のたびに読みます。<code dir="auto">CLAUDE.md</code> がなければ、代わりに <code dir="auto">AGENTS.md</code> を読みます。この動作は、v2.1.277以降の既定の設定でのものです（2026年10月確認）。作業するディレクトリかその上に <code dir="auto">CLAUDE.local.md</code> があるときも、<code dir="auto">AGENTS.md</code> は読まれません。読まれない場合は、<code dir="auto">CLAUDE.md</code> に <code dir="auto">@AGENTS.md</code> と書いて読み込ませます。Codex、Cursor、GitHub Copilotは <code dir="auto">AGENTS.md</code> を読みます。複数のツールを使うチームでは、内容を <code dir="auto">AGENTS.md</code> へまとめます。<code dir="auto">CLAUDE.md</code> も置く場合は、<code dir="auto">@AGENTS.md</code> で読み込み、同じ内容を2か所で持たないようにします。</p>
+<p>書くのは、選択肢があるときの判断基準です。「あなたはCSSの専門家です」という役割の指定だけでは、採用する規約もプロジェクト固有の判断基準も伝わりません。選択肢があるときに何を基準に選ぶかを、具体的に書きます。たとえば、ブレイクポイントをいくつ置くか、トークンにない値をその場に書くかトークンを足すか、どの幅で確かめるかは、プロジェクトごとに答えが違います。これらを書いておかなければ、AIはその場で選び、選んだ理由も残りません。</p>
+<p>本書のルールで足りることは、IDで参照し、本文を写しません。写すと、本書の版が上がってルールが変わったときに、<code dir="auto">CLAUDE.md</code> の文面だけが古いまま残ります。本書と違う規約を採るときは、どのルールより優先するかが分かるように、ルールのIDと理由を添えます。CSSに関わる部分の例を、次に示します。</p>
+<figure class="code"><figcaption>CLAUDE.md（CSSに関わる部分の例）</figcaption><pre><code><span style="--0:#82B1FF;--1:#3B61B0"># &lt;プロジェクトの名前&gt;</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!--</span>
+<span style="--0:#919F9F;--1:#5F636F">CSS に関わる部分の例です。コマンド、ディレクトリの構成など、プロジェクトの全体の説明は別に書きます。</span>
+<span style="--0:#919F9F;--1:#5F636F">書くのは、選択肢があるときの判断基準と、本書と違うこのプロジェクトの規約です。</span>
+<span style="--0:#919F9F;--1:#5F636F">本書のルールで足りることは ID で参照し、本文を写しません。</span>
+<span style="--0:#919F9F;--1:#5F636F">--&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## CSS</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> CSS は「CSSコーディングガイドライン」に従う。書く前とレビューの前に、css-coding-guideline スキルの手順を読む。判断の根拠には、ルールの ID を添える。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> このプロジェクトで本書と違う規約（本書のルールより優先する）：</span>
+<span class="indent">  </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 例：WordPress のコアのスタイルと共存するので、`@layer` を使わない（`no-layers-with-unlayered-css`） --&gt;</span>
+<span class="indent">  </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 例：ブレイクポイントは 768px の1つだけにする --&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> トークンにない値は、トークンを増やさずにその場で直接書き、plan の値の対応表に例外として理由を書く。トークンを足すときは、人に確かめる。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 確かめる幅は、320 / 480 / 768 / 1024 / 1280px。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## Figma</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> Figma の MCP でデザインを読むのは、</span><span style="--0:#C5E478;--1:#3B61B0">`/task-start`</span><span style="--0:#D6DEEB;--1:#403F53"> で plan を書くときだけ。承認された plan で実装するときは </span><span style="--0:#C5E478;--1:#3B61B0">`get_design_context`</span><span style="--0:#D6DEEB;--1:#403F53"> を呼ばず、plan の値の対応表に従う。完了を確かめるときは、</span><span style="--0:#C5E478;--1:#3B61B0">`get_screenshot`</span><span style="--0:#D6DEEB;--1:#403F53"> で見比べる画像だけを取る。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">`get_design_context`</span><span style="--0:#D6DEEB;--1:#403F53"> が返すコードは、値を読むために使う。React、Tailwind のクラス、絶対配置の座標、固定の幅と高さをそのまま写さない（</span><span style="--0:#C5E478;--1:#3B61B0">`no-verbatim-design-output`</span><span style="--0:#D6DEEB;--1:#403F53">）。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> デザインのスクリーンショットは見比べる目安にする。合否は brief の完了条件で決める。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 検証</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 完了と報告する前に、lint とビルドを実行する。lint のエラーを消すためにルールを無効にしない（</span><span style="--0:#C5E478;--1:#3B61B0">`no-disabling-to-silence`</span><span style="--0:#D6DEEB;--1:#403F53">）。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 宣言が効いているかは、</span><span style="--0:#C5E478;--1:#3B61B0">`getComputedStyle`</span><span style="--0:#D6DEEB;--1:#403F53"> で計算値を読んで確かめる（</span><span style="--0:#C5E478;--1:#3B61B0">`verify-applied-styles`</span><span style="--0:#D6DEEB;--1:#403F53">）。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 実行していない検査を「問題なし」と報告しない（</span><span style="--0:#C5E478;--1:#3B61B0">`report-unverified-honestly`</span><span style="--0:#D6DEEB;--1:#403F53">）。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> VRT の基準画像は、差分の原因を確かめずに更新しない（</span><span style="--0:#C5E478;--1:#3B61B0">`no-baseline-update-to-pass`</span><span style="--0:#D6DEEB;--1:#403F53">）。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## タスク</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 3つ以上の手順がかかる作業は、</span><span style="--0:#C5E478;--1:#3B61B0">`/task-new`</span><span style="--0:#D6DEEB;--1:#403F53"> でタスクを作ってから進める。1つのファイルの値を直すだけのような小さな修正は、タスクにしない。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">`tasks/*/brief.md`</span><span style="--0:#D6DEEB;--1:#403F53"> と </span><span style="--0:#C5E478;--1:#3B61B0">`tasks/*/refs/`</span><span style="--0:#D6DEEB;--1:#403F53"> は人のファイル。編集しない。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> plan.md の status を approved にするのは </span><span style="--0:#C5E478;--1:#3B61B0">`/task-approve`</span><span style="--0:#D6DEEB;--1:#403F53"> だけ。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> デザイナーやディレクターに確かめる点は、</span><span style="--0:#C5E478;--1:#3B61B0">`/confirm-request`</span><span style="--0:#D6DEEB;--1:#403F53"> で確認依頼の文面にする。送るのは人。</span></code></pre></figure>
+<p>例の「Figma」「検証」「タスク」の項目は、この章の後の節で説明する進め方を前提にしています<span class="note-ref">※4</span>。</p>
+<p>私のテンプレートでは、<code dir="auto">CLAUDE.md</code> にコマンド、ディレクトリの構成、検証の手順を書き、CSSの規約は単位、不要な記述、<span class="ix" id="ai-coding_setup--ix-t29"></span>コンポーネントの設計のように、話題ごとのファイルに分けています。CMSの案件では、ネストやモーションの規約を書き足し、「下位の手段を選ぶときは、上位の手段で満たせない理由を説明する」のように、AIに判断の理由を求める書き方もしています。</p>
+<p>指示のファイルは、書き足すだけでなく、要らなくなった指示を消すことも必要です。モデルの版が上がると、以前は書かなければ守れなかった指示を、書かなくても守れるようになることもあります。古い指示が残ると、読ませる量が増えるうえに、新しい規約と食い違う指示が混ざります。見直す機会は、タスクを終えるときに設けます<span class="note-ref">※5</span>。</p>
+<h2 id="ai-coding_setup--既存のプロジェクトで最初にすること">既存のプロジェクトで最初にすること</h2>
+<p>すでにCSSがあるプロジェクトでAIに書かせ始めるときは、最初の作業として、AIにCSSの構成を説明させます。説明させる項目は、レイヤーの順番、トークンの置き場所と名前の付け方、コンポーネントの命名とスコープの書き方、ブレイクポイントとコンテナサイズクエリの使い方です。</p>
+<figure class="code"><figcaption>AIへの依頼の例</figcaption><pre><code><span style="--0:#D6DEEB;--1:#403F53">このリポジトリのCSSの構成を説明してください。レイヤーの順番、トークンの置き場所と名前の付け方、コンポーネントの命名とスコープの書き方、ブレイクポイントとコンテナサイズクエリの使い方を、根拠になるファイルのパスを添えて説明し、本書のルールと違う点を挙げてください。コードは変更しないでください。</span></code></pre></figure>
+<p>説明を読んで、自分の理解と違う点があれば、どちらが正しいかをコードで確かめます。AIの説明が誤っていれば、誤解の元になった箇所を <code dir="auto">CLAUDE.md</code> に書きます。自分の理解が誤っていれば、そのまま学べます。本書と違う規約が見つかったら、本書に合わせるか、プロジェクトの規約として残すかを決め、残すものを <code dir="auto">CLAUDE.md</code> に書きます。</p>
+<p>この作業を飛ばすと、AIは新しいコンポーネントを、既存の規約を確かめないまま書きます。デザインに合わせることだけを追って、既存のコンポーネントの書き方と違うスコープの書き方を持ち込む、といった手戻りが起きます<span class="note-ref">※6</span>。</p>
+<h2 id="ai-coding_setup--lintと許可とフック">lintと、許可とフック</h2>
+<p>規約のうち機械的に判断できるものは、Stylelintで検査します。AIには、CSSを変えたらlintを実行させ、エラーを消すためにルールを無効にすることを禁じます（<code dir="auto">no-disabling-to-silence</code>）<span class="note-ref">※7</span>。</p>
+<p>Claude Codeの許可の設定（<code dir="auto">.claude/settings.json</code> の <code dir="auto">permissions</code>）では、読むだけのツールを許可しておくと、作業のたびに確認を求められる回数が減ります。たとえば、FigmaのMCPサーバーのデザインを読むツールや、本書のMCPサーバーのツールは、ファイルを書き換えないので許可してかまいません。</p>
+<p>取り返しのつかない操作には、フックで確認を挟みます。フックは、ツールを使う前後に、決めたコマンドを実行する仕組みです。私の案件では、AIが作業の途中で、ローカル環境の管理者のパスワードを無断で変えたことがありました。それ以来、パスワードを変えるコマンドを実行する前に、必ず人の確認を求めるフックを入れています<span class="note-ref">※8</span>。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>「<a href="#page-ai-coding_pitfalls" class="xref">20-7 AIが誤りやすいパターン</a>」</li><li><span class="note-mark">※2</span>ツールごとの設定方法は、付録J「<a class="xref-out">AIツールで使う</a>（巻3）」</li><li><span class="note-mark">※3</span>lintを通っても残る誤りの例は「<a href="#page-ai-coding_verify-output" class="xref">20-8 生成したコードを確かめ、教訓を残す</a>」</li><li><span class="note-mark">※4</span>Figmaを読む段階は「<a href="#page-ai-coding_from-figma" class="xref">20-5 Figmaのデザインから計画を立てる</a>」で、タスクの進め方は「<a href="#page-ai-coding_tasks" class="xref">20-4 タスクの単位で進める</a>」</li><li><span class="note-mark">※5</span>「<a href="#page-ai-coding_verify-output" class="xref">20-8 生成したコードを確かめ、教訓を残す</a>」</li><li><span class="note-mark">※6</span>本書の規約を既存のサイトにどの範囲から入れるかは、「<a href="06-operations.html#page-operations_adoption" class="xref">19-6 既存のサイトに段階的に導入する</a>」</li><li><span class="note-mark">※7</span>本書の設定と、プロジェクトへの入れ方は「<a href="06-operations.html#page-operations_stylelint" class="xref">19-1 Stylelintでルールを守る</a>」</li><li><span class="note-mark">※8</span>人が書いたファイルをAIの書き込みから守るフックは、「<a href="#page-ai-coding_tasks" class="xref">20-4 タスクの単位で進める</a>」</li></ol></aside><h2 id="ai-coding_setup--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_setup--rule-ai-read-rules-first"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>AI に CSS を書かせるときやレビューさせるときは、先に本書のルールを、スキルか MCP サーバーで読ませる。</span></p><p class="_id"><code>ai-read-rules-first</code></p></li></ul>
+<h2 id="ai-coding_setup--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://code.claude.com/docs/en/skills">Extend Claude with skills - Claude Code Docs</a></li>
+<li><a href="https://code.claude.com/docs/en/memory">How Claude remembers your project - Claude Code Docs</a></li>
+<li><a href="https://code.claude.com/docs/en/permissions">Configure permissions - Claude Code Docs</a></li>
+<li><a href="https://code.claude.com/docs/en/hooks-guide">Automate actions with hooks - Claude Code Docs</a></li>
+<li><a href="https://modelcontextprotocol.io/">Model Context Protocol</a></li>
+<li><a href="https://agents.md/">AGENTS.md</a></li>
+</ul>
+</section>
+<section class="page" id="page-ai-coding_mcp-servers" data-title="20-3 MCPサーバーを役割で使い分ける">
+<h1>20-3 MCPサーバーを役割で使い分ける</h1>
+
+<p>AIにCSSを書かせるときに用意するMCPサーバーは、役割で使い分けます。役割は、デザインを読む、表示と操作を確かめる、適用された宣言と性能を調べる、ルールを引くの4つです。MCPサーバーは、AIのツールに外部の機能をつなぐ仕組み（Model Context Protocol）で、つないだ機能をAIが自分で呼び出せるようになります。</p>
+<table>
+<thead>
+<tr>
+<th>役割</th>
+<th>使うもの</th>
+<th>使う段階</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>デザインを読む</td>
+<td>Figma MCP</td>
+<td>計画を立てるとき。完了を確かめるときは画像だけ</td>
+</tr>
+<tr>
+<td>表示と操作を確かめる</td>
+<td><code dir="auto">@playwright/test</code>、Playwright MCP</td>
+<td>手順ごとの検証と、完了を確かめるとき</td>
+</tr>
+<tr>
+<td>適用された宣言と性能を調べる</td>
+<td>Chrome DevTools MCP</td>
+<td>宣言が効かない、崩れの原因が分からないとき</td>
+</tr>
+<tr>
+<td>ルールを引く</td>
+<td>本書のMCPサーバー</td>
+<td>書く前、書いた後、レビューのとき</td>
+</tr>
+</tbody>
+</table>
+<p>Figma MCPの出力は、値と要素の並び方を読むために使い、コードとしては写しません。デザインと見比べるときは、デザインと同じ幅で撮ったスクリーンショットを並べます。この節のツール名と機能は、2026年10月時点の各ツールのドキュメントにもとづいています。</p>
+<h2 id="ai-coding_mcp-servers--figma-mcpでデザインを読む">Figma MCPでデザインを読む</h2>
+<p>Figma MCPは、Figmaが公式に提供しているMCPサーバーです。Claude Codeでは、Figmaの公式プラグインを入れると、MCPサーバーの設定と、使い方を指示するスキルがまとめて入ります。プラグインを使わない場合は、リモートのサーバー（<code dir="auto">https://mcp.figma.com/mcp</code>）を登録します。どちらの場合も、初回は <code dir="auto">/mcp</code> からFigmaのアカウントで認可します。</p>
+<figure class="code"><figcaption>Figma MCPを入れる</figcaption><pre><code><span style="--0:#82AAFF;--1:#3B61B0">claude</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">plugin</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">install</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">figma@claude-plugins-official</span>
+<span style="--0:#919F9F;--1:#5F636F"># プラグインを使わない場合</span>
+<span style="--0:#82AAFF;--1:#3B61B0">claude</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">mcp</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">add</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--transport</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">http</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">figma</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">https://mcp.figma.com/mcp</span></code></pre></figure>
+<p>CSSを書くときに使うツールは、主に4つです。<code dir="auto">get_design_context</code> は、フレームやレイヤーのデザインを、コードの形で返します。<code dir="auto">get_variable_defs</code> は、そのフレームで使っている変数（色、余白、文字のスタイル）の名前と値を返し、<code dir="auto">get_screenshot</code> は画像を返します。<code dir="auto">get_metadata</code> は、レイヤーの名前、位置、大きさだけを返すので、大きなフレームをノードに分けて読むときに使います。</p>
+<p><code dir="auto">get_design_context</code> の出力は、ReactとTailwind CSSのコードです。プロジェクトの言語を伝える引数（<code dir="auto">clientLanguages</code>）に <code dir="auto">html,css</code> を渡しても、出力の形は変わりませんでした（2026年10月確認）。出力の末尾には、プロジェクトの技術と書き方に合わせて変換するよう求める指示が添えられています。素のHTMLとCSSに書き換えるのは、ツールを呼んだAIの仕事です。ただし、書き換えても、出力はそのまま写すコードではありません。理由は、この節の後半で説明します。</p>
+<p>ツールを呼べる回数は、Figmaのシートの種類で制限されています。閲覧用のシート（View、Collab）では月20回まで、開発用のシート（Dev、Full）でもプランごとに1日あたりの上限があります。AIが読み直すたびに回数を使うので、デザインを読むのは計画の段階だけにし、読んだ値は計画のファイルに書き残します<span class="note-ref">※1</span>。</p>
+<h2 id="ai-coding_mcp-servers--公式のfigmaスキルとの関係">公式のFigmaスキルとの関係</h2>
+<p>Figmaの公式プラグインには、デザインからコードを書くときの手順を指示するスキル（<code dir="auto">figma-design-to-code</code>）が入っています。このスキルは、Figmaのデザインを実装する依頼をすると、自動で読み込まれます（2026年10月、v2.2.127で確認）。</p>
+<p>スキルの指示の多くは、本書の考え方と同じ方向です。スキルは、返されたコードを操作できない試作として扱うこと、絶対配置をプロジェクトのレイアウトの書き方に置き換えること、既存の部品とトークンを探して使い、値を直接書いて作り直さないことを求めています。画像をすべてダウンロードし、Figmaの一時的なURLを残さないことも求めています。これらの指示には、そのまま従ってかまいません。</p>
+<p>食い違うのは2点です。1つは「<code dir="auto">get_design_context</code> の結果だけから実装する」という指示で、実装の段階でも毎回Figmaを読むことになります。もう1つは「スクリーンショットと見た目を一致させる」という指示で、合否を<span class="ix" id="ai-coding_mcp-servers--ix-t122"></span>カンプとの一致で決めることになります。カンプは特定の幅と内容で描かれた1つの例なので、一致を合否の基準にはしません<span class="note-ref">※2</span>。</p>
+<p>この2点は、プロジェクトの指示で優先順位を決めます。<code dir="auto">CLAUDE.md</code> とタスクを進めるスキルに、「承認された計画で実装するときは <code dir="auto">get_design_context</code> を呼ばず、計画の値の対応表に従う」「スクリーンショットは見比べる目安で、合否は完了条件で決める」と書きます。指示の例は「<a href="#page-ai-coding_setup" class="xref">20-2 AIに読ませる規約を用意する</a>」に、タスクを進めるスキルは「<a href="#page-ai-coding_tasks" class="xref">20-4 タスクの単位で進める</a>」にあります。</p>
+<h2 id="ai-coding_mcp-servers--出力をそのまま写さない">出力をそのまま写さない</h2>
+<p><code dir="auto">get_design_context</code> の出力は、カンプの1つの幅と1つの内容を再現した試作です。次のコードは、記事の一覧のデザインを読ませたときの出力から、カードの1枚分を抜き出したものです（2026年10月確認）。文言と色の値を一般的なものに置き換え、説明に関わらないクラスと属性を省いています。</p>
+<figure class="code"><figcaption>🙅‍♂ Not Recommended: 出力のクラスと値をそのまま写す</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">imgRectangle</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">https://www.figma.com/api/mcp/asset/…</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+
+<span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">border-[#171717] border-b flex flex-col gap-[20px] pb-[30px] relative w-[380px]</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">data-node-id</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">1:2</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">aspect-[278/156] relative w-full</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">img</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">alt</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">""</span><span style="--0:#7FDBCA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">absolute inset-0 object-cover size-full</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">src</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#E2817F;--1:#B23834">{</span><span style="--0:#D7DBE0;--1:#403F53">imgRectangle</span><span style="--0:#E2817F;--1:#B23834">}</span><span style="--0:#7FDBCA;--1:#8844AE"> /&gt;</span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">flex flex-col gap-[15px] w-full</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">flex gap-[10px] items-center w-full</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">      </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">font-['Helvetica_Neue:Regular'] text-[14px] text-black whitespace-nowrap</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span><span style="--0:#D6DEEB;--1:#403F53">2026.10.01</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">      </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">bg-[#171717] px-[7px] py-[6px] rounded-[14px]</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">        </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">font-['Noto_Sans_JP:Medium'] text-[#eee] text-[10px] whitespace-nowrap</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span><span style="--0:#D6DEEB;--1:#403F53">お知らせ</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">      </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">className</span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">font-['Noto_Sans_CJK_JP:Regular'] h-[45px] leading-[1.4] overflow-hidden text-[#171717] text-[16px] text-ellipsis w-full</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">      </span></span><span style="--0:#D6DEEB;--1:#403F53">公開プロパティで色を受け取る</span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA">&gt;</span></span></code></pre></figure>
+<p>Figmaのオートレイアウトで組んだ部分は、<code dir="auto">flex flex-col gap-[20px]</code> のように、Flexboxと <code dir="auto">gap</code> で出力されます。並び方と間隔は、ここから読み取れます。問題は、カンプの幅と内容でしか成り立たない指定が、並び方と同じ形で混ざっていることです。</p>
+<p>カードの幅は <code dir="auto">w-[380px]</code> で固定され、一覧では、この幅のカードを <code dir="auto">flex-wrap</code> と <code dir="auto">justify-between</code> で並べていました。<code dir="auto">flex-wrap</code> なので、一覧の幅が変わると、1行に入る枚数は変わり、入らないカードは次の行へ移ります。ただし、カードの幅は380pxのままです。<code dir="auto">justify-between</code> は、行の中の余りをカードの間に配るので、最後の行が2枚になると、2枚が両端に分かれて間が大きく開きます。はみ出すのは、さらに2つの条件が重なるときです。出力では一覧の幅も <code dir="auto">w-[1200px]</code> で固定されていたので、それより狭い画面では、一覧ごとはみ出します。一覧の中のカードには縮まないようにする <code dir="auto">shrink-0</code> も付いていたので、置き場所が380pxより狭いと、カードがはみ出します。見出しは <code dir="auto">h-[45px]</code> と <code dir="auto">overflow-hidden</code> で、カンプの2行分の高さに固定されているので、3行になる見出しは途中で切れます。日付とタグには <code dir="auto">whitespace-nowrap</code> が付いていて、狭い幅でも折り返しません。</p>
+<p>値も、そのままでは使えません。色は <code dir="auto">#171717</code> のような値そのもので、Figmaの変数に結び付いた色だけが <code dir="auto">var(--変数名, 値)</code> の形で出ます。フォントは <code dir="auto">Noto_Sans_CJK_JP:Regular</code> のようなFigmaのスタイル名で、CSSの <code dir="auto">font-family</code> には使えない名前です。画像のURLは7日で期限が切れる一時的なものです。一覧の外側の要素は、ページ上の座標（<code dir="auto">absolute left-[40px] top-[536px]</code>）で置かれていました（<code dir="auto">no-verbatim-design-output</code>）。</p>
+<p>出力から読み取るのは、要素の並び方と、余白、文字の大きさ、色の値です。この例の並び方は、画像の下に、日付とタグの行と見出しが縦に積まれていることです。値は、トークンに対応づけてから書きます<span class="note-ref">※3</span>。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: 並び方をグリッドで、値をトークンで書く</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.article-card) to (.scoped) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">._layout</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">display</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">block</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#FF6D6D;--1:#984E4D">grid</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--spacing--sm</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">h3</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--title--font-size</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">line-height</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--title--leading</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">time</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--foreground--muted</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--caption--font-size</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">line-height</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--caption--leading</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>書き直したコードでは、幅と高さを固定していないので、カードの幅は置き場所で、高さは内容で決まります。見出しが3行になっても切れずに、カードがその分だけ高くなります。狭い置き場所での形は、コンテナサイズクエリで切り替えます。カードの全体は、演習の「<a href="08-exercise.html#page-exercise_card" class="xref">21-2 カードを作る</a>」で作っています。</p>
+<h2 id="ai-coding_mcp-servers--表示と操作を確かめる">表示と操作を確かめる</h2>
+<p>幅を変えたときの表示、キーボードやマウスでの操作、表示の設定を変えたときの見え方を確かめるときは、Playwrightを使います。どの宣言が適用されたかや、処理の重さを調べるときは、次の見出しのChrome DevTools MCPを使います。</p>
+<p>Playwrightの道具は、繰り返す確認と、その場の確認で使い分けます。繰り返す確認には、テストのフレームワークの <code dir="auto">@playwright/test</code> を使います。決まった幅で開いてスクリーンショットを撮る、計算値を読んで期待する値と比べる、前回の画像との差を調べる（VRT）といった確認を、コードに書いておけば毎回同じ条件で実行できます。</p>
+<p>その場の確認には、Playwright MCPを使います。AIがブラウザを開き、幅を変え、要素を押し、スクリーンショットを撮って、結果を自分で読めます。<code dir="auto">browser_emulate_media</code> で、動きを減らす設定、強制カラーモード、ダークモードを切り替えられるので、「<a href="06-operations.html#page-operations_verification" class="xref">19-3 表示と操作を確かめる</a>」の表示の設定もAIに再現させられます。起動するブラウザには、Chromeのほか、FirefoxとWebKitも選べます。</p>
+
+<p><code dir="auto">@playwright/test</code> とPlaywright MCPの使い分けの目安は、同じ確認を2回以上するかです。初めての状態を探るときはPlaywright MCPで試し、繰り返す価値のある確認が見つかったら、<code dir="auto">@playwright/test</code> のテストに書き移します。テストに書いた確認は、AIが変更を加えるたびに、人の手を借りずに実行できます<span class="note-ref">※4</span>。</p>
+<h2 id="ai-coding_mcp-servers--デザインと同じ幅で見比べる">デザインと同じ幅で見比べる</h2>
+<p>実装をデザインと見比べるときは、デザインと同じ幅で撮ったスクリーンショットを並べます（<code dir="auto">compare-at-design-width</code>）。カンプが375pxと1280pxで描かれていれば、ブラウザもその2つの幅で撮ります。Figmaの画像は、<code dir="auto">get_screenshot</code> で取ります。</p>
+<p>幅をそろえるのは、幅が違うと、差の原因を見分けられないからです。幅が違えば、見出しを折り返す位置も、コンテナサイズクエリで切り替わる形も変わります。この差は不具合でないのに、本当の崩れと同じように画像の上に現れます。幅をそろえれば、残った差は、値、要素の構造、画像、フォントのどれかに原因があると絞れます。</p>
+<p>ただし、同じ幅でのスクリーンショットの一致は、合否の基準にはしません。フォントの描画やブラウザの違いで、正しい実装でも数ピクセルの差は出ます。カンプのない幅での振る舞いも、画像の比較では確かめられません。合否は、タスクの完了条件で決めます。</p>
+<h2 id="ai-coding_mcp-servers--適用された宣言と性能を調べる">適用された宣言と性能を調べる</h2>
+<p>Chrome DevTools MCPは、Googleが提供している、Chromeの開発者ツールの機能をAIに使わせるMCPサーバーです。CSSで役に立つのは、要素に当たったルールを、カスケードで優先される順に返す <code dir="auto">get_css_styles</code> です（2026年9月の1.10.0で追加）。どのルールの宣言が勝ち、どの宣言が負けたかが、<code dir="auto">@layer</code>、<code dir="auto">@scope</code>、<code dir="auto">@container</code> の包みと、ソースの行番号付きで分かります。</p>
+<p>宣言が効かないとき、AIに直させると、<code dir="auto">!important</code> や詳細度を上げるセレクタで症状を消そうとすることがあります。そこで、先に <code dir="auto">get_css_styles</code> で負けた宣言と勝った宣言を確かめさせ、原因の宣言を直すよう指示します。人が開発者ツールで行う手順は「<a href="06-operations.html#page-operations_devtools" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」で説明していて、AIにさせる手順も同じです。</p>
+<p>計算値は <code dir="auto">evaluate_script</code> で <code dir="auto">getComputedStyle</code> を呼んで読み、処理の重さは性能のトレースで調べます。一方で、動きを減らす設定や強制カラーモードを切り替える機能はなく、対象のブラウザもChromeだけです。表示の設定やほかのブラウザでの確認は、Playwright MCPに任せます。</p>
+<h2 id="ai-coding_mcp-servers--mcpjson-にまとめる"><code dir="auto">.mcp.json</code> にまとめる</h2>
+<p>チームで同じMCPサーバーを使うときは、プロジェクトのルートの <code dir="auto">.mcp.json</code> に設定を書いてコミットします。Claude Codeは、<code dir="auto">.mcp.json</code> のサーバーを初めて使う前に、使ってよいかを確かめます<span class="note-ref">※5</span>。</p>
+<figure class="code"><figcaption>.mcp.json</figcaption><pre><code><span style="--0:#D6DEEB;--1:#403F53">{</span>
+<span class="indent">  </span><span style="--0:#7FDBCA;--1:#096E72">"mcpServers"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span>
+<span class="indent">    </span><span style="--0:#7FDBCA;--1:#096E72">"css-coding-guideline"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"type"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">stdio</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"command"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">npx</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"args"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">-y</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">css-coding-guideline-mcp@0.50.6</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">]</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">},</span>
+<span class="indent">    </span><span style="--0:#7FDBCA;--1:#096E72">"playwright"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"type"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">stdio</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"command"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">npx</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"args"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">-y</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">@playwright/mcp@0.0.83</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">--isolated</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">]</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">},</span>
+<span class="indent">    </span><span style="--0:#7FDBCA;--1:#096E72">"chrome-devtools"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"type"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">stdio</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"command"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">npx</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">      </span><span style="--0:#7FDBCA;--1:#096E72">"args"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">-y</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">chrome-devtools-mcp@1.10.1</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">--isolated</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">]</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>この例には、本書のMCPサーバー、Playwright MCP、Chrome DevTools MCPを書いています。Figma MCPは、Claude Codeでは公式プラグインで入れるので、ここには書きません。両方に書くと、同じサーバーが2つ登録されます。2つのブラウザのMCPサーバーへ <code dir="auto">--isolated</code> を付け、ブラウザの履歴やログインの状態を作業ごとに捨てさせています。</p>
+<p>どのサーバーも、版を書いて固定しています。版を書かないと、起動するたびに最新の版を使うので、ツールの名前や引数が知らないうちに変わることがあります<span class="note-ref">※6</span>。本書のMCPサーバーは、提供に向けて対応中のため、まだ利用できません（2026年10月時点）。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>進め方は「<a href="#page-ai-coding_from-figma" class="xref">20-5 Figmaのデザインから計画を立てる</a>」（値の対応表とノードの対応表を作り、実装は計画だけを見て進める）</li><li><span class="note-mark">※2</span>「<a class="xref-out">3-1 ピクセルではなく意図を再現する</a>」（巻1）</li><li><span class="note-mark">※3</span>トークンに当たらない値や、トークンに近いがずれる値の扱いは、「<a href="#page-ai-coding_from-figma" class="xref">20-5 Figmaのデザインから計画を立てる</a>」</li><li><span class="note-mark">※4</span>テストの例は「<a href="#page-ai-coding_implementation" class="xref">20-6 実装と検証を回す</a>」</li><li><span class="note-mark">※5</span>ほかのツールの設定ファイルの書き方は、付録J「<a class="xref-out">AIツールで使う</a>（巻3）」</li><li><span class="note-mark">※6</span>本書のMCPサーバーの使い方は「<a href="#page-ai-coding_setup" class="xref">20-2 AIに読ませる規約を用意する</a>」</li></ol></aside><h2 id="ai-coding_mcp-servers--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_mcp-servers--rule-no-verbatim-design-output"><p class="_statement"><span class="_level" data-level="禁止">禁止</span><span>Figma などのデザインツールが出力したコードの、Tailwind のクラス、絶対配置の座標、固定の幅と高さを、そのまま CSS に写さない。</span></p><p class="_id"><code>no-verbatim-design-output</code></p></li><li class="_rule" id="ai-coding_mcp-servers--rule-compare-at-design-width"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>実装をデザインと見比べるときは、デザインと同じ幅で撮ったスクリーンショットを並べる。</span></p><p class="_id"><code>compare-at-design-width</code></p></li></ul>
+<h2 id="ai-coding_mcp-servers--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://developers.figma.com/docs/figma-mcp-server/">Figma MCP server - Figma Developer Docs</a></li>
+<li><a href="https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/">Tools and prompts - Figma Developer Docs</a></li>
+<li><a href="https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/">Rate limits and access - Figma Developer Docs</a></li>
+<li><a href="https://github.com/microsoft/playwright-mcp">microsoft/playwright-mcp - GitHub</a></li>
+<li><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp">ChromeDevTools/chrome-devtools-mcp - GitHub</a></li>
+<li><a href="https://code.claude.com/docs/en/mcp">Connect Claude Code to tools via MCP - Claude Code Docs</a></li>
+<li><a href="https://playwright.dev/">Playwright</a></li>
+</ul>
+</section>
+<section class="page" id="page-ai-coding_tasks" data-title="20-4 タスクの単位で進める">
+<h1>20-4 タスクの単位で進める</h1>
+
+<p>AIへの依頼は、人が書く <code dir="auto">brief.md</code> と、AIが書いて人が承認する <code dir="auto">plan.md</code> に分け、タスクの単位で進めます。briefには目的、デザインから読み取れないこと、完了の条件を書き、planには値の対応表、触るファイル、検証の付いた手順を書きます。どちらもリポジトリのファイルなので、セッションが変わっても、決めたことは残ります。</p>
+<p>進め方は、4つのスキルに受け持たせます。作るのは <code dir="auto">/task-new</code>、計画と実装は <code dir="auto">/task-start</code>、承認は <code dir="auto">/task-approve</code>、完了は <code dir="auto">/task-done</code> です。承認は利用者だけが呼べるスキルで記録し、AIが自分で計画を承認しないようにします。briefとplanにない値が要る場面では、推測で埋めさせず、AIを止めます。デザイナーやディレクターに確かめる質問は、5つ目のスキル <code dir="auto">/confirm-request</code> で、そのまま送れる確認依頼の文面にします。</p>
+<h2 id="ai-coding_tasks--1回の指示で書かせたときの手戻り">1回の指示で書かせたときの手戻り</h2>
+<p>「このデザインでカードを作って」と1回の指示で書かせると、手戻りは3つの形で起きます。1つ目は、AIが不明な点を推測で埋めて、最後まで書き切ることです。カンプのない幅での振る舞いや、ホバーのときの見た目は、デザインに描かれていなければ、AIがその場で決めます。決めたことは報告に現れないので、人は後から画面を見て気付くことになります。</p>
+<p>2つ目は、決めたことが残らないことです。チャットで伝えた修正の指示は、セッションを閉じると、次のセッションのAIには届きません。会話が長くなると、Claude Codeは古いやりとりを要約して詰めます。そのため、同じセッションの中でも、細かい判断は要約から落ちることがあります。</p>
+<p>3つ目は、何をもって完了とするかが決まっていないことです。AIは、自分が確かめた範囲で問題がなければ、完了と報告します<span class="note-ref">※1</span>。</p>
+<p>タスクの単位で進めるのは、この3つを防ぐためです。不明な点は計画の段階で質問として出させ、決めたことはファイルに残し、完了の条件は作業の前に書いておきます。</p>
+<h2 id="ai-coding_tasks--タスクのファイル">タスクのファイル</h2>
+<p>タスクは、リポジトリの <code dir="auto">tasks/</code> の下に、1つのディレクトリとして置きます。ディレクトリの名前は、タスクを表す英小文字のスラッグです。終わったタスクは <code dir="auto">tasks/archive/</code> に移し、AIの誤りから得た教訓は <code dir="auto">tasks/lessons.md</code> に書きます。</p>
+<figure class="code"><figcaption>タスクのファイルの構成</figcaption><pre><code><span style="--0:#d6deeb;--1:#403f53">tasks/</span>
+<span style="--0:#d6deeb;--1:#403f53">├── article-card/</span>
+<span style="--0:#d6deeb;--1:#403f53">│   ├── brief.md   人が書く。AIは読むだけ</span>
+<span style="--0:#d6deeb;--1:#403f53">│   ├── refs/      人が用意する参考ファイル。AIは読むだけ</span>
+<span style="--0:#d6deeb;--1:#403f53">│   └── plan.md    AIが書き、人が承認する</span>
+<span style="--0:#d6deeb;--1:#403f53">├── archive/       終わったタスク</span>
+<span style="--0:#d6deeb;--1:#403f53">└── lessons.md     教訓。着手する前にAIが読む</span></code></pre></figure>
+<p>ファイルごとに、書く人を決めています。briefは、何を作るかと、何をもって完了とするかを決める文書なので、人が書きます。planは、コードベースとデザインを調べて書く文書なので、AIが書きます。ただし、planの承認は人が行い、人が承認するまで、AIは実装に進みません。</p>
+<p>Claude Codeのプランモードも、実装の前に計画を書かせる機能です。ただし、プランモードの計画は、既定ではリポジトリの外（<code dir="auto">~/.claude/plans/</code>）に保存されます。また、承認の記録も、後から計画を変えたときの記録も残りません。タスクのファイルをリポジトリに置くのは、決めたことと、その理由を、ほかのセッションやほかの人が読めるようにするためです。チームで共有するなら、<code dir="auto">tasks/</code> はコミットします。<code dir="auto">refs/</code> の画像や原稿をコミットするかは、プロジェクトで決めます。</p>
+<h2 id="ai-coding_tasks--4つのスキルと状態の移り方">4つのスキルと状態の移り方</h2>
+<p>4つのスキルは、タスクの状態を次の順に進めます。planの状態は、<code dir="auto">plan.md</code> の先頭に <code dir="auto">status</code> として書きます。</p>
+<figure class="scoped figure | not-content" role="img" aria-label="タスクの状態の移り方を示す図。/task-newで人がbrief.mdを書き、/task-startでAIがplan.mdを書いてdraftにする。draftの間は修正を反映して再レビューを頼み、利用者が/task-approveを呼ぶとapprovedになる。approvedになると/task-startで未完了の手順から実装と検証を繰り返す。範囲が変わったらdraftに戻して止まる。すべての手順を終えたら完了の報告を書き、/task-doneでdoneにしてarchiveに移す。"><div class="_body" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 500" width="520" height="500">
+  <title>タスクの状態の移り方</title>
+  <!-- /task-new で brief を書く -->
+  <path class="_arrow" d="M260 2 V21"></path>
+  <polygon class="_arrowhead" points="260,30 255,21 265,21"></polygon>
+  <text class="_text-muted" x="272" y="20" font-size="13">/task-new</text>
+  <rect class="_box" x="150" y="30" width="220" height="44" rx="8"></rect>
+  <text class="_text" x="260" y="57" font-size="15" font-weight="700" text-anchor="middle">brief.md（人が書く）</text>
+  <!-- /task-start で plan を書く -->
+  <path class="_arrow" d="M260 74 V105"></path>
+  <polygon class="_arrowhead" points="260,114 255,105 265,105"></polygon>
+  <text class="_text-muted" x="272" y="98" font-size="13">/task-start（計画を書く）</text>
+  <rect class="_box" x="150" y="114" width="220" height="44" rx="8"></rect>
+  <text class="_text" x="260" y="141" font-size="15" font-weight="700" text-anchor="middle">plan.md：draft</text>
+  <path class="_arrow" d="M370 128 H392 V144 H379"></path>
+  <polygon class="_arrowhead" points="370,144 379,139 379,149"></polygon>
+  <text class="_text-muted" x="400" y="141" font-size="12">修正を反映</text>
+  <!-- /task-approve で承認する -->
+  <path class="_arrow" d="M260 158 V189"></path>
+  <polygon class="_arrowhead" points="260,198 255,189 265,189"></polygon>
+  <text class="_text-accent" x="272" y="182" font-size="13">/task-approve（利用者だけ）</text>
+  <rect class="_box -accent" x="150" y="198" width="220" height="44" rx="8"></rect>
+  <text class="_text-accent" x="260" y="225" font-size="15" font-weight="700" text-anchor="middle">plan.md：approved</text>
+  <!-- /task-start で手順ごとに実装する -->
+  <path class="_arrow" d="M260 242 V273"></path>
+  <polygon class="_arrowhead" points="260,282 255,273 265,273"></polygon>
+  <text class="_text-muted" x="272" y="266" font-size="13">/task-start（未完了の手順から）</text>
+  <rect class="_box" x="150" y="282" width="220" height="44" rx="8"></rect>
+  <text class="_text" x="260" y="309" font-size="15" font-weight="700" text-anchor="middle">手順を実装し、検証する</text>
+  <path class="_arrow" d="M370 296 H392 V312 H379"></path>
+  <polygon class="_arrowhead" points="370,312 379,307 379,317"></polygon>
+  <text class="_text-muted" x="400" y="309" font-size="12">次の手順へ</text>
+  <!-- 範囲が変わったら draft に戻す -->
+  <path class="_arrow" d="M150 304 H20 V136 H141" stroke-dasharray="4 3"></path>
+  <polygon class="_arrowhead" points="150,136 141,131 141,141"></polygon>
+  <text class="_text-muted" x="28" y="204" font-size="12">範囲が変わったら</text>
+  <text class="_text-muted" x="28" y="220" font-size="12">draft に戻して止まる</text>
+  <!-- 完了の報告 -->
+  <path class="_arrow" d="M260 326 V357"></path>
+  <polygon class="_arrowhead" points="260,366 255,357 265,357"></polygon>
+  <text class="_text-muted" x="272" y="350" font-size="13">完了条件を確かめる</text>
+  <rect class="_box" x="120" y="366" width="280" height="44" rx="8"></rect>
+  <text class="_text" x="260" y="393" font-size="15" font-weight="700" text-anchor="middle">完了の報告（合格／不合格／未確認）</text>
+  <!-- /task-done でアーカイブする -->
+  <path class="_arrow" d="M260 410 V441"></path>
+  <polygon class="_arrowhead" points="260,450 255,441 265,441"></polygon>
+  <text class="_text-muted" x="272" y="434" font-size="13">/task-done</text>
+  <rect class="_box" x="150" y="450" width="220" height="44" rx="8"></rect>
+  <text class="_text" x="260" y="477" font-size="15" font-weight="700" text-anchor="middle">done（archive/ へ移す）</text>
+</svg>
+</div><figcaption>図20-1　タスクの状態の移り方</figcaption></figure>
+<p><code dir="auto">/task-new</code> は、対話でbriefを作ります。AIが項目を1つずつ尋ね、答えをひな形の形にまとめます。ファイルへ書き出す前に、チャットで全文を見せます。人の確認が取れたら、briefを書き出して、以後は編集しません。<code dir="auto">/task-start</code> は、planの状態に応じて、計画を書くか、計画の修正を反映するか、承認された計画の続きから実装します。</p>
+<p><code dir="auto">/task-approve</code> は、planの <code dir="auto">status</code> を <code dir="auto">approved</code> にし、承認した日付を書きます。承認は、このスキルでしか記録しません。チャットで「よさそうです」と伝えても、AIは承認として扱いません。</p>
+<p>確認事項は、回答によって実装に必要な値や振る舞いが決まり、planに反映されてから解決済みとします。「未定」という回答だけでは解決済みになりません。人が選んだ仮の案が値の対応表に記録されている場合は、その案で進めることを確かめてから承認します。</p>
+<p><code dir="auto">/task-done</code> は、終了の条件を確かめてから、教訓を書き、タスクを <code dir="auto">archive/</code> に移します。条件は、planがapprovedであること、全手順が検証済みであること、完了の報告がbriefの今の完了条件をすべて含み、不合格の行がないことです。未確認の項目は、人の判定と証拠を記録してから終了します。仮の値が残っていれば確定した値を尋ね、値が変わる場合は計画の更新、承認、検証をやり直します。</p>
+<p>4つのスキルと <code dir="auto">/confirm-request</code> には、どれもスキルの設定に <code dir="auto">disable-model-invocation: true</code> を書き、利用者だけが呼べるようにしています。この設定のスキルは、AIが自分の判断で呼び出せません（2026年10月確認）。とくに <code dir="auto">/task-approve</code> は、モデルから呼べないことで、承認の経路が利用者の操作に限られます。この設定のスキルは、メッセージの先頭に <code dir="auto">/task-start</code> のように書いたときだけ呼ばれ、文の途中に書いても呼ばれません。また、別のスキルからも呼べないので、<code dir="auto">/task-start</code> は <code dir="auto">/confirm-request</code> を呼び出すのではなく、その <code dir="auto">SKILL.md</code> を読んで同じ手順に従います。</p>
+<h2 id="ai-coding_tasks--briefに書くこと">briefに書くこと</h2>
+<p>briefには、目的、対象、やることとやらないこと、デザインから読み取れないこと、完了の条件、確かめる幅、参考ファイルを書きます。「デザインから読み取れないこと」は、「<a class="xref-out">3-2 実装の前にデザイナーと確かめること</a>（巻1）」で挙げた4つの項目です。決まっていない項目は「未定」と書き、AIはその項目を推測で埋めずに質問します。</p>
+<figure class="code"><figcaption>brief.md のひな形</figcaption><pre><code><span style="--0:#82B1FF;--1:#3B61B0"># &lt;タスクの名前&gt;</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!--</span>
+<span style="--0:#919F9F;--1:#5F636F">人が書くファイルです。作るときの対話は /task-new が行い、書き出した後は AI が編集しません。</span>
+<span style="--0:#919F9F;--1:#5F636F">決まっていない項目は「未定」と書きます。AI は、未定の項目を推測で埋めずに質問します。</span>
+<span style="--0:#919F9F;--1:#5F636F">--&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 目的</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 何のための変更か。誰の、どんな困りごとを解決するか（1〜3文） --&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 対象</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 種類：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 新しいコンポーネント / 既存のコンポーネントの変更 / ページの組み立て / 不具合の修正 --&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 対象の部品やページ：</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> Figma：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- URL（node-id を含む） --&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 置き場所と幅：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 例：トップページの新着（本文の幅）、記事ページのサイドバー（幅240px相当） --&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## やること</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">-</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## やらないこと</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">-</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## デザインから読み取れないこと</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 共通のルールから外している箇所：</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> カンプのない幅での振る舞い：</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 内容が変わったときの見せ方：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 長い見出し、画像がない、項目が0件・1件・多数 --&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 状態と動き：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- ホバー、フォーカス、押下、無効、開閉、動きを減らす設定 --&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 完了条件</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### AI が判定する</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- コマンドや数値で確かめられるもの --&gt;</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] lint とビルドがエラーなしで通る</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] 確かめる幅のすべてで、横スクロールが出ない</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] plan の値の対応表の値が、計算値と一致する</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] css-coding-guideline スキルのレビューで、「必須」と「禁止」のルールの違反が0件</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### 人が判定する</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 見た目の印象や意図の再現のように、人の目で決めるもの。AI は「未確認」として報告する --&gt;</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] デザインと同じ幅のスクリーンショットを見比べて、意図が再現できている</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 確かめる幅と環境</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- プロジェクトの既定と違う場合だけ書き換える --&gt;</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 幅：320 / 480 / 768 / 1024 / 1280px（カンプの幅：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 例：375 / 1280px --&gt;</span><span style="--0:#D6DEEB;--1:#403F53">）</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> ブラウザ：Chrome、Safari</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 表示の設定：200%の拡大、文字サイズ200%、キーボードの操作、強制カラーモード、動きを減らす設定</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 参考ファイル</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| ファイル | 用途 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`refs/&lt;ファイル名&gt;`</span><span style="--0:#D6DEEB;--1:#403F53"> | &lt;!-- 例：文言の原稿。テキストは一字一句このとおりに入れる --&gt; |</span></code></pre></figure>
+<p>完了の条件は、AIが判定するものと、人が判定するものに分けて書きます。ひな形の「AIが判定する」には、lintとビルド、横スクロール、計算値、本書のスキルによるレビューを、既定の条件として入れています。確かめる幅と表示の設定は、「<a href="06-operations.html#page-operations_verification" class="xref">19-3 表示と操作を確かめる</a>」の条件をもとにしているので、プロジェクトに合わせて書き換えます。</p>
+<p><code dir="auto">refs/</code> には、文言の原稿やデザイナーとの確認の記録のように、Figmaの外にある資料を置きます。briefの「参考ファイル」の表に、ファイルごとの用途を書いておくと、AIは用途を確かめてから読みます。たとえば、原稿のファイルに「テキストは一字一句このとおりに入れる」と書いておけば、AIが文言を言い換えることを防げます。</p>
+<h2 id="ai-coding_tasks--task-start-の手順"><code dir="auto">/task-start</code> の手順</h2>
+<p><code dir="auto">/task-start</code> は、タスクを進めるスキルの中心です。planがまだなければ、コードベースとデザインを調べてplanを書き、draftにして止まります。planがdraftなら、修正を反映して、もう一度レビューを頼みます。planがapprovedなら、未完了の最初の手順から実装し、手順ごとに検証します。</p>
+<figure class="code"><figcaption>.claude/skills/task-start/SKILL.md</figcaption><pre><code><span style="--0:#D6DEEB;--1:#403F53">---</span>
+<span style="--0:#7FDBCA;--1:#111111">name</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#ECC48D;--1:#3B61B0">task-start</span>
+<span style="--0:#7FDBCA;--1:#111111">description</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#ECC48D;--1:#3B61B0">タスクの brief と plan を読み、計画を書くか、承認済みの計画の続きから実装する。利用者が呼ぶ。</span>
+<span style="--0:#7FDBCA;--1:#111111">argument-hint</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#ECC48D;--1:#3B61B0">&lt;タスクのスラッグの一部&gt;</span>
+<span style="--0:#7FDBCA;--1:#111111">disable-model-invocation</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6A83;--1:#A24848">true</span>
+<span style="--0:#D6DEEB;--1:#403F53">---</span>
+
+<span style="--0:#C5E478;--1:#3B61B0">`tasks/`</span><span style="--0:#D6DEEB;--1:#403F53"> の直下から、名前に「$ARGUMENTS」を含むディレクトリを探す。</span><span style="--0:#C5E478;--1:#3B61B0">`tasks/archive/`</span><span style="--0:#D6DEEB;--1:#403F53"> は探さない。</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 引数が空なら、進行中のタスクを、各 plan.md の status と一緒に一覧にして、どれを進めるかを尋ねる。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 複数見つかったら、一覧を示して選んでもらう。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 見つからなければ、</span><span style="--0:#C5E478;--1:#3B61B0">`/task-new`</span><span style="--0:#D6DEEB;--1:#403F53"> でタスクを作るよう案内して止まる。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> brief.md がなければ、止まって人に書いてもらう。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## ファイルの役割</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">`brief.md`</span><span style="--0:#D6DEEB;--1:#403F53">：人が書く。読み取り専用で、編集しない。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">`refs/`</span><span style="--0:#D6DEEB;--1:#403F53">：人が用意する。読み取り専用。brief の「参考ファイル」の表で用途を確かめてから読む。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">`plan.md`</span><span style="--0:#D6DEEB;--1:#403F53">：AI が書く。ただし、</span><span style="--0:#C5E478;--1:#3B61B0">`status: approved`</span><span style="--0:#D6DEEB;--1:#403F53"> を書くのは </span><span style="--0:#C5E478;--1:#3B61B0">`/task-approve`</span><span style="--0:#D6DEEB;--1:#403F53"> だけ。人が「懸念・確認事項」の回答欄に書いた内容は消さない。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">`tasks/lessons.md`</span><span style="--0:#D6DEEB;--1:#403F53">：過去の教訓。着手する前に読む。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 手順</span>
+
+<span style="--0:#D9F5DD;--1:#111111">1.</span><span style="--0:#D6DEEB;--1:#403F53"> brief.md と </span><span style="--0:#C5E478;--1:#3B61B0">`tasks/lessons.md`</span><span style="--0:#D6DEEB;--1:#403F53"> を読む。plan.md があれば読む。brief の「参考ファイル」の表に従って、必要な </span><span style="--0:#C5E478;--1:#3B61B0">`refs/`</span><span style="--0:#D6DEEB;--1:#403F53"> を読む。</span>
+<span style="--0:#D9F5DD;--1:#111111">2.</span><span style="--0:#D6DEEB;--1:#403F53"> plan.md の status が done なら、完了していることを伝えて止まる。空、draft、approved、done 以外の status は書き換えず、利用者に確認して止まる。</span>
+<span style="--0:#D9F5DD;--1:#111111">3.</span><span style="--0:#D6DEEB;--1:#403F53"> このセッションで受けた回答や修正依頼を確認する。plan がなければ、初回の計画の材料にする。plan がある場合、回答欄が空の問いに対する回答は、「&lt;日付&gt; チャットで回答：&lt;内容&gt;」と回答欄に写し、決定ログにも日付付きで記録する。人が書いた回答と食い違う場合は、上書きせず確認して止まる。</span>
+<span style="--0:#D9F5DD;--1:#111111">4.</span><span style="--0:#D6DEEB;--1:#403F53"> 回答と修正依頼を plan に反映する。承認済みの値、方針、スコープ、完了条件、触るファイルが変わるなら、「止まる条件」の1つ目に従って draft に戻し、影響を受ける検証結果も未確認に戻す。回答の記録だけで計画が変わらない場合は、status を変えない。</span>
+<span style="--0:#D9F5DD;--1:#111111">5.</span><span style="--0:#D6DEEB;--1:#403F53"> 確認事項を判定する。実装に必要な値や振る舞いが回答によって決まり、plan に反映されている問いは、解決済みとする。「未定」という回答だけでは解決済みにしない。人が選んだ暫定案が値の対応表に種類「仮」として記録されている問いは、その案で進めることを </span><span style="--0:#C5E478;--1:#3B61B0">`/task-approve`</span><span style="--0:#D6DEEB;--1:#403F53"> で承認してから実装に使う。</span>
+<span style="--0:#D9F5DD;--1:#111111">6.</span><span style="--0:#D6DEEB;--1:#403F53"> plan.md の有無と status で分ける。計画の編集と確認依頼は、未解決の問いがあっても行える。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### plan.md がない、または status が空のとき</span>
+
+<span style="--0:#D9F5DD;--1:#111111">1.</span><span style="--0:#D6DEEB;--1:#403F53"> コードベースを調べる。再利用できる部品、トークン、</span><span style="--0:#C5E478;--1:#3B61B0">`CLAUDE.md`</span><span style="--0:#D6DEEB;--1:#403F53"> のプロジェクトの規約を探す。css-coding-guideline スキルがあれば、このタスクに関係する章を読む。</span>
+<span style="--0:#D9F5DD;--1:#111111">2.</span><span style="--0:#D6DEEB;--1:#403F53"> brief に Figma の URL があり、Figma の MCP が使えるときは、その node-id のデザインを読む。Figma を読むのは、この段階だけ。</span><span style="--0:#C5E478;--1:#3B61B0">`get_design_context`</span><span style="--0:#D6DEEB;--1:#403F53"> が返すコード（React、Tailwind、絶対配置の座標）は値を読むために使い、そのまま写さない。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> Figma の指定がないとき（既存のコードの修正、不具合の修正など）や、MCP が使えないとき（未認可、呼び出しの上限）は、brief、既存のコード、</span><span style="--0:#C5E478;--1:#3B61B0">`refs/`</span><span style="--0:#D6DEEB;--1:#403F53"> を根拠に計画する。Figma の指定があるのに突き合わせられなかった項目は、plan と完了の報告に「未確認」と書く。Figma の指定がないタスクでは、デザインとの比較を必須にせず、brief の完了条件で検証する。</span>
+<span style="--0:#D9F5DD;--1:#111111">3.</span><span style="--0:#D6DEEB;--1:#403F53"> [</span><span style="--0:#D6DEEB;--0td:underline;--1:#403F53;--1td:underline">templates/plan.md</span><span style="--0:#D6DEEB;--1:#403F53">]</span><span style="--0:#7FDBCA;--1:#096E72">(</span><span style="--0:#FF869A;--0td:underline;--1:#954F5A;--1td:underline">templates/plan.md</span><span style="--0:#7FDBCA;--1:#096E72">)</span><span style="--0:#D6DEEB;--1:#403F53"> の形で plan.md を書き、status を draft にする。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 値の対応表に、実装で使う値と根拠をすべて書く。トークンに当たらない値は「例外」とし、理由を書く。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> brief にない値は推測で埋めず、「懸念・確認事項」に宛先、選択肢、推奨を書く。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 手順ごとに、検証（実行するコマンドと、期待する結果）を書く。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 触るファイルごとに影響範囲を書く。</span>
+<span style="--0:#D9F5DD;--1:#111111">4.</span><span style="--0:#D6DEEB;--1:#403F53"> 宛先がデザイナーやディレクターの問いがあれば、[</span><span style="--0:#D6DEEB;--0td:underline;--1:#403F53;--1td:underline">confirm-request の手順</span><span style="--0:#D6DEEB;--1:#403F53">]</span><span style="--0:#7FDBCA;--1:#096E72">(</span><span style="--0:#FF869A;--0td:underline;--1:#954F5A;--1td:underline">../confirm-request/SKILL.md</span><span style="--0:#7FDBCA;--1:#096E72">)</span><span style="--0:#D6DEEB;--1:#403F53">で、宛先ごとの確認依頼の文面を作る。</span>
+<span style="--0:#D9F5DD;--1:#111111">5.</span><span style="--0:#D6DEEB;--1:#403F53"> 止まって、plan のレビューを頼む。確認依頼を作ったときは、送るのは人であることを伝える。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### status が draft のとき</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 実装には進まない。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 未解決の問いが残っていれば、一覧にして示す。宛先がデザイナーやディレクターなら、[</span><span style="--0:#D6DEEB;--0td:underline;--1:#403F53;--1td:underline">confirm-request の手順</span><span style="--0:#D6DEEB;--1:#403F53">]</span><span style="--0:#7FDBCA;--1:#096E72">(</span><span style="--0:#FF869A;--0td:underline;--1:#954F5A;--1td:underline">../confirm-request/SKILL.md</span><span style="--0:#7FDBCA;--1:#096E72">)</span><span style="--0:#D6DEEB;--1:#403F53">で確認依頼の文面を作る。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 確認事項の回答が「未定」なら、仮の案を、選択肢の中から推奨と理由を添えて示し、人に選んでもらう。人が選んだら、値の対応表に種類「仮」として書き、「未確定の点」として決定ログに残す。仮の値で進めるかどうかは、人が </span><span style="--0:#C5E478;--1:#3B61B0">`/task-approve`</span><span style="--0:#D6DEEB;--1:#403F53"> で承認して決める。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 共通の手順で反映した回答や修正依頼を重ねて記録しない。更新した plan を示して、もう一度レビューを頼んで止まる。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 承認は、人が </span><span style="--0:#C5E478;--1:#3B61B0">`/task-approve`</span><span style="--0:#D6DEEB;--1:#403F53"> で行うと案内する。チャットで「よさそう」と言われても、status を書き換えない。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### status が approved のとき</span>
+
+<span style="--0:#D9F5DD;--1:#111111">1.</span><span style="--0:#D6DEEB;--1:#403F53"> 実装に必要な値や振る舞いが未解決なら、一覧にして示し、止まる。種類「仮」の値は、その案で進めることが承認されている場合だけ使う。</span>
+<span style="--0:#D9F5DD;--1:#111111">2.</span><span style="--0:#D6DEEB;--1:#403F53"> 未完了（</span><span style="--0:#C5E478;--1:#3B61B0">`- [ ]`</span><span style="--0:#D6DEEB;--1:#403F53">）の最初の手順を選ぶ。全手順が検証済みなら「終えるとき」へ進む。</span>
+<span style="--0:#D9F5DD;--1:#111111">3.</span><span style="--0:#D6DEEB;--1:#403F53"> 影響範囲が全ページに及ぶ手順（トークン、ベーススタイル、レイヤーの順番、コンポジションの変更）は、変更内容と影響範囲について人の確認が決定ログに記録されていることを確かめる。記録がなければ、着手する前に確認を求めて止まる。同じ内容について確認済みなら、繰り返し尋ねない。</span>
+<span style="--0:#D9F5DD;--1:#111111">4.</span><span style="--0:#D6DEEB;--1:#403F53"> plan の値の対応表と方針に沿って実装する。承認済みの計画で足りる間は、</span><span style="--0:#C5E478;--1:#3B61B0">`get_design_context`</span><span style="--0:#D6DEEB;--1:#403F53"> を呼び直さない。新しい情報が必要になったときは「止まる条件」に従って計画を見直す。デザインを再取得して plan との差が見つかった場合も、draft に戻して承認し直す。</span>
+<span style="--0:#D9F5DD;--1:#111111">5.</span><span style="--0:#D6DEEB;--1:#403F53"> 1つの手順を終えたら、その手順の検証を実行する。期待する結果と一致したら </span><span style="--0:#C5E478;--1:#3B61B0">`- [x]`</span><span style="--0:#D6DEEB;--1:#403F53"> にする。通らなければ直す。実行できなかった検証は「未確認」と記録し、</span><span style="--0:#C5E478;--1:#3B61B0">`- [x]`</span><span style="--0:#D6DEEB;--1:#403F53"> を付けずに止まる。</span>
+<span style="--0:#D9F5DD;--1:#111111">6.</span><span style="--0:#D6DEEB;--1:#403F53"> 判断、検証結果、つまずいた点を、決定ログに日付付きで追記する。次の手順があれば、同じ流れで続ける。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### status が done のとき</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">完了していることを伝えて止まる。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 止まる条件</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">次のどれかに当たったら、作業を止めて、理由と選択肢を示す。</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 方針、スコープ、完了条件、触るファイルの範囲、値の対応表が変わる：status を draft に戻し、変わる点を決定ログに書く。変更の影響を受ける手順の </span><span style="--0:#C5E478;--1:#3B61B0">`[x]`</span><span style="--0:#D6DEEB;--1:#403F53"> を </span><span style="--0:#C5E478;--1:#3B61B0">`[ ]`</span><span style="--0:#D6DEEB;--1:#403F53"> に戻し、「完了の報告」があれば、影響を受ける行の判定を「未確認」に戻す。影響範囲を判断できなければ、全手順と全報告を未確認に戻す。過去の証拠は履歴として残し、今回の判定とは分ける。内容と検証を変えずに手順を分けたり順番を入れ替えたりするだけなら、決定ログに書いて続ける。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> brief と plan にない値（色、余白、カンプのない幅での振る舞い、状態の見た目）が要る：推測せず、「懸念・確認事項」に書く。宛先がデザイナーやディレクターなら、[</span><span style="--0:#D6DEEB;--0td:underline;--1:#403F53;--1td:underline">confirm-request の手順</span><span style="--0:#D6DEEB;--1:#403F53">]</span><span style="--0:#7FDBCA;--1:#096E72">(</span><span style="--0:#FF869A;--0td:underline;--1:#954F5A;--1td:underline">../confirm-request/SKILL.md</span><span style="--0:#7FDBCA;--1:#096E72">)</span><span style="--0:#D6DEEB;--1:#403F53">で確認依頼の文面も作る。回答で値の対応表が変わるときは、status を draft に戻し、承認し直してから続ける。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 同じ失敗が2回続く、または同じ箇所の修正が3巡に達した：立てた仮説と試したことを、決定ログに書く。</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 検査を通すために、ルールを無効にする、テストの基準画像を更新する、検査を飛ばす必要がある：実行しない。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 終えるとき</span>
+
+<span style="--0:#D9F5DD;--1:#111111">1.</span><span style="--0:#D6DEEB;--1:#403F53"> plan の全手順が検証済みであることを確認する。未完了の手順があれば、完了とは報告せず、残っている手順と次に必要な対応を示して止まる。</span>
+<span style="--0:#D9F5DD;--1:#111111">2.</span><span style="--0:#D6DEEB;--1:#403F53"> 現在の brief の完了条件を、1つずつ確かめる。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> lint とビルドを実行する。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 確かめる幅のすべてで、表示とはみ出しを確かめる。宣言が効いているかは、</span><span style="--0:#C5E478;--1:#3B61B0">`getComputedStyle`</span><span style="--0:#D6DEEB;--1:#403F53"> で計算値を読んで確かめる。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> デザインとの比較が完了条件にある場合は、同じ幅のスクリーンショットを撮り、Figma の </span><span style="--0:#C5E478;--1:#3B61B0">`get_screenshot`</span><span style="--0:#D6DEEB;--1:#403F53"> の画像と並べる。Figma を使えないときは、</span><span style="--0:#C5E478;--1:#3B61B0">`refs/`</span><span style="--0:#D6DEEB;--1:#403F53"> の画像と並べるか、「未確認」と書く。</span>
+<span class="indent">   </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> css-coding-guideline スキルの「レビューするとき」の手順で、変更した CSS をレビューする。</span>
+<span style="--0:#D9F5DD;--1:#111111">3.</span><span style="--0:#D6DEEB;--1:#403F53"> plan.md の「完了の報告」を、今回の結果で更新する。「完了条件 | 判定（合格／不合格／未確認） | 証拠」の表に、現在の brief の完了条件をすべて入れる。過去の結果を使う場合は、今回の変更の影響を受けない根拠を添える。実行していない検査と、人の判定を受けていない項目は「未確認」と書き、「問題なし」と書かない。値の対応表に種類「仮」の値が残っていれば、対応する確認事項とともに一覧にする。</span>
+<span style="--0:#D9F5DD;--1:#111111">4.</span><span style="--0:#D6DEEB;--1:#403F53"> 不合格、未確認、仮の値が残っていれば、残っている項目と次に必要な対応を示す。</span>
+<span style="--0:#D9F5DD;--1:#111111">5.</span><span style="--0:#D6DEEB;--1:#403F53"> 完了の確認とアーカイブは </span><span style="--0:#C5E478;--1:#3B61B0">`/task-done`</span><span style="--0:#D6DEEB;--1:#403F53"> で行うよう案内する。</span></code></pre></figure>
+<p>Figmaのデザインは、planを立てる段階で読みます。既存のコードの修正のようにFigmaの指定がないタスクや、Figma MCPが使えないときは、brief、既存のコード、<code dir="auto">refs/</code> を根拠に計画させます。Figmaの指定があるのに突き合わせられなかった項目は「未確認」として残させ、Figmaの指定がないタスクではbriefの完了条件で検証します。</p>
+<p>承認されたplanで実装するときは、値をplanの対応表から取ります。新しい情報が必要になったときは計画を見直し、デザインを再取得してplanとの差が見つかった場合も、draftに戻して承認し直します<span class="note-ref">※2</span>。</p>
+<p>全ページに影響する手順は、着手する前に人が変更内容と影響範囲を確かめ、決定ログに記録します。同じ内容について確認済みなら、再開のたびに確認し直す必要はありません。内容や影響範囲が変わった場合は、もう一度確かめます。</p>
+<h2 id="ai-coding_tasks--推測で埋めずに止める">推測で埋めずに止める</h2>
+<p>AIに書かせるときの手戻りの多くは、AIがデザインと指示にない値を推測で埋めることから起きます。カンプのない幅での振る舞い、状態の見た目、内容が増えたときの見せ方は、デザインに描かれていないことが多く、AIはそれらしい値で埋めて先に進みます。推測で作った見た目は、意図と食い違っていても確かめられないまま残ります（<code dir="auto">no-guessing-missing-design</code>）。</p>
+<p><code dir="auto">/task-start</code> には、止まる条件を4つ書いています。1つ目は、方針、スコープ、完了条件、触るファイルの範囲、値の対応表が変わるときで、planをdraftに戻します。承認は、その方針と範囲と値で作ることへの承認なので、変われば承認し直します。</p>
+<p>あわせて、変更の影響を受ける手順の検証済みの印と、完了の報告の判定を戻し、確かめ直させます。古い報告が残ったまま、タスクを終えられないようにするためです。内容と検証を変えずに手順を分けたり順番を入れ替えたりするだけなら、決定ログに書いて続けます。</p>
+<p>2つ目は、briefとplanにない値が要るときです。AIは推測せず、planの「懸念・確認事項」に、宛先、選択肢、推奨を書いて止まります。宛先がデザイナーやディレクターなら、確認依頼の文面も作ります<span class="note-ref">※3</span>。人は回答欄に書くかチャットで答え、AIはその回答を決定ログに写してから反映します。</p>
+<p>3つ目は、同じ失敗が2回続くか、同じ箇所の修正が3巡に達したときです。そこまで直らない失敗は、AIが原因を取り違えていることが多く、続けても修正が積み重なるだけです。立てた仮説と試したことを書かせて止めれば、人は原因の見当を付けてから指示し直せます。</p>
+<p>4つ目は、検査を通すために、ルールを無効にする、テストの基準画像を更新する、検査を飛ばす必要があるときです。どれも、検査が見つけた問題を隠す操作なので、AIには実行させません。</p>
+<h2 id="ai-coding_tasks--briefとrefsをフックで守る">briefとrefsをフックで守る</h2>
+<p>「briefは編集しない」と指示に書いても、AIが修正の流れでbriefを書き換えることがあります。briefは完了の条件を決める文書なので、AIが書き換えると、AIが自分で合格の基準を変えられることになります。そこで、Claude Codeのフックで、既存のbriefと <code dir="auto">refs/</code> への書き込みを止めます。</p>
+<figure class="code"><figcaption>.claude/hooks/protect-task-inputs.mjs</figcaption><pre><code><span style="--0:#919F9F;--1:#5D6376">// tasks/ の brief.md（書き出した後）と refs/ を、AI の書き込みから守る PreToolUse のフック。</span>
+<span style="--0:#919F9F;--1:#5D6376">// .claude/settings.json で、Write と Edit のツールに登録する。</span>
+<span style="--0:#919F9F;--1:#5D6376">// Bash のリダイレクトなど、ほかのツールでの書き込みは防げない。取り決めの見落としを止める仕組みとして使う。</span>
+<span style="--0:#C792EA;--1:#8844AE">import</span><span style="--0:#D6DEEB;--1:#403F53"> { existsSync, readFileSync } </span><span style="--0:#C792EA;--1:#8844AE">from</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">node:fs</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">import</span><span style="--0:#D6DEEB;--1:#403F53"> path </span><span style="--0:#C792EA;--1:#8844AE">from</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">node:path</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">input</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#82AAFF;--1:#3B61B0">JSON</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">parse</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#82AAFF;--1:#3B61B0">readFileSync</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">utf8</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">));</span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">filePath</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#7FDBCA;--1:#096E72">input</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#FAF39F;--1:#111111">tool_input</span><span style="--0:#C792EA;--1:#8844AE">?.</span><span style="--0:#7FDBCA;--1:#096E72">file_path</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">if</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#C792EA;--1:#8844AE">!</span><span style="--1:#403F53"><span style="--0:#D7DBE0">filePath</span><span style="--0:#D6DEEB">) </span></span><span style="--0:#7FDBCA;--1:#096E72">process</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">exit</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">root</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#7FDBCA;--1:#096E72">process</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#FAF39F;--1:#111111">env</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">CLAUDE_PROJECT_DIR</span><span style="--0:#C792EA;--1:#8844AE"> ?? </span><span style="--0:#7FDBCA;--1:#096E72">input</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">cwd</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">absolute</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#7FDBCA;--1:#096E72">path</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">resolve</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#7FDBCA;--1:#096E72">input</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">cwd</span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--1:#403F53"><span style="--0:#D7DBE0">filePath</span><span style="--0:#D6DEEB">);</span></span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">relative</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#7FDBCA;--1:#096E72">path</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">relative</span><span style="--1:#403F53"><span style="--0:#D6DEEB">(</span><span style="--0:#D7DBE0">root</span></span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--1:#403F53"><span style="--0:#D7DBE0">absolute</span><span style="--0:#D6DEEB">)</span></span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">split</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#7FDBCA;--1:#096E72">path</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">sep</span><span style="--0:#D6DEEB;--1:#403F53">)</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">join</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">/</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+
+<span style="--0:#919F9F;--1:#5D6376">// tasks/&lt;slug&gt;/ と tasks/archive/&lt;slug&gt;/ の両方を守る</span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">task</span><span style="--0:#C792EA;--1:#8844AE"> =</span><span style="--0:#5CA7E4;--1:#3A688F"> </span><span style="--0:#D9F5DD;--1:#111111">/</span><span style="--0:#C792EA;--1:#8844AE">^</span><span style="--0:#5CA7E4;--1:#3A688F">tasks</span><span style="--0:#F78C6C;--1:#AA0982">\/</span><span style="--0:#5CA7E4;--1:#3A688F">(?:archive</span><span style="--0:#F78C6C;--1:#AA0982">\/</span><span style="--0:#5CA7E4;--1:#3A688F">)</span><span style="--0:#7FDBCA;--1:#096E72">?</span><span style="--0:#82AAFF;--1:#3B61B0">[</span><span style="--0:#7FDBCA;--1:#096E72">^</span><span style="--0:#82AAFF;--1:#3B61B0">/]</span><span style="--0:#7FDBCA;--1:#096E72">+</span><span style="--0:#F78C6C;--1:#AA0982">\/</span><span style="--0:#D9F5DD;--1:#111111">/</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">let </span><span style="--1:#403F53"><span style="--0:#D7DBE0">reason</span><span style="--0:#D6DEEB">;</span></span>
+<span style="--0:#C792EA;--1:#8844AE">if</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#7FDBCA;--1:#096E72">task</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">test</span><span style="--1:#403F53"><span style="--0:#D6DEEB">(</span><span style="--0:#D7DBE0">relative</span><span style="--0:#D6DEEB">) </span></span><span style="--0:#C792EA;--1:#8844AE">&amp;&amp;</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#7FDBCA;--1:#096E72">relative</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">includes</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">/refs/</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">)) {</span>
+<span class="indent"><span style="--1:#403F53">  </span></span><span style="--0:#D7DBE0;--1:#403F53">reason</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">refs/ は人が用意するファイルです。AI は書き込みません。</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#D6DEEB;--1:#403F53">} </span><span style="--0:#C792EA;--1:#8844AE">else</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">if</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#7FDBCA;--1:#096E72">task</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">test</span><span style="--1:#403F53"><span style="--0:#D6DEEB">(</span><span style="--0:#D7DBE0">relative</span><span style="--0:#D6DEEB">) </span></span><span style="--0:#C792EA;--1:#8844AE">&amp;&amp;</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#7FDBCA;--1:#096E72">relative</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">endsWith</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">/brief.md</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">&amp;&amp;</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">existsSync</span><span style="--1:#403F53"><span style="--0:#D6DEEB">(</span><span style="--0:#D7DBE0">absolute</span><span style="--0:#D6DEEB">)) {</span></span>
+<span class="indent"><span style="--1:#403F53">  </span></span><span style="--0:#D7DBE0;--1:#403F53">reason</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">brief.md は人が書くファイルです。直したい点は、チャットで人に伝えてください。</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span style="--0:#C792EA;--1:#8844AE">if</span><span style="--1:#403F53"><span style="--0:#D6DEEB"> (</span><span style="--0:#D7DBE0">reason</span><span style="--0:#D6DEEB">) {</span></span>
+<span class="indent">  </span><span style="--0:#7FDBCA;--1:#096E72">console</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">log</span><span style="--0:#D6DEEB;--1:#403F53">(</span>
+<span class="indent">    </span><span style="--0:#82AAFF;--1:#3B61B0">JSON</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">stringify</span><span style="--0:#D6DEEB;--1:#403F53">({</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">      </span></span><span style="--0:#D6DEEB;--1:#403F53">hookSpecificOutput: {</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">        </span></span><span style="--0:#D6DEEB;--1:#403F53">hookEventName: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">PreToolUse</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">        </span></span><span style="--0:#D6DEEB;--1:#403F53">permissionDecision: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">deny</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">        </span></span><span style="--0:#D6DEEB;--1:#403F53">permissionDecisionReason: </span><span style="--0:#D7DBE0;--1:#403F53">reason</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">      </span></span><span style="--0:#D6DEEB;--1:#403F53">},</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}),</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<figure class="code"><figcaption>.claude/settings.json</figcaption><pre><code><span style="--0:#D6DEEB;--1:#403F53">{</span>
+<span class="indent">  </span><span style="--0:#7FDBCA;--1:#096E72">"hooks"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span>
+<span class="indent">    </span><span style="--0:#7FDBCA;--1:#096E72">"PreToolUse"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">      </span></span><span style="--0:#D6DEEB;--1:#403F53">{</span>
+<span class="indent">        </span><span style="--0:#7FDBCA;--1:#096E72">"matcher"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">Edit|Write</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">        </span><span style="--0:#7FDBCA;--1:#096E72">"hooks"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">          </span></span><span style="--0:#D6DEEB;--1:#403F53">{</span>
+<span class="indent">            </span><span style="--0:#7FDBCA;--1:#096E72">"type"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">command</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent">            </span><span style="--0:#7FDBCA;--1:#096E72">"command"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">node </span><span style="--0:#F78C6C;--1:#AA0982">\"</span><span style="--0:#C789D6;--1:#7C5686">$CLAUDE_PROJECT_DIR/.claude/hooks/protect-task-inputs.mjs</span><span style="--0:#F78C6C;--1:#AA0982">\"</span><span style="--0:#D9F5DD;--1:#111111">"</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">          </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">        </span></span><span style="--0:#D6DEEB;--1:#403F53">]</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">      </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">]</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>フックは、AIがファイルを書くツール（WriteとEdit）を使う前に実行され、対象が既存の <code dir="auto">brief.md</code> か <code dir="auto">refs/</code> の中のファイルなら、書き込みを拒否します。まだない <code dir="auto">brief.md</code> は止めないので、<code dir="auto">/task-new</code> が新しいbriefを書き出すことはできます。拒否するときの理由はAIに返るので、AIは人に伝えるべきことを伝えます。</p>
+<p>このフックが止めるのは、ファイルを書くツールでの書き込みだけです。シェルのコマンドでファイルに書き込めば、フックを通りません。フックは、取り決めの見落としを止める仕組みであり、悪意のある操作を防ぐ仕組みではありません。</p>
+<h2 id="ai-coding_tasks--補足と注意点">補足と注意点</h2>
+<p>タスクの単位で進めると、扱う概念が増えます。2つのファイル、3つの状態、5つのスキルに加えて、止まる条件と、書く人の取り決めを覚える必要があります。そのため、手順が3つ以上かかる作業だけをタスクにします。1つのファイルの値を直すような小さな修正は、タスクを作らずに頼みます。目安は、<code dir="auto">CLAUDE.md</code> に書いておきます<span class="note-ref">※4</span>。</p>
+<p>チームに入れるときは、一度にすべてを入れず、次の順に進めます。最初に <code dir="auto">CLAUDE.md</code> と <code dir="auto">tasks/lessons.md</code> を置き、AIの誤りを記録する習慣を作ります。次にbriefとplanで承認の流れを試し、最後にフックで取り決めを固めます。承認の流れが合わないと分かった時点で、フックまで入れていなければ、戻すのも簡単です。</p>
+<p>ひな形は、<code dir="auto">/ai-coding-files/</code> に置いています。スキルは <code dir="auto">.claude/skills/</code> に、フックは <code dir="auto">.claude/hooks/</code> に、設定は <code dir="auto">.claude/settings.json</code> に置きます。置き場所の一覧は、配布物の <a href="/css-coding-guideline/ai-coding-files/README.md">README.md</a> にあります。</p>
+<p>Codex、Cursor、GitHub Copilotでも、5つのスキルは、プロジェクトの <code dir="auto">.agents/skills/</code> に置けば読み込まれます。ただし、<code dir="auto">disable-model-invocation</code> はClaude Codeの設定なので、ほかのツールでは、AIが自分の判断でスキルを使うことがあります。フックもClaude Codeの仕組みなので、ほかのツールでは、指示の文書の取り決めだけで守ります。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>完了の条件をどう決めるかは「<a href="#page-ai-coding_roles" class="xref">20-1 AIに任せる範囲と人が担う範囲</a>」（AIが判定できる数値と、人が判定する項目に分ける）</li><li><span class="note-mark">※2</span>planの書き方は「<a href="#page-ai-coding_from-figma" class="xref">20-5 Figmaのデザインから計画を立てる</a>」で、手順ごとの検証と完了の報告は「<a href="#page-ai-coding_implementation" class="xref">20-6 実装と検証を回す</a>」</li><li><span class="note-mark">※3</span>「<a href="#page-ai-coding_from-figma" class="xref">20-5 Figmaのデザインから計画を立てる</a>」</li><li><span class="note-mark">※4</span>「<a href="#page-ai-coding_setup" class="xref">20-2 AIに読ませる規約を用意する</a>」</li></ol></aside><h2 id="ai-coding_tasks--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_tasks--rule-no-guessing-missing-design"><p class="_statement"><span class="_level" data-level="必須">必須</span><span>デザインと指示にない値や振る舞い（カンプのない幅、状態の見た目、内容が増えたときの見せ方）を、推測で作って完成として扱わない。</span></p><p class="_id"><code>no-guessing-missing-design</code></p></li></ul>
+<h2 id="ai-coding_tasks--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://code.claude.com/docs/en/skills">Extend Claude with skills - Claude Code Docs</a></li>
+<li><a href="https://code.claude.com/docs/en/hooks-guide">Automate actions with hooks - Claude Code Docs</a></li>
+<li><a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode - Claude Code Docs</a></li>
+<li><a href="https://agentskills.io/specification">Agent Skills Specification</a></li>
+<li><a href="https://zenn.dev/cureapp/articles/fd00f58b065c7a">カスタムスラッシュコマンドはスキルに置き換えるべき - Zenn</a>（2026年3月）</li>
+</ul>
+</section>
+<section class="page" id="page-ai-coding_from-figma" data-title="20-5 Figmaのデザインから計画を立てる">
+<h1>20-5 Figmaのデザインから計画を立てる</h1>
+
+<p>Figmaのデザインは、計画の段階で読みます。AIは、デザインの値をトークンに対応づけた「値の対応表」と、Figmaのノードを要素に対応づけた「ノードの対応表」を <code dir="auto">plan.md</code> に書きます。トークンに当たらない値は例外として理由とともに書き出し、トークンに近いがずれる値は、確認事項として人に尋ねます。</p>
+<p>承認されたplanで実装するときは、AIは値を対応表から取ります。新しい情報が必要になったら計画を見直し、Figmaを再取得して値が変わる場合も、draftに戻して承認し直します。値の判断は、planのレビューで人の目を通ります。また、planの手順には触るファイルと影響範囲を書かせ、トークンやベーススタイルのように全ページに及ぶ変更は、その手順の前に人が確かめた記録を残します。</p>
+<h2 id="ai-coding_from-figma--完成したplanの例">完成したplanの例</h2>
+<p>次の例は、演習の記事カード（<code dir="auto">article-card</code>）をFigmaのフレームから作るタスクのplanを、抜粋したものです。FigmaのURLとノードのIDは架空の値で、トークンは本書のデモの共通トークン（付録I「<a class="xref-out">デモの共通トークン</a>（巻3）」）を使っています。</p>
+<figure class="code"><figcaption>tasks/article-card/plan.md（抜粋）</figcaption><pre><code><span style="--0:#D6DEEB;--1:#403F53">---</span>
+<span style="--0:#7FDBCA;--1:#111111">status</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#ECC48D;--1:#3B61B0">draft</span>
+<span style="--0:#7FDBCA;--1:#111111">approved</span><span style="--0:#D6DEEB;--1:#403F53">:</span>
+<span style="--0:#D6DEEB;--1:#403F53">---</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0"># 計画：記事カード</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 値の対応表</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| 要素 | プロパティ | 条件 | Figma の値 | 書く値 | 種類 | 備考 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- | --- | --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`._layout`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`gap`</span><span style="--0:#D6DEEB;--1:#403F53"> | 広い形 | 16 | </span><span style="--0:#C5E478;--1:#3B61B0">`calc(var(--spacing--sm) * 1px)`</span><span style="--0:#D6DEEB;--1:#403F53"> | トークン | |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`._layout`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`gap`</span><span style="--0:#D6DEEB;--1:#403F53"> | 狭い形 | 12 | </span><span style="--0:#C5E478;--1:#3B61B0">`calc(var(--spacing--xs) * 1px)`</span><span style="--0:#D6DEEB;--1:#403F53"> | トークン | |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`._layout`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`grid-template-columns`</span><span style="--0:#D6DEEB;--1:#403F53"> | 狭い形 | 96 と残り | </span><span style="--0:#C5E478;--1:#3B61B0">`calc(96 / 16 * 1rem) 1fr`</span><span style="--0:#D6DEEB;--1:#403F53"> | 例外 | サムネイルの幅。このカードでしか使わない |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`h3`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`font-size`</span><span style="--0:#D6DEEB;--1:#403F53">、</span><span style="--0:#C5E478;--1:#3B61B0">`line-height`</span><span style="--0:#D6DEEB;--1:#403F53"> | 広い形 | 19 / 26 | </span><span style="--0:#C5E478;--1:#3B61B0">`--text--title--*`</span><span style="--0:#D6DEEB;--1:#403F53"> | トークン | Q1 の回答による |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`h3`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`font-size`</span><span style="--0:#D6DEEB;--1:#403F53">、</span><span style="--0:#C5E478;--1:#3B61B0">`line-height`</span><span style="--0:#D6DEEB;--1:#403F53"> | 狭い形 | Subtitle | </span><span style="--0:#C5E478;--1:#3B61B0">`--text--subtitle--*`</span><span style="--0:#D6DEEB;--1:#403F53"> | トークン | Figma の文字のスタイル |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`time`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`color`</span><span style="--0:#D6DEEB;--1:#403F53"> | | </span><span style="--0:#C5E478;--1:#3B61B0">`text/muted`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`var(--foreground--muted)`</span><span style="--0:#D6DEEB;--1:#403F53"> | トークン | Figma の変数 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`img`</span><span style="--0:#D6DEEB;--1:#403F53"> | </span><span style="--0:#C5E478;--1:#3B61B0">`border-radius`</span><span style="--0:#D6DEEB;--1:#403F53"> | | 4 | </span><span style="--0:#C5E478;--1:#3B61B0">`var(--rounded--sm)`</span><span style="--0:#D6DEEB;--1:#403F53"> | トークン | |</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## ノードの対応表</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| Figma のノード | 名前 | 対応する要素 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`12:34`</span><span style="--0:#D6DEEB;--1:#403F53"> | Card / Wide | 一覧に置いたカード（広い形） |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`12:56`</span><span style="--0:#D6DEEB;--1:#403F53"> | Card / Narrow | サイドバーに置いたカード（狭い形） |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`12:41`</span><span style="--0:#D6DEEB;--1:#403F53"> | Title | </span><span style="--0:#C5E478;--1:#3B61B0">`h3`</span><span style="--0:#D6DEEB;--1:#403F53"> |</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 触るファイル</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| ファイル | 変更 | 影響範囲 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`src/styles/components/article-card.css`</span><span style="--0:#D6DEEB;--1:#403F53"> | 新規 | このカードだけ |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| </span><span style="--0:#C5E478;--1:#3B61B0">`src/pages/test/article-card.astro`</span><span style="--0:#D6DEEB;--1:#403F53"> | 新規 | テストページだけ |</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 手順</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] 1. 広い形のスタイルを書く</span>
+<span class="indent">  </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 検証：</span><span style="--0:#C5E478;--1:#3B61B0">`pnpm lint:css`</span><span style="--0:#D6DEEB;--1:#403F53"> がエラーなし。テストページの #wide で、値の対応表と計算値が一致する</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] 2. 狭い形への切り替え（</span><span style="--0:#C5E478;--1:#3B61B0">`--_density`</span><span style="--0:#D6DEEB;--1:#403F53">）を書く</span>
+<span class="indent">  </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 検証：#narrow で一致する。320〜1280pxで横スクロールが出ない</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 懸念・確認事項</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### Q1. 広い形の見出しの文字の大きさ</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 宛先：デザイナー</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> Figma の値は19px。最も近いトークンは title（20px）</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 選択肢：A. title で書く／B. 19px を例外として直接書く</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 推奨：A。一覧のほかの見出しと同じ役割で、1px の差に意図があるかは Figma からは読み取れない</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 回答：A（デザイナーに確認済み）</span></code></pre></figure>
+<p>このplanでは、実装に使う値がすべて表に出ています。例外は、サムネイルの幅の1つだけで、トークンにしない理由が書いてあります。見出しの19pxは、トークンの20pxに近いがずれる値なので、AIは推測で選ばず、確認事項にしています。</p>
+<p>レビューする人は、表の「書く値」の列と、例外の理由を読めば、デザインの値がどう扱われるかを確かめられます。実装が始まってから値の扱いを指摘するより、ここで指摘するほうが、直す範囲は小さく済みます。</p>
+<h2 id="ai-coding_from-figma--figmaを読む手順">Figmaを読む手順</h2>
+<p>AIにFigmaを読ませる手順は、4つの段階に分かれます。大きなフレームを一度に読ませると、出力が長くなり、細部の値を省いて返すことがあるからです。</p>
+<p>1つ目は、<code dir="auto">get_metadata</code> でフレームの中のノードの一覧を取り、カードの広い形と狭い形のように、読む単位に分けることです。2つ目は、ノードごとに <code dir="auto">get_design_context</code> で、並び方と値を読むことです。出力はReactとTailwind CSSのコードなので、AIには、クラスに書かれた値（<code dir="auto">gap-[20px]</code> の20pxなど）を読み取らせ、値の対応表に写させます。一覧のように同じ部品が並ぶフレームでは、部品の数だけ同じマークアップが展開されるので、1つのノードだけを読ませます。</p>
+<p>3つ目は、<code dir="auto">get_variable_defs</code> で、ノードが使っているFigmaの変数とスタイルを読むことです。変数の名前（<code dir="auto">text/muted</code> など）が分かれば、値が同じでも、どの役割の値なのかを手がかりにトークンを選べます。4つ目は、<code dir="auto">get_screenshot</code> でノードの画像を取ることです。この画像は、完了を確かめるときに見比べる基準として使います<span class="note-ref">※1</span>。</p>
+<p>読んだ結果は、次のひな形の形で <code dir="auto">plan.md</code> に書かせます。</p>
+<figure class="code"><figcaption>plan.md のひな形</figcaption><pre><code><span style="--0:#D6DEEB;--1:#403F53">---</span>
+<span style="--0:#7FDBCA;--1:#111111">status</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#ECC48D;--1:#3B61B0">draft</span>
+<span style="--0:#7FDBCA;--1:#111111">approved</span><span style="--0:#D6DEEB;--1:#403F53">:</span>
+<span style="--0:#D6DEEB;--1:#403F53">---</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0"># 計画：&lt;タスクの名前&gt;</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!--</span>
+<span style="--0:#919F9F;--1:#5F636F">AI が書くファイルです。status を approved にするのは /task-approve だけです。</span>
+<span style="--0:#919F9F;--1:#5F636F">人は「懸念・確認事項」の回答欄にだけ書き込めます。</span>
+<span style="--0:#919F9F;--1:#5F636F">--&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 方針</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- brief の目的をどう実現するか（2〜5文）。既存の部品とトークンをどう使うか --&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 調べたこと</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 再利用する部品：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- パスと、そのまま使うか、公開プロパティで変えるか --&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 使うトークン：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- トークンのファイル --&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> プロジェクトの規約：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- CLAUDE.md のうち、このタスクに関わるもの --&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 関係する本書のルール：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- ID を並べる。例：scope-with-donut、density-via-style-query --&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 値の対応表</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!--</span>
+<span style="--0:#919F9F;--1:#5F636F">Figma の値を、書く値に対応づけます。実装では、この表にない値を使いません。</span>
+<span style="--0:#919F9F;--1:#5F636F">Figma を使わないタスクでは「Figma の値」を「資料の値」に替え、備考に brief、既存コード、refs/ などの根拠を書きます。ノードの対応表は対象外と書きます。</span>
+<span style="--0:#919F9F;--1:#5F636F">種類は「トークン」「例外」「仮」のどれか。例外は、トークンにない値を直接書くもので、備考に理由を書きます。仮は、確認の回答が「未定」だったときに人が選んだ暫定の値で、備考にどの問いの回答待ちかを書きます。</span>
+<span style="--0:#919F9F;--1:#5F636F">幅で値が変わるものは、条件の列に書きます。</span>
+<span style="--0:#919F9F;--1:#5F636F">--&gt;</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| 要素 | プロパティ | 条件 | Figma の値 | 書く値 | 種類 | 備考 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- | --- | --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| | | | | | | |</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## ノードの対応表</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| Figma のノード | 名前 | 対応する要素 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| | | |</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 触るファイル</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 影響範囲が「全ページ」の変更（トークン、ベーススタイル、レイヤーの順番、コンポジション）は、その手順の前に人が確認する。変更内容と影響範囲の確認を決定ログに記録し、同じ内容では繰り返し尋ねない --&gt;</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| ファイル | 変更 | 影響範囲 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| | | |</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 手順</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 1つの手順は、1回のコミットにできる大きさにする。検証を実行して通ってから [x] にする --&gt;</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> [ ] 1. </span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 手順 --&gt;</span>
+<span class="indent">  </span><span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 検証：</span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 実行するコマンドと、期待する結果 --&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 懸念・確認事項</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 人の判断が要る点。選択肢と推奨を書く。宛先は、誰に確かめるか（実装者／デザイナー／ディレクター）。回答は、ここに書いてもチャットで伝えてもよい --&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">### Q1. </span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- 問い --&gt;</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 宛先：</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 選択肢：</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 推奨：</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 回答：</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 決定ログ</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 日付を付けて追記する。チャットで受けた修正依頼も、ここに写してから反映する --&gt;</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">-</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 完了の報告</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 完了条件ごとに、判定（合格／不合格／未確認）と証拠を書く。実行していない検査と、人が判定する項目は「未確認」 --&gt;</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">| 完了条件 | 判定 | 証拠 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| | | |</span></code></pre></figure>
+<h2 id="ai-coding_from-figma--値をトークンに対応づける">値をトークンに対応づける</h2>
+<p>デザインの値は、CSSを書く前に、対応するトークンを決めておきます（<code dir="auto">figma-values-to-tokens</code>）。<span class="ix" id="ai-coding_from-figma--ix-t122"></span>カンプの値を1つずつ写すと、トークンと少しずつ違う値が増えます。</p>
+<figure class="code"><figcaption>🙅‍♂ Not Recommended: カンプの値をそのまま写す</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
+<span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.article-card) to (.scoped) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">._layout</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">15</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">h3</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">19</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">line-height</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">26</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">time</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">#</span><span style="--0:#FFEB95">767676</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>この書き方では、<code dir="auto">gap</code> の15pxがトークンの16pxと違うことも、見出しが19pxであることも、意図した差なのかが分かりません。文字色の <code dir="auto">#767676</code> も、どの役割の色なのかが読み取れず、ダークモードで値を切り替えることもできません。同じことが別のカードでも起きると、デザインの共通のルールがコードから読み取れなくなります。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: 対応表のとおり、トークンで書く</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.article-card) to (.scoped) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">._layout</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--spacing--sm</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">h3</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--title--font-size</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">line-height</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--title--leading</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">time</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--foreground--muted</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>対応づけの手がかりは、Figmaの変数です。<code dir="auto">get_design_context</code> の出力では、変数に結び付いた値は <code dir="auto">var(--変数名, 値)</code> の形で、結び付いていない値は <code dir="auto">#171717</code> のような値だけで出ます（2026年10月確認）。変数の名前があれば、その名前からトークンを選び、値だけのものは、<code dir="auto">get_variable_defs</code> の一覧と値を突き合わせて選びます。</p>
+<p>トークンに当たらない値は、例外として書き出します。トークンを増やすのではなく、その場に値を直接書き、planの表に理由を残します<span class="note-ref">※2</span>。</p>
+<p>迷うのは、トークンに近いがずれる値です。15pxと16pxのような差は、デザインの意図である場合も、Figmaでの作業の途中で生じた誤差である場合もあります。どちらかはFigmaのデータからは決められないので、AIには推測させず、確認事項として選択肢と推奨を書かせます<span class="note-ref">※3</span>。</p>
+<h2 id="ai-coding_from-figma--出力から読み取ること読み取らないこと">出力から読み取ること、読み取らないこと</h2>
+<p><code dir="auto">get_design_context</code> の出力のうち、読み取るのは、要素の並び方と値です。Figmaのオートレイアウトは、要素を縦か横に並べ、間隔と内側の余白を指定する機能で、CSSのFlexboxやGridの考え方に近いものです。出力でも、オートレイアウトの部分は <code dir="auto">flex flex-col gap-[20px]</code> のようにFlexboxと <code dir="auto">gap</code> で表されるので、向きと間隔は <code dir="auto">display: grid</code> や <code dir="auto">gap</code> の指定に置き換えられます。</p>
+<p>読み取らないのは、絶対配置の座標と、固定の幅と高さです。オートレイアウトを使っていないフレームの要素は、フレームの左上からの座標で配置されていて、出力にもその座標が出ます。座標は、カンプの幅と内容でしか成り立たない値なので、計画の段階で、通常のフローやGridの並び方に読み替えます。オートレイアウトの部分の出力にも、カードの幅（<code dir="auto">w-[380px]</code>）や、見出しを2行分で切る高さ（<code dir="auto">h-[45px]</code> と <code dir="auto">overflow-hidden</code>）、折り返しを止める <code dir="auto">whitespace-nowrap</code> の混ざることがあります。どれもカンプの幅と文字数でしか成り立たないので、写しません（「<a href="#page-ai-coding_mcp-servers" class="xref">20-3 MCPサーバーを役割で使い分ける</a>」の <code dir="auto">no-verbatim-design-output</code>）。</p>
+<p>文字は、Figmaの文字のスタイルの名前と、文字の役割のトークンを対応づけます。大きさと行の高さを別々の値として拾うと、同じ役割の見出しどうしで、値の食い違うことがあります。フォントは <code dir="auto">Noto_Sans_CJK_JP:Regular</code> のようなFigmaのスタイル名で出るので、プロジェクトのフォントの指定に読み替えます<span class="note-ref">※4</span>。</p>
+<h2 id="ai-coding_from-figma--全ページに及ぶ変更を分ける">全ページに及ぶ変更を分ける</h2>
+<p>planの「触るファイル」には、ファイルごとに影響範囲を書かせます。<span class="ix" id="ai-coding_from-figma--ix-t29"></span>コンポーネントのファイルの変更は、そのコンポーネントの中で閉じます。一方で、トークン、ベーススタイル、レイヤーの順番、コンポジションの変更は、そのファイルを読み込むすべてのページに及びます（<code dir="auto">escalate-shared-changes</code>）。</p>
+<p>全ページに及ぶ変更は、コンポーネントの中で閉じる変更と分けます。そして、その手順を始める前にAIを止め、人が確かめます。全ページに及ぶ変更は、作っているカードでは正しく見えても、ほかのページの見出しや余白を変えることがあります。カードのテストページだけを見ていては、その変化に気付けません。止まったときに、変える理由と影響するページを確かめれば、トークンを足すのではなく例外として書く、といった判断もその場でできます。</p>
+<p>同じ考え方は、AIに作業を並行させるときにも当てはまります。サブエージェントに複数のコンポーネントを同時に書かせるなら、共有のファイルを触らない作業に限ります。2つの作業で同じトークンのファイルを書き換えると、後の変更で先の変更を上書きして、どちらの意図とも違う値を残すおそれがあるからです<span class="note-ref">※5</span>。</p>
+<h2 id="ai-coding_from-figma--デザイナーへの確認を依頼する">デザイナーへの確認を依頼する</h2>
+<p>確認事項のうち、デザインの意図に関わるものは、デザイナーに確かめます。AIには、確認事項ごとに宛先を書かせ、宛先がデザイナーやディレクターの問いは、<code dir="auto">/confirm-request</code> で、そのまま送れる確認依頼の文面にさせます。<code dir="auto">/task-start</code> も、planを書いて止まるときと、実装の途中で止まるときに、同じ手順で文面を作ります。AIは文面を作るだけで、送るのは人です。</p>
+<figure class="code"><figcaption>確認依頼のひな形</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">&lt;!--</span>
+<span style="--0:#919F9F;--1:#5F636F">確認依頼のひな形です。/confirm-request が、宛先ごとに1通ずつ、この形で書きます。</span>
+<span style="--0:#919F9F;--1:#5F636F">送る前に人が読み、言い回しや宛名をチームに合わせて直してから送ります。</span>
+<span style="--0:#919F9F;--1:#5F636F">--&gt;</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">&lt;宛先の名前&gt;さん</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">&lt;タスクの名前&gt;の実装で、デザインから読み取れない点が&lt;質問の数&gt;つあります。それぞれ、A、Bのどちらかを選んでいただくか、別の案があれば教えてください。</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 1. &lt;確かめたいことを1行で&gt;</span>
+
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 対象：</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">Figma</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">のノードの</span><span style="--0:#7FDBCA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">URL。指定がなければ、ページの</span><span style="--0:#7FDBCA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">URL、部品名、参考ファイルなど</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 状況：&lt;デザインに何が描かれていないか、何と何が食い違っているか&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> A：&lt;案&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> B：&lt;案&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> 実装する側としては</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">A／B</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">がよいと考えています。&lt;理由を1文で&gt;</span>
+<span style="--0:#D9F5DD;--1:#111111">-</span><span style="--0:#D6DEEB;--1:#403F53"> いまの見え方：&lt;スクリーンショットのファイル名。実装を始めた後だけ&gt;</span>
+
+<span style="--0:#82B1FF;--1:#3B61B0">## 2. &lt;確かめたいことを1行で&gt;</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!-- 1と同じ形で、5問まで --&gt;</span>
+
+<span style="--0:#D6DEEB;--1:#403F53">決まっていない項目は「未定」とお答えください。その場合は、仮の案と進め方をこちらから提案します。</span></code></pre></figure>
+<p>文面は、「<a class="xref-out">3-2 実装の前にデザイナーと確かめること</a>（巻1）」の質問の例と同じく、確かめることを1つずつ、選択肢の形で尋ねます。選ぶだけで答えられる質問は、答えるまでの時間が短く、回答をplanの回答欄にそのまま写せます。選択肢には、実装する側の推奨と理由を添えます。推奨がないと、デザイナーは実装の手間を知らないまま選ぶことになるからです。</p>
+<p>文面には、実装の用語を使わせません。「コンテナサイズクエリの閾値」ではなく「置き場所が狭いとき」、「<code dir="auto">gap</code>」ではなく「見出しと日付の間」と書かせます。対象は、FigmaのノードのURLで示し、実装を始めた後の便には、Figmaと同じ幅で撮ったいまの画面のスクリーンショットを添えます。カンプのない幅での振る舞いは、いまの見え方を見せなければ伝わりにくいからです。</p>
+<p>1通に入れる質問は5問までにします。質問が多いほど、すべてに答えてもらえるまでの時間が延びるので、実装を止めている質問から順に入れます。宛先がディレクターの質問（文言、件数、CMSで編集する範囲）は、別の1通にします。文面は、送る人が読んで直してから、自分の質問として送ります。</p>
+<p>回答を受け取ったら、人がplanの回答欄に貼るか、チャットでAIに伝えます。チャットで伝えた回答は、AIが回答欄と決定ログに記録してからplanに反映します。回答がbriefの「デザインから読み取れないこと」に当たるときは、人がbriefも直します。briefは完了の条件を決める文書なので、AIには直させません<span class="note-ref">※6</span>。</p>
+<p>回答が「未定」のこともあります。依頼文では、仮の形で進めるとは約束せず、仮の案と進め方をこちらから提案すると伝えます。仮の値を決めるのは人です。AIには、選択肢の中から仮の案を推奨と理由を添えて示させ、人が選んだ値を、値の対応表に種類「仮」として、どの問いの回答待ちかと一緒に書かせます。値の対応表が変わるので、planはdraftに戻り、人が承認し直してから実装に使います。仮の値は、完了の報告にも一覧で残させ、回答が届いたら差し替えます。</p>
+<h2 id="ai-coding_from-figma--planのレビューで見ること">planのレビューで見ること</h2>
+<p>planのレビューでは、4つの点を見ます。1つ目は値の対応表で、例外の理由が、トークンにしない理由として成り立っているかを確かめます。2つ目は確認事項で、回答のない問いが残っていないか、推奨の理由が妥当かを確かめます。</p>
+<p>3つ目は触るファイルで、影響範囲が全ページに及ぶ変更が紛れていないかを確かめます。4つ目は手順で、各手順に検証が書かれ、その検証で手順の結果を確かめられるかを見ます。「スタイルを整える」のように、終わったかどうかを判定できない手順があれば、分け直させます。</p>
+<p>4つを確かめたら、<code dir="auto">/task-approve</code> で承認します。承認の後に範囲が変わったら、AIはplanをdraftに戻して止まります<span class="note-ref">※7</span>。</p>
+<h2 id="ai-coding_from-figma--補足と注意点">補足と注意点</h2>
+<p>Figma MCPが使えないときもあります。認可が切れている場合や、シートの種類による呼び出しの回数の上限に達した場合です。そのときは、人がFigmaから書き出した画像と値を <code dir="auto">refs/</code> に置き、AIにはそこからplanを書かせます。Figmaと突き合わせられなかった項目は、planと完了の報告に「未確認」として残させます。</p>
+<p>画像やアイコンのような素材は、<code dir="auto">download_assets</code> で取得すると、一時的なURLが返ります。URLのままコードに書くと、期限が切れた後に表示されなくなるので、ダウンロードしてリポジトリに置きます。私の案件では、書き出したSVGに背景の矩形が入っていたり、ブレンドモードが失われていたりしたことがありました。素材は、書き出した後に画面で確かめます。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>ツールの役割は「<a href="#page-ai-coding_mcp-servers" class="xref">20-3 MCPサーバーを役割で使い分ける</a>」</li><li><span class="note-mark">※2</span>サイト全体で意味を持つ値だけをトークンにする理由は、「<a class="xref-out">10-4 デザイントークン</a>（巻2）」</li><li><span class="note-mark">※3</span>デザイナーに確かめる観点は「<a class="xref-out">3-1 ピクセルではなく意図を再現する</a>（巻1）」</li><li><span class="note-mark">※4</span>文字の役割のトークンは「<a href="01-typography.html#page-typography_text-roles" class="xref">14-5 文字の役割と色</a>」</li><li><span class="note-mark">※5</span>コンポーネントの境界の考え方は「<a class="xref-out">10-2 コンポーネントの境界を守る</a>（巻2）」</li><li><span class="note-mark">※6</span>「<a href="#page-ai-coding_tasks" class="xref">20-4 タスクの単位で進める</a>」</li><li><span class="note-mark">※7</span>「<a href="#page-ai-coding_tasks" class="xref">20-4 タスクの単位で進める</a>」</li></ol></aside><h2 id="ai-coding_from-figma--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_from-figma--rule-figma-values-to-tokens"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>デザインの値は、CSS を書く前にトークンに対応づけ、トークンに当たらない値は例外として理由とともに書き出す。</span></p><p class="_id"><code>figma-values-to-tokens</code></p></li><li class="_rule" id="ai-coding_from-figma--rule-escalate-shared-changes"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>AI に CSS を書かせるときは、トークン、ベーススタイル、レイヤーの順番、コンポジションのように全ページに及ぶ変更を、コンポーネントの中で閉じる変更と分け、着手する前に人が確かめる。</span></p><p class="_id"><code>escalate-shared-changes</code></p></li></ul>
+<h2 id="ai-coding_from-figma--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/">Tools and prompts - Figma Developer Docs</a></li>
+<li><a href="https://help.figma.com/hc/en-us/articles/360040451373-Guide-to-auto-layout">Guide to auto layout in Figma - Figma Learn</a></li>
+</ul>
+</section>
+<section class="page" id="page-ai-coding_implementation" data-title="20-6 実装と検証を回す">
+<h1>20-6 実装と検証を回す</h1>
+
+<p>承認されたplanで実装するとき、AIには手順を1つずつ実装させ、その手順の検証が通ってから完了の印（<code dir="auto">[x]</code>）を付けさせます。検証は、planを書く段階で手順ごとに決めておいた、実行するコマンドと期待する結果です。通らなければ直し、直せなければ止まります。</p>
+<p>lintとビルドが通っても、書いた宣言がブラウザで適用されているとは限りません。宣言が効いているかは、計算値で確かめます。完了の報告は、完了条件ごとに合格、不合格、未確認と、その証拠を書かせます。実行していない検査と、人が判定する項目は「未確認」と書かせ、「問題なし」とは書かせません。</p>
+<h2 id="ai-coding_implementation--手順ごとに検証する">手順ごとに検証する</h2>
+<p>planの各手順は、1回のコミットで収まる大きさにします。広い形のスタイルを書く、狭い形への切り替えを書く、ホバーとフォーカスを書く、のように分ければ、各手順の結果を1つの検証で確かめられます。手順が大きいと、検証が通らなかったときに、どの変更が原因かを絞れません。</p>
+<p>検証は、手順の結果を確かめられるものにします。「広い形のスタイルを書く」の検証が <code dir="auto">pnpm lint:css</code> だけなら、lintに通る誤ったスタイルも合格になります。値の対応表の値が、テストページの計算値と一致することまでを、検証に含めます。</p>
+<p>AIは、検証が通ってから <code dir="auto">[x]</code> を付けます。検証の前に印を付けさせると、セッションが途中で切れたときに、確かめていない手順が完了として残ります。次のセッションのAIは、印の付いていない最初の手順から再開するので、印は「検証が通った」ことの記録として扱います。</p>
+<h2 id="ai-coding_implementation--lintが通っても宣言が効いているとは限らない">lintが通っても、宣言が効いているとは限らない</h2>
+<p>次のコードは、構文に誤りがなく、本書のStylelintの設定でも1件も報告されません（2026年10月、Stylelint 17.15.0で確認）。しかし、カードが広い置き場所に置かれても、<code dir="auto">gap</code> は12px相当のままです。</p>
+<figure class="code"><figcaption>🙅‍♂ Not Recommended: フラグを宣言した要素が、自分のフラグを問い合わせる</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
+<span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.article-card) to (.scoped) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">:scope</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">container</span><span style="--0:#D6DEEB;--1:#403F53">: --scoped / inline-size;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">._layout</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#C5E478;--1:#3B61B0">--_density</span><span style="--0:#D6DEEB;--1:#403F53">: --compact;</span>
+
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">display</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">block</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#FF6D6D;--1:#984E4D">grid</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--spacing--xs</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">@</span><span style="--0:#80CBC4;--1:#096E72">container</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">--scoped</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#80CBC4;--1:#096E72">inline-size</span><span style="--0:#D6DEEB;--1:#403F53"> &gt;= </span><span style="--0:#80CBC4;--1:#096E72">calc</span><span style="--0:#D6DEEB;--1:#403F53">(260 / 16 * 1</span><span style="--0:#80CBC4;--1:#096E72">rem</span><span style="--0:#D6DEEB;--1:#403F53">)) {</span>
+<span class="indent">      </span><span style="--0:#C5E478;--1:#3B61B0">--_density</span><span style="--0:#D6DEEB;--1:#403F53">: --spacious;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">    </span><span style="--0:#C792EA;--1:#8844AE">@container</span><span style="--0:#D6DEEB;--1:#403F53"> style(--_density: --spacious) {</span>
+<span class="indent">      </span><span style="--0:#C792EA;--1:#8844AE">gap: calc(var(--spacing--sm</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#7FDBCA;--1:#096E72">*</span><span style="--0:#C792EA;--1:#8844AE"> 1px</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>スタイルクエリは、問い合わせる要素自身ではなく、祖先の要素のカスタムプロパティを調べます。<code dir="auto">._layout</code> の <code dir="auto">--_density</code> は <code dir="auto">--spacious</code> に切り替わっていますが、<code dir="auto">._layout</code> のスタイルクエリが調べるのは親のルートの値で、ルートには <code dir="auto">--_density</code> がありません。条件が成り立たないので、<code dir="auto">gap</code> の宣言は適用されません（Chrome 152で確認）。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: 要素自身の値はコンテナサイズクエリの中に書き、子孫がフラグを問い合わせる</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.article-card) to (.scoped) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">:scope</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">container</span><span style="--0:#D6DEEB;--1:#403F53">: --scoped / inline-size;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">._layout</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#C5E478;--1:#3B61B0">--_density</span><span style="--0:#D6DEEB;--1:#403F53">: --compact;</span>
+
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">display</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">block</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#FF6D6D;--1:#984E4D">grid</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--spacing--xs</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">@</span><span style="--0:#80CBC4;--1:#096E72">container</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">--scoped</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#80CBC4;--1:#096E72">inline-size</span><span style="--0:#D6DEEB;--1:#403F53"> &gt;= </span><span style="--0:#80CBC4;--1:#096E72">calc</span><span style="--0:#D6DEEB;--1:#403F53">(260 / 16 * 1</span><span style="--0:#80CBC4;--1:#096E72">rem</span><span style="--0:#D6DEEB;--1:#403F53">)) {</span>
+<span class="indent">      </span><span style="--0:#C5E478;--1:#3B61B0">--_density</span><span style="--0:#D6DEEB;--1:#403F53">: --spacious;</span>
+
+<span class="indent">      </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--spacing--sm</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">h3</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--subtitle--font-size</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">@</span><span style="--0:#80CBC4;--1:#096E72">container</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#80CBC4;--1:#096E72">style</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--_density</span><span style="--0:#D6DEEB;--1:#403F53">: --spacious) {</span>
+<span class="indent">      </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--text--title--font-size</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>フラグを宣言した要素自身の値は、フラグを切り替えるコンテナサイズクエリの中に書き、子孫の <code dir="auto">h3</code> がフラグを問い合わせます<span class="note-ref">※1</span>。</p>
+<p>このような誤りは、lintでは見つかりません。宣言が適用されているかは、ブラウザの計算値で確かめます（<code dir="auto">verify-applied-styles</code>）。開発者ツールのコンソールか、Playwright MCPの <code dir="auto">browser_evaluate</code> で、次のように読みます。</p>
+<figure class="code"><figcaption>計算値を読む</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">layout</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#7FDBCA;--1:#096E72">document</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">querySelector</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">#wide .article-card ._layout</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span style="--0:#82AAFF;--1:#3B61B0">getComputedStyle</span><span style="--1:#403F53"><span style="--0:#D6DEEB">(</span><span style="--0:#D7DBE0">layout</span><span style="--0:#D6DEEB">)</span></span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">getPropertyValue</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">--_density</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">); </span><span style="--0:#919F9F;--1:#5D6376">// '--spacious'</span>
+<span style="--0:#82AAFF;--1:#3B61B0">getComputedStyle</span><span style="--1:#403F53"><span style="--0:#D6DEEB">(</span><span style="--0:#D7DBE0">layout</span><span style="--0:#D6DEEB">)</span></span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">rowGap</span><span style="--0:#D6DEEB;--1:#403F53">; </span><span style="--0:#919F9F;--1:#5D6376">// '12px'（対応表では 16px）</span></code></pre></figure>
+<p>フラグは <code dir="auto">--spacious</code> なのに、<code dir="auto">row-gap</code> は12pxのままです。計算値と対応表が食い違えば、AIはどの宣言が勝ったかを調べます<span class="note-ref">※2</span>。</p>
+<h2 id="ai-coding_implementation--値の対応表をテストにする">値の対応表をテストにする</h2>
+<p>複数の幅や置き場所で切り替わるコンポーネントでは、計算値の確認を、<code dir="auto">@playwright/test</code> のテストにしておきます。planの値の対応表を、要素、プロパティ、書く値の行としてテストに写し、確かめる幅のすべてで計算値と照合します。手順を進めるたびに同じテストを実行すれば、後の手順で前の手順の値を壊したことにも気付けます。</p>
+<figure class="code"><figcaption>tests/design-values.spec.ts</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">import</span><span style="--0:#D6DEEB;--1:#403F53"> { test, expect } </span><span style="--0:#C792EA;--1:#8844AE">from</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">@playwright/test</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+
+<span style="--0:#919F9F;--1:#5F636F">/**</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* plan の値の対応表を、ブラウザの計算値と照合するテスト。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* 対応表の「書く値」を、対象と同じ親の中に置いた比較用の要素に指定し、2つの計算値が一致するかを見る。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* トークンを参照する値も、ブラウザが解決した値どうしで比べられる。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* 値に % や em を含む行は、比較用の要素と大きさの基準が変わるので、この方法では比べない。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*/</span>
+
+<span style="--0:#919F9F;--1:#5D6376">// 最悪の内容を入れたテストページ（tests/pages/article-card/index.html）。カードを、幅の違う2つの置き場所に並べている。</span>
+<span style="--0:#919F9F;--1:#5D6376">// コンテナサイズクエリで切り替わる値は、画面の幅ではなく置き場所の幅で決まるので、</span>
+<span style="--0:#919F9F;--1:#5D6376">// #narrow は幅240px相当に固定し、#wide は最大400px相当にして、どの画面の幅でも同じ値を期待できるようにする</span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">PAGE</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">/tests/pages/article-card/</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">WIDTHS</span><span style="--0:#C792EA;--1:#8844AE"> =</span><span style="--0:#D6DEEB;--1:#403F53"> [</span><span style="--0:#F78C6C;--1:#AA0982">320</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#F78C6C;--1:#AA0982">480</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#F78C6C;--1:#AA0982">768</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#F78C6C;--1:#AA0982">1024</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#F78C6C;--1:#AA0982">1280</span><span style="--0:#D6DEEB;--1:#403F53">];</span>
+
+<span style="--0:#919F9F;--1:#5D6376">// plan の値の対応表から写す</span>
+<span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">ROWS</span><span style="--0:#C792EA;--1:#8844AE"> =</span><span style="--0:#D6DEEB;--1:#403F53"> [</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">{ selector: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">#narrow .article-card ._layout</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, property: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">row-gap</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, value: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">calc(var(--spacing--xs) * 1px)</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53"> },</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">{ selector: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">#wide .article-card ._layout</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, property: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">row-gap</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, value: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">calc(var(--spacing--sm) * 1px)</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53"> },</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">{ selector: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">#narrow .article-card h3</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, property: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">font-size</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, value: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">calc(var(--text--subtitle--font-size) / 16 * 1rem)</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53"> },</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">{ selector: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">#wide .article-card h3</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, property: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">font-size</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, value: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">calc(var(--text--title--font-size) / 16 * 1rem)</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53"> },</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">{ selector: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">#wide .article-card time</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, property: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">color</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, value: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">var(--foreground--muted)</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53"> },</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">{ selector: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">#narrow .article-card ._excerpt</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, property: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">display</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, value: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">none</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53"> },</span>
+<span style="--0:#D6DEEB;--1:#403F53">];</span>
+
+<span style="--0:#C792EA;--1:#8844AE">for</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">width</span><span style="--0:#C792EA;--1:#8844AE"> </span><span style="--0:#7FDBCA;--1:#096E72">of</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">WIDTHS</span><span style="--0:#D6DEEB;--1:#403F53">) {</span>
+<span class="indent">  </span><span style="--0:#82AAFF;--1:#3B61B0">test</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D6DEEB;--1:#403F53">`</span><span style="--0:#ECC48D;--1:#3B61B0">article-card：</span><span style="--0:#E2817F;--1:#B23834">${</span><span style="--0:#D6DEEB;--1:#403F53">width</span><span style="--0:#E2817F;--1:#B23834">}</span><span style="--0:#ECC48D;--1:#3B61B0">px</span><span style="--0:#D6DEEB;--1:#403F53">`</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#C792EA;--1:#8844AE">async</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--1:#403F53"><span style="--0:#D6DEEB">{ </span><span style="--0:#D7DBE0">page</span><span style="--0:#D6DEEB"> }</span></span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">=&gt;</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#C792EA;--1:#8844AE">await</span><span style="--0:#D6DEEB;--1:#403F53"> page</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">setViewportSize</span><span style="--0:#D6DEEB;--1:#403F53">({ width, height: </span><span style="--0:#F78C6C;--1:#AA0982">900</span><span style="--0:#D6DEEB;--1:#403F53"> });</span>
+<span class="indent">    </span><span style="--0:#C792EA;--1:#8844AE">await</span><span style="--0:#D6DEEB;--1:#403F53"> page</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">goto</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#82AAFF;--1:#3B61B0">PAGE</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+
+<span class="indent">    </span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">overflow</span><span style="--0:#C792EA;--1:#8844AE"> = await </span><span style="--0:#D6DEEB;--1:#403F53">page</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">evaluate</span><span style="--0:#D6DEEB;--1:#403F53">(</span>
+<span class="indent">      </span><span style="--0:#D9F5DD;--1:#111111">()</span><span style="--0:#C792EA;--1:#8844AE"> =&gt; </span><span style="--0:#D6DEEB;--1:#403F53">document</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#FAF39F;--1:#111111">documentElement</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">scrollWidth</span><span style="--0:#C792EA;--1:#8844AE"> - </span><span style="--0:#D6DEEB;--1:#403F53">document</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#FAF39F;--1:#111111">documentElement</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">clientWidth</span><span style="--0:#C792EA;--1:#8844AE">,</span>
+<span class="indent">    </span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#82AAFF;--1:#3B61B0">expect</span><span style="--0:#D6DEEB;--1:#403F53">(overflow, </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">横スクロールが出ていない</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">)</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">toBeLessThanOrEqual</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+
+<span class="indent">    </span><span style="--0:#C792EA;--1:#8844AE">for</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">row</span><span style="--0:#C792EA;--1:#8844AE"> </span><span style="--0:#7FDBCA;--1:#096E72">of</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">ROWS</span><span style="--0:#D6DEEB;--1:#403F53">) {</span>
+<span class="indent">      </span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">result</span><span style="--0:#C792EA;--1:#8844AE"> = await </span><span style="--0:#D6DEEB;--1:#403F53">page</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">evaluate</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#C792EA;--1:#8844AE">{ </span><span style="--0:#D7DBE0;--1:#403F53">selector</span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--0:#D7DBE0;--1:#403F53">property</span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--0:#D7DBE0;--1:#403F53">value</span><span style="--0:#C792EA;--1:#8844AE"> }</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#C792EA;--1:#8844AE"> =&gt; {</span>
+<span class="indent"><span style="--0:#C792EA;--1:#8844AE">        </span></span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">element</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#D6DEEB;--1:#403F53">document</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">querySelector</span><span style="--0:#D6DEEB;--1:#403F53">(selector)</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+<span class="indent"><span style="--0:#C792EA;--1:#8844AE">        </span></span><span style="--0:#C792EA;--1:#8844AE">if </span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C792EA;--1:#8844AE">!</span><span style="--0:#D6DEEB;--1:#403F53">element</span><span style="--0:#C792EA;--1:#8844AE">?.</span><span style="--0:#7FDBCA;--1:#096E72">parentElement</span><span style="--0:#D6DEEB;--1:#403F53">)</span><span style="--0:#C792EA;--1:#8844AE"> return </span><span style="--0:#FF6A83;--1:#A24848">null</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+
+<span class="indent"><span style="--0:#C792EA;--1:#8844AE">        </span></span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">probe</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#D6DEEB;--1:#403F53">document</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">createElement</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">div</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">)</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+<span class="indent">        </span><span style="--0:#D6DEEB;--1:#403F53">probe</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#FAF39F;--1:#111111">style</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">setProperty</span><span style="--0:#D6DEEB;--1:#403F53">(property</span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--0:#D6DEEB;--1:#403F53">value)</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+<span class="indent">        </span><span style="--0:#D6DEEB;--1:#403F53">element</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#FAF39F;--1:#111111">parentElement</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">append</span><span style="--0:#D6DEEB;--1:#403F53">(probe)</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+<span class="indent"><span style="--0:#C792EA;--1:#8844AE">        </span></span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">actual</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#82AAFF;--1:#3B61B0">getComputedStyle</span><span style="--0:#D6DEEB;--1:#403F53">(element)</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">getPropertyValue</span><span style="--0:#D6DEEB;--1:#403F53">(property)</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+<span class="indent"><span style="--0:#C792EA;--1:#8844AE">        </span></span><span style="--0:#C792EA;--1:#8844AE">const </span><span style="--0:#82AAFF;--1:#3B61B0">expected</span><span style="--0:#C792EA;--1:#8844AE"> = </span><span style="--0:#82AAFF;--1:#3B61B0">getComputedStyle</span><span style="--0:#D6DEEB;--1:#403F53">(probe)</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">getPropertyValue</span><span style="--0:#D6DEEB;--1:#403F53">(property)</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+<span class="indent">        </span><span style="--0:#D6DEEB;--1:#403F53">probe</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">remove</span><span style="--0:#D6DEEB;--1:#403F53">()</span><span style="--0:#C792EA;--1:#8844AE">;</span>
+
+<span class="indent"><span style="--0:#C792EA;--1:#8844AE">        </span></span><span style="--0:#C792EA;--1:#8844AE">return { </span><span style="--0:#D6DEEB;--1:#403F53">actual</span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--0:#D6DEEB;--1:#403F53">expected</span><span style="--0:#C792EA;--1:#8844AE"> };</span>
+<span class="indent"><span style="--0:#C792EA;--1:#8844AE">      </span></span><span style="--0:#C792EA;--1:#8844AE">}, </span><span style="--0:#D6DEEB;--1:#403F53">row);</span>
+
+<span class="indent">      </span><span style="--0:#82AAFF;--1:#3B61B0">expect</span><span style="--0:#D6DEEB;--1:#403F53">(result, </span><span style="--0:#D6DEEB;--1:#403F53">`</span><span style="--0:#E2817F;--1:#B23834">${</span><span style="--0:#D6DEEB;--1:#403F53">row</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">selector</span><span style="--0:#E2817F;--1:#B23834">}</span><span style="--0:#ECC48D;--1:#3B61B0"> がある</span><span style="--0:#D6DEEB;--1:#403F53">`</span><span style="--0:#D6DEEB;--1:#403F53">)</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#FAF39F;--1:#111111">not</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">toBeNull</span><span style="--0:#D6DEEB;--1:#403F53">();</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">      </span></span><span style="--0:#D6DEEB;--1:#403F53">expect</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">soft</span><span style="--0:#D6DEEB;--1:#403F53">(result</span><span style="--0:#C792EA;--1:#8844AE">?.</span><span style="--0:#7FDBCA;--1:#096E72">actual</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#D6DEEB;--1:#403F53">`</span><span style="--0:#E2817F;--1:#B23834">${</span><span style="--0:#D6DEEB;--1:#403F53">row</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">selector</span><span style="--0:#E2817F;--1:#B23834">}</span><span style="--0:#ECC48D;--1:#3B61B0"> の </span><span style="--0:#E2817F;--1:#B23834">${</span><span style="--0:#D6DEEB;--1:#403F53">row</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#7FDBCA;--1:#096E72">property</span><span style="--0:#E2817F;--1:#B23834">}</span><span style="--0:#D6DEEB;--1:#403F53">`</span><span style="--0:#D6DEEB;--1:#403F53">)</span><span style="--0:#C792EA;--1:#8844AE">.</span><span style="--0:#82AAFF;--1:#3B61B0">toBe</span><span style="--0:#D6DEEB;--1:#403F53">(result</span><span style="--0:#C792EA;--1:#8844AE">?.</span><span style="--0:#7FDBCA;--1:#096E72">expected</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">});</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>テストは、対応表の「書く値」を、対象と同じ親の中に置いた比較用の要素に指定し、2つの計算値を比べます。トークンを参照する値は、ブラウザが解決した値どうしで比べるので、テストにトークンの実際の値を書き写す必要はありません。演習の記事ページで試すと、正しい値の行は一致し、見出しの大きさをわざと誤らせた行だけが不一致になりました。</p>
+<p>置き場所は、テストページで幅を固定します。コンテナサイズクエリで切り替わる値は、画面の幅ではなく置き場所の幅で決まるからです。たとえば、記事ページのサイドバーは、狭い画面では本文の下に回って広くなります。サイドバーに置いたカードを狭い形と期待するテストは、その幅では失敗します。</p>
+<p>このテストには、2つの限界があります。1つは、値に <code dir="auto">%</code> や <code dir="auto">em</code> を含む行は比べられないことです。比較用の要素と対象の要素で、大きさの基準が変わるからです。もう1つは、作る手間がかかることです。テストにするのは、幅や置き場所で切り替わるコンポーネントのような大きなタスクだけにし、小さなタスクでは、計算値を読む確認で済ませます。</p>
+<p>テストページには、「<a href="06-operations.html#page-operations_verification" class="xref">19-3 表示と操作を確かめる</a>」の最悪の内容（長い見出し、画像のない記事、多数のタグ）を入れておきます。確かめる中で崩れる内容が見つかったら、その内容をテストページに足し、以後のタスクでも同じ内容で確かめます。</p>
+<h2 id="ai-coding_implementation--この例を試すための最小構成">この例を試すための最小構成</h2>
+<p>上のテストは、ひな形の配布物（<a href="/css-coding-guideline/ai-coding-files/README.md"><code dir="auto">/ai-coding-files/</code></a>）に、そのまま動かせる形で入れています。動かすのに要るのは、テスト、テストページ、Playwrightの設定の3つです。</p>
+<table>
+<thead>
+<tr>
+<th>配布ファイル</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">playwright.config.ts</code></td>
+<td>テストページを配信するサーバー、<code dir="auto">baseURL</code>、確かめるブラウザの設定</td>
+</tr>
+<tr>
+<td><code dir="auto">tests/design-values.spec.ts</code></td>
+<td>値の対応表を計算値と照合するテスト</td>
+</tr>
+<tr>
+<td><code dir="auto">tests/pages/article-card/</code></td>
+<td>テストページ（<code dir="auto">index.html</code>）と、演習の21-7を終えた時点のCSS</td>
+</tr>
+</tbody>
+</table>
+<p>テストページには、広い置き場所（<code dir="auto">#wide</code>、最大400px相当）と狭い置き場所（<code dir="auto">#narrow</code>、240px相当）を置き、長い見出し、画像のない記事、5つのタグ、長い英単語を入れたカードを並べています。CSSは、演習の配布ファイルと同じものです。</p>
+<figure class="code"><figcaption>playwright.config.ts</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">import</span><span style="--0:#D6DEEB;--1:#403F53"> { defineConfig, devices } </span><span style="--0:#C792EA;--1:#8844AE">from</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">@playwright/test</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+
+<span style="--0:#919F9F;--1:#5F636F">/**</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* 20-6 の値の照合テスト（tests/design-values.spec.ts）を動かすための、最小の設定。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* プロジェクトのルートに置く。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* テストページ（tests/pages/article-card/）を、静的なファイルのサーバーで配信する。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* プロジェクトに開発サーバーがあれば、webServer の command と url、use の baseURL を、</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* その開発サーバーのものに書き換え、テストページも開発サーバーで配信する。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*/</span>
+<span style="--0:#C792EA;--1:#8844AE">export</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">default</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">defineConfig</span><span style="--0:#D6DEEB;--1:#403F53">({</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">testDir: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">./tests</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">use: {</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">baseURL: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">http://localhost:4173</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">},</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">webServer: {</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">command: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">npx --yes serve@14.2.4 -l 4173 .</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">url: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">http://localhost:4173</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">reuseExistingServer: </span><span style="--0:#FF6A83;--1:#A24848">true</span><span style="--0:#D6DEEB;--1:#403F53">,</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">},</span>
+<span class="indent">  </span><span style="--0:#919F9F;--1:#5D6376">// Chrome と Safari のエンジンで確かめる（19-3 の確かめるブラウザ）</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">projects: [</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">{ name: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">chromium</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, use: { </span><span style="--0:#7FDBCA;--1:#096E72">...</span><span style="--0:#D6DEEB;--1:#403F53">devices[</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">Desktop Chrome</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">] } },</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">{ name: </span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">webkit</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">, use: { </span><span style="--0:#7FDBCA;--1:#096E72">...</span><span style="--0:#D6DEEB;--1:#403F53">devices[</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#ECC48D;--1:#984E4D">Desktop Safari</span><span style="--0:#D9F5DD;--1:#111111">'</span><span style="--0:#D6DEEB;--1:#403F53">] } },</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">],</span>
+<span style="--0:#D6DEEB;--1:#403F53">});</span></code></pre></figure>
+<p>設定では、テストページを静的なファイルのサーバーで配信し、ChromeとSafariのエンジンで確かめます。自分のプロジェクトで使うときは、<code dir="auto">webServer</code> と <code dir="auto">baseURL</code> を、プロジェクトの開発サーバーのコマンドとURLに書き換え、テストページも開発サーバーで配信します。</p>
+<figure class="code"><figcaption>Playwrightを入れて、テストを実行する</figcaption><pre><code><span style="--0:#82AAFF;--1:#3B61B0">npm</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">install</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--save-dev</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">@playwright/test</span>
+<span style="--0:#82AAFF;--1:#3B61B0">npx</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">playwright</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">install</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">chromium</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">webkit</span>
+<span style="--0:#82AAFF;--1:#3B61B0">npx</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">playwright</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">test</span></code></pre></figure>
+<p>配布物の3つのファイルをプロジェクトのルートに置き、この3つのコマンドを実行すると、ChromeとSafariのエンジンで、確かめる5つの幅のテストが実行されます。私が試したときは、10件がすべて通りました（2026年10月、Playwright 1.61.1）。テストの値を1つ誤らせると、そのテストは、期待した値と実際の計算値を並べて失敗します。</p>
+<h2 id="ai-coding_implementation--デザインと同じ幅で見比べる">デザインと同じ幅で見比べる</h2>
+<p>すべての手順を終えたら、デザインと同じ幅で撮ったスクリーンショットと、Figmaの <code dir="auto">get_screenshot</code> の画像を並べて見比べます（「<a href="#page-ai-coding_mcp-servers" class="xref">20-3 MCPサーバーを役割で使い分ける</a>」の <code dir="auto">compare-at-design-width</code>）。差が見つかったら、AIには、原因を値、要素の構造、素材、フォントのどれかに分けさせます。</p>
+<p>分けさせるのは、原因によって直す場所が違うからです。値の差なら、対応表と計算値を照らします。構造の差なら、HTMLの要素の並びを見直します。素材の差なら、書き出した画像を確かめます。フォントの差は、フォントの読み込みと、ブラウザとFigmaの描画の違いのどちらかです。</p>
+<p>原因を分けずに直させると、AIは差を埋めるために、<code dir="auto">margin</code> を1px足すような調整を重ねがちです。その調整は、その幅のその内容でしか成り立たず、別の幅で新しい差を生みます。推測で位置を足さず、原因の場所を直させます。</p>
+<h2 id="ai-coding_implementation--vrtの基準画像を更新するとき">VRTの基準画像を更新するとき</h2>
+<p>VRT（ビジュアルリグレッションテスト）は、前回の画像と今回の画像を比べて、表示の変化を見つける仕組みです。<code dir="auto">@playwright/test</code> では、<code dir="auto">toHaveScreenshot</code> で撮った画像を基準画像として保存し、次回から差を報告します。差が出たときに <code dir="auto">--update-snapshots</code> を付けて実行すると、今回の画像が新しい基準画像になります。</p>
+<p>AIにテストを通させようとすると、差の原因を調べずに基準画像を更新することがあります。原因の分からない差を基準画像に取り込むと、崩れた表示が正しい表示として固定され、以後のテストでは見つかりません（<code dir="auto">no-baseline-update-to-pass</code>）。私の案件でも、原因の分からないVRTの差を、基準画像に取り込んでしまったことがありました。</p>
+<p>基準画像を更新するのは、意図した変更で表示が変わったことを、変わった箇所ごとに確かめたときだけです。<code dir="auto">/task-start</code> の止まる条件にも、基準画像の更新を入れています<span class="note-ref">※3</span>。</p>
+<h2 id="ai-coding_implementation--完了の報告">完了の報告</h2>
+<p>完了の報告は、briefの完了条件ごとに、判定と証拠を書かせます。判定は、合格、不合格、未確認の3つです。</p>
+<figure class="code"><figcaption>完了の報告の例</figcaption><pre><code><span style="--0:#D6DEEB;--1:#403F53">| 完了条件 | 判定 | 証拠 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| --- | --- | --- |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| lint とビルドがエラーなしで通る | 合格 | </span><span style="--0:#C5E478;--1:#3B61B0">`pnpm lint:css`</span><span style="--0:#D6DEEB;--1:#403F53"> と </span><span style="--0:#C5E478;--1:#3B61B0">`pnpm build`</span><span style="--0:#D6DEEB;--1:#403F53"> が終了コード0 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| 確かめる幅のすべてで、横スクロールが出ない | 合格 | tests/design-values.spec.ts を5つの幅で実行 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| plan の値の対応表の値が、計算値と一致する | 合格 | tests/design-values.spec.ts の6行がすべて一致 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| css-coding-guideline スキルのレビューで、「必須」と「禁止」の違反が0件 | 合格 | 第9章、第10章、第13章を通読してレビュー。「推奨」の指摘2件は決定ログに記録 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| デザインと同じ幅のスクリーンショットで、意図が再現できている | 未確認 | 375px と 1280px の画像を並べた。人が判定する項目 |</span>
+<span style="--0:#D6DEEB;--1:#403F53">| Safari で表示が崩れない | 未確認 | WebKit での確認を実行していない |</span></code></pre></figure>
+<p>実行していない検査と、人が判定する項目は「未確認」と書かせます（<code dir="auto">report-unverified-honestly</code>）。AIは、確かめられなかった項目を、ほかの項目の結果から推して「問題なし」とまとめることがあります。そう報告されると、人はその項目を確かめる機会を失い、崩れが公開まで残ります。未確認の項目は、<code dir="auto">/task-done</code> の前に人が確かめます。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>この書き方は「<a class="xref-out">10-6 スタイルクエリで状態を伝える</a>（巻2）」</li><li><span class="note-mark">※2</span>調べ方は「<a href="#page-ai-coding_mcp-servers" class="xref">20-3 MCPサーバーを役割で使い分ける</a>」（Chrome DevTools MCPの <code dir="auto">get_css_styles</code> で、勝った宣言と負けた宣言を確かめる）</li><li><span class="note-mark">※3</span>「<a href="#page-ai-coding_tasks" class="xref">20-4 タスクの単位で進める</a>」</li></ol></aside><h2 id="ai-coding_implementation--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_implementation--rule-verify-applied-styles"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>lint とビルドが通っても、書いた宣言が適用されているかを、ブラウザの計算値で確かめる。</span></p><p class="_id"><code>verify-applied-styles</code></p></li><li class="_rule" id="ai-coding_implementation--rule-report-unverified-honestly"><p class="_statement"><span class="_level" data-level="必須">必須</span><span>実行していない検査と、人が判定する項目は、完了の報告で「未確認」と書き、「問題なし」と書かない。</span></p><p class="_id"><code>report-unverified-honestly</code></p></li><li class="_rule" id="ai-coding_implementation--rule-no-baseline-update-to-pass"><p class="_statement"><span class="_level" data-level="禁止">禁止</span><span>VRT の基準画像を、差分の原因を確かめずに、テストを通すためだけに更新しない。</span></p><p class="_id"><code>no-baseline-update-to-pass</code></p></li></ul>
+<h2 id="ai-coding_implementation--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle">Window: getComputedStyle() method - MDN</a></li>
+<li><a href="https://playwright.dev/docs/test-snapshots">Visual comparisons - Playwright</a></li>
+<li><a href="https://www.w3.org/TR/css-conditional-5/">CSS Conditional Rules Module Level 5 - W3C</a></li>
+</ul>
+</section>
+<section class="page" id="page-ai-coding_pitfalls" data-title="20-7 AIが誤りやすいパターン">
+<h1>20-7 AIが誤りやすいパターン</h1>
+
+<p>AIが生成するCSSには、繰り返し現れる誤りがあります。本書では、こうした誤りに当たるルールへ「AIが誤りやすい」の印を付け、CSSを書く前の段階でスキルから読ませています。誤りは、書き方そのものの誤り、本書の前提と食い違う古い知識、レイアウトの手法の偏り、デザインツールの出力から生じる誤りの4つに分けられます。</p>
+<p>型を知っておくと、AIの出力をレビューするときに、どこを重点的に見ればよいかが分かります。lintで見つかるものもありますが、多くはlintを通るので、レビューで確かめます<span class="note-ref">※1</span>。</p>
+<h2 id="ai-coding_pitfalls--書き方の誤り">書き方の誤り</h2>
+<p>本書で「AIが誤りやすい」の印を付けたルールのうち、書き方そのものの誤りは、大きく5つに分けられます。1つ目は、古い単位と記法です。<code dir="auto">vh</code> や <code dir="auto">vw</code>、<code dir="auto">rgba()</code>、<code dir="auto">display: flex</code> の1値の構文、<code dir="auto">transform: translateX()</code>、<code dir="auto">min-width</code> のメディアクエリなどです。</p>
+<p>2つ目は、詳細度で解決しようとする書き方です。上書きが効かない原因を調べずに <code dir="auto">!important</code> を足したり、セレクタを重ねたりします<span class="note-ref">※2</span>。</p>
+<p>3つ目は、不要な指定です。何にでも <code dir="auto">width: 100%</code> を付ける、中央寄せに <code dir="auto">margin: 0 auto</code> を使う、リセットCSSが済ませているリストの <code dir="auto">padding: 0</code> を書き直す、といったものです。<span class="ix" id="ai-coding_pitfalls--ix-t130"></span>Tailwind CSSを使うと、<code dir="auto">w-full</code> や <code dir="auto">h-full</code> がとくに乱用されがちです。4つ目は、アクセシビリティを損なう指定で、<code dir="auto">outline: none</code> や <code dir="auto">list-style: none</code> が代表です。</p>
+<p>5つ目は、仕組みの理解が必要な機能の誤用です。名前のないコンテナ、コンテナにした要素そのものを条件にしたクエリ、クエリの条件の中の <code dir="auto">var()</code>、Sassの書き方をまねた <code dir="auto">&amp;__title</code> がこれに当たります。CMSのテーマに <code dir="auto">@layer</code> を持ち込むのも、この仲間です。フラグを宣言した要素が、自分のフラグをスタイルクエリで問い合わせる誤りもあり、lintを通るので計算値で確かめます<span class="note-ref">※3</span>。</p>
+<h2 id="ai-coding_pitfalls--本書の前提と食い違う古い知識">本書の前提と食い違う古い知識</h2>
+<p>AIの知識は学習した時点で止まっているので、その後に変わった前提を古いまま持ち込むことがあります。1つ目は、「<code dir="auto">@scope</code> はまだ使えない」という知識です。AIはこれを理由に、BEMの長いクラス名やCSS Modulesを選びがちです。<code dir="auto">@scope</code> の基本の動作はSafari 17.4で対応していて、機能全体も2026年3月にBaselineの「新たに利用可能」になりました（2026年9月確認）。本書の対象のブラウザはすべて対応しているので、<span class="ix" id="ai-coding_pitfalls--ix-t29"></span>コンポーネントは <code dir="auto">@scope</code> で書きます（<code dir="auto">scope-with-donut</code>）。</p>
+<div class="scoped baseline | not-content" data-baseline="low"><p class="_summary"><span class="_label">Baseline</span><strong>新しく利用可能</strong><span class="_since">2026年3月から</span></p><p class="_feature"><code>@scope</code></p><ul class="_browsers"><li>Chrome 143</li><li>Edge 143</li><li>Firefox 146</li><li>Safari 26.4</li><li>iOS Safari 26.4</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
+<p>2つ目は、Tailwind CSSのユーティリティだけで組み、コンポーネントのクラスを書かない前提を持ち込むことです。本書では、コンポーネントはクラスと <code dir="auto">@scope</code> で作り、ユーティリティは <code dir="auto">.-visually-hidden</code> のような単機能のクラスに限ります（<code dir="auto">utility-single-purpose</code>）。私のテンプレートのAI向けの規約でも、明示的な要求がない限りTailwind CSSやCSS-in-JSは使わないと定めています（<code dir="auto">no-unrequested-css-framework</code>）。</p>
+<p>3つ目は、<span class="ix" id="ai-coding_pitfalls--ix-t52"></span>アンカーポジショニングやView Transitionsを「未対応」とみなし、位置の計算や画面の切り替えをJavaScriptで作り直すことです。2026年9月時点で、<code dir="auto">anchor-name</code> は2026年1月に、同じページの中のView Transitionsは2025年10月に、主要なブラウザの最新版がそろいました。本書の対象のSafari 18系でアンカーポジショニングが使えないのは事実です。それでも、未対応の環境向けの表示をCSSで用意すれば、プログレッシブ・エンハンスメントとして使えます（<a class="xref-out">11-8 アンカーポジショニング</a>（巻2）、<a href="05-motion.html#page-motion_view-transitions" class="xref">18-8 View Transitionsで画面の切り替えをつなぐ</a>）。「未対応」という判断は、対応状況を確かめてから受け入れます（<code dir="auto">verify-support-claims</code>）。</p>
+<p>4つ目は、レイヤーを使うプロジェクトで、<code dir="auto">@layer</code> の外にスタイルを書くことです。レイヤーに入っていないスタイルは、詳細度に関係なくすべてのレイヤーに勝つので、決めたレイヤーの順番が崩れます（<code dir="auto">no-unlayered-styles</code>）。CMSのテーマに <code dir="auto">@layer</code> を持ち込む誤りとは反対の向きですが、どちらもレイヤーの外のCSSが最も強いという仕組みを知らないことから起きます<span class="note-ref">※4</span>。</p>
+<h2 id="ai-coding_pitfalls--レイアウトの手法の偏り">レイアウトの手法の偏り</h2>
+<p>書き方の誤りとは別に、レイアウトの手法の選び方にも偏りがあります。AIは、配置をFlexboxで組み、要素を重ねるときは <code dir="auto">position: absolute</code> を選びがちです。学習したコードにその書き方が多いからだと私は考えています。結果として、Gridなら親の1か所で決まる配置が、子要素の幅の計算に散らばります。</p>
+<p>レイアウトを書かせるときは、先に「配置は <code dir="auto">grid-template-areas</code> で定義し、エリアに名前を付ける」と指示します（<code dir="auto">ai-layout-with-grid-areas</code>）。エリアの名前が付いた配置は、生成されたコードを読む側にとっても、<span class="ix" id="ai-coding_pitfalls--ix-t122"></span>デザインカンプと見比べやすくなります<span class="note-ref">※5</span>。</p>
+<h2 id="ai-coding_pitfalls--デザインツールの出力に由来する誤り">デザインツールの出力に由来する誤り</h2>
+<p>Figmaのようなデザインツールの出力を経由すると、誤りの型が増えます。代表は、幅と高さを固定すること、オートレイアウトの外の要素を絶対配置の座標で置くこと、出力のTailwindのクラスやカンプの値をそのまま書くことの3つです。どれも、カンプの1つの幅と1つの内容でしか成り立たない書き方で、見出しが長くなる、狭い置き場所に置かれる、といった変化で崩れます（<code dir="auto">no-verbatim-design-output</code>）。</p>
+<p>これらは、lintでは一部しか見つかりません。本書の設定では、<code dir="auto">width</code> や <code dir="auto">height</code> は論理プロパティを使うよう警告されますが、自動修正で <code dir="auto">inline-size</code> に直すと、固定の値は規約に沿った見た目のまま残ります。<code dir="auto">position: absolute</code> と座標の組み合わせは、lintでは誤りと判定できません<span class="note-ref">※6</span>。</p>
+<p>デザインに合わせることだけを追うと、既存のコンポーネントの規約を確かめずに書くことも起きます。たとえば、既存のコンポーネントとは違うスコープの書き方や命名で、新しいコンポーネントを書きます。既存のプロジェクトでは、書き始める前の段階で、CSSの構成をAIに説明させて規約を確かめさせます<span class="note-ref">※7</span>。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>「<a href="#page-ai-coding_verify-output" class="xref">20-8 生成したコードを確かめ、教訓を残す</a>」</li><li><span class="note-mark">※2</span>原因の宣言を確かめてから直させる手順は、「<a href="06-operations.html#page-operations_devtools" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」</li><li><span class="note-mark">※3</span>「<a href="#page-ai-coding_implementation" class="xref">20-6 実装と検証を回す</a>」</li><li><span class="note-mark">※4</span>詳しくは「<a class="xref-out">4-3 カスケードレイヤーで順位を決める</a>（巻1）」</li><li><span class="note-mark">※5</span><a class="xref-out">7-8 Gridの基礎</a>（巻1）</li><li><span class="note-mark">※6</span>デザインの値を、書く前にトークンへ対応づけさせる進め方は、「<a href="#page-ai-coding_from-figma" class="xref">20-5 Figmaのデザインから計画を立てる</a>」</li><li><span class="note-mark">※7</span>「<a href="#page-ai-coding_setup" class="xref">20-2 AIに読ませる規約を用意する</a>」</li></ol></aside><h2 id="ai-coding_pitfalls--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_pitfalls--rule-verify-support-claims"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>「まだ使えない」「未対応」を理由に CSS の機能を避けたり JavaScript で作り直したりする提案は、Baseline などで現在の対応状況を確かめてから受け入れる。</span></p><p class="_id"><code>verify-support-claims</code></p></li><li class="_rule" id="ai-coding_pitfalls--rule-no-unrequested-css-framework"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと <code>@scope</code> で書く。</span></p><p class="_id"><code>no-unrequested-css-framework</code></p></li><li class="_rule" id="ai-coding_pitfalls--rule-ai-layout-with-grid-areas"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>AI にレイアウトを書かせるときは、配置を <code>grid-template-areas</code> で定義し、エリアに名前を付けるよう先に指示する。</span></p><p class="_id"><code>ai-layout-with-grid-areas</code></p></li></ul>
+<h2 id="ai-coding_pitfalls--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://web.dev/baseline">Baseline - web.dev</a></li>
+</ul>
+</section>
+<section class="page" id="page-ai-coding_verify-output" data-title="20-8 生成したコードを確かめ、教訓を残す">
+<h1>20-8 生成したコードを確かめ、教訓を残す</h1>
+
+<p>AIが生成したCSSは、lintを通しても誤りが残ります。lintで検出できるのはルールの一部だからです。lintの後に、本書のスキルで関係する章を通読させてからレビューさせ、人は「AIが誤りやすい」の印が付いたルールを重点的に見ます。</p>
+<p>AIの誤りを直したら、同じ誤りを繰り返さないように、教訓として記録します。教訓には、原因がコンテキスト不足、権限不足、性能不足のどれかを書き、規約や設定に昇格させるかを、タスクを終えるときに見直します。モデルが守れるようになって要らなくなった指示は、消します。</p>
+<h2 id="ai-coding_verify-output--lintを通っても残る誤り">lintを通っても残る誤り</h2>
+<p>AIが生成したCSSは、必ず<span class="ix" id="ai-coding_verify-output--ix-t132"></span>Stylelintを実行してから、レビューで確かめます。次のコードは、カードの一覧をAIへ書かせたときにありがちな例として、私が作ったものです。</p>
+<figure class="code"><figcaption>🙅‍♂ Not Recommended: lintを通っても、名前のないコンテナや !important が残る</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
+<span style="--0:#C5E478;--1:#3B61B0">.card-list</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">container-type</span><span style="--0:#D6DEEB;--1:#403F53">: inline-size;</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">display</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">grid</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">24</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">width</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">100</span><span style="--0:#FFEB95">%</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">margin</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#FF6D6D;--1:#984E4D">auto</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">padding</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">list-style</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">none</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">&amp;__</span><span style="--0:#80CBC4;--1:#096E72">item</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">transform</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">translateY</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">&amp;</span><span style="--0:#C792EA;--1:#8844AE">__link</span><span style="--0:#C5E478;--1:#3B61B0">:focus</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">outline</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">none</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span style="--0:#C792EA;--1:#8844AE">@container</span><span style="--0:#D6DEEB;--1:#403F53"> (width &gt;= 600px) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">.card-list</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">grid-template-columns</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">repeat</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">3</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">fr</span></span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">!important</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>本書のStylelintの設定で検査すると、報告されるのは3件だけです（2026年9月、Stylelint 17.15.0で確認）。エラーになるのは、<code dir="auto">display: grid</code> の1値の構文と、セレクタの外へ置いた <code dir="auto">@container</code> です。<code dir="auto">width</code> は、物理プロパティとして警告されます。名前のないコンテナ、コンテナ自身を条件にしたクエリ、<code dir="auto">margin: 0 auto</code>、<code dir="auto">&amp;__item</code>、<code dir="auto">translateY()</code>、<code dir="auto">outline: none</code>、<code dir="auto">!important</code> は、どれも検出されません。</p>
+<p>しかも、自動修正を使うと、<code dir="auto">width: 100%</code> は <code dir="auto">inline-size: 100%</code> に書き換わります。不要な宣言が、規約に沿った見た目のまま残るということです。lintが通ったことは、ルールを守っていることの証明にはなりません。lintで検出できないルールこそ、レビューで確かめます。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: ルートを名前付きのコンテナにし、グリッドを内側の ul に分ける</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.card-list) to (.scoped) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">:scope</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">container</span><span style="--0:#D6DEEB;--1:#403F53">: --scoped / inline-size;</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">ul</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">display</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">block</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#FF6D6D;--1:#984E4D">grid</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">24</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">@</span><span style="--0:#80CBC4;--1:#096E72">container</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">--scoped</span><span style="--0:#D6DEEB;--1:#403F53"> (</span><span style="--0:#80CBC4;--1:#096E72">inline-size</span><span style="--0:#D6DEEB;--1:#403F53"> &gt;= </span><span style="--0:#80CBC4;--1:#096E72">calc</span><span style="--0:#D6DEEB;--1:#403F53">(600 / 16 * 1</span><span style="--0:#80CBC4;--1:#096E72">rem</span><span style="--0:#D6DEEB;--1:#403F53">)) {</span>
+<span class="indent">      </span><span style="--0:#80CBC4;--1:#096E72">grid-template-columns</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">repeat</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">3</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">fr</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<figure class="code"><figcaption>🙆‍♂ Recommended: コンテナのルートと、グリッドにする ul を分けたHTML</figcaption><pre><code><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">class</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">scoped card-list</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">ul</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">li</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#919F9F;--1:#5F636F">&lt;!-- ... --&gt;</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">li</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">ul</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA">&gt;</span></span></code></pre></figure>
+<p>書き直したコードでは、ルートをコンテナにし、グリッドにする要素を1段内側の <code dir="auto">ul</code> に分けています。コンテナにした要素は、自分の幅を条件にしたスタイルを受け取れないからです。コンテナには名前を付け、<code dir="auto">container</code> ショートハンドで指定します。条件は <code dir="auto">inline-size</code> とremの式で書きます（<code dir="auto">container-name-required</code>、<code dir="auto">container-shorthand</code>、<code dir="auto">container-query-inline-size</code>）。条件が意図どおりに適用されるので、<code dir="auto">!important</code> も要りません（<code dir="auto">no-important-for-specificity</code>）。</p>
+<p><code dir="auto">width: 100%</code>、<code dir="auto">margin: 0 auto</code>、<code dir="auto">padding: 0</code>、<code dir="auto">list-style: none</code> は、どれも不要なので消しました。ブロックレベルの要素は幅いっぱいに広がり、リストの字下げとマーカーはリセットCSSが消しているからです（<code dir="auto">no-redundant-width-100</code>、<code dir="auto">no-redundant-defaults</code>）。意味のない <code dir="auto">translateY(0)</code> と、フォーカスリングを消す <code dir="auto">outline: none</code> も消しています（<code dir="auto">no-outline-none</code>）。<code dir="auto">&amp;__item</code> のような連結は、素のCSSのネストでは意図どおりに動きません（<code dir="auto">no-nesting-concatenation</code>）。子要素は、<code dir="auto">@scope</code> の中で <code dir="auto">li</code> のようなタイプセレクタで選びます（<code dir="auto">type-selector-in-scope</code>）。</p>
+<h2 id="ai-coding_verify-output--本書のスキルにレビューさせる">本書のスキルにレビューさせる</h2>
+
+<p>本書のスキルとMCPサーバーは、提供に向けて対応中のため、まだ利用できません（2026年10月時点）。</p>
+<p>AIにレビューを任せるときは、関係する章を通読させてから指摘させます。ルールの補足には適用範囲と例外が書いてあり、検索で見つけたルールの本文だけで判断すると、例外に当たるコードまで違反として挙げてしまうからです。スキルには、章を選ぶ条件と、読んだ節を読了表に記録する手順を書いています。サブエージェントに分担させる場合も、返ってきた指摘をルールと照合させ、確かめたものだけを報告させます。</p>
+<p>本書のスキルは、本文の通読と、ルールとの照合を、別々のサブエージェントに分担させます。本文は章によって10万字を超えるので、通読を軽いモデルに任せ、判断を高性能なモデルで行います<span class="note-ref">※1</span>。</p>
+<p>私の案件では、サブエージェントにCSSの修正を任せ、lintとVRTが通ったことだけで完了と報告させたことがありました。後から関係する章を通読させてレビューすると、ルールの本文と逆の書き方が残っていました。それ以来、レビューは通読から始めさせ、違反を検出するスクリプトを書ける規約は、スクリプトで全数を数えて0件を完了の条件にしています。</p>
+<p>AIのレビューの後に、人もレビューします。人が重点的に見るのは、lintで検出できないルール、とくに「AIが誤りやすい」の印が付いたルールです。誤りの型は「<a href="#page-ai-coding_pitfalls" class="xref">20-7 AIが誤りやすいパターン</a>」に、レビューの進め方は「<a href="06-operations.html#page-operations_review" class="xref">19-2 レビューの進め方</a>」にあります。</p>
+<h2 id="ai-coding_verify-output--教訓を残す">教訓を残す</h2>
+<p>AIの誤りを直したら、同じ誤りを繰り返さないように記録します（<code dir="auto">record-ai-corrections</code>）。直した内容が文書に残らなければ、次のタスクでも、次のセッションでも、同じ説明を繰り返すことになります。教訓は <code dir="auto">tasks/lessons.md</code> に書き、<code dir="auto">/task-start</code> は着手する前にこのファイルを読みます。</p>
+<figure class="code"><figcaption>tasks/lessons.md</figcaption><pre><code><span style="--0:#82B1FF;--1:#3B61B0"># 教訓</span>
+
+<span style="--0:#919F9F;--1:#5F636F">&lt;!--</span>
+<span style="--0:#919F9F;--1:#5F636F">AI の誤りを人が直したら、/task-done で追記します。/task-start は、着手する前にこのファイルを読みます。</span>
+<span style="--0:#919F9F;--1:#5F636F">原因は、次の3つのどれかに分けます。分けると、同じ誤りを防ぐために書き足す場所が決まります。</span>
+
+<span style="--0:#919F9F;--1:#5F636F">- コンテキスト不足：知らせていなかった。CLAUDE.md、Stylelint の設定、テストに書き足す</span>
+<span style="--0:#919F9F;--1:#5F636F">- 権限不足：確かめる手段がなかった。MCP サーバーの認可、ツールの許可を見直す</span>
+<span style="--0:#919F9F;--1:#5F636F">- 性能不足：知らせても守れなかった。計画の手順を細かくするか、人が書く</span>
+
+<span style="--0:#919F9F;--1:#5F636F">書式（新しいものを上に足す）：</span>
+
+<span style="--0:#919F9F;--1:#5F636F">## YYYY-MM-DD：短い題</span>
+
+<span style="--0:#919F9F;--1:#5F636F">- 症状：何が起きたか</span>
+<span style="--0:#919F9F;--1:#5F636F">- 原因：なぜ起きたか（コンテキスト不足 / 権限不足 / 性能不足）</span>
+<span style="--0:#919F9F;--1:#5F636F">- 対処：次から何をするか。どこに書き足したか</span>
+<span style="--0:#919F9F;--1:#5F636F">- 確かめ方：直ったことを、どのコマンドや画面で確かめるか</span>
+
+<span style="--0:#919F9F;--1:#5F636F">例：</span>
+
+<span style="--0:#919F9F;--1:#5F636F">## 2026-10-09：lint が通っても @container の中の宣言が効いていなかった</span>
+
+<span style="--0:#919F9F;--1:#5F636F">- 症状：lint とビルドは通ったが、広い幅でもカードの見出しが小さいままだった</span>
+<span style="--0:#919F9F;--1:#5F636F">- 原因：コンテキスト不足。完了条件に、計算値で確かめる項目がなかった</span>
+<span style="--0:#919F9F;--1:#5F636F">- 対処：brief のひな形の完了条件に「値の対応表の値が、計算値と一致する」を足した</span>
+<span style="--0:#919F9F;--1:#5F636F">- 確かめ方：tests/design-values.spec.ts を確かめる幅のすべてで実行する</span>
+<span style="--0:#919F9F;--1:#5F636F">--&gt;</span></code></pre></figure>
+<p>教訓には、症状、原因、対処、確かめ方を書きます。原因は、コンテキスト不足、権限不足、性能不足のどれかに分けます<span class="note-ref">※2</span>。分けておくと、対処として書き足す場所が決まります。コンテキスト不足なら指示やテストに、権限不足なら設定に、性能不足なら計画の粒度に手を入れます。</p>
+<p>私のテンプレートでは、修正を受けるたび、教訓のファイルを決まった形で更新し、次の作業の前に読み直しています。「<code dir="auto">max-nesting-depth</code> に <code dir="auto">ignoreAtRules</code> を使うと検査の穴になる」といった気づきも、規約や作業の記録に残してきました。</p>
+<h2 id="ai-coding_verify-output--規約に昇格させ古い指示を消す">規約に昇格させ、古い指示を消す</h2>
+<p>教訓のファイルは、追記するだけでは長くなり続け、読ませる量が増えます。そこで、タスクを終えるとき（<code dir="auto">/task-done</code>）に、教訓ごとに書き足す先を決めます。何度も起きる誤りは、<code dir="auto">CLAUDE.md</code> の判断基準、Stylelintの設定、テスト、briefやplanのひな形に昇格させます。Stylelintやテストで検出できるようにした誤りは、AIが読み落としても検査で見つかります。</p>
+<p>同じ見直しで、要らなくなった指示を消します。モデルの版が上がると、以前は書かなければ守れなかったことを、書かなくても守れるようになることがあります。本書のルールと重なる指示は、本書の版が上がったときに食い違いの元となるので、IDで参照する形へ置き換えます。どちらも、AIに案を出させ、人が確かめてから書き換えます。</p>
+<h2 id="ai-coding_verify-output--視点を与えて監査させる">視点を与えて監査させる</h2>
+<p>タスクの仕組みは、新しく作るときだけでなく、既存のCSSを確かめるときにも使えます。そのときは、実装をしない「列挙だけ」のタスクにします。AIに視点を1つ与え、その視点で問題のある箇所を、ファイルと行を添えて一覧にさせます。視点は、アクセシビリティ（フォーカスの見え方、強制カラーモード）、保守性（上書きの多いセレクタ、トークンを使っていない値）、AIが誤りやすいルールなどです。</p>
+<p>一度に複数の視点を与えると、1つの視点あたりの確認が浅くなるので、視点ごとにタスクを分けます。見つかった項目は、親のタスクの一覧にまとめ、直す価値のあるものから個別のタスクに切り出します。私の案件では、本書のスキルで既存のCSS全体をレビューさせ、ルールの違反を270件、うち「必須」と「禁止」の違反を104件、一覧にしました。直すかどうかは、その一覧を見て人が決めています。</p>
+<h2 id="ai-coding_verify-output--機械的な移行をループで回す">機械的な移行をループで回す</h2>
+<p>付録B「<a class="xref-out">モダンな書き方への置き換え表</a>（巻3）」のような、機械的に判定できる移行は、終わる条件を決めてループで回せます。Claude Codeの <code dir="auto">/goal</code> は、条件を満たすまでAIに作業を続けさせるコマンドです。AIが1回の作業を終えるたびに、別のモデルが会話を読んで、条件を満たしたかを判定します（2026年10月確認）。</p>
+<p>判定するモデルは、コマンドを実行せず、会話に出た結果だけを読みます。そのため、条件には、確かめるコマンドと期待する結果を書き、変えてはいけない範囲と、止める回数も添えます。</p>
+<figure class="code"><figcaption>機械的な移行の条件の例</figcaption><pre><code><span style="--0:#d6deeb;--1:#403f53">/goal src/styles/components/ のCSSで、pnpm lint:css の出力に logical-css/require-logical-properties の警告が0件であることを、コマンドの出力で示す。src/styles/components/ の外のファイルは変更しない。20ターンで止める</span></code></pre></figure>
+<p>ループに向くのは、検出数のように、判定が数値で決まる作業だけです。デザインの再現は、合否の多くが人の判定なので、ループでは回しません。判定するモデルが会話の中の報告だけで合格と判断し、崩れたまま止まるおそれがあるからです。ループで直した結果も、lintが通っただけでは確かめたことにならないので、最後にこの節の手順でレビューします。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>分担の設定は、付録J「<a class="xref-out">AIツールで使う</a>（巻3）」</li><li><span class="note-mark">※2</span>分け方は「<a href="#page-ai-coding_roles" class="xref">20-1 AIに任せる範囲と人が担う範囲</a>」</li></ol></aside><h2 id="ai-coding_verify-output--ガイドライン">ガイドライン</h2>
+<ul class="scoped guideline | not-content"><li class="_rule" id="ai-coding_verify-output--rule-record-ai-corrections"><p class="_statement"><span class="_level" data-level="推奨">推奨</span><span>AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。</span></p><p class="_id"><code>record-ai-corrections</code></p></li></ul>
+<h2 id="ai-coding_verify-output--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://code.claude.com/docs/en/goal">Keep Claude working toward a goal - Claude Code Docs</a></li>
+<li><a href="https://code.claude.com/docs/en/skills">Extend Claude with skills - Claude Code Docs</a></li>
+</ul>
+</section>
+
+
+</body></html>

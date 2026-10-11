@@ -1,0 +1,909 @@
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="utf-8">
+<title>CSSコーディングガイドライン 巻3 実装（2）・運用・演習</title>
+<link rel="stylesheet" href="paper.css">
+</head>
+<body>
+<section class="page" id="page-appendix_checklist" data-title="付録D レビューのチェックリスト">
+<h1>付録D レビューのチェックリスト</h1>
+<p>この付録は、CSSをレビューするときの確認項目をまとめたチェックリストです。項目は、「<a href="06-operations.html#page-operations_review" class="xref">19-2 レビューの進め方</a>」で定めた確認の順番に並べています。上にあるものほど、プロジェクト全体への影響が大きい項目です。レビューの前に目を通し、関係する項目だけを拾って使ってください。</p>
+<p>各項目には、関係するルールのIDを添えています。指摘するときは、IDを引用すると、理由と詳しい説明をすぐに示せます。項目に当てはまらない記述でも、意図が読み取れないものは誤りと決めつけずに <code dir="auto">Q</code> で質問します。反対に、プロジェクトで合意していない規約を求める指摘は <code dir="auto">IMO</code> にとどめます。</p>
+<p>インデントやプロパティの並び順は、この一覧に入れていません。整形は<span class="ix" id="appendix_checklist--ix-t132"></span>Stylelintで自動化しているので、レビューで指摘するのは、自動化が機能していないときだけです。Stylelintで検出できるルールは、各ページのガイドラインの「自動チェック」の欄で分かります。このチェックリストでは、Stylelintが通ったことを前提に、人が確かめる項目を中心に挙げています。</p>
+<p>コードを読む確認とは別に、ブラウザで条件を再現して表示と操作を確かめる手順は「<a href="06-operations.html#page-operations_verification" class="xref">19-3 表示と操作を確かめる</a>」に、崩れの原因を開発者ツールで調べる手順は「<a href="06-operations.html#page-operations_devtools" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」にまとめています。</p>
+<h2 id="appendix_checklist--レビューの前に">レビューの前に</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> Stylelintを実行し、エラーが残っていないか（<a href="06-operations.html#operations_stylelint--rule-run-stylelint-before-done" class="xref-rule" data-label="19-1"><code dir="auto">run-stylelint-before-done</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> エラーや警告を消すためだけに、ルールを無効にしていないか（<a href="06-operations.html#operations_stylelint--rule-no-disabling-to-silence" class="xref-rule" data-label="19-1"><code dir="auto">no-disabling-to-silence</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ルールを無効にする場合は、1行と1つのルールに絞り、理由を書いているか（<a href="06-operations.html#operations_stylelint--rule-disable-one-line-with-reason" class="xref-rule" data-label="19-1"><code dir="auto">disable-one-line-with-reason</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 警告を放置していないか（<a href="06-operations.html#operations_stylelint--rule-resolve-warnings" class="xref-rule" data-label="19-1"><code dir="auto">resolve-warnings</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> AIが生成したCSSを、lintとレビューの両方で確かめたか（<a href="07-ai-coding.html#ai-coding_roles--rule-verify-ai-output" class="xref-rule" data-label="20-1"><code dir="auto">verify-ai-output</code></a>）</li>
+</ul>
+<h2 id="appendix_checklist--指摘の書き方">指摘の書き方</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> 指摘に、理由と解決策をセットで書いているか（<a href="06-operations.html#operations_review--rule-review-reason-and-solution" class="xref-rule" data-label="19-2"><code dir="auto">review-reason-and-solution</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">MUST</code>、<code dir="auto">IMO</code>、<code dir="auto">Q</code> のラベルで深刻度を分けているか（<a href="06-operations.html#operations_review--rule-review-severity-labels" class="xref-rule" data-label="19-2"><code dir="auto">review-severity-labels</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 合意のない好みの指摘を、<code dir="auto">IMO</code> にとどめているか（<a href="06-operations.html#operations_review--rule-review-preferences-as-imo" class="xref-rule" data-label="19-2"><code dir="auto">review-preferences-as-imo</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 意図が読み取れない記述を、<code dir="auto">Q</code> で質問しているか（<a href="06-operations.html#operations_review--rule-review-ask-unclear-intent" class="xref-rule" data-label="19-2"><code dir="auto">review-ask-unclear-intent</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 本書のルールに関わる指摘で、ルールのIDを添えているか（<a href="06-operations.html#operations_review--rule-cite-rule-ids" class="xref-rule" data-label="19-2"><code dir="auto">cite-rule-ids</code></a>）</li>
+</ul>
+<p><code dir="auto">MUST</code> は、仕様やコーディング規約に反するもの、バグが起きているもの、将来深刻な問題になりそうなもの、使いやすさやアクセシビリティを損なうものに付けます。レビューを通したコードには、レビュアーも責任を負います。承認するときは、自分が書いたコードと同じ基準で見ます。</p>
+<h2 id="appendix_checklist--1-仕様とプロジェクトの規約">1. 仕様とプロジェクトの規約</h2>
+<p>プロジェクトでコーディングガイドラインが定められている場合は、それを守れているかを最優先で確かめます。本書の規約を採用しているプロジェクトなら、次の項目が対象です。</p>
+<h3 id="appendix_checklist--命名とスコープ">命名と<span class="ix" id="appendix_checklist--ix-t10"></span>スコープ</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> コンポーネントのルートに <code dir="auto">scoped</code> クラスを付け、スタイルを <code dir="auto">@scope (.scoped.&lt;名前&gt;) to (.scoped)</code> の中に書いているか（<a class="xref-out"><code dir="auto">scoped-class-on-root</code></a>（9-3、巻2）、<a class="xref-out"><code dir="auto">scope-with-donut</code></a>（4-4、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 子要素は <code dir="auto">._</code>、ユーティリティは <code dir="auto">.-</code> で始め、コンポジションとパターンは接頭辞なしにしているか（<a class="xref-out"><code dir="auto">child-class-underscore</code></a>（9-1、巻2）、<a class="xref-out"><code dir="auto">utility-class-hyphen</code></a>（9-1、巻2）、<a class="xref-out"><code dir="auto">composition-class-plain</code></a>（9-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 名前が、見た目ではなく役割を表しているか。コンポジションは配置の名前、パターンは役割の名前にしているか（<a class="xref-out"><code dir="auto">name-by-role</code></a>（9-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">container</code> や <code dir="auto">button</code> のような語を、別の意味の名前に使っていないか（<a class="xref-out"><code dir="auto">no-redefining-web-terms</code></a>（9-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">wrapper</code> や <code dir="auto">module</code> のように、責務を表さない名前を使っていないか（<a class="xref-out"><code dir="auto">no-vague-names</code></a>（9-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <span class="ix" id="appendix_checklist--ix-s165"></span><code dir="auto">@keyframes</code>、グリッドのエリア、アンカー、コンテナの名前を <code dir="auto">--</code> で始めているか（<a class="xref-out"><code dir="auto">dashed-ident-names</code></a>（9-1、巻2）、<a class="xref-out"><code dir="auto">container-name-dashed-ident</code></a>（13-3、巻2））</li>
+</ul>
+<h3 id="appendix_checklist--カスケードとセレクタ"><span class="ix" id="appendix_checklist--ix-t7"></span>カスケードとセレクタ</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> IDセレクタでスタイルを指定していないか（<a class="xref-out"><code dir="auto">no-id-selector</code></a>（4-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">.a.a</code> や祖先のクラスを足すような、<span class="ix" id="appendix_checklist--ix-t8"></span>詳細度を上げるためだけのセレクタがないか（<a class="xref-out"><code dir="auto">no-specificity-hacks</code></a>（4-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">:hover</code> や <code dir="auto">[aria-expanded="true"]</code> のような状態のセレクタを、<code dir="auto">:where()</code> で包んでいないか。まとめるときは <code dir="auto">:is()</code> を使っているか（<a class="xref-out"><code dir="auto">is-for-state-selectors</code></a>（5-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 詳細度や読み込み順の競争に勝つための <code dir="auto">!important</code> がないか（<a class="xref-out"><code dir="auto">no-important-for-specificity</code></a>（4-1、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> レイヤーを使うプロジェクトで、<code dir="auto">@layer</code> の外にスタイルを書いていないか（<a class="xref-out"><code dir="auto">no-unlayered-styles</code></a>（4-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ページ固有のセクションを <code dir="auto">pages</code> に、使い回すコンポーネントを <code dir="auto">components</code> に書いているか（<a class="xref-out"><code dir="auto">layer-by-role</code></a>（4-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> CMSのように外部のCSSと共存する環境で、<code dir="auto">@layer</code> を使っていないか（<a class="xref-out"><code dir="auto">no-layers-with-unlayered-css</code></a>（4-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">:has()</code> の直前に起点を書き、引数を <code dir="auto">&gt;</code> や <code dir="auto">+</code> で絞っているか（<a class="xref-out"><code dir="auto">no-unanchored-has</code></a>（5-3、巻1）、<a class="xref-out"><code dir="auto">has-narrow-anchor</code></a>（5-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 対応が分かれる<span class="ix" id="appendix_checklist--ix-t12"></span>擬似クラスを、<code dir="auto">:is()</code> か <code dir="auto">:where()</code> の中でほかのセレクタと並べているか（<a class="xref-out"><code dir="auto">forgiving-list-for-partial-support</code></a>（5-1、巻1））</li>
+</ul>
+<h3 id="appendix_checklist--ネストと記法"><span class="ix" id="appendix_checklist--ix-t82"></span>ネストと記法</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> セレクタのネストが2層までで、ネストしたセレクタが <code dir="auto">&amp;</code> で始まっているか（<a class="xref-out"><code dir="auto">nesting-depth-one</code></a>（9-4、巻2）、<a class="xref-out"><code dir="auto">nested-selector-ampersand</code></a>（9-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 要素自身の擬似クラス・擬似要素・属性の状態を、<code dir="auto">[popover]:popover-open</code> のように主語へ連結せず、<code dir="auto">&amp;:popover-open</code> とネストしているか（<a class="xref-out"><code dir="auto">nest-own-states</code></a>（9-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">&amp;__title</code> のように、<code dir="auto">&amp;</code> に文字をつなげていないか（<a class="xref-out"><code dir="auto">no-nesting-concatenation</code></a>（9-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">@media</code>、<code dir="auto">@container</code>、<code dir="auto">@supports</code> を、各セレクタの中に書いているか（<a class="xref-out"><code dir="auto">conditions-inside-rules</code></a>（9-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 直下の子へのネストに、親のレイアウトで意味が決まる宣言だけを書いているか（<a class="xref-out"><code dir="auto">nest-child-placement-only</code></a>（9-5、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 詳細度の違うセレクタリストの中で、セレクタをネストしていないか（<a class="xref-out"><code dir="auto">no-nesting-under-selector-list</code></a>（9-5、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 寸法、余白、位置を論理プロパティで書いているか（<a class="xref-out"><code dir="auto">logical-properties</code></a>（9-8、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">display</code> を2値構文で、変形を <code dir="auto">translate</code> などの個別のプロパティで書いているか（<a class="xref-out"><code dir="auto">display-two-value-syntax</code></a>（9-7、巻2）、<a class="xref-out"><code dir="auto">individual-transform-properties</code></a>（9-7、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 色の関数をスペース区切りで書き、<code dir="auto">rgba()</code> を使っていないか（<a class="xref-out"><code dir="auto">color-space-separated</code></a>（9-7、巻2）、<a class="xref-out"><code dir="auto">no-rgba-hsla</code></a>（9-7、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 必要のないベンダープレフィックスがないか（<a class="xref-out"><code dir="auto">no-vendor-prefix</code></a>（9-7、巻2））</li>
+</ul>
+<h2 id="appendix_checklist--2-デザイントークン">2. <span class="ix" id="appendix_checklist--ix-t35"></span>デザイントークン</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> トークンとして定義されている値を、数値や色で直接書いていないか（<a class="xref-out"><code dir="auto">use-defined-tokens</code></a>（10-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> z-indexを数値ではなくトークンで指定しているか（<a class="xref-out"><code dir="auto">z-index-tokens-only</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> トランジションの再生時間とイージングに、トークンを使っているか（<a href="05-motion.html#motion_transitions-and-keyframes--rule-transition-longhand-with-tokens" class="xref-rule" data-label="18-4"><code dir="auto">transition-longhand-with-tokens</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 新しいトークンが <code dir="auto">--&lt;分類&gt;--&lt;名前&gt;</code> の形になっているか（<a class="xref-out"><code dir="auto">token-naming-category-first</code></a>（10-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 1回しか使わない値や、特定のコンポーネント専用の値をトークンにしていないか（<a class="xref-out"><code dir="auto">no-single-use-token</code></a>（10-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 派生させた色のために、トークンやRGBの値を別に用意していないか（<a href="02-color-media.html#color-media_relative-color--rule-derive-colors-from-base" class="xref-rule" data-label="15-2"><code dir="auto">derive-colors-from-base</code></a>）</li>
+</ul>
+<p>余白のトークンは、レスポンシブの環境では <code dir="auto">%</code> や <code dir="auto">cqi</code> が絡み、二者択一で片付かないことが多いので、使っていなくてもあまり細かく指摘しません。</p>
+<h2 id="appendix_checklist--3-対象のブラウザ">3. 対象のブラウザ</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> 新しい機能が、対象のSafari（現行から2つ前のメジャーバージョンの最終版）で使えるか（<a class="xref-out"><code dir="auto">browser-support-target</code></a>（1-2、巻1）、<a class="xref-out"><code dir="auto">check-safari-support-first</code></a>（1-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 一部のブラウザしか対応していない機能を、未対応の環境でも内容を読めて操作できる範囲で使っているか（<a class="xref-out"><code dir="auto">progressive-enhancement-if-harmless</code></a>（1-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> アンカーポジショニングのような未対応の環境があるレイアウトの機能を、レイアウトの要にしていないか（<a class="xref-out"><code dir="auto">no-unsupported-layout-features</code></a>（1-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 新しい機能に合わせて既存の宣言も変える場合に、<code dir="auto">@supports</code> で分岐しているか（<a class="xref-out"><code dir="auto">supports-for-dependent-declarations</code></a>（1-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 対象のすべてが対応した機能のフォールバックが、残っていないか（<a class="xref-out"><code dir="auto">remove-unneeded-fallbacks</code></a>（1-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> JavaScriptで表示を切り替える前提のスタイルを、<code dir="auto">@media (scripting: enabled)</code> の中に書いているか（<a class="xref-out"><code dir="auto">scripting-for-js-dependent-styles</code></a>（1-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ブロックレイアウトの要素に <code dir="auto">justify-self</code> を指定していないか（<a class="xref-out"><code dir="auto">no-justify-self-in-block-layout</code></a>（1-2、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 単位のついた値での割り算を、Firefoxの安定版で宣言が無効になっても内容を読める場面で使っているか（<a class="xref-out"><code dir="auto">typed-arithmetic-to-unitless</code></a>（6-4、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> Chromeだけでなく、Safari（iOSを含む）とFirefoxでも表示を確かめたか（<a class="xref-out"><code dir="auto">no-chrome-only-check</code></a>（1-2、巻1））</li>
+</ul>
+<h2 id="appendix_checklist--4-不要な記述と副作用のある上書き">4. 不要な記述と副作用のある上書き</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> どの宣言も、なぜ必要かを説明できるか（<a class="xref-out"><code dir="auto">explainable-declarations</code></a>（2-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 何にでも <code dir="auto">width: 100%</code> や <code dir="auto">height: 100%</code> を指定していないか（<a class="xref-out"><code dir="auto">no-redundant-width-100</code></a>（2-3、巻1）、<a class="xref-out"><code dir="auto">stretch-over-height-100</code></a>（7-4、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 幅いっぱいに広げる指定が要る要素に、<code dir="auto">100%</code> ではなく <code dir="auto">-webkit-fill-available</code> と <code dir="auto">stretch</code> をこの順に書いているか（<a class="xref-out"><code dir="auto">stretch-over-width-100</code></a>（7-4、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 初期値、デフォルトスタイル、リセットや<span class="ix" id="appendix_checklist--ix-t24"></span>ベーススタイルで決まっている値を、指定し直していないか（<a class="xref-out"><code dir="auto">no-redundant-defaults</code></a>（2-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 中央寄せに <code dir="auto">margin: 0 auto</code> ではなく <code dir="auto">margin-inline: auto</code> を使っているか（<a class="xref-out"><code dir="auto">margin-inline-auto-centering</code></a>（7-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 一部だけを変えるのに、<code dir="auto">background</code> のような影響範囲の広いショートハンドを使っていないか（<a class="xref-out"><code dir="auto">longhand-for-partial-change</code></a>（2-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> kiso.cssで0になっているマージンを、<code dir="auto">margin: 0</code> や <code dir="auto">margin-block: 8px 0</code> で打ち消していないか。片側だけ付けるならロングハンドで書いているか（<a class="xref-out"><code dir="auto">no-redundant-defaults</code></a>（2-3、巻1）、<a class="xref-out"><code dir="auto">longhand-for-partial-change</code></a>（2-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 値を戻すときに、戻したい先に合うキーワード（<code dir="auto">revert</code> など）を選んでいるか（<a class="xref-out"><code dir="auto">explicit-rollback-keyword</code></a>（4-1、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 継承されるプロパティを、子要素ごとに指定し直していないか（<a class="xref-out"><code dir="auto">inherit-from-root</code></a>（4-1、巻1））</li>
+</ul>
+<h2 id="appendix_checklist--5-グローバルのcss">5. グローバルのCSS</h2>
+<p>リセットやベーススタイルの変更は、すべてのページに影響します。変更があったときは、とくに丁寧に確かめます。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> ベーススタイルを <code dir="auto">base</code> レイヤーに素のセレクタで書いているか。レイヤーを使えない環境では、セレクタを <code dir="auto">:where()</code> で包み、詳細度を0にしているか（<a class="xref-out"><code dir="auto">where-for-base-selectors</code></a>（4-2、巻1）、<a class="xref-out"><code dir="auto">no-heavy-specificity-in-global</code></a>（8-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 要素全体に <code dir="auto">display</code> や <code dir="auto">position</code> のようなレイアウトのプロパティを指定していないか（<a class="xref-out"><code dir="auto">no-layout-properties-in-base</code></a>（8-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">* { margin: 0; padding: 0; }</code> や <code dir="auto">input { appearance: none; }</code> のような、機能を一律に消すリセットがないか（<a class="xref-out"><code dir="auto">reset-no-destructive-reset</code></a>（8-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">outline: none</code> でフォーカスリングを消していないか（<a class="xref-out"><code dir="auto">no-outline-none</code></a>（8-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> フォーカスリングを <code dir="auto">box-shadow</code> だけで描いていないか（<a class="xref-out"><code dir="auto">focus-ring-not-box-shadow-only</code></a>（8-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> リストのマーカーを <code dir="auto">list-style: none</code> ではなく <code dir="auto">list-style-type: ""</code> で消しているか（<a class="xref-out"><code dir="auto">list-style-type-empty-string</code></a>（8-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ベースの <code dir="auto">line-height</code> が1.5以上で、<code dir="auto">line-height: 1</code> がないか（<a href="01-typography.html#typography_line-height--rule-base-line-height-min" class="xref-rule" data-label="14-3"><code dir="auto">base-line-height-min</code></a>、<a href="01-typography.html#typography_line-height--rule-no-line-height-one" class="xref-rule" data-label="14-3"><code dir="auto">no-line-height-one</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">scroll-behavior: smooth</code> を無条件に指定していないか（<a class="xref-out"><code dir="auto">no-global-smooth-scroll</code></a>（8-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ダークモードに対応しないのに <code dir="auto">color-scheme: light dark</code> を指定していないか（<a class="xref-out"><code dir="auto">no-color-scheme-without-dark-mode</code></a>（8-3、巻2））</li>
+</ul>
+<h2 id="appendix_checklist--6-内容の変化への耐性">6. 内容の変化への耐性</h2>
+<p>テキストが2倍の長さになったら、画像がなかったら、要素の数が変わったら、と考えながら見ます。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> 長い見出し、画像のない記事、要素の数が違う一覧で、表示を確かめたか（<a class="xref-out"><code dir="auto">design-for-content-changes</code></a>（11-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 幅を固定値で決めず、<code dir="auto">max-inline-size</code> で上限を決めているか（<a class="xref-out"><code dir="auto">max-inline-size-over-fixed-width</code></a>（13-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 高さを <code dir="auto">block-size</code> で固定せず、<code dir="auto">min-block-size</code> や <code dir="auto">aspect-ratio</code> で決めているか（<a class="xref-out"><code dir="auto">min-block-size-over-fixed-height</code></a>（11-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 縦の <code dir="auto">margin</code> を、<code dir="auto">* + *</code> で選んだ後ろの要素の <code dir="auto">margin-block-start</code> に付けているか（<a class="xref-out"><code dir="auto">block-margin-with-sibling-combinator</code></a>（11-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">minmax()</code> や <code dir="auto">min-inline-size</code> の固定の最小値を、<code dir="auto">min(100%, …)</code> で包んでいるか（<a class="xref-out"><code dir="auto">minmax-min-capped-at-100-percent</code></a>（11-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 列を <code dir="auto">minmax(0, 1fr)</code> ではなく <code dir="auto">1fr</code> で分けているか（<a class="xref-out"><code dir="auto">fr-without-minmax-zero</code></a>（11-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 要素の数が変わるFlexboxに <code dir="auto">flex-wrap: wrap</code> を指定しているか（<a class="xref-out"><code dir="auto">flex-wrap-for-variable-items</code></a>（11-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 列数を子要素の数ではなく、<code dir="auto">auto-fit</code> やコンテナサイズクエリで切り替えているか（<a class="xref-out"><code dir="auto">quantity-query-for-count-conditions</code></a>（5-5、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 理由のない <code dir="auto">white-space: nowrap</code> がないか（<a class="xref-out"><code dir="auto">no-nowrap-without-reason</code></a>（11-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> はみ出しを切り取るのに、<code dir="auto">hidden</code> ではなく <code dir="auto">clip</code> を使っているか（<a class="xref-out"><code dir="auto">overflow-clip-over-hidden</code></a>（11-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 横スクロールを隠す前に、はみ出している要素を特定して直したか（<a class="xref-out"><code dir="auto">find-overflow-source-first</code></a>（11-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 画像の上の文字に、画像が表示されなくても読める背景色があるか（<a href="03-decoration.html#decoration_images--rule-text-on-image-fallback-background" class="xref-rule" data-label="16-1"><code dir="auto">text-on-image-fallback-background</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ブラウザの文字サイズの設定を大きくして、表示を確かめたか（<a class="xref-out"><code dir="auto">verify-with-text-scaling</code></a>（6-1、巻1））</li>
+</ul>
+<h2 id="appendix_checklist--7-コンポーネントの境界">7. <span class="ix" id="appendix_checklist--ix-t29"></span>コンポーネントの境界</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> 見た目が似ているだけのものを、1つのコンポーネントにまとめていないか（<a class="xref-out"><code dir="auto">component-split-by-role</code></a>（10-1、巻2）、<a class="xref-out"><code dir="auto">rule-of-three</code></a>（2-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> コンポーネントごとにCSSのファイルを分け、複数のコンポーネントのCSSを1つのファイルに混ぜていないか（<a class="xref-out"><code dir="auto">one-component-per-file</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> コンポーネントのルートに、<code dir="auto">margin</code> や <code dir="auto">grid-area</code> のような外部関連型のレイアウトを指定していないか（<a class="xref-out"><code dir="auto">no-external-layout-on-root</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 子のコンポーネントの配置と外側の余白を、親の <code dir="auto">gap</code> やOuterで決めているか（<a class="xref-out"><code dir="auto">parent-owns-child-placement</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ほかのコンポーネントのルートや内部の要素を、セレクタで選んで上書きしていないか（<a class="xref-out"><code dir="auto">no-other-component-internals</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> パターンに、重ねるコンポーネントが指定するプロパティを書いていないか。コンポーネントの側で変える値を<span class="ix" id="appendix_checklist--ix-t38"></span>公開プロパティで受け取っているか（<a class="xref-out"><code dir="auto">pattern-leaves-component-properties</code></a>（10-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> コンポーネントの中の要素をタイプセレクタで選び、子クラスは同じ種類の要素を役割で区別するときと、<code dir="auto">div</code> と <code dir="auto">span</code> に役割を示すときだけ付けているか。<code dir="auto">a:hover</code> のような擬似クラス付きのタイプセレクタで、子クラスのスタイルを打ち消していないか（<a class="xref-out"><code dir="auto">type-selector-in-scope</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 外から変えてよい値を <code dir="auto">--&lt;コンポーネント&gt;--&lt;プロパティ&gt;</code> の公開プロパティにし、内部で使う値を <code dir="auto">--_</code> で始めているか（<a class="xref-out"><code dir="auto">public-property-naming</code></a>（10-5、巻2）、<a class="xref-out"><code dir="auto">internal-property-prefix</code></a>（10-5、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 公開プロパティを自分で宣言せず、内部プロパティで受けてフォールバックにデフォルト値を書いているか（<a class="xref-out"><code dir="auto">receive-public-property-with-fallback</code></a>（10-5、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ルートには絶対的なz-indexだけを、内部には相対的なz-indexだけを指定しているか（<a class="xref-out"><code dir="auto">z-index-absolute-root-relative-inside</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 内部で相対的なz-indexを使うコンポーネントのルートに、<code dir="auto">isolation: isolate</code> があるか（<a class="xref-out"><code dir="auto">isolation-for-relative-z-index</code></a>（10-2、巻2））</li>
+</ul>
+<h2 id="appendix_checklist--8-レスポンシブ">8. レスポンシブ</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> 「静的 → イントリンシック → コンテナサイズクエリ → メディアクエリ」の順に検討し、不要なクエリを書いていないか（<a class="xref-out"><code dir="auto">responsive-escalation-order</code></a>（13-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> タグやアイコンのような固定サイズの要素を、レスポンシブにしていないか（<a class="xref-out"><code dir="auto">no-responsive-for-static-elements</code></a>（13-1、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> コンテナに名前を付け、条件を <code dir="auto">inline-size</code> で書いているか（<a class="xref-out"><code dir="auto">container-name-required</code></a>（13-3、巻2）、<a class="xref-out"><code dir="auto">container-query-inline-size</code></a>（13-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">cqi</code> を、名前付きのコンテナがあると言い切れる要素でだけ使っているか（<a class="xref-out"><code dir="auto">cqi-needs-named-container</code></a>（13-4、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> クエリの条件を範囲構文で書き、<span class="ix" id="appendix_checklist--ix-t58"></span>ブレイクポイントをremの式にしているか（<a class="xref-out"><code dir="auto">query-range-syntax</code></a>（13-5、巻2）、<a class="xref-out"><code dir="auto">breakpoint-in-rem</code></a>（13-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ブレイクポイントを、デバイスの幅ではなくレイアウトが崩れる幅から決めているか（<a class="xref-out"><code dir="auto">breakpoint-from-content</code></a>（13-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">sp</code> や <code dir="auto">pc</code> のようなデバイスの名前を使っていないか（<a class="xref-out"><code dir="auto">no-device-names</code></a>（13-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> メディアクエリの条件と、コンテナクエリのサイズの条件の中で <code dir="auto">var()</code> を使っていないか（<a class="xref-out"><code dir="auto">no-var-in-query</code></a>（13-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">vw</code> や <code dir="auto">vh</code> を使っていないか（<a class="xref-out"><code dir="auto">no-vw-vh</code></a>（6-2、巻1））</li>
+</ul>
+<h2 id="appendix_checklist--9-コメント">9. コメント</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> コードの途中のコメントが、「なぜ」だけを書いているか（<a class="xref-out"><code dir="auto">comments-why-only</code></a>（9-9、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 変更の経緯や、コメントアウトしたコードが残っていないか（<a class="xref-out"><code dir="auto">no-history-comments</code></a>（9-9、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ファイルの先頭に、責務と使い方の説明ブロックがあるか（<a class="xref-out"><code dir="auto">file-header-doc-block</code></a>（9-9、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 公開プロパティを <code dir="auto">@prop</code> で説明しているか（<a class="xref-out"><code dir="auto">prop-tag-for-public-properties</code></a>（9-9、巻2））</li>
+</ul>
+<h2 id="appendix_checklist--あわせて確かめる項目">あわせて確かめる項目</h2>
+<p>次の項目は、確認の順番の9つには含まれていません。しかし、使いやすさやアクセシビリティを損なうものは <code dir="auto">MUST</code> の対象です。関係するスタイルがあれば、あわせて確かめます。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> ホバーを <code dir="auto">&amp;:any-link:hover</code> や <code dir="auto">&amp;:enabled:hover</code> のように操作できる状態に限り、<code dir="auto">@media (any-hover)</code> の中に書いているか（<a href="04-interaction.html#interaction_states-and-focus--rule-hover-operable-in-any-hover" class="xref-rule" data-label="17-1"><code dir="auto">hover-operable-in-any-hover</code></a>）。<code dir="auto">:focus-visible</code> にも同じ見た目を指定しているか（<a href="04-interaction.html#interaction_states-and-focus--rule-hover-with-focus-visible" class="xref-rule" data-label="17-1"><code dir="auto">hover-with-focus-visible</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 状態を <code dir="auto">.is-active</code> のようなクラスではなく、擬似クラスやARIA属性で表しているか（<a href="04-interaction.html#interaction_state-attributes--rule-state-by-pseudo-class-or-aria" class="xref-rule" data-label="17-3"><code dir="auto">state-by-pseudo-class-or-aria</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 動きに目的があり、高い頻度で触るUIに装飾的な動きを足していないか（<a href="05-motion.html#motion_purpose--rule-motion-needs-purpose" class="xref-rule" data-label="18-1"><code dir="auto">motion-needs-purpose</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 装飾的な動きのうちフェード以外を <code dir="auto">@media (prefers-reduced-motion: no-preference)</code> の中で指定しているか（<a href="05-motion.html#motion_reduced-motion--rule-motion-only-with-no-preference" class="xref-rule" data-label="18-2"><code dir="auto">motion-only-with-no-preference</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 機能的な動きの大きな変動を、動きを減らす設定でフェードに置き換えているか。DevToolsで <code dir="auto">prefers-reduced-motion: reduce</code> をエミュレートして確かめたか（<a href="05-motion.html#motion_reduced-motion--rule-simplify-large-motion-when-reduced" class="xref-rule" data-label="18-2"><code dir="auto">simplify-large-motion-when-reduced</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 機能的な動きの再生時間が300ms以下（大きなUIでも500ms以下）か。イージングは標準のキーワードではなくトークンで、現れる動きと出ていく動きは <code dir="auto">ease-out</code> 系、画面の上にあるものの移動は <code dir="auto">ease-in-out</code> 系か。<code dir="auto">ease-in</code> 系を使っていないか（<a href="05-motion.html#motion_easing-and-duration--rule-functional-motion-under-300ms" class="xref-rule" data-label="18-3"><code dir="auto">functional-motion-under-300ms</code></a>、<a href="05-motion.html#motion_easing-and-duration--rule-no-ease-in-for-ui" class="xref-rule" data-label="18-3"><code dir="auto">no-ease-in-for-ui</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 拡大して現れる動きを <code dir="auto">scale: 0</code> から始めず、<code dir="auto">transform-origin</code> をトリガーのある側に向けているか（<a href="05-motion.html#motion_easing-and-duration--rule-scale-in-from-near-one" class="xref-rule" data-label="18-3"><code dir="auto">scale-in-from-near-one</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> キーボードのフォーカスの移動に動きを付けていないか（<a href="04-interaction.html#interaction_states-and-focus--rule-no-motion-on-focus-visible" class="xref-rule" data-label="17-1"><code dir="auto">no-motion-on-focus-visible</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> キーボードショートカットで開閉するUIに、出現と退場の動きを付けていないか（<a href="05-motion.html#motion_purpose--rule-no-motion-on-keyboard-shortcut" class="xref-rule" data-label="18-1"><code dir="auto">no-motion-on-keyboard-shortcut</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 途中で取り消される動きをトランジションで書き、続けて押されるUIの動きを短くするか省いているか（<a href="05-motion.html#motion_transitions-and-keyframes--rule-interruptible-with-transition" class="xref-rule" data-label="18-4"><code dir="auto">interruptible-with-transition</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> レイアウトの変わるプロパティを動かしていないか。<code dir="auto">will-change</code> をCSSに書いたままの状態にしていないか（<a href="05-motion.html#motion_performance--rule-animate-composite-properties" class="xref-rule" data-label="18-7"><code dir="auto">animate-composite-properties</code></a>、<a href="05-motion.html#motion_performance--rule-will-change-temporarily" class="xref-rule" data-label="18-7"><code dir="auto">will-change-temporarily</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">content-visibility: auto</code> を最初の画面より下のブロックにだけ指定しているか。<code dir="auto">contain-intrinsic-block-size: auto &lt;長さ&gt;</code> を組で書いているか（<a href="05-motion.html#motion_performance--rule-content-visibility-with-intrinsic-size" class="xref-rule" data-label="18-7"><code dir="auto">content-visibility-with-intrinsic-size</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">@keyframes</code> の名前が <code dir="auto">--</code> で始まり、中間のフレームを持つものをコンポーネントのCSSに置いているか。一度だけ再生する演出で、<code dir="auto">@keyframes</code> の外に <code dir="auto">opacity: 0</code> などを重ねて書いていないか（<a href="05-motion.html#motion_transitions-and-keyframes--rule-keyframes-local-naming" class="xref-rule" data-label="18-4"><code dir="auto">keyframes-local-naming</code></a>、<a href="05-motion.html#motion_scroll-driven--rule-scroll-linked-method" class="xref-rule" data-label="18-6"><code dir="auto">scroll-linked-method</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">transition: all</code> を使っていないか（<a href="05-motion.html#motion_transitions-and-keyframes--rule-no-transition-all" class="xref-rule" data-label="18-4"><code dir="auto">no-transition-all</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 開閉するUIを、<code dir="auto">&lt;dialog&gt;</code>、<code dir="auto">popover</code> 属性、<code dir="auto">&lt;details&gt;</code> のようなHTMLの機能で作っているか（<a href="04-interaction.html#interaction_disclosure--rule-native-disclosure-elements" class="xref-rule" data-label="17-5"><code dir="auto">native-disclosure-elements</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> リンクや入力エラーのような情報を、色の違いだけで伝えていないか（<a href="02-color-media.html#color-media_forced-colors--rule-no-color-only-information" class="xref-rule" data-label="15-5"><code dir="auto">no-color-only-information</code></a>、<a href="02-color-media.html#color-media_forced-colors--rule-grayscale-check" class="xref-rule" data-label="15-5"><code dir="auto">grayscale-check</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 文字と背景のコントラスト比が、WCAG 2.1のAAを満たしているか（<a href="02-color-media.html#color-media_forced-colors--rule-text-contrast-aa" class="xref-rule" data-label="15-5"><code dir="auto">text-contrast-aa</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 枠線を <code dir="auto">border: none</code> ではなく <code dir="auto">border-color: transparent</code> で消しているか（<a href="02-color-media.html#color-media_forced-colors--rule-transparent-border-over-none" class="xref-rule" data-label="15-5"><code dir="auto">transparent-border-over-none</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">grid-template-areas</code> や <code dir="auto">*-reverse</code> で並べ替えたルールに、<code dir="auto">reading-flow</code> を指定しているか（<a class="xref-out"><code dir="auto">reading-flow-when-reordered</code></a>（11-12、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 必須の印や単位のように読み手が知る必要のある文字を、<code dir="auto">content</code> で入れていないか（<a class="xref-out"><code dir="auto">no-meaningful-generated-content</code></a>（5-8、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">::placeholder</code> の文字と背景のコントラスト比が4.5:1以上か（<a class="xref-out"><code dir="auto">placeholder-color-contrast</code></a>（5-6、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 入力欄の文字サイズが1rem以上で、ズームを止める指定がないか（<a href="04-interaction.html#interaction_forms--rule-input-font-size-min-1rem" class="xref-rule" data-label="17-6"><code dir="auto">input-font-size-min-1rem</code></a>、<a href="04-interaction.html#interaction_forms--rule-no-maximum-scale" class="xref-rule" data-label="17-6"><code dir="auto">no-maximum-scale</code></a>）</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">&lt;img&gt;</code> に <code dir="auto">width</code> と <code dir="auto">height</code> の属性があり、ファーストビューの画像を遅延読み込みにしていないか（<a href="03-decoration.html#decoration_images--rule-img-width-height-attributes" class="xref-rule" data-label="16-1"><code dir="auto">img-width-height-attributes</code></a>、<a href="03-decoration.html#decoration_images--rule-no-lazy-loading-first-view" class="xref-rule" data-label="16-1"><code dir="auto">no-lazy-loading-first-view</code></a>）</li>
+</ul>
+<h2 id="appendix_checklist--aiが生成したコードを見るとき">AIが生成したコードを見るとき</h2>
+<p>AIが生成したCSSでは、Stylelintで検出できない誤りが残りやすくなります。付録A「<a class="xref-out">ルール一覧</a>（巻3）」のうち、AIが誤りやすい印の付いたルールを重点的に確かめます<span class="note-ref">※1</span>。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled=""> 名前のないコンテナや、コンテナにした要素そのものを条件にしたクエリがないか（<a class="xref-out"><code dir="auto">container-name-required</code></a>（13-3、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> ブレイクポイントが <code dir="auto">768px</code> のような慣習の値ではなく、レイアウトが成り立つ条件から決めた値になっているか（<a class="xref-out"><code dir="auto">breakpoint-from-content</code></a>（13-2、巻2）、<a class="xref-out"><code dir="auto">threshold-as-formula</code></a>（13-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 閾値の式が「列の最小幅×列数」で終わらず、列数から決まる隙間（<code dir="auto">gap</code>）の数や、<code dir="auto">padding</code> と <code dir="auto">border</code> まで含んでいるか（<a class="xref-out"><code dir="auto">threshold-includes-gap-and-padding</code></a>（13-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 何にでも付いた <code dir="auto">width: 100%</code> や、中央寄せの <code dir="auto">margin: 0 auto</code> がないか（<a class="xref-out"><code dir="auto">no-redundant-width-100</code></a>（2-3、巻1）、<a class="xref-out"><code dir="auto">margin-inline-auto-centering</code></a>（7-3、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 上書きが効かない原因を調べずに足した <code dir="auto">!important</code> がないか（<a class="xref-out"><code dir="auto">no-important-for-specificity</code></a>（4-1、巻1））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <code dir="auto">._list</code> や <code dir="auto">._link</code> のように、要素の種類を言い換えただけの子クラスをすべての要素に付けていないか（<a class="xref-out"><code dir="auto">type-selector-in-scope</code></a>（10-2、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> 宣言を1つずつ言い換えたコメントが付いていないか（<a class="xref-out"><code dir="auto">comments-why-only</code></a>（9-9、巻2））</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> AIの出力を直した内容を、プロジェクトの規約の文書に書き足したか（<a href="07-ai-coding.html#ai-coding_verify-output--rule-record-ai-corrections" class="xref-rule" data-label="20-8"><code dir="auto">record-ai-corrections</code></a>）</li>
+</ul><aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>よく見かける古い書き方と置き換え先は、付録B「<a class="xref-out">モダンな書き方への置き換え表</a>（巻3）」</li></ol></aside>
+</section>
+<section class="page" id="page-appendix_glossary" data-title="付録E 用語集">
+<h1>付録E 用語集</h1>
+<p>この付録は、本書で使う用語の一覧です。CSSの仕様の用語に加えて、「外部関連型のレイアウト」のように、本書や著者の資料で名前を付けた考え方も含めています。意味は本文での説明に合わせて短くまとめ、詳しく説明しているページへのリンクを添えました。</p>
+<p>用語は分野ごとの表に分けています。知らない用語に出会ったときの確認に使うほか、AIに本書を読ませるときの用語の対応表としても使えます。本書の中では、同じものを表すときは、この一覧の語を使うようにしています。</p>
+<p>表記の揺れやすい語は、最後の「<a href="#appendix_glossary--表記の決まり">表記の決まり</a>」にまとめています。原稿の表記は、textlintの辞書（<code dir="auto">prh.yml</code>）で検証しています。</p>
+<h2 id="appendix_glossary--考え方とブラウザ対応">考え方とブラウザ対応</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>提案書としてのCSS</td>
+<td>CSSはブラウザへの命令書ではなく提案書だという考え方です。実装者は上限、下限、比率のような条件を決め、具体的な値の計算はブラウザに任せます。</td>
+<td><a class="xref-out">1-1</a>（巻1）</td>
+</tr>
+<tr>
+<td>ピクセルパーフェクト</td>
+<td><span class="ix" id="appendix_glossary--ix-t122"></span>デザインカンプと、カンプと同じ幅のような限られた環境でのブラウザの表示を、1pxのずれもなく一致させることです。表示の環境が無数にあるWebでは、すべての環境でこの一致を保てないので、本書はこれを目指しません。</td>
+<td><a class="xref-out">1-1</a>（巻1）、<a class="xref-out">3-1 ピクセルではなく意図を再現する</a>（巻1）</td>
+</tr>
+<tr>
+<td>合格点</td>
+<td>限られた環境での満点（ピクセルパーフェクト）ではなく、どの環境で見てもデザインの意図が伝わり、内容を読めて操作できる状態です。「デザインの意図パーフェクト」とも言います。</td>
+<td><a class="xref-out">1-1</a>（巻1）</td>
+</tr>
+<tr>
+<td><span class="ix" id="appendix_glossary--ix-t3"></span>イントリンシック（intrinsic）</td>
+<td>「本来備わっている」という意味です。要素の中身やレイアウトの仕組みが持つ伸び縮みの性質を活かし、計算をブラウザに任せる設計を、イントリンシック・デザインと呼びます。</td>
+<td><a class="xref-out">1-1</a>（巻1）、<a class="xref-out">13-1</a>（巻2）</td>
+</tr>
+<tr>
+<td>デフォルト値</td>
+<td>本書では、CSSの初期値、ブラウザのデフォルトスタイル、リセットCSSの値、ベーススタイルの値をまとめてこう呼びます。表記は、このページの最後の表のとおりです。</td>
+<td><a class="xref-out">2-3</a>（巻1）</td>
+</tr>
+<tr>
+<td>プログレッシブ・エンハンスメント</td>
+<td>未対応の環境でも内容を読めて操作でき、対応した環境ではより良い体験になる範囲で、新しい機能を使うことです。中黒を入れて書きます。</td>
+<td><a class="xref-out">1-2</a>（巻1）</td>
+</tr>
+<tr>
+<td>Baseline</td>
+<td>web-featuresのデータで、機能がどれだけのブラウザで使えるかを示す指標です。「広く利用可能」「新しく利用可能」「一部のブラウザのみ」の3段階で表示します。</td>
+<td><a class="xref-out">1-2</a>（巻1）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--カスケードとセレクタ"><span class="ix" id="appendix_glossary--ix-t7"></span>カスケードとセレクタ</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>カスケード</td>
+<td>同じ要素の同じプロパティに複数の値があるとき、使う値を決める手順です。オリジンと重要度、<code dir="auto">style</code> 属性、レイヤー、<span class="ix" id="appendix_glossary--ix-t8"></span>詳細度、<span class="ix" id="appendix_glossary--ix-t10"></span>スコープの近さ、出現順などを決まった順に比べます。</td>
+<td><a class="xref-out">4-1</a>（巻1）</td>
+</tr>
+<tr>
+<td>詳細度</td>
+<td>セレクタの強さです。IDの数、クラス・属性・擬似クラスの数、タイプセレクタ・擬似要素の数の3つで表し、本書では「0.1.1」のようにドットでつないで書きます。</td>
+<td><a class="xref-out">4-1</a>（巻1）、<a class="xref-out">4-2</a>（巻1）</td>
+</tr>
+<tr>
+<td>カスケードレイヤー</td>
+<td><code dir="auto">@layer</code> で分けたスタイルのまとまりです。通常の宣言では後ろのレイヤーほど強く（<code dir="auto">!important</code> の宣言では逆になります）、詳細度より先に比べられます。本書の基本は <code dir="auto">tokens</code> から <code dir="auto">utilities</code> までの9つです。略して「レイヤー」と書きます。</td>
+<td><a class="xref-out">4-3</a>（巻1）</td>
+</tr>
+<tr>
+<td>スコープ</td>
+<td><code dir="auto">@scope</code> で、スタイルが当たる範囲をルートと下限の間に限る仕組みです。ルートは <code dir="auto">:scope</code> で選びます。</td>
+<td><a class="xref-out">4-4</a>（巻1）</td>
+</tr>
+<tr>
+<td>ドーナツスコープ</td>
+<td><code dir="auto">@scope (.scoped.&lt;名前&gt;) to (.scoped)</code> のように下限を付け、入れ子になった別のコンポーネントを範囲から外したスコープです。穴の開いたドーナツにたとえた呼び名です。</td>
+<td><a class="xref-out">4-4</a>（巻1）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--擬似クラスと擬似要素"><span class="ix" id="appendix_glossary--ix-t12"></span>擬似クラスと<span class="ix" id="appendix_glossary--ix-t13"></span>擬似要素</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>擬似クラス</td>
+<td><code dir="auto">:hover</code> や <code dir="auto">:checked</code> のように、要素の状態や位置を条件にして要素そのものを選ぶセレクタです。コロン1つで書き、詳細度は原則としてクラスと同じ0.1.0です。<code dir="auto">:is()</code>、<code dir="auto">:not()</code>、<code dir="auto">:has()</code> は引数の詳細度になり、<code dir="auto">:where()</code> は0です。</td>
+<td><a class="xref-out">5-1</a>（巻1）</td>
+</tr>
+<tr>
+<td>擬似要素</td>
+<td><code dir="auto">::before</code> や <code dir="auto">::first-line</code> のように、要素の一部や、CSSが生成した箱を選ぶセレクタです。コロン2つで書き、詳細度はタイプセレクタと同じ0.0.1です。</td>
+<td><a class="xref-out">5-1</a>（巻1）</td>
+</tr>
+<tr>
+<td>寛容なセレクタリスト</td>
+<td>解釈できないセレクタがあっても、それだけを無視して残りを有効にするセレクタリストです。<code dir="auto">:is()</code> と <code dir="auto">:where()</code> の引数がこれに当たり、普通のセレクタリストと <code dir="auto">:not()</code>・<code dir="auto">:has()</code> の引数は当たりません。</td>
+<td><a class="xref-out">5-1</a>（巻1）</td>
+</tr>
+<tr>
+<td><span class="ix" id="appendix_glossary--ix-t15"></span>起点（<code dir="auto">:has()</code> の）</td>
+<td><code dir="auto">A:has(B)</code> の <code dir="auto">A</code> のように、<code dir="auto">:has()</code> の直前に書いてスタイルを当てる要素です。本書では起点のない <code dir="auto">:has()</code> を禁止しています。</td>
+<td><a class="xref-out">5-3</a>（巻1）</td>
+</tr>
+<tr>
+<td>数量クエリ</td>
+<td>子要素の数に応じてスタイルを切り替える手法です。本書では、親や兄弟の見た目を変えるときは <code dir="auto">&amp;:has(&gt; :nth-child(3))</code> のように親を起点にした <code dir="auto">:has()</code> で書き、数えた子要素そのものを変えるときは <code dir="auto">:nth-child()</code> と <code dir="auto">:nth-last-child()</code> を組み合わせて書きます。</td>
+<td><a class="xref-out">5-5</a>（巻1）</td>
+</tr>
+<tr>
+<td>生成コンテンツ</td>
+<td><code dir="auto">::before</code> と <code dir="auto">::after</code> の <code dir="auto">content</code> プロパティで、CSSが要素の前後に入れる文字や箱です。</td>
+<td><a class="xref-out">5-8</a>（巻1）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--値と単位">値と単位</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>スモールビューポート、ラージビューポート、ダイナミックビューポート</td>
+<td>ブラウザのUIが表示されているときの最も小さい領域、UIが引っ込んだときの最も大きい領域、そのときどきで見えている領域です。単位は <code dir="auto">sv*</code>、<code dir="auto">lv*</code>、<code dir="auto">dv*</code> で始まります。</td>
+<td><a class="xref-out">6-2</a>（巻1）</td>
+</tr>
+<tr>
+<td>コンテナ単位</td>
+<td>コンテナの大きさを基準にした単位です。本書で使うのは、コンテナのインライン方向のサイズの1%を表す <code dir="auto">cqi</code> です。</td>
+<td><a class="xref-out">6-2</a>（巻1）、<a class="xref-out">13-4</a>（巻2）</td>
+</tr>
+<tr>
+<td>流体的な値</td>
+<td><code dir="auto">clamp()</code> などで、幅に応じて最小値と最大値の間を連続的に変わる値です。文字サイズに使うものを流体的な文字サイズと呼びます。</td>
+<td><a class="xref-out">6-3</a>（巻1）、<a href="01-typography.html#page-typography_size-and-line-breaks" class="xref">14-4</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--リセットと記法">リセットと記法</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>リセットCSS</td>
+<td>ブラウザごとに異なるデフォルトスタイルをそろえるためのCSSです。本書では、著者が公開しているkiso.cssを使います。</td>
+<td><a class="xref-out">8-1</a>（巻2）</td>
+</tr>
+<tr>
+<td>ベーススタイル</td>
+<td>リセットの上に、フォーカスリングや色、フォントのような、プロジェクト全体の既定を書くスタイルです。<code dir="auto">base</code> レイヤーに置きます。</td>
+<td><a class="xref-out">8-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>フォーカスリング</td>
+<td>キーボードで操作するユーザーに、いまどこにフォーカスがあるかを伝える表示です。本書では、<code dir="auto">outline</code> と <code dir="auto">box-shadow</code> を重ねた二重のリングにします。</td>
+<td><a class="xref-out">8-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>論理プロパティ</td>
+<td>上下左右ではなく、書字方向を基準に方向を表すプロパティです。<code dir="auto">width</code> の代わりに <code dir="auto">inline-size</code>、<code dir="auto">margin-top</code> の代わりに <code dir="auto">margin-block-start</code> と書きます。</td>
+<td><a class="xref-out">9-8</a>（巻2）</td>
+</tr>
+<tr>
+<td>2値構文</td>
+<td><code dir="auto">display</code> の値を、外側の表示と内側の表示の2つで書く構文です。<code dir="auto">display: flex</code> は <code dir="auto">block flex</code> と書きます。</td>
+<td><a class="xref-out">9-7</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">&lt;dashed-ident&gt;</code></td>
+<td><code dir="auto">--</code> で始まる名前のことです。本書では、<code dir="auto">@keyframes</code>、グリッドの線とエリア、アンカー、コンテナ、<span class="ix" id="appendix_glossary--ix-t56"></span>スタイルクエリの値のように、自分で付けて値として使う名前をこの形にします。</td>
+<td><a class="xref-out">9-1</a>（巻2）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--コンポーネントとカスタムプロパティ"><span class="ix" id="appendix_glossary--ix-t29"></span>コンポーネントとカスタムプロパティ</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>コンポーネント</td>
+<td>HTMLの構造や属性、振る舞いを1つの定義から管理する部品です。ルートに <code dir="auto">class="scoped &lt;名前&gt;"</code> を付け、スタイルは <code dir="auto">@scope</code> の中に書きます。</td>
+<td><a class="xref-out">10-1</a>（巻2）、<a class="xref-out">10-2</a>（巻2）、<a class="xref-out">9-1</a>（巻2）</td>
+</tr>
+<tr>
+<td>外部関連型のレイアウト</td>
+<td><code dir="auto">margin</code>、<code dir="auto">position: absolute</code> と <code dir="auto">inset</code>、<code dir="auto">grid-area</code> のように、周りの要素との関係で成り立つレイアウトの指定です。著者の造語で、コンポーネントのルートには書きません。</td>
+<td><a class="xref-out">10-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>内部関連型のレイアウト</td>
+<td><code dir="auto">padding</code> や <code dir="auto">grid-template</code> のように、自分のスタイルだけで完結するレイアウトの指定です。コンポーネントのルートに書いてかまいません。</td>
+<td><a class="xref-out">10-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>Outer</td>
+<td>親のコンポーネントが、子のコンポーネントを包むために置く要素です。子の配置や特別な余白を、親の側で決めます。単独のコンポーネントにはしません。</td>
+<td><a class="xref-out">10-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>コンポジション</td>
+<td><code dir="auto">stack</code>、<code dir="auto">cluster</code>、<code dir="auto">switcher</code> のように、コンポーネントに依存しない配置を受け持つクラスです。配置だけを持ち、見た目は持ちません。</td>
+<td><a class="xref-out">10-3</a>（巻2）</td>
+</tr>
+<tr>
+<td>ユーティリティ</td>
+<td><code dir="auto">.-visually-hidden</code> のように、どこに付けても同じ意味を持つ単機能のクラスです。最後の <code dir="auto">utilities</code> レイヤーに置きます。</td>
+<td><a class="xref-out">10-3</a>（巻2）</td>
+</tr>
+<tr>
+<td>デザイントークン</td>
+<td>色、余白、イージング、z-indexのように、サイト全体で意味を持つ値に名前を付けたものです。<code dir="auto">--&lt;分類&gt;--&lt;名前&gt;</code> の形で <code dir="auto">:root</code> に定義します。略して「トークン」と書きます。</td>
+<td><a class="xref-out">10-4</a>（巻2）</td>
+</tr>
+<tr>
+<td>プリミティブ、セマンティクス</td>
+<td>色のトークンの2つの層です。プリミティブは明るさの段階で並べた生の色、セマンティクスは背景や文字のような色の役割を表すトークンです。</td>
+<td><a class="xref-out">10-4</a>（巻2）</td>
+</tr>
+<tr>
+<td>公開プロパティ</td>
+<td>コンポーネントが、外から変えてよい値として用意するカスタムプロパティです。<code dir="auto">--&lt;コンポーネント&gt;--&lt;プロパティ&gt;</code> の形にします。</td>
+<td><a class="xref-out">10-5</a>（巻2）</td>
+</tr>
+<tr>
+<td>内部プロパティ</td>
+<td>コンポーネントの中だけで使うカスタムプロパティです。<code dir="auto">--_</code> で始めます。</td>
+<td><a class="xref-out">10-5</a>（巻2）</td>
+</tr>
+<tr>
+<td>状態の接尾辞</td>
+<td>状態やモードで変わる値を、<code dir="auto">--_background--hocus</code> のように <code dir="auto">--</code> で区切って名前の後ろに付けた部分です。<code dir="auto">hocus</code> はホバーとフォーカスをまとめた語です。</td>
+<td><a class="xref-out">10-5</a>（巻2）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--レイアウト">レイアウト</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>レイアウトの方式</td>
+<td>子の大きさと位置を決める規則のまとまりです。<span class="ix" id="appendix_glossary--ix-t42"></span>通常フロー、Flexbox、Grid、位置指定などがあり、親の <code dir="auto">display</code> の内側の値と、要素自身の <code dir="auto">position</code> で決まります。同じプロパティでも、方式によって働き方が変わります。レイアウトモードとも言います。</td>
+<td><a class="xref-out">1-3</a>（巻1）、<a class="xref-out">7-1</a>（巻1）</td>
+</tr>
+<tr>
+<td>通常フロー</td>
+<td>FlexboxやGridを指定していない要素が従う、既定のレイアウトの方式です。ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスは行の中をインライン方向に流れます。</td>
+<td><a class="xref-out">7-2</a>（巻1）</td>
+</tr>
+<tr>
+<td>ブロック整形コンテキスト</td>
+<td>通常フローのブロックを並べる、閉じた範囲です。中の <code dir="auto">float</code> を内側に収め、外とのマージンの相殺を止めます。本書では <code dir="auto">display: flow-root</code> で作ります。</td>
+<td><a class="xref-out">7-2</a>（巻1）、<a class="xref-out">7-6</a>（巻1）</td>
+</tr>
+<tr>
+<td>読み上げ順</td>
+<td>スクリーンリーダーが読み上げ、キーボードでフォーカスが移る順番です。DOMの順番で決まり、<code dir="auto">reading-flow</code> を指定したコンテナでは見た目の順番に合わせられます。</td>
+<td><a class="xref-out">11-12</a>（巻2）</td>
+</tr>
+<tr>
+<td>サブグリッド</td>
+<td><code dir="auto">grid-template-rows: subgrid</code> のように、親のグリッドの行や列をそのまま使う仕組みです。並べたカードの中の行をそろえるときに使います。</td>
+<td><a class="xref-out">7-9</a>（巻1）</td>
+</tr>
+<tr>
+<td>ガター</td>
+<td>ページのコンテンツの左右に置く、余白のための列です。画面幅いっぱいに広げたい要素は、この列まで広げます。</td>
+<td><a class="xref-out">11-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>次兄弟結合子</td>
+<td><code dir="auto">h2 + p</code> の <code dir="auto">+</code> のように、直前の兄弟要素を条件にして要素を選ぶ結合子です。本書では、要素の間のブロック方向の <code dir="auto">margin</code> を、<code dir="auto">&amp; &gt; * + *</code> のようにこの結合子で選んだ後ろの要素の <code dir="auto">margin-block-start</code> に付けます。</td>
+<td><a class="xref-out">11-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>ディフェンシブCSS</td>
+<td>テキストが長くなったら、画像がなかったら、要素の数が変わったらと考え、想定外の内容が入っても崩れないように書くCSSです。</td>
+<td><a class="xref-out">11-3</a>（巻2）</td>
+</tr>
+<tr>
+<td><span class="ix" id="appendix_glossary--ix-t49"></span>包含ブロック</td>
+<td>要素の大きさや位置を計算するときの基準になる領域です。<code dir="auto">inset</code> やパーセントの値も、この領域を基準に解決されます。絶対配置では、包含ブロックを形成する最も近い祖先が基準です。<code dir="auto">position</code> が <code dir="auto">static</code> 以外の祖先や、<code dir="auto">transform</code> などを指定した祖先が該当します。該当する祖先がなければ初期包含ブロックが基準になります。</td>
+<td><a class="xref-out">7-10</a>（巻1）</td>
+</tr>
+<tr>
+<td>スタッキングコンテキスト</td>
+<td>重なり順を決める単位です。z-indexは、同じスタッキングコンテキストの中の要素どうしでしか比べられません。</td>
+<td><a class="xref-out">11-6</a>（巻2）</td>
+</tr>
+<tr>
+<td>トップレイヤー</td>
+<td><code dir="auto">&lt;dialog&gt;</code> のモーダルや <code dir="auto">popover</code> 属性の要素が表示される層です。本来は、z-indexと関係なく最前面に描かれます。</td>
+<td><a class="xref-out">10-2</a>（巻2）、<a href="04-interaction.html#page-interaction_disclosure" class="xref">17-5</a></td>
+</tr>
+<tr>
+<td>アンカーポジショニング</td>
+<td>ある要素（アンカー）の位置を基準に、別の要素を配置する仕組みです。本書の対象のブラウザではまだレイアウトの要にしません（2026年9月確認）。</td>
+<td><a class="xref-out">7-11</a>（巻1）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--レスポンシブ">レスポンシブ</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>検討の順番</td>
+<td>レスポンシブ対応を「静的 → イントリンシック → <span class="ix" id="appendix_glossary--ix-t55"></span>コンテナサイズクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わないという本書の原則です。</td>
+<td><a class="xref-out">13-1</a>（巻2）</td>
+</tr>
+<tr>
+<td><span class="ix" id="appendix_glossary--ix-t54"></span>コンテナクエリ</td>
+<td><code dir="auto">@container</code> で、祖先の要素（コンテナ）の状態を条件にするクエリの総称です。サイズを調べるコンテナサイズクエリ、カスタムプロパティの値を調べるスタイルクエリ、スクロールの状態を調べるスクロール状態クエリの3つを含みます。</td>
+<td><a class="xref-out">13-3</a>（巻2）</td>
+</tr>
+<tr>
+<td>コンテナサイズクエリ</td>
+<td>ビューポートではなく、コンテナの大きさで条件を判定するコンテナクエリです。<code dir="auto">container: --scoped / inline-size</code> でコンポーネントのルートをコンテナにし、<code dir="auto">@container --scoped (inline-size &gt;= …)</code> のように書きます。</td>
+<td><a class="xref-out">13-3</a>（巻2）</td>
+</tr>
+<tr>
+<td>スタイルクエリ</td>
+<td>コンテナのカスタムプロパティの値を条件にするコンテナクエリです。<code dir="auto">@container style(--color-scheme: --dark)</code> のように書きます。</td>
+<td><a class="xref-out">6-5</a>（巻1）、<a class="xref-out">13-3</a>（巻2）、<a href="02-color-media.html#page-color-media_dark-mode" class="xref">15-4</a></td>
+</tr>
+<tr>
+<td>スクロール状態クエリ</td>
+<td><code dir="auto">sticky</code> の要素が留まっているか、スクロールスナップで止まっているかのような、スクロールの状態を条件にするコンテナクエリです。<code dir="auto">@container scroll-state(stuck: block-start)</code> のように書きます。</td>
+<td><a class="xref-out">11-7</a>（巻2）、<a href="04-interaction.html#page-interaction_carousel" class="xref">17-7</a></td>
+</tr>
+<tr>
+<td>ブレイクポイント</td>
+<td>レイアウトを切り替える幅です。デバイスの幅ではなく、レイアウトが崩れる幅から決め、remの式で書きます。</td>
+<td><a class="xref-out">13-2</a>（巻2）</td>
+</tr>
+<tr>
+<td>範囲構文</td>
+<td><code dir="auto">min-width</code> の代わりに、<code dir="auto">(width &gt;= …)</code> のように不等号でクエリの条件を書く構文です。</td>
+<td><a class="xref-out">13-5</a>（巻2）</td>
+</tr>
+<tr>
+<td>モバイルファースト</td>
+<td>狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを <code dir="auto">width &gt;=</code> の条件の中に足す書き方です。</td>
+<td><a class="xref-out">13-5</a>（巻2）</td>
+</tr>
+<tr>
+<td>フルリキッド</td>
+<td>カンプの幅に対する比率で、ページ全体の文字サイズや余白を拡大・縮小する組み方です。本書では使わず、拡大・縮小させたい局所だけをコンテナ単位で組みます。</td>
+<td><a class="xref-out">13-7</a>（巻2）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--タイポグラフィ">タイポグラフィ</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ハーフレディング</td>
+<td>行の高さが文字の大きさより大きいとき、その差が文字の上と下に半分ずつ配分された余白です。中黒を入れずに書きます。</td>
+<td><a href="01-typography.html#page-typography_line-height" class="xref">14-3</a></td>
+</tr>
+<tr>
+<td>ベタ組み</td>
+<td>全角の文字を1文字ずつ同じ幅の枠に収め、詰めずに並べる組み方です。本書では、和文の本文をベタ組みにします。</td>
+<td><a href="01-typography.html#page-typography_japanese-typesetting" class="xref">14-2</a></td>
+</tr>
+<tr>
+<td><span class="ix" id="appendix_glossary--ix-t64"></span>アキ</td>
+<td>文字と文字の間の空きです。本書では、和文と英数字の間や、<span class="ix" id="appendix_glossary--ix-t65"></span>約物の周りの空きを指します。</td>
+<td><a href="01-typography.html#page-typography_japanese-typesetting" class="xref">14-2</a></td>
+</tr>
+<tr>
+<td>約物</td>
+<td>括弧や句読点のような記号です。開き括弧、閉じ括弧、読点、句点は、全角の幅の中に、半分ほどのアキを含んでいます。</td>
+<td><a href="01-typography.html#page-typography_japanese-typesetting" class="xref">14-2</a></td>
+</tr>
+<tr>
+<td><code dir="auto">palt</code></td>
+<td>フォントが持つ文字ごとの幅の情報（プロポーショナルメトリクス）を使い、仮名や約物の周りのアキを詰めるOpenTypeの機能です。見出しにだけ使います。</td>
+<td><a href="01-typography.html#page-typography_japanese-typesetting" class="xref">14-2</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--色とアクセシビリティ">色とアクセシビリティ</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>相対カラー構文</td>
+<td><code dir="auto">oklch(from 元の色 l c h / 10%)</code> のように、元の色を成分に分けて、一部だけを書き換えた色を作る構文です。</td>
+<td><a href="02-color-media.html#page-color-media_relative-color" class="xref">15-2</a></td>
+</tr>
+<tr>
+<td>強制カラーモード</td>
+<td>Windowsの「コントラスト テーマ」などを有効にしたときの表示モードです。ページの色が、ユーザーが選んだ少数のシステムカラーに置き換わります。</td>
+<td><a href="02-color-media.html#page-color-media_forced-colors" class="xref">15-5</a></td>
+</tr>
+<tr>
+<td>システムカラー</td>
+<td><code dir="auto">Canvas</code>、<code dir="auto">CanvasText</code>、<code dir="auto">LinkText</code> のように、ユーザーの配色の設定から決まる色のキーワードです。</td>
+<td><a href="02-color-media.html#page-color-media_forced-colors" class="xref">15-5</a></td>
+</tr>
+<tr>
+<td>動きを減らす設定</td>
+<td>OSにある、画面の動きを減らす設定です。CSSでは <code dir="auto">prefers-reduced-motion</code> で調べ、本書では、装飾的な動きを <code dir="auto">no-preference</code> のときだけ付けます。</td>
+<td><a href="05-motion.html#page-motion_reduced-motion" class="xref">18-2</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--運用">運用</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+<th>詳しい説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ルールの強度</td>
+<td>「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。</td>
+<td><a class="xref-out">付録A</a>（巻3）</td>
+</tr>
+<tr>
+<td>MUST、IMO、Q</td>
+<td>レビューの指摘に付けるラベルです。直さなければならない指摘、好みが入りうる提案、意図が読み取れない記述への質問を表します。</td>
+<td><a href="06-operations.html#page-operations_review" class="xref">19-2</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_glossary--表記の決まり">表記の決まり</h2>
+<p>次の語は、書き方が揺れやすいので、本書の表記にそろえます。原稿では、textlintの辞書（<code dir="auto">prh.yml</code>）で使わない表記を検出しています。</p>
+
+<table>
+<thead>
+<tr>
+<th>本書の表記</th>
+<th>使わない表記</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>セレクタ</td>
+<td>セレクター</td>
+</tr>
+<tr>
+<td>ブレイクポイント</td>
+<td>ブレークポイント</td>
+</tr>
+<tr>
+<td>コンテナ</td>
+<td>コンテナー</td>
+</tr>
+<tr>
+<td>メディアクエリ</td>
+<td>メディアクエリー</td>
+</tr>
+<tr>
+<td>プロパティ</td>
+<td>プロパティー</td>
+</tr>
+<tr>
+<td>ブラウザ</td>
+<td>ブラウザー</td>
+</tr>
+<tr>
+<td>ユーザー</td>
+<td>ユーザ</td>
+</tr>
+<tr>
+<td>レイヤー</td>
+<td>レイヤ</td>
+</tr>
+<tr>
+<td>ハーフレディング</td>
+<td>ハーフ・レディング</td>
+</tr>
+<tr>
+<td>デフォルト値</td>
+<td>既定値</td>
+</tr>
+<tr>
+<td>インターフェース</td>
+<td>インタフェース、インターフェイス</td>
+</tr>
+</tbody>
+</table>
+
+<p>このほか、和文と英数字の間には空白を入れません。アキは、表示の側の <code dir="auto">text-autospace</code> に任せています<span class="note-ref">※1</span>。</p><aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>「<a href="01-typography.html#page-typography_japanese-typesetting" class="xref">14-2 和文組版を整える</a>」</li></ol></aside>
+</section>
+<section class="page" id="page-appendix_troubles" data-title="付録K 困りごとから引く">
+<h1>付録K 困りごとから引く</h1>
+<p>このページは、実装中に出会う困りごとから、本書の説明へたどるための索引です。症状ごとに、最初に読む節と、関係するルールを並べています。原因の調べ方そのものは「<a href="06-operations.html#page-operations_devtools" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」で説明しているので、どの節を読めばよいか分からないときは、まずそこから始めてください。</p>
+<p>ルールの全体は付録A「<a class="xref-out">ルール一覧</a>（巻3）」に、レビューで確かめる項目は付録D「<a href="#page-appendix_checklist" class="xref">レビューのチェックリスト</a>」に、古い書き方からの置き換えは付録B「<a class="xref-out">モダンな書き方への置き換え表</a>（巻3）」にまとめています。このページは、それらへの入口です。</p>
+<h2 id="appendix_troubles--宣言と優先順位">宣言と優先順位</h2>
+<table>
+<thead>
+<tr>
+<th>困りごと</th>
+<th>最初に読む節</th>
+<th>関係するルール</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>書いた宣言が効かない</td>
+<td>「<a href="06-operations.html#operations_devtools--宣言が効かない" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」「<a class="xref-out">4-1 カスケード・<span class="ix" id="appendix_troubles--ix-t8"></span>詳細度・継承</a>（巻1）」</td>
+<td><a class="xref-out"><code dir="auto">order-by-layer-not-specificity</code></a>（4-1、巻1）</td>
+</tr>
+<tr>
+<td>ユーティリティクラスが効かない</td>
+<td>「<a class="xref-out">4-3 カスケードレイヤーで順位を決める</a>（巻1）」</td>
+<td><a class="xref-out"><code dir="auto">layer-order-declaration</code></a>（4-3、巻1）</td>
+</tr>
+<tr>
+<td>上書きのために詳細度を上げたくなる</td>
+<td>「<a class="xref-out">4-2 セレクタで詳細度を設計する</a>（巻1）」</td>
+<td><a class="xref-out"><code dir="auto">no-specificity-hacks</code></a>（4-2、巻1）</td>
+</tr>
+<tr>
+<td>ほかのコンポーネントにスタイルが漏れる</td>
+<td>「<a class="xref-out">4-4 @scopeでスタイルを閉じ込める</a>（巻1）」「<a class="xref-out">10-2 コンポーネントの境界を守る</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">scope-with-donut</code></a>（4-4、巻1）、<a class="xref-out"><code dir="auto">no-other-component-internals</code></a>（10-2、巻2）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_troubles--幅とはみ出し">幅とはみ出し</h2>
+<table>
+<thead>
+<tr>
+<th>困りごと</th>
+<th>最初に読む節</th>
+<th>関係するルール</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>幅が縮まない、親からはみ出す</td>
+<td>「<a href="06-operations.html#page-operations_devtools" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」「<a class="xref-out">11-3 サイズと内容の変化に耐える</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">fr-without-minmax-zero</code></a>（11-3、巻2）</td>
+</tr>
+<tr>
+<td>ページに横スクロールが出る</td>
+<td>「<a href="06-operations.html#operations_devtools--横スクロールが出る" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」「<a class="xref-out">11-4 はみ出しとスクロール</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">find-overflow-source-first</code></a>（11-4、巻2）</td>
+</tr>
+<tr>
+<td>狭い場所に置くと部品が崩れる</td>
+<td>「<a class="xref-out">13-3 コンテナサイズクエリ</a>（巻2）」「<a class="xref-out">11-3 サイズと内容の変化に耐える</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">flex-wrap-for-variable-items</code></a>（11-3、巻2）</td>
+</tr>
+<tr>
+<td>長いURLや英単語がはみ出す</td>
+<td>「<a href="01-typography.html#page-typography_size-and-line-breaks" class="xref">14-4 文字サイズと改行</a>」</td>
+<td><a href="01-typography.html#typography_size-and-line-breaks--rule-overflow-wrap-over-word-break" class="xref-rule" data-label="14-4"><code dir="auto">overflow-wrap-over-word-break</code></a></td>
+</tr>
+<tr>
+<td>コンテナクエリが効かない、コンテナにした要素の幅が0になる</td>
+<td>「<a href="06-operations.html#operations_devtools--コンテナクエリが効かない" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」「<a class="xref-out">13-4 コンテナの副作用とコンテナ単位</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">no-container-on-intrinsic-size</code></a>（13-4、巻2）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_troubles--余白と重なり">余白と重なり</h2>
+<table>
+<thead>
+<tr>
+<th>困りごと</th>
+<th>最初に読む節</th>
+<th>関係するルール</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>要素の間の余白が思ったとおりにならない</td>
+<td>「<a class="xref-out">7-5 marginの役割</a>（巻1）」「<a class="xref-out">7-6 マージンの相殺</a>（巻1）」「<a class="xref-out">11-2 余白を設計する</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">block-margin-with-sibling-combinator</code></a>（11-2、巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">position: sticky</code> が留まらない</td>
+<td>「<a href="06-operations.html#page-operations_devtools" class="xref">19-4 表示の崩れを開発者ツールで調べる</a>」「<a class="xref-out">11-7 固定ヘッダー</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">sticky-header-height-query</code></a>（11-7、巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">z-index</code> を上げても手前に出ない</td>
+<td>「<a class="xref-out">11-6 重なりと全幅</a>（巻2）」</td>
+<td><a class="xref-out"><code dir="auto">check-stacking-context-first</code></a>（11-6、巻2）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_troubles--操作と状態">操作と状態</h2>
+<table>
+<thead>
+<tr>
+<th>困りごと</th>
+<th>最初に読む節</th>
+<th>関係するルール</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>タッチ操作の端末で、ホバーの見た目が残る</td>
+<td>「<a href="04-interaction.html#page-interaction_states-and-focus" class="xref">17-1 ホバーとフォーカスを表す</a>」</td>
+<td><a href="04-interaction.html#interaction_states-and-focus--rule-hover-operable-in-any-hover" class="xref-rule" data-label="17-1"><code dir="auto">hover-operable-in-any-hover</code></a></td>
+</tr>
+<tr>
+<td>ボタンやリンクが押しにくい</td>
+<td>「<a href="04-interaction.html#page-interaction_hit-area-and-touch" class="xref">17-2 押せる範囲とタッチ操作</a>」</td>
+<td><a href="04-interaction.html#interaction_hit-area-and-touch--rule-hit-area-min-size" class="xref-rule" data-label="17-2"><code dir="auto">hit-area-min-size</code></a></td>
+</tr>
+<tr>
+<td>選択中や展開中の見た目が、実際の状態とずれる</td>
+<td>「<a href="04-interaction.html#page-interaction_state-attributes" class="xref">17-3 状態を属性で表す</a>」</td>
+<td><a href="04-interaction.html#interaction_state-attributes--rule-state-by-pseudo-class-or-aria" class="xref-rule" data-label="17-3"><code dir="auto">state-by-pseudo-class-or-aria</code></a></td>
+</tr>
+<tr>
+<td>動きを減らす設定のユーザーに配慮したい</td>
+<td>「<a href="05-motion.html#page-motion_reduced-motion" class="xref">18-2 動きを減らす設定に対応する</a>」</td>
+<td><a href="05-motion.html#motion_reduced-motion--rule-motion-only-with-no-preference" class="xref-rule" data-label="18-2"><code dir="auto">motion-only-with-no-preference</code></a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_troubles--色">色</h2>
+<table>
+<thead>
+<tr>
+<th>困りごと</th>
+<th>最初に読む節</th>
+<th>関係するルール</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ダークモードで文字や枠線が見えにくい</td>
+<td>「<a href="02-color-media.html#page-color-media_dark-mode" class="xref">15-4 ダークモード</a>」</td>
+<td><a href="02-color-media.html#color-media_dark-mode--rule-light-dark-in-semantic-tokens" class="xref-rule" data-label="15-4"><code dir="auto">light-dark-in-semantic-tokens</code></a></td>
+</tr>
+<tr>
+<td>強制カラーモードで枠線やアイコンが消える</td>
+<td>「<a href="02-color-media.html#page-color-media_forced-colors" class="xref">15-5 強制カラーモードとコントラスト</a>」</td>
+<td><a href="02-color-media.html#color-media_forced-colors--rule-forced-colors-system-colors" class="xref-rule" data-label="15-5"><code dir="auto">forced-colors-system-colors</code></a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix_troubles--表にない困りごと">表にない困りごと</h2>
+<p>表にない症状は、まず開発者ツールで、問題の要素にどの宣言が当たり、どの宣言が負けているかを確かめます。負けている宣言が分かれば、その宣言のプロパティから付録A「<a class="xref-out">ルール一覧</a>（巻3）」を引けます。崩れが特定の幅や内容でだけ起きるなら、「<a href="06-operations.html#page-operations_verification" class="xref">19-3 表示と操作を確かめる</a>」の手順で、幅と内容を変えながら再現する条件を絞ります。</p>
+</section>
+
+
+</body></html>
