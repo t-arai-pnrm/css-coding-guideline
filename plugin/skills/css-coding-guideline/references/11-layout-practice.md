@@ -1,6 +1,6 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.50.8（2026-10-11 生成）
+- ガイドラインのバージョン: 0.50.9（2026-10-11 生成）
 - ルールの数: 61
 - 本文: 約24.7万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
@@ -28,7 +28,7 @@
 - `layout-practice/icon-alignment` 11-13 アイコンを配置する（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/icon-alignment/
 - `layout-practice/float` 11-14 floatで文章を回り込ませる（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/float/
 - `layout-practice/tables` 11-15 表を組む（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/
-- `layout-practice/truncation-and-skeletons` 11-16 文字の切り詰めと読み込み中の表示（約8,200字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/truncation-and-skeletons/
+- `layout-practice/truncation-and-skeletons` 11-16 文字の切り詰めと読み込み中の表示（約8,300字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/truncation-and-skeletons/
 
 ## 11-1 レイアウト手法の選び方
 

@@ -176,7 +176,7 @@ img {
 }
 ```
 
-`box-shadow: inset` では、この線を描けません。内側の影は要素の背景の上、中身の下に描かれるので、`<img>` の画像に覆われて見えなくなります。`outline` は中身より手前に描かれ、`outline-offset` を負の値にすれば、画像の大きさを変えずに内側へ引けます。Chrome 152で、不透明な画像に指定した `box-shadow: inset` は見えず、`outline` の線は画像の上に表示されることを確かめました（2026年10月確認）。{/* 要検証: ブラウザ。Safari と Firefox で、負の outline-offset の outline が img の画像の上に描かれること */}`border` で描くと、`box-sizing: border-box` の画像では線の分だけ画像が小さくなるので、使いません。
+`box-shadow: inset` では、この線を描けません。内側の影は要素の背景の上、中身の下に描かれるので、`<img>` の画像に覆われて見えなくなります。`outline` は中身より手前に描かれ、`outline-offset` を負の値にすれば、画像の大きさを変えずに内側へ引けます。Chrome 152で、不透明な画像に指定した `box-shadow: inset` は見えず、`outline` の線は画像の上に表示されることを確かめました（2026年10月確認）。Firefox 156とSafari 26.5でも、負の `outline-offset` の `outline` は画像の上に表示されました（2026年10月確認）。`border` で描くと、`box-sizing: border-box` の画像では線の分だけ画像が小さくなるので、使いません。
 
 線の色は、枠線のトークンから選びます。濃い色にすると、白くない画像では枠が目立ちすぎます。強制カラーモードでは、`outline` の色はシステムカラーに置き換わります（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
 

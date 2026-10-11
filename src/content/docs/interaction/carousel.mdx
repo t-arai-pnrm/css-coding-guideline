@@ -200,7 +200,7 @@ Chrome系のブラウザでは、スクロールバーが消え、ボタンと�
 | 強制カラーモード | 点の並びと現在位置の点を見比べる | 表示しているスライドの点を、ほかの点と見分けられる |
 | 200%に拡大した状態 | ボタンとスライドの中身の重なりを見る | ボタンが文字やリンクを覆い、読めない部分ができていない |
 
-動きを減らす設定と強制カラーモードは、Chromeの開発者ツールの「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。点の現在位置は、色に加えて形の違いでも示しているので、強制カラーモードで色が置き換わっても、横長の点で見分けられるはずです。{/* 要検証: ブラウザ。強制カラーモードでの ::scroll-marker の枠線と CanvasText の見え方は未検証。Chrome のエミュレーションで確かめてから、確認した年月を書く */}
+動きを減らす設定と強制カラーモードは、Chromeの開発者ツールの「Rendering」パネルで再現できます。それぞれ「Emulate CSS media feature prefers-reduced-motion」と「Emulate CSS media feature forced-colors」を切り替えます。点の現在位置は、色に加えて形の違いでも示しているので、強制カラーモードで色が置き換わっても、横長の点で見分けられます。Chromeのエミュレーションで強制カラーモードにすると、ほかの点は `CanvasText` の枠線だけの円になり、現在位置の点は横長に塗られた形で表示されました（2026年10月、Chrome 154で確認）。Windowsの実際のハイコントラストテーマでの見え方は、確かめていません。{/* 要検証: ブラウザ。Windows の実際のハイコントラストテーマでの ::scroll-marker の見え方 */}
 
 ## 発展：ページ内リンクを現在位置の印にする `scroll-target-group`
 
