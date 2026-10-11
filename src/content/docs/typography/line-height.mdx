@@ -169,7 +169,7 @@ CSS Inline Layout Module Level 3では、`text-box-trim` を指定できるの�
 }
 ```
 
-ラベルの要素には `padding` や `border` を付けません。間に `padding` や `border` があると、`text-box-trim` は何も削らないからです。また、ハーフレディングを削ったぶん、ボタンは低くなります。操作に必要な最小の高さは `min-block-size` で確保し（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）、`align-items: center` でラベルを中央に置けば、高さが増えても上下の空きは同じになります。
+ラベルの要素には `padding` や `border` を付けず、余白はボタンの側で持ちます。ラベル自身に付けても、`text-box-trim` は中の行のハーフレディングを削ります。Chrome 154で、10pxの `padding` と2pxの `border` を付けたラベルも、ハーフレディングの分だけ低くなりました（2026年10月確認）。それでも付けないのは、ボタンの大きさを決める余白を1か所にまとめるための、設計上の判断です。削られなくなるのは、`text-box-trim` を指定した要素と、その中の行の間に、`padding` や `border` を持つ要素を挟んだ場合です。枠線を付けた要素は、ラベルの中で入れ子にしません。また、ハーフレディングを削ったぶん、ボタンは低くなります。操作に必要な最小の高さは `min-block-size` で確保し（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）、`align-items: center` でラベルを中央に置けば、高さが増えても上下の空きは同じになります。
 
 ### 和文のラベルで切り取る位置
 
