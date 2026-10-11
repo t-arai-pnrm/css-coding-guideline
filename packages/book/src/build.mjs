@@ -46,31 +46,49 @@ const ctx = {
   },
 };
 
-const sections = [];
+// 章ごとに1つのファイルにする。1つの大きな HTML を組むと、Vivliostyle の組版が文書の大きさに対して急に遅くなるため
+const files = new Map();
+const fileOf = (page) => `${String(volume.dirs.indexOf(page.dir) + 1).padStart(2, '0')}-${page.dir}.html`;
+const keyToFile = new Map(volumeAll.map((page) => [keyOf(page.id), fileOf(page)]));
 for (const page of pages) {
   process.stdout.write(`${page.id}\n`);
-  sections.push(await extractPage(page, ctx));
+  const file = fileOf(page);
+  if (!files.has(file)) files.set(file, []);
+  files.get(file).push(await extractPage(page, ctx));
 }
 await capturer.close();
 
 for (const [name, from] of assets) await copyFile(from, join(outDir, 'assets', name));
 await copyFile(join(HERE, 'src/paper.css'), join(outDir, 'paper.css'));
 
-// 目次：章の概要と節を、ページ番号付きで並べる
-const toc = pages
-  .map((page) => `<li class="${page.slug === 'index' ? 'toc-chapter' : 'toc-section'}"><a href="#page-${keyOf(page.id)}">${page.title}</a></li>`)
-  .join('\n');
+/** ほかのファイルにある要素への参照を、ファイル名付きの href にする */
+const linkAcross = (html, file) =>
+  html.replace(/href="#([^"]+)"/g, (match, id) => {
+    const key = id.startsWith('page-') ? id.slice('page-'.length) : id.split('--')[0];
+    const target = keyToFile.get(key);
+    return target && target !== file ? `href="${target}#${id}"` : match;
+  });
 
 const version = JSON.parse(await readFile(join(HERE, '../../package.json'), 'utf8')).version;
-const html = `<!doctype html>
+const title = `CSSコーディングガイドライン 巻${volume.number} ${volume.title}`;
+const documentOf = (body) => `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>CSSコーディングガイドライン 巻${volume.number} ${volume.title}</title>
+<title>${title}</title>
 <link rel="stylesheet" href="paper.css">
 </head>
 <body>
-<section class="title-page">
+${body}
+</body>
+</html>
+`;
+
+// 扉と目次：章の概要と節を、ページ番号付きで並べる
+const toc = pages
+  .map((page) => `<li class="${page.slug === 'index' ? 'toc-chapter' : 'toc-section'}"><a href="#page-${keyOf(page.id)}">${page.title}</a></li>`)
+  .join('\n');
+const front = `<section class="title-page">
 <p class="book-title">CSSコーディングガイドライン</p>
 <p class="volume-title">巻${volume.number}　${volume.title}</p>
 <p class="book-version">試し組み（v${version}）</p>
@@ -80,10 +98,12 @@ const html = `<!doctype html>
 <ol>
 ${toc}
 </ol>
-</nav>
-${sections.join('\n')}
-</body>
-</html>
-`;
-await writeFile(join(outDir, 'book.html'), html);
-process.stdout.write(`${join(outDir, 'book.html')}（${pages.length}ページ分）を作りました。\n`);
+</nav>`;
+const entries = ['00-front.html', ...files.keys()];
+await writeFile(join(outDir, '00-front.html'), documentOf(linkAcross(front, '00-front.html')));
+for (const [file, sections] of files) await writeFile(join(outDir, file), documentOf(linkAcross(sections.join('\n'), file)));
+
+// Vivliostyle の設定。章のファイルを1つの本として組む
+const config = { title, entryContext: outDir, entry: entries, size: '182mm,235mm', output: join(HERE, 'out', `vol${volume.number}.pdf`) };
+await writeFile(join(outDir, 'vivliostyle.config.json'), `${JSON.stringify(config, null, 2)}\n`);
+process.stdout.write(`${outDir} に、${pages.length}ページ分を${entries.length}個のファイルで作りました。\n`);

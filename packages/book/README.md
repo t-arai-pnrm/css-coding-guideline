@@ -6,11 +6,11 @@
 
 ```sh
 pnpm build                                   # サイトを作り、dist/ を最新にする（ルートで実行）
-pnpm --filter css-coding-guideline-book html # out/vol1/book.html を作る
+pnpm --filter css-coding-guideline-book html # out/vol1/ に章ごとの HTML と Vivliostyle の設定を作る
 pnpm --filter css-coding-guideline-book pdf  # out/vol1.pdf を作る
 ```
 
-巻を選ぶときは、`node src/build.mjs 2` のように番号を渡す。デモの撮影と PDF には Google Chrome を使う。場所が違う場合は、環境変数 `CHROME_PATH` で指定する。`out/` は git の管理外。
+巻を選ぶときは、`node src/build.mjs 2` のように番号を渡す。確認のために組むページを絞るときは、`BOOK_PAGES=values/if-and-attr,layout/sizing` のようにページの ID を渡す。巻は章ごとのファイルに分けて組む（1つの大きな HTML にすると、組版の時間が文書の大きさに対して急に延びる。巻1は1つのファイルで約20分、章ごとで約1分半）。デモの撮影と PDF には Google Chrome を使う。場所が違う場合は、環境変数 `CHROME_PATH` で指定する。`out/` は git の管理外。
 
 ## 設定
 

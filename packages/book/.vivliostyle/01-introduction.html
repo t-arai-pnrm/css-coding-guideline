@@ -1,0 +1,488 @@
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="utf-8">
+<title>CSSコーディングガイドライン 巻1 考え方と基礎</title>
+<link rel="stylesheet" href="paper.css">
+</head>
+<body>
+<section class="page" id="page-introduction_preface" data-title="はじめに">
+<h1>はじめに</h1>
+<p>CSSを実務で書いていると、同じような困りごとに何度も出会います。ボタンの余白を直したら、別のページの見出しまで動くことがあります。同じカードの部品なのに、メインの列とサイドバーで別々のCSSが書かれていることもあります。デザインカンプどおりに組んだ一覧が、長い見出しや画像のない記事が入った途端に崩れることや、書いた宣言が効かない理由を説明できず、<code dir="auto">!important</code> を足して済ませることもあるでしょう。</p>
+<p>こうした問題の原因は、個々の書き間違いより手前にあることがほとんどです。1つは、カスケードや継承、レイアウトの計算の仕組みを知らないまま、見た目が合うまで値を足していることです。仕組みを知らなければ、宣言がなぜ効かないのか、なぜほかの場所まで変わったのかを説明できません。もう1つは、部品がどこまでの見た目に責任を持ち、どの値を外から変えてよいのかを決めないまま書いていることです。責任の範囲が決まっていないと、同じ部品でも置き場所ごとに上書きが積み重なり、関わる人が増えるほど影響を追えなくなります。</p>
+<p>本書は、この2つの原因に、CSSの仕組みの理解と、実務で使える書き方の規約の両面から答えるための本です。仕組みを知っていれば、思いどおりにならない理由を自分で突き止められます。規約があれば、チームの誰が書いても、同じ理由で同じ書き方を選べます。</p>
+<h2 id="introduction_preface--仕組みと規約で答える方針">仕組みと規約で答える方針</h2>
+<p>本書は、3つのことに取り組みます。1つ目は、マージンの相殺、インライン要素のベースライン、<code dir="auto">display</code> の内側と外側の表示種別のように、知っているつもりで誤解しやすい古くからの仕組みを、仕様にもとづいて説明し直すことです。崩れた表示の原因の多くは、こうした基礎の仕組みで説明がつきます。</p>
+<p>2つ目は、ここ数年で使えるようになった機能と、それを前提にした書き方を、理由とともに示すことです。<code dir="auto">@scope</code>、カスケードレイヤー、コンテナクエリ、<code dir="auto">:has()</code> は、部品の範囲や優先順位を、命名の注意ではなくブラウザの仕組みで守るための道具です。新しい機能を紹介するだけでなく、古い書き方のどこに問題があり、新しい書き方で何が解決するのかを示します。</p>
+<p>3つ目は、新旧の知識を組み合わせて、保守しやすく崩れにくいCSSを書くための判断の基準を、ルールとして示すことです。各ルールには理由を添え、そのルールが仕様上の制約なのか、条件つきの判断なのか、本書が選んだ規約なのかも区別しています。理由と性質が分かれば、ルールが想定していない場面でも、同じ考え方で判断できます。</p>
+<h2 id="introduction_preface--読み終えたときにできること">読み終えたときにできること</h2>
+<p>本書を読み終えると、崩れた表示の原因を、カスケードとレイアウトの仕組みから説明できるようになります。宣言が効かないときに詳細度とレイヤーの順位を確かめ、要素がはみ出したときに大きさを決めている規則を突き止める、という手順で原因を探せます。</p>
+<p>部品については、どこで部品を分け、外から変えてよい値をどれにするかを決められるようになります。長い見出し、画像のない記事、件数の変化、置き場所の幅の変化に対して、どの部品が何を受け持つかを、書く前に判断できます。</p>
+<p>チームについては、内容や画面幅が変わるサイトに、共有できる規約を導入できるようになります。本書のルールには理由と性質を添えているので、チームの事情に合わせて採り入れるものと置き換えるものを選び、レビューの根拠として使えます。</p>
+<p>CSSの難しさの多くは、仕組みを知ることで説明がつくものです。そして、デザインをコードで思いどおりに表現できれば、ほかの言語にはない面白さを味わえます。本書が、その面白さにたどり着くための手がかりになれば幸いです。</p>
+<h2 id="introduction_preface--次に読むページ">次に読むページ</h2>
+<p>続けて、本書の対象読者と全体の構成を「<a href="#page-introduction_about" class="xref">本書について</a>」で確かめてください。本書の書き方を先に手元で動かしたいときは、「<a href="#page-introduction_quick-start" class="xref">最小の構成で始める</a>」の課題から始められます<span class="note-ref">※1</span>。本書がいまの方針を採る背景にあるIE11のサポート終了やAIの普及は、「<a href="#introduction_about--本書の背景" class="xref">本書について</a>」で述べます。</p><aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>各ページの約束事は「<a href="#page-introduction_how-to-read" class="xref">本書の読み方</a>」に、スタイルを素のCSSで書く理由は「<a href="#page-introduction_why-plain-css" class="xref">素のCSSで書く理由</a>」</li></ol></aside>
+</section>
+<section class="page" id="page-introduction_about" data-title="本書について">
+<h1>本書について</h1>
+<p>本書は、実務でCSSを書く人のためのコーディングガイドラインです。CSSの記法と、その記法を選ぶ理由になる知識を、1冊の技術書の分量でまとめています。各節では、なぜそう書くのかを文章で説明し、最後に守るべきルールを一覧にしています。</p>
+<p>本書のルールは、私が実務で使っている書き方をもとにしています。考え方や実装、日々の案件での判断を、1つの体系に整理し直したものです。</p>
+<p>そのため、本書のルールには性質の違うものが混ざっています。守らないと表示の崩れやアクセシビリティの問題が起きる、仕様やブラウザの挙動にもとづく制約があります。状況とトレードオフで決まり、適用する条件がある実装上の判断もあります。どちらで書いても正しく動くなかから、保守のしやすさや書き方の統一のために私が選んだ規約もあります。各ルールがどれに当たるかは、ルールごとに「性質」として示しています<span class="note-ref">※1</span>。</p>
+<h2 id="introduction_about--対象読者">対象読者</h2>
+<p>主な読者として想定しているのは、HTMLとCSSの基本的な構文は書けるものの、書き方の判断に迷うことがある実務1〜3年目のコーダーです。セレクタやプロパティの書き方そのものは説明しません。その代わり、カスケードや詳細度、コンテナサイズクエリの副作用のように、知っているつもりでも誤解しやすい仕組みを説明し直しています。</p>
+<p>経験を積んだ方には、チームで書き方をそろえるときの根拠として使えます。各ルールに理由を添えているので、レビューで指摘するときの説明にもそのまま使えます。</p>
+<p>題材は、コーポレートサイトやランディングページ、メディアサイトのようなWebサイト制作です。静的なサイトとCMSの両方を扱います。特定のフレームワークに依存しない書き方を基本にしているので、AstroやVue、Reactのコンポーネントにもそのまま当てはめられます。</p>
+<h2 id="introduction_about--読み終えて判断できるようになること">読み終えて判断できるようになること</h2>
+<p>本書を読み終えて判断できるようになる3つのこと（崩れの原因の説明、部品の境界と公開する値、チームの規約の導入）は、「<a href="#introduction_preface--読み終えたときにできること" class="xref">はじめに</a>」で説明しています。ここでは、それぞれをどの部で身につけるかを示します。</p>
+<p>1つ目の判断の土台は、第II部の基礎編で扱うカスケードとレイアウトの仕組みです。2つ目は、第III部の設計編で、部品の範囲を <code dir="auto">@scope</code> で区切り、値を公開プロパティで受け渡す方法として身につけます。第IV部の実装編では、その部品を長い見出し、画像の欠け、件数や置き場所の幅の変化に耐えるように組み立てます。3つ目は、第V部の運用編で、Stylelintとレビューを使ってチームの規約として定着させる方法を扱います。</p>
+<h2 id="introduction_about--本書の構成">本書の構成</h2>
+<p>本書は6つの部と21の章で構成しています。前から順に読めるように並べていますが、必要な章だけを拾い読みしてもかまいません<span class="note-ref">※2</span>。</p>
+<ul>
+<li>第I部「CSSコーディングにおけるマインドセット」：CSSとどう向き合うかを扱う章です。CSSの捉え方と学び方、本書のルールの前提になる方針（第1章）、CSS設計の考え方（第2章）、デザインを再現する姿勢（第3章）を扱います。この部の考え方の節には、ルールを置いていません。</li>
+<li>第II部「基礎編」：CSSの仕組みを正しく理解するための章です。カスケードの制御（第4章）、擬似クラスと擬似要素（第5章）、値と単位（第6章）、レイアウトの仕組み（第7章）を扱います。</li>
+<li>第III部「設計編」：壊れにくい構造をつくるための章です。リセットとベーススタイル（第8章）、記法の規約（第9章）、コンポーネントとカスタムプロパティ（第10章）を扱います。</li>
+<li>第IV部「実装編」：レイアウトと表現を組み立てる章です。レイアウトを組む方法（第11章）とレイアウトコンポジション（第12章）を扱います。そのうえで、レスポンシブデザイン（第13章）、タイポグラフィと和文組版（第14章）、色（第15章）、画像・装飾（第16章）、インタラクション（第17章）、モーション（第18章）を扱います。</li>
+<li>第V部「運用編」：実務で使い続けるための章です。Stylelintによる検証、レビューの進め方、表示と操作の確かめ方、開発者ツールでの原因の調べ方、CMSの本文エリアのスタイル、既存のサイトへの段階的な導入（第19章）を扱います。あわせて、AIに規約を読ませ、計画と検証を挟みながらコーディングさせる進め方（第20章）も扱います。</li>
+<li>第VI部「演習編」：ここまでの章で学んだことを、1つの題材でつなぐ章です。記事のカードと一覧を作り、要件を1つずつ変えながら、直す場所と直さずに済む場所を確かめます（第21章）。</li>
+</ul>
+<p>「はじめに」には、このページのほかに4つのページを置いています。読む順は、本書を書いた理由の「<a href="#page-introduction_preface" class="xref">はじめに</a>」、このページ、本書の書き方を試せる「<a href="#page-introduction_quick-start" class="xref">最小の構成で始める</a>」、各ページの約束事をまとめた「<a href="#page-introduction_how-to-read" class="xref">本書の読み方</a>」、スタイルを素のCSSで書く理由を述べた「<a href="#page-introduction_why-plain-css" class="xref">素のCSSで書く理由</a>」です。</p>
+<p>巻末には、付録A「<a class="xref-out">ルール一覧</a>（巻3）」、付録B「<a class="xref-out">モダンな書き方への置き換え表</a>（巻3）」、付録C「<a class="xref-out">Sassの機能を素のCSSで置き換える</a>（巻3）」、付録D「<a class="xref-out">レビューのチェックリスト</a>（巻3）」を用意しています。続いて、付録E「<a class="xref-out">用語集</a>（巻3）」、付録F「<a class="xref-out">更新履歴</a>（巻3）」、付録G「<a class="xref-out">参考資料</a>（巻3）」、付録H「<a class="xref-out">CSS-in-JSと素のCSSの比較</a>（巻3）」、付録I「<a class="xref-out">デモの共通トークン</a>（巻3）」、付録J「<a class="xref-out">AIツールで使う</a>（巻3）」、付録K「<a class="xref-out">困りごとから引く</a>（巻3）」があります。デモのCSSは色や文字の大きさをトークンで参照しているので、コード例やデモを手元で試すときは、付録Iで値を確かめてください。</p>
+<p>各章の最初には概要のページがあり、その章で扱う問題と、各節の要点をまとめています。どこから読むか迷ったら、概要のページから目を通してください。</p>
+<h2 id="introduction_about--ルールの出どころと更新">ルールの出どころと更新</h2>
+<p>本書のルールは、2026年9月時点の私の書き方にもとづいています。CSSは今も新しい機能が増え続けていて、ブラウザの対応状況も変わります。そのため、時間とともに変わる記述には、確認した年月を添えています。ブラウザの対応状況は、Web標準の対応データ（web-features）から自動で表示しています。</p>
+<p>本書にはバージョン番号を付けています。ルールを変えたり削除したりしたときはメジャーバージョンを、ルールを追加したときはマイナーバージョンを上げます。ただし、執筆中の <code dir="auto">0.x</code> の間は、ルールを変えたり削除したりしたときもマイナーバージョンを上げます。すべての章の内容を私が確認した時点で、<code dir="auto">1.0.0</code> にする予定です。変更の内容は、付録F「<a class="xref-out">更新履歴</a>（巻3）」に記録します。</p>
+<h2 id="introduction_about--aiにも読ませるガイドライン">AIにも読ませるガイドライン</h2>
+<p>本書は、人が読む技術書であると同時に、AIのコーディングエージェントに参照させるドキュメントも兼ねています。AIにCSSを書かせると、<code dir="auto">100vh</code> や <code dir="auto">min-width</code> のメディアクエリのような古い書き方がよく出てきます。本書のルールをAIに読ませれば、どの規約で書くかをIDで指示できます。ただし、読ませたからといって、生成されたコードがルールに沿うとは限りません。出力はStylelintとレビューで確かめる必要があります。</p>
+<p>各ページの「ガイドライン」と付録A「<a class="xref-out">ルール一覧</a>（巻3）」は、AI向けのスキルやMCPサーバーと同じデータから作っているので、人が読むルールとAIに渡すルールは食い違いません<span class="note-ref">※3</span>。</p>
+<p>AIが1ページだけを読む場合に備えて、各ページは単体で意味が通るように書いています。ほかのページの内容に触れるときは、リンクと一言の要約を添えています。</p>
+<h2 id="introduction_about--本書の背景">本書の背景</h2>
+<p>本書が仕組みの理解と規約の両面から答える方針を採るのには、ここ数年の環境の変化が関わっています。1つは、2022年6月16日（日本時間）に、Windows 10の主なエディションでInternet Explorer 11（IE11）のデスクトップアプリケーションのサポートが終了したことです。それまで多くの案件はIE11での表示を求められ、カスタムプロパティやGridのような機能を、フォールバックなしでは使えませんでした。その後もコンテナクエリ、カスケードレイヤー、<code dir="auto">:has()</code>、ネストが主要なブラウザに実装され、数年前には書けなかったCSSが書けるようになっています。一方で、機能が次々に増えたことで全体を把握しにくくなり、IE11の時代の制約を前提にした書き方が今も多くの現場で続いています。本書が新しい書き方を勧める箇所の多くは、この差を埋めるためのものです。</p>
+<p>同じ時期に、React、Vue、Astroのようなコンポーネントのフレームワークや、Tailwind CSSのようなユーティリティファーストの手法が広まりました。ただ、道具が増えても、ブラウザが最後に解釈するのはCSSです。部品の責任の範囲を決めるというBEMやOOCSSの考え方は今も変わらず、変わったのは、その範囲を命名の規則ではなく <code dir="auto">@scope</code> やカスケードレイヤーで守れるようになったことです<span class="note-ref">※4</span>。</p>
+<p>さらに、AIがHTMLとCSSを書くようになり、書き方の規約は、人とAIが共有する土台にもなりました。規約がなければ、AIはページごとにその場で考えた書き方を出力するからです。AIは既存のコードに倣って書くので、コードを安く書けるようになった今も、コードの質は次に書かれるコードの質を左右します<span class="note-ref">※5</span><span class="note-ref">※6</span>。</p>
+<h2 id="introduction_about--ライセンス">ライセンス</h2>
+<p>本書の文章は、<a href="https://creativecommons.org/licenses/by/4.0/deed.ja">クリエイティブ・コモンズ 表示 4.0 国際（CC BY 4.0）</a>で公開しています。出典を示せば、転載や翻訳、改変ができます。</p>
+<p>本書のコード例は、<a href="https://opensource.org/license/mit-0">MIT No Attribution（MIT-0）</a>で公開しています。著作権の表示も不要なので、自分のプロジェクトにそのまま貼り付けて使ってください。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>「<a href="#page-introduction_how-to-read" class="xref">本書の読み方</a>」</li><li><span class="note-mark">※2</span>初めて読むときに、一部の節を読めば足りる章とその読み方は、「<a href="#introduction_how-to-read--初めて読むときの順番" class="xref">本書の読み方</a>」</li><li><span class="note-mark">※3</span>ツールごとの設定方法は付録J「<a class="xref-out">AIツールで使う</a>（巻3）」で、AIに書かせるときの準備と進め方、生成されたコードの確かめ方は第20章「<a class="xref-out">AIにコーディングさせる</a>（巻3）」</li><li><span class="note-mark">※4</span>「<a href="03-design-mindset.html#page-design-mindset_what-is-css-design" class="xref">2-1 CSS設計のマインドセット</a>」</li><li><span class="note-mark">※5</span>「<a href="03-design-mindset.html#design-mindset_maintainability--aiがコードを書いても質が要る理由" class="xref">2-3 保守しやすさを最優先にする</a>」</li><li><span class="note-mark">※6</span>AIに任せる範囲と、生成されたコードを人が確かめる手順は第20章「<a class="xref-out">AIにコーディングさせる</a>（巻3）」</li></ol></aside><h2 id="introduction_about--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/ja-jp/lifecycle/announcements/internet-explorer-11-support-end-dates">Internet Explorer 11 デスクトップ アプリのサポート終了 | Microsoft Learn</a></li>
+<li><a href="https://x.com/tak_dcxi/status/2029063669435515083">AI時代のWeb制作メモ書き</a>（X、2026年3月4日）</li>
+</ul>
+</section>
+<section class="page" id="page-introduction_quick-start" data-title="最小の構成で始める">
+<h1>最小の構成で始める</h1>
+
+<p>本書の書き方を手元で試すには、HTML、エントリーポイントのCSS、kiso.css、トークン、コンポーネントの5種類のファイルがあれば足ります。このページの前半では、この構成でお知らせのカードを表示し、見出しの色を1つ変えるところまでを試します。</p>
+<p>構成には、カスケードレイヤー、トークンの階層、公開プロパティと内部プロパティ、本書独自の命名といった設計の要素が含まれています。前半では、それぞれの役割を一言で示すだけにとどめます。仕組みは本編で順に説明するので、詳しい読み方は、本編を読み進めてから後半の「<a href="#introduction_quick-start--この構成の読み方">この構成の読み方</a>」以降に戻って確かめてください。前半で出てくる名前の意味は、後半の「<a href="#introduction_quick-start--命名の早見表">命名の早見表</a>」で引けます。</p>
+<h2 id="introduction_quick-start--課題1お知らせのカードを表示する">課題1：お知らせのカードを表示する</h2>
+<p>ファイルは次のように置きます。kiso.cssは、kiso.cssの<a href="https://github.com/tak-dcxi/kiso.css">GitHubのリポジトリ</a>からダウンロードし、エントリーポイントの <code dir="auto">style.css</code> と同じ場所に置きます。</p>
+<figure class="code"><figcaption>ファイルの配置</figcaption><pre><code><span style="--0:#d6deeb;--1:#403f53">index.html</span>
+<span style="--0:#d6deeb;--1:#403f53">css/</span>
+<span style="--0:#d6deeb;--1:#403f53">├── style.css           … エントリーポイント</span>
+<span style="--0:#d6deeb;--1:#403f53">├── kiso.css            … リセットCSS</span>
+<span style="--0:#d6deeb;--1:#403f53">├── tokens/</span>
+<span style="--0:#d6deeb;--1:#403f53">│   ├── colors.css      … 色のトークン</span>
+<span style="--0:#d6deeb;--1:#403f53">│   └── sizes.css       … 余白と角丸のトークン</span>
+<span style="--0:#d6deeb;--1:#403f53">└── components/</span>
+<span class="indent"><span style="--0:#d6deeb;--1:#403f53">    </span></span><span style="--0:#d6deeb;--1:#403f53">└── news-card.css   … コンポーネント</span></code></pre></figure>
+<p>HTMLは、エントリーポイントの <code dir="auto">style.css</code> だけを読み込みます。カードのルートの要素には <code dir="auto">class="scoped news-card"</code> を付けます。これがコンポーネントの目印です。</p>
+<figure class="code"><figcaption>index.html</figcaption><pre><code><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;!</span><span style="--0:#CAECE6">doctype</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">html</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">html</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">lang</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">ja</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">head</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">meta</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">charset</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">utf-8</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">meta</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">name</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">viewport</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">content</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">width=device-width, initial-scale=1</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">title</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">最小の構成</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">title</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">link</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">rel</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">stylesheet</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">href</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">css/style.css</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">head</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">body</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">article</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">class</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">scoped news-card</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span>
+<span class="indent">      </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">h2</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">サイトを公開しました</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">h2</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">      </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">time</span><span style="--0:#7FDBCA"> </span></span><span style="--0:#C5E478;--1:#3B61B0">datetime</span><span style="--0:#7FDBCA;--1:#8844AE">=</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">2026-10-01</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#7FDBCA;--1:#8844AE">&gt;</span><span style="--0:#D6DEEB;--1:#403F53">2026年10月1日</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">time</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">      </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">最初のお知らせです。</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">p</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">    </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">article</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span class="indent">  </span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">body</span><span style="--0:#7FDBCA">&gt;</span></span>
+<span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">html</span><span style="--0:#7FDBCA">&gt;</span></span></code></pre></figure>
+<p>エントリーポイントには、レイヤーの順番の宣言と、各ファイルの読み込みだけを書きます。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: css/style.css でレイヤーの順番を宣言し、各ファイルを割り当てる</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/**</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* サイト全体のスタイルの入り口。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* レイヤーの順番を宣言し、各ファイルをレイヤーに割り当てる。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*/</span>
+<span style="--0:#C792EA;--1:#8844AE">@layer</span><span style="--0:#D6DEEB;--1:#403F53"> tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;</span>
+
+<span style="--0:#C792EA;--1:#8844AE">@import</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">url</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">kiso.css</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">) layer</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#D6DEEB;--1:#403F53">reset</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">@import</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">url</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">./tokens/colors.css</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">) layer</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#D6DEEB;--1:#403F53">tokens</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">@import</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">url</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">./tokens/sizes.css</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">) layer</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#D6DEEB;--1:#403F53">tokens</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#C792EA;--1:#8844AE">@import</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">url</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">./components/news-card.css</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">) layer</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#D6DEEB;--1:#403F53">components</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53">;</span></code></pre></figure>
+<p>トークンのファイルには、サイト全体で使う色と余白の値を書きます。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: css/tokens/colors.css にプリミティブとセマンティクスの色を定義する</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/**</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* 色のトークン。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* プリミティブの色と、役割を表すセマンティクスの色を定義する。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*/</span>
+<span style="--0:#C5E478;--1:#3B61B0">:root</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--color--neutral--100</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">oklch</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--1:#AA0982"><span style="--0:#F78C6C">97</span><span style="--0:#FFEB95">%</span></span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">0</span><span style="--0:#FFEB95">deg</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--color--neutral--600</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">oklch</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--1:#AA0982"><span style="--0:#F78C6C">43.9</span><span style="--0:#FFEB95">%</span></span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">0</span><span style="--0:#FFEB95">deg</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--color--accent--600</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">oklch</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--1:#AA0982"><span style="--0:#F78C6C">52</span><span style="--0:#FFEB95">%</span></span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">0.16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">250</span><span style="--0:#FFEB95">deg</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--background--surface</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--color--neutral--100</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--foreground--accent</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--color--accent--600</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--foreground--muted</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--color--neutral--600</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<figure class="code"><figcaption>🙆‍♂ Recommended: css/tokens/sizes.css に余白を単位なしの数値で定義する</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/**</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* 余白と角丸のトークン。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* 余白はピクセル相当の数値で定義し、使う場所で単位に変換する。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*/</span>
+<span style="--0:#C5E478;--1:#3B61B0">:root</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--spacing--xxs</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">8</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--spacing--md</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">24</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">--rounded--md</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">8</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p>コンポーネントのファイルには、カード1つ分のスタイルを書きます。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: css/components/news-card.css で、カード1つ分を @scope に閉じ込める</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/**</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* お知らせのカード。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* 一覧としての並べ方は、置く側のレイアウトが受け持つ。</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* @prop {color} --news-card--accent [var(--foreground--accent)] - 見出しの色</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* @example</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* &lt;article class="scoped news-card" style="--news-card--accent: oklch(50% 0.17 30deg)"&gt;</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*   ...</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">* &lt;/article&gt;</span>
+<span class="indent"><span style="--0:#919F9F;--1:#5F636F"> </span></span><span style="--0:#919F9F;--1:#5F636F">*/</span>
+
+<span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.news-card) to (.scoped) {</span>
+<span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">:scope</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#C5E478;--1:#3B61B0">--_accent</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--news-card--accent</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--foreground--accent</span><span style="--0:#D6DEEB;--1:#403F53">));</span>
+
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">display</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">block</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#FF6D6D;--1:#984E4D">grid</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">gap</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--spacing--xxs</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">padding</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--spacing--md</span><span style="--0:#D6DEEB;--1:#403F53">) </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">border-radius</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--rounded--md</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">background-color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--background--surface</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">h2</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--_accent</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">20</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+
+<span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">time</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--foreground--muted</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
+<span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p><code dir="auto">index.html</code> をブラウザで開くと、淡い灰色の背景のカードに、青い見出し、日付、本文が表示されます。背景色や見出しの色が付かないときは、開発者ツールのネットワークのパネルで、CSSのファイルがすべて読み込まれているかを確かめてください。</p>
+<h2 id="introduction_quick-start--課題2見出しの色を1つ変える">課題2：見出しの色を1つ変える</h2>
+<p>カードの見出しの色は、使う側から変えられるようにしてあります。<code dir="auto">index.html</code> のカードの <code dir="auto">article</code> 要素に、<code dir="auto">style="--news-card--accent: oklch(50% 0.17 30deg)"</code> のように属性を足すと、そのカードの見出しだけが赤みのある色に変わります。コンポーネントのCSSは書き換えません。</p>
+<p>次のデモは、この構成と同じCSSで、カードを2枚並べたものです。2枚目のカードにだけ、<code dir="auto">style</code> 属性で <code dir="auto">--news-card--accent</code> に値を渡しています。1枚目の見出しはトークンの青、2枚目の見出しは渡した色で表示されます。</p>
+<figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 100.00%"><img src="img/demo-79ed172d023f-720.png" alt=""><p class="shot-label">幅 720px</p></div></div><figcaption>図序-1　最小の構成で表示したお知らせのカード</figcaption></figure>
+<p><code dir="auto">--news-card--accent</code> は、このカードが外から値を受け取るために用意した入り口です。値を渡さなかった1枚目は、コンポーネントに書いたデフォルトの色を使います。入り口を用意した値だけを外から変え、それ以外の見た目はコンポーネントの中で決めるのが、本書の部品の作り方です<span class="note-ref">※1</span>。</p>
+<p>ここまでで、本書の構成を手元で動かせました。以降は参照のための説明です。本編のコード例を試すときや、構成の各部分の意味を確かめたくなったときに戻ってください。</p>
+<h2 id="introduction_quick-start--この構成の読み方">この構成の読み方</h2>
+<p>エントリーポイントの先頭の <code dir="auto">@layer</code> 文は、9つのレイヤーの順番を決めています。その後ろの <code dir="auto">@import</code> は、各ファイルを <code dir="auto">layer()</code> で指定したレイヤーに割り当てます。レイヤーの順番は先頭の <code dir="auto">@layer</code> 文で決まるので、<code dir="auto">@import</code> を並べる順番には左右されません<span class="note-ref">※2</span>。<code dir="auto">css</code> ディレクトリの中は、このレイヤーの分類に合わせてディレクトリを分けています。</p>
+<p>コンポーネントのファイルには <code dir="auto">@layer components { … }</code> を書いていません。エントリーポイントの <code dir="auto">@import</code> に <code dir="auto">layer(components)</code> を付けているので、ファイルの中身がすべて <code dir="auto">components</code> レイヤーに入ります。<code dir="auto">&lt;head&gt;</code> の中の <code dir="auto">&lt;style&gt;</code> のように、<code dir="auto">@import</code> で読み込まないCSSでは、<code dir="auto">@layer</code> を自分で書きます。</p>
+<p>トークンの色は、プリミティブ（<code dir="auto">--color--…</code>）と、役割を表すセマンティクス（<code dir="auto">--foreground--…</code> など）の2層にしています。余白のトークンは単位を付けずに定義し、使う場所で単位に変換します<span class="note-ref">※3</span>。</p>
+<p>コンポーネントのスタイルは、<code dir="auto">@scope (.scoped.&lt;名前&gt;) to (.scoped)</code> の中に書きます。子要素は <code dir="auto">h2</code> や <code dir="auto">time</code> のようなタイプセレクタで選ぶので、クラスを付けていません。<code dir="auto">_</code> で始まる子クラスを付けるのは、同じ種類の要素を役割で区別するときと、<code dir="auto">div</code> と <code dir="auto">span</code> に役割を示すときだけです<span class="note-ref">※4</span>。外から変えてよい見出しの色は、公開プロパティ <code dir="auto">--news-card--accent</code> として受け取り、<code dir="auto">:scope</code> で内部プロパティ <code dir="auto">--_accent</code> に受けます。渡されなかったときのデフォルト値は、<code dir="auto">var()</code> のフォールバックに書いています<span class="note-ref">※5</span>。</p>
+<p>デモのCSSのタブは、本文のコード例と違い、省略のない全体です。トークンを <code dir="auto">@layer tokens { … }</code> で、コンポーネントを <code dir="auto">@layer components { … }</code> で包み、1つのファイルにまとめています。カードを並べるための余白は、置く側の <code dir="auto">demo-layout</code> のスコープに書いています。デモの枠には、レイヤーの順番の宣言と、<code dir="auto">reset</code> レイヤーに入れたkiso.cssを読み込んでいるので、CSSのタブにはエントリーポイントにあたる記述がありません。</p>
+<p>この構成は、ビルドツールを用意せずに本書の書き方を試すための学習用です。エントリーポイントの <code dir="auto">@import</code> をブラウザがそのまま読むので、各ファイルの読み込みが直列になり、最初の表示が遅れます。実務では、同じファイル構成のまま、ビルドツールで <code dir="auto">@import</code> を展開して1つのCSSにしてから配信します。本書のルールの <code dir="auto">import-resolved-at-build</code> も、この展開を求めています。学習や検証のため、ビルドせずに試す場合だけを例外にしています（「<a href="05-cascade.html#cascade_layers--rule-import-resolved-at-build" class="xref-rule" data-label="4-3">4-3 カスケードレイヤーで順位を決める</a>」）。</p>
+<h2 id="introduction_quick-start--本文のコード例だけでは動かない理由">本文のコード例だけでは動かない理由</h2>
+<p>本文のコード例は、説明に必要な部分だけを抜き出したものです。「<a href="#page-introduction_how-to-read" class="xref">本書の読み方</a>」で説明しているとおり、ほとんどのコード例ではカスケードレイヤー（<code dir="auto">@layer</code>）の記述を省略しています。<code dir="auto">._main-link</code> のように <code dir="auto">_</code> で始まるクラスのルールは、<code dir="auto">@scope</code> の中に書く前提で、<code dir="auto">@scope</code> の記述も省略していることがあります。</p>
+<p>コード例が参照しているトークンも、別のファイルで定義されている前提です。たとえば <code dir="auto">color: var(--foreground--muted);</code> だけを貼り付けると、<code dir="auto">--foreground--muted</code> がどこにも定義されていないので、<code dir="auto">var()</code> の参照が無効になります。このとき <code dir="auto">color</code> はエラーにならず、親から継承した色のまま表示されます。説明している機能が動かないように見えても、原因はトークンがないことかもしれません。</p>
+<p>本文のコード例を試すときは、この構成のコンポーネントのファイルへ貼り付け、コード例が参照するトークンを「<a class="xref-out">10-4 デザイントークン</a>（巻2）」の定義から足してください。この構成のトークンは、カードに必要なものだけを定義しています。<code dir="auto">--foreground--base</code> のような色のトークンや、<code dir="auto">--ease--out-quint</code> のようなイージングのトークンも、そのページで定義しています。</p>
+<h2 id="introduction_quick-start--kisocssを読み込むほかの方法">kiso.cssを読み込むほかの方法</h2>
+<p>本文では <code dir="auto">@import url("kiso.css") layer(reset);</code> と書いていますが、ブラウザはこの <code dir="auto">kiso.css</code> を、書いたCSSファイルと同じ場所にあるファイルのURLとして読みます。課題1でファイルを <code dir="auto">style.css</code> の隣に置いたのは、そのためです。npmでパッケージをインストールしただけでは、<code dir="auto">node_modules</code> の中のファイルは読まれません。</p>
+<p>ファイルを置かずに、CDNのURLを直接書く方法もあります。kiso.cssのREADMEは、jsDelivrで配信しているファイルのURLを案内しています。URLにバージョンを書いておけば、kiso.cssが更新されても、知らないうちに見た目が変わることはありません。</p>
+<figure class="code"><figcaption>🙆‍♂ Recommended: CDNのURLから reset レイヤーに読み込む</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@layer</span><span style="--0:#D6DEEB;--1:#403F53"> tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;</span>
+
+<span style="--0:#C792EA;--1:#8844AE">@import</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">url</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">https://cdn.jsdelivr.net/npm/kiso.css@1.2.4/kiso.css</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">) layer</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#D6DEEB;--1:#403F53">reset</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53">;</span></code></pre></figure>
+<p>npmでインストールする場合（<code dir="auto">npm install kiso.css</code>）は、CSSの <code dir="auto">@import</code> でパッケージ名を解決するビルドツールが必要です。Viteは、CSSの <code dir="auto">@import</code> を <code dir="auto">postcss-import</code> で展開し、その過程で <code dir="auto">node_modules</code> の中のパッケージも探します。 この場合は、エントリーポイントの <code dir="auto">@import url("kiso.css") layer(reset);</code> が、パッケージに含まれる <code dir="auto">kiso.css</code> を指します。</p>
+<p>同じ <code dir="auto">@import url("kiso.css")</code> でも、ブラウザが直接読むときは隣にあるファイルを、ビルドツールが処理するときはパッケージを指します。手元で試すときに <code dir="auto">kiso.css</code> が読み込まれていないようなら、開発者ツールのネットワークのパネルで、どのURLを読みにいったのかを確かめてください。</p>
+<h2 id="introduction_quick-start--命名の早見表">命名の早見表</h2>
+<p>本書のコード例には、CSSの構文ではなく、本書の規約で決めている名前が多く出てきます。どれも先頭の記号で種類を見分けられるようにしています。接頭辞のないコンポジションとパターンは、配置の名前か役割の名前かで見分けます。各行の詳しい説明は、右の列のページにあります。</p>
+<table>
+<thead>
+<tr>
+<th>記法</th>
+<th>例</th>
+<th>意味</th>
+<th>詳しい節</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">scoped &lt;名前&gt;</code></td>
+<td><code dir="auto">class="scoped news-card"</code></td>
+<td>コンポーネントのルート。<code dir="auto">scoped</code> は、外側のスコープの下限にもなる</td>
+<td><a class="xref-out">9-3</a>（巻2）、<a class="xref-out">9-1</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">scoped page-&lt;スラッグ&gt;</code></td>
+<td><code dir="auto">class="scoped page-about"</code></td>
+<td>ページ固有のスタイルのルート</td>
+<td><a class="xref-out">9-3</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">._&lt;名前&gt;</code></td>
+<td><code dir="auto">._main-link</code>、<code dir="auto">._sub-link</code></td>
+<td>コンポーネントの子要素のうち、同じ種類の要素を役割で区別するものと、<code dir="auto">div</code> と <code dir="auto">span</code> の役割を示すもの。スコープの中だけで意味を持つ</td>
+<td><a class="xref-out">9-1</a>（巻2）、<a class="xref-out">10-2</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">.-&lt;名前&gt;</code></td>
+<td><code dir="auto">.-visually-hidden</code>、<code dir="auto">.-fluid-text--md</code></td>
+<td>ユーティリティ。段階や種類は <code dir="auto">--</code> で続ける</td>
+<td><a class="xref-out">9-1</a>（巻2）、<a class="xref-out">10-3</a>（巻2）</td>
+</tr>
+<tr>
+<td>接頭辞なし（配置の名前）</td>
+<td><code dir="auto">.cluster</code>、<code dir="auto">.switcher</code></td>
+<td>コンポジション（配置のパターン）</td>
+<td><a class="xref-out">9-1</a>（巻2）、<a class="xref-out">10-3</a>（巻2）</td>
+</tr>
+<tr>
+<td>接頭辞なし（役割の名前）</td>
+<td><code dir="auto">.section-heading</code>、<code dir="auto">.icon</code></td>
+<td>パターン（静的な見た目の断片）。コンポーネントが変える値は <code dir="auto">--&lt;パターン&gt;--&lt;プロパティ&gt;</code> で受け取る</td>
+<td><a class="xref-out">9-1</a>（巻2）、<a class="xref-out">10-3</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">--&lt;分類&gt;--&lt;名前&gt;</code></td>
+<td><code dir="auto">--color--accent--600</code>、<code dir="auto">--spacing--md</code></td>
+<td>デザイントークン</td>
+<td><a class="xref-out">10-4</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">--&lt;役割&gt;--&lt;バリエーション&gt;</code></td>
+<td><code dir="auto">--foreground--muted</code></td>
+<td>役割を表す色のトークン</td>
+<td><a class="xref-out">10-4</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">--&lt;コンポーネント&gt;--&lt;プロパティ&gt;</code></td>
+<td><code dir="auto">--news-card--accent</code></td>
+<td>公開プロパティ。外から値を渡してよい</td>
+<td><a class="xref-out">10-5</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">--_&lt;名前&gt;</code></td>
+<td><code dir="auto">--_accent</code></td>
+<td>内部プロパティ。コンポーネントの中だけで使う</td>
+<td><a class="xref-out">10-5</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">--_&lt;名前&gt;--&lt;状態&gt;</code></td>
+<td><code dir="auto">--_background--hocus</code></td>
+<td>状態やモードごとの値</td>
+<td><a class="xref-out">10-5</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">--&lt;名前&gt;</code>（値として使う名前）</td>
+<td><code dir="auto">@keyframes --fade-in</code></td>
+<td>自分で付けて値として使う名前</td>
+<td><a class="xref-out">9-1</a>（巻2）</td>
+</tr>
+<tr>
+<td><code dir="auto">data-variant</code></td>
+<td><code dir="auto">data-variant="featured"</code></td>
+<td>コンポーネントのバリエーション</td>
+<td><a class="xref-out">9-1</a>（巻2）</td>
+</tr>
+<tr>
+<td>擬似クラス、ARIA属性</td>
+<td><code dir="auto">:checked</code>、<code dir="auto">[aria-selected="true"]</code></td>
+<td>状態。<code dir="auto">.is-active</code> のような状態クラスは使わない</td>
+<td><a class="xref-out">17-3</a>（巻3）</td>
+</tr>
+<tr>
+<td>9つのレイヤー名</td>
+<td><code dir="auto">tokens</code>、<code dir="auto">components</code></td>
+<td>レイヤー名。値として使わないので <code dir="auto">--</code> を付けない</td>
+<td><a href="05-cascade.html#page-cascade_layers" class="xref">4-3</a></td>
+</tr>
+</tbody>
+</table>
+<p>内部プロパティの <code dir="auto">--_</code> には、種類ごとの接頭辞もあります。コンポジションは <code dir="auto">--_c--</code>、パターンは <code dir="auto">--_p--</code>、ユーティリティは <code dir="auto">--_u--</code>、ベーススタイルは <code dir="auto">--_b--</code> で始めます。コンポーネントの内部プロパティと名前がぶつからないようにするためです。</p>
+<h2 id="introduction_quick-start--本書の規約と仕様上の制約">本書の規約と仕様上の制約</h2>
+<p>本書が勧めない書き方の多くは、CSSとして正しく動きます。BEMの <code dir="auto">.card__title</code>、<code dir="auto">display: flex</code>、<code dir="auto">margin-top</code>、<code dir="auto">@media (min-width: 768px)</code> は、どれも有効なCSSで、ブラウザも問題なく表示します。本書がこれらを使わないのは、読みやすさや変更のしやすさ、多言語への対応のような保守の理由からです。</p>
+<p>そのため、本書のルールの「必須」や「禁止」は、本書を採用したプロジェクトの中での約束を表しています。CSSの仕様に反しているという意味ではありません。チームで使うときは、ルールの理由に納得したうえで、規約として合意することが前提になります。</p>
+<p>一方で、仕様上の制約から決めているルールもあります。<code dir="auto">@import</code> をほかのルールの後ろに書くと無視されることや、宣言していないレイヤー名が新しいレイヤーになることは、書き方の好みではなく、ブラウザの動作です。各ルールがどちらに当たるかは、ルールごとの「性質」で確かめられます<span class="note-ref">※6</span>。</p>
+<aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>「<a class="xref-out">10-5 公開プロパティと内部プロパティ</a>」（巻2）</li><li><span class="note-mark">※2</span>「<a href="05-cascade.html#page-cascade_layers" class="xref">4-3 カスケードレイヤーで順位を決める</a>」</li><li><span class="note-mark">※3</span>「<a class="xref-out">10-4 デザイントークン</a>」（巻2）</li><li><span class="note-mark">※4</span>「<a class="xref-out">10-2 コンポーネントの境界を守る</a>」（巻2）</li><li><span class="note-mark">※5</span>「<a class="xref-out">10-5 公開プロパティと内部プロパティ</a>」（巻2）</li><li><span class="note-mark">※6</span>「<a href="#page-introduction_how-to-read" class="xref">本書の読み方</a>」</li></ol></aside><h2 id="introduction_quick-start--参考リンク">参考リンク</h2>
+<ul>
+<li><a href="https://github.com/tak-dcxi/kiso.css">kiso.css</a>（GitHub）</li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/@import">@import - CSS | MDN</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/@layer">@layer - CSS | MDN</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/@scope">@scope - CSS | MDN</a></li>
+<li><a href="https://www.w3.org/TR/css-variables-1/#invalid-variables">CSS Custom Properties for Cascading Variables Module Level 1: Invalid Variables</a></li>
+<li><a href="https://vite.dev/guide/features.html#css">Features: CSS | Vite</a></li>
+</ul>
+</section>
+<section class="page" id="page-introduction_how-to-read" data-title="本書の読み方">
+<h1>本書の読み方</h1>
+<p>本書の節のページは、共通の基本の構成と約束事で書いています。このページでは、ページの構成、初めて読むときの順番、ルールの読み方、コード例のラベル、デモの操作、ブラウザの対応状況の表示、AIでの使い方を順に説明します。先に一度読んでおくと、どの章から読み始めても表記に迷いません。</p>
+<h2 id="introduction_how-to-read--節のページの構成">節のページの構成</h2>
+<p>節のページは、冒頭の数段落でその節の結論を先に示し、最後に「ガイドライン」と「参考リンク」を置くという基本の構成を持っています。その間の進め方は、節の題材に合わせて選んでいます。コード例とデモは、説明する見出しの直下に置いています。</p>
+<p>仕組みを理解する節は、実際に起きる表示から始め、どう表示されるかを予測したうえで仕組みを説明し、デモで確かめます。手法を選ぶ節は、満たしたい要件を挙げ、選択肢を比べてから、どれを選ぶかの判断を示します。実装する節は、完成形を先に見せ、組み立ての手順と表示の検証を経て、注意点を添えます。本書独自の規約を導入する節は、目的、約束の中身、例外、チームでの運用の順に書き、採用したときに増える手間も示します。このほか、よくある書き方の問題点から本書の解決策へ進む節もあります。</p>
+<p>ページの最後にある「ガイドライン」は、その節で守るべきルールの一覧です。時間がないときは、ここだけを確認してもかまいません。ルールの理由を知りたいときは、本文に戻ってください。ただし、第I部でCSSや設計の考え方を述べる節にはルールを置いていないので、「ガイドライン」もありません。</p>
+<p>第21章の演習の節は、別の形で進みます。各節で要件を1つ変え、直す場所を予想してから解説を読み、最後に判断を問う問題と答えで振り返ります。演習では新しいルールを置かず、「ガイドライン」の代わりに、その節で使ったルールを掲載ページへのリンク付きで並べています。</p>
+<h2 id="introduction_how-to-read--初めて読むときの順番">初めて読むときの順番</h2>
+<p>本書は、前から順に読めるように章を並べていますが、初めて読むときにすべての節を読む必要はありません。次の表の「初めて読むとき」の節を読めば、本書の規約で部品を1つ書き始められ、第21章「<a class="xref-out">記事の一覧を作る</a>（巻3）」の演習の前半（21-1〜21-4）に取り組めます。「必要になってから」の節は、作るものが決まったときや、演習で知らないルールを見つけたときに読んでください。</p>
+<table>
+<thead>
+<tr>
+<th>章</th>
+<th>初めて読むとき</th>
+<th>必要になってから</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第1章「<a href="02-principles.html#page-principles" class="xref">CSSのマインドセット</a>」</td>
+<td>1-1、1-2、1-3</td>
+<td>1-4〜1-7</td>
+</tr>
+<tr>
+<td>第2章「<a href="03-design-mindset.html#page-design-mindset" class="xref">CSS設計の考え方</a>」</td>
+<td>2-1、2-3</td>
+<td>2-2</td>
+</tr>
+<tr>
+<td>第3章「<a href="04-design-reproduction.html#page-design-reproduction" class="xref">デザインを再現する</a>」</td>
+<td>3-1</td>
+<td>3-2</td>
+</tr>
+<tr>
+<td>第4章「<a href="05-cascade.html#page-cascade" class="xref">カスケードを制御する</a>」</td>
+<td>4-1〜4-5（すべて）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>第5章「<a href="06-pseudo.html#page-pseudo" class="xref">擬似クラスと擬似要素</a>」</td>
+<td>5-1、5-2、5-3</td>
+<td>5-4〜5-8</td>
+</tr>
+<tr>
+<td>第6章「<a href="07-values.html#page-values" class="xref">値と単位</a>」</td>
+<td>6-1、6-3</td>
+<td>6-2、6-4、6-5</td>
+</tr>
+<tr>
+<td>第7章「<a href="08-layout.html#page-layout" class="xref">レイアウトの仕組み</a>」</td>
+<td>7-1〜7-5、7-7、7-8</td>
+<td>7-6、7-9〜7-12</td>
+</tr>
+<tr>
+<td>第8章「<a class="xref-out">リセットとベーススタイル</a>（巻2）」</td>
+<td>8-1〜8-3（すべて）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>第9章「<a class="xref-out">記法の規約</a>（巻2）」</td>
+<td>9-1、9-3、9-4、9-5</td>
+<td>9-2、9-6〜9-9</td>
+</tr>
+<tr>
+<td>第10章「<a class="xref-out">コンポーネントとカスタムプロパティ</a>（巻2）」</td>
+<td>10-1〜10-5、21-4の前に10-6</td>
+<td>10-7、10-8</td>
+</tr>
+<tr>
+<td>第11章「<a class="xref-out">レイアウトを組む</a>（巻2）」</td>
+<td>11-1〜11-4</td>
+<td>11-5〜11-16</td>
+</tr>
+<tr>
+<td>第12章「<a class="xref-out">レイアウトコンポジション</a>（巻2）」</td>
+<td>概要の「目的から選ぶ」の表、12-1、12-11、12-2、12-5、12-6</td>
+<td>ほかの6つ</td>
+</tr>
+<tr>
+<td>第13章「<a class="xref-out">レスポンシブデザイン</a>（巻2）」</td>
+<td>13-1〜13-5</td>
+<td>13-6〜13-8</td>
+</tr>
+<tr>
+<td>第14章「<a class="xref-out">タイポグラフィと和文組版</a>（巻3）」</td>
+<td>14-3、14-4、14-5</td>
+<td>14-1、14-2</td>
+</tr>
+<tr>
+<td>第15章「<a class="xref-out">色</a>（巻3）」</td>
+<td>15-1</td>
+<td>15-2〜15-5</td>
+</tr>
+<tr>
+<td>第16章「<a class="xref-out">画像・装飾</a>（巻3）」</td>
+<td>16-1</td>
+<td>16-2〜16-8</td>
+</tr>
+<tr>
+<td>第17章「<a class="xref-out">インタラクション</a>（巻3）」</td>
+<td>17-1、17-3、21-6の前に17-4</td>
+<td>17-2、17-5〜17-7</td>
+</tr>
+<tr>
+<td>第18章「<a class="xref-out">モーション</a>（巻3）」</td>
+<td>18-1、18-2</td>
+<td>18-3〜18-8</td>
+</tr>
+<tr>
+<td>第19章「<a class="xref-out">実務での運用</a>（巻3）」</td>
+<td>19-1</td>
+<td>19-2〜19-6</td>
+</tr>
+<tr>
+<td>第20章「<a class="xref-out">AIにコーディングさせる</a>（巻3）」</td>
+<td>AIを使う読者だけ 20-1、20-2</td>
+<td>20-3〜20-8</td>
+</tr>
+<tr>
+<td>第21章「<a class="xref-out">記事の一覧を作る</a>（巻3）」</td>
+<td>21-1〜21-4</td>
+<td>21-5〜21-8</td>
+</tr>
+</tbody>
+</table>
+<p>高度な計算関数、<code dir="auto">if()</code>、アンカーポジショニング、スクロールに合わせた動きのように、使う場面が限られる話題は、どれも「必要になってから」に入れています。各章の概要ページにも、同じ案内を「初めて読むとき」の見出しで置いています。</p>
+<p>第11章と第12章は、節の数が多いので、読み方を少し詳しく書きます。</p>
+<p>第11章「<a class="xref-out">レイアウトを組む</a>（巻2）」には16の節があり、固定ヘッダーや表、アンカーポジショニングのように、作るものが決まってから読めば足りる節を多く含みます。初めて読むときは、作るものの要件から通常フロー、Grid、Flexbox、<code dir="auto">float</code> を選ぶ「<a class="xref-out">11-1 レイアウト手法の選び方</a>（巻2）」を読みます。続けて、章の概要が最初に押さえるルールを置いている「<a class="xref-out">11-2 余白を設計する</a>（巻2）」「<a class="xref-out">11-3 サイズと内容の変化に耐える</a>（巻2）」「<a class="xref-out">11-4 はみ出しとスクロール</a>（巻2）」を読みます。11-5以降は、その部品を作るときに章の概要から引きます。</p>
+<p>第12章「<a class="xref-out">レイアウトコンポジション</a>（巻2）」は、章の概要で、必要なときに引く参照用の章と位置づけています。初めて読むときは、概要の「目的から選ぶ」の表で11のコンポジションの役割をつかみます。そのうえで、概要が先に読むよう勧めている基本の5つ、「<a class="xref-out">12-1 stack</a>（巻2）」「<a class="xref-out">12-11 prose</a>（巻2）」「<a class="xref-out">12-2 cluster</a>（巻2）」「<a class="xref-out">12-5 sidebar</a>（巻2）」「<a class="xref-out">12-6 grid</a>（巻2）」を読みます。<code dir="auto">switcher</code> や <code dir="auto">masonry</code> のような計算の多いページは、使う場面が来てから読めば足ります。</p>
+<p>読み飛ばした節に戻るきっかけは、第21章の演習で作ります。演習の各節は、その節で使ったルールを掲載ページへのリンク付きで並べているので、知らないルールがあれば、そこから該当する節を読めます。</p>
+<h2 id="introduction_how-to-read--ルールの強度と性質id">ルールの強度と性質、ID</h2>
+<p>ルールには、「必須」「推奨」「非推奨」「禁止」の4段階の強度を付けています。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除き、必ず守るルールです。補足の例外に当たるコードは違反ではないので、レビューやAIのチェックで指摘しません。「推奨」と「非推奨」は、基本的には従いますが、理由があれば外れてかまいません。外れるときは、その理由をコメントに残します。</p>
+<p>強度とは別に、ルールの根拠がどこにあるかを「性質」として示しています。「仕様上の制約」は、CSS・HTML・ブラウザの振る舞いやWCAGから導かれるルールで、守らないと表示や操作が崩れます。「実装上の判断」は、状況とトレードオフで決まるルールです。適用する条件は、補足や本文に書いています。「本書の規約」は、命名やレイヤーの順番のように、一貫性のために本書が選んだ約束です。自分の案件に持ち帰るときは、仕様上の制約はそのまま使い、実装上の判断は条件が合うかを確かめ、本書の規約はチームの規約と見比べて選んでください。</p>
+<p>各ルールには、<code dir="auto">no-vw-vh</code> のような英語のIDを付けています。IDは章の構成が変わっても変えないので、レビューのコメントやAIへの指示で「<code dir="auto">no-vw-vh</code> に違反しています」のように引用できます<span class="note-ref">※1</span>。</p>
+<p>ルールによっては、「自動チェック」の欄にStylelintのルール名を書いています。本書のStylelintの設定を使えば、そのルールへの違反は機械的に見つけられます<span class="note-ref">※2</span>。</p>
+<h2 id="introduction_how-to-read--コード例のラベル">コード例のラベル</h2>
+<p>コード例のタイトルには、2種類のラベルを付けています。<code dir="auto">🙆‍♂ Recommended</code> は本書が勧める書き方で、<code dir="auto">🙅‍♂ Not Recommended</code> は避けるべき書き方です。避けるべき書き方には、コードの先頭行にも同じラベルをコメントで入れています。コードだけを切り出して読んだときにも、避けるべき例だと分かるようにするためです。</p>
+<figure class="code"><figcaption>🙅‍♂ Not Recommended: 物理プロパティで書く</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
+<span style="--0:#C5E478;--1:#3B61B0">._card</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">padding-top</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">16</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<figure class="code"><figcaption>🙆‍♂ Recommended: 論理プロパティで書く</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">._card</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
+<span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">padding-block-start</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">16</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
+<span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
+<p><code dir="auto">🙆‍♂ Recommended</code> のCSSは、本書のStylelintの設定ですべて検証しています。ラベルのないコード例は、計算式だけを示す場合など、完全なCSSになっていないものです。</p>
+<p>本文のコード例では、説明に関係しない記述を省略しています。とくにカスケードレイヤー（<code dir="auto">@layer</code>）の記述は、ほとんどのコード例で省略しています。省略した箇所は <code dir="auto">/* ... */</code> と書いています。クラス名が <code dir="auto">._main-link</code> のように <code dir="auto">_</code> で始まっている場合は、<code dir="auto">@scope</code> の中に書く子要素のクラスです<span class="note-ref">※3</span>。</p>
+<p>省略した記述をそろえた全体の形は、「<a href="#page-introduction_quick-start" class="xref">最小の構成で始める</a>」に1枚のカードを例にして示しています。その構成で定義しているトークンは、そのカードに必要な最小限のものだけです。本文のコード例を手元で試すときは、その構成のコンポーネントのファイルに貼り付け、コード例が参照するトークンを足してください。色や余白、イージングと再生時間のトークンは「<a class="xref-out">10-4 デザイントークン</a>（巻2）」で定義しています。</p>
+<h2 id="introduction_how-to-read--デモの使い方">デモの使い方</h2>
+<p>多くの節には、コードをその場で表示するデモがあります。デモは、ページとは切り離された枠（iframe）の中で表示しているので、デモのCSSがページに影響することはありません。枠の幅がそのままデモの画面幅になるので、メディアクエリも実際の画面と同じように動きます。</p>
+<p>デモの上にあるボタンやスライダーで、表示の幅を変えられます。本文の幅より広い値を選ぶと、デモを横にスクロールして確認できます。デモの下のタブでは、表示に使っているCSSとHTMLを確認できます。</p>
+<p>デモには、特に断りがない限り、本書が勧めるリセットCSS（kiso.css）とカスケードレイヤーの順序の宣言を読み込んでいます。ブラウザのデフォルトスタイルそのものを見せるデモでは、これらを読み込んでいません。</p>
+<h2 id="introduction_how-to-read--ブラウザの対応状況の表示">ブラウザの対応状況の表示</h2>
+<p>新しい機能を紹介する箇所には、ブラウザの対応状況を示す枠を置いています。表示は、Web標準の対応データ（web-features）の「Baseline」という指標にもとづいています。「広く利用可能」はすべての主要なブラウザで長く使えている機能、「新しく利用可能」は最近すべての主要なブラウザで使えるようになった機能、「一部のブラウザのみ」はまだ一部のブラウザでしか使えない機能です。</p>
+<p>枠には、データのバージョンと確認した年月を書いています<span class="note-ref">※4</span>。</p>
+<h2 id="introduction_how-to-read--aiで使う">AIで使う</h2>
+<p>本書のルールは、AIのコーディングエージェントにも読ませられる形で提供する予定です。スキル、MCPサーバー、プラグインは、提供に向けて対応中のため、まだ利用できません（2026年10月時点）。提供を始めた後は、スキルとMCPサーバーを入れれば、CSSを書くときやレビューするときに、本書のルールを規約として指示できます<span class="note-ref">※5</span>。</p>
+<p>ただし、スキルを読み込ませても、生成されたCSSがルールに沿うとは限りません。出力は、Stylelintとレビューで確かめる必要があります。AIへの指示でルールのIDを使うと、どのルールに従ってほしいのかを正確に伝えられます<span class="note-ref">※6</span>。</p><aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span>すべてのルールは、付録A「<a class="xref-out">ルール一覧</a>（巻3）」</li><li><span class="note-mark">※2</span>設定の中身は「<a class="xref-out">19-1 Stylelintでルールを守る</a>（巻3）」</li><li><span class="note-mark">※3</span>命名の規則は「<a class="xref-out">9-1 命名規則</a>（巻2）」</li><li><span class="note-mark">※4</span>本書が対象にしているブラウザ（Safariは現行から2つ前のメジャーバージョンの最終版以降、ほかの主要なブラウザは最新版）と、機能ごとの使い方の判断は、「<a href="02-principles.html#page-principles_browser-support" class="xref">1-2 ブラウザサポートとプログレッシブ・エンハンスメント</a>」</li><li><span class="note-mark">※5</span>提供の状況と、ツールごとの設定方法は、付録J「<a class="xref-out">AIツールで使う</a>（巻3）」</li><li><span class="note-mark">※6</span>生成されたコードの確かめ方は「<a class="xref-out">20-8 生成したコードを確かめ、教訓を残す</a>（巻3）」</li></ol></aside>
+</section>
+<section class="page" id="page-introduction_why-plain-css" data-title="素のCSSで書く理由">
+<h1>素のCSSで書く理由</h1>
+<p>本書のコード例は、すべて素のCSSで書いています。ここでいう素のCSSは、CSSファイルにWeb標準の構文だけで書いたスタイルのことです。JavaScriptのオブジェクトで書くCSS-in-JSも、HTMLのクラス属性にユーティリティを並べるTailwind CSSも、Sassの独自の構文も使いません。ビルドの段階で <code dir="auto">@import</code> を展開することはありますが、書く内容はブラウザが解釈するCSSそのものです。</p>
+<h2 id="introduction_why-plain-css--静的なサイトとcmsで同じ書き方を使うため">静的なサイトとCMSで同じ書き方を使うため</h2>
+<p>本書が扱うのは、コーポレートサイト、ランディングページ、メディアサイトのようなWebサイト制作で、静的なサイトとCMSの両方を含みます。CMSのテンプレートが出力するHTMLや、編集者が書く本文には、JavaScriptでクラス名を生成する仕組みを持ち込めないことがあります。素のCSSなら、部品のルートにクラスを1つ付けるだけで、どちらの環境でも同じ書き方で部品の範囲を区切れます。</p>
+<p>部品の範囲、スタイルどうしの優先順位、外から変えてよい値は、どの道具を選んでも決めなければならない設計の判断です。本書は、これらをブラウザの仕組みである <code dir="auto">@scope</code>、カスケードレイヤー、カスタムプロパティで表します。特定のフレームワークやビルドの道具に依存しないので、案件ごとに道具が変わっても書き方を変えずに済みます。</p>
+<h2 id="introduction_why-plain-css--どの道具を使う現場でも役に立つ知識">どの道具を使う現場でも役に立つ知識</h2>
+<p>本書の読者として想定している実務1〜3年目のコーダーにとって、カスケード、<code dir="auto">@scope</code>、カスタムプロパティ、擬似クラスは、どの道具を使う現場に移っても役に立つ知識です。Tailwind CSSのクラスも、CSS-in-JSで書いたスタイルも、ブラウザが最後に解釈するのはCSSだからです。道具に固有の記法は道具を替えると使えなくなりますが、CSSの仕組みの知識は、道具が生成したCSSを読み解くときにも使えます。</p>
+<p>そのため、VueやAstroのように、フレームワークが標準でスコープ付きのCSSを書く仕組みを備えているなら、それを使ってかまいません。その場合は <code dir="auto">@scope</code> だけをフレームワークのスコープに置き換え、命名やカスケードレイヤーといったほかの規約はそのまま使います。</p>
+<h2 id="introduction_why-plain-css--採用していない道具は持ち込まない">採用していない道具は持ち込まない</h2>
+<p>この判断は、AIにコードを書かせるときの規約にもなっています。本書のルール <code dir="auto">no-unrequested-css-framework</code> は、プロジェクトで採用を決めていない限り、Tailwind CSSやCSS-in-JSを使わず、コンポーネントのクラスと <code dir="auto">@scope</code> で書くことを求めます。AIは、指示がなくてもユーティリティだけで組む前提を持ち込むことがあるからです<span class="note-ref">※1</span>。</p>
+<p>このルールが求めているのは、採用していない道具を持ち込まないことです。プロジェクトがTailwind CSSやCSS-in-JSを採用しているなら、その方針に従います<span class="note-ref">※2</span>。</p>
+<p>ほかの道具と比べた詳しい根拠は、付録H「<a class="xref-out">CSS-in-JSと素のCSSの比較</a>（巻3）」で説明します。CSS-in-JSやStyleXの仕組み、型安全性、スコープとグローバルなスタイルの共存、公開プロパティによる部品の再利用、見た目のロジックの分担を比べています。比較には第4章と第10章で扱う仕組みが出てくるので、それらの章を読んでから戻ると判断しやすくなります。</p><aside class="notes"><p class="notes-title">参照</p><ol><li><span class="note-mark">※1</span><a class="xref-out">20-7 AIが誤りやすいパターン</a>（巻3）</li><li><span class="note-mark">※2</span>Tailwind CSSを使う現場で本書の考え方を生かす方法は、「<a class="xref-out">10-3 コンポジションとユーティリティ</a>（巻2）」のコラム</li></ol></aside>
+</section>
+
+
+</body></html>
