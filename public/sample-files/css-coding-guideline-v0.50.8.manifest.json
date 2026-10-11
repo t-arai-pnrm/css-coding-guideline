@@ -1,0 +1,4019 @@
+{
+  "version": "0.50.8",
+  "baselineChecked": "2026年9月",
+  "dependencies": {
+    "astro": "7.3.5",
+    "vite": "8.3.1",
+    "kiso": "1.2.4",
+    "webFeatures": "3.40.0"
+  },
+  "lockfileSha256": "6330a34925b6fd9cee2c2ca5ab64d16d9f30c356f941b2dc26269b8383250269",
+  "demos": [
+    {
+      "id": "introduction-quick-start-1",
+      "page": "introduction/quick-start",
+      "title": "最小の構成で表示したお知らせのカード",
+      "file": "demos/introduction/quick-start/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/introduction/quick-start/",
+      "chapter": 0,
+      "order": 3
+    },
+    {
+      "id": "1-1-1",
+      "page": "principles/browser-suggestion",
+      "title": "固定値で書いたボタンは、長いラベルや狭い幅に対応できない",
+      "file": "demos/principles/browser-suggestion/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-suggestion/",
+      "chapter": 1,
+      "order": 1
+    },
+    {
+      "id": "1-1-2",
+      "page": "principles/browser-suggestion",
+      "title": "制約だけを決めたボタンは、ラベルと置き場所の幅に合わせて形を変える",
+      "file": "demos/principles/browser-suggestion/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-suggestion/",
+      "chapter": 1,
+      "order": 1
+    },
+    {
+      "id": "1-2-1",
+      "page": "principles/browser-support",
+      "title": "field-sizing に対応した環境でだけ、入力欄が内容に合わせて伸び縮みする",
+      "file": "demos/principles/browser-support/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/",
+      "chapter": 1,
+      "order": 2
+    },
+    {
+      "id": "1-5-1",
+      "page": "principles/no-memorizing",
+      "title": "画像の下にできる隙間と、それを消す3つの書き方",
+      "file": "demos/principles/no-memorizing/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/principles/no-memorizing/",
+      "chapter": 1,
+      "order": 5
+    },
+    {
+      "id": "1-7-1",
+      "page": "principles/options",
+      "title": "同じ5枚のカードを、GridとFlexboxで並べる",
+      "file": "demos/principles/options/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/principles/options/",
+      "chapter": 1,
+      "order": 7
+    },
+    {
+      "id": "2-3-1",
+      "page": "design-mindset/maintainability",
+      "title": "margin: 0 auto は、上下の余白の指定まで打ち消す",
+      "file": "demos/design-mindset/maintainability/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainability/",
+      "chapter": 2,
+      "order": 3
+    },
+    {
+      "id": "4-1-1",
+      "page": "cascade/cascade-basics",
+      "title": "base の a:any-link（0.1.1）より、components のボタン（0.1.0）の色が勝つ",
+      "file": "demos/cascade/cascade-basics/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/",
+      "chapter": 4,
+      "order": 1
+    },
+    {
+      "id": "4-1-2",
+      "page": "cascade/cascade-basics",
+      "title": "継承するプロパティはルートでまとめて指定する",
+      "file": "demos/cascade/cascade-basics/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/",
+      "chapter": 4,
+      "order": 1
+    },
+    {
+      "id": "4-1-3",
+      "page": "cascade/cascade-basics",
+      "title": "revert はブラウザのデフォルトに、revert-layer は reset レイヤーの値に戻る",
+      "file": "demos/cascade/cascade-basics/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/",
+      "chapter": 4,
+      "order": 1
+    },
+    {
+      "id": "4-2-1",
+      "page": "cascade/selectors",
+      "title": ":not() は引数の分だけ詳細度が上がり、後に書いたクラスに勝つ",
+      "file": "demos/cascade/selectors/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/",
+      "chapter": 4,
+      "order": 2
+    },
+    {
+      "id": "4-3-1",
+      "page": "cascade/layers",
+      "title": "前に書いた utilities のクラスが、後に書いた components の指定に勝つ",
+      "file": "demos/cascade/layers/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/",
+      "chapter": 4,
+      "order": 3
+    },
+    {
+      "id": "4-3-2",
+      "page": "cascade/layers",
+      "title": "@layer を書き忘れたコンポーネントには、ユーティリティクラスが効かない",
+      "file": "demos/cascade/layers/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/",
+      "chapter": 4,
+      "order": 3
+    },
+    {
+      "id": "4-3-3",
+      "page": "cascade/layers",
+      "title": "レイヤーの外のタイプセレクタが、レイヤーの中のクラスセレクタに勝つ",
+      "file": "demos/cascade/layers/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/",
+      "chapter": 4,
+      "order": 3
+    },
+    {
+      "id": "4-4-1",
+      "page": "cascade/scope",
+      "title": "to (.scoped) があるので、入れ子のコンポーネントの p に外側のスタイルが届かない",
+      "file": "demos/cascade/scope/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/",
+      "chapter": 4,
+      "order": 4
+    },
+    {
+      "id": "4-4-2",
+      "page": "cascade/scope",
+      "title": "to (.scoped) がないと、入れ子のコンポーネントの p にも外側のスタイルが届く",
+      "file": "demos/cascade/scope/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/",
+      "chapter": 4,
+      "order": 4
+    },
+    {
+      "id": "4-4-3",
+      "page": "cascade/scope",
+      "title": "詳細度が同じなら、ルートに近い @scope の指定が勝つ",
+      "file": "demos/cascade/scope/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/",
+      "chapter": 4,
+      "order": 4
+    },
+    {
+      "id": "4-4-4",
+      "page": "cascade/scope",
+      "title": "前置きのない @scope は、style 要素を置いた section の中にだけ当たる",
+      "file": "demos/cascade/scope/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/",
+      "chapter": 4,
+      "order": 4
+    },
+    {
+      "id": "4-4-5",
+      "page": "cascade/scope",
+      "title": "@scope の中の見出しにも、外に書いたルールが当たる",
+      "file": "demos/cascade/scope/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/scope/",
+      "chapter": 4,
+      "order": 4
+    },
+    {
+      "id": "4-5-1",
+      "page": "cascade/nesting",
+      "title": "Sass の &__title は、素の CSS では無効なルールになる",
+      "file": "demos/cascade/nesting/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/",
+      "chapter": 4,
+      "order": 5
+    },
+    {
+      "id": "4-5-2",
+      "page": "cascade/nesting",
+      "title": "セレクタリストの中にネストすると、.news の中の見出しにも 1.1.0 が付く",
+      "file": "demos/cascade/nesting/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/",
+      "chapter": 4,
+      "order": 5
+    },
+    {
+      "id": "4-5-3",
+      "page": "cascade/nesting",
+      "title": "条件付きのアットルールを、要素のルールの中に書く",
+      "file": "demos/cascade/nesting/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/",
+      "chapter": 4,
+      "order": 5
+    },
+    {
+      "id": "4-5-4",
+      "page": "cascade/nesting",
+      "title": "ネストしたルールの後ろに書いた宣言が、書いた位置の順番で勝つ",
+      "file": "demos/cascade/nesting/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/",
+      "chapter": 4,
+      "order": 5
+    },
+    {
+      "id": "4-5-5",
+      "page": "cascade/nesting",
+      "title": "@scope で部品を、ネストで状態や種類を表す",
+      "file": "demos/cascade/nesting/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/cascade/nesting/",
+      "chapter": 4,
+      "order": 5
+    },
+    {
+      "id": "5-1-1",
+      "page": "pseudo/basics",
+      "title": "擬似クラスは段落の箱全体に、擬似要素は段落の1行目だけに当たる",
+      "file": "demos/pseudo/basics/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/basics/",
+      "chapter": 5,
+      "order": 1
+    },
+    {
+      "id": "5-2-1",
+      "page": "pseudo/is-where-not",
+      "title": "押した状態の背景色は、:is() でまとめたボタンにだけ付く",
+      "file": "demos/pseudo/is-where-not/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/is-where-not/",
+      "chapter": 5,
+      "order": 2
+    },
+    {
+      "id": "5-2-2",
+      "page": "pseudo/is-where-not",
+      "title": "祖先を :not() の引数に書くと、見出しの中のリンクを除ける",
+      "file": "demos/pseudo/is-where-not/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/is-where-not/",
+      "chapter": 5,
+      "order": 2
+    },
+    {
+      "id": "5-3-1",
+      "page": "pseudo/has",
+      "title": "結合子の有無で、画像を探す範囲が変わる",
+      "file": "demos/pseudo/has/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/has/",
+      "chapter": 5,
+      "order": 3
+    },
+    {
+      "id": "5-3-2",
+      "page": "pseudo/has",
+      "title": "直下のラジオボタンがチェックされたカードだけ、選んだ見た目にする",
+      "file": "demos/pseudo/has/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/has/",
+      "chapter": 5,
+      "order": 3
+    },
+    {
+      "id": "5-3-3",
+      "page": "pseudo/has",
+      "title": "選んだ星と、それより前の星だけを塗る",
+      "file": "demos/pseudo/has/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/has/",
+      "chapter": 5,
+      "order": 3
+    },
+    {
+      "id": "5-4-1",
+      "page": "pseudo/child-index",
+      "title": "隠した行も数えるので、見えている行の縞が崩れる",
+      "file": "demos/pseudo/child-index/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/",
+      "chapter": 5,
+      "order": 4
+    },
+    {
+      "id": "5-4-2",
+      "page": "pseudo/child-index",
+      "title": "兄弟のいないカードだけが、すべての列にまたがる",
+      "file": "demos/pseudo/child-index/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/",
+      "chapter": 5,
+      "order": 4
+    },
+    {
+      "id": "5-4-3",
+      "page": "pseudo/child-index",
+      "title": "先頭から3件の項目の日付だけを強調する",
+      "file": "demos/pseudo/child-index/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/",
+      "chapter": 5,
+      "order": 4
+    },
+    {
+      "id": "5-4-4",
+      "page": "pseudo/child-index",
+      "title": "hidden 属性の付いていない行だけを数え、縞を付ける",
+      "file": "demos/pseudo/child-index/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/",
+      "chapter": 5,
+      "order": 4
+    },
+    {
+      "id": "5-4-5",
+      "page": "pseudo/child-index",
+      "title": ":nth-of-type() はタグ名で数え、of S はクラスで絞って数える",
+      "file": "demos/pseudo/child-index/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/",
+      "chapter": 5,
+      "order": 4
+    },
+    {
+      "id": "5-4-6",
+      "page": "pseudo/child-index",
+      "title": "対応した環境では、項目ごとに線の色相がずれる",
+      "file": "demos/pseudo/child-index/6/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/",
+      "chapter": 5,
+      "order": 4
+    },
+    {
+      "id": "5-5-1",
+      "page": "pseudo/quantity-queries",
+      "title": "> を省くと、項目の中のタグまで数えて3列になる",
+      "file": "demos/pseudo/quantity-queries/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/quantity-queries/",
+      "chapter": 5,
+      "order": 5
+    },
+    {
+      "id": "5-5-2",
+      "page": "pseudo/quantity-queries",
+      "title": "列数は幅で決まり、項目が1件のときだけ中央に置かれる一覧",
+      "file": "demos/pseudo/quantity-queries/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/quantity-queries/",
+      "chapter": 5,
+      "order": 5
+    },
+    {
+      "id": "5-6-1",
+      "page": "pseudo/form-states",
+      "title": ":invalid は開いた時点で、:user-invalid は操作の後にエラーの見た目になる",
+      "file": "demos/pseudo/form-states/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/form-states/",
+      "chapter": 5,
+      "order": 6
+    },
+    {
+      "id": "5-6-2",
+      "page": "pseudo/form-states",
+      "title": "一部だけを選んだときに、「すべて選ぶ」のチェックボックスを中間の状態にする",
+      "file": "demos/pseudo/form-states/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/form-states/",
+      "chapter": 5,
+      "order": 6
+    },
+    {
+      "id": "5-6-3",
+      "page": "pseudo/form-states",
+      "title": ":read-only は無効の欄とチェックボックスにも当たり、[readonly] は読み取り専用の欄だけに当たる",
+      "file": "demos/pseudo/form-states/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/form-states/",
+      "chapter": 5,
+      "order": 6
+    },
+    {
+      "id": "5-6-4",
+      "page": "pseudo/form-states",
+      "title": ":not(:placeholder-shown) は placeholder 属性のない空の欄も入力済みにする",
+      "file": "demos/pseudo/form-states/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/form-states/",
+      "chapter": 5,
+      "order": 6
+    },
+    {
+      "id": "5-6-5",
+      "page": "pseudo/form-states",
+      "title": "未入力、入力済み、読み取り専用、無効、エラーで見た目が変わる入力欄",
+      "file": "demos/pseudo/form-states/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/form-states/",
+      "chapter": 5,
+      "order": 6
+    },
+    {
+      "id": "5-6-6",
+      "page": "pseudo/form-states",
+      "title": "aria-disabled と aria-invalid の状態を、:disabled と :user-invalid と同じ見た目にする",
+      "file": "demos/pseudo/form-states/6/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/form-states/",
+      "chapter": 5,
+      "order": 6
+    },
+    {
+      "id": "5-7-1",
+      "page": "pseudo/open-states",
+      "title": "name 属性のアコーディオンで、開いている項目だけを [open] で選ぶ",
+      "file": "demos/pseudo/open-states/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/",
+      "chapter": 5,
+      "order": 7
+    },
+    {
+      "id": "5-7-2",
+      "page": "pseudo/open-states",
+      "title": "[open] と :popover-open で、開いている間だけ開閉のボタンの見た目を変える",
+      "file": "demos/pseudo/open-states/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/",
+      "chapter": 5,
+      "order": 7
+    },
+    {
+      "id": "5-7-3",
+      "page": "pseudo/open-states",
+      "title": "同じダイアログを、:modal のときは中央に、[open]:not(:modal) のときは右下に置く",
+      "file": "demos/pseudo/open-states/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/",
+      "chapter": 5,
+      "order": 7
+    },
+    {
+      "id": "5-7-4",
+      "page": "pseudo/open-states",
+      "title": "ページ内リンクの移動先の項目に、:target で線を引く",
+      "file": "demos/pseudo/open-states/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/",
+      "chapter": 5,
+      "order": 7
+    },
+    {
+      "id": "5-7-5",
+      "page": "pseudo/open-states",
+      "title": ":empty は改行だけを含む要素には当てはまらない",
+      "file": "demos/pseudo/open-states/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/",
+      "chapter": 5,
+      "order": 7
+    },
+    {
+      "id": "5-8-1",
+      "page": "pseudo/generated-content",
+      "title": "content がなければ擬似要素は作られず、インラインの箱には大きさが効かない",
+      "file": "demos/pseudo/generated-content/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/generated-content/",
+      "chapter": 5,
+      "order": 8
+    },
+    {
+      "id": "5-8-2",
+      "page": "pseudo/generated-content",
+      "title": "見出しの線、リストのチェック、リンクの矢印を擬似要素で描く",
+      "file": "demos/pseudo/generated-content/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/generated-content/",
+      "chapter": 5,
+      "order": 8
+    },
+    {
+      "id": "5-8-3",
+      "page": "pseudo/generated-content",
+      "title": "::marker で色と大きさを変えたリストと、::before で印を描いたリスト",
+      "file": "demos/pseudo/generated-content/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/generated-content/",
+      "chapter": 5,
+      "order": 8
+    },
+    {
+      "id": "5-8-4",
+      "page": "pseudo/generated-content",
+      "title": "入力した語に一致する範囲を、::highlight() で背景色と下線で示す",
+      "file": "demos/pseudo/generated-content/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/generated-content/",
+      "chapter": 5,
+      "order": 8
+    },
+    {
+      "id": "5-8-5",
+      "page": "pseudo/generated-content",
+      "title": "::first-letter は開き括弧と次の1字を選び、::first-line の範囲は幅で変わる",
+      "file": "demos/pseudo/generated-content/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/generated-content/",
+      "chapter": 5,
+      "order": 8
+    },
+    {
+      "id": "6-1-1",
+      "page": "values/px-and-rem",
+      "title": "文字サイズの設定を変えたときの、px・rem・使い分けの違い",
+      "file": "demos/values/px-and-rem/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/",
+      "chapter": 6,
+      "order": 1
+    },
+    {
+      "id": "6-1-2",
+      "page": "values/px-and-rem",
+      "title": "1lh を基準に、文字サイズや行の高さが違っても1行目の中央にアイコンを置く",
+      "file": "demos/values/px-and-rem/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/",
+      "chapter": 6,
+      "order": 1
+    },
+    {
+      "id": "6-2-1",
+      "page": "values/viewport-and-container-units",
+      "title": "svi と cqi で文字サイズを変えたときの、置き場所による違い",
+      "file": "demos/values/viewport-and-container-units/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/viewport-and-container-units/",
+      "chapter": 6,
+      "order": 2
+    },
+    {
+      "id": "6-2-2",
+      "page": "values/viewport-and-container-units",
+      "title": "vw を使わずに、背景だけを親の幅いっぱいに広げる",
+      "file": "demos/values/viewport-and-container-units/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/viewport-and-container-units/",
+      "chapter": 6,
+      "order": 2
+    },
+    {
+      "id": "6-3-1",
+      "page": "values/math-functions",
+      "title": "max() で余白の下限を、min() で幅の上限を決める",
+      "file": "demos/values/math-functions/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/math-functions/",
+      "chapter": 6,
+      "order": 3
+    },
+    {
+      "id": "6-3-2",
+      "page": "values/math-functions",
+      "title": "clamp() で、画面の幅に合わせて文字サイズが変わる見出し",
+      "file": "demos/values/math-functions/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/math-functions/",
+      "chapter": 6,
+      "order": 3
+    },
+    {
+      "id": "6-4-1",
+      "page": "values/advanced-math-functions",
+      "title": "clamp() の範囲に負の値を含め、余白が広いときだけラベルを本文の外へ出す",
+      "file": "demos/values/advanced-math-functions/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-functions/",
+      "chapter": 6,
+      "order": 4
+    },
+    {
+      "id": "6-4-2",
+      "page": "values/advanced-math-functions",
+      "title": "対応した環境では、中央の項目が高く、両端の項目が低い弧の形に並ぶ",
+      "file": "demos/values/advanced-math-functions/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-functions/",
+      "chapter": 6,
+      "order": 4
+    },
+    {
+      "id": "6-5-1",
+      "page": "values/if-and-attr",
+      "title": "rows 属性の行数を、伸び縮みする入力欄の最小の高さにする",
+      "file": "demos/values/if-and-attr/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/",
+      "chapter": 6,
+      "order": 5
+    },
+    {
+      "id": "6-5-2",
+      "page": "values/if-and-attr",
+      "title": "ルートで決めたモードを、ルート自身は if() で、ロゴはスタイルクエリで読む",
+      "file": "demos/values/if-and-attr/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/",
+      "chapter": 6,
+      "order": 5
+    },
+    {
+      "id": "7-1-1",
+      "page": "layout/fundamentals",
+      "title": "親の display を変えると、子の同じ指定の効き方が変わる",
+      "file": "demos/layout/fundamentals/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/",
+      "chapter": 7,
+      "order": 1
+    },
+    {
+      "id": "7-1-2",
+      "page": "layout/fundamentals",
+      "title": "同じ inline-size: 280px が、置かれた方式によって無視される、はみ出す、縮む",
+      "file": "demos/layout/fundamentals/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/",
+      "chapter": 7,
+      "order": 1
+    },
+    {
+      "id": "7-1-3",
+      "page": "layout/fundamentals",
+      "title": "包含ブロックが変わると、絶対配置のバッジの基準が変わる",
+      "file": "demos/layout/fundamentals/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/",
+      "chapter": 7,
+      "order": 1
+    },
+    {
+      "id": "7-1-4",
+      "page": "layout/fundamentals",
+      "title": "親がスタッキングコンテキストを作ると、子の z-index は親の外と比べられない",
+      "file": "demos/layout/fundamentals/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/",
+      "chapter": 7,
+      "order": 1
+    },
+    {
+      "id": "7-1-5",
+      "page": "layout/fundamentals",
+      "title": "align-items と align-content の違いと、ブロックコンテナの align-content",
+      "file": "demos/layout/fundamentals/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/",
+      "chapter": 7,
+      "order": 1
+    },
+    {
+      "id": "7-2-1",
+      "page": "layout/normal-flow",
+      "title": "同じ論理プロパティが、書字方向に合わせて向きを変える",
+      "file": "demos/layout/normal-flow/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/",
+      "chapter": 7,
+      "order": 2
+    },
+    {
+      "id": "7-2-2",
+      "page": "layout/normal-flow",
+      "title": "display の外側と内側の値で、span の並び方が変わる",
+      "file": "demos/layout/normal-flow/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/",
+      "chapter": 7,
+      "order": 2
+    },
+    {
+      "id": "7-2-3",
+      "page": "layout/normal-flow",
+      "title": "画像をベースラインにそろえると、下に隙間ができる",
+      "file": "demos/layout/normal-flow/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/",
+      "chapter": 7,
+      "order": 2
+    },
+    {
+      "id": "7-2-4",
+      "page": "layout/normal-flow",
+      "title": "通常フローは指定した幅を守り、Flexbox は縮める",
+      "file": "demos/layout/normal-flow/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/",
+      "chapter": 7,
+      "order": 2
+    },
+    {
+      "id": "7-2-5",
+      "page": "layout/normal-flow",
+      "title": "display: flow-root で、float を親の内側に収める",
+      "file": "demos/layout/normal-flow/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/",
+      "chapter": 7,
+      "order": 2
+    },
+    {
+      "id": "7-2-6",
+      "page": "layout/normal-flow",
+      "title": "同じ HTML でも、通常フロー、Flexbox、Grid で並び方が変わる",
+      "file": "demos/layout/normal-flow/6/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/",
+      "chapter": 7,
+      "order": 2
+    },
+    {
+      "id": "7-3-1",
+      "page": "layout/box-model",
+      "title": "ボックスの4つの領域と、背景が描かれる範囲",
+      "file": "demos/layout/box-model/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/",
+      "chapter": 7,
+      "order": 3
+    },
+    {
+      "id": "7-3-2",
+      "page": "layout/box-model",
+      "title": "同じ inline-size でも、box-sizing によって全体の幅が変わる",
+      "file": "demos/layout/box-model/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/",
+      "chapter": 7,
+      "order": 3
+    },
+    {
+      "id": "7-3-3",
+      "page": "layout/box-model",
+      "title": "box-sizing を unset にすると、最大幅が内容の幅になる",
+      "file": "demos/layout/box-model/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/",
+      "chapter": 7,
+      "order": 3
+    },
+    {
+      "id": "7-3-4",
+      "page": "layout/box-model",
+      "title": "auto の margin が、余った空間を受け取る",
+      "file": "demos/layout/box-model/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/",
+      "chapter": 7,
+      "order": 3
+    },
+    {
+      "id": "7-3-5",
+      "page": "layout/box-model",
+      "title": "outline と box-shadow はボックスの大きさに含まれない",
+      "file": "demos/layout/box-model/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/",
+      "chapter": 7,
+      "order": 3
+    },
+    {
+      "id": "7-3-6",
+      "page": "layout/box-model",
+      "title": "インライン要素と inline flow-root の要素で、上下の余白の扱いが違う",
+      "file": "demos/layout/box-model/6/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/",
+      "chapter": 7,
+      "order": 3
+    },
+    {
+      "id": "7-4-1",
+      "page": "layout/sizing",
+      "title": "min-content、max-content、fit-content の幅の違い",
+      "file": "demos/layout/sizing/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/sizing/",
+      "chapter": 7,
+      "order": 4
+    },
+    {
+      "id": "7-4-2",
+      "page": "layout/sizing",
+      "title": "固定の下限ははみ出し、下限と上限が矛盾すると下限が勝つ",
+      "file": "demos/layout/sizing/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/sizing/",
+      "chapter": 7,
+      "order": 4
+    },
+    {
+      "id": "7-4-3",
+      "page": "layout/sizing",
+      "title": "上下の padding の % も、親の幅に対する割合になる",
+      "file": "demos/layout/sizing/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/sizing/",
+      "chapter": 7,
+      "order": 4
+    },
+    {
+      "id": "7-5-1",
+      "page": "layout/margin-role",
+      "title": "padding、gap、margin が作る余白の位置",
+      "file": "demos/layout/margin-role/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/",
+      "chapter": 7,
+      "order": 5
+    },
+    {
+      "id": "7-5-2",
+      "page": "layout/margin-role",
+      "title": "背景の内側は padding、ブロックの間隔は gap、本文の要素の間は後ろの要素の margin-block-start で作る",
+      "file": "demos/layout/margin-role/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/",
+      "chapter": 7,
+      "order": 5
+    },
+    {
+      "id": "7-5-3",
+      "page": "layout/margin-role",
+      "title": "段落の横の margin では端がそろわず、包む要素の padding ではそろう",
+      "file": "demos/layout/margin-role/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-role/",
+      "chapter": 7,
+      "order": 5
+    },
+    {
+      "id": "7-6-1",
+      "page": "layout/margin-collapse",
+      "title": "空の p と hr の余白は、通常フローでは相殺し、Grid では gap に足される",
+      "file": "demos/layout/margin-collapse/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/",
+      "chapter": 7,
+      "order": 6
+    },
+    {
+      "id": "7-6-2",
+      "page": "layout/margin-collapse",
+      "title": "正と負の組み合わせで、相殺した余白の大きさが変わる",
+      "file": "demos/layout/margin-collapse/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/",
+      "chapter": 7,
+      "order": 6
+    },
+    {
+      "id": "7-6-3",
+      "page": "layout/margin-collapse",
+      "title": "親の padding が挟まると、子の margin は親の外へ出ない",
+      "file": "demos/layout/margin-collapse/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/",
+      "chapter": 7,
+      "order": 6
+    },
+    {
+      "id": "7-6-4",
+      "page": "layout/margin-collapse",
+      "title": "通常フロー、flow-root、Grid で、同じ margin の相殺の仕方が変わる",
+      "file": "demos/layout/margin-collapse/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/margin-collapse/",
+      "chapter": 7,
+      "order": 6
+    },
+    {
+      "id": "7-7-1",
+      "page": "layout/flexbox-basics",
+      "title": "flex-direction で主軸が変わり、justify-content の向きも変わる",
+      "file": "demos/layout/flexbox-basics/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-2",
+      "page": "layout/flexbox-basics",
+      "title": "justify-content、align-items、align-self、align-content の対象の違い",
+      "file": "demos/layout/flexbox-basics/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-3",
+      "page": "layout/flexbox-basics",
+      "title": "flex-grow と flex-shrink による空間の配り方",
+      "file": "demos/layout/flexbox-basics/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-4",
+      "page": "layout/flexbox-basics",
+      "title": "flex-basis は min と max の範囲に収められ、縦に並べると高さになる",
+      "file": "demos/layout/flexbox-basics/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-5",
+      "page": "layout/flexbox-basics",
+      "title": "flex-grow: 1 と flex: 1 の伸ばし方の違い",
+      "file": "demos/layout/flexbox-basics/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-6",
+      "page": "layout/flexbox-basics",
+      "title": "padding の違うアイテムを、flex: 1 と Grid で等分する",
+      "file": "demos/layout/flexbox-basics/6/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-7",
+      "page": "layout/flexbox-basics",
+      "title": "自動の最小幅で縮まない本文と、min-inline-size: 0 で縮む本文",
+      "file": "demos/layout/flexbox-basics/7/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-8",
+      "page": "layout/flexbox-basics",
+      "title": "サイドの flex-shrink を変えて、縮める順番を決める",
+      "file": "demos/layout/flexbox-basics/8/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-9",
+      "page": "layout/flexbox-basics",
+      "title": "flex-wrap: nowrap と wrap の比較",
+      "file": "demos/layout/flexbox-basics/9/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-7-10",
+      "page": "layout/flexbox-basics",
+      "title": "order で装飾の画像だけを見た目の先頭に出す",
+      "file": "demos/layout/flexbox-basics/10/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/",
+      "chapter": 7,
+      "order": 7
+    },
+    {
+      "id": "7-8-1",
+      "page": "layout/grid-basics",
+      "title": "fr、max-content、min-content、fit-content() のトラックの幅",
+      "file": "demos/layout/grid-basics/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/",
+      "chapter": 7,
+      "order": 8
+    },
+    {
+      "id": "7-8-2",
+      "page": "layout/grid-basics",
+      "title": "アイテムの min-inline-size が auto のときと0のときの 1fr の列",
+      "file": "demos/layout/grid-basics/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/",
+      "chapter": 7,
+      "order": 8
+    },
+    {
+      "id": "7-8-3",
+      "page": "layout/grid-basics",
+      "title": "明示的な行と暗黙の行、負の線番号の範囲",
+      "file": "demos/layout/grid-basics/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/",
+      "chapter": 7,
+      "order": 8
+    },
+    {
+      "id": "7-8-4",
+      "page": "layout/grid-basics",
+      "title": "線の名前で、本文の列と端から端までの列に置き分ける",
+      "file": "demos/layout/grid-basics/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/",
+      "chapter": 7,
+      "order": 8
+    },
+    {
+      "id": "7-8-5",
+      "page": "layout/grid-basics",
+      "title": "エリアの名前を使い、幅に応じてテンプレートだけを書き換える",
+      "file": "demos/layout/grid-basics/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/",
+      "chapter": 7,
+      "order": 8
+    },
+    {
+      "id": "7-9-1",
+      "page": "layout/grid-alignment",
+      "title": "Flexboxで本文を伸ばしても、見出しの高さはカードごとにそろわない",
+      "file": "demos/layout/grid-alignment/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-alignment/",
+      "chapter": 7,
+      "order": 9
+    },
+    {
+      "id": "7-9-2",
+      "page": "layout/grid-alignment",
+      "title": "place-items と place-content の違い",
+      "file": "demos/layout/grid-alignment/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-alignment/",
+      "chapter": 7,
+      "order": 9
+    },
+    {
+      "id": "7-9-3",
+      "page": "layout/grid-alignment",
+      "title": "サブグリッドで、カードの見出し・本文・ボタンの位置をそろえる",
+      "file": "demos/layout/grid-alignment/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-alignment/",
+      "chapter": 7,
+      "order": 9
+    },
+    {
+      "id": "7-9-4",
+      "page": "layout/grid-alignment",
+      "title": "日付・カテゴリ・タイトルの列を、サブグリッドで全項目にそろえる",
+      "file": "demos/layout/grid-alignment/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-alignment/",
+      "chapter": 7,
+      "order": 9
+    },
+    {
+      "id": "7-9-5",
+      "page": "layout/grid-alignment",
+      "title": "fit-content() で、画像の列を画像の幅に合わせる",
+      "file": "demos/layout/grid-alignment/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-alignment/",
+      "chapter": 7,
+      "order": 9
+    },
+    {
+      "id": "7-10-1",
+      "page": "layout/positioning",
+      "title": "同じ inset を指定しても、position の値によって B の置かれ方が変わる",
+      "file": "demos/layout/positioning/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-10-2",
+      "page": "layout/positioning",
+      "title": "包含ブロックを作らないと、バッジがカードの外の角に置かれる",
+      "file": "demos/layout/positioning/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-10-3",
+      "page": "layout/positioning",
+      "title": "祖先に translate を指定すると、fixed の要素がその祖先を基準に置かれる",
+      "file": "demos/layout/positioning/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-10-4",
+      "page": "layout/positioning",
+      "title": "inset: 0 と margin: auto で、ラベルを包含ブロックの中央に置く",
+      "file": "demos/layout/positioning/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-10-5",
+      "page": "layout/positioning",
+      "title": "Grid の子に sticky だけを指定すると、目次がセルの高さまで伸びて留まらない",
+      "file": "demos/layout/positioning/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-10-6",
+      "page": "layout/positioning",
+      "title": "align-self: start を加えると、目次が枠の上端に留まる",
+      "file": "demos/layout/positioning/6/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-10-7",
+      "page": "layout/positioning",
+      "title": "inset を指定しない sticky の見出しは留まらない",
+      "file": "demos/layout/positioning/7/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-10-8",
+      "page": "layout/positioning",
+      "title": "祖先がスクロールコンテナになると、sticky の見出しがページのスクロールで留まらない",
+      "file": "demos/layout/positioning/8/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/positioning/",
+      "chapter": 7,
+      "order": 10
+    },
+    {
+      "id": "7-11-1",
+      "page": "layout/anchor-basics",
+      "title": "anchor-name と position-anchor で、入力欄の下に説明を置く",
+      "file": "demos/layout/anchor-basics/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/anchor-basics/",
+      "chapter": 7,
+      "order": 11
+    },
+    {
+      "id": "7-11-2",
+      "page": "layout/anchor-basics",
+      "title": "名前を付けずに、開いたボタンの下にポップオーバーを置く",
+      "file": "demos/layout/anchor-basics/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/anchor-basics/",
+      "chapter": 7,
+      "order": 11
+    },
+    {
+      "id": "7-11-3",
+      "page": "layout/anchor-basics",
+      "title": "anchor() で入力欄の下端と行頭側の辺にそろえ、anchor-size() で幅を合わせる",
+      "file": "demos/layout/anchor-basics/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/anchor-basics/",
+      "chapter": 7,
+      "order": 11
+    },
+    {
+      "id": "7-11-4",
+      "page": "layout/anchor-basics",
+      "title": "position-area の値を切り替えて、9マスのどこに置かれるかを確かめる",
+      "file": "demos/layout/anchor-basics/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/anchor-basics/",
+      "chapter": 7,
+      "order": 11
+    },
+    {
+      "id": "7-11-5",
+      "page": "layout/anchor-basics",
+      "title": "候補がないと、下に収まらない説明がボタンに重なる",
+      "file": "demos/layout/anchor-basics/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/anchor-basics/",
+      "chapter": 7,
+      "order": 11
+    },
+    {
+      "id": "7-11-6",
+      "page": "layout/anchor-basics",
+      "title": "flip-block を候補にすると、下に空きがないときだけ上に表示する",
+      "file": "demos/layout/anchor-basics/6/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/anchor-basics/",
+      "chapter": 7,
+      "order": 11
+    },
+    {
+      "id": "7-12-1",
+      "page": "layout/display-contents",
+      "title": "display: contents の有無で、ラッパーの子がグリッドアイテムになるかが変わる",
+      "file": "demos/layout/display-contents/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/display-contents/",
+      "chapter": 7,
+      "order": 12
+    },
+    {
+      "id": "7-12-2",
+      "page": "layout/display-contents",
+      "title": "ランキングを、狭いときは2段のカード、広いときは4列の表のように並べる",
+      "file": "demos/layout/display-contents/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout/display-contents/",
+      "chapter": 7,
+      "order": 12
+    },
+    {
+      "id": "8-1-1",
+      "page": "reset/kiso",
+      "title": "ブラウザのデフォルトスタイルのまま表示した状態",
+      "file": "demos/reset/kiso/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/reset/kiso/",
+      "chapter": 8,
+      "order": 1
+    },
+    {
+      "id": "8-1-2",
+      "page": "reset/kiso",
+      "title": "kiso.cssを読み込んで表示した状態",
+      "file": "demos/reset/kiso/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/reset/kiso/",
+      "chapter": 8,
+      "order": 1
+    },
+    {
+      "id": "8-2-1",
+      "page": "reset/base-styles",
+      "title": "背景の色が変わっても見える、二重のフォーカスリング",
+      "file": "demos/reset/base-styles/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/reset/base-styles/",
+      "chapter": 8,
+      "order": 2
+    },
+    {
+      "id": "8-2-2",
+      "page": "reset/base-styles",
+      "title": "アクセントカラーの1色のリングは、同じ色の背景の上で見えなくなる",
+      "file": "demos/reset/base-styles/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/reset/base-styles/",
+      "chapter": 8,
+      "order": 2
+    },
+    {
+      "id": "9-3-1",
+      "page": "notation/scope-and-nesting",
+      "title": "下限に書いていないコンポーネントには、外側のスタイルが届く",
+      "file": "demos/notation/scope-and-nesting/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/",
+      "chapter": 9,
+      "order": 3
+    },
+    {
+      "id": "9-3-2",
+      "page": "notation/scope-and-nesting",
+      "title": "下限を共通の目印にすると、中に何を置いても外側のスタイルが届かない",
+      "file": "demos/notation/scope-and-nesting/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/",
+      "chapter": 9,
+      "order": 3
+    },
+    {
+      "id": "9-4-1",
+      "page": "notation/nesting",
+      "title": "条件をセレクタの中に書いたヘッダー",
+      "file": "demos/notation/nesting/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/",
+      "chapter": 9,
+      "order": 4
+    },
+    {
+      "id": "9-4-2",
+      "page": "notation/nesting",
+      "title": "条件を @scope の先頭にまとめたヘッダー",
+      "file": "demos/notation/nesting/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/",
+      "chapter": 9,
+      "order": 4
+    },
+    {
+      "id": "9-5-1",
+      "page": "notation/nesting-criteria",
+      "title": "ネストするルールをセレクタごとに分けたボタン",
+      "file": "demos/notation/nesting-criteria/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/",
+      "chapter": 9,
+      "order": 5
+    },
+    {
+      "id": "9-5-2",
+      "page": "notation/nesting-criteria",
+      "title": "詳細度の違うセレクタリストの中でネストしたボタン",
+      "file": "demos/notation/nesting-criteria/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/",
+      "chapter": 9,
+      "order": 5
+    },
+    {
+      "id": "9-8-1",
+      "page": "notation/logical-properties",
+      "title": "同じCSSで書いた注記を、3つの書字方向に置く",
+      "file": "demos/notation/logical-properties/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/",
+      "chapter": 9,
+      "order": 8
+    },
+    {
+      "id": "10-1-1",
+      "page": "components/what-is-a-component",
+      "title": "区画は親のスコープの中で選び、ボタンだけを別のコンポーネントにしたカード",
+      "file": "demos/components/what-is-a-component/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-component/",
+      "chapter": 10,
+      "order": 1
+    },
+    {
+      "id": "10-2-1",
+      "page": "components/boundaries",
+      "title": "共通の a の状態で文字色を変えると、サブのリンクの文字が背景に溶ける",
+      "file": "demos/components/boundaries/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/",
+      "chapter": 10,
+      "order": 2
+    },
+    {
+      "id": "10-2-2",
+      "page": "components/boundaries",
+      "title": "文字色の変更をメインのリンクだけに書くと、サブのリンクは読めたまま",
+      "file": "demos/components/boundaries/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/",
+      "chapter": 10,
+      "order": 2
+    },
+    {
+      "id": "10-2-3",
+      "page": "components/boundaries",
+      "title": "ルートに isolation: isolate がないと、z-index: -1 の飾りが親の背景に隠れる",
+      "file": "demos/components/boundaries/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/",
+      "chapter": 10,
+      "order": 2
+    },
+    {
+      "id": "10-2-4",
+      "page": "components/boundaries",
+      "title": "ルートに isolation: isolate を指定すると、飾りがカードの背景と文字の間に描かれる",
+      "file": "demos/components/boundaries/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/",
+      "chapter": 10,
+      "order": 2
+    },
+    {
+      "id": "10-3-1",
+      "page": "components/compositions-and-utilities",
+      "title": "stack、cluster、switcher を組み合わせ、間隔を style 属性で渡す",
+      "file": "demos/components/compositions-and-utilities/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/compositions-and-utilities/",
+      "chapter": 10,
+      "order": 3
+    },
+    {
+      "id": "10-5-1",
+      "page": "components/custom-properties",
+      "title": "親から継承で、また style 属性で、子のカードに公開プロパティの値を渡す",
+      "file": "demos/components/custom-properties/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/custom-properties/",
+      "chapter": 10,
+      "order": 5
+    },
+    {
+      "id": "10-6-1",
+      "page": "components/style-queries",
+      "title": "1つのフラグで、日付の配置と文字サイズをそろえて切り替えるカード",
+      "file": "demos/components/style-queries/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/",
+      "chapter": 10,
+      "order": 6
+    },
+    {
+      "id": "10-6-2",
+      "page": "components/style-queries",
+      "title": "ホバーとフォーカスで、矢印が動き、ラベルに下線が引かれるリンク",
+      "file": "demos/components/style-queries/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/",
+      "chapter": 10,
+      "order": 6
+    },
+    {
+      "id": "10-7-1",
+      "page": "components/placement-and-child-states",
+      "title": "1枚だけ置かれ、幅が足りるときに特集の見た目になる商品カード",
+      "file": "demos/components/placement-and-child-states/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/placement-and-child-states/",
+      "chapter": 10,
+      "order": 7
+    },
+    {
+      "id": "10-8-1",
+      "page": "components/web-components",
+      "title": "ホバーで開く振る舞いをカスタム要素で足した、ポップオーバーのメニュー",
+      "file": "demos/components/web-components/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/web-components/",
+      "chapter": 10,
+      "order": 8
+    },
+    {
+      "id": "10-8-2",
+      "page": "components/web-components",
+      "title": "Shadow DOMの中で :host と kiso.css の代わりの指定を書いた、配色の切り替え",
+      "file": "demos/components/web-components/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/components/web-components/",
+      "chapter": 10,
+      "order": 8
+    },
+    {
+      "id": "11-1-1",
+      "page": "layout-practice/choosing",
+      "title": "Flexbox は最終行の端数を中央に寄せ、Grid は1行のときだけ中央に寄せる",
+      "file": "demos/layout-practice/choosing/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/choosing/",
+      "chapter": 11,
+      "order": 1
+    },
+    {
+      "id": "11-2-1",
+      "page": "layout-practice/spacing",
+      "title": "空のグリッドセルの行で、見出しの下と本文の下に違う大きさの余白を作る",
+      "file": "demos/layout-practice/spacing/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/",
+      "chapter": 11,
+      "order": 2
+    },
+    {
+      "id": "11-2-2",
+      "page": "layout-practice/spacing",
+      "title": "セクションの間をページの gap で空けると、間にページの背景が帯になって見える",
+      "file": "demos/layout-practice/spacing/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/",
+      "chapter": 11,
+      "order": 2
+    },
+    {
+      "id": "11-2-3",
+      "page": "layout-practice/spacing",
+      "title": "上下の余白を各セクションの padding-block で持つと、背景が途切れない",
+      "file": "demos/layout-practice/spacing/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/",
+      "chapter": 11,
+      "order": 2
+    },
+    {
+      "id": "11-2-4",
+      "page": "layout-practice/spacing",
+      "title": "要素そのものに下の余白を付けると、見出しだけのカードに余白が残り、リストの後ろの間隔がなくなる",
+      "file": "demos/layout-practice/spacing/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/",
+      "chapter": 11,
+      "order": 2
+    },
+    {
+      "id": "11-2-5",
+      "page": "layout-practice/spacing",
+      "title": "前の要素を条件にして後ろの要素の上に余白を付けると、要素の間にだけ余白が空く",
+      "file": "demos/layout-practice/spacing/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/",
+      "chapter": 11,
+      "order": 2
+    },
+    {
+      "id": "11-3-1",
+      "page": "layout-practice/defensive",
+      "title": "高さを固定した帯は、狭い幅で中身が上下にはみ出す",
+      "file": "demos/layout-practice/defensive/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/",
+      "chapter": 11,
+      "order": 3
+    },
+    {
+      "id": "11-3-2",
+      "page": "layout-practice/defensive",
+      "title": "高さの下限だけを決めた帯は、中身に合わせて伸びる",
+      "file": "demos/layout-practice/defensive/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/",
+      "chapter": 11,
+      "order": 3
+    },
+    {
+      "id": "11-3-3",
+      "page": "layout-practice/defensive",
+      "title": "アイテムの最小幅が auto で overflow-wrap: break-word だと、長い URL が列を押し広げる",
+      "file": "demos/layout-practice/defensive/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/",
+      "chapter": 11,
+      "order": 3
+    },
+    {
+      "id": "11-3-4",
+      "page": "layout-practice/defensive",
+      "title": "アイテムの最小幅0と overflow-wrap: anywhere で、長い URL を列の中で折り返す",
+      "file": "demos/layout-practice/defensive/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/",
+      "chapter": 11,
+      "order": 3
+    },
+    {
+      "id": "11-4-1",
+      "page": "layout-practice/overflow",
+      "title": "overflow: hidden で切り取ると、中の sticky の見出しが留まらない",
+      "file": "demos/layout-practice/overflow/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overflow/",
+      "chapter": 11,
+      "order": 4
+    },
+    {
+      "id": "11-4-2",
+      "page": "layout-practice/overflow",
+      "title": "overflow: clip で切り取ると、中の sticky の見出しが留まる",
+      "file": "demos/layout-practice/overflow/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overflow/",
+      "chapter": 11,
+      "order": 4
+    },
+    {
+      "id": "11-5-1",
+      "page": "layout-practice/quantity-layouts",
+      "title": "最終行に残ったカードが、コンテナの幅に応じて中央に寄る",
+      "file": "demos/layout-practice/quantity-layouts/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/quantity-layouts/",
+      "chapter": 11,
+      "order": 5
+    },
+    {
+      "id": "11-5-2",
+      "page": "layout-practice/quantity-layouts",
+      "title": "引用の有無と新着記事の件数で、ゾーンの配置が変わる",
+      "file": "demos/layout-practice/quantity-layouts/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/quantity-layouts/",
+      "chapter": 11,
+      "order": 5
+    },
+    {
+      "id": "11-6-1",
+      "page": "layout-practice/layering",
+      "title": "ヘッダーが z-index: 1 のコンテキストを作るので、9999 のメニューもヒーローの後ろに隠れる",
+      "file": "demos/layout-practice/layering/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/layering/",
+      "chapter": 11,
+      "order": 6
+    },
+    {
+      "id": "11-6-2",
+      "page": "layout-practice/layering",
+      "title": "ヘッダーのルートで順位を決めると、メニューは z-index なしでヒーローの手前に出る",
+      "file": "demos/layout-practice/layering/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/layering/",
+      "chapter": 11,
+      "order": 6
+    },
+    {
+      "id": "11-8-1",
+      "page": "layout-practice/anchor-positioning",
+      "title": "画像と本文の並びが変わっても、タグを画像の角に重ねるカード",
+      "file": "demos/layout-practice/anchor-positioning/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/anchor-positioning/",
+      "chapter": 11,
+      "order": 8
+    },
+    {
+      "id": "11-8-2",
+      "page": "layout-practice/anchor-positioning",
+      "title": "ホバーかフォーカスした項目へ、背景が移っていくメニュー",
+      "file": "demos/layout-practice/anchor-positioning/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/anchor-positioning/",
+      "chapter": 11,
+      "order": 8
+    },
+    {
+      "id": "11-9-1",
+      "page": "layout-practice/overlap-detection",
+      "title": "飾りの円と本文の間隔が20pxを切ると、円が消える",
+      "file": "demos/layout-practice/overlap-detection/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overlap-detection/",
+      "chapter": 11,
+      "order": 9
+    },
+    {
+      "id": "11-11-1",
+      "page": "layout-practice/masonry",
+      "title": "対応している環境では項目を短い列へ詰め、未対応の環境では通常のGridで並べる",
+      "file": "demos/layout-practice/masonry/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/masonry/",
+      "chapter": 11,
+      "order": 11
+    },
+    {
+      "id": "11-12-1",
+      "page": "layout-practice/reading-flow",
+      "title": "エリアで並べ替えたカードに reading-flow: grid-rows を指定する",
+      "file": "demos/layout-practice/reading-flow/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/reading-flow/",
+      "chapter": 11,
+      "order": 12
+    },
+    {
+      "id": "11-12-2",
+      "page": "layout-practice/reading-flow",
+      "title": "wrap-reverse で上へ折り返すボタンに reading-flow: flex-visual を指定する",
+      "file": "demos/layout-practice/reading-flow/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/reading-flow/",
+      "chapter": 11,
+      "order": 12
+    },
+    {
+      "id": "11-13-1",
+      "page": "layout-practice/icon-alignment",
+      "title": "align-items: center で、アイコンが項目全体の中央に移る",
+      "file": "demos/layout-practice/icon-alignment/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/icon-alignment/",
+      "chapter": 11,
+      "order": 13
+    },
+    {
+      "id": "11-13-2",
+      "page": "layout-practice/icon-alignment",
+      "title": "Gridとlhでアイコンをそろえたチェックリスト、リンク、ボタン",
+      "file": "demos/layout-practice/icon-alignment/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/icon-alignment/",
+      "chapter": 11,
+      "order": 13
+    },
+    {
+      "id": "11-13-3",
+      "page": "layout-practice/icon-alignment",
+      "title": "同じ項目を float と position: absolute で置いたときの違い",
+      "file": "demos/layout-practice/icon-alignment/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/icon-alignment/",
+      "chapter": 11,
+      "order": 13
+    },
+    {
+      "id": "11-14-1",
+      "page": "layout-practice/float",
+      "title": "閉じるボタンと装飾の画像を float で文章の角に置く",
+      "file": "demos/layout-practice/float/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/float/",
+      "chapter": 11,
+      "order": 14
+    },
+    {
+      "id": "11-15-1",
+      "page": "layout-practice/tables",
+      "title": "最小の幅を決めた表を、包む要素の中でスクロールさせ、見出しのセルを留める",
+      "file": "demos/layout-practice/tables/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/",
+      "chapter": 11,
+      "order": 15
+    },
+    {
+      "id": "11-15-2",
+      "page": "layout-practice/tables",
+      "title": "狭い場所では、注文の表の行をカードのように縦に積む",
+      "file": "demos/layout-practice/tables/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/",
+      "chapter": 11,
+      "order": 15
+    },
+    {
+      "id": "12-1-1",
+      "page": "compositions/stack",
+      "title": "stack を入れ子にして間隔を2段にし、リンクをカードの下端に寄せる",
+      "file": "demos/compositions/stack/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/stack/",
+      "chapter": 12,
+      "order": 1
+    },
+    {
+      "id": "12-2-1",
+      "page": "compositions/cluster",
+      "title": "cluster でタグ、価格と注記、ボタンを並べる",
+      "file": "demos/compositions/cluster/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/cluster/",
+      "chapter": 12,
+      "order": 2
+    },
+    {
+      "id": "12-3-1",
+      "page": "compositions/apart",
+      "title": "apart でヘッダーとフッターの要素を両端に分ける",
+      "file": "demos/compositions/apart/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/apart/",
+      "chapter": 12,
+      "order": 3
+    },
+    {
+      "id": "12-3-2",
+      "page": "compositions/apart",
+      "title": "折り返したときの並び方を、子の数と書き方で比べる",
+      "file": "demos/compositions/apart/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/apart/",
+      "chapter": 12,
+      "order": 3
+    },
+    {
+      "id": "12-4-1",
+      "page": "compositions/switcher",
+      "title": "閾値を境に、3列と1列、4列と1列が切り替わる switcher",
+      "file": "demos/compositions/switcher/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/switcher/",
+      "chapter": 12,
+      "order": 4
+    },
+    {
+      "id": "12-5-1",
+      "page": "compositions/sidebar",
+      "title": "sidebar で、メインとサイドを横に並べ、狭ければ縦に積む",
+      "file": "demos/compositions/sidebar/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/sidebar/",
+      "chapter": 12,
+      "order": 5
+    },
+    {
+      "id": "12-6-1",
+      "page": "compositions/grid",
+      "title": "最小幅200px相当、最大4列でカードを並べる grid",
+      "file": "demos/compositions/grid/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/grid/",
+      "chapter": 12,
+      "order": 6
+    },
+    {
+      "id": "12-6-2",
+      "page": "compositions/grid",
+      "title": "アイテムが2つのときの auto-fill と auto-fit の違い",
+      "file": "demos/compositions/grid/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/grid/",
+      "chapter": 12,
+      "order": 6
+    },
+    {
+      "id": "12-6-3",
+      "page": "compositions/grid",
+      "title": "grid は列が1つずつ減り、switcher は一気に1列になる",
+      "file": "demos/compositions/grid/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/grid/",
+      "chapter": 12,
+      "order": 6
+    },
+    {
+      "id": "12-7-1",
+      "page": "compositions/columns",
+      "title": "五十音順の用語集を、上から下へ読む順番のまま段に分ける",
+      "file": "demos/compositions/columns/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/columns/",
+      "chapter": 12,
+      "order": 7
+    },
+    {
+      "id": "12-8-1",
+      "page": "compositions/masonry",
+      "title": "masonry コンポジションで、高さの違う項目を最大4列に詰めて並べる",
+      "file": "demos/compositions/masonry/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/masonry/",
+      "chapter": 12,
+      "order": 8
+    },
+    {
+      "id": "12-9-1",
+      "page": "compositions/pile",
+      "title": "pile で画像と文字を重ね、文字を右下に寄せたヒーロー",
+      "file": "demos/compositions/pile/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/pile/",
+      "chapter": 12,
+      "order": 9
+    },
+    {
+      "id": "12-10-1",
+      "page": "compositions/primary-layout",
+      "title": "5段階の幅のクラスを付けた子を、primary-layout に並べる",
+      "file": "demos/compositions/primary-layout/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/primary-layout/",
+      "chapter": 12,
+      "order": 10
+    },
+    {
+      "id": "12-11-1",
+      "page": "compositions/prose",
+      "title": "prose の子ごとに --prose--space を渡し、見出しの前だけ広げる",
+      "file": "demos/compositions/prose/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/compositions/prose/",
+      "chapter": 12,
+      "order": 11
+    },
+    {
+      "id": "13-1-1",
+      "page": "responsive/escalation",
+      "title": "auto-fit と minmax() で列数が自動で変わるカードの一覧",
+      "file": "demos/responsive/escalation/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/escalation/",
+      "chapter": 13,
+      "order": 1
+    },
+    {
+      "id": "13-2-1",
+      "page": "responsive/breakpoints",
+      "title": "列の最小幅と隙間の式で範囲を決め、最後の行の端数を中央に寄せる",
+      "file": "demos/responsive/breakpoints/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/breakpoints/",
+      "chapter": 13,
+      "order": 2
+    },
+    {
+      "id": "13-3-1",
+      "page": "responsive/container-size-queries",
+      "title": "同じカードが、置かれた場所の幅に合わせて配置を切り替える",
+      "file": "demos/responsive/container-size-queries/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/container-size-queries/",
+      "chapter": 13,
+      "order": 3
+    },
+    {
+      "id": "13-3-2",
+      "page": "responsive/container-size-queries",
+      "title": "同じシェアボタンが、置かれた場所の幅に合わせてラベルを隠す",
+      "file": "demos/responsive/container-size-queries/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/container-size-queries/",
+      "chapter": 13,
+      "order": 3
+    },
+    {
+      "id": "13-4-1",
+      "page": "responsive/container-units-and-side-effects",
+      "title": "内側のコンテナがあっても、見出しの文字サイズをカード全体の幅に合わせる",
+      "file": "demos/responsive/container-units-and-side-effects/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/container-units-and-side-effects/",
+      "chapter": 13,
+      "order": 4
+    },
+    {
+      "id": "13-4-2",
+      "page": "responsive/container-units-and-side-effects",
+      "title": "閾値で配置を切り替え、その間の画像の幅と見出しの文字サイズを連続的に変えるカード",
+      "file": "demos/responsive/container-units-and-side-effects/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/container-units-and-side-effects/",
+      "chapter": 13,
+      "order": 4
+    },
+    {
+      "id": "13-5-1",
+      "page": "responsive/media-queries",
+      "title": "本文とサイドバーの段組みを、成り立つ幅でだけ2カラムにする",
+      "file": "demos/responsive/media-queries/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/media-queries/",
+      "chapter": 13,
+      "order": 5
+    },
+    {
+      "id": "13-7-1",
+      "page": "responsive/design-comp-pattern",
+      "title": "見出しと余白だけを、コンテナの幅に合わせて拡大・縮小するヒーロー",
+      "file": "demos/responsive/design-comp-pattern/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/design-comp-pattern/",
+      "chapter": 13,
+      "order": 7
+    },
+    {
+      "id": "13-8-1",
+      "page": "responsive/safe-area",
+      "title": "セーフエリアを模擬した全幅の帯と、下端に固定したバー",
+      "file": "demos/responsive/safe-area/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/responsive/safe-area/",
+      "chapter": 13,
+      "order": 8
+    },
+    {
+      "id": "14-2-1",
+      "page": "typography/japanese-typesetting",
+      "title": "和文組版の初期値を打ち消した段落と、kiso.cssの初期値のままの段落",
+      "file": "demos/typography/japanese-typesetting/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/typography/japanese-typesetting/",
+      "chapter": 14,
+      "order": 2
+    },
+    {
+      "id": "14-2-2",
+      "page": "typography/japanese-typesetting",
+      "title": "ベタ組みの見出しと、palt とカーニングで詰めた見出し",
+      "file": "demos/typography/japanese-typesetting/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/typography/japanese-typesetting/",
+      "chapter": 14,
+      "order": 2
+    },
+    {
+      "id": "14-3-1",
+      "page": "typography/line-height",
+      "title": "ハーフレディングが残った状態と、.-trim-both で取り除いた状態",
+      "file": "demos/typography/line-height/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/typography/line-height/",
+      "chapter": 14,
+      "order": 3
+    },
+    {
+      "id": "14-3-2",
+      "page": "typography/line-height",
+      "title": "画像の横の見出しにハーフレディングが残った状態と、.-trim-start で取り除いた状態",
+      "file": "demos/typography/line-height/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/typography/line-height/",
+      "chapter": 14,
+      "order": 3
+    },
+    {
+      "id": "14-4-1",
+      "page": "typography/size-and-line-breaks",
+      "title": "通常の折り返しと、auto-phrase と balance で文節ごとに折り返した見出し",
+      "file": "demos/typography/size-and-line-breaks/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/typography/size-and-line-breaks/",
+      "chapter": 14,
+      "order": 4
+    },
+    {
+      "id": "14-5-1",
+      "page": "typography/text-roles",
+      "title": "6つの文字の役割を、サイズと行の高さの組で並べたもの",
+      "file": "demos/typography/text-roles/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/typography/text-roles/",
+      "chapter": 14,
+      "order": 5
+    },
+    {
+      "id": "15-1-1",
+      "page": "color-media/color",
+      "title": "同じ2色を、sRGB、Oklab、Oklch で補間したグラデーション",
+      "file": "demos/color-media/color/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/color/",
+      "chapter": 15,
+      "order": 1
+    },
+    {
+      "id": "15-2-1",
+      "page": "color-media/relative-color",
+      "title": "元の色を1つ変えるだけで、背景、枠線、バッジ、ホバーの色が変わる",
+      "file": "demos/color-media/relative-color/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/relative-color/",
+      "chapter": 15,
+      "order": 2
+    },
+    {
+      "id": "15-2-2",
+      "page": "color-media/relative-color",
+      "title": "文字色を1つ変えるだけで、枠線と背景の色が変わる",
+      "file": "demos/color-media/relative-color/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/relative-color/",
+      "chapter": 15,
+      "order": 2
+    },
+    {
+      "id": "15-3-1",
+      "page": "color-media/contrast-text",
+      "title": "背景色から、文字色が黒か白に決まる",
+      "file": "demos/color-media/contrast-text/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/contrast-text/",
+      "chapter": 15,
+      "order": 3
+    },
+    {
+      "id": "15-3-2",
+      "page": "color-media/contrast-text",
+      "title": "画像を表示できなくても、文字色と対比する背景色の上で文字が読める",
+      "file": "demos/color-media/contrast-text/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/contrast-text/",
+      "chapter": 15,
+      "order": 3
+    },
+    {
+      "id": "15-4-1",
+      "page": "color-media/dark-mode",
+      "title": "同じトークンから、ライトとダークの配色を作る",
+      "file": "demos/color-media/dark-mode/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/dark-mode/",
+      "chapter": 15,
+      "order": 4
+    },
+    {
+      "id": "15-4-2",
+      "page": "color-media/dark-mode",
+      "title": "選んだテーマをメタ要素に書き込み、トークンの色とスタイルクエリで表示を切り替える",
+      "file": "demos/color-media/dark-mode/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/dark-mode/",
+      "chapter": 15,
+      "order": 4
+    },
+    {
+      "id": "15-5-1",
+      "page": "color-media/forced-colors",
+      "title": "通常の表示では同じでも、強制カラーモードでは差が出るボタンとリンク",
+      "file": "demos/color-media/forced-colors/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/forced-colors/",
+      "chapter": 15,
+      "order": 5
+    },
+    {
+      "id": "15-5-2",
+      "page": "color-media/forced-colors",
+      "title": "グレースケールにすると、色だけで区別したリンクと入力エラーが見分けられなくなる",
+      "file": "demos/color-media/forced-colors/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/color-media/forced-colors/",
+      "chapter": 15,
+      "order": 5
+    },
+    {
+      "id": "16-1-1",
+      "page": "decoration/images",
+      "title": "元の画像の比率が違っても、サムネイルは16:9に、アバターは正円にそろう",
+      "file": "demos/decoration/images/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/",
+      "chapter": 16,
+      "order": 1
+    },
+    {
+      "id": "16-1-2",
+      "page": "decoration/images",
+      "title": "16:9の画像を正方形の枠に入れたときの、object-fit の違い",
+      "file": "demos/decoration/images/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/",
+      "chapter": 16,
+      "order": 1
+    },
+    {
+      "id": "16-1-3",
+      "page": "decoration/images",
+      "title": "block-size: 100% では、画像の元の高さで行が伸び、本文の下が空く",
+      "file": "demos/decoration/images/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/",
+      "chapter": 16,
+      "order": 1
+    },
+    {
+      "id": "16-1-4",
+      "page": "decoration/images",
+      "title": "画像の高さが本文の高さに合い、はみ出した部分は切り取られる",
+      "file": "demos/decoration/images/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/",
+      "chapter": 16,
+      "order": 1
+    },
+    {
+      "id": "16-1-5",
+      "page": "decoration/images",
+      "title": "画像を表示できなくても、背景色の上で白い文字が読める",
+      "file": "demos/decoration/images/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/",
+      "chapter": 16,
+      "order": 1
+    },
+    {
+      "id": "16-2-1",
+      "page": "decoration/icons-and-masks",
+      "title": "形のトークンで切り抜いた三角形と、下向きの三角形を付けたツールチップ",
+      "file": "demos/decoration/icons-and-masks/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/",
+      "chapter": 16,
+      "order": 2
+    },
+    {
+      "id": "16-2-2",
+      "page": "decoration/icons-and-masks",
+      "title": "選んだときの色で描いた列を重ね、選んだタブの範囲だけを切り抜いて見せる",
+      "file": "demos/decoration/icons-and-masks/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/",
+      "chapter": 16,
+      "order": 2
+    },
+    {
+      "id": "16-2-3",
+      "page": "decoration/icons-and-masks",
+      "title": "マスクで描いた矢印が、背景色に合わせた文字色で塗られる",
+      "file": "demos/decoration/icons-and-masks/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/",
+      "chapter": 16,
+      "order": 2
+    },
+    {
+      "id": "16-2-4",
+      "page": "decoration/icons-and-masks",
+      "title": "無効なボタンでは、文字色だけを変えると、アイコンと枠線も同じ色になる",
+      "file": "demos/decoration/icons-and-masks/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/",
+      "chapter": 16,
+      "order": 2
+    },
+    {
+      "id": "16-3-1",
+      "page": "decoration/surfaces",
+      "title": "ページ、カード、ダイアログ、ダイアログの中のメニューを重ねたとき",
+      "file": "demos/decoration/surfaces/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/",
+      "chapter": 16,
+      "order": 3
+    },
+    {
+      "id": "16-3-2",
+      "page": "decoration/surfaces",
+      "title": "同じ影のトークンを、ライトモードとダークモードの背景に置いたとき",
+      "file": "demos/decoration/surfaces/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/",
+      "chapter": 16,
+      "order": 3
+    },
+    {
+      "id": "16-3-3",
+      "page": "decoration/surfaces",
+      "title": "内側の角丸を外側と同じにすると、角の部分だけ余白が広く見える",
+      "file": "demos/decoration/surfaces/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/",
+      "chapter": 16,
+      "order": 3
+    },
+    {
+      "id": "16-3-4",
+      "page": "decoration/surfaces",
+      "title": "スクロールすると、ヘッダーの真後ろにある色だけがぼかされて混ざる",
+      "file": "demos/decoration/surfaces/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/",
+      "chapter": 16,
+      "order": 3
+    },
+    {
+      "id": "16-4-1",
+      "page": "decoration/text-ornaments",
+      "title": "::marker で番号の色を変えたリストと、::before で番号を円で囲んだリスト",
+      "file": "demos/decoration/text-ornaments/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/",
+      "chapter": 16,
+      "order": 4
+    },
+    {
+      "id": "16-4-2",
+      "page": "decoration/text-ornaments",
+      "title": "paint-order を指定すると、縁取りが塗りの下に描かれる",
+      "file": "demos/decoration/text-ornaments/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/",
+      "chapter": 16,
+      "order": 4
+    },
+    {
+      "id": "16-4-3",
+      "page": "decoration/text-ornaments",
+      "title": "幅が足りずに折り返した行にも、clone なら padding と枠線が付く",
+      "file": "demos/decoration/text-ornaments/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/",
+      "chapter": 16,
+      "order": 4
+    },
+    {
+      "id": "16-5-1",
+      "page": "decoration/shapes",
+      "title": "border-radius: 24px の正方形に、corner-shape のキーワードを指定したとき",
+      "file": "demos/decoration/shapes/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/",
+      "chapter": 16,
+      "order": 5
+    },
+    {
+      "id": "16-5-2",
+      "page": "decoration/shapes",
+      "title": "錠剤型のボタンと、corner-shape: squircle を足したボタン",
+      "file": "demos/decoration/shapes/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/",
+      "chapter": 16,
+      "order": 5
+    },
+    {
+      "id": "16-5-3",
+      "page": "decoration/shapes",
+      "title": "左は border-radius の角丸、右は同じ半径を .-corner-squircle に渡したもの",
+      "file": "demos/decoration/shapes/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/",
+      "chapter": 16,
+      "order": 5
+    },
+    {
+      "id": "16-5-4",
+      "page": "decoration/shapes",
+      "title": "選んでいるタブの下の端が、scoop で外側へ反り返る",
+      "file": "demos/decoration/shapes/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/",
+      "chapter": 16,
+      "order": 5
+    },
+    {
+      "id": "16-5-5",
+      "page": "decoration/shapes",
+      "title": "カードが画面いっぱいに広がったときだけ、角丸が消える",
+      "file": "demos/decoration/shapes/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/",
+      "chapter": 16,
+      "order": 5
+    },
+    {
+      "id": "16-6-1",
+      "page": "decoration/outlines",
+      "title": "選んでいるタブの輪郭を、shape() で反り返らせて描く",
+      "file": "demos/decoration/outlines/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/",
+      "chapter": 16,
+      "order": 6
+    },
+    {
+      "id": "16-6-2",
+      "page": "decoration/outlines",
+      "title": "Chrome 147以降では枠線が輪郭に沿い、未対応の環境では塗りだけの吹き出しになる",
+      "file": "demos/decoration/outlines/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/",
+      "chapter": 16,
+      "order": 6
+    },
+    {
+      "id": "16-6-3",
+      "page": "decoration/outlines",
+      "title": "対応している環境では、枠線がグラデーションになる",
+      "file": "demos/decoration/outlines/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/",
+      "chapter": 16,
+      "order": 6
+    },
+    {
+      "id": "16-6-4",
+      "page": "decoration/outlines",
+      "title": "擬似要素とマスクで、どの環境でもグラデーションの枠線を描く",
+      "file": "demos/decoration/outlines/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/",
+      "chapter": 16,
+      "order": 6
+    },
+    {
+      "id": "16-6-5",
+      "page": "decoration/outlines",
+      "title": "割合に合わせて輪が伸び、中心の数値が数え上がるドーナツグラフ",
+      "file": "demos/decoration/outlines/5/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/",
+      "chapter": 16,
+      "order": 6
+    },
+    {
+      "id": "16-7-1",
+      "page": "decoration/separators",
+      "title": "対応している環境では、リンクの間に丸い点が入る",
+      "file": "demos/decoration/separators/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/",
+      "chapter": 16,
+      "order": 7
+    },
+    {
+      "id": "16-7-2",
+      "page": "decoration/separators",
+      "title": "列の間隔に縦線を描く。未対応の環境では box-shadow で描く",
+      "file": "demos/decoration/separators/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/",
+      "chapter": 16,
+      "order": 7
+    },
+    {
+      "id": "16-7-3",
+      "page": "decoration/separators",
+      "title": "セルの影を gap の中で重ね、1本の枠線に見せる",
+      "file": "demos/decoration/separators/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/",
+      "chapter": 16,
+      "order": 7
+    },
+    {
+      "id": "17-1-1",
+      "page": "interaction/states-and-focus",
+      "title": "ホバーとフォーカスで同じように色が変わり、操作できないものは反応しない",
+      "file": "demos/interaction/states-and-focus/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/",
+      "chapter": 17,
+      "order": 1
+    },
+    {
+      "id": "17-1-2",
+      "page": "interaction/states-and-focus",
+      "title": "ホバーを透明度で表すと、文字まで薄くなり、フォーカスでは何も変わらない",
+      "file": "demos/interaction/states-and-focus/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/",
+      "chapter": 17,
+      "order": 1
+    },
+    {
+      "id": "17-2-1",
+      "page": "interaction/hit-area-and-touch",
+      "title": "余白を外側の要素に付けると押せる範囲は文字だけになり、操作する要素自身に付けると余白まで押せる",
+      "file": "demos/interaction/hit-area-and-touch/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/",
+      "chapter": 17,
+      "order": 2
+    },
+    {
+      "id": "17-2-2",
+      "page": "interaction/hit-area-and-touch",
+      "title": "項目の間に隙間があると背景が点滅し、項目の padding で間隔を作ると背景が途切れずに移る",
+      "file": "demos/interaction/hit-area-and-touch/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/",
+      "chapter": 17,
+      "order": 2
+    },
+    {
+      "id": "17-2-3",
+      "page": "interaction/hit-area-and-touch",
+      "title": "擬似要素をはみ出させると、見た目を変えずに押せる範囲が広がる",
+      "file": "demos/interaction/hit-area-and-touch/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/",
+      "chapter": 17,
+      "order": 2
+    },
+    {
+      "id": "17-2-4",
+      "page": "interaction/hit-area-and-touch",
+      "title": "安全な三角形の中を通ると、斜めに動かしてもサブメニューが切り替わらない",
+      "file": "demos/interaction/hit-area-and-touch/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/",
+      "chapter": 17,
+      "order": 2
+    },
+    {
+      "id": "17-3-1",
+      "page": "interaction/state-attributes",
+      "file": "demos/interaction/state-attributes/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/",
+      "chapter": 17,
+      "order": 3
+    },
+    {
+      "id": "17-5-1",
+      "page": "interaction/disclosure",
+      "title": "ドロワーを開いている間は、背面の本文に inert 属性が付き、リンクにフォーカスが移らない",
+      "file": "demos/interaction/disclosure/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/",
+      "chapter": 17,
+      "order": 5
+    },
+    {
+      "id": "17-5-2",
+      "page": "interaction/disclosure",
+      "file": "demos/interaction/disclosure/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/",
+      "chapter": 17,
+      "order": 5
+    },
+    {
+      "id": "17-6-1",
+      "page": "interaction/forms",
+      "title": "accent-color、input 自体に描いたチェックボックスとスイッチ、:user-invalid によるエラーの表示",
+      "file": "demos/interaction/forms/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/",
+      "chapter": 17,
+      "order": 6
+    },
+    {
+      "id": "17-7-1",
+      "page": "interaction/carousel",
+      "title": "::scroll-button() と ::scroll-marker で作った、JavaScriptを使わないカルーセル",
+      "file": "demos/interaction/carousel/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/",
+      "chapter": 17,
+      "order": 7
+    },
+    {
+      "id": "18-2-1",
+      "page": "motion/reduced-motion",
+      "title": "ドロワーを右端から滑り込ませ、動きを減らす設定ではフェードだけにする",
+      "file": "demos/motion/reduced-motion/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/",
+      "chapter": 18,
+      "order": 2
+    },
+    {
+      "id": "18-3-1",
+      "page": "motion/easing-and-duration",
+      "title": "同じ再生時間で、イージングだけを変えて4つの点を動かす",
+      "file": "demos/motion/easing-and-duration/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/",
+      "chapter": 18,
+      "order": 3
+    },
+    {
+      "id": "18-3-2",
+      "page": "motion/easing-and-duration",
+      "title": "ツールチップ、ドロップダウン、ダイアログを、それぞれの開始値と起点で拡大して表示する",
+      "file": "demos/motion/easing-and-duration/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/",
+      "chapter": 18,
+      "order": 3
+    },
+    {
+      "id": "18-3-3",
+      "page": "motion/easing-and-duration",
+      "title": "ホバーで色を変え、押したときに短く縮める",
+      "file": "demos/motion/easing-and-duration/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/",
+      "chapter": 18,
+      "order": 3
+    },
+    {
+      "id": "18-3-4",
+      "page": "motion/easing-and-duration",
+      "title": "スイッチのつまみを、cubic-bezier() のイージングとばねで動かして比べる",
+      "file": "demos/motion/easing-and-duration/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/",
+      "chapter": 18,
+      "order": 3
+    },
+    {
+      "id": "18-4-1",
+      "page": "motion/transitions-and-keyframes",
+      "title": "コピーのアイコンをチェックの印に切り替え、ぼかしの有無で重なり方を比べる",
+      "file": "demos/motion/transitions-and-keyframes/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/",
+      "chapter": 18,
+      "order": 4
+    },
+    {
+      "id": "18-4-2",
+      "page": "motion/transitions-and-keyframes",
+      "title": "同じ @keyframes に起点だけを渡し、通知を下からと上から出す",
+      "file": "demos/motion/transitions-and-keyframes/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/",
+      "chapter": 18,
+      "order": 4
+    },
+    {
+      "id": "18-5-1",
+      "page": "motion/entry-and-exit",
+      "title": "@starting-style で出現と退場を動かし、動きを減らす設定ではフェードだけにする",
+      "file": "demos/motion/entry-and-exit/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/",
+      "chapter": 18,
+      "order": 5
+    },
+    {
+      "id": "18-5-2",
+      "page": "motion/entry-and-exit",
+      "title": "::details-content の高さと不透明度を動かし、name 属性で1つだけを開く",
+      "file": "demos/motion/entry-and-exit/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/",
+      "chapter": 18,
+      "order": 5
+    },
+    {
+      "id": "18-5-3",
+      "page": "motion/entry-and-exit",
+      "title": "初回の案内の項目を、sibling-index() で50msずつずらして出す",
+      "file": "demos/motion/entry-and-exit/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/",
+      "chapter": 18,
+      "order": 5
+    },
+    {
+      "id": "18-5-4",
+      "page": "motion/entry-and-exit",
+      "title": "ツールバーのツールチップを、初回だけ400ms遅らせ、続けて触れている間はすぐに表示する",
+      "file": "demos/motion/entry-and-exit/4/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/",
+      "chapter": 18,
+      "order": 5
+    },
+    {
+      "id": "18-6-1",
+      "page": "motion/scroll-driven",
+      "title": "スクロールした量に合わせて、ヘッダーの背景をフェードインする",
+      "file": "demos/motion/scroll-driven/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/",
+      "chapter": 18,
+      "order": 6
+    },
+    {
+      "id": "18-6-2",
+      "page": "motion/scroll-driven",
+      "title": "縦のスクロールに合わせて、留めた画像の列が横に流れる",
+      "file": "demos/motion/scroll-driven/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/",
+      "chapter": 18,
+      "order": 6
+    },
+    {
+      "id": "18-6-3",
+      "page": "motion/scroll-driven",
+      "title": "画面に入ったカードが、1回だけフェードインする",
+      "file": "demos/motion/scroll-driven/3/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/",
+      "chapter": 18,
+      "order": 6
+    },
+    {
+      "id": "18-7-1",
+      "page": "motion/performance",
+      "title": "ポインターの位置を、継承しないカスタムプロパティでカードだけに書き込む",
+      "file": "demos/motion/performance/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/",
+      "chapter": 18,
+      "order": 7
+    },
+    {
+      "id": "18-8-1",
+      "page": "motion/view-transitions",
+      "title": "テーマの切り替えだけ、新しい画面を上から塗り替えるように表示する",
+      "file": "demos/motion/view-transitions/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/",
+      "chapter": 18,
+      "order": 8
+    },
+    {
+      "id": "18-8-2",
+      "page": "motion/view-transitions",
+      "title": "match-element と view-transition-class で、並べ替えた項目を新しい位置へ移動させる",
+      "file": "demos/motion/view-transitions/2/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/",
+      "chapter": 18,
+      "order": 8
+    },
+    {
+      "id": "19-5-1",
+      "page": "operations/wysiwyg",
+      "title": "本文エリアのスタイルが、独自ブロックの中には届かない",
+      "file": "demos/operations/wysiwyg/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/operations/wysiwyg/",
+      "chapter": 19,
+      "order": 5
+    },
+    {
+      "id": "21-1-1",
+      "page": "exercise/requirements",
+      "title": "完成形：同じカードが、関連記事では特集の形に、サイドバーでは小さな形になる",
+      "file": "demos/exercise/requirements/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/requirements/",
+      "chapter": 21,
+      "order": 1
+    },
+    {
+      "id": "21-2-1",
+      "page": "exercise/card",
+      "title": "21-2を終えた時点の記事カード：幅は置く側の要素で決まる",
+      "file": "demos/exercise/card/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/card/",
+      "chapter": 21,
+      "order": 2
+    },
+    {
+      "id": "21-3-1",
+      "page": "exercise/list",
+      "title": "21-3を終えた時点の新着：6件と7件を同じCSSで並べる",
+      "file": "demos/exercise/list/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/list/",
+      "chapter": 21,
+      "order": 3
+    },
+    {
+      "id": "21-4-1",
+      "page": "exercise/sidebar",
+      "title": "21-4を終えた時点の記事ページ：同じカードが、置かれた幅で形を変える",
+      "file": "demos/exercise/sidebar/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/sidebar/",
+      "chapter": 21,
+      "order": 4
+    },
+    {
+      "id": "21-5-1",
+      "page": "exercise/content-changes",
+      "title": "21-5を終えた時点：長い見出し、画像のない記事、5つのタグを入れた記事ページ",
+      "file": "demos/exercise/content-changes/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/content-changes/",
+      "chapter": 21,
+      "order": 5
+    },
+    {
+      "id": "21-6-1",
+      "page": "exercise/clickable-card",
+      "title": "21-6を終えた時点：カードのどこを押しても記事へ移動し、タグはそれぞれ押せる",
+      "file": "demos/exercise/clickable-card/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/clickable-card/",
+      "chapter": 21,
+      "order": 6
+    },
+    {
+      "id": "21-7-1",
+      "page": "exercise/featured",
+      "title": "21-7を終えた時点の記事ページ：関連記事の3件だけが、それぞれの色で特集の見た目になる",
+      "file": "demos/exercise/featured/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/featured/",
+      "chapter": 21,
+      "order": 7
+    },
+    {
+      "id": "21-8-1",
+      "page": "exercise/review",
+      "title": "レビューするプルリクエスト：お知らせの一覧に6つの誤りがある",
+      "file": "demos/exercise/review/1/index.html",
+      "url": "https://t-arai-pnrm.github.io/css-coding-guideline/exercise/review/",
+      "chapter": 21,
+      "order": 8
+    }
+  ],
+  "files": [
+    {
+      "file": "ai-coding/CLAUDE.md",
+      "sha256": "bb56db991c5cb86c65713b93d79918f308661986d9109b1b4e703c4ee82fb90f"
+    },
+    {
+      "file": "ai-coding/hooks/protect-task-inputs.mjs",
+      "sha256": "c8f214f4a8c52dd3442db889837ec332576c83ca42922bc78e2ddcab2417792a"
+    },
+    {
+      "file": "ai-coding/mcp.json",
+      "sha256": "ad195a2e097b73aa1e8bcec97baa20ab233a940ac264f11916da72ebcb74a77a"
+    },
+    {
+      "file": "ai-coding/playwright.config.ts",
+      "sha256": "404f6574a512f21d93c15f62398bc499ba21552bac6a4801e24759e711872937"
+    },
+    {
+      "file": "ai-coding/README.md",
+      "sha256": "7d2edab948c7301b9ce2f76406196d1d44e816634cd86f8671b35d29b01d14ca"
+    },
+    {
+      "file": "ai-coding/settings.json",
+      "sha256": "14d411501aedf20bdabd35a60592457606ce3162d75e936f330b2ca2220a196f"
+    },
+    {
+      "file": "ai-coding/skills/confirm-request/SKILL.md",
+      "sha256": "eabbcd0dff3e19047acc53de1645afb2c06b040204a8160757ff0bfbcc49d7bb"
+    },
+    {
+      "file": "ai-coding/skills/confirm-request/templates/request.md",
+      "sha256": "5e06f6a20f7e26c94649055a8d919ea1e4ffc2e7d274c8a92a63f11d86c48104"
+    },
+    {
+      "file": "ai-coding/skills/task-approve/SKILL.md",
+      "sha256": "4069b9002669de3d2d7192382bd3551d99690175284d0a64dfa519a4b1da38d6"
+    },
+    {
+      "file": "ai-coding/skills/task-done/SKILL.md",
+      "sha256": "7961f32aaf824989ce86d79123b815042ffbae057f7639e12692c2bca70bbf1a"
+    },
+    {
+      "file": "ai-coding/skills/task-new/SKILL.md",
+      "sha256": "7a7ddbfaee80135004e1779324ba65530f97ece5ddf1379e8362eb603c7c6ac0"
+    },
+    {
+      "file": "ai-coding/skills/task-new/templates/brief.md",
+      "sha256": "6819fabc15d994fcba76b6a363eb5abf855cfc9f357d41677df6be0016abd6b2"
+    },
+    {
+      "file": "ai-coding/skills/task-start/SKILL.md",
+      "sha256": "36fe6521e111b4023c578950305a03041c3dfdfce1fdb17690d10712d597dfb7"
+    },
+    {
+      "file": "ai-coding/skills/task-start/templates/plan.md",
+      "sha256": "e309a38ff0883233a715a6ab20d43f720de5237b12aa00ae1e24d8dfb6fde9d5"
+    },
+    {
+      "file": "ai-coding/tasks/lessons.md",
+      "sha256": "23dffd8f2c1e1f1a813a37587d5b584ab9e008055f70dbe0c7abe3fadb350379"
+    },
+    {
+      "file": "ai-coding/tests/design-values.spec.ts",
+      "sha256": "ca262090d41dc8d4548c0c6b37dc196e3b777646b3872fa5ec22803b70b7a1a8"
+    },
+    {
+      "file": "ai-coding/tests/pages/article-card/article-card.css",
+      "sha256": "ac5aa15f60a884c404d79a6bfb12932ea63d3a604ba2f444ed816a243daa2841"
+    },
+    {
+      "file": "ai-coding/tests/pages/article-card/base.css",
+      "sha256": "0fc4a8afb6366a33e855d9371f0f4210f2fa74e2e4b73ba952b5f929e743448a"
+    },
+    {
+      "file": "ai-coding/tests/pages/article-card/compositions.css",
+      "sha256": "eb654579c8c5debfe7f989989081f34e4927f5eb3c5b1aeb77e0c59f610928a9"
+    },
+    {
+      "file": "ai-coding/tests/pages/article-card/index.html",
+      "sha256": "dd4d82d8df7f2c0dae9fbaed88f45132c94f79648cdbcd4f02ace690d72eedc4"
+    },
+    {
+      "file": "demos/cascade/cascade-basics/1/index.html",
+      "sha256": "2c9e036da904b591b74cd4000dc22304957b13026fd9be6c37a39acb9ec46a3e"
+    },
+    {
+      "file": "demos/cascade/cascade-basics/2/index.html",
+      "sha256": "bbd90ca018d5501ad7c0cfd42bb2cd85b056b7385829b486788858ab40c31f18"
+    },
+    {
+      "file": "demos/cascade/cascade-basics/3/index.html",
+      "sha256": "7d4c815539d4828a4d1b137a83ffa2971342fc6e036e9ab5341af0e3f563152b"
+    },
+    {
+      "file": "demos/cascade/layers/1/index.html",
+      "sha256": "14307730736b83f092ba3775b04051ec00a9c91d5ea0bff3dd326f8f00a03984"
+    },
+    {
+      "file": "demos/cascade/layers/2/index.html",
+      "sha256": "ed9941a48b2ee1107b8cc5faa5ae237c7c2ffdfae0a2ec3583efd01b30ab8102"
+    },
+    {
+      "file": "demos/cascade/layers/3/index.html",
+      "sha256": "255c745723c7750ac646c46446c2a7225e7e1f4814998890598228a09594ec84"
+    },
+    {
+      "file": "demos/cascade/nesting/1/index.html",
+      "sha256": "301bba10b855becfa1bab8ba1776c2f4c6044e5658de32de9291130f9ecd080d"
+    },
+    {
+      "file": "demos/cascade/nesting/2/index.html",
+      "sha256": "ddb5b5fba5489224db5e625ade0895867157e6f5e1d1edbe5b8bf81ce08b1f91"
+    },
+    {
+      "file": "demos/cascade/nesting/3/index.html",
+      "sha256": "8269b2823aefa6bc2ec805144a3b4c054faf4cddf4c655cff07be27cf4531bf5"
+    },
+    {
+      "file": "demos/cascade/nesting/4/index.html",
+      "sha256": "9e5f747f40d1f6286a8f7236ce28f4a9f3ba6a192a2efd6787e3485a9b6447d8"
+    },
+    {
+      "file": "demos/cascade/nesting/5/index.html",
+      "sha256": "84adc049a7ac2e56bf385bb66b6ae202662d651b8cbc46b6190a9a55005f261e"
+    },
+    {
+      "file": "demos/cascade/scope/1/index.html",
+      "sha256": "585a7b3b8becbe2119835496ce52266610ae491ef03e489c1709d9cd99aa7da4"
+    },
+    {
+      "file": "demos/cascade/scope/2/index.html",
+      "sha256": "42a1bdb57b6243b12b6acf44dc3b9e7a8e74841167c9a5b4bad0a2a40fbc4570"
+    },
+    {
+      "file": "demos/cascade/scope/3/index.html",
+      "sha256": "abbba66dec11c9d94d5765f0f327854af5eb32be43fe5653378dd212d6ecdf30"
+    },
+    {
+      "file": "demos/cascade/scope/4/index.html",
+      "sha256": "50b6e042540977fba1df31f91eb555f459668c3d1c7061dcec88322e4d1e1c23"
+    },
+    {
+      "file": "demos/cascade/scope/5/index.html",
+      "sha256": "534edbc52f60d5a1bf67d3d7b493f26ae7ba50df5553c0ead836c0af77b13e2a"
+    },
+    {
+      "file": "demos/cascade/selectors/1/index.html",
+      "sha256": "d3ac0b07c9cfb9097779e8cfe741746f9ab44c29b05e6c79ac57cfda80ababf5"
+    },
+    {
+      "file": "demos/color-media/color/1/index.html",
+      "sha256": "b65c8b787417c4fb2d71169ec3f82a6419d162be88ef364ce9e7a96a56c23a40"
+    },
+    {
+      "file": "demos/color-media/contrast-text/1/index.html",
+      "sha256": "d124c90233105ca4188bd4bbf25f92c550c6295004a597683aa58ae1240e9957"
+    },
+    {
+      "file": "demos/color-media/contrast-text/2/index.html",
+      "sha256": "32ceeb30901337dd3f72d618ae62a8a9dc1c6c0c5187f90af382493c608fdcd1"
+    },
+    {
+      "file": "demos/color-media/dark-mode/1/index.html",
+      "sha256": "f5647f6d4c20d9bcc110dd5e0bed28639493e1e47fa8c4c419f80bcebe6ed119"
+    },
+    {
+      "file": "demos/color-media/dark-mode/2/index.html",
+      "sha256": "a5c5ea87d95e05f70e5b57b3f8b2263a81736a7b1f2ce6b07751611d118498e0"
+    },
+    {
+      "file": "demos/color-media/forced-colors/1/index.html",
+      "sha256": "74eaeab77d1703382bdbd1fa2f2d34ad92fd78c423d18646ecb46a9a2d7f4a9f"
+    },
+    {
+      "file": "demos/color-media/forced-colors/2/index.html",
+      "sha256": "96a4bddf18a6d9b81c0e4aab8001064e4edafb1d3bf8d46aac9e984889b65925"
+    },
+    {
+      "file": "demos/color-media/relative-color/1/index.html",
+      "sha256": "e2e1b5c2658ecba21d1b073d47afdede57762012a605874e99cf84f6a0b4de24"
+    },
+    {
+      "file": "demos/color-media/relative-color/2/index.html",
+      "sha256": "a3135bda3987f6f9a87ce364a0d41a26628df92dbc9442c27a8dd411a61da438"
+    },
+    {
+      "file": "demos/components/boundaries/1/index.html",
+      "sha256": "36451c550b8f108326c2d603714b74e0ee75fe2a88a24ea401237c3bb26afe3a"
+    },
+    {
+      "file": "demos/components/boundaries/2/index.html",
+      "sha256": "c45db7c84cfe8836dfc4ae1e00803f6708b4a79cd7dd17b078af18501209f98f"
+    },
+    {
+      "file": "demos/components/boundaries/3/index.html",
+      "sha256": "0aba0c4d739c117124fcc2647924916388056b866d1416e975bae028090bcff4"
+    },
+    {
+      "file": "demos/components/boundaries/4/index.html",
+      "sha256": "32b3c7a9aa54e11c3405586656f382b264f592512683ec32d9b214f9be3d628f"
+    },
+    {
+      "file": "demos/components/compositions-and-utilities/1/index.html",
+      "sha256": "afedc4a12f02ad8f8129a0e8b8dc40a2584711e82a525e1901f4ec26347601c5"
+    },
+    {
+      "file": "demos/components/custom-properties/1/index.html",
+      "sha256": "656af584da48ac3edb1fc887016f951b660de674a7a16b27880d76bff3af1374"
+    },
+    {
+      "file": "demos/components/placement-and-child-states/1/index.html",
+      "sha256": "6ee8c5c6214eccf475f4fd1be50c6f8583500a6e100e53b9a819b5ac6e441536"
+    },
+    {
+      "file": "demos/components/style-queries/1/index.html",
+      "sha256": "697cfaba5f6eac0332f8992f4329ad26905e933386e6a7c2ef8519cca473e425"
+    },
+    {
+      "file": "demos/components/style-queries/2/index.html",
+      "sha256": "d9ad875ef55d3dd1ad5bca6d15ec89410eec0dbd053cf9414224486461ef71fd"
+    },
+    {
+      "file": "demos/components/web-components/1/index.html",
+      "sha256": "b030c64c1134c7a7e2109029b60e1322c94bf06f91652ea285fa3d62ae3204e7"
+    },
+    {
+      "file": "demos/components/web-components/2/index.html",
+      "sha256": "3b69b266e808c9bd5be8e9e0d1ffc857477fc3aa9ec8b7784757380a859c3195"
+    },
+    {
+      "file": "demos/components/what-is-a-component/1/index.html",
+      "sha256": "468be01985e07df6a9e50c4798eb6ee5cbc2079c1b7a6d21c0f1078ca333a016"
+    },
+    {
+      "file": "demos/compositions/apart/1/index.html",
+      "sha256": "d6e1f79816572e630333b063f53eac2323604c95fcb03af5ebfab812370fe518"
+    },
+    {
+      "file": "demos/compositions/apart/2/index.html",
+      "sha256": "38441b4f9b4e5418f5bfb8f1fe53484b7511e9522a5063118a05bd66a7e0e352"
+    },
+    {
+      "file": "demos/compositions/cluster/1/index.html",
+      "sha256": "0055c79a023b234048be58d3ce177bf59def55eaaa13890c42cc66bc184f4637"
+    },
+    {
+      "file": "demos/compositions/columns/1/index.html",
+      "sha256": "698c83bb182540664959b1d7c80074d6b7afa2d82d0d69cce737a2dbacd54f61"
+    },
+    {
+      "file": "demos/compositions/grid/1/index.html",
+      "sha256": "604f826844071c72e6b3e2e25e995e647f950f4cc79b3b12c2b5a7cee491c7d8"
+    },
+    {
+      "file": "demos/compositions/grid/2/index.html",
+      "sha256": "5b375427ac05e4f20c47519f87b32cf670ec838dc7f5af880f5658519b105a90"
+    },
+    {
+      "file": "demos/compositions/grid/3/index.html",
+      "sha256": "d58a0607f9a44f807514efdf1d31c9b0d5858bc57545e5ef99c183eb7fc127d1"
+    },
+    {
+      "file": "demos/compositions/masonry/1/index.html",
+      "sha256": "421b142a80388fb6c43ff0f69a433bc261939153614ae3e7d810fe3ce0f7ddac"
+    },
+    {
+      "file": "demos/compositions/pile/1/index.html",
+      "sha256": "2912c8b3397ff007e26e12ff0a8ec39637a2d4bb4e0f4483e6ee89f0ac0cfac7"
+    },
+    {
+      "file": "demos/compositions/primary-layout/1/index.html",
+      "sha256": "e91dcb4de1a805db990ecd4bf361f4f7c1b6718991bb603093e374235a54c791"
+    },
+    {
+      "file": "demos/compositions/prose/1/index.html",
+      "sha256": "66ec17fb238b15e27e700f1c93e32b11a15d2947ddd8a1dba9ca8ea40c8e2947"
+    },
+    {
+      "file": "demos/compositions/sidebar/1/index.html",
+      "sha256": "5f596b6025a21b686be31514fde63e9acec9d161beb81f19368e35e3fa44fd79"
+    },
+    {
+      "file": "demos/compositions/stack/1/index.html",
+      "sha256": "6f51291ec704dd2be029a06dad3ffa75926c02b09902aa489609b61d5d1fe038"
+    },
+    {
+      "file": "demos/compositions/switcher/1/index.html",
+      "sha256": "b878f19c2ca524099cf4d9c2db0d09f052b8f49c6ad58deba0d5d5f54e8d4e71"
+    },
+    {
+      "file": "demos/decoration/icons-and-masks/1/index.html",
+      "sha256": "0fe77309e3854f1c8bf2eaed67e55e35af0254f3d0ae7b2abddf55e66b57a164"
+    },
+    {
+      "file": "demos/decoration/icons-and-masks/2/index.html",
+      "sha256": "d306b7426faed69d957d44deb3c50237cc50de344e53ad186bbb89b40b8e9a41"
+    },
+    {
+      "file": "demos/decoration/icons-and-masks/3/index.html",
+      "sha256": "7094172a33dbaea884285399da3277bf3a38dde11ecc53c6edacbc63f82376c5"
+    },
+    {
+      "file": "demos/decoration/icons-and-masks/4/index.html",
+      "sha256": "66e9954b8c45c24cd7068ad70047b0b991bb10bb9c8e8acb2f80c20d5d56292c"
+    },
+    {
+      "file": "demos/decoration/images/1/index.html",
+      "sha256": "60bf2092cbd0c9932a09c336aaa8ba9dcef78023df489cbd2004a8baabce6679"
+    },
+    {
+      "file": "demos/decoration/images/2/index.html",
+      "sha256": "367fc0771d0f9c19a5d7e43e56da607399250ce8b2225dae9ae662c195987493"
+    },
+    {
+      "file": "demos/decoration/images/3/index.html",
+      "sha256": "5d44acb3b680bf1ca6be651efcd21ceccd50419fa89bd1608f3408a062a32967"
+    },
+    {
+      "file": "demos/decoration/images/4/index.html",
+      "sha256": "e4ebdde70907525c8cfdcb0d82609cb90809c0d135d657a28f56f00a882fda03"
+    },
+    {
+      "file": "demos/decoration/images/5/index.html",
+      "sha256": "85bbfa5a4c04703b8ff8eb60ce307e45474f334284f6dc04431a5fa792f2b8fc"
+    },
+    {
+      "file": "demos/decoration/outlines/1/index.html",
+      "sha256": "03ab0d5d1c39302d767e43269d9ae4ac3703440f4c08200e64a77ea4c5798b6a"
+    },
+    {
+      "file": "demos/decoration/outlines/2/index.html",
+      "sha256": "3fb1193e45a3e62ff4c30638d21327a12534274763f5239ac8d51132e3666fba"
+    },
+    {
+      "file": "demos/decoration/outlines/3/index.html",
+      "sha256": "20bef841048338d82d8afa895ffdefac0cc7ede300f1e5db7a3106d9d7ff5784"
+    },
+    {
+      "file": "demos/decoration/outlines/4/index.html",
+      "sha256": "209b0d86363cee9cee578f4d40bce39f12e443f60e649a81666cf00772e15e15"
+    },
+    {
+      "file": "demos/decoration/outlines/5/index.html",
+      "sha256": "cd5bbf51ece5ea7fa41933044ecb8da37ef3ce7db1641e0087d2032ef2afc89d"
+    },
+    {
+      "file": "demos/decoration/separators/1/index.html",
+      "sha256": "ac0fcd2a684175c34d079b34fd5de2238998d0d721c887aaa2b52abfe6957a80"
+    },
+    {
+      "file": "demos/decoration/separators/2/index.html",
+      "sha256": "c63d76ea0ed772338b66e4dfe3e7eb955d8500457f8599e126db29250f39399c"
+    },
+    {
+      "file": "demos/decoration/separators/3/index.html",
+      "sha256": "fa4c1fcb4bc639488def65e945d1541ff8856a097462fe33ceadc275f94ad78f"
+    },
+    {
+      "file": "demos/decoration/shapes/1/index.html",
+      "sha256": "b81a8fef1889555d723b32c524e6fb71e9ab6e39a71ee4baf87f08fa2717da79"
+    },
+    {
+      "file": "demos/decoration/shapes/2/index.html",
+      "sha256": "adbe72f2f874d5949e3e6dbd8126ac3c19fce3097d4eb4e680c85820190a3d82"
+    },
+    {
+      "file": "demos/decoration/shapes/3/index.html",
+      "sha256": "19dc1b4513d80c026b437914ead6b81bc794e27b13ba828f90807a42cec0048a"
+    },
+    {
+      "file": "demos/decoration/shapes/4/index.html",
+      "sha256": "8517d08f712731abd109f8036d471cf5936873c4bc2ebc2e739791bccd950531"
+    },
+    {
+      "file": "demos/decoration/shapes/5/index.html",
+      "sha256": "bac6552396e48b27f071c82a3d86e6891f59b8309c4a4fda2d0c6aaa91aca130"
+    },
+    {
+      "file": "demos/decoration/surfaces/1/index.html",
+      "sha256": "1f47d99170fee3fef01962ce0f7cabb12f2db955558f77026317c6f70673f376"
+    },
+    {
+      "file": "demos/decoration/surfaces/2/index.html",
+      "sha256": "ae578279e7db239a149f86c36161dacd55606edef6149f8aa61f182d617b5905"
+    },
+    {
+      "file": "demos/decoration/surfaces/3/index.html",
+      "sha256": "d9b63afcf559d1d8a666e591b78aaf3a665e39d66254a8324c38bb650d8ba10f"
+    },
+    {
+      "file": "demos/decoration/surfaces/4/index.html",
+      "sha256": "f568dc7de9b52555d5ace061fe44670ff21bc56906da4e0a83ed69b5f127e04e"
+    },
+    {
+      "file": "demos/decoration/text-ornaments/1/index.html",
+      "sha256": "cf6ac846035f30de64a07e14728de71e761cb19382beeabbd469c3ef57c77274"
+    },
+    {
+      "file": "demos/decoration/text-ornaments/2/index.html",
+      "sha256": "ece5b6c42d66d023cc3fb2ac6f255e298a1582aa2ddf4715e34a128f0b452d20"
+    },
+    {
+      "file": "demos/decoration/text-ornaments/3/index.html",
+      "sha256": "5d696991c088d296d5d38ea4d82a4ce0ddeb5033a9d1be0b12a0f35b4422727a"
+    },
+    {
+      "file": "demos/design-mindset/maintainability/1/index.html",
+      "sha256": "945d91ada812dd49550a5194e88b7dbb8a288762561b77e32988d0daabe47231"
+    },
+    {
+      "file": "demos/exercise/card/1/index.html",
+      "sha256": "e6db64e0e5111bbdfc67c5b2926d0dd6a055c33c40064e8e72bfe88fc585147b"
+    },
+    {
+      "file": "demos/exercise/clickable-card/1/index.html",
+      "sha256": "24fce816c61d3844907b49a64d6b7be68985a4d0b3c0c1e78d052fe6f0da7b5b"
+    },
+    {
+      "file": "demos/exercise/content-changes/1/index.html",
+      "sha256": "6d2247ef0c488b6e6c439f94665269f0a4ca5f9064f9ed98b0e5bc8ec62ad909"
+    },
+    {
+      "file": "demos/exercise/featured/1/index.html",
+      "sha256": "a7032f48787be04ac6ad097889d233f936baa0abf6026de8df29d1318de08a82"
+    },
+    {
+      "file": "demos/exercise/list/1/index.html",
+      "sha256": "d8505a904c67561b1fe50df23154a4c5b2250a2eacf4c32309f8fbb12fb57485"
+    },
+    {
+      "file": "demos/exercise/requirements/1/index.html",
+      "sha256": "a7032f48787be04ac6ad097889d233f936baa0abf6026de8df29d1318de08a82"
+    },
+    {
+      "file": "demos/exercise/review/1/index.html",
+      "sha256": "d23c543b2f97de95dea8048f89ecf48400bdf1553e5dfbc37de6a33dc946d994"
+    },
+    {
+      "file": "demos/exercise/sidebar/1/index.html",
+      "sha256": "9472d3557722948c5598b14dd7b051b2f0a84990a15d1b62229cbfecc6bbb86c"
+    },
+    {
+      "file": "demos/interaction/carousel/1/index.html",
+      "sha256": "9ca88a1b6d1e409d33bafc70474d43d7a8ec212442d4a76a44610e09164f5b5f"
+    },
+    {
+      "file": "demos/interaction/disclosure/1/index.html",
+      "sha256": "703df6509087637fa3c5f28cb555381ccba008e42269f923624b1db63dbc7d3a"
+    },
+    {
+      "file": "demos/interaction/disclosure/2/index.html",
+      "sha256": "23ea9ce8677bdc457ae1be13bd3d1c4040a23762b84a30f9e58c95381b7a8dd0"
+    },
+    {
+      "file": "demos/interaction/forms/1/index.html",
+      "sha256": "2f79ae4ea2cf2edaf758e4d3a958bf572166e6ee4d2903dcdb1d76938e6535f7"
+    },
+    {
+      "file": "demos/interaction/hit-area-and-touch/1/index.html",
+      "sha256": "771014b5e61632255cd28f859fd6828bbbcf55ca0839a95518d397ebdd393268"
+    },
+    {
+      "file": "demos/interaction/hit-area-and-touch/2/index.html",
+      "sha256": "1e553fda4cf3d32a6b4f3dec7d847feff82eee177bc42c7055274929de11e8d7"
+    },
+    {
+      "file": "demos/interaction/hit-area-and-touch/3/index.html",
+      "sha256": "c352dd746938b8636adee0721f569fc84c9cb3a08c1365a4743e53ee2fddac88"
+    },
+    {
+      "file": "demos/interaction/hit-area-and-touch/4/index.html",
+      "sha256": "09d4cdf1c530ab34c07bd20a0894ca70684948f3dd0062625037a10cf9f68d59"
+    },
+    {
+      "file": "demos/interaction/state-attributes/1/index.html",
+      "sha256": "671eea3e2be63eaabb9883467dac44620dcd6d3d2f3e353311c2986fcb5c8429"
+    },
+    {
+      "file": "demos/interaction/states-and-focus/1/index.html",
+      "sha256": "ffb865e35b4c65e60b482609698721b067300176c8caa1188e1124067d1f981a"
+    },
+    {
+      "file": "demos/interaction/states-and-focus/2/index.html",
+      "sha256": "dc1a86e21cb3d8fa3163099e8920e76875b4c08e9a52f8cb245f51a152eab02c"
+    },
+    {
+      "file": "demos/introduction/quick-start/1/index.html",
+      "sha256": "851c282da51081efd38c36897f1b8783014bc678d6aef39086455abeeef55c6b"
+    },
+    {
+      "file": "demos/layout/anchor-basics/1/index.html",
+      "sha256": "155fae2005ddc59e3e8f89d2ae582572737b410d73be66b50529cb6b5eeaa859"
+    },
+    {
+      "file": "demos/layout/anchor-basics/2/index.html",
+      "sha256": "512b0724344ce3de8240fea176c319c11f5a2d44866eb0bd7a48fef30f411d8f"
+    },
+    {
+      "file": "demos/layout/anchor-basics/3/index.html",
+      "sha256": "4d8df0fb8e68a835a10725ed3fd82416b3db438943e46e79b67836187a3f2c9d"
+    },
+    {
+      "file": "demos/layout/anchor-basics/4/index.html",
+      "sha256": "56254c9242a7ecfe61a71f0ee0afbb1883fbd5281d7ac01e6976303a58c5cbf6"
+    },
+    {
+      "file": "demos/layout/anchor-basics/5/index.html",
+      "sha256": "1fee3ec96741064861612c7cc6c16434f775591e5e09b81b4495c3e138589f79"
+    },
+    {
+      "file": "demos/layout/anchor-basics/6/index.html",
+      "sha256": "823599a8ddd606bc1574c1466d85b9d749eeedea2d9ca8a0488588751481e398"
+    },
+    {
+      "file": "demos/layout/box-model/1/index.html",
+      "sha256": "22b1a9546930e87c462f121742da80471441842ab8f9dcb37413465db7ab8562"
+    },
+    {
+      "file": "demos/layout/box-model/2/index.html",
+      "sha256": "5e28e78c039610a6a597e937796d9332a023f30026f73599fee24ac2bf12beee"
+    },
+    {
+      "file": "demos/layout/box-model/3/index.html",
+      "sha256": "343acd3084d526339dd4a54c8b17c2154d4f61f4d0858e9958e3f11c7806a47e"
+    },
+    {
+      "file": "demos/layout/box-model/4/index.html",
+      "sha256": "967e0060e25f0adbb17fcd2eb6d557e41b561d3f71eb5b398e441bebde359cc5"
+    },
+    {
+      "file": "demos/layout/box-model/5/index.html",
+      "sha256": "9f945231295cb4daf0c59273addad167788cbb5c0f2565bbf921004961b77825"
+    },
+    {
+      "file": "demos/layout/box-model/6/index.html",
+      "sha256": "1f969ce92d1754767519e825c2b4e6ebb3027b62f45d6fe23f59b4d415a2e459"
+    },
+    {
+      "file": "demos/layout/display-contents/1/index.html",
+      "sha256": "e23912a8d5e967692c8ad4843857b2e75b3c7754ee4d9fb0d4bf03f3283e89fa"
+    },
+    {
+      "file": "demos/layout/display-contents/2/index.html",
+      "sha256": "0ecd028e11cfac8834d77cfa152d9882272de990bac112f3d981d3544836f2b1"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/1/index.html",
+      "sha256": "635cc4053af754d7625c17dcf34bb8214115b01b2ae1e5adc614aaf43452f2f9"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/10/index.html",
+      "sha256": "e2139e9a5197dfb5a39498dd8979fe62c6cc7e6ba323bcff2e46503b4814bfe9"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/2/index.html",
+      "sha256": "af6a572f1ee7ec63946e2e54c32c5198da30f4833a9b0a55c91f2848e813d63d"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/3/index.html",
+      "sha256": "1efc7ef1c5a0e845910e7d0fcca326598a6a936251aa9b3beb7165b367ab5877"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/4/index.html",
+      "sha256": "04222ad22cb43c1bbb37f202756dbfdf30455941173d32637762c8612a749c8c"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/5/index.html",
+      "sha256": "dd5d4a456f01d4986244549baa711e8ac226c40b7f6201b4ef16a99464d10abc"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/6/index.html",
+      "sha256": "c23803989f13b41cf9bb3067368ee902b2ff8a5571d113c33172d208a491a4ea"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/7/index.html",
+      "sha256": "0ea84c01d706908781b6804740da98ec74dd44b529a11469e5604ffa1466d6d6"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/8/index.html",
+      "sha256": "8ddac9a01ffae5d86367607f504e8a49917e8a14fb8edc6b1c63392079c38357"
+    },
+    {
+      "file": "demos/layout/flexbox-basics/9/index.html",
+      "sha256": "25e2b4b00c1a3b49892ffb3fbb3926f68487a3da2c3e7e7c8303b1252454a654"
+    },
+    {
+      "file": "demos/layout/fundamentals/1/index.html",
+      "sha256": "f9dadb4c19b7181417bf4a27603521f5cb844b2368e37f8af097f7d86730f4f1"
+    },
+    {
+      "file": "demos/layout/fundamentals/2/index.html",
+      "sha256": "a98081718a1d04532db89ff43a71595d40688fd24313507dc2c0f1958f18b17e"
+    },
+    {
+      "file": "demos/layout/fundamentals/3/index.html",
+      "sha256": "cbff7aa9bb8cb8bb163a79db170bec5e2418cc86bf3107c3995086742dcd70ac"
+    },
+    {
+      "file": "demos/layout/fundamentals/4/index.html",
+      "sha256": "8d8af27b7918ff0b3384ebf080e51329c887c24c048cb3da5ffd271d2c663665"
+    },
+    {
+      "file": "demos/layout/fundamentals/5/index.html",
+      "sha256": "6b9a3da14b250cf45a1212bb234ae4ffebbf545458d1a6331c7f6b6844294a79"
+    },
+    {
+      "file": "demos/layout/grid-alignment/1/index.html",
+      "sha256": "4cfc8c389a859fd382223ecbc9d193fc19a4b3505fb96ce9a4068f472a3723d1"
+    },
+    {
+      "file": "demos/layout/grid-alignment/2/index.html",
+      "sha256": "46c6cb7cfe56e2a48c2b5a2fc1e6bcd66bdd0b972b6f02f3955629e13e6556c4"
+    },
+    {
+      "file": "demos/layout/grid-alignment/3/index.html",
+      "sha256": "f79ba09335cddf2474c92f50a5c2c8b7626b1816801f3c0300a672dff911e5e9"
+    },
+    {
+      "file": "demos/layout/grid-alignment/4/index.html",
+      "sha256": "eea7a23f25ff90465434beb5dc3a64c989e9fd622b2550b745e1471c42ee0100"
+    },
+    {
+      "file": "demos/layout/grid-alignment/5/index.html",
+      "sha256": "200c819e065ee6c493293f0910ed9f4d87fa9898ea45000b1f981c0bf004ce35"
+    },
+    {
+      "file": "demos/layout/grid-basics/1/index.html",
+      "sha256": "ef460d19aacf580aef765d005a873b97ff203e2dc02985fad9d5eedbb34a1572"
+    },
+    {
+      "file": "demos/layout/grid-basics/2/index.html",
+      "sha256": "58faacff85cb1a4f8dd7671b08301e984e2616f5cd6b576e724883885b0cd43b"
+    },
+    {
+      "file": "demos/layout/grid-basics/3/index.html",
+      "sha256": "6cb0f9b8cdbc5c0589dfaed3b1c23b8a7f9f28c36ef98272bff2261f1ad970cd"
+    },
+    {
+      "file": "demos/layout/grid-basics/4/index.html",
+      "sha256": "ba951d2c74425e750344e55618a31520eaceeca3e7c74cfcf9502165181094b5"
+    },
+    {
+      "file": "demos/layout/grid-basics/5/index.html",
+      "sha256": "5a632f209482179e9bf06ecdc14c42b5b33b641982dab9293ad89cf199e1680a"
+    },
+    {
+      "file": "demos/layout/margin-collapse/1/index.html",
+      "sha256": "e15a596b087b49febd7ce79c3aca3e8cbbc00b525d41a528c037835d89f0324e"
+    },
+    {
+      "file": "demos/layout/margin-collapse/2/index.html",
+      "sha256": "4af454ccd0422f810de4cddbf04eeb5723030b8bcedeea9e000dab90900eda63"
+    },
+    {
+      "file": "demos/layout/margin-collapse/3/index.html",
+      "sha256": "2868b33dc88e553011a1161980e36ee5b42b1d527a94878c5206f7dd6f4b9623"
+    },
+    {
+      "file": "demos/layout/margin-collapse/4/index.html",
+      "sha256": "f912ee26b646e5f1276c4f6f201091745f1f7e85304b36d606854e378c2cbb0a"
+    },
+    {
+      "file": "demos/layout/margin-role/1/index.html",
+      "sha256": "b3e5c2238c5492160fa5023276e17e4144ed372cbb0a8519b8208ac5db1bfc26"
+    },
+    {
+      "file": "demos/layout/margin-role/2/index.html",
+      "sha256": "f23a3625021bcfccfa0ac32eb9fa9ddc9049d010f7af678201be2432f456f88b"
+    },
+    {
+      "file": "demos/layout/margin-role/3/index.html",
+      "sha256": "c32dd75c8e483980af03c26acbf1d237a74b5636604a550bf807e789e5f03790"
+    },
+    {
+      "file": "demos/layout/normal-flow/1/index.html",
+      "sha256": "f54392a858af21597ea087ee3053a69c0f7664504acfb881801d56fc7ab87566"
+    },
+    {
+      "file": "demos/layout/normal-flow/2/index.html",
+      "sha256": "74249026ee492e3bd8fd3dfada853d3abaee34533e22503eb816189c1d836efd"
+    },
+    {
+      "file": "demos/layout/normal-flow/3/index.html",
+      "sha256": "d42539c9267695db0447e209b9b7838b16114c11958fcc9fdab345ce5bce205f"
+    },
+    {
+      "file": "demos/layout/normal-flow/4/index.html",
+      "sha256": "519011c606d7acdb06a8204e94b8873894df76b005909b42573576fae3d2ac45"
+    },
+    {
+      "file": "demos/layout/normal-flow/5/index.html",
+      "sha256": "7a3ac75beddafe187915fc73cb71aeee40b70f809f5e750d4093b48fb6b5a31c"
+    },
+    {
+      "file": "demos/layout/normal-flow/6/index.html",
+      "sha256": "b23cd95069662d56b34d5595c78079262113861cf79e9f135566b80d1d90cf95"
+    },
+    {
+      "file": "demos/layout/positioning/1/index.html",
+      "sha256": "51143af1e99fb997bc2f48ba1e9db1091b3415c0ffaed784cb8f054ea7d38d0c"
+    },
+    {
+      "file": "demos/layout/positioning/2/index.html",
+      "sha256": "9b63eb5860b597556cc53776ad3a3c8b1b9d4d360c506544d1b82a780f284d06"
+    },
+    {
+      "file": "demos/layout/positioning/3/index.html",
+      "sha256": "31a75bcfaf5a6f7bc317ebc42c0d4e4ce3c9d3268c42b7e85ba0823fe14f17d0"
+    },
+    {
+      "file": "demos/layout/positioning/4/index.html",
+      "sha256": "3a64d506f0e033ac6d0f1c3c54185e2a872cff070c8d6d7b711925f0d3f21864"
+    },
+    {
+      "file": "demos/layout/positioning/5/index.html",
+      "sha256": "a933fb2268bb413147677cf3019aff62e0aa3fd15baf97ff367621a727e631f6"
+    },
+    {
+      "file": "demos/layout/positioning/6/index.html",
+      "sha256": "104ce208a4fc027ba1295f085e48aedd5692eb378f04d0d7305c8a6e2dc12d89"
+    },
+    {
+      "file": "demos/layout/positioning/7/index.html",
+      "sha256": "28601c504e8f6c958b17a7745c47d34502eacf90639a79e4c538ce6005e3ea87"
+    },
+    {
+      "file": "demos/layout/positioning/8/index.html",
+      "sha256": "928b80105b0da1f4bc40ecd7f6225f36e5f5a1de5845d0f89d8b33aa6630b4ea"
+    },
+    {
+      "file": "demos/layout/sizing/1/index.html",
+      "sha256": "417147c2822ef47a260295d2fcddbeacd089672d8a9df09119e01094eeab81f5"
+    },
+    {
+      "file": "demos/layout/sizing/2/index.html",
+      "sha256": "2a27ea8f3ab4e8789f1a3a62df3a69cd7dab5b8a5712bb5ac02f0db201cf5206"
+    },
+    {
+      "file": "demos/layout/sizing/3/index.html",
+      "sha256": "d766260592a7a32092f5f41423bac728657ae31a3e3572e71d9ffe0d0d24ccbb"
+    },
+    {
+      "file": "demos/layout-practice/anchor-positioning/1/index.html",
+      "sha256": "084cb811f95800e402b03d369df027db0d4eab3209160641d1d0b32f59f99c8c"
+    },
+    {
+      "file": "demos/layout-practice/anchor-positioning/2/index.html",
+      "sha256": "5baa565a610f1164e57b1eae27ff51653c5b36473fb61bb2789a3e6e14745e98"
+    },
+    {
+      "file": "demos/layout-practice/choosing/1/index.html",
+      "sha256": "7eeb6713a93ad18d4fdb91e62eb39690844ae5c7fe4f33c44e9b7ca25a359b58"
+    },
+    {
+      "file": "demos/layout-practice/defensive/1/index.html",
+      "sha256": "8ece3b4cb2259fa7949b5b1587e7b3a94976c90a7a39e9c4c647d8ad045f1f1c"
+    },
+    {
+      "file": "demos/layout-practice/defensive/2/index.html",
+      "sha256": "d4bd5f9f6c7802c17adb3f6a6cacaf7e23651eb0801ce83bbcf86a9b824118f6"
+    },
+    {
+      "file": "demos/layout-practice/defensive/3/index.html",
+      "sha256": "f5ab9e7698a642aed9ae5e4a39f8df4ba062546eddec43999b250d41083574ac"
+    },
+    {
+      "file": "demos/layout-practice/defensive/4/index.html",
+      "sha256": "f511fb06fddef79b6b730884f97c02475f6569beb04ea55549a07179e702f4d3"
+    },
+    {
+      "file": "demos/layout-practice/float/1/index.html",
+      "sha256": "4fd8dc6dd70d9b7891e36631374abc5a21805b8c7e99b15f46b8cdc5aa1605d4"
+    },
+    {
+      "file": "demos/layout-practice/icon-alignment/1/index.html",
+      "sha256": "d624d0cbca0450de22025664dda1990566eff09ee8d0421c46b9a504f7bca678"
+    },
+    {
+      "file": "demos/layout-practice/icon-alignment/2/index.html",
+      "sha256": "07b399573945382d5f7d8551a88348564007b4610215c067a620d91d2a0fbfaf"
+    },
+    {
+      "file": "demos/layout-practice/icon-alignment/3/index.html",
+      "sha256": "51ee5e368183cc85c912fb466a3cad67b6deb26ea983b2048b8021bf25aa1d05"
+    },
+    {
+      "file": "demos/layout-practice/layering/1/index.html",
+      "sha256": "1b0a8dd858e4a3e4d6bb6db9c77c43d1712ed2e305744f26287834d09a6b9054"
+    },
+    {
+      "file": "demos/layout-practice/layering/2/index.html",
+      "sha256": "5b146e70b6103d76737d1b7b8a39c9119f0caf1ecfdc72b6c3d8d3c5892d4ac1"
+    },
+    {
+      "file": "demos/layout-practice/masonry/1/index.html",
+      "sha256": "37a00f4f9623e231e8f94a00b6386c5d3967c5fbd91f0d9f9adf171a99c7cc5f"
+    },
+    {
+      "file": "demos/layout-practice/overflow/1/index.html",
+      "sha256": "de8d49c2ee7b040b9f961c5de9e8e290a7fe3ba1b0b6287a33a64a50281c4cf0"
+    },
+    {
+      "file": "demos/layout-practice/overflow/2/index.html",
+      "sha256": "5985803844e86f6b33fa255d9a7ff82fb60a6a0dfa161ffa55400fce220e79c6"
+    },
+    {
+      "file": "demos/layout-practice/overlap-detection/1/index.html",
+      "sha256": "3db53642523bbd3514eac0ef5abc31a49e4be70aa471bd4ac1474aa1fd5d2dac"
+    },
+    {
+      "file": "demos/layout-practice/quantity-layouts/1/index.html",
+      "sha256": "c73816bf3a08c93227b872fc1ca2463e987b8334a8bc1c76c3740f785adcf8a3"
+    },
+    {
+      "file": "demos/layout-practice/quantity-layouts/2/index.html",
+      "sha256": "f94315fc80016af692a76ff00ce72400becf403cd0bcab7efced3c11d13a74d8"
+    },
+    {
+      "file": "demos/layout-practice/reading-flow/1/index.html",
+      "sha256": "e47837b58c1e38f134aa36f22c766732179a52ebaa981b9901fe354c77841343"
+    },
+    {
+      "file": "demos/layout-practice/reading-flow/2/index.html",
+      "sha256": "e25aea8ae0169898fd31beea78bce98675a4e25c8e48cf240a5d61286becb2aa"
+    },
+    {
+      "file": "demos/layout-practice/spacing/1/index.html",
+      "sha256": "4612138fd54859b57633a09c2f29905724c0c404bae5303fabc5095391548d8f"
+    },
+    {
+      "file": "demos/layout-practice/spacing/2/index.html",
+      "sha256": "38d60f53cb3f1e61af55adb7c04f41a1e969fedc2eb25495f948631494bf7cc3"
+    },
+    {
+      "file": "demos/layout-practice/spacing/3/index.html",
+      "sha256": "e9f072d38eb76a1bfef8c5a4785b067b069a446a2ab7516e5a51f1c2639946f7"
+    },
+    {
+      "file": "demos/layout-practice/spacing/4/index.html",
+      "sha256": "4cc69a08edc8cb66e5687e4cf727eb094733e7009d6b97b611db09b4bb58d066"
+    },
+    {
+      "file": "demos/layout-practice/spacing/5/index.html",
+      "sha256": "ccce202e7c1826ed58cdc0841c43e0d7f7e1556166e359f8783de67cdce1a2e8"
+    },
+    {
+      "file": "demos/layout-practice/tables/1/index.html",
+      "sha256": "7bdcc454f40ca7d12b6f0415907ee3e7807d0d07f7903ec4be9ea4ddbb962ffc"
+    },
+    {
+      "file": "demos/layout-practice/tables/2/index.html",
+      "sha256": "dc3e7c63917aba6b86f7287768164386cec7e35cd299463c9d37c06b9989bfa4"
+    },
+    {
+      "file": "demos/motion/easing-and-duration/1/index.html",
+      "sha256": "cf87ec22df1faf9b9ce117749da5e55a71109424a7c3562470f22906a78f4c7c"
+    },
+    {
+      "file": "demos/motion/easing-and-duration/2/index.html",
+      "sha256": "7fa7a41ec0f86dddab975a5a173f61b843c2d8dcab1e7328ecbb5646c42d9873"
+    },
+    {
+      "file": "demos/motion/easing-and-duration/3/index.html",
+      "sha256": "d92d2ae7a3d8c710ba5ed0a04531d2c31abc620e75882b613a743672e9a0b51f"
+    },
+    {
+      "file": "demos/motion/easing-and-duration/4/index.html",
+      "sha256": "ba977bc824f29284affd1dec872b9d4a02a753c224f1f51214656fa5f11d650a"
+    },
+    {
+      "file": "demos/motion/entry-and-exit/1/index.html",
+      "sha256": "ecb6cbb7b313e310147e787307d1fe30332a109e58f0fd76b90f66cc754b85d1"
+    },
+    {
+      "file": "demos/motion/entry-and-exit/2/index.html",
+      "sha256": "bca14e5e4c362a77f60cbbdb963b586814e4d421b2693ec6216fff232c922a61"
+    },
+    {
+      "file": "demos/motion/entry-and-exit/3/index.html",
+      "sha256": "e48b2762a4bbf88157188abfbab612230f1a5f30702a8b6fbe6a2541b1ee69c1"
+    },
+    {
+      "file": "demos/motion/entry-and-exit/4/index.html",
+      "sha256": "03e071e1493f2c033a7b1179649f05283c26ff277639685c0103df64079c2e14"
+    },
+    {
+      "file": "demos/motion/performance/1/index.html",
+      "sha256": "82e19cff781b9354c58d8c4011eb198a4e2d7e6f7f66ae2bafc585cbe28903cc"
+    },
+    {
+      "file": "demos/motion/reduced-motion/1/index.html",
+      "sha256": "470a47773f335fd94f8863a179783649777f78a64d7e4d32f60dd6ce8ad7088a"
+    },
+    {
+      "file": "demos/motion/scroll-driven/1/index.html",
+      "sha256": "f64853fe91a3cd5e3340a7cffb02c3064e42dd74edd8f76c4406ac94dfe9697b"
+    },
+    {
+      "file": "demos/motion/scroll-driven/2/index.html",
+      "sha256": "0654551c3ff736d3957cec4139f9f3b1979ef5b99be288df169d38074e474305"
+    },
+    {
+      "file": "demos/motion/scroll-driven/3/index.html",
+      "sha256": "899d38f3564634c0c65a0e9bd1d58b318714e470fc3dcb3336acfc5f23334dff"
+    },
+    {
+      "file": "demos/motion/transitions-and-keyframes/1/index.html",
+      "sha256": "db2de974ed826aa759f8231025475cfe664da32ec8c0246c7f4b2faf70c34b3b"
+    },
+    {
+      "file": "demos/motion/transitions-and-keyframes/2/index.html",
+      "sha256": "d1d8607296ee8659ca6ee95f337f4564bae37be06138cab94161e7040236a16d"
+    },
+    {
+      "file": "demos/motion/view-transitions/1/index.html",
+      "sha256": "328eeabcfac35e6953e3b6a98c52870813e2e7698865f7d0e12cd09451c45920"
+    },
+    {
+      "file": "demos/motion/view-transitions/2/index.html",
+      "sha256": "6784391a8c9a655ef5dbb2d03324dcd84fd5d660883fb1f3f5b86d2f05e04ca5"
+    },
+    {
+      "file": "demos/notation/logical-properties/1/index.html",
+      "sha256": "73c17e2bfe2781c6a82577aeb89db3bedd6c5d1fc142329be4e6405ca7680b73"
+    },
+    {
+      "file": "demos/notation/nesting/1/index.html",
+      "sha256": "d9e21c8c670d333c9fba615d3ce44e30d5d5d0548700e6e19faf14254ddb3491"
+    },
+    {
+      "file": "demos/notation/nesting/2/index.html",
+      "sha256": "8ecf2d0566fab9ddb4e0947b2700b1bf34c40927ab7e561ac07b5d10995ee1c8"
+    },
+    {
+      "file": "demos/notation/nesting-criteria/1/index.html",
+      "sha256": "0aae63f61472cbbc9dff2a15ab3728f458e674c4a4145da8bc006cb443d0c077"
+    },
+    {
+      "file": "demos/notation/nesting-criteria/2/index.html",
+      "sha256": "78d9789cc7c21d5c78590d8b5166f408da18715b5684b78166fd63dfb307fc65"
+    },
+    {
+      "file": "demos/notation/scope-and-nesting/1/index.html",
+      "sha256": "b53941ba3098830d030d96c4b2a0c2ddaa2299427921cdf9dc96cc997dd64b65"
+    },
+    {
+      "file": "demos/notation/scope-and-nesting/2/index.html",
+      "sha256": "1354616465375494736b6c573fa85cc0bf14f1ac9a844fd7a79476bccb133762"
+    },
+    {
+      "file": "demos/operations/wysiwyg/1/index.html",
+      "sha256": "2dc0b72d5dc36e2ebc4a7a836c91c0ae14cc164602ff94a6b103f1d2c4d20f42"
+    },
+    {
+      "file": "demos/principles/browser-suggestion/1/index.html",
+      "sha256": "ec14c2ddc7b778423cdcf40cbcd0cb39d628bcf520b0b4adbfcda50ea436a7e1"
+    },
+    {
+      "file": "demos/principles/browser-suggestion/2/index.html",
+      "sha256": "ef21a7d90044d0aa7cc7b0a176a61fef5398287962be0dbbc871446bb29a1ab6"
+    },
+    {
+      "file": "demos/principles/browser-support/1/index.html",
+      "sha256": "c8fa6916dd554d2ada913df101b3ca88f32ca00acf78984dcfea293d3662d37f"
+    },
+    {
+      "file": "demos/principles/no-memorizing/1/index.html",
+      "sha256": "32c6d44bb5ce713a361cf12ee3d689d505b55288efd22ce0adc12ba14dae4129"
+    },
+    {
+      "file": "demos/principles/options/1/index.html",
+      "sha256": "15b0fc6f385bb424c09bf164e26f1dc413a6ad173245e237babfa193de165522"
+    },
+    {
+      "file": "demos/pseudo/basics/1/index.html",
+      "sha256": "9b30611f5174cdefd82838f070f913e7de91135beedd61a4ef53dbb67c175daa"
+    },
+    {
+      "file": "demos/pseudo/child-index/1/index.html",
+      "sha256": "d38e0d7110f9bcde7171398a7f60c322b129a315189ad7c069e7b10d38582c8c"
+    },
+    {
+      "file": "demos/pseudo/child-index/2/index.html",
+      "sha256": "102b3b0b2b4d4b049b109905e8529ccb3133389cb2cd236c130430d23685d9bd"
+    },
+    {
+      "file": "demos/pseudo/child-index/3/index.html",
+      "sha256": "5dc1d4d8b8e8c071fbb0ab5e46717b784fe17dae8cca7de7b22bcb5a0248e98c"
+    },
+    {
+      "file": "demos/pseudo/child-index/4/index.html",
+      "sha256": "92bdafaea1c4d749ddbf77a5a0cb910c7d69130f749bc30448127e79b576b3e6"
+    },
+    {
+      "file": "demos/pseudo/child-index/5/index.html",
+      "sha256": "511bf1b0534c174f25cd6d921e8ee79308179b8978554a30894f0107b1f0c422"
+    },
+    {
+      "file": "demos/pseudo/child-index/6/index.html",
+      "sha256": "1a3fd027aaabbd29b988ab774e885e0f6a615f14f7efcdcec6b2dd89e1accc69"
+    },
+    {
+      "file": "demos/pseudo/form-states/1/index.html",
+      "sha256": "440c30a1e1ee962fc0b6c97811f7254af763735369274af2ec0f09c29e14d642"
+    },
+    {
+      "file": "demos/pseudo/form-states/2/index.html",
+      "sha256": "cc9c02328c48e616e51f235b6418360ffc24d6be543a7677684a694e4887e027"
+    },
+    {
+      "file": "demos/pseudo/form-states/3/index.html",
+      "sha256": "8da027f3e1c0a41819305442229a6dfc02749cbec1b4ab72693376ca20b04961"
+    },
+    {
+      "file": "demos/pseudo/form-states/4/index.html",
+      "sha256": "f2705d7b868f5ee1bc2c256c461f6dd7b765c12288e30ef29b9715f4a1f9e721"
+    },
+    {
+      "file": "demos/pseudo/form-states/5/index.html",
+      "sha256": "39b49e778020ca7c1350a0c098728bcab63332ef411d9ee6c8ffd509486693dc"
+    },
+    {
+      "file": "demos/pseudo/form-states/6/index.html",
+      "sha256": "71ce4c71889a65400e780a7220dc289088bb004d69552c1c095c34e89a60351d"
+    },
+    {
+      "file": "demos/pseudo/generated-content/1/index.html",
+      "sha256": "5ed046c23ecbdb232ef7618b5a243ebffa120239470de32f1b778847d2032604"
+    },
+    {
+      "file": "demos/pseudo/generated-content/2/index.html",
+      "sha256": "5dd40d9989045c97e87a19e0a250fbad5c16e12adf58d00c4995bc2de8c39f01"
+    },
+    {
+      "file": "demos/pseudo/generated-content/3/index.html",
+      "sha256": "6d2dd7f85b6ebce9b54d0a1ca7187612951d9b2e6f99d0d123bbd4b90ba2ad0e"
+    },
+    {
+      "file": "demos/pseudo/generated-content/4/index.html",
+      "sha256": "466b2f8578e3290ae8122c9e9ca462aafb93ad9502c117cc71b63fd2146c2c4d"
+    },
+    {
+      "file": "demos/pseudo/generated-content/5/index.html",
+      "sha256": "5b2a72e39eb4cb5914358be5880c2bbd88aeb9666600fcb0fbedc41edefa0fbc"
+    },
+    {
+      "file": "demos/pseudo/has/1/index.html",
+      "sha256": "f926ce4a49af2bb2da60fef58a2ad5dde745d25ee6ae1fa3769db343122017f2"
+    },
+    {
+      "file": "demos/pseudo/has/2/index.html",
+      "sha256": "7859db84efb98cff2948b1a4887b9d8b21e6a9a7add462d6d8f8258a936c5070"
+    },
+    {
+      "file": "demos/pseudo/has/3/index.html",
+      "sha256": "9cc8c622f3f874a89a9b2f1dc4253213a25c690374c448e12820191ff321084a"
+    },
+    {
+      "file": "demos/pseudo/is-where-not/1/index.html",
+      "sha256": "622c8cdc5386f10b886fdf3522c227b4585154bfc963666f043619e590f7f49b"
+    },
+    {
+      "file": "demos/pseudo/is-where-not/2/index.html",
+      "sha256": "bfc578003ac758c59af75d8f4e54fdd5c010d298088a1f7a5f4e01328fcf7043"
+    },
+    {
+      "file": "demos/pseudo/open-states/1/index.html",
+      "sha256": "4ea415850f8ef2bc8588eb062e6ecd4a616c424341aa6343ee606390e60ad1ad"
+    },
+    {
+      "file": "demos/pseudo/open-states/2/index.html",
+      "sha256": "97156a26f43ac3486266d44f712b96d0f80431b3ad09cee3e6682b2333bd0afc"
+    },
+    {
+      "file": "demos/pseudo/open-states/3/index.html",
+      "sha256": "274047e1cc8e70543de05999abb9409804ed39c7ff981d22505ea0d73ac3f232"
+    },
+    {
+      "file": "demos/pseudo/open-states/4/index.html",
+      "sha256": "797ef8063fa4d63b4748d85926bc89c9cc9a3a0c55df70cb0df3a4f730d7d25a"
+    },
+    {
+      "file": "demos/pseudo/open-states/5/index.html",
+      "sha256": "56dc4cbc6ed978788167ffa6d8bdb243eae7be3fbf8967cfffa1953af33bbe5c"
+    },
+    {
+      "file": "demos/pseudo/quantity-queries/1/index.html",
+      "sha256": "05ec966aa1fe1204232c0f63c2dd8c8d21d2154d118e3c1012415401b13e41fd"
+    },
+    {
+      "file": "demos/pseudo/quantity-queries/2/index.html",
+      "sha256": "b0c54b27c7dafcd101712d3177247c1ad56c47a79c6435ae11ce59b4ed79f2c2"
+    },
+    {
+      "file": "demos/reset/base-styles/1/index.html",
+      "sha256": "04836ba1841786e7aaf2e5a13ef3ead2ef0600d404e72e17afcadd345ab2e997"
+    },
+    {
+      "file": "demos/reset/base-styles/2/index.html",
+      "sha256": "7b95aaf39ae1d530ebe64fe432711e8fdee4bf0195ba2944efefbd8081596bbb"
+    },
+    {
+      "file": "demos/reset/kiso/1/index.html",
+      "sha256": "838444a71a3c2defec8ce60e55b85b43e5a96db17c91d510bbd1674f0fbade81"
+    },
+    {
+      "file": "demos/reset/kiso/2/index.html",
+      "sha256": "0daa32c0474865888573b53298fd3413d2c663432d884d9672e76568a2983bdf"
+    },
+    {
+      "file": "demos/responsive/breakpoints/1/index.html",
+      "sha256": "daa83a5323bc05b16b1f57ed81852aa8c4725e8740b51434516c3c15b608f007"
+    },
+    {
+      "file": "demos/responsive/container-size-queries/1/index.html",
+      "sha256": "f1afea233e5c43e49fefee4b719223294cc016b841e6541333b154b99572bb7d"
+    },
+    {
+      "file": "demos/responsive/container-size-queries/2/index.html",
+      "sha256": "5be54bc244ea8edf3fc8e91d0e998aa0ca4d174ee61284fe1ebd48806153d271"
+    },
+    {
+      "file": "demos/responsive/container-units-and-side-effects/1/index.html",
+      "sha256": "29c6eb76974a2721cbaa7d5ad7463b77b78877c45b83bfd168d019d5b959d0a8"
+    },
+    {
+      "file": "demos/responsive/container-units-and-side-effects/2/index.html",
+      "sha256": "cf564f1fb2ac5c856c2e836bab8f0b18286f0e3acbd4407134fba654f499ffae"
+    },
+    {
+      "file": "demos/responsive/design-comp-pattern/1/index.html",
+      "sha256": "a549f8dadf23c22896856e63b920b8ec54b8be6ae7b439830264753871c19d0f"
+    },
+    {
+      "file": "demos/responsive/escalation/1/index.html",
+      "sha256": "a2230f27c2ad4581aea7cd0e974f1e3abd0a760839c3efd0e97a25f62023e769"
+    },
+    {
+      "file": "demos/responsive/media-queries/1/index.html",
+      "sha256": "dc25225c3d8251f10fe92d816646ed21d063333c04208e4638249335a88ed64f"
+    },
+    {
+      "file": "demos/responsive/safe-area/1/index.html",
+      "sha256": "568fab6140b3c9f7b8c1df0f6fc2c2c83ff9b3cfe55e280dcb1e7a8b1d37b332"
+    },
+    {
+      "file": "demos/typography/japanese-typesetting/1/index.html",
+      "sha256": "3c82f7427821d33926d6a5dcbffee87dd99aa04014d15a147437b5e43b7905c2"
+    },
+    {
+      "file": "demos/typography/japanese-typesetting/2/index.html",
+      "sha256": "5c2b821bf9f0dd7a476244aa21ac9ba122e38b84147f82576e446cfb53b3644b"
+    },
+    {
+      "file": "demos/typography/line-height/1/index.html",
+      "sha256": "97c160392c93ce5f9c60d1374981392fcef7233c5c3b7dbae2a4554ff4bc873b"
+    },
+    {
+      "file": "demos/typography/line-height/2/index.html",
+      "sha256": "1256e2d9a3d8aa208ba0a9185da6ff09d15b7f95e55bdd55ed18df2a5a030000"
+    },
+    {
+      "file": "demos/typography/size-and-line-breaks/1/index.html",
+      "sha256": "9540eaf2e452e6b0ca854e2ab263c175d518ac151e34393ec96a5c6187482729"
+    },
+    {
+      "file": "demos/typography/text-roles/1/index.html",
+      "sha256": "a23b19616610c1028dd350140305d91c9990b85aceaa927d56d1ab39ece8e8bb"
+    },
+    {
+      "file": "demos/values/advanced-math-functions/1/index.html",
+      "sha256": "60c55527488c5788e2947b33d68c0388f69bedc941e59018dff4e2db22754529"
+    },
+    {
+      "file": "demos/values/advanced-math-functions/2/index.html",
+      "sha256": "8cd999dbb1c2940e3eab83d83f70b63f0df1eaafea4ed75c5435008a64813ca9"
+    },
+    {
+      "file": "demos/values/if-and-attr/1/index.html",
+      "sha256": "2f61c419d643665d348fb6b9f210f098cc0e3dd09c06750b461012302c7c6d9f"
+    },
+    {
+      "file": "demos/values/if-and-attr/2/index.html",
+      "sha256": "49012fdadb9dcf675390ee7a48447b462eaf552f2c87573757bf395ceaed1072"
+    },
+    {
+      "file": "demos/values/math-functions/1/index.html",
+      "sha256": "951468209d7fb81905d321f8c5692025168c55368e923793fef1f083d5eb7dd6"
+    },
+    {
+      "file": "demos/values/math-functions/2/index.html",
+      "sha256": "e619f7b60706c903c447f3d83fb74f81955e9b0f7c0eee88a3c963bd8dfe7e3a"
+    },
+    {
+      "file": "demos/values/px-and-rem/1/index.html",
+      "sha256": "997695e3dbfc7f4d9a0ef3e3c4572f1e3e8c7c9db7098713710f5c7dac262069"
+    },
+    {
+      "file": "demos/values/px-and-rem/2/index.html",
+      "sha256": "7b442139a2dc7ba1d49ec5c14874f72cc2491e0ed00143b72a1ceb1fafd9e61f"
+    },
+    {
+      "file": "demos/values/viewport-and-container-units/1/index.html",
+      "sha256": "7dd1a06063d42fb1e8ae6cf3d723c5146e5ebbeb123ea4db8f2143334fff92cb"
+    },
+    {
+      "file": "demos/values/viewport-and-container-units/2/index.html",
+      "sha256": "4565c462c443e996346d7e5aa7785099463ee73111f17bc530114bc5f2b4a1d5"
+    },
+    {
+      "file": "exercise/base.css",
+      "sha256": "0fc4a8afb6366a33e855d9371f0f4210f2fa74e2e4b73ba952b5f929e743448a"
+    },
+    {
+      "file": "exercise/card/article-card.css",
+      "sha256": "6412dbd436fa178330b103075a2c5428245c7dfcf4555c1c08433e0c1778395f"
+    },
+    {
+      "file": "exercise/card/demo-page.css",
+      "sha256": "6ea40c36530706a72a574871d6b3a4bcff6e5f434c609e91ed9792e387bb792f"
+    },
+    {
+      "file": "exercise/card/index.html",
+      "sha256": "f0f4f71f84796129381f0bcf08c818d750ff0640bd0fbb374b8edc0fe0274489"
+    },
+    {
+      "file": "exercise/card-start/article-card.css",
+      "sha256": "8ea543c7144b51385d13368897a26715f799202158e5f94bf7b3719912d74a9d"
+    },
+    {
+      "file": "exercise/card-start/demo-page.css",
+      "sha256": "6ea40c36530706a72a574871d6b3a4bcff6e5f434c609e91ed9792e387bb792f"
+    },
+    {
+      "file": "exercise/card-start/index.html",
+      "sha256": "65b05cb97de2ca05eae5db8933aaf851290f6c3fb62175c5714fa0bdafd4fb32"
+    },
+    {
+      "file": "exercise/clickable-card/article-card.css",
+      "sha256": "d199de53e65dbd6cae4f55d17b42d221125f21c39b81030b99b6a903663e61d5"
+    },
+    {
+      "file": "exercise/clickable-card/article-list.css",
+      "sha256": "f294514f9fa790ea3068b5b6929a580b359ba6f7a3ee1fc20ec2c22320b1ae8f"
+    },
+    {
+      "file": "exercise/clickable-card/article.html",
+      "sha256": "b5f83f0b0a53e17afc78586336d94c09fecdc5f0569e7b1d215e288ba41cbcc6"
+    },
+    {
+      "file": "exercise/clickable-card/compositions.css",
+      "sha256": "eb654579c8c5debfe7f989989081f34e4927f5eb3c5b1aeb77e0c59f610928a9"
+    },
+    {
+      "file": "exercise/clickable-card/index.html",
+      "sha256": "75340013951b25615bc91f6b09dfee58d0659c3d92912cf6a6240601eb8fbd1c"
+    },
+    {
+      "file": "exercise/clickable-card/page-article.css",
+      "sha256": "9ab8fbd2f280d09179f3fc129dd13d5848c6d3d86ed390d5da4e6035da621c10"
+    },
+    {
+      "file": "exercise/clickable-card/page-top.css",
+      "sha256": "ba2217297b3acb5b0b9accb3129accae3b7ee43ac9d2969b9191a905b29464c9"
+    },
+    {
+      "file": "exercise/content-changes/article-card.css",
+      "sha256": "a315d5ada366218c91ead4a38f4d3451feee3d69b34c34bf849f6bfcc627d345"
+    },
+    {
+      "file": "exercise/content-changes/article-list.css",
+      "sha256": "f294514f9fa790ea3068b5b6929a580b359ba6f7a3ee1fc20ec2c22320b1ae8f"
+    },
+    {
+      "file": "exercise/content-changes/article.html",
+      "sha256": "36c8678e409c460f1a32869eeff54970e075ee42e597922702d17026e02eab7c"
+    },
+    {
+      "file": "exercise/content-changes/compositions.css",
+      "sha256": "eb654579c8c5debfe7f989989081f34e4927f5eb3c5b1aeb77e0c59f610928a9"
+    },
+    {
+      "file": "exercise/content-changes/index.html",
+      "sha256": "725dc8c6cfa84423fb1d71063cfd784fb53541c5729e8bd7e265e0eac471519d"
+    },
+    {
+      "file": "exercise/content-changes/page-article.css",
+      "sha256": "9ab8fbd2f280d09179f3fc129dd13d5848c6d3d86ed390d5da4e6035da621c10"
+    },
+    {
+      "file": "exercise/content-changes/page-top.css",
+      "sha256": "ba2217297b3acb5b0b9accb3129accae3b7ee43ac9d2969b9191a905b29464c9"
+    },
+    {
+      "file": "exercise/featured/article-card.css",
+      "sha256": "ac5aa15f60a884c404d79a6bfb12932ea63d3a604ba2f444ed816a243daa2841"
+    },
+    {
+      "file": "exercise/featured/article-list.css",
+      "sha256": "f294514f9fa790ea3068b5b6929a580b359ba6f7a3ee1fc20ec2c22320b1ae8f"
+    },
+    {
+      "file": "exercise/featured/article.html",
+      "sha256": "61487fa92260a3dbb2c6df0428177e6dc73ecd8952a1a941874f32a9c1cff632"
+    },
+    {
+      "file": "exercise/featured/compositions.css",
+      "sha256": "eb654579c8c5debfe7f989989081f34e4927f5eb3c5b1aeb77e0c59f610928a9"
+    },
+    {
+      "file": "exercise/featured/index.html",
+      "sha256": "2b234a16fcc960a3e5f6ed0067bbd3334d83c635a2124ebf4128e05db7bb238c"
+    },
+    {
+      "file": "exercise/featured/page-article.css",
+      "sha256": "9ab8fbd2f280d09179f3fc129dd13d5848c6d3d86ed390d5da4e6035da621c10"
+    },
+    {
+      "file": "exercise/featured/page-top.css",
+      "sha256": "ba2217297b3acb5b0b9accb3129accae3b7ee43ac9d2969b9191a905b29464c9"
+    },
+    {
+      "file": "exercise/list/article-card.css",
+      "sha256": "337a19f64cf6c2fd675cb8a33fcb77ff1ce7bd6f67a1f53613e147b36bbcbd2c"
+    },
+    {
+      "file": "exercise/list/article-list.css",
+      "sha256": "f294514f9fa790ea3068b5b6929a580b359ba6f7a3ee1fc20ec2c22320b1ae8f"
+    },
+    {
+      "file": "exercise/list/compositions.css",
+      "sha256": "9657413985334c34f2cf78c5ac69301656db7fd597f94f015b181f1957add43c"
+    },
+    {
+      "file": "exercise/list/index.html",
+      "sha256": "52f3fd45fa8748418e1169ea9fbbc5c2b56e94aa132c059710034c7a4ff12b42"
+    },
+    {
+      "file": "exercise/list/page-top.css",
+      "sha256": "ba2217297b3acb5b0b9accb3129accae3b7ee43ac9d2969b9191a905b29464c9"
+    },
+    {
+      "file": "exercise/review/compositions.css",
+      "sha256": "eb654579c8c5debfe7f989989081f34e4927f5eb3c5b1aeb77e0c59f610928a9"
+    },
+    {
+      "file": "exercise/review/index.html",
+      "sha256": "f2757c4e69f2e61a6fb59d55302bcbe5b362801cfb9f31ae2b6708746148816d"
+    },
+    {
+      "file": "exercise/review/notice-card.css",
+      "sha256": "0ddb5b6e57b8562e729c56dd5bbdcaf2ad3d36e5cfde7bb4ba04b34c0cd66731"
+    },
+    {
+      "file": "exercise/review/notice-list.css",
+      "sha256": "84db4b85babd745d11c79ee701ee3e0c9d3990a870f2dc19080730f06bcc1626"
+    },
+    {
+      "file": "exercise/review/page-top.css",
+      "sha256": "b1200560ca3ddc7f3c03fed0ac8a6db4b5ee580046651980537ef19ccd11ce6d"
+    },
+    {
+      "file": "exercise/sidebar/article-card.css",
+      "sha256": "60e3a79d1aa3e3258225e9f37e6d8e2b0a92a6f9850d8d62100b3daeb4461b0e"
+    },
+    {
+      "file": "exercise/sidebar/article-list.css",
+      "sha256": "f294514f9fa790ea3068b5b6929a580b359ba6f7a3ee1fc20ec2c22320b1ae8f"
+    },
+    {
+      "file": "exercise/sidebar/article.html",
+      "sha256": "313421a65a7104cd9024322af89eae56a7caf40ee44abddc4c308c2455c57f8c"
+    },
+    {
+      "file": "exercise/sidebar/compositions.css",
+      "sha256": "b86e0b669f9d7ef18bc37ea5bfc390cec9018eeb0b9e379f3e524ecb43a4184b"
+    },
+    {
+      "file": "exercise/sidebar/index.html",
+      "sha256": "4ac246945f22076343907a803b176fc4ba605babae49955898469eb392f3d5f5"
+    },
+    {
+      "file": "exercise/sidebar/page-article.css",
+      "sha256": "9ab8fbd2f280d09179f3fc129dd13d5848c6d3d86ed390d5da4e6035da621c10"
+    },
+    {
+      "file": "exercise/sidebar/page-top.css",
+      "sha256": "ba2217297b3acb5b0b9accb3129accae3b7ee43ac9d2969b9191a905b29464c9"
+    },
+    {
+      "file": "practical/css/components/news-card.css",
+      "sha256": "258a86d15744422afea4950f83441e6f3e8375c0ebc6bc8d9a7ae1302cb456b1"
+    },
+    {
+      "file": "practical/css/kiso.css",
+      "sha256": "f6ce0930acb933aa04356ab1dbed61c90862f11be1f2afb79352654b823d3e0a"
+    },
+    {
+      "file": "practical/css/style.css",
+      "sha256": "7330b5cfe11a1598a8abe23176eaa05adcddfbefb9b02aa39306fe534bf3ffb9"
+    },
+    {
+      "file": "practical/css/tokens/colors.css",
+      "sha256": "105551d0782591ebc82aa78eff93aa069db95a1a09afc83145f80fa89cdcc67f"
+    },
+    {
+      "file": "practical/css/tokens/sizes.css",
+      "sha256": "be0d30b9a75c2e63918dbd8894db42d14e3c349451eb88dcbd298ba56e605254"
+    },
+    {
+      "file": "practical/index.html",
+      "sha256": "a8ad25201ee9583c4552797fb74bbd81dc2e18e898635df357580ead5eb9c448"
+    },
+    {
+      "file": "practical/package.json",
+      "sha256": "f53c50edd3747b986bbbb59669c42a0c9241802d6f931920804ef2e47da604e6"
+    },
+    {
+      "file": "quick-start/css/components/news-card.css",
+      "sha256": "258a86d15744422afea4950f83441e6f3e8375c0ebc6bc8d9a7ae1302cb456b1"
+    },
+    {
+      "file": "quick-start/css/kiso.css",
+      "sha256": "f6ce0930acb933aa04356ab1dbed61c90862f11be1f2afb79352654b823d3e0a"
+    },
+    {
+      "file": "quick-start/css/style.css",
+      "sha256": "7330b5cfe11a1598a8abe23176eaa05adcddfbefb9b02aa39306fe534bf3ffb9"
+    },
+    {
+      "file": "quick-start/css/tokens/colors.css",
+      "sha256": "105551d0782591ebc82aa78eff93aa069db95a1a09afc83145f80fa89cdcc67f"
+    },
+    {
+      "file": "quick-start/css/tokens/sizes.css",
+      "sha256": "be0d30b9a75c2e63918dbd8894db42d14e3c349451eb88dcbd298ba56e605254"
+    },
+    {
+      "file": "quick-start/index.html",
+      "sha256": "a8ad25201ee9583c4552797fb74bbd81dc2e18e898635df357580ead5eb9c448"
+    },
+    {
+      "file": "README.md",
+      "sha256": "8724d214ef585b2a3e8adb2ef844fe647eae6d65bbe1df9d5ac4b4a56303f1ca"
+    },
+    {
+      "file": "tokens/colors.css",
+      "sha256": "7fbdbbd9f548a07a9c15990bbceda3fc37975627ae803acb727f0509f279539d"
+    },
+    {
+      "file": "tokens/motion.css",
+      "sha256": "85200b3348e6982c3ff234eb80e2aff2e603050bda1b2887a61017891b8ae2d5"
+    },
+    {
+      "file": "tokens/shadows.css",
+      "sha256": "7d003cbaa8210abf7342aa3bcc876c481461e88bbc345187cad325019f2d2d52"
+    },
+    {
+      "file": "tokens/sizes.css",
+      "sha256": "08aecb1d89acd87064a75f247dbbe10ce63b3af017fd124e766c94c0d44e791e"
+    },
+    {
+      "file": "tokens/typography.css",
+      "sha256": "b72be27993559643d48223519ecfdba533b15274819bdde4a6e9d8effb1add16"
+    },
+    {
+      "file": "tokens/z-index.css",
+      "sha256": "0b86783536cae1a51cac0583aaf7f854aadb5d513c36c694a994cb74c5a636a4"
+    }
+  ]
+}

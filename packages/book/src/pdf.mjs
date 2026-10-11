@@ -13,7 +13,7 @@ const config = join(HERE, 'out', `vol${number}`, 'vivliostyle.config.json');
 
 const child = spawn(
   join(HERE, 'node_modules/.bin/vivliostyle'),
-  ['build', '--config', config, '--executable-browser', CHROME, '--timeout', '1200'],
-  { stdio: 'inherit' },
+  ['build', '--config', config, '--port', String(13000 + number), '--executable-browser', CHROME, '--timeout', '1200'],
+  { stdio: 'inherit', cwd: join(HERE, 'out', `vol${number}`) },
 );
 child.on('exit', (code) => process.exit(code ?? 1));

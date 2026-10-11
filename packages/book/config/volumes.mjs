@@ -24,3 +24,10 @@ export const VOLUMES = [
 
 /** 章のディレクトリから、巻の番号を引く */
 export const volumeOf = (dir) => VOLUMES.find((volume) => volume.dirs.includes(dir))?.number ?? null;
+
+/** 付録は、巻に採録するページだけを内部参照の対象にする。 */
+export const printedVolumeOf = (page) => {
+  const volume = VOLUMES.find((item) => item.dirs.includes(page.dir));
+  if (!volume || (page.dir === 'appendix' && !volume.appendix?.includes(page.slug))) return null;
+  return volume.number;
+};

@@ -5,11 +5,11 @@
  * - 内部リンクを、同じ巻なら「（p.N）」、別の巻なら「（巻N）」が付く参照にする
  * - 参照だけの文と括弧の参照を「※N」の注にして、節末の「参照」に集める（notes.mjs）
  * - デモを、静止図（図N-M）か、補足サイトのデモ番号に置き換える
- * - ガイドラインのルールを、要点（強度と本文）と ID だけにする
+ * - ガイドラインの要点、性質、適用条件、IDを残す
  */
 import { readFile } from 'node:fs/promises';
 import { JSDOM, VirtualConsole } from 'jsdom';
-import { BASE } from '../../../src/lib/site.mjs';
+import { BASE, SITE, pageUrl } from '../../../src/lib/site.mjs';
 import { moveReferencesToNotes } from './notes.mjs';
 
 const SITE_BASE = `${BASE}/`;
@@ -52,6 +52,7 @@ export const extractPage = async (page, ctx) => {
   const dom = new JSDOM(await readFile(page.html, 'utf8'), { virtualConsole: new VirtualConsole() });
   const doc = dom.window.document;
   const content = doc.querySelector('.sl-markdown-content');
+  if (!content) throw new Error(`${page.id}: 本文がありません。先に pnpm build を実行してください。`);
   const key = keyOf(page.id);
 
   // サイトの UI を外す
@@ -66,9 +67,32 @@ export const extractPage = async (page, ctx) => {
   for (const block of content.querySelectorAll('.expressive-code')) {
     const title = block.querySelector('figcaption .title')?.textContent.trim() ?? '';
     const lines = [...block.querySelectorAll('.ec-line .code')].map((line) => line.innerHTML.replace(/\n$/, ''));
+    const selection = ctx.codeSelection?.[page.id]?.[title];
+    if (selection?.ranges?.some(([start, end]) => start < 1 || end < start || end > lines.length)) {
+      throw new Error(`${page.id}: ${title}の抜粋範囲を見直してください。`);
+    }
+    const selected = selection?.ranges
+      ? selection.ranges.flatMap(([start, end], index) => [
+          ...(index ? ['…（中略）'] : []),
+          ...lines.slice(start - 1, end),
+        ])
+      : lines;
     const figure = doc.createElement('figure');
     figure.className = 'code';
-    figure.innerHTML = `${title ? `<figcaption>${title}</figcaption>` : ''}<pre><code>${lines.join('\n')}</code></pre>`;
+    const caption = doc.createElement('figcaption');
+    const label = title.replace(/🙆‍♂\s*Recommended:\s*/u, '推奨例：').replace(/🙅‍♂\s*Not Recommended:\s*/u, '避ける例：');
+    caption.textContent = `${label}${selection ? '（抜粋。全体は配布ファイル）' : ''}`;
+    const pre = doc.createElement('pre');
+    const code = doc.createElement('code');
+    code.innerHTML = selected.join('\n');
+    pre.append(code);
+    figure.append(caption, pre);
+    if (selection?.summary) {
+      const note = doc.createElement('p');
+      note.className = 'code-note';
+      note.textContent = selection.summary;
+      figure.append(note);
+    }
     block.replaceWith(figure);
   }
   for (const details of content.querySelectorAll('details')) details.setAttribute('open', '');
@@ -83,13 +107,14 @@ export const extractPage = async (page, ctx) => {
     const name = call.name;
     const setting = name ? ctx.selection[name] : null;
     const title = figure.querySelector('._caption')?.textContent.trim() ?? '';
+    const demoId = `${page.label ?? page.id.replaceAll('/', '-')}-${index + 1}`;
+    ctx.supplements?.push({ id: demoId, page: page.id, title, source: name, url: pageUrl(page.id) });
     const tabs = figure.nextElementSibling;
     if (tabs?.localName === 'starlight-tabs') tabs.remove();
     if (setting?.print) {
       const srcdoc = figure.querySelector('iframe')?.getAttribute('srcdoc') ?? '';
       const shots = [];
       for (const width of widthsOf(figure, setting, call.mentioned)) shots.push({ width, ...(await ctx.capture(srcdoc, width)) });
-      const number = ctx.nextFigure(figureKey(page));
       const out = doc.createElement('figure');
       out.className = 'print-demo';
       // 幅の違う図を同じ縮尺で縦に積む。最も広い図を紙の幅いっぱいにする
@@ -98,23 +123,48 @@ export const extractPage = async (page, ctx) => {
         .map((shot) => `<div class="shot" style="inline-size: ${((shot.width / widest) * 100).toFixed(2)}%"><img src="img/${shot.file}" alt=""><p class="shot-label">幅 ${shot.width}px${shot.cropped ? '（上の部分）' : ''}</p></div>`)
         .join('')}</div>`;
       const caption = doc.createElement('figcaption');
-      caption.textContent = `図${number}　${title}`;
+      caption.textContent = title;
+      caption.append(doc.createTextNode(`（デモ${demoId}）`));
       out.append(caption);
       figure.replaceWith(out);
     } else {
       const note = doc.createElement('p');
       note.className = 'demo-ref';
-      note.textContent = `デモ${page.label ?? ''}-${index + 1}　${title}（補足サイト）`;
+      const link = doc.createElement('a');
+      link.href = pageUrl(page.id);
+      link.textContent = `デモ${demoId}　${title}`;
+      note.append(link, doc.createTextNode('（補足サイトのデモ一覧から参照）'));
       figure.replaceWith(note);
     }
   }
 
-  // 図（Figure）：SVG の title をキャプションにして、番号を付ける
-  for (const figure of content.querySelectorAll('figure.figure')) {
-    const title = figure.querySelector('svg > title')?.textContent.trim() ?? '';
-    const caption = doc.createElement('figcaption');
-    caption.textContent = `図${ctx.nextFigure(figureKey(page))}　${title}`;
-    figure.append(caption);
+  // デモのコードタブを外した後で番号を振り、欠番や重複を避ける。
+  for (const [index, figure] of [...content.querySelectorAll('figure.code')].entries()) {
+    const caption = figure.querySelector('figcaption');
+    caption.prepend(doc.createTextNode(`リスト${ctx.nextCode?.(figureKey(page)) ?? `${page.label}-${index + 1}`}　`));
+    figure.id = `list-${index + 1}`;
+  }
+  for (const [index, table] of [...content.querySelectorAll('table')].entries()) {
+    if (table.closest('.guideline, .baseline')) continue;
+    let preceding = table.previousElementSibling;
+    while (preceding && !/^h[23]$/.test(preceding.localName)) preceding = preceding.previousElementSibling;
+    const caption = doc.createElement('caption');
+    caption.textContent = `表${ctx.nextTable?.(figureKey(page)) ?? `${page.label}-${index + 1}`}　${preceding?.textContent ?? page.title}`;
+    table.prepend(caption);
+    table.id ||= `table-${index + 1}`;
+  }
+
+  // 静止デモと概念図を、本文に現れる順に番号付けする。
+  for (const figure of content.querySelectorAll('figure.figure, figure.print-demo')) {
+    let caption = figure.querySelector('figcaption');
+    if (!caption) {
+      caption = doc.createElement('figcaption');
+      caption.textContent = figure.querySelector('svg > title')?.textContent.trim() ?? '';
+      figure.append(caption);
+    }
+    const number = ctx.nextFigure(figureKey(page));
+    caption.prepend(doc.createTextNode(`図${number}　`));
+    figure.id ||= `figure-${number}`;
   }
 
   // 画像：dist/ から写し、相対パスにする
@@ -123,14 +173,42 @@ export const extractPage = async (page, ctx) => {
     image.setAttribute('src', ctx.copyAsset(src));
   }
 
-  // ガイドライン：要点（強度と本文）と ID だけにする
+  // 規約の性質と適用条件は、要点を読むときにも必要なので残す。
   for (const rule of content.querySelectorAll('.guideline ._rule')) {
     const id = rule.querySelector('._meta code')?.textContent ?? '';
-    rule.querySelector('._meta')?.remove();
+    for (const row of rule.querySelectorAll('._meta ._row')) {
+      if (!['性質', '補足'].includes(row.querySelector('dt')?.textContent)) row.remove();
+    }
     const tag = doc.createElement('p');
     tag.className = '_id';
     tag.innerHTML = `<code>${id}</code>`;
     rule.append(tag);
+  }
+
+  // 予想を問う問題の解答は、節の本文と離して後方に置く。
+  if (page.dir === 'exercise' || page.slug === 'index') {
+    const answers = [...content.querySelectorAll('details')].filter((item) => /答え|解説/.test(item.querySelector('summary')?.textContent ?? ''));
+    if (answers.length) {
+      const appendix = doc.createElement('aside');
+      appendix.className = 'answers';
+      const heading = doc.createElement('h2');
+      heading.textContent = 'この節の解答';
+      appendix.append(heading);
+      for (const [index, answer] of answers.entries()) {
+        answer.id = `answer-${index + 1}`;
+        const pointer = doc.createElement('p');
+        pointer.className = 'answer-pointer';
+        const anchor = doc.createElement('a');
+        anchor.href = `#answer-${index + 1}`;
+        anchor.className = 'xref';
+        anchor.textContent = `解答${index + 1}は、この節の解答欄を参照してください。`;
+        pointer.append(anchor);
+        answer.before(pointer);
+        answer.querySelector('summary').textContent = `解答${index + 1}　答えと解説`;
+        appendix.append(answer);
+      }
+      content.append(appendix);
+    }
   }
 
   // id をページの中で一意にする
@@ -146,20 +224,35 @@ export const extractPage = async (page, ctx) => {
     const target = parseHref(href);
     if (!target) continue;
     const targetPage = ctx.pages.get(target.page);
-    if (!targetPage) continue;
+    if (!targetPage) {
+      anchor.setAttribute('href', `${SITE}${href}`);
+      continue;
+    }
+    if (/^(こちら|ここ|詳細|このページ|リンク)$/.test(anchor.textContent.trim())) anchor.textContent = targetPage.title;
     const inVolume = ctx.volumePageIds.has(targetPage.id);
     const isRule = target.hash.startsWith('rule-');
     if (inVolume) {
       const hash = target.hash ? `${keyOf(targetPage.id)}--${target.hash}` : `page-${keyOf(targetPage.id)}`;
       anchor.setAttribute('href', `#${hash}`);
-      anchor.className = isRule ? 'xref-rule' : 'xref';
+      anchor.classList.add(isRule ? 'xref-rule' : 'xref');
       if (isRule) anchor.dataset.label = targetPage.label ?? '';
     } else {
-      anchor.removeAttribute('href');
-      anchor.className = 'xref-out';
-      const where = targetPage.volume ? `巻${targetPage.volume}` : '補足サイト';
+      // 採録しない付録や試し組みで省略したページにページ番号を付けない。
+      const where = targetPage.volume === ctx.volumeNumber ? 'この試し組みでは省略' : targetPage.volume ? `巻${targetPage.volume}` : '補足サイト';
+      if (targetPage.volume && targetPage.volume !== ctx.volumeNumber) anchor.removeAttribute('href');
+      else anchor.setAttribute('href', pageUrl(targetPage.id) + (target.hash ? `#${target.hash}` : ''));
+      anchor.classList.add('xref-out');
       const suffix = isRule ? `（${targetPage.label ?? ''}、${where}）` : `（${where}）`;
       anchor.after(doc.createTextNode(suffix));
+    }
+  }
+
+  for (const heading of content.querySelectorAll('h2')) {
+    if (heading.textContent !== '参考リンク') continue;
+    let list = heading.nextElementSibling;
+    while (list && !/^h[12]$/.test(list.localName)) {
+      if (list.localName === 'ul') list.classList.add('reference-list');
+      list = list.nextElementSibling;
     }
   }
 

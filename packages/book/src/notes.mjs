@@ -60,6 +60,7 @@ export const moveReferencesToNotes = (doc, content) => {
 
   for (const paragraph of content.querySelectorAll('p')) {
     if (paragraph.closest(SKIP)) continue;
+    if (/前提|先に|読んでから/.test(paragraph.textContent)) continue;
     paragraph.normalize();
 
     // 括弧だけの参照：（「13-2 …」）と（13-2 …）
@@ -83,7 +84,8 @@ export const moveReferencesToNotes = (doc, content) => {
     const sentences = sentencesOf(paragraph);
     for (const [index, sentence] of sentences.entries()) {
       const text = sentence.map((node) => node.textContent).join('').trim();
-      if (!sentence.some(isRef) || !POINTER.test(text)) continue;
+      // 学習の順序や適用条件は本文に残す。単なる関連資料の案内だけを注にする。
+      if (!sentence.some(isRef) || !POINTER.test(text) || /前提|先に|必要|条件|読んでから/.test(text)) continue;
       const previous = sentences.slice(0, index).reverse().find((item) => item.some((node) => node.isConnected));
       if (!previous) continue;
       const note = marker();

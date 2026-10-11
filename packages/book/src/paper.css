@@ -235,7 +235,7 @@ a.xref-rule::after {
 }
 
 /* 参考リンク：URL を書き出す */
-section > ul:last-child a[href^="http"]::after {
+.reference-list a[href^="http"]::after {
   content: " " attr(href);
   color: var(--muted);
   font: 6.5pt/1.4 "SF Mono", Menlo, monospace;
@@ -465,4 +465,52 @@ section.index h2 {
 
 .ix-ref.-definition::after {
   font-weight: 700;
+}
+
+/* 刊行版の入口と、問題の後方へ移した解答。 */
+.publication-info {
+  break-before: page;
+  break-after: page;
+}
+
+.support-url {
+  overflow-wrap: anywhere;
+  font: 8pt/1.5 "SF Mono", Menlo, monospace;
+}
+
+.support-qr {
+  inline-size: 28mm;
+  block-size: 28mm;
+}
+
+.answers {
+  break-before: page;
+  padding-block-start: 0.1mm;
+}
+
+.answers > h2 {
+  margin-block-start: 0;
+}
+
+.guideline ._meta {
+  margin-block: 1mm;
+  font-size: 7.5pt;
+}
+
+.guideline ._row {
+  display: block flow;
+}
+
+.guideline dt {
+  font-weight: 700;
+}
+
+.guideline dd {
+  margin-inline-start: 0;
+}
+
+table > caption {
+  margin-block-end: 2mm;
+  text-align: start;
+  font: 7.5pt/1.5 "Hiragino Sans", sans-serif;
 }

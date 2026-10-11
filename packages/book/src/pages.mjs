@@ -6,7 +6,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { CHAPTERS } from '../../../src/lib/book.mjs';
-import { VOLUMES, volumeOf } from '../config/volumes.mjs';
+import { VOLUMES, printedVolumeOf } from '../config/volumes.mjs';
 
 export const ROOT = new URL('../../../', import.meta.url).pathname;
 export const DOCS = join(ROOT, 'src/content/docs');
@@ -60,7 +60,7 @@ export const allPages = async () => {
     for (const file of await readdir(join(DOCS, entry.name))) {
       if (!file.endsWith('.mdx')) continue;
       const page = await readPage(entry.name, file);
-      if (!page.draft) pages.push({ ...page, volume: volumeOf(entry.name) });
+      if (!page.draft) pages.push({ ...page, volume: printedVolumeOf(page) });
     }
   }
   return pages;

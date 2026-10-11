@@ -102,7 +102,7 @@ import forgottenLayerCss from '../../../demos/cascade/forgotten-layer/style.bad.
 
 レイヤーの順番は、そのレイヤーの名前が最初に現れた順で決まります。そこで、読み込むCSSの先頭で、すべてのレイヤーの順番を `@layer` 文で宣言します。その後ろで、各ファイルを `@import … layer()` の形で読み込みます。
 
-```css title="🙆‍♂ Recommended: 先頭で順番を宣言し、ファイルごとにレイヤーを割り当てる"
+```css title="🙆‍♂ Recommended: 本書の規約として9つの分類に割り当てる"
 @layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
 
 @import url("kiso.css") layer(reset);
@@ -166,7 +166,7 @@ npx vite build
 
 レイヤー名を打ち間違えても、エラーにはなりません。先頭の `@layer` 文にない名前は、その場で新しいレイヤーとして作られ、それまでに現れたすべてのレイヤーの後ろに加わります。次の例では、`components` を `component` と書いたことで、`utilities` よりも後ろの、より強いレイヤーができてしまいます。
 
-```css title="🙅‍♂ Not Recommended: 宣言していないレイヤー名を使う"
+```css title="🙅‍♂ Not Recommended: 本書の規約と異なるレイヤー名で順位が変わる"
 /* 🙅‍♂ Not Recommended */
 @layer component {
   /* ... */
