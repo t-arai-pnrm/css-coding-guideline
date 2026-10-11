@@ -8,8 +8,9 @@
   margin-block: 18mm 20mm;
   margin-inline: 18mm;
 
+  /* 柱は節の見出し。見出しのあるページ（節や章の最初のページ）には出さない */
   @top-center {
-    content: string(page-title);
+    content: string(page-title, first-except);
     color: #555;
     font: 8pt/1 sans-serif;
   }
@@ -23,11 +24,6 @@
 @page :first {
   @top-center { content: none; }
   @bottom-center { content: none; }
-}
-
-/* 章扉の最初のページには、柱を出さない */
-@page chapter:first {
-  @top-center { content: none; }
 }
 
 :root {
@@ -123,7 +119,6 @@ section.chapter-opener {
 
 section.chapter-opener {
   break-before: right;
-  page: chapter;
 }
 
 section > h1 {

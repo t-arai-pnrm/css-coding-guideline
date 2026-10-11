@@ -31,8 +31,10 @@ const widthsOf = (figure, setting) => {
   const presets = [...figure.querySelectorAll('._preset[data-width]')]
     .map((button) => Number(button.dataset.width))
     .filter(Number.isFinite);
+  // 幅のボタンがないデモ（widths={[]}）は、本文の幅に近い720pxで1枚だけ撮る
   if (presets.length === 0) return [720];
-  const narrow = Math.min(...presets.filter((width) => width >= 320), 375);
+  const usable = presets.filter((width) => width >= 320);
+  const narrow = Math.min(...(usable.length ? usable : presets));
   const wide = presets.includes(1024) ? 1024 : Math.max(...presets);
   return narrow === wide ? [wide] : [narrow, wide];
 };
@@ -45,7 +47,7 @@ export const extractPage = async (page, ctx) => {
   const key = keyOf(page.id);
 
   // サイトの UI を外す
-  for (const element of content.querySelectorAll('script, style, .sl-anchor-link, .copy, [data-pagefind-ignore] ._toolbar')) element.remove();
+  for (const element of content.querySelectorAll('script, style, .sl-anchor-link, .copy')) element.remove();
   for (const link of content.querySelectorAll('link[rel="stylesheet"]')) {
     ctx.stylesheets.add(link.getAttribute('href'));
     link.remove();
