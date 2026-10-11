@@ -7,8 +7,8 @@
 <section class="chapter-opener" id="page-cascade" data-title="第4章 カスケードを制御する">
 <h1>第4章 カスケードを制御する</h1>
 <p>この章では、同じ要素の同じプロパティに複数の値が指定されたとき、どの値が使われるかを扱います。スタイルの優先順位は、<span class="ix" id="cascade--ix-t8"></span>詳細度の高さで競わせず、「どのレイヤーに書くか」と「どの範囲に適用するか」で先に決めます。詳細度そのものは、できるだけ低く一定に保ちます。</p>
-<p>私は2020年に、<code dir="auto">!important</code> を使わずにスタイルを上書きする技として、同じクラスを連結して詳細度を上げる書き方を紹介していました。当時は、詳細度を調整する手段がセレクタしかなかったからです。いまはカスケードレイヤー、<code dir="auto">:where()</code>、<code dir="auto">@scope</code> がすべての主要なブラウザで使えるので、上書きの技そのものが要らない設計にできます。この章では、上書きで困ってから対処するのではなく、困らない順番と範囲を最初に決めておく設計を扱います。</p>
-<p>ただし、新しい仕組みにも向き不向きがあります。私自身、2024年のブログではITCSSにならった7つのレイヤーを使い、2025年に公開したリセットCSSのkiso.cssでは「レイヤーに頼らなくても上書きしやすい」ことを優先しました。現在、Astroで作るサイトのテンプレートでは9つのレイヤーを使っていますが、CMSの案件ではレイヤーをやめています。こうした経験から、レイヤーを使う基準と使わない基準の両方を示します。</p>
+<p>私は2020年に、<span class="ix" id="cascade--ix-t133"></span><code dir="auto">!important</code> を使わずにスタイルを上書きする技として、同じクラスを連結して詳細度を上げる書き方を紹介していました。当時は、詳細度を調整する手段がセレクタしかなかったからです。いまはカスケードレイヤー、<code dir="auto">:where()</code>、<code dir="auto">@scope</code> がすべての主要なブラウザで使えるので、上書きの技そのものが要らない設計にできます。この章では、上書きで困ってから対処するのではなく、困らない順番と範囲を最初に決めておく設計を扱います。</p>
+<p>ただし、新しい仕組みにも向き不向きがあります。私自身、2024年のブログではITCSSにならった7つのレイヤーを使い、2025年に公開したリセットCSSのkiso.cssでは「レイヤーに頼らなくても上書きしやすい」ことを優先しました。現在、Astroで作るサイトのテンプレートでは9つのレイヤーを使っていますが、<span class="ix" id="cascade--ix-t127"></span>CMSの案件ではレイヤーをやめています。こうした経験から、レイヤーを使う基準と使わない基準の両方を示します。</p>
 <h2 id="cascade--この章で判断できるようになること">この章で判断できるようになること</h2>
 <p>この章を読むと、宣言が適用されないときに、レイヤー、詳細度、<span class="ix" id="cascade--ix-t10"></span>スコープの近接度、出現順のどれで負けているかを切り分けられるようになります。上書きが要るときは、詳細度を上げる代わりに、書くレイヤーを変えるか、<code dir="auto">@scope</code> で範囲を絞るかを選べます。CMSのようにレイヤーに入っていない外部のCSSと共存する環境では、<code dir="auto">@layer</code> を使わないと判断でき、<code dir="auto">!important</code> を使ってよい場面かどうかも見分けられます。</p>
 <h2 id="cascade--この章の節">この章の節</h2>
@@ -18,7 +18,7 @@
 <li><a href="#page-cascade_selectors" class="xref">4-2 セレクタで詳細度を設計する</a>：<code dir="auto">:where()</code>、<code dir="auto">:is()</code>、<code dir="auto">:not()</code>、<code dir="auto">:has()</code> の詳細度と、使わないセレクタ</li>
 <li><a href="#page-cascade_layers" class="xref">4-3 カスケードレイヤーで順位を決める</a>：9つのレイヤーの役割と、レイヤーを使わないと判断する基準</li>
 <li><a href="#page-cascade_scope" class="xref">4-4 @scopeでスタイルを閉じ込める</a>：ドーナツスコープの動作、スコープの近接度、<code dir="auto">@scope</code> が防がないもの</li>
-<li><a href="#page-cascade_nesting" class="xref">4-5 CSSネストの基礎</a>：<code dir="auto">&amp;</code> が <code dir="auto">:is()</code> と同じように働く仕組みと、Sassのネストとの違い</li>
+<li><a href="#page-cascade_nesting" class="xref">4-5 CSS<span class="ix" id="cascade--ix-t82"></span>ネストの基礎</a>：<code dir="auto">&amp;</code> が <code dir="auto">:is()</code> と同じように働く仕組みと、Sassのネストとの違い</li>
 </ul>
 <p>リセットCSSをレイヤーに入れる方法と<span class="ix" id="cascade--ix-t24"></span>ベーススタイルの中身は第8章「<a class="xref-out">リセットとベーススタイル</a>（巻2）」で、スコープのルートや子要素の命名、<code dir="auto">@scope</code> とネストの使い分け、条件付きのアットルールを書く位置は第9章「<a class="xref-out">記法の規約</a>（巻2）」で扱います<span class="note-ref">※1</span>。</p>
 <h2 id="cascade--初めて読むとき">初めて読むとき</h2>
@@ -91,7 +91,7 @@
 <h2 id="cascade_cascade-basics--カスケードが値を決める順番"><span class="ix" id="cascade_cascade-basics--ix-t7"></span>カスケードが値を決める順番</h2>
 <p>カスケードは、次の順に宣言を比べます。上の段階で差がつけば、下の段階は比べません。</p>
 <ol>
-<li>オリジンと重要度：ブラウザのデフォルトスタイル、ユーザーのスタイル、作者のスタイルの区別と、<code dir="auto">!important</code> の有無</li>
+<li><span class="ix" id="cascade_cascade-basics--ix-t75"></span>オリジンと<span class="ix" id="cascade_cascade-basics--ix-t76"></span>重要度：ブラウザのデフォルトスタイル、ユーザーのスタイル、作者のスタイルの区別と、<code dir="auto">!important</code> の有無</li>
 <li>コンテキスト：Shadow DOMの内側と外側の区別</li>
 <li><code dir="auto">style</code> 属性：要素に直接書いたスタイル</li>
 <li>レイヤー：<code dir="auto">@layer</code> の順番</li>
@@ -202,7 +202,7 @@
 <h2 id="cascade_cascade-basics--優先順位はレイヤーと書く順番で決める">優先順位はレイヤーと書く順番で決める</h2>
 <p>本書では、優先順位を次の方針で設計します。まず、スタイルの役割ごとにレイヤーを分け、「リセットよりベース、ベースよりコンポーネント、コンポーネントより<span class="ix" id="cascade_cascade-basics--ix-t34"></span>ユーティリティが強い」という順番をレイヤーで決めます。同じレイヤーの中では詳細度をそろえ、書いた順番で勝ち負けが決まるようにします。</p>
 <p>詳細度の目安は2つです。ベーススタイルは、<code dir="auto">base</code> レイヤーに素のセレクタで書きます。後のレイヤーの指定は詳細度に関係なく勝つので、<code dir="auto">a:any-link</code>（0.1.1）のままでも、コンポーネントのクラス1つで上書きできます。コンポーネントの中は、クラス1つ分（0.1.0）を基本にします。本書では、コンポーネントのスタイルを <code dir="auto">@scope</code> の中に書くので、クラスを1つ書けばちょうど0.1.0になります<span class="note-ref">※5</span><span class="note-ref">※6</span>。</p>
-<p><span class="ix" id="cascade_cascade-basics--ix-t23"></span>リセットCSSのkiso.cssは、すべてのセレクタを <code dir="auto">:where()</code> で包んで詳細度を0にしています。レイヤーなしで読み込まれても上書きしやすくするためです。CMSと共存する場合のようにレイヤーを使えない環境では、ベーススタイルのセレクタも同じように <code dir="auto">:where()</code> で包みます<span class="note-ref">※7</span>。</p>
+<p><span class="ix" id="cascade_cascade-basics--ix-t23"></span>リセットCSSの<span class="ix" id="cascade_cascade-basics--ix-t131"></span>kiso.cssは、すべてのセレクタを <code dir="auto">:where()</code> で包んで詳細度を0にしています。レイヤーなしで読み込まれても上書きしやすくするためです。CMSと共存する場合のようにレイヤーを使えない環境では、ベーススタイルのセレクタも同じように <code dir="auto">:where()</code> で包みます<span class="note-ref">※7</span>。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 順番はレイヤーで決め、詳細度は低くそろえる</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@layer</span><span style="--0:#D6DEEB;--1:#403F53"> base {</span>
 <span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">a</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">&amp;:any-link {</span>
@@ -220,7 +220,7 @@
 <p>次のデモでは、リンクで作ったボタンの文字がボタンの文字色になり、<code dir="auto">base</code> レイヤーのリンクの青は使われません。</p>
 <p class="demo-ref">デモ4-1-1　base の a:any-link（0.1.1）より、components のボタン（0.1.0）の色が勝つ（補足サイト）</p>
 <p>なお、この節のほかのコード例では、説明に関係しない <code dir="auto">@layer</code> の記述を省略しています。</p>
-<h2 id="cascade_cascade-basics--継承されるプロパティとされないプロパティ">継承されるプロパティとされないプロパティ</h2>
+<h2 id="cascade_cascade-basics--継承されるプロパティとされないプロパティ"><span class="ix" id="cascade_cascade-basics--ix-t74"></span>継承されるプロパティとされないプロパティ</h2>
 <p>カスケードは、「要素に当てはまる宣言のうち、どれを使うか」を決める仕組みです。当てはまる宣言がひとつもないプロパティは、継承されるプロパティなら親の値を受け継ぎ、継承されないプロパティなら初期値になります。</p>
 <p>継承されるのは、主に文字に関わるプロパティです。<code dir="auto">color</code>、<code dir="auto">font-family</code>、<code dir="auto">font-size</code>、<code dir="auto">line-height</code>、<code dir="auto">letter-spacing</code> などがこれに当たります。一方で、<code dir="auto">margin</code>、<code dir="auto">padding</code>、<code dir="auto">border</code>、<code dir="auto">background-color</code>、<code dir="auto">display</code> のように、ボックスやレイアウトに関わるプロパティは継承されません。カスタムプロパティは、<code dir="auto">@property</code> で <code dir="auto">inherits: false</code> を指定しない限り継承されます。</p>
 <p>継承で受け継いだ値には、詳細度がありません。要素に直接当てはまる宣言がひとつでもあれば、詳細度0の <code dir="auto">:where()</code> の指定であっても、継承した値より優先されます。親に色を指定したのに子の色が変わらないときは、子に当てはまる宣言がどこかにないかを確認します。</p>
@@ -250,7 +250,7 @@
 <figure class="code"><figcaption>🙆‍♂ Recommended: まとめて戻すときは、戻る先が分かるキーワードを使う</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">.embed-content</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">all</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">revert-layer</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<h2 id="cascade_cascade-basics--important-を使ってよい場面"><code dir="auto">!important</code> を使ってよい場面</h2>
+<h2 id="cascade_cascade-basics--important-を使ってよい場面"><span class="ix" id="cascade_cascade-basics--ix-t133"></span><code dir="auto">!important</code> を使ってよい場面</h2>
 <p><code dir="auto">!important</code> は、カスケードの最初の段階である「オリジンと重要度」の順位を変える指定です。<code dir="auto">!important</code> が付いた宣言は、付いていない宣言に、レイヤーや詳細度に関係なく勝ちます。スタイルの宣言どうしで比べる限り、これを打ち消せるのは、同じように <code dir="auto">!important</code> を付けた宣言だけです。例外は実行中のトランジションで、その値は <code dir="auto">!important</code> を付けた宣言よりも優先されます（<code dir="auto">@keyframes</code> のアニメーションは優先されません）。</p>
 <p>さらに、<code dir="auto">!important</code> を付けた宣言どうしでは、レイヤーの順番が逆になります。前のレイヤーの <code dir="auto">!important</code> ほど強く、レイヤーの外の <code dir="auto">!important</code> がいちばん弱くなります。前のレイヤーで <code dir="auto">!important</code> を付けた指定は、後ろのレイヤーから上書きできません。</p>
 <figure class="scoped figure | not-content" role="img" aria-label="レイヤーの強さの順番を、!importantなしの場合とありの場合で並べた比較図。左の列は!importantなしで、上ほど強く、上から順に、レイヤーの外、utilities、patterns、components、pages、compositions、vendors、base、reset、tokens。右の列は!importantありで、順番が逆になり、上から順に、tokens、reset、base、vendors、compositions、pages、components、patterns、utilities、レイヤーの外。レイヤーの外とresetは色を付けて強調し、2つの列で同じレイヤーを線で結んでいる。レイヤーの外は、!importantなしでは最も強く、ありでは最も弱い。resetは、なしでは下から2番目、ありでは上から2番目になる。下の注記は、!importantを付けた宣言は、付けていない宣言のすべてに勝つ、というもの。"><div class="_body" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 402" width="480" height="402">
@@ -377,9 +377,9 @@
 <span style="--0:#C5E478;--1:#3B61B0">.news-list</span><span style="--0:#C792EA;--1:#8844AE"> </span><span style="--0:#C5E478;--1:#3B61B0">.title</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">font-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">20</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<p><code dir="auto">input[type="submit"]</code> は、タイプセレクタと属性セレクタで0.1.1になります。ボタンに <code dir="auto">.submit-button</code> を付けても、0.1.0なので背景色を変えられません。見出しの例では、IDセレクタを含む <code dir="auto">#news h2</code> が1.0.1になり、クラスをいくつ重ねても勝てなくなっています。</p>
+<p><code dir="auto">input[type="submit"]</code> は、<span class="ix" id="cascade_selectors--ix-t77"></span>タイプセレクタと属性セレクタで0.1.1になります。ボタンに <code dir="auto">.submit-button</code> を付けても、0.1.0なので背景色を変えられません。見出しの例では、IDセレクタを含む <code dir="auto">#news h2</code> が1.0.1になり、クラスをいくつ重ねても勝てなくなっています。</p>
 <p>原因は、上書きされる側のセレクタが、必要以上に高い詳細度を持っていることです。上書きする側で工夫しても、さらに高い詳細度が必要になるだけです。そのため、詳細度はセレクタを書く最初の段階で低くそろえておきます。</p>
-<h2 id="cascade_selectors--idセレクタと詳細度を上げる技">IDセレクタと詳細度を上げる技</h2>
+<h2 id="cascade_selectors--idセレクタと詳細度を上げる技"><span class="ix" id="cascade_selectors--ix-t78"></span>IDセレクタと詳細度を上げる技</h2>
 <p>IDセレクタでは、スタイルを指定しません。詳細度が1.0.0になり、クラスをいくつ重ねても上書きできないからです。オリジンと重要度とレイヤーが同じなら、IDセレクタで指定したスタイルを変えられるのは、別のIDセレクタか <code dir="auto">style</code> 属性、あるいは <code dir="auto">!important</code> だけです。後のレイヤーに書けば詳細度に関係なく上書きできますが、IDのスタイルを変えるたびにレイヤーを分けることになります。本書のStylelintの設定では、<code dir="auto">selector-max-id</code> でIDセレクタを検出しています。</p>
 <p><code dir="auto">id</code> 属性そのものは使います。JavaScriptから要素を参照するとき、<code dir="auto">aria-labelledby</code> などのARIAの属性から参照するとき、ページ内リンクの移動先にするときです。スタイルはクラスで指定し、<code dir="auto">id</code> 属性はこうした用途のために残しておきます。</p>
 <p>私は2020年に、<code dir="auto">!important</code> を使わずに上書きする方法として、次のようなセレクタを紹介していました。同じクラスを連結する、<code dir="auto">[class]</code> を足す、存在しないIDを <code dir="auto">:not()</code> に入れる、といった技です。当時はセレクタのほかに詳細度を調整する手段がなく、既存のCSSを直せない場面での最終手段として使っていました。</p>
@@ -408,7 +408,7 @@
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--foreground--base</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>セレクタの各部分は、外すと選ぶ要素が変わるかで確かめます。状態の擬似クラスや、同じクラスの要素を置き場所で区別する祖先のように、外すと意味が変わる部分は必要な部分です。本書では、コンポーネントのスタイルを <code dir="auto">@scope</code> の中に書くので、祖先をたどって範囲を限る必要もありません<span class="note-ref">※5</span>。</p>
-<h2 id="cascade_selectors--ベーススタイルの詳細度と-where"><span class="ix" id="cascade_selectors--ix-t24"></span>ベーススタイルの詳細度と <span class="ix" id="cascade_selectors--ix-s76"></span><code dir="auto">:where()</code></h2>
+<h2 id="cascade_selectors--ベーススタイルの詳細度と-where"><span class="ix" id="cascade_selectors--ix-t24"></span>ベーススタイルの詳細度と <span class="ix" id="cascade_selectors--ix-s155"></span><code dir="auto">:where()</code></h2>
 <p>ベーススタイルのように、あらゆる場所で上書きされる前提のスタイルは、<code dir="auto">base</code> レイヤーに素のセレクタで書きます。<code dir="auto">base</code> レイヤーは <code dir="auto">components</code> レイヤーより前にあるので、<code dir="auto">a:any-link</code>（0.1.1）のように、コンポーネントのクラス（0.1.0）より詳細度の高いセレクタでも、クラス1つで上書きできます。レイヤーの順番は詳細度より先に比べられるからです。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: ベーススタイルは base レイヤーに素のセレクタで書く</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@layer</span><span style="--0:#D6DEEB;--1:#403F53"> base {</span>
 <span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">a</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -427,7 +427,7 @@
 <span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">font-kerning</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">normal</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<p>リンクの色は、<code dir="auto">a:link, a:visited</code> ではなく、<code dir="auto">a</code> のルールの中に <code dir="auto">&amp;:any-link</code> とネストして書きます（展開すると <code dir="auto">a:any-link</code> です）。<code dir="auto">:any-link</code> は <code dir="auto">href</code> 属性を持つリンクすべてに当てはまる擬似クラスで、<code dir="auto">:link</code> と <code dir="auto">:visited</code> をまとめて書くのと同じ意味です。リンクで作ったボタンにクラスを付ければ、<code dir="auto">components</code> レイヤーのそのクラスだけで文字色を上書きできます。</p>
+<p>リンクの色は、<code dir="auto">a:link, a:visited</code> ではなく、<code dir="auto">a</code> のルールの中に <code dir="auto">&amp;:any-link</code> と<span class="ix" id="cascade_selectors--ix-t82"></span>ネストして書きます（展開すると <code dir="auto">a:any-link</code> です）。<code dir="auto">:any-link</code> は <code dir="auto">href</code> 属性を持つリンクすべてに当てはまる擬似クラスで、<code dir="auto">:link</code> と <code dir="auto">:visited</code> をまとめて書くのと同じ意味です。リンクで作ったボタンにクラスを付ければ、<code dir="auto">components</code> レイヤーのそのクラスだけで文字色を上書きできます。</p>
 <p>レイヤーを使えない環境では、この前提が崩れます。CMSのテーマのCSSと共存するために自分のCSSもレイヤーなしで書く場合は、読み込む順番と詳細度だけで優先順位が決まります。このときは、ベーススタイルのセレクタを <code dir="auto">:where()</code> で包みます。<code dir="auto">:where()</code> は、引数にどのようなセレクタを書いても詳細度が0になる擬似クラスで、<code dir="auto">:where(a:any-link)</code> の詳細度は0.1.1から0になります。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: レイヤーを使えないときは、ベーススタイルのセレクタを :where() で包む</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">:where</span><span style="--0:#C792EA;--1:#8844AE">(</span><span style="--0:#FF6D6D;--1:#984E4D">a</span><span style="--0:#C5E478;--1:#3B61B0">:any-link</span><span style="--0:#C792EA;--1:#8844AE">)</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">color</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">var</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#C5E478;--1:#3B61B0">--foreground--link</span><span style="--0:#D6DEEB;--1:#403F53">);</span>
@@ -504,7 +504,7 @@
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>この例では、<code dir="auto">.card</code> の中の <code dir="auto">._title</code> にも、1.1.0という高い詳細度が付きます。まとめるセレクタの詳細度をそろえるか、詳細度を加えたくないときは <code dir="auto">:where()</code> を使います。<code dir="auto">:not()</code> と <code dir="auto">:has()</code> の引数も同じです。</p>
 <p>詳細度が引数で決まることは、状態のスタイルを書くときには役に立ちます。画像があるときだけ2列にするカードの <code dir="auto">&amp;:has(&gt; img)</code> は、<code dir="auto">:scope</code> の0.1.0に <code dir="auto">img</code> の0.0.1が加わり、0.1.1です。状態のスタイルは元のスタイルより詳細度が高くなるので、書く位置に関係なく元のスタイルを上書きできます。引数を短く保てば、こうした上書きの関係も読み取りやすくなります。</p>
-<h2 id="cascade_selectors--祖先の状態を-is-で書く">祖先の状態を <span class="ix" id="cascade_selectors--ix-s77"></span><code dir="auto">:is()</code> で書く</h2>
+<h2 id="cascade_selectors--祖先の状態を-is-で書く">祖先の状態を <span class="ix" id="cascade_selectors--ix-s156"></span><code dir="auto">:is()</code> で書く</h2>
 <p><code dir="auto">:is()</code> が特に役立つのは、祖先の状態によって変わるスタイルを、子のルールの中に書くときです。次の例では、<code dir="auto">&lt;details&gt;</code> が開いているときだけ、中のアイコンを回転させています。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 祖先の状態による変化を、子のルールの中に書く</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">.faq-icon</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">inline-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">em</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
@@ -536,7 +536,7 @@
 <div class="scoped baseline | not-content" data-baseline="high"><p class="_summary"><span class="_label">Baseline</span><strong>広く利用可能</strong><span class="_since">2024年9月から（新しく利用可能になったのは2022年3月）</span></p><p class="_feature"><code>カスケードレイヤー</code></p><ul class="_browsers"><li>Chrome 99</li><li>Edge 99</li><li>Firefox 97</li><li>Safari 15.4</li><li>iOS Safari 15.4</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <h2 id="cascade_layers--詳細度で役割の強さを表せるか"><span class="ix" id="cascade_layers--ix-t8"></span>詳細度で役割の強さを表せるか</h2>
 <p>スタイルには、役割による強さの違いがあります。<span class="ix" id="cascade_layers--ix-t23"></span>リセットCSSは<span class="ix" id="cascade_layers--ix-t24"></span>ベーススタイルに上書きされるべきで、コンポーネントのスタイルは<span class="ix" id="cascade_layers--ix-t34"></span>ユーティリティクラスに上書きされるべきです。しかし、詳細度はセレクタの形で決まる値なので、この役割の違いを表せません。</p>
-<p>たとえば、要素を視覚的に隠すユーティリティクラス <code dir="auto">.-visually-hidden</code> は、どのコンポーネントの要素に付けても効かなければなりません。レイヤーがなければ、ユーティリティとコンポーネントのクラスはどちらも0.1.0なので、頼れるのは書いた順番だけです。読み込む順番が変わっただけで効かなくなるので、以前はユーティリティに <code dir="auto">!important</code> を付けるのが一般的でした。</p>
+<p>たとえば、要素を視覚的に隠すユーティリティクラス <code dir="auto">.-visually-hidden</code> は、どのコンポーネントの要素に付けても効かなければなりません。レイヤーがなければ、ユーティリティとコンポーネントのクラスはどちらも0.1.0なので、頼れるのは書いた順番だけです。読み込む順番が変わっただけで効かなくなるので、以前はユーティリティに <span class="ix" id="cascade_layers--ix-t133"></span><code dir="auto">!important</code> を付けるのが一般的でした。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: 読み込む順番に左右されないよう、ユーティリティに !important を付ける</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
 <span style="--0:#C5E478;--1:#3B61B0">.-visually-hidden</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">position</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">absolute</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">!important</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
@@ -572,7 +572,7 @@
 <p>本書の基本のレイヤーは、次の9つです。前に書いたレイヤーほど弱く、後ろに書いたレイヤーほど強くなります。</p>
 <ol>
 <li><code dir="auto">tokens</code>：デザイントークン。<code dir="auto">:root</code> のカスタムプロパティだけを置く</li>
-<li><code dir="auto">reset</code>：リセットCSS（kiso.css）</li>
+<li><code dir="auto">reset</code>：リセットCSS（<span class="ix" id="cascade_layers--ix-t131"></span>kiso.css）</li>
 <li><code dir="auto">base</code>：HTML要素のデフォルトの見た目、<code dir="auto">@font-face</code>、グローバルな <code dir="auto">@keyframes</code>、<code dir="auto">@property</code></li>
 <li><code dir="auto">vendors</code>：自分で読み込むサードパーティのCSS</li>
 <li><code dir="auto">compositions</code>：stack、cluster、sidebarなど、レイアウトの再利用パターン</li>
@@ -651,7 +651,7 @@
 <p><code dir="auto">vendors</code> は、スライダーのようなサードパーティのCSSを入れるレイヤーです。自分たちのコンポジションやコンポーネントより前に置くので、サードパーティのCSSの見た目を、自分たちのCSSから上書きできます。</p>
 <p><code dir="auto">compositions</code>、<code dir="auto">pages</code>、<code dir="auto">components</code> は、ページを組み立てるためのレイヤーです。ページ固有のセクションは <code dir="auto">pages</code> に、複数の場所で使うコンポーネントは <code dir="auto">components</code> に書きます。この区別は、レスポンシブ対応の手段の選び方とも対応しています。<code dir="auto">pages</code> ではメディアクエリを、<code dir="auto">components</code> ではコンテナサイズクエリを優先します<span class="note-ref">※1</span><span class="note-ref">※2</span>。</p>
 <p><code dir="auto">components</code> は、自分の構造とスコープと状態を持つ部品で、<code dir="auto">patterns</code> は、それらを持たない静的な見た目の断片です。<code dir="auto">patterns</code> は、コンポーネントの要素に重ねて使います。<code dir="auto">components</code> より後ろにあるので、<code dir="auto">class="_label | status-badge"</code> のようにコンポーネントの子要素に付けると、パターンの指定が勝ちます。コンポーネントの状態や <code dir="auto">@container</code> の中の指定でも、同じプロパティは変えられません。そのため、パターンにはコンポーネントが変えないプロパティだけを書き、変える値は公開プロパティで受け取ります（「<a class="xref-out">10-3 コンポジションとユーティリティ</a>（10-3、巻2）」）。最後の <code dir="auto">utilities</code> は、どこに付けても効かなければならない補助クラスなので、最も強いレイヤーにします。<code dir="auto">.-visually-hidden</code> も、<code dir="auto">!important</code> なしでコンポーネントのスタイルに勝ちます。</p>
-<h2 id="cascade_layers--レイヤーの順番の宣言と-import-での割り当て">レイヤーの順番の宣言と <span class="ix" id="cascade_layers--ix-s78"></span><code dir="auto">@import</code> での割り当て</h2>
+<h2 id="cascade_layers--レイヤーの順番の宣言と-import-での割り当て">レイヤーの順番の宣言と <span class="ix" id="cascade_layers--ix-s157"></span><code dir="auto">@import</code> での割り当て</h2>
 <p>レイヤーの順番は、そのレイヤーの名前が最初に現れた順で決まります。そこで、読み込むCSSの先頭で、すべてのレイヤーの順番を <code dir="auto">@layer</code> 文で宣言します。その後ろで、各ファイルを <code dir="auto">@import … layer()</code> の形で読み込みます。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 先頭で順番を宣言し、ファイルごとにレイヤーを割り当てる</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@layer</span><span style="--0:#D6DEEB;--1:#403F53"> tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;</span>
 
@@ -698,7 +698,7 @@
 <span class="indent">  </span><span style="--0:#919F9F;--1:#5F636F">/* ... */</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>この打ち間違いは、見た目ではすぐに気づけません。コンポーネントのスタイルはほぼ意図どおりに表示され、ユーティリティクラスを付けたときだけ効かないという形で現れます。<code dir="auto">@import url("…") layer(utility);</code> のように、<code dir="auto">@import</code> の <code dir="auto">layer()</code> で打ち間違えた場合も同じです。</p>
-<p>そのため、<code dir="auto">@layer</code> と <code dir="auto">layer()</code> には、先頭で宣言した9つの名前だけを使います。 この確認は、Stylelintに任せられます。Stylelintの <code dir="auto">layer-name-pattern</code> は、<code dir="auto">@layer</code> と <code dir="auto">@import</code> の <code dir="auto">layer()</code> に書いたレイヤー名を正規表現で検証するルールです。stylelint-config-standardのデフォルトは、名前がケバブケースかどうかしか調べません。本書の設定では、9つの名前を列挙した <code dir="auto">^(tokens|reset|base|vendors|compositions|pages|components|patterns|utilities)$</code> のようなパターンを指定しています。これで、宣言していない名前を検出できます<span class="note-ref">※4</span>。</p>
+<p>そのため、<code dir="auto">@layer</code> と <code dir="auto">layer()</code> には、先頭で宣言した9つの名前だけを使います。 この確認は、<span class="ix" id="cascade_layers--ix-t132"></span>Stylelintに任せられます。Stylelintの <code dir="auto">layer-name-pattern</code> は、<code dir="auto">@layer</code> と <code dir="auto">@import</code> の <code dir="auto">layer()</code> に書いたレイヤー名を正規表現で検証するルールです。stylelint-config-standardのデフォルトは、名前がケバブケースかどうかしか調べません。本書の設定では、9つの名前を列挙した <code dir="auto">^(tokens|reset|base|vendors|compositions|pages|components|patterns|utilities)$</code> のようなパターンを指定しています。これで、宣言していない名前を検出できます<span class="note-ref">※4</span>。</p>
 <h2 id="cascade_layers--レイヤーの外に書いたスタイルの扱い">レイヤーの外に書いたスタイルの扱い</h2>
 <p>レイヤーを使うプロジェクトでは、すべてのスタイルをいずれかのレイヤーに入れます。レイヤーに入っていないスタイルは、すべてのレイヤーより後ろにある「暗黙の最後のレイヤー」として扱われるからです。<code dir="auto">!important</code> を付けていない宣言どうしなら、レイヤーの外のスタイルは、詳細度に関係なくすべてのレイヤーに勝ちます。</p>
 <p><code dir="auto">@layer</code> を書き忘れたスタイルは、<code dir="auto">utilities</code> のユーティリティクラスよりも強くなります（2026年9月、Chrome 152で確認）。ユーティリティクラスを付けたのに効かないときは、レイヤーの書き忘れを疑います。1か所の書き忘れで、9つのレイヤーで決めた順番が崩れてしまいます。</p>
@@ -706,7 +706,7 @@
 <p class="demo-ref">デモ4-3-2　@layer を書き忘れたコンポーネントには、ユーティリティクラスが効かない（補足サイト）</p>
 <p>サードパーティのCSSも同じです。<code dir="auto">&lt;link&gt;</code> 要素などを使ってレイヤーの外で読み込むと、そのCSSはどのレイヤーよりも強くなり、自分のコンポーネントからは上書きできません。自分で読み込むサードパーティのCSSは、前の見出しのコード例のように <code dir="auto">@import url("…") layer(vendors);</code> で <code dir="auto">vendors</code> レイヤーに入れます。</p>
 <p>この「レイヤーの外のCSSが勝つ」という性質は、自分で読み込み方を決められないCSSがある環境で、大きな問題になります。その代表がCMSです。</p>
-<h2 id="cascade_layers--cmsでのレイヤー">CMSでのレイヤー</h2>
+<h2 id="cascade_layers--cmsでのレイヤー"><span class="ix" id="cascade_layers--ix-t127"></span>CMSでのレイヤー</h2>
 <p>多くのCMSでは、CMSの本体やプラグインの出力するCSSが、レイヤーに入っていない状態で読み込まれます。この環境で自分のテーマのCSSだけをレイヤーに入れると、テーマのCSSは構造的に負けます。どれほど詳細度を上げても、レイヤーの外にあるプラグインのCSSには勝てません。</p>
 <p>次のデモでは、テーマのCSSを <code dir="auto">components</code> レイヤーに入れ、見出しにクラスで色と大きさを指定しています。一方、プラグインを想定したCSSは、レイヤーの外にタイプセレクタ <code dir="auto">h2</code> で書いています。詳細度はテーマのCSSのほうが高いのに、見出しにはプラグインの色と大きさが使われます。見出しは、テーマで指定した青の20px相当ではなく、プラグインの赤の28px相当で表示されます。</p>
 <p class="demo-ref">デモ4-3-3　レイヤーの外のタイプセレクタが、レイヤーの中のクラスセレクタに勝つ（補足サイト）</p>
@@ -785,7 +785,7 @@
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>子孫セレクタで範囲を限ろうとすると、カードの中に置いた別のコンポーネントの <code dir="auto">.title</code> にもスタイルが当たります。詳細度も0.2.0に上がります。BEMのように <code dir="auto">.news-card__title</code> と名前で区別すれば漏れは防げますが、名前が長くなり、すべての子要素に同じ接頭辞を付け続ける必要があります。</p>
 <p><code dir="auto">@scope</code> は、この問題をセレクタが当てはまる範囲そのもので解決します。スコープのルートと下限を指定すれば、その間にある要素にだけスタイルが当たります。ほかのコンポーネントもすべて <code dir="auto">@scope</code> の中に書かれているなら、子要素のクラス名がほかのコンポーネントと同じでも、スタイルはぶつかりません。この条件が成り立たない場合は、「外から入ってくるスタイルは防げない」で説明します。</p>
-<h2 id="cascade_scope--scope-の基本形"><span class="ix" id="cascade_scope--ix-s79"></span><code dir="auto">@scope</code> の基本形</h2>
+<h2 id="cascade_scope--scope-の基本形"><span class="ix" id="cascade_scope--ix-s158"></span><code dir="auto">@scope</code> の基本形</h2>
 <p><code dir="auto">@scope</code> の後ろの括弧に、スコープのルートを書きます。下限は <code dir="auto">to</code> の後ろの括弧に書きますが、次の見出しで説明します。</p>
 <figure class="code"><figcaption>スコープのルートだけを書いた @scope</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.news-card) {</span>
 <span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">:scope</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -903,7 +903,7 @@
 <p>下限を書かなかった場合と比べてみます。次のデモは、外側の <code dir="auto">@scope</code> から <code dir="auto">to (.scoped)</code> を消しただけのものです。入れ子のコンポーネントの段落も、青い文字になります。</p>
 <p class="demo-ref">デモ4-4-2　to (.scoped) がないと、入れ子のコンポーネントの p にも外側のスタイルが届く（補足サイト）</p>
 <p>このデモでは、文字の大きさにだけ入れ子のコンポーネントの指定が使われています。どちらの <code dir="auto">p</code> のルールも詳細度は0.0.1なので、この節の後半で説明するスコープの近接度によって、ルートに近い入れ子のコンポーネントの指定が勝つからです。しかし、入れ子のコンポーネントが指定していない色には、外側のスタイルがそのまま当たります。</p>
-<h2 id="cascade_scope--下限のない-scope-とネストの違い">下限のない <code dir="auto">@scope</code> とネストの違い</h2>
+<h2 id="cascade_scope--下限のない-scope-とネストの違い">下限のない <code dir="auto">@scope</code> と<span class="ix" id="cascade_scope--ix-t82"></span>ネストの違い</h2>
 <p>下限のない <code dir="auto">@scope</code> が当てはまる範囲は、ネストで書いた子孫セレクタと変わりません。次の3つのルールは、どれも <code dir="auto">.section</code> の子孫のすべての <code dir="auto">p</code> に当たり、入れ子になった別のコンポーネントの <code dir="auto">p</code> も除きません。</p>
 <figure class="code"><figcaption>下限のない @scope と、同じ範囲に当たるネストの書き方</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.section) {</span>
 <span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">p</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -924,7 +924,7 @@
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>違いは、まず詳細度です。ネストでは、<code dir="auto">p</code> は <code dir="auto">.section p</code> として扱われ、親のクラスの分だけ詳細度が上がります。<code dir="auto">@scope</code> ではルートのセレクタが詳細度に加わらないので、<code dir="auto">p</code> の0.0.1のままです。この差は、ネストの親を <code dir="auto">:where()</code> で包めば再現できます。反対に、<code dir="auto">.section { :where(p) { … } }</code> と書けば、親のクラスだけが残って0.1.0になります。</p>
 <p>もうひとつの違いは、<code dir="auto">@scope</code> の中のルールにだけ、次に説明するスコープの近接度が働くことです。ただし、近接度が働くのは、同じ要素の同じプロパティに、詳細度の同じ宣言が複数あるときだけです。上のデモで外側の色が入れ子のコンポーネントに届いたように、入れ子のコンポーネントが指定していないプロパティには、外側の指定がそのまま当たります。範囲を閉じ込めるという <code dir="auto">@scope</code> の目的は、下限を書いて初めて果たせます。</p>
-<h2 id="cascade_scope--スコープの近接度"><span class="ix" id="cascade_scope--ix-t10"></span>スコープの近接度</h2>
+<h2 id="cascade_scope--スコープの近接度"><span class="ix" id="cascade_scope--ix-t10"></span>スコープの<span class="ix" id="cascade_scope--ix-t81"></span>近接度</h2>
 <p>スコープの近接度は、CSS Cascading and Inheritance Level 6で、カスケードの比較の段階に加わった基準です。カスケードは、オリジンと重要度、コンテキスト、<code dir="auto">style</code> 属性、レイヤー、詳細度、スコープの近接度、出現順の順に比べ、先の段階で決まらなかったときだけ次の段階に進みます。近接度は、詳細度の後、出現順の前です。</p>
 <p>近接度で比べるのは、スコープのルートから、スタイルが当たる要素までの距離です。仕様は、ルートが違う宣言どうしでは、要素からルートまでの世代や兄弟の数（ホップ数）の少ないほうが勝つと定めています。近接度は詳細度の後に比べるので、詳細度の高いルールは、ルートが遠くても勝ちます。近接度が順位を決めるのは、詳細度が同じときだけです。</p>
 <p>次の例では、ライトとダークの配色を入れ子にしています。どちらのルールも詳細度は0.0.1なので、近接度で比べます。</p>
@@ -970,11 +970,11 @@
 <p>本書では、この書き方を規約として勧めません。コンポーネントのスタイルがテンプレートのHTMLに散らばると、コンポーネントごとのCSSファイルにまとまらず、Stylelintでも検証できなくなります。同じコンポーネントをページに3つ置けば、同じ内容の <code dir="auto">&lt;style&gt;</code> も3つ出力されます。本書は、コンポーネントのCSSをファイルに分け、ルートに付けたクラスでスコープを作ります。</p>
 <h2 id="cascade_scope--外から入ってくるスタイルは防げない">外から入ってくるスタイルは防げない</h2>
 <p><code dir="auto">@scope</code> が制限するのは、<code dir="auto">@scope</code> の中に書いたルールが当たる範囲です。スコープの中のスタイルが外へ漏れることは防げますが、<code dir="auto">@scope</code> の外に書かれたルールがスコープの中の要素に当たることは防げません。</p>
-<p>この違いは、自分で書いていないCSSと共存するときに表れます。CMSが本文エリアに <code dir="auto">.entry-content h2 { border-inline-start: 4px solid; }</code> のようなスタイルを出力していると、本文エリアに置いたコンポーネントの <code dir="auto">h2</code> にも枠線が付きます。ライブラリのCSSが <code dir="auto">.title</code> のような汎用的なクラス名にスタイルを指定していれば、同じ名前の子クラスにも当たります。子要素のクラス名がほかのコンポーネントと同じでもかまわないのは、ページのCSSがすべて <code dir="auto">@scope</code> で範囲を閉じているときに限ります。</p>
+<p>この違いは、自分で書いていないCSSと共存するときに表れます。<span class="ix" id="cascade_scope--ix-t127"></span>CMSが本文エリアに <code dir="auto">.entry-content h2 { border-inline-start: 4px solid; }</code> のようなスタイルを出力していると、本文エリアに置いたコンポーネントの <code dir="auto">h2</code> にも枠線が付きます。ライブラリのCSSが <code dir="auto">.title</code> のような汎用的なクラス名にスタイルを指定していれば、同じ名前の子クラスにも当たります。子要素のクラス名がほかのコンポーネントと同じでもかまわないのは、ページのCSSがすべて <code dir="auto">@scope</code> で範囲を閉じているときに限ります。</p>
 <p>外から入ってくるスタイルへの対処は、レイヤーとCSSの読み込み方の問題です。外部のCSSを自分で読み込めるなら、<code dir="auto">vendors</code> レイヤーに入れ、コンポーネントの指定が勝つようにします<span class="note-ref">※4</span>。ただし、レイヤーで決まるのは同じプロパティを指定したときの優劣なので、コンポーネントが指定していないプロパティには、外部のCSSが当たり続けます。CMSの本文エリアのように読み込み方を変えられないCSSがある環境では、レイヤーを使わず、読み込む順番で優先順位を保ちます。その判断の基準も4-3で説明しています。</p>
 <p>次のデモでは、本文エリアのCSSを <code dir="auto">vendors</code> レイヤーに入れ、<code dir="auto">.entry-content h2</code> に色と線を指定しています。コンポーネントが指定した <code dir="auto">color</code> はレイヤーの順番で勝ちますが、指定していない <code dir="auto">border-inline-start</code> と <code dir="auto">padding-inline-start</code> は、スコープの中の見出しにも当たります。</p>
 <p class="demo-ref">デモ4-4-5　@scope の中の見出しにも、外に書いたルールが当たる（補足サイト）</p>
-<p>値の継承も、スコープの境界を越えます。<code dir="auto">@scope</code> が制限するのはセレクタの適用範囲なので、外側の要素に指定した <code dir="auto">color</code> や <code dir="auto">font-size</code>、カスタムプロパティの値は、下限の内側にも継承されます<span class="note-ref">※5</span>。</p>
+<p>値の<span class="ix" id="cascade_scope--ix-t74"></span>継承も、スコープの境界を越えます。<code dir="auto">@scope</code> が制限するのはセレクタの適用範囲なので、外側の要素に指定した <code dir="auto">color</code> や <code dir="auto">font-size</code>、カスタムプロパティの値は、下限の内側にも継承されます<span class="note-ref">※5</span>。</p>
 <p>外のスタイルを境界で止める仕組みには、Shadow DOMがあります。<code dir="auto">@scope</code> はLight DOM（ページの通常のDOMツリー）の中で自分のルールが当たる範囲を区切るだけなので、外に書いたルールと継承する値の両方が中に届きます。一方、Shadow DOMでは、境界の外に書いた通常のセレクタは内側の要素に当たりません。届くのは、<code dir="auto">color</code> やカスタムプロパティのような継承する値と、部品が <code dir="auto">part</code> 属性で公開した要素に <code dir="auto">::part()</code> で指定するスタイルです。本書では、<code dir="auto">::part()</code> による公開を基本の設計には使いません。その代わり、ページのリセットCSS（kiso.css）やユーティリティクラスも内側には届きません。本書では、カスタム要素で部品を作るときもLight DOMのまま <code dir="auto">@scope</code> で書くのを基本にし、ページから子要素を受け取らず、中身をすべて自分で描く部品に限ってShadow DOMを使います<span class="note-ref">※6</span>。</p>
 <p>このため、<code dir="auto">@scope (.scoped.&lt;名前&gt;) to (.scoped)</code> の形には、本書の中で3つの例外があります。1つ目は、カスタム要素で作る部品です。名前のクラスを付けず、要素名を前置きにして <code dir="auto">@scope (&lt;要素名&gt;.scoped) to (.scoped)</code> と書きます。2つ目は、Shadow DOMの中のCSSで、境界がすでにあるので <code dir="auto">@scope</code> を使いません<span class="note-ref">※7</span>。3つ目は、CMSのWYSIWYGが出力する本文エリアです。編集者は <code dir="auto">scoped</code> のクラスを付けられないので、<code dir="auto">@scope (.wysiwyg)</code> をルートにし、独自のブロックの手前を下限にします<span class="note-ref">※8</span>。どの例外も、下のガイドラインのルールの補足から、該当するルールをたどれます。</p>
 <h2 id="cascade_scope--対応状況と注意点">対応状況と注意点</h2>
@@ -1008,8 +1008,8 @@
 <h1>4-5 CSSネストの基礎</h1>
 
 <p>CSSのネストは、スタイルのルールの中に別のルールを書き、親のセレクタを <code dir="auto">&amp;</code> で参照する仕組みです。見た目はSassのネストと似ていますが、セレクタを文字列としてつなげる機能ではありません。<code dir="auto">&amp;</code> は、親のセレクタを <code dir="auto">:is()</code> で包んだものとして要素に一致し、<span class="ix" id="cascade_nesting--ix-t8"></span>詳細度もそれに従って決まります。</p>
-<p><code dir="auto">@scope</code> とネストは、どちらもコンポーネントのスタイルをまとめる道具ですが、得意なことが違います。<code dir="auto">@scope</code> はBEMにおけるblockとelementの関係を、ネストはelementとmodifierの関係を表すのに向いています<span class="note-ref">※1</span>。</p>
-<h2 id="cascade_nesting--sassのネストと同じだと考えて書く問題">Sassのネストと同じだと考えて書く問題</h2>
+<p><code dir="auto">@scope</code> とネストは、どちらもコンポーネントのスタイルをまとめる道具ですが、得意なことが違います。<code dir="auto">@scope</code> は<span class="ix" id="cascade_nesting--ix-t128"></span>BEMにおけるblockとelementの関係を、ネストはelementとmodifierの関係を表すのに向いています<span class="note-ref">※1</span>。</p>
+<h2 id="cascade_nesting--sassのネストと同じだと考えて書く問題"><span class="ix" id="cascade_nesting--ix-t129"></span>Sassの<span class="ix" id="cascade_nesting--ix-t82"></span>ネストと同じだと考えて書く問題</h2>
 <p>ネストは、長くSassやLessのようなプリプロセッサーの機能でした。プリプロセッサーは、ネストしたセレクタを親のセレクタと文字列としてつなげ、普通のCSSに展開します。<code dir="auto">.card { &amp;__title { … } }</code> から <code dir="auto">.card__title</code> を作れるのも、文字列の展開だからです。</p>
 <p>素のCSSのネストは、この展開をしません。ブラウザは、ネストしたルールを親のルールとの関係として解釈し、<code dir="auto">&amp;</code> を「親のセレクタに一致する要素」として扱います。そのため、Sassと同じ形で書いても、無効になるものや、当たる要素と詳細度の変わるものがあります。</p>
 <p>次のデモでは、1つ目の見出しをSassと同じ <code dir="auto">&amp;__title</code> で、2つ目の見出しを <code dir="auto">&amp; ._title</code> で指定しています。<code dir="auto">&amp;__title</code> のルールは無効なので捨てられ、1つ目の見出しには、色と大きさのどちらの指定も当たりません。</p>
@@ -1039,7 +1039,7 @@
 <p><code dir="auto">&amp;</code> を省いた書き方は、2023年12月より前の実装では使えませんでした。Chrome 112〜119とSafari 16.5〜17.1では、ネストしたセレクタを <code dir="auto">&amp;</code> や <code dir="auto">.</code>、<code dir="auto">&gt;</code> のような記号で始める必要があり、<code dir="auto">h2</code> のようにタイプセレクタで始めると無効になりました。</p>
 <p>本書では、どのセレクタも <code dir="auto">&amp;</code> で始めます。現在の仕様では、<code dir="auto">&amp;</code> を省いた <code dir="auto">.card { ._title { … } }</code> は、先頭に <code dir="auto">&amp;</code> と子孫結合子を補った <code dir="auto">.card ._title</code> として扱われます。省いても動きますが、先頭に <code dir="auto">&amp;</code> があれば、ネストしたセレクタが親とどういう関係にあるのか（<code dir="auto">&amp;:hover</code> なら自身の状態、<code dir="auto">&amp; &gt; img</code> なら直下の子、<code dir="auto">&amp; ._title</code> なら子孫）を、セレクタの先頭を見ただけで読み取れます。ネストが長くなって親のルールの先頭が画面から外れても、<code dir="auto">&amp;</code> が親を指していることは変わらないので、どのセレクタが親との関係を表しているのかを読み違えにくくなります<span class="note-ref">※2</span>。</p>
 <div class="scoped baseline | not-content" data-baseline="high"><p class="_summary"><span class="_label">Baseline</span><strong>広く利用可能</strong><span class="_since">2026年6月から（新しく利用可能になったのは2023年12月）</span></p><p class="_feature"><code>Nesting</code></p><ul class="_browsers"><li>Chrome 120</li><li>Edge 120</li><li>Firefox 117</li><li>Safari 17.2</li><li>iOS Safari 17.2</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
-<h2 id="cascade_nesting---は-is-と同じように働く"><code dir="auto">&amp;</code> は <span class="ix" id="cascade_nesting--ix-s77"></span><code dir="auto">:is()</code> と同じように働く</h2>
+<h2 id="cascade_nesting---は-is-と同じように働く"><code dir="auto">&amp;</code> は <span class="ix" id="cascade_nesting--ix-s156"></span><code dir="auto">:is()</code> と同じように働く</h2>
 <p>仕様は、<code dir="auto">&amp;</code> の詳細度を、親のセレクタリストの中でいちばん高い詳細度と定めています。これは、親のセレクタリストを <code dir="auto">:is()</code> で包んだときと同じ決まり方です。親が1つのセレクタなら、展開した結果と詳細度は変わりません。違いが出るのは、親がセレクタリストのときです。</p>
 <figure class="code"><figcaption>親のセレクタリストは :is() で包まれる</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">.news</span><span style="--0:#C792EA;--1:#8844AE">, </span><span style="--0:#FAD430;--1:#AA0982">#pickup</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">&amp; ._</span><span style="--0:#80CBC4;--1:#096E72">title</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -1073,7 +1073,7 @@
 <p class="demo-ref">デモ4-5-4　ネストしたルールの後ろに書いた宣言が、書いた位置の順番で勝つ（補足サイト）</p>
 <div class="scoped baseline | not-content" data-baseline="low"><p class="_summary"><span class="_label">Baseline</span><strong>新しく利用可能</strong><span class="_since">2024年12月から</span></p><p class="_feature"><code>ネストした宣言のルール（CSSNestedDeclarations）</code></p><ul class="_browsers"><li>Chrome 130</li><li>Edge 130</li><li>Firefox 132</li><li>Safari 18.2</li><li>iOS Safari 18.2</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <p>本書の対象のブラウザ（Safari 18系の最終版以降と、ほかのブラウザの最新版）は、どれも新しい動作に対応しています。ただし、本書ではルールの中を宣言、条件付きのアットルール、ネストしたルールの順に書くので、どちらの動作でも結果は変わりません。並び順の規約は、第9章のルール <code dir="auto">block-content-order</code> です。</p>
-<h2 id="cascade_nesting--scope-とネストの役割の違い"><span class="ix" id="cascade_nesting--ix-s79"></span><code dir="auto">@scope</code> とネストの役割の違い</h2>
+<h2 id="cascade_nesting--scope-とネストの役割の違い"><span class="ix" id="cascade_nesting--ix-s158"></span><code dir="auto">@scope</code> とネストの役割の違い</h2>
 <p><code dir="auto">@scope</code> とネストは、BEMの3つの単位のうち、違う関係を表します。BEMのblockは独立したコンポーネント、elementはその部品、modifierはblockやelementの状態や種類です。<code dir="auto">@scope</code> は、ルートと下限でblockの範囲を区切り、その中の部品（element）を短いセレクタで選ぶ仕組みです。ネストは、ひとつの要素のルールの中に、その要素自身の状態や種類（modifier）を <code dir="auto">&amp;</code> でまとめる仕組みです。次のデモでは、2枚のカードのうち <code dir="auto">data-variant="featured"</code> を付けた2枚目だけが、ネストした指定によって青い2pxの枠線と24pxの見出しになります。</p>
 <p class="demo-ref">デモ4-5-5　@scope で部品を、ネストで状態や種類を表す（補足サイト）</p>
 <p>BEMで書けば、<code dir="auto">.news-card</code>、<code dir="auto">.news-card__title</code>、<code dir="auto">.news-card--featured</code> に当たる3つの関係が、それぞれ <code dir="auto">@scope</code> のルート、スコープの中の <code dir="auto">h2</code>、<code dir="auto">&amp;</code> を使ったネストで表されます。ネストで部品の階層をたどる書き方（<code dir="auto">:scope { h2 { … } }</code>）もできますが、<code dir="auto">@scope</code> があれば、部品はスコープの直下に並べられます<span class="note-ref">※3</span>。<code dir="auto">@scope</code> の仕様は「<a href="#page-cascade_scope" class="xref">4-4 @scopeでスタイルを閉じ込める</a>」で説明しています。</p>

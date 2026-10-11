@@ -13,8 +13,8 @@ const HERE = new URL('../', import.meta.url).pathname;
 /** 索引の語を探す場所と、探さない場所 */
 const SEARCH = 'p, li, td, th, h2, h3, dd, summary';
 const SKIP = 'pre, figure.code, .notes, .guideline, .baseline, .demo-ref, figcaption, .toc';
-/** 見出しの中で、索引に載せる CSS の構文 */
-const SYNTAX = /^(@[a-z-]+|::?[a-z-]+(\(\))?|[a-z-]+\(\))$/;
+/** 見出しの中で、索引に載せる CSS の構文（アットルール、擬似クラス、関数、プロパティ、「プロパティ: 値」） */
+const SYNTAX = /^(@[a-z-]+|::?[a-z-]+(\(\))?|[a-z-]+\(\)|[a-z][a-z-]*(: [a-z][a-z -]*)?)$/;
 /** 節ごとに索引に載せる、本文での出現回数の下限 */
 const MIN_COUNT = 3;
 
@@ -22,7 +22,8 @@ const toHiragana = (text) => text.replace(/[ァ-ヶ]/g, (char) => String.fromCha
 
 /** 用語集の表から、語、読み、本文で探す表記、詳しい説明の節を読む */
 export const loadTerms = async () => {
-  const extra = JSON.parse(await readFile(join(HERE, 'config/index-terms.json'), 'utf8')).terms;
+  const extraConfig = JSON.parse(await readFile(join(HERE, 'config/index-terms.json'), 'utf8'));
+  const extra = extraConfig.terms;
   const source = await readFile(join(DOCS, 'appendix/glossary.mdx'), 'utf8');
   const terms = [];
   for (const line of source.split('\n')) {
@@ -45,6 +46,10 @@ export const loadTerms = async () => {
         defines,
       });
     }
+  }
+  // 用語集にない、索引にだけ載せる語
+  for (const item of extraConfig.add ?? []) {
+    terms.push({ label: item.label, code: Boolean(item.code), yomi: item.yomi ?? item.label, match: item.match ?? [item.label], defines: null });
   }
   return terms;
 };
@@ -100,7 +105,7 @@ export const createIndexer = (terms) => {
       for (const code of container.querySelectorAll('code')) {
         if (code.closest(SEARCH) !== container || code.closest(SKIP)) continue;
         const term = entries.get(code.textContent.trim());
-        if (term?.code && term.defines !== null) note(term, code, 0, inHeading);
+        if (term?.code) note(term, code, 0, inHeading);
       }
     }
 

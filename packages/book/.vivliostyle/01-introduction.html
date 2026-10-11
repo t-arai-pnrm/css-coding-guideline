@@ -32,7 +32,7 @@
 <p>題材は、コーポレートサイトやランディングページ、メディアサイトのようなWebサイト制作です。静的なサイトとCMSの両方を扱います。特定のフレームワークに依存しない書き方を基本にしているので、AstroやVue、Reactの<span class="ix" id="introduction_about--ix-t29"></span>コンポーネントにもそのまま当てはめられます。</p>
 <h2 id="introduction_about--読み終えて判断できるようになること">読み終えて判断できるようになること</h2>
 <p>本書を読み終えて判断できるようになる3つのこと（崩れの原因の説明、部品の境界と公開する値、チームの規約の導入）は、「<a href="#introduction_preface--読み終えたときにできること" class="xref">はじめに</a>」で説明しています。ここでは、それぞれをどの部で身につけるかを示します。</p>
-<p>1つ目の判断の土台は、第II部の基礎編で扱うカスケードとレイアウトの仕組みです。2つ目は、第III部の設計編で、部品の範囲を <code dir="auto">@scope</code> で区切り、値を公開プロパティで受け渡す方法として身につけます。第IV部の実装編では、その部品を長い見出し、画像の欠け、件数や置き場所の幅の変化に耐えるように組み立てます。3つ目は、第V部の運用編で、Stylelintとレビューを使ってチームの規約として定着させる方法を扱います。</p>
+<p>1つ目の判断の土台は、第II部の基礎編で扱うカスケードとレイアウトの仕組みです。2つ目は、第III部の設計編で、部品の範囲を <code dir="auto">@scope</code> で区切り、値を公開プロパティで受け渡す方法として身につけます。第IV部の実装編では、その部品を長い見出し、画像の欠け、件数や置き場所の幅の変化に耐えるように組み立てます。3つ目は、第V部の運用編で、<span class="ix" id="introduction_about--ix-t132"></span>Stylelintとレビューを使ってチームの規約として定着させる方法を扱います。</p>
 <h2 id="introduction_about--本書の構成">本書の構成</h2>
 <p>本書は6つの部と21の章で構成しています。前から順に読めるように並べていますが、必要な章だけを拾い読みしてもかまいません<span class="note-ref">※2</span>。</p>
 <ul>
@@ -183,7 +183,7 @@
 <p>本文のコード例は、説明に必要な部分だけを抜き出したものです。「<a href="#page-introduction_how-to-read" class="xref">本書の読み方</a>」で説明しているとおり、ほとんどのコード例ではカスケードレイヤー（<code dir="auto">@layer</code>）の記述を省略しています。<code dir="auto">._main-link</code> のように <code dir="auto">_</code> で始まるクラスのルールは、<code dir="auto">@scope</code> の中に書く前提で、<code dir="auto">@scope</code> の記述も省略していることがあります。</p>
 <p>コード例が参照しているトークンも、別のファイルで定義されている前提です。たとえば <code dir="auto">color: var(--foreground--muted);</code> だけを貼り付けると、<code dir="auto">--foreground--muted</code> がどこにも定義されていないので、<code dir="auto">var()</code> の参照が無効になります。このとき <code dir="auto">color</code> はエラーにならず、親から継承した色のまま表示されます。説明している機能が動かないように見えても、原因はトークンがないことかもしれません。</p>
 <p>本文のコード例を試すときは、この構成のコンポーネントのファイルへ貼り付け、コード例が参照するトークンを「<a class="xref-out">10-4 デザイントークン</a>（巻2）」の定義から足してください。この構成のトークンは、カードに必要なものだけを定義しています。<code dir="auto">--foreground--base</code> のような色のトークンや、<code dir="auto">--ease--out-quint</code> のようなイージングのトークンも、そのページで定義しています。</p>
-<h2 id="introduction_quick-start--kisocssを読み込むほかの方法">kiso.cssを読み込むほかの方法</h2>
+<h2 id="introduction_quick-start--kisocssを読み込むほかの方法"><span class="ix" id="introduction_quick-start--ix-t131"></span>kiso.cssを読み込むほかの方法</h2>
 <p>本文では <code dir="auto">@import url("kiso.css") layer(reset);</code> と書いていますが、ブラウザはこの <code dir="auto">kiso.css</code> を、書いたCSSファイルと同じ場所にあるファイルのURLとして読みます。課題1でファイルを <code dir="auto">style.css</code> の隣に置いたのは、そのためです。npmでパッケージをインストールしただけでは、<code dir="auto">node_modules</code> の中のファイルは読まれません。</p>
 <p>ファイルを置かずに、CDNのURLを直接書く方法もあります。kiso.cssのREADMEは、jsDelivrで配信しているファイルのURLを案内しています。URLにバージョンを書いておけば、kiso.cssが更新されても、知らないうちに見た目が変わることはありません。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: CDNのURLから reset レイヤーに読み込む</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@layer</span><span style="--0:#D6DEEB;--1:#403F53"> tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;</span>
@@ -445,7 +445,7 @@
 <p>ルールには、「必須」「推奨」「非推奨」「禁止」の4段階の強度を付けています。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除き、必ず守るルールです。補足の例外に当たるコードは違反ではないので、レビューやAIのチェックで指摘しません。「推奨」と「非推奨」は、基本的には従いますが、理由があれば外れてかまいません。外れるときは、その理由をコメントに残します。</p>
 <p>強度とは別に、ルールの根拠がどこにあるかを「性質」として示しています。「仕様上の制約」は、CSS・HTML・ブラウザの振る舞いやWCAGから導かれるルールで、守らないと表示や操作が崩れます。「実装上の判断」は、状況とトレードオフで決まるルールです。適用する条件は、補足や本文に書いています。「本書の規約」は、命名やレイヤーの順番のように、一貫性のために本書が選んだ約束です。自分の案件に持ち帰るときは、仕様上の制約はそのまま使い、実装上の判断は条件が合うかを確かめ、本書の規約はチームの規約と見比べて選んでください。</p>
 <p>各ルールには、<code dir="auto">no-vw-vh</code> のような英語のIDを付けています。IDは章の構成が変わっても変えないので、レビューのコメントやAIへの指示で「<code dir="auto">no-vw-vh</code> に違反しています」のように引用できます<span class="note-ref">※1</span>。</p>
-<p>ルールによっては、「自動チェック」の欄にStylelintのルール名を書いています。本書のStylelintの設定を使えば、そのルールへの違反は機械的に見つけられます<span class="note-ref">※2</span>。</p>
+<p>ルールによっては、「自動チェック」の欄に<span class="ix" id="introduction_how-to-read--ix-t132"></span>Stylelintのルール名を書いています。本書のStylelintの設定を使えば、そのルールへの違反は機械的に見つけられます<span class="note-ref">※2</span>。</p>
 <h2 id="introduction_how-to-read--コード例のラベル">コード例のラベル</h2>
 <p>コード例のタイトルには、2種類のラベルを付けています。<code dir="auto">🙆‍♂ Recommended</code> は本書が勧める書き方で、<code dir="auto">🙅‍♂ Not Recommended</code> は避けるべき書き方です。避けるべき書き方には、コードの先頭行にも同じラベルをコメントで入れています。コードだけを切り出して読んだときにも、避けるべき例だと分かるようにするためです。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: 物理プロパティで書く</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
@@ -471,8 +471,8 @@
 </section>
 <section class="page" id="page-introduction_why-plain-css" data-title="素のCSSで書く理由">
 <h1>素のCSSで書く理由</h1>
-<p>本書のコード例は、すべて素のCSSで書いています。ここでいう素のCSSは、CSSファイルにWeb標準の構文だけで書いたスタイルのことです。JavaScriptのオブジェクトで書くCSS-in-JSも、HTMLのクラス属性にユーティリティを並べるTailwind CSSも、Sassの独自の構文も使いません。ビルドの段階で <code dir="auto">@import</code> を展開することはありますが、書く内容はブラウザが解釈するCSSそのものです。</p>
-<h2 id="introduction_why-plain-css--静的なサイトとcmsで同じ書き方を使うため">静的なサイトとCMSで同じ書き方を使うため</h2>
+<p>本書のコード例は、すべて素のCSSで書いています。ここでいう素のCSSは、CSSファイルにWeb標準の構文だけで書いたスタイルのことです。JavaScriptのオブジェクトで書くCSS-in-JSも、HTMLのクラス属性にユーティリティを並べる<span class="ix" id="introduction_why-plain-css--ix-t130"></span>Tailwind CSSも、Sassの独自の構文も使いません。ビルドの段階で <code dir="auto">@import</code> を展開することはありますが、書く内容はブラウザが解釈するCSSそのものです。</p>
+<h2 id="introduction_why-plain-css--静的なサイトとcmsで同じ書き方を使うため">静的なサイトと<span class="ix" id="introduction_why-plain-css--ix-t127"></span>CMSで同じ書き方を使うため</h2>
 <p>本書が扱うのは、コーポレートサイト、ランディングページ、メディアサイトのようなWebサイト制作で、静的なサイトとCMSの両方を含みます。CMSのテンプレートが出力するHTMLや、編集者が書く本文には、JavaScriptでクラス名を生成する仕組みを持ち込めないことがあります。素のCSSなら、部品のルートにクラスを1つ付けるだけで、どちらの環境でも同じ書き方で部品の範囲を区切れます。</p>
 <p>部品の範囲、スタイルどうしの優先順位、外から変えてよい値は、どの道具を選んでも決めなければならない設計の判断です。本書は、これらをブラウザの仕組みである <code dir="auto">@scope</code>、カスケードレイヤー、カスタムプロパティで表します。特定のフレームワークやビルドの道具に依存しないので、案件ごとに道具が変わっても書き方を変えずに済みます。</p>
 <h2 id="introduction_why-plain-css--どの道具を使う現場でも役に立つ知識">どの道具を使う現場でも役に立つ知識</h2>

@@ -9,7 +9,7 @@
 <p>この章では、本書のすべてのルールの土台になる、CSSの捉え方を扱います。CSSは、プロパティと値を書けば思いどおりに動く言語ではありません。最終的な表示を決めるのはユーザーの環境とブラウザで、同じプロパティも<span class="ix" id="principles--ix-t41"></span>レイアウトの方式によって働き方が変わります。JavaScriptと同じ感覚で表示をすべて制御しようとするほど、CSSは思いどおりにならない言語だと感じられます。</p>
 <p>そこで本書では、2つの考え方を前提にしています。1つ目は、CSSをブラウザへの命令ではなく「提案」として書くことです。2つ目は、対象のブラウザをはっきり決め、そのブラウザが未対応の新しい機能は、<span class="ix" id="principles--ix-t5"></span>プログレッシブ・エンハンスメントとして使うことです。</p>
 <p>以降の章に出てくるルールの多くは、この2つのどちらかと、第2章で扱う保守しやすさから導かれています。たとえば「幅を固定しない」はブラウザに計算を任せるためで、「未対応の機能をレイアウトの要にしない」はどの環境でも内容を読めるようにするためです。個々のルールの扱いに迷ったときは、この章の考え方に戻って判断します。</p>
-<p>私自身、以前は「デザインカンプを忠実に再現するのは実装者として当たり前」と考えていました。しかし、ユーザーの画面の幅や文字サイズの設定は無数にあり、カンプと同じ見た目を、すべての環境で保証するのは不可能です。今は、限られた環境で見た目を一致させるよりも、どの環境でも破綻しない状態を用意するほうが大切だと考えています。</p>
+<p>私自身、以前は「<span class="ix" id="principles--ix-t122"></span>デザインカンプを忠実に再現するのは実装者として当たり前」と考えていました。しかし、ユーザーの画面の幅や文字サイズの設定は無数にあり、カンプと同じ見た目を、すべての環境で保証するのは不可能です。今は、限られた環境で見た目を一致させるよりも、どの環境でも破綻しない状態を用意するほうが大切だと考えています。</p>
 <h2 id="principles--この章で判断できるようになること">この章で判断できるようになること</h2>
 <p>この章を読むと、固定値で見た目を合わせるか、制約を書いて計算をブラウザに任せるかを、どの環境でも破綻しないかという基準で選べるようになります。新しい機能を使いたいときは、対象のブラウザの対応状況から、プログレッシブ・エンハンスメントとして使えるか、レイアウトの要にしてはいけないかを判断できます。指定が思いどおりに働かないときは、値を足す前に、要素がどのレイアウトの方式の中にあるかから原因を確かめられます。SNSで見かけたTipsや覚えた解決策も、仕様と問題の原因に照らして、いまの文脈で使ってよいかを判断できます。</p>
 <h2 id="principles--この章の節">この章の節</h2>
@@ -43,7 +43,7 @@
 <h1>1-1 CSSはブラウザへの「提案」である</h1>
 
 <p>CSSは、ブラウザへの命令書ではなく「提案書」です。実装者が決めるのは「この範囲の中で、うまく表示してほしい」という条件までで、最終的な表示は、ユーザーの環境に合わせてブラウザが決めます。本書のルールは、すべてこの前提にもとづいています。</p>
-<p>そのため、幅や高さを固定値で決めつけず、上限・下限・比率といった制約を示して、具体的な値の計算はブラウザに任せます。目指すのは、限られた環境でデザインカンプと寸分違わず一致させること（<span class="ix" id="principles_browser-suggestion--ix-t1"></span>ピクセルパーフェクト）ではありません。どの環境で見てもデザインの意図が損なわれない「合格点」を取ることです。</p>
+<p>そのため、幅や高さを固定値で決めつけず、上限・下限・比率といった制約を示して、具体的な値の計算はブラウザに任せます。目指すのは、限られた環境で<span class="ix" id="principles_browser-suggestion--ix-t122"></span>デザインカンプと寸分違わず一致させること（<span class="ix" id="principles_browser-suggestion--ix-t1"></span>ピクセルパーフェクト）ではありません。どの環境で見てもデザインの意図が損なわれない「合格点」を取ることです。</p>
 <h2 id="principles_browser-suggestion--表示を左右する変数">表示を左右する変数</h2>
 <p>Webページの表示は、実装者には決められない多くの変数に左右されます。ビューポートの幅と高さ、画面の解像度、ブラウザのズーム、ユーザーが設定した文字サイズ、OSに入っているフォントなどです。キーボードやスクリーンリーダーで操作する人もいれば、機械翻訳で読む人もいます。翻訳されれば、見出しの文字数は大きく変わります。</p>
 <p>デザインカンプは、こうした変数の組み合わせの1つを切り取った静止画です。カンプの幅で、カンプの文字量で、デフォルトの文字サイズで見たときの一例にすぎません。その一例に合わせて値を決め打ちすると、ほかの組み合わせでは崩れます。</p>
@@ -278,7 +278,7 @@
 <p>開発中はChromeを使っていてもかまいません。ただし、作業を終える前に、Safari（iOSを含む）とFirefoxでも表示を確かめます。対象の下限にあたる古いSafariは手元で用意しにくいので、対応状況のデータでの確認と組み合わせます。</p>
 <h2 id="principles_browser-support--未対応の環境に備える書き方の詳細">未対応の環境に備える書き方の詳細</h2>
 <p>ここまでで、対象のブラウザと、未対応の環境で守ることは決まります。以降は、その判断をコードにするときの詳細です。<code dir="auto">@supports</code> の使いどころ、フォールバックを書く位置の選び方、JavaScriptがない環境への備えを順に説明します。前から通して読むときは、案件の基準を決めたあと、必要になった節から読めば足ります。</p>
-<h3 id="principles_browser-support--supports-で対応した環境だけを変える"><span class="ix" id="principles_browser-support--ix-s74"></span><code dir="auto">@supports</code> で対応した環境だけを変える</h3>
+<h3 id="principles_browser-support--supports-で対応した環境だけを変える"><span class="ix" id="principles_browser-support--ix-s147"></span><code dir="auto">@supports</code> で対応した環境だけを変える</h3>
 <p><code dir="auto">@supports</code> は、ブラウザが宣言を理解できるかどうかで分岐します。未対応の宣言はもともと無視されるので、新しいプロパティそのものを <code dir="auto">@supports</code> で囲む必要はありません。<code dir="auto">@supports</code> が必要になるのは、新しい機能に合わせて、既存の宣言も一緒に変えるときです。</p>
 <p><code dir="auto">&lt;textarea&gt;</code> に <code dir="auto">field-sizing: content</code> を指定すると、入力した量に合わせて入力欄が伸び縮みします。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（<code dir="auto">resize</code>）は不要です。ただし、<code dir="auto">resize</code> を無条件に止めると、未対応の環境では入力欄の高さが固定され、手で広げることもできなくなります。最大の高さも同じです。無条件に付けると、未対応の環境では、ユーザーの広げられる範囲が狭まります。そこで、手動のリサイズを止める指定と最大の高さを、<code dir="auto">field-sizing: content</code> と一緒に <code dir="auto">@supports</code> の中に書きます。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 自動で伸び縮みする環境でだけ、手動のリサイズを止め、最大の高さを付ける</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.inquiry-form) to (.scoped) {</span>
@@ -314,13 +314,13 @@
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>使われないフォールバックは、読む人に「まだ対応していないブラウザがある」と思わせ、消してよいかの判断を迷わせます。対象の下限を上げたときは、こうした分岐も見直します。なお、<code dir="auto">@supports selector(::-webkit-scrollbar)</code> のように、<code dir="auto">selector()</code> を使えばセレクタの対応状況でも分岐できます。</p>
-<h3 id="principles_browser-support--フォールバックの書き方を選ぶ">フォールバックの書き方を選ぶ</h3>
+<h3 id="principles_browser-support--フォールバックの書き方を選ぶ"><span class="ix" id="principles_browser-support--ix-t125"></span>フォールバックの書き方を選ぶ</h3>
 <p>未対応の環境のための書き方には、新しい宣言をそのまま書く、従来の宣言を前に書く、<code dir="auto">@supports</code> の中に書く、の3つがあります。どれを選ぶかは、未対応の環境で新しい宣言がいつ無効になるかと、一緒に変える宣言があるかで決まります。判断を誤ると、未対応の環境で従来の値まで失われます。</p>
 <p>新しいプロパティそのものは、そのまま書きます。未対応のブラウザは、知らないプロパティの宣言を構文の段階で捨てるだけで、ほかの宣言には影響しません。<code dir="auto">text-wrap: pretty</code> がこれに当たります。前の節の例で <code dir="auto">field-sizing</code> を <code dir="auto">@supports</code> の中に書いているのは、一緒に変える宣言とまとめて読めるようにするためです。外に書いても、未対応の環境では同じように捨てられるので、結果は変わりません。</p>
 <p>既存のプロパティに新しい値や関数を使い、宣言に <code dir="auto">var()</code> を含まない場合は、従来の宣言を前に書くか、新しい宣言を <code dir="auto">@supports</code> の中に書きます。未対応のブラウザは、新しい値を含む宣言を構文の段階で無効とみなして捨て、前の宣言を使うので、どちらでも結果は同じです。「<a href="07-values.html#page-values_if-and-attr" class="xref">6-5 if()とattr()で条件と属性を値にする</a>」の <code dir="auto">if()</code> の例は前者、「<a class="xref-out">12-2 cluster</a>（巻2）」の <code dir="auto">flex-wrap: balance</code> は後者で書いています。前者で書くなら、同じプロパティが2回並ぶと誤記に見えるので、前の宣言には「未対応の環境で使う値」であることをコメントで書きます。</p>
 <p>宣言に <code dir="auto">var()</code> を含む場合は、<code dir="auto">@supports</code> の中に書きます。<code dir="auto">var()</code> を含む宣言は、構文の検査が値の計算まで先送りされます。未対応の関数があると分かった時点では、前の宣言はもう使えないので、宣言は「計算値の時点で無効」になり、プロパティの初期値か継承した値が使われます。型付きの <code dir="auto">attr()</code> は <code dir="auto">var()</code> と組み合わせることが多いので、6-5では <code dir="auto">@supports</code> の中に書いています。</p>
 <p>新しい機能に合わせて、ほかの宣言もまとめて切り替える場合も、<code dir="auto">@supports</code> の中に書きます。<code dir="auto">display</code> でレイアウトの方式を切り替えると、<code dir="auto">grid-template-columns</code> や子の <code dir="auto">aspect-ratio</code> のように、ほかの宣言の意味も変わるからです。「<a class="xref-out">11-11 grid-lanesで石積みのレイアウトを組む</a>（巻2）」で <code dir="auto">display</code> を2つ並べずに <code dir="auto">@supports</code> を使うのは、このためです。<code dir="auto">@supports</code> の条件は検索できるので、対象のすべてが対応した時点で、分岐をまとめて消せます。</p>
-<h3 id="principles_browser-support--scripting-メディア特性でjavascriptのない環境に備える"><code dir="auto">scripting</code> メディア特性でJavaScriptのない環境に備える</h3>
+<h3 id="principles_browser-support--scripting-メディア特性でjavascriptのない環境に備える"><span class="ix" id="principles_browser-support--ix-s148"></span><code dir="auto">scripting</code> メディア特性でJavaScriptのない環境に備える</h3>
 <p>JavaScriptで表示を切り替える前提のスタイルは、<code dir="auto">@media (scripting: enabled)</code> の中に書きます。典型的なのが、画面に入ったらふわっと表示するアニメーションです。表示する前の状態で要素を待たせておき、画面に入ったらJavaScriptが再生を始めます。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: JavaScriptが使える環境でだけ、表示する前の状態で待たせる</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.feature-list) to (.scoped) {</span>
 <span class="indent">  </span><span style="--0:#FF6D6D;--1:#984E4D">li</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -360,9 +360,9 @@
 </section>
 <section class="page" id="page-principles_layout-algorithms" data-title="1-3 CSSはレイアウトのアルゴリズムの集まりである">
 <h1>1-3 CSSはレイアウトのアルゴリズムの集まりである</h1>
-<p>CSSは、プロパティと値の組を並べたものではなく、ブラウザが要素の大きさと位置を計算するためのアルゴリズムの集まりです。<span class="ix" id="principles_layout-algorithms--ix-t42"></span>通常フロー、Flexbox、Grid、位置指定といった<span class="ix" id="principles_layout-algorithms--ix-t41"></span>レイアウトの方式は、それぞれが別のアルゴリズムで、プロパティはそのアルゴリズムへの入力として読まれます。同じ <code dir="auto">width: 1000px</code> が、要素の置かれた方式によって、守られる値にも、縮む出発点にも、無視される値にもなるのはこのためです。</p>
+<p>CSSは、プロパティと値の組を並べたものではなく、ブラウザが要素の大きさと位置を計算するためのアルゴリズムの集まりです。<span class="ix" id="principles_layout-algorithms--ix-t42"></span>通常フロー、<span class="ix" id="principles_layout-algorithms--ix-t119"></span>Flexbox、Grid、位置指定といった<span class="ix" id="principles_layout-algorithms--ix-t41"></span>レイアウトの方式は、それぞれが別のアルゴリズムで、プロパティはそのアルゴリズムへの入力として読まれます。同じ <code dir="auto">width: 1000px</code> が、要素の置かれた方式によって、守られる値にも、縮む出発点にも、無視される値にもなるのはこのためです。</p>
 <p>この節では、<code dir="auto">width</code> が効かないという1つの現象から、CSSを見る見方を変えるところまでを説明します<span class="note-ref">※1</span>。</p>
-<h2 id="principles_layout-algorithms--width-が効かないと感じる理由"><code dir="auto">width</code> が効かないと感じる理由</h2>
+<h2 id="principles_layout-algorithms--width-が効かないと感じる理由"><span class="ix" id="principles_layout-algorithms--ix-s149"></span><code dir="auto">width</code> が効かないと感じる理由</h2>
 <p>CSSを書き始めて最初に覚える宣言は、たいてい <code dir="auto">color: blue</code> のようなものです。書いた値がそのまま文字の色になるので、CSSを「プロパティに値を書けば、そのとおりに表示される言語」と捉えたくなります。プロパティごとに「この値ならこう表示される」という対応を覚えていけば、CSSを書けるようになると考えるわけです。</p>
 <p>ところが、大きさと位置に関わるプロパティでは、この捉え方が通用しません。リンクに <code dir="auto">width: 1000px</code> を書いても、幅は変わりません。横並びのカードで同じ指定をすると、カードは画面の幅に収まるまで縮みます。</p>
 <p>プロパティと値の対応表しか持っていないと、こうした振る舞いは「CSSは予測できない」という印象になります。印象のまま値を足し引きすると、見た目は合っても原因は残ります。効かない <code dir="auto">width</code> に <code dir="auto">display: block</code> を足し、それでも合わなければ <code dir="auto">position: absolute</code> や <code dir="auto">!important</code> を重ねるような修正は、どの宣言がなぜ効いているのかを誰も説明できないコードを残します。</p>
@@ -390,9 +390,9 @@
 <h1>1-4 基礎を固める</h1>
 <p>CSSを学ぶうえで最初に大切なのは、基礎を固めることです。ここでいう基礎とは、ボックスモデル、プロパティとその値、セレクタと擬似クラス、カスケードと継承といった、CSSのどの書き方にも共通する仕組みの知識です。新しい機能も、フレームワークも、AIが出力するコードも、この基礎の上で動いています。</p>
 <p>基礎を学ぶ順番は、決まったロードマップに合わせる必要はありません。作りたいものに必要な知識から学び、一次情報を読み、自分で手を動かして確かめます。このページでは、基礎が要る理由と、私が勧める学び方を説明します。</p>
-<h2 id="principles_fundamentals--tailwind-cssやaiを使っても基礎は要る">Tailwind CSSやAIを使っても基礎は要る</h2>
+<h2 id="principles_fundamentals--tailwind-cssやaiを使っても基礎は要る"><span class="ix" id="principles_fundamentals--ix-t130"></span>Tailwind CSSやAIを使っても基礎は要る</h2>
 <p>基礎の知識がないと、CSSを思いどおりに扱えません。要素がなぜその幅になるのか、余白がなぜ重なるのかを説明できなければ、デザインを再現するたびに、値を少しずつ変えて試すことになります。値を変えて見た目が合ったとしても、なぜ合ったのかが分からないので、次の場面で同じ判断を再現できません。</p>
-<p>Tailwind CSSのようなユーティリティファーストのフレームワークを使っても、これは変わりません。Tailwind CSSを使えばCSSを書かなくて済む、と言われることがありますが、Tailwind CSSはクラスを通してCSSの宣言を書く道具です。<code dir="auto">items-center</code> で要素が交差軸の中央にそろうのは、このクラスが <code dir="auto">align-items: center</code> を指定しているからです。<code dir="auto">align-items</code> がFlexboxとGridでどう働くかを知らなければ、期待どおりにそろわない場面で原因を探せません。</p>
+<p>Tailwind CSSのようなユーティリティファーストのフレームワークを使っても、これは変わりません。Tailwind CSSを使えばCSSを書かなくて済む、と言われることがありますが、Tailwind CSSはクラスを通してCSSの宣言を書く道具です。<code dir="auto">items-center</code> で要素が交差軸の中央にそろうのは、このクラスが <code dir="auto">align-items: center</code> を指定しているからです。<code dir="auto">align-items</code> がFlexboxと<span class="ix" id="principles_fundamentals--ix-t120"></span>Gridでどう働くかを知らなければ、期待どおりにそろわない場面で原因を探せません。</p>
 <p>BootstrapやBulmaのようなUIフレームワークは、用意された部品の範囲であれば、フレームワーク独自の知識だけで使えます。しかし、用意された部品から外れる表現が必要になると、結局はCSSを書くことになります。そこで必要になるのが、フレームワークの外にある基礎の知識です。</p>
 <p>AIにCSSを書かせる場合も同じです。AIはそれらしいCSSをすぐ出力しますが、そのコードは、デザインカンプの寸法を写しただけで、内容や画面の幅が変わると崩れがちです。どのプロパティを使い、どういう考え方で書くかをプロンプトで指示すれば出力は改善しますが、その指示を書くときも、出力の良し悪しを判断するときも、基礎の知識が要ります<span class="note-ref">※1</span>。</p>
 <h2 id="principles_fundamentals--学ぶ順番はロードマップどおりでなくてよい">学ぶ順番はロードマップどおりでなくてよい</h2>
@@ -402,7 +402,7 @@
 <h2 id="principles_fundamentals--能動的に学ぶ">能動的に学ぶ</h2>
 <p>チュートリアルのコードをそのまま書き写すだけでは、知識はなかなか身につきません。書き写したコードは動きますが、なぜその書き方を選んだのかを自分で考えていないので、少し違う場面になると応用できないからです。チュートリアルの動画を見ているなら、途中で止めて、自分ならどう書くかを考えてから続きを見ます。自分の書き方とチュートリアルの書き方が違えば、その違いが学ぶきっかけになります。</p>
 <p>誰かに教わっているなら、なぜそのプロパティを使うのか、別の書き方ではいけないのかを質問するのも効果的です。教える側も、理由を説明しようとすることで、自分の知識があいまいな箇所に気づけます。</p>
-<h2 id="principles_fundamentals--一次情報をaiと一緒に読む">一次情報をAIと一緒に読む</h2>
+<h2 id="principles_fundamentals--一次情報をaiと一緒に読む"><span class="ix" id="principles_fundamentals--ix-t126"></span>一次情報をAIと一緒に読む</h2>
 <p>CSSの一次情報は、W3Cが公開している仕様書です。MDN Web Docsは、仕様書の内容を例とともに解説した、一次情報に近い資料です。解説記事は便利ですが、書き手の理解を通した二次情報なので、誤りや古い情報が含まれていることがあります。</p>
 <p>とはいえ、仕様書は英語で書かれていて、用語の定義も厳密なので、慣れないうちは読み進めるのが大変です。そこで、AIと一緒に読むことを勧めます。知りたい仕様書のURLをAIへ渡して、「この分野の知識が少ないので、この仕様書の内容を初心者向けに説明してください」と頼みます。分からない箇所は、続けて何度でも質問できます。</p>
 <p>ただし、AIの説明が誤っていることもあります。AIの説明で全体をつかんだら、重要な箇所は仕様書やMDNの原文で確かめます。AIを仕様書の代わりにするのではなく、仕様書を読むための補助として使うのがよいと考えています。</p>
@@ -442,16 +442,16 @@
 <p class="demo-ref">デモ1-5-1　画像の下にできる隙間と、それを消す3つの書き方（補足サイト）</p>
 <h2 id="principles_no-memorizing--なぜ画像の下に隙間ができるのか">なぜ画像の下に隙間ができるのか</h2>
 <p>隙間の原因は、<code dir="auto">&lt;img&gt;</code> 要素の <code dir="auto">display</code> の初期値が <code dir="auto">inline</code> であることです。外側の表示種別がインラインの要素は、文中の文字と同じように、行の中に並べられます。画像は、行の中に置かれた大きな1文字のように扱われます。</p>
-<p>行の中の文字は、ベースラインという線にそろえて並べられます。ベースラインは、アルファベットの「x」の下端がそろう線です。<code dir="auto">vertical-align</code> の初期値は <code dir="auto">baseline</code> なので、画像も、その下端をベースラインにそろえて置かれます。</p>
+<p>行の中の文字は、<span class="ix" id="principles_no-memorizing--ix-t100"></span>ベースラインという線にそろえて並べられます。ベースラインは、アルファベットの「x」の下端がそろう線です。<code dir="auto">vertical-align</code> の初期値は <code dir="auto">baseline</code> なので、画像も、その下端をベースラインにそろえて置かれます。</p>
 <p>ベースラインの下には、「g」や「p」「y」のように下に伸びる文字の部分（ディセンダー）のための空間があります。行の高さは、この空間を含めて計算されます。画像にはディセンダーがありませんが、行の中に置かれている以上、行の下端までの空間は残ります。これが、画像の下にできる隙間の正体です。</p>
-<h2 id="principles_no-memorizing--なぜ-vertical-align-bottom-で隙間が消えるのか">なぜ <code dir="auto">vertical-align: bottom</code> で隙間が消えるのか</h2>
+<h2 id="principles_no-memorizing--なぜ-vertical-align-bottom-で隙間が消えるのか">なぜ <span class="ix" id="principles_no-memorizing--ix-s150"></span><code dir="auto">vertical-align: bottom</code> で隙間が消えるのか</h2>
 <p><code dir="auto">vertical-align</code> は、インライン要素を、行の中で縦方向のどこにそろえるかを決めるプロパティです。初期値の <code dir="auto">baseline</code> では、画像の下端はベースラインにそろいます。</p>
 <p>値を <code dir="auto">bottom</code> にすると、画像の下端は、ベースラインではなく行の下端にそろいます。行の下端は、ディセンダーのための空間を含めたいちばん下なので、画像の下に空間が残りません。画像はインライン要素のまま、置く位置だけが変わります。</p>
 <p>本書が勧めるリセットCSSのkiso.cssも、画像や動画などの要素にこの指定をしています。画像をインライン要素のまま扱えるので、文中にアイコンの画像を置くような使い方も妨げません<span class="note-ref">※1</span>。</p>
-<h2 id="principles_no-memorizing--なぜ-display-block-flow-で隙間が消えるのか">なぜ <code dir="auto">display: block flow</code> で隙間が消えるのか</h2>
+<h2 id="principles_no-memorizing--なぜ-display-block-flow-で隙間が消えるのか">なぜ <span class="ix" id="principles_no-memorizing--ix-s151"></span><code dir="auto">display: block flow</code> で隙間が消えるのか</h2>
 <p><code dir="auto">display: block flow</code> を指定すると、<code dir="auto">&lt;img&gt;</code> 要素の外側の表示種別がブロックに変わります。ブロックの要素は、行の中には並ばず、前後の要素とは別の段として置かれます。</p>
 <p>行の中に置かれていないので、ベースラインにそろえる処理も、ディセンダーのための空間もありません。そのため、隙間がなくなります。ただし、画像は文中の文字とは並ばなくなり、<code dir="auto">text-align</code> による左右の配置も効かなくなります。隙間を消すために、隙間とは関係のない振る舞いまで変えていることになります。</p>
-<h2 id="principles_no-memorizing--なぜ親をgridにすると隙間が消えるのか">なぜ親をGridにすると隙間が消えるのか</h2>
+<h2 id="principles_no-memorizing--なぜ親をgridにすると隙間が消えるのか">なぜ親を<span class="ix" id="principles_no-memorizing--ix-t120"></span>Gridにすると隙間が消えるのか</h2>
 <p>画像の親に <code dir="auto">display: block grid</code> や <code dir="auto">display: block flex</code> を指定しても、隙間はなくなります。GridやFlexboxの直接の子要素は、グリッドアイテムやフレックスアイテムになり、外側の表示種別がブロックとして扱われます。仕様では、この変換をブロック化（blockification）と呼びます。</p>
 <p>ブロック化された画像は、<code dir="auto">display: block flow</code> を指定した場合と同じく、行の中には置かれません。そのため、ベースラインの下の空間もなくなります。画像に何も指定していないのに隙間が消えるのは、親の <code dir="auto">display</code> が子の扱いを変えているからです。</p>
 <h2 id="principles_no-memorizing--原因を知ると応用できる">原因を知ると応用できる</h2>
@@ -470,7 +470,7 @@
 
 <p>SNSや技術ブログで流れてくるCSSのTipsは、新しい書き方を知るきっかけになります。私自身もTipsを参考にし、発信もしています。ただし、Tipsはそのまま使わず、仕様とブラウザの対応状況を確かめ、自分で試してから使うことを勧めます。</p>
 <p>便利に見えるTipsにも、特定の条件でしか成り立たない前提や、一部のブラウザでしか動かない機能が含まれていることがあります。Tipsそのものに誤りが含まれていることもあります。このページでは、3つの例を使って、Tipsのどこを確かめるとよいかを説明します。</p>
-<h2 id="principles_tips--例1first-line-で見出しの1行目を装飾する">例1：<span class="ix" id="principles_tips--ix-s75"></span><code dir="auto">::first-line</code> で見出しの1行目を装飾する</h2>
+<h2 id="principles_tips--例1first-line-で見出しの1行目を装飾する">例1：<span class="ix" id="principles_tips--ix-s152"></span><code dir="auto">::first-line</code> で見出しの1行目を装飾する</h2>
 <p>次のコードは、見出しの日本語と英語を <code dir="auto">&lt;br&gt;</code> で改行し、1行目と2行目で文字の大きさと色を変えるTipsです。<code dir="auto">::first-line</code> は1行目だけを選ぶ擬似要素で、古くからすべての主要なブラウザが対応しています。</p>
 <figure class="code"><pre><code><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">h2</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">私たちについて</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">br</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">About</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">h2</span><span style="--0:#7FDBCA">&gt;</span></span></code></pre></figure>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: ::first-line で見出しの1行目と2行目を描き分ける</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
@@ -515,7 +515,7 @@
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p><code dir="auto">&lt;hgroup&gt;</code> は、W3C版のHTMLの仕様から削除された時期があったので、使えない要素だと思われていることがあります。現在のHTMLの仕様（HTML Living Standard）では、2022年に、見出しと、その前後の段落（<code dir="auto">&lt;p&gt;</code>）をまとめる要素として定義し直されています。CSSのTipsを確かめるときには、HTMLの仕様の変化も一緒に確かめる必要があります。</p>
 <h2 id="principles_tips--例2ルートの文字サイズを10pxにする">例2：ルートの文字サイズを10pxにする</h2>
-<p>文字サイズには <code dir="auto">rem</code> を使う、というのはよく知られた助言です。ブラウザの設定で文字サイズを大きくしているユーザーがいて、ChromeやFirefoxでは、<code dir="auto">px</code> で指定した文字はこの設定に追従しないからです（2026年10月確認）。<code dir="auto">rem</code> はルート要素の文字サイズを基準にする単位なので、ルート要素の文字サイズがユーザーの設定に従っていれば、<code dir="auto">rem</code> で指定した文字も設定に追従します。</p>
+<p>文字サイズには <span class="ix" id="principles_tips--ix-t135"></span><code dir="auto">rem</code> を使う、というのはよく知られた助言です。ブラウザの設定で文字サイズを大きくしているユーザーがいて、ChromeやFirefoxでは、<span class="ix" id="principles_tips--ix-t134"></span><code dir="auto">px</code> で指定した文字はこの設定に追従しないからです（2026年10月確認）。<code dir="auto">rem</code> はルート要素の文字サイズを基準にする単位なので、ルート要素の文字サイズがユーザーの設定に従っていれば、<code dir="auto">rem</code> で指定した文字も設定に追従します。</p>
 <p>この助言の理由を確かめずに使うと、次のようなコードになることがあります。ルート要素の文字サイズを10pxにして、<code dir="auto">1rem</code> を10pxにそろえ、デザインカンプの値を <code dir="auto">rem</code> に換算しやすくするTipsです。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: ルートの文字サイズを10pxに固定して、remの計算を簡単にする</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
 <span style="--0:#C5E478;--1:#3B61B0">:root</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -528,8 +528,8 @@
 <p>このコードでは、ルート要素の文字サイズを <code dir="auto">px</code> で固定しているので、<code dir="auto">rem</code> の基準も固定されます。ユーザーが設定で文字サイズを大きくしても、ルート要素は10pxのままで、<code dir="auto">rem</code> で指定した文字も大きくなりません。<code dir="auto">rem</code> を使っていても、<code dir="auto">px</code> で書いた場合と同じく、文字は設定に追従しません。</p>
 <p>ルート要素の文字サイズを変えると、外部のCSSを読み込んだときにも問題が起きます。多くのCSSは、<code dir="auto">1rem</code> がブラウザのデフォルトの16pxであることを前提に書かれているので、その部分の文字や余白が小さくなります。本書では、この書き方をルール「<a href="07-values.html#values_px-and-rem--rule-no-root-font-size-change" class="xref-rule" data-label="6-1">ルートの文字サイズを変えない</a>」で禁止しています。</p>
 <p>「<code dir="auto">rem</code> を使う」という結論だけを覚えて、<code dir="auto">rem</code> が何を基準にしているのかを確かめなかったことが、この問題の原因です。ブラウザの文字サイズの設定を変えて表示を確かめれば、文字が大きくならないことにすぐ気づけます<span class="note-ref">※1</span>。</p>
-<h2 id="principles_tips--例3ブロックレイアウトの-justify-self">例3：ブロックレイアウトの <code dir="auto">justify-self</code></h2>
-<p>次のような2つのTipsがあったとします。1つは、要素の中身を上下左右の中央に置くのに、GridやFlexboxを使わず、ブロックレイアウトのまま <code dir="auto">align-content</code> と <code dir="auto">justify-items</code> を指定すればよいというものです。もう1つは、要素を中身の幅にして左右の中央に置くのは、<code dir="auto">justify-self: center</code> の1行で済むというものです。</p>
+<h2 id="principles_tips--例3ブロックレイアウトの-justify-self">例3：ブロックレイアウトの <span class="ix" id="principles_tips--ix-s153"></span><code dir="auto">justify-self</code></h2>
+<p>次のような2つのTipsがあったとします。1つは、要素の中身を上下左右の中央に置くのに、<span class="ix" id="principles_tips--ix-t120"></span>GridやFlexboxを使わず、ブロックレイアウトのまま <code dir="auto">align-content</code> と <code dir="auto">justify-items</code> を指定すればよいというものです。もう1つは、要素を中身の幅にして左右の中央に置くのは、<code dir="auto">justify-self: center</code> の1行で済むというものです。</p>
 <figure class="code"><pre><code><span style="--0:#C5E478;--1:#3B61B0">._hero</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">min-block-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">100</span><span style="--0:#FFEB95">svb</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">align-content</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">center</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
@@ -584,7 +584,7 @@
 <p>経験を積むと、「中央寄せならこの方法」「横に並べるならこの方法」のように、作業ごとに決まった書き方ができてきます。一度うまくいった方法や、慣れている方法を使えば、迷わずに速く書けます。私にも、特定の書き方にこだわっていた時期がありました。</p>
 <p>しかし、決まった書き方が、どの場面でも最適とは限りません。ソフトウェア開発には「銀の弾丸はない」という言葉があり、どんな問題も解決する万能の方法はないという意味で使われます。CSSでも、同じ見た目を作る方法ごとに、そのスタイルが当たる要素だけでなく、親や兄弟、子要素への影響が違います。ある場面ではうまくいった方法が、別の場面では思わぬ副作用を生むことがあります。</p>
 <p>方法を選ぶときは、見た目を再現できるかに加えて、その宣言がほかの要素に与える影響、中身の量が変わるかどうか、後から変更しやすいかを考えます。選択肢を多く知っているほど、こうした条件に合う方法を見つけやすくなります。</p>
-<h2 id="principles_options--中央寄せの方法を文脈で選ぶ">中央寄せの方法を文脈で選ぶ</h2>
+<h2 id="principles_options--中央寄せの方法を文脈で選ぶ"><span class="ix" id="principles_options--ix-t115"></span>中央寄せの方法を文脈で選ぶ</h2>
 <p>「中央に寄せる」という作業1つをとっても、文脈によって適切な方法が変わります。中央に寄せたいのは、テキストのようなインラインの内容なのか、ブロックの要素そのものなのか。その要素は通常の流れの中に置くのか、モーダルのように流れから切り離して置くのか。寄せたいのは1つの要素だけなのか、続く要素もまとめてなのか。これらの答えによって、使うプロパティが決まります。</p>
 <p>見出しのテキストを中央に寄せるなら、多くの人は <code dir="auto">text-align: center</code> を指定すると思います。テキストを中央に寄せるという目的なら、これで正解です。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: テキストを中央に寄せる</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">._section-title</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -596,7 +596,7 @@
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">inline-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">fit-content</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">margin-inline</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">auto</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<p><code dir="auto">inline-size: fit-content</code> を指定すると、見出しの幅は中身の幅になり、<code dir="auto">margin-inline: auto</code> で左右の中央に置かれます。テキストが1行に収まる間は、見出しが中央に寄ります。テキストが長くなると、見出しの幅は親の幅まで広がり、テキストは左揃えのまま折り返されます。見出しがGridの子要素なら、<code dir="auto">margin-inline: auto</code> ではなく <code dir="auto">justify-self: center</code> でも同じように配置できます。同じ「中央寄せ」でも、1行のときだけ寄せるのか、何行でも寄せるのか、親のレイアウトが何かによって、選ぶ方法が変わります。</p>
+<p><code dir="auto">inline-size: fit-content</code> を指定すると、見出しの幅は中身の幅になり、<code dir="auto">margin-inline: auto</code> で左右の中央に置かれます。テキストが1行に収まる間は、見出しが中央に寄ります。テキストが長くなると、見出しの幅は親の幅まで広がり、テキストは左揃えのまま折り返されます。見出しが<span class="ix" id="principles_options--ix-t120"></span>Gridの子要素なら、<code dir="auto">margin-inline: auto</code> ではなく <code dir="auto">justify-self: center</code> でも同じように配置できます。同じ「中央寄せ」でも、1行のときだけ寄せるのか、何行でも寄せるのか、親のレイアウトが何かによって、選ぶ方法が変わります。</p>
 <h2 id="principles_options--カードの並べ方を文脈で選ぶ">カードの並べ方を文脈で選ぶ</h2>
 <p>カードを横に並べる場合も、「今はGridの時代だからGridで書く」と決めてしまうのではなく、並べ方の条件から選びます。最後の行に入るカードの数が列の数に満たないとき、そのカードを列の幅のまま並べるか、残りの幅いっぱいに広げるかで、適した方法が変わります。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 最後の行のカードも、列の幅をそろえて並べる</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">._card-grid</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -614,13 +614,13 @@
 <span class="indent">    </span><span style="--0:#80CBC4;--1:#096E72">flex-basis</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">360</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<p>Gridは、親が列の数と幅を決めるので、最後の行のカードもほかの行と同じ幅で並びます。Flexboxは、子要素が自分の幅を決めるので、最後の行に残ったカードが、余った幅を分け合って広がります。次のデモで幅を変えると、最後の行の振る舞いの違いを確かめられます。たとえば幅のボタンで768pxを選ぶと、Gridでは2行目に2枚が並んで右端の列が空き、Flexboxでは2行目の2枚が行の幅を半分ずつ使います。320pxではどちらも1列に、1280pxではどちらも5枚が1行に並ぶので、違いは出ません。</p>
+<p>Gridは、親が列の数と幅を決めるので、最後の行のカードもほかの行と同じ幅で並びます。<span class="ix" id="principles_options--ix-t119"></span>Flexboxは、子要素が自分の幅を決めるので、最後の行に残ったカードが、余った幅を分け合って広がります。次のデモで幅を変えると、最後の行の振る舞いの違いを確かめられます。たとえば幅のボタンで768pxを選ぶと、Gridでは2行目に2枚が並んで右端の列が空き、Flexboxでは2行目の2枚が行の幅を半分ずつ使います。320pxではどちらも1列に、1280pxではどちらも5枚が1行に並ぶので、違いは出ません。</p>
 <figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 41.67%"><img src="img/demo-8f427c394138-320.png" alt=""><p class="shot-label">幅 320px</p></div><div class="shot" style="inline-size: 100.00%"><img src="img/demo-ea46d0b3fd0c-768.png" alt=""><p class="shot-label">幅 768px</p></div></div><figcaption>図1-4　同じ5枚のカードを、GridとFlexboxで並べる</figcaption></figure>
 <p>列の幅をそろえたいならGridが、最後の行を広げたいならFlexboxが、短いコードで書けます<span class="note-ref">※1</span>。</p>
 <h2 id="principles_options--道具を文脈で選ぶ">道具を文脈で選ぶ</h2>
 <p>同じ考え方は、CSSの書き方を支える道具を選ぶときにも当てはまります。SNSでは、特定の道具を使うべきだ、あるいは使うべきではないという強い主張をよく見かけます。しかし、どの道具にも利点と欠点があり、プロジェクトの文脈によって適否が変わります。</p>
 <p>Tailwind CSSにも、デザイントークンにない値が紛れ込みにくいという利点と、Gridのレイアウトを扱いにくいという欠点があります<span class="note-ref">※2</span>。どの道具を選んでも、UIをどの単位で部品にし、どう名付けるかという判断は残ります<span class="note-ref">※3</span>。</p>
-<p>Sassも、CSSに変数やネストが加わったことで、不要になったと言われることがあります。小規模や中規模のサイトであれば、Sassを使わなくても困らない場面が多く、私も最近はSassを使う機会が減りました。ただし、<code dir="auto">@function</code>、<code dir="auto">@mixin</code>、<code dir="auto">@each</code> のようなSassの機能で、トークンやユーティリティを生成すると効率よく書けるプロジェクトもあります<span class="note-ref">※4</span>。</p>
+<p><span class="ix" id="principles_options--ix-t129"></span>Sassも、CSSに変数やネストが加わったことで、不要になったと言われることがあります。小規模や中規模のサイトであれば、Sassを使わなくても困らない場面が多く、私も最近はSassを使う機会が減りました。ただし、<code dir="auto">@function</code>、<code dir="auto">@mixin</code>、<code dir="auto">@each</code> のようなSassの機能で、トークンやユーティリティを生成すると効率よく書けるプロジェクトもあります<span class="note-ref">※4</span>。</p>
 <h2 id="principles_options--選択肢を増やす方法">選択肢を増やす方法</h2>
 <p>選択肢を増やすには、慣れていない方法にも手を伸ばす必要があります。たとえば、Gridに苦手意識があると、慣れているFlexboxで何でも組んでしまいがちです。Flexboxで書くこと自体は問題ではありませんが、Gridで書けば短く済むレイアウトまでFlexboxで組むと、子要素の幅の計算や入れ子が増えて、コードが複雑になります。</p>
 <p>よく使うコードをスニペットとして保存しておくのは、作業を速くするよい方法です。ただし、スニペットが最適なのは、それを作ったときと同じ文脈の場合に限られます。中央寄せのスニペットを2つか3つ用意しても、中央寄せの方法はそれよりずっと多く、それぞれに向く場面と副作用があります。スニペットを使うときも、今の文脈に合っているかを確かめます。</p>
