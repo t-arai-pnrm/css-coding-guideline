@@ -1,5 +1,5 @@
 {
-  "$comment": "索引の語の補い。terms は、用語集（付録E）の語のうち、漢字を含む語の読み（yomi）と、本文で探す表記（match）。カタカナと英字だけの語は書かなくてよい。skip は索引に載せない語。add は、用語集にない、索引にだけ載せる語（code: true はコードで書く語）。",
+  "$comment": "索引の語の補い。terms は、用語集（付録E）の語のうち、漢字を含む語の読み（yomi）と、本文で探す表記（match）。カタカナと英字だけの語は書かなくてよい。skip は索引に載せない語（見出しから拾う CSS の構文にも効く）。add は、用語集にない、索引にだけ載せる語（code: true はコードで書く語、defines は主な説明の節で、そのページ番号を太字にする）。",
   "terms": {
     "提案書としてのCSS": {
       "yomi": "ていあんしょとしてのCSS",
@@ -139,20 +139,29 @@
     },
     "Q": {
       "skip": true
+    },
+    "auto": {
+      "skip": true
+    },
+    "stretch": {
+      "skip": true
     }
   },
   "add": [
     {
       "label": "継承",
-      "yomi": "けいしょう"
+      "yomi": "けいしょう",
+      "defines": "cascade/cascade-basics"
     },
     {
       "label": "オリジン",
-      "yomi": "おりじん"
+      "yomi": "おりじん",
+      "defines": "cascade/cascade-basics"
     },
     {
       "label": "重要度",
-      "yomi": "じゅうようど"
+      "yomi": "じゅうようど",
+      "defines": "cascade/cascade-basics"
     },
     {
       "label": "タイプセレクタ",
@@ -172,11 +181,13 @@
     },
     {
       "label": "近接度",
-      "yomi": "きんせつど"
+      "yomi": "きんせつど",
+      "defines": "cascade/scope"
     },
     {
       "label": "ネスト",
-      "yomi": "ねすと"
+      "yomi": "ねすと",
+      "defines": "cascade/nesting"
     },
     {
       "label": "ショートハンド",
@@ -200,27 +211,33 @@
     },
     {
       "label": "ビューポート単位",
-      "yomi": "びゅーぽーとたんい"
+      "yomi": "びゅーぽーとたんい",
+      "defines": "values/viewport-and-container-units"
     },
     {
       "label": "マジックナンバー",
-      "yomi": "まじっくなんばー"
+      "yomi": "まじっくなんばー",
+      "defines": "values/math-functions"
     },
     {
       "label": "ズーム",
-      "yomi": "ずーむ"
+      "yomi": "ずーむ",
+      "defines": "values/px-and-rem"
     },
     {
       "label": "文字サイズの設定",
-      "yomi": "もじさいずのせってい"
+      "yomi": "もじさいずのせってい",
+      "defines": "values/px-and-rem"
     },
     {
       "label": "計算関数",
-      "yomi": "けいさんかんすう"
+      "yomi": "けいさんかんすう",
+      "defines": "values/math-functions"
     },
     {
       "label": "ボックスモデル",
-      "yomi": "ぼっくすもでる"
+      "yomi": "ぼっくすもでる",
+      "defines": "layout/box-model"
     },
     {
       "label": "マージンの相殺",
@@ -228,87 +245,108 @@
       "match": [
         "マージンの相殺",
         "相殺"
-      ]
+      ],
+      "defines": "layout/margin-collapse"
     },
     {
       "label": "ブロック方向",
-      "yomi": "ぶろっくほうこう"
+      "yomi": "ぶろっくほうこう",
+      "defines": "layout/normal-flow"
     },
     {
       "label": "インライン方向",
-      "yomi": "いんらいんほうこう"
+      "yomi": "いんらいんほうこう",
+      "defines": "layout/normal-flow"
     },
     {
       "label": "ブロックレベル",
-      "yomi": "ぶろっくれべる"
+      "yomi": "ぶろっくれべる",
+      "defines": "layout/normal-flow"
     },
     {
       "label": "インラインレベル",
-      "yomi": "いんらいんれべる"
+      "yomi": "いんらいんれべる",
+      "defines": "layout/normal-flow"
     },
     {
       "label": "行ボックス",
-      "yomi": "ぎょうぼっくす"
+      "yomi": "ぎょうぼっくす",
+      "defines": "layout/normal-flow"
     },
     {
       "label": "ベースライン",
-      "yomi": "べーすらいん"
+      "yomi": "べーすらいん",
+      "defines": "layout/normal-flow"
     },
     {
       "label": "匿名ボックス",
-      "yomi": "とくめいぼっくす"
+      "yomi": "とくめいぼっくす",
+      "defines": "layout/normal-flow"
     },
     {
       "label": "主軸",
-      "yomi": "しゅじく"
+      "yomi": "しゅじく",
+      "defines": "layout/flexbox-basics"
     },
     {
       "label": "交差軸",
-      "yomi": "こうさじく"
+      "yomi": "こうさじく",
+      "defines": "layout/flexbox-basics"
     },
     {
       "label": "フレックスアイテム",
-      "yomi": "ふれっくすあいてむ"
+      "yomi": "ふれっくすあいてむ",
+      "defines": "layout/flexbox-basics"
     },
     {
       "label": "フレックスコンテナ",
-      "yomi": "ふれっくすこんてな"
+      "yomi": "ふれっくすこんてな",
+      "defines": "layout/flexbox-basics"
     },
     {
       "label": "グリッドアイテム",
-      "yomi": "ぐりっどあいてむ"
+      "yomi": "ぐりっどあいてむ",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "グリッドコンテナ",
-      "yomi": "ぐりっどこんてな"
+      "yomi": "ぐりっどこんてな",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "グリッド線",
-      "yomi": "ぐりっどせん"
+      "yomi": "ぐりっどせん",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "トラック",
-      "yomi": "とらっく"
+      "yomi": "とらっく",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "グリッドエリア",
-      "yomi": "ぐりっどえりあ"
+      "yomi": "ぐりっどえりあ",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "明示的なグリッド",
-      "yomi": "めいじてきなぐりっど"
+      "yomi": "めいじてきなぐりっど",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "暗黙のグリッド",
-      "yomi": "あんもくのぐりっど"
+      "yomi": "あんもくのぐりっど",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "自動の最小幅",
-      "yomi": "じどうのさいしょうはば"
+      "yomi": "じどうのさいしょうはば",
+      "defines": "layout/flexbox-basics"
     },
     {
       "label": "絶対配置",
-      "yomi": "ぜったいはいち"
+      "yomi": "ぜったいはいち",
+      "defines": "layout/positioning"
     },
     {
       "label": "中央寄せ",
@@ -320,7 +358,8 @@
     },
     {
       "label": "アンカー",
-      "yomi": "あんかー"
+      "yomi": "あんかー",
+      "defines": "layout/anchor-basics"
     },
     {
       "label": "書字方向",
@@ -328,15 +367,18 @@
     },
     {
       "label": "Flexbox",
-      "yomi": "Flexbox"
+      "yomi": "Flexbox",
+      "defines": "layout/flexbox-basics"
     },
     {
       "label": "Grid",
-      "yomi": "Grid"
+      "yomi": "Grid",
+      "defines": "layout/grid-basics"
     },
     {
       "label": "余った空間",
-      "yomi": "あまったくうかん"
+      "yomi": "あまったくうかん",
+      "defines": "layout/flexbox-basics"
     },
     {
       "label": "デザインカンプ",
@@ -392,11 +434,13 @@
     },
     {
       "label": "px",
-      "code": true
+      "code": true,
+      "defines": "values/px-and-rem"
     },
     {
       "label": "rem",
-      "code": true
+      "code": true,
+      "defines": "values/px-and-rem"
     },
     {
       "label": "em",
@@ -404,39 +448,48 @@
     },
     {
       "label": "lh",
-      "code": true
+      "code": true,
+      "defines": "values/px-and-rem"
     },
     {
       "label": "rlh",
-      "code": true
+      "code": true,
+      "defines": "values/px-and-rem"
     },
     {
       "label": "vw",
-      "code": true
+      "code": true,
+      "defines": "values/viewport-and-container-units"
     },
     {
       "label": "vh",
-      "code": true
+      "code": true,
+      "defines": "values/viewport-and-container-units"
     },
     {
       "label": "svh",
-      "code": true
+      "code": true,
+      "defines": "values/viewport-and-container-units"
     },
     {
       "label": "dvh",
-      "code": true
+      "code": true,
+      "defines": "values/viewport-and-container-units"
     },
     {
       "label": "svi",
-      "code": true
+      "code": true,
+      "defines": "values/viewport-and-container-units"
     },
     {
       "label": "cqi",
-      "code": true
+      "code": true,
+      "defines": "values/viewport-and-container-units"
     },
     {
       "label": "fr",
-      "code": true
+      "code": true,
+      "defines": "layout/grid-basics"
     },
     {
       "label": "%",

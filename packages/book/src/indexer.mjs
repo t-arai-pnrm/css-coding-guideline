@@ -49,8 +49,10 @@ export const loadTerms = async () => {
   }
   // 用語集にない、索引にだけ載せる語
   for (const item of extraConfig.add ?? []) {
-    terms.push({ label: item.label, code: Boolean(item.code), yomi: item.yomi ?? item.label, match: item.match ?? [item.label], defines: null });
+    terms.push({ label: item.label, code: Boolean(item.code), yomi: item.yomi ?? item.label, match: item.match ?? [item.label], defines: item.defines ?? null });
   }
+  // 見出しから拾う CSS の構文でも、skip の語は載せない
+  terms.skip = new Set(Object.entries(extra).filter(([, setting]) => setting.skip).map(([label]) => label));
   return terms;
 };
 
@@ -80,7 +82,7 @@ export const createIndexer = (terms) => {
         for (const code of container.querySelectorAll('code')) {
           if (code.closest(SEARCH) !== container) continue;
           const text = code.textContent.trim();
-          if (!SYNTAX.test(text)) continue;
+          if (!SYNTAX.test(text) || terms.skip?.has(text)) continue;
           if (!entries.has(text)) entries.set(text, { label: text, code: true, yomi: text, match: [text], defines: null, id: `s${entries.size}`, locators: [] });
           note(entries.get(text), code, 0, true);
         }
