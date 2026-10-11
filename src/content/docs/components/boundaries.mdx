@@ -6,6 +6,7 @@ sidebar:
 ---
 
 import Demo from '../../../components/Demo.astro';
+import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import zIndexHtml from '../../../demos/components/z-index-isolation/index.html?raw';
 import zIndexCss from '../../../demos/components/z-index-isolation/style.css?raw';
@@ -38,6 +39,10 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 - `position: absolute` と `inset`：基準になる祖先の要素があって、初めて位置が決まる
 - `flex`、`grid-area`、`justify-self`、`align-self`：親のFlexboxやGridの指定とセットで成り立つ
 - `inline-size` と `block-size`（`width` と `height`）：多くの場合、親に決めさせたほうが使い回しやすい
+
+カードのルートに書くものと、置く側が書くものの分担を、図にまとめます。
+
+<Figure src="components/layout-inner-outer" alt="カードのルートと、置く側のコンポーネントの分担を示した図。破線で囲んだ置く側のコンポーネントの中に、2つの枠が並んでいる。左の枠はカードのルートで、内部関連型として、自分のスタイルだけで完結するdisplay、gap、padding、borderとborder-radius、grid-templateを挙げ、ルートに書くと示している。右の枠は外部関連型で、周りとの関係で成り立つmargin、inline-sizeとblock-size、position: absoluteとinset、flexとgrid-area、justify-selfとalign-selfを挙げ、置く側が書くと示している。右の枠から左の枠へ、矢印が向いている。" />
 
 `min-inline-size` や `max-inline-size` は、文脈によって扱いが変わります。「このコンポーネントには最低でもこの幅が必要」のようにコンポーネント自身の決まりなら内部関連型、「親に対して最大50%」のように親との関係で決まるなら外部関連型です。`subgrid` は親がグリッドであることを前提にするので、両方の性質を持ちます。サブグリッドを使うカードは、並べる側のグリッドまで含めて1つのコンポーネントとして扱います。
 

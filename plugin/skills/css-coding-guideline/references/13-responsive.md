@@ -1,8 +1,8 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.50.4（2026-10-10 生成）
+- ガイドラインのバージョン: 0.50.6（2026-10-11 生成）
 - ルールの数: 39
-- 本文: 約11.2万字
+- 本文: 約10.9万字
 - 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,10 +12,10 @@
 
 ## この章の節
 
-- `responsive` 第13章 レスポンシブデザイン（約5,700字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/
+- `responsive` 第13章 レスポンシブデザイン（約5,800字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/
 - `responsive/escalation` 13-1 検討する順番（約8,500字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/escalation/
 - `responsive/breakpoints` 13-2 ブレイクポイントの決め方（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/breakpoints/
-- `responsive/container-size-queries` 13-3 コンテナサイズクエリ（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/container-size-queries/
+- `responsive/container-size-queries` 13-3 コンテナサイズクエリ（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/container-size-queries/
 - `responsive/container-units-and-side-effects` 13-4 コンテナの副作用とコンテナ単位（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/container-units-and-side-effects/
 - `responsive/media-queries` 13-5 メディアクエリ（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/media-queries/
 - `responsive/min-viewport-width` 13-6 375px未満の画面の扱い（約7,200字）https://t-arai-pnrm.github.io/css-coding-guideline/responsive/min-viewport-width/

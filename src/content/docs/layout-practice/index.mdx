@@ -12,6 +12,12 @@ sidebar:
 
 もうひとつは、内容が変わっても崩れないことです。内容が変わることを前提にする理由は「[2-2 CSSで考えるための6つの視点](/design-mindset/css-mindset/#内容が変わる前提で書く)」で説明しました。この章では、その変化を種類ごとに受け止めます。文章の長さや要素の高さの変化は「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で、それでも起きたはみ出しは「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」で扱います。件数や区画の有無の変化は「[11-5 件数で配置を組み替える](/layout-practice/quantity-layouts/)」で、入りきらない文字の切り詰めは「[11-16 文字の切り詰めと読み込み中の表示](/layout-practice/truncation-and-skeletons/)」で扱います。
 
+## この章で判断できるようになること
+
+この章を読むと、作るものを見て、通常フロー、Grid、Flexbox、`float` のどれで組むかを決め、配置と余白を親と子のどちらに書くかを決められるようになります。長い見出しや画像のない記事、件数の増減があっても、どの要素が伸び、どこで折り返し、どこを切り取るかを、書く前に決められます。横スクロールが出たときの原因の特定や、並べ替えた配置で読み上げ順がずれないかの確認も、実装の段階で行えます。
+
+## この章の節
+
 この章は次の16の節で構成しています。
 
 - [11-1 レイアウト手法の選び方](/layout-practice/choosing/)：よくある実装ごとの通常フロー、Grid、Flexbox、`float` の選び方と、間隔が条件で変わる縦の並びを通常フローで組む理由
@@ -50,10 +56,6 @@ stack、cluster、switcher、gridなど、配置のパターンを部品にし�
 - [`minmax-min-capped-at-100-percent`](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)：`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にします。
 - [`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)：はみ出しを切り取るだけなら、`overflow: hidden` ではなく `clip` を使います。
 - [`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula)：親の幅を超えて画面の端まで広げる量は「画面の幅と親の幅の差の半分」の式で書き、`100vw` を使いません。
-
-## この章で判断できるようになること
-
-この章を読むと、作るものを見て、通常フロー、Grid、Flexbox、`float` のどれで組むかを決め、配置と余白を親と子のどちらに書くかを決められるようになります。長い見出しや画像のない記事、件数の増減があっても、どの要素が伸び、どこで折り返し、どこを切り取るかを、書く前に決められます。横スクロールが出たときの原因の特定や、並べ替えた配置で読み上げ順がずれないかの確認も、実装の段階で行えます。
 
 ## 次の章へ
 

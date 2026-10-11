@@ -12,6 +12,12 @@ sidebar:
 
 装飾の書き方も変わりました。三角形は `border` の組み合わせではなく `clip-path` で、アイコンはマスクと `currentColor` で描けます。角の形は `corner-shape` で、タブや吹き出しの輪郭は `shape()` で書けるようになりました。ただし、対応しているブラウザがまだ限られる機能もあるので、未対応の環境で形が崩れる指定だけを `@supports` で切り替えます。
 
+## この章で判断できるようになること
+
+この章を読むと、画像を置くときに、大きさの属性、比率、読み込みの優先度をどう指定すれば、後ろの内容を押し下げず表示も遅らせずに済むかを決められるようになります。アイコンや図形を `clip-path`、マスク、インラインSVGのどれで描くかも、色を文字色に合わせたいか、代替テキストが要るかから選べます。`corner-shape` や `shape()` のような新しい機能を使うときは、未対応の環境で何が描かれるかを確かめ、`@supports` で切り替える指定を見極められます。
+
+## この章の節
+
 この章は次の節で構成しています。
 
 - [16-1 画像の配置と読み込み](/decoration/images/)：`aspect-ratio` と `object-fit`、`<img>` の大きさの属性、背景の写真を `<img>` で置く理由、`srcset` と `sizes`、画像の形式と読み込みの優先度
@@ -39,10 +45,6 @@ sidebar:
 - [`no-lazy-loading-first-view`](/decoration/images/#rule-no-lazy-loading-first-view)：ファーストビューで表示される画像には、`loading="lazy"` を指定しません。
 - [`aspect-ratio-for-ratios`](/decoration/images/#rule-aspect-ratio-for-ratios)：要素の縦横比は `aspect-ratio` で決め、`padding-top` の割合で高さを作りません。
 - [`icon-current-color`](/decoration/icons-and-masks/#rule-icon-current-color)：単色のアイコンの色は `currentColor` で文字色に合わせます。
-
-## この章で判断できるようになること
-
-この章を読むと、画像を置くときに、大きさの属性、比率、読み込みの優先度をどう指定すれば、後ろの内容を押し下げず表示も遅らせずに済むかを決められるようになります。アイコンや図形を `clip-path`、マスク、インラインSVGのどれで描くかも、色を文字色に合わせたいか、代替テキストが要るかから選べます。`corner-shape` や `shape()` のような新しい機能を使うときは、未対応の環境で何が描かれるかを確かめ、`@supports` で切り替える指定を見極められます。
 
 ## 次の章へ
 

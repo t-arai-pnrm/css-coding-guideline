@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 268" width="480" height="268">
+  <title>内部関連型と外部関連型のレイアウトの分担</title>
+  <!-- 置く側（親） -->
+  <rect class="_guide" x="1" y="1" width="478" height="266" rx="8"/>
+  <text class="_text-muted" x="14" y="24" font-size="12">置く側（親のコンポーネント、Outer）</text>
+  <!-- カードのルート：内部関連型 -->
+  <rect class="_box -accent" x="14" y="40" width="206" height="214" rx="6"/>
+  <text class="_text-accent" x="26" y="64" font-size="14" font-weight="700">カードのルート</text>
+  <text class="_text" x="26" y="86" font-size="13" font-weight="700">内部関連型</text>
+  <text class="_text-muted" x="26" y="106" font-size="12">自分のスタイルだけで完結する</text>
+  <text class="_text-muted" x="26" y="136" font-size="12">display</text>
+  <text class="_text-muted" x="26" y="156" font-size="12">gap</text>
+  <text class="_text-muted" x="26" y="176" font-size="12">padding</text>
+  <text class="_text-muted" x="26" y="196" font-size="12">border、border-radius</text>
+  <text class="_text-muted" x="26" y="216" font-size="12">grid-template</text>
+  <text class="_text-accent" x="26" y="242" font-size="12" font-weight="700">→ ルートに書く</text>
+  <!-- 外部関連型 -->
+  <rect class="_box" x="262" y="40" width="204" height="214" rx="6"/>
+  <text class="_text" x="274" y="64" font-size="14" font-weight="700">外部関連型</text>
+  <text class="_text-muted" x="274" y="86" font-size="12">周りとの関係で成り立つ</text>
+  <text class="_text-muted" x="274" y="116" font-size="12">margin</text>
+  <text class="_text-muted" x="274" y="136" font-size="12">inline-size、block-size</text>
+  <text class="_text-muted" x="274" y="156" font-size="12">position: absolute、inset</text>
+  <text class="_text-muted" x="274" y="176" font-size="12">flex、grid-area</text>
+  <text class="_text-muted" x="274" y="196" font-size="12">justify-self、align-self</text>
+  <text class="_text" x="274" y="242" font-size="12" font-weight="700">→ 置く側が書く</text>
+  <!-- 置く側が決める -->
+  <path class="_arrow" d="M262 147 H236"/>
+  <polygon class="_arrowhead" points="226,147 236,142 236,152"/>
+</svg>

@@ -14,6 +14,12 @@ sidebar:
 
 私自身、以前は動きを減らす設定に、全称セレクタと `!important` で全体の動きを止めるCSSで対応していました。これでは、状態の変化を伝えるフェードまで消えてしまいます。いまは動きを種類ごとに分け、止めるもの、フェードにするもの、短くするもの、そのまま残すものを選んでいます。
 
+## この章で判断できるようになること
+
+この章を読むと、動きを足す前に、その動きが状態の変化や操作の結果を伝えるものか、どのくらいの頻度で見られるものかを確かめ、入れるかどうかを決められるようになります。動きを減らす設定に対しては、止めるか、フェードにするか、短くするか、そのまま残すかを動きの種類ごとに選べます。実装の手段は、トランジションと `@keyframes`、`@starting-style`、スクロール駆動アニメーション、View Transitionsから選べます。描画の負荷も、レイアウト、ペイント、合成のどれが起きるかから見積もれます。
+
+## この章の節
+
 この章は次の8つの節で構成しています。
 
 - [18-1 動かすかどうかを決める](/motion/purpose/)：動きの目的の判断表、機能的な動きと装飾的な動き、見る頻度、CSSを先に検討すること
@@ -41,10 +47,6 @@ sidebar:
 - [`scale-in-from-near-one`](/motion/easing-and-duration/#rule-scale-in-from-near-one)：拡大して現れる動きは `scale: 0` から始めず、`transform-origin` をトリガーのある側に向けます。
 - [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)：`transition: all` や `transition-property: all` を使いません。
 - [`starting-style-for-entry`](/motion/entry-and-exit/#rule-starting-style-for-entry)：`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。
-
-## この章で判断できるようになること
-
-この章を読むと、動きを足す前に、その動きが状態の変化や操作の結果を伝えるものか、どのくらいの頻度で見られるものかを確かめ、入れるかどうかを決められるようになります。動きを減らす設定に対しては、止めるか、フェードにするか、短くするか、そのまま残すかを動きの種類ごとに選べます。実装の手段は、トランジションと `@keyframes`、`@starting-style`、スクロール駆動アニメーション、View Transitionsから選べます。描画の負荷も、レイアウト、ペイント、合成のどれが起きるかから見積もれます。
 
 ## 次の章へ
 

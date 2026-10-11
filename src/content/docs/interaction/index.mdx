@@ -12,6 +12,12 @@ sidebar:
 
 私自身、少し前まではモーダルの開閉や背景のクリックの判定をJavaScriptで書いていました。入力エラーの表示も、`:invalid` ではページを開いた時点でエラーが出てしまうので、JavaScriptで管理していました。どちらも、いまはブラウザの機能で置き換えられます。
 
+## この章で判断できるようになること
+
+この章を読むと、ホバーで変える見た目をどの状態に限定し、キーボードで操作したときにどう表すかを決められるようになります。開閉するUIでは、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のどれを使うかを、背面を操作できなくするか、ページ内検索で中身を見つけられるようにするかといった要件から選べます。フォーム部品やカルーセルについても、JavaScriptで作り直していた振る舞いのうち、ブラウザの機能に置き換えられるものを見分けられます。
+
+## この章の節
+
 この章は次の7つの節で構成しています。17-1から17-4は、どの部品にも関わる操作の基本で、17-5から17-7は、部品ごとの作り方です。
 
 - [17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)：`any-hover` によるホバーの書き方、`:focus-visible` との対応、キーボード操作とトランジション、透明度ではなく色で表す変化
@@ -38,10 +44,6 @@ sidebar:
 - [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーのスタイルは、`&:any-link:hover` や `&:enabled:hover` のように操作できる状態に限定し、`@media (any-hover)` の中に書きます。
 - [`hide-panels-after-init`](/interaction/disclosure/#rule-hide-panels-after-init)：開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してからJavaScriptで隠します。
 - [`no-maximum-scale`](/interaction/forms/#rule-no-maximum-scale)：入力欄での拡大を防ぐために、`maximum-scale` や `user-scalable=no` でズームを止めません。
-
-## この章で判断できるようになること
-
-この章を読むと、ホバーで変える見た目をどの状態に限定し、キーボードで操作したときにどう表すかを決められるようになります。開閉するUIでは、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のどれを使うかを、背面を操作できなくするか、ページ内検索で中身を見つけられるようにするかといった要件から選べます。フォーム部品やカルーセルについても、JavaScriptで作り直していた振る舞いのうち、ブラウザの機能に置き換えられるものを見分けられます。
 
 ## 次の章へ
 

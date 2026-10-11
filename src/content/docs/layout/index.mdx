@@ -10,6 +10,12 @@ sidebar:
 
 レイアウトの不具合の多くは、方式の規則を知らないまま値を足したことから生まれます。インライン要素に上下の余白を付けても空かない、`position: sticky` が留まらない、フレックスアイテムが縮まずにはみ出す、といった場面は、どれも方式の規則どおりの振る舞いです。値を少しずつ変えて見た目を合わせる前に、要素がどの方式の中にあり、何を基準に大きさが決まっているのかを確かめます。CSSをレイアウトのアルゴリズムの集まりとして捉える考え方は、「[1-3 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」で説明しています。
 
+## この章で判断できるようになること
+
+この章を読むと、配置が思いどおりにならないとき、値を足す前に、要素がどの方式の中にあり、大きさが何で決まっているかから原因を特定できるようになります。フレックスアイテムがはみ出すなら自動の最小幅を、GridやFlexboxの子で `position: sticky` が留まらないなら `align-self` を確かめる、というように、症状に合った規則から調べられます。余白を `margin`、`padding`、`gap` のどれに受け持たせるか、マージンの相殺が起きる条件にあるか、`display: contents` で箱をなくしてよいかも判断できます。
+
+## この章の節
+
 この章は次の12の節で構成しています。7-1で方式の全体像を示し、7-2〜7-10で方式ごとの規則を説明します。7-11と7-12では、位置指定を広げるアンカーポジショニングと、箱をなくす `display: contents` を扱います。
 
 - [7-1 レイアウトの基礎](/layout/fundamentals/)：レイアウトの方式の全体像、方式を決める親の `display`、同じ幅の指定が方式ごとに違う意味を持つこと、包含ブロックの要約、重なり、FlexboxとGridの配置のプロパティ、効かない指定を調べる順番
@@ -43,10 +49,6 @@ sidebar:
 - [`flexbox-check-auto-min-size`](/layout/flexbox-basics/#rule-flexbox-check-auto-min-size)：フレックスアイテムが縮まずにはみ出すときは、固定の幅を足す前に、自動の最小幅を確かめます。
 - [`sticky-align-self-start`](/layout/positioning/#rule-sticky-align-self-start)：GridやFlexboxの子に `position: sticky` を指定するときは、その要素に `align-self: start` も指定します。
 - [`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)：フォーカスできる要素や順番に意味のある要素を、`order` や `row-reverse` で見た目だけ入れ替えません。
-
-## この章で判断できるようになること
-
-この章を読むと、配置が思いどおりにならないとき、値を足す前に、要素がどの方式の中にあり、大きさが何で決まっているかから原因を特定できるようになります。フレックスアイテムがはみ出すなら自動の最小幅を、GridやFlexboxの子で `position: sticky` が留まらないなら `align-self` を確かめる、というように、症状に合った規則から調べられます。余白を `margin`、`padding`、`gap` のどれに受け持たせるか、マージンの相殺が起きる条件にあるか、`display: contents` で箱をなくしてよいかも判断できます。
 
 ## 判断の問い
 
