@@ -195,7 +195,7 @@
 <h1>6-2 ビューポート単位とコンテナ単位</h1>
 
 <p><code dir="auto">vw</code> と <code dir="auto">vh</code> は使いません。ビューポート単位が必要なときは、横方向は <code dir="auto">svi</code>、縦方向は <code dir="auto">svb</code> を優先し、スクロールで値が変わる <code dir="auto">dvb</code> は避けます。<code dir="auto">lvb</code> を使うのは、ブラウザのUIが出ていても引っ込んでいても高さいっぱいに広げたい、固定の背景などだけです。</p>
-<p>ビューポート単位を使うのは、ページ全体の余白やヒーローのように、メディアクエリと対になる値です。置き場所が変わるコンポーネントの中で幅に応じて値を変えたいなら、名前付きのコンテナと <code dir="auto">cqi</code> を使います。どちらの単位も、<code dir="auto">%</code> やイントリンシックなレイアウトで解決できないときに使う手段です。</p>
+<p>ビューポート単位を使うのは、ページ全体の余白やヒーローのように、メディアクエリと対になる値です。置き場所が変わる<span class="ix" id="values_viewport-and-container-units--ix-t29"></span>コンポーネントの中で幅に応じて値を変えたいなら、名前付きのコンテナと <code dir="auto">cqi</code> を使います。どちらの単位も、<code dir="auto">%</code> やイントリンシックなレイアウトで解決できないときに使う手段です。</p>
 <h2 id="values_viewport-and-container-units--vhとvwで起きる問題">vhとvwで起きる問題</h2>
 <p>画面の高さいっぱいのヒーローを作るとき、高さを <code dir="auto">100vh</code> にする例をよく見かけます。PCのブラウザでは意図どおりに見えますが、スマートフォンでは下の部分がブラウザのツールバーに隠れることがあります。ヒーローの下端にボタンを置いていると、最初の表示でボタンが見えません。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: vw と vh で画面いっぱいに広げる</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
@@ -203,11 +203,11 @@
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">inline-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">100</span><span style="--0:#FFEB95">vw</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">block-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">100</span><span style="--0:#FFEB95">vh</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<p>原因は、<code dir="auto">vh</code> の基準が、最初に見えている領域ではないことです。モバイルのブラウザでは、アドレスバーやツールバーがスクロールに合わせて出入りし、そのたびに見えている領域の高さが変わります。現在のCSS Values Level 4では、接頭辞のない <code dir="auto">vh</code> は、UIが引っ込んだ最も大きい領域（後述のラージビューポート）を基準にすると定められています。UIが表示されている最初の状態では、その分だけ要素が画面からはみ出すわけです。</p>
+<p>原因は、<code dir="auto">vh</code> の基準が、最初に見えている領域ではないことです。モバイルのブラウザでは、アドレスバーやツールバーがスクロールに合わせて出入りし、そのたびに見えている領域の高さが変わります。現在のCSS Values Level 4では、接頭辞のない <code dir="auto">vh</code> は、UIが引っ込んだ最も大きい領域（後述の<span class="ix" id="values_viewport-and-container-units--ix-t19"></span>ラージビューポート）を基準にすると定められています。UIが表示されている最初の状態では、その分だけ要素が画面からはみ出すわけです。</p>
 <p>この定義は、実装に合わせて後から決まりました。以前の仕様は、ブラウザのUIが出入りする場合を想定しておらず、どちらの高さを基準にするかは実質的にブラウザに任されていました。多くのブラウザが大きいほうを選んでいたため、仕様も、Webの互換性を保つため、その選択を引き継ぎました（2026年10月確認）。基準が定まったいまも、<code dir="auto">vh</code> と書いただけでは、UIが出ている状態と引っ込んだ状態のどちらに合わせたいのかがコードから読み取れません。</p>
 <p><code dir="auto">inline-size: 100vw</code> にも問題があります。<code dir="auto">vw</code> はスクロールバーの幅を含めて計算されるので、スクロールバーが幅を取る環境では、要素がその分だけはみ出して横スクロールが起きます。Chrome 145からは、ルートに <code dir="auto">scrollbar-gutter: stable</code> や <code dir="auto">overflow: scroll</code> が指定されていると、<code dir="auto">vw</code> がスクロールバーを除いて計算されるようになりました。どちらもスクロールバーの領域が常に確保される指定で、CSS Values Level 4の仕様に沿った動作です。本書で使う<a class="xref-out">kiso.css</a>（巻2）は前者の指定を含んでいます。SafariとFirefoxでは、<code dir="auto">scrollbar-gutter: stable</code> を指定しても従来どおり横スクロールが起こりえます（2026年9月確認）。</p>
 <h2 id="values_viewport-and-container-units--3つのビューポートを使い分ける">3つのビューポートを使い分ける</h2>
-<p>こうした問題を解決するために、ビューポートの大きさを3つに分けた単位が追加されました。ブラウザのUIが表示されているときの最も小さい領域が「スモールビューポート」、UIが引っ込んだときの最も大きい領域が「ラージビューポート」です。そのときどきで実際に見えている領域を「ダイナミックビューポート」と呼びます。それぞれを参照する単位は、<code dir="auto">sv*</code>、<code dir="auto">lv*</code>、<code dir="auto">dv*</code> で始まります。</p>
+<p>こうした問題を解決するために、ビューポートの大きさを3つに分けた単位が追加されました。ブラウザのUIが表示されているときの最も小さい領域が「<span class="ix" id="values_viewport-and-container-units--ix-t18"></span>スモールビューポート」、UIが引っ込んだときの最も大きい領域が「ラージビューポート」です。そのときどきで実際に見えている領域を「<span class="ix" id="values_viewport-and-container-units--ix-t20"></span>ダイナミックビューポート」と呼びます。それぞれを参照する単位は、<code dir="auto">sv*</code>、<code dir="auto">lv*</code>、<code dir="auto">dv*</code> で始まります。</p>
 
 <p><img src="assets/viewport-sizes.DeAYM9t5_Z6bhM9.svg" alt="スマートフォンのブラウザを2つ並べた図。左はアドレスバーとツールバーが表示された状態で、その間の見えている領域の高さが「100svb」で、このときの「100dvb」と等しい。右はスクロールしてアドレスバーとツールバーが引っ込んだ状態で、画面全体の高さが「100lvb」で、このときの「100dvb」と等しい。dvbはUIの出入りに合わせて、svbとlvbの間で伸び縮みする。" loading="lazy" decoding="async" width="720" height="530"></p>
 
@@ -345,7 +345,7 @@
 <p class="demo-ref">デモ6-3-1　max() で余白の下限を、min() で幅の上限を決める（補足サイト）</p>
 <p>どちらも、クエリを使わずに幅の変化へ対応する手段です。「<a class="xref-out">13-1 検討する順番</a>（巻2）」で説明したイントリンシックな方法の1つで、クエリを書く前に、これらの関数で解決できないかを検討します。</p>
 <p><code dir="auto">min()</code>、<code dir="auto">max()</code>、<code dir="auto">clamp()</code> の引数では、<code dir="auto">calc()</code> を書かずに四則演算が使えます。<code dir="auto">min(100%, 320 / 16 * 1rem)</code> のように書けるので、<code dir="auto">calc()</code> を入れ子にする必要はありません。</p>
-<h2 id="values_math-functions--clampで流体的な値を組み立てる">clamp()で流体的な値を組み立てる</h2>
+<h2 id="values_math-functions--clampで流体的な値を組み立てる">clamp()で<span class="ix" id="values_math-functions--ix-t22"></span>流体的な値を組み立てる</h2>
 <p><code dir="auto">clamp(最小値, 推奨値, 最大値)</code> は、推奨値を最小値と最大値の範囲に収める関数です。推奨値にビューポート単位やコンテナ単位を含めると、幅に応じて連続的に変わり、しかも決めた範囲からはみ出さない値になります。文字サイズを画面の幅で変えたいとき、クエリで段階的に切り替えるよりもコードが短く済み、切り替わる幅の前後で値が急に変わることもありません。</p>
 <p>推奨値は、2つの基準点から組み立てます。たとえば「画面の幅が375pxのとき24px、1280pxのとき40px」にしたいなら、この2点を結ぶ直線の傾きと切片を求めます。</p>
 <figure class="code"><pre><code><span style="--0:#d6deeb;--1:#403f53">傾き   = (最大値 - 最小値) / (最大の幅 - 最小の幅)</span>
@@ -461,7 +461,7 @@
 <p>計算関数は、根拠を式に残すだけでなく、クエリを書かずに値を切り替える手段にもなります。<code dir="auto">clamp()</code> の最小値を負、最大値を0にすると、余白が広いときだけ要素を外へはみ出させる値を作れます。<code dir="auto">abs()</code> で絶対値を取れば、兄弟の並びの中央からの距離を、項目の数に関係なく求められます<span class="note-ref">※1</span>。</p>
 <p>長さを単位のない数値に変えるときは、三角関数の組み合わせではなく、単位のついた値で割ります。Chrome系のブラウザだけが対応する <code dir="auto">calc-size()</code> と <code dir="auto">@function</code> は、従来の書き方で足りる場面では使いません。</p>
 <p>関数の意味と小さな例は、基礎編のこの位置で読めるように書いています。一方、応用例の「コンポーネントの中で、はみ出す量を余白から求める」は、2つの章の内容を前提にしています<span class="note-ref">※2</span>。初めて読むときはこの見出しを飛ばし、第10章と第13章を読んだあとで読み返してください。</p>
-<h2 id="values_advanced-math-functions--clamp-の範囲に負の値を含める"><code dir="auto">clamp()</code> の範囲に負の値を含める</h2>
+<h2 id="values_advanced-math-functions--clamp-の範囲に負の値を含める"><span class="ix" id="values_advanced-math-functions--ix-s99"></span><code dir="auto">clamp()</code> の範囲に負の値を含める</h2>
 <p><code dir="auto">clamp()</code> の最小値には、負の値も書けます。最小値を負、最大値を0にすると、ある幅を境に「はみ出すか、はみ出さないか」が切り替わる値を、クエリを使わずに作れます。たとえば、見出しの上に付けたラベルを、本文の外の余白が広いときだけ本文の行頭より左へはみ出させ、余白が狭くなったらはみ出しをなくす、という指定です。</p>
 <p>この指定を、画面の幅と結果の数値だけで書くと、次のようになります。<code dir="auto">336px</code> が何の幅から求めた値なのかは、式からは読み取れません。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: 結果の数値だけで、はみ出しを切り替える</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
@@ -479,7 +479,7 @@
 <p>2つの式は同じ値を返しますが（<code dir="auto">16px - (100vw - 640px) / 2</code> を展開すると <code dir="auto">336px - 50vw</code>）、書き直した式は、中央の式が0になる幅を境に読めます。<code dir="auto">(100vw - 640px) / 2</code> は本文の片側の余白なので、中央の式が0になるのは、画面の幅が「本文の幅＋最小の余白の2倍」（672px）のときです。672pxより狭いと中央の式は正の値になり、最大値の0で止まるので、ラベルの位置は本文の行頭と同じです。</p>
 <p>672pxより広いと中央の式は負の値になり、ラベルは余白が広がった分だけ左へ動きます。最小値の <code dir="auto">-24px</code> に達する720px以上では、はみ出しは24pxで止まります。なお、最大値の <code dir="auto">0px</code> には単位が要ります。単位のない <code dir="auto">0</code> は数値として扱われ、長さと混ぜた <code dir="auto">clamp()</code> 全体が無効になるからです。</p>
 <p>次の見出しでは、この式を本書のコンポーネントの書き方に整えます。第10章と第13章の内容を前提にするので、初めて読むときは「<code dir="auto">abs()</code> で並びの中央からの距離を求める」へ進んでください。</p>
-<h2 id="values_advanced-math-functions--コンポーネントの中ではみ出す量を余白から求める">コンポーネントの中で、はみ出す量を余白から求める</h2>
+<h2 id="values_advanced-math-functions--コンポーネントの中ではみ出す量を余白から求める"><span class="ix" id="values_advanced-math-functions--ix-t29"></span>コンポーネントの中で、はみ出す量を余白から求める</h2>
 <p>前の見出しの式を本書の設計に整えると、次のようになります。最小値を負、中央を余白の差、最大値を0にする式の組み立ては変えていません。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 余白が広い分だけ、ラベルを本文の外へ出す</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.article-header) to (.scoped) {</span>
 <span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">:scope</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -511,7 +511,7 @@
 <p>次のデモの破線の枠が本文の幅です。480pxではラベルが枠の左端にそろい、696pxでは12px、1024pxでは24px、枠の外へ出ます。</p>
 <figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 68.97%"><img src="img/demo-ce643452c26b-480.png" alt=""><p class="shot-label">幅 480px</p></div><div class="shot" style="inline-size: 100.00%"><img src="img/demo-f1cd54a4e0b7-696.png" alt=""><p class="shot-label">幅 696px</p></div></div><figcaption>図6-5　clamp() の範囲に負の値を含め、余白が広いときだけラベルを本文の外へ出す</figcaption></figure>
 <p>はみ出させる手段には、<code dir="auto">inset-inline-start</code> ではなく <code dir="auto">margin-inline-start</code> を選びます。<code dir="auto">inset-inline-start</code> でずらすには <code dir="auto">position: relative</code> が要り、ずらしても元の場所が空いたまま描画だけが動きます。負の <code dir="auto">margin-inline-start</code> なら、ラベルはレイアウトの中で動き、位置を決めるための指定だと分かります。要素の間隔を作る <code dir="auto">margin</code> とは役割が違うので、次兄弟結合子で付ける規則の対象にもなりません<span class="note-ref">※5</span>。</p>
-<h2 id="values_advanced-math-functions--abs-で並びの中央からの距離を求める"><code dir="auto">abs()</code> で並びの中央からの距離を求める</h2>
+<h2 id="values_advanced-math-functions--abs-で並びの中央からの距離を求める"><span class="ix" id="values_advanced-math-functions--ix-s100"></span><code dir="auto">abs()</code> で並びの中央からの距離を求める</h2>
 <p><code dir="auto">abs()</code> は、引数の絶対値を返す関数です。兄弟の中の位置を数値で返す <code dir="auto">sibling-index()</code> と、兄弟の数を返す <code dir="auto">sibling-count()</code> と組み合わせると、並びの中央からの距離を式で表せます<span class="note-ref">※6</span>。中央の位置は <code dir="auto">(sibling-count() + 1) / 2</code> で、自分の位置との差の絶対値を <code dir="auto">abs()</code> で取れば、中央の項目が0、両端に近いほど大きい値になります。この値に一定の長さを掛けて項目を下げると、中央を頂点にして、両端へ下がる弧の形に並びます。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 対応した環境でだけ、中央から離れた項目ほど下げる</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.badge-row) to (.scoped) {</span>
 <span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">:scope</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -556,7 +556,7 @@
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>単位のついた値で割って作った長さには、ズームについての注意があります。Chromeでは、<code dir="auto">calc(24px / 1rem * 1rem)</code> のように長さどうしの割り算を含む式で定義した値が、ブラウザのズームで拡大縮小されません（2026年初めに確認）。式の値は24pxと同じ長さですが、表示を拡大しても大きさが変わらないので、文字サイズに使うとWCAGの達成基準1.4.4（テキストのサイズ変更）を満たせなくなるおそれがあります。この割り算から求めた値を文字サイズに使うときは、<code dir="auto">max()</code> でremの下限を付けます。</p>
-<h2 id="values_advanced-math-functions--chrome系のブラウザだけが対応する-calc-size-と-function">Chrome系のブラウザだけが対応する <code dir="auto">calc-size()</code> と <code dir="auto">@function</code></h2>
+<h2 id="values_advanced-math-functions--chrome系のブラウザだけが対応する-calc-size-と-function">Chrome系のブラウザだけが対応する <span class="ix" id="values_advanced-math-functions--ix-s101"></span><code dir="auto">calc-size()</code> と <span class="ix" id="values_advanced-math-functions--ix-s102"></span><code dir="auto">@function</code></h2>
 <p><code dir="auto">calc-size()</code> は、<code dir="auto">auto</code> や <code dir="auto">fit-content</code> のようなキーワードで決まる大きさを、計算で扱える値に変える関数です。<code dir="auto">calc-size(auto, size + 16px)</code> の <code dir="auto">size</code> が、<code dir="auto">auto</code> で決まる大きさを表します。計算した値は数値の大きさと同じように補間されるので、<code dir="auto">block-size: 0</code> から「内容の高さ＋余白」まで変わるトランジションも書けます。</p>
 <p>ただし、高さを <code dir="auto">auto</code> まで動かすだけなら、<code dir="auto">interpolate-size: allow-keywords</code> で足ります。本書はこの指定を、ベーススタイルの <code dir="auto">:root</code> に1行で書いています<span class="note-ref">※8</span>。MDNも、計算を伴わないなら <code dir="auto">calc-size()</code> ではなく <code dir="auto">interpolate-size</code> を使うよう勧めています。<code dir="auto">calc-size()</code> が要るのは、内容の大きさに値を足したり掛けたりしたうえで動かす場面だけです。使うとしても、直前に <code dir="auto">block-size: auto</code> のような普通の値を書きます。未対応の環境では <code dir="auto">calc-size()</code> を含む宣言が捨てられ、前の値が残るからです。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: 計算を伴わないのに calc-size() で auto まで動かす</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
@@ -658,8 +658,8 @@
 <p>同じプロパティを2回書き、未対応の環境では後の宣言が捨てられることに頼る書き方は、この宣言では成り立ちません。宣言に <code dir="auto">attr()</code> や <code dir="auto">var()</code> が含まれていると、ブラウザは構文の検査を値の計算まで先送りするからです。未対応の関数があると分かるのは計算値を求める時点なので、宣言は「計算値の時点で無効」になり、前の宣言には戻らずに初期値が使われます。<code dir="auto">min-block-size</code> の初期値は <code dir="auto">auto</code> で、<code dir="auto">field-sizing: content</code> の空の入力欄は1行分の高さに縮みます。<code dir="auto">var()</code> を含む宣言で、未知の関数を使って試すと、<code dir="auto">min-block-size</code> は前に書いた値ではなく0pxになりました（2026年10月、Chrome 152で確認）<span class="note-ref">※2</span>。</p>
 <p>第2引数は省略しません。対応した環境で属性がなかったり、値を型として読めなかったりすると、宣言は「計算値の時点で無効」になり、前に書いた宣言ではなくプロパティの初期値が使われます。<code dir="auto">z-index: 5</code> の後に <code dir="auto">z-index: attr(data-layer type(&lt;integer&gt;))</code> と書き、属性値を <code dir="auto">abc</code> にして試しました。<code dir="auto">z-index</code> は <code dir="auto">5</code> ではなく <code dir="auto">auto</code> になります（2026年10月、Chrome 152で確認）。</p>
 <p>列の数や、グリッドのエリアの名前を属性で渡す書き方もあります。<code dir="auto">grid-area: attr(data-area type(&lt;custom-ident&gt;), auto)</code> と書けば、HTMLの側でどのエリアに置くかを決められます。ただし、エリアの名前は本書の命名どおり <code dir="auto">data-area="--aside"</code> のように <code dir="auto">--</code> で始めるので、HTMLの側にもCSSの命名の規則が現れます<span class="note-ref">※3</span>。</p>
-<h2 id="values_if-and-attr--style属性の公開プロパティとの使い分け">style属性の公開プロパティとの使い分け</h2>
-<p>型付きの <code dir="auto">attr()</code> が使えるなら、カスタムプロパティを <code dir="auto">style</code> 属性で渡す方法が要らなくなるのではないでしょうか。私は2025年2月の時点で、型付きの <code dir="auto">attr()</code> がすべてのブラウザで使えるようになれば、修飾や状態、ユーティリティをデータ属性で表すほうが良くなると考えていました。2026年3月の時点では、コンポーネントや小さな汎用の部品の上書きを <code dir="auto">attr()</code> で行い、コンポジションとユーティリティをこれまでどおり公開プロパティで行う、という分け方を考えています。</p>
+<h2 id="values_if-and-attr--style属性の公開プロパティとの使い分け">style属性の<span class="ix" id="values_if-and-attr--ix-t38"></span>公開プロパティとの使い分け</h2>
+<p>型付きの <code dir="auto">attr()</code> が使えるなら、カスタムプロパティを <code dir="auto">style</code> 属性で渡す方法が要らなくなるのではないでしょうか。私は2025年2月の時点で、型付きの <code dir="auto">attr()</code> がすべてのブラウザで使えるようになれば、修飾や状態、ユーティリティをデータ属性で表すほうが良くなると考えていました。2026年3月の時点では、<span class="ix" id="values_if-and-attr--ix-t29"></span>コンポーネントや小さな汎用の部品の上書きを <code dir="auto">attr()</code> で行い、コンポジションとユーティリティをこれまでどおり公開プロパティで行う、という分け方を考えています。</p>
 <p>一方で、2つの方法には性質の違いがあります。<code dir="auto">style</code> 属性で渡したカスタムプロパティは、子孫の要素に継承されます。<code dir="auto">attr()</code> が読むのは、その要素自身の属性だけです。また、<code dir="auto">style</code> 属性の方法は本書の対象のすべてのブラウザで動きますが、型付きの <code dir="auto">attr()</code> はSafariで動きません（2026年10月確認）。</p>
 <p>HTMLに書いた値そのものは、CSSで書き換えられません。属性の値はCSSから変えられず、<code dir="auto">style</code> 属性で渡したカスタムプロパティは、同じ要素へのCSSの宣言より優先されます<span class="note-ref">※4</span>。一方、その値を読むプロパティの宣言は、ふつうの宣言としてカスケードで比べられます。<code dir="auto">padding-inline: attr(data-gap type(&lt;length&gt;), 16px)</code> の後に、メディアクエリの中で <code dir="auto">padding-inline: 24px</code> と書けば、属性はそのままで余白だけが変わります。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 属性値を読む宣言を、メディアクエリの中の宣言で上書きする</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.info-box) to (.scoped) {</span>
@@ -702,7 +702,7 @@
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<p>次のデモは、この例をヘッダーとして表示したものです。768px以上では、<code dir="auto">if()</code> でルート自身の上下の余白が24pxになり、スタイルクエリでロゴが150pxに広がります。<code dir="auto">if()</code> に未対応のブラウザでは、ロゴだけが広がり、上下の余白は12pxのままです。</p>
+<p>次のデモは、この例をヘッダーとして表示したものです。768px以上では、<code dir="auto">if()</code> でルート自身の上下の余白が24pxになり、<span class="ix" id="values_if-and-attr--ix-t56"></span>スタイルクエリでロゴが150pxに広がります。<code dir="auto">if()</code> に未対応のブラウザでは、ロゴだけが広がり、上下の余白は12pxのままです。</p>
 <p class="demo-ref">デモ6-5-2　ルートで決めたモードを、ルート自身は if() で、ロゴはスタイルクエリで読む（補足サイト）</p>
 <p>この例で <code dir="auto">if()</code> を使っているのは、ルート自身の <code dir="auto">padding-block</code> だけです。スタイルクエリ（<code dir="auto">@container style()</code>）は、親の要素に定義されたカスタムプロパティを調べるので、<code dir="auto">--_density</code> を定義したルート自身には当たりません。<code dir="auto">if()</code> の <code dir="auto">style()</code> は、その要素自身の値を調べます。同じ要素に <code dir="auto">--_pressed: 1</code> を定義して試すと、スタイルクエリの色は変わらず、<code dir="auto">if()</code> の色は変わりました（2026年10月、Chrome 152で確認）。</p>
 <p><code dir="auto">if()</code> がなければ、ルートの余白のためにメディアクエリをもう1つ書くことになり、モードの判定が2か所に分かれます。判定をルートの1か所に集め、子孫の要素はスタイルクエリで分岐する書き方では、ルート自身だけが分岐できません。<code dir="auto">if()</code> は、その穴を埋めるものとして使います。モードをメディアクエリではなくコンテナサイズクエリの閾値で決めるときは、ルートは自分のサイズを問い合わせられないので、ルートの子孫の要素で <code dir="auto">--_density</code> を宣言します。この要素自身の見た目は同じサイズクエリの中で変えられるので、<code dir="auto">if()</code> は要りません<span class="note-ref">※5</span>。</p>

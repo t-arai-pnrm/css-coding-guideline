@@ -186,6 +186,9 @@ export const extractPage = async (page, ctx) => {
     else content.append(aside);
   }
 
+  // 索引の語に印を入れる
+  ctx.indexer.mark(doc, content, page, key);
+
   const kind = page.slug === 'index' ? (page.dir === 'introduction' ? 'page' : 'chapter-opener') : 'page';
   return `<section class="${kind}" id="page-${key}" data-title="${page.title}">
 <h1>${page.title}</h1>

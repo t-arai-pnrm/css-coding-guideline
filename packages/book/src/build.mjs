@@ -9,6 +9,7 @@ import { basename, join } from 'node:path';
 import { extractPage, keyOf } from './extract.mjs';
 import { createCapturer } from './capture.mjs';
 import { allPages, DIST, volumePages } from './pages.mjs';
+import { createIndexer, loadTerms, renderIndex } from './indexer.mjs';
 import { BASE } from '../../../src/lib/site.mjs';
 
 const HERE = new URL('../', import.meta.url).pathname;
@@ -24,12 +25,14 @@ const pages = only?.length ? volumeAll.filter((page) => only.includes(page.id)) 
 const pagesById = new Map((await allPages()).map((page) => [page.id, page]));
 const selection = JSON.parse(await readFile(join(HERE, 'config/demo-selection.json'), 'utf8'));
 const capturer = await createCapturer(join(outDir, 'img'));
+const indexer = createIndexer(await loadTerms());
 
 const counters = new Map();
 const stylesheets = new Set();
 const assets = new Map();
 const ctx = {
   pages: pagesById,
+  indexer,
   volumePageIds: new Set(volumeAll.map((page) => page.id)),
   selection,
   stylesheets,
@@ -49,7 +52,7 @@ const ctx = {
 // 章ごとに1つのファイルにする。1つの大きな HTML を組むと、Vivliostyle の組版が文書の大きさに対して急に遅くなるため
 const files = new Map();
 const fileOf = (page) => `${String(volume.dirs.indexOf(page.dir) + 1).padStart(2, '0')}-${page.dir}.html`;
-const keyToFile = new Map(volumeAll.map((page) => [keyOf(page.id), fileOf(page)]));
+const keyToFile = new Map([...volumeAll.map((page) => [keyOf(page.id), fileOf(page)]), ['index', '99-index.html']]);
 for (const page of pages) {
   process.stdout.write(`${page.id}\n`);
   const file = fileOf(page);
@@ -97,11 +100,13 @@ const front = `<section class="title-page">
 <h1>目次</h1>
 <ol>
 ${toc}
+<li class="toc-chapter"><a href="99-index.html#page-index">索引</a></li>
 </ol>
 </nav>`;
-const entries = ['00-front.html', ...files.keys()];
+const entries = ['00-front.html', ...files.keys(), '99-index.html'];
 await writeFile(join(outDir, '00-front.html'), documentOf(linkAcross(front, '00-front.html')));
 for (const [file, sections] of files) await writeFile(join(outDir, file), documentOf(linkAcross(sections.join('\n'), file)));
+await writeFile(join(outDir, '99-index.html'), documentOf(linkAcross(renderIndex(indexer.entries), '99-index.html')));
 
 // Vivliostyle の設定。章のファイルを1つの本として組む
 const config = { title, entryContext: outDir, entry: entries, size: '182mm,235mm', output: join(HERE, 'out', `vol${volume.number}.pdf`) };

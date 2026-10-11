@@ -6,8 +6,8 @@
 <body>
 <section class="chapter-opener" id="page-principles" data-title="第1章 CSSのマインドセット">
 <h1>第1章 CSSのマインドセット</h1>
-<p>この章では、本書のすべてのルールの土台になる、CSSの捉え方を扱います。CSSは、プロパティと値を書けば思いどおりに動く言語ではありません。最終的な表示を決めるのはユーザーの環境とブラウザで、同じプロパティもレイアウトの方式によって働き方が変わります。JavaScriptと同じ感覚で表示をすべて制御しようとするほど、CSSは思いどおりにならない言語だと感じられます。</p>
-<p>そこで本書では、2つの考え方を前提にしています。1つ目は、CSSをブラウザへの命令ではなく「提案」として書くことです。2つ目は、対象のブラウザをはっきり決め、そのブラウザが未対応の新しい機能は、プログレッシブ・エンハンスメントとして使うことです。</p>
+<p>この章では、本書のすべてのルールの土台になる、CSSの捉え方を扱います。CSSは、プロパティと値を書けば思いどおりに動く言語ではありません。最終的な表示を決めるのはユーザーの環境とブラウザで、同じプロパティも<span class="ix" id="principles--ix-t41"></span>レイアウトの方式によって働き方が変わります。JavaScriptと同じ感覚で表示をすべて制御しようとするほど、CSSは思いどおりにならない言語だと感じられます。</p>
+<p>そこで本書では、2つの考え方を前提にしています。1つ目は、CSSをブラウザへの命令ではなく「提案」として書くことです。2つ目は、対象のブラウザをはっきり決め、そのブラウザが未対応の新しい機能は、<span class="ix" id="principles--ix-t5"></span>プログレッシブ・エンハンスメントとして使うことです。</p>
 <p>以降の章に出てくるルールの多くは、この2つのどちらかと、第2章で扱う保守しやすさから導かれています。たとえば「幅を固定しない」はブラウザに計算を任せるためで、「未対応の機能をレイアウトの要にしない」はどの環境でも内容を読めるようにするためです。個々のルールの扱いに迷ったときは、この章の考え方に戻って判断します。</p>
 <p>私自身、以前は「デザインカンプを忠実に再現するのは実装者として当たり前」と考えていました。しかし、ユーザーの画面の幅や文字サイズの設定は無数にあり、カンプと同じ見た目を、すべての環境で保証するのは不可能です。今は、限られた環境で見た目を一致させるよりも、どの環境でも破綻しない状態を用意するほうが大切だと考えています。</p>
 <h2 id="principles--この章で判断できるようになること">この章で判断できるようになること</h2>
@@ -43,7 +43,7 @@
 <h1>1-1 CSSはブラウザへの「提案」である</h1>
 
 <p>CSSは、ブラウザへの命令書ではなく「提案書」です。実装者が決めるのは「この範囲の中で、うまく表示してほしい」という条件までで、最終的な表示は、ユーザーの環境に合わせてブラウザが決めます。本書のルールは、すべてこの前提にもとづいています。</p>
-<p>そのため、幅や高さを固定値で決めつけず、上限・下限・比率といった制約を示して、具体的な値の計算はブラウザに任せます。目指すのは、限られた環境でデザインカンプと寸分違わず一致させること（ピクセルパーフェクト）ではありません。どの環境で見てもデザインの意図が損なわれない「合格点」を取ることです。</p>
+<p>そのため、幅や高さを固定値で決めつけず、上限・下限・比率といった制約を示して、具体的な値の計算はブラウザに任せます。目指すのは、限られた環境でデザインカンプと寸分違わず一致させること（<span class="ix" id="principles_browser-suggestion--ix-t1"></span>ピクセルパーフェクト）ではありません。どの環境で見てもデザインの意図が損なわれない「合格点」を取ることです。</p>
 <h2 id="principles_browser-suggestion--表示を左右する変数">表示を左右する変数</h2>
 <p>Webページの表示は、実装者には決められない多くの変数に左右されます。ビューポートの幅と高さ、画面の解像度、ブラウザのズーム、ユーザーが設定した文字サイズ、OSに入っているフォントなどです。キーボードやスクリーンリーダーで操作する人もいれば、機械翻訳で読む人もいます。翻訳されれば、見出しの文字数は大きく変わります。</p>
 <p>デザインカンプは、こうした変数の組み合わせの1つを切り取った静止画です。カンプの幅で、カンプの文字量で、デフォルトの文字サイズで見たときの一例にすぎません。その一例に合わせて値を決め打ちすると、ほかの組み合わせでは崩れます。</p>
@@ -59,7 +59,7 @@
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>カンプと同じ幅、同じラベルで見る限り、このボタンは完璧に見えます。しかし、ラベルが長くなると文字は枠からはみ出します。ボタンより狭い場所に置かれれば、ボタンそのものがはみ出します。ユーザーが文字サイズを大きくすれば、文字は56pxの高さに収まりません。どれも、実装者が「こうなるはずだ」と決めつけた値が、実際の環境と合わなかったことが原因です。</p>
 <p>CSSで挫折やストレスを感じる原因の多くは、自分の書いた宣言だけで表示が決まると考えることにあります。先に挙げた変数は、どれも宣言と並んでブラウザが受け取る入力で、実装者には書き換えられません<span class="note-ref">※1</span>。</p>
-<h2 id="principles_browser-suggestion--cssを提案書として書く">CSSを提案書として書く</h2>
+<h2 id="principles_browser-suggestion--cssを提案書として書く">CSSを<span class="ix" id="principles_browser-suggestion--ix-t0"></span>提案書として書く</h2>
 <p>最終的な表示を制御しているのは、実装者ではなく、ユーザーのデバイスとブラウザです。CSSは、その決定権をユーザーの側に残すように作られていて、ユーザーは文字サイズを変えられ、ブラウザは画面の幅に合わせて文字を折り返し、ボックスの大きさを計算し直します。固定した値は環境が変わっても追従しないので、値を固定するほど、CSSは壊れやすくなります。</p>
 <p>そこで本書では、CSSを「このルールの中で、あとはうまくやってほしい」という提案書として書きます。実装者が決めるのは、最小でもこの大きさは欲しい、これ以上は広げない、この比率を保ってほしい、といった条件です。条件を満たす具体的な値は、その場の環境を知っているブラウザに計算させます。</p>
 <p>先ほどのボタンを、提案書の考え方で書き直すと次のようになります。</p>
@@ -78,7 +78,7 @@
 <figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 41.67%"><img src="img/demo-2932665597f4-320.png" alt=""><p class="shot-label">幅 320px</p></div><div class="shot" style="inline-size: 100.00%"><img src="img/demo-dc4ea660e5d0-768.png" alt=""><p class="shot-label">幅 768px</p></div></div><figcaption>図1-1　固定値で書いたボタンは、長いラベルや狭い幅に対応できない</figcaption></figure>
 <figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 41.67%"><img src="img/demo-e9ed85a01685-320.png" alt=""><p class="shot-label">幅 320px</p></div><div class="shot" style="inline-size: 100.00%"><img src="img/demo-842a5e072dee-768.png" alt=""><p class="shot-label">幅 768px</p></div></div><figcaption>図1-2　制約だけを決めたボタンは、ラベルと置き場所の幅に合わせて形を変える</figcaption></figure>
 <p>レイアウト以外でも、考え方は同じです。画像を表示枠に合わせて切り抜くなら、幅ごとに切り抜いた画像を用意するより、<code dir="auto">object-fit: cover</code> でブラウザに切り抜かせるほうが、どの大きさの枠にも対応できます。装飾のグラデーションも、画像で用意するよりCSSで描くほうが、要素の大きさに合わせてブラウザが描き直してくれます。ブラウザは実際の要素の大きさを知っているので、任せたほうが対応できる大きさの範囲が広がります。</p>
-<p>要素に本来備わっている性質を活かし、細かく指定する代わりにブラウザへ十分な情報を渡して、レイアウトの計算を任せる。こうした設計は「イントリンシック・デザイン」と呼ばれます。第13章で扱うレスポンシブ対応も、この考え方を土台にしています。</p>
+<p>要素に本来備わっている性質を活かし、細かく指定する代わりにブラウザへ十分な情報を渡して、レイアウトの計算を任せる。こうした設計は「<span class="ix" id="principles_browser-suggestion--ix-t3"></span>イントリンシック・デザイン」と呼ばれます。第13章で扱うレスポンシブ対応も、この考え方を土台にしています。</p>
 <h2 id="principles_browser-suggestion--固定値と制約">固定値と制約</h2>
 <p>提案書として書くときの手がかりは、「固定値より制約で考える」ことです。「この値でなければならないか」ではなく、「どこまでなら許せるか」を問います。最小でどこまで縮んでよいか、最大でどこまで広がってよいか、縦横の比率は保つ必要があるか。こうした範囲を決めることが、実装者の仕事になります。</p>
 <p>範囲を表す手段は、CSSにすでに十分そろっています。<code dir="auto">min-inline-size</code> と <code dir="auto">max-inline-size</code>、<code dir="auto">min()</code>・<code dir="auto">max()</code>・<code dir="auto">clamp()</code> の関数、Gridの <code dir="auto">minmax()</code> と <code dir="auto">auto-fit</code>、<code dir="auto">flex-wrap: wrap</code>、<code dir="auto">aspect-ratio</code> などです。どれも1つの値を指定するのではなく、値の範囲や関係を指定する仕組みで、範囲の中のどの値を使うかはブラウザがその場の条件から決めます。</p>
@@ -140,7 +140,7 @@
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>書かなかった部分は、ブラウザがその場の状況に合わせて決めます。文章が増えれば高さが伸び、狭い場所に置かれれば幅が縮みます。書かないことは手抜きではなく、ブラウザが対応できる状況を広げるための選択です<span class="note-ref">※4</span>。</p>
 <p>この考え方は、ブラウザのデフォルトスタイルの扱いにも当てはまります。本書で使うリセットCSSのkiso.cssは、見出しの太さやボタンの余白、表の枠線のように役に立つデフォルトスタイルを残し、書くべきコードを減らす方針で作られています<span class="note-ref">※5</span>。</p>
-<h2 id="principles_browser-suggestion--すべての環境で合格点を取る">すべての環境で合格点を取る</h2>
+<h2 id="principles_browser-suggestion--すべての環境で合格点を取る">すべての環境で<span class="ix" id="principles_browser-suggestion--ix-t2"></span>合格点を取る</h2>
 <p>レスポンシブなWebサイトで目指すのは、限られた環境での満点ではなく、すべての環境での合格点です。ここでいう合格点とは、どの環境で見ても、デザインの意図が伝わり、内容を読めて、操作できる状態のことです。カンプの幅で満点を取っても、ほかの幅で赤点なら意味がありません。そもそも、カンプと同じ幅で見る人のほうが少数です。</p>
 <p>ピクセルパーフェクトを目指さないことは、デザインを軽く扱うことではありません。合格点の中身として守るのは、余白の比率、文字サイズの階層、要素の並び順といったデザインのガイドラインや意図です。これらは、どの幅でも忠実に守ります。守らないのは、特定の幅でしか成り立たない寸法の一致です<span class="note-ref">※6</span>。</p>
 <p>何をもって合格とするかは、実装者だけで決めません。カンプのない画面の幅での振る舞い、内容が変わったときの見せ方、細部をどこまで再現するかを、実装の前にデザイナーやクライアントと確かめておきます<span class="note-ref">※7</span>。</p>
@@ -203,7 +203,7 @@
 <div class="scoped baseline | not-content" data-baseline="low"><p class="_summary"><span class="_label">Baseline</span><strong>新しく利用可能</strong><span class="_since">2026年5月から</span></p><p class="_feature"><code>コンテナスタイルクエリ</code></p><ul class="_browsers"><li>Chrome 111</li><li>Edge 111</li><li>Firefox 151</li><li>Safari 18</li><li>iOS Safari 18</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <p>「広く利用可能」と表示される機能は、すべての主要なブラウザで対応してから長い時間がたっているので、本書の対象でもそのまま使えます。「新しく利用可能」と「一部のブラウザのみ」の機能は、Safariの欄のバージョンが18.6以下かどうかを確かめます。上のコンテナスタイルクエリは、2026年5月に「新しく利用可能」になったばかりですが、Safariは18で対応しているので、本書の対象ではそのまま使えます。</p>
 <p>ただし、表示されるのは「途切れずに対応している最初のバージョン」です。たとえば <code dir="auto">@scope</code> はSafari 17.4で対応しましたが、Safari 26.0〜26.3に <code dir="auto">&lt;input&gt;</code> などで効かない不具合があったため、Safari 26.4と表示されます。数字が対象の下限より新しいときは、MDNで経緯を確かめます。</p>
-<h2 id="principles_browser-support--プログレッシブエンハンスメントとして使いやすい機能">プログレッシブ・エンハンスメントとして使いやすい機能</h2>
+<h2 id="principles_browser-support--プログレッシブエンハンスメントとして使いやすい機能"><span class="ix" id="principles_browser-support--ix-t5"></span>プログレッシブ・エンハンスメントとして使いやすい機能</h2>
 <p>対象の一部しか対応していない機能でも、プログレッシブ・エンハンスメントとして使えるものがあります。判断の基準は2つあります。1つは、未対応の環境で従来どおりに表示されるか、簡単なフォールバックを用意できることです。もう1つは、対応した環境で、より良い体験を提供できることです。未対応のブラウザは、理解できない宣言を無視します。無視されても困らない機能なら、使わない理由はありません。</p>
 <table>
 <thead>
@@ -244,7 +244,7 @@
 <p>この表は2026年9月時点のものです。<code dir="auto">text-box</code> のように、未対応の環境で余白の大きさが変わる機能は、レイアウトが崩れたり、表示が大きく変わったりしない範囲で使います。</p>
 <p>対象の下限が上がると、プログレッシブ・エンハンスメントとして扱っていた機能が、そのまま使える機能に変わります。たとえば <code dir="auto">::details-content</code> はSafari 18.4で対応したので、下限がSafari 17.6だった2026年1月の時点では対象外でした。下限がSafari 18.6になった現在は、本書の対象のすべてで使えます。</p>
 <h2 id="principles_browser-support--プログレッシブエンハンスメントとして使いにくい機能">プログレッシブ・エンハンスメントとして使いにくい機能</h2>
-<p>反対に、未対応の環境での影響が大きく、プログレッシブ・エンハンスメントとして使いにくい機能もあります。未対応の環境でブロックごと無視されるアットルールと、無視されたときに表示の崩れが大きくなるレイアウト関連の機能です。2026年9月時点では、アンカーポジショニングと、絶対配置の要素への <code dir="auto">place-self</code>（どちらもSafari 26で対応）がこれに当たります。<code dir="auto">sibling-index()</code> と <code dir="auto">sibling-count()</code>（Safari 26.2で対応）も同じです。</p>
+<p>反対に、未対応の環境での影響が大きく、プログレッシブ・エンハンスメントとして使いにくい機能もあります。未対応の環境でブロックごと無視されるアットルールと、無視されたときに表示の崩れが大きくなるレイアウト関連の機能です。2026年9月時点では、<span class="ix" id="principles_browser-support--ix-t52"></span>アンカーポジショニングと、絶対配置の要素への <code dir="auto">place-self</code>（どちらもSafari 26で対応）がこれに当たります。<code dir="auto">sibling-index()</code> と <code dir="auto">sibling-count()</code>（Safari 26.2で対応）も同じです。</p>
 <p>アットルールでは、以前はコンテナスタイルクエリがこの例でした。<code dir="auto">@scope</code> も未対応の環境では中身がまとめて無視されますが、本書の対象はすべて対応しているので、前提の機能として使っています<span class="note-ref">※1</span>。</p>
 <div class="scoped baseline | not-content" data-baseline="low"><p class="_summary"><span class="_label">Baseline</span><strong>新しく利用可能</strong><span class="_since">2026年1月から</span></p><p class="_feature"><code>アンカーポジショニング（anchor-name）</code></p><ul class="_browsers"><li>Chrome 125</li><li>Edge 125</li><li>Firefox 147</li><li>Safari 26</li><li>iOS Safari 26</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <p>たとえば、アンカーポジショニングでツールチップをボタンの横に配置したとします。未対応の環境では配置の指定が無視され、ツールチップは意図しない場所に表示されて、ほかの内容に重なることがあります。レイアウトの要になる機能は、対象のすべてが対応するまで待つか、別の方法で実現します。</p>
@@ -278,7 +278,7 @@
 <p>開発中はChromeを使っていてもかまいません。ただし、作業を終える前に、Safari（iOSを含む）とFirefoxでも表示を確かめます。対象の下限にあたる古いSafariは手元で用意しにくいので、対応状況のデータでの確認と組み合わせます。</p>
 <h2 id="principles_browser-support--未対応の環境に備える書き方の詳細">未対応の環境に備える書き方の詳細</h2>
 <p>ここまでで、対象のブラウザと、未対応の環境で守ることは決まります。以降は、その判断をコードにするときの詳細です。<code dir="auto">@supports</code> の使いどころ、フォールバックを書く位置の選び方、JavaScriptがない環境への備えを順に説明します。前から通して読むときは、案件の基準を決めたあと、必要になった節から読めば足ります。</p>
-<h3 id="principles_browser-support--supports-で対応した環境だけを変える"><code dir="auto">@supports</code> で対応した環境だけを変える</h3>
+<h3 id="principles_browser-support--supports-で対応した環境だけを変える"><span class="ix" id="principles_browser-support--ix-s74"></span><code dir="auto">@supports</code> で対応した環境だけを変える</h3>
 <p><code dir="auto">@supports</code> は、ブラウザが宣言を理解できるかどうかで分岐します。未対応の宣言はもともと無視されるので、新しいプロパティそのものを <code dir="auto">@supports</code> で囲む必要はありません。<code dir="auto">@supports</code> が必要になるのは、新しい機能に合わせて、既存の宣言も一緒に変えるときです。</p>
 <p><code dir="auto">&lt;textarea&gt;</code> に <code dir="auto">field-sizing: content</code> を指定すると、入力した量に合わせて入力欄が伸び縮みします。自動で伸び縮みするなら、ユーザーが手でサイズを変える機能（<code dir="auto">resize</code>）は不要です。ただし、<code dir="auto">resize</code> を無条件に止めると、未対応の環境では入力欄の高さが固定され、手で広げることもできなくなります。最大の高さも同じです。無条件に付けると、未対応の環境では、ユーザーの広げられる範囲が狭まります。そこで、手動のリサイズを止める指定と最大の高さを、<code dir="auto">field-sizing: content</code> と一緒に <code dir="auto">@supports</code> の中に書きます。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: 自動で伸び縮みする環境でだけ、手動のリサイズを止め、最大の高さを付ける</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.inquiry-form) to (.scoped) {</span>
@@ -352,7 +352,7 @@
 <li><a href="https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/">スクロール連動アニメーションの実装例</a>（TAKLOG、2024年4月。本書と一部の方針が異なります）</li>
 <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/@supports">@supports - CSS | MDN</a></li>
 <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/@media/scripting">scripting - CSS | MDN</a></li>
-<li><a href="https://web.dev/baseline?hl=ja">Baseline | web.dev</a></li>
+<li><a href="https://web.dev/baseline?hl=ja"><span class="ix" id="principles_browser-support--ix-t6"></span>Baseline | web.dev</a></li>
 <li><a href="https://developer.apple.com/documentation/safari-release-notes">Safari Release Notes | Apple Developer Documentation</a></li>
 <li><a href="https://www.joshwcomeau.com/css/browser-support/">A Framework for Evaluating Browser Support</a>（Josh W. Comeau。未対応の環境での体験、利用者の分布、害の大きさの3つの観点と、宣言を外して確かめる方法）</li>
 </ul>
@@ -360,7 +360,7 @@
 </section>
 <section class="page" id="page-principles_layout-algorithms" data-title="1-3 CSSはレイアウトのアルゴリズムの集まりである">
 <h1>1-3 CSSはレイアウトのアルゴリズムの集まりである</h1>
-<p>CSSは、プロパティと値の組を並べたものではなく、ブラウザが要素の大きさと位置を計算するためのアルゴリズムの集まりです。通常フロー、Flexbox、Grid、位置指定といったレイアウトの方式は、それぞれが別のアルゴリズムで、プロパティはそのアルゴリズムへの入力として読まれます。同じ <code dir="auto">width: 1000px</code> が、要素の置かれた方式によって、守られる値にも、縮む出発点にも、無視される値にもなるのはこのためです。</p>
+<p>CSSは、プロパティと値の組を並べたものではなく、ブラウザが要素の大きさと位置を計算するためのアルゴリズムの集まりです。<span class="ix" id="principles_layout-algorithms--ix-t42"></span>通常フロー、Flexbox、Grid、位置指定といった<span class="ix" id="principles_layout-algorithms--ix-t41"></span>レイアウトの方式は、それぞれが別のアルゴリズムで、プロパティはそのアルゴリズムへの入力として読まれます。同じ <code dir="auto">width: 1000px</code> が、要素の置かれた方式によって、守られる値にも、縮む出発点にも、無視される値にもなるのはこのためです。</p>
 <p>この節では、<code dir="auto">width</code> が効かないという1つの現象から、CSSを見る見方を変えるところまでを説明します<span class="note-ref">※1</span>。</p>
 <h2 id="principles_layout-algorithms--width-が効かないと感じる理由"><code dir="auto">width</code> が効かないと感じる理由</h2>
 <p>CSSを書き始めて最初に覚える宣言は、たいてい <code dir="auto">color: blue</code> のようなものです。書いた値がそのまま文字の色になるので、CSSを「プロパティに値を書けば、そのとおりに表示される言語」と捉えたくなります。プロパティごとに「この値ならこう表示される」という対応を覚えていけば、CSSを書けるようになると考えるわけです。</p>
@@ -470,7 +470,7 @@
 
 <p>SNSや技術ブログで流れてくるCSSのTipsは、新しい書き方を知るきっかけになります。私自身もTipsを参考にし、発信もしています。ただし、Tipsはそのまま使わず、仕様とブラウザの対応状況を確かめ、自分で試してから使うことを勧めます。</p>
 <p>便利に見えるTipsにも、特定の条件でしか成り立たない前提や、一部のブラウザでしか動かない機能が含まれていることがあります。Tipsそのものに誤りが含まれていることもあります。このページでは、3つの例を使って、Tipsのどこを確かめるとよいかを説明します。</p>
-<h2 id="principles_tips--例1first-line-で見出しの1行目を装飾する">例1：<code dir="auto">::first-line</code> で見出しの1行目を装飾する</h2>
+<h2 id="principles_tips--例1first-line-で見出しの1行目を装飾する">例1：<span class="ix" id="principles_tips--ix-s75"></span><code dir="auto">::first-line</code> で見出しの1行目を装飾する</h2>
 <p>次のコードは、見出しの日本語と英語を <code dir="auto">&lt;br&gt;</code> で改行し、1行目と2行目で文字の大きさと色を変えるTipsです。<code dir="auto">::first-line</code> は1行目だけを選ぶ擬似要素で、古くからすべての主要なブラウザが対応しています。</p>
 <figure class="code"><pre><code><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">h2</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">私たちについて</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;</span><span style="--0:#CAECE6">br</span><span style="--0:#7FDBCA">&gt;</span></span><span style="--0:#D6DEEB;--1:#403F53">About</span><span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">h2</span><span style="--0:#7FDBCA">&gt;</span></span></code></pre></figure>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: ::first-line で見出しの1行目と2行目を描き分ける</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>

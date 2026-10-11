@@ -27,9 +27,9 @@
 <p>本書のルールは、私が実務で使っている書き方をもとにしています。考え方や実装、日々の案件での判断を、1つの体系に整理し直したものです。</p>
 <p>そのため、本書のルールには性質の違うものが混ざっています。守らないと表示の崩れやアクセシビリティの問題が起きる、仕様やブラウザの挙動にもとづく制約があります。状況とトレードオフで決まり、適用する条件がある実装上の判断もあります。どちらで書いても正しく動くなかから、保守のしやすさや書き方の統一のために私が選んだ規約もあります。各ルールがどれに当たるかは、ルールごとに「性質」として示しています<span class="note-ref">※1</span>。</p>
 <h2 id="introduction_about--対象読者">対象読者</h2>
-<p>主な読者として想定しているのは、HTMLとCSSの基本的な構文は書けるものの、書き方の判断に迷うことがある実務1〜3年目のコーダーです。セレクタやプロパティの書き方そのものは説明しません。その代わり、カスケードや詳細度、コンテナサイズクエリの副作用のように、知っているつもりでも誤解しやすい仕組みを説明し直しています。</p>
+<p>主な読者として想定しているのは、HTMLとCSSの基本的な構文は書けるものの、書き方の判断に迷うことがある実務1〜3年目のコーダーです。セレクタやプロパティの書き方そのものは説明しません。その代わり、<span class="ix" id="introduction_about--ix-t7"></span>カスケードや詳細度、コンテナサイズクエリの副作用のように、知っているつもりでも誤解しやすい仕組みを説明し直しています。</p>
 <p>経験を積んだ方には、チームで書き方をそろえるときの根拠として使えます。各ルールに理由を添えているので、レビューで指摘するときの説明にもそのまま使えます。</p>
-<p>題材は、コーポレートサイトやランディングページ、メディアサイトのようなWebサイト制作です。静的なサイトとCMSの両方を扱います。特定のフレームワークに依存しない書き方を基本にしているので、AstroやVue、Reactのコンポーネントにもそのまま当てはめられます。</p>
+<p>題材は、コーポレートサイトやランディングページ、メディアサイトのようなWebサイト制作です。静的なサイトとCMSの両方を扱います。特定のフレームワークに依存しない書き方を基本にしているので、AstroやVue、Reactの<span class="ix" id="introduction_about--ix-t29"></span>コンポーネントにもそのまま当てはめられます。</p>
 <h2 id="introduction_about--読み終えて判断できるようになること">読み終えて判断できるようになること</h2>
 <p>本書を読み終えて判断できるようになる3つのこと（崩れの原因の説明、部品の境界と公開する値、チームの規約の導入）は、「<a href="#introduction_preface--読み終えたときにできること" class="xref">はじめに</a>」で説明しています。ここでは、それぞれをどの部で身につけるかを示します。</p>
 <p>1つ目の判断の土台は、第II部の基礎編で扱うカスケードとレイアウトの仕組みです。2つ目は、第III部の設計編で、部品の範囲を <code dir="auto">@scope</code> で区切り、値を公開プロパティで受け渡す方法として身につけます。第IV部の実装編では、その部品を長い見出し、画像の欠け、件数や置き場所の幅の変化に耐えるように組み立てます。3つ目は、第V部の運用編で、Stylelintとレビューを使ってチームの規約として定着させる方法を扱います。</p>
@@ -69,8 +69,8 @@
 <section class="page" id="page-introduction_quick-start" data-title="最小の構成で始める">
 <h1>最小の構成で始める</h1>
 
-<p>本書の書き方を手元で試すには、HTML、エントリーポイントのCSS、kiso.css、トークン、コンポーネントの5種類のファイルがあれば足ります。このページの前半では、この構成でお知らせのカードを表示し、見出しの色を1つ変えるところまでを試します。</p>
-<p>構成には、カスケードレイヤー、トークンの階層、公開プロパティと内部プロパティ、本書独自の命名といった設計の要素が含まれています。前半では、それぞれの役割を一言で示すだけにとどめます。仕組みは本編で順に説明するので、詳しい読み方は、本編を読み進めてから後半の「<a href="#introduction_quick-start--この構成の読み方">この構成の読み方</a>」以降に戻って確かめてください。前半で出てくる名前の意味は、後半の「<a href="#introduction_quick-start--命名の早見表">命名の早見表</a>」で引けます。</p>
+<p>本書の書き方を手元で試すには、HTML、エントリーポイントのCSS、kiso.css、トークン、<span class="ix" id="introduction_quick-start--ix-t29"></span>コンポーネントの5種類のファイルがあれば足ります。このページの前半では、この構成でお知らせのカードを表示し、見出しの色を1つ変えるところまでを試します。</p>
+<p>構成には、<span class="ix" id="introduction_quick-start--ix-t9"></span>カスケードレイヤー、トークンの階層、<span class="ix" id="introduction_quick-start--ix-t38"></span>公開プロパティと<span class="ix" id="introduction_quick-start--ix-t39"></span>内部プロパティ、本書独自の命名といった設計の要素が含まれています。前半では、それぞれの役割を一言で示すだけにとどめます。仕組みは本編で順に説明するので、詳しい読み方は、本編を読み進めてから後半の「<a href="#introduction_quick-start--この構成の読み方">この構成の読み方</a>」以降に戻って確かめてください。前半で出てくる名前の意味は、後半の「<a href="#introduction_quick-start--命名の早見表">命名の早見表</a>」で引けます。</p>
 <h2 id="introduction_quick-start--課題1お知らせのカードを表示する">課題1：お知らせのカードを表示する</h2>
 <p>ファイルは次のように置きます。kiso.cssは、kiso.cssの<a href="https://github.com/tak-dcxi/kiso.css">GitHubのリポジトリ</a>からダウンロードし、エントリーポイントの <code dir="auto">style.css</code> と同じ場所に置きます。</p>
 <figure class="code"><figcaption>ファイルの配置</figcaption><pre><code><span style="--0:#d6deeb;--1:#403f53">index.html</span>
@@ -177,7 +177,7 @@
 <p>コンポーネントのファイルには <code dir="auto">@layer components { … }</code> を書いていません。エントリーポイントの <code dir="auto">@import</code> に <code dir="auto">layer(components)</code> を付けているので、ファイルの中身がすべて <code dir="auto">components</code> レイヤーに入ります。<code dir="auto">&lt;head&gt;</code> の中の <code dir="auto">&lt;style&gt;</code> のように、<code dir="auto">@import</code> で読み込まないCSSでは、<code dir="auto">@layer</code> を自分で書きます。</p>
 <p>トークンの色は、プリミティブ（<code dir="auto">--color--…</code>）と、役割を表すセマンティクス（<code dir="auto">--foreground--…</code> など）の2層にしています。余白のトークンは単位を付けずに定義し、使う場所で単位に変換します<span class="note-ref">※3</span>。</p>
 <p>コンポーネントのスタイルは、<code dir="auto">@scope (.scoped.&lt;名前&gt;) to (.scoped)</code> の中に書きます。子要素は <code dir="auto">h2</code> や <code dir="auto">time</code> のようなタイプセレクタで選ぶので、クラスを付けていません。<code dir="auto">_</code> で始まる子クラスを付けるのは、同じ種類の要素を役割で区別するときと、<code dir="auto">div</code> と <code dir="auto">span</code> に役割を示すときだけです<span class="note-ref">※4</span>。外から変えてよい見出しの色は、公開プロパティ <code dir="auto">--news-card--accent</code> として受け取り、<code dir="auto">:scope</code> で内部プロパティ <code dir="auto">--_accent</code> に受けます。渡されなかったときのデフォルト値は、<code dir="auto">var()</code> のフォールバックに書いています<span class="note-ref">※5</span>。</p>
-<p>デモのCSSのタブは、本文のコード例と違い、省略のない全体です。トークンを <code dir="auto">@layer tokens { … }</code> で、コンポーネントを <code dir="auto">@layer components { … }</code> で包み、1つのファイルにまとめています。カードを並べるための余白は、置く側の <code dir="auto">demo-layout</code> のスコープに書いています。デモの枠には、レイヤーの順番の宣言と、<code dir="auto">reset</code> レイヤーに入れたkiso.cssを読み込んでいるので、CSSのタブにはエントリーポイントにあたる記述がありません。</p>
+<p>デモのCSSのタブは、本文のコード例と違い、省略のない全体です。トークンを <code dir="auto">@layer tokens { … }</code> で、コンポーネントを <code dir="auto">@layer components { … }</code> で包み、1つのファイルにまとめています。カードを並べるための余白は、置く側の <code dir="auto">demo-layout</code> の<span class="ix" id="introduction_quick-start--ix-t10"></span>スコープに書いています。デモの枠には、レイヤーの順番の宣言と、<code dir="auto">reset</code> レイヤーに入れたkiso.cssを読み込んでいるので、CSSのタブにはエントリーポイントにあたる記述がありません。</p>
 <p>この構成は、ビルドツールを用意せずに本書の書き方を試すための学習用です。エントリーポイントの <code dir="auto">@import</code> をブラウザがそのまま読むので、各ファイルの読み込みが直列になり、最初の表示が遅れます。実務では、同じファイル構成のまま、ビルドツールで <code dir="auto">@import</code> を展開して1つのCSSにしてから配信します。本書のルールの <code dir="auto">import-resolved-at-build</code> も、この展開を求めています。学習や検証のため、ビルドせずに試す場合だけを例外にしています（「<a href="05-cascade.html#cascade_layers--rule-import-resolved-at-build" class="xref-rule" data-label="4-3">4-3 カスケードレイヤーで順位を決める</a>」）。</p>
 <h2 id="introduction_quick-start--本文のコード例だけでは動かない理由">本文のコード例だけでは動かない理由</h2>
 <p>本文のコード例は、説明に必要な部分だけを抜き出したものです。「<a href="#page-introduction_how-to-read" class="xref">本書の読み方</a>」で説明しているとおり、ほとんどのコード例ではカスケードレイヤー（<code dir="auto">@layer</code>）の記述を省略しています。<code dir="auto">._main-link</code> のように <code dir="auto">_</code> で始まるクラスのルールは、<code dir="auto">@scope</code> の中に書く前提で、<code dir="auto">@scope</code> の記述も省略していることがあります。</p>
@@ -192,7 +192,7 @@
 <p>npmでインストールする場合（<code dir="auto">npm install kiso.css</code>）は、CSSの <code dir="auto">@import</code> でパッケージ名を解決するビルドツールが必要です。Viteは、CSSの <code dir="auto">@import</code> を <code dir="auto">postcss-import</code> で展開し、その過程で <code dir="auto">node_modules</code> の中のパッケージも探します。 この場合は、エントリーポイントの <code dir="auto">@import url("kiso.css") layer(reset);</code> が、パッケージに含まれる <code dir="auto">kiso.css</code> を指します。</p>
 <p>同じ <code dir="auto">@import url("kiso.css")</code> でも、ブラウザが直接読むときは隣にあるファイルを、ビルドツールが処理するときはパッケージを指します。手元で試すときに <code dir="auto">kiso.css</code> が読み込まれていないようなら、開発者ツールのネットワークのパネルで、どのURLを読みにいったのかを確かめてください。</p>
 <h2 id="introduction_quick-start--命名の早見表">命名の早見表</h2>
-<p>本書のコード例には、CSSの構文ではなく、本書の規約で決めている名前が多く出てきます。どれも先頭の記号で種類を見分けられるようにしています。接頭辞のないコンポジションとパターンは、配置の名前か役割の名前かで見分けます。各行の詳しい説明は、右の列のページにあります。</p>
+<p>本書のコード例には、CSSの構文ではなく、本書の規約で決めている名前が多く出てきます。どれも先頭の記号で種類を見分けられるようにしています。接頭辞のない<span class="ix" id="introduction_quick-start--ix-t33"></span>コンポジションとパターンは、配置の名前か役割の名前かで見分けます。各行の詳しい説明は、右の列のページにあります。</p>
 <table>
 <thead>
 <tr>
@@ -385,7 +385,7 @@
 <td>11-5〜11-16</td>
 </tr>
 <tr>
-<td>第12章「<a class="xref-out">レイアウトコンポジション</a>（巻2）」</td>
+<td>第12章「<a class="xref-out">レイアウト<span class="ix" id="introduction_how-to-read--ix-t33"></span>コンポジション</a>（巻2）」</td>
 <td>概要の「目的から選ぶ」の表、12-1、12-11、12-2、12-5、12-6</td>
 <td>ほかの6つ</td>
 </tr>
@@ -441,7 +441,7 @@
 <p>第11章「<a class="xref-out">レイアウトを組む</a>（巻2）」には16の節があり、固定ヘッダーや表、アンカーポジショニングのように、作るものが決まってから読めば足りる節を多く含みます。初めて読むときは、作るものの要件から通常フロー、Grid、Flexbox、<code dir="auto">float</code> を選ぶ「<a class="xref-out">11-1 レイアウト手法の選び方</a>（巻2）」を読みます。続けて、章の概要が最初に押さえるルールを置いている「<a class="xref-out">11-2 余白を設計する</a>（巻2）」「<a class="xref-out">11-3 サイズと内容の変化に耐える</a>（巻2）」「<a class="xref-out">11-4 はみ出しとスクロール</a>（巻2）」を読みます。11-5以降は、その部品を作るときに章の概要から引きます。</p>
 <p>第12章「<a class="xref-out">レイアウトコンポジション</a>（巻2）」は、章の概要で、必要なときに引く参照用の章と位置づけています。初めて読むときは、概要の「目的から選ぶ」の表で11のコンポジションの役割をつかみます。そのうえで、概要が先に読むよう勧めている基本の5つ、「<a class="xref-out">12-1 stack</a>（巻2）」「<a class="xref-out">12-11 prose</a>（巻2）」「<a class="xref-out">12-2 cluster</a>（巻2）」「<a class="xref-out">12-5 sidebar</a>（巻2）」「<a class="xref-out">12-6 grid</a>（巻2）」を読みます。<code dir="auto">switcher</code> や <code dir="auto">masonry</code> のような計算の多いページは、使う場面が来てから読めば足ります。</p>
 <p>読み飛ばした節に戻るきっかけは、第21章の演習で作ります。演習の各節は、その節で使ったルールを掲載ページへのリンク付きで並べているので、知らないルールがあれば、そこから該当する節を読めます。</p>
-<h2 id="introduction_how-to-read--ルールの強度と性質id">ルールの強度と性質、ID</h2>
+<h2 id="introduction_how-to-read--ルールの強度と性質id"><span class="ix" id="introduction_how-to-read--ix-t71"></span>ルールの強度と性質、ID</h2>
 <p>ルールには、「必須」「推奨」「非推奨」「禁止」の4段階の強度を付けています。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除き、必ず守るルールです。補足の例外に当たるコードは違反ではないので、レビューやAIのチェックで指摘しません。「推奨」と「非推奨」は、基本的には従いますが、理由があれば外れてかまいません。外れるときは、その理由をコメントに残します。</p>
 <p>強度とは別に、ルールの根拠がどこにあるかを「性質」として示しています。「仕様上の制約」は、CSS・HTML・ブラウザの振る舞いやWCAGから導かれるルールで、守らないと表示や操作が崩れます。「実装上の判断」は、状況とトレードオフで決まるルールです。適用する条件は、補足や本文に書いています。「本書の規約」は、命名やレイヤーの順番のように、一貫性のために本書が選んだ約束です。自分の案件に持ち帰るときは、仕様上の制約はそのまま使い、実装上の判断は条件が合うかを確かめ、本書の規約はチームの規約と見比べて選んでください。</p>
 <p>各ルールには、<code dir="auto">no-vw-vh</code> のような英語のIDを付けています。IDは章の構成が変わっても変えないので、レビューのコメントやAIへの指示で「<code dir="auto">no-vw-vh</code> に違反しています」のように引用できます<span class="note-ref">※1</span>。</p>
@@ -477,7 +477,7 @@
 <p>部品の範囲、スタイルどうしの優先順位、外から変えてよい値は、どの道具を選んでも決めなければならない設計の判断です。本書は、これらをブラウザの仕組みである <code dir="auto">@scope</code>、カスケードレイヤー、カスタムプロパティで表します。特定のフレームワークやビルドの道具に依存しないので、案件ごとに道具が変わっても書き方を変えずに済みます。</p>
 <h2 id="introduction_why-plain-css--どの道具を使う現場でも役に立つ知識">どの道具を使う現場でも役に立つ知識</h2>
 <p>本書の読者として想定している実務1〜3年目のコーダーにとって、カスケード、<code dir="auto">@scope</code>、カスタムプロパティ、擬似クラスは、どの道具を使う現場に移っても役に立つ知識です。Tailwind CSSのクラスも、CSS-in-JSで書いたスタイルも、ブラウザが最後に解釈するのはCSSだからです。道具に固有の記法は道具を替えると使えなくなりますが、CSSの仕組みの知識は、道具が生成したCSSを読み解くときにも使えます。</p>
-<p>そのため、VueやAstroのように、フレームワークが標準でスコープ付きのCSSを書く仕組みを備えているなら、それを使ってかまいません。その場合は <code dir="auto">@scope</code> だけをフレームワークのスコープに置き換え、命名やカスケードレイヤーといったほかの規約はそのまま使います。</p>
+<p>そのため、VueやAstroのように、フレームワークが標準で<span class="ix" id="introduction_why-plain-css--ix-t10"></span>スコープ付きのCSSを書く仕組みを備えているなら、それを使ってかまいません。その場合は <code dir="auto">@scope</code> だけをフレームワークのスコープに置き換え、命名やカスケードレイヤーといったほかの規約はそのまま使います。</p>
 <h2 id="introduction_why-plain-css--採用していない道具は持ち込まない">採用していない道具は持ち込まない</h2>
 <p>この判断は、AIにコードを書かせるときの規約にもなっています。本書のルール <code dir="auto">no-unrequested-css-framework</code> は、プロジェクトで採用を決めていない限り、Tailwind CSSやCSS-in-JSを使わず、コンポーネントのクラスと <code dir="auto">@scope</code> で書くことを求めます。AIは、指示がなくてもユーティリティだけで組む前提を持ち込むことがあるからです<span class="note-ref">※1</span>。</p>
 <p>このルールが求めているのは、採用していない道具を持ち込まないことです。プロジェクトがTailwind CSSやCSS-in-JSを採用しているなら、その方針に従います<span class="note-ref">※2</span>。</p>

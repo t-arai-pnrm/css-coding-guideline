@@ -6,14 +6,14 @@
 <body>
 <section class="chapter-opener" id="page-layout" data-title="第7章 レイアウトの仕組み">
 <h1>第7章 レイアウトの仕組み</h1>
-<p>この章では、要素の大きさと位置がどう決まるのかという、レイアウトの仕組みを扱います。CSSのレイアウトは、通常フロー、Flexbox、Grid、位置指定（<code dir="auto">position</code>）という複数の方式でできていて、同じ <code dir="auto">margin</code> や <code dir="auto">inline-size</code> でも、要素がどの方式の中にあるかで働き方が変わります。この章は、その規則を方式ごとに整理し直すための章です。</p>
+<p>この章では、要素の大きさと位置がどう決まるのかという、レイアウトの仕組みを扱います。CSSのレイアウトは、<span class="ix" id="layout--ix-t42"></span>通常フロー、Flexbox、Grid、位置指定（<code dir="auto">position</code>）という複数の方式でできていて、同じ <code dir="auto">margin</code> や <code dir="auto">inline-size</code> でも、要素がどの方式の中にあるかで働き方が変わります。この章は、その規則を方式ごとに整理し直すための章です。</p>
 <p>レイアウトの不具合の多くは、方式の規則を知らないまま値を足したことから生まれます。インライン要素に上下の余白を付けても空かない、<code dir="auto">position: sticky</code> が留まらない、フレックスアイテムが縮まずにはみ出す、といった場面は、どれも方式の規則どおりの振る舞いです。値を少しずつ変えて見た目を合わせる前に、要素がどの方式の中にあり、何を基準に大きさが決まっているのかを確かめます<span class="note-ref">※1</span>。</p>
 <h2 id="layout--この章で判断できるようになること">この章で判断できるようになること</h2>
 <p>この章を読むと、配置が思いどおりにならないとき、値を足す前に、要素がどの方式の中にあり、大きさが何で決まっているかから原因を特定できるようになります。フレックスアイテムがはみ出すなら自動の最小幅を、GridやFlexboxの子で <code dir="auto">position: sticky</code> が留まらないなら <code dir="auto">align-self</code> を確かめる、というように、症状に合った規則から調べられます。余白を <code dir="auto">margin</code>、<code dir="auto">padding</code>、<code dir="auto">gap</code> のどれに受け持たせるか、マージンの相殺が起きる条件にあるか、<code dir="auto">display: contents</code> で箱をなくしてよいかも判断できます。</p>
 <h2 id="layout--この章の節">この章の節</h2>
-<p>この章は次の12の節で構成しています。7-1で方式の全体像を示し、7-2〜7-10で方式ごとの規則を説明します。7-11と7-12では、位置指定を広げるアンカーポジショニングと、箱をなくす <code dir="auto">display: contents</code> を扱います。</p>
+<p>この章は次の12の節で構成しています。7-1で方式の全体像を示し、7-2〜7-10で方式ごとの規則を説明します。7-11と7-12では、位置指定を広げる<span class="ix" id="layout--ix-t52"></span>アンカーポジショニングと、箱をなくす <code dir="auto">display: contents</code> を扱います。</p>
 <ul>
-<li><a href="#page-layout_fundamentals" class="xref">7-1 レイアウトの基礎</a>：レイアウトの方式の全体像、方式を決める親の <code dir="auto">display</code>、同じ幅の指定が方式ごとに違う意味を持つこと、包含ブロックの要約、重なり、FlexboxとGridの配置のプロパティ、効かない指定を調べる順番</li>
+<li><a href="#page-layout_fundamentals" class="xref">7-1 レイアウトの基礎</a>：<span class="ix" id="layout--ix-t41"></span>レイアウトの方式の全体像、方式を決める親の <code dir="auto">display</code>、同じ幅の指定が方式ごとに違う意味を持つこと、包含ブロックの要約、重なり、FlexboxとGridの配置のプロパティ、効かない指定を調べる順番</li>
 <li><a href="#page-layout_normal-flow" class="xref">7-2 通常フローの基礎</a>：ブロック方向とインライン方向、ブロックとインラインのボックス、行ボックスと匿名ボックス、幅と高さの決まり方、<code dir="auto">display: flow-root</code></li>
 <li><a href="#page-layout_box-model" class="xref">7-3 ボックスモデルの基礎</a>：内容・<code dir="auto">padding</code>・<code dir="auto">border</code>・<code dir="auto">margin</code> の領域、<code dir="auto">box-sizing</code>、<code dir="auto">margin</code> の負の値と <code dir="auto">auto</code>、大きさに含まれない <code dir="auto">outline</code> と <code dir="auto">box-shadow</code></li>
 <li><a href="#page-layout_sizing" class="xref">7-4 大きさの決まり方</a>：<code dir="auto">auto</code> と中身に合わせた大きさ、<code dir="auto">min-inline-size</code> と <code dir="auto">max-inline-size</code> による下限と上限、<code dir="auto">%</code> の基準、幅いっぱいに広げる <code dir="auto">stretch</code></li>
@@ -26,7 +26,7 @@
 <li><a href="#page-layout_anchor-basics" class="xref">7-11 アンカーポジショニングの基礎</a>：<code dir="auto">anchor-name</code> と暗黙のアンカー、<code dir="auto">anchor()</code>、<code dir="auto">position-area</code> の9マス、<code dir="auto">position-try-fallbacks</code> による反転、未対応の環境への備え</li>
 <li><a href="#page-layout_display-contents" class="xref">7-12 display: contentsで箱をなくす</a>：箱だけをなくす仕組み、幅で並びを変えるだけならエリアで組む理由、サブグリッドへの参加とラッパーの箱の出し入れ、ロールと <code dir="auto">hidden</code> 属性の注意点</li>
 </ul>
-<p>これらの仕組みを使って、作るものに合わせて手法を選び、余白を設計し、内容が変わっても崩れないように組む方法は、第11章「<a class="xref-out">レイアウトを組む</a>（巻2）」で扱います<span class="note-ref">※2</span>。配置のパターンを部品にしたコンポジションは第12章「<a class="xref-out">レイアウトコンポジション</a>（巻2）」で、フレックスアイテムとグリッドアイテムの最小幅を0にするベーススタイルは第8章「<a class="xref-out">リセットとベーススタイル</a>（巻2）」で説明しています。</p>
+<p>これらの仕組みを使って、作るものに合わせて手法を選び、余白を設計し、内容が変わっても崩れないように組む方法は、第11章「<a class="xref-out">レイアウトを組む</a>（巻2）」で扱います<span class="note-ref">※2</span>。配置のパターンを部品にしたコンポジションは第12章「<a class="xref-out">レイアウトコンポジション</a>（巻2）」で、フレックスアイテムとグリッドアイテムの最小幅を0にする<span class="ix" id="layout--ix-t24"></span>ベーススタイルは第8章「<a class="xref-out">リセットとベーススタイル</a>（巻2）」で説明しています。</p>
 <p>この章のコード例では、説明に関係しない <code dir="auto">@layer</code> の記述を省略しています。デモのCSSには省略せずに書いています。</p>
 <h2 id="layout--初めて読むとき">初めて読むとき</h2>
 <p>初めて読むときは、「<a href="#page-layout_fundamentals" class="xref">7-1 レイアウトの基礎</a>」「<a href="#page-layout_normal-flow" class="xref">7-2 通常フローの基礎</a>」「<a href="#page-layout_box-model" class="xref">7-3 ボックスモデルの基礎</a>」「<a href="#page-layout_sizing" class="xref">7-4 大きさの決まり方</a>」「<a href="#page-layout_margin-role" class="xref">7-5 marginの役割</a>」「<a href="#page-layout_flexbox-basics" class="xref">7-7 Flexboxの基礎</a>」「<a href="#page-layout_grid-basics" class="xref">7-8 Gridの基礎</a>」を読みます。7-6のマージンの相殺は、余白の大きさが予想と違うときに読んでください。7-9以降のGridのそろえ方、<code dir="auto">position</code>、アンカーポジショニング、<code dir="auto">display: contents</code> は、その仕組みを使うときに読みます。</p>
@@ -74,7 +74,7 @@
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">margin-block</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--1:#AA0982"><span style="--0:#F78C6C">4</span><span style="--0:#FFEB95">px</span></span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>AIが生成するコードにも、同じ傾向があります。方式の違いを考えずに、<code dir="auto">display: flex</code> と <code dir="auto">align-items: center</code> を何にでも足し、効かなければ <code dir="auto">position: absolute</code> で位置を合わせるコードはよく見かけます。レビューで「なぜこの指定が要るのか」を問うためにも、方式ごとの基本の振る舞いを押さえておきます。</p>
-<h2 id="layout_fundamentals--レイアウトの方式の一覧">レイアウトの方式の一覧</h2>
+<h2 id="layout_fundamentals--レイアウトの方式の一覧"><span class="ix" id="layout_fundamentals--ix-t41"></span>レイアウトの方式の一覧</h2>
 <p>本書で扱うレイアウトの方式と、それぞれの大きさの決め方は次のとおりです。</p>
 <table>
 <thead>
@@ -198,7 +198,7 @@
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">flex-shrink</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">inline-size</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#C5E478;--1:#3B61B0">calc</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#F78C6C;--1:#AA0982">96</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">/</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#F78C6C;--1:#AA0982">16</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">*</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--1:#AA0982"><span style="--0:#F78C6C">1</span><span style="--0:#FFEB95">rem</span></span><span style="--0:#D6DEEB;--1:#403F53">);</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<h2 id="layout_fundamentals--包含ブロック">包含ブロック</h2>
+<h2 id="layout_fundamentals--包含ブロック"><span class="ix" id="layout_fundamentals--ix-t49"></span>包含ブロック</h2>
 <p><code dir="auto">inline-size: 50%</code> のような <code dir="auto">%</code> や、絶対配置の <code dir="auto">inset</code> は、包含ブロックという矩形を基準にします。通常フローの要素なら、包含ブロックはたいていいちばん近いブロックの親の内容の領域です<span class="note-ref">※8</span>。</p>
 <p>位置指定の要素は、包含ブロックの決まり方が違います。<code dir="auto">position: absolute</code> の要素は <code dir="auto">position</code> が <code dir="auto">static</code> 以外のいちばん近い祖先を、<code dir="auto">fixed</code> の要素はビューポートを基準にします。ただし、祖先に <code dir="auto">transform</code> などがあると、その祖先が包含ブロックになります<span class="note-ref">※9</span>。</p>
 <p>カードの角にバッジを置くときは、カードに <code dir="auto">position: relative</code> を指定して、カードを包含ブロックにします。</p>
@@ -213,7 +213,7 @@
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>次のデモでは、点線の枠が <code dir="auto">position: relative</code> の祖先です。カードに <code dir="auto">position</code> がないと、バッジは祖先の角を基準にして、カードの外に出ます。カードに <code dir="auto">position: relative</code> を指定すると、バッジはカードの角に収まります。</p>
 <figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 41.67%"><img src="img/demo-4964c13bd46d-320.png" alt=""><p class="shot-label">幅 320px</p></div><div class="shot" style="inline-size: 100.00%"><img src="img/demo-80f539ce3709-768.png" alt=""><p class="shot-label">幅 768px</p></div></div><figcaption>図7-3　包含ブロックが変わると、絶対配置のバッジの基準が変わる</figcaption></figure>
-<h2 id="layout_fundamentals--重なりとスタッキングコンテキスト">重なりとスタッキングコンテキスト</h2>
+<h2 id="layout_fundamentals--重なりとスタッキングコンテキスト">重なりと<span class="ix" id="layout_fundamentals--ix-t50"></span>スタッキングコンテキスト</h2>
 <p>要素の前後の重なりは、デフォルトではHTMLの順番で決まり、後に書いた要素が手前に描かれます。<code dir="auto">z-index</code> で順番を変えられるのは、同じスタッキングコンテキストの中だけです。親が <code dir="auto">z-index: 1</code> のスタッキングコンテキストを作っていれば、子に <code dir="auto">z-index: 99</code> を指定しても、親の兄弟の <code dir="auto">z-index: 2</code> の要素より手前には出ません。</p>
 <p>次のデモは、この例をそのまま並べたものです。親に <code dir="auto">z-index</code> がないと、子の <code dir="auto">z-index: 99</code> が親の兄弟と比べられ、子が手前に出ます。親に <code dir="auto">z-index: 1</code> を指定すると、子は親の中に閉じ込められ、親ごと兄弟の後ろに回ります。</p>
 <figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 41.67%"><img src="img/demo-060e7acc3c74-320.png" alt=""><p class="shot-label">幅 320px</p></div><div class="shot" style="inline-size: 100.00%"><img src="img/demo-f631eb17e8bd-768.png" alt=""><p class="shot-label">幅 768px</p></div></div><figcaption>図7-4　親がスタッキングコンテキストを作ると、子の z-index は親の外と比べられない</figcaption></figure>
@@ -221,7 +221,7 @@
 <figure class="code"><figcaption>🙆‍♂ Recommended: z-index の数値を使わずにスタッキングコンテキストを作る</figcaption><pre><code><span style="--0:#C5E478;--1:#3B61B0">._card</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">isolation</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">isolate</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<h2 id="layout_fundamentals--flexboxとgridが通常フローを置き換える">FlexboxとGridが通常フローを置き換える</h2>
+<h2 id="layout_fundamentals--flexboxとgridが通常フローを置き換える">FlexboxとGridが<span class="ix" id="layout_fundamentals--ix-t42"></span>通常フローを置き換える</h2>
 <p><code dir="auto">display</code> の内側を <code dir="auto">flex</code> や <code dir="auto">grid</code> にすると、その要素の子は、通常フローではなくFlexboxやGridの規則で並びます。子の外側の値は無視され、<code dir="auto">&lt;span&gt;</code> のようなインラインの要素も、ブロックのように大きさを持つアイテムになります。マージンの相殺も、アイテムの間では起きません。</p>
 <p>Flexboxは、アイテムの中身の大きさから出発して、余った空間や足りない空間をアイテムに配ります。Gridは、先に親で行と列を決め、アイテムをそのセルに置きます。前者は中身から外へ、後者は外から中身へと大きさを決める、と言い換えることもできます<span class="note-ref">※11</span>。</p>
 <p>配置のプロパティは、<code dir="auto">*-items</code> と <code dir="auto">*-content</code> で対象が違います。<code dir="auto">align-items</code> は、各アイテムを、自分に割り当てられた領域（Gridならセル）の中でそろえます。<code dir="auto">align-content</code> は、行や列のまとまり全体を、コンテナの中でそろえます。コンテナに余白があるときに、この違いが見た目に現れます。</p>
@@ -271,7 +271,7 @@
 
 <p>通常フロー（フローレイアウト）は、<code dir="auto">display</code> を変えていない要素が従うレイアウトの方式です。FlexboxやGridと同じく独自の規則を持ち、ブロックレベルのボックスはブロック方向に積まれ、インラインレベルのボックスと文字は行の中をインライン方向に流れます。ブロックの幅は包含ブロックの幅いっぱいに広がり、高さは中身から決まります。</p>
 <p><code dir="auto">gap</code> や <code dir="auto">align-items</code> が効かない、インライン要素の上下の <code dir="auto">margin</code> が空かない、<code dir="auto">float</code> が親からはみ出すといった現象は、どれも通常フローの規則どおりの振る舞いです。この節では、その規則を、FlexboxやGridと同じ1つの方式として説明します<span class="note-ref">※1</span>。</p>
-<h2 id="layout_normal-flow--通常フローを何もしていない状態と考えたとき">通常フローを「何もしていない状態」と考えたとき</h2>
+<h2 id="layout_normal-flow--通常フローを何もしていない状態と考えたとき"><span class="ix" id="layout_normal-flow--ix-t42"></span>通常フローを「何もしていない状態」と考えたとき</h2>
 <p>通常フローは、<code dir="auto">display: flex</code> や <code dir="auto">grid</code> を指定する前の、何も起きていない状態だと思われがちです。そう考えると、<code dir="auto">gap: 16px</code> を書いたのに子の間が空かない、<code dir="auto">align-items: center</code> で中央に寄らないといった場面で、指定の誤りではなくブラウザの不具合を疑うことになります。実際には、通常フローがこれらのプロパティを使わない方式だというだけです。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: ブロックのままの親に gap と align-items を書く</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
 <span style="--0:#C5E478;--1:#3B61B0">._list</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -349,7 +349,7 @@
 <p class="demo-ref">デモ7-2-4　通常フローは指定した幅を守り、Flexbox は縮める（補足サイト）</p>
 <p><code dir="auto">block-size: 50%</code> のような高さの割合は、親の高さが中身で決まる（<code dir="auto">auto</code> の）ときには解決できず、<code dir="auto">auto</code> として扱われます。親の高さが子から決まり、子の高さが親から決まるという循環になるからです。縦の大きさを親に合わせたいときは、親をGridにして行を決めるほうが確実です。</p>
 <p><code dir="auto">&lt;span&gt;</code> のような通常の非置換インラインボックスには <code dir="auto">inline-size</code> と <code dir="auto">block-size</code> が適用されず、大きさは中身と <code dir="auto">line-height</code> で決まります。インラインレベルのボックスでも、<code dir="auto">&lt;img&gt;</code> のような置換要素や、<code dir="auto">display: inline flow-root</code> のボックスには大きさを指定できます<span class="note-ref">※6</span>。</p>
-<h2 id="layout_normal-flow--ブロック整形コンテキストと-display-flow-root">ブロック整形コンテキストと <code dir="auto">display: flow-root</code></h2>
+<h2 id="layout_normal-flow--ブロック整形コンテキストと-display-flow-root"><span class="ix" id="layout_normal-flow--ix-t43"></span>ブロック整形コンテキストと <code dir="auto">display: flow-root</code></h2>
 <p>通常フローのボックスは、整形コンテキストという範囲の中で並びます。ブロックレベルのボックスを積む範囲をブロック整形コンテキスト（BFC）、インラインレベルのボックスを行に並べる範囲をインライン整形コンテキストと呼びます。新しいBFCを作った要素の中は、外から独立して並べられます。</p>
 <p>独立していることは、3つの振る舞いに表れます。中の <code dir="auto">float</code> は要素の外へはみ出さず、要素の高さに含まれます。中の子の <code dir="auto">margin</code> は、要素の <code dir="auto">margin</code> と相殺しません。要素自体も、隣の <code dir="auto">float</code> と重ならず、その横に収まります。</p>
 <p>新しいBFCは、ルート要素、<code dir="auto">float</code> した要素、絶対配置の要素、<code dir="auto">inline flow-root</code> の要素、<code dir="auto">overflow</code> が <code dir="auto">visible</code> と <code dir="auto">clip</code> 以外の要素などが作ります。このうち、BFCを作ることだけを目的にした値が <code dir="auto">display: flow-root</code> です。<code dir="auto">overflow: hidden</code> もBFCを作りますが、影や絶対配置の子を切り取り、中の <code dir="auto">position: sticky</code> を妨げるので、BFCのために使うのは避けます（<a class="xref-out"><code dir="auto">flow-root-for-margin-collapse</code></a>（11-2、巻2））。</p>
@@ -538,7 +538,7 @@
 <section class="page" id="page-layout_sizing" data-title="7-4 大きさの決まり方">
 <h1>7-4 大きさの決まり方</h1>
 
-<p>大きさを指定しないときの <code dir="auto">auto</code> は、ブロックの幅なら横いっぱい、高さなら中身の高さを意味します。中身に合わせた幅には <code dir="auto">fit-content</code> を使い、固定の長さは <code dir="auto">inline-size</code> ではなく、<code dir="auto">min-inline-size</code> や <code dir="auto">max-inline-size</code> で下限と上限として書きます。<code dir="auto">%</code> は包含ブロックを基準に計算され、高さの <code dir="auto">%</code> は親の高さが決まっているときにしか働きません。自然には広がらない要素を幅いっぱいに広げるときは、<code dir="auto">100%</code> ではなく <code dir="auto">stretch</code> を使います。</p>
+<p>大きさを指定しないときの <code dir="auto">auto</code> は、ブロックの幅なら横いっぱい、高さなら中身の高さを意味します。中身に合わせた幅には <code dir="auto">fit-content</code> を使い、固定の長さは <code dir="auto">inline-size</code> ではなく、<code dir="auto">min-inline-size</code> や <code dir="auto">max-inline-size</code> で下限と上限として書きます。<code dir="auto">%</code> は<span class="ix" id="layout_sizing--ix-t49"></span>包含ブロックを基準に計算され、高さの <code dir="auto">%</code> は親の高さが決まっているときにしか働きません。自然には広がらない要素を幅いっぱいに広げるときは、<code dir="auto">100%</code> ではなく <code dir="auto">stretch</code> を使います。</p>
 <p>この節で扱うのは、ボックスの大きさがどの規則で決まるかです<span class="note-ref">※1</span>。</p>
 <h2 id="layout_sizing--auto-と中身に合わせた大きさ"><code dir="auto">auto</code> と中身に合わせた大きさ</h2>
 <p><code dir="auto">inline-size</code> と <code dir="auto">block-size</code> の初期値は <code dir="auto">auto</code> です。通常フローのブロックでは、<code dir="auto">inline-size: auto</code> は包含ブロックの幅から左右の <code dir="auto">margin</code> を引いた残りいっぱいの幅、<code dir="auto">block-size: auto</code> は中身を収める高さを表します。一方、<code dir="auto">float</code> の要素、<code dir="auto">inline flow-root</code> の要素、左右の片側しか位置を指定していない絶対配置の要素、横に並ぶフレックスアイテムの <code dir="auto">inline-size: auto</code> は、中身に合わせた幅を表します。絶対配置の要素でも <code dir="auto">inset-inline</code> で左右の両方を指定すると、<code dir="auto">auto</code> の幅は包含ブロックいっぱいに広がり、縦に並ぶフレックスアイテムも <code dir="auto">align-items</code> の初期値（<code dir="auto">stretch</code>）によってコンテナの幅まで広がります。<code dir="auto">auto</code> の意味は、要素がどのレイアウトの方式の中にあるかと、位置や揃え方の指定で変わります<span class="note-ref">※2</span>。</p>
@@ -614,7 +614,7 @@
 <h1>7-5 marginの役割</h1>
 
 <p><code dir="auto">margin</code> は、要素と前後の要素の間に「最低これだけ離したい」という距離を表すプロパティです。HTMLが縦に長い文書を書くための言語として生まれたことと結び付いた考え方です。ブロック方向で隣り合う <code dir="auto">margin</code> が足し算にならず、大きいほうが採られる仕組み（マージンの相殺）も、この捉え方から説明できます。</p>
-<p>本書は、ボックスを並べるレイアウトの間隔をFlexboxやGridの <code dir="auto">gap</code> に任せ、<code dir="auto">margin</code> は段落や見出しのような文章の要素の間の余白に使います。文章の要素の間の <code dir="auto">margin</code> は、次兄弟結合子で前の要素を条件にして選んだ後ろの要素の <code dir="auto">margin-block-start</code> に付けます。要素自身に条件なしの <code dir="auto">margin-block-end</code> を付け、最後の要素で打ち消す書き方はしません。</p>
+<p>本書は、ボックスを並べるレイアウトの間隔をFlexboxやGridの <code dir="auto">gap</code> に任せ、<code dir="auto">margin</code> は段落や見出しのような文章の要素の間の余白に使います。文章の要素の間の <code dir="auto">margin</code> は、<span class="ix" id="layout_margin-role--ix-t47"></span>次兄弟結合子で前の要素を条件にして選んだ後ろの要素の <code dir="auto">margin-block-start</code> に付けます。要素自身に条件なしの <code dir="auto">margin-block-end</code> を付け、最後の要素で打ち消す書き方はしません。</p>
 <p>背景や枠線の内側の余白は、子の <code dir="auto">margin</code> ではなく親の <code dir="auto">padding</code> で作ります。この節では、<code dir="auto">margin</code>、<code dir="auto">padding</code>、<code dir="auto">gap</code> が受け持つ余白の違いと、この書き分けを選ぶ理由を説明します<span class="note-ref">※1</span>。</p>
 <h2 id="layout_margin-role--margin-でレイアウトを組んだときに起きること"><code dir="auto">margin</code> でレイアウトを組んだときに起きること</h2>
 <p>お知らせのカードを縦に並べるとき、各カードへ <code dir="auto">margin-block-end</code> を付け、最後のカードだけ0に戻す書き方は、今もよく見かけます。</p>
@@ -627,7 +627,7 @@
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
 <p>1列で並べている間は、見た目に問題はありません。しかし、間隔を決めているのが子の側なので、並べ方を変えるたびに子の指定を直すことになります。広い画面で2列のグリッドに変えると、最後の行の左側のカードには <code dir="auto">margin-block-end</code> が残り、列の間隔は別の指定で足さなければなりません。カードの1つを条件によって出さないようにしたときも、どの要素の余白を打ち消すかを考え直します。</p>
-<p>同じ考え方で、カードの背景の内側に余白を取ろうとして、見出しに <code dir="auto">margin-block-start</code> を付けることもあります。通常フローでは、親に <code dir="auto">padding</code> や <code dir="auto">border</code> がないと、子の <code dir="auto">margin</code> が親の <code dir="auto">margin</code> と相殺して親の外へ出ます。その結果、余白は背景の内側ではなく、カードの外側にできます。</p>
+<p>同じ考え方で、カードの背景の内側に余白を取ろうとして、見出しに <code dir="auto">margin-block-start</code> を付けることもあります。<span class="ix" id="layout_margin-role--ix-t42"></span>通常フローでは、親に <code dir="auto">padding</code> や <code dir="auto">border</code> がないと、子の <code dir="auto">margin</code> が親の <code dir="auto">margin</code> と相殺して親の外へ出ます。その結果、余白は背景の内側ではなく、カードの外側にできます。</p>
 <p>どちらも、CSSの不具合ではありません。並べる間隔や背景の内側の余白という、<code dir="auto">margin</code> の本来の意味とは違う役割を持たせたことから生じるずれです。<code dir="auto">margin</code> が何のための仕組みかを知っておくと、どの余白をどのプロパティで作るかを判断できます。</p>
 <h2 id="layout_margin-role--縦に長い文書のための仕組み">縦に長い文書のための仕組み</h2>
 <p>HTMLは、もともと論文のような縦に長い文書を書くための言語です。その文書で <code dir="auto">margin</code> が表すのは、段落や見出しを読みやすくするために「前後の要素から最低これだけ離したい」という希望です。見出しが下に24px、段落が上に40pxを求めているなら、40px離せば両方の希望を満たせるので、相殺は大きいほうを採ります。</p>
@@ -722,7 +722,7 @@
 <section class="page" id="page-layout_margin-collapse" data-title="7-6 マージンの相殺">
 <h1>7-6 マージンの相殺</h1>
 
-<p>通常フローでは、ブロック方向で隣り合う2つ以上の <code dir="auto">margin</code> は、足し算されず、1つにまとまります。これをマージンの相殺（margin collapsing）と呼びます。まとまった余白の大きさは、正の値どうしなら大きいほうの値です。上の要素の <code dir="auto">margin-block-end: 24px</code> と下の要素の <code dir="auto">margin-block-start: 40px</code> が隣り合えば、間は64pxではなく40pxになります。</p>
+<p><span class="ix" id="layout_margin-collapse--ix-t42"></span>通常フローでは、ブロック方向で隣り合う2つ以上の <code dir="auto">margin</code> は、足し算されず、1つにまとまります。これをマージンの相殺（margin collapsing）と呼びます。まとまった余白の大きさは、正の値どうしなら大きいほうの値です。上の要素の <code dir="auto">margin-block-end: 24px</code> と下の要素の <code dir="auto">margin-block-start: 40px</code> が隣り合えば、間は64pxではなく40pxになります。</p>
 <p>相殺は、兄弟の間だけでなく、親と最初の子、親と最後の子、中身のない要素の上下の間でも起きます。一方で、FlexboxやGridのアイテム、<code dir="auto">display: flow-root</code> の要素とその子の間、<code dir="auto">float</code> や絶対配置の要素では起きません。余白が思った大きさにならないときは、値を調整する前に、その <code dir="auto">margin</code> がどの要素の <code dir="auto">margin</code> と隣り合っているかを確かめます。</p>
 <p>相殺は、余白を打ち消す仕組みではなく、隣り合う要素の余白のうち大きいほうが採られる仕組みです。<code dir="auto">margin</code> を「前後の要素から最低これだけ離したい」という距離と捉えれば、段落や見出しが続く本文では、余白が重なって広がりすぎるのを防ぐ便利な仕組みです。一方、<code dir="auto">margin</code> でカードやセクションを並べるレイアウトでは、思わぬずれを生みます<span class="note-ref">※1</span>。</p>
 <p>子の <code dir="auto">margin</code> を残したまま親子の相殺を止めたいときは、親に <code dir="auto">display: block flow-root</code> を指定します。<code dir="auto">overflow: hidden</code> や見えない <code dir="auto">padding</code> でも止まりますが、副作用があるか、止める意図がコードから読み取れません。この節では、相殺の規則と、止め方の選び方を説明します。</p>
@@ -885,7 +885,7 @@
 <p>高さの指定は、片側にだけ影響します。親に <code dir="auto">block-size</code> を指定すると、最後の子の <code dir="auto">margin-block-end</code> は親の外へ出なくなります。<code dir="auto">min-block-size</code> は、CSS 2.2の注記では0でなければ外へ出るのを止めるとされていますが、2026年10月にChrome 152で確かめたところ、止めたのは値が中身の高さを超えて親の高さを変えたときだけでした。中身より小さい <code dir="auto">min-block-size: 1px</code> では、<code dir="auto">margin-block-end</code> は親の外へ出ました。最後の子の <code dir="auto">margin</code> を確実に親の中に留めたいときは、<code dir="auto">min-block-size</code> に頼らず、<code dir="auto">padding</code> か <code dir="auto">border</code> を挟みます。</p>
 <p>一方で、最初の子の <code dir="auto">margin-block-start</code> は、親の高さに関係なく親の外へ出ます。空の要素も、0より大きい <code dir="auto">block-size</code> か <code dir="auto">min-block-size</code> を指定すると上下の <code dir="auto">margin</code> が隣り合わなくなり、通り抜けは起きません（値が0なら、指定していても通り抜けます）。</p>
 <p><code dir="auto">gap</code> は、通常フローのブロックコンテナには効きません。<code dir="auto">gap</code> が働くのはFlexbox、Grid、段組みで、FlexboxとGridではそもそも相殺が起きません。フレックスアイテムとグリッドアイテムの <code dir="auto">margin</code> は、隣のアイテムや親の <code dir="auto">margin</code> と相殺せず、<code dir="auto">gap</code> に足されます。<code dir="auto">gap: 16px</code> の中で要素に <code dir="auto">margin-block-start: 24px</code> を付けると、間は40pxになります。</p>
-<p>新しいブロック整形コンテキストを作る要素は、子の <code dir="auto">margin</code> を外へ出しません。<code dir="auto">display: flow-root</code>、<code dir="auto">overflow</code> が <code dir="auto">visible</code> と <code dir="auto">clip</code> 以外の要素、<code dir="auto">float</code> した要素、<code dir="auto">inline flow-root</code> の要素がこれにあたります。また、<code dir="auto">float</code> した要素と絶対配置の要素は通常フローから外れるので、自分の <code dir="auto">margin</code> がほかの要素の <code dir="auto">margin</code> と相殺することもありません。ルート要素（<code dir="auto">&lt;html&gt;</code>）の <code dir="auto">margin</code> も相殺しません。</p>
+<p>新しい<span class="ix" id="layout_margin-collapse--ix-t43"></span>ブロック整形コンテキストを作る要素は、子の <code dir="auto">margin</code> を外へ出しません。<code dir="auto">display: flow-root</code>、<code dir="auto">overflow</code> が <code dir="auto">visible</code> と <code dir="auto">clip</code> 以外の要素、<code dir="auto">float</code> した要素、<code dir="auto">inline flow-root</code> の要素がこれにあたります。また、<code dir="auto">float</code> した要素と絶対配置の要素は通常フローから外れるので、自分の <code dir="auto">margin</code> がほかの要素の <code dir="auto">margin</code> と相殺することもありません。ルート要素（<code dir="auto">&lt;html&gt;</code>）の <code dir="auto">margin</code> も相殺しません。</p>
 <h2 id="layout_margin-collapse--相殺を止めるときの-display-flow-root">相殺を止めるときの <code dir="auto">display: flow-root</code></h2>
 <p>相殺を止める必要があるのは、子の <code dir="auto">margin</code> を残したまま、その余白を親の内側に収めたいときです。本文の領域を包む要素に背景を付けた場合や、CMSで入力された本文の最初の見出しが <code dir="auto">margin-block-start</code> を持つ場合がこれにあたります。並べる間隔や背景の内側の余白を新しく作るだけなら、親の <code dir="auto">gap</code> や <code dir="auto">padding</code> で足ります<span class="note-ref">※4</span>。</p>
 <p>その場合は、親に <code dir="auto">display: block flow-root</code> を指定します（ルール「<a class="xref-out"><code dir="auto">flow-root-for-margin-collapse</code></a>（11-2、巻2）」）。<code dir="auto">flow-root</code> は、スクロールコンテナや切り取りを作らずに、新しいブロック整形コンテキストを作れる値です。ただし、変わるのは相殺だけではありません。中の <code dir="auto">float</code> した要素も、親の高さの計算に入ります。また、親の外にある <code dir="auto">float</code> の横では、親のボックスは <code dir="auto">float</code> と重ならないよう、幅を狭めるか <code dir="auto">float</code> の下へ送られます<span class="note-ref">※5</span>。止まるのは親子の相殺で、<code dir="auto">flow-root</code> の中の兄弟どうしは相殺したままです。</p>
@@ -1232,7 +1232,7 @@
 <p class="demo-ref">デモ7-7-9　flex-wrap: nowrap と wrap の比較（補足サイト）</p>
 <div class="scoped baseline | not-content" data-baseline="high"><p class="_summary"><span class="_label">Baseline</span><strong>広く利用可能</strong><span class="_since">2023年10月から（新しく利用可能になったのは2021年4月）</span></p><p class="_feature"><code>Flexbox の gap</code></p><ul class="_browsers"><li>Chrome 84</li><li>Edge 84</li><li>Firefox 63</li><li>Safari 14.1</li><li>iOS Safari 14.5</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <p>フレックスアイテムの <code dir="auto">auto</code> の <code dir="auto">margin</code> は、<code dir="auto">flex-grow</code> で配った後の余りを吸収し、<code dir="auto">justify-content</code> より先に適用されます<span class="note-ref">※8</span>。</p>
-<h2 id="layout_flexbox-basics--見た目の順番と読み上げの順番">見た目の順番と読み上げの順番</h2>
+<h2 id="layout_flexbox-basics--見た目の順番と読み上げの順番">見た目の順番と<span class="ix" id="layout_flexbox-basics--ix-t44"></span>読み上げの順番</h2>
 <p><code dir="auto">order</code> はアイテムを値の小さい順に並べ直し、<code dir="auto">row-reverse</code> と <code dir="auto">column-reverse</code> は並びを逆にします。本書では、<code dir="auto">order</code> の値に <code dir="auto">1</code> か <code dir="auto">-1</code> だけを使います（<a class="xref-out"><code dir="auto">order-one-or-minus-one</code></a>（11-12、巻2））。変わるのは見た目の順番だけなので、読み上げの順番と、Tabキーでフォーカスが移る順番はHTMLの順番のままです。</p>
 <p>フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（<a href="#layout_grid-basics--rule-source-order-for-reading" class="xref-rule" data-label="7-8"><code dir="auto">source-order-for-reading</code></a>）。</p>
 <p>並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す <code dir="auto">reading-flow</code> は、2026年10月の時点でBaselineではありません。それでも <code dir="auto">row-reverse</code> や <code dir="auto">wrap-reverse</code> で並べ替えるときは、同じルールに <code dir="auto">reading-flow</code> を指定します<span class="note-ref">※9</span>。</p>
@@ -1370,7 +1370,7 @@
   <text class="_text-muted" x="240" y="278" font-size="13" text-anchor="middle">終わりの側からは -4、-3、-2、-1（行の線も同じ）</text>
 </svg>
 </div><figcaption>図7-28　グリッド線、トラック、セル、グリッドエリア、溝</figcaption></figure>
-<h2 id="layout_grid-basics--トラックの大きさを決める-frfit-contentminmaxrepeat">トラックの大きさを決める <code dir="auto">fr</code>、<code dir="auto">fit-content()</code>、<code dir="auto">minmax()</code>、<code dir="auto">repeat()</code></h2>
+<h2 id="layout_grid-basics--トラックの大きさを決める-frfit-contentminmaxrepeat">トラックの大きさを決める <code dir="auto">fr</code>、<span class="ix" id="layout_grid-basics--ix-s103"></span><code dir="auto">fit-content()</code>、<span class="ix" id="layout_grid-basics--ix-s104"></span><code dir="auto">minmax()</code>、<span class="ix" id="layout_grid-basics--ix-s105"></span><code dir="auto">repeat()</code></h2>
 <p>列の大きさは <code dir="auto">grid-template-columns</code>、行の大きさは <code dir="auto">grid-template-rows</code> に、トラックごとの値を空白で区切って並べます。値には、長さ、中身の大きさを表す <code dir="auto">min-content</code>、<code dir="auto">max-content</code>、<code dir="auto">auto</code>、そして <code dir="auto">fr</code> が使えます。</p>
 <p><code dir="auto">fr</code> は、固定の大きさのトラックと <code dir="auto">gap</code> を引いた残りの空間を、比率で分ける単位です。<code dir="auto">calc(200 / 16 * 1rem) 2fr 1fr</code> なら、200px相当の列と溝を除いた残りを、2対1で分けます。溝を除いてから分けるので、<code dir="auto">%</code> で分けたときのように、列の合計が溝の分だけ親の幅を超えることはありません。</p>
 <p>同じ理由で、グリッドアイテムの大きさに、親の大きさを前提にした <code dir="auto">%</code> を書かないようにします。グリッドアイテムの <code dir="auto">%</code> は、親ではなく、アイテムが置かれたグリッドエリアを基準に解決されます。<code dir="auto">place-content: center</code> で中央に寄せたグリッドのアイテムに <code dir="auto">inline-size: 50%</code> と書いても、トラックがアイテムの中身の大きさで決まっていれば、その50%にしかなりません。大きさは、トラックの側で <code dir="auto">fr</code> と <code dir="auto">minmax()</code> を使って決めます。</p>
@@ -1546,7 +1546,7 @@
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">place-content</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">center</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span class="indent">  </span><span style="--0:#80CBC4;--1:#096E72">place-items</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#FF6D6D;--1:#984E4D">center</span><span style="--0:#D6DEEB;--1:#403F53">;</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<h2 id="layout_grid-alignment--サブグリッドでカードの行をそろえる">サブグリッドでカードの行をそろえる</h2>
+<h2 id="layout_grid-alignment--サブグリッドでカードの行をそろえる"><span class="ix" id="layout_grid-alignment--ix-t45"></span>サブグリッドでカードの行をそろえる</h2>
 <p>グリッドの孫の要素は、親のグリッドに参加しません。子に <code dir="auto">grid-template-rows: subgrid</code> を指定すると、子は自分の行を持たず、親の行をそのまま使います。子の中の要素は親の行に並ぶので、別々のカードの見出しや本文が、同じ高さの行に入ります。</p>
 <div class="scoped baseline | not-content" data-baseline="high"><p class="_summary"><span class="_label">Baseline</span><strong>広く利用可能</strong><span class="_since">2026年3月から（新しく利用可能になったのは2023年9月）</span></p><p class="_feature"><code>Subgrid</code></p><ul class="_browsers"><li>Chrome 117</li><li>Edge 117</li><li>Firefox 71</li><li>Safari 16</li><li>iOS Safari 16</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <figure class="code"><figcaption>🙆‍♂ Recommended: カードの行を、並べる側のグリッドの行に参加させる</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.card-grid) to (.scoped) {</span>
@@ -1680,9 +1680,9 @@
 <section class="page" id="page-layout_positioning" data-title="7-10 positionの基礎">
 <h1>7-10 positionの基礎</h1>
 
-<p><code dir="auto">position</code> の <code dir="auto">static</code> 以外の値は、働き方で2つに分かれます。<code dir="auto">relative</code> と <code dir="auto">sticky</code> は、親が決めた方式（通常フロー、Flexbox、Grid）に参加したまま、配置された後の位置を <code dir="auto">inset</code> の分だけ補正します。<code dir="auto">absolute</code> と <code dir="auto">fixed</code> は、要素を親の流れから外し、絶対配置という別のレイアウトの方式で置き直します。位置の基準になる「包含ブロック」は、値によって、また祖先の <code dir="auto">transform</code> などの指定によって変わります。</p>
-<p>本書では、絶対配置の要素の包含ブロックを、同じコンポーネントの中に <code dir="auto">position: relative</code> ではっきり作ります。<code dir="auto">position: sticky</code> を指定するときは、<code dir="auto">inset</code> を指定し、GridとFlexboxの子なら <code dir="auto">align-self: start</code> も指定します。</p>
-<h2 id="layout_positioning--positionをレイアウトの方式として考える">positionをレイアウトの方式として考える</h2>
+<p><code dir="auto">position</code> の <code dir="auto">static</code> 以外の値は、働き方で2つに分かれます。<code dir="auto">relative</code> と <code dir="auto">sticky</code> は、親が決めた方式（<span class="ix" id="layout_positioning--ix-t42"></span>通常フロー、Flexbox、Grid）に参加したまま、配置された後の位置を <code dir="auto">inset</code> の分だけ補正します。<code dir="auto">absolute</code> と <code dir="auto">fixed</code> は、要素を親の流れから外し、絶対配置という別のレイアウトの方式で置き直します。位置の基準になる「包含ブロック」は、値によって、また祖先の <code dir="auto">transform</code> などの指定によって変わります。</p>
+<p>本書では、絶対配置の要素の包含ブロックを、同じ<span class="ix" id="layout_positioning--ix-t29"></span>コンポーネントの中に <code dir="auto">position: relative</code> ではっきり作ります。<code dir="auto">position: sticky</code> を指定するときは、<code dir="auto">inset</code> を指定し、GridとFlexboxの子なら <code dir="auto">align-self: start</code> も指定します。</p>
+<h2 id="layout_positioning--positionをレイアウトの方式として考える">positionを<span class="ix" id="layout_positioning--ix-t41"></span>レイアウトの方式として考える</h2>
 <p>CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと位置を決める方式が複数あります。同じプロパティでも、どの方式で配置されるかによって働き方が変わります。<code dir="auto">width</code> は、通常フローでは決まった幅になり、Flexboxの子では縮むことのある仮の幅として扱われます。<code dir="auto">z-index</code> は、通常フローの要素に指定しても何も起きませんが、FlexboxとGridの子なら <code dir="auto">position</code> を指定しなくても効きます。</p>
 <p><code dir="auto">position</code> も、この方式に関わるプロパティです。<code dir="auto">top</code> や <code dir="auto">left</code> を書くための前提の指定と覚えていると、<code dir="auto">absolute</code> を指定した要素がFlexboxの子として並ばなくなる理由や、<code dir="auto">relative</code> を指定しただけで重なり順が変わる理由を説明できません。前者は、要素が絶対配置に移って親の流れから外れたことで起きる変化です。後者は、<code dir="auto">static</code> 以外の要素（位置指定された要素）が、<code dir="auto">static</code> の要素より後に描かれることで起きる変化です。</p>
 <figure class="code"><figcaption>🙅‍♂ Not Recommended: Flexbox の子の1つに position: absolute を指定する</figcaption><pre><code><span style="--0:#919F9F;--1:#5F636F">/* 🙅‍♂ Not Recommended */</span>
@@ -1785,7 +1785,7 @@
 <p><code dir="auto">fixed</code> と <code dir="auto">sticky</code> の要素は、z-indexを指定しなくてもスタッキングコンテキストを作ります。<code dir="auto">relative</code> と <code dir="auto">absolute</code> は、z-indexに <code dir="auto">auto</code> 以外を指定したときだけ作ります。</p>
 <p>次のデモでは、5つの値のBに、同じ <code dir="auto">inset</code> を指定しています。枠の中をスクロールすると、<code dir="auto">fixed</code> のBは枠の同じ位置に留まり、<code dir="auto">sticky</code> のBは破線の枠の範囲で上端に留まります。スクロールする前の位置では、<code dir="auto">static</code> のBは <code dir="auto">inset</code> が無視されてAとCの間に並び、<code dir="auto">relative</code> のBは元の場所を空けたまま下へ16px、行末側へ48pxずれます。<code dir="auto">absolute</code> のBは流れから外れ、破線の枠の角から同じ距離に置かれます。</p>
 <p class="demo-ref">デモ7-10-1　同じ inset を指定しても、position の値によって B の置かれ方が変わる（補足サイト）</p>
-<h2 id="layout_positioning--包含ブロックはどの祖先で決まるか">包含ブロックはどの祖先で決まるか</h2>
+<h2 id="layout_positioning--包含ブロックはどの祖先で決まるか"><span class="ix" id="layout_positioning--ix-t49"></span>包含ブロックはどの祖先で決まるか</h2>
 <p>要素の位置と大きさは、「包含ブロック」を基準に計算されます。<code dir="auto">inset</code> のパーセントの値も、<code dir="auto">inline-size</code> や <code dir="auto">padding</code> のパーセントの値も、包含ブロックの大きさに対する割合です。どの領域が包含ブロックになるかは、<code dir="auto">position</code> の値で次のように決まります。</p>
 <table>
 <thead>
@@ -2002,7 +2002,7 @@
 <section class="page" id="page-layout_anchor-basics" data-title="7-11 アンカーポジショニングの基礎">
 <h1>7-11 アンカーポジショニングの基礎</h1>
 
-<p>アンカーポジショニングは、<code dir="auto">absolute</code> か <code dir="auto">fixed</code> の要素を、包含ブロックの辺ではなく、別の要素（アンカー）の辺を基準に置く仕組みです。アンカーに <code dir="auto">anchor-name</code> で名前を付け、配置する要素の <code dir="auto">position-anchor</code> でその名前を参照し、<code dir="auto">position-area</code> で置く領域を選びます。画面の端で収まらないときは、<code dir="auto">position-try-fallbacks</code> で反対側へ切り替えます。</p>
+<p><span class="ix" id="layout_anchor-basics--ix-t52"></span>アンカーポジショニングは、<code dir="auto">absolute</code> か <code dir="auto">fixed</code> の要素を、包含ブロックの辺ではなく、別の要素（アンカー）の辺を基準に置く仕組みです。アンカーに <code dir="auto">anchor-name</code> で名前を付け、配置する要素の <code dir="auto">position-anchor</code> でその名前を参照し、<code dir="auto">position-area</code> で置く領域を選びます。画面の端で収まらないときは、<code dir="auto">position-try-fallbacks</code> で反対側へ切り替えます。</p>
 <p>本書では、ポップオーバーを開くボタンを基準にするなら、名前を付けずに暗黙のアンカーを使います。<code dir="auto">position-area</code> の値は論理キーワードで書きます。対象のブラウザの一部が対応していないので、アンカーを基準にした指定は <code dir="auto">@supports</code> の中に書き、その外に、未対応の環境でも内容を読めて操作できる配置を書きます。</p>
 <p>この節は、「<a href="#page-layout_positioning" class="xref">7-10 positionの基礎</a>」の続きで、絶対配置と包含ブロックの仕組みを前提にしています<span class="note-ref">※1</span>。</p>
 <h2 id="layout_anchor-basics--絶対配置だけでは別の要素の隣に置けない">絶対配置だけでは別の要素の隣に置けない</h2>
@@ -2039,7 +2039,7 @@
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span class="indent"><span style="--0:#D6DEEB;--1:#403F53">  </span></span><span style="--0:#D6DEEB;--1:#403F53">}</span>
 <span style="--0:#D6DEEB;--1:#403F53">}</span></code></pre></figure>
-<p>次のデモでは、入力欄をアンカーにして、その下に説明を置いています。包含ブロックは、入力欄と説明を包むコンポーネントのルートです。</p>
+<p>次のデモでは、入力欄をアンカーにして、その下に説明を置いています。包含ブロックは、入力欄と説明を包む<span class="ix" id="layout_anchor-basics--ix-t29"></span>コンポーネントのルートです。</p>
 <figure class="print-demo"><div class="shots"><div class="shot" style="inline-size: 41.67%"><img src="img/demo-69560ec48918-320.png" alt=""><p class="shot-label">幅 320px</p></div><div class="shot" style="inline-size: 100.00%"><img src="img/demo-6f672b14e360-768.png" alt=""><p class="shot-label">幅 768px</p></div></div><figcaption>図7-36　anchor-name と position-anchor で、入力欄の下に説明を置く</figcaption></figure>
 <p>アンカーには、配置する要素より先にレイアウトが済んでいる要素しかなれません。具体的には、アンカーが配置する要素の包含ブロックの中にあり、同じ包含ブロックに置かれた絶対配置の要素どうしなら、アンカーが文書の順で先にある必要があります。包含ブロックを作っている要素そのものと、その外にある要素は、アンカーにできません。条件を満たすアンカーがなければ、<code dir="auto">position-area</code> は働かず、要素は通常の絶対配置の位置に置かれます。</p>
 <p>同じ名前のアンカーが複数あるときは、条件を満たすもののうち、文書の順で最後の要素が選ばれます。入力欄の説明のようなコンポーネントを繰り返し置くと、別の入力欄が基準に選ばれることがあります。<code dir="auto">anchor-scope</code> は、名前が届く範囲を、指定した要素の子孫に限るプロパティです。<code dir="auto">anchor-scope: --field-note</code> で特定の名前を、<code dir="auto">anchor-scope: all</code> ですべての名前を限ります。繰り返し置くコンポーネントでの使い方は、11-8で扱います。</p>
@@ -2062,7 +2062,7 @@
 <p><code dir="auto">position-anchor</code> の初期値 <code dir="auto">normal</code> は、<code dir="auto">position-area</code> を指定したときだけ暗黙のアンカーを使います。<code dir="auto">anchor()</code> で暗黙のアンカーを参照するときは、<code dir="auto">position-anchor: auto</code> を明示します。初期値が <code dir="auto">auto</code> から <code dir="auto">normal</code> に変わったのは、2026年のChrome 151、Firefox 151、Safari 27です。それより前のChromeとSafari 26では、指定しなくても <code dir="auto">anchor()</code> が暗黙のアンカーを使っていました。</p>
 <div class="scoped baseline | not-content" data-baseline="low"><p class="_summary"><span class="_label">Baseline</span><strong>新しく利用可能</strong><span class="_since">2026年1月から</span></p><p class="_feature"><code>popovertarget による暗黙のアンカー</code></p><ul class="_browsers"><li>Chrome 133</li><li>Edge 133</li><li>Firefox 147</li><li>Safari 26</li><li>iOS Safari 26</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <p><code dir="auto">popovertarget</code> の暗黙のアンカーは、Chrome 133、Firefox 147、Safari 26で使えます。<code dir="auto">commandfor</code> ではChrome 135、Firefox 147、Safari 26.2からです（2026年10月確認）<span class="note-ref">※3</span>。</p>
-<h2 id="layout_anchor-basics--anchor-と-anchor-size-でアンカーの辺と大きさを参照する"><code dir="auto">anchor()</code> と <code dir="auto">anchor-size()</code> でアンカーの辺と大きさを参照する</h2>
+<h2 id="layout_anchor-basics--anchor-と-anchor-size-でアンカーの辺と大きさを参照する"><span class="ix" id="layout_anchor-basics--ix-s106"></span><code dir="auto">anchor()</code> と <span class="ix" id="layout_anchor-basics--ix-s107"></span><code dir="auto">anchor-size()</code> でアンカーの辺と大きさを参照する</h2>
 <p><code dir="auto">anchor()</code> は、アンカーの辺の位置を返す関数で、<code dir="auto">inset</code> のプロパティにだけ書けます。<code dir="auto">inset-block-start: anchor(end)</code> は、配置する要素のブロック方向の始まりの辺を、アンカーの終わりの辺にそろえる指定です。辺は、<code dir="auto">start</code> や <code dir="auto">end</code> のような論理キーワード、<code dir="auto">top</code> や <code dir="auto">left</code> のような物理キーワード、中央の <code dir="auto">center</code>、割合で指定します。<code dir="auto">inside</code> は書いたプロパティと同じ側の辺を、<code dir="auto">outside</code> は反対側の辺を指すので、<code dir="auto">inset: anchor(inside)</code> と書くと、4辺をアンカーの4辺に重ねられます。</p>
 <figure class="code"><figcaption>🙆‍♂ Recommended: anchor() で、アンカーの下端と行頭側の辺にそろえる</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.field-note) to (.scoped) {</span>
 <span class="indent">  </span><span style="--0:#C5E478;--1:#3B61B0">._note</span><span style="--0:#D6DEEB;--1:#403F53"> {</span>
@@ -2114,7 +2114,7 @@
 <p>一度切り替わった位置は、元の位置に空きができても自動では戻らず、再びはみ出したときに選び直されます。スクロールのたびに位置が行き来しないようにするためです。書いた順ではなく空きの大きさで選ばせるときは、<code dir="auto">position-try-order: most-block-size</code> のように指定します。<code dir="auto">position-try</code> は、この2つをまとめて書く一括指定です。</p>
 <p><code dir="auto">position-visibility</code> は、配置した要素を隠す条件を決めるプロパティです。初期値の <code dir="auto">anchors-visible</code> では、アンカーがスクロールなどで完全に見えなくなると、配置した要素も見えなくなります。<code dir="auto">no-overflow</code> は包含ブロックからはみ出したときに隠し、<code dir="auto">always</code> は常に表示します。<code dir="auto">position-visibility</code> はSafariでは26.2から使えます（2026年10月確認）。</p>
 <div class="scoped baseline | not-content" data-baseline="low"><p class="_summary"><span class="_label">Baseline</span><strong>新しく利用可能</strong><span class="_since">2026年1月から</span></p><p class="_feature"><code>position-try-fallbacks</code></p><ul class="_browsers"><li>Chrome 128</li><li>Edge 128</li><li>Firefox 147</li><li>Safari 26</li><li>iOS Safari 26</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
-<h2 id="layout_anchor-basics--包含ブロックがマス目とはみ出しの範囲を決める">包含ブロックがマス目とはみ出しの範囲を決める</h2>
+<h2 id="layout_anchor-basics--包含ブロックがマス目とはみ出しの範囲を決める"><span class="ix" id="layout_anchor-basics--ix-t49"></span>包含ブロックがマス目とはみ出しの範囲を決める</h2>
 <p>アンカーポジショニングでも、包含ブロックの決まり方は「<a href="#page-layout_positioning" class="xref">7-10 positionの基礎</a>」と同じです。変わるのは役割で、位置の基準ではなく、<code dir="auto">position-area</code> のマス目の外枠と、はみ出したかどうかを判定する範囲になります。先のデモの枠に <code dir="auto">position: relative</code> を指定しているのは、この範囲を枠に合わせるためです。</p>
 <p>カードの中で <code dir="auto">position: absolute</code> を使い、カードに <code dir="auto">position: relative</code> を指定すると、マス目もはみ出しの判定もカードの範囲になります。カードの下端に近いボタンの説明は、画面には十分な空きがあっても、カードからはみ出すので反転します。説明を画面の端まで使って表示したいなら、包含ブロックをビューポートにします。</p>
 <p>ポップオーバーはトップレイヤーに表示されるので、祖先の指定にかかわらず、包含ブロックはビューポートになります。祖先の <code dir="auto">overflow</code> で切り取られず、はみ出しも画面の端で判定され、ページのどこにあるボタンもアンカーにできます。そのため、ツールチップやメニューはポップオーバーで作ります。<code dir="auto">position: fixed</code> もビューポートを基準にしますが、祖先に <code dir="auto">transform</code> や <code dir="auto">filter</code> があると、その祖先が包含ブロックになります。</p>
@@ -2273,7 +2273,7 @@
 <span style="--1:#8844AE"><span style="--0:#7FDBCA">&lt;/</span><span style="--0:#CAECE6">div</span><span style="--0:#7FDBCA">&gt;</span></span></code></pre></figure>
 <p>HTMLは見出しから書き、ラッパーも足していません。配置の変化はテンプレートの差し替えにまとまり、<code dir="auto">order</code> も使いません。広いときに画像が見出しより左に来る並べ替えは、同じルールの <code dir="auto">reading-flow: grid-rows</code> で、対応したブラウザでは読み上げとフォーカスの順番も見た目に合わせられます<span class="note-ref">※1</span><span class="note-ref">※2</span>。</p>
 <p>見出しと副題を別々のエリアに置きたいときだけは、<code dir="auto">hgroup</code> の箱をなくす必要があります。それでも、箱をなくすのは文書構造として必要な <code dir="auto">hgroup</code> の1つだけで、レイアウトのためのラッパーは足しません。<code dir="auto">hgroup</code> には <code dir="auto">role="group"</code> でロールを明示します。</p>
-<h2 id="layout_display-contents--サブグリッドに参加させる">サブグリッドに参加させる</h2>
+<h2 id="layout_display-contents--サブグリッドに参加させる"><span class="ix" id="layout_display-contents--ix-t45"></span>サブグリッドに参加させる</h2>
 <p>1つ目の使いどころは、サブグリッドです。サブグリッドにできるのはグリッドの直接の子だけなので、<code dir="auto">ul &gt; li &gt; article</code> のように、グリッドとカードの間に <code dir="auto">li</code> があると、<code dir="auto">article</code> を <code dir="auto">ul</code> の列に参加させられません。<code dir="auto">li</code> の箱をなくせば、<code dir="auto">article</code> が <code dir="auto">ul</code> の直接のグリッドアイテムになります。</p>
 <div class="scoped baseline | not-content" data-baseline="high"><p class="_summary"><span class="_label">Baseline</span><strong>広く利用可能</strong><span class="_since">2026年3月から（新しく利用可能になったのは2023年9月）</span></p><p class="_feature"><code>Subgrid</code></p><ul class="_browsers"><li>Chrome 117</li><li>Edge 117</li><li>Firefox 71</li><li>Safari 16</li><li>iOS Safari 16</li></ul><p class="_source">web-features 3.40.0 のデータ（2026年9月確認）</p></div>
 <figure class="code"><figcaption>🙆‍♂ Recommended: li の箱をなくし、article を ul のサブグリッドにする</figcaption><pre><code><span style="--0:#C792EA;--1:#8844AE">@scope</span><span style="--0:#D6DEEB;--1:#403F53"> (.scoped.article-list) to (.scoped) {</span>

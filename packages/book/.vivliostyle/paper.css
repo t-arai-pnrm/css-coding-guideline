@@ -427,3 +427,42 @@ details > summary {
 img {
   max-inline-size: 100%;
 }
+
+/* 索引：2段組。ページ番号は組版のときに入る。用語集が詳しい説明として指す節のページは太字にする */
+section.index {
+  break-before: right;
+}
+
+section.index h2 {
+  margin-block: 4mm 1mm;
+  font-size: 10pt;
+  column-span: all;
+}
+
+.ix-list {
+  columns: 2;
+  column-gap: 8mm;
+  padding: 0;
+  list-style: none;
+  font: 8pt/1.7 "Hiragino Sans", sans-serif;
+}
+
+.ix-list li {
+  break-inside: avoid;
+}
+
+.ix-term {
+  margin-inline-end: 2mm;
+}
+
+.ix-ref::after {
+  content: target-counter(attr(href), page);
+}
+
+.ix-ref + .ix-ref::before {
+  content: ", ";
+}
+
+.ix-ref.-definition::after {
+  font-weight: 700;
+}
