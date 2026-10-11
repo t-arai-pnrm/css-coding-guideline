@@ -1,0 +1,72 @@
+@layer components {
+  /* 2つのページを比べるための枠 */
+  @scope (.scoped.section-join-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+    }
+
+    p {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+
+  @scope (.scoped.news-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-block: 48px;
+      padding-inline: 16px;
+      background-color: var(--background--active);
+    }
+  }
+
+  /**
+   * キャンペーンのセクション。
+   *
+   * @prop {length} --campaign-section--padding-block-start [48px] - 上の余白
+   */
+  @scope (.scoped.campaign-section) to (.scoped) {
+    :scope {
+      --_padding-block-start: var(--campaign-section--padding-block-start, 48px);
+
+      display: block grid;
+      gap: 8px;
+      padding-block: var(--_padding-block-start) 48px;
+      padding-inline: 16px;
+
+      /* お知らせのセクションと同じ背景 */
+      background-color: var(--background--active);
+    }
+  }
+
+  @scope (.scoped.contact-section) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      padding-block: 48px;
+      padding-inline: 16px;
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-home) to (.scoped) {
+    ._sections {
+      /* 比べるために、data-spacing="joined" の側にだけ指定する */
+      &[data-spacing="joined"] > ._news-outer + ._campaign-outer {
+        /* 同じ背景のお知らせが前にあるときは、キャンペーンの上の余白を詰める */
+        --campaign-section--padding-block-start: 0px;
+      }
+    }
+  }
+}

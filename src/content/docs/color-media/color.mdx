@@ -1,6 +1,6 @@
 ---
 title: "15-1 色の形式と色空間"
-description: "色は oklch() で定義します。16進数、rgb()、hsl() は sRGB の範囲に限られ、明度が見た目の明るさと一致しません。oklch() は明度が知覚に近く、広色域の画面の色も表せます。グラデーションには、補間の色空間を書きます。"
+description: "色は oklch() で定義します。16進数、rgb()、hsl() は sRGB の範囲に限られ、明度が見た目の明るさと一致しません。oklch() は明度が知覚に近く、広色域の画面の色も表せます。グラデーションには、補間の色空間を書きます。無彩色の色相は none にします。"
 sidebar:
   order: 1
 ---
@@ -10,6 +10,8 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import gradientHtml from '../../../demos/color-media/gradient-interpolation/index.html?raw';
 import gradientCss from '../../../demos/color-media/gradient-interpolation/style.css?raw';
+import achromaticHtml from '../../../demos/color-media/achromatic-hue/index.html?raw';
+import achromaticCss from '../../../demos/color-media/achromatic-hue/style.css?raw';
 
 色は `oklch()` で定義します。`oklch()` は明度、彩度、色相の3つの値で色を表し、明度が見た目の明るさに近くなるように作られています。値から色の性質を読み取れ、色相を変えても明度をそろえれば同じくらいの明るさに見えるので、段階的なパレットを組み立てやすくなります。
 
@@ -33,16 +35,16 @@ import gradientCss from '../../../demos/color-media/gradient-interpolation/style
 
 ```css title="🙆‍♂ Recommended: 明度の段階を oklch() でそろえる"
 :root {
-  --color--neutral--100: oklch(97% 0 0deg);
-  --color--neutral--500: oklch(55.6% 0 0deg);
-  --color--neutral--900: oklch(20.5% 0 0deg);
+  --color--neutral--100: oklch(97% 0 none);
+  --color--neutral--500: oklch(55.6% 0 none);
+  --color--neutral--900: oklch(20.5% 0 none);
   --color--accent--300: oklch(80% 0.1 250deg);
   --color--accent--500: oklch(60% 0.16 250deg);
   --color--accent--700: oklch(45% 0.14 250deg);
 }
 ```
 
-私のテンプレートでは、グレーとアクセントカラーを、それぞれ50から950までの11段階で定義しています。グレーは彩度を0にして、明度だけを変えています。アクセントカラーは色相を250deg（青）に固定し、中間の段階ほど彩度が高くなるように、山なりに値を変えています。
+私のテンプレートでは、グレーとアクセントカラーを、それぞれ50から950までの11段階で定義しています。グレーは彩度を0にして、明度だけを変えています。グレーの色相を `none` にする理由は、「[無彩色の色相を none にする](#無彩色の色相を-none-にする)」で説明します。{/* 要確認: 著者の判断。テンプレートとデモの共通トークン（src/demos/tokens/colors.css）のグレーは色相を 0deg で書いている。コード例は none に変えた */}アクセントカラーは色相を250deg（青）に固定し、中間の段階ほど彩度が高くなるように、山なりに値を変えています。
 
 `oklch()` を選ぶいちばんの理由は、値がそのまま色の性質を表していることです。`#c9853a` という値を見ても、元の色より暗いのかどうかは分かりません。`oklch(52% 0.16 250deg)` なら明度52%の青だと読み取れ、「もう少し明るく」という調整も明度の数値を上げるだけです。
 
@@ -89,6 +91,35 @@ import gradientCss from '../../../demos/color-media/gradient-interpolation/style
 
 <Baseline id="gradient-interpolation" />
 
+## 無彩色の色相を none にする
+
+グレーのような無彩色を `oklch()` で書くときは、色相を `0deg` ではなく `none` にします。`none` は、その成分の値が欠落していることを表すキーワードです。彩度が0の色は色相を変えても見た目が変わらないので、`oklch(90% 0 0deg)` と `oklch(90% 0 none)` は同じグレーに見えます。違いが出るのは、ほかの色との間を補間するときです。
+
+```css title="🙅‍♂ Not Recommended: グレーの色相を 0deg と書いて、青と oklch で混ぜる"
+/* 🙅‍♂ Not Recommended */
+._badge {
+  background-color: color-mix(in oklch, oklch(90% 0 0deg), oklch(55% 0.2 260deg));
+}
+```
+
+```css title="🙆‍♂ Recommended: グレーの色相を none にして、青の色相のまま混ぜる"
+._badge {
+  background-color: color-mix(in oklch, oklch(90% 0 none), oklch(55% 0.2 260deg));
+}
+```
+
+`in oklch` の補間では、明度、彩度、色相を成分ごとに補間します。グレーの色相を `0deg` と書くと、その0が値として使われ、青の260degとの間で色相も動きます。初期値の `shorter hue` は色相環の短いほうを通るので、色相は360degから260degへ、赤紫と紫を経由します。彩度も0から上がっていくため、中間の色は紫みを帯びます。色相を `none` にすると、欠落した色相は補間の相手の値で補われ、中間の色は260degの青のまま、明度と彩度だけが変わります。
+
+次のデモでは、明度90%のグレーと青を、`color-mix(in oklch, …)` で青の割合を0%、25%、50%、75%、100%にして混ぜています。上の段はグレーの色相を `0deg` で、下の段は `none` で書いています。上の段の中間の3色は紫みを帯び、50%の色の色相は310degになります。下の段は、どの色も色相が260degのままで、グレーから青へ変わります（2026年10月、Chrome 152で確認）。
+
+<Demo title="色相を 0deg と none で書いたグレーを、青と oklch で混ぜた色" html={achromaticHtml} css={achromaticCss} variant="neutral" scheme="light" />
+
+この違いが出るのは、色相を成分に持つ色空間で補間するときです。`color-mix()` を `in oklab` で書くと、色相ではなく明度と2つの色の軸で補間するので、`0deg` でも `none` でも同じ色になります。トランジションとアニメーションの色も既定ではOklabで補間され、どちらで書いても途中の色は変わりませんでした。16進数や `rgb()` で書いたグレーは、`oklch` へ変換した時点で色相が欠落した値になるので、`color-mix(in oklch, #e5e5e5, …)` は青の色相のまま混ざります。問題になるのは、`oklch()` で色相を数値として書いたときです（いずれも2026年10月、Chrome 152で確認）。
+
+グラデーションの `in oklch` は、Chrome 152では `0deg` と `none` で同じ描画になり、紫みは出ませんでした。ただし、ほかのブラウザで同じになるかは確かめていません。{/* 要検証: ブラウザ。Safari と Firefox で、色相を 0deg で書いたグレーを含む in oklch のグラデーションと color-mix(in oklch, …) の中間の色 */} 結果がブラウザの扱いで変わらないように、無彩色のトークンは、補間での使われ方を問わず `none` で書きます。
+
+相対カラー構文で、グレーから有彩色を作るときは別の注意が要ります。相対カラー構文では、元の色の欠落した成分は0として扱われます。`oklch(from var(--color--neutral--100) l 0.1 h)` のようにグレーに彩度を足すと、色相は0degになり、赤紫がかった色になります（2026年10月、Chrome 152で確認）。グレーから有彩色を作るときは、色相を `h` で受け取らず、数値で書きます。相対カラー構文の使い方は「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」で説明しています。
+
 ## 色の形式を選ぶときの注意
 
 `oklch()` の彩度の上限は、色相と明度によって変わります。明度が0%や100%に近い色は、彩度を上げても鮮やかになりません。範囲を超えた値を書いてもエラーにはならず、ブラウザが表示できる色に置き換えるだけなので、値が範囲内かどうかはコードからは分かりません。カラーピッカーなどのツールで、sRGBとDisplay P3の範囲を確かめながら値を決めます。
@@ -109,5 +140,6 @@ import gradientCss from '../../../demos/color-media/gradient-interpolation/style
 - [color() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/color_value/color)
 - [linear-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/linear-gradient)
 - [CSS Images Level 4: Coloring the Gradient Line](https://drafts.csswg.org/css-images-4/#coloring-gradient-line)（既定の補間の色空間はOklab）
+- [CSS Color Level 4: "Missing" Color Components and the none Keyword](https://drafts.csswg.org/css-color-4/#missing)（欠落した成分と、補間での補い方）
 - [CSS Color Level 4: Color Space for Interpolation](https://drafts.csswg.org/css-color-4/#interpolation-space)（旧来のsRGBの書き方の色どうしはsRGBで補間する）
 - [Make Beautiful Gradients](https://www.joshwcomeau.com/css/make-beautiful-gradients/)（Josh W. Comeau。補間の色空間と灰色のくすみ。記事はHSLも勧めますが、本書は `oklch` を使います）

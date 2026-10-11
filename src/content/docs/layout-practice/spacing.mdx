@@ -1,6 +1,6 @@
 ---
 title: "11-2 余白を設計する"
-description: "一律の間隔は親の gap で、構成の決まった要素の間ごとに違う余白は grid-template の空のセルで作ります。ページに並べるセクションの上下の余白は、各セクションの padding-block で作ります。要素の有無が変わる場所と本文の流れには縦の margin を使い、次兄弟結合子で前の要素を条件にして、後ろの要素の margin-block-start に付けます。"
+description: "一律の間隔は親の gap で、構成の決まった要素の間ごとに違う余白は grid-template の空のセルで作ります。ページに並べるセクションの上下の余白は、各セクションの padding-block で作ります。同じ背景のセクションが続く境目は、ページの側で後ろのセクションの上の余白を詰めます。要素の有無が変わる場所と本文の流れには縦の margin を使い、次兄弟結合子で前の要素を条件にして、後ろの要素の margin-block-start に付けます。"
 sidebar:
   order: 2
 ---
@@ -16,6 +16,8 @@ import siblingMarginCss from '../../../demos/layout-practice/sibling-margin/styl
 import sectionSpacingHtml from '../../../demos/layout-practice/section-spacing/index.html?raw';
 import sectionSpacingBadCss from '../../../demos/layout-practice/section-spacing/style.bad.css?raw';
 import sectionSpacingCss from '../../../demos/layout-practice/section-spacing/style.css?raw';
+import sectionAdjacentHtml from '../../../demos/layout-practice/section-adjacent-spacing/index.html?raw';
+import sectionAdjacentCss from '../../../demos/layout-practice/section-adjacent-spacing/style.css?raw';
 
 要素の間の余白は、間隔の決まり方で作り方を選びます。すべての間が同じ間隔なら、子要素の `margin` ではなく、親の `gap` で作ります。見出しの下は24px、本文の下は16pxのように間ごとに大きさが違っても、要素の構成と配置が決まっていれば、`grid-template` に空のセルの行を置いて作ります。余白の指定が `grid-template` の1か所にまとまるからです。要素の有無が状況で変わる場所や、本文のように種類の違う要素が続く領域では、前後の要素によって間隔が変わるので、通常フローのまま `margin` で作ります。
 
@@ -23,7 +25,7 @@ import sectionSpacingCss from '../../../demos/layout-practice/section-spacing/st
 
 縦の `margin` は、次兄弟結合子で前の要素を条件にして、後ろの要素の `margin-block-start` に付けます。セレクタは `& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` のように書きます。余白は要素そのものの性質ではなく、隣り合う2つの要素の関係から決まるからです。要素自身に `margin-block-end` を付けて、最後の子で打ち消す書き方はしません。
 
-コンポーネントのルートに外側の `margin` を持たせない理由は、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
+ページを縦に区切るセクションの上下の余白は、各セクションの `padding-block` で作ります。同じ背景のセクションが続く境目で余白を詰めるときは、その判定をセクションではなく、セクションを並べるページの側に書きます。コンポーネントのルートに外側の `margin` を持たせない理由は、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明しています。
 
 ## 子要素のmarginで間隔を作ると起きること
 
@@ -233,6 +235,68 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 同じ背景のセクションが続く箇所では、上のセクションの下の `padding` と、下のセクションの上の `padding` が足し合わされます。`padding` は、`margin` と違って相殺しないからです。デザインカンプでセクションの間隔を測るときは、この足し算を前提にして、各セクションの上下の値を読み取ります。{/* 要確認: 出典なし */}
 
+## 隣り合うセクションで変わる境目の余白
+
+同じ背景のセクションが続く境目では、前の見出しで述べた足し算が問題になります。背景の色が変わる境目なら、上下の `padding` を合わせた96pxの帯は、2つの面がそれぞれ持つ余白として読めます。同じ背景が続くと面の境目が見えないので、96pxの帯は、1つの面の中の大きすぎる空白に見えます。そこで、同じ背景のセクションが続くときだけ、後ろのセクションの上の `padding` を詰めます。{/* 要確認: 出典なし */}
+
+この判定は、セクションのCSSではなく、セクションを並べるページのCSSに書きます。どのセクションの後ろにどのセクションが来るかは、ページの構成で決まるからです。キャンペーンのセクションが、自分のCSSに「お知らせのセクションの後ろなら上の余白を詰める」と書くと、ほかのコンポーネントの名前に依存します。お知らせのないページや順番の違うページで余白がどうなるかも、キャンペーンのCSSを読むまで分かりません。周りとの関係で決まる指定は置く側が持つという、「[10-2 コンポーネントの境界を守る](/components/boundaries/)」の分担と同じです。
+
+ただし、ページのCSSからは、セクションのルートを選べません。`@scope (.scoped.page-home) to (.scoped)` の範囲は、内側のコンポーネントのルートで打ち切られるからです。そこで、ページは各セクションをOuterの要素（親が子のコンポーネントを包む要素）で包み、Outerどうしの並びを次兄弟結合子で調べます。詰める値は、セクションが公開する上の余白の公開プロパティに渡し、継承でセクションのルートに届けます。
+
+```css title="🙆‍♂ Recommended: 同じ背景が続く境目は、ページの側で後ろのセクションの上の余白を詰める"
+@scope (.scoped.page-home) to (.scoped) {
+  main {
+    & > ._news-outer + ._campaign-outer {
+      --campaign-section--padding-block-start: 0px;
+    }
+  }
+}
+
+@scope (.scoped.campaign-section) to (.scoped) {
+  :scope {
+    --_padding-block-start: var(--campaign-section--padding-block-start, calc(var(--spacing--xxl) * 1px));
+
+    padding-block: var(--_padding-block-start) calc(var(--spacing--xxl) * 1px);
+    background-color: var(--background--muted);
+  }
+}
+```
+
+```html
+<div class="scoped page-home">
+  <main>
+    <div class="_news-outer">
+      <section class="scoped news-section">…</section>
+    </div>
+    <div class="_campaign-outer">
+      <section class="scoped campaign-section">…</section>
+    </div>
+  </main>
+</div>
+```
+
+詰めるのを後ろのセクションの上の余白にするのは、縦の `margin` を後ろの要素の `margin-block-start` に付けるのと同じ理由です。境目の余白は2つのセクションの関係で決まるので、`+` で前のセクションを条件にして、後ろの側の値を変えます。詰める側をそろえておけば、境目ごとに上と下のどちらの余白が詰まっているかを迷わずに済みます。順番が決まったページなら、Outerの `style` 属性で値を渡しても見た目は同じです。それでもセレクタで書くのは、セクションを並べ替えたときに、指定が並びに合わせて付いたり外れたりするからです。
+
+次のデモでは、背景が同じお知らせとキャンペーンのセクションと、背景の違うお問い合わせのセクションを、2つのページに同じ順で並べています。上のページは調整しておらず、お知らせの本文の下端からキャンペーンの見出しまでが96px空きます。下のページは、お知らせの直後のキャンペーンに `--campaign-section--padding-block-start: 0px` を渡しているので、この間が48pxに詰まります。背景の違うお問い合わせとの境目は、どちらのページでも96pxのままです（Chromeで2026年10月確認）。
+
+<Demo title="同じ背景のセクションが続く境目だけ、ページの側で後ろのセクションの上の余白を詰める" html={sectionAdjacentHtml} css={sectionAdjacentCss} />
+
+前のセクションの側を詰めたいときは、`:has(+ …)` で、後ろに続く兄弟を条件にして前のOuterを選びます。後ろのセクションが上端まで画像を敷いていて、詰める上の `padding` を持たない場合などです。起点は `main` の直下のOuterで、引数は `+` で直後の兄弟に絞るので、調べる範囲は隣の要素1つに収まります（「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」）。
+
+```css title="🙆‍♂ Recommended: 後ろに続くセクションを条件にして、前のセクションの下の余白を詰める"
+@scope (.scoped.page-home) to (.scoped) {
+  main {
+    & > ._news-outer:has(+ ._gallery-outer) {
+      --news-section--padding-block-end: 0px;
+    }
+  }
+}
+```
+
+セクションのクラス名は、`.gray-section` のような見た目ではなく、`news-section` のような役割で付けます。見た目の名前なら、`.gray-section + .gray-section` の1行で灰色が続くすべての境目に当たるので、汎用的に見えます。しかし、デザインの変更でお知らせの背景を白にすると、クラス名を付け替えるまで名前と見た目が食い違い、付け替えれば、そのセクションを置いたほかのページのHTMLまで直すことになります。役割の名前なら、クラス名はそのままで、ページのCSSに書いた組み合わせだけを直せば済みます。見た目の名前を付けてよいのがユーティリティだけである理由は、「[9-1 命名規則](/notation/naming/)」で説明しています。
+
+組み合わせを列挙するこの書き方が向くのは、ページごとにセクションの順番が決まっている場合です。編集者がCMSでセクションを自由に並べ替えるサイトでは、組み合わせが増えて列挙しきれなくなります。{/* 要確認: 著者の判断。編集者がセクションを並べ替えるCMSで、同じ背景が続く境目の余白をどこで調整するか */}
+
 ## 縦の `margin` と隣り合う要素の関係
 
 このあと説明する、要素の有無が変わる場所と本文の流れでは、間隔を縦の `margin` で作ります。そのときは、`margin` を要素そのものに付けず、次兄弟結合子で前の要素を条件にして、後ろの要素の `margin-block-start` に指定します。`& > * + *` は前に兄弟がある要素を、`& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` は見出しの直後の要素を選びます。
@@ -334,6 +398,8 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 - [空のグリッドセルを使う余白設計を広めたい](https://www.tak-dcxi.com/article/promote-spacing-design-using-empty-grid-cells/)（TAKLOG、2025年5月）
 - [実例で学ぶFlexboxとCSS Gridの使い分け](https://www.tak-dcxi.com/article/learning-by-example-flex-vs-grid-usage/)（TAKLOG、2024年8月）
 - [gap - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gap)
+- [次兄弟結合子 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Next-sibling_combinator)
+- [:has() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:has)
 - [grid-template-areas - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-areas)
 - [マージンの相殺の各種 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing)
 - [Proximity Principle in Visual Design](https://www.nngroup.com/articles/gestalt-proximity/)（Nielsen Norman Group、2020年8月）

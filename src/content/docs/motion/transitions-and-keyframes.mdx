@@ -1,6 +1,6 @@
 ---
 title: "18-4 トランジションと@keyframes"
-description: "トランジションはallを使わず、動かすプロパティをロングハンドとトークンで書きます。@keyframesは1つにつき1つのプロパティだけを変え、自明なfromとtoを省き、起点はカスタムプロパティで受け取ります。途中で取り消される動きにはトランジションを使います。"
+description: "トランジションはallを使わず、動かすプロパティをロングハンドとトークンで書きます。@keyframesは1つにつき1つのプロパティだけを変え、自明なfromとtoを省き、起点はカスタムプロパティで受け取ります。途中で取り消される動きにはトランジションを使い、複数の値を同じ進み方で動かすときは、型を登録したカスタムプロパティを1つだけ動かします。"
 sidebar:
   order: 4
 ---
@@ -11,10 +11,12 @@ import Guideline from '../../../components/Guideline.astro';
 import crossfadeHtml from '../../../demos/motion/crossfade-blur/index.html?raw';
 import crossfadeCss from '../../../demos/motion/crossfade-blur/style.css?raw';
 import crossfadeJs from '../../../demos/motion/crossfade-blur/script.js?raw';
+import registeredProgressHtml from '../../../demos/motion/registered-progress/index.html?raw';
+import registeredProgressCss from '../../../demos/motion/registered-progress/style.css?raw';
 import toastHtml from '../../../demos/motion/keyframes-toast/index.html?raw';
 import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
 
-トランジションは `transition: all` を使わず、動かすプロパティだけをロングハンドで書き、再生時間とイージングにはトークンを使います。途中で取り消されることがある動きは、`@keyframes` ではなくトランジションで作ります。トランジションは、取り消された時点の状態から逆向きに戻るからです。
+トランジションは `transition: all` を使わず、動かすプロパティだけをロングハンドで書き、再生時間とイージングにはトークンを使います。途中で取り消されることがある動きは、`@keyframes` ではなくトランジションで作ります。トランジションは、取り消された時点の状態から逆向きに戻るからです。複数のプロパティを同じ進み方で動かすときは、`@property` で型を登録したカスタムプロパティを1つだけトランジションさせ、各プロパティの値をその値から計算します。
 
 `@keyframes` は、ユーティリティクラスのように設計します。サイト全体で使う `@keyframes` は `base/keyframes.css` にまとめ、1つにつき1つのプロパティだけを変えます。自明な `from` と `to` は省略し、動きの起点は `--scale-from--x-value` のようなカスタムプロパティで使う側から受け取ります。特定のUIに結びついた動きは、`--<コンポーネント>--<動きの名前>` の名前でコンポーネントのCSSに置きます。
 
@@ -156,6 +158,95 @@ import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
 次のデモでは、ボタンを押すと `data-copied` 属性が `true` になり、コピーのアイコンがチェックの印に切り替わって、1.5秒後に戻ります。左のボタンは不透明度だけを、右のボタンは不透明度とぼかしを動かしています。左は切り替えの途中で四角とチェックの印が重なって見え、右は輪郭がぼけて、1つの形が別の形に変わったように見えます。比べるために、ぼかしの半径を公開用のカスタムプロパティで受け取り、左のボタンだけ0にしています。
 
 <Demo title="コピーのアイコンをチェックの印に切り替え、ぼかしの有無で重なり方を比べる" html={crossfadeHtml} css={crossfadeCss} js={crossfadeJs} widths={[]} />
+
+## 複数の値を1つのカスタムプロパティで一緒に動かす
+
+ホバーしたカードを持ち上げ、同時に影を濃くし、枠線の色を変えるときは、3つのプロパティを別々にトランジションさせるより、`@property` で `<number>` 型に登録したカスタムプロパティを1つだけ動かすほうが管理しやすくなります。0から1へ進む値を1つ用意し、`translate`、`box-shadow`、`border-color` の値をその値から計算します。トランジションの対象は登録したカスタムプロパティだけなので、3つの値は同じ再生時間とイージングで、同じ進み方をします。
+
+プロパティごとにトランジションさせる書き方では、状態の値が状態のセレクタごとに散らばります。次の例では、ホバーとフォーカスの2つのセレクタに、同じ3つの値を書き並べています。持ち上げる距離を変えるときは両方を直し、動かすプロパティを足すときは `transition-property` の並びも直します。
+
+```css title="🙅‍♂ Not Recommended: 状態の値を、プロパティごとに状態のセレクタへ書き並べる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.link-card) to (.scoped) {
+  :scope {
+    border: 1px solid var(--border--base);
+    transition-duration: var(--duration--base);
+    transition-property: translate, box-shadow, border-color;
+    transition-timing-function: var(--ease--out-quint);
+
+    &:any-link:hover {
+      @media (any-hover) {
+        border-color: var(--foreground--accent);
+        box-shadow: 0 8px 24px var(--shadow--color);
+        translate: 0 -4px;
+      }
+    }
+
+    &:focus-visible {
+      border-color: var(--foreground--accent);
+      box-shadow: 0 8px 24px var(--shadow--color);
+      translate: 0 -4px;
+    }
+  }
+}
+```
+
+カスタムプロパティを1つにまとめるには、型の登録が欠かせません。登録していないカスタムプロパティは文字の並びとして扱われるので、0と1の間の値が補間されず、値が変わった時点で切り替わります。`transition-behavior: allow-discrete` を指定しても、再生時間の半分の時点で切り替わるだけです（2026年10月、Chrome 152で確認）。`@property` の記述子と、登録する場面の判断は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 登録した1つの値から、3つのプロパティの値を計算する"
+@property --link-card--progress {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@scope (.scoped.link-card) to (.scoped) {
+  :scope {
+    --_lift: 0px;
+
+    border: 1px solid color-mix(in oklab, var(--foreground--accent) calc(var(--link-card--progress) * 100%), var(--border--base));
+    box-shadow: 0 calc(var(--link-card--progress) * 8px) calc(var(--link-card--progress) * 24px) color-mix(in oklab, var(--shadow--color) calc(var(--link-card--progress) * 100%), transparent);
+    translate: 0 calc(var(--link-card--progress) * var(--_lift));
+    transition-duration: var(--duration--base);
+    transition-property: --link-card--progress;
+    transition-timing-function: var(--ease--out-quint);
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_lift: -4px;
+    }
+
+    &:any-link:hover {
+      @media (any-hover) {
+        --link-card--progress: 1;
+      }
+    }
+
+    &:focus-visible {
+      --link-card--progress: 1;
+    }
+  }
+}
+```
+
+状態のセレクタが書き換えるのは `--link-card--progress` の1つだけです。3つのプロパティの値は、進み具合を掛けた式として基本のルールに1回ずつ書くので、持ち上げる距離や影の大きさを変えるときに直す場所は1か所です。動きに加わるプロパティを足しても、`transition-property` は変えずに済みます。
+
+動きを減らす設定には、移動の距離を係数にして対応します。`--_lift` は `0px` を基本にし、`prefers-reduced-motion: no-preference` のときだけ `-4px` にします。動きを減らす設定のときは、カードは持ち上がらず、影と枠線の色だけが変わります。影と枠線の変化は要素の位置と大きさを変えないので、トランジションは条件の外に書いています。1つの値で動かす書き方では、プロパティごとにトランジションを外せないので、移動や拡大に当たる値だけをこのように係数で止めます（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。
+
+次のデモは、上のCSSをそのまま使っています。カードにポインターを乗せるか、キーボードでフォーカスすると、カードが4px持ち上がり、影が濃くなり、枠線が青に変わります。3つの変化は同時に始まり、同時に終わります。ポインターを途中で外すと、3つがそろって途中の状態から戻ります。
+
+<Demo title="登録した1つのカスタムプロパティで、持ち上がる距離、影、枠線の色を一緒に動かす" html={registeredProgressHtml} css={registeredProgressCss} widths={[]} />
+
+<Baseline id="registered-custom-properties" name="@property" />
+
+### 1つの値で動かすときの注意点
+
+動かすカスタムプロパティは、`inherits: false` で登録します。継承するカスタムプロパティを動かすと、その値を受け継ぐ子孫の要素すべてで、スタイルの計算がフレームごとに繰り返されるからです（「[18-7 動きの負荷を抑える](/motion/performance/)」）。継承しないので、値を参照できるのは、値を宣言した要素自身だけです。上の例では、計算に使う3つのプロパティをすべてカードのルートに書いています。
+
+`translate` や `opacity` をカスタムプロパティを介して動かすと、合成の処理だけでは済まず、描画のやり直しが起きます。この書き方を選ぶのは、影や色のように、もともと描画のやり直しが必要な値を一緒に動かす場合です。動かすのが `translate` と `opacity` だけなら、ルール [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit) のとおり、カスタムプロパティを介さずに直接トランジションさせます。
+
+`@property` による登録は、書いた場所を問わず、文書全体に適用されます。`@scope` の中で登録しても、型と初期値は範囲の外の要素まで適用されました（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Firefox と Safari で、@scope の中に書いた @property が範囲の外にも適用されること */}そのため、`@property` は `@scope` の外のトップレベルか、グローバルな定義を置く `base` レイヤーに書きます（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。同じ名前を2つのレイヤーで登録したときは、スタイルシートに現れた順ではなく、レイヤーの順序で後のレイヤーの登録が有効になりました（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Firefox と Safari で、同じ名前の @property がレイヤーの順序で決まること */}
+
+名前は、コンポーネントの中でだけ使う値でも、内部用の `--_progress` ではなく、`--link-card--progress` のように公開プロパティの形にします。登録は文書全体に及ぶので、短い内部用の名前を登録すると、同じ名前を別の意味で使うほかのコンポーネントにも型が適用されるからです（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。{/* 要確認: 著者の判断。外から渡すことを想定しない値を、公開プロパティの形の名前で登録すること */}一方、`--_lift` のように登録せず、動かさない値は、これまでどおり内部用の名前にします。
 
 ## 途中で取り消される動き
 
@@ -338,6 +429,8 @@ const close = async (dialog) => {
 - [Animations Skill](https://gist.github.com/tak-dcxi/b1870cfe73e3089a1e4aa7da19c3374a)（TAK、`@keyframes` の命名と設計の規約）
 - [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）
 - [animation-fill-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-fill-mode)
+- [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)
+- [CSS Properties and Values API Level 1](https://drafts.css-houdini.org/css-properties-values-api-1/)
 - [Element.getAnimations() - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Element/getAnimations)
 - [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)
 - [An Interactive Guide to CSS Transitions | Josh W. Comeau](https://www.joshwcomeau.com/animation/css-transitions/)（2021年）

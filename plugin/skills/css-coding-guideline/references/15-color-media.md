@@ -1,8 +1,8 @@
 # 第15章 色：ルール
 
-- ガイドラインのバージョン: 0.50.9（2026-10-11 生成）
+- ガイドラインのバージョン: 0.50.10（2026-10-11 生成）
 - ルールの数: 23
-- 本文: 約8.7万字
+- 本文: 約9.1万字
 - 読む条件: 色の指定（oklch()、color-mix()、相対カラー構文）、ダークモード、強制カラーモード、コントラスト
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,7 +13,7 @@
 ## この章の節
 
 - `color-media` 第15章 色（約3,700字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/
-- `color-media/color` 15-1 色の形式と色空間（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/color/
+- `color-media/color` 15-1 色の形式と色空間（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/color/
 - `color-media/relative-color` 15-2 相対カラー構文で派生色を作る（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/relative-color/
 - `color-media/contrast-text` 15-3 背景から文字色を決める（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/contrast-text/
 - `color-media/dark-mode` 15-4 ダークモード（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/color-media/dark-mode/

@@ -1,0 +1,97 @@
+/* 型を登録したので、長さが補間される。継承させないので、子孫はスタイルを計算し直さない */
+@property --tag-scroller--fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tag-scroller--fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* 先頭から離れる間に、先頭の側を薄くする幅を0から広げる */
+@keyframes --tag-scroller--leave-start {
+  to {
+    --tag-scroller--fade-start: var(--_fade);
+  }
+}
+
+/* 末尾に近づく間に、末尾の側を薄くする幅を0まで狭める */
+@keyframes --tag-scroller--reach-end {
+  from {
+    --tag-scroller--fade-end: var(--_fade);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.tag-scroller-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._row {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._heading {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--regular);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.tag-scroller) to (.scoped) {
+    :scope {
+      --_fade: 32px;
+      --_direction: to right;
+
+      display: block flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-block: 4px;
+
+      /* スクロールできないと、タイムラインが非アクティブになり、アニメーションが当たらない。幅は初期値の0のままになる */
+      @supports (animation-timeline: scroll()) and (animation-range: 0 32px) {
+        mask-image: linear-gradient(var(--_direction), transparent, #000 var(--tag-scroller--fade-start), #000 calc(100% - var(--tag-scroller--fade-end)), transparent);
+        animation-name: --tag-scroller--leave-start, --tag-scroller--reach-end;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll(self inline);
+        animation-range: 0 var(--_fade), calc(100% - var(--_fade)) 100%;
+      }
+
+      &:dir(rtl) {
+        --_direction: to left;
+      }
+    }
+
+    ._item {
+      flex-shrink: 0;
+    }
+
+    ._tag {
+      display: block flow-root;
+      padding: 4px 12px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--full);
+      color: inherit;
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+      white-space: nowrap;
+      text-decoration-line: none;
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+    }
+  }
+}

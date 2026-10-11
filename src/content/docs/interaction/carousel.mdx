@@ -1,6 +1,6 @@
 ---
 title: "17-7 CSSでカルーセルを作る"
-description: "カルーセルはスクロールスナップを土台にし、ページ送りのボタンとインジケーターを::scroll-button()と::scroll-markerで足します。止まっていないスライドはinteractivity: inertで読み上げとフォーカスから外し、未対応の環境ではスクロールバー付きの横スクロールとして読めるようにします。"
+description: "カルーセルはスクロールスナップを土台にし、ページ送りのボタンとインジケーターを::scroll-button()と::scroll-markerで足します。止まっていないスライドはinteractivity: inertで読み上げとフォーカスから外し、未対応の環境ではスクロールバー付きの横スクロールとして読めるようにします。未対応の環境でもボタンが要るときは、HTMLのボタンからscrollBy()を呼ぶだけの小さなスクリプトを足します。"
 sidebar:
   order: 7
 ---
@@ -13,7 +13,7 @@ import carouselCss from '../../../demos/interaction/css-carousel/style.css?raw';
 
 カルーセルは、スクロールスナップで作った横スクロールを土台にします。ページ送りのボタンは `::scroll-button()`、現在の位置を示すインジケーターは `::scroll-marker` と `::scroll-marker-group` で足し、JavaScriptは使いません。止まっていないスライドは、`scroll-state()` のコンテナクエリと `interactivity: inert` で、読み上げとフォーカスの対象から外します。
 
-2026年10月の時点で、これらの擬似要素に対応しているのはChrome系のブラウザだけです。そのため、ボタンとインジケーター、スクロールバーを消す指定は `@supports` の中に書き、未対応の環境ではスクロールバー付きの横スクロールとして読めるようにします。そのうえで、カルーセルにする必要があるのかを先に検討します。
+2026年10月の時点で、これらの擬似要素に対応しているのはChrome系のブラウザだけです。そのため、ボタンとインジケーター、スクロールバーを消す指定は `@supports` の中に書き、未対応の環境ではスクロールバー付きの横スクロールとして読めるようにします。未対応の環境でもページ送りのボタンが要件として求められるときに限り、HTMLの `<button>` から `scrollBy()` を呼ぶだけのスクリプトを足します。そのうえで、カルーセルにする必要があるのかを先に検討します。
 
 ## カルーセルを使う前に考えること
 
@@ -187,6 +187,107 @@ Chrome系のブラウザでは、スクロールバーが消え、ボタンと�
 
 `container: --slide / scroll-state` と、`scroll-state()` の条件、`interactivity: inert` は、未対応の環境では無視されます。隠れているスライドも読み上げとフォーカスの対象に残りますが、スクロールバーで表示でき、フォーカスが移れば、そのスライドまで自動でスクロールします。内容を読めなくなるわけではないので、`@supports` で囲む必要はありません。
 
+## 未対応の環境でもページ送りのボタンが要るとき
+
+ここまでの作り方では、SafariやFirefoxにページ送りのボタンが出ません。デザインの要件として、どのブラウザでもボタンが必要な場合は、スクロールスナップの土台はそのままにし、HTMLに `<button>` を置いて、押したときに `scrollBy()` を呼ぶだけのスクリプトを足します。スワイプで送る操作、スライドの位置で止める処理、滑らかに動かすかどうかは、すでにブラウザがスクロールスナップと `scroll-behavior` で受け持っています。スクリプトに任せるのは、ボタンを押したらスクロールさせることと、端にいる方向のボタンを無効にすることの2つだけです。
+
+```html title="🙆‍♂ Recommended: ボタンをスライドの外に置き、最初は隠しておく"
+<section class="scoped css-carousel" aria-labelledby="css-carousel-heading">
+  <h2 id="css-carousel-heading">施工事例</h2>
+  <div class="_buttons" hidden>
+    <button type="button" class="_button" data-carousel="prev" aria-label="前の事例">←</button>
+    <button type="button" class="_button" data-carousel="next" aria-label="次の事例">→</button>
+  </div>
+  <ul>
+    <!-- ... -->
+  </ul>
+</section>
+```
+
+ボタンは、スクロールコンテナの `ul` の前に、スライドの外に置きます。Tabキーの順番は、`::scroll-button()` と同じく、前後のボタン、表示しているスライドの中身の順になります。スライドの中に置くと、止まっていないスライドの `interactivity: inert` に巻き込まれ、ボタンまで操作できなくなります。最初は `hidden` 属性で隠しておき、スクリプトが動いて、しかも `::scroll-button()` を使えない環境でだけ表示します。
+
+```css title="🙆‍♂ Recommended: スクリプトで表示するボタンの見た目"
+@scope (.scoped.css-carousel) to (.scoped) {
+  ._buttons {
+    display: block flex;
+    gap: 8px;
+    justify-content: end;
+  }
+
+  ._button {
+    inline-size: 40px;
+    aspect-ratio: 1;
+    border: 1px solid;
+    border-radius: calc(infinity * 1px);
+    background-color: var(--background--surface);
+
+    &:disabled {
+      opacity: 0.3;
+    }
+
+    &:dir(rtl) {
+      scale: -1 1;
+    }
+  }
+}
+```
+
+```js title="🙆‍♂ Recommended: 見えている幅だけ送り、止まる位置はスクロールスナップに任せる"
+const carousel = document.querySelector('.css-carousel');
+const scroller = carousel.querySelector('ul');
+const buttons = carousel.querySelector('._buttons');
+const prev = buttons.querySelector('[data-carousel="prev"]');
+const next = buttons.querySelector('[data-carousel="next"]');
+
+// ::scroll-button() を使える環境では、HTML のボタンを出さない
+if (!CSS.supports('selector(::scroll-button(*))')) {
+  buttons.hidden = false;
+
+  // 1回に送るのは、見えている幅の分。止まる位置はスクロールスナップが合わせる
+  const scrollPage = (step) => {
+    // 右から左に書く言語では、scrollLeft と scrollBy() の left が負の向きになる
+    const sign = getComputedStyle(scroller).direction === 'rtl' ? -1 : 1;
+    scroller.scrollBy({ left: step * sign * scroller.clientWidth });
+  };
+
+  // それ以上送れない方向のボタンを無効にする
+  const update = () => {
+    const position = Math.abs(scroller.scrollLeft);
+    const max = scroller.scrollWidth - scroller.clientWidth;
+    const atStart = position < 1;
+    const atEnd = position > max - 1;
+
+    // フォーカスしたボタンを無効にするとフォーカスが外れるので、反対のボタンに移す
+    if (atStart && document.activeElement === prev) next.focus();
+    if (atEnd && document.activeElement === next) prev.focus();
+
+    prev.disabled = atStart;
+    next.disabled = atEnd;
+  };
+
+  prev.addEventListener('click', () => scrollPage(-1));
+  next.addEventListener('click', () => scrollPage(1));
+  scroller.addEventListener('scrollend', update);
+  update();
+}
+```
+
+1回に送る量は、スクロールコンテナの見えている幅（`clientWidth`）にします。スライドの幅と `gap` から1枚分の距離を計算する必要はありません。`scroll-snap-type: inline mandatory` があるので、スクロールが終わると、近いスライドの位置にブラウザが合わせます。`grid-auto-columns` を変えて3枚ずつ見せる形にしても、スクリプトを直さずに、見えている枚数ずつ送れます。{/* 要検証: ブラウザ。3枚ずつ見せる幅で、clientWidth ずつ送ったときにスナップが3枚先に合うか */}
+
+`scrollBy()` には `behavior` を渡しません。省略すると `auto` になり、スクロールコンテナの `scroll-behavior` に従います。`scroll-behavior: smooth` は、「[スクロールスナップを土台にする](#スクロールスナップを土台にする)」で `prefers-reduced-motion: no-preference` の条件の中に書きました。そのため、動きを減らす設定のユーザーには、スクリプトの側で何もしなくても即座に移動します。Chrome 152で、ボタンを押した直後の `scrollLeft` を読んで確かめました。`scroll-behavior` が `smooth` のときは0のまま変わらず、`auto` のときは押した直後に次のスライドの位置になりました（2026年10月、Chrome 152で確認）。
+
+ボタンの「前へ」「次へ」は、左右ではなくインライン方向の前後として扱います。右から左に書く言語（`direction: rtl`）では、スクロールの開始位置で `scrollLeft` が0になり、先へ進むほど負の値になります。そのため、`getComputedStyle()` で `direction` を読み、`rtl` なら `scrollBy()` に渡す `left` の符号を反転します。端の判定は、`scrollLeft` の絶対値で行います。Chrome 152で `dir="rtl"` のページを確かめたところ、`scrollLeft` は0から-990まで変わり、開始位置で `left` に正の値を渡してもスクロールしませんでした（2026年10月、Chrome 152で確認）。矢印の向きも書字方向で逆になるので、CSSの `:dir(rtl)` でボタンを左右に反転しています。
+
+ボタンを無効にする判定は、`scrollend` イベントで、スクロールの位置から行います。押した回数を数える方法では、スワイプやスクロールバーで送ったときや、隠れているスライドへフォーカスが移って自動でスクロールしたときに、ボタンの状態がずれます。位置で判定すれば、どの操作でスクロールしても、終わった時点の状態に合わせられます。Chrome 152で、押した「→」のボタンが最後のスライドで無効になると、フォーカスが `body` に外れました（2026年10月、Chrome 152で確認）。キーボードで操作しているユーザーが位置を見失わないよう、反対のボタンへフォーカスを移してから、ボタンを無効にしています。
+
+<Baseline id="scrollend" />
+
+`scrollend` イベントは、Safariでは26.2から使えます。それより前のSafariでは `update()` が初めの1回しか動かないので、最初のスライドを離れても「←」のボタンが無効のままになります。古いSafariも対象にするときは、`scroll` イベントで同じ判定を呼びます。`scroll` はスクロールの途中で何度も発生しますが、判定は位置を読んで比べるだけなので、負荷はほとんどありません。
+
+`::scroll-button()` を使える環境では、スクリプトは `CSS.supports('selector(::scroll-button(*))')` でそれを調べ、ボタンを隠したままにします。2つの仕組みを重ねると、同じ役割のボタンが2組表示されるからです。`@supports` で隠す方法もありますが、`hidden` 属性で隠しておいてスクリプトで表示すれば、スクリプトが読み込めなかった環境に、押しても動かないボタンが残りません。
+
+止まっていないスライドを外す `interactivity: inert` は、このボタンとは独立に働きます。2026年10月の時点では、`scroll-state()` のコンテナクエリと `interactivity` に対応しているのも、`::scroll-button()` に対応したChrome系のブラウザだけです。スクリプトのボタンが表示されるSafariやFirefoxでは、隠れているスライドもTabキーの対象に残ります。それでも、フォーカスが移ったスライドまでブラウザがスクロールし、そのスクロールの終わりで `update()` が動くので、ボタンの状態は表示に合います。Chrome 152で、`interactivity` を `auto` に戻し、4枚目のリンクにフォーカスを移したところ、そのスライドまでスクロールし、「次の事例」のボタンが無効になりました（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Safari と Firefox で、スクリプトのボタンの scrollBy() とスクロールスナップ、dir="rtl" での符号、scrollend による無効化が Chrome と同じに動くか */}
+
 ## カルーセルで確かめる状態
 
 カルーセルを実装したら、対応したブラウザで動くことだけでなく、未対応の環境や設定を変えた環境でも内容を読めるかを確かめます。このページで説明した振る舞いから、確かめる状態を次の表にまとめました。
@@ -195,6 +296,7 @@ Chrome系のブラウザでは、スクロールバーが消え、ボタンと�
 | --- | --- | --- |
 | 対応したブラウザ（Chrome系） | Tabキーだけで操作する | 前後のボタン、表示しているスライドの中身、カルーセルの後ろの要素の順に移動し、隠れているスライドのリンクは飛ばされる |
 | 未対応のブラウザ（Safari、Firefox） | スクロールバーとTabキーで操作する | ボタンと点は出ず、スクロールバーで横に送れる。隠れているスライドにフォーカスが移ると、そのスライドまでスクロールする |
+| 未対応のブラウザで、スクリプトのボタンを足した場合 | ボタンで端まで送り、`dir="rtl"` でも送る | 1回に1画面分ずつ進み、端の方向のボタンは無効になり、フォーカスは反対のボタンに移る |
 | 複数枚を表示する設定 | 見えているすべてのスライドをクリックし、フォーカスする | 見えているのに操作できないスライドがない |
 | 動きを減らす設定 | ボタンと点を押す | スクロールが滑らかにならず、即座に移動する |
 | 強制カラーモード | 点の並びと現在位置の点を見比べる | 表示しているスライドの点を、ほかの点と見分けられる |
@@ -228,4 +330,8 @@ Chrome 152で、目次の `<ol>` に `scroll-target-group: auto` を指定して
 - [Using container scroll-state queries - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
 - [CSS Overflow Module Level 5](https://drafts.csswg.org/css-overflow-5/)（W3C）
 - [Understanding Success Criterion 2.2.2: Pause, Stop, Hide](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html)（W3C）
+- [Element: scrollBy() method - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollBy)
+- [Element: scrollLeft property - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft)
+- [Element: scrollend event - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollend_event)
+- [CSS: supports() static method - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports_static)
 - [inert - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Global_attributes/inert)

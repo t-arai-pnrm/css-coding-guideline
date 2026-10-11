@@ -1,8 +1,8 @@
 # 第14章 タイポグラフィと和文組版：ルール
 
-- ガイドラインのバージョン: 0.50.9（2026-10-11 生成）
+- ガイドラインのバージョン: 0.50.10（2026-10-11 生成）
 - ルールの数: 32
-- 本文: 約7.4万字
+- 本文: 約7.7万字
 - 読む条件: font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,7 +15,7 @@
 - `typography` 第14章 タイポグラフィと和文組版（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/
 - `typography/fonts` 14-1 フォントを指定する（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/fonts/
 - `typography/japanese-typesetting` 14-2 和文組版を整える（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/japanese-typesetting/
-- `typography/line-height` 14-3 行の高さとハーフレディング（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/line-height/
+- `typography/line-height` 14-3 行の高さとハーフレディング（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/line-height/
 - `typography/size-and-line-breaks` 14-4 文字サイズと改行（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/size-and-line-breaks/
 - `typography/text-roles` 14-5 文字の役割と色（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/typography/text-roles/
 

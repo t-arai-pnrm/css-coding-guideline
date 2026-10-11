@@ -1,6 +1,6 @@
 ---
 title: "18-5 出現と退場"
-description: "display: noneから表示する要素の出現と退場は、@starting-styleとtransition-behavior: allow-discreteでCSSだけで動かします。退場を動かさないなら@keyframesのfromで足り、ツールチップは初回だけ表示を遅らせます。"
+description: "display: noneから表示する要素の出現と退場は、@starting-styleとtransition-behavior: allow-discreteでCSSだけで動かします。重ねて出すパネルは高さを変えずにclip-pathの切り抜きを動かし、退場を動かさないなら@keyframesのfromで足り、ツールチップは初回だけ表示を遅らせます。"
 sidebar:
   order: 5
 ---
@@ -17,10 +17,13 @@ import staggerCss from '../../../demos/motion/stagger-steps/style.css?raw';
 import tooltipHtml from '../../../demos/motion/tooltip-delay/index.html?raw';
 import tooltipCss from '../../../demos/motion/tooltip-delay/style.css?raw';
 import tooltipJs from '../../../demos/motion/tooltip-delay/script.js?raw';
+import megaMenuHtml from '../../../demos/motion/mega-menu-clip/index.html?raw';
+import megaMenuCss from '../../../demos/motion/mega-menu-clip/style.css?raw';
+import megaMenuJs from '../../../demos/motion/mega-menu-clip/script.js?raw';
 
 `display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。表示された瞬間の見た目を `@starting-style` で指定し、`display` と `overlay` をトランジションの対象に加えれば、ポップオーバーやダイアログの開閉の両方をCSSだけで動かせます。退場を動かす必要がなければ、`@keyframes` の `from` で出現だけを動かすほうが壊れにくくなります。
 
-`<details>` の開閉は、`::details-content` の高さと不透明度をトランジションで動かします。ツールチップは、初回の表示だけを300〜500ms遅らせ、続けて操作している間はすぐに表示します。
+`<details>` の開閉は、`::details-content` の高さと不透明度をトランジションで動かします。メガメニューのようにページの上に重ねて出すパネルは、高さを変えずに `clip-path: inset()` の切り抜きを動かし、閉じたら `visibility: hidden` で隠します。ツールチップは、初回の表示だけを300〜500ms遅らせ、続けて操作している間はすぐに表示します。
 
 ## `display: none` の要素は現れる瞬間を動かせない
 
@@ -207,6 +210,53 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 
 グリッドアイテムの最小の高さは、デフォルトでは中身の高さになり、行を `0fr` にしても中身の高さより縮みません。`._answer` に `overflow: hidden` を指定すると、アイテムがスクロールコンテナになって最小の高さが0になり、行と一緒に縮みます。はみ出した中身の切り取りも、この指定で済みます。本書では切り取りに `clip` を優先しますが、この場面はスクロールコンテナになることが目的に合っている例外です（「[11-4 はみ出しとスクロール](/layout-practice/overflow/#overflow-hidden-を使う場面)」）。Firefoxは、2026年10月の時点で `content-visibility` のトランジションにも対応していないので、閉じる動きは一瞬です。包む要素が増えるので、私はこの方法を、すべてのブラウザで高さを動かす必要があるときだけ使っています。
 
+## 重ねて出すパネルを `clip-path` で現す
+
+メガメニューやドロップダウンのパネルのように、ページの上に重ねて出すパネルは、高さではなく `clip-path: inset()` の切り抜きを動かして、上端から下へ巻き取るように現します。前の見出しのアコーディオンは、開いた分だけ後ろの内容を押し下げ、その動きで開閉の位置関係を伝えていました。重ねて出すパネルは後ろの内容を動かさないので、高さを動かす理由がありません。切り抜きを変えてもパネルの大きさは変わらないので、レイアウトは起きず、本文の位置もそのまま保たれます。
+
+隠し方も、パネルの置き方で変わります。`popover` 属性のパネルは閉じると `display: none` になるので、前の見出しまでと同じく、`display` と `overlay` を `allow-discrete` でトランジションの対象にします。ただし、トップレイヤーに出すポップオーバーをヘッダーの下端に合わせて置くには、アンカー位置指定が要ります。2026年10月の時点でアンカー位置指定はBaselineになっていないので、ここではパネルをヘッダーの中に絶対配置で置き、開閉の状態をボタンの `aria-expanded` で表します（「[17-5 開閉するUI](/interaction/disclosure/)」のドロワーと同じ形です）。この置き方では、閉じている間も `display` は変わらないので、`visibility: hidden` で隠します。
+
+```css title="🙆‍♂ Recommended: 切り抜きを上端から広げ、閉じたパネルを visibility で隠す"
+@scope (.scoped.mega-header) to (.scoped) {
+  ._panel {
+    --_clip-from: inset(0 -24px -24px);
+
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 100%;
+    clip-path: inset(0 -24px -24px);
+    box-shadow: var(--shadow--md);
+    transition-duration: var(--duration--slow);
+    transition-property: clip-path, opacity, visibility;
+    transition-timing-function: var(--ease--out-quint);
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_clip-from: inset(0 -24px 100%);
+    }
+
+    &:not(:is(._menu-button[aria-expanded="true"] + *)) {
+      visibility: hidden;
+      clip-path: var(--_clip-from);
+      opacity: 0;
+    }
+  }
+}
+```
+
+`inset()` は、上、右、下、左の順に、要素の各辺から内側へ切り取る量を指定する関数です。閉じた状態では下から100%を切り取るので、見える範囲は上端の高さ0の帯になり、開くと下の辺が下がって全体が見えます。左右と下を負の値にしているのは、`clip-path` が影まで含めて切り取るからです。開いた状態を `none` にしないのも、`none` と `inset()` の間は補間されず、一瞬で切り替わるからです。
+
+`clip-path` で見えなくしただけでは、パネルの中のリンクはフォーカスと読み上げの対象に残ります。Tabキーを押すと見えないリンクにフォーカスが移り、キーボードの利用者にはフォーカスが消えたように見えます。`visibility: hidden` を指定すると、中の要素はフォーカスを受け取らず、アクセシビリティツリーからも外れます。
+
+`visibility` は、`display` と違い、`allow-discrete` がなくてもトランジションの対象になります。`visibility` には途中の値の決め方が定められていて、片方の値が `visible` なら、トランジションの間はずっと `visible` として扱われるからです。開くときはトランジションの始まりと同時に `visible` へ切り替わり、閉じるときは切り抜きが閉じ終わるまで `visible` が続き、最後に `hidden` へ切り替わります。
+
+動きの負荷は、高さを動かす方法より小さくなります。ただし、本書では `clip-path` の変化をペイントが起きるものとして扱っているので（「[18-7 動きの負荷を抑える](/motion/performance/)」）、合成だけで済む `opacity` や `translate` と同じ扱いにはしません。全幅のパネルは描き直す面積が大きいので、再生時間は `--duration--slow`（240ms）までに抑えます。{/* 要検証: ブラウザ。clip-path のトランジションで毎フレームペイントが起きるか（DevTools の Paint flashing） */}
+
+全幅のパネルの下端が画面を縦に横切る動きは、本書では「大きな変動」として扱います。{/* 要確認: 著者の判断。切り抜きの変化を、18-2 の「大きな変動」の目安に含めるか */} 動きを減らす設定のときは、ポップオーバーの例と同じく切り抜きを変えず、フェードだけを残します（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の「簡素化」）。次のデモで「製品」を押すと、パネルがヘッダーの下端から下へ広がり、本文の上に重なります。本文の位置は変わりません。閉じた状態でTabキーを押すと、フォーカスは「製品」「料金」「サポート」から本文のリンクへ進み、パネルの中のリンクには移りません。開いた状態でEscキーを押すと、パネルが閉じてフォーカスは「製品」に戻ります。{/* 要検証: ブラウザ。デモの開閉の動き、負の値の inset() で影が切り取られないこと、閉じたパネルにフォーカスが移らないこと */}
+
+<Demo title="clip-path の切り抜きでパネルを上から下へ現し、閉じたパネルは visibility で隠す" html={megaMenuHtml} css={megaMenuCss} js={megaMenuJs} height="20rem" />
+
+<Baseline id="clip-path" />
+
 ## 頻度の低いUIで要素をずらして出す
 
 並んだ要素を少しずつずらして出す動き（スタッガー）は、頻度の高いUIでは待ち時間を増やすだけです（「[18-1 動かすかどうかを決める](/motion/purpose/)」）。一方で、初回の案内や、LPで一度だけ開く一覧のように、まれにしか見ないUIでは、要素の並びの順番を伝える演出として使えます。このときも、ずらす間隔は30〜80msと短くし、全体が現れ終わるまでの時間を延ばしすぎないようにします。{/* 要確認: 出典なし。30〜80msという間隔 */}
@@ -332,6 +382,8 @@ CSSで書けるのは、初回の遅延だけです。表示した状態のル�
 - [transition-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/transition-behavior)
 - [overlay - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overlay)
 - [::details-content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::details-content)
+- [clip-path - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clip-path)
+- [visibility - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/visibility)
 - [interpolate-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/interpolate-size)
 - [calc-size() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size)
 - [sibling-index() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/sibling-index)

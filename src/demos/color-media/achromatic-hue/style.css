@@ -1,0 +1,58 @@
+@layer components {
+  @scope (.scoped.achromatic-hue-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    figure {
+      display: block grid;
+      gap: 4px;
+    }
+
+    ._swatches {
+      --_to: oklch(55% 0.2 260deg);
+
+      display: block grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+
+      &[data-hue="zero"] {
+        --_gray: oklch(90% 0 0deg);
+      }
+
+      &[data-hue="none"] {
+        --_gray: oklch(90% 0 none);
+      }
+    }
+
+    ._swatch {
+      --_ratio: 0%;
+
+      min-block-size: calc(48 / 16 * 1rem);
+      border-radius: var(--rounded--md);
+      background-color: color-mix(in oklch, var(--_gray), var(--_to) var(--_ratio));
+
+      &:nth-child(2) {
+        --_ratio: 25%;
+      }
+
+      &:nth-child(3) {
+        --_ratio: 50%;
+      }
+
+      &:nth-child(4) {
+        --_ratio: 75%;
+      }
+
+      &:nth-child(5) {
+        --_ratio: 100%;
+      }
+    }
+
+    figcaption {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}

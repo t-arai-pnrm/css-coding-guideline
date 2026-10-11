@@ -1,6 +1,6 @@
 ---
 title: "16-2 アイコン・SVG・マスク"
-description: "三角形のような図形は clip-path で描き、polygon() の値をトークンにします。単色のアイコンはマスクかインライン SVG で描き、currentColor で文字色に合わせます。スクロールできる領域の端をマスクで薄くする方法、2つの層を重ねて選んだ範囲だけを切り抜く方法、インライン SVG の代替テキストも扱います。"
+description: "三角形のような図形は clip-path で描き、polygon() の値をトークンにします。単色のアイコンはマスクかインライン SVG で描き、currentColor で文字色に合わせます。スクロールできる領域の端をマスクで薄くし、スクロールできる側の端だけを残す方法、2つの層を重ねて選んだ範囲だけを切り抜く方法、インライン SVG の代替テキストも扱います。"
 sidebar:
   order: 2
 ---
@@ -17,6 +17,8 @@ import maskIconHtml from '../../../demos/decoration/mask-icon/index.html?raw';
 import maskIconCss from '../../../demos/decoration/mask-icon/style.css?raw';
 import currentColorHtml from '../../../demos/decoration/current-color-icon/index.html?raw';
 import currentColorCss from '../../../demos/decoration/current-color-icon/style.css?raw';
+import scrollFadeHtml from '../../../demos/decoration/scroll-fade-edges/index.html?raw';
+import scrollFadeCss from '../../../demos/decoration/scroll-fade-edges/style.css?raw';
 
 三角形のような図形は、`border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のような名前のトークンにします。単色のアイコンは、擬似要素の `mask-image` かインラインSVGで描き、どちらも文字色に合わせて塗ります。
 
@@ -192,7 +194,81 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 マスクは、要素の境界の外に描かれるものも切り取ります。Chrome 152で確かめたところ、マスクを指定したスクロールコンテナの `outline` は表示されませんでした（2026年10月確認）。中にリンクのないスクロールコンテナは、キーボードでフォーカスを受けることがあり、そのときのフォーカスリングも見えなくなります。この場合は、親の要素に `&:has(> ul:focus-visible)` でリングを出します。リングを親に出す書き方は、「[17-4 カード全体をリンクにする](/interaction/card-link/)」の例と同じです。
 
-上の例は、先頭までスクロールしていても、先頭の側の端を薄くします。スクロールできる方向の端だけを薄くするには、スクロールの位置を条件にする必要があります。方法は2つあります。1つは、スクロール駆動アニメーションで薄くする幅を変える方法です（「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」）。もう1つは、`scroll-state(scrollable: inline-end)` のようなコンテナクエリで表示を切り替える方法です（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まっている間だけ見た目を変える)」）。
+### スクロールできる側の端だけを薄くする
+
+上の例は、中身が収まっていてスクロールできないときも両端を薄くし、先頭にいるときも先頭の側を薄くします。端を薄くするのは続きがあることを示すためなので、薄くするのは、その方向にまだスクロールできる端だけにします。そのためには、薄くする幅をスクロールの位置に合わせて変えます。スクロールの位置を進み具合にして値を変える仕組みが、スクロール駆動アニメーションです（「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」）。
+
+```css title="🙆‍♂ Recommended: スクロールの位置に合わせて、スクロールできる側の端だけを薄くする"
+@property --tag-scroller--fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tag-scroller--fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes --tag-scroller--leave-start {
+  to {
+    --tag-scroller--fade-start: var(--_fade);
+  }
+}
+
+@keyframes --tag-scroller--reach-end {
+  from {
+    --tag-scroller--fade-end: var(--_fade);
+  }
+}
+
+@scope (.scoped.tag-scroller) to (.scoped) {
+  :scope {
+    --_fade: 32px;
+    --_direction: to right;
+
+    display: block flex;
+    gap: 8px;
+    overflow-x: auto;
+
+    @supports (animation-timeline: scroll()) and (animation-range: 0 32px) {
+      mask-image: linear-gradient(var(--_direction), transparent, #000 var(--tag-scroller--fade-start), #000 calc(100% - var(--tag-scroller--fade-end)), transparent);
+      animation-name: --tag-scroller--leave-start, --tag-scroller--reach-end;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(self inline);
+      animation-range: 0 var(--_fade), calc(100% - var(--_fade)) 100%;
+    }
+
+    &:dir(rtl) {
+      --_direction: to left;
+    }
+  }
+}
+```
+
+<Baseline id="scroll-driven-animations" />
+
+マスクのグラデーションは、2つのカスタムプロパティを、先頭の側と末尾の側で薄くする幅として参照します。`animation-timeline: scroll(self inline)` は、要素自身のインライン方向のスクロールを進み具合にします。`scroll()` は、何も指定しなければ最も近い祖先のスクロールコンテナを測るので、スクロールコンテナ自身に指定するときは `self` を書きます。
+
+2つのアニメーションは、`animation-range` で受け持つ範囲を分けています。`--tag-scroller--leave-start` は、先頭から32pxスクロールする間に、先頭の側の幅を0から32pxに広げます。`--tag-scroller--reach-end` は、末尾の手前の32pxの間に、末尾の側の幅を32pxから0に狭めます。`animation-fill-mode: both` を指定しているので、範囲の前後では、それぞれの端の値が残ります。その結果、先頭にいるときは末尾の側だけが、途中では両側が、末尾に着いたときは先頭の側だけが薄くなります。幅はスクロールの位置に合わせて少しずつ変わるので、端に着いたところで薄さが急に消えることもありません。
+
+中身が収まっていてスクロールできない要素では、どちらの端も薄くなりません。スクロールできる範囲が0なので、スクロールのタイムラインが非アクティブになるからです（Scroll-driven Animations Level 1）。非アクティブなタイムラインでは、アニメーションの現在の時間が決まらないので、`animation-fill-mode: both` を指定していても、アニメーションは当たりません。2つの幅は登録した初期値の0のままになり、グラデーションは端まで不透明になります。中身を減らしてはみ出さなくなったときも、同じように薄さが消えました（2026年10月、Chrome 152で確認）。
+
+幅は、`@property` で `<length>` 型に登録します。登録していないカスタムプロパティは、キーフレームの間で値が補間されず、進み具合の途中で切り替わるだけです。`inherits: false` で登録し、`@property` を `@scope` の外に書く理由は、「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」の「複数の値を1つのカスタムプロパティで一緒に動かす」で説明しています。継承しないので、2つの幅を参照する `mask-image` は、アニメーションを指定した要素自身に書きます。
+
+次のデモの2つの列は、同じCSSで、タグの数だけが違います。1つ目の列はタグがはみ出すので、最初は右端だけが薄くなっています。スクロールすると左端も薄くなり、末尾まで送ると右端の薄さが消えます。2つ目の列はタグが2つで収まり、どちらの端も薄くなりません。
+
+<Demo title="はみ出す列ではスクロールできる側の端だけを薄くし、収まる列では薄くしない" html={scrollFadeHtml} css={scrollFadeCss} />
+
+グラデーションの向きには論理方向のキーワードがないので、片側だけを薄くするときは、右から左へ書く言語で向きを反転させます。一方、`scroll(self inline)` の進み具合は、書字方向の先頭から数えます。右から左へ書く言語では、右端にいるときが進み具合の0%です。そのため、アニメーションはそのままにして、`:dir(rtl)` で `--_direction` を `to left` に変えるだけで済みます（2026年10月、Chrome 152で `dir="rtl"` の列を確認）。{/* 要検証: ブラウザ。Safari 26 で、非アクティブなタイムラインのときにアニメーションが当たらないことと、右から左へ書く列の進み具合の向き */}
+
+マスクとアニメーションは、一緒に `@supports` の中に書きます。スクロール駆動アニメーションに対応していない環境（2026年10月の時点ではFirefox）では、マスクが付かず、端が薄くならないだけです。続きがあることは見た目で示せなくなりますが、スクロールすれば続きを見られるので、操作は損なわれません。
+
+このアニメーションは、動きを減らす設定の条件で囲みません。変わるのは端を薄くする範囲だけで、要素の位置と大きさは変わらないからです。中身が動くのはユーザー自身がスクロールしたからで、アニメーションが中身を動かしているわけではありません。「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の目安では、位置と大きさの変わらない変化は大きな変動にあたらず、スクロールに合わせた変形にもあたりません。スクロールに合わせてヘッダーの背景をフェードインさせる18-6の例と同じ扱いです。
+
+スクロールできる方向は、`scroll-state(scrollable: inline-end)` のコンテナクエリでも判定できます（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まっている間だけ見た目を変える)」）。しかし、コンテナクエリで変えられるのはコンテナの子孫だけなので、スクロールコンテナ自身の `mask-image` は切り替えられません。条件が成り立つかどうかで切り替わるので、端に近づくにつれて幅を狭めることもできません。2026年10月の時点では、`scroll-state()` のクエリに対応しているのはChrome系のブラウザだけです。端を薄くするのには、スクロール駆動アニメーションを使います。
 
 ## アイコンは currentColor で文字色に合わせる
 
@@ -279,5 +355,7 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 - [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月。`aspect-ratio`、`clip-path`、`currentColor` の例）
 - [インラインSVGの代替テキストはどうするべきか](https://www.tak-dcxi.com/article/how-to-handle-alt-text-for-inline-svg/)（TAKLOG、2024年3月）
 - [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)
+- [scroll() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline/scroll)
+- [Scroll-driven Animations Module Level 1 | W3C](https://drafts.csswg.org/scroll-animations-1/)
 - [clip-path - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clip-path)
 - [xywh() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/basic-shape/xywh)

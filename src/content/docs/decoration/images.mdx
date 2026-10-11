@@ -1,6 +1,6 @@
 ---
 title: "16-1 画像の配置と読み込み"
-description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。img には width と height の属性を書き、背景の写真も img で置きます。srcset と sizes はツールで確かめ、ファーストビューの画像は遅延読み込みにせず、写真は AVIF で書き出します。"
+description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。img には width と height の属性を書き、入稿される画像の箱には背景色と内側の線を付けます。背景の写真も img で置きます。srcset と sizes はツールで確かめ、ファーストビューの画像は遅延読み込みにせず、写真は AVIF で書き出します。"
 sidebar:
   order: 1
 ---
@@ -17,10 +17,12 @@ import fitHeightBadCss from '../../../demos/decoration/fit-height/style.bad.css?
 import fitHeightCss from '../../../demos/decoration/fit-height/style.css?raw';
 import heroHeaderHtml from '../../../demos/decoration/hero-header/index.html?raw';
 import heroHeaderCss from '../../../demos/decoration/hero-header/style.css?raw';
+import imagePlaceholderHtml from '../../../demos/decoration/image-placeholder/index.html?raw';
+import imagePlaceholderCss from '../../../demos/decoration/image-placeholder/style.css?raw';
 
 画像の縦横比は `aspect-ratio` で決め、中身は `object-fit` の `cover` か `contain` で収めます。初期値の `fill` のまま、画像を引き伸ばさないようにします。`<img>` には `width` と `height` の属性を書き、`srcset` と `sizes` の値は、手で計算せずにツールで確かめて決めます。
 
-写真を背景に敷くときも、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置きます。ファーストビューに表示される画像には `loading="lazy"` を指定せず、写真のような画像はAVIFで書き出します。
+入稿される画像を受ける箱には、面の背景色と内側の線を付け、読み込む前や読み込みに失敗したときにも範囲が見えるようにします。写真を背景に敷くときも、`background-image` ではなく、`object-fit` を指定した `<img>` を本文と同じグリッドのエリアに置きます。ファーストビューに表示される画像には `loading="lazy"` を指定せず、写真のような画像はAVIFで書き出します。
 
 アイコンや図形の描き方は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で、影や角丸、すりガラスの背景は「[16-3 面・影・角丸](/decoration/surfaces/)」で、番号付きリストの番号や文字の縁取りのような文字の装飾は「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
 
@@ -180,6 +182,30 @@ img {
 
 線の色は、枠線のトークンから選びます。濃い色にすると、白くない画像では枠が目立ちすぎます。強制カラーモードでは、`outline` の色はシステムカラーに置き換わります（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
 
+### 読み込む前と読み込めなかったときの箱
+
+入稿される画像を受ける箱には、線に加えて、`<img>` に面の背景色を付けておきます。比率と切り取り方を `aspect-ratio` と `object-fit: cover` で決めても、画像が描かれていない間は、箱の中に何も見えないからです。背景色があれば、読み込む前も読み込みに失敗したときも、箱の範囲が面として見え、読み込んだ後と同じ形のまま並びます。
+
+```css title="🙆‍♂ Recommended: 画像の箱に面の背景色と内側の線を付け、画像がなくても範囲を示す"
+._thumbnail {
+  inline-size: -webkit-fill-available;
+  inline-size: stretch;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background-color: var(--background--surface);
+  outline: 1px solid var(--border--base);
+  outline-offset: -1px;
+}
+```
+
+<Demo title="背景色と線がないと、読み込めなかった画像の場所が穴に見える" html={imagePlaceholderHtml} css={imagePlaceholderCss} />
+
+デモの上段は背景色と線を付けない画像、下段は付けた画像で、左から、読み込んだ画像、代替テキストのある画像の読み込みに失敗したとき、`alt=""` の画像の読み込みに失敗したときです。上段では、ライトのテーマで白い背景の写真の縁がページに溶け、読み込めなかった画像は代替テキストだけが空いた場所に浮かびます。下段では、3つとも同じ大きさの面と線に収まり、読み込めたかどうかにかかわらず箱の並びがそろって見えます。
+
+背景色は、画像の後ろに描かれます。不透明な写真を読み込めば隠れ、表示されるのは読み込む前と失敗したときだけです。透過のあるPNGやSVGでは背景色が透けるので、ロゴのような画像を受ける箱では、背景色を周りの面と同じ色にするか、付けずにおきます。遅延読み込みの画像は、スクロールで近づくまで読み込まれないので、この面だけを表示する時間が長くなります。
+
+読み込みに失敗した `<img>` の中には、ブラウザが壊れた画像のアイコンと代替テキストを描きます。Chrome 152では、`aspect-ratio` で決めた大きさのまま、箱の左上にアイコンと `alt` の文字が表示され、`alt=""` の画像には文字が表示されませんでした。背景色と `outline` はどちらにも描かれ、代替テキストは `<img>` の文字色で描かれました（2026年10月確認）。代替テキストが面の上で読めるように、背景色は文字色と対になる面のトークンから選びます。{/* 要検証: ブラウザ。読み込み中の箱の表示と、Firefox と Safari での読み込みに失敗した画像の表示（aspect-ratio の大きさ、背景色、outline、代替テキスト） */}
+
 ## 背景の写真も `<img>` で置く
 
 前の項目のヒーローのように写真を背景に敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を背景に置きます。`background-image` を使うのは、小さな画像を繰り返して敷き詰めるパターン画像や、内容と関係のない細かな装飾に限ります。
@@ -293,3 +319,4 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 - [Lazy loading - Performance | MDN](https://developer.mozilla.org/ja/docs/Web/Performance/Guides/Lazy_loading)
 - [aspect-ratio - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)
 - [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)
+- [`<img>`: 画像埋め込み要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Elements/img)（読み込みに失敗したときの代替テキストの扱い）

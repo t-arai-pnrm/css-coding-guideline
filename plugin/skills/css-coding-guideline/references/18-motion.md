@@ -1,8 +1,8 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.50.9（2026-10-11 生成）
+- ガイドラインのバージョン: 0.50.10（2026-10-11 生成）
 - ルールの数: 31
-- 本文: 約16.1万字
+- 本文: 約17.5万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -16,8 +16,8 @@
 - `motion/purpose` 18-1 動かすかどうかを決める（約8,800字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/purpose/
 - `motion/reduced-motion` 18-2 動きを減らす設定に対応する（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/
 - `motion/easing-and-duration` 18-3 イージングと再生時間（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/
-- `motion/transitions-and-keyframes` 18-4 トランジションと@keyframes（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
-- `motion/entry-and-exit` 18-5 出現と退場（約2.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
+- `motion/transitions-and-keyframes` 18-4 トランジションと@keyframes（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
+- `motion/entry-and-exit` 18-5 出現と退場（約3.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
 - `motion/scroll-driven` 18-6 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
 - `motion/performance` 18-7 動きの負荷を抑える（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
 - `motion/view-transitions` 18-8 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/

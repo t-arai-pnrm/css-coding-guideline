@@ -1,0 +1,103 @@
+@layer components {
+  @scope (.scoped.mega-header) to (.scoped) {
+    :scope {
+      position: relative;
+      z-index: var(--z--header);
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      align-items: center;
+      padding-block-end: 12px;
+      border-block-end: 1px solid var(--border--base);
+    }
+
+    ._logo {
+      font-weight: var(--font-weight--bold);
+    }
+
+    ._nav {
+      display: block flex;
+      gap: 4px;
+    }
+
+    ._menu-button,
+    ._nav-link {
+      display: block flow;
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-radius: var(--rounded--md);
+    }
+
+    ._menu-button {
+      &[aria-expanded="true"] {
+        background-color: var(--background--accent-subtle);
+      }
+    }
+
+    /* ヘッダーの下端に重ねて置く。高さは変えず、見える範囲だけを clip-path で動かす */
+    ._panel {
+      --_clip-from: inset(0 -24px -24px);
+
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 100%;
+
+      /* 左右と下に負の値を指定し、影を切り取らない */
+      clip-path: inset(0 -24px -24px);
+      padding: 16px;
+      border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--md);
+      background-color: var(--background--raised);
+      transition-duration: var(--duration--slow);
+      transition-property: clip-path, opacity, visibility;
+      transition-timing-function: var(--ease--out-quint);
+
+      /* 動きを減らす設定のときは見える範囲を変えず、フェードだけを残す */
+      @media (prefers-reduced-motion: no-preference) {
+        --_clip-from: inset(0 -24px 100%);
+      }
+
+      /* 閉じた状態。visibility: hidden で、中のリンクをフォーカスと読み上げから外す */
+      &:not(:is(._menu-button[aria-expanded="true"] + *)) {
+        visibility: hidden;
+        clip-path: var(--_clip-from);
+        opacity: 0;
+      }
+    }
+
+    ._panel-links {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(calc(160 / 16 * 1rem), 1fr));
+    }
+
+    ._panel-link {
+      display: block flow;
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-radius: var(--rounded--md);
+
+      @media (any-hover) {
+        &:any-link:hover {
+          background-color: var(--background--hover);
+        }
+      }
+    }
+  }
+
+  @scope (.scoped.page-main) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 12px;
+      padding-block-start: 24px;
+    }
+
+    ._title {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
+    }
+
+    a {
+      text-decoration-line: revert;
+    }
+  }
+}

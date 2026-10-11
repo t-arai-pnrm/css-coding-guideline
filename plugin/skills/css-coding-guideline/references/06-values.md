@@ -1,8 +1,8 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.50.9（2026-10-11 生成）
+- ガイドラインのバージョン: 0.50.10（2026-10-11 生成）
 - ルールの数: 29
-- 本文: 約7.6万字
+- 本文: 約8.1万字
 - 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -16,7 +16,7 @@
 - `values/px-and-rem` 6-1 pxとremを使い分ける（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/
 - `values/viewport-and-container-units` 6-2 ビューポート単位とコンテナ単位（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/viewport-and-container-units/
 - `values/math-functions` 6-3 計算関数で根拠を式に残す（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/math-functions/
-- `values/advanced-math-functions` 6-4 計算関数を応用する（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-functions/
+- `values/advanced-math-functions` 6-4 計算関数を応用する（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-functions/
 - `values/if-and-attr` 6-5 if()とattr()で条件と属性を値にする（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/
 
 ## 6-1 pxとremを使い分ける

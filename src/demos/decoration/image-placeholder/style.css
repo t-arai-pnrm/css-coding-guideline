@@ -1,0 +1,52 @@
+@layer components {
+  @scope (.scoped.image-boxes) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._row {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label {
+      font-weight: var(--font-weight--bold);
+    }
+
+    ._list {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
+      gap: 16px;
+    }
+
+    ._item {
+      display: block grid;
+      grid-template-rows: auto 1fr;
+      gap: 8px;
+    }
+
+    ._thumbnail {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--rounded--md);
+      object-fit: cover;
+      background-color: var(--background--surface);
+      outline: 1px solid var(--border--base);
+      outline-offset: -1px;
+
+      /* 比べるための指定。背景色と線を外す */
+      &[data-fallback="none"] {
+        background-color: transparent;
+        outline: none;
+      }
+    }
+
+    ._caption {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}

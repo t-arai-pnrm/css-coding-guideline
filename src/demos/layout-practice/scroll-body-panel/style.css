@@ -1,0 +1,96 @@
+@layer components {
+  @scope (.scoped.panel-compare) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    ._case {
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._label {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+
+  @scope (.scoped.filter-panel) to (.scoped) {
+    :scope {
+      display: block grid;
+
+      /* 見出しは中身の高さ、フォームは残りの高さ。フォームの行の下限を0にする */
+      grid-template-rows: auto minmax(0, 1fr);
+
+      /* デモの枠の中で上限を見せるため、固定の値にしている。実際のダイアログでは calc(100svb - 32px * 2) などにする */
+      max-block-size: calc(280 / 16 * 1rem);
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--md);
+      background-color: var(--background--raised);
+
+      /* 比較のため、フォームの行を 1fr（minmax(auto, 1fr)）のままにする */
+      &[data-row-min="auto"] {
+        grid-template-rows: auto 1fr;
+      }
+    }
+
+    ._title {
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-block-end: 1px solid var(--border--base);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    ._form {
+      display: block grid;
+
+      /* 本文の行は残りの高さ。下限を0にして、収まらない分は本文の中でスクロールさせる */
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    ._body {
+      overflow-y: auto;
+      overscroll-behavior-block: contain;
+      padding-block: 8px;
+      padding-inline: 16px;
+    }
+
+    ._option {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+      padding-block: 4px;
+    }
+
+    ._footer {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: end;
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-block-start: 1px solid var(--border--base);
+    }
+
+    ._button {
+      padding-block: 6px;
+      padding-inline: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--base);
+
+      &[data-variant="primary"] {
+        border-color: transparent;
+        background-color: var(--background--inverse);
+        color: var(--foreground--inverse);
+      }
+    }
+  }
+}

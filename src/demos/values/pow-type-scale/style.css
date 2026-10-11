@@ -1,0 +1,57 @@
+@layer components {
+  @scope (.scoped.type-scale) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    ._scale {
+      /* 基準の大きさと、1段階ごとに掛ける比率 */
+      --_base: 1rem;
+      --_ratio: 1.2;
+
+      padding: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+      line-height: var(--text--title--leading);
+
+      /* 比率だけを変える。各段階の式は同じ */
+      &[data-ratio="1.25"] {
+        --_ratio: 1.25;
+      }
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    ._heading-text {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._step-3 {
+      font-size: calc(var(--_base) * pow(var(--_ratio), 3));
+    }
+
+    ._step-2 {
+      font-size: calc(var(--_base) * pow(var(--_ratio), 2));
+    }
+
+    ._step-1 {
+      font-size: calc(var(--_base) * pow(var(--_ratio), 1));
+    }
+
+    ._step-0 {
+      font-size: var(--_base);
+    }
+
+    ._step-minus-1 {
+      font-size: calc(var(--_base) * pow(var(--_ratio), -1));
+    }
+  }
+}

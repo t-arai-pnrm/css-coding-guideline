@@ -1,6 +1,6 @@
 ---
 title: "11-10 ページのスクロールとルートスクローラー"
-description: "ページ全体のスクロールは、ビューポートのスクロール（ルートスクローラー）に任せます。html や body の高さを固定して内側の要素をスクロールさせると、戻ったときの位置の復元やキーボードでの操作など、ブラウザがページのスクロールに用意した機能が使えなくなります。入れ子になる書き方と、その確かめ方、用途ごとの直し方をまとめます。"
+description: "ページ全体のスクロールは、ビューポートのスクロール（ルートスクローラー）に任せます。html や body の高さを固定して内側の要素をスクロールさせると、戻ったときの位置の復元やキーボードでの操作など、ブラウザがページのスクロールに用意した機能が使えなくなります。入れ子になる書き方と、その確かめ方、用途ごとの直し方をまとめ、ページの端の跳ね返りを止めるときの条件も扱います。"
 sidebar:
   order: 10
 ---
@@ -8,7 +8,7 @@ sidebar:
 import Baseline from '../../../components/Baseline.astro';
 import Guideline from '../../../components/Guideline.astro';
 
-ページ全体のスクロールは、ビューポートのスクロール（ルートスクローラー）に任せます。`html` や `body` の高さを固定し、その内側の要素に `overflow: auto` を指定してページをスクロールさせると、見た目はほとんど変わらないまま、ブラウザがページのスクロールのために用意した機能が使えなくなります。高さは `min-block-size` で最小値だけを決め、画面に留めたい要素は `position: sticky` で留め、横のはみ出しは `overflow-x: clip` で切り取ります。
+ページ全体のスクロールは、ビューポートのスクロール（ルートスクローラー）に任せます。`html` や `body` の高さを固定し、その内側の要素に `overflow: auto` を指定してページをスクロールさせると、見た目はほとんど変わらないまま、ブラウザがページのスクロールのために用意した機能が使えなくなります。高さは `min-block-size` で最小値だけを決め、画面に留めたい要素は `position: sticky` で留め、横のはみ出しは `overflow-x: clip` で切り取ります。スクロールの端の跳ね返りを止めるなら、タッチの入力がない環境に限り、ルートに `overscroll-behavior-block: none` を指定します。
 
 ## ルートスクローラーとは何か
 
@@ -148,6 +148,43 @@ kiso.cssは、`body` に `min-block-size: 100dvb` を指定しています（kis
 
 AIが生成するコードでは、`html, body { height: 100%; }` に `overflow-x: hidden` を加えた組み合わせをよく見かけます。どちらも単独では理由のある指定に見えるので、レビューで見落としやすい組み合わせです。`html` と `body` に `height` や `overflow` が指定されていたら、ページがビューポートでスクロールしているかを、前の方法で確かめます。
 
+## スクロールの端の跳ね返り
+
+macOSのトラックパッドやiOSのSafariでは、ページの端を越えてスクロールしようとすると、ページが端から少し離れてから戻ります。この跳ね返り（ラバーバンド）は、OSとブラウザが標準で用意している動きで、端に着いたことをユーザーへ伝えます。スクロールの端での動きは `overscroll-behavior` で変えられ、ページ全体の動きは、ルート要素の値がビューポートへ適用されて決まります。{/* 要検証: ブラウザ。body の overscroll-behavior はビューポートへ伝わらないこと */}
+
+`overscroll-behavior` の値は `auto`、`contain`、`none` の3つです。`contain` は、端に着いたスクロールが祖先のスクロールコンテナへ連鎖するのを止めますが、その要素自身の跳ね返りは残します。`none` は、連鎖に加えて跳ね返りも止めます。ルートスクローラーには連鎖する先の祖先がないので、跳ね返りを止めるには `none` が要ります。一方、タッチ端末でページの上端から下へ引っ張って再読み込みする操作（pull-to-refresh）は、ページの外への連鎖として扱われるので、`contain` でも `none` でも止まります。{/* 要検証: ブラウザ。ルートの contain で、Android の Chrome と iOS の Safari の引っ張って更新が止まり、跳ね返りは残ること */}
+
+```css title="🙅‍♂ Not Recommended: すべての環境で跳ね返りを止め、引っ張って更新まで止める"
+/* 🙅‍♂ Not Recommended */
+@layer base {
+  :root {
+    overscroll-behavior-block: none;
+  }
+}
+```
+
+この指定は、跳ね返りだけでなく、スマートフォンの引っ張って更新も止めます。引っ張って更新は、ユーザーが再読み込みのために使う操作で、ページの見た目とは関わりがありません。跳ね返りを止める理由があっても、この操作まで取り上げる理由にはならないので、止めるならタッチで操作しない環境に限ります。
+
+本書では、主な入力しか調べない `pointer` は使わず、入力の精度を `any-pointer` で調べます（「[13-5 メディアクエリ](/responsive/media-queries/)」）。ただし、`(any-pointer: fine)` は、使える入力のどれかひとつでも精度が高ければ当てはまります。トラックパッド付きのキーボードをつないだiPadでも当てはまり、指で操作したときの跳ね返りまで止めてしまいます。ここで確かめたいのは「タッチの入力がないか」なので、`not (any-pointer: coarse)` と書きます。
+
+```css title="🙆‍♂ Recommended: タッチの入力がない環境だけ、ページの跳ね返りを止める"
+@layer base {
+  :root {
+    @media not (any-pointer: coarse) {
+      overscroll-behavior-block: none;
+    }
+  }
+}
+```
+
+<Baseline id="overscroll-behavior" compatKey="css.properties.overscroll-behavior-block" name="overscroll-behavior-block" />
+
+タッチスクリーンのあるノートパソコンは `coarse` の入力も持つので、この条件に当てはまらず、跳ね返りは残ります。判定が外れたときは止めない側に倒れるので、OSの標準の動きを損なうことはありません。指定するのは縦の軸だけです。横の軸まで止めると、トラックパッドの横のスワイプで前のページに戻る操作も使えなくなることがあります。{/* 要検証: ブラウザ。macOS の Chrome、Safari、Firefox で、ルートの overscroll-behavior-block: none が跳ね返りを止め、横のスワイプでの「戻る」は残ること */}
+
+そもそも跳ね返りを止めるかどうかは、「[1-1 CSSはブラウザへの「提案」である](/principles/browser-suggestion/)」の立場で判断します。跳ね返りはOSが用意し、ユーザーが慣れている動きなので、サイトの都合で取り除くものではありません。跳ね返りでページの外側に見えるのはルート要素の背景色で（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）、ルートに背景色を指定していれば、見た目が崩れることはほとんどありません。止める理由になるのは、固定ヘッダーの色とルートの背景色が違い、跳ね返りの間だけ上端に別の色がのぞく場合や、画面全体をアプリのように見せる画面で、ページ全体が動くと不自然に見える場合です。前者は、先にルートの背景色をヘッダーとそろえられないかを検討します。{/* 要確認: 著者の判断。跳ね返りを止めるのを、固定ヘッダーやアプリ風の画面で背景がのぞく場合に限るか、本書では止めないことを原則にするか */}{/* 要検証: ブラウザ。固定ヘッダーの上に、跳ね返りの間だけルートの背景色がのぞくこと */}
+
+kiso.cssが `dialog` と `[popover]` に指定している `overscroll-behavior-block: contain` は、この指定とは別の目的のものです。こちらは、モーダルの中のスクロールが背面のページへ連鎖するのを止め、モーダル自身の跳ね返りは残します（「[17-5 開閉するUI](/interaction/disclosure/)」）。連鎖させるかどうかは、端に着いた要素自身の値で決まるので、ルートに `none` を指定してもモーダルの指定は要ります。ルートの跳ね返りを止めるかどうかも、モーダルの指定とは関係なく決められます。
+
 ## ガイドライン
 
 <Guideline />
@@ -161,5 +198,8 @@ AIが生成するコードでは、`html, body { height: 100%; }` に `overflow-
 - [CSSOM View Module - scrollingElement](https://drafts.csswg.org/cssom-view/#dom-document-scrollingelement)（W3C）
 - [CSS Scroll Snap Module Level 1 - scroll-padding](https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding)（W3C）
 - [CSS Scroll Snap Module Level 2 - scroll-initial-target](https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target)（W3C）
+- [overscroll-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior)
+- [CSS Overscroll Behavior Module Level 1](https://drafts.csswg.org/css-overscroll-1/)（W3C）
+- [Take control of your scroll: customizing pull-to-refresh and overflow effects](https://developer.chrome.com/blog/overscroll-behavior)（Chrome for Developers）
 - [Non-Document Root Scroller explainer](https://github.com/bokand/NonDocumentRootScroller/blob/master/explainer.md)（GitHub）
 - [The root scroller and how not to lose it](https://polypane.app/blog/the-root-scroller-and-how-not-to-lose-it/)（Polypane）

@@ -1,0 +1,66 @@
+/* 型を登録したので、0から1の間の値が補間される。継承させないので、子孫はスタイルを計算し直さない */
+@property --link-card--progress {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@layer pages {
+  @scope (.scoped.link-card-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      place-items: center;
+      padding-block: 24px;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.link-card) to (.scoped) {
+    :scope {
+      /* 動きを減らす設定のときは持ち上げず、影と枠線の色だけを変える */
+      --_lift: 0px;
+
+      display: block grid;
+      gap: 8px;
+      max-inline-size: calc(400 / 16 * 1rem);
+      padding: 24px;
+      border: 1px solid color-mix(in oklab, var(--foreground--accent) calc(var(--link-card--progress) * 100%), var(--border--base));
+      border-radius: var(--rounded--lg);
+      box-shadow: 0 calc(var(--link-card--progress) * 8px) calc(var(--link-card--progress) * 24px) color-mix(in oklab, var(--shadow--color) calc(var(--link-card--progress) * 100%), transparent);
+      background-color: var(--background--surface);
+      color: inherit;
+      text-decoration-line: none;
+      translate: 0 calc(var(--link-card--progress) * var(--_lift));
+      transition-duration: var(--duration--base);
+      transition-property: --link-card--progress;
+      transition-timing-function: var(--ease--out-quint);
+
+      @media (prefers-reduced-motion: no-preference) {
+        --_lift: -4px;
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          --link-card--progress: 1;
+        }
+      }
+
+      &:focus-visible {
+        --link-card--progress: 1;
+      }
+    }
+
+    ._title {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    ._description {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}

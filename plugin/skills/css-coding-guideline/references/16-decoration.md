@@ -1,8 +1,8 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.50.9（2026-10-11 生成）
+- ガイドラインのバージョン: 0.50.10（2026-10-11 生成）
 - ルールの数: 33
-- 本文: 約14.4万字
+- 本文: 約15.7万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,8 +13,8 @@
 ## この章の節
 
 - `decoration` 第16章 画像・装飾（約3,600字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
-- `decoration/images` 16-1 画像の配置と読み込み（約2.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
-- `decoration/icons-and-masks` 16-2 アイコン・SVG・マスク（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
+- `decoration/images` 16-1 画像の配置と読み込み（約3万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
+- `decoration/icons-and-masks` 16-2 アイコン・SVG・マスク（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
 - `decoration/surfaces` 16-3 面・影・角丸（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
 - `decoration/text-ornaments` 16-4 文字とリストの装飾（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
 - `decoration/shapes` 16-5 角の形を変える（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/

@@ -1,6 +1,6 @@
 ---
 title: "14-3 行の高さとハーフレディング"
-description: "ベースのline-heightは1.5以上にして継承させ、line-height: 1は使いません。上下の余白を詰めたいときは、行の高さを小さくせず、text-box-trimでハーフレディングを取り除きます。"
+description: "ベースのline-heightは1.5以上にして継承させ、line-height: 1は使いません。上下の余白を詰めたいときは、行の高さを小さくせず、text-box-trimでハーフレディングを取り除きます。Flexboxのボタンでは、ラベルの要素に指定します。"
 sidebar:
   order: 3
 ---
@@ -13,7 +13,7 @@ import trimCss from '../../../demos/typography/text-box-trim/style.css?raw';
 import mediaTextHtml from '../../../demos/typography/media-text-trim/index.html?raw';
 import mediaTextCss from '../../../demos/typography/media-text-trim/style.css?raw';
 
-行の高さ（`line-height`）は、ベーススタイルで1.5以上にして各要素に継承させ、`line-height: 1` は使いません。値はトークンから選び、和文の本文は1.7〜2、見出しは1.25〜1.5を目安にします。デザインの都合で文字の上下の余白を詰めたいときは、行の高さを小さくするのではなく、`text-box-trim` でハーフレディングを取り除きます。
+行の高さ（`line-height`）は、ベーススタイルで1.5以上にして各要素に継承させ、`line-height: 1` は使いません。値はトークンから選び、和文の本文は1.7〜2、見出しは1.25〜1.5を目安にします。デザインの都合で文字の上下の余白を詰めたいときは、行の高さを小さくするのではなく、`text-box-trim` でハーフレディングを取り除きます。ボタンのラベルを上下の中央に置くときも同じで、Flexboxのボタンでは、ボタン自身ではなくラベルの要素に指定します。
 
 `line-height` を単位のない数値で書く理由は、「[6-1 pxとremを使い分ける](/values/px-and-rem/)」で説明しています。
 
@@ -113,6 +113,71 @@ CSSの行は、`line-height` の高さを持つ箱として並びます。行の
 web-featuresのデータでは、`text-box-trim` は2026年8月のFirefox 154で主要なブラウザのすべてが対応し、「新しく利用可能」になりました（2026年9月確認）。このため、`@supports` で分岐したり、`text-box-trim` の対応していない環境のための代わりの指定を用意したりせずに、そのまま使えます。
 
 Adobe製のツールで作ったデザインカンプを再現する案件では、全称セレクタですべての要素に `text-box-trim` を指定するのも選択肢です。すべての余白がハーフレディングを含まない前提になるので、カンプの数値をそのまま `margin` や `gap` に書けます。
+
+## ボタンのラベルを上下の中央に置く
+
+ボタンのラベルを、上下の `padding` を同じ値にしたまま文字の見た目の中央に置くときも、`text-box-trim` を使います。ボタンの中の行の箱は、フォントのアセントとディセントにハーフレディングを足した高さを持ち、文字はその中に置かれます。英語の大文字だけのラベルは、ベースラインより下のディセントの領域に文字がありません。そのうえ、大文字の上端からアセントまでの空きとディセントの大きさはフォントごとに違うので、`padding` を上下で同じにしても、ラベルは上か下に寄って見えます。
+
+英語のラベルに `text-box: trim-both cap alphabetic` を指定すると、行の箱が大文字の上端とベースラインで切り取られます。`padding` が大文字の字面からの距離になるので、上下の値が同じなら、大文字はボタンの上下の中央に来ます。`g` や `p` のようなディセンダーのある小文字は、ベースラインより下の `padding` にはみ出しますが、大文字とベースラインを基準にそろえるのが欧文の組版の慣習なので、そのままにします。
+
+### Flexboxのボタンではラベルの要素に指定する
+
+アイコンとラベルを並べるボタンは、ボタン自身を `display: inline flex` にすることが多くあります。このボタン自身に `text-box` を指定しても、何も削られません。
+
+```css title="🙅‍♂ Not Recommended: Flexboxのボタン自身に text-box を指定する"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.action-button) to (.scoped) {
+  :scope {
+    display: inline flex;
+    gap: 8px;
+    align-items: center;
+    padding-block: 12px;
+    padding-inline: 20px;
+    text-box: trim-both cap alphabetic;
+  }
+}
+```
+
+CSS Inline Layout Module Level 3では、`text-box-trim` を指定できるのは、ブロックコンテナ、段組みのコンテナ、インラインの箱だけです。仕様は、`::first-line` と同じく、Flexbox、Grid、表の整形文脈には適用されず、その中を通って子に伝わることもないと定めています。フレックスコンテナの中の行は、ボタン自身の行ではなく、各フレックスアイテムの中にあるからです。Chrome 152で確かめたところ、Flexboxのボタン自身に指定しても高さは変わらず、ラベルの要素に指定すると、ボタンが低くなりました（2026年10月確認）。{/* 要検証: ブラウザ。SafariとFirefoxでの同じ比較 */}
+
+そこで、`text-box-trim` はラベルの `span` に指定します。`span` はインライン要素ですが、フレックスアイテムになるとブロック化され、ブロックコンテナとして扱われるので、1行目の上と最後の行の下が削られます。言語による切り替えは、`.-trim-both` のユーティリティと同じく、和文はデフォルト値のまま、英文だけ `cap alphabetic` にします。
+
+```html title="🙆‍♂ Recommended: アイコンとラベルを別の要素にする"
+<button class="scoped action-button" type="button" lang="en">
+  <svg class="_icon" aria-hidden="true">/* ... */</svg>
+  <span class="_label">Download</span>
+</button>
+```
+
+```css title="🙆‍♂ Recommended: ハーフレディングをボタンではなくラベルの要素で取り除く"
+@scope (.scoped.action-button) to (.scoped) {
+  :scope {
+    display: inline flex;
+    gap: 8px;
+    align-items: center;
+    padding-block: 12px;
+    padding-inline: 20px;
+  }
+
+  ._label {
+    text-box-trim: trim-both;
+
+    &:lang(en) {
+      text-box-edge: cap alphabetic;
+    }
+  }
+}
+```
+
+ラベルの要素には `padding` や `border` を付けません。間に `padding` や `border` があると、`text-box-trim` は何も削らないからです。また、ハーフレディングを削ったぶん、ボタンは低くなります。操作に必要な最小の高さは `min-block-size` で確保し（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）、`align-items: center` でラベルを中央に置けば、高さが増えても上下の空きは同じになります。
+
+### 和文のラベルで切り取る位置
+
+和文のラベルに `cap alphabetic` は使いません。漢字や仮名の字面は、大文字の上端より上とベースラインより下にはみ出すので、`padding` に食い込み、上下が詰まって見えます。はみ出す量も上下で同じではありません。macOSのChrome 152で、システムフォントの「送信する」を比べたところ、字面は上に約2px、下に約1pxはみ出し、ラベルが上に寄って見えました（2026年10月確認）。
+
+和文のラベルには、デフォルト値の `text` のまま `text-box-trim` を指定します。ハーフレディングはなくなりますが、切り取る位置はフォントのアセントとディセントなので、字面がボタンの正確な中央に来るとは限りません。欧文フォントを先に指定していれば、この位置は欧文フォントのアセントとディセントで決まることもあります。使われるフォントはOSによって変わるので、ずれ方も環境ごとに変わります。{/* 要検証: ブラウザ。欧文フォントを先に指定したとき、OSごとの和文の字面の位置 */}本書では、ある環境のフォントの見え方を基準にして、上下の `padding` を変えることはしません。別の環境では、その調整が逆向きのずれになるからです。{/* 要確認: 著者の判断 */}
+
+仕様には、和文の字面に合う値もあります。`ideographic` は漢字や仮名の文字の枠（仮想ボディ）の上端と下端を、`ideographic-ink` は字面の上端と下端を、切り取る位置にする値です。ただし、Chrome 152はどちらにも対応していません。`text-box: trim-both ideographic` は宣言全体が無効になり、ハーフレディングも残りました（2026年10月確認）。{/* 要検証: ブラウザ。Safariでの ideographic の対応 */}対応が広がるまでは使いません。`ex` は小文字の `x` の高さを切り取る位置にする値で、上側にしか指定できません。大文字や和文の字面がはみ出すので、ラベルには使いません。
 
 ## 画像と並べた文章の上端をそろえる
 

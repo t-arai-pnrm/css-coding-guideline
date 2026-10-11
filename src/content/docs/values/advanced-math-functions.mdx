@@ -1,6 +1,6 @@
 ---
 title: "6-4 計算関数を応用する"
-description: clamp() の範囲に負の値を含めると、幅によってはみ出すかどうかを切り替えられます。abs() と sibling-index() で並びの中央からの距離を求め、長さを単位のない数値に変えるときは単位のついた値で割ります。Chrome系のブラウザだけが対応する calc-size() と @function は、従来の書き方で足りる場面では使いません。
+description: clamp() の範囲に負の値を含めると、幅によってはみ出すかどうかを切り替えられます。abs() と sibling-index() で並びの中央からの距離を求め、文字サイズなどの段階は pow() で基準と比率から求めます。長さを単位のない数値に変えるときは単位のついた値で割ります。Chrome系のブラウザだけが対応する calc-size() と @function は、従来の書き方で足りる場面では使いません。
 sidebar:
   order: 4
 ---
@@ -12,8 +12,10 @@ import hangingHtml from '../../../demos/values/hanging-label/index.html?raw';
 import hangingCss from '../../../demos/values/hanging-label/style.css?raw';
 import arcHtml from '../../../demos/values/sibling-index-arc/index.html?raw';
 import arcCss from '../../../demos/values/sibling-index-arc/style.css?raw';
+import powHtml from '../../../demos/values/pow-type-scale/index.html?raw';
+import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
-計算関数は、根拠を式に残すだけでなく、クエリを書かずに値を切り替える手段にもなります。`clamp()` の最小値を負、最大値を0にすると、余白が広いときだけ要素を外へはみ出させる値を作れます。`abs()` で絶対値を取れば、兄弟の並びの中央からの距離を、項目の数に関係なく求められます。`calc()`、`min()`、`max()`、`clamp()` の基本と、推奨値の組み立て方は「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+計算関数は、根拠を式に残すだけでなく、クエリを書かずに値を切り替える手段にもなります。`clamp()` の最小値を負、最大値を0にすると、余白が広いときだけ要素を外へはみ出させる値を作れます。`abs()` で絶対値を取れば、兄弟の並びの中央からの距離を、項目の数に関係なく求められます。`pow()` で累乗を求めれば、文字サイズや余白の段階を、基準と比率と段階の数から式で導けます。`calc()`、`min()`、`max()`、`clamp()` の基本と、推奨値の組み立て方は「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
 
 長さを単位のない数値に変えるときは、三角関数の組み合わせではなく、単位のついた値で割ります。Chrome系のブラウザだけが対応する `calc-size()` と `@function` は、従来の書き方で足りる場面では使いません。
 
@@ -129,6 +131,80 @@ import arcCss from '../../../demos/values/sibling-index-arc/style.css?raw';
 
 <Baseline id="abs-sign" name="abs() と sign()" />
 
+## `pow()` で基準と比率から段階を求める
+
+`pow()` は、1つ目の引数を2つ目の引数の回数だけ掛けた値（累乗）を返す関数です。文字サイズや余白の段階を「基準の値に、同じ比率を段階の数だけ掛ける」と決めているなら、各段階を `pow()` の式で書けます。{/* 要確認: 出典なし。基準と比率から段階を求める書き方 */}基準を16px、比率を1.25とすると、1段階上は20px、2段階上は25px、3段階上は31.25pxで、段階の数が `pow()` の2つ目の引数になります。
+
+この段階を、計算した結果の数値だけで並べると、次のようになります。`1.5625rem` が「16pxに1.25を2回掛けた値」であることは、コードからは読み取れません。比率を1.2に変えるときは、すべての段階を計算し直して書き換えることになります。
+
+```css title="🙅‍♂ Not Recommended: 比率から求めた段階を、結果の数値だけで並べる"
+/* 🙅‍♂ Not Recommended */
+.section-title {
+  font-size: 1.5625rem;
+}
+
+.section-lead {
+  font-size: 1.25rem;
+}
+
+.section-note {
+  font-size: 0.8rem;
+}
+```
+
+`pow()` で書くと、基準を `--_base`、比率を `--_ratio` に置き、各段階はその2つと段階の数から求める式になります。基準より小さい段階は、負の数で表します。`pow(1.25, -1)` は1を1.25で割った値（0.8）なので、`._note-text` の文字サイズは12.8pxです。
+
+```css title="🙆‍♂ Recommended: 基準と比率から、各段階を pow() で求める"
+@scope (.scoped.article-body) to (.scoped) {
+  :scope {
+    /* 基準の大きさと、1段階ごとに掛ける比率 */
+    --_base: 1rem;
+    --_ratio: 1.25;
+  }
+
+  ._title-text {
+    font-size: calc(var(--_base) * pow(var(--_ratio), 2));
+  }
+
+  ._lead-text {
+    font-size: calc(var(--_base) * pow(var(--_ratio), 1));
+  }
+
+  ._note-text {
+    font-size: calc(var(--_base) * pow(var(--_ratio), -1));
+  }
+}
+```
+
+式には、基準と比率と段階の数が残るので、それぞれの値がどう決まったのかを読み取れます。比率を変えるときも、`--_ratio` の1か所を書き換えれば、すべての段階が式に従って変わります。なお、`pow()` の2つの引数は、どちらも単位のない数値でなければなりません。`pow(1rem, 2)` のように長さを渡すと宣言が無効になるので、単位は、`pow()` の結果に基準の長さを掛けて付けます。
+
+次のデモは、同じ5つの段階を、左の列は比率1.2、右の列は比率1.25で求めたものです。2つの列の違いは `--_ratio` の値だけで、各段階の式は同じです。基準の段階0はどちらも16pxで、段階3は約27.6pxと31.25px、段階−1は約13.3pxと12.8pxになり、比率が大きいほど段階の間の差が開きます。{/* 要検証: ブラウザ。デモの各段階の計算値 */}
+
+<Demo title="同じ式で、比率だけを1.2と1.25に変えた文字サイズの段階" html={powHtml} css={powCss} widths={[320, 768]} />
+
+本書のデモでは、文字サイズを役割のトークン（`--text--<役割>--font-size`）で指定しています（「[14-5 文字の役割と色](/typography/text-roles/)」）。比率で段階を決めるデザインなら、`pow()` はコンポーネントの中ではなく、プリミティブのトークンの定義に書きます。プリミティブの文字サイズは単位のないpx相当の数値なので（「[10-4 デザイントークン](/components/design-tokens/)」）、`pow()` の結果も数値のまま持てます。役割はプリミティブを参照し、コンポーネントは役割を参照するので、比率を変えてもコンポーネントのCSSは変わりません。
+
+```css title="🙆‍♂ Recommended: プリミティブのトークンを、基準と比率から求める"
+:root {
+  --font-size--base: 16;
+  --font-size--ratio: 1.25;
+  --font-size--sm: calc(var(--font-size--base) * pow(var(--font-size--ratio), -1));
+  --font-size--md: var(--font-size--base);
+  --font-size--lg: calc(var(--font-size--base) * pow(var(--font-size--ratio), 1));
+  --font-size--xl: calc(var(--font-size--base) * pow(var(--font-size--ratio), 2));
+  --text--body--font-size: var(--font-size--md);
+  --text--title--font-size: var(--font-size--lg);
+
+  /* ... */
+}
+```
+
+ただし、本書のデモの文字サイズのトークン（12、14、16、20、28など）は、デザインで決めた値を並べたもので、1つの比率から求めたものではありません。こうした値を `pow()` の式に置き換えると、14が12.8に変わるように、デザインとは違う値になります。式に残すのは、その値を実際に決めた根拠です。比率から決めていない段階は、数値のままトークンにします（「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」）。
+
+この見出しで求めた段階は、どれも画面の幅によらない固定の値です。画面の幅に比例して大きさを変える文字サイズは、「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」の `clamp()` のユーティリティで扱い、段階の値はその最大値として渡します。`pow()` は、`sqrt()`、`hypot()`、`log()`、`exp()` とともに2023年12月から主要なブラウザで使え、本書の対象のブラウザもすべて対応しています（2026年10月確認）。
+
+<Baseline id="exp-functions" name="pow() などの指数関数" />
+
 ## 長さを単位のない数値に変える割り算
 
 長さを単位のない数値に変えるときは、単位のついた値で割ります。`calc(100svi / 1px)` は、画面の幅をpxで数えた数値（幅375pxの画面なら375）を返します。単位のついた値どうしを割り、単位を打ち消して数値にする計算は、「typed arithmetic」と呼ばれる仕様です。
@@ -220,6 +296,8 @@ SafariとFirefoxでは `--fluid()` を含む宣言が無効になり、見出し
 
 - [clamp() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clamp)
 - [abs() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/abs)
+- [pow() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/pow)
+- [CSS Values and Units Module Level 4: Exponential Functions](https://drafts.csswg.org/css-values-4/#exponent-funcs)
 - [sibling-index() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sibling-index)
 - [calc-size() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/calc-size)
 - [@function - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@function)

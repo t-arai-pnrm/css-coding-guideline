@@ -1,6 +1,6 @@
 ---
 title: "11-4 はみ出しとスクロール"
-description: "ページに横スクロールが出たら、まずはみ出している要素を特定して直します。はみ出しを切り取るだけなら overflow: hidden ではなく clip を使い、hidden は 0fr で畳む中身のようにスクロールコンテナが要る場面に限ります。中央に寄せたスクロール領域には safe を付けます。"
+description: "ページに横スクロールが出たら、まずはみ出している要素を特定して直します。はみ出しを切り取るだけなら overflow: hidden ではなく clip を使い、hidden は 0fr で畳む中身のようにスクロールコンテナが要る場面に限ります。見出しと操作ボタンを残して本文だけをスクロールさせるパネルは、Grid の本文の行を minmax(0, 1fr) にします。中央に寄せたスクロール領域には safe を付けます。"
 sidebar:
   order: 4
 ---
@@ -11,8 +11,12 @@ import Guideline from '../../../components/Guideline.astro';
 import stickyClipHtml from '../../../demos/layout-practice/sticky-in-clip/index.html?raw';
 import stickyClipCss from '../../../demos/layout-practice/sticky-in-clip/style.css?raw';
 import stickyClipBadCss from '../../../demos/layout-practice/sticky-in-clip/style.bad.css?raw';
+import scrollBodyPanelHtml from '../../../demos/layout-practice/scroll-body-panel/index.html?raw';
+import scrollBodyPanelCss from '../../../demos/layout-practice/scroll-body-panel/style.css?raw';
 
 ページに横スクロールが出たら、まず、はみ出している要素を特定して、その要素を直します。ルートで横方向のはみ出しを切り取るのは、そのうえでの備えです。はみ出しを切り取るときは、`overflow: hidden` ではなく `overflow: clip` を使います。`hidden` は要素をスクロールコンテナにするので、`position: sticky` やスクロール駆動アニメーションの基準を変えてしまうからです。`hidden` を使うのは、`0fr` で畳むアコーディオンの中身のように、スクロールコンテナであることが要る場面に限ります。
+
+見出しと操作ボタンを残して本文だけをスクロールさせるパネルでは、Gridの本文の行を `minmax(0, 1fr)` にして、行の高さの下限を0にします。
 
 中身を中央に寄せたスクロール領域では、中身がはみ出したときに先頭側が切れます。中央寄せには `safe` を付け、はみ出すときは先頭に寄せます。はみ出しを起こしにくい書き方（幅の上限、最小の長さ、アイテムの最小幅0）は、「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で説明しています。
 
@@ -143,6 +147,43 @@ $$('*').forEach((el) => {
 
 `auto` では、はみ出したときにスクロールバーが現れ、その分だけ中身の幅が変わる場合もあります。この揺れが気になる場所では、`scrollbar-gutter: stable` でスクロールバーの領域をあらかじめ確保します。本書のベーススタイルは、ページ全体のスクロールについてこの指定をしています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-scrollbar-gutter-stable)」）。
 
+## 見出しと操作ボタンを残して本文だけをスクロールさせる
+
+ダイアログやドロワー、ドロップダウンのパネルで、見出しと操作ボタンを見せたまま本文だけをスクロールさせるときは、パネルに `max-block-size` で高さの上限を付けます。パネルを `grid-template-rows: auto minmax(0, 1fr) auto` で3つの行に分け、本文を `overflow-y: auto` でスクロールさせます。
+
+```css title="🙆‍♂ Recommended: 見出しと操作ボタンの行を残し、本文の行だけを縮めてスクロールさせる"
+@scope (.scoped.dialog-panel) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    max-block-size: calc(100svb - 32px * 2);
+  }
+
+  ._body {
+    overflow-y: auto;
+    overscroll-behavior-block: contain;
+  }
+}
+```
+
+高さを `max-block-size` で上限として書くのは、中身が少ないときはパネルを中身の高さまで縮めるためです。上限の基準には、ブラウザのUIが表示されている最も小さい領域を表す `svb` を使い、画面の上下に32pxずつの余白を残しています。UIの出入りで値が変わる `dvb` は、要素の大きさに使いません（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。`<dialog>` のデフォルトの高さの上限はkiso.cssが解除しているので、上限はコンポーネントで決めます。
+
+Flexboxでも組めますが、本書ではGridを選びます。Gridなら、行の数と、どの行が残りの高さを受け取るかを、親の `grid-template-rows` の1行で読み取れます。Flexboxでは、どのアイテムが縮むかがアイテムごとの `flex-shrink` と最小サイズで決まり、親と子のCSSを読み合わせる必要があります（「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」）。
+
+本文の行の `minmax(0, 1fr)` の `0` は、行の高さの下限です。単独の `1fr` は `minmax(auto, 1fr)` として扱われ、下限が `auto` の行は、その行に置かれたアイテムの自動の最小サイズより低くなりません（「[7-8 Gridの基礎](/layout/grid-basics/)」）。グリッドアイテムの `min-block-size` の初期値 `auto` は、スクロールコンテナでないアイテムでは、中身の高さとして扱われます。本書のベーススタイルが0にしているのは `min-inline-size` だけなので（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）、高さの方向ではこの下限が残ります。
+
+例外は、行のアイテム自体がスクロールコンテナの場合です。上の例のように、`overflow-y: auto` の本文がそのまま行のアイテムなら、自動の最小サイズは0になるので、`1fr` でも本文は縮みます。崩れるのは、本文を包む別の要素が行のアイテムになったときです。たとえば、`<form method="dialog">` で本文と操作ボタンをまとめると、行のアイテムはスクロールコンテナでないフォームになります。行はフォームの中身の高さまで伸び、パネルが上限で止まったまま、フォームがパネルの外へはみ出します。
+
+`minmax(0, 1fr)` と書いておけば、どの要素がその行に入っても、パネルの上限の中に収まります。列を分けるときに `minmax(0, 1fr)` ではなく `1fr` と書くのは（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-fr-without-minmax-zero)」）、ベーススタイルが幅の方向の最小サイズを0にしているからです。高さの方向にはその前提がないので、スクロールさせる行には下限の0を明示します。{/* 要確認: 著者の判断。本文がスクロールコンテナなら 1fr でも縮むが、本文を包む要素が入る場合に備えて、スクロールさせる行は常に minmax(0, 1fr) と書く方針でよいか */} Flexboxで組んだパネルでは、縮ませるアイテムに `min-block-size: 0` を指定します（「[7-7 Flexboxの基礎](/layout/flexbox-basics/)」）。
+
+次のデモは、見出しと、本文と操作ボタンを包んだフォームを、高さの上限が `calc(280 / 16 * 1rem)` のパネルに入れたものです。フォームの行を `minmax(0, 1fr)` にした1つ目では、カテゴリーの一覧だけがスクロールし、見出しと「クリア」「適用」のボタンは見えたままです。`data-row-min="auto"` で行を `1fr` に戻した2つ目では、フォームがパネルの下の枠を越えてはみ出し、一覧はスクロールせず、ボタンもパネルの外に出ます。
+
+<Demo title="本文を包むフォームの行を minmax(0, 1fr) にすると本文だけがスクロールし、1fr のままだとパネルの外へはみ出す" html={scrollBodyPanelHtml} css={scrollBodyPanelCss} widths={[]} />
+
+本文がそのまま行のアイテムのときは、`1fr` でも `minmax(0, 1fr)` でも本文だけがスクロールしました。Flexboxで組んだ場合も、包む要素の `min-block-size` を0にすると収まりました（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Safari と Firefox で、本文を包む要素の行が 1fr だとパネルの外へはみ出し、minmax(0, 1fr) で収まること */}
+
+本文の `overscroll-behavior-block: contain` は、端までスクロールしたときに背面のページへスクロールが連鎖するのを止めます。kiso.cssは `<dialog>` と `[popover]` の要素自体にしか指定していないので、スクロールする本文にも指定します（「[17-5 開閉するUI](/interaction/disclosure/)」の「スクロールの連鎖を止める」）。
+
 ## 中央に寄せたスクロール領域の先頭が切れる
 
 `justify-content: center` や `align-content: center` で中身を中央へ寄せ、`overflow: auto` でスクロールを付けた要素では、中身が要素より大きくなると先頭側が切れます。中央に寄せる計算は、はみ出した分を前後に均等に振り分けます。そのため、先頭側へはみ出した部分は、スクロールで戻れない位置に置かれるからです。モーダルの中身や、横にスクロールするカードの列でよく起きます。
@@ -173,4 +214,6 @@ $$('*').forEach((el) => {
 - [overflow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
 - [CSS Overflow Module Level 3 - 3.1. Managing Overflow: the overflow-x, overflow-y, and overflow properties](https://drafts.csswg.org/css-overflow-3/#overflow-properties)
 - [CSS Grid Layout Module Level 1 - 6.6. Automatic Minimum Size of Grid Items](https://drafts.csswg.org/css-grid-1/#min-size-auto)
+- [CSS Flexible Box Layout Module Level 1 - 4.5. Automatic Minimum Size of Flex Items](https://drafts.csswg.org/css-flexbox-1/#min-size-auto)
+- [overscroll-behavior-block - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior-block)
 - [Defensive CSS](https://defensivecss.dev/)
