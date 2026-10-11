@@ -1,6 +1,6 @@
 /*
  * 紙の書籍版の組版スタイル（B5変形 182×235mm、フルカラー）。
- * Vivliostyle で組む。サイトの CSS は読み込まず、コードの色付け（Expressive Code）だけを借りる。
+ * Vivliostyle で組む。サイトの CSS は読み込まない。
  */
 
 @page {
@@ -198,22 +198,40 @@ a.xref-rule::after {
   font: 7pt sans-serif;
 }
 
-.related {
+.note-ref {
+  margin-inline: 0.15em;
+  font: 6.5pt/1 "Hiragino Sans", sans-serif;
+  vertical-align: super;
+}
+
+.notes {
   margin-block: 6mm 4mm;
   padding-block-start: 2mm;
   border-block-start: 0.5pt solid var(--line);
-  font: 7.5pt/1.6 "Hiragino Sans", sans-serif;
-  break-inside: avoid;
+  font: 7.5pt/1.65 "Hiragino Sans", sans-serif;
 }
 
-.related-title {
+.notes-title {
   margin: 0 0 1mm;
   font-weight: 700;
 }
 
-.related ul {
+.notes ol {
   margin: 0;
-  columns: 2;
+  padding: 0;
+  list-style: none;
+}
+
+.notes li {
+  padding-inline-start: 2.2em;
+  text-indent: -2.2em;
+  break-inside: avoid;
+}
+
+.note-mark {
+  display: inline-block;
+  inline-size: 2.2em;
+  text-indent: 0;
 }
 
 /* 参考リンク：URL を書き出す */
@@ -224,47 +242,38 @@ section > ul:last-child a[href^="http"]::after {
   overflow-wrap: anywhere;
 }
 
-/* コード（Expressive Code）：ライトテーマの色にして、長い行は折り返す */
-.expressive-code {
+/* コード：タイトルと pre。色は、コードの色付けのライトテーマの値（--1）を使う */
+figure.code {
   margin-block: 4mm;
-}
-
-.expressive-code span[style*="--0"] {
-  color: var(--1) !important;
-}
-
-.expressive-code figure,
-.expressive-code .frame {
+  margin-inline: 0;
   border: 0.5pt solid var(--line);
   background-color: var(--surface);
-  box-shadow: none !important;
 }
 
-.expressive-code pre {
-  background-color: var(--surface) !important;
-  color: var(--text) !important;
-  font-size: 7.2pt !important;
-  line-height: 1.55 !important;
-}
-
-.expressive-code pre,
-.expressive-code .ec-line .code {
-  white-space: pre-wrap !important;
-  overflow-wrap: anywhere;
-}
-
-.expressive-code .header {
+figure.code figcaption {
+  margin: 0;
   padding-block: 1mm;
   padding-inline: 3mm;
   border-block-end: 0.5pt solid var(--line);
-  background: none !important;
   font: 7.5pt/1.5 "Hiragino Sans", sans-serif;
   break-after: avoid;
 }
 
-.expressive-code .header::before,
-.expressive-code .header::after {
-  display: none !important;
+figure.code pre {
+  margin: 0;
+  padding-block: 2.5mm;
+  padding-inline: 3mm;
+  font: 7.2pt/1.55 "SF Mono", Menlo, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+figure.code code {
+  font: inherit;
+}
+
+figure.code span[style*="--1"] {
+  color: var(--1);
 }
 
 /* デモの静止図と、載せないデモ */
@@ -278,16 +287,9 @@ figure.print-demo {
 
 .print-demo .shots {
   display: block flex;
-  gap: 4mm;
+  flex-direction: column;
+  gap: 3mm;
   align-items: flex-start;
-}
-
-.print-demo .shot:first-child:not(:last-child) {
-  flex: 0 0 34mm;
-}
-
-.print-demo .shot:last-child {
-  flex: 1 1 auto;
 }
 
 .print-demo img {
@@ -365,7 +367,10 @@ figure.figure ._dot { fill: var(--accent); }
 .baseline ul { list-style: none; }
 .baseline li { display: inline; }
 .baseline li + li::before { content: " / "; }
-.baseline ._label { margin-inline-end: 2mm; font-weight: 700; }
+.baseline ._label { font-weight: 700; }
+.baseline ._summary > * + *,
+.baseline ._feature,
+.baseline ._browsers { margin-inline-start: 2mm; }
 .baseline ._source { display: block; color: var(--muted); }
 
 /* ガイドライン：強度と要点、ID */

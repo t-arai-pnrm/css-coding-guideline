@@ -2,13 +2,15 @@
  * dist/ の1ページの HTML から本文を取り出し、紙に合わせて書き換える。
  * - サイトの UI（見出しのアンカー、コピーのボタン、スクリプト）を外す
  * - 要素の id に、ページの ID を前置きして、巻の中で重ならないようにする
- * - 内部リンクを、同じ巻なら「（p.N）」、別の巻なら「（巻N）」が付く参照にし、節末に関連する節を集める
+ * - 内部リンクを、同じ巻なら「（p.N）」、別の巻なら「（巻N）」が付く参照にする
+ * - 参照だけの文と括弧の参照を「※N」の注にして、節末の「参照」に集める（notes.mjs）
  * - デモを、静止図（図N-M）か、補足サイトのデモ番号に置き換える
  * - ガイドラインのルールを、要点（強度と本文）と ID だけにする
  */
 import { readFile } from 'node:fs/promises';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { BASE } from '../../../src/lib/site.mjs';
+import { moveReferencesToNotes } from './notes.mjs';
 
 const SITE_BASE = `${BASE}/`;
 
@@ -25,17 +27,23 @@ const parseHref = (href) => {
 /** 章ごとの図の番号のキー。はじめには「序」、付録は記号 */
 const figureKey = (page) => page.chapter ?? (page.label?.startsWith('付録') ? page.label.slice(2) : '序');
 
-/** デモの撮影の幅。指定がなければ、デモの幅のボタンから、狭い幅と広い幅を選ぶ */
-const widthsOf = (figure, setting) => {
+/**
+ * デモの撮影の幅。指定がなければ、デモの幅のボタンから狭い幅と広い幅を選ぶ。
+ * 本文が触れている幅を優先し、触れていなければ、広い幅は768px（紙で文字が読める大きさに収まる幅）にする。
+ */
+const widthsOf = (figure, setting, mentioned) => {
   if (setting?.widths) return setting.widths;
   const presets = [...figure.querySelectorAll('._preset[data-width]')]
     .map((button) => Number(button.dataset.width))
     .filter(Number.isFinite);
   // 幅のボタンがないデモ（widths={[]}）は、本文の幅に近い720pxで1枚だけ撮る
   if (presets.length === 0) return [720];
+  const cited = presets.filter((width) => mentioned.includes(width));
   const usable = presets.filter((width) => width >= 320);
-  const narrow = Math.min(...(usable.length ? usable : presets));
-  const wide = presets.includes(1024) ? 1024 : Math.max(...presets);
+  const narrowCited = cited.filter((width) => width < 600);
+  const wideCited = cited.filter((width) => width >= 600);
+  const narrow = narrowCited.length ? Math.min(...narrowCited) : Math.min(...(usable.length ? usable : presets));
+  const wide = wideCited.length ? Math.min(...wideCited) : presets.includes(768) ? 768 : Math.max(...presets);
   return narrow === wide ? [wide] : [narrow, wide];
 };
 
@@ -53,12 +61,26 @@ export const extractPage = async (page, ctx) => {
     link.remove();
   }
   for (const wrapper of content.querySelectorAll('.sl-heading-wrapper')) wrapper.replaceWith(...wrapper.childNodes);
+
+  // コード：Expressive Code の枠を、タイトルと pre だけの単純な形に組み直す（Vivliostyle は、その CSS の折り返しを再現しないため）
+  for (const block of content.querySelectorAll('.expressive-code')) {
+    const title = block.querySelector('figcaption .title')?.textContent.trim() ?? '';
+    const lines = [...block.querySelectorAll('.ec-line .code')].map((line) => line.innerHTML.replace(/\n$/, ''));
+    const figure = doc.createElement('figure');
+    figure.className = 'code';
+    figure.innerHTML = `${title ? `<figcaption>${title}</figcaption>` : ''}<pre><code>${lines.join('\n')}</code></pre>`;
+    block.replaceWith(figure);
+  }
   for (const details of content.querySelectorAll('details')) details.setAttribute('open', '');
 
   // デモ：静止図か、補足サイトのデモ番号に置き換える
   const demos = [...content.querySelectorAll('figure.css-demo')];
+  if (demos.length !== page.demos.length) {
+    process.stderr.write(`注意: ${page.id} のデモの数が、原稿（${page.demos.length}）と dist/（${demos.length}）で違います。\n`);
+  }
   for (const [index, figure] of demos.entries()) {
-    const name = page.demos[index] ?? null;
+    const call = page.demos[index] ?? { name: null, mentioned: [] };
+    const name = call.name;
     const setting = name ? ctx.selection[name] : null;
     const title = figure.querySelector('._caption')?.textContent.trim() ?? '';
     const tabs = figure.nextElementSibling;
@@ -66,12 +88,14 @@ export const extractPage = async (page, ctx) => {
     if (setting?.print) {
       const srcdoc = figure.querySelector('iframe')?.getAttribute('srcdoc') ?? '';
       const shots = [];
-      for (const width of widthsOf(figure, setting)) shots.push({ width, file: await ctx.capture(srcdoc, width) });
+      for (const width of widthsOf(figure, setting, call.mentioned)) shots.push({ width, file: await ctx.capture(srcdoc, width) });
       const number = ctx.nextFigure(figureKey(page));
       const out = doc.createElement('figure');
       out.className = 'print-demo';
+      // 幅の違う図を同じ縮尺で縦に積む。最も広い図を紙の幅いっぱいにする
+      const widest = Math.max(...shots.map((shot) => shot.width));
       out.innerHTML = `<div class="shots">${shots
-        .map((shot) => `<div class="shot" style="--width: ${shot.width}"><img src="img/${shot.file}" alt=""><p class="shot-label">幅 ${shot.width}px</p></div>`)
+        .map((shot) => `<div class="shot" style="inline-size: ${((shot.width / widest) * 100).toFixed(2)}%"><img src="img/${shot.file}" alt=""><p class="shot-label">幅 ${shot.width}px</p></div>`)
         .join('')}</div>`;
       const caption = doc.createElement('figcaption');
       caption.textContent = `図${number}　${title}`;
@@ -113,7 +137,6 @@ export const extractPage = async (page, ctx) => {
   for (const element of content.querySelectorAll('[id]')) element.id = `${key}--${element.id}`;
 
   // リンク
-  const related = new Map();
   for (const anchor of content.querySelectorAll('a[href]')) {
     const href = anchor.getAttribute('href');
     if (href.startsWith('#')) {
@@ -138,23 +161,26 @@ export const extractPage = async (page, ctx) => {
       const suffix = isRule ? `（${targetPage.label ?? ''}、${where}）` : `（${where}）`;
       anchor.after(doc.createTextNode(suffix));
     }
-    if (!isRule && targetPage.id !== page.id && targetPage.label) {
-      related.set(targetPage.id, { page: targetPage, inVolume });
-    }
   }
 
-  // 節末に、関連する節を置く（ガイドラインの前、なければ参考リンクの前、なければ末尾）
-  if (related.size && page.slug !== 'index') {
+  // 参照を ※N の注にして、節末の「参照」に集める（ガイドラインの前、なければ参考リンクの前、なければ末尾）
+  const notes = moveReferencesToNotes(doc, content);
+  if (notes.length) {
     const aside = doc.createElement('aside');
-    aside.className = 'related';
-    const items = [...related.values()]
-      .map(({ page: target, inVolume }) =>
-        inVolume
-          ? `<li><a class="xref" href="#page-${keyOf(target.id)}">${target.title}</a></li>`
-          : `<li>${target.title}（${target.volume ? `巻${target.volume}` : '補足サイト'}）</li>`,
-      )
-      .join('');
-    aside.innerHTML = `<p class="related-title">この節に関連する節</p><ul>${items}</ul>`;
+    aside.className = 'notes';
+    const list = doc.createElement('ol');
+    for (const note of notes) {
+      const item = doc.createElement('li');
+      const mark = doc.createElement('span');
+      mark.className = 'note-mark';
+      mark.textContent = note.mark.textContent;
+      item.append(mark, ...note.nodes);
+      list.append(item);
+    }
+    const title = doc.createElement('p');
+    title.className = 'notes-title';
+    title.textContent = '参照';
+    aside.append(title, list);
     const before = content.querySelector(`[id="${key}--ガイドライン"], [id="${key}--参考リンク"]`);
     if (before) before.before(aside);
     else content.append(aside);

@@ -17,7 +17,10 @@ const outDir = join(HERE, 'out', `vol${number}`);
 await mkdir(join(outDir, 'img'), { recursive: true });
 await mkdir(join(outDir, 'assets'), { recursive: true });
 
-const { volume, pages } = await volumePages(number);
+const { volume, pages: volumeAll } = await volumePages(number);
+// 確認用に、環境変数 BOOK_PAGES（ページの ID をカンマで区切る）で組むページを絞れる。絞ったときは、外したページへの参照のページ番号が出ない
+const only = process.env.BOOK_PAGES?.split(',').map((id) => id.trim()).filter(Boolean);
+const pages = only?.length ? volumeAll.filter((page) => only.includes(page.id)) : volumeAll;
 const pagesById = new Map((await allPages()).map((page) => [page.id, page]));
 const selection = JSON.parse(await readFile(join(HERE, 'config/demo-selection.json'), 'utf8'));
 const capturer = await createCapturer(join(outDir, 'img'));
@@ -27,7 +30,7 @@ const stylesheets = new Set();
 const assets = new Map();
 const ctx = {
   pages: pagesById,
-  volumePageIds: new Set(pages.map((page) => page.id)),
+  volumePageIds: new Set(volumeAll.map((page) => page.id)),
   selection,
   stylesheets,
   capture: capturer.capture,
@@ -51,12 +54,6 @@ for (const page of pages) {
 await capturer.close();
 
 for (const [name, from] of assets) await copyFile(from, join(outDir, 'assets', name));
-const cssLinks = [];
-for (const href of stylesheets) {
-  const name = basename(href);
-  await copyFile(join(DIST, href.slice(BASE.length)), join(outDir, name));
-  cssLinks.push(`<link rel="stylesheet" href="${name}">`);
-}
 await copyFile(join(HERE, 'src/paper.css'), join(outDir, 'paper.css'));
 
 // 目次：章の概要と節を、ページ番号付きで並べる
@@ -70,7 +67,6 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <title>CSSコーディングガイドライン 巻${volume.number} ${volume.title}</title>
-${cssLinks.join('\n')}
 <link rel="stylesheet" href="paper.css">
 </head>
 <body>

@@ -20,12 +20,22 @@ const frontmatter = (source) => {
   return { title, order, draft };
 };
 
-/** MDX の <Demo> の呼び出しを順に読み、デモのディレクトリ名（例：components/density-event-card）を返す */
-const demoNames = (source) => {
+/**
+ * MDX の <Demo> の呼び出しを順に読み、デモのディレクトリ名（例：components/density-event-card）と、
+ * 前後の段落が触れている幅（「幅のボタンで768pxを選ぶと」の768）を返す
+ */
+const demoCalls = (source) => {
   const imports = new Map(
     [...source.matchAll(/^import (\w+) from '[./]*\/demos\/([^']+?)\/index\.html\?raw';$/gm)].map((match) => [match[1], match[2]]),
   );
-  return [...source.matchAll(/<Demo\b[^>]*?\bhtml=\{(\w+)\}/gs)].map((match) => imports.get(match[1]) ?? null);
+  // タイトルに「>」を含むことがあるので、呼び出しは「/>」までを1つとして読む
+  return [...source.matchAll(/<Demo\b[\s\S]*?\bhtml=\{(\w+)\}[\s\S]*?\/>/g)].map((match) => {
+    const before = source.slice(0, match.index).split('\n\n').filter((part) => part.trim()).slice(-2);
+    const after = source.slice(match.index + match[0].length).split('\n\n').filter((part) => part.trim() && !part.startsWith('<')).slice(0, 1);
+    const text = [...before, ...after].join('\n');
+    const mentioned = [...new Set([...text.matchAll(/(\d{3,4})px/g)].map((width) => Number(width[1])))];
+    return { name: imports.get(match[1]) ?? null, mentioned };
+  });
 };
 
 /** 節番号（例：10-6）。章の概要は「第10章」、付録は「付録E」、はじめには null */
@@ -39,7 +49,7 @@ const readPage = async (dir, file) => {
   const id = slug === 'index' ? dir : `${dir}/${slug}`;
   const html = join(DIST, slug === 'index' ? dir : join(dir, slug), 'index.html');
   const chapter = CHAPTERS.find((item) => item.dir === dir) ?? null;
-  return { id, dir, slug, title, order, draft, label: labelOf(title), chapter: chapter?.number ?? null, html, demos: demoNames(source) };
+  return { id, dir, slug, title, order, draft, label: labelOf(title), chapter: chapter?.number ?? null, html, demos: demoCalls(source) };
 };
 
 /** すべてのページ（下書きを除く）。リンク先の節番号と巻を引くのに使う */
