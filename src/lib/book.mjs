@@ -71,7 +71,7 @@ export const PARTS = [
         number: 9,
         dir: 'notation',
         title: '記法の規約',
-        review: 'すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法）',
+        review: 'すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）',
         always: true,
       },
       {

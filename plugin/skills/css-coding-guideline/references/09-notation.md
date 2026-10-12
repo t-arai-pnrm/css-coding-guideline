@@ -1,9 +1,9 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.53.0（2026-10-12 生成）
+- ガイドラインのバージョン: 0.54.0（2026-10-12 生成）
 - ルールの数: 49
-- 本文: 約11.6万字
-- 読む条件: すべてのCSS（命名、ネスト、@scope、プロパティの並び、記法）（常に読む）
+- 本文: 約12.1万字
+- 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -12,16 +12,17 @@
 
 ## この章の節
 
-- `notation` 第9章 記法の規約（約7,400字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/
-- `notation/naming` 9-1 命名規則（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
-- `notation/terminology` 9-2 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/
-- `notation/scope-and-nesting` 9-3 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/
-- `notation/nesting` 9-4 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/
-- `notation/nesting-criteria` 9-5 ネストの判断基準（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/
-- `notation/property-order` 9-6 プロパティの並び順（約3,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/property-order/
-- `notation/modern-syntax` 9-7 モダンな記法にそろえる（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/modern-syntax/
-- `notation/logical-properties` 9-8 論理プロパティと論理値（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/
-- `notation/comments` 9-9 コメントの書き方（約8,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/comments/
+- `notation` 第9章 記法の規約（約7,700字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/
+- `notation/naming` 9-1 命名規則（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
+- `notation/variants` 9-2 BEMからの書き直しとバリエーション（約8,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/variants/
+- `notation/terminology` 9-3 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/
+- `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/
+- `notation/nesting` 9-5 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/
+- `notation/nesting-criteria` 9-6 ネストの判断基準（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/
+- `notation/property-order` 9-7 プロパティの並び順（約3,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/property-order/
+- `notation/modern-syntax` 9-8 モダンな記法にそろえる（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/modern-syntax/
+- `notation/logical-properties` 9-9 論理プロパティと論理値（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/
+- `notation/comments` 9-10 コメントの書き方（約8,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/comments/
 
 ## 9-1 命名規則
 
@@ -29,7 +30,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
 
 - 【推奨・本書の規約】コンポーネントのルートに付ける `scoped <名前>` の `<名前>` は、kebab-case にする（例：`class="scoped media-card"`）。（`root-name-kebab-case`）
   - 理由: ルートの名前はコンポーネントの名前そのものなので、ブロック名やファイル名と対応させておくと、CSS から実装のファイルをたどりやすいため。
-  - 補足: `scoped` のクラスを付ける理由は 9-3 で、`@scope` の仕組みは第4章で扱います。
+  - 補足: `scoped` のクラスを付ける理由は 9-4 で、`@scope` の仕組みは第4章で扱います。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/#rule-root-name-kebab-case
 - 【必須・本書の規約】コンポーネントの子要素のクラス名は、`_` で始まる kebab-case にする（例：`._main-link`、`._nav-links`）。（`child-class-underscore`）
   - 理由: HTML を見ただけで、そのコンポーネントの中だけで意味を持つ名前だと分かるため。`@scope` で範囲を閉じているので、短い名前でもほかのコンポーネントと衝突しない。
@@ -61,17 +62,22 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
 - 【推奨・実装上の判断】子要素のクラス名に HTML の階層を映さない。孫にあたる要素にも、親の名前をつなげず、役割の名前を `._kebab` で付ける（`._tags-item-link` ではなく `._tag-link`）。（`child-name-flat`）
   - 理由: 階層を名前に写すと名前が要素の位置を表し、HTML の構造を変えるたびにクラス名とセレクタも変えなければならなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/#rule-child-name-flat
-- 【推奨・実装上の判断】互いに独立して選ばれるバリエーションの軸は、軸ごとに別の属性で表し、1つの属性には1つの値だけを書く（`data-variant="warning" data-size="small"`）。（`variant-attribute-per-axis`）
-  - 理由: 属性名から軸が分かり、セレクタを完全一致で書けるため。値を空白で区切って1つの属性に詰めると、`~=` のセレクタが必要になり、どの値がどの軸に属し、同時に指定できるのかが読み取れなくなる。
-  - 補足: 見た目の種類を表す軸には `data-variant` を、それと組み合わせる軸には `data-size` のように軸の名前を属性名に使います。2つの軸のセレクタは詳細度が同じなので、軸ごとに変えるプロパティを分けます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/#rule-variant-attribute-per-axis
 - 【必須・本書の規約】自分で付けて値として使う名前（`@keyframes`、グリッドの線とエリア、アンカー、スタイルクエリの値）は、`--` で始める。（`dashed-ident-names`）
   - 理由: 自分で付けた名前だとすぐに分かり、プロパティごとに `--` が必要かどうかを覚えずに済むため。将来 CSS に追加されるキーワードとも衝突しにくい。
   - 補足: `view-transition-name` の名前にも付けます。コンテナの名前は、第13章のルール `container-name-dashed-ident` で扱います。`@layer` の名前のように、値として使わない名前には付けません。
   - 自動チェック: Stylelint: `keyframes-name-pattern`（`@keyframes` のみ）
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/#rule-dashed-ident-names
 
-## 9-2 名前に使う語
+## 9-2 BEMからの書き直しとバリエーション
+
+https://t-arai-pnrm.github.io/css-coding-guideline/notation/variants/
+
+- 【推奨・実装上の判断】互いに独立して選ばれるバリエーションの軸は、軸ごとに別の属性で表し、1つの属性には1つの値だけを書く（`data-variant="warning" data-size="small"`）。（`variant-attribute-per-axis`）
+  - 理由: 属性名から軸が分かり、セレクタを完全一致で書けるため。値を空白で区切って1つの属性に詰めると、`~=` のセレクタが必要になり、どの値がどの軸に属し、同時に指定できるのかが読み取れなくなる。
+  - 補足: 見た目の種類を表す軸には `data-variant` を、それと組み合わせる軸には `data-size` のように軸の名前を属性名に使います。2つの軸のセレクタは詳細度が同じなので、軸ごとに変えるプロパティを分けます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/variants/#rule-variant-attribute-per-axis
+
+## 9-3 名前に使う語
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/
 
@@ -111,7 +117,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/
   - 補足: 番号を付けたくなるのは、要素の違いがまだ言葉になっていないときです。役割がはっきりするまでは、タイプセレクタや `:nth-child()` で選び、名前を付けるのは役割を説明できるようになってからにします。段階を表すときは `--md` のような段階の名前を使います。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/#rule-no-numbers-in-class-names
 
-## 9-3 @scopeとネストの使い分け
+## 9-4 @scopeとネストの使い分け
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/
 
@@ -126,7 +132,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/
   - 理由: ページのスタイルもほかのページやコンポーネントに漏れず、コンポーネントと同じ書き方で管理できるため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/#rule-page-scope-root
 
-## 9-4 ネストの書き方
+## 9-5 ネストの書き方
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/
 
@@ -156,7 +162,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/
   - 自動チェック: Stylelint: `book/conditions-inside-rules`（本書の独自ルール）
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/#rule-conditions-inside-rules
 
-## 9-5 ネストの判断基準
+## 9-6 ネストの判断基準
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/
 
@@ -170,7 +176,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/
   - 自動チェック: Stylelint に対応する設定がないため、レビューで確認する
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/#rule-no-nesting-under-selector-list
 
-## 9-6 プロパティの並び順
+## 9-7 プロパティの並び順
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/property-order/
 
@@ -185,7 +191,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/property-order/
   - 自動チェック: Stylelint: `order/properties-order`（taks-stylelint-order）
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/property-order/#rule-property-order
 
-## 9-7 モダンな記法にそろえる
+## 9-8 モダンな記法にそろえる
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/modern-syntax/
 
@@ -216,7 +222,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/modern-syntax/
   - 自動チェック: Stylelint: `property-no-vendor-prefix`
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/modern-syntax/#rule-no-vendor-prefix
 
-## 9-8 論理プロパティと論理値
+## 9-9 論理プロパティと論理値
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/
 
@@ -234,7 +240,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/
   - 補足: 本書の規約を採用したプロジェクトでは、物理プロパティは Stylelint の警告で見つけてそろえます。プロジェクトが物理プロパティで統一されているなら、その統一を優先します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/#rule-no-logical-nitpicking
 
-## 9-9 コメントの書き方
+## 9-10 コメントの書き方
 
 https://t-arai-pnrm.github.io/css-coding-guideline/notation/comments/
 

@@ -6,7 +6,7 @@
   kind: convention
   rule: コンポーネントのルートに付ける `scoped <名前>` の `<名前>` は、kebab-case にする（例：`class="scoped media-card"`）。
   reason: ルートの名前はコンポーネントの名前そのものなので、ブロック名やファイル名と対応させておくと、CSS から実装のファイルをたどりやすいため。
-  note: '`scoped` のクラスを付ける理由は 9-3 で、`@scope` の仕組みは第4章で扱います。'
+  note: '`scoped` のクラスを付ける理由は 9-4 で、`@scope` の仕組みは第4章で扱います。'
   page: notation/naming
   since: 0.1.0
 
@@ -88,7 +88,7 @@
   rule: 互いに独立して選ばれるバリエーションの軸は、軸ごとに別の属性で表し、1つの属性には1つの値だけを書く（`data-variant="warning" data-size="small"`）。
   reason: 属性名から軸が分かり、セレクタを完全一致で書けるため。値を空白で区切って1つの属性に詰めると、`~=` のセレクタが必要になり、どの値がどの軸に属し、同時に指定できるのかが読み取れなくなる。
   note: 見た目の種類を表す軸には `data-variant` を、それと組み合わせる軸には `data-size` のように軸の名前を属性名に使います。2つの軸のセレクタは詳細度が同じなので、軸ごとに変えるプロパティを分けます。
-  page: notation/naming
+  page: notation/variants
   since: 0.13.0
 
 - id: dashed-ident-names
@@ -102,7 +102,7 @@
   page: notation/naming
   since: 0.1.0
 
-# 9-2 名前に使う語
+# 9-3 名前に使う語
 - id: no-abbreviation
   level: 推奨
   kind: convention
@@ -189,7 +189,7 @@
   page: notation/terminology
   since: 0.14.0
 
-# 9-3 @scope とネストの使い分け
+# 9-4 @scope とネストの使い分け
 - id: scoped-class-on-root
   level: 必須
   kind: convention
@@ -215,7 +215,7 @@
   page: notation/scope-and-nesting
   since: 0.1.0
 
-# 9-4 ネストの書き方
+# 9-5 ネストの書き方
 - id: nesting-depth-one
   level: 推奨
   kind: convention
@@ -274,7 +274,7 @@
   page: notation/nesting
   since: 0.1.0
 
-# 9-5 ネストの判断基準
+# 9-6 ネストの判断基準
 - id: nest-child-placement-only
   level: 推奨
   kind: judgment
@@ -294,7 +294,7 @@
   page: notation/nesting-criteria
   since: 0.6.0
 
-# 9-6 プロパティの並び順
+# 9-7 プロパティの並び順
 - id: block-content-order
   level: 必須
   kind: convention
@@ -315,7 +315,7 @@
   page: notation/property-order
   since: 0.1.0
 
-# 9-7 モダンな記法にそろえる
+# 9-8 モダンな記法にそろえる
 - id: display-two-value-syntax
   level: 必須
   kind: convention
@@ -376,7 +376,7 @@
   page: notation/modern-syntax
   since: 0.1.0
 
-# 9-8 論理プロパティと論理値
+# 9-9 論理プロパティと論理値
 - id: logical-properties
   level: 推奨
   kind: judgment
@@ -406,7 +406,7 @@
   page: notation/logical-properties
   since: 0.18.0
 
-# 9-9 コメントの書き方
+# 9-10 コメントの書き方
 - id: file-header-doc-block
   level: 必須
   kind: convention

@@ -169,7 +169,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 }
 ```
 
-`inline-size` は子自身の大きさなので、親のルールの中にネストせず、子のルールに書きます（「[9-5 ネストの判断基準](/notation/nesting-criteria/)」）。`flex-basis` を書くのは、`flex: 1` のように伸び縮みの起点を0にするときと、「[12-5 sidebar](/compositions/sidebar/)」のように主軸の大きさを折り返しの閾値として計算に使わせるときです。どちらも主軸の大きさとして書く値なので、向きを変えても意図はずれません。
+`inline-size` は子自身の大きさなので、親のルールの中にネストせず、子のルールに書きます（「[9-6 ネストの判断基準](/notation/nesting-criteria/)」）。`flex-basis` を書くのは、`flex: 1` のように伸び縮みの起点を0にするときと、「[12-5 sidebar](/compositions/sidebar/)」のように主軸の大きさを折り返しの閾値として計算に使わせるときです。どちらも主軸の大きさとして書く値なので、向きを変えても意図はずれません。
 
 `flex-basis` と `inline-size` は、最終的な大きさではなく、伸び縮みを計算する前の仮の大きさです。計算した大きさは、最後に `min-inline-size` と `max-inline-size` の範囲に収められます。`max-inline-size` が `flex-basis` より小さければ、`max-inline-size` の大きさになります。`min-inline-size` と `max-inline-size` が矛盾すれば、`min-inline-size` が勝ちます。優先順位は、`min-*`、`max-*`、`flex-basis` と `inline-size` の順です（「[7-4 大きさの決まり方](/layout/sizing/)」）。
 

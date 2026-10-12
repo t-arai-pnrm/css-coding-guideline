@@ -97,7 +97,7 @@ import clickableCardCss from '../../../demos/exercise/clickable-card/style.css?r
 
 ## ホバーとフォーカスをルートの1か所で受ける
 
-見出しの下線と画像の明るさは、どちらもホバーとフォーカスの2つの状態で切り替えます。子要素ごとに `:hover` と `:focus-visible` を書く代わりに、カードのルートで状態を `--_has-hocus` のフラグにまとめます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/#状態をフラグにして子孫に伝える)」）。
+見出しの下線と画像の明るさは、どちらもホバーとフォーカスの2つの状態で切り替えます。子要素ごとに `:hover` と `:focus-visible` を書く代わりに、カードのルートで状態を `--_has-hocus` のフラグにまとめます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/#ホバーとフォーカスの状態をフラグにする)」）。
 
 ```css title="🙆‍♂ Recommended: 見出しのリンクのホバーとフォーカスを、ルートで --_has-hocus にまとめる"
 @scope (.scoped.article-card) to (.scoped) {

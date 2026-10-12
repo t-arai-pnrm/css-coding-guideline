@@ -11,6 +11,17 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.54.0（2026年10月12日）
+
+命名の節を分け、規約の説明を、小さな場面から表記の体系へ広げる順に改めました。ルールの掲載ページが変わったので、マイナーバージョンを上げています。既存の節のURLは変えていません。
+
+- 「[9-1 命名規則](/notation/naming/)」から、BEMの書き直しとバリエーションを、新しい「[9-2 BEMからの書き直しとバリエーション](/notation/variants/)」に分けました。BEMとの比較は、名前と範囲、バリエーションの2段階に分け、それぞれの例から比べる条件に関係のない宣言を外しました。
+- 第9章の旧9-2〜9-9を、9-3〜9-10に繰り下げました。ほかの節からのリンクの節番号も直しています。
+- 「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」の冒頭に、公開プロパティと内部プロパティを1つずつ追う場面を置き、名前の形の表を後ろへ移しました。
+- 「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」を3段階（幅で1つの要素を変える／幅のフラグで複数の子を変える／ホバーとフォーカスに当てはめる）に分け、各段階の終わりに確かめることを書きました。
+- ルールの掲載ページを移しました。
+  - [`variant-attribute-per-axis`](/notation/variants/#rule-variant-attribute-per-axis)：9-1から9-2へ
+
 ## 0.53.0（2026年10月12日）
 
 `if()` に未対応の環境でも同じ表示にする書き方を補い、アイコンとコントラストの記述を改めました。ルールを追加したので、マイナーバージョンを上げています。
@@ -1262,7 +1273,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`navigation-not-menu`](/notation/terminology/#rule-navigation-not-menu)：サイトの導線は `navigation`、操作の選択肢の一覧は `menu` と呼びます。
   - [`no-text-only-name`](/notation/terminology/#rule-no-text-only-name)：`text` だけの名前を付けません。
   - [`renaming-terms-is-breaking`](/notation/terminology/#rule-renaming-terms-is-breaking)：公開プロパティやコンポーネントの名前に使った語の変更は、互換性のない変更として扱います。
-  - [`variant-attribute-per-axis`](/notation/naming/#rule-variant-attribute-per-axis)：独立したバリエーションの軸は、軸ごとに別の属性で表します。
+  - [`variant-attribute-per-axis`](/notation/variants/#rule-variant-attribute-per-axis)：独立したバリエーションの軸は、軸ごとに別の属性で表します。
   - [`section-padding-block`](/layout-practice/spacing/#rule-section-padding-block)：ページに並べるセクションの上下の余白は、各セクションのルートの `padding-block` で作ります。
 - ルール [`no-vague-names`](/notation/naming/#rule-no-vague-names) の補足の例を、`_inner` から `_section-inner` に変えました。
 - 本書のコード例とデモのクラス名を、命名のルールに合わせて直しました。`._inner` には「何の」を併記し、`._columns`、`._row`、`._text` のような名前を役割の名前に変えています。`._list`、`._link`、`._button`、`li` の `._item` のように要素の種類を言い換えただけのクラスは、タイプセレクタか役割の名前に変えました。

@@ -72,7 +72,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 `sticky` の要素に `container-type: scroll-state` を指定します。すると、その中の要素は `@container scroll-state(stuck: block-start)` の条件を使い、上端に留まっている間だけスタイルを変えられます。コンテナクエリなので、条件で変えられるのはコンテナの子孫だけです。ヘッダーそのものではなく、内側の要素に見た目を書きます。
 
-`stuck` の値には、`top` や `bottom` のような物理キーワードと、`block-start` や `block-end` のような論理キーワードがあります。本書では、`inset-block-start` で留める位置を決めているのに合わせて、論理キーワードで書きます（「[9-8 論理プロパティと論理値](/notation/logical-properties/)」）。下端に留めるフッターなら `stuck: block-end` です。
+`stuck` の値には、`top` や `bottom` のような物理キーワードと、`block-start` や `block-end` のような論理キーワードがあります。本書では、`inset-block-start` で留める位置を決めているのに合わせて、論理キーワードで書きます（「[9-9 論理プロパティと論理値](/notation/logical-properties/)」）。下端に留めるフッターなら `stuck: block-end` です。
 
 ```css title="🙆‍♂ Recommended: 上端に留まっている間だけ、ヘッダーの内側に境界線を付ける"
 @scope (.scoped.site-header) to (.scoped) {

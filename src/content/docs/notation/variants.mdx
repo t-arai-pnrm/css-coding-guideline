@@ -1,0 +1,192 @@
+---
+title: "9-2 BEMからの書き直しとバリエーション"
+description: BEMの名前を本書の命名に書き直すときは、名前と範囲、バリエーションの2段階に分けます。バリエーションはクラスの修飾子ではなく data-variant 属性で表し、変わる値をルートの内部プロパティで切り替えるので、子要素のセレクタの詳細度は上がりません。互いに独立した軸が2つ以上あるときは、軸ごとに属性を分けます。
+sidebar:
+  order: 2
+---
+
+import Guideline from '../../../components/Guideline.astro';
+
+BEMの名前を本書の命名に書き直すときは、2段階に分けて進めます。1段階目では、子要素の名前に繰り返していたコンポーネント名を `@scope` の範囲に移し、子要素の名前を短くします。2段階目では、修飾子のクラスを `data-variant` 属性に置き換え、変わる値をルートの内部プロパティで切り替えます。段階ごとに変わるものが1種類になるので、それぞれの段階で何を確かめればよいかがはっきりします。
+
+互いに独立して選ばれるバリエーションの軸が2つ以上あるときは、`data-variant` に値を詰めず、`data-size` のように軸ごとに属性を分けます。クラス名の5種類と、`class` 属性での区切り方は「[9-1 命名規則](/notation/naming/)」で、BEMのBlock、Element、Modifierを `@scope` とネストに書き分ける考え方は「[9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で説明しています。
+
+## 書き直す前のBEMの例
+
+書き直す前のカードは、BEMで書いた次の形です。画像と見出しを持ち、編集者が選んだ記事だけを、修飾子 `--featured` で見出しを大きくします。
+
+```html title="🙅‍♂ Not Recommended: 名前の衝突と上書きの順番を、命名の規則で管理する"
+<!-- 🙅‍♂ Not Recommended -->
+<article class="media-card media-card--featured">
+  <div class="media-card__image"></div>
+  <h2 class="media-card__title">記事のタイトル</h2>
+</article>
+```
+
+```css title="🙅‍♂ Not Recommended: 名前の衝突と上書きの順番を、命名の規則で管理する"
+/* 🙅‍♂ Not Recommended */
+.media-card__image {
+  aspect-ratio: 16 / 9;
+}
+
+.media-card__title {
+  font-size: calc(18 / 16 * 1rem);
+}
+
+.media-card--featured .media-card__title {
+  font-size: calc(24 / 16 * 1rem);
+}
+```
+
+この書き方では、2つのことを人が守る規則で管理しています。1つ目は名前の衝突です。子要素の名前に `media-card` を繰り返すのは、ほかのコンポーネントの `__title` と区別するためで、全員がこの規則を守っている間だけ衝突が起きません。2つ目は上書きの順番です。featuredの見出しを選ぶセレクタはクラスが2つになるので、詳細度は `0.2.0` に上がります。これを後から上書きするには、さらに詳細度の高いセレクタが要ります。
+
+本書では、この2つをCSSの仕組みに任せます。名前の衝突は `@scope` の範囲で防ぎ、上書きの順番は、子要素のセレクタにルートの条件を加えないことで、詳細度が上がらないようにします。2つは別の問題なので、書き直しも2つの段階に分けます。
+
+## 1段階目：名前と範囲を書き直す
+
+1段階目では、コンポーネント名をルートの `scoped media-card` と `@scope` の範囲に移します。範囲が閉じれば、子要素の名前にコンポーネント名を繰り返す必要はありません。この段階では、バリエーションのない基本の形だけを扱い、宣言は書き直す前と同じにします。
+
+```html title="🙆‍♂ Recommended: コンポーネント名をルートにだけ付ける"
+<article class="scoped media-card">
+  <div class="_image"></div>
+  <h2>記事のタイトル</h2>
+</article>
+```
+
+```css title="🙆‍♂ Recommended: 子要素は短い名前で、スコープの中に書く"
+@scope (.scoped.media-card) to (.scoped) {
+  ._image {
+    aspect-ratio: 16 / 9;
+  }
+
+  h2 {
+    font-size: calc(18 / 16 * 1rem);
+  }
+}
+```
+
+変わったのは名前と範囲だけです。`.media-card__image` は `._image` になり、カードに1つしかない見出しはクラスを外して、タイプセレクタの `h2` で選んでいます。`@scope` の中のルールは、`media-card` のルートから、内側にある次の `scoped` の要素の手前までにしか当たりません。そのため、ほかのコンポーネントに同じ `._image` や `h2` があっても、スタイルは混ざりません（「[9-1 命名規則](/notation/naming/)」）。
+
+この段階で確かめるのは、範囲の外に影響が出ていないことです。`@scope` の括弧の中のセレクタは詳細度に加わらないので、`._image` は `0.1.0` で、BEMの `.media-card__image` と同じです。`h2` はクラスを外した分だけ `0.0.1` に下がるので、同じレイヤーの中で、より詳細度の高いセレクタが見出しを選んでいないかを確かめます。そのうえで、カードの中に別のコンポーネントを置いたページで、内側のコンポーネントの見出しにカードのスタイルが当たっていないかを見ます（「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」）。
+
+AIに名前を付けさせると、`.media-card__title` のようなBEMの名前や、`.card-title` のようにコンポーネント名を繰り返した名前が出てくることがよくあります。`@scope` の中に書くコードでは、子要素の名前からコンポーネント名を取り除き、`_` で始まる短い名前に直してください。`.media-card__title` のように1つしかない見出しに付いた名前は、クラスごと外してタイプセレクタで選びます。
+
+## 2段階目：バリエーションを属性と内部プロパティで表す
+
+2段階目では、修飾子のクラス `media-card--featured` を、ルートの `data-variant="featured"` に置き換えます。見出しの大きさは、ルートで内部プロパティ `--_title-font-size` の値を切り替え、見出しのルールはその値を読むだけにします。
+
+```html title="🙆‍♂ Recommended: バリエーションを data-variant 属性で渡す"
+<article class="scoped media-card" data-variant="featured">
+  <div class="_image"></div>
+  <h2>記事のタイトル</h2>
+</article>
+```
+
+```css title="🙆‍♂ Recommended: ルートで内部プロパティの値を切り替え、見出しはその値を読む"
+@scope (.scoped.media-card) to (.scoped) {
+  :scope {
+    --_title-font-size: calc(18 / 16 * 1rem);
+
+    &[data-variant="featured"] {
+      --_title-font-size: calc(24 / 16 * 1rem);
+    }
+  }
+
+  ._image {
+    aspect-ratio: 16 / 9;
+  }
+
+  h2 {
+    font-size: var(--_title-font-size);
+  }
+}
+```
+
+見出しを選ぶセレクタは、1段階目と同じ `h2` のままです。featuredかどうかの条件はルートの `&[data-variant="featured"]` にだけあり、見出しのルールには加わりません。詳細度は、`:scope` が `0.1.0`、`&[data-variant="featured"]` が属性セレクタの分を足した `0.2.0` で、`h2` は `0.0.1` のままです。BEMの例で `0.2.0` まで上がっていたのは見出しのセレクタでしたが、この書き方で上がるのはルートのセレクタだけです。
+
+修飾子をクラスではなく属性で表すのは、バリエーションが「どの種類か」という1つの値だからです。`class="media-card media-card--featured"` では、修飾子のクラスを単独で付けても意味を持たないことを、名前の規則で守ることになります。`data-variant="featured"` なら、値はルートの `:scope` の中の `&[data-variant="featured"]` でしか読まないので、ほかの要素に付けても何も起きません。1つの属性には1つの値しか書けないので、同じ軸の2つの値を同時に付ける誤りも起きません。
+
+この段階で確かめるのは、値の切り替えと詳細度です。featuredのカードとそうでないカードを並べ、見出しの大きさだけが変わっているかを見ます。値では表せない変化、たとえば見出しの前に記号を足すような変化は、見出しのルールの中に `&:is(:scope[data-variant="featured"] *)` と書きます（「[9-6 ネストの判断基準](/notation/nesting-criteria/)」）。なお、選択中や展開中のような状態は、バリエーションではありません。状態は、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に検討して表します（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。
+
+## バリエーションの軸が2つ以上あるとき
+
+1つのコンポーネントが、互いに関係のない2つの観点で変わることがあります。状態を示すバッジなら、「注意」や「完了」のような種類と、本文の中に置くための小さいサイズは、別々に選ばれます。本書では、この独立して選ばれる観点を、バリエーションの軸と呼びます。`data-variant` に書ける値は1つなので、軸が2つになると書き方を決めておく必要があります。
+
+2つの軸の値を、空白で区切って `data-variant` に詰める書き方は勧めません。`[data-variant="warning"]` は値の完全一致なので、`data-variant="warning small"` の要素には当たりません。そのため、`[data-variant~="warning"]` のように、空白で区切った単語の1つに一致するセレクタを使うことになります。
+
+```css title="🙅‍♂ Not Recommended: 2つの軸の値を data-variant に詰める"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.status-badge) to (.scoped) {
+  :scope {
+    &[data-variant~="warning"] {
+      color: var(--color--warning--700);
+    }
+
+    &[data-variant~="small"] {
+      font-size: calc(12 / 16 * 1rem);
+    }
+  }
+}
+```
+
+この書き方では、HTMLの `data-variant="warning small"` を読んでも、2つの値が別々の軸なのか、1組で意味を持つ値なのかが分かりません。新しい値を足すときも、その値がどちらの軸に属し、どの値と同時に指定できるのかを、CSSを読んで確かめることになります。値の並び順も決まらないので、`"small warning"` と書かれた要素が混ざっても気付きにくくなります。
+
+軸ごとに属性を分ければ、この問題は起きません。見た目の種類を表す軸には `data-variant` を使い、それと組み合わせる軸には、`data-size` のように軸の名前を属性名にします。1つの属性には1つの値だけを書くので、セレクタは完全一致で書けます。属性名を見れば軸が分かり、同じ属性に2つの値を書けないことが、同じ軸の値は同時に選べないことをそのまま表します。
+
+```html title="🙆‍♂ Recommended: 軸ごとに別の属性で値を渡す"
+<span class="scoped status-badge" data-variant="warning" data-size="small">要確認</span>
+```
+
+```css title="🙆‍♂ Recommended: 軸ごとに、別のプロパティを変える"
+@scope (.scoped.status-badge) to (.scoped) {
+  :scope {
+    display: inline flow-root;
+    padding-block: 4px;
+    padding-inline: 12px;
+    border: 1px solid;
+    border-radius: var(--rounded--full);
+    color: var(--foreground--base);
+    font-size: calc(14 / 16 * 1rem);
+
+    &[data-variant="warning"] {
+      color: var(--color--warning--700);
+    }
+
+    &[data-size="small"] {
+      padding-block: 2px;
+      padding-inline: 8px;
+      font-size: calc(12 / 16 * 1rem);
+    }
+  }
+}
+```
+
+軸ごとのスタイルを独立に書いておけば、「注意で、しかも小さい」のような組み合わせのためのセレクタは要りません。種類が3つ、大きさが2つなら組み合わせは6通りですが、CSSに書くのは軸ごとの値の数だけです。ただし、`&[data-variant="warning"]` と `&[data-size="small"]` の詳細度はどちらも `0.2.0` なので、2つの軸が同じプロパティを変えると、後に書いたほうが勝ちます。そこで、軸ごとに変えるプロパティを分けます。この例では、種類の軸は `color` だけを、大きさの軸は余白と文字の大きさだけを変えています。
+
+種類の軸が `color` だけで済んでいるのは、`border` の色を省略しているからです。`border-color` の初期値は文字色（`currentColor`）なので、文字色を変えれば枠線の色も変わります。アイコンを文字色に合わせる書き方は、「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で説明しています。
+
+## BEMの考え方と分かれるところ
+
+BEMなどの命名規則と、本書の命名が分かれるところもあります。BEMに基づく設計の記事には、レイアウトのためのブロックに `l-` のような接頭辞を付けず、通常のブロックと同じに扱うものがあります。何がレイアウトなのかの線引きが人によって違い、接頭辞で見分けられても利点が少ないからです。また、修飾クラスは単独でスタイルを持たせず、必ずブロックと一緒に宣言する、という考え方もあります。単独で使えるクラスは、どこに付けても同じ効果があるとは限らないからです。
+
+本書では、配置のパターンを `.cluster` のようなコンポジションとして分けます。コンポジションは配置だけを書くと決めているので、線引きは「見た目を持つか」で判断でき、接頭辞は付けません。また、単独でスタイルを持つクラスは、どこに付けても同じ意味を持つユーティリティと、静的な見た目だけを持つパターンに限ります。コンポーネントのバリエーションは、クラスの修飾子ではなく属性で表します。この対比は、命名の規則が違うだけで、名前から役割と影響範囲を読み取れるようにするという目的は同じです。
+
+## 補足と注意点
+
+既存のサイトでは、2つの段階を1つの変更で行います。修飾子のクラスを残したまま名前と範囲だけを書き直すと、`@scope` の外に `.media-card--featured` のルールが残り、範囲の中と外で同じ要素のスタイルを管理することになるからです。段階に分けるのは、確かめる観点を分けるためです。1段階目の観点は範囲の外への影響で、2段階目の観点は値の切り替えと詳細度です。レビューでも、この2つを分けて差分を読みます。
+
+修飾子を属性に替えると、HTMLを出力するテンプレートと、クラスを付け外ししていたJavaScriptも書き直します。`classList.toggle('media-card--featured')` のような処理は、`dataset.variant` を書き換える処理に替わります。書き直す時期は、「[9-1 命名規則](/notation/naming/)」の「補足と注意点」のとおり、`@scope` へ移るときに合わせます。
+
+バリエーションの軸を属性に分ける約束は、軸が1つのコンポーネントでは何も足しません。新しく増える概念は、2つ目の軸を足すときの「属性名を軸の名前にする」ことだけです。{/* 要確認: 出典なし */}軸どうしで同じプロパティを変えたくなったら、軸の分け方を見直すか、どちらかの軸の値を内部プロパティで受け、宣言を1か所にまとめます。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [BEM — Block Element Modifier](https://en.bem.info/methodology/)
+- [@scope - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@scope)
+- [属性セレクター - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Attribute_selectors)
+- [data-* - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Global_attributes/data-*)
+- [細かすぎるけど伝わってほしい私的BEMプラクティス30（ぐらい）](https://necomesi.jp/blog/tsmd/posts/152)（necomesi。`l-` 接頭辞と修飾クラスの考え方）

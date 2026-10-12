@@ -59,7 +59,7 @@ CSS-in-JSの多くは、生成した一意なクラス名を付けて、スタ�
 
 置き換えたときは、詳細度の変わり方に注意が要ります。Vueの `scoped` は、`.example` を `.example[data-v-f3f3eg9]` のように属性セレクタを足して変換するので、詳細度が属性セレクタ1つ分上がります。Astroも、デフォルトの設定では `data-astro-cid-*` の属性セレクタを足すので、同じように上がります。ただし、設定 `scopedStyleStrategy` を `"where"` にすれば、`:where()` で包んで詳細度を変えません（2026年10月確認）。
 
-`@scope` の仕組みは「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、ルートと下限の名前の付け方は「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で説明しています。Shadow DOMを使う場面は、「[10-8 Web Components](/components/web-components/)」で、中身をすべて自分で描く部品に限っています。
+`@scope` の仕組みは「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で、ルートと下限の名前の付け方は「[9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で説明しています。Shadow DOMを使う場面は、「[10-8 Web Components](/components/web-components/)」で、中身をすべて自分で描く部品に限っています。
 
 ## 再利用できる部品と公開プロパティ
 

@@ -17,8 +17,8 @@ sidebar:
 | --- | --- | --- |
 | `$変数` | サイト全体の値は `:root` のトークン、コンポーネントの中の値は `--_` で始まる内部プロパティ | [10-4](/components/design-tokens/)、[10-5](/components/custom-properties/) |
 | `!default` | 公開プロパティを内部プロパティで受け、デフォルト値を `var()` のフォールバックに書く | [10-5](/components/custom-properties/) |
-| ネスト、`&:hover` | ネイティブのネスト。セレクタは2層までにし、`&` で始める | [9-4](/notation/nesting/) |
-| `&__title`、`&--modifier` | `@scope` の中のタイプセレクタ（`h2`）と子クラス（`._main-link`）、`data-*` 属性や公開プロパティ | [9-3](/notation/scope-and-nesting/)、[9-1](/notation/naming/)、[10-2](/components/boundaries/) |
+| ネスト、`&:hover` | ネイティブのネスト。セレクタは2層までにし、`&` で始める | [9-5](/notation/nesting/) |
+| `&__title`、`&--modifier` | `@scope` の中のタイプセレクタ（`h2`）と子クラス（`._main-link`）、`data-*` 属性や公開プロパティ | [9-4](/notation/scope-and-nesting/)、[9-1](/notation/naming/)、[10-2](/components/boundaries/) |
 | `@mixin` と `@include` | コンポジション、ユーティリティ、ベーススタイル | [10-3](/components/compositions-and-utilities/) |
 | `@function`、`math.div()` | `calc()`、`min()`、`max()`、`clamp()` の式 | [6-3](/values/math-functions/) |
 | `@extend` とプレースホルダ | トークンの共有、HTMLに付けるコンポジションとユーティリティのクラス | [10-2](/components/boundaries/)、[10-3](/components/compositions-and-utilities/) |
@@ -26,7 +26,7 @@ sidebar:
 | `darken()`、`lighten()`、`rgba($color, 0.5)`、`mix()` | 相対カラー構文と `color-mix()` | [15-1](/color-media/color/) |
 | `@use`、`@import` とパーシャル | エントリーポイントの `@import url("…") layer(…)` | [4-3](/cascade/layers/) |
 | メディアクエリのmixin | 範囲構文とremの式を、各セレクタの中に書く | [13-5](/responsive/media-queries/) |
-| `//` のコメント | `/* */` | [9-9](/notation/comments/) |
+| `//` のコメント | `/* */` | [9-10](/notation/comments/) |
 
 ## 変数はカスタムプロパティにする
 
@@ -84,7 +84,7 @@ Sassの変数はビルドの時点で値に置き換わりますが、カスタ�
 
 ## ネストはネイティブのネストで書く
 
-`&:hover` のような擬似クラスのネストや、セレクタの中の `@media` は、素のCSSのネストでもそのまま書けます。本書では、セレクタを2層（親と、その中の1段）までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書きます。規約は「[9-4 ネストの書き方](/notation/nesting/)」で説明しています。
+`&:hover` のような擬似クラスのネストや、セレクタの中の `@media` は、素のCSSのネストでもそのまま書けます。本書では、セレクタを2層（親と、その中の1段）までにして、ネストしたセレクタは必ず `&` で始めます。宣言はネストしたルールより前に書きます。規約は「[9-5 ネストの書き方](/notation/nesting/)」で説明しています。
 
 Sassと大きく違うのは、`&__title` のように `&` に文字をつなげてクラス名を作れないことです。素のCSSではこれが無効なセレクタになり、ルールごと無視されます。そのため、つなげて作っていたクラス名は、ネストから出して完全な名前で書きます。
 
@@ -300,4 +300,4 @@ Sassの `@use` や `@import` で分けていたパーシャルは、CSSの `@imp
 
 ## コメントは /* */ で書く
 
-Sassでは `//` で1行のコメントを書けますが、素のCSSでは `//` はコメントとして扱われません。Sassから移したコードに `//` が残っていないかを確かめ、コメントはすべて `/* */` で書きます。コメントに書く内容は「[9-9 コメントの書き方](/notation/comments/)」で説明しています。
+Sassでは `//` で1行のコメントを書けますが、素のCSSでは `//` はコメントとして扱われません。Sassから移したコードに `//` が残っていないかを確かめ、コメントはすべて `/* */` で書きます。コメントに書く内容は「[9-10 コメントの書き方](/notation/comments/)」で説明しています。
