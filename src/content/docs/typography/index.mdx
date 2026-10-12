@@ -45,6 +45,10 @@ sidebar:
 - [`lang-for-typesetting`](/typography/japanese-typesetting/#rule-lang-for-typesetting)：`html` 要素とほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替えます。
 - [`overflow-wrap-over-word-break`](/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break)：`word-break` は初期値のままにし、長い単語やURLのはみ出しは `overflow-wrap: anywhere` で防ぎます。
 
+## この章の実装を終えたら確かめること
+
+文字の指定を終えたら、ページ全体のズーム、既定の文字サイズの変更、文字だけのズームを、それぞれ200%まで上げて、文字が欠けたり重なったりしないかを見ます。あわせて、長い単語やURL、折り返すほど長い見出しを入れて、はみ出しがないかと、改行の位置が読みにくくならないかを確かめます。英文を含むページでは、その部分の `lang` 属性を確かめ、言語ごとの組版が切り替わっているかを見ます。条件の再現のしかたは「[19-3 表示と操作を確かめる](/operations/verification/)」で説明しています。
+
 ## この章の判断のまとめ
 
 文字の見た目がデザインカンプと合わないときは、値を書き足す前に、ずれの原因がどこにあるかを確かめます。文字の上下の余白が広いならハーフレディングを疑い、`line-height` を削らずに `text-box-trim` で取り除きます。改行の位置や和文と英数字のアキを整えたいなら、原稿に `<br>` や空白を書き込まず、`word-break: auto-phrase` や `text-autospace` のようなCSSの指定に任せます。言語ごとの組版が切り替わらないなら、セレクタを足す前に `lang` 属性が正しく付いているかを見ます。

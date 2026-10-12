@@ -51,6 +51,10 @@ sidebar:
 - [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)：`transition: all` や `transition-property: all` を使いません。
 - [`starting-style-for-entry`](/motion/entry-and-exit/#rule-starting-style-for-entry)：`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。
 
+## この章の実装を終えたら確かめること
+
+動きを付け終えたら、OSの動きを減らす設定を有効にして、大きな動きが止まるか、フェードに置き換わるかを確かめます。設定を戻した状態では、動きを途中で取り消したときに、表示が元の状態へ自然に戻るかを見ます。かくつく動きがあれば、DevToolsのPerformanceパネルで記録し、レイアウトやペイントがフレームの時間を超えていないかを調べます（「[18-10 動きの負荷を抑える](/motion/performance/)」）。条件の再現のしかたは「[19-3 表示と操作を確かめる](/operations/verification/)」で説明しています。
+
 ## この章の判断のまとめ
 
 動きが遅い、邪魔だと感じたら、再生時間やイージングを詰める前に、その動きに目的があるかと、どれだけ繰り返し見られるかを確かめます。動きを減らす設定でどう見せるかは、位置と大きさが大きく変わるかで決め、変わる動きは止めるかフェードに置き換え、位置と大きさの変わらないフェードは残します。
