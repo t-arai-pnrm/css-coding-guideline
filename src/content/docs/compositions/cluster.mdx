@@ -126,7 +126,7 @@ import clusterCss from '../../../demos/compositions/cluster/style.css?raw';
 
 コンポーネントのCSSが書いているのは、タグの余白、角丸、背景色、文字の大きさだけです。`ul` に `display` や `gap` を書かず、`li` に `margin` も書きません。並び方と間隔は `cluster` とHTMLの `style` 属性が決め、コンポーネントはその中の子の見た目を決める、という分担になります。
 
-次のデモでは、タグの一覧は一括の間隔で並べ、価格と注記は列の間隔だけを渡して `baseline` でそろえ、ボタンの並びは `end` で行末に寄せています。幅のボタンで320pxに切り替えると、タグとボタンが折り返します。`flex-wrap: balance` に対応したブラウザでは、タグの各行の長さがそろいます。
+次のデモでは、タグの一覧は一括の間隔で並べ、価格と注記は列の間隔だけを渡して `baseline` でそろえ、ボタンの並びは `end` で行末に寄せています。幅を320pxにすると、タグとボタンが折り返します。`flex-wrap: balance` に対応したブラウザでは、タグの各行の長さがそろいます。
 
 <Demo title="cluster でタグ、価格と注記、ボタンを並べる" html={clusterHtml} css={clusterCss} widths={[320, 480, 768]} />
 

@@ -197,7 +197,7 @@ legend {
 
 一方、ページのセレクタで指定したスタイルは、中の要素に当たりません。kiso.cssがボタンに指定している `font: unset` や `background-color: unset` が当たらないので、ボタンはブラウザのデフォルトの文字と背景で表示されます。上の例の `color: inherit` と `font: inherit` は、その差を埋めるための指定です。`.-visually-hidden` のようなユーティリティのクラスも効かないので、必要な指定を中に書きます。
 
-次のデモは、`<theme-toggle>` のShadow DOMを `<template>` の複製で作り、ボタンで開くポップオーバーのラジオボタンで配色を選べるようにしたものです。Shadow DOMのCSSを読めるよう、デモでは `<template>` をHTMLのタブに置き、スクリプトはそれを複製するだけにしています。ボタンの文字が周りの文と同じ書体と大きさになり、選択肢のラジオボタンに余白が付かないのは、kiso.cssではなく、Shadow DOMの中に書き直した指定によるものです。配色を切り替えると、ページの `:root` で `light-dark()` を使って定義したトークンが境界を越えて届き、ボタンとポップオーバーの背景も変わります（「[15-4 ダークモード](/color-media/dark-mode/)」）。
+次のデモは、`<theme-toggle>` のShadow DOMを `<template>` の複製で作り、ボタンで開くポップオーバーのラジオボタンで配色を選べるようにしたものです。Shadow DOMのCSSを読めるよう、デモでは `<template>` をHTMLに置き、スクリプトはそれを複製するだけにしています。ボタンの文字が周りの文と同じ書体と大きさになり、選択肢のラジオボタンに余白が付かないのは、kiso.cssではなく、Shadow DOMの中に書き直した指定によるものです。配色を切り替えると、ページの `:root` で `light-dark()` を使って定義したトークンが境界を越えて届き、ボタンとポップオーバーの背景も変わります（「[15-4 ダークモード](/color-media/dark-mode/)」）。
 
 <Demo title="Shadow DOMの中で :host と kiso.css の代わりの指定を書いた、配色の切り替え" html={themeToggleHtml} css={themeToggleCss} js={themeToggleJs} scheme="light dark" height="16rem" />
 
