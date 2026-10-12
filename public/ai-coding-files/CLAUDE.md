@@ -34,3 +34,5 @@ CSS に関わる部分の例です。コマンド、ディレクトリの構成�
 - `tasks/*/brief.md` と `tasks/*/refs/` は人のファイル。編集しない。
 - plan.md の status を approved にするのは `/task-approve` だけ。
 - デザイナーやディレクターに確かめる点は、`/confirm-request` で確認依頼の文面にする。送るのは人。
+- 既存の CSS の監査は `/audit` で問題を一覧にするだけにする。直す項目は人が選び、選んだ項目を `/task-new` でタスクにする（`audit-list-before-fix`）。
+- 作業をサブエージェントに並行させるときは、同じファイルを2つのエージェントに書き換えさせない。修正は1つのエージェントがまとめて行う（`single-writer-per-file`）。

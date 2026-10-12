@@ -1,8 +1,8 @@
 # 第20章 AIにコーディングさせる：ルール
 
-- ガイドラインのバージョン: 0.54.1（2026-10-12 生成）
-- ルールの数: 14
-- 本文: 約7.3万字
+- ガイドラインのバージョン: 0.55.0（2026-10-12 生成）
+- ルールの数: 16
+- 本文: 約8.2万字
 - 読む条件: AIが書いたCSS、Figmaなどのデザインツールから書いたCSS
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,15 +12,16 @@
 
 ## この章の節
 
-- `ai-coding` 第20章AIにコーディングさせる（約4,300字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/
-- `ai-coding/roles` 20-1 AIに任せる範囲と人が担う範囲（約3,800字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/roles/
-- `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約7,100字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/
+- `ai-coding` 第20章AIにコーディングさせる（約4,500字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/
+- `ai-coding/roles` 20-1 AIに任せる範囲と人が担う範囲（約4,300字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/roles/
+- `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約7,700字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/
 - `ai-coding/mcp-servers` 20-3 MCPサーバーを役割で使い分ける（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/mcp-servers/
 - `ai-coding/tasks` 20-4 タスクの単位で進める（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/tasks/
 - `ai-coding/from-figma` 20-5 Figmaのデザインから計画を立てる（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/from-figma/
 - `ai-coding/implementation` 20-6 実装と検証を回す（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/implementation/
-- `ai-coding/pitfalls` 20-7 AIが誤りやすいパターン（約4,900字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/pitfalls/
-- `ai-coding/verify-output` 20-8 生成したコードを確かめ、教訓を残す（約6,300字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/
+- `ai-coding/pitfalls` 20-7 AIが誤りやすいパターン（約6,400字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/pitfalls/
+- `ai-coding/verify-output` 20-8 生成したコードを確かめ、教訓を残す（約5,300字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/
+- `ai-coding/audit` 20-9 既存のCSSの監査と移行をAIに任せる（約7,200字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/audit/
 
 ## 20-1 AIに任せる範囲と人が担う範囲
 
@@ -113,3 +114,16 @@ https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/
 - 【推奨・実装上の判断】AI の出力を直したら、同じ誤りを繰り返さないように、プロジェクトの規約の文書に書き足す。（`record-ai-corrections`）
   - 理由: 直した内容が文書に残れば、次の作業でも同じ説明を繰り返さずに済むため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/#rule-record-ai-corrections
+
+## 20-9 既存のCSSの監査と移行をAIに任せる
+
+https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/audit/
+
+- 【推奨・実装上の判断】既存の CSS を AI に監査させるときは、視点ごとに問題を一覧にさせるだけにし、直す項目は人が一覧を見てから選ぶ。（`audit-list-before-fix`）
+  - 理由: 見つけた箇所をその場で直させると、直す価値や全ページへの影響を人が判断する前に変更が入り、一覧と変更の対応も追えなくなるため。
+  - 補足: 視点ごとにサブエージェントを分けてよい。機械的に判定できる移行（警告の件数を0にするなど）は、終わる条件を決めたループで回してよい。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/audit/#rule-audit-list-before-fix
+- 【推奨・実装上の判断】AI の作業を並行させるときは、同じファイルを2つのエージェントに書き換えさせず、修正は1つのエージェントにまとめる。（`single-writer-per-file`）
+  - 理由: 2つの作業が同じファイルを書き換えると、後の変更が先の変更を上書きし、どちらの意図とも違う内容が残るおそれがあるため。
+  - 補足: 調べて一覧を返すだけの作業は、並行させてよい。トークンやベーススタイルのような共有のファイルを触る作業は、並行させない。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/audit/#rule-single-writer-per-file

@@ -1,6 +1,6 @@
 # AIにコーディングさせるためのひな形
 
-「CSSコーディングガイドライン」第20章「AIにコーディングさせる」で使うひな形です。使い方は、本書の 20-4「タスクの単位で進める」で説明しています。
+「CSSコーディングガイドライン」第20章「AIにコーディングさせる」で使うひな形です。使い方は、本書の 20-4「タスクの単位で進める」で、監査の `/audit` は 20-9「既存のCSSの監査と移行をAIに任せる」で説明しています。
 
 プロジェクトにコピーし、確かめる幅や完了条件の既定を、プロジェクトに合わせて書き換えてください。
 
@@ -11,6 +11,7 @@
 | `skills/task-approve/` | `.claude/skills/task-approve/` |
 | `skills/task-done/` | `.claude/skills/task-done/` |
 | `skills/confirm-request/` | `.claude/skills/confirm-request/` |
+| `skills/audit/` | `.claude/skills/audit/` |
 | `hooks/protect-task-inputs.mjs` | `.claude/hooks/protect-task-inputs.mjs` |
 | `settings.json` | `.claude/settings.json`（`hooks` を足す） |
 | `mcp.json` | `.mcp.json` |
@@ -20,7 +21,7 @@
 | `tests/design-values.spec.ts` | `tests/design-values.spec.ts` |
 | `tests/pages/article-card/` | `tests/pages/article-card/`（テストページと、演習の 21-7 を終えた時点の CSS） |
 
-Codex、Cursor、GitHub Copilot では、`skills/` の5つを `.agents/skills/` に置きます。フックと `settings.json` は Claude Code の仕組みなので、ほかのツールでは使えません。
+Codex、Cursor、GitHub Copilot では、`skills/` の6つを `.agents/skills/` に置きます。フックと `settings.json` は Claude Code の仕組みなので、ほかのツールでは使えません。
 
 テストの動かし方は、本書の 20-6「実装と検証を回す」の「この例を試すための最小構成」で説明しています。
 
