@@ -1,8 +1,8 @@
 # 第1章 CSSのマインドセット：ルール
 
-- ガイドラインのバージョン: 0.52.3（2026-10-12 生成）
+- ガイドラインのバージョン: 0.53.0（2026-10-12 生成）
 - ルールの数: 15
-- 本文: 約5.4万字
+- 本文: 約5.5万字
 - 読む条件: 新しい機能、ブラウザの対応状況、フォールバック、@supports
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `principles` 第1章 CSSのマインドセット（約4,300字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/
+- `principles` 第1章 CSSのマインドセット（約4,600字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/
 - `principles/browser-suggestion` 1-1 CSSはブラウザへの「提案」である（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-suggestion/
 - `principles/browser-support` 1-2 ブラウザサポートとプログレッシブ・エンハンスメント（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/
 - `principles/layout-algorithms` 1-3 CSSはレイアウトのアルゴリズムの集まりである（約3,400字）https://t-arai-pnrm.github.io/css-coding-guideline/principles/layout-algorithms/

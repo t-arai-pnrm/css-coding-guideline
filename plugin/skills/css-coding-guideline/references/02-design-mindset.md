@@ -1,8 +1,8 @@
 # 第2章 CSS設計の考え方：ルール
 
-- ガイドラインのバージョン: 0.52.3（2026-10-12 生成）
+- ガイドラインのバージョン: 0.53.0（2026-10-12 生成）
 - ルールの数: 7
-- 本文: 約2.6万字
+- 本文: 約2.7万字
 - 読む条件: コンポーネントの分け方、共通化、上書きの多い設計
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `design-mindset` 第2章 CSS設計の考え方（約2,700字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/
+- `design-mindset` 第2章 CSS設計の考え方（約3,000字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/
 - `design-mindset/what-is-css-design` 2-1 CSS設計のマインドセット（約3,000字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/what-is-css-design/
 - `design-mindset/css-mindset` 2-2 CSSで考えるための6つの視点（約7,700字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/css-mindset/
 - `design-mindset/maintainability` 2-3 保守しやすさを最優先にする（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainability/

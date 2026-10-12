@@ -276,3 +276,13 @@
   aiProne: true
   page: values/if-and-attr
   since: 0.5.0
+
+- id: space-toggle-until-if
+  level: 推奨
+  kind: judgment
+  rule: '要素自身の2値の分岐を、`if()` に未対応の環境でも同じ表示にする必要があるときは、スペーストグル（`--_if-spacious: initial` と `--_if-compact: ;` を入れ替え、`var(--_if-spacious, 24px) var(--_if-compact, 12px)` で読む）で書き、`if()` がすべての主要なブラウザで使えるようになったら `if()` に置き換える。'
+  reason: スペーストグルはすべての主要なブラウザで動くが、空白の値に意味を持たせるハックで、1つの状態に変数が2つ要り、読み手に仕組みの知識を求めるため。
+  note: '2値の分岐にだけ使い、3段階の切り替えや複数の条件の組み合わせには使いません。トグルの変数はフラグ（`--_density`）と同じ `@media` の中で切り替え、子孫の要素はこれまでどおりスタイルクエリでフラグを読みます。オフの値は空白1文字にし、整形ツールや圧縮で消されないことを確かめます。未対応の環境で値が少し変わるだけで済むなら、`if()` の前に従来の宣言を書く方法（`if-fallback-and-else`）を使います。'
+  aiProne: true
+  page: values/if-and-attr
+  since: 0.53.0

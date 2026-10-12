@@ -1,6 +1,6 @@
 ---
 title: "6-5 if()とattr()で条件と属性を値にする"
-description: 型付きのattr()はHTMLの属性値を数値や名前として読み、if()は1つのプロパティの値を条件で切り替えます。どちらも未対応のブラウザがあるので、attr()は@supportsの中に書き、if()は前に従来の宣言を書いて、使う場面を限ります。
+description: 型付きのattr()はHTMLの属性値を数値や名前として読み、if()は1つのプロパティの値を条件で切り替えます。どちらも未対応のブラウザがあるので、attr()は@supportsの中に書き、if()は前に従来の宣言を書いて、使う場面を限ります。if()に未対応の環境でも同じ表示が要る分岐は、if()が使えるようになるまでスペーストグルで書きます。
 sidebar:
   order: 5
 ---
@@ -12,10 +12,12 @@ import rowsHtml from '../../../demos/values/textarea-rows/index.html?raw';
 import rowsCss from '../../../demos/values/textarea-rows/style.css?raw';
 import densityHtml from '../../../demos/values/if-density/index.html?raw';
 import densityCss from '../../../demos/values/if-density/style.css?raw';
+import toggleHtml from '../../../demos/values/space-toggle-density/index.html?raw';
+import toggleCss from '../../../demos/values/space-toggle-density/style.css?raw';
 
 型付きの `attr()` を使うと、HTMLの属性値を数値や長さ、名前として、`content` 以外のプロパティで使えます。`if()` は、1つのプロパティの値を、条件によって切り替える関数です。どちらもSafariが対応していないので（2026年10月確認）、従来の宣言を外に書き、対応した環境でだけ新しい値が使われるようにします。`attr()` は `var()` と組み合わせることが多いので、宣言を `@supports` の中に書きます。
 
-使う場面も限ります。`attr()` で読むのは、`<textarea>` の `rows` のように、HTMLがすでに持っている属性の値です。`if()` は、要素自身に定義したカスタムプロパティで値を分岐するときにだけ、条件1つと `else` の形で書きます。
+使う場面も限ります。`attr()` で読むのは、`<textarea>` の `rows` のように、HTMLがすでに持っている属性の値です。`if()` は、要素自身に定義したカスタムプロパティで値を分岐するときにだけ、条件1つと `else` の形で書きます。未対応の環境でも同じ表示が要る分岐は、`if()` が使えるようになるまで、スペーストグルで書きます。
 
 <Baseline id="attr" name="型付きの attr()" />
 
@@ -256,6 +258,41 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 HTMLの側では、`style="--hero--background-image: url(/images/hero.jpg)"` のように、`url()` まで含めた値を渡します。
 
 対応を `@supports` で調べるときは、`content` 以外のプロパティに型付きの `attr()` を書きます。入力欄のコード例とデモでは、`min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` を条件にしています。型を付けない `attr()` を条件にすると、従来の `attr()` だけに対応した環境でも成り立つので、判別できません。条件の中には `var()` を書きません。`@supports` は条件の宣言を構文として調べるので、`var()` があると、どの環境でも成り立ってしまいます。{/* 要確認: 出典なし */}
+
+## if()に未対応の環境でも同じ表示にする
+
+ルート自身の分岐を、`if()` に未対応の環境でも同じ表示にする必要があるときは、スペーストグルで書きます。スペーストグルは、カスタムプロパティの値を空白にするか `initial` にするかで、`var()` の第2引数を使うかどうかを切り替える書き方です。`if()` が登場する前から使われてきた方法で、すべての主要なブラウザで動きます。ただし、ハックの色が強いので、`if()` がすべての主要なブラウザで使えるようになったら、`if()` に置き換えます。
+
+```css title="🙆‍♂ Recommended: ルート自身の余白を、スペーストグルで切り替える"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    --_density: --compact;
+    --_if-spacious: ;
+    --_if-compact: initial;
+
+    /* if() がすべての主要なブラウザで使えるようになったら、if() に置き換える */
+    padding-block: var(--_if-spacious, 24px) var(--_if-compact, 12px);
+
+    @media (width >= calc(768 / 16 * 1rem)) {
+      --_density: --spacious;
+      --_if-spacious: initial;
+      --_if-compact: ;
+    }
+  }
+}
+```
+
+`initial` を指定したカスタムプロパティは、値を持たない状態になるので、`var()` は第2引数を使います。空白1文字を指定したカスタムプロパティは、空の値を持つので、`var()` は何も返しません。768px未満では、`var(--_if-spacious, 24px)` が空になり、`var(--_if-compact, 12px)` が12pxになるので、`padding-block` は12pxです。768px以上では2つの変数の値が入れ替わり、24pxになります。
+
+次のデモは、「[if()で1つの値を条件で切り替える](#ifで1つの値を条件で切り替える)」のヘッダーを、スペーストグルで書き直したものです。768px以上で上下の余白が24pxに、ロゴが150pxになります。`if()` のデモと違い、`if()` に未対応のSafariとFirefoxでも、768px以上では余白が24pxになります。{/* 要検証: ブラウザ。Safari と Firefox で、768px 以上の上下の余白が 24px になること */}
+
+<Demo title="ルートで決めたモードを、ルート自身はスペーストグルで、ロゴはスタイルクエリで読む" html={toggleHtml} css={toggleCss} widths={[480, 768]} />
+
+スペーストグルの変数は、`--_if-` の後ろにフラグの値の名前を付け、1つの状態に「その状態のとき」と「そうでないとき」の2つを用意します。2つの変数は、フラグの `--_density` と同じ `@media` の中で切り替えるので、判定は1か所に集まったままです。子孫の要素は、これまでどおりスタイルクエリでフラグを読み、トグルの変数は使いません。
+
+この書き方を使うのは、2値の分岐だけです。3段階の切り替えや、複数の条件の組み合わせを書くと、変数の数が増え、どの組み合わせで何が返るかを読み取れなくなります。また、空白1文字の値に意味があるので、整形ツールやCSSの圧縮で `--_if-spacious: ;` の値が消えたり、宣言ごと消されたりしないことを確かめます。{/* 要検証: ブラウザ。主要な整形ツールと圧縮ツールで、空白だけのカスタムプロパティが保たれること */}
+
+余白が少し狭いだけで済むなら、これまでどおり、`if()` の前に従来の宣言を書く方法を使います。スペーストグルは、未対応の環境で値が変わると困る場合に限ります。`if()` がすべての主要なブラウザで使えるようになったら、`padding-block: if(style(--_density: --spacious): 24px; else: 12px);` に置き換え、トグルの変数を消します。
 
 ## ガイドライン
 

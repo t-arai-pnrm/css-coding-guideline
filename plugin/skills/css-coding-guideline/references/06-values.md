@@ -1,8 +1,8 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.52.3（2026-10-12 生成）
-- ルールの数: 29
-- 本文: 約8.1万字
+- ガイドラインのバージョン: 0.53.0（2026-10-12 生成）
+- ルールの数: 30
+- 本文: 約8.5万字
 - 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,12 +12,12 @@
 
 ## この章の節
 
-- `values` 第6章 値と単位（約3,600字）https://t-arai-pnrm.github.io/css-coding-guideline/values/
+- `values` 第6章 値と単位（約4,000字）https://t-arai-pnrm.github.io/css-coding-guideline/values/
 - `values/px-and-rem` 6-1 pxとremを使い分ける（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/
 - `values/viewport-and-container-units` 6-2 ビューポート単位とコンテナ単位（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/viewport-and-container-units/
 - `values/math-functions` 6-3 計算関数で根拠を式に残す（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/math-functions/
 - `values/advanced-math-functions` 6-4 計算関数を応用する（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-functions/
-- `values/if-and-attr` 6-5 if()とattr()で条件と属性を値にする（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/
+- `values/if-and-attr` 6-5 if()とattr()で条件と属性を値にする（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/
 
 ## 6-1 pxとremを使い分ける
 
@@ -153,3 +153,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
   - 補足: 前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`var()` を含むと計算値の時点で無効になり、前の宣言に戻らないので、`@supports` の中に書くか、スタイルクエリや状態のセレクタで書きます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/#rule-if-fallback-and-else
+- 【推奨・実装上の判断】要素自身の2値の分岐を、`if()` に未対応の環境でも同じ表示にする必要があるときは、スペーストグル（`--_if-spacious: initial` と `--_if-compact: ;` を入れ替え、`var(--_if-spacious, 24px) var(--_if-compact, 12px)` で読む）で書き、`if()` がすべての主要なブラウザで使えるようになったら `if()` に置き換える。（`space-toggle-until-if`）
+  - 理由: スペーストグルはすべての主要なブラウザで動くが、空白の値に意味を持たせるハックで、1つの状態に変数が2つ要り、読み手に仕組みの知識を求めるため。
+  - 補足: 2値の分岐にだけ使い、3段階の切り替えや複数の条件の組み合わせには使いません。トグルの変数はフラグ（`--_density`）と同じ `@media` の中で切り替え、子孫の要素はこれまでどおりスタイルクエリでフラグを読みます。オフの値は空白1文字にし、整形ツールや圧縮で消されないことを確かめます。未対応の環境で値が少し変わるだけで済むなら、`if()` の前に従来の宣言を書く方法（`if-fallback-and-else`）を使います。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/#rule-space-toggle-until-if

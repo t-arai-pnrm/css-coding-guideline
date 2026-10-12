@@ -45,6 +45,72 @@ sidebar:
 - [`hide-panels-after-init`](/interaction/disclosure/#rule-hide-panels-after-init)：開閉するパネルは初期のHTMLでは隠さず、開閉の処理の初期化が成功してからJavaScriptで隠します。
 - [`no-maximum-scale`](/interaction/forms/#rule-no-maximum-scale)：入力欄での拡大を防ぐために、`maximum-scale` や `user-scalable=no` でズームを止めません。
 
+## 判断の問い
+
+この章の内容で答えられる問いを1つ置きます。答えを開く前に、開閉の状態をどこから読み取るかを予想してください。
+
+よくある質問を `<details>` と `<summary>` で並べたアコーディオンで、開いている項目だけ背景色を変え、`<summary>` の右端の矢印を半回転させたいと言われました。開閉に合わせて、JavaScriptで `<details>` に `.is-open` クラスを付け外しする案が出ています。開閉の状態は、どの要素の何から読み取りますか。あわせて、`<summary>` にホバーの見た目を付けるときの書き方も考えてください。
+
+```html
+<div class="scoped faq-list">
+  <details class="_item">
+    <summary class="_question">送料はかかりますか？<span class="_icon" aria-hidden="true"></span></summary>
+    <p>…</p>
+  </details>
+</div>
+```
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`<details>` の `open` 属性から読み取り、`.is-open` は付けません。`open` 属性は、`<summary>` を押したときも、キーボードで開閉したときも、対応したブラウザでページ内検索の結果として自動で開いたときも、ブラウザが付け外しします。状態を表すセレクタは、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に選ぶので、HTML要素の属性がある状態にクラスを足すと、同じ状態を2か所で管理することになります（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。`:open` 擬似クラスもありますが、Safariが対応したのは26.5からなので、本書の対象のすべてでは使えません（「[17-5 開閉するUI](/interaction/disclosure/)」）。
+
+```css title="🙆‍♂ Recommended: 開閉の状態を open 属性から読み、summary のホバーをフォーカスとそろえる"
+@scope (.scoped.faq-list) to (.scoped) {
+  ._item {
+    &[open] {
+      background-color: var(--background--surface);
+    }
+  }
+
+  ._question {
+    &:focus-visible {
+      background-color: var(--background--hover);
+    }
+
+    &:hover {
+      @media (any-hover) {
+        background-color: var(--background--hover);
+      }
+    }
+  }
+
+  ._icon {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--base);
+      transition-property: rotate;
+      transition-timing-function: var(--ease--in-out-quint);
+    }
+
+    &:is(._item[open] *) {
+      rotate: 0.5turn;
+    }
+  }
+}
+```
+
+矢印は `<summary>` の中の子要素なので、`&:is(._item[open] *)` で祖先の `<details>` の状態を読みます。回転は大きな変動にあたるので、トランジションは `prefers-reduced-motion: no-preference` の中に書きます（「[18-7 出現と退場](/motion/entry-and-exit/)」）。`<summary>` には無効の状態がないので、ホバーは `&:any-link:hover` や `&:enabled:hover` で絞らずに `&:hover` と書き、`@media (any-hover)` の中に置きます。同じ見た目を `:focus-visible` にも指定し、キーボードで操作するユーザーにも同じ手がかりを渡します（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。
+
+</details>
+
+## この章の判断のまとめ
+
+操作に応じた振る舞いが要るときは、JavaScriptで作り直す前に、ブラウザの要素や属性で足りないかを見ます。状態に合わせて見た目を変えたいなら、クラスを足さず、その状態をブラウザや支援技術に伝えている擬似クラスや属性をセレクタにします。
+
+押し損じや、ホバーの背景が途切れるといった症状は、余白を外側の要素や項目の間の隙間に置いていないかを疑い、操作する要素自身の `padding` に移します。ホバーで変えた見た目は、`:focus-visible` でもキーボードの利用者に同じ手がかりが出ているかを確かめます。
+
 ## 次の章へ
 
 ここまでで、操作に応じて状態を切り替え、その状態を伝えられるようになりました。切り替わる瞬間に動きを付けると変化は分かりやすくなりますが、繰り返し触るUIでは待ち時間が増え、動きを減らす設定をしているユーザーには不調の原因にもなるので、動かすかどうかは別に判断します。第18章「[モーション](/motion/)」では、動かすかどうかの判断から、出現と退場、View Transitionsまでを説明します。

@@ -1,0 +1,48 @@
+@layer components {
+  @scope (.scoped.site-header) to (.scoped) {
+    :scope {
+      --_density: --compact;
+      --_if-spacious: ;
+      --_if-compact: initial;
+
+      display: block flex;
+      gap: 16px;
+      align-items: center;
+
+      /* if() がすべての主要なブラウザで使えるようになったら、if() に置き換える */
+      padding-block: var(--_if-spacious, 24px) var(--_if-compact, 12px);
+      padding-inline: 16px;
+      background-color: var(--background--active);
+
+      @media (width >= calc(768 / 16 * 1rem)) {
+        --_density: --spacious;
+        --_if-spacious: initial;
+        --_if-compact: ;
+      }
+
+      & > ._logo {
+        flex-shrink: 0;
+      }
+    }
+
+    ._logo {
+      display: block grid;
+      place-items: center;
+      inline-size: 120px;
+      aspect-ratio: 4 / 1;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+      font-weight: var(--font-weight--bold);
+
+      @container style(--_density: --spacious) {
+        inline-size: 150px;
+      }
+    }
+
+    ._note {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}

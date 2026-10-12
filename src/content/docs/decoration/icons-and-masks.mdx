@@ -45,7 +45,29 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 デモの1つ目はページと同じ配色、2つ目は背景と文字の明暗を反転させたセクションです。どちらのセクションでも、リンクの後ろの矢印は、リンクの文字と同じ色で塗られます。
 
-`display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定がなくても描けます。
+`display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定は要りません。その代わり、フレックスアイテムの伸び縮みで、アイコンが正方形でなくなります。
+
+```css title="🙆‍♂ Recommended: フレックスアイテムのアイコンを、伸び縮みさせない"
+._more {
+  display: inline flex;
+  gap: 4px;
+
+  &::after {
+    content: "";
+    flex: none;
+    align-self: center;
+    mask-image: var(--chevron--rightward);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    inline-size: 1em;
+    aspect-ratio: 1;
+    background-color: var(--background-current);
+  }
+}
+```
+
+`align-self` を指定しないと、交差軸の `stretch` で、高さが行の高さまで伸びます。`aspect-ratio` は、高さが伸ばされると効きません。高さ60pxのフレックスコンテナで試すと、`inline-size: 1em` と `aspect-ratio: 1` を指定した20pxのアイコンは、20×60pxになりました。`flex: none` を指定しないと、リンクの文字が折り返すほど親が狭いときに、幅が縮みます。親の幅を60pxにすると、幅は約4pxでした（どちらも2026年10月、Chrome 152で確認）。デモでは、親の `align-items: center` で高さが伸びないので、`flex: none` だけを指定しています。
 
 `background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
 
@@ -94,7 +116,7 @@ button {
 
 `border` の色を省略した場合も、初期値は `currentColor` です。文字と同じ色の枠線なら、`border: 1px solid` とだけ書けば足ります。色を2か所に書かなければ、片方だけ変え忘れることもありません。
 
-アイコンの大きさは、`inline-size: 1em` と `aspect-ratio: 1` で文字の大きさに合わせます。テンプレートでは `.icon` というクラスで、`--icon--size` を受け取れるようにしています。アイコンを画面の幅に合わせて変える必要がないことは、「[13-1 検討する順番](/responsive/escalation/)」で説明しています。
+アイコンの大きさは、`inline-size: 1em` と `aspect-ratio: 1` で文字の大きさに合わせます。デモのボタンのようにフレックスコンテナの中に置くときは、マスクのアイコンと同じく `flex: none` を指定し、交差軸で伸ばさないようにします。テンプレートでは `.icon` というクラスで、`--icon--size` を受け取れるようにしています。アイコンを画面の幅に合わせて変える必要がないことは、「[13-1 検討する順番](/responsive/escalation/)」で説明しています。
 
 ### インラインSVGの代替テキスト
 
@@ -119,11 +141,15 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 | 方法 | 色を文字色に合わせる | 強制カラーモード | 代替テキスト | 向く場面 |
 | --- | --- | --- | --- | --- |
-| 擬似要素の `mask-image` | `background-color` で合わせられる | 背景色が消えるので、`--background-current` でシステムカラーに戻す | 持てない。意味があれば隣にテキストを置く | 矢印や外部リンクの印のように、CSSだけで足す装飾 |
+| 擬似要素の `mask-image` | `background-color` で合わせられる | 背景色が消えるので、`--background-current` でシステムカラーに戻す | `content` の代替テキストで付けられるが、翻訳されないので、意味があれば隣にテキストを置く | 矢印や外部リンクの印のように、CSSだけで足す装飾 |
 | インラインSVG | `fill` や `stroke` の `currentColor` で合わせられる | 色が置き換わらないことがあるので、`fill` と `stroke` をシステムカラーに固定する | `aria-hidden="true"` にして、隣に視覚的に隠したテキストを置く | 意味のあるアイコンや、線と塗りを使い分ける複雑な形 |
 | 外部のファイルの `<img>` | 合わせられない。画像の中の色のまま | 影響を受けないので、背景に溶け込むなら `filter` で塗りつぶす | `alt` 属性で付ける | 色を変えないロゴや、多色の画像 |
 
 {/* 要確認: 出典なし。「向く場面」の列と、<img> のSVGがページの文字色を受け取らないこと */}
+
+擬似要素の `content` には、`content: "" / "新しいウィンドウが開きます"` のように、スラッシュの後ろに代替テキストを書けます。この文字列は読み上げられますが、インラインSVGの `<title>` と同じく、機械翻訳やページ内検索の対象になりません。そのため、意味のあるアイコンでは、マスクで描く場合も、隣に視覚的に隠したテキストを置きます。装飾だけのアイコンには、代替テキストを書きません。{/* 要検証: ブラウザ。content の代替テキストが機械翻訳とページ内検索の対象にならないこと */}
+
+<Baseline id="alt-text-generated-content" name="生成コンテンツの代替テキスト" />
 
 文字色に合わせる必要があるアイコンは、`mask-image` かインラインSVGのどちらかになります。HTMLに手を入れずにCSSだけで足したい装飾なら `mask-image` を、HTMLの中で意味を持たせたいアイコンならインラインSVGを選びます。強制カラーモードの補正は、どちらも「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
 
