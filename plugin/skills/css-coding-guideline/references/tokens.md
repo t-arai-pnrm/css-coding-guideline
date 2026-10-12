@@ -1,6 +1,6 @@
 # 本書のデモの共通トークン
 
-- ガイドラインのバージョン: 0.50.11（2026-10-11 生成）
+- ガイドラインのバージョン: 0.51.0（2026-10-12 生成）
 - 元のファイル: src/demos/tokens/*.css（https://t-arai-pnrm.github.io/css-coding-guideline/appendix/demo-tokens/）
 
 本書のデモは、次のトークンを `@layer tokens` に入れて読み込んでいる。デモからは、色はセマンティクス（`--background--*`、`--foreground--*`、`--border--*`）だけを、文字は役割（`--text--<役割>--font-size` と `--text--<役割>--leading`）を参照する。
@@ -82,9 +82,16 @@
 
 ```css
 /*
- * 影の形のトークン。段階が上がるほど、オフセットとぼかしを倍にした層を足す。
+ * 影の形のトークン。色は colors.css のセマンティクスを参照するので、ライトとダークで形を書き分けない。
+ *
+ * --shadow--*：box-shadow に渡す影。段階が上がるほど、オフセットとぼかしを倍にした層を足す。
  * 各層の不透明度は同じで、重なるほど濃く、遠くまで落ちる。
- * 色は colors.css のセマンティクスを参照するので、ライトとダークで形を書き分けない。
+ *
+ * --drop-shadow--*：filter に渡す drop-shadow() の並び。影を動かすときに使う。
+ * drop-shadow() のぼかしはガウスぼかしの標準偏差で、box-shadow のぼかし半径の半分の値でほぼ同じ広がりになる。
+ * 広がりと inset がなく、並べた関数は前の影を含めた結果に順に影を付けるので、--shadow--* と同じ見た目にはならない。
+ * どの段階も関数を2つにそろえ、どの段階の間でもトランジションできるようにする。
+ * 縁取り（--shadow--xs）は含めないので、box-shadow で別に付ける。
  */
 :root {
   --shadow--xs:
@@ -105,6 +112,9 @@
   --shadow--xl:
     var(--shadow--lg),
     0 48px 48px -24px var(--shadow--color);
+  --drop-shadow--sm: drop-shadow(0 1px 0.5px var(--shadow--color)) drop-shadow(0 3px 1.5px var(--shadow--color));
+  --drop-shadow--md: drop-shadow(0 6px 3px var(--shadow--color)) drop-shadow(0 12px 6px var(--shadow--color));
+  --drop-shadow--lg: drop-shadow(0 12px 6px var(--shadow--color)) drop-shadow(0 24px 12px var(--shadow--color));
 }
 ```
 

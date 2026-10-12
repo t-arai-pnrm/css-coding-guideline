@@ -33,6 +33,8 @@ import zIndex from '../../../demos/tokens/z-index.css?raw';
 
 影の色は、色のトークン（`--shadow--color` など）を参照しています。`box-shadow` の値は `light-dark()` で切り替えられないので、形は1つだけ定義し、各層の色をライトとダークで切り替えています。ダークでは、上辺の白いハイライトと内側の縁取りで面の端を見せます。
 
+`--drop-shadow--*` は、影を動かすときの `filter` の値にする `drop-shadow()` の並びです（「[16-3 面・影・角丸](/decoration/surfaces/)」）。`drop-shadow()` の3つ目の長さはガウスぼかしの標準偏差で、`box-shadow` のぼかし半径とは意味が違います。同じ値では約2倍の距離までぼけるので、ぼかしを `box-shadow` の半分にしています。`drop-shadow()` には広がりと `inset` がなく、並べた関数は前の影を含めた結果に順に影を付けるので、`box-shadow` の独立した層をそのまま置き換えたものにはなりません。そのため、`--shadow--*` の同じ名前の段階と同じ見た目にはなりません。どの段階も関数を2つにそろえているので、どの段階の間でもトランジションできます。色は `--shadow--color` を共有し、縁取りは含めません。
+
 <Code code={shadows} lang="css" title="src/demos/tokens/shadows.css" />
 
 ## 余白と角丸

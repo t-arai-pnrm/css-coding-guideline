@@ -1,6 +1,6 @@
 ---
 title: "18-7 動きの負荷を抑える"
-description: "動かすプロパティは、合成だけで処理できるopacity、translate、scale、rotateを優先し、レイアウトが変わるプロパティはほかに方法がない場合に限ります。will-changeはCSSに書いたままにせず、どうしても必要なときだけJavaScriptで付けて、動きが終わったら外します。"
+description: "動かすプロパティは、合成だけで処理できるopacity、translate、scale、rotateを優先します。clip-path、background-color、filterは、ブラウザと値によっては描き直しを避けられる候補として、確かめてから使います。影はbox-shadowではなくfilterのdrop-shadow()で動かします。レイアウトが変わるプロパティはほかに方法がない場合に限ります。will-changeはCSSに書いたままにせず、どうしても必要なときだけJavaScriptで付けて、動きが終わったら外します。"
 sidebar:
   order: 7
 ---
@@ -12,13 +12,13 @@ import spotlightHtml from '../../../demos/motion/spotlight/index.html?raw';
 import spotlightCss from '../../../demos/motion/spotlight/style.css?raw';
 import spotlightJs from '../../../demos/motion/spotlight/script.js?raw';
 
-動きの負荷は、変えたプロパティのせいでブラウザがレイアウト、ペイント、合成のどこから処理をやり直すかで決まります。動かすプロパティは、合成だけで処理できる `opacity`、`translate`、`scale`、`rotate` を優先します。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、ほかに方法がない場合（アコーディオンの高さなど）に限ります。
+動きの負荷は、変えたプロパティのせいでブラウザがレイアウト、ペイント、合成のどこから処理をやり直すかで決まります。動かすプロパティは、合成だけで処理できる `opacity`、`translate`、`scale`、`rotate` を優先します。`clip-path`、`background-color`、`filter` は、ブラウザと値によっては描き直しを避けられる候補で、DevToolsで確かめてから使います。影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、ほかに方法がない場合（アコーディオンの高さなど）に限ります。
 
 `will-change` はCSSへ書いたまま残さず、どうしても必要なときだけ、動きの直前からJavaScriptで付けて、終わったら外します。`backdrop-filter` の大きなぼかしや、継承するカスタムプロパティの毎フレームの更新のように、指定の仕方によって負荷が大きく増えるものもあります。`contain: content` のような負荷を抑える指定にも副作用があるので、効果をDevToolsで確かめてから使います。
 
 ## 同じ見た目の動きでも負荷が違う理由
 
-ブラウザは、スタイルが変わると、レイアウト、ペイント、合成の順に処理をやり直します。レイアウトは要素の位置と大きさを計算する処理、ペイントは文字や背景や影を画素に描く処理、合成は描いた層を重ねて画面に出す処理です。どこからやり直すかは、変えたプロパティで決まります。`inline-size` を変えると、その要素と周りの要素の位置を計算し直し、描き直し、重ね直します。`background-color` はペイントから、`opacity` と `translate` は、条件が合えば合成だけで済みます。
+ブラウザは、スタイルが変わると、レイアウト、ペイント、合成の順に処理をやり直します。レイアウトは要素の位置と大きさを計算する処理、ペイントは文字や背景や影を画素に描く処理、合成は描いた層を重ねて画面に出す処理です。どこからやり直すかは、変えたプロパティで決まります。`inline-size` を変えると、その要素と周りの要素の位置を計算し直し、描き直し、重ね直します。`color` や `box-shadow` はペイントから、`opacity` と `translate` は、条件が合えば合成だけで済みます。
 
 処理を担うスレッドも違います。レイアウトとペイントは、JavaScriptと同じメインスレッドで行われます。合成はコンポジタのスレッドで行われるので、合成だけで済む動きは、メインスレッドがJavaScriptの処理で埋まっているときにも止まりにくくなります。たとえば、ページの読み込み中にスクリプトの実行が長引いても、`rotate` で回しているスピナーは動き続けることが多く、`inline-size` で伸びるバーは止まります。
 
@@ -26,21 +26,29 @@ import spotlightJs from '../../../demos/motion/spotlight/script.js?raw';
 
 ## 動かすプロパティの優先度
 
-私は、動かす方法を次の表の優先度で選んでいます。上の段ほど負荷が小さく、下の段ほど、使う前に別の方法がないかを検討します。
+私は、動かす方法を次の表の優先度で選んでいます。上の段ほど負荷が小さく、下の段ほど、使う前に別の方法がないかを検討します。表では、フレームごとに描き直しが起きるか（DevToolsのPaint）と、アニメーションの進行をどのスレッドで計算するかを分けています。2つは別の性質で、描き直しが起きなくても、進行の計算がメインスレッドに残る場合があるからです。
 
-| 優先度 | 方法 | 起きる処理 |
-| --- | --- | --- |
-| 高 | `opacity`、`translate`、`scale`、`rotate`、一部の `filter`、スクロール駆動アニメーション | 合成だけ |
-| 中 | JavaScriptから変形や不透明度を更新する方法、FLIP | メインスレッドで値を計算するが、レイアウトとペイントは最小限 |
-| 低 | `background-color`、`box-shadow` など、ペイントが起きるプロパティ | ペイントと合成。負荷は描く面積による |
-| 避ける | `inline-size`、`block-size`、`padding`、`inset` など、レイアウトが起きるプロパティ | レイアウトから全部 |
-| リスク大 | 大きな `blur()` や `backdrop-filter`、巨大な合成レイヤー、グローバルなカスタムプロパティの毎フレームの更新、`scrollTop` を毎フレーム読む実装 | 条件しだいで大きく重くなる |
+| 優先度 | 方法 | フレームごとの描き直し | 進行を計算するスレッド |
+| --- | --- | --- | --- |
+| 高 | `opacity`、`translate`、`scale`、`rotate`、これらを動かすスクロール駆動アニメーション | 起きない | コンポジタ |
+| 確かめて使う | `clip-path`、`background-color`、`filter` の `brightness()` など | 値によっては起きない（Chrome 154） | 値によってはコンポジタ（Chrome 154） |
+| 確かめて使う | `filter` の `drop-shadow()`、`blur()` | 起きない（Chrome 154） | メイン（Chrome 154） |
+| 中 | JavaScriptから変形や不透明度を更新する方法、FLIP | 起きない | メイン |
+| 低 | `color`、`border-color`、`box-shadow` など | 起きる。負荷は描く面積による | メイン |
+| 避ける | `inline-size`、`block-size`、`padding`、`inset` など | レイアウトから起きる | メイン |
+| リスク大 | 大きな `blur()` や `backdrop-filter`、巨大な合成レイヤー、グローバルなカスタムプロパティの毎フレームの更新、`scrollTop` を毎フレーム読む実装 | 条件しだいで大きく重くなる | 条件による |
 
-優先度が高いのは、合成だけで動くものです。スクロール駆動アニメーションも、動かすのが `opacity` や変形なら、スクロールの位置に合わせてコンポジタのスレッドで処理できます。`filter` を「一部」としたのは、合成だけで処理できるかが、ブラウザと値によって変わるからです。`clip-path` は、本書ではペイントが起きるものとして扱います。切り抜きを動かすと、多くの環境でペイントが毎フレーム起き、面積が大きいとかくつきます。
+優先度が高いのは、主要なブラウザで合成だけで動かせる `opacity` と変形です。スクロール駆動アニメーションも、動かすのが `opacity` や変形なら、スクロールの位置に合わせてコンポジタのスレッドで処理できます。`clip-path`、`background-color`、`filter` は、従来はペイントが起きるプロパティでした。Chromeでは、これらのアニメーションでも描き直しを避けられる場合がありますが、ブラウザと値によって結果が変わるので、基本の候補とは分けています。{/* 要検証: ブラウザ。Firefox と Safari で、clip-path、background-color、filter のアニメーションで描き直しが起きるか、進行がコンポジタのスレッドに移るか */}
+
+Chrome 154で、それぞれを1秒間トランジションさせ、パフォーマンスのトレースで描き直し（Paint）の回数と、アニメーションがコンポジタのスレッドに移ったかを調べました（2026年10月確認）。`clip-path`、`background-color`、`filter` の `brightness()`、`drop-shadow()`、`blur()` は、動き出すときの数回を除いて描き直しが起きませんでした。`box-shadow` と `color` は毎フレーム描き直されました。進行がコンポジタのスレッドに移ったのは、`clip-path`、`background-color`、`brightness()` です。`drop-shadow()` と `blur()` は、描き直しは起きませんが、進行の計算はフレームごとにメインスレッドで行われました。Chromiumの実装には、画素を移動するフィルター（`drop-shadow()`、`blur()` など）をコンポジタでアニメーションさせない判定があるからです。そのため、メインスレッドが詰まると止まる点が、`opacity` や変形と違います。
+
+ここでいう描き直しは、DevToolsのPaintに記録される、メインスレッドで画素を描く処理のことです。描き直しが起きなくても、GPUの側でフィルターを当てる処理は毎フレーム行われるので、`filter` の負荷がなくなるわけではありません（後の見出しの「`filter` と `backdrop-filter` のコスト」）。
+
+同じ版で、角丸を付けた切り抜きを大きさ0から動かす場合（`inset(0 100% 0 0 round 12px)` から `inset(0 round 12px)` へ）は、毎フレーム描き直しが起き、進行もメインスレッドで計算されました。角丸のない `inset()` や、0にならない範囲の間で動かす場合は、描き直しは起きませんでした。切り抜きを動かしたら、後の見出しで説明するPaint flashingを使って確かめます。
 
 中の段は、JavaScriptで値を計算し、変形や不透明度として反映する方法です。値の計算はメインスレッドで行われますが、レイアウトとペイントは起きません。FLIPは、変化の前後で要素の位置を測り、その差を `translate` と `scale` で打ち消してから、打ち消しを解いて動かす方法です。位置を測るときに一度だけレイアウトが起きますが、動いている間は変形しか変わりません。
 
-ペイントが起きるプロパティは、負荷が描く面積で決まります。ボタンのホバーで背景色を変えるような、小さい要素の短い変化なら問題になりません。避けたいのは、大きくぼかした `box-shadow` をループするアニメーションで動かし続けるような使い方です。ぼかしを含む影は描くのに時間がかかり、動いている間は描き直しが続きます。この場合は、影を擬似要素に描いておき、その擬似要素の `opacity` を動かすなど、合成だけで表せないかを考えます。
+ペイントが起きるプロパティは、負荷が描く面積で決まります。ボタンのホバーで文字色を変えるような、小さい要素の短い変化なら問題になりません。避けたいのは、大きくぼかした `box-shadow` を動かすことです。ぼかしを含む影は描くのに時間がかかり、動いている間は描き直しが続きます。影を動かすときは、`box-shadow` の代わりに `filter: drop-shadow()` の値を動かします。`drop-shadow()` と `box-shadow` の見た目の違いと、影のトークンとの関係は「[16-3 面・影・角丸](/decoration/surfaces/)」で説明しています。
 
 レイアウトが起きるプロパティは避けますが、アコーディオンの高さのように、ほかに方法のない場合は例外です。開閉の動きは「[18-5 出現と退場](/motion/entry-and-exit/)」で扱います。`scrollTop` を毎フレーム読む実装を避ける方法は「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で扱います。
 
@@ -287,7 +295,11 @@ button.addEventListener('click', () => {
 
 動きの負荷は、コードを読むだけでは判断しきれません。同じプロパティでも、ブラウザや値によって合成で処理されるかどうかが変わるからです。ここではChromeのDevToolsの機能を紹介します（2026年10月確認）。
 
-Performanceパネルでは、動きを再生している間の処理を記録できます。記録した結果には、フレームごとにかかった時間と、Layout、Paint、Compositeといった処理が時系列で並ぶので、どの処理がフレームの時間を超えているかが分かります。CPUの速度を落とす設定を使うと、性能の低いスマートフォンに近い条件で確かめられます。
+Performanceパネルでは、動きを再生している間の処理を記録できます。記録した結果には、フレームごとにかかった時間と、Layout、Paint、Compositeといった処理が時系列で並ぶので、どの処理がフレームの時間を超えているかが分かります。CPUの速度を落とす設定（CPU throttling）を使うと、メインスレッドの処理が遅い端末での振る舞いを確かめられます。
+
+ただし、この設定が遅くするのはCPUの処理だけです。合成やラスタライズを受け持つGPUの性能や、合成レイヤーを保持するGPUのメモリの量は、手元のパソコンのままです。そのため、`backdrop-filter` の大きなぼかしや大きな合成レイヤー、多すぎるレイヤーの負荷は、この設定では再現できません。合成やペイントの負荷は、中位のスマートフォンの実機で確かめます。
+
+実機の記録は、パソコンのブラウザから取れます。AndroidのChromeは、端末をUSBでつなぎ、パソコンのChromeで `chrome://inspect` を開くと、端末のページをDevToolsで調べられ、Performanceパネルで記録できます。iOSのSafariは、端末の設定でWebインスペクタを有効にしてMacにつなぐと、MacのSafariの「開発」メニューからWebインスペクタを開き、タイムラインを記録できます。開発サーバーのページは、端末とパソコンを同じネットワークにつなぎ、パソコンのIPアドレスとポート番号を指定すれば端末から開けます。{/* 要検証: ブラウザ。リモートデバッグでのPerformanceパネルの記録と、Webインスペクタのタイムラインの記録 */}
 
 Renderingパネルでは、描き直しと合成レイヤーを画面の上で確かめられます。Paint flashingを有効にすると、描き直された領域が緑色で示されます。合成だけで動いているはずの要素が動くたび緑色になるなら、どこかでペイントが起きています。Layer bordersを有効にすると、合成レイヤーの境界が枠で示されるので、`will-change` を外し忘れたレイヤーや、意図しない巨大なレイヤーを見つけられます。
 
@@ -298,6 +310,7 @@ Renderingパネルでは、描き直しと合成レイヤーを画面の上で�
 ## 参考リンク
 
 - [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)
+- [compositor_animations.cc | Chromium Code Search](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/core/animation/compositor_animations.cc)（コンポジタでアニメーションさせるかの判定）
 - [Rendering performance | web.dev](https://web.dev/articles/rendering-performance)
 - [will-change - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/will-change)
 - [contain - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/contain)
@@ -308,5 +321,7 @@ Renderingパネルでは、描き直しと合成レイヤーを画面の上で�
 - [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)
 - [Analyze runtime performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/performance)
 - [Discover issues with rendering performance | Chrome DevTools](https://developer.chrome.com/docs/devtools/rendering/performance)
+- [Remote debug Android devices | Chrome DevTools](https://developer.chrome.com/docs/devtools/remote-debugging)
+- [Inspecting iOS and iPadOS | Apple Developer Documentation](https://developer.apple.com/documentation/safari-developer-tools/inspecting-ios)
 - [スクロール連動アニメーションの実装例](https://www.tak-dcxi.com/article/scroll-linked-animation-implementation-examples/)（TAKLOG、2024年4月。本書と一部の方針が異なります）
 - [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）

@@ -1,0 +1,59 @@
+@layer components {
+  @scope (.scoped.comparison-slider) to (.scoped) {
+    :scope {
+      /* スクリプトが書き込む位置。書き込まれる前は中央 */
+      --_position: var(--comparison-slider--position, 50%);
+
+      display: block grid;
+      gap: 16px;
+      max-inline-size: calc(480 / 16 * 1rem);
+    }
+
+    ._images {
+      display: block grid;
+      overflow: clip;
+      border-radius: var(--rounded--md);
+
+      & > ._after,
+      & > ._before,
+      &::after {
+        grid-area: 1 / 1;
+      }
+
+      /* 境界の線。線も切り抜きで描き、位置の変化でレイアウトを起こさない */
+      &::after {
+        content: "";
+        clip-path: inset(0 calc(100% - var(--_position) - 1px) 0 calc(var(--_position) - 1px));
+        background-color: var(--background--base);
+      }
+    }
+
+    ._after,
+    ._before {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+    }
+
+    /* 補正前の画像を、境界より左の範囲だけ見せる */
+    ._before {
+      clip-path: inset(0 calc(100% - var(--_position)) 0 0);
+    }
+
+    ._control {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._range {
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+    }
+  }
+}

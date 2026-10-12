@@ -1,6 +1,6 @@
 ---
 title: "16-3 面・影・角丸"
-description: "面の背景は役割で決めた4段階のトークンから選び、影は光源の向きをそろえて、段階ごとにオフセットとぼかしを倍にした層を足します。ダークモードでは高い面ほど背景を明るくします。角丸もトークンから選び、入れ子にした内側の角丸は、外側の角丸から間の余白を引いた値にします。すりガラスの背景は、半透明の背景に backdrop-filter を重ねて作ります。"
+description: "面の背景は役割で決めた4段階のトークンから選び、影は光源の向きをそろえて、段階ごとにオフセットとぼかしを倍にした層を足します。ダークモードでは高い面ほど背景を明るくします。影を動かすときは、box-shadow ではなく filter の drop-shadow() を動かします。角丸もトークンから選び、入れ子にした内側の角丸は、外側の角丸から間の余白を引いた値にします。すりガラスの背景は、半透明の背景に backdrop-filter を重ねて作ります。"
 sidebar:
   order: 3
 ---
@@ -17,7 +17,7 @@ import nestedRadiusCss from '../../../demos/decoration/nested-radius/style.css?r
 import frostedHtml from '../../../demos/decoration/frosted-header/index.html?raw';
 import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 
-面の背景は、ページ、カード、ダイアログ、メニューの役割で決めた4段階のトークンから選びます。影は、光源の向きをそろえ、段階が上がるほどオフセットとぼかしを倍にした層を足して作ります。ライトモードでは面の高さを影だけで表し、影の見えにくいダークモードでは、高い面ほど背景を明るくします。角丸も、段階を決めたトークンから選び、入れ子にした内側の角丸は、外側の角丸から間の余白を引いた値にします。
+面の背景は、ページ、カード、ダイアログ、メニューの役割で決めた4段階のトークンから選びます。影は、光源の向きをそろえ、段階が上がるほどオフセットとぼかしを倍にした層を足して作ります。ライトモードでは面の高さを影だけで表し、影の見えにくいダークモードでは、高い面ほど背景を明るくします。影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします。角丸も、段階を決めたトークンから選び、入れ子にした内側の角丸は、外側の角丸から間の余白を引いた値にします。
 
 すりガラスの背景は、半透明の背景に `backdrop-filter: blur()` を重ねて作ります。ぼかしに混ざるのは、要素の真後ろにある色だけです。
 
@@ -97,7 +97,67 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 
 本書のデモの背景は無彩色なので、ライトモードの影も黒です。色のある背景に影を落とすなら、影の色を背景の色相に寄せ、明度と彩度を下げた色にします。灰色がかった黒の影を色のある背景に重ねると、背景がくすんで見えるからです。
 
-層を重ねた影は、描画の計算量が層の数に比例して増えます。段階が高い影ほど層が多いので、`transition` や `animation` で影そのものを動かすと、古い端末ではコマ落ちしやすくなります。影を動かしたいときは、影を付けた擬似要素の `opacity` だけを動かします。{/* 要確認: 出典なし */}透明な部分の輪郭に沿わせたいときは、`box-shadow` ではなく `filter: drop-shadow()` を使います。
+## 影を動かすときは drop-shadow() を動かす
+
+ホバーで面を持ち上げるように影を変えるときは、`box-shadow` をトランジションさせず、`filter: drop-shadow()` の値を動かします。`box-shadow` を動かすと、動いている間は毎フレーム影を描き直します。ぼかしを含む影は描く計算が重く、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではかくつきます。
+
+```css title="🙅‍♂ Not Recommended: box-shadow のトークンをそのままトランジションさせる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    box-shadow: var(--shadow--sm);
+    transition-duration: var(--duration--base);
+    transition-property: box-shadow;
+    transition-timing-function: var(--ease--out-quint);
+
+    &:any-link:hover {
+      @media (any-hover) {
+        box-shadow: var(--shadow--md);
+      }
+    }
+  }
+}
+```
+
+影のトークン `--shadow--*` は `box-shadow` の値なので、`drop-shadow()` にはそのまま渡せません。`drop-shadow()` は広がり（4つ目の値）と `inset` を持たず、複数の影は関数を並べて書くからです。そこで、高さを表す影を `drop-shadow()` の並びにしたトークン（`--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を別に用意し、`filter` に指定して動かします。縁取りの `--shadow--xs` は、`box-shadow` に置いたまま動かしません。
+
+```css title="🙆‍♂ Recommended: 縁取りは box-shadow に残し、高さを表す層を drop-shadow() で動かす"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    box-shadow: var(--shadow--xs);
+    filter: var(--drop-shadow--sm);
+    transition-duration: var(--duration--base);
+    transition-property: filter;
+    transition-timing-function: var(--ease--out-quint);
+
+    &:any-link:hover {
+      @media (any-hover) {
+        filter: var(--drop-shadow--md);
+      }
+    }
+  }
+}
+```
+
+Chrome 154で、2つの例のトランジションを1秒に延ばし、パフォーマンスのトレースで比べました（2026年10月確認）。ここでいう描き直しは、DevToolsのPaintの記録です。`box-shadow` の例は毎フレーム描き直され、`drop-shadow()` の例は、ホバーした直後を除いて描き直されませんでした。一方、トランジションの進行は、どちらの例もメインスレッドで計算されます。Chromeは、`drop-shadow()` のように画素を動かすフィルターのアニメーションをコンポジタに移さないので、メインスレッドが詰まると影の変化も止まります。描き直しがなくなっても、GPUでフィルターを当てる処理の負荷は残ります。ほかのブラウザでは確かめていないので、ブラウザ共通の振る舞いとしては扱いません（「[18-7 動きの負荷を抑える](/motion/performance/)」）。{/* 要検証: ブラウザ。Firefox と Safari で、drop-shadow() のトランジションが描き直しなしで処理されるか */}
+
+`--drop-shadow--sm` と `--drop-shadow--md` は、`--shadow--sm` と `--shadow--md` で足す2つの層のオフセットをそのまま使い、ぼかしを半分にしています。`--drop-shadow--lg` は、`--shadow--md` で足す層の大きいほうと `--shadow--lg` で足す層を組にしたものです。色は `box-shadow` の影と同じ `--shadow--color` を参照するので、ダークモードでは `light-dark()` で影の色だけが切り替わります。
+
+```css title="🙆‍♂ Recommended: drop-shadow() の影は、関数の数をそろえた別のトークンにする"
+:root {
+  --drop-shadow--sm: drop-shadow(0 1px 0.5px var(--shadow--color)) drop-shadow(0 3px 1.5px var(--shadow--color));
+  --drop-shadow--md: drop-shadow(0 6px 3px var(--shadow--color)) drop-shadow(0 12px 6px var(--shadow--color));
+  --drop-shadow--lg: drop-shadow(0 12px 6px var(--shadow--color)) drop-shadow(0 24px 12px var(--shadow--color));
+}
+```
+
+`drop-shadow()` の3つ目の長さは、ガウスぼかしの標準偏差です。Chrome 154で同じぼかしの値を比べると、`drop-shadow()` の影は `box-shadow` の約2倍の距離までぼけました。ぼかしを半分にすると、`box-shadow` とほぼ同じ広がりになります（2026年10月確認）。`box-shadow` のぼかしの値はガウスぼかしの標準偏差の2倍に当たり、`drop-shadow()` の値は標準偏差そのものとして扱われるからです。{/* 要検証: ブラウザ。Firefox と Safari で、drop-shadow() のぼかしが box-shadow の約2倍に広がること */}
+
+トランジションの前後では、関数の数をそろえます。関数は前から順に組になって補間されるので、数がそろっていれば、それぞれの層が対応する層へ滑らかに変わります。そのため、どの段階も関数を2つにし、`--shadow--*` のように前の段階の層を含めて増やすことはしていません。
+
+`drop-shadow()` は、要素の箱ではなく、描かれた不透明な部分の輪郭に沿って影を描きます。背景を塗ったカードなら影の形は角丸の箱とほぼ同じですが、背景が透明な要素では、文字やアイコンの形に影が付きます。並べた関数は、前の関数の影も含めた結果に次の影を付けるので、`box-shadow` の層を同じ数だけ並べると影が濃くなります。広がりで影を絞れないので、左右の端からわずかに影がはみ出し、角丸の外側のぼけ方も `box-shadow` と少し変わります。このため、`--drop-shadow--*` は `--shadow--*` の同じ名前の段階と同じ見た目にはなりません。Chrome 154で並べると、`--drop-shadow--md` と `--drop-shadow--lg` の影は、同じ名前の `--shadow--*` より濃く、左右にも広がりました（2026年10月確認）。動かす部品では、動かす前と後の影を `box-shadow` の影と並べて確かめます。
+
+`filter` に `none` 以外の値を指定した要素は、重ね合わせコンテキストを作り、`position: absolute` と `position: fixed` の子孫の包含ブロックにもなります。カードの中にカードの外へはみ出す要素を置くときは、その要素の位置と重なり順が変わらないかを確かめます。
 
 ## 角丸はトークンから選ぶ
 
@@ -157,4 +217,5 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 - [Designing Beautiful Shadows in CSS](https://www.joshwcomeau.com/css/designing-shadows/)（Josh W. Comeau。光源、高さと影の関係、背景の色相に寄せた影。記事のダークモードの扱いは本書と異なります）
 - [Next-level frosted glass with backdrop-filter](https://www.joshwcomeau.com/css/backdrop-filter/)（Josh W. Comeau。記事は `-webkit-` の併記を勧めますが、本書は接頭辞なしで書きます）
 - [Sneaky Header Blocker Trick](https://www.joshwcomeau.com/css/header-blockers/)（Josh W. Comeau）
+- [drop-shadow() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/filter-function/drop-shadow)
 - [backdrop-filter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/backdrop-filter)

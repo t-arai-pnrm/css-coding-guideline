@@ -78,7 +78,9 @@ if (document.startViewTransition) {
 
 :active-view-transition-type(theme-toggle) {
   &::view-transition-old(root) {
-    animation-name: none;
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: none;
+    }
   }
 
   &::view-transition-new(root) {
@@ -88,17 +90,17 @@ if (document.startViewTransition) {
       animation-timing-function: var(--ease--in-out-quint);
       animation-fill-mode: both;
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      animation-name: none;
-    }
   }
 }
 ```
 
-前の画面のアニメーションを止め、新しい画面だけを `clip-path` で広げています。動きを減らす設定のときは、新しい画面のアニメーションも止めるので、テーマは一瞬で切り替わります。`clip-path` は `none` との間では補間できないので、ここでは `to` も書いています。
+前の画面のアニメーションを止め、新しい画面だけを `clip-path` で広げています。`clip-path` は `none` との間では補間できないので、ここでは `to` も書いています。
 
-次のデモでは、ボタンでテーマを切り替えます。ボタンを押すと、`types` に `theme-toggle` を渡して `document.startViewTransition()` を呼び、ルートの `data-theme` 属性を書き換えます。新しいテーマの画面が、上から塗り替えるように現れます。View Transitionsに対応していない環境では、テーマが一瞬で切り替わります。
+塗り替える動きは、前の画面のアニメーションを止める指定も含めて、すべて `no-preference` の中に書いています。動きを減らす設定のときは、どちらの画像にも独自の指定が当たらないので、デフォルトのクロスフェードで切り替わります。新しい画面が上から広がる動きをやめ、不透明度の変化だけを残すので、「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の4段階では「簡素化」にあたります。
+
+この例では、フェードまで止めてテーマを一瞬で切り替えるのではなく、画面の移動を省いて短いクロスフェードに簡素化しています。短いクロスフェードは位置と大きさを変えないので、残しても動きを減らす設定の目的に反しないと判断しました。ただし、すべての利用者にフェードを残すべきだという根拠があるわけではありません。一瞬で切り替えるほうが合うサイトなら、動きを減らす設定のときは `document.startViewTransition()` を呼ばずにテーマを切り替える選択肢もあります。
+
+次のデモでは、ボタンでテーマを切り替えます。ボタンを押すと、`types` に `theme-toggle` を渡して `document.startViewTransition()` を呼び、ルートの `data-theme` 属性を書き換えます。新しいテーマの画面が、上から塗り替えるように現れます。動きを減らす設定のときは、塗り替えずにクロスフェードで切り替わります。View Transitionsに対応していない環境では、テーマが一瞬で切り替わります。
 
 <Demo title="テーマの切り替えだけ、新しい画面を上から塗り替えるように表示する" html={themeHtml} css={themeCss} js={themeJs} scheme="light" widths={[]} />
 

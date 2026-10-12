@@ -11,6 +11,24 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.51.0（2026年10月12日）
+
+動きについての記述を見直し、負荷の扱いと、時間の向きの例外を改めました。ルールを変えたので、マイナーバージョンを上げています。
+
+- 「[18-7 動きの負荷を抑える](/motion/performance/)」の優先度の表を、フレームごとの描き直しの有無と、進行を計算するスレッドの2つの軸に分けました。`opacity` と変形を基本の候補にし、`clip-path`、`background-color`、`filter` は、Chrome 154で描き直しが起きなかった結果とあわせて、確かめて使う候補にしました。
+- 影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かすように改めました。「[16-3 面・影・角丸](/decoration/surfaces/)」に見出しを加え、擬似要素の `opacity` を動かす方法の説明を置き換えました。デモの共通トークンに、`filter` に渡す `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg` を加えました（「[付録I デモの共通トークン](/appendix/demo-tokens/)」）。
+- 「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」に、長押しで確定するボタンを加えました。押し続けて確定できる状態になってから、ボタンの上で離したときに削除し、途中で離したときやボタンの外へ出たときは中止します。進み具合は押している間だけ伸び、離すと0に戻ります。
+- 「[18-5 出現と退場](/motion/entry-and-exit/)」に、DOMに追加した要素の出現と削除した要素の退場の扱いと、トーストの出現を `@keyframes` で書いてよい理由を加えました。
+- 「[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」のテーマの切り替えの例で、動きを減らす設定のときは、塗り替える動きを省いてクロスフェードに簡素化するように改めました。「[15-4 ダークモード](/color-media/dark-mode/)」は、この実装例を案内する書き方にしました。
+- 「[18-7 動きの負荷を抑える](/motion/performance/)」に、CPUの速度を落とす設定では再現できない負荷と、実機で計測する手順を加えました。
+- 「[18-1 動かすかどうかを決める](/motion/purpose/)」の目的の表に「急な変化を和らげる」と「操作の手順や仕組みを説明する」を、頻度のまれな場面に空の状態と成功を加えました。
+- 「[18-3 イージングと再生時間](/motion/easing-and-duration/)」に、`linear()` のばねが中断されても速度を引き継がないことと、行き過ぎの量の目安、スロー再生で見る点を加えました。
+- 「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」の2層のタブで、選んだ色が隣のタブへ滑って移るようにしました。「[16-1 画像の配置と読み込み](/decoration/images/)」に、2枚の画像を重ねて比べるスライダーを加えました。
+- ルールを変えました。
+  - [`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)：`opacity` と変形を優先し、`clip-path`、`background-color`、`filter` は描き直しが起きないことを確かめたうえで使うことにしました。
+  - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：影を変えるときに `box-shadow` を動かさず、`--drop-shadow--*` のトークンで `filter: drop-shadow()` を動かすようにしました。
+  - [`transition-duration-per-direction`](/motion/transitions-and-keyframes/#rule-transition-duration-per-direction)、[`functional-motion-under-300ms`](/motion/easing-and-duration/#rule-functional-motion-under-300ms)、[`linear-only-for-constant-motion`](/motion/easing-and-duration/#rule-linear-only-for-constant-motion)：長押しの進み具合を例外として補足に加えました。
+
 ## 0.50.11（2026年10月12日）
 
 0.50.10で書き足した内容のレビューにもとづき、誤りを直しました。ルールは変えていないので、パッチバージョンを上げています。

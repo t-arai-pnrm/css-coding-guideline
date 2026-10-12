@@ -169,9 +169,9 @@
 - id: no-animate-layered-shadow
   level: 非推奨
   kind: judgment
-  rule: 重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。
-  reason: 描画の計算量が層の数に比例して増え、段階の高い影ほど層が多いので、古い端末ではコマ落ちしやすいため。
-  note: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
+  rule: 影を変えるときに、`box-shadow` を `transition` や `animation` で動かさない。
+  reason: '`box-shadow` の変化は毎フレーム影を描き直し、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではコマ落ちしやすいため。`filter: drop-shadow()` のトランジションは、Chrome 154 では毎フレームの描き直しが起きなかった（進行の計算はメインスレッドに残り、GPU でフィルターを当てる負荷も残る）。'
+  note: '影を動かすときは、`filter` に `drop-shadow()` の影のトークン（本書のデモでは `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を指定して動かします。`box-shadow` 用のトークンは渡せないので、別のトークンにします。`drop-shadow()` は広がりと `inset` を持たず、ぼかしは `box-shadow` の半分の値でほぼ同じ広がりになります（Chrome 154 で確認）。縁取りのように動かさない影は `box-shadow` のままにします。トランジションの前後では `drop-shadow()` の数をそろえます。`box-shadow` の影と同じ見た目になるとは限らないので、並べて確かめます。'
   page: decoration/surfaces
   since: 0.4.0
 

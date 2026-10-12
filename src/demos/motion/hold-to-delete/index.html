@@ -1,0 +1,14 @@
+<div class="scoped hold-demo">
+  <button type="button" class="scoped hold-button" data-label="下書きを削除" commandfor="hold-demo-confirm" command="show-modal" aria-describedby="hold-demo-hint">
+    <span class="_label">下書きを削除</span>
+  </button>
+  <p class="_hint" id="hold-demo-hint">2秒押し続けてからボタンの上で離すと、確認せずに削除します。押してすぐに離すと、確認のダイアログを開きます。</p>
+  <p class="_status" role="status"></p>
+  <dialog class="scoped confirm-dialog" id="hold-demo-confirm" closedby="any" aria-labelledby="hold-demo-confirm-message">
+    <p class="_message" id="hold-demo-confirm-message">下書きを削除しますか。</p>
+    <form class="_actions" method="dialog">
+      <button type="submit" value="cancel" autofocus>キャンセル</button>
+      <button type="submit" value="delete">削除する</button>
+    </form>
+  </dialog>
+</div>

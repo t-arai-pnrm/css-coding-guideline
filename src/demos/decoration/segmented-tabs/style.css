@@ -52,6 +52,13 @@
       background-color: var(--background--accent);
       color: var(--foreground--on-accent);
       pointer-events: none;
+
+      /* 切り抜く範囲を、選んだタブへ滑らせる */
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: var(--duration--press);
+        transition-property: clip-path;
+        transition-timing-function: var(--ease--in-out-quint);
+      }
     }
 
     /* 上下の列で文字の位置をそろえる */

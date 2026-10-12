@@ -1,8 +1,8 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.50.11（2026-10-11 生成）
+- ガイドラインのバージョン: 0.51.0（2026-10-12 生成）
 - ルールの数: 33
-- 本文: 約15.7万字
+- 本文: 約16.8万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,9 +13,9 @@
 ## この章の節
 
 - `decoration` 第16章 画像・装飾（約3,600字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
-- `decoration/images` 16-1 画像の配置と読み込み（約3万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
-- `decoration/icons-and-masks` 16-2 アイコン・SVG・マスク（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
-- `decoration/surfaces` 16-3 面・影・角丸（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
+- `decoration/images` 16-1 画像の配置と読み込み（約3.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
+- `decoration/icons-and-masks` 16-2 アイコン・SVG・マスク（約3万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
+- `decoration/surfaces` 16-3 面・影・角丸（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
 - `decoration/text-ornaments` 16-4 文字とリストの装飾（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
 - `decoration/shapes` 16-5 角の形を変える（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/
 - `decoration/outlines` 16-6 輪郭と枠線を描く（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/
@@ -102,9 +102,9 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
   - 理由: 各層の不透明度が同じでも、要素の近くほど層が重なって濃くなり、段階が高いほど影が遠くまで落ちるので、段階ごとに調整しなくても高さの関係が一貫して読み取れるため。
   - 補足: 本書のデモでは、層のオフセットとぼかしを1、3、6、12、24、48pxとし、広がりをその半分の負の値にしています。最も低い段階は1pxの縁取りだけで、枠線の代わりに使えます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/#rule-shadow-tokens-light-source
-- 【非推奨・実装上の判断】重ねた影（複数の `box-shadow`）そのものを、`transition` や `animation` で動かさない。（`no-animate-layered-shadow`）
-  - 理由: 描画の計算量が層の数に比例して増え、段階の高い影ほど層が多いので、古い端末ではコマ落ちしやすいため。
-  - 補足: 影を動かしたいときは、影を付けた擬似要素の `opacity` を動かします。
+- 【非推奨・実装上の判断】影を変えるときに、`box-shadow` を `transition` や `animation` で動かさない。（`no-animate-layered-shadow`）
+  - 理由: `box-shadow` の変化は毎フレーム影を描き直し、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではコマ落ちしやすいため。`filter: drop-shadow()` のトランジションは、Chrome 154 では毎フレームの描き直しが起きなかった（進行の計算はメインスレッドに残り、GPU でフィルターを当てる負荷も残る）。
+  - 補足: 影を動かすときは、`filter` に `drop-shadow()` の影のトークン（本書のデモでは `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を指定して動かします。`box-shadow` 用のトークンは渡せないので、別のトークンにします。`drop-shadow()` は広がりと `inset` を持たず、ぼかしは `box-shadow` の半分の値でほぼ同じ広がりになります（Chrome 154 で確認）。縁取りのように動かさない影は `box-shadow` のままにします。トランジションの前後では `drop-shadow()` の数をそろえます。`box-shadow` の影と同じ見た目になるとは限らないので、並べて確かめます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/#rule-no-animate-layered-shadow
 
 ## 16-4 文字とリストの装飾

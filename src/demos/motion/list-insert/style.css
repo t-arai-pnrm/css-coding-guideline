@@ -1,0 +1,52 @@
+@layer components {
+  @scope (.scoped.invite-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+      max-inline-size: calc(400 / 16 * 1rem);
+      margin-inline: auto;
+      padding-block: 24px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: var(--rounded--sm);
+    }
+
+    ._list {
+      display: block grid;
+      gap: 8px;
+      justify-self: stretch;
+    }
+
+    /* JavaScript で append() した項目も、最初のスタイル計算で @starting-style の値から動き始める */
+    ._item {
+      --_translate-from: 0;
+
+      display: block flex;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
+      transition-duration: var(--duration--base);
+      transition-property: opacity, translate;
+      transition-timing-function: var(--ease--out-quint);
+
+      /* 動きを減らす設定のときは移動をやめ、フェードだけを残す */
+      @media (prefers-reduced-motion: no-preference) {
+        --_translate-from: 0 8px;
+      }
+
+      @starting-style {
+        opacity: 0;
+        translate: var(--_translate-from);
+      }
+    }
+  }
+}

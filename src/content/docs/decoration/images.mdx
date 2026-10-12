@@ -1,6 +1,6 @@
 ---
 title: "16-1 画像の配置と読み込み"
-description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。img には width と height の属性を書き、入稿される画像の箱には背景色と内側の線を付けます。背景の写真も img で置きます。srcset と sizes はツールで確かめ、ファーストビューの画像は遅延読み込みにせず、写真は AVIF で書き出します。"
+description: "画像の比率は aspect-ratio で決め、object-fit の cover か contain で収めます。img には width と height の属性を書き、入稿される画像の箱には背景色と内側の線を付けます。背景の写真も img で置き、2枚の画像を重ねて比べるときは上の画像を clip-path で切り抜きます。srcset と sizes はツールで確かめ、ファーストビューの画像は遅延読み込みにせず、写真は AVIF で書き出します。"
 sidebar:
   order: 1
 ---
@@ -19,6 +19,9 @@ import heroHeaderHtml from '../../../demos/decoration/hero-header/index.html?raw
 import heroHeaderCss from '../../../demos/decoration/hero-header/style.css?raw';
 import imagePlaceholderHtml from '../../../demos/decoration/image-placeholder/index.html?raw';
 import imagePlaceholderCss from '../../../demos/decoration/image-placeholder/style.css?raw';
+import comparisonSliderHtml from '../../../demos/decoration/comparison-slider/index.html?raw';
+import comparisonSliderCss from '../../../demos/decoration/comparison-slider/style.css?raw';
+import comparisonSliderJs from '../../../demos/decoration/comparison-slider/script.js?raw';
 
 画像の縦横比は `aspect-ratio` で決め、中身は `object-fit` の `cover` か `contain` で収めます。初期値の `fill` のまま、画像を引き伸ばさないようにします。`<img>` には `width` と `height` の属性を書き、`srcset` と `sizes` の値は、手で計算せずにツールで確かめて決めます。
 
@@ -261,6 +264,57 @@ img {
 
 単色やグラデーションだけの背景は、画像のファイルを読み込まず、意味も持たないので、`background-image` で足ります。パターン画像も、内容を伝えず、表示される幅に合わせて出し分ける必要がないので、`<img>` にする利点がありません。やむを得ずLCPの候補の写真を `background-image` で敷く場合は、`<link rel="preload">` でその画像を先に読み込ませます。
 
+## 2枚の画像を重ねて比べる
+
+加工前と加工後のように、同じ構図の2枚の画像を比べるUIは、2枚の `<img>` を同じグリッドのエリアに重ね、上の画像を `clip-path` で切り抜いて作ります。境界の位置は `<input type="range">` で操作し、入力の値はスクリプトでカスタムプロパティに書き込みます。範囲の入力は画像の下に置き、ブラウザの標準の見た目のまま使います。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 重ねた上の画像を、境界の位置から右だけ切り抜く"
+@scope (.scoped.comparison-slider) to (.scoped) {
+  :scope {
+    --_position: var(--comparison-slider--position, 50%);
+  }
+
+  ._images {
+    display: block grid;
+
+    & > ._after,
+    & > ._before {
+      grid-area: 1 / 1;
+    }
+  }
+
+  ._before {
+    clip-path: inset(0 calc(100% - var(--_position)) 0 0);
+  }
+}
+```
+
+`inset()` の4つの値は、上、右、下、左から切り取る量です。右から `100% - 境界の位置` を切り取るので、上に重ねた加工前の画像は、左端から境界の位置までだけが見え、その右には下の加工後の画像が見えます。HTMLでは加工後の画像を先に、加工前の画像を後に書くので、加工前の画像が上に描かれます。
+
+境界を動かすのに、上の画像の幅を変えないのは、レイアウトと画像の切り取り方を変えないためです。幅を変えると、`object-fit: cover` で収めた画像は幅に合わせて拡大率と切り取る位置が変わり、2枚の構図がずれます。`clip-path` は見える範囲を決めるだけで、要素の大きさと位置は変わらないので、値が変わってもレイアウトは起こらず、2枚はいつも同じ位置に重なったままです。デモでは、境界の線も `::after` を `clip-path` で細く切り抜いて描いています。
+
+範囲の入力の値は、CSSから読めません。`attr()` で読める `value` は、HTMLに書いた属性の値で、ユーザーがつまみを動かしても変わりません。Chrome 154で、キーボードで値を65に変えたあとも、`value` 属性と `attr(value type(<number>))` の値は50のままでした（2026年10月確認）。入力の現在の値を表す擬似クラスやプロパティもないので、値を `clip-path` に渡すにはスクリプトが要ります。
+
+```js title="範囲の入力の値を、カスタムプロパティに書き込む"
+const root = document.querySelector('.scoped.comparison-slider');
+const range = root.querySelector('._range');
+
+const update = () => {
+  root.style.setProperty('--comparison-slider--position', `${range.value}%`);
+};
+
+range.addEventListener('input', update);
+update();
+```
+
+`input` イベントは、つまみを動かしている間も値が変わるたびに発生するので、境界はつまみに合わせて動きます。最後に一度 `update()` を呼ぶのは、再読み込みのときにブラウザが入力の値を復元し、HTMLの `value` と現在の値の食い違う場合に備えるためです。書き込むカスタムプロパティは、外から値を受け取る入り口なので、公開用の名前（`--comparison-slider--position`）にし、CSSの中では内部用の `--_position` に受けて使います。
+
+範囲の入力は、透明にして画像全体に重ねる作り方もありますが、本書では画像の下に置きます。重ねると画像のどこを押しても境界が動きますが、透明にしたつまみとフォーカスリングは見えなくなるので、境界の線やフォーカスの表示を `:has(._range:focus-visible)` などで描き直すことになります。強制カラーモードでの見え方も自分で確かめる必要があります。下に置けば、見えるラベル、左右の矢印キーでの操作、ブラウザのフォーカスリングが、標準の範囲の入力のまま手に入ります。
+
+<Demo title="範囲の入力で、重ねた2枚の画像の境界を動かす" html={comparisonSliderHtml} css={comparisonSliderCss} js={comparisonSliderJs} />
+
+デモでは、灰色の補正前の画像を、色を補正した後の画像に重ねています。スライダーを右へ動かすと、境界の線が右へ移り、補正前の画像の見える範囲が広がります。スライダーにフォーカスして左右の矢印キーを押すと、境界が1%ずつ動きます。Chrome 154では、Page Upを押すと10%動きました（2026年10月確認）。{/* 要検証: ブラウザ。Firefox と Safari での範囲の入力のキーボード操作と、強制カラーモードでの表示 */}
+
 ## レスポンシブ画像
 
 画面の幅や解像度に合わせて、大きさの違う画像を出し分けるには、`srcset` と `sizes` の属性を使います。`srcset` には画像の候補とその幅を、`sizes` には画像がレイアウトの中で表示される幅を書きます。ブラウザは、表示される幅と画面の解像度から、ちょうどよい候補を選んで読み込みます。
@@ -318,5 +372,8 @@ RespImageLintが提案する `sizes` の値は、`vw` を使って書かれて�
 - [HTML Standard: decoding 属性](https://html.spec.whatwg.org/multipage/images.html#decoding-images)（WHATWG）
 - [Lazy loading - Performance | MDN](https://developer.mozilla.org/ja/docs/Web/Performance/Guides/Lazy_loading)
 - [aspect-ratio - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)
+- [clip-path - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clip-path)
+- [`<input type="range">` - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Elements/input/range)
+- [attr() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/attr)
 - [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)
 - [`<img>`: 画像埋め込み要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Elements/img)（読み込みに失敗したときの代替テキストの扱い）

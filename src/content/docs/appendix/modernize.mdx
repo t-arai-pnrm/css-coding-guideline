@@ -163,6 +163,7 @@ sidebar:
 | ホバーで `opacity: 0.7` | 背景色や文字色を別の色に変える | 挙動：文字まで透けて、コントラストが下がる | [`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover) | AI |
 | `.is-active`、`.is-open` の状態クラス | `:checked` などの擬似クラスや `[aria-selected="true"]` | 本書の方針 | [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria) | AI |
 | `transition: all 0.3s` | `transition-duration`、`transition-property`、`transition-timing-function` のロングハンドとトークン | 挙動：関係のないプロパティまで動き、描画の負荷も増える | [`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)、[`transition-longhand-with-tokens`](/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens) | AI |
+| 影を変える状態で `box-shadow` をトランジションさせる | `filter: drop-shadow()` の値を動かし、縁取りの `box-shadow` は動かさない | 挙動：動いている間、毎フレーム影を描き直し、性能の低い端末でかくつく | [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow) | |
 | `prefers-reduced-motion: reduce` のときに全称セレクタと `!important` で動きを止める | `@media (prefers-reduced-motion: no-preference)` の中で動きを付ける | 本書の方針 | [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference) | AI |
 | 並んだ要素に `view-transition-name: card-1`、`card-2` と連番を振る | `view-transition-name: match-element` と `view-transition-class` | 本書の方針 | [`view-transition-match-element`](/motion/view-transitions/#rule-view-transition-match-element) | AI |
 | 入力エラーの見た目を `:invalid` に指定する | `:user-invalid` に指定する | 挙動：入力する前から、エラーの見た目が表示される | [`user-invalid-for-errors`](/interaction/forms/#rule-user-invalid-for-errors) | AI |

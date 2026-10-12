@@ -173,7 +173,7 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 
 <Demo title="選んだテーマをメタ要素に書き込み、トークンの色とスタイルクエリで表示を切り替える" html={themeSwitchHtml} css={themeSwitchCss} js={themeSwitchJs} scheme="light dark" />
 
-テーマを切り替える瞬間には、View Transitionで画面を上から塗り替えるアニメーションを付けています。切り替えの処理は、`types` に `theme-toggle` を指定して `document.startViewTransition()` に渡します。CSSの側では、`:active-view-transition-type(theme-toggle)` でアニメーションを定義します。動きを減らす設定をしているユーザーには、アニメーションを付けません。View Transitionsの書き方は「[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」で扱います。
+テーマを切り替える瞬間に、View Transitionで画面を上から塗り替える実装例は、「[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」で説明します。切り替えの処理は、`types` に `theme-toggle` を指定して `document.startViewTransition()` に渡します。CSSの側では、`:active-view-transition-type(theme-toggle)` でアニメーションを定義します。動きを減らす設定のときは、塗り替える動きを付けず、View Transitionsのデフォルトの短いクロスフェードに簡素化します。
 
 ## 案件でのダークモード
 

@@ -183,7 +183,7 @@ sidebar:
 - [ ] キーボードのフォーカスの移動に動きを付けていないか（[`no-motion-on-focus-visible`](/interaction/states-and-focus/#rule-no-motion-on-focus-visible)）
 - [ ] キーボードショートカットで開閉するUIに、出現と退場の動きを付けていないか（[`no-motion-on-keyboard-shortcut`](/motion/purpose/#rule-no-motion-on-keyboard-shortcut)）
 - [ ] 途中で取り消される動きをトランジションで書き、続けて押されるUIの動きを短くするか省いているか（[`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition)）
-- [ ] レイアウトの変わるプロパティを動かしていないか。`will-change` をCSSに書いたままの状態にしていないか（[`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)、[`will-change-temporarily`](/motion/performance/#rule-will-change-temporarily)）
+- [ ] レイアウトの変わるプロパティを動かしていないか。`clip-path`、`background-color`、`filter` を動かすときは、描き直しが起きないことをDevToolsで確かめたか。影を `box-shadow` ではなく `filter: drop-shadow()` で動かしているか。`will-change` をCSSに書いたままの状態にしていないか（[`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)、[`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)、[`will-change-temporarily`](/motion/performance/#rule-will-change-temporarily)）
 - [ ] `content-visibility: auto` を最初の画面より下のブロックにだけ指定しているか。`contain-intrinsic-block-size: auto <長さ>` を組で書いているか（[`content-visibility-with-intrinsic-size`](/motion/performance/#rule-content-visibility-with-intrinsic-size)）
 - [ ] `@keyframes` の名前が `--` で始まり、中間のフレームを持つものをコンポーネントのCSSに置いているか。一度だけ再生する演出で、`@keyframes` の外に `opacity: 0` などを重ねて書いていないか（[`keyframes-local-naming`](/motion/transitions-and-keyframes/#rule-keyframes-local-naming)、[`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)）
 - [ ] `transition: all` を使っていないか（[`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)）

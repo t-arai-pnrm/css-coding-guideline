@@ -20,6 +20,9 @@ import tooltipJs from '../../../demos/motion/tooltip-delay/script.js?raw';
 import megaMenuHtml from '../../../demos/motion/mega-menu-clip/index.html?raw';
 import megaMenuCss from '../../../demos/motion/mega-menu-clip/style.css?raw';
 import megaMenuJs from '../../../demos/motion/mega-menu-clip/script.js?raw';
+import listInsertHtml from '../../../demos/motion/list-insert/index.html?raw';
+import listInsertCss from '../../../demos/motion/list-insert/style.css?raw';
+import listInsertJs from '../../../demos/motion/list-insert/script.js?raw';
 
 `display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。表示された瞬間の見た目を `@starting-style` で指定し、`display` と `overlay` をトランジションの対象に加えれば、ポップオーバーやダイアログの開閉の両方をCSSだけで動かせます。退場を動かす必要がなければ、`@keyframes` の `from` で出現だけを動かすほうが壊れにくくなります。
 
@@ -84,6 +87,39 @@ import megaMenuJs from '../../../demos/motion/mega-menu-clip/script.js?raw';
 <Baseline id="overlay" />
 
 2026年10月の時点で、Firefoxは `display: none` へのトランジションに対応していません。開くときは動きますが、閉じるときは一瞬で消えます。閉じる機能は損なわれないので、プログレッシブ・エンハンスメントとして許容します。`overlay` に対応しているのはChrome系のブラウザだけなので、閉じる途中でほかの要素の下に潜り込まないように、`z-index: var(--z--top)` も指定しておきます（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+## DOMに追加した要素と削除した要素
+
+`@starting-style` の値が開始値になるのは、`display: none` から表示に切り替わったときだけではありません。JavaScriptの `append()` などでDOMに追加した要素も、最初のスタイル計算では直前の見た目を持たないので、`@starting-style` の値から動き始めます。追加する項目の基本のルールに書いておけば、状態のクラスを付け替えなくてもフェードインします。
+
+```css title="🙆‍♂ Recommended: 追加した項目を @starting-style の値からフェードインさせる"
+@scope (.scoped.invite-list) to (.scoped) {
+  ._item {
+    --_translate-from: 0;
+
+    transition-duration: var(--duration--base);
+    transition-property: opacity, translate;
+    transition-timing-function: var(--ease--out-quint);
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_translate-from: 0 8px;
+    }
+
+    @starting-style {
+      opacity: 0;
+      translate: var(--_translate-from);
+    }
+  }
+}
+```
+
+退場は事情が違います。`remove()` で削除した要素は、その時点でDOMからなくなり、スタイルを計算する対象が残らないので、トランジションは起きず、その場で消えます。退場を動かす方法は2つあります。View Transitionsで削除の前後をつなぐ方法（「[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」）と、JavaScriptで閉じた状態の属性を付け、退場のトランジションが終わるのを待ってから削除する方法です。
+
+次のデモで「メンバーを招待する」を押すと、追加した項目が8px下からフェードインします。「取り消す」を押した項目は、動かずにすぐ消えます。ページを読み込んだときにある項目も、最初のスタイル計算なので同じように動きます（2026年10月にChromeで確認）。
+
+<Demo title="append() した項目を @starting-style でフェードインさせ、remove() した項目はすぐに消す" html={listInsertHtml} css={listInsertCss} js={listInsertJs} height="20rem" />
+
+追加と削除を動かすかどうかは、その一覧を操作する頻度で決めます。招待したメンバーのようにときどき増える一覧なら、出現を短く動かせます。ToDoのように1回の作業で何度も追加と削除を繰り返す一覧は、「[18-1 動かすかどうかを決める](/motion/purpose/)」の頻度の目安に従い、動かさないか最小限にします。
 
 ## ダイアログの開閉を動かす
 
@@ -249,7 +285,7 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 
 `visibility` は、`display` と違い、`allow-discrete` がなくてもトランジションの対象になります。`visibility` には途中の値の決め方が定められていて、片方の値が `visible` なら、トランジションの間はずっと `visible` として扱われるからです。開くときはトランジションの始まりと同時に `visible` へ切り替わり、閉じるときは切り抜きが閉じ終わるまで `visible` が続き、最後に `hidden` へ切り替わります。
 
-動きの負荷は、高さを動かす方法より小さくなります。ただし、本書では `clip-path` の変化をペイントが起きるものとして扱っているので（「[18-7 動きの負荷を抑える](/motion/performance/)」）、合成だけで済む `opacity` や `translate` と同じ扱いにはしません。全幅のパネルは描き直す面積が大きいので、再生時間は `--duration--slow`（240ms）までに抑えます。{/* 要検証: ブラウザ。clip-path のトランジションで毎フレームペイントが起きるか（DevTools の Paint flashing） */}
+動きの負荷は、高さを動かす方法より小さくなります。切り抜きを変えてもレイアウトは起きず、ブラウザと値によっては描き直しも避けられるからです（「[18-7 動きの負荷を抑える](/motion/performance/)」）。Chrome 154で、このデモのパネルを開くと、切り抜きのトランジションはコンポジタのスレッドで進み、動き出すときを除いて描き直しが起きないことを、パフォーマンスのトレースで確かめました（2026年10月確認）。再生時間は、全幅のパネルが画面を大きく横切る動きなので、ダイアログと同じ `--duration--slow`（240ms）にします。{/* 要検証: ブラウザ。Firefox と Safari で、clip-path のトランジションで描き直しが起きるか、進行がコンポジタのスレッドに移るか */}
 
 全幅のパネルの下端が画面を縦に横切る動きは、本書では「大きな変動」として扱います。{/* 要確認: 著者の判断。切り抜きの変化を、18-2 の「大きな変動」の目安に含めるか */} 動きを減らす設定のときは、ポップオーバーの例と同じく切り抜きを変えず、フェードだけを残します（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の「簡素化」）。次のデモで「製品」を押すと、パネルがヘッダーの下端から下へ広がり、本文の上に重なります。本文の位置は変わりません。閉じた状態でTabキーを押すと、フォーカスは「製品」「料金」「サポート」から本文のリンクへ進み、パネルの中のリンクには移りません。開いた状態でEscキーを押すと、パネルが閉じてフォーカスは「製品」に戻ります。{/* 要検証: ブラウザ。デモの開閉の動き、負の値の inset() で影が切り取られないこと、閉じたパネルにフォーカスが移らないこと */}
 
@@ -369,6 +405,8 @@ CSSで書けるのは、初回の遅延だけです。表示した状態のル�
 ```
 
 この例の `--fade-in` は、ベーススタイルに置いたグローバルな `@keyframes` です（「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。位置と大きさを変えないフェードなので、動きを減らす設定の条件の外に書いています。
+
+この例は、取り消されることがある動きをトランジションで書くルール（[`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition)）と矛盾しません。トーストは出現だけを動かし、閉じるときは動かさず、即座に消します。出現の途中で閉じられても、アニメーションごと要素が消えるだけなので、キーフレームを逆向きに再生する必要はありません。トーストを続けて出したときも、アニメーションは新しく追加した要素や表示し直した要素で最初から始まるので、前のトーストの動きとは干渉しません。一方、トグルやパネルのように同じ要素を何度も開閉し、閉じるときも動かすUIは、取り消された位置から逆向きに戻れるトランジションで書きます。
 
 ## ガイドライン
 

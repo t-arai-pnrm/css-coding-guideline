@@ -42,7 +42,9 @@
 
 :active-view-transition-type(theme-toggle) {
   &::view-transition-old(root) {
-    animation-name: none;
+    @media (prefers-reduced-motion: no-preference) {
+      animation-name: none;
+    }
   }
 
   &::view-transition-new(root) {
@@ -51,10 +53,6 @@
       animation-duration: var(--duration--slow);
       animation-timing-function: var(--ease--in-out-quint);
       animation-fill-mode: both;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      animation-name: none;
     }
   }
 }

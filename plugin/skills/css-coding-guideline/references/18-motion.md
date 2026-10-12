@@ -1,8 +1,8 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.50.11（2026-10-11 生成）
+- ガイドラインのバージョン: 0.51.0（2026-10-12 生成）
 - ルールの数: 31
-- 本文: 約17.5万字
+- 本文: 約19.5万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,13 +13,13 @@
 ## この章の節
 
 - `motion` 第18章 モーション（約4,700字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/
-- `motion/purpose` 18-1 動かすかどうかを決める（約8,800字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/purpose/
+- `motion/purpose` 18-1 動かすかどうかを決める（約9,400字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/purpose/
 - `motion/reduced-motion` 18-2 動きを減らす設定に対応する（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/
-- `motion/easing-and-duration` 18-3 イージングと再生時間（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/
-- `motion/transitions-and-keyframes` 18-4 トランジションと@keyframes（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
-- `motion/entry-and-exit` 18-5 出現と退場（約3.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
+- `motion/easing-and-duration` 18-3 イージングと再生時間（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/
+- `motion/transitions-and-keyframes` 18-4 トランジションと@keyframes（約3.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
+- `motion/entry-and-exit` 18-5 出現と退場（約3.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
 - `motion/scroll-driven` 18-6 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
-- `motion/performance` 18-7 動きの負荷を抑える（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
+- `motion/performance` 18-7 動きの負荷を抑える（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
 - `motion/view-transitions` 18-8 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/
 
 ## 18-1 動かすかどうかを決める
@@ -64,10 +64,11 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/#rule-no-ease-in-for-ui
 - 【推奨・実装上の判断】`linear` のイージングは、マーキーやプログレスバーのように一定の速さで続く動きにだけ使い、UI の状態の変化には使わない。（`linear-only-for-constant-motion`）
   - 理由: 速さが変わらない動きは機械的に見え、始まりと終わりが唐突に感じられるため。
+  - 補足: 長押しで確定するボタンの進み具合は、押し続けた時間に比例して進むプログレスバーなので、押している間の広がりに `linear` を使います。離したときは、判定と同じく進み具合を0に戻すので、トランジションを付けません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/#rule-linear-only-for-constant-motion
 - 【必須・実装上の判断】操作に応じる機能的な動きの再生時間は300ms以下にし、ダイアログ、ドロワー、シートのように画面の大部分を覆う UI でも500ms以下にする。（`functional-motion-under-300ms`）
   - 理由: 動きが終わるまで次の操作を待たせず、1日に何度も触る UI でも待ち時間が積み重ならないようにするため。
-  - 補足: 例外は、スクロールで画面に入ったときに一度だけ再生する演出の `--duration--reveal`（600ms）と、ばねの動きの `--duration--spring`（700ms）だけです。どちらも頻繁に触る UI には使いません。ツールチップの表示を遅らせる `transition-delay` は、再生時間に含めません。
+  - 補足: 例外は、スクロールで画面に入ったときに一度だけ再生する演出の `--duration--reveal`（600ms）と、ばねの動きの `--duration--spring`（700ms）です。どちらも頻繁に触る UI には使いません。長押しで確定するボタンの進み具合（2秒前後）は、動きの速さではなく確定までに押し続ける時間を表すので、この上限の対象外です。ツールチップの表示を遅らせる `transition-delay` は、再生時間に含めません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/#rule-functional-motion-under-300ms
 - 【推奨・実装上の判断】ボタンを押したことを動きで返すときは、`:active` で `scale` を0.96〜0.98に縮め、再生時間を100〜150msにする。（`press-feedback-short`）
   - 理由: 押したことがすぐに伝わり、短い動きなら続けて押す操作の妨げにならないため。
@@ -91,7 +92,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyfra
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens
 - 【推奨・仕様上の制約】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
   - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
-  - 補足: どちらの再生時間もトークンから選びます。
+  - 補足: どちらの再生時間もトークンから選びます。例外は、長押しで確定するボタンの進み具合のように、入る側の動きが押し続けた時間そのものを表す場合です。このときは入る側の状態にだけ、確定までの時間（トークンの段階にない値なので、公開用のカスタムプロパティで受け取る）と `linear` を書き、基本のルールにはトランジションを書きません。離したら、判定と同じく進み具合を0に戻すためです。確定は表示のトランジションではなく JavaScript のタイマーで判定し、ボタンの上で離したときに行います。進み具合は確定に要る情報なので、動きを減らす設定でも残し、`transition-property` を絞ったうえで条件の外に書きます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-transition-duration-per-direction
 - 【推奨・仕様上の制約】操作の途中で取り消されることがある動きは `@keyframes` ではなくトランジションで書き、タブやセグメンテッドコントロールのように続けて押される UI では、再生時間を100〜150msにするか、動きを省く。（`interruptible-with-transition`）
   - 理由: トランジションは途中の状態から逆向きに戻るが、`@keyframes` のアニメーションは途中で止めると値が飛び、続けて押すと動きが操作に追いつかないため。
@@ -151,9 +152,9 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
 
 https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
 
-- 【推奨・実装上の判断】動かすプロパティは `opacity`、`translate`、`scale`、`rotate` を優先し、`inline-size` や `inset` のようにレイアウトが変わるプロパティは避ける。（`animate-composite-properties`）
-  - 理由: レイアウトと描画をやり直さずに済み、動きが滑らかになるため。
-  - 補足: 一部の `filter` も、ブラウザによっては合成だけで処理されます。`clip-path` はペイントが起きるものとして扱います。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。
+- 【推奨・実装上の判断】動かすプロパティは `opacity` と変形（`translate`、`scale`、`rotate`）を優先し、`clip-path`、`background-color`、`filter` は描き直しが起きないことを確かめたうえで使い、`inline-size` や `inset` のようにレイアウトが変わるプロパティは避ける。（`animate-composite-properties`）
+  - 理由: `opacity` と変形のアニメーションは、レイアウトと描き直しが起きず、進行もコンポジタのスレッドで計算されるので、メインスレッドが忙しいときにも滑らかに動くため。`clip-path`、`background-color`、`filter` で描き直しを避けられるかは、ブラウザと値によって変わる。
+  - 補足: 影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします（`no-animate-layered-shadow`）。Chrome 154 では、`clip-path`（角丸を付けて大きさ0から動かす場合を除く）、`background-color`、`filter` のアニメーションで描き直し（DevTools の Paint）は起きませんでした。ただし、`drop-shadow()` と `blur()` は、進行の計算がメインスレッドに残ります。描き直しが起きなくても、GPU でフィルターを当てる処理の負荷は残ります。`color`、`border-color`、`box-shadow` はペイントが起きるので、小さい要素の短い変化に限ります。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/#rule-animate-composite-properties
 - 【必須・実装上の判断】`will-change` は CSS に書いたままにせず、どうしても必要なときだけ、動きの直前に JavaScript で付けて、終わったら外す。（`will-change-temporarily`）
   - 理由: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。
