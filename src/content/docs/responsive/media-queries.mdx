@@ -104,7 +104,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 ヒーローヘッダーのようなブロックは、「ほかの場所に置かれることがない」と言い切れるかどうかが分かれ目です。同じ見た目のブロックを記事の途中にも置く可能性があるなら、コンテナサイズクエリで書いておくほうが安全です。ブロックの幅がビューポートの幅と一致しなくなり、ビューポートを基準にした切り替えが合わなくなるからです。ビューポート単位（`svi` や `svb`）も、同じ基準で使い分けます（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
 
-画面の幅で画像を差し替えるときは、CSSの `background-image` を切り替えずに、HTMLの `<picture>` の `<source>` に `media` 属性で条件を書きます。`media` 属性はビューポートを基準にするメディアクエリで、範囲構文もそのまま使えます。写真を `<img>` で置く理由は「[16-1 画像の配置と読み込み](/decoration/images/)」で説明しています。
+画面の幅で画像を差し替えるときは、CSSの `background-image` を切り替えずに、HTMLの `<picture>` の `<source>` に `media` 属性で条件を書きます。`media` 属性はビューポートを基準にするメディアクエリで、範囲構文もそのまま使えます。写真を `<img>` で置く理由は「[16-1 画像の配置と比率](/decoration/images/)」で説明しています。
 
 ```html
 <picture>
@@ -127,7 +127,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 | `forced-colors` | 使う | 強制カラーモード。[15-5](/color-media/forced-colors/) |
 | `prefers-color-scheme` | トークンでだけ使う | コンポーネントには書かず、トークンの `light-dark()` で切り替える。[15-4](/color-media/dark-mode/) |
 | `scripting` | 使う | JavaScriptが使えるか。[1-2](/principles/browser-support/) |
-| `print`（メディアタイプ） | 使う | 印刷のスタイル。16-8 |
+| `print`（メディアタイプ） | 使う | 印刷のスタイル。16-10 |
 | `prefers-reduced-transparency` | 追加の対策として使う | Chrome系だけが対応。この節 |
 | `min-width`、`max-width` | 使わない | 範囲構文で書く |
 | `device-width`、`device-height`、`device-aspect-ratio` | 使わない | 端末の画面の大きさで、使える幅ではない |

@@ -1,8 +1,8 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.51.0（2026-10-12 生成）
+- ガイドラインのバージョン: 0.52.0（2026-10-12 生成）
 - ルールの数: 33
-- 本文: 約16.8万字
+- 本文: 約17.1万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,16 +12,18 @@
 
 ## この章の節
 
-- `decoration` 第16章 画像・装飾（約3,600字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
-- `decoration/images` 16-1 画像の配置と読み込み（約3.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
-- `decoration/icons-and-masks` 16-2 アイコン・SVG・マスク（約3万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
-- `decoration/surfaces` 16-3 面・影・角丸（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
-- `decoration/text-ornaments` 16-4 文字とリストの装飾（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
-- `decoration/shapes` 16-5 角の形を変える（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/
-- `decoration/outlines` 16-6 輪郭と枠線を描く（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/
-- `decoration/separators` 16-7 区切り線を引く（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/
+- `decoration` 第16章 画像・装飾（約4,100字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
+- `decoration/images` 16-1 画像の配置と比率（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
+- `decoration/image-loading` 16-2 画像の形式と読み込み（約4,800字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/image-loading/
+- `decoration/icons-and-masks` 16-3 アイコンとSVG（約8,600字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
+- `decoration/clipping-and-masks` 16-4 clip-pathとマスクで見せる範囲を決める（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/clipping-and-masks/
+- `decoration/surfaces` 16-5 面・影・角丸（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
+- `decoration/text-ornaments` 16-6 文字とリストの装飾（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
+- `decoration/shapes` 16-7 角の形を変える（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/
+- `decoration/outlines` 16-8 輪郭と枠線を描く（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/
+- `decoration/separators` 16-9 区切り線を引く（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/
 
-## 16-1 画像の配置と読み込み
+## 16-1 画像の配置と比率
 
 https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
 
@@ -48,32 +50,30 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
   - 理由: `<picture>` や `srcset` と `sizes` で表示される幅に合った画像を読み込め、`opacity` やフィルターで画像だけを加工でき、`alt` で意味を伝えられるうえ、HTML を解析する段階でプリロードスキャナーに見つかり、LCP の候補でも表示が遅れないため。
   - 補足: `background-image` は、`background-repeat` で敷き詰めるパターン画像や、内容と関係のない細かな装飾に使います。1枚だけ置く装飾には、`background-repeat: no-repeat` を明示します。単色やグラデーションだけの背景も `background-image` で足ります。装飾の写真なら `alt=""` にします。重ねるだけの入れ物には、コンポジションの `pile` を使えます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-img-over-background-image
+
+## 16-2 画像の形式と読み込み
+
+https://t-arai-pnrm.github.io/css-coding-guideline/decoration/image-loading/
+
 - 【推奨・実装上の判断】`srcset` と `sizes` の値は、手で計算せず、RespImageLint などのツールで確かめて決める。（`sizes-by-tool`）
   - 理由: 表示される幅は余白や段組みの切り替えによって変わり、手で計算すると誤りやすいため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-sizes-by-tool
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/image-loading/#rule-sizes-by-tool
 - 【禁止・仕様上の制約】ファーストビューに表示される画像に、`loading="lazy"` を指定しない。（`no-lazy-loading-first-view`）
   - 理由: ページでいちばん大きな要素の表示が遅れるため。
   - 補足: `fetchpriority="high"` は、LCP の候補になる画像（ファーストビューでいちばん大きく表示される画像）にだけ指定します。ファーストビューの画像すべてに指定すると、優先する画像どうしで帯域を奪い合うためです。`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-no-lazy-loading-first-view
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/image-loading/#rule-no-lazy-loading-first-view
 - 【推奨・実装上の判断】`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せる。（`no-decoding-async`）
   - 理由: キャッシュのない通常の読み込みでは `sync` と `async` に目立った性能の差がなく、キャッシュがあるときに `async` だと、画像以外が先に表示されて画像があとから現れ、画面がちらつくため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-no-decoding-async
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/image-loading/#rule-no-decoding-async
 - 【推奨・実装上の判断】写真のような画像は、AVIF で書き出す。（`avif-for-photos`）
   - 理由: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
   - 補足: AVIF への変換は WebP より時間がかかるので、画像の多いサイトではビルドの時間を見積もります。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/#rule-avif-for-photos
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/image-loading/#rule-avif-for-photos
 
-## 16-2 アイコン・SVG・マスク
+## 16-3 アイコンとSVG
 
 https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
 
-- 【推奨・実装上の判断】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
-  - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/#rule-clip-path-shape-tokens
-- 【推奨・実装上の判断】スクロールできる領域の端を薄くして続きを示すときは、端に線や背景と同じ色のグラデーションを重ねず、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定する。（`scroll-edge-fade-with-mask`）
-  - 理由: 中身そのものが端で薄れるので、背景が写真や別の色でも帯が浮かず、線のように区切りとして読まれることもないため。
-  - 補足: `linear-gradient()` の向きには論理方向のキーワードがないので、両端を同じ幅で薄くして書字方向に左右されない形にします。マスクは要素の外側に描く `outline` も切り取るので、スクロールコンテナがフォーカスを受けるときは、リングを親の `:has(:focus-visible)` に出します。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/#rule-scroll-edge-fade-with-mask
 - 【推奨・実装上の判断】単色のアイコンの色は `currentColor` で文字色に合わせ、状態ごとにアイコンの色を指定し直さない。（`icon-current-color`）
   - 理由: 文字色を切り替えるだけでアイコンも追従し、色を2か所に書く必要がなくなるため。
   - 補足: `border` の色も、省略すれば `currentColor` になります。
@@ -82,7 +82,19 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
   - 理由: `<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/#rule-inline-svg-hidden-with-text
 
-## 16-3 面・影・角丸
+## 16-4 clip-pathとマスクで見せる範囲を決める
+
+https://t-arai-pnrm.github.io/css-coding-guideline/decoration/clipping-and-masks/
+
+- 【推奨・実装上の判断】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
+  - 理由: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/clipping-and-masks/#rule-clip-path-shape-tokens
+- 【推奨・実装上の判断】スクロールできる領域の端を薄くして続きを示すときは、端に線や背景と同じ色のグラデーションを重ねず、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定する。（`scroll-edge-fade-with-mask`）
+  - 理由: 中身そのものが端で薄れるので、背景が写真や別の色でも帯が浮かず、線のように区切りとして読まれることもないため。
+  - 補足: `linear-gradient()` の向きには論理方向のキーワードがないので、両端を同じ幅で薄くして書字方向に左右されない形にします。マスクは要素の外側に描く `outline` も切り取るので、スクロールコンテナがフォーカスを受けるときは、リングを親の `:has(:focus-visible)` に出します。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/clipping-and-masks/#rule-scroll-edge-fade-with-mask
+
+## 16-5 面・影・角丸
 
 https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
 
@@ -107,7 +119,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
   - 補足: 影を動かすときは、`filter` に `drop-shadow()` の影のトークン（本書のデモでは `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を指定して動かします。`box-shadow` 用のトークンは渡せないので、別のトークンにします。`drop-shadow()` は広がりと `inset` を持たず、ぼかしは `box-shadow` の半分の値でほぼ同じ広がりになります（Chrome 154 で確認）。縁取りのように動かさない影は `box-shadow` のままにします。トランジションの前後では `drop-shadow()` の数をそろえます。`box-shadow` の影と同じ見た目になるとは限らないので、並べて確かめます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/#rule-no-animate-layered-shadow
 
-## 16-4 文字とリストの装飾
+## 16-6 文字とリストの装飾
 
 https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
 
@@ -124,7 +136,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
   - 補足: 上下の座布団が重ならないように、`line-height` を `1cap + (padding + border + 間隔) * 2` のように座布団の高さから決めます。この `line-height` は長さなので、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。改行の位置は `.-br` で決めます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/#rule-inline-decoration-clone-with-prefix
 
-## 16-5 角の形を変える
+## 16-7 角の形を変える
 
 https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/
 
@@ -141,7 +153,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/
   - 補足: 倍率は半径によって変わります（著者の CodePen では、8px 以上が2倍、24px 以上が1.67倍で `superellipse(1.75)`、32px 以上が1.5倍で `superellipse(1.5)`）。錠剤型のボタンに `squircle` を1行足すだけの場合は、ルール `corner-shape-guard-when-broken` に従います。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/#rule-squircle-larger-radius
 
-## 16-6 輪郭と枠線を描く
+## 16-8 輪郭と枠線を描く
 
 https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/
 
@@ -162,7 +174,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/
   - 補足: しっぽの高さは `半幅 * tan(60deg)` で正三角形にし、下の `padding` にしっぽの高さを足します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/#rule-shared-shape-for-border-shape
 
-## 16-7 区切り線を引く
+## 16-9 区切り線を引く
 
 https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/
 

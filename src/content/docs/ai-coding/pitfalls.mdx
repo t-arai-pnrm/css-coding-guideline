@@ -30,7 +30,7 @@ AIの知識は学習した時点で止まっているので、その後に変わ
 
 2つ目は、Tailwind CSSのユーティリティだけで組み、コンポーネントのクラスを書かない前提を持ち込むことです。{/* 要確認: 出典なし */}本書では、コンポーネントはクラスと `@scope` で作り、ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（`utility-single-purpose`）。私のテンプレートのAI向けの規約でも、明示的な要求がない限りTailwind CSSやCSS-in-JSは使わないと定めています（`no-unrequested-css-framework`）。
 
-3つ目は、アンカーポジショニングやView Transitionsを「未対応」とみなし、位置の計算や画面の切り替えをJavaScriptで作り直すことです。{/* 要確認: 出典なし */}2026年9月時点で、`anchor-name` は2026年1月に、同じページの中のView Transitionsは2025年10月に、主要なブラウザの最新版がそろいました。本書の対象のSafari 18系でアンカーポジショニングが使えないのは事実です。それでも、未対応の環境向けの表示をCSSで用意すれば、プログレッシブ・エンハンスメントとして使えます（[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)、[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)）。「未対応」という判断は、対応状況を確かめてから受け入れます（`verify-support-claims`）。
+3つ目は、アンカーポジショニングやView Transitionsを「未対応」とみなし、位置の計算や画面の切り替えをJavaScriptで作り直すことです。{/* 要確認: 出典なし */}2026年9月時点で、`anchor-name` は2026年1月に、同じページの中のView Transitionsは2025年10月に、主要なブラウザの最新版がそろいました。本書の対象のSafari 18系でアンカーポジショニングが使えないのは事実です。それでも、未対応の環境向けの表示をCSSで用意すれば、プログレッシブ・エンハンスメントとして使えます（[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)、[18-11 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)）。「未対応」という判断は、対応状況を確かめてから受け入れます（`verify-support-claims`）。
 
 4つ目は、レイヤーを使うプロジェクトで、`@layer` の外にスタイルを書くことです。レイヤーに入っていないスタイルは、詳細度に関係なくすべてのレイヤーに勝つので、決めたレイヤーの順番が崩れます（`no-unlayered-styles`）。CMSのテーマに `@layer` を持ち込む誤りとは反対の向きですが、どちらもレイヤーの外のCSSが最も強いという仕組みを知らないことから起きます。詳しくは「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。
 

@@ -11,23 +11,42 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.52.0（2026年10月12日）
+
+字数が多くなった第16章と第18章の4つの節を、読者が実装と判断をする単位で分けました。ルールの掲載ページが変わったので、マイナーバージョンを上げています。URLは、既存の節では変えていません。
+
+- 第16章
+  - 16-1「画像の配置と読み込み」を、「[16-1 画像の配置と比率](/decoration/images/)」と「[16-2 画像の形式と読み込み](/decoration/image-loading/)」に分けました。
+  - 16-2「アイコン・SVG・マスク」を、「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」と「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」に分けました。
+  - 後ろの節は、16-5〜16-10に番号を改めました。
+- 第18章
+  - 18-4「トランジションと@keyframes」を、「[18-4 トランジションの基本と中断](/motion/transitions-and-keyframes/)」「[18-5 トランジションを応用する](/motion/transition-techniques/)」「[18-6 @keyframesを設計する](/motion/keyframes/)」に分けました。
+  - 18-5「出現と退場」を、「[18-7 出現と退場](/motion/entry-and-exit/)」と「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/)」に分けました。
+  - 後ろの節は、18-9〜18-11に番号を改めました。
+- ルールの掲載ページを改めました。
+  - 16-2へ：[`sizes-by-tool`](/decoration/image-loading/#rule-sizes-by-tool)、[`no-lazy-loading-first-view`](/decoration/image-loading/#rule-no-lazy-loading-first-view)、[`no-decoding-async`](/decoration/image-loading/#rule-no-decoding-async)、[`avif-for-photos`](/decoration/image-loading/#rule-avif-for-photos)
+  - 16-4へ：[`clip-path-shape-tokens`](/decoration/clipping-and-masks/#rule-clip-path-shape-tokens)、[`scroll-edge-fade-with-mask`](/decoration/clipping-and-masks/#rule-scroll-edge-fade-with-mask)
+  - 18-5へ：[`transition-duration-per-direction`](/motion/transition-techniques/#rule-transition-duration-per-direction)
+  - 18-6へ：[`animation-longhand-fill-mode`](/motion/keyframes/#rule-animation-longhand-fill-mode)、[`keyframes-single-property`](/motion/keyframes/#rule-keyframes-single-property)、[`keyframes-omit-obvious-frame`](/motion/keyframes/#rule-keyframes-omit-obvious-frame)
+  - 18-6へ（続き）：[`keyframes-api-properties`](/motion/keyframes/#rule-keyframes-api-properties)、[`keyframes-local-naming`](/motion/keyframes/#rule-keyframes-local-naming)
+
 ## 0.51.0（2026年10月12日）
 
 動きについての記述を見直し、負荷の扱いと、時間の向きの例外を改めました。ルールを変えたので、マイナーバージョンを上げています。
 
 - 「[18-7 動きの負荷を抑える](/motion/performance/)」の優先度の表を、フレームごとの描き直しの有無と、進行を計算するスレッドの2つの軸に分けました。`opacity` と変形を基本の候補にし、`clip-path`、`background-color`、`filter` は、Chrome 154で描き直しが起きなかった結果とあわせて、確かめて使う候補にしました。
 - 影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かすように改めました。「[16-3 面・影・角丸](/decoration/surfaces/)」に見出しを加え、擬似要素の `opacity` を動かす方法の説明を置き換えました。デモの共通トークンに、`filter` に渡す `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg` を加えました（「[付録I デモの共通トークン](/appendix/demo-tokens/)」）。
-- 「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」に、長押しで確定するボタンを加えました。押し続けて確定できる状態になってから、ボタンの上で離したときに削除し、途中で離したときやボタンの外へ出たときは中止します。進み具合は押している間だけ伸び、離すと0に戻ります。
+- 「[18-4 トランジションと@keyframes](/motion/transition-techniques/)」に、長押しで確定するボタンを加えました。押し続けて確定できる状態になってから、ボタンの上で離したときに削除し、途中で離したときやボタンの外へ出たときは中止します。進み具合は押している間だけ伸び、離すと0に戻ります。
 - 「[18-5 出現と退場](/motion/entry-and-exit/)」に、DOMに追加した要素の出現と削除した要素の退場の扱いと、トーストの出現を `@keyframes` で書いてよい理由を加えました。
 - 「[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」のテーマの切り替えの例で、動きを減らす設定のときは、塗り替える動きを省いてクロスフェードに簡素化するように改めました。「[15-4 ダークモード](/color-media/dark-mode/)」は、この実装例を案内する書き方にしました。
 - 「[18-7 動きの負荷を抑える](/motion/performance/)」に、CPUの速度を落とす設定では再現できない負荷と、実機で計測する手順を加えました。
 - 「[18-1 動かすかどうかを決める](/motion/purpose/)」の目的の表に「急な変化を和らげる」と「操作の手順や仕組みを説明する」を、頻度のまれな場面に空の状態と成功を加えました。
 - 「[18-3 イージングと再生時間](/motion/easing-and-duration/)」に、`linear()` のばねが中断されても速度を引き継がないことと、行き過ぎの量の目安、スロー再生で見る点を加えました。
-- 「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」の2層のタブで、選んだ色が隣のタブへ滑って移るようにしました。「[16-1 画像の配置と読み込み](/decoration/images/)」に、2枚の画像を重ねて比べるスライダーを加えました。
+- 「[16-2 アイコン・SVG・マスク](/decoration/clipping-and-masks/)」の2層のタブで、選んだ色が隣のタブへ滑って移るようにしました。「[16-1 画像の配置と読み込み](/decoration/images/)」に、2枚の画像を重ねて比べるスライダーを加えました。
 - ルールを変えました。
   - [`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)：`opacity` と変形を優先し、`clip-path`、`background-color`、`filter` は描き直しが起きないことを確かめたうえで使うことにしました。
   - [`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)：影を変えるときに `box-shadow` を動かさず、`--drop-shadow--*` のトークンで `filter: drop-shadow()` を動かすようにしました。
-  - [`transition-duration-per-direction`](/motion/transitions-and-keyframes/#rule-transition-duration-per-direction)、[`functional-motion-under-300ms`](/motion/easing-and-duration/#rule-functional-motion-under-300ms)、[`linear-only-for-constant-motion`](/motion/easing-and-duration/#rule-linear-only-for-constant-motion)：長押しの進み具合を例外として補足に加えました。
+  - [`transition-duration-per-direction`](/motion/transition-techniques/#rule-transition-duration-per-direction)、[`functional-motion-under-300ms`](/motion/easing-and-duration/#rule-functional-motion-under-300ms)、[`linear-only-for-constant-motion`](/motion/easing-and-duration/#rule-linear-only-for-constant-motion)：長押しの進み具合を例外として補足に加えました。
 
 ## 0.50.11（2026年10月12日）
 
@@ -48,10 +67,10 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 - 「[14-3 行の高さとハーフレディング](/typography/line-height/)」に、`text-box` でボタンのラベルを上下の中央に置く方法と、Flexboxのボタンではラベルの要素に指定する理由を加えました。
 - 「[15-1 色の形式と色空間](/color-media/color/)」に、無彩色の色相を `none` にする理由を加え、コード例のグレーの色相を `none` に改めました。
 - 「[16-1 画像の配置と読み込み](/decoration/images/)」に、入稿される画像を受ける箱に背景色を付け、読み込む前や読み込めなかったときにも範囲が見えるようにする書き方を加えました。
-- 「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」に、スクロール駆動アニメーションで、スクロールできる側の端だけを薄くする書き方を加えました。
+- 「[16-2 アイコン・SVG・マスク](/decoration/clipping-and-masks/)」に、スクロール駆動アニメーションで、スクロールできる側の端だけを薄くする書き方を加えました。
 - 「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」に、`::scroll-button()` に未対応の環境でもページ送りのボタンが要るとき、小さなスクリプトで補う書き方を加えました。
-- 「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」に、`@property` で登録したカスタムプロパティを1つ動かし、複数の値を一緒に変える書き方を加えました。
-- 「[18-5 出現と退場](/motion/entry-and-exit/)」に、重ねて出すパネルを `clip-path` で現す書き方を加えました。
+- 「[18-4 トランジションと@keyframes](/motion/transition-techniques/)」に、`@property` で登録したカスタムプロパティを1つ動かし、複数の値を一緒に変える書き方を加えました。
+- 「[18-5 出現と退場](/motion/overlays-and-stagger/)」に、重ねて出すパネルを `clip-path` で現す書き方を加えました。
 
 ## 0.50.9（2026年10月11日）
 
@@ -658,7 +677,7 @@ AIにレビューさせるときの手順を直しました。ルールは変え
 - 「[8-1 壊さないリセット](/reset/kiso/)」：`reset` の `!important` を、「`reset` より後に宣言したレイヤーの `!important` より強い」と直しました。
 - 「[2-1 CSS設計のマインドセット](/design-mindset/what-is-css-design/)」：拡張性の例を、親の `gap` で要素の間の余白をまとめる書き方に改め、stackの現在の説明にそろえました。
 - 「[付録B モダンな書き方への置き換え表](/appendix/modernize/)」：`position-area: bottom right` の置き換え先を `block-end inline-end` にし、配置領域が変わらないようにしました。全幅背景の `100lvi` の式には、ルートで横方向のはみ出しをclipする前提を加えました。
-- 「[18-5 出現と退場](/motion/entry-and-exit/)」：ツールチップのデモを直しました。ホバーとフォーカスを別々に覚え、どちらもなくなったときに閉じます。ツールチップの上へポインターを動かせることと、Escで閉じることも加えました。
+- 「[18-5 出現と退場](/motion/overlays-and-stagger/)」：ツールチップのデモを直しました。ホバーとフォーカスを別々に覚え、どちらもなくなったときに閉じます。ツールチップの上へポインターを動かせることと、Escで閉じることも加えました。
 - 「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」：BEMの例の前に、動作上の誤りではなく本書の方針であることを一文で添えました。
 - 「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」：`cqi` の段落を3つに分け、入れ子のコンテナの図を加えました。flexアイテムとgridアイテムの説明も分けました。
 - 「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」：判断の節を前にまとめ、`@supports`、フォールバックの書き方、`scripting` の詳細を「未対応の環境に備える書き方の詳細」にまとめて後ろへ移しました。
@@ -721,7 +740,7 @@ AIにレビューさせるときの手順を直しました。ルールは変え
   - 「[16-3 表面と文字の装飾](/decoration/text-ornaments/)」：`box-decoration-break: clone` で見出しの行ごとに背景を敷く例を加えました。
   - 「[16-4 角の形を変える](/decoration/shapes/)」：`corner-shape: squircle` のときに `border-radius` を大きくする例を加えました。
   - 「[16-5 輪郭と枠線を描く](/decoration/outlines/)」：吹き出しの例を、`shape()` を `clip-path` と `border-shape` で共有する書き方に具体化しました。
-  - 「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」：縦のスクロールで横に流れるセクションの例を加えました。「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」の `@keyframes` の一覧には `--translate-to` を加えています。
+  - 「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」：縦のスクロールで横に流れるセクションの例を加えました。「[18-4 トランジションと@keyframes](/motion/keyframes/)」の `@keyframes` の一覧には `--translate-to` を加えています。
 - ルールを追加しました。
   - [`contrast-color-for-image-fallback`](/color-media/contrast-text/#rule-contrast-color-for-image-fallback)：画像が表示されなかったときの背景色は `contrast-color(currentColor)` で決めます。
   - [`variant-palette-from-one-color`](/color-media/relative-color/#rule-variant-palette-from-one-color)：種類ごとに色が変わる部品は、元の色1つから枠線と背景を作ります。
@@ -902,9 +921,9 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
 - 「[10-7 positionの基礎](/layout-practice/sticky-header/)」に、留まると大きさが変わる要素とスクロールアンカリングの関係を加えました。
 - 「[13-1 フォントを指定する](/typography/fonts/)」に `font-size-adjust` を、「[13-4 文字サイズと改行](/typography/size-and-line-breaks/)」に `text-wrap: balance` を指定しない要素を加えました。
 - 「[14-3 背景から文字色を決める](/color-media/contrast-text/)」に閾値を0.7にする根拠を、「[14-4 ダークモード](/color-media/dark-mode/)」に一部のコンポーネントだけを暗い配色にする方法を加えました。
-- 「[15-1 画像と装飾](/decoration/icons-and-masks/)」に、スクロールできる領域の端をマスクで薄くする方法と、2つの層を重ねて選んだ範囲だけを切り抜く方法を加えました。
+- 「[15-1 画像と装飾](/decoration/clipping-and-masks/)」に、スクロールできる領域の端をマスクで薄くする方法と、2つの層を重ねて選んだ範囲だけを切り抜く方法を加えました。
 - 「[16-1 状態とフォーカスを表す](/interaction/states-and-focus/)」に、`user-select` と `touch-action` を指定する範囲を加えました。「[16-3 フォーム部品](/interaction/forms/)」には `appearance: base-select` を、「[16-4 CSSでカルーセルを作る](/interaction/carousel/)」には `scroll-target-group` を加えています。
-- 第17章では、「[17-1 動かすかどうかを決める](/motion/purpose/)」に使う頻度の目安を加えました。「[17-5 出現と退場](/motion/entry-and-exit/)」には頻度の低いUIで要素をずらして出す方法を、「[17-7 動きの負荷を抑える](/motion/performance/)」には `content-visibility` を加えています。「[17-6 スクロールに合わせて動かす](/motion/scroll-driven/)」の `@supports` の条件には、`animation-range` を加えました。
+- 第17章では、「[17-1 動かすかどうかを決める](/motion/purpose/)」に使う頻度の目安を加えました。「[17-5 出現と退場](/motion/overlays-and-stagger/)」には頻度の低いUIで要素をずらして出す方法を、「[17-7 動きの負荷を抑える](/motion/performance/)」には `content-visibility` を加えています。「[17-6 スクロールに合わせて動かす](/motion/scroll-driven/)」の `@supports` の条件には、`animation-range` を加えました。
 - ルールを32件追加しました。
   - [`import-resolved-at-build`](/cascade/layers/#rule-import-resolved-at-build)：`@import` はビルド時に展開し、ブラウザで実行させません。
   - [`sibling-functions-for-decoration`](/pseudo/child-index/#rule-sibling-functions-for-decoration)：`sibling-index()` と `sibling-count()` は装飾の値に限り、`@supports` の中で使います。
@@ -930,7 +949,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`stacked-table-aria-roles`](/layout-practice/tables/#rule-stacked-table-aria-roles)：表を縦に積むときは、各要素に `role` を書きます。
   - [`no-font-size-adjust-for-japanese`](/typography/fonts/#rule-no-font-size-adjust-for-japanese)：和文を含む要素に `font-size-adjust` を指定しません。
   - [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：コンポーネントに `color-scheme` を指定するときは、`color` と `background-color` を指定し直します。
-  - [`scroll-edge-fade-with-mask`](/decoration/icons-and-masks/#rule-scroll-edge-fade-with-mask)：スクロールできる領域の端は、`mask-image` のグラデーションで薄くします。
+  - [`scroll-edge-fade-with-mask`](/decoration/clipping-and-masks/#rule-scroll-edge-fade-with-mask)：スクロールできる領域の端は、`mask-image` のグラデーションで薄くします。
   - [`user-select-none-for-controls`](/interaction/hit-area-and-touch/#rule-user-select-none-for-controls)：`user-select: none` は、文字が選択されて困る操作部品にだけ指定します。
   - [`no-global-touch-action-none`](/interaction/hit-area-and-touch/#rule-no-global-touch-action-none)：ページ全体に `touch-action: none` を指定しません。
   - [`base-select-in-supports`](/interaction/forms/#rule-base-select-in-supports)：`appearance: base-select` の指定は、`@supports` の中に書きます。
@@ -1070,7 +1089,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`no-full-liquid-scaling`](/responsive/design-comp-pattern/#rule-no-full-liquid-scaling)：カンプの幅に対する比率で、ページ全体を拡大・縮小しません。
   - [`local-liquid-with-cqi`](/responsive/design-comp-pattern/#rule-local-liquid-with-cqi)：拡大・縮小させたい局所は、コンテナクエリの単位で組みます。
   - [`img-over-background-image`](/decoration/images/#rule-img-over-background-image)：写真など内容に関わる画像は `<img>` で置き、`background-image` はパターン画像や細かな装飾だけに使います。
-  - [`no-decoding-async`](/decoration/images/#rule-no-decoding-async)：`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せます。
+  - [`no-decoding-async`](/decoration/image-loading/#rule-no-decoding-async)：`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せます。
 - ルールの内容を変えました。
   - [`logical-properties`](/notation/logical-properties/#rule-logical-properties)：掲載先を7-4から7-5に移し、補足を書き直しました。
   - [`root-name-kebab-case`](/notation/naming/#rule-root-name-kebab-case)：ルートの名前をPascalCaseにしてもよい、という補足を削除しました。
@@ -1119,12 +1138,12 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`smooth-scroll-conditional`](/reset/base-styles/#rule-smooth-scroll-conditional)：ページの読み込みが終わってルート要素に `data-loaded` 属性が付くまで、スムーススクロールを無効にする条件を加えました。フラグメント付きのURLで表示した直後に、なめらかにスクロールしないようにするためです。
   - `screen-mode-single-source`：ビューポートの `@media` を `:root` の1か所にまとめ、`--screen` と比例スケールの比率をそこで一緒に切り替えます。
   - [`stack-vs-prose`](/compositions/stack/#rule-stack-vs-prose)：`stack` を使う条件を、同じ役割の要素から、構成が決まっていて間隔を一律にしてよい要素に改めました。
-  - [`no-lazy-loading-first-view`](/decoration/images/#rule-no-lazy-loading-first-view)：`fetchpriority="high"` を、ファーストビューの画像すべてではなく、LCPの候補になる画像にだけ指定するようにしました。
+  - [`no-lazy-loading-first-view`](/decoration/image-loading/#rule-no-lazy-loading-first-view)：`fetchpriority="high"` を、ファーストビューの画像すべてではなく、LCPの候補になる画像にだけ指定するようにしました。
   - [`fit-content-over-flex-shrink-zero`](/layout-practice/defensive/#rule-fit-content-over-flex-shrink-zero)：`fit-content` の上限は同じ並びのほかのアイテムや `gap` を差し引きません。アイコンと並ぶボタンの中のラベルには指定しない、と補足しました。
   - `proportional-scale-comp-values`：`--px` と `--rem` に比率1の値を先に入れ、長さどうしの割り算に対応していることを `@supports` で確かめられたときだけ比例の式に切り替える、と補足しました。割り算に対応していないブラウザでも、カンプどおりの寸法で表示されます。
   - [`quantity-query-with-has`](/pseudo/quantity-queries/#rule-quantity-query-with-has)：ルート要素の中に `<style>` を置く場合は、項目だけを数える書き方にする、と補足しました。
 - 本文の説明の誤りを直しました。
-  - 「[14-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」：`animation-fill-mode: both` では、終わったあとも最終フレームの値が保たれます。
+  - 「[14-4 トランジションと@keyframes](/motion/keyframes/)」：`animation-fill-mode: both` では、終わったあとも最終フレームの値が保たれます。
   - 「[14-7 動きの負荷を抑える](/motion/performance/)」：開閉のコードを、描画の前に続けて押しても状態を取りこぼさない形に直しました。`contain: content` はサイズの封じ込めを含まないことも補いました。
   - 「[14-6 スクロールに合わせて動かす](/motion/scroll-driven/)」：JavaScriptがメインスレッドで動く負担と、レイアウトの同期的な計算を分けて説明しました。
   - 「[11-1 色の形式と色空間](/color-media/color/)」：`rgb()` の値は光の量に比例しない、と直しました。
@@ -1164,7 +1183,7 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`will-change-temporarily`](/motion/performance/#rule-will-change-temporarily)：`will-change` を常に指定せず、必要なときだけJavaScriptで付け外しします。
 - ルールの内容を変えました。
   - [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)：すべての動きを条件の中に書く形から、段階的な対応に変えました。装飾的な動きのうちフェード以外を `no-preference` の中に書き、大きな変動は簡素化します。
-  - [`animation-longhand-fill-mode`](/motion/transitions-and-keyframes/#rule-animation-longhand-fill-mode)：`animation-fill-mode` は `both` を第一候補にします。
+  - [`animation-longhand-fill-mode`](/motion/keyframes/#rule-animation-longhand-fill-mode)：`animation-fill-mode` は `both` を第一候補にします。
   - `hover-only-when-operable`：推奨から必須に上げました。
   - 次の4件は、文言と補足を補いました。
     - [`motion-mode-attribute`](/motion/scroll-driven/#rule-motion-mode-attribute)
@@ -1550,9 +1569,9 @@ Web Componentsと表の組み方を扱う節を加え、新しいCSSの機能、
   - [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーを受ける要素は動かさない
   - [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素の最小の大きさを確保する
   - `ease-in-for-exit`：出ていく動きには `ease-in` 系を使う
-  - [`transition-duration-per-direction`](/motion/transitions-and-keyframes/#rule-transition-duration-per-direction)：入るときと外れるときで再生時間を変える
+  - [`transition-duration-per-direction`](/motion/transition-techniques/#rule-transition-duration-per-direction)：入るときと外れるときで再生時間を変える
   - [`starting-style-not-overridden`](/motion/entry-and-exit/#rule-starting-style-not-overridden)：`@starting-style` で動かすプロパティを上書きしない
-  - [`animation-longhand-fill-mode`](/motion/transitions-and-keyframes/#rule-animation-longhand-fill-mode)：アニメーションはロングハンドで書く
+  - [`animation-longhand-fill-mode`](/motion/keyframes/#rule-animation-longhand-fill-mode)：アニメーションはロングハンドで書く
   - [`scroll-animation-explicit-range`](/motion/scroll-driven/#rule-scroll-animation-explicit-range)：スクロール駆動アニメーションの範囲を明示する
   - [`spring-easing-token`](/motion/easing-and-duration/#rule-spring-easing-token)：ばねの動きは `linear()` のトークンにする
   - [`css-before-js-animation`](/motion/purpose/#rule-css-before-js-animation)：動きはまずCSSで作る

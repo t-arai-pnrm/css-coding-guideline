@@ -1,6 +1,6 @@
 # 第15章 色：ルール
 
-- ガイドラインのバージョン: 0.51.0（2026-10-12 生成）
+- ガイドラインのバージョン: 0.52.0（2026-10-12 生成）
 - ルールの数: 23
 - 本文: 約9.1万字
 - 読む条件: 色の指定（oklch()、color-mix()、相対カラー構文）、ダークモード、強制カラーモード、コントラスト
@@ -102,7 +102,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/color-media/forced-colors/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/color-media/forced-colors/#rule-transparent-outline-for-custom-focus
 - 【禁止・仕様上の制約】要素の境界や区切りを、`box-shadow` だけで描かない。（`no-box-shadow-only-boundary`）
   - 理由: 強制カラーモードでは `box-shadow` が `none` になり、境界が消えるため。
-  - 補足: フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。区切り線や枠線を `box-shadow` で描くときは、`@media (forced-colors: active)` の中で同じ太さの `outline` を描きます（16-7）。
+  - 補足: フォーカスリングについては、第8章の `focus-ring-not-box-shadow-only` を参照してください。区切り線や枠線を `box-shadow` で描くときは、`@media (forced-colors: active)` の中で同じ太さの `outline` を描きます（16-9）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/color-media/forced-colors/#rule-no-box-shadow-only-boundary
 - 【必須・仕様上の制約】`mask-image` や `clip-path` で切り抜き、`background-color` で塗る図形は、`currentColor` を直接指定せず、強制カラーモードでシステムカラーに切り替わるカスタムプロパティ（`--background-current`）から色を受け取る。（`background-current-for-shapes`）
   - 理由: 強制カラーモードでは `background-color` がページの背景色に置き換わり、図形が見えなくなるため。

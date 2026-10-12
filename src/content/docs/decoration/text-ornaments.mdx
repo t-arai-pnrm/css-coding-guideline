@@ -1,8 +1,8 @@
 ---
-title: "16-4 文字とリストの装飾"
+title: "16-6 文字とリストの装飾"
 description: "番号付きリストの番号は ::marker で色と大きさを変え、それ以上の装飾が要るときだけ ::before と counter() で描きます。文字の縁取りは -webkit-text-stroke で描き、paint-order: stroke fill で塗りの下に置きます。見出しの行ごとに敷く背景は、インラインの要素に box-decoration-break: clone を接頭辞付きと併記して描きます。"
 sidebar:
-  order: 4
+  order: 6
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -17,7 +17,7 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 番号付きリストの番号は `::marker` で色と大きさを変え、番号を円で囲むような装飾が要るときだけ、`::before` に `counter()` で番号を描きます。文字の縁取りは `-webkit-text-stroke` で描いて、`paint-order: stroke fill` で塗りの下に置きます。見出しの行ごとに敷く背景は、インラインの要素に `box-decoration-break: clone` を指定して描きます。
 
-どれも、組み終えた文字やリストに付ける装飾です。フォント、行の高さ、改行の位置といった文字の組み方は第14章「[タイポグラフィと和文組版](/typography/)」で決め、この節では、その文字の見た目に足す指定だけを扱います。面の背景、影、角丸のような要素の表面の装飾は「[16-3 面・影・角丸](/decoration/surfaces/)」で説明しています。3つの装飾は互いに独立しているので、作るものに合わせて必要な見出しだけを読めば足ります。
+どれも、組み終えた文字やリストに付ける装飾です。フォント、行の高さ、改行の位置といった文字の組み方は第14章「[タイポグラフィと和文組版](/typography/)」で決め、この節では、その文字の見た目に足す指定だけを扱います。面の背景、影、角丸のような要素の表面の装飾は「[16-5 面・影・角丸](/decoration/surfaces/)」で説明しています。3つの装飾は互いに独立しているので、作るものに合わせて必要な見出しだけを読めば足ります。
 
 ## 番号付きリストのマーカーは ::marker で装飾する
 

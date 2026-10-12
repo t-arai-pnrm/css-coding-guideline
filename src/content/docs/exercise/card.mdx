@@ -21,7 +21,7 @@ import cardCss from '../../../demos/exercise/card/style.css?raw';
 - [10-2 コンポーネントの境界を守る](/components/boundaries/)
 - [10-4 デザイントークン](/components/design-tokens/)
 - [11-2 余白を設計する](/layout-practice/spacing/)
-- [16-1 画像の配置と読み込み](/decoration/images/)
+- [16-1 画像の配置と比率](/decoration/images/)
 
 ## 予想する
 
@@ -57,7 +57,7 @@ import cardCss from '../../../demos/exercise/card/style.css?raw';
 
 子要素は、`@scope` の中のタイプセレクタで選びます。クラスを付けたのは、2つある `p` の役割を区別する `_category` と `_excerpt`、そして役割を示す必要のある `div` の `_body` だけです（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」、「[9-1 命名規則](/notation/naming/)」）。`img`、`h3`、`time` は、カードの中に1つずつしかないので、クラスがなくても選べます。
 
-画像の `alt` は空にしています。カードの画像は記事の内容を表す写真ですが、すぐ隣の見出しが同じ内容を伝えているので、画像の説明を読み上げても情報は増えません。`width` と `height` の属性は、画像を読み込む前に縦横比の場所を確保するために書きます（「[16-1 画像の配置と読み込み](/decoration/images/)」）。
+画像の `alt` は空にしています。カードの画像は記事の内容を表す写真ですが、すぐ隣の見出しが同じ内容を伝えているので、画像の説明を読み上げても情報は増えません。`width` と `height` の属性は、画像を読み込む前に縦横比の場所を確保するために書きます（「[16-1 画像の配置と比率](/decoration/images/)」）。
 
 CSSは、カードのファイルの1つの `@scope` に書きます。スコープの下限を `.scoped` にしているので、将来カードの中に別のコンポーネントを入れても、カードのタイプセレクタはその中に届きません（「[9-3 @scopeとネストの使い分け](/notation/scope-and-nesting/)」）。
 
@@ -103,7 +103,7 @@ CSSは、カードのファイルの1つの `@scope` に書きます。スコー
 
 ## 画像の比率と文字の階層
 
-画像は、置かれた幅いっぱいに広げ、高さは縦横比から決めます。高さを `block-size` で固定しないので、カードの幅が変わっても比率は保たれます（「[16-1 画像の配置と読み込み](/decoration/images/)」）。
+画像は、置かれた幅いっぱいに広げ、高さは縦横比から決めます。高さを `block-size` で固定しないので、カードの幅が変わっても比率は保たれます（「[16-1 画像の配置と比率](/decoration/images/)」）。
 
 ```css title="🙆‍♂ Recommended: 画像は幅いっぱいに広げ、高さを縦横比で決める"
 @scope (.scoped.article-card) to (.scoped) {

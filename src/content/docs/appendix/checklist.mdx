@@ -185,7 +185,7 @@ sidebar:
 - [ ] 途中で取り消される動きをトランジションで書き、続けて押されるUIの動きを短くするか省いているか（[`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition)）
 - [ ] レイアウトの変わるプロパティを動かしていないか。`clip-path`、`background-color`、`filter` を動かすときは、描き直しが起きないことをDevToolsで確かめたか。影を `box-shadow` ではなく `filter: drop-shadow()` で動かしているか。`will-change` をCSSに書いたままの状態にしていないか（[`animate-composite-properties`](/motion/performance/#rule-animate-composite-properties)、[`no-animate-layered-shadow`](/decoration/surfaces/#rule-no-animate-layered-shadow)、[`will-change-temporarily`](/motion/performance/#rule-will-change-temporarily)）
 - [ ] `content-visibility: auto` を最初の画面より下のブロックにだけ指定しているか。`contain-intrinsic-block-size: auto <長さ>` を組で書いているか（[`content-visibility-with-intrinsic-size`](/motion/performance/#rule-content-visibility-with-intrinsic-size)）
-- [ ] `@keyframes` の名前が `--` で始まり、中間のフレームを持つものをコンポーネントのCSSに置いているか。一度だけ再生する演出で、`@keyframes` の外に `opacity: 0` などを重ねて書いていないか（[`keyframes-local-naming`](/motion/transitions-and-keyframes/#rule-keyframes-local-naming)、[`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)）
+- [ ] `@keyframes` の名前が `--` で始まり、中間のフレームを持つものをコンポーネントのCSSに置いているか。一度だけ再生する演出で、`@keyframes` の外に `opacity: 0` などを重ねて書いていないか（[`keyframes-local-naming`](/motion/keyframes/#rule-keyframes-local-naming)、[`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)）
 - [ ] `transition: all` を使っていないか（[`no-transition-all`](/motion/transitions-and-keyframes/#rule-no-transition-all)）
 - [ ] 開閉するUIを、`<dialog>`、`popover` 属性、`<details>` のようなHTMLの機能で作っているか（[`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)）
 - [ ] リンクや入力エラーのような情報を、色の違いだけで伝えていないか（[`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)、[`grayscale-check`](/color-media/forced-colors/#rule-grayscale-check)）
@@ -195,7 +195,7 @@ sidebar:
 - [ ] 必須の印や単位のように読み手が知る必要のある文字を、`content` で入れていないか（[`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)）
 - [ ] `::placeholder` の文字と背景のコントラスト比が4.5:1以上か（[`placeholder-color-contrast`](/pseudo/form-states/#rule-placeholder-color-contrast)）
 - [ ] 入力欄の文字サイズが1rem以上で、ズームを止める指定がないか（[`input-font-size-min-1rem`](/interaction/forms/#rule-input-font-size-min-1rem)、[`no-maximum-scale`](/interaction/forms/#rule-no-maximum-scale)）
-- [ ] `<img>` に `width` と `height` の属性があり、ファーストビューの画像を遅延読み込みにしていないか（[`img-width-height-attributes`](/decoration/images/#rule-img-width-height-attributes)、[`no-lazy-loading-first-view`](/decoration/images/#rule-no-lazy-loading-first-view)）
+- [ ] `<img>` に `width` と `height` の属性があり、ファーストビューの画像を遅延読み込みにしていないか（[`img-width-height-attributes`](/decoration/images/#rule-img-width-height-attributes)、[`no-lazy-loading-first-view`](/decoration/image-loading/#rule-no-lazy-loading-first-view)）
 
 ## AIが生成したコードを見るとき
 

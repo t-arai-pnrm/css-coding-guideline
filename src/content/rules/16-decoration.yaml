@@ -1,6 +1,6 @@
 # 第16章 画像・装飾
 
-# 16-1 画像の配置と読み込み
+# 16-1 画像の配置と比率
 - id: aspect-ratio-for-ratios
   level: 必須
   kind: judgment
@@ -56,12 +56,13 @@
   page: decoration/images
   since: 0.18.0
 
+# 16-2 画像の形式と読み込み
 - id: sizes-by-tool
   level: 推奨
   kind: judgment
   rule: '`srcset` と `sizes` の値は、手で計算せず、RespImageLint などのツールで確かめて決める。'
   reason: 表示される幅は余白や段組みの切り替えによって変わり、手で計算すると誤りやすいため。
-  page: decoration/images
+  page: decoration/image-loading
   since: 0.1.0
 
 - id: no-lazy-loading-first-view
@@ -71,7 +72,7 @@
   reason: ページでいちばん大きな要素の表示が遅れるため。
   note: '`fetchpriority="high"` は、LCP の候補になる画像（ファーストビューでいちばん大きく表示される画像）にだけ指定します。ファーストビューの画像すべてに指定すると、優先する画像どうしで帯域を奪い合うためです。`loading="lazy"` は、スクロールしないと見えない画像と `<iframe>` にだけ付けます。ページ内のすべての `<img>` に一括では付けません。遅延読み込みは処理を先送りするだけで、スクロールや操作の最中に処理が重なると INP や体感を悪くするためです。遅延読み込みする要素にも、`width` と `height` の属性か `aspect-ratio` で場所を確保します。'
   aiProne: true
-  page: decoration/images
+  page: decoration/image-loading
   since: 0.1.0
 
 - id: no-decoding-async
@@ -80,7 +81,7 @@
   rule: '`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せる。'
   reason: キャッシュのない通常の読み込みでは `sync` と `async` に目立った性能の差がなく、キャッシュがあるときに `async` だと、画像以外が先に表示されて画像があとから現れ、画面がちらつくため。
   aiProne: true
-  page: decoration/images
+  page: decoration/image-loading
   since: 0.18.0
 
 - id: avif-for-photos
@@ -89,28 +90,10 @@
   rule: 写真のような画像は、AVIF で書き出す。
   reason: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
   note: AVIF への変換は WebP より時間がかかるので、画像の多いサイトではビルドの時間を見積もります。
-  page: decoration/images
+  page: decoration/image-loading
   since: 0.1.0
 
-# 16-2 アイコン・SVG・マスク
-- id: clip-path-shape-tokens
-  level: 推奨
-  kind: judgment
-  rule: 三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。
-  reason: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
-  aiProne: true
-  page: decoration/icons-and-masks
-  since: 0.1.0
-
-- id: scroll-edge-fade-with-mask
-  level: 推奨
-  kind: judgment
-  rule: スクロールできる領域の端を薄くして続きを示すときは、端に線や背景と同じ色のグラデーションを重ねず、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定する。
-  reason: 中身そのものが端で薄れるので、背景が写真や別の色でも帯が浮かず、線のように区切りとして読まれることもないため。
-  note: '`linear-gradient()` の向きには論理方向のキーワードがないので、両端を同じ幅で薄くして書字方向に左右されない形にします。マスクは要素の外側に描く `outline` も切り取るので、スクロールコンテナがフォーカスを受けるときは、リングを親の `:has(:focus-visible)` に出します。'
-  page: decoration/icons-and-masks
-  since: 0.21.0
-
+# 16-3 アイコンとSVG
 - id: icon-current-color
   level: 推奨
   kind: judgment
@@ -128,7 +111,26 @@
   page: decoration/icons-and-masks
   since: 0.1.0
 
-# 16-3 面・影・角丸
+# 16-4 clip-pathとマスクで見せる範囲を決める
+- id: clip-path-shape-tokens
+  level: 推奨
+  kind: judgment
+  rule: 三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。
+  reason: 図形の大きさを幅と高さで決められ、どのような形なのかが名前から分かるため。
+  aiProne: true
+  page: decoration/clipping-and-masks
+  since: 0.1.0
+
+- id: scroll-edge-fade-with-mask
+  level: 推奨
+  kind: judgment
+  rule: スクロールできる領域の端を薄くして続きを示すときは、端に線や背景と同じ色のグラデーションを重ねず、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定する。
+  reason: 中身そのものが端で薄れるので、背景が写真や別の色でも帯が浮かず、線のように区切りとして読まれることもないため。
+  note: '`linear-gradient()` の向きには論理方向のキーワードがないので、両端を同じ幅で薄くして書字方向に左右されない形にします。マスクは要素の外側に描く `outline` も切り取るので、スクロールコンテナがフォーカスを受けるときは、リングを親の `:has(:focus-visible)` に出します。'
+  page: decoration/clipping-and-masks
+  since: 0.21.0
+
+# 16-5 面・影・角丸
 - id: surface-levels-by-role
   level: 推奨
   kind: judgment
@@ -175,7 +177,7 @@
   page: decoration/surfaces
   since: 0.4.0
 
-# 16-4 文字とリストの装飾
+# 16-6 文字とリストの装飾
 - id: marker-for-list-number-style
   level: 推奨
   kind: judgment
@@ -204,7 +206,7 @@
   page: decoration/text-ornaments
   since: 0.25.0
 
-# 16-5 角の形を変える
+# 16-7 角の形を変える
 - id: corner-shape-guard-when-broken
   level: 推奨
   kind: spec
@@ -234,7 +236,7 @@
   page: decoration/shapes
   since: 0.25.0
 
-# 16-6 輪郭と枠線を描く
+# 16-8 輪郭と枠線を描く
 - id: guard-new-shapes-with-supports
   level: 推奨
   kind: spec
@@ -274,7 +276,7 @@
   page: decoration/outlines
   since: 0.25.0
 
-# 16-7 区切り線を引く
+# 16-9 区切り線を引く
 - id: separators-in-gap
   level: 推奨
   kind: spec
@@ -312,4 +314,4 @@
   page: decoration/separators
   since: 0.25.0
 
-# 16-8 印刷のスタイル
+# 16-10 印刷のスタイル

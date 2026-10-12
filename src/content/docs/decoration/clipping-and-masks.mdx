@@ -1,0 +1,272 @@
+---
+title: "16-4 clip-pathとマスクで見せる範囲を決める"
+description: "三角形のような図形は clip-path で描き、polygon() の値をトークンにします。同じ大きさの層を2つ重ね、上の層を選んだ範囲だけ切り抜くと、選んだタブの色を1つの列で描き、その範囲をトランジションで動かせます。スクロールできる領域の端は mask-image のグラデーションで薄くし、スクロール駆動アニメーションで、スクロールできる側の端だけを薄くします。"
+sidebar:
+  order: 4
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import triangleHtml from '../../../demos/decoration/clip-path-triangle/index.html?raw';
+import triangleCss from '../../../demos/decoration/clip-path-triangle/style.css?raw';
+import segmentedHtml from '../../../demos/decoration/segmented-tabs/index.html?raw';
+import segmentedCss from '../../../demos/decoration/segmented-tabs/style.css?raw';
+import segmentedJs from '../../../demos/decoration/segmented-tabs/script.js?raw';
+import scrollFadeHtml from '../../../demos/decoration/scroll-fade-edges/index.html?raw';
+import scrollFadeCss from '../../../demos/decoration/scroll-fade-edges/style.css?raw';
+
+三角形のような図形は、`border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のような名前のトークンにします。`clip-path` は要素の見える範囲を図形で決め、`mask-image` は画像の不透明度で決めます。どちらも要素の大きさと位置を変えないので、見える範囲を変えてもレイアウトは変わりません。
+
+選んだタブの背景色と文字色を変えるときは、選んだときの色で描いた列を通常の列に重ね、上の列を選んだタブの範囲だけ `clip-path` で切り抜きます。切り抜く範囲を `transition` で動かせば、選んだ色が隣のタブへ滑って移ります。スクロールできる領域の端で続きを示すときは、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定し、スクロール駆動アニメーションで、まだスクロールできる側の端だけを薄くします。
+
+単色のアイコンをマスクで描く方法は「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で、`clip-path` の `shape()` で輪郭を描く方法と、マスクの合成で枠線やドーナツグラフを描く方法は「[16-8 輪郭と枠線を描く](/decoration/outlines/)」で説明しています。
+
+## 図形は clip-path で描く
+
+吹き出しの三角形のような図形は、`clip-path` で描きます。以前は、透明な `border` を組み合わせて三角形を作る方法がよく使われていました。
+
+```css title="🙅‍♂ Not Recommended: border を組み合わせて三角形を作る"
+/* 🙅‍♂ Not Recommended */
+._tooltip {
+  &::after {
+    --_size: 16px;
+
+    content: "";
+
+    /* ... */
+    border-block-start: calc(var(--_size) / 2 * tan(60deg)) solid;
+    border-inline-start: calc(var(--_size) / 2) solid transparent;
+    border-inline-end: calc(var(--_size) / 2) solid transparent;
+  }
+}
+```
+
+この方法では、三角形の大きさを3つの `border` の幅から逆算する必要があり、どの向きの三角形なのかもコードから読み取りにくくなります。`clip-path` なら、要素の幅と縦横比を決めて、形で切り抜くだけです。
+
+```css title="🙆‍♂ Recommended: 形をトークンにして、clip-path で切り抜く"
+:root {
+  --shape--triangle-top: polygon(50% 0, 100% 100%, 0 100%);
+  --shape--triangle-bottom: polygon(0 0, 100% 0, 50% 100%);
+  --shape--triangle-right: polygon(0 0, 100% 50%, 0 100%);
+  --shape--triangle-left: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+._tooltip {
+  position: relative;
+
+  &::after {
+    --_size: 16px;
+
+    content: "";
+
+    /* ツールチップの下端の中央から、下へ突き出す */
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 50%;
+    clip-path: var(--shape--triangle-bottom);
+    inline-size: var(--_size);
+    aspect-ratio: 2 / tan(60deg);
+    background-color: inherit;
+    translate: -50% 0;
+  }
+}
+```
+
+<Demo title="形のトークンで切り抜いた三角形と、下向きの三角形を付けたツールチップ" html={triangleHtml} css={triangleCss} />
+
+デモの上は、下端の中央に下向きの三角形を付けたツールチップです。その下には、4つの形のトークンで正方形を切り抜き、上、下、右、左を向いた三角形を並べています。
+
+三角形は、ツールチップの本体を基準に絶対配置します。絶対配置した擬似要素はブロックの箱になるので、`display` を指定しなくても、`inline-size` と `aspect-ratio` で大きさが決まります。`translate: -50% 0` で三角形の幅の半分だけ戻し、本体の中央にそろえます。
+
+`polygon()` の値は直接書かず、トークンとして定義します。`polygon(0 0, 100% 0, 50% 100%)` という値を見て、下向きの三角形だとすぐに気づく人は多くないでしょう。`--shape--triangle-bottom` という名前なら、形がすぐに分かります。縦横比を `2 / tan(60deg)` にすると、正三角形になります（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Safari 18 と Firefox で、aspect-ratio の比に書いた tan() が効くか */}
+
+## 2つの層を重ねて、選んだ範囲だけを切り抜く
+
+`clip-path` は、図形を描くだけでなく、同じ大きさの層を2つ重ねて、上の層の一部だけを見せる使い方もできます。横に並んだタブで、選んだタブの背景色と文字色を変える場面で考えます。通常の色で描いたタブの列の上に、選んだときの色で描いた同じ列を重ね、上の列を選んだタブの範囲だけ切り抜きます。{/* 要確認: 出典なし */}
+
+```css title="🙆‍♂ Recommended: 選んだときの色で描いた列を重ね、選んだタブの範囲だけを切り抜く"
+@scope (.scoped.segmented-tabs) to (.scoped) {
+  :scope {
+    --_count: 3;
+    --_index: 0;
+
+    display: block grid;
+
+    &:has(._tab:nth-child(2)[aria-selected="true"]) {
+      --_index: 1;
+    }
+
+    &:has(._tab:nth-child(3)[aria-selected="true"]) {
+      --_index: 2;
+    }
+
+    & > ._list,
+    & > ._highlight {
+      grid-area: 1 / 1;
+    }
+  }
+
+  ._list,
+  ._highlight {
+    display: block grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+  }
+
+  ._highlight {
+    clip-path: xywh(calc(var(--_index) * 100% / var(--_count)) 0 calc(100% / var(--_count)) 100% round calc(infinity * 1px));
+    background-color: var(--background--accent);
+    color: var(--foreground--on-accent);
+    pointer-events: none;
+  }
+}
+```
+
+<Baseline id="rect-xywh" compatKey="css.types.basic-shape.xywh" name="xywh()" />
+
+下の列（`._list`）は、`role="tab"` を付けた `<button>` を並べた、操作するためのタブです。上の列（`._highlight`）は見た目のためだけの複製なので、`aria-hidden="true"` で読み上げから外し、中身は `<span>` にしてフォーカスを受けないようにします。`pointer-events: none` で、クリックは下のタブに通します。どのタブを選んでいるかは、`aria-selected` から `:has()` で読み取り、`--_index` に入れています。
+
+次のデモでは、タブを選ぶとスクリプトが `aria-selected` を付け替え、`:has()` で決まる `--_index` が変わります。上の列を切り抜く範囲が選んだタブへ滑って移り、帯が通った部分から背景と文字の色が切り替わります。キーボードでは、左右の矢印キーでタブを移れます。切り抜く範囲を動かす書き方は、次の見出しで説明します。
+
+<Demo title="選んだときの色で描いた列を重ね、選んだタブの範囲だけを切り抜いて見せる" html={segmentedHtml} css={segmentedCss} js={segmentedJs} />
+
+この方法では、選んだときの見た目を1つの列としてまとめて描けます。角丸の帯をタブの区切りと関係なく置くことも、列全体に掛けたグラデーションのうち選んだ範囲だけを見せることもできます。選択が変わったときに変わるのは、切り抜く範囲だけです。なお、`xywh()` の位置は左端から数えるので、右から左へ書く言語では、`:dir(rtl)` で位置の計算を反転させます。
+
+### 選んだ色を隣のタブへ滑らせる
+
+切り抜く範囲は `clip-path` の値なので、`transition` で動かせます。選択が変わると、上の列の見える範囲が前のタブから選んだタブへ移り、帯が通り過ぎた部分から文字色が切り替わります。文字色を切り替えるタイミングを別に指定する必要はありません。帯の端と文字色の境目は、同じ切り抜きの端なので、いつも一致します。
+
+```css title="🙆‍♂ Recommended: 切り抜く範囲の変化を、短いトランジションで動かす"
+@scope (.scoped.segmented-tabs) to (.scoped) {
+  ._highlight {
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--press);
+      transition-property: clip-path;
+      transition-timing-function: var(--ease--in-out-quint);
+    }
+  }
+}
+```
+
+前の見出しのデモの `._highlight` には、この3つの宣言を足しています。タブは続けて押されるUIなので、`@keyframes` ではなくトランジションで書きます（「[18-4 トランジションの基本と中断](/motion/transitions-and-keyframes/)」）。再生時間は、続けて押されるUIの目安の100〜150msに収まる `--duration--press`（120ms）にしています。トランジションは、動いている途中でほかのタブを押すと、その時点の範囲から新しいタブへ向かい直します。Chrome 154で、帯が移っている途中に別のタブを押すと、切り抜く範囲が途中の値から新しいタブへ向かうことを確かめました（2026年10月確認）。イージングは、画面の上にある帯の移動なので `in-out` 系のトークンを選んでいます（「[18-3 イージングと再生時間](/motion/easing-and-duration/)」）。
+
+帯が横に移る動きは、色の変化ではなく位置の変化です。トランジションの指定は `@media (prefers-reduced-motion: no-preference)` の中に書き、動きを減らす設定では、切り抜く範囲が一度で切り替わります（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。帯が動かなくても、どのタブを選んだかは色で伝わるので、動きを省いても情報は欠けません。Chrome 154で、動きを減らす設定を模したときにトランジションが起きないことも確かめました（2026年10月確認）。
+
+`clip-path` のアニメーションでは、レイアウトは起きず、ブラウザと値によっては描き直しも避けられます。切り抜く範囲が変わっても、上の列の大きさと位置は変わらないので、ほかの要素の配置にも影響しません。Chrome 154で、帯が移る間の切り抜きのトランジションがコンポジタのスレッドで進み、押した直後を除いて描き直しが起きないことを、パフォーマンスのトレースで確かめました（2026年10月確認）。動かすプロパティと負荷の関係は、「[18-10 動きの負荷を抑える](/motion/performance/)」で説明しています。{/* 要検証: ブラウザ。Firefox と Safari で、clip-path のトランジションで描き直しが起きるか、進行がコンポジタのスレッドに移るか */}
+
+項目から項目へ背景を移す表現は、アンカーポジショニングでも作れます。「[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)」では、ホバーした項目をアンカーにして、背景の位置と大きさをその項目に合わせています。アンカーを基準にすれば、幅のそろわない項目にも背景の大きさが合います。一方、背景は文字の後ろに置く1つの要素なので、帯に重なった部分だけ文字色を変えることはできず、`anchor()` の値の変化を補間できるブラウザも限られます。この見出しの方法は、タブの幅をそろえる必要があるかわりに、帯と文字色の境目が一致します。幅のそろったタブで選んだ色を見せるならこの方法を、幅のそろわない項目へ背景を追従させるならアンカーポジショニングを選びます。
+
+## スクロールできる領域の端をマスクで薄くする
+
+横にスクロールできるタグやタブの列では、続きがあることを見た目で示します。端に線や影を付ける方法は、そこで区切られているように見え、続きがあることは伝わりにくくなります。背景と同じ色のグラデーションを端に重ねる方法は、背景が写真や別の色になると色がずれて、帯が浮いて見えます。{/* 要確認: 出典なし */}
+
+端を薄くするときは、スクロールコンテナの `mask-image` に、両端が透明になるグラデーションを指定します。マスクは要素の中身そのものを透かすので、背景が何色でも、端の項目が途中で薄れて、続きがあるように見えます。マスクに使われるのはグラデーションの不透明度だけなので、`#000` は「そのまま見せる」範囲を表しているだけです。
+
+```css title="🙆‍♂ Recommended: スクロールコンテナの両端を、マスクのグラデーションで薄くする"
+@scope (.scoped.tag-scroller) to (.scoped) {
+  ul {
+    --_fade: 24px;
+
+    display: block flex;
+    gap: 8px;
+    overflow-x: auto;
+    mask-image: linear-gradient(to right, transparent, #000 var(--_fade), #000 calc(100% - var(--_fade)), transparent);
+  }
+}
+```
+
+グラデーションの向きには、`to inline-end` のような論理方向のキーワードがありません。Chrome 152では、`CSS.supports()` で `linear-gradient(to inline-end, …)` が無効と判定されました（2026年10月確認）。そこで、両端を同じ幅で薄くして、グラデーションを左右対称にします。右から左へ書く言語でも、同じ見た目になります。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
+
+<Baseline id="masks" name="マスク（mask-image など）" />
+
+マスクは、要素の境界の外に描かれるものも切り取ります。Chrome 152で確かめたところ、マスクを指定したスクロールコンテナの `outline` は表示されませんでした（2026年10月確認）。中にリンクのないスクロールコンテナは、キーボードでフォーカスを受けることがあり、そのときのフォーカスリングも見えなくなります。この場合は、親の要素に `&:has(> ul:focus-visible)` でリングを出します。リングを親に出す書き方は、「[17-4 カード全体をリンクにする](/interaction/card-link/)」の例と同じです。
+
+### スクロールできる側の端だけを薄くする
+
+上の例は、中身が収まっていてスクロールできないときも両端を薄くし、先頭にいるときも先頭の側を薄くします。端を薄くするのは続きがあることを示すためなので、薄くするのは、その方向にまだスクロールできる端だけにします。そのためには、薄くする幅をスクロールの位置に合わせて変えます。スクロールの位置を進み具合にして値を変える仕組みが、スクロール駆動アニメーションです（「[18-9 スクロールに合わせて動かす](/motion/scroll-driven/)」）。
+
+```css title="🙆‍♂ Recommended: スクロールの位置に合わせて、スクロールできる側の端だけを薄くする"
+@property --tag-scroller--fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tag-scroller--fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes --tag-scroller--leave-start {
+  to {
+    --tag-scroller--fade-start: var(--_fade);
+  }
+}
+
+@keyframes --tag-scroller--reach-end {
+  from {
+    --tag-scroller--fade-end: var(--_fade);
+  }
+}
+
+@scope (.scoped.tag-scroller) to (.scoped) {
+  :scope {
+    --_fade: 32px;
+    --_direction: to right;
+
+    display: block flex;
+    gap: 8px;
+    overflow-x: auto;
+
+    @supports (animation-timeline: scroll()) and (animation-range: 0 32px) {
+      mask-image: linear-gradient(var(--_direction), transparent, #000 var(--tag-scroller--fade-start), #000 calc(100% - var(--tag-scroller--fade-end)), transparent);
+      animation-name: --tag-scroller--leave-start, --tag-scroller--reach-end;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(self inline);
+      animation-range: 0 var(--_fade), calc(100% - var(--_fade)) 100%;
+    }
+
+    &:dir(rtl) {
+      --_direction: to left;
+    }
+  }
+}
+```
+
+<Baseline id="scroll-driven-animations" />
+
+マスクのグラデーションは、2つのカスタムプロパティを、先頭の側と末尾の側で薄くする幅として参照します。`animation-timeline: scroll(self inline)` は、要素自身のインライン方向のスクロールを進み具合にします。`scroll()` は、何も指定しなければ最も近い祖先のスクロールコンテナを測るので、スクロールコンテナ自身に指定するときは `self` を書きます。
+
+2つのアニメーションは、`animation-range` で受け持つ範囲を分けています。`--tag-scroller--leave-start` は、先頭から32pxスクロールする間に、先頭の側の幅を0から32pxに広げます。`--tag-scroller--reach-end` は、末尾の手前の32pxの間に、末尾の側の幅を32pxから0に狭めます。`animation-fill-mode: both` を指定しているので、範囲の前後では、それぞれの端の値が残ります。その結果、先頭にいるときは末尾の側だけが、途中では両側が、末尾に着いたときは先頭の側だけが薄くなります。幅はスクロールの位置に合わせて少しずつ変わるので、端に着いたところで薄さが急に消えることもありません。
+
+中身が収まっていてスクロールできない要素では、どちらの端も薄くなりません。スクロールできる範囲が0なので、スクロールのタイムラインが非アクティブになるからです（Scroll-driven Animations Level 1）。非アクティブなタイムラインでは、アニメーションの現在の時間が決まらないので、`animation-fill-mode: both` を指定していても、アニメーションは当たりません。2つの幅は登録した初期値の0のままになり、グラデーションは端まで不透明になります。中身を減らしてはみ出さなくなったときも、同じように薄さが消えました（2026年10月、Chrome 152で確認）。
+
+幅は、`@property` で `<length>` 型に登録します。登録していないカスタムプロパティは、キーフレームの間で値が補間されず、進み具合の途中で切り替わるだけです。`inherits: false` で登録し、`@property` を `@scope` の外に書く理由は、「[18-5 トランジションを応用する](/motion/transition-techniques/#複数の値を1つのカスタムプロパティで一緒に動かす)」で説明しています。継承しないので、2つの幅を参照する `mask-image` は、アニメーションを指定した要素自身に書きます。
+
+次のデモの2つの列は、同じCSSで、タグの数だけが違います。1つ目の列はタグがはみ出すので、最初は右端だけが薄くなっています。スクロールすると左端も薄くなり、末尾まで送ると右端の薄さが消えます。2つ目の列はタグが2つで収まり、どちらの端も薄くなりません。
+
+<Demo title="はみ出す列ではスクロールできる側の端だけを薄くし、収まる列では薄くしない" html={scrollFadeHtml} css={scrollFadeCss} />
+
+グラデーションの向きには論理方向のキーワードがないので、片側だけを薄くするときは、右から左へ書く言語で向きを反転させます。一方、`scroll(self inline)` の進み具合は、書字方向の先頭から数えます。右から左へ書く言語では、右端にいるときが進み具合の0%です。そのため、アニメーションはそのままにして、`:dir(rtl)` で `--_direction` を `to left` に変えるだけで済みます（2026年10月、Chrome 152で `dir="rtl"` の列を確認）。{/* 要検証: ブラウザ。Safari 26 で、非アクティブなタイムラインのときにアニメーションが当たらないことと、右から左へ書く列の進み具合の向き */}
+
+マスクとアニメーションは、一緒に `@supports` の中に書きます。スクロール駆動アニメーションに対応していない環境（2026年10月の時点ではFirefox）では、マスクが付かず、端が薄くならないだけです。続きがあることは見た目で示せなくなりますが、スクロールすれば続きを見られるので、操作は損なわれません。
+
+このアニメーションは、動きを減らす設定の条件で囲みません。変わるのは端を薄くする範囲だけで、要素の位置と大きさは変わらないからです。中身が動くのはユーザー自身がスクロールしたからで、アニメーションが中身を動かしているわけではありません。「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」の目安では、位置と大きさの変わらない変化は大きな変動にあたらず、スクロールに合わせた変形にもあたりません。スクロールに合わせてヘッダーの背景をフェードインさせる18-6の例と同じ扱いです。
+
+スクロールできる方向は、`scroll-state(scrollable: inline-end)` のコンテナクエリでも判定できます（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まっている間だけ見た目を変える)」）。しかし、コンテナクエリで変えられるのはコンテナの子孫だけなので、スクロールコンテナ自身の `mask-image` は切り替えられません。条件が成り立つかどうかで切り替わるので、端に近づくにつれて幅を狭めることもできません。2026年10月の時点では、`scroll-state()` のクエリに対応しているのはChrome系のブラウザだけです。端を薄くするのには、スクロール駆動アニメーションを使います。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月。`aspect-ratio`、`clip-path`、`currentColor` の例）
+- [clip-path - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clip-path)
+- [xywh() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/basic-shape/xywh)
+- [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)
+- [scroll() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline/scroll)
+- [Scroll-driven Animations Module Level 1 | W3C](https://drafts.csswg.org/scroll-animations-1/)

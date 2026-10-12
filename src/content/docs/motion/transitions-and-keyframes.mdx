@@ -1,29 +1,17 @@
 ---
-title: "18-4 トランジションと@keyframes"
-description: "トランジションはallを使わず、動かすプロパティをロングハンドとトークンで書きます。@keyframesは1つにつき1つのプロパティだけを変え、自明なfromとtoを省き、起点はカスタムプロパティで受け取ります。途中で取り消される動きにはトランジションを使い、複数の値を同じ進み方で動かすときは、型を登録したカスタムプロパティを1つだけ動かします。"
+title: "18-4 トランジションの基本と中断"
+description: "トランジションはallを使わず、動かすプロパティをロングハンドとトークンで書きます。途中で取り消されることがある動きは、取り消された時点から逆向きに戻れるトランジションで作り、続けて押されるUIでは動きを短くするか省きます。トランジション、@keyframes、@starting-styleは要件から選びます。"
 sidebar:
   order: 4
 ---
 
-import Baseline from '../../../components/Baseline.astro';
-import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
-import crossfadeHtml from '../../../demos/motion/crossfade-blur/index.html?raw';
-import crossfadeCss from '../../../demos/motion/crossfade-blur/style.css?raw';
-import crossfadeJs from '../../../demos/motion/crossfade-blur/script.js?raw';
-import registeredProgressHtml from '../../../demos/motion/registered-progress/index.html?raw';
-import registeredProgressCss from '../../../demos/motion/registered-progress/style.css?raw';
-import toastHtml from '../../../demos/motion/keyframes-toast/index.html?raw';
-import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
-import holdHtml from '../../../demos/motion/hold-to-delete/index.html?raw';
-import holdCss from '../../../demos/motion/hold-to-delete/style.css?raw';
-import holdJs from '../../../demos/motion/hold-to-delete/script.js?raw';
 
-トランジションは `transition: all` を使わず、動かすプロパティだけをロングハンドで書き、再生時間とイージングにはトークンを使います。途中で取り消されることがある動きは、`@keyframes` ではなくトランジションで作ります。トランジションは、取り消された時点の状態から逆向きに戻るからです。複数のプロパティを同じ進み方で動かすときは、`@property` で型を登録したカスタムプロパティを1つだけトランジションさせ、各プロパティの値をその値から計算します。
+トランジションは `transition: all` を使わず、動かすプロパティだけをロングハンドで書き、再生時間とイージングにはトークンを使います。途中で取り消されることがある動きは、`@keyframes` ではなくトランジションで作ります。トランジションは、取り消された時点の状態から逆向きに戻るからです。タブのように続けて押されるUIでは、動きを短くするか省きます。
 
-`@keyframes` は、ユーティリティクラスのように設計します。サイト全体で使う `@keyframes` は `base/keyframes.css` にまとめ、1つにつき1つのプロパティだけを変えます。自明な `from` と `to` は省略し、動きの起点は `--scale-from--x-value` のようなカスタムプロパティで使う側から受け取ります。特定のUIに結びついた動きは、`--<コンポーネント>--<動きの名前>` の名前でコンポーネントのCSSに置きます。
+動きの手段は、トランジションを基本にし、要件に合わせて `@keyframes` と `@starting-style` を選びます。この節では、トランジションの書き方と、取り消される動きの扱い、手段の選び方を説明します。トランジションの応用は「[18-5 トランジションを応用する](/motion/transition-techniques/)」で、`@keyframes` の命名と設計は「[18-6 @keyframesを設計する](/motion/keyframes/)」で扱います。
 
-## まとめて書いたトランジションとアニメーションの問題
+## まとめて書いたトランジションの問題
 
 `transition: all` は手軽ですが、関係のないプロパティまでアニメーションします。たとえば、ブレイクポイントをまたいで余白が変わったときや、ダークモードに切り替えたときにも、要素がゆっくりと変化します。動かす必要のないプロパティまで毎フレーム補間するので、描画の負荷も増えます。
 
@@ -35,25 +23,6 @@ import holdJs from '../../../demos/motion/hold-to-delete/script.js?raw';
 ```
 
 この書き方には、再生時間とイージングを直接書いている問題もあります。`0.3s` や `ease` がコンポーネントごとに散らばると、サイトの中で動きの速さと質感がそろいません。「全体をもう少し速くしたい」と思っても、すべてのファイルを探して書き換えることになります。
-
-`@keyframes` にも、似た問題があります。よく見かけるのは、`fadeInUp` のような名前で、不透明度と移動を1つにまとめ、始まりと終わりの値を両方書き込んだものです。この形では、フェードだけが欲しい場面で使い回せず、終わりの値が要素の本来の値と食い違うと、動きの最後で値が飛びます。
-
-```css title="🙅‍♂ Not Recommended: 複数のプロパティを持ち、終わりの値を書き込んだ @keyframes"
-/* 🙅‍♂ Not Recommended */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    translate: 0 20px;
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-```
-
-名前が `--` で始まっていないので、CSSのキーワードと見分けにくい点も問題です（「[9-1 命名規則](/notation/naming/)」）。`@keyframes` の名前はグローバルなので、置き場所と命名に決まりがないと、コンポーネントごとに似た動きが少しずつ違う名前で増えていきます。
 
 ## トランジションをロングハンドとトークンで書く
 
@@ -82,281 +51,9 @@ import holdJs from '../../../demos/motion/hold-to-delete/script.js?raw';
 
 この例では、メニューを開いたボタンのアイコンを半回転させ、色も変えています。回転は画面の上にあるものの動きなので `in-out` 系、色の変化は `out` 系のイージングを選んでいます。トランジションのプロパティを `prefers-reduced-motion: no-preference` の中に書いているのは、回転が動きを減らす設定で避けたい動きだからです。動きを減らす設定のときは、状態は変わっても、その途中は見せません（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。トークンの値と、イージングの選び方は「[18-3 イージングと再生時間](/motion/easing-and-duration/)」で説明しています。
 
-動かすプロパティは、`opacity` と、`translate`、`scale`、`rotate` を優先します。これらは条件が合えば描画をやり直さずに合成だけで動かせるので、滑らかに動きます。`clip-path`、`background-color`、`filter` は、ブラウザと値によって扱いが変わります。Chrome 154では、この3つのトランジションでフレームごとの描き直し（DevToolsのPaint）は起きませんでした。ただし、アニメーションの進行をコンポジタのスレッドで計算したのは、`clip-path`、`background-color` と、画素の位置を動かさない `filter` の関数だけです。`blur()` と `drop-shadow()` の進行は、メインスレッドで計算されました（2026年10月確認）。{/* 要検証: ブラウザ。Firefox と Safari で、clip-path、background-color、filter のアニメーションに描き直しが起きるか、進行をどのスレッドで計算するか */}この例の `color` は描画のやり直しが必要ですが、小さな部品の状態の変化なら許容できます。どのプロパティがどの処理を起こすかは「[18-7 動きの負荷を抑える](/motion/performance/)」で説明しています。
+動かすプロパティは、`opacity` と、`translate`、`scale`、`rotate` を優先します。これらは条件が合えば描画をやり直さずに合成だけで動かせるので、滑らかに動きます。`clip-path`、`background-color`、`filter` は、ブラウザと値によって扱いが変わります。Chrome 154では、この3つのトランジションでフレームごとの描き直し（DevToolsのPaint）は起きませんでした。ただし、アニメーションの進行をコンポジタのスレッドで計算したのは、`clip-path`、`background-color` と、画素の位置を動かさない `filter` の関数だけです。`blur()` と `drop-shadow()` の進行は、メインスレッドで計算されました（2026年10月確認）。{/* 要検証: ブラウザ。Firefox と Safari で、clip-path、background-color、filter のアニメーションに描き直しが起きるか、進行をどのスレッドで計算するか */}この例の `color` は描画のやり直しが必要ですが、小さな部品の状態の変化なら許容できます。どのプロパティがどの処理を起こすかは「[18-10 動きの負荷を抑える](/motion/performance/)」で説明しています。
 
-### 入るときと外れるときで再生時間を変える
-
-トランジションは、変化したあとの状態に指定された再生時間とイージングで動きます。そのため、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書けば、入るときは素早く、戻るときはゆっくり動きます。押した反応の速さと、戻るときの自然さの両方を取れます。どちらの値もトークンから選びます。
-
-```css title="🙆‍♂ Recommended: 押したときは素早く、戻るときはゆっくり変える"
-@scope (.scoped.like-button) to (.scoped) {
-  :scope {
-    --_background: var(--color--accent--600);
-    --_background--pressed: var(--color--accent--700);
-
-    background-color: var(--_background);
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--slow);
-      transition-property: background-color;
-      transition-timing-function: var(--ease--out-quint);
-    }
-
-    &[aria-pressed="true"] {
-      --_background: var(--_background--pressed);
-
-      @media (prefers-reduced-motion: no-preference) {
-        transition-duration: var(--duration--fast);
-      }
-    }
-  }
-}
-```
-
-入る側の `transition-duration` も、動きを減らす設定の条件の中に書きます。`transition-property` の初期値は `all` なので、条件の外に再生時間だけを書くと、動きを減らす設定のときにも、すべてのプロパティがその再生時間で動いてしまいます。
-
-同じ仕組みで、入る側の状態にだけトランジションを書くと、入るときだけ動き、外れるときは一瞬で戻ります。これを使うのが、押し続けている間だけ進み具合が伸び、一定の時間押し続けてから離すと確定するボタンです。削除のような取り消せない操作を、一度押しただけでは実行しないようにする場面で使います。入る側（押している状態）に確定までの時間と `linear` を書き、基本のルールにはトランジションを書きません。押している間は一定の速さで進み、離すとすぐに0に戻ります。
-
-前の例と違って戻る動きを付けないのは、進み具合の広がりが、押し続けた時間そのものを表すからです。前の例のボタンの色は押したかどうかを伝えるだけなので、戻る途中で押し直されても、伝える内容は食い違いません。長押しは、利用者が意図して時間をかける操作で、離すと押し続けた時間の判定は最初からやり直しになります。戻る動きを付けると、戻る途中で押し直したときに、判定は0から始まるのに表示は途中から広がり、表示と確定までの残りの時間が食い違います。そのため、入る側は確定までの時間をかけて一定の速さで進め、離したら表示も判定と同じく0に戻します。
-
-```css title="🙆‍♂ Recommended: 押している間は一定の速さで広げ、離したらすぐに0へ戻す"
-@scope (.scoped.hold-button) to (.scoped) {
-  :scope {
-    --_holding: --false;
-    --_duration: var(--hold-button--duration, 2s);
-
-    display: inline grid;
-    overflow: clip;
-    border: 1px solid currentColor;
-    border-radius: var(--rounded--md);
-    color: var(--foreground--danger);
-
-    & > ._label,
-    &::before {
-      grid-area: 1 / 1;
-    }
-
-    &::before {
-      content: attr(data-label) / "";
-      clip-path: inset(0 100% 0 0);
-      padding-block: 12px;
-      padding-inline: 24px;
-      background-color: var(--foreground--danger);
-      color: var(--foreground--inverse);
-
-      @container style(--_holding: --true) {
-        clip-path: inset(0);
-        transition-duration: var(--_duration);
-        transition-property: clip-path;
-        transition-timing-function: linear;
-      }
-    }
-
-    &[data-holding="true"] {
-      --_holding: --true;
-    }
-  }
-
-  ._label {
-    padding-block: 12px;
-    padding-inline: 24px;
-  }
-}
-```
-
-ボタンの文字と同じ文字を `data-label` 属性から擬似要素に入れ、危険を表す色で塗った層として、文字と同じグリッドのセルに重ねます。`clip-path: inset(0 100% 0 0)` は右から幅の100%を切り落とすので、押す前の層は見えません。押している間は、後で説明するJavaScriptがボタンに `data-holding="true"` を付け、`--_holding` が `--true` になります。擬似要素は `@container style()` でその値を問い合わせて、`inset(0)` まで左から広がります。押している状態を `:active` で受け取らないのは、マウスのボタンを押したままボタンの外へ動かしても `:active` が当たり続けるからです（2026年10月、Chrome 154で確認）。外へ出た時点で判定を中止しても、`:active` で広げていると進み具合は伸び続けます。擬似要素の見た目を要素の状態で切り替えるときに、状態のフラグを立てる書き方は「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
-
-2秒は、このデモのために選んだ例示の値であり、一般に推奨する長さではありません。UIの動きの速さではなく、確定までに押し続けてもらう時間なので、誤って押したときに離す余裕と、待たされる長さの兼ね合いで、操作の重さに合わせて決めます。値はボタンの公開用のカスタムプロパティ `--hold-button--duration` で受け取り、使う側から変えられるようにしています。受け取った値は内部用の `--_duration` に入れ、トランジションの再生時間と、JavaScriptの判定の両方がそこから読みます。進み具合の動きは、機能的な動きの再生時間の上限と、`linear` を一定の速さで続く動きに限るルールの例外です。どちらもルールの補足に書いています（「[18-3 イージングと再生時間](/motion/easing-and-duration/)」）。
-
-この例では、進み具合の表示を動きを減らす設定でも残すので、トランジションを条件の外に書いています。進み具合は、小さなボタンの中で、あとどれだけ押し続ければ確定できるかという残りの時間を伝える情報で、なくすと押している間に何も手がかりがなくなるからです。「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で、プログレスバーの表示を変えないのと同じ扱いです。ボタン自体の位置と大きさは変わらず、移動や拡大も足しません。`transition-property` を `clip-path` に絞っているので、ほかのプロパティは動きません。
-
-Chrome 154で、このデモのボタンを押し続けている間をパフォーマンスのトレースで記録しました（2026年10月確認）。擬似要素の切り抜きのトランジションはコンポジタのスレッドで進み、DevToolsのPaintは、押し始めと押し切った時点を除いて記録されませんでした。ほかのブラウザでの扱いは確かめていません（「[18-7 動きの負荷を抑える](/motion/performance/)」）。{/* 要検証: ブラウザ。Firefox と Safari で、clip-path のトランジションに描き直しが起きるか、進行をどのスレッドで計算するか */}
-
-### 長押しで確定する処理と、ほかの操作の方法
-
-CSSで作れるのは進み具合の表示までで、削除の確定にはJavaScriptが要ります。押し切った時点では削除せず、確定できる状態にするだけにして、ボタンの上で離したときに削除します。WCAG 2.2の達成基準2.5.2（ポインターのキャンセル）は、満たし方として、押し下げた時点で処理を実行しないことや、離した時点で完了させ、完了の前に中止する手段を用意することを挙げています。達成基準の解説も、長押しで操作する要素の例として、指を要素の内側で離したときに結果を実行するものを挙げています。このボタンは後者に当たり、ボタンの外へポインターを動かしてから離せば中止できます。押したまま確定すると、押し切ってから誤りに気付いても、取り消す手段がありません。
-
-途中で離したとき、ボタンの外で離したときは中止します。ブラウザが `pointercancel` で操作を取り消したとき（タッチでスクロールが始まった場合など）と、ボタンがフォーカスを失ったときも同じです。中止したら表示と判定を最初に戻し、押し直したときは0から数え直します。確かめたいのは、連続して2秒押したことだからです。
-
-経過時間は、押し始めに始めたJavaScriptのタイマーで測ります。進み具合の層のトランジションが終わったときに起きる `transitionend` で判定すれば、時間をCSSだけに書けますが、確定できるかどうかが表示のトランジションの有無に左右されます。ユーザースタイルシートや拡張機能でトランジションを止めている環境では、`transitionend` が起きず、長押しで確定できなくなります。時間は、CSSの `--_duration` を `getComputedStyle()` で読み、表示と判定に同じ値を使います。次の例の `toMilliseconds()` は、`2s` や `2000ms` の形の値をミリ秒の数に直す関数です。
-
-```js title="押し続けた時間をタイマーで測り、ボタンの上で離したときに確定する JavaScript の例"
-const start = () => {
-  ready = false;
-  button.dataset.holding = 'true';
-  const duration = toMilliseconds(getComputedStyle(button).getPropertyValue('--_duration'));
-  holdTimer = setTimeout(() => {
-    ready = true;
-    status.textContent = '離すと削除します。';
-  }, duration);
-};
-
-// 中止する。進み具合の表示も、判定も、最初に戻す
-const cancel = () => {
-  clearTimeout(holdTimer);
-  ready = false;
-  delete button.dataset.holding;
-};
-
-// 離したときに、押し切っていれば削除を確定する
-const finish = () => {
-  const wasReady = ready;
-  cancel();
-  if (wasReady) remove();
-};
-
-button.addEventListener('pointerdown', start);
-button.addEventListener('pointerup', finish);
-button.addEventListener('pointerleave', cancel);
-button.addEventListener('pointercancel', cancel);
-button.addEventListener('blur', cancel);
-```
-
-ボタンの外へポインターを動かすと、その時点で `pointerleave` が起きて中止されるので、外で離しても削除されません。タッチの操作では、押した要素がポインターを捕捉し、指が外へ出ても `pointerleave` が起きません。デモでは、`pointerdown` で `releasePointerCapture()` を呼んで捕捉を外しています。押し切ったときは、状態のメッセージで「離すと削除します。」と伝えます。
-
-キーボードでは、ボタンにフォーカスしてSpaceキーを押し続ける操作を、同じ判定で扱います。`keydown` で `start()` を、`keyup` で `finish()` を呼びます。押し続けている間に繰り返し起きる `keydown` は、`event.repeat` で除きます。一方、Enterキーは押した時点で `click` を起こすので、長押しの判定を始めません（どちらも2026年10月、Chrome 154で確認）。スクリーンリーダーでボタンを押す操作は、多くの場合 `click` だけを起こし、押し続ける状態を作れません。{/* 要検証: ブラウザ。Firefox と Safari で、Space キーを押し続けたときの keydown、keyup、click の順序。iOS の Safari と Android の Chrome で、タッチの長押しが pointercancel や contextmenu で中断されないこと */}
-
-長押しだけを確定の手段にすると、Enterキーやスクリーンリーダーの利用者は削除できません。そのため、押してすぐに離したときや、Enterキーやスクリーンリーダーでボタンを押したときは、確認のダイアログを開いて、そこから削除できるようにします。デモでは、ボタンに `command="show-modal"` を付けてダイアログを開き、押し切って離したあとに起きる `click` だけを `preventDefault()` で取り消しています。ボタンの下には、2つの操作の方法を書いた説明を置き、`aria-describedby` でボタンに結び付けています。
-
-次のデモでは、ボタンを押し続けると、赤い層が左から2秒かけて広がり、広がりきると「離すと削除します。」と表示されます。そのままボタンの上で離すと「下書きを削除しました。」と表示されます。広がりきってからボタンの外へポインターを動かすと、層は消え、離しても削除されません。途中で離すと層はすぐに消えて確認のダイアログが開き、押し直すと層は左端から広がり直します。Spaceキーを押し続けても同じように広がり、Enterキーで押すとダイアログが開きます。動きを減らす設定でも、層は同じように広がります（2026年10月、Chrome 154で確認）。
-
-<Demo title="押し続けて進み具合を広げ、押し切ってからボタンの上で離したら削除するボタン" html={holdHtml} css={holdCss} js={holdJs} widths={[]} height="16rem" />
-
-### ぼかしでクロスフェードの重なりを目立たなくする
-
-2つの要素を同じ場所に重ね、片方を消しながらもう片方を出すクロスフェードでは、途中で両方が半透明になり、二重に写って見えます。コピーのボタンのアイコンを、押したあとにチェックの印へ切り替えるような場面です。消える側と現れる側に `filter: blur()` を数pxだけ掛けると、途中の重なりがぼけて、1つの形が別の形に変わったように見えます。{/* 要確認: 出典なし。ぼかしで二重写りを目立たなくする技法 */}
-
-```css title="🙆‍♂ Recommended: 切り替わるアイコンに、不透明度と小さなぼかしを組み合わせる"
-@scope (.scoped.copy-button) to (.scoped) {
-  :scope {
-    display: inline grid;
-
-    & > ._copy-icon,
-    & > ._copied-icon {
-      grid-area: 1 / 1;
-    }
-  }
-
-  ._copy-icon,
-  ._copied-icon {
-    transition-duration: var(--duration--fast);
-    transition-property: opacity, filter;
-    transition-timing-function: var(--ease--out-quint);
-  }
-
-  ._copied-icon {
-    opacity: 0;
-    filter: blur(4px);
-
-    &:is(:scope[data-copied="true"] *) {
-      opacity: 1;
-      filter: none;
-    }
-  }
-
-  ._copy-icon {
-    &:is(:scope[data-copied="true"] *) {
-      opacity: 0;
-      filter: blur(4px);
-    }
-  }
-}
-```
-
-2つのアイコンは、グリッドの同じセルに置いて重ねています。`filter` の `none` と `blur(4px)` の間は、`blur(0)` から補間されます。位置と大きさを変えない変化なので、フェードと同じく、動きを減らす設定の条件の外に書いています。ぼかしの半径を大きくすると描画の負荷が増えるので、数pxにとどめます（「[18-7 動きの負荷を抑える](/motion/performance/)」）。
-
-次のデモでは、ボタンを押すと `data-copied` 属性が `true` になり、コピーのアイコンがチェックの印に切り替わって、1.5秒後に戻ります。左のボタンは不透明度だけを、右のボタンは不透明度とぼかしを動かしています。左は切り替えの途中で四角とチェックの印が重なって見え、右は輪郭がぼけて、1つの形が別の形に変わったように見えます。比べるために、ぼかしの半径を公開用のカスタムプロパティで受け取り、左のボタンだけ0にしています。
-
-<Demo title="コピーのアイコンをチェックの印に切り替え、ぼかしの有無で重なり方を比べる" html={crossfadeHtml} css={crossfadeCss} js={crossfadeJs} widths={[]} />
-
-## 複数の値を1つのカスタムプロパティで一緒に動かす
-
-ホバーしたカードを持ち上げ、同時に影を濃くし、枠線の色を変えるときは、3つのプロパティを別々にトランジションさせるより、`@property` で `<number>` 型に登録したカスタムプロパティを1つだけ動かすほうが管理しやすくなります。0から1へ進む値を1つ用意し、`translate`、`filter`、`border-color` の値をその値から計算します。影は、`box-shadow` ではなく `filter: drop-shadow()` で描きます（「[16-3 面・影・角丸](/decoration/surfaces/)」）。トランジションの対象は登録したカスタムプロパティだけなので、3つの値は同じ再生時間とイージングで、同じ進み方をします。
-
-プロパティごとにトランジションさせる書き方では、状態の値が状態のセレクタごとに散らばります。次の例では、ホバーとフォーカスの2つのセレクタに、同じ3つの値を書き並べています。持ち上げる距離を変えるときは両方を直し、動かすプロパティを足すときは `transition-property` の並びも直します。
-
-```css title="🙅‍♂ Not Recommended: 状態の値を、プロパティごとに状態のセレクタへ書き並べる"
-/* 🙅‍♂ Not Recommended */
-@scope (.scoped.link-card) to (.scoped) {
-  :scope {
-    border: 1px solid var(--border--base);
-    transition-duration: var(--duration--base);
-    transition-property: translate, filter, border-color;
-    transition-timing-function: var(--ease--out-quint);
-
-    &:any-link:hover {
-      @media (any-hover) {
-        border-color: var(--foreground--accent);
-        filter: drop-shadow(0 8px 12px var(--shadow--color));
-        translate: 0 -4px;
-      }
-    }
-
-    &:focus-visible {
-      border-color: var(--foreground--accent);
-      filter: drop-shadow(0 8px 12px var(--shadow--color));
-      translate: 0 -4px;
-    }
-  }
-}
-```
-
-カスタムプロパティを1つにまとめるには、型の登録が欠かせません。登録していないカスタムプロパティは文字の並びとして扱われるので、0と1の間の値が補間されず、値が変わった時点で切り替わります。`transition-behavior: allow-discrete` を指定しても、再生時間の半分の時点で切り替わるだけです（2026年10月、Chrome 152で確認）。`@property` の記述子と、登録する場面の判断は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
-
-```css title="🙆‍♂ Recommended: 登録した1つの値から、3つのプロパティの値を計算する"
-@property --link-card--progress {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
-}
-
-@scope (.scoped.link-card) to (.scoped) {
-  :scope {
-    --_lift: 0px;
-
-    border: 1px solid color-mix(in oklab, var(--foreground--accent) calc(var(--link-card--progress) * 100%), var(--border--base));
-    filter: drop-shadow(0 calc(var(--link-card--progress) * 8px) calc(var(--link-card--progress) * 12px) color-mix(in oklab, var(--shadow--color) calc(var(--link-card--progress) * 100%), transparent));
-    translate: 0 calc(var(--link-card--progress) * var(--_lift));
-    transition-duration: var(--duration--base);
-    transition-property: --link-card--progress;
-    transition-timing-function: var(--ease--out-quint);
-
-    @media (prefers-reduced-motion: no-preference) {
-      --_lift: -4px;
-    }
-
-    &:any-link:hover {
-      @media (any-hover) {
-        --link-card--progress: 1;
-      }
-    }
-
-    &:focus-visible {
-      --link-card--progress: 1;
-    }
-  }
-}
-```
-
-状態のセレクタが書き換えるのは `--link-card--progress` の1つだけです。3つのプロパティの値は、進み具合を掛けた式として基本のルールに1回ずつ書くので、持ち上げる距離や影の大きさを変えるときに直す場所は1か所です。動きに加わるプロパティを足しても、`transition-property` は変えずに済みます。
-
-動きを減らす設定には、移動の距離を係数にして対応します。`--_lift` は `0px` を基本にし、`prefers-reduced-motion: no-preference` のときだけ `-4px` にします。動きを減らす設定のときは、カードは持ち上がらず、影と枠線の色だけが変わります。影と枠線の変化は要素の位置と大きさを変えないので、トランジションは条件の外に書いています。1つの値で動かす書き方では、プロパティごとにトランジションを外せないので、移動や拡大に当たる値だけをこのように係数で止めます（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。
-
-次のデモは、上のCSSをそのまま使っています。カードにポインターを乗せるか、キーボードでフォーカスすると、カードが4px持ち上がり、影が濃くなり、枠線が青に変わります。3つの変化は同時に始まり、同時に終わります。ポインターを途中で外すと、3つがそろって途中の状態から戻ります。
-
-<Demo title="登録した1つのカスタムプロパティで、持ち上がる距離、影、枠線の色を一緒に動かす" html={registeredProgressHtml} css={registeredProgressCss} widths={[]} />
-
-<Baseline id="registered-custom-properties" name="@property" />
-
-### 1つの値で動かすときの注意点
-
-動かすカスタムプロパティは、`inherits: false` で登録します。継承するカスタムプロパティを動かすと、その値を受け継ぐ子孫の要素すべてで、スタイルの計算がフレームごとに繰り返されるからです（「[18-7 動きの負荷を抑える](/motion/performance/)」）。継承しないので、値を参照できるのは、値を宣言した要素自身だけです。上の例では、計算に使う3つのプロパティをすべてカードのルートに書いています。
-
-`translate` や `filter` をカスタムプロパティを介して動かすと、合成の処理だけでは済まず、値の計算がフレームごとにメインスレッドで行われます。Chrome 154で、このデモの動きをパフォーマンスのトレースで記録すると、スタイルの計算は毎フレーム起き、描き直しは `border-color` の変化の分だけ毎フレーム起きました（2026年10月確認）。この書き方を選ぶのは、枠線の色のように、もともと描画のやり直しが必要な値を一緒に動かす場合です。動かすのが `translate`、`opacity`、`filter` だけなら、ルール [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit) のとおり、カスタムプロパティを介さずに直接トランジションさせます。
-
-`@property` による登録は、書いた場所を問わず、文書全体に適用されます。`@scope` の中で登録しても、型と初期値は範囲の外の要素まで適用されました（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Firefox と Safari で、@scope の中に書いた @property が範囲の外にも適用されること */}そのため、`@property` は `@scope` の外のトップレベルか、グローバルな定義を置く `base` レイヤーに書きます（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。同じ名前を2つのレイヤーで登録したときは、スタイルシートに現れた順ではなく、レイヤーの順序で後のレイヤーの登録が有効になりました（2026年10月、Chrome 152で確認）。{/* 要検証: ブラウザ。Firefox と Safari で、同じ名前の @property がレイヤーの順序で決まること */}
-
-名前は、コンポーネントの中でだけ使う値でも、内部用の `--_progress` ではなく、`--link-card--progress` のように公開プロパティの形にします。登録は文書全体に及ぶので、短い内部用の名前を登録すると、同じ名前を別の意味で使うほかのコンポーネントにも型が適用されるからです（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。{/* 要確認: 著者の判断。外から渡すことを想定しない値を、公開プロパティの形の名前で登録すること */}一方、`--_lift` のように登録せず、動かさない値は、これまでどおり内部用の名前にします。
+トランジションは、変化したあとの状態のルールに書いた再生時間とイージングで動きます。この性質を使って、入るときと外れるときで再生時間を変える書き方は「[18-5 トランジションを応用する](/motion/transition-techniques/)」で説明しています。
 
 ## 途中で取り消される動き
 
@@ -371,150 +68,9 @@ UIの動きは、最後まで再生されるとは限りません。ホバーし
 
 トランジションは、値が変わった時点の状態を起点に、新しい値へ向かって動きます。途中で元の状態に戻されれば、その位置から逆向きに戻るので、値は飛びません。一方、`@keyframes` のアニメーションは、適用が外れた瞬間に要素本来の値へ切り替わり、逆向きの動きもありません。そのため、取り消されることがある動きはトランジションで作ります。
 
-`@keyframes` を使う場面で取り消しに対応するときは、Web Animations APIを使います。CSSで定義したアニメーションも、`element.getAnimations()` で `Animation` オブジェクトとして取り出せます。`reverse()` は今の位置から逆向きに再生し、`cancel()` はアニメーションを外して要素本来の値に戻します。次の例は、出現の途中でも、出現し終えたあとでも、同じ動きを逆向きに再生してから閉じるものです。
+`@keyframes` で作った動きを途中で取り消すには、JavaScriptのWeb Animations APIで、今の位置から逆向きに再生し直す制御が要ります（「[18-6 @keyframesを設計する](/motion/keyframes/#keyframes-の再生をjavascriptで制御する)」）。退場も動かすダイアログやポップオーバーなら、`@starting-style` とトランジションを使えばCSSだけで済むので、「[18-7 出現と退場](/motion/entry-and-exit/)」の方法で作ります。
 
-```js title="再生中の @keyframes を逆向きに戻してから閉じる JavaScript の例"
-const close = async (dialog) => {
-  const animations = dialog.getAnimations();
-  animations.forEach((animation) => animation.reverse());
-  await Promise.all(animations.map((animation) => animation.finished));
-  dialog.close();
-};
-```
-
-<Baseline id="web-animations" />
-
-動きを減らす設定でアニメーションを指定していなければ、`getAnimations()` は空の配列を返すので、すぐに閉じます。ただし、この制御は `@starting-style` とトランジションならCSSだけで済みます。退場も動かすダイアログやポップオーバーは、「[18-5 出現と退場](/motion/entry-and-exit/)」の方法で作ります。
-
-タブやセグメンテッドコントロールのように続けて押されるUIでは、動きが操作に追いつかないことがあります。こうしたUIでは、再生時間を100〜150msに短くするか、動きを省きます。ページの中の切り替えにView Transitionsを使っている場合は、新しい切り替えを始める前に `skipTransition()` で前の切り替えを終わらせます（「[18-8 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」）。
-
-## `@keyframes` をユーティリティのように設計する
-
-サイト全体で使う `@keyframes` は、`base` レイヤーの `base/keyframes.css` にまとめ、ユーティリティクラスと同じ考え方で設計します。1つの `@keyframes` は1つのプロパティだけを変え、`--fade-in` は `opacity` だけを、`--scale-from` は `scale` だけを動かします。名前は、ほかの自分で付ける名前と同じく `--` で始めます。
-
-```css title="🙆‍♂ Recommended: base/keyframes.css に1つのプロパティだけを変える @keyframes を置く"
-@keyframes --fade-in {
-  from {
-    opacity: var(--fade-in--from-value, 0);
-  }
-}
-
-@keyframes --fade-out {
-  to {
-    opacity: var(--fade-out--to-value, 0);
-  }
-}
-
-@keyframes --scale-from {
-  from {
-    scale: var(--scale-from--x-value, 1) var(--scale-from--y-value, 1);
-  }
-}
-
-@keyframes --translate-from {
-  from {
-    translate: var(--translate-from--x-value, 0) var(--translate-from--y-value, 0);
-  }
-}
-
-@keyframes --translate-to {
-  to {
-    translate: var(--translate-to--x-value, 0) var(--translate-to--y-value, 0);
-  }
-}
-```
-
-複数のプロパティを同時に動かしたいときは、`animation-name` にカンマ区切りで並べます。再生時間とイージングも同じ順に並べられるので、不透明度は早めに終え、移動はゆっくり止める、といった調整がプロパティごとにできます。値の数が名前より少ないときは、値のリストが繰り返して使われます。
-
-```css title="🙆‍♂ Recommended: 必要な動きを組み合わせ、起点だけを指定する"
-@scope (.scoped.toast) to (.scoped) {
-  :scope {
-    --translate-from--y-value: 100%;
-
-    @media (prefers-reduced-motion: no-preference) {
-      animation-name: --fade-in, --translate-from;
-      animation-duration: var(--duration--base), var(--duration--slow);
-      animation-timing-function: var(--ease--out-quint);
-      animation-fill-mode: both;
-    }
-
-    &[data-position="top"] {
-      --translate-from--y-value: -100%;
-    }
-  }
-}
-```
-
-起点や方向は、`@keyframes` の中で参照しているカスタムプロパティに、使う側から値を渡して変えます。このカスタムプロパティは `@keyframes` の引数のようなものなので、本書では「API的なカスタムプロパティ」と呼びます。名前は `--<keyframes の名前>--<値の名前>` の形にします。先頭に `@keyframes` の名前が入っていて、コンポーネントの公開用や内部用のカスタムプロパティとは区別できるので、内部用の `--_` は付けません。
-
-次のデモでは、同じ `--fade-in` と `--translate-from` を使い、下に出す通知は下から、上に出す通知は上から現れます。「下に通知を出す」と「上に通知を出す」のボタンで、それぞれの通知を開けます。2つの通知で違うのは、`--translate-from--y-value` の値と配置だけです。通知は `popover` 属性で表示しているので、開くたびに `display: none` から表示され、アニメーションも最初から再生されます。
-
-<Demo title="同じ @keyframes に起点だけを渡し、通知を下からと上から出す" html={toastHtml} css={toastCss} height="12rem" />
-
-この通知は出現だけを動かし、退場は動かしません。途中で逆向きに戻す動きがないので、取り消される動きをトランジションで書くルール [`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition) に当たらず、`@keyframes` で書けます（「[18-5 出現と退場](/motion/entry-and-exit/#starting-style-とカスケード)」）。
-
-`@keyframes` が `from` と `to` の2つのフレームで完結していれば、渡す値は開始値か終了値のどちらかだけです。中間のフレームが加わると、渡す値がフレームの数だけ増え、引数として扱える範囲を超えます。そのため、グローバルに置くのは2つのフレームで完結するものに限ります。
-
-## 自明な `from` と `to` を省略する
-
-`@keyframes` の `from` か `to` を省略すると、そのフレームには要素がその時点で持っている値が使われます。`--fade-in` に `to` を書いていないのは、要素がもともと持っている不透明度に向かって動かすためです。`opacity: 0.8` の要素に使えば0から0.8まで、`opacity: 1` の要素なら0から1まで変化します。
-
-`to { opacity: 1; }` と書き込むと、`opacity: 0.8` の要素では終了値が本来の値と食い違います。`animation-fill-mode: both` なら終わったあとも1が保たれ、本来の0.8に戻りません。`none` なら、終わった瞬間に1から0.8へ跳ねます。退場の動きでは、同じ理由で `from` を省略します。半透明の要素に `from { opacity: 1; }` の退場を使うと、一瞬不透明になってから消えるからです。どちらを省略するかは、次の表で判断します。
-
-| 動き | 書くフレーム |
-| --- | --- |
-| 何もない状態からの出現（`--fade-in`、`--scale-from` など） | `from` だけ |
-| 何もない状態への退場（`--fade-out` など） | `to` だけ |
-| 無限に繰り返す回転 | `to` だけ（`to { rotate: 1turn; }`） |
-| 開始値と終了値の両方を決める必要がある | 両方（コンポーネントに置くことが多い） |
-
-開始値と終了値の両方を書くのは、要素本来の値がどちらの端とも一致しない場合です。たとえば、`clip-path` で隠した状態から全体を見せるとき、要素本来の値は `none` なので、`inset()` との間は補間できません。こうした動きは特定のUIに結びついていることが多いので、次の見出しのようにコンポーネントに置きます。
-
-## グローバルとローカルの使い分け
-
-中間のフレームを持つ動きや、複数のプロパティを同時に動かす動きは、グローバルに置きません。そのコンポーネントのCSSに、`--<コンポーネント>--<動きの名前>` の名前で定義します。名前の先頭にコンポーネントの名前が入るので、ほかのコンポーネントの `@keyframes` と衝突しません。
-
-```css title="🙆‍♂ Recommended: 中間のフレームを持つ動きをコンポーネントに置く"
-@keyframes --skeleton--pulse {
-  50% {
-    opacity: 0.4;
-  }
-}
-
-@scope (.scoped.skeleton) to (.scoped) {
-  :scope {
-    background-color: var(--color--neutral--100);
-
-    @media (prefers-reduced-motion: no-preference) {
-      animation-name: --skeleton--pulse;
-      animation-duration: 1.5s;
-      animation-timing-function: var(--ease--in-out-quint);
-      animation-iteration-count: infinite;
-    }
-  }
-}
-```
-
-この例では、`from` と `to` の両方を省略しています。始まりと終わりは要素本来の不透明度になり、`50%` のフレームだけで点滅を表せます。1.5秒は、トークンの段階にない再生時間です。読み込み中であることを伝えるループの周期で、UIの状態の変化の速さとは目的が違うので、ここでは値を直接書いています。{/* 要確認: 出典なし */}
-
-グローバルとローカルのどちらに置くかは、次の表で判断します。迷ったらコンポーネントに置き、3か所で使われるようになった時点でグローバルに移します。最初からグローバルに置くと、一度しか使わない動きが `base/keyframes.css` に溜まっていきます。
-
-| 状況 | 置き場所 |
-| --- | --- |
-| フェード、拡大縮小、移動のような汎用の動きで、起点だけを変えたい | グローバル（API的なカスタムプロパティで起点を渡す） |
-| そのコンポーネントで、複数のプロパティを同時に動かす | ローカル |
-| 中間のフレーム（`50%` など）が要る | ローカル |
-| 背景（`::backdrop`）や特殊な擬似要素の動き | ローカル |
-
-## `animation` の略記と `animation-fill-mode`
-
-アニメーションも、略記の `animation` ではなく、ここまでの例のようにロングハンドで書きます。略記の `animation` は、`animation-timeline` と `animation-range` もリセットします。略記をあとに書くと、先に指定したスクロール駆動アニメーションの設定が消えます。ロングハンドなら、指定していないプロパティに影響しません。
-
-`animation-fill-mode` は、`both` を第一候補にします。指定しない（`none`）と、遅延の間は開始前の見た目のままで、終わった瞬間に最後のフレームが外れます。`backwards` は遅延の間にも最初のフレームの値を当て、`forwards` は終わったあとも最後のフレームの値を保ち、`both` はその両方を行います。
-
-`both` は、自明なフレームを省略した `@keyframes` と組み合わせると安全です。`to` を省いた出現の動きでは、最後のフレームが要素本来の値なので、終わったあとに保っても見た目は変わりません。`forwards` で、書き込んだ終了値を保つと、要素本来の値が上書きされたままになり、あとから状態を変えても反映されません。
-
-`both` には、`animation-play-state: paused` の間も最初のフレームを当てる働きがあります。画面に入るまで止めておき、入ったら再生する演出では、この働きで初期の見えない状態を `@keyframes` の `from` だけで表せます。この使い方は「[18-6 スクロールに合わせて動かす](/motion/scroll-driven/)」で説明しています。
+タブやセグメンテッドコントロールのように続けて押されるUIでは、動きが操作に追いつかないことがあります。こうしたUIでは、再生時間を100〜150msに短くするか、動きを省きます。ページの中の切り替えにView Transitionsを使うときは、新しい切り替えを始める前に `skipTransition()` で前の切り替えを終わらせます（「[18-11 View Transitionsで画面の切り替えをつなぐ](/motion/view-transitions/)」）。
 
 ## `@keyframes`、トランジション、`@starting-style` の使い分け
 
@@ -530,7 +86,7 @@ const close = async (dialog) => {
 | 複数のプロパティを時間をずらして動かしたい | `@keyframes`、または `transition-delay` の組み合わせ |
 | 画面に入るまで止めておき、入ったら一度だけ再生する | `@keyframes` と `animation-play-state` |
 
-`@starting-style` は、要素が表示されたときの開始値を指定する規則で、`display: none` から表示された要素もトランジションで動かせます。出現と退場の書き方と、`@starting-style` が効かなくなる条件は「[18-5 出現と退場](/motion/entry-and-exit/)」で説明しています。
+`@keyframes` を使うと決めたあとの命名、置き場所、起点の渡し方は「[18-6 @keyframesを設計する](/motion/keyframes/)」で説明しています。`@starting-style` は、要素が表示されたときの開始値を指定する規則で、`display: none` から表示された要素もトランジションで動かせます。出現と退場の書き方と、`@starting-style` が効かなくなる条件は「[18-7 出現と退場](/motion/entry-and-exit/)」で説明しています。
 
 ## ガイドライン
 
@@ -538,12 +94,7 @@ const close = async (dialog) => {
 
 ## 参考リンク
 
-- [Animations Skill](https://gist.github.com/tak-dcxi/b1870cfe73e3089a1e4aa7da19c3374a)（TAK、`@keyframes` の命名と設計の規約）
 - [えっ！？まだtransformプロパティを使ってるの！？](https://www.tak-dcxi.com/article/are-you-still-using-the-transform-property/)（TAKLOG、2024年3月）
-- [animation-fill-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/animation-fill-mode)
-- [@property - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@property)
-- [CSS Properties and Values API Level 1](https://drafts.css-houdini.org/css-properties-values-api-1/)
-- [Understanding Success Criterion 2.5.2: Pointer Cancellation | WAI | W3C](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation)
-- [Element.getAnimations() - Web API | MDN](https://developer.mozilla.org/ja/docs/Web/API/Element/getAnimations)
+- [transition-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/transition-behavior)
 - [How to create high-performance CSS animations | web.dev](https://web.dev/articles/animations-guide)
 - [An Interactive Guide to CSS Transitions | Josh W. Comeau](https://www.joshwcomeau.com/animation/css-transitions/)（2021年）

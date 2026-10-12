@@ -1,8 +1,8 @@
 ---
-title: 16-6 輪郭と枠線を描く
+title: 16-8 輪郭と枠線を描く
 description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で描き、吹き出しの枠線は同じ輪郭を border-shape に渡して対応した環境だけに足します。グラデーションの枠線は background-clip の border-area で描きます。どの環境でもグラデーションの枠線が必要なときと、ドーナツグラフは、擬似要素とマスクで描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
 sidebar:
-  order: 6
+  order: 8
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -21,7 +21,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 要素の輪郭は `clip-path` の `shape()` で、枠線の塗りは `background-clip: border-area` で描きます。どちらも、以前は複数の擬似要素やマスクの重ね合わせで作っていた形を、1つか2つの宣言で書けるようにする機能です。`shape()` はすべての主要なブラウザが対応していますが、`border-area` は対応が分かれています。
 
-`border-area` は、未対応の環境で宣言全体が無効になり、何も描かれなくなることがあります。そのため、未対応の環境での見え方を先に確かめ、`@supports` で従来の書き方に切り替えます。角の形だけを変える `corner-shape` は「[16-5 角の形を変える](/decoration/shapes/)」で扱います。`polygon()` で図形を切り抜く書き方と、`mask-image` の基本は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で説明しています。
+`border-area` は、未対応の環境で宣言全体が無効になり、何も描かれなくなることがあります。そのため、未対応の環境での見え方を先に確かめ、`@supports` で従来の書き方に切り替えます。角の形だけを変える `corner-shape` は「[16-7 角の形を変える](/decoration/shapes/)」で扱います。`polygon()` で図形を切り抜く書き方は「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」で、`mask-image` でアイコンを描く基本は「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で説明しています。
 
 ## 輪郭を描く方法の違い
 
@@ -33,7 +33,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 `shape()` は、`clip-path` などで使う図形の関数です。`polygon()` は頂点を直線でつなぐことしかできず、`path()` はSVGのパスの文字列なので、`%` や `calc()`、カスタムプロパティが使えませんでした。`shape()` は、直線と曲線の命令をCSSの値で書けるので、要素の大きさに合わせて伸び縮みする輪郭を描けます。
 
-次の例は、「[16-5 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
+次の例は、「[16-7 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
 
 ```css title="🙆‍♂ Recommended: 反り返るタブを、擬似要素1つの shape() で描く"
 @scope (.scoped.tab-list) to (.scoped) {
@@ -206,13 +206,13 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 <Demo scheme="light" title="擬似要素とマスクで、どの環境でもグラデーションの枠線を描く" html={gradientBorderMaskHtml} css={gradientBorderMaskCss} />
 
-枠線を描くのは `::before` です。`inset: 0` でルートと同じ大きさに広げ、透明な枠線を付けて、`background-origin: border-box` で枠線の外側からグラデーションを敷きます。`mask-image` には2枚の単色の画像を指定し、`mask-clip` で1枚目を `padding-box`、2枚目を `border-box` に切り抜きます。2枚を `mask-composite: exclude` で合成すると、2枚の重なる内側が消え、枠線の部分だけが残ります。`conic-gradient(#000)` は単色の画像を短く書くための指定です。マスクに使われるのは画像の不透明度だけなので、`#000` の色は表示されません（「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」）。
+枠線を描くのは `::before` です。`inset: 0` でルートと同じ大きさに広げ、透明な枠線を付けて、`background-origin: border-box` で枠線の外側からグラデーションを敷きます。`mask-image` には2枚の単色の画像を指定し、`mask-clip` で1枚目を `padding-box`、2枚目を `border-box` に切り抜きます。2枚を `mask-composite: exclude` で合成すると、2枚の重なる内側が消え、枠線の部分だけが残ります。`conic-gradient(#000)` は単色の画像を短く書くための指定です。マスクに使われるのは画像の不透明度だけなので、`#000` の色は表示されません（「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」）。
 
 擬似要素の枠線は、ルートの外周に重なって描かれます。ルート自身には枠線がないので、そのままでは中身が枠線の上に重なります。そこで、ルートの `padding` に枠線の太さを足しています。角丸の半径は、ルートと擬似要素の両方に同じ `--_radius` を指定します。ルートの背景色が擬似要素の角からはみ出さず、擬似要素の内側の角も、枠線の太さの分だけ小さな半径で丸まります。
 
 擬似要素は `z-index: var(--z--backwards)` でルートの中身の背面に回し、ルートには `position: relative` と `isolation: isolate` を指定します。`isolation` でスタッキングコンテキストを作らないと、擬似要素はルートの背景よりも後ろに回り、ルートの背景色に隠れます（「[10-2 コンポーネントの境界を守る](/components/boundaries/#rule-isolation-for-relative-z-index)」）。
 
-この書き方は、私のCodePen（Gradient Border）で使っているものです。CodePenでは、`position: relative` と `isolation` の代わりに `contain: content` を指定しています。`contain: content` に含まれるレイアウトの封じ込めは、要素を絶対配置の包含ブロックにし、スタッキングコンテキストも作るので、1つの宣言で同じ役割を果たします。ただし、ペイントの封じ込めも含むので、ルートからはみ出した子孫の影やポップアップが切り取られます（「[18-7 動きの負荷を抑える](/motion/performance/)」）。本書では、役割がそのまま読み取れる `position: relative` と `isolation: isolate` で書きます。
+この書き方は、私のCodePen（Gradient Border）で使っているものです。CodePenでは、`position: relative` と `isolation` の代わりに `contain: content` を指定しています。`contain: content` に含まれるレイアウトの封じ込めは、要素を絶対配置の包含ブロックにし、スタッキングコンテキストも作るので、1つの宣言で同じ役割を果たします。ただし、ペイントの封じ込めも含むので、ルートからはみ出した子孫の影やポップアップが切り取られます（「[18-10 動きの負荷を抑える](/motion/performance/)」）。本書では、役割がそのまま読み取れる `position: relative` と `isolation: isolate` で書きます。
 
 <Baseline id="masks" />
 
@@ -302,7 +302,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 `::after` が中心の数値です。`calc(var(--count-up--value) / 1%)` は、割合を1%で割った単位のない数値を返し（「[6-4 計算関数を応用する](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless)」）、`counter()` がその数値を文字にします。`counter-reset` は整数を受け取るので、`calc()` の結果は整数に丸められます。`@property` で `<percentage>` に登録した42%を `calc(var(--v) / 1%)` で渡すと、Firefox 156とSafari 26.5で「42」と表示されました（2026年10月確認）。文字の大きさは、コンテナの幅（`100cqi`）に、グラフの幅が `--_basis-width`（200px）のとき32pxとなる比を掛けて決めています。グラフをどの大きさで置いても、輪と数値の大きさの比が変わりません。`tabular-nums` で数字の幅をそろえるのは、数値が増える間も文字の位置を左右に揺らさないためです。
 
-割合は、0%から数え上げて表示します。`--count-up--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。`@keyframes` には `from` だけを書き、終わりの値は擬似要素で指定した値を使います（「[18-4 トランジションと@keyframes](/motion/transitions-and-keyframes/)」）。輪と数値は同じ `@keyframes` で動くので、輪が伸びるのに合わせて数値も増えます。トランジションではなく `@keyframes` を使うのは、トランジションは値が変わったときにしか動かず、ページを開いたときの表示では何も起きないからです。数値が一定の速さで増えるように、イージングは `linear` にしています。動かすのは、`prefers-reduced-motion: no-preference` のときだけです。
+割合は、0%から数え上げて表示します。`--count-up--value` は、`@property` で `<percentage>` の型を登録しています。型のないカスタムプロパティは、途中の値を補間できず、値が一瞬で切り替わります。`@keyframes` には `from` だけを書き、終わりの値は擬似要素で指定した値を使います（「[18-6 @keyframesを設計する](/motion/keyframes/#自明な-from-と-to-を省略する)」）。輪と数値は同じ `@keyframes` で動くので、輪が伸びるのに合わせて数値も増えます。トランジションではなく `@keyframes` を使うのは、トランジションは値が変わったときにしか動かず、ページを開いたときの表示では何も起きないからです。数値が一定の速さで増えるように、イージングは `linear` にしています。動かすのは、`prefers-reduced-motion: no-preference` のときだけです。
 
 <Baseline id="registered-custom-properties" name="@property" />
 

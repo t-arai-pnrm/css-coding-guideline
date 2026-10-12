@@ -59,7 +59,7 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 
 システムカラーは、強制カラーモード以外でも使えます。「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で紹介したフォーカスリングは、`Canvas` と `CanvasText` の2色を重ねているので、強制カラーモードでもそのまま見えます。
 
-要素ごとに強制カラーモードを無効にする、`forced-color-adjust: none` というプロパティもあります。ただし、ユーザーが自分で選んだ配色を打ち消す指定なので、本書では、システムカラーに置き換えると図として成り立たないグラフのような要素に限って使います（「[16-6 輪郭と枠線を描く](/decoration/outlines/)」のドーナツグラフ）。Safariも対応していません（2026年9月確認）。
+要素ごとに強制カラーモードを無効にする、`forced-color-adjust: none` というプロパティもあります。ただし、ユーザーが自分で選んだ配色を打ち消す指定なので、本書では、システムカラーに置き換えると図として成り立たないグラフのような要素に限って使います（「[16-8 輪郭と枠線を描く](/decoration/outlines/)」のドーナツグラフ）。Safariも対応していません（2026年9月確認）。
 
 ## 枠線は消さずに透明にする
 
@@ -139,7 +139,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 通常の文字の中では `CanvasText`、リンクの中では `LinkText`、有効なボタンの中では `ButtonText`、無効な要素の中では `GrayText` になります。アイコンは、周りの文字と同じシステムカラーで描かれます。これらの指定は `base` レイヤーに書くので、コンポーネントの側で文脈を足したいときは、クラス1つで上書きできます。レイヤーを使えない環境では、セレクタを `:where()` で包んで詳細度を0にします（[4-2 セレクタで詳細度を設計する](/cascade/selectors/)）{/* CMSの節を公開したらリンクする: /operations/cms/ */}。
 
-アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」）。
+アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」）。
 
 ```css title="🙆‍♂ Recommended: アイコンの色を --background-current から受け取る"
 ._more {

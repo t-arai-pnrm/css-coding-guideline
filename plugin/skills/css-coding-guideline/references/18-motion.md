@@ -1,8 +1,8 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.51.0（2026-10-12 生成）
+- ガイドラインのバージョン: 0.52.0（2026-10-12 生成）
 - ルールの数: 31
-- 本文: 約19.5万字
+- 本文: 約20.1万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,15 +12,18 @@
 
 ## この章の節
 
-- `motion` 第18章 モーション（約4,700字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/
+- `motion` 第18章 モーション（約5,300字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/
 - `motion/purpose` 18-1 動かすかどうかを決める（約9,400字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/purpose/
 - `motion/reduced-motion` 18-2 動きを減らす設定に対応する（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/
 - `motion/easing-and-duration` 18-3 イージングと再生時間（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/
-- `motion/transitions-and-keyframes` 18-4 トランジションと@keyframes（約3.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
-- `motion/entry-and-exit` 18-5 出現と退場（約3.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
-- `motion/scroll-driven` 18-6 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
-- `motion/performance` 18-7 動きの負荷を抑える（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
-- `motion/view-transitions` 18-8 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/
+- `motion/transitions-and-keyframes` 18-4 トランジションの基本と中断（約6,600字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
+- `motion/transition-techniques` 18-5 トランジションを応用する（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transition-techniques/
+- `motion/keyframes` 18-6 @keyframesを設計する（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/
+- `motion/entry-and-exit` 18-7 出現と退場（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
+- `motion/overlays-and-stagger` 18-8 重ねて出すパネルと順に出す要素（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/overlays-and-stagger/
+- `motion/scroll-driven` 18-9 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
+- `motion/performance` 18-10 動きの負荷を抑える（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
+- `motion/view-transitions` 18-11 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/
 
 ## 18-1 動かすかどうかを決める
 
@@ -79,7 +82,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/
   - 補足: 揺れが収まるまでの時間が要るので、機能的な動きの上限（300ms）を超えます。頻繁に触る UI には使わず、`prefers-reduced-motion: no-preference` の中でだけ指定します。`opacity` には使いません。0〜1の範囲を超えた値が丸められ、揺れが明滅になるためです。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/easing-and-duration/#rule-spring-easing-token
 
-## 18-4 トランジションと@keyframes
+## 18-4 トランジションの基本と中断
 
 https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/
 
@@ -90,32 +93,42 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyfra
   - 理由: 動かすプロパティが一目で分かり、サイトの中で動きの速さと質感がそろうため。
   - 補足: `transition-behavior: allow-discrete` も、略記の `transition` に含めず、ロングハンドで書きます。略記に入れると、`allow-discrete` を解釈できないブラウザでは宣言全体が無効になり、ほかのプロパティのトランジションまで失われるためです。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens
-- 【推奨・仕様上の制約】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
-  - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
-  - 補足: どちらの再生時間もトークンから選びます。例外は、長押しで確定するボタンの進み具合のように、入る側の動きが押し続けた時間そのものを表す場合です。このときは入る側の状態にだけ、確定までの時間（トークンの段階にない値なので、公開用のカスタムプロパティで受け取る）と `linear` を書き、基本のルールにはトランジションを書きません。離したら、判定と同じく進み具合を0に戻すためです。確定は表示のトランジションではなく JavaScript のタイマーで判定し、ボタンの上で離したときに行います。進み具合は確定に要る情報なので、動きを減らす設定でも残し、`transition-property` を絞ったうえで条件の外に書きます。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-transition-duration-per-direction
 - 【推奨・仕様上の制約】操作の途中で取り消されることがある動きは `@keyframes` ではなくトランジションで書き、タブやセグメンテッドコントロールのように続けて押される UI では、再生時間を100〜150msにするか、動きを省く。（`interruptible-with-transition`）
   - 理由: トランジションは途中の状態から逆向きに戻るが、`@keyframes` のアニメーションは途中で止めると値が飛び、続けて押すと動きが操作に追いつかないため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-interruptible-with-transition
+
+## 18-5 トランジションを応用する
+
+https://t-arai-pnrm.github.io/css-coding-guideline/motion/transition-techniques/
+
+- 【推奨・仕様上の制約】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
+  - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
+  - 補足: どちらの再生時間もトークンから選びます。例外は、長押しで確定するボタンの進み具合のように、入る側の動きが押し続けた時間そのものを表す場合です。このときは入る側の状態にだけ、確定までの時間（トークンの段階にない値なので、公開用のカスタムプロパティで受け取る）と `linear` を書き、基本のルールにはトランジションを書きません。離したら、判定と同じく進み具合を0に戻すためです。確定は表示のトランジションではなく JavaScript のタイマーで判定し、ボタンの上で離したときに行います。進み具合は確定に要る情報なので、動きを減らす設定でも残し、`transition-property` を絞ったうえで条件の外に書きます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transition-techniques/#rule-transition-duration-per-direction
+
+## 18-6 @keyframesを設計する
+
+https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/
+
 - 【推奨・仕様上の制約】アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書き、`animation-fill-mode` は `both` を第一候補にする。（`animation-longhand-fill-mode`）
   - 理由: 略記は `animation-timeline` と `animation-range` もリセットするため。また、`both` にしないと、遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
   - 補足: `transition-longhand-with-tokens` と対になるルールです。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-animation-longhand-fill-mode
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/#rule-animation-longhand-fill-mode
 - 【推奨・本書の規約】グローバルな `@keyframes` は1つにつき1つのプロパティだけを変え、複数の動きは `animation-name` のカンマ区切りで組み合わせる。（`keyframes-single-property`）
   - 理由: プロパティごとに再生時間とイージングを選び分けられ、単体でも再利用できるため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-keyframes-single-property
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/#rule-keyframes-single-property
 - 【推奨・実装上の判断】`@keyframes` の自明な `from` や `to` は省略し、要素がもともと持っている値に向けて（または、その値から）動かす。（`keyframes-omit-obvious-frame`）
   - 理由: 値を書き込むと、要素の実際の値と食い違ったときに、動きの始めや終わりで値が飛ぶため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-keyframes-omit-obvious-frame
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/#rule-keyframes-omit-obvious-frame
 - 【推奨・本書の規約】動きの起点や方向を変えたいときは、`@keyframes` の中で `--<keyframes の名前>--<値の名前>` のカスタムプロパティを参照し、使う側から値を渡す。（`keyframes-api-properties`）
   - 理由: 同じ `@keyframes` を、起点や方向だけを変えて使い回せるため。
   - 補足: 例：`--translate-from` の中で `var(--translate-from--y-value, 0)` を参照し、使う側で `--translate-from--y-value: 24px` を指定します。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-keyframes-api-properties
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/#rule-keyframes-api-properties
 - 【推奨・本書の規約】中間のフレームを持つものや、複数のプロパティを同時に動かす `@keyframes` は、コンポーネントの CSS に `--<コンポーネント>--<動きの名前>` の名前で定義する。（`keyframes-local-naming`）
   - 理由: 特定の UI に結びついた動きをグローバルに置かず、名前の衝突も防げるため。
-  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/transitions-and-keyframes/#rule-keyframes-local-naming
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/#rule-keyframes-local-naming
 
-## 18-5 出現と退場
+## 18-7 出現と退場
 
 https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
 
@@ -128,7 +141,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
   - 補足: `!important` や詳細度を上げるセレクタで解決しようとしません。ほかの状態のスタイルまで上書きしてしまうためです。`@keyframes` の値は通常の宣言より優先されます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/#rule-starting-style-not-overridden
 
-## 18-6 スクロールに合わせて動かす
+## 18-9 スクロールに合わせて動かす
 
 https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
 
@@ -148,7 +161,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
   - 理由: JavaScript が動かない環境や、動きを減らす設定をしている環境でも、すべての内容を読めるようにするため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/#rule-motion-mode-attribute
 
-## 18-7 動きの負荷を抑える
+## 18-10 動きの負荷を抑える
 
 https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
 
@@ -165,7 +178,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
   - 補足: 物理の `contain-intrinsic-size` や `contain-intrinsic-height` ではなく、論理の `contain-intrinsic-block-size` を使います。ページ内検索、Tab キーでの移動、スクリーンリーダーの読み上げで中身に届くかを確かめます。閉じたパネルのように、見つかるまで隠しておく中身には `hidden="until-found"` を使います。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/#rule-content-visibility-with-intrinsic-size
 
-## 18-8 View Transitionsで画面の切り替えをつなぐ
+## 18-11 View Transitionsで画面の切り替えをつなぐ
 
 https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/
 

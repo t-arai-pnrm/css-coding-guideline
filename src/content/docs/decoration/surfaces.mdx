@@ -1,8 +1,8 @@
 ---
-title: "16-3 面・影・角丸"
+title: "16-5 面・影・角丸"
 description: "面の背景は役割で決めた4段階のトークンから選び、影は光源の向きをそろえて、段階ごとにオフセットとぼかしを倍にした層を足します。ダークモードでは高い面ほど背景を明るくします。影を動かすときは、box-shadow ではなく filter の drop-shadow() を動かします。角丸もトークンから選び、入れ子にした内側の角丸は、外側の角丸から間の余白を引いた値にします。すりガラスの背景は、半透明の背景に backdrop-filter を重ねて作ります。"
 sidebar:
-  order: 3
+  order: 5
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -21,7 +21,7 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 
 すりガラスの背景は、半透明の背景に `backdrop-filter: blur()` を重ねて作ります。ぼかしに混ざるのは、要素の真後ろにある色だけです。
 
-どれも要素の表面に付ける装飾なので、作るものに合わせて必要な見出しだけを読めば足ります。番号付きリストの番号、文字の縁取り、見出しの行ごとの背景のような文字の装飾は、「[16-4 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。画像の比率と読み込みは「[16-1 画像の配置と読み込み](/decoration/images/)」で、アイコンと図形は「[16-2 アイコン・SVG・マスク](/decoration/icons-and-masks/)」で扱います。
+どれも要素の表面に付ける装飾なので、作るものに合わせて必要な見出しだけを読めば足ります。番号付きリストの番号、文字の縁取り、見出しの行ごとの背景のような文字の装飾は、「[16-6 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。画像は「[16-1 画像の配置と比率](/decoration/images/)」と「[16-2 画像の形式と読み込み](/decoration/image-loading/)」で扱います。アイコンは「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で、`clip-path` で描く図形は「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」で扱います。
 
 ## 面の背景は役割で4段階に分ける
 
@@ -139,7 +139,7 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 }
 ```
 
-Chrome 154で、2つの例のトランジションを1秒に延ばし、パフォーマンスのトレースで比べました（2026年10月確認）。ここでいう描き直しは、DevToolsのPaintの記録です。`box-shadow` の例は毎フレーム描き直され、`drop-shadow()` の例は、ホバーした直後を除いて描き直されませんでした。一方、トランジションの進行は、どちらの例もメインスレッドで計算されます。Chromeは、`drop-shadow()` のように画素を動かすフィルターのアニメーションをコンポジタに移さないので、メインスレッドが詰まると影の変化も止まります。描き直しがなくなっても、GPUでフィルターを当てる処理の負荷は残ります。ほかのブラウザでは確かめていないので、ブラウザ共通の振る舞いとしては扱いません（「[18-7 動きの負荷を抑える](/motion/performance/)」）。{/* 要検証: ブラウザ。Firefox と Safari で、drop-shadow() のトランジションが描き直しなしで処理されるか */}
+Chrome 154で、2つの例のトランジションを1秒に延ばし、パフォーマンスのトレースで比べました（2026年10月確認）。ここでいう描き直しは、DevToolsのPaintの記録です。`box-shadow` の例は毎フレーム描き直され、`drop-shadow()` の例は、ホバーした直後を除いて描き直されませんでした。一方、トランジションの進行は、どちらの例もメインスレッドで計算されます。Chromeは、`drop-shadow()` のように画素を動かすフィルターのアニメーションをコンポジタに移さないので、メインスレッドが詰まると影の変化も止まります。描き直しがなくなっても、GPUでフィルターを当てる処理の負荷は残ります。ほかのブラウザでは確かめていないので、ブラウザ共通の振る舞いとしては扱いません（「[18-10 動きの負荷を抑える](/motion/performance/)」）。{/* 要検証: ブラウザ。Firefox と Safari で、drop-shadow() のトランジションが描き直しなしで処理されるか */}
 
 `--drop-shadow--sm` と `--drop-shadow--md` は、`--shadow--sm` と `--shadow--md` で足す2つの層のオフセットをそのまま使い、ぼかしを半分にしています。`--drop-shadow--lg` は、`--shadow--md` で足す層の大きいほうと `--shadow--lg` で足す層を組にしたものです。色は `box-shadow` の影と同じ `--shadow--color` を参照するので、ダークモードでは `light-dark()` で影の色だけが切り替わります。
 
@@ -161,7 +161,7 @@ Chrome 154で、2つの例のトランジションを1秒に延ばし、パフ�
 
 ## 角丸はトークンから選ぶ
 
-角丸は、`--rounded--sm`（4px）、`--rounded--md`（8px）、`--rounded--lg`（12px）の段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[16-5 角の形を変える](/decoration/shapes/)」で説明しています。
+角丸は、`--rounded--sm`（4px）、`--rounded--md`（8px）、`--rounded--lg`（12px）の段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[16-7 角の形を変える](/decoration/shapes/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする"
 @scope (.scoped.account-menu) to (.scoped) {
