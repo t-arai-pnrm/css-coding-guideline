@@ -84,7 +84,7 @@ article {
 <Baseline id="subgrid" />
 
 ```css title="🙆‍♂ Recommended: カードの行を、並べる側のグリッドの行に参加させる"
-@scope (.scoped.card-grid) to (.scoped) {
+@scope (.scoped.article-cards) to (.scoped) {
   :scope {
     display: block grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
@@ -103,7 +103,7 @@ article {
 }
 ```
 
-行の高さは、その行でいちばん高い見出しに合わせて決まります。本文とボタンの行も同じなので、見出しや本文の長さがカードごとに違っても、ボタンの位置は横一列にそろいます。
+行の高さは、その行でいちばん高い見出しに合わせて決まります。本文とボタンの行も同じなので、見出しや本文の長さがカードごとに違っても、ボタンの位置は横一列にそろいます。カードの行は一覧の行なので、この例では、一覧とカードを `article-cards` という1つのコンポーネントにしています（「[10-1 何をコンポーネントにするか](/components/what-is-a-component/#行をそろえて並べる一覧と項目)」）。
 
 `grid-row: span 3` は、カードが親の行を3行分使うという指定で、中の要素の数と一致させます。指定を忘れると、カードは親の1行分にしかまたがらず、見出しと本文とボタンが同じ1行に押し込まれてしまいます。サブグリッドの行の間隔は、何も指定しなければ親の `gap` を引き継ぐので、カードの中の間隔は `row-gap` で指定し直しています。
 

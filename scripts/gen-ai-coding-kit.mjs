@@ -42,9 +42,9 @@ for (const file of files) {
 const EXERCISE_CSS = {
   'base.css': 'public/exercise-files/base.css',
   'compositions.css': 'public/exercise-files/card-grid/finished/compositions.css',
-  'article-card.css': 'public/exercise-files/card-grid/finished/article-card.css',
+  'article-cards.css': 'public/exercise-files/card-grid/finished/article-cards.css',
 };
 for (const [name, from] of Object.entries(EXERCISE_CSS)) {
-  writeFileSync(join(outDir, 'tests/pages/article-card', name), readFileSync(join(root, from)));
+  writeFileSync(join(outDir, 'tests/pages/article-cards', name), readFileSync(join(root, from)));
 }
 console.log(`${files.length + Object.keys(EXERCISE_CSS).length} 個のファイルを public/ai-coding-files/ に写した`);

@@ -24,50 +24,48 @@ AIは、検証が通ってから `[x]` を付けます。検証の前に印を�
 
 ## lintが通っても、宣言が効いているとは限らない
 
-次のコードは、構文に誤りがなく、本書のStylelintの設定でも1件も報告されません。しかし、カードが広い置き場所に置かれても、`gap` は12px相当のままです。
+次のコードは、構文に誤りがなく、本書のStylelintの設定でも1件も報告されません。しかし、一覧が広い置き場所に置かれても、カードの `padding` は0のままです。
 
 ```css title="🙅‍♂ Not Recommended: フラグを宣言した要素が、自分のフラグを問い合わせる"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.article-card) to (.scoped) {
+@scope (.scoped.article-cards) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
   }
 
-  ._layout {
+  ._card {
     --_density: --compact;
 
     display: block grid;
-    gap: calc(var(--spacing--xs) * 1px);
 
     @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
       --_density: --spacious;
     }
 
     @container style(--_density: --spacious) {
-      gap: calc(var(--spacing--sm) * 1px);
+      padding: calc(var(--spacing--sm) * 1px);
     }
   }
 }
 ```
 
-スタイルクエリは、問い合わせる要素自身ではなく、祖先の要素のカスタムプロパティを調べます。`._layout` の `--_density` は `--spacious` に切り替わっていますが、`._layout` のスタイルクエリが調べるのは親のルートの値で、ルートには `--_density` がありません。条件が成り立たないので、`gap` の宣言は適用されません。
+スタイルクエリは、問い合わせる要素自身ではなく、祖先の要素のカスタムプロパティを調べます。`._card` の `--_density` は `--spacious` に切り替わっていますが、`._card` のスタイルクエリが調べるのは親の一覧のルートの値で、ルートには `--_density` がありません。条件が成り立たないので、`gap` の宣言は適用されません。
 
 ```css title="🙆‍♂ Recommended: 要素自身の値はコンテナサイズクエリの中に書き、子孫がフラグを問い合わせる"
-@scope (.scoped.article-card) to (.scoped) {
+@scope (.scoped.article-cards) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
   }
 
-  ._layout {
+  ._card {
     --_density: --compact;
 
     display: block grid;
-    gap: calc(var(--spacing--xs) * 1px);
 
     @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
       --_density: --spacious;
 
-      gap: calc(var(--spacing--sm) * 1px);
+      padding: calc(var(--spacing--sm) * 1px);
     }
   }
 
@@ -86,12 +84,12 @@ AIは、検証が通ってから `[x]` を付けます。検証の前に印を�
 このような誤りは、lintでは見つかりません。宣言が適用されているかは、ブラウザの計算値で確かめます（`verify-applied-styles`）。開発者ツールのコンソールか、Playwright MCPの `browser_evaluate` で、次のように読みます。
 
 ```js title="計算値を読む"
-const layout = document.querySelector('#wide .article-card ._layout');
-getComputedStyle(layout).getPropertyValue('--_density'); // '--spacious'
-getComputedStyle(layout).rowGap; // '12px'（対応表では 16px）
+const card = document.querySelector('#wide .article-cards ._card');
+getComputedStyle(card).getPropertyValue('--_density'); // '--spacious'
+getComputedStyle(card).paddingBlockStart; // '0px'（対応表では 16px）
 ```
 
-フラグは `--spacious` なのに、`row-gap` は12pxのままです。計算値と対応表が食い違えば、AIはどの宣言が勝ったかを調べます。調べ方は「[20-3 MCPサーバーを役割で使い分ける](/ai-coding/mcp-servers/)」（Chrome DevTools MCPの `get_css_styles` で、勝った宣言と負けた宣言を確かめる）で説明しています。
+フラグは `--spacious` なのに、`padding` は0のままです。計算値と対応表が食い違えば、AIはどの宣言が勝ったかを調べます。調べ方は「[20-3 MCPサーバーを役割で使い分ける](/ai-coding/mcp-servers/)」（Chrome DevTools MCPの `get_css_styles` で、勝った宣言と負けた宣言を確かめる）で説明しています。
 
 ## 値の対応表をテストにする
 
@@ -101,7 +99,7 @@ getComputedStyle(layout).rowGap; // '12px'（対応表では 16px）
 
 テストは、対応表の「書く値」を、対象と同じ親の中に置いた比較用の要素に指定し、2つの計算値を比べます。トークンを参照する値は、ブラウザが解決した値どうしで比べるので、テストにトークンの実際の値を書き写す必要はありません。演習のコラム一覧のページで試すと、正しい値の行は一致し、見出しの大きさをわざと誤らせた行だけが不一致になりました。
 
-置き場所は、テストページで幅を固定します。コンテナサイズクエリで切り替わる値は、画面の幅ではなく置き場所の幅で決まるからです。たとえば、コラム一覧のサイドの列は、狭い画面ではメインの列の下に回って広くなります。サイドの列に置いたカードを狭い形と期待するテストは、その幅では失敗します。
+置き場所は、テストページで幅を固定します。コンテナサイズクエリで切り替わる値は、画面の幅ではなく置き場所の幅で決まるからです。たとえば、コラム一覧のサイドの列は、狭い画面ではメインの列の下に回って広くなります。サイドの列に置いた一覧のカードを狭い形と期待するテストは、その幅では失敗します。
 
 このテストには、2つの限界があります。1つは、値に `%` や `em` を含む行は比べられないことです。比較用の要素と対象の要素で、大きさの基準が変わるからです。もう1つは、作る手間がかかることです。テストにするのは、幅や置き場所で切り替わるコンポーネントのような大きなタスクだけにし、小さなタスクでは、計算値を読む確認で済ませます。
 
@@ -115,9 +113,9 @@ getComputedStyle(layout).rowGap; // '12px'（対応表では 16px）
 | --- | --- |
 | `playwright.config.ts` | テストページを配信するサーバー、`baseURL`、確かめるブラウザの設定 |
 | `tests/design-values.spec.ts` | 値の対応表を計算値と照合するテスト |
-| `tests/pages/article-card/` | テストページ（`index.html`）と、演習の21-3を終えた時点のCSS |
+| `tests/pages/article-cards/` | テストページ（`index.html`）と、演習の21-3を終えた時点のCSS |
 
-テストページには、広い置き場所（`#wide`、最大400px相当）と狭い置き場所（`#narrow`、240px相当）を置き、長い見出し、画像のない記事、長いカテゴリー名、長い英単語を入れたカードを並べています。CSSは、演習の配布ファイルと同じものです。
+テストページには、広い置き場所（`#wide`、最大400px相当）と狭い置き場所（`#narrow`、240px相当）を置き、それぞれに記事のカードの一覧を置いています。カードには、長い見出し、画像のない記事、長いカテゴリー名、長い英単語を入れています。CSSは、演習の配布ファイルと同じものです。
 
 <Code code={playwrightConfig} lang="ts" title="playwright.config.ts" />
 

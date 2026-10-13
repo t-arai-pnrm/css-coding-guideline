@@ -1,9 +1,22 @@
+/**
+ * 記事のカードの一覧。
+ * カードの中の行を一覧のグリッドの行にそろえるので、一覧とカードを1つのコンポーネントにする。
+ */
 @layer components {
-  /* 記事のカード */
-  @scope (.scoped.article-card) to (.scoped) {
+  @scope (.scoped.article-cards) to (.scoped) {
     :scope {
+      --grid--column-min-width: calc(280 / 16 * 1rem);
+      --grid--column-max-count: 2;
+      --grid--gap: 24px;
+    }
+
+    ._card {
       display: block grid;
-      gap: 16px;
+
+      /* 画像、日付とカテゴリー、見出し、抜粋の4行を、一覧のグリッドの行に参加させる */
+      grid-template-rows: subgrid;
+      grid-row: span 4;
+      row-gap: 12px;
       padding: 16px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--lg);
@@ -15,11 +28,6 @@
       aspect-ratio: 16 / 9;
       border-radius: var(--rounded--sm);
       object-fit: cover;
-    }
-
-    ._body {
-      display: block grid;
-      gap: 8px;
     }
 
     ._meta {
@@ -55,6 +63,12 @@
       &:focus-visible {
         text-decoration-line: underline;
       }
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
     }
   }
 }

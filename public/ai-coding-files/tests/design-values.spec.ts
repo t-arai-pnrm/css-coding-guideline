@@ -7,23 +7,25 @@ import { test, expect } from '@playwright/test';
  * 値に % や em を含む行は、比較用の要素と大きさの基準が変わるので、この方法では比べない。
  */
 
-// 最悪の内容を入れたテストページ（tests/pages/article-card/index.html）。カードを、幅の違う2つの置き場所に並べている。
+// 最悪の内容を入れたテストページ（tests/pages/article-cards/index.html）。記事のカードの一覧を、幅の違う2つの置き場所に置いている。
 // コンテナサイズクエリで切り替わる値は、画面の幅ではなく置き場所の幅で決まるので、
 // #narrow は幅240px相当に固定し、#wide は最大400px相当にして、どの画面の幅でも同じ値を期待できるようにする
-const PAGE = '/tests/pages/article-card/';
+const PAGE = '/tests/pages/article-cards/';
 const WIDTHS = [320, 480, 768, 1024, 1280];
 
 // plan の値の対応表から写す
 const ROWS = [
-  { selector: '#narrow .article-card ._layout', property: 'row-gap', value: 'calc(var(--spacing--xs) * 1px)' },
-  { selector: '#wide .article-card ._layout', property: 'row-gap', value: 'calc(var(--spacing--sm) * 1px)' },
-  { selector: '#narrow .article-card h3', property: 'font-size', value: 'calc(var(--text--subtitle--font-size) / 16 * 1rem)' },
-  { selector: '#wide .article-card h3', property: 'font-size', value: 'calc(var(--text--title--font-size) / 16 * 1rem)' },
-  { selector: '#wide .article-card time', property: 'color', value: 'var(--foreground--muted)' },
+  { selector: '#wide .article-cards', property: 'column-gap', value: 'calc(var(--spacing--md) * 1px)' },
+  { selector: '#wide .article-cards ._card', property: 'row-gap', value: 'calc(var(--spacing--xs) * 1px)' },
+  { selector: '#wide .article-cards ._card', property: 'padding-block-start', value: 'calc(var(--spacing--sm) * 1px)' },
+  { selector: '#narrow .article-cards ._card', property: 'column-gap', value: 'calc(var(--spacing--xs) * 1px)' },
+  { selector: '#narrow .article-cards h3', property: 'font-size', value: 'calc(var(--text--subtitle--font-size) / 16 * 1rem)' },
+  { selector: '#wide .article-cards h3', property: 'font-size', value: 'calc(var(--text--title--font-size) / 16 * 1rem)' },
+  { selector: '#wide .article-cards time', property: 'color', value: 'var(--foreground--muted)' },
 ];
 
 for (const width of WIDTHS) {
-  test(`article-card：${width}px`, async ({ page }) => {
+  test(`article-cards：${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(PAGE);
 

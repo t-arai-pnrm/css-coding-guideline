@@ -16,23 +16,25 @@ Figmaのデザインは、計画の段階で読みます。AIは、デザイン�
 
 ## 完成したplanの例
 
-次の例は、演習の記事カード（`article-card`）をFigmaのフレームから作るタスクのplanを、抜粋したものです。FigmaのURLとノードのIDは架空の値で、トークンは本書のデモの共通トークン（付録I「[デモの共通トークン](/appendix/demo-tokens/)」）を使っています。
+次の例は、演習の記事カードの一覧（`article-cards`）をFigmaのフレームから作るタスクのplanを、抜粋したものです。FigmaのURLとノードのIDは架空の値で、トークンは本書のデモの共通トークン（付録I「[デモの共通トークン](/appendix/demo-tokens/)」）を使っています。
 
-````md title="tasks/article-card/plan.md（抜粋）"
+````md title="tasks/article-cards/plan.md（抜粋）"
 ---
 status: draft
 approved:
 ---
 
-# 計画：記事カード
+# 計画：記事カードの一覧
 
 ## 値の対応表
 
 | 要素 | プロパティ | 条件 | Figma の値 | 書く値 | 種類 | 備考 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `._layout` | `gap` | 広い形 | 16 | `calc(var(--spacing--sm) * 1px)` | トークン | |
-| `._layout` | `gap` | 狭い形 | 12 | `calc(var(--spacing--xs) * 1px)` | トークン | |
-| `._layout` | `grid-template-columns` | 狭い形 | 96 と残り | `calc(96 / 16 * 1rem) 1fr` | 例外 | サムネイルの幅。このカードでしか使わない |
+| `:scope` | `--grid--gap` | | 24 | `calc(var(--spacing--md) * 1px)` | トークン | カードの間 |
+| `._card` | `row-gap` | 広い形 | 12 | `calc(var(--spacing--xs) * 1px)` | トークン | |
+| `._card` | `padding` | 広い形 | 16 | `calc(var(--spacing--sm) * 1px)` | トークン | |
+| `._card` | `column-gap` | 狭い形 | 12 | `calc(var(--spacing--xs) * 1px)` | トークン | |
+| `._card` | `grid-template-columns` | 狭い形 | 96 と残り | `calc(96 / 16 * 1rem) 1fr` | 例外 | サムネイルの幅。この一覧でしか使わない |
 | `h3` | `font-size`、`line-height` | 広い形 | 19 / 26 | `--text--title--*` | トークン | Q1 の回答による |
 | `h3` | `font-size`、`line-height` | 狭い形 | Subtitle | `--text--subtitle--*` | トークン | Figma の文字のスタイル |
 | `time` | `color` | | `text/muted` | `var(--foreground--muted)` | トークン | Figma の変数 |
@@ -50,8 +52,8 @@ approved:
 
 | ファイル | 変更 | 影響範囲 |
 | --- | --- | --- |
-| `src/styles/components/article-card.css` | 新規 | このカードだけ |
-| `src/pages/test/article-card.astro` | 新規 | テストページだけ |
+| `src/styles/components/article-cards.css` | 新規 | この一覧だけ |
+| `src/pages/test/article-cards.astro` | 新規 | テストページだけ |
 
 ## 手順
 
@@ -93,9 +95,9 @@ AIにFigmaを読ませる手順は、4つの段階に分かれます。大きな
 
 ```css title="🙅‍♂ Not Recommended: カンプの値をそのまま写す"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.article-card) to (.scoped) {
-  ._layout {
-    gap: 15px;
+@scope (.scoped.article-cards) to (.scoped) {
+  ._card {
+    row-gap: 11px;
   }
 
   h3 {
@@ -109,12 +111,12 @@ AIにFigmaを読ませる手順は、4つの段階に分かれます。大きな
 }
 ```
 
-この書き方では、`gap` の15pxがトークンの16pxと違うことも、見出しが19pxであることも、意図した差なのかが分かりません。文字色の `#767676` も、どの役割の色なのかが読み取れず、ダークモードで値を切り替えることもできません。同じことが別のカードでも起きると、デザインの共通のルールがコードから読み取れなくなります。
+この書き方では、`row-gap` の11pxがトークンの12pxと違うことも、見出しが19pxであることも、意図した差なのかが分かりません。文字色の `#767676` も、どの役割の色なのかが読み取れず、ダークモードで値を切り替えることもできません。同じことが別のカードでも起きると、デザインの共通のルールがコードから読み取れなくなります。
 
 ```css title="🙆‍♂ Recommended: 対応表のとおり、トークンで書く"
-@scope (.scoped.article-card) to (.scoped) {
-  ._layout {
-    gap: calc(var(--spacing--sm) * 1px);
+@scope (.scoped.article-cards) to (.scoped) {
+  ._card {
+    row-gap: calc(var(--spacing--xs) * 1px);
   }
 
   h3 {

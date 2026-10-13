@@ -2,7 +2,7 @@
  * 第21章の演習を手元で進めるためのファイルを、演習のデモから生成する。
  * 出力先は `public/exercise-files/` で、サイトの `/exercise-files/` から読める。
  *
- * - `base.css`：レイヤーの順序宣言、共通トークンと演習のサイトのトークン（tokens レイヤー）、kiso.css（reset レイヤー）、デモのベーススタイル
+ * - `base.css`：レイヤーの順序宣言、共通トークンと演習のサイトのトークン（tokens レイヤー）、kiso.css（reset レイヤー）、デモと演習のベーススタイル
  * - `<節のスラッグ>/start/`：開始版。その節で作るファイルだけを空にし、ほかの部品は完成した状態にする
  * - `<節のスラッグ>/middle/`：中間版。最初の要件を終えた時点（デモの `<スラッグ>-1`）
  * - `<節のスラッグ>/finished/`：完成版。要件の変更を終えた時点（デモの `<スラッグ>-2`）
@@ -32,7 +32,7 @@ const read = (path) => readFileSync(join(root, path), 'utf8');
  */
 const SECTIONS = [
   { slug: 'buttons', title: '21-2 ボタンとセクション見出しを作る', empty: ['action-control.css', 'patterns.css'] },
-  { slug: 'card-grid', title: '21-3 カード一覧とサイドバーを作る', empty: ['article-card.css'] },
+  { slug: 'card-grid', title: '21-3 カード一覧とサイドバーを作る', empty: ['article-cards.css'] },
   {
     slug: 'article-list',
     title: '21-4 記事リストを作る',
@@ -89,6 +89,8 @@ ${kiso}
 }
 
 ${pickConstant('DEMO_BASE')}
+
+${pickConstant('EXERCISE_BASE')}
 `;
 
 /* ---------- CSS の切り出し ---------- */

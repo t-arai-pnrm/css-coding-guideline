@@ -74,22 +74,24 @@
   /* カテゴリーの絞り込み。各カテゴリーのページへのリンクを並べ、今のページを示す */
   @scope (.scoped.category-filter) to (.scoped) {
     ul {
-      --cluster--gap: 8px;
+      --cluster--gap: 0;
     }
 
     a {
       --_hit-size: max(24px, 24 / 16 * 1rem);
       --_background: transparent;
       --_background--hocus: var(--background--hover);
+      --_border-color: var(--border--base);
 
+      position: relative;
       display: block flex;
       align-items: center;
       min-block-size: var(--_hit-size);
-      padding-block: 8px;
-      padding-inline: 20px;
-      border: 1px solid var(--border--base);
-      border-radius: var(--rounded--full);
-      background-color: var(--_background);
+
+      /* ピルの内側の余白（上下8px、左右20px）と枠線（1px）に、ピルの間の隙間の半分（4px）を足す */
+      padding-block: 13px;
+      padding-inline: 25px;
+      isolation: isolate;
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       font-weight: var(--font-weight--bold);
       line-height: var(--text--body-compact--leading);
@@ -98,11 +100,25 @@
         --_hit-size: max(44px, 44 / 16 * 1rem);
       }
 
+      /*
+       * ピルの形は擬似要素に描き、内側に4pxずつ寄せる。
+       * 項目どうしは隙間なく並ぶので、ピルの間を通ってもホバーが途切れず、押せる範囲も途切れない
+       */
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        z-index: var(--z--backwards);
+        border: 1px solid var(--_border-color);
+        border-radius: var(--rounded--full);
+        background-color: var(--_background);
+      }
+
       &[aria-current="page"] {
         --_background: var(--background--accent);
         --_background--hocus: oklch(from var(--background--accent) calc(l - 0.06) c h);
+        --_border-color: transparent;
 
-        border-color: transparent;
         color: var(--foreground--on-accent);
 
         /* 強制カラーモードでは塗りが消え、選んだ項目を見分けられなくなるので、下線を引く */
@@ -115,12 +131,12 @@
 
       &:any-link:hover {
         @media (any-hover) {
-          background-color: var(--_background--hocus);
+          --_background: var(--_background--hocus);
         }
       }
 
       &:focus-visible {
-        background-color: var(--_background--hocus);
+        --_background: var(--_background--hocus);
       }
     }
   }
@@ -215,8 +231,9 @@
         inset: 0;
       }
 
-      /* フォーカスリングは行の外周に出すので、リンク自身の outline は色だけを透明にする */
+      /* フォーカスリングは行の外周に出すので、リンク自身のリングは、ベーススタイルの影を戻し、outline の色だけを透明にする */
       &:focus-visible {
+        box-shadow: initial;
         outline-color: transparent;
       }
     }

@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
  * 20-6 の値の照合テスト（tests/design-values.spec.ts）を動かすための、最小の設定。
  * プロジェクトのルートに置く。
  *
- * テストページ（tests/pages/article-card/）を、静的なファイルのサーバーで配信する。
+ * テストページ（tests/pages/article-cards/）を、静的なファイルのサーバーで配信する。
  * プロジェクトに開発サーバーがあれば、webServer の command と url、use の baseURL を、
  * その開発サーバーのものに書き換え、テストページも開発サーバーで配信する。
  */

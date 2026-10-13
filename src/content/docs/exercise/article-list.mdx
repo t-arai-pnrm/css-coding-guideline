@@ -26,6 +26,7 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 - [12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)
 - [15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)
 - [16-10 区切り線を引く](/decoration/separators/)
+- [17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)
 - [17-3 状態を属性で表す](/interaction/state-attributes/)
 - [17-4 カード全体をリンクにする](/interaction/card-link/)
 
@@ -136,32 +137,53 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
     }
 
     &:focus-visible {
+      box-shadow: initial;
       outline-color: transparent;
     }
   }
 }
 ```
 
-見出しのリンクのホバーとフォーカスは、ルートの `:has()` で `--_has-hocus` のフラグにまとめ、サムネイルと見出しのリンクがフラグを読みます。子孫の状態を親でまとめるフラグなので、自分の `:hover` で立てる `--_hocus` とは名前を分けています（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/#子の状態で親を変えるときのhas)」）。フォーカスリングは、押せる範囲と同じ行の外周に出し、見出しのリンク自身のリングは色だけを透明にします。
+見出しのリンクのホバーとフォーカスは、ルートの `:has()` で `--_has-hocus` のフラグにまとめ、サムネイルと見出しのリンクがフラグを読みます。子孫の状態を親でまとめるフラグなので、自分の `:hover` で立てる `--_hocus` とは名前を分けています（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/#子の状態で親を変えるときのhas)」）。フォーカスリングは、押せる範囲と同じ行の外周に出します。見出しのリンク自身のリングは、ベーススタイルの二重のリングの内側に描いた `box-shadow` を `initial` で戻し、`outline` は色だけを透明にします（「[17-4 カード全体をリンクにする](/interaction/card-link/)」）。
 
 ## 今いるカテゴリーを aria-current で示す
 
 絞り込みは、各カテゴリーのページへのリンクです。今いるページのリンクには `aria-current="page"` を付け、スクリーンリーダーにも、今いるページだと伝えます。CSSは、この属性を状態のセレクタにして見た目を変えます。状態のためのクラスは足しません（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。
 
-```css title="🙆‍♂ Recommended: 今いるページのリンクは、内部プロパティの値だけを変える"
+```css title="🙆‍♂ Recommended: リンクを隙間なく並べ、ピルの形と今いるページの塗りを擬似要素に描く"
 @scope (.scoped.category-filter) to (.scoped) {
+  ul {
+    --cluster--gap: 0;
+  }
+
   a {
     --_background: transparent;
     --_background--hocus: var(--background--hover);
+    --_border-color: var(--border--base);
 
-    border: 1px solid var(--border--base);
-    background-color: var(--_background);
+    position: relative;
+
+    /* ピルの内側の余白（上下8px、左右20px）と枠線（1px）に、ピルの間の隙間の半分（4px）を足す */
+    padding-block: 13px;
+    padding-inline: 25px;
+    isolation: isolate;
+
+    /* ピルの形は擬似要素に描き、内側に4pxずつ寄せる */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      z-index: var(--z--backwards);
+      border: 1px solid var(--_border-color);
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+    }
 
     &[aria-current="page"] {
       --_background: var(--background--accent);
       --_background--hocus: oklch(from var(--background--accent) calc(l - 0.06) c h);
+      --_border-color: transparent;
 
-      border-color: transparent;
       color: var(--foreground--on-accent);
 
       /* 強制カラーモードでは塗りが消え、選んだ項目を見分けられなくなるので、下線を引く */
@@ -174,18 +196,20 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 
     &:any-link:hover {
       @media (any-hover) {
-        background-color: var(--_background--hocus);
+        --_background: var(--_background--hocus);
       }
     }
 
     &:focus-visible {
-      background-color: var(--_background--hocus);
+      --_background: var(--_background--hocus);
     }
   }
 }
 ```
 
-書き方は、21-2の `action-control` と同じです。状態ごとに内部プロパティの値を変え、ホバーとフォーカスの背景は1か所で読みます（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。今いるページのリンクを塗る色は、選んだ状態を示す `--background--accent` で、ホバーのときは相対カラー構文で少し暗くします。
+リンクの間は、`cluster` の `gap` で空けません。ホバーで背景が付く項目の間に隙間があると、カーソルが隙間を通る間はどのリンクにも背景が付かず、隙間を押しても何も起きないからです（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。リンクは隙間なく並べ、ピルの枠線と塗りは `::before` に描いて、`inset` で4pxずつ内側に寄せます。ピルとピルの間には8pxの隙間が見えますが、ホバーを受ける範囲と押せる範囲は、リンクの全体に残ります。
+
+状態ごとに内部プロパティの値を変え、塗りは擬似要素が1か所で読みます。書き方は、21-2の `action-control` と同じです（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。今いるページのリンクを塗る色は、選んだ状態を示す `--background--accent` で、ホバーのときは相対カラー構文で少し暗くします。
 
 今いるページのリンクは、塗りと枠線の有無で見分けます。強制カラーモードでは `background-color` がシステムカラーに置き換わり、塗りが消えて、どのリンクも同じ枠線と文字色になります。色の違いだけが手がかりになる状態なので、強制カラーモードのときだけ、今いるページのリンクに下線を引きます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。選択のシステムカラーの `Highlight` で塗り直す方法もありますが、強制カラーモードでは文字の後ろにページの背景色の板（バックプレート）が敷かれ、`HighlightText` の文字が読めなくなります。`forced-color-adjust: none` で強制カラーモードを外せば塗れますが、ユーザーが選んだ配色を打ち消すことになります。下線なら、配色はユーザーの選んだとおりのまま、線の有無で見分けられます。
 
@@ -303,5 +327,6 @@ CMSで記事の登録が始まり、カンプになかった記事が入って�
 - [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは `block-size` で固定しません。
 - [`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index)：内部の要素で相対的な `z-index` を使うコンポーネントは、ルートに `isolation: isolate` を指定します。
 - [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：`z-index` の値は、数値を直接書かずにトークンで指定します。
+- [`no-gaps-between-hover-items`](/interaction/hit-area-and-touch/#rule-no-gaps-between-hover-items)：ホバーで背景が付く項目の間を `gap` で空けず、背景の帯を離して見せるときは擬似要素を `inset` で内側に寄せます。
 - [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素には24px相当の大きさを確保し、指で操作する環境では44px相当にします。
 - [`pseudo-hit-area-no-overlap`](/interaction/hit-area-and-touch/#rule-pseudo-hit-area-no-overlap)：擬似要素で押せる範囲を広げるときは、隣の操作する要素に重ねません。

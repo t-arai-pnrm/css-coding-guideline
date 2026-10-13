@@ -76,6 +76,50 @@ const DEMO_BASE = `@layer base {
   }
 }`;
 
+/**
+ * 第21章の演習のサイトのベーススタイル。演習は1つのサイトを作るので、本書のベーススタイル（第8章、第14章）を通して当てる。
+ * 解説のデモでは、話題と関係のない見た目の差を増やさないよう、`DEMO_BASE` だけにしている。
+ */
+const EXERCISE_BASE = `@layer base {
+  :root {
+    text-underline-offset: 25%;
+
+    &:lang(ja) {
+      font-kerning: none;
+    }
+  }
+
+  :lang(en) {
+    font-kerning: normal;
+  }
+
+  :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
+    font-kerning: normal;
+
+    &:lang(en) {
+      text-wrap: balance;
+    }
+
+    &:lang(ja) {
+      font-feature-settings: "palt";
+
+      @supports (word-break: auto-phrase) {
+        text-wrap: balance;
+        word-break: auto-phrase;
+      }
+    }
+  }
+
+  :focus-visible {
+    --_b--ring-width: 3px;
+    --_b--ring-offset: 3px;
+
+    box-shadow: 0 0 0 calc(var(--_b--ring-offset) + var(--_b--ring-width)) Canvas;
+    outline: var(--_b--ring-width) solid CanvasText;
+    outline-offset: var(--_b--ring-offset);
+  }
+}`;
+
 export const buildSrcdoc = ({
   html,
   css,
@@ -104,6 +148,7 @@ export const buildSrcdoc = ({
       `<style>@layer reset {\n${kisoCss}\n}</style>`,
       `<style>${DEMO_BASE}</style>`,
     );
+    if (base === 'exercise') head.push(`<style>${EXERCISE_BASE}</style>`);
   }
   head.push(`<style>\n${css}\n</style>`);
   const script = js ? `<script type="module">\n${js}\n</script>` : '';

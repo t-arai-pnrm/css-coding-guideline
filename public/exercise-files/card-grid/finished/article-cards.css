@@ -1,28 +1,40 @@
 /**
- * 記事のカード。
- * 置かれた場所の幅で、画像が上の広い形と、画像が左の狭い形を切り替える。
+ * 記事のカードの一覧。
+ * カードの中の行を一覧のグリッドの行にそろえるので、一覧とカードを1つのコンポーネントにする。
  */
 @layer components {
-  @scope (.scoped.article-card) to (.scoped) {
+  @scope (.scoped.article-cards) to (.scoped) {
     :scope {
+      --grid--column-min-width: calc(280 / 16 * 1rem);
+      --grid--column-max-count: 2;
+      --grid--gap: 24px;
+
+      /* カードは subgrid にするのでコンテナにできない。カードの形は、一覧の幅で切り替える */
       container: --scoped / inline-size;
     }
 
     /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
-    ._layout {
+    ._card {
       --_density: --compact;
 
       display: block grid;
       grid-template-columns: calc(96 / 16 * 1rem) 1fr;
-      gap: 12px;
-      align-items: start;
+      grid-template-rows: auto 1fr;
+      gap: 4px 12px;
 
-      /* サイドの列の幅（240px 相当）より広く、一覧の列の最小幅（280px 相当）より狭い幅 */
+      /*
+       * サイドの列の幅（240px 相当）より広く、一覧の列の最小幅（280px 相当）より狭い幅。
+       * 1列のときはカードの幅が一覧の幅と同じで、2列になるのは列が280px相当以上のときなので、一覧の幅で判断してよい
+       */
       @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
         --_density: --spacious;
 
         grid-template-columns: 1fr;
-        gap: 16px;
+
+        /* 画像、日付とカテゴリー、見出し、抜粋の4行を、一覧のグリッドの行に参加させる */
+        grid-template-rows: subgrid;
+        grid-row: span 4;
+        row-gap: 12px;
         padding: 16px;
         border: 1px solid var(--border--base);
         border-radius: var(--rounded--lg);
@@ -35,11 +47,11 @@
       aspect-ratio: 16 / 9;
       border-radius: var(--rounded--sm);
       object-fit: cover;
-    }
 
-    ._body {
-      display: block grid;
-      gap: 8px;
+      /* 画像が左の形では、日付とカテゴリー、見出しの2行にまたがらせる */
+      @container style(--_density: --compact) {
+        grid-row: span 2;
+      }
     }
 
     ._meta {
@@ -79,6 +91,17 @@
 
       &:focus-visible {
         text-decoration-line: underline;
+      }
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+
+      /* 画像が左の形では、抜粋を出さない */
+      @container style(--_density: --compact) {
+        display: none;
       }
     }
   }

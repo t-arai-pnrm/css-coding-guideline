@@ -1,8 +1,8 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.57.2（2026-10-13 生成）
-- ルールの数: 51
-- 本文: 約16.1万字
+- ガイドラインのバージョン: 0.58.0（2026-10-13 生成）
+- ルールの数: 52
+- 本文: 約16.3万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,7 +13,7 @@
 ## この章の節
 
 - `components` 第10章 コンポーネントとカスタムプロパティ（約8,700字）https://t-arai-pnrm.github.io/css-coding-guideline/components/
-- `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-component/
+- `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-component/
 - `components/boundaries` 10-2 コンポーネントの境界を守る（約3万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/
 - `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/compositions-and-utilities/
 - `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/components/design-tokens/
@@ -42,6 +42,10 @@ https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-componen
   - 理由: 区画をコンポーネントに分けると、区画のルートの `.scoped` で親のスコープが打ち切られ、親の中の並びを親の CSS だけで決められなくなるため。
   - 補足: 親の外でも独立した責務と再利用の価値を持つ子要素（カードの中のボタンなど）は、別のコンポーネントにしてかまいません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-component/#rule-local-parts-stay-in-parent
+- 【推奨・実装上の判断】`subgrid` で項目の中の行を一覧の行にそろえるときは、一覧と項目を1つのコンポーネントにし、項目を一覧の子要素として書く。（`subgrid-list-as-one-component`）
+  - 理由: `subgrid` の項目は、一覧のグリッドの行にまたがって初めて行がそろい、一覧の外に取り出すとそろえる相手がなくなるため。項目をコンテナにすると `subgrid` にできないので、項目を別のコンポーネントにして置かれた幅で形を変えることもできないため。
+  - 補足: 一覧のルートに `grid` などのコンポジションを付けるときは、列の最小幅や間隔を一覧の `:scope` から渡します。項目の形を置かれた幅で切り替えるときは、一覧のルートをコンテナにし、項目がフラグを宣言します（`density-via-style-query`）。項目だけを一覧の外に1つ置く場所があっても、1項目の一覧として置きます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/what-is-a-component/#rule-subgrid-list-as-one-component
 - 【推奨・実装上の判断】見た目が似ていても、役割や中に入る内容が異なるものは、別のコンポーネントにする。（`component-split-by-role`）
   - 理由: 別物を1つにまとめると分岐が増えて肥大化し、後から不要になった部分も捨てられなくなるため。
   - 補足: 見た目の共通化だけを理由に、新しいコンポーネントを作ることもしません。

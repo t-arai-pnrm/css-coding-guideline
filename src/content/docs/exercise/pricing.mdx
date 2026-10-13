@@ -141,7 +141,7 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 }
 ```
 
-`grid-row: span 5` で各プランを一覧の5行にまたがらせ、`grid-template-rows: subgrid` でその行をそのまま使います。プランの中の行の間隔は、`row-gap` で一覧の間隔とは別に決めます。1列に積んだときは、各プランが自分の5行を持つので、行の高さはそのプランの中身だけで決まります。
+`grid-row: span 5` で各プランを一覧の5行にまたがらせ、`grid-template-rows: subgrid` でその行をそのまま使います。プランの中の行の間隔は、`row-gap` で一覧の間隔とは別に決めます。1列に積んだときは、各プランが自分の5行を持つので、行の高さはそのプランの中身だけで決まります。プランの行が一覧の行になったので、プランだけを一覧の外に取り出すことはできません。前半でプランを一覧の子要素として書いていたので、ここでコンポーネントの分け方を直さずに済みました（`subgrid-list-as-one-component`）。
 
 この書き方が成り立つのは、どのプランも5つの子要素を持っているからです。「おすすめ」の印を名前の横に置き、`._name` の中に入れたのは、おすすめのプランだけ行が1つ増えないようにするためでもあります。
 
@@ -186,6 +186,7 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 ## この節で使ったルール
 
 - [`local-parts-stay-in-parent`](/components/what-is-a-component/#rule-local-parts-stay-in-parent)：親の中でしか意味を持たない区画は、別のコンポーネントにしません。
+- [`subgrid-list-as-one-component`](/components/what-is-a-component/#rule-subgrid-list-as-one-component)：`subgrid` で項目の中の行を一覧の行にそろえるときは、一覧と項目を1つのコンポーネントにし、項目を子要素で書きます。
 - [`grid-switcher-for-fixed-sets`](/compositions/grid/#rule-grid-switcher-for-fixed-sets)：数が決まっていて揃いで見せたいアイテムは、`switcher` で並べます。
 - [`composition-configurable-via-props`](/components/compositions-and-utilities/#rule-composition-configurable-via-props)：コンポジションの間隔や列数は、公開プロパティで受け取ります。
 - [`variant-attribute-per-axis`](/notation/variants/#rule-variant-attribute-per-axis)：見た目の種類は、`data-variant` の属性で表します。

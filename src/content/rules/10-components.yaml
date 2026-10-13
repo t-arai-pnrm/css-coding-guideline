@@ -40,6 +40,15 @@
   page: components/what-is-a-component
   since: 0.12.0
 
+- id: subgrid-list-as-one-component
+  level: 推奨
+  kind: judgment
+  rule: '`subgrid` で項目の中の行を一覧の行にそろえるときは、一覧と項目を1つのコンポーネントにし、項目を一覧の子要素として書く。'
+  reason: '`subgrid` の項目は、一覧のグリッドの行にまたがって初めて行がそろい、一覧の外に取り出すとそろえる相手がなくなるため。項目をコンテナにすると `subgrid` にできないので、項目を別のコンポーネントにして置かれた幅で形を変えることもできないため。'
+  note: '一覧のルートに `grid` などのコンポジションを付けるときは、列の最小幅や間隔を一覧の `:scope` から渡します。項目の形を置かれた幅で切り替えるときは、一覧のルートをコンテナにし、項目がフラグを宣言します（`density-via-style-query`）。項目だけを一覧の外に1つ置く場所があっても、1項目の一覧として置きます。'
+  page: components/what-is-a-component
+  since: 0.58.0
+
 - id: component-split-by-role
   level: 推奨
   kind: judgment
