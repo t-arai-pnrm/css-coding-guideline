@@ -41,14 +41,13 @@ sidebar:
 
 ## 最初に押さえるルール
 
-{/* 要確認: 著者の判断。最初に押さえるルールを著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
-
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
 - [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)：配置が思いどおりにならないときは、値を足す前に、その要素がどのレイアウトの方式の中にあるかを確かめます。
 - [`flexbox-check-auto-min-size`](/layout/flexbox-basics/#rule-flexbox-check-auto-min-size)：フレックスアイテムが縮まずにはみ出すときは、固定の幅を足す前に、自動の最小幅を確かめます。
-- [`sticky-align-self-start`](/layout/positioning/#rule-sticky-align-self-start)：GridやFlexboxの子に `position: sticky` を指定するときは、その要素に `align-self: start` も指定します。
 - [`flexbox-no-visual-reorder`](/layout/flexbox-basics/#rule-flexbox-no-visual-reorder)：フォーカスできる要素や順番に意味のある要素を、`order` や `row-reverse` で見た目だけ入れ替えません。
+- [`margin-inline-auto-centering`](/layout/box-model/#rule-margin-inline-auto-centering)：ブロックの左右の中央寄せには、`margin: 0 auto` ではなく `margin-inline: auto` を使います。
+- [`no-display-contents-on-focusable`](/layout/display-contents/#rule-no-display-contents-on-focusable)：ボタンやリンクのようにフォーカスできる要素に、`display: contents` を指定しません。
 
 ## 判断の問い
 

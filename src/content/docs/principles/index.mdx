@@ -40,14 +40,13 @@ sidebar:
 
 ## 最初に押さえるルール
 
-{/* 要確認: 著者の判断。最初に押さえるルールを著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
-
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
-- [`scripting-for-js-dependent-styles`](/principles/browser-support/#rule-scripting-for-js-dependent-styles)：JavaScriptで表示を切り替える前提の隠す指定は、`@media (scripting: enabled)` と、初期化が成功したら付く属性を条件にして書きます。
+- [`browser-support-target`](/principles/browser-support/#rule-browser-support-target)：対象のブラウザは、Safariは現行のメジャーバージョンから2つ前の最終版以降、Chrome、Edge、Firefoxは最新版にします。
+- [`css-as-suggestion`](/principles/browser-suggestion/#rule-css-as-suggestion)：寸法は1つの値に決めつけず、上限、下限、比率などの制約を示して、具体的な値の計算はブラウザに任せます。
 - [`progressive-enhancement-if-harmless`](/principles/browser-support/#rule-progressive-enhancement-if-harmless)：対象のブラウザの一部しか対応していない機能は、未対応の環境でも内容を読めて操作できる場合に限って使います。
-- [`no-unsupported-layout-features`](/principles/browser-support/#rule-no-unsupported-layout-features)：対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要にしません。
 - [`no-chrome-only-check`](/principles/browser-support/#rule-no-chrome-only-check)：表示はChromeだけでなく、Safari（iOSを含む）とFirefoxでも確かめます。
+- [`scripting-for-js-dependent-styles`](/principles/browser-support/#rule-scripting-for-js-dependent-styles)：JavaScriptで表示を切り替える前提の隠す指定は、`@media (scripting: enabled)` と、初期化が成功したら付く属性を条件にして書きます。
 
 ## この章の判断のまとめ
 

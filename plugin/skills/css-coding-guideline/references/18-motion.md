@@ -1,6 +1,6 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.3（2026-10-13 生成）
 - ルールの数: 31
 - 本文: 約20.1万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
@@ -20,7 +20,7 @@
 - `motion/transition-techniques` 18-5 トランジションを応用する（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transition-techniques/
 - `motion/keyframes` 18-6 @keyframesを設計する（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/
 - `motion/entry-and-exit` 18-7 出現と退場（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
-- `motion/overlays-and-stagger` 18-8 重ねて出すパネルと順に出す要素（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/overlays-and-stagger/
+- `motion/overlays-and-stagger` 18-8 重ねて出すパネルと順に出す要素（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/overlays-and-stagger/
 - `motion/scroll-driven` 18-9 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
 - `motion/performance` 18-10 動きの負荷を抑える（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
 - `motion/view-transitions` 18-11 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/
@@ -51,7 +51,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/#rule-motion-only-with-no-preference
 - 【必須・実装上の判断】機能的な動きでも大きな変動は、動きを減らす設定のときにフェードへ置き換える。（`simplify-large-motion-when-reduced`）
   - 理由: 状態の変化や操作の結果を伝える動きでも、多くは WCAG 2.3.3 の「本質的な動き」（その動きがないと機能や情報が成り立たないもの）にあたらず、フェードでも同じ情報を伝えられるため。フェードは位置と大きさが変わらないので、WCAG 2.3.3 の「動きのアニメーション」を無効にしたことになる。
-  - 補足: 大きな変動は、本書の目安では、画面の3分の1以上を占める要素の移動、回転を伴う動き、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。WCAG が定める基準ではなく、目安を下回れば配慮が要らないという意味でもありません。再生時間を短くする対応（本書の目安は50ms以下）は、位置と大きさが変わらない動き（フェード）に限ります。AAA を目標にしないサイトで、移動や拡大を短くして残す場合は、動きが残るので WCAG 2.3.3 を満たしません。AAA に適合させるなら、本質的でない移動や拡大は、大きさを問わず無効にするか、フェードへ置き換えます。スピナー、プログレスバー、フォーカスリングの表示は変えません。
+  - 補足: 大きな変動は、本書の目安では、画面の3分の1以上を占める要素の移動、画面の3分の1以上の範囲で切り抜きを変える動き、回転を伴う動き（スピナーを除く）、`scale` の変化量が0.5以上の拡大や縮小、スクロールに合わせた変形、揺れる動きです。WCAG が定める基準ではなく、目安を下回れば配慮が要らないという意味でもありません。再生時間を短くする対応（本書の目安は50ms以下）は、位置と大きさが変わらない動き（フェード）に限ります。AAA を目標にしないサイトで、移動や拡大を短くして残す場合は、動きが残るので WCAG 2.3.3 を満たしません。AAA に適合させるなら、本質的でない移動や拡大は、大きさを問わず無効にするか、フェードへ置き換えます。スピナー、プログレスバー、フォーカスリングの表示は変えません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/reduced-motion/#rule-simplify-large-motion-when-reduced
 
 ## 18-3 イージングと再生時間

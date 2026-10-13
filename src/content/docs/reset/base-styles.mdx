@@ -194,7 +194,7 @@ window.addEventListener("load", () => {
 
 スクロールを止めるとスクロールバーが消え、その幅の分だけコンテンツが横にずれます。kiso.cssが `:root` に指定している `scrollbar-gutter: stable` は、スクロールバーの有無にかかわらずその幅の領域を確保するので、ダイアログを開閉してもレイアウトはずれません。
 
-`overflow: hidden` の代わりに `overflow: clip` を使う方法もありますが、2025年5月の時点ではFirefoxで背面を固定できなかったので使いません。FirefoxとSafariで確かめたところ、`:root` の `overflow: clip` でも背面のスクロールは止まりました。{/* 要確認: 著者の判断。Firefox 156 で背面を固定できるようになったので、overflow: clip に改めるか、hidden のままにするか */}また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。
+`overflow: hidden` の代わりに `overflow: clip` を使う方法もあります。FirefoxとSafariで確かめたところ、`:root` の `overflow: clip` でも背面のスクロールは止まりました。それでも本書は `hidden` のままにします。ルートに指定した `overflow` はビューポートに伝わり、ビューポートでは `clip` が `hidden` として扱われるので、ルートでは2つの値の働きは変わりません。値を替えても得られるものがなく、`hidden` なら、`clip` で背面を固定できなかった古い版のFirefoxでも同じように止まります。また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。
 
 ## スクロールバーの領域と見た目
 
@@ -328,6 +328,7 @@ Safariは18.2で対応したので、本書が対象とするブラウザ（Safa
 - [少しの記述でユーザビリティやアクセシビリティを向上させるHTML/CSSテクニック集](https://www.tak-dcxi.com/article/html-css-techniques-to-improve-usability-and-accessibility-with-minimal-code/)（TAKLOG、2024年5月）
 - [C40: Creating a two-color focus indicator to ensure sufficient contrast with all components](https://www.w3.org/WAI/WCAG22/Techniques/css/C40)（W3C）
 - [:modal - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:modal)
+- [CSS Overflow Module Level 3: Overflow Viewport Propagation](https://www.w3.org/TR/css-overflow-3/#overflow-propagation)（ルートの `overflow` がビューポートに伝わり、`clip` が `hidden` として扱われること）
 - [scrollbar-gutter - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/scrollbar-gutter)
 - [interpolate-size - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/interpolate-size)
 - [text-underline-offset - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-underline-offset)

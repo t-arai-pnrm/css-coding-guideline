@@ -49,13 +49,13 @@ sidebar:
 
 ## 最初に押さえるルール
 
-{/* 要確認: 著者の判断。最初に押さえるルールを著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
-
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
 - [`no-unanchored-has`](/pseudo/has/#rule-no-unanchored-has)：`:has()` は、`&:has(> img)` や `.card:has(> img)` のように直前に起点を書き、起点のない `:has()` は書きません。
-- [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)：`:has()` の起点はコンポーネントのルートのような狭い要素にし、引数は `>` や `+` の結合子で範囲を絞ります。
 - [`not-has-for-absence`](/pseudo/has/#rule-not-has-for-absence)：「Xを持たない要素」は `:not(:has(X))` で書き、`:has(:not(X))` は使いません。
+- [`has-over-state-class`](/pseudo/has/#rule-has-over-state-class)：子孫の状態や有無で祖先のスタイルを変えるときは、JavaScriptで状態のクラスを付けずに `:has()` を使います。
+- [`forgiving-list-for-partial-support`](/pseudo/basics/#rule-forgiving-list-for-partial-support)：ブラウザの対応が分かれる擬似クラスをほかのセレクタと並べるときは、普通のセレクタリストではなく、`:is()` か `:where()` の引数に書きます。
+- [`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)：必須の印、単位、注意書きのように、読み手が知る必要のある文字を、`::before` や `::after` の `content` で入れません。
 
 ## この章の判断のまとめ
 

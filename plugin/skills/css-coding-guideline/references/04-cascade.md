@@ -1,6 +1,6 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.3（2026-10-13 生成）
 - ルールの数: 23
 - 本文: 約8万字
 - 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `cascade` 第4章 カスケードを制御する（約4,600字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/
+- `cascade` 第4章 カスケードを制御する（約4,500字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/
 - `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/cascade-basics/
 - `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/selectors/
 - `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/

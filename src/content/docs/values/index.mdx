@@ -36,11 +36,9 @@ sidebar:
 
 ## 最初に押さえるルール
 
-{/* 要確認: 著者の判断。最初に押さえるルールを著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
-
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
-- [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)：`font-size` はremで指定し、pxを使いません（要素の文字サイズに比例させるならem）。
+- [`unit-by-text-scaling`](/values/px-and-rem/#rule-unit-by-text-scaling)：単位は、ユーザーがブラウザの文字サイズを大きくしたとき、一緒に大きくなるべき値かどうかで選びます。大きくなるべき値はrem（またはem）、そうでない値はpxです。
 - [`no-root-font-size-change`](/values/px-and-rem/#rule-no-root-font-size-change)：`html { font-size: 62.5% }` などで、remの計算を簡単にする目的でルートの文字サイズを変えません。
 - [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height)：`line-height` は単位のない数値で指定します。
 - [`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)：`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` は使いません。

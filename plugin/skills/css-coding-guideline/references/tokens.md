@@ -1,6 +1,6 @@
 # 本書のデモの共通トークン
 
-- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.3（2026-10-13 生成）
 - 元のファイル: src/demos/tokens/*.css（https://t-arai-pnrm.github.io/css-coding-guideline/appendix/demo-tokens/）
 
 本書のデモは、次のトークンを `@layer tokens` に入れて読み込んでいる。デモからは、色はセマンティクス（`--background--*`、`--foreground--*`、`--border--*`）だけを、文字は役割（`--text--<役割>--font-size` と `--text--<役割>--leading`）を参照する。
@@ -14,17 +14,17 @@
  */
 :root {
   /* プリミティブ */
-  --color--neutral--50: oklch(98.5% 0 0deg);
-  --color--neutral--100: oklch(97% 0 0deg);
-  --color--neutral--200: oklch(92.2% 0 0deg);
-  --color--neutral--300: oklch(87% 0 0deg);
-  --color--neutral--400: oklch(70.8% 0 0deg);
-  --color--neutral--500: oklch(55.6% 0 0deg);
-  --color--neutral--600: oklch(43.9% 0 0deg);
-  --color--neutral--700: oklch(37.1% 0 0deg);
-  --color--neutral--800: oklch(26.9% 0 0deg);
-  --color--neutral--900: oklch(20.5% 0 0deg);
-  --color--neutral--950: oklch(14.5% 0 0deg);
+  --color--neutral--50: oklch(98.5% 0 none);
+  --color--neutral--100: oklch(97% 0 none);
+  --color--neutral--200: oklch(92.2% 0 none);
+  --color--neutral--300: oklch(87% 0 none);
+  --color--neutral--400: oklch(70.8% 0 none);
+  --color--neutral--500: oklch(55.6% 0 none);
+  --color--neutral--600: oklch(43.9% 0 none);
+  --color--neutral--700: oklch(37.1% 0 none);
+  --color--neutral--800: oklch(26.9% 0 none);
+  --color--neutral--900: oklch(20.5% 0 none);
+  --color--neutral--950: oklch(14.5% 0 none);
   --color--accent--400: oklch(70% 0.15 260deg);
   --color--accent--500: oklch(62% 0.19 260deg);
   --color--accent--600: oklch(54% 0.22 260deg);
@@ -41,13 +41,13 @@
    * メニューはダイアログの中でも開くので、raised を overlay より明るくする。
    */
   --background--base: light-dark(var(--color--neutral--50), var(--color--neutral--900));
-  --background--surface: light-dark(oklch(100% 0 0deg), oklch(from var(--color--neutral--900) calc(l + 0.05) c h));
-  --background--overlay: light-dark(oklch(100% 0 0deg), oklch(from var(--color--neutral--900) calc(l + 0.085) c h));
-  --background--raised: light-dark(oklch(100% 0 0deg), oklch(from var(--color--neutral--900) calc(l + 0.12) c h));
+  --background--surface: light-dark(oklch(100% 0 none), oklch(from var(--color--neutral--900) calc(l + 0.05) c h));
+  --background--overlay: light-dark(oklch(100% 0 none), oklch(from var(--color--neutral--900) calc(l + 0.085) c h));
+  --background--raised: light-dark(oklch(100% 0 none), oklch(from var(--color--neutral--900) calc(l + 0.12) c h));
 
   /* 背景が透明な項目に重ねる色。どの面の上でも同じ見え方になるよう、半透明にする */
-  --background--hover: light-dark(oklch(0% 0 0deg / 4%), oklch(100% 0 0deg / 6%));
-  --background--active: light-dark(oklch(0% 0 0deg / 7%), oklch(100% 0 0deg / 10%));
+  --background--hover: light-dark(oklch(0% 0 none / 4%), oklch(100% 0 none / 6%));
+  --background--active: light-dark(oklch(0% 0 none / 7%), oklch(100% 0 none / 10%));
 
   /* 主ボタンのように、文字色で塗る面 */
   --background--inverse: light-dark(var(--color--neutral--900), var(--color--neutral--100));
@@ -61,7 +61,7 @@
   --foreground--danger: light-dark(var(--color--red--600), var(--color--red--400));
   --foreground--success: light-dark(var(--color--green--700), var(--color--green--400));
   --foreground--inverse: light-dark(var(--color--neutral--50), var(--color--neutral--900));
-  --foreground--on-accent: oklch(100% 0 0deg);
+  --foreground--on-accent: oklch(100% 0 none);
 
   /* 枠線は文字色から作り、どの面の上でもなじませる */
   --border--base: color-mix(in oklab, var(--foreground--base) 12%, transparent);
@@ -72,9 +72,9 @@
    * 影の色。影の形（shadows.css）から参照する。
    * ダークでは、上辺のハイライトと内側の縁取りで面の端を見せる。ライトでは使わないので透明にする。
    */
-  --shadow--color: light-dark(oklch(0% 0 0deg / 6%), oklch(0% 0 0deg / 18%));
-  --shadow--ring-color: light-dark(oklch(0% 0 0deg / 6%), oklch(0% 0 0deg / 24%));
-  --shadow--highlight-color: light-dark(transparent, oklch(100% 0 0deg / 4%));
+  --shadow--color: light-dark(oklch(0% 0 none / 6%), oklch(0% 0 none / 18%));
+  --shadow--ring-color: light-dark(oklch(0% 0 none / 6%), oklch(0% 0 none / 24%));
+  --shadow--highlight-color: light-dark(transparent, oklch(100% 0 none / 4%));
 }
 ```
 

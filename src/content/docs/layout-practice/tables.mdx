@@ -174,7 +174,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 1行ごとに完結した記録を並べる表は、狭い幅で行をカードのように縦に積めます。表が複数の場所に置かれることを考え、切り替えはコンテナサイズクエリで書きます。ルートを `container: --scoped / inline-size` のコンテナにし、閾値には、各列の中身の最小の幅とセルの `padding` を足した式を書きます（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
 
-縦に積むには、`table`、`tbody`、`tr`、`td` の `display` を変える必要があります。`display` を変えた表は、以前は表として扱われなくなるブラウザがありました。この不具合は、Chromeは80、Firefoxは2022年、Safariは17で修正されています（表と `display` の不具合を追跡している記事で確認）。しかし、修正前のブラウザや、それと組み合わせた支援技術では、表の意味が失われます。MDNは、`display: grid` などで表の意味が上書きされる場合に、ARIAの表の `role` を書いて意味を加え直す方法を挙げています。そこで、HTMLの各要素に `role` を書きます。`table` には `role="table"`、`thead` と `tbody` には `role="rowgroup"`、`tr` には `role="row"` を書きます。見出しのセルには `role="columnheader"` か `role="rowheader"` を、データのセルには `role="cell"` を書きます。{/* 要確認: 著者の判断。主要なブラウザで修正された後も、縦積みの表に role を書く方針を残すか */}
+縦に積むには、`table`、`tbody`、`tr`、`td` の `display` を変える必要があります。`display` を変えた表は、以前は表として扱われなくなるブラウザがありました。この不具合は、Chromeは80、Firefoxは2022年、Safariは17で修正されています（表と `display` の不具合を追跡している記事で確認）。しかし、修正前のブラウザや、それと組み合わせた支援技術では、表の意味が失われます。MDNは、`display: grid` などで表の意味が上書きされる場合に、ARIAの表の `role` を書いて意味を加え直す方法を挙げています。そこで、HTMLの各要素に `role` を書きます。`table` には `role="table"`、`thead` と `tbody` には `role="rowgroup"`、`tr` には `role="row"` を書きます。見出しのセルには `role="columnheader"` か `role="rowheader"` を、データのセルには `role="cell"` を書きます。本書が対象にするブラウザは、どれも修正後の版です。それでも `role` を書くのは、古いブラウザと支援技術の組み合わせでも表として読めるようにするためで、書く手間は小さく済みます。
 
 ```css title="🙆‍♂ Recommended: 狭いときだけ、行をカードのように縦に積む"
 @scope (.scoped.order-table) to (.scoped) {

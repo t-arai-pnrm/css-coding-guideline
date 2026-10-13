@@ -49,15 +49,13 @@ sidebar:
 
 ## 最初に押さえるルール
 
-{/* 要確認: 著者の判断。最初に押さえるルールを著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
-
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
+- [`scoped-class-on-root`](/notation/scope-and-nesting/#rule-scoped-class-on-root)：スコープのルートになる要素には、必ず `scoped` クラスを付けます。
 - [`child-class-underscore`](/notation/naming/#rule-child-class-underscore)：コンポーネントの子要素のクラス名は、`._title` のように `_` で始まるkebab-caseにします。
+- [`name-by-role`](/notation/naming/#rule-name-by-role)：コンポーネント、子要素、パターンの名前は、見た目ではなく役割で付けます。
+- [`nest-own-states`](/notation/nesting/#rule-nest-own-states)：要素自身の擬似クラス、擬似要素、属性の状態は、主語のセレクタに連結せず、主語のルールの中に `&:popover-open` のようにネストして書きます。
 - [`no-nesting-concatenation`](/notation/nesting/#rule-no-nesting-concatenation)：`&__title` のように、`&` に文字をつなげてクラス名を作りません。
-- [`conditions-inside-rules`](/notation/nesting/#rule-conditions-inside-rules)：`@media` と `@container` は、`@scope` やファイルの直下ではなく各セレクタの中に書きます。
-- [`display-two-value-syntax`](/notation/modern-syntax/#rule-display-two-value-syntax)：`display` は `block flex` のような2値構文で書きます。
-- [`comments-why-only`](/notation/comments/#rule-comments-why-only)：コードの途中のコメントには「なぜそう書くのか」と「なぜ別の書き方をしないのか」だけを書き、何をしているかは書きません。
 
 ## 判断の問い
 

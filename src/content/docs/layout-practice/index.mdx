@@ -47,15 +47,13 @@ stack、cluster、switcher、gridなど、配置のパターンを部品にし�
 
 ## 最初に押さえるルール
 
-{/* 要確認: 著者の判断。最初に押さえるルールを著者の優先順位で選び直す（レビューの提案にもとづく下書き） */}
-
 次のルールを先に押さえ、ほかのルールは、該当する場面で付録A「[ルール一覧](/appendix/rules/)」から引けば足ります。
 
+- [`grid-template-first`](/layout-practice/choosing/#rule-grid-template-first)：レイアウトを組むときは、まず親の `grid-template` で子要素の配置と大きさを決められないかを検討します。
+- [`gap-over-child-margin`](/layout-practice/spacing/#rule-gap-over-child-margin)：FlexboxやGridの子要素の間隔は、子要素の `margin` ではなく、親の `gap` で作ります。
 - [`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)：要素の間の縦の `margin` は、`& > * + *` のようなセレクタで、後ろの要素の `margin-block-start` に付けます。
 - [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：高さは `block-size` で固定せず、`min-block-size`、`max-block-size`、`aspect-ratio` で決めます。
-- [`minmax-min-capped-at-100-percent`](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)：`minmax()` の最小値や `min-inline-size` に固定の長さを書くときは、`min(100%, …)` で親の幅を上限にします。
 - [`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)：はみ出しを切り取るだけなら、`overflow: hidden` ではなく `clip` を使います。
-- [`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula)：親の幅を超えて画面の端まで広げる量は「画面の幅と親の幅の差の半分」の式で書き、`100vw` を使いません。
 
 ## この章の判断のまとめ
 

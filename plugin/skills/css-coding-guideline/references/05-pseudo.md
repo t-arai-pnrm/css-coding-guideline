@@ -1,8 +1,8 @@
 # 第5章 擬似クラスと擬似要素：ルール
 
-- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.3（2026-10-13 生成）
 - ルールの数: 28
-- 本文: 約15.3万字
+- 本文: 約15.4万字
 - 読む条件: :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `pseudo` 第5章 擬似クラスと擬似要素（約6,200字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/
+- `pseudo` 第5章 擬似クラスと擬似要素（約6,600字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/
 - `pseudo/basics` 5-1 擬似クラスと擬似要素の基本（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/basics/
 - `pseudo/is-where-not` 5-2 :is()・:where()・:not()（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/is-where-not/
 - `pseudo/has` 5-3 :has() で祖先と前の兄弟を選ぶ（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/has/
