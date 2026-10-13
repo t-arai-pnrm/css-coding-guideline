@@ -77,7 +77,10 @@ const tokens = [
 const require = createRequire(import.meta.url);
 const kiso = readFileSync(require.resolve('kiso.css/kiso.css'), 'utf8');
 
-const baseCss = `/* 演習の土台。本書のデモと同じレイヤー、共通トークン、演習のサイトのトークン、リセットCSS（kiso.css）、ベーススタイル。このファイルは変えない。 */
+const baseCss = `/**
+ * 演習の土台。本書のデモと同じレイヤーの順序、共通トークン、演習のサイトのトークン、リセットCSS（kiso.css）、ベーススタイルを入れている。
+ * すべての節の HTML が最初に読み込む。このファイルは変えない。
+ */
 ${pickConstant('LAYER_ORDER')}
 
 @layer tokens {
@@ -169,6 +172,25 @@ const hoistCompositionDocs = (css) => {
 };
 
 /**
+ * 元のデモに説明ブロックがないファイルの説明（ルール `file-header-doc-block`）。
+ * ページのスタイル、パターン、ベーススタイルの追加は、デモでは1つの style.css の中にあり、ファイルの説明を持たないので、ここで補う。
+ */
+const FILE_DOCS = {
+  'patterns.css': 'パターン。複数のコンポーネントで同じ見た目を繰り返す要素のスタイル。\nクラス1つで見た目が決まり、置かれた場所の余白や幅は持たない。',
+  'site-base.css': 'ベーススタイルの追加。base.css のベーススタイルに、このサイトで要る指定（ルート要素のスクロールの指定や、サイト全体で使う @keyframes）を足す。\nセレクタは、クラスを付けない素のセレクタで書く。',
+  'page-demo.css': 'この節のデモのページ。部品を並べ、部品の外側の余白と、中身の幅を決める。\n部品の内側には触れない。',
+  'page-top.css': 'トップページ。帯の順番、背景、上下の余白、中身の幅を決める。\n部品の内側には触れない。',
+  'page-column.css': 'コラムのページ。新着と人気の記事の一覧とサイドバーを並べ、その間隔と幅を決める。',
+  'page-category.css': 'コラムのカテゴリーのページ。見出し、絞り込み、記事の一覧を縦に並べ、その間隔を決める。',
+  'page-contact.css': 'お問い合わせのページ。見出しとフォームを並べ、フォームの幅を決める。',
+  'page-pricing.css': '料金プランのページ。見出しと料金プランの一覧を並べ、その間隔と幅を決める。',
+  'page-service.css': '事業内容のページ。見出しと制作の流れを並べ、その間隔と幅を決める。',
+};
+/** 説明ブロックを先頭に置く。続く内容がコメントなら、間を1行空ける */
+const withHeader = (header, css) => `${header}\n${css.startsWith('/*') ? '\n' : ''}${css}`;
+const docBlock = (text) => `/**\n${text.split('\n').map((line) => ` * ${line}`).join('\n')}\n */`;
+
+/**
  * デモの CSS を、ファイル名ごとの CSS に分ける。
  * 戻り値は `Map<ファイル名, CSS>`。
  */
@@ -176,6 +198,7 @@ const splitDemoCss = (css, source) => {
   const files = new Map();
   const unlayered = new Map();
   const headers = new Map();
+  const isReview = source.includes('/review/');
   // chunk は、元のファイルと同じく @layer の中の字下げ（2文字）を付けた CSS
   const add = (name, layer, chunk) => {
     const prev = files.get(name);
@@ -215,15 +238,29 @@ const splitDemoCss = (css, source) => {
         child.prelude?.match(/^@scope\s*\(\.scoped\.([\w-]+)\)/)?.[1] ?? child.prelude?.match(/\.([\w-]+)/)?.[1];
       if (!name) throw new Error(`${source}: @layer ${layer} の中に、どのファイルに入れるか決められない項目があります`);
       // 説明ブロックは @layer の中に入れず、ファイルの先頭に置く（ルール `file-header-doc-block`）
-      const docs = pending.filter((comment) => comment.startsWith('/**'));
-      if (docs.length > 0 && !headers.has(`${name}.css`)) headers.set(`${name}.css`, docs.map(dedentDocBlock).join('\n'));
+      // 説明ブロックがなく、1行のコメントで説明しているときは、そのコメントを説明ブロックにする（21-15のレビューの版は除く）
+      let docs = pending.filter((comment) => comment.startsWith('/**'));
+      if (docs.length === 0 && !isReview && pending.length > 0 && !pending.at(-1).includes('\n')) docs = [pending.at(-1)];
+      if (docs.length > 0 && !headers.has(`${name}.css`)) {
+        const header = docs.map((comment) =>
+          comment.startsWith('/**') ? dedentDocBlock(comment) : docBlock(comment.replace(/^\/\*\s*|\s*\*\/$/g, '').replace(/(?<!。)$/, '。')),
+        );
+        headers.set(`${name}.css`, header.join('\n'));
+      }
       add(`${name}.css`, layer, `  ${[...pending.filter((comment) => !docs.includes(comment)), child.text].join('\n  ')}`);
       pending = [];
     }
   }
   for (const [name, css] of unlayered) files.set(name, `${css}${files.get(name) ?? ''}`.trimEnd() + '\n');
-  for (const [name, header] of headers) files.set(name, `${header}\n${files.get(name)}`);
+  for (const [name, header] of headers) files.set(name, withHeader(header, files.get(name)));
   if (files.has('compositions.css')) files.set('compositions.css', hoistCompositionDocs(files.get('compositions.css')));
+  if (!isReview) {
+    for (const [name, css] of files) {
+      if (css.startsWith('/**')) continue;
+      if (!FILE_DOCS[name]) throw new Error(`${source}: ${name} の先頭に置く説明がありません。デモに説明ブロックを書くか、FILE_DOCS に足してください`);
+      files.set(name, withHeader(docBlock(FILE_DOCS[name]), css));
+    }
+  }
   return files;
 };
 
