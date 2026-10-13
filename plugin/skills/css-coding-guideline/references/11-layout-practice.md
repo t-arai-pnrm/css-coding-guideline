@@ -1,8 +1,8 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.56.0（2026-10-13 生成）
+- ガイドラインのバージョン: 0.56.1（2026-10-13 生成）
 - ルールの数: 61
-- 本文: 約26.7万字
+- 本文: 約26.8万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -16,7 +16,7 @@
 - `layout-practice/choosing` 11-1 レイアウト手法の選び方（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/choosing/
 - `layout-practice/spacing` 11-2 余白を設計する（約3.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/spacing/
 - `layout-practice/defensive` 11-3 サイズと内容の変化に耐える（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/defensive/
-- `layout-practice/overflow` 11-4 はみ出しとスクロール（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overflow/
+- `layout-practice/overflow` 11-4 はみ出しとスクロール（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overflow/
 - `layout-practice/quantity-layouts` 11-5 件数で配置を組み替える（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/quantity-layouts/
 - `layout-practice/layering` 11-6 重なりと全幅（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/layering/
 - `layout-practice/sticky-header` 11-7 固定ヘッダー（約7,800字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/sticky-header/

@@ -264,6 +264,19 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 狭い場所では、画像、見出し、本文の順で縦に積みます。広い場所では、画像を左側、見出しと本文を右側へ置いています。クエリの中で書き換えているのは `grid-template` だけで、子要素の配置の指定は1か所ずつしかありません。テンプレートの文字列が、そのまま配置の図として読めるのも利点です。
 
+テンプレートの書き方には、宣言全体を無効にする規則が2つあります。1つは、各行の文字列に同じ数のセルを書くことです。もう1つは、同じ名前を書いたセルが1つの長方形を作ることです。L字の形に並べたり、離れた2か所に同じ名前を書いたりすると、そのエリアだけでなく宣言全体が無効になります。エリアに置かない空きのセルは、名前の代わりに `.` を書きます。
+
+```css title="🙅‍♂ Not Recommended: 同じ名前のセルをL字に並べる"
+/* 🙅‍♂ Not Recommended */
+._layout {
+  grid-template:
+    "--image --heading"
+    "--image --image";
+}
+```
+
+無効になった宣言は、構文の誤りと同じように読み込みの時点で捨てられ、前に書いた宣言が残ります。上の例のテンプレートを `@container` の中に書くと、どの幅でも1列のテンプレートのままになり、エラーも出ません。配置がクエリで切り替わらないときは、名前の綴りとあわせて、各行のセルの数と長方形の形を確かめます。L字のような形が要るなら、エリアを2つに分けて別々の要素を置くか、1つの要素を長方形のエリアに置き、その中で並べます。
+
 次のデモは、この例をそのまま動かしたものです。幅を320pxと768pxで比べると、子要素の指定は変わらないまま、テンプレートの書き換えだけで配置が変わります。
 
 <Demo title="エリアの名前を使い、幅に応じてテンプレートだけを書き換える" html={areasHtml} css={areasCss} widths={[320, 768]} />
@@ -287,5 +300,6 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 - [線ベースの配置を用いたグリッドレイアウト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Grid_layout_using_line-based_placement)
 - [グリッドの自動配置 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout/Auto-placement_in_grid_layout)
 - [grid-template - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template)
+- [grid-template-areas - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-areas)
 - [minmax() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/minmax)
 - [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)

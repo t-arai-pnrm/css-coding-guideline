@@ -83,6 +83,16 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 `polygon()` の値は直接書かず、トークンとして定義します。`polygon(0 0, 100% 0, 50% 100%)` という値を見て、下向きの三角形だとすぐに気づく人は多くないでしょう。`--shape--triangle-bottom` という名前なら、形がすぐに分かります。縦横比を `2 / tan(60deg)` にすると、正三角形になります（Chromeで確認）。{/* 要検証: ブラウザ。Safari 18 と Firefox で、aspect-ratio の比に書いた tan() が効くか */}
 
+切り抜いた形に影を付けるときは、`clip-path` を指定した要素ではなく、親の要素に `filter: drop-shadow()` を指定します。`clip-path` は、要素の背景だけでなく、要素の外に描かれる `box-shadow` も切り取るからです。同じ要素に指定した `filter` の影も、切り抜きの前に描かれるので一緒に切り取られます（Filter Effects Module Level 1）。`drop-shadow()` は、要素の箱ではなく描かれた形の不透明な部分に沿って影を付けるので、親に指定すれば、切り抜いた後の三角形の輪郭どおりに影が付きます。
+
+```css title="🙆‍♂ Recommended: 三角形を含むツールチップ全体に、親の filter で影を付ける"
+._tooltip {
+  filter: var(--drop-shadow--sm);
+}
+```
+
+ツールチップの三角形は擬似要素なので、`._tooltip` に指定した `filter` は、本体と三角形を合わせた形に1つの影を付けます。Chromeで確かめたところ、`clip-path` で切り抜いた要素自身に指定した `box-shadow` と `drop-shadow()` はどちらも表示されず、親に指定した `drop-shadow()` は三角形の形に沿って表示されました。`drop-shadow()` のトークンと、`box-shadow` との違いは「[16-5 面・影・角丸](/decoration/surfaces/#影を動かすときは-drop-shadow-を動かす)」で説明しています。
+
 ## 2つの層を重ねて、選んだ範囲だけを切り抜く
 
 `clip-path` は、図形を描くだけでなく、同じ大きさの層を2つ重ねて、上の層の一部だけを見せる使い方もできます。横に並んだタブで、選んだタブの背景色と文字色を変える場面で考えます。通常の色で描いたタブの列の上に、選んだときの色で描いた同じ列を重ね、上の列を選んだタブの範囲だけ切り抜きます。{/* 要確認: 出典なし */}
@@ -373,6 +383,8 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 - [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月。`aspect-ratio`、`clip-path`、`currentColor` の例）
 - [clip-path - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clip-path)
 - [xywh() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/basic-shape/xywh)
+- [drop-shadow() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/filter-function/drop-shadow)
+- [Filter Effects Module Level 1 | W3C](https://drafts.fxtf.org/filter-effects-1/)（フィルター、切り抜き、マスクを適用する順序）
 - [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)
 - [radial-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/radial-gradient)
 - [scroll() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline/scroll)

@@ -262,6 +262,19 @@ img {
 }
 ```
 
+装飾の画像とパターンを1つの要素に重ねるときは、`background-image` に画像をカンマで区切って並べます。先に書いた画像ほど手前に描かれ、リストの先頭が最前面になります。`background-color` は、すべての画像の後ろに1色だけ敷かれます。`background-position` や `background-size` にも同じ順で値をカンマで並べ、何番目の値が何番目の画像に当たるかを、画像のリストとそろえます。
+
+```css title="🙆‍♂ Recommended: 手前に置く飾りを先に書き、各プロパティの値を画像の順に並べる"
+._notice {
+  background-image: url("corner-ornament.svg"), url("dots.svg");
+  background-position: right top, left top;
+  background-size: 48px, 24px;
+  background-repeat: no-repeat, repeat;
+}
+```
+
+一括指定の `background` では、層ごとに `url("corner-ornament.svg") right top / 48px no-repeat` のように、位置の後ろにスラッシュで区切って大きさを書きます。大きさは位置の直後にしか書けず、位置を省いて大きさだけを書くことはできません。本書では、背景の画像を指定するときは一括指定を使わず、個別のプロパティで書きます。一括指定は、書かなかったサブプロパティと `background-color` を初期値に戻すので、ほかの場所で指定した背景色を消すことがあるからです（[`longhand-for-partial-change`](/design-mindset/maintainability/#rule-longhand-for-partial-change)）。方眼のように多くの層を重ねる例は「[16-6 グラデーションを描く](/decoration/gradients/)」にあります。{/* 要確認: 出典なし。背景の画像を重ねる順序と、一括指定を使わない書き方 */}
+
 単色やグラデーションだけの背景は、画像のファイルを読み込まず、意味も持たないので、`background-image` で足ります。パターン画像も、内容を伝えず、表示される幅に合わせて出し分ける必要がないので、`<img>` にする利点がありません。やむを得ずLCPの候補の写真を `background-image` で敷く場合は、`<link rel="preload">` でその画像を先に読み込ませます。
 
 ## 2枚の画像を重ねて比べる
@@ -330,5 +343,6 @@ update();
 - [clip-path - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clip-path)
 - [`<input type="range">` - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Elements/input/range)
 - [attr() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/attr)
+- [複数の背景を使う - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_backgrounds_and_borders/Using_multiple_backgrounds)
 - [object-fit - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/object-fit)
 - [`<img>`: 画像埋め込み要素 - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Elements/img)（読み込みに失敗したときの代替テキストの扱い）

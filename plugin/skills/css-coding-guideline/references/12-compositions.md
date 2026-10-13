@@ -1,8 +1,8 @@
 # 第12章 レイアウトコンポジション：ルール
 
-- ガイドラインのバージョン: 0.56.0（2026-10-13 生成）
+- ガイドラインのバージョン: 0.56.1（2026-10-13 生成）
 - ルールの数: 37
-- 本文: 約17.1万字
+- 本文: 約17.2万字
 - 読む条件: 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -21,7 +21,7 @@
 - `compositions/grid` 12-6 grid：列の最小幅と最大数から列数を決める（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/grid/
 - `compositions/columns` 12-7 columns：上から下へ読むリストを段に分ける（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/columns/
 - `compositions/masonry` 12-8 masonry：高さの違う子を短い列へ詰めて並べる（約1.7万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/masonry/
-- `compositions/pile` 12-9 pile：子要素を同じセルに重ねる（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/pile/
+- `compositions/pile` 12-9 pile：子要素を同じセルに重ねる（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/pile/
 - `compositions/primary-layout` 12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/primary-layout/
 - `compositions/prose` 12-11 prose：子ごとに変えられる間隔で、本文の流れを作る（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/compositions/prose/
 

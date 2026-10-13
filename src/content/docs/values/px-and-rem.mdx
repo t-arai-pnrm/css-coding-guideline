@@ -100,6 +100,14 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
 
 このカードでは、文字サイズと段落の間の余白、カードの最大幅をremで、`padding` と線と角丸をpxで指定しています。アイコンの大きさとラベルとの間隔は、見出しの文字サイズに比例させたいのでemです。`gap` や `margin` のように場面によって答えが変わる値は、先ほどの問いに照らして1つずつ判断します。
 
+emのほかにも、その要素のフォントの寸法を基準にする単位があります。`cap` は大文字の高さ、`ex` は小文字の「x」の高さ（x-height）、`ic` は全角の「水」の送り幅（横書きでは1字分の幅）です。どれも、要素のフォントスタックで最初に使えるフォントの寸法から決まり、フォントがその寸法を持たないときは、`cap` はアセント、`ex` は `0.5em`、`ic` は `1em` として扱われます。文字サイズに比例するので、emと同じく文字サイズの設定にも追従します。
+
+これらは、「文字の何に合わせるか」がemよりも具体的に決まっている値に使います。本書では、本文の行の長さを `40ic` のように全角の字数で決め（「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/#ほかの要素を壊すプロパティ)」）、段落の幅を `1ic` の倍数に丸めています（「[14-2 和文組版を整える](/typography/japanese-typesetting/#約物のぶら下げ)」）。見出しの各行に敷く背景の行の間隔は、大文字の高さの `1cap` から求め（「[16-7 文字とリストの装飾](/decoration/text-ornaments/#見出しの行ごとに背景を敷く)」）、メニューの区切りの点の大きさは、区切りの文字「・」と釣り合う `1ex` で決めています（「[16-10 区切り線を引く](/decoration/separators/#メニューに点の区切りを入れる)」）。値はフォントの寸法で変わるので、フォントを変えたら表示を確かめます。行の高さを基準にする `lh` は、フォントの寸法ではなく `line-height` から決まる単位で、後の「行の高さを基準にするlhとrlh」で説明します。
+
+<Baseline id="cap" />
+
+<Baseline id="ic" />
+
 ## pxからremへの変換は式で書く
 
 デザインカンプの値は、たいていピクセルで書かれています。remに変換するときは、計算した結果（`1.5rem`）ではなく、`calc(24 / 16 * 1rem)` のように変換の式で書きます。16は、ブラウザの文字サイズのデフォルト値です。式にしておけば、カンプの「24px」をコードからそのまま読み取れ、電卓で割り算をする手間も、計算を間違える心配もなくなります。
@@ -237,3 +245,5 @@ remを使ったら、ブラウザの文字サイズの設定を大きくして�
 - [「font-sizeの指定はpxとremどちらを使うべきか？」問題に対する回答](https://zenn.dev/tak_dcxi/articles/26280e7607bcd2)（TAK、2020年12月。本書と一部の方針が異なります）
 - [CSS Fonts Module Level 5（Editor's Draft）](https://drafts.csswg.org/css-fonts-5/#scale-keyword)
 - [line-height - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/line-height)
+- [&lt;length&gt; - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/length)：`cap`、`ex`、`ic`、`lh` などの単位
+- [CSS Values and Units Module Level 4: Font-relative Lengths](https://drafts.csswg.org/css-values-4/#font-relative-lengths)

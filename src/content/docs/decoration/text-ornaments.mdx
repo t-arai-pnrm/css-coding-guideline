@@ -41,6 +41,26 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 
 <Baseline id="marker" />
 
+入れ子にした番号付きリストで、「1.2.3」のように親の番号をつないで見せるときは、`counter()` の代わりに `counters()` を使います。`counter()` はいちばん内側のカウンターの値だけを返し、`counters()` は同じ名前のカウンターを外側から順にすべて並べて、2つ目の引数の文字列で区切ります。区切りの文字列は番号の間にだけ入るので、末尾の「.」は `content` の後ろに足します。`::marker` の `content` はSafariに反映されないので、この番号も `::before` に描きます。
+
+```css title="🙆‍♂ Recommended: 各リストでカウンターを作り直し、counters() で親の番号をつなぐ"
+._list {
+  counter-reset: --item;
+}
+
+._item {
+  counter-increment: --item;
+
+  &::before {
+    content: counters(--item, ".") ". ";
+  }
+}
+```
+
+`counter-reset` は、外側の `<ol>` だけでなく、入れ子の `<ol>` にも同じクラスで指定します。`counter-reset` を指定した要素は、祖先に同じ名前のカウンターがあれば、それを残したまま内側に新しいカウンターを作ります（CSS Lists and Counters Level 3）。`counters()` がつなぐのは、この入れ子になったカウンターの値です。
+
+外側の `<ol>` にだけ指定すると、内側の項目も外側と同じカウンターを数え進めるので、番号は階層にならず「1、2、3、4」と通し番号になります。Chromeで確かめたところ、各 `<ol>` に指定したリストは「1.」「1.1.」「1.2.」「1.2.1.」「2.」「2.1.」と表示され、外側にだけ指定したリストは「1.」から「5.」までの通し番号になりました。{/* 要確認: 出典なし。入れ子の番号付きリストを counters() で描く方法 */}
+
 ## 文字の縁取りは塗りの下に描く
 
 写真の上の見出しやバナーの文字に、縁取りを付けたいことがあります。文字の縁取りは `-webkit-text-stroke` で描きます。接頭辞が付いていますが、WHATWGのCompatibility Standardで定義され、すべての主要なブラウザが対応しています。接頭辞のない書き方はないので、理由のコメントを添えて、Stylelintの警告を無効にします。
@@ -141,6 +161,8 @@ Safariは、接頭辞付きの `-webkit-box-decoration-break` にしか対応し
 
 - [box-decoration-break: clone](https://codepen.io/tak-dcxi/pen/myEBWRK)（CodePen）
 - [::marker - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::marker)
+- [counters() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/counters)
+- [CSS Lists and Counters Module Level 3 | W3C](https://drafts.csswg.org/css-lists-3/)
 - [-webkit-text-stroke - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/-webkit-text-stroke)
 - [paint-order - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/paint-order)
 - [Compatibility Standard: -webkit-text-stroke](https://compat.spec.whatwg.org/#the-webkit-text-stroke)（WHATWG）

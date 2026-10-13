@@ -15,7 +15,7 @@ import arcCss from '../../../demos/values/sibling-index-arc/style.css?raw';
 import powHtml from '../../../demos/values/pow-type-scale/index.html?raw';
 import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
-計算関数は、根拠を式に残すだけでなく、クエリを書かずに値を切り替える手段にもなります。`clamp()` の最小値を負、最大値を0にすると、余白が広いときだけ要素を外へはみ出させる値を作れます。`abs()` で絶対値を取れば、兄弟の並びの中央からの距離を、項目の数に関係なく求められます。`pow()` で累乗を求めれば、文字サイズや余白の段階を、基準と比率と段階の数から式で導けます。`calc()`、`min()`、`max()`、`clamp()` の基本と、推奨値の組み立て方は「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
+計算関数は、根拠を式に残すだけでなく、クエリを書かずに値を切り替える手段にもなります。`clamp()` の最小値を負、最大値を0にすると、余白が広いときだけ要素を外へはみ出させる値を作れます。`abs()` で絶対値を取れば、兄弟の並びの中央からの距離を、項目の数に関係なく求められます。`pow()` で累乗を求めれば、文字サイズや余白の段階を、基準と比率と段階の数から式で導けます。`round()` で丸めれば、式で求めた端数のある値を、決めた刻みの倍数にそろえられます。`calc()`、`min()`、`max()`、`clamp()` の基本と、推奨値の組み立て方は「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で説明しています。
 
 長さを単位のない数値に変えるときは、三角関数の組み合わせではなく、単位のついた値で割ります。Chrome系のブラウザだけが対応する `calc-size()` と `@function` は、従来の書き方で足りる場面では使いません。
 
@@ -205,6 +205,33 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 <Baseline id="exp-functions" name="pow() などの指数関数" />
 
+## `round()` で値を刻みにそろえる
+
+`round()` は、値を、指定した刻みの倍数に丸める関数です。`round(丸め方, 値, 刻み)` の順に書き、`round(down, 100%, 1ic)` は、要素の幅を全角1文字分（`1ic`）の倍数に切り下げます。本書では、この形で段落の幅を丸め、ベタ組みの行末に半端なすき間を残しにくくしています（「[14-2 和文組版を整える](/typography/japanese-typesetting/#約物のぶら下げ)」）。
+
+丸め方は4つあります。省略したときの `nearest` は、近いほうの倍数を選び、ちょうど中間なら大きいほうに丸めます。`up` は常に大きいほうへ、`down` は常に小さいほうへ丸めます。`to-zero` は0に近いほうへ丸めるので、正の値では `down` と同じですが、負の値では結果が分かれます。`round(down, -30px, 16px)` は `-32px`、`round(to-zero, -30px, 16px)` は `-16px` です。「`clamp()` の範囲に負の値を含める」のはみ出し量のように負の値を取る式で、絶対値を上限より大きくしたくないなら `to-zero` を選びます。
+
+丸め方は、刻みを超えてよい向きで選びます。親の幅を丸めた結果が親を超えると横にはみ出すので、幅は `down` で丸めます。中身を収めるための最小の高さを丸めるなら、中身より低くならない `up` です。どちらに振れても困らない余白なら、`nearest` で足ります。
+
+刻みには、そろえたい単位の長さを書きます。全角の文字にそろえるなら `1ic`、行の高さにそろえるなら `1lh`、4pxの格子にそろえるなら `4px` です。値と刻みは同じ種類でなければならず、長さを丸めるなら刻みも長さにします。刻みを省略できるのは、値が単位のない数値のときだけで（刻みは1になります）、`round(17.3px)` のように長さの刻みを省くと宣言が無効になります。`100%` と `1ic` のように、パーセントと長さを組み合わせることはできます。
+
+```css title="🙆‍♂ Recommended: コンテナの幅から求めた余白を、4pxの刻みにそろえる"
+@scope (.scoped.feature-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    /* 幅の5%を16px〜40pxに収め、4pxの倍数に丸める */
+    padding-inline: round(clamp(16px, 5cqi, 40px), 4px);
+  }
+}
+```
+
+`clamp()` とコンテナ単位で求めた値は、幅に応じて `19.7px` のような端数を取ります。`round()` で包むと、余白は16px、20px、24pxのように4pxずつ変わり、ほかの部品の4pxの倍数の余白と並べてもずれが目立ちません。{/* 要確認: 出典なし。流動的な値を round() で刻みにそろえる使い方 */}`round()` は2024年5月から主要なブラウザで使え、本書の対象のブラウザもすべて対応しています。
+
+<Baseline id="round-mod-rem" name="round()、mod()、rem()" />
+
 ## 長さを単位のない数値に変える割り算
 
 長さを単位のない数値に変えるときは、単位のついた値で割ります。`calc(100svi / 1px)` は、画面の幅をpxで数えた数値（幅375pxの画面なら375）を返します。単位のついた値どうしを割り、単位を打ち消して数値にする計算は、「typed arithmetic」と呼ばれる仕様です。
@@ -300,6 +327,8 @@ SafariとFirefoxでは `--fluid()` を含む宣言が無効になり、見出し
 - [abs() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/abs)
 - [pow() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/pow)
 - [CSS Values and Units Module Level 4: Exponential Functions](https://drafts.csswg.org/css-values-4/#exponent-funcs)
+- [round() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/round)
+- [CSS Values and Units Module Level 4: Stepped Value Functions](https://drafts.csswg.org/css-values-4/#round-func)
 - [sibling-index() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/sibling-index)
 - [calc-size() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/calc-size)
 - [@function - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@function)

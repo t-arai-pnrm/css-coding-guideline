@@ -102,6 +102,35 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 }
 ```
 
+`inline flow-root`（`inline-block`）のボックスは、中の最後の行のベースラインを、行の中でそろえる基準にします。ただし、`overflow` を `hidden`、`auto`、`scroll` にしてスクロールコンテナにすると、基準は中の文字ではなく、ボックスの下の `margin` の端に変わります。CSS 2で決まった振る舞いが、互換性のために、いまの仕様（CSS Box Alignment）にも残っています。ボックスの下端がまわりの文字のベースラインにそろうので、ボックスは持ち上がり、中の文字はまわりの文字より高い位置に並びます。
+
+```css title="🙅‍♂ Not Recommended: 文中のラベルを overflow: hidden で切り取る"
+/* 🙅‍♂ Not Recommended */
+._label {
+  display: inline flow-root;
+  overflow: hidden;
+  max-inline-size: calc(160 / 16 * 1rem);
+  padding-block: 2px;
+  white-space: nowrap;
+}
+```
+
+はみ出しを切り取るだけなら、`overflow: clip` にします。`clip` はスクロールコンテナを作らないので、基準は中の最後の行のベースラインのまま変わりません（[`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden)）。スクロールさせる必要があって `auto` や `scroll` を使うときは、`baseline-source: last` を指定すると、中の最後の行のベースラインでそろえ直せます。Chromeで確かめたところ、`overflow: hidden` のボックスは中の文字ごと上へずれ、`overflow: clip` と `baseline-source: last` のボックスは、まわりの文字とベースラインがそろいました。
+
+```css title="🙆‍♂ Recommended: スクロールコンテナを作らない clip で切り取る"
+._label {
+  display: inline flow-root;
+  overflow: clip;
+  max-inline-size: calc(160 / 16 * 1rem);
+  padding-block: 2px;
+  white-space: nowrap;
+}
+```
+
+<Baseline id="baseline-source" />
+
+`baseline-source` に対応しているのはChromeとFirefoxで、Safariは対応していません。{/* 要検証: ブラウザ。Safariで、スクロールコンテナの inline flow-root がずれること */}Safariでもずれを避けたいときは、`vertical-align: top` や `bottom` でボックスの端を行の端にそろえる方法がありますが、中の文字とまわりの文字のベースラインはそろいません。文中に置くボックスでは、まず `clip` で済むかを考えます。
+
 インライン要素が複数の行にまたがると、背景、`border`、`padding` は、各行の断片に分けて描かれます。デフォルトでは1つの帯を行の端で切ったように描かれ、行の端の `padding` と角丸は失われます。各行の断片を独立した箱として描きたいときは、`box-decoration-break: clone` を指定します。Safariは接頭辞付きの `-webkit-box-decoration-break` だけに対応しています。{/* 要確認: 出典なし */}見出しの行ごとに背景を敷く使い方と、上下の行と重ならない `line-height` の決め方は、「[16-7 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
 
 <Baseline id="box-decoration-break" />
@@ -255,4 +284,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 - [通常フローでのブロックおよびインラインレイアウト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Block_and_inline_layout_in_normal_flow)
 - [ブロック整形コンテキスト - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_display/Block_formatting_context)
 - [vertical-align - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/vertical-align)
+- [baseline-source - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/baseline-source)
+- [CSS Box Alignment Module Level 3: Determining the Baselines of a Box](https://drafts.csswg.org/css-align-3/#baseline-export)
+- [CSS 2.2: Line height calculations](https://drafts.csswg.org/css2/#leading)（`inline-block` のベースライン）
 - [box-decoration-break - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/box-decoration-break)

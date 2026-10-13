@@ -11,6 +11,31 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.56.1（2026年10月13日）
+
+本書が扱っていなかった細かな仕様と注意点を、既存の節に補いました。ルールは変えていません。
+
+- 「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」に、`:has()` は隠した子孫にも当たることと、隠した状態を条件に含める書き方を足しました。
+- 「[6-1 pxとremを使い分ける](/values/px-and-rem/)」に、フォントの寸法に基づく単位 `cap`、`ex`、`ic` の定義と、本書で使っている箇所を足しました。
+- 「[6-4 計算関数を応用する](/values/advanced-math-functions/)」に、見出し「round() で値を刻みにそろえる」を加え、4つの丸め方と刻みの書き方を説明しました。
+- 「[7-2 通常フローの基礎](/layout/normal-flow/)」に、スクロールコンテナにした `inline flow-root` のベースラインが下の `margin` の端になることと、`overflow: clip` と `baseline-source` による対処を足しました。
+- 「[7-8 Gridの基礎](/layout/grid-basics/)」に、エリアの名前が長方形にならないと `grid-template` の宣言全体が無効になることを足しました。
+- 「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」に、開始側へのはみ出しにはスクロールで届かないことを足しました。
+- 「[11-10 ページのスクロールとルートスクローラー](/layout-practice/root-scroller/)」に、ページ全体のスナップを `proximity` にする理由を足しました。
+- 「[12-9 pile：子要素を同じセルに重ねる](/compositions/pile/)」に、文字のある側だけを暗くするグラデーションの層と、その停止位置の決め方を足しました。
+- 「[13-5 メディアクエリ](/responsive/media-queries/)」のメディア特性の表に、`height` の行を足しました。
+- 「[14-1 フォントを指定する](/typography/fonts/)」に、可変フォントの軸は対応するプロパティで指定し、`font-variation-settings` は独自の軸にだけ使うことを足しました。
+- 「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」に、`text-wrap: balance` が箱の幅を縮めないことへの対処と、`hyphens: auto` に `lang` 属性が要ることを足しました。
+- 「[16-1 画像の配置と比率](/decoration/images/)」に、背景の画像を重ねる順序と、本書が個別のプロパティで書く理由を足しました。
+- 「[16-2 画像の形式と読み込み](/decoration/image-loading/)」に、`display: none` で隠した `<img>` も読み込まれるので、幅で画像を出し分けるときは `<picture>` を使うことを足しました。
+- 「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」に、大きさを変えても線の太さを変えない `vector-effect="non-scaling-stroke"` を足しました。
+- 「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」に、`clip-path` は影も切り取るので、切り抜いた形の影は親の `drop-shadow()` で付けることを足しました。
+- 「[16-7 文字とリストの装飾](/decoration/text-ornaments/)」に、入れ子の番号付きリストで親の番号をつなぐ `counters()` を足しました。
+- 「[17-7 フォーム部品](/interaction/forms/)」に、`field-sizing: content` を1行の入力欄と `<select>` の幅に使う書き方と、`accent-color` が効く部品を足しました。
+- 「[18-4 トランジションの基本と中断](/motion/transitions-and-keyframes/)」に、クエリで値が切り替わるときもトランジションが動くことと、その避け方を足しました。
+- 「[19-3 表示と操作を確かめる](/operations/verification/)」に、ビューポートの高さも変えて確かめる条件を足しました。
+- 「[19-4 表示の崩れを開発者ツールで調べる](/operations/devtools/)」に、すべての要素に一時的に `outline` を付けて箱の構造を見る方法を足しました。
+
 ## 0.56.0（2026年10月13日）
 
 本書が扱っていなかった話題を洗い出し、節と見出しを加えました。ルールを追加したので、マイナーバージョンを上げています。

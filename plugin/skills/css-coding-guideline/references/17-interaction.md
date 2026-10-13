@@ -1,8 +1,8 @@
 # 第17章 インタラクション：ルール
 
-- ガイドラインのバージョン: 0.56.0（2026-10-13 生成）
+- ガイドラインのバージョン: 0.56.1（2026-10-13 生成）
 - ルールの数: 40
-- 本文: 約14万字
+- 本文: 約14.2万字
 - 読む条件: ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -19,7 +19,7 @@
 - `interaction/card-link` 17-4 カード全体をリンクにする（約2,300字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/
 - `interaction/hiding-elements` 17-5 要素を隠す方法を選ぶ（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hiding-elements/
 - `interaction/disclosure` 17-6 開閉するUI（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
-- `interaction/forms` 17-7 フォーム部品（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
+- `interaction/forms` 17-7 フォーム部品（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
 - `interaction/carousel` 17-8 CSSでカルーセルを作る（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
 
 ## 17-1 ホバーとフォーカスを表す
