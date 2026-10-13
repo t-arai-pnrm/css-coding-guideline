@@ -135,8 +135,17 @@
         }
       }
 
+      /*
+       * フォーカスリングは、ピルのすぐ外に出す。
+       * リンクの箱はピルより4px大きいので、角をピルと同じに丸め、outline を内側へ1px寄せる。
+       * ベーススタイルの影はピルの外の隙間まで広がり、隣のピルに重なるので戻す
+       */
       &:focus-visible {
         --_background: var(--_background--hocus);
+
+        border-radius: var(--rounded--full);
+        box-shadow: initial;
+        outline-offset: -1px;
       }
     }
   }

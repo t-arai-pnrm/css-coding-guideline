@@ -106,8 +106,9 @@
         inset: 0;
       }
 
-      /* フォーカスリングは行の外周に出すので、リンク自身の outline は色だけを透明にする */
+      /* フォーカスリングは行の外周に出すので、リンク自身のリングは、ベーススタイルの影を戻し、outline の色だけを透明にする */
       &:focus-visible {
+        box-shadow: initial;
         outline-color: transparent;
       }
     }

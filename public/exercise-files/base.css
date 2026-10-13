@@ -809,3 +809,43 @@
     color: var(--foreground--base);
   }
 }
+
+@layer base {
+  :root {
+    text-underline-offset: 25%;
+
+    &:lang(ja) {
+      font-kerning: none;
+    }
+  }
+
+  :lang(en) {
+    font-kerning: normal;
+  }
+
+  :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
+    font-kerning: normal;
+
+    &:lang(en) {
+      text-wrap: balance;
+    }
+
+    &:lang(ja) {
+      font-feature-settings: "palt";
+
+      @supports (word-break: auto-phrase) {
+        text-wrap: balance;
+        word-break: auto-phrase;
+      }
+    }
+  }
+
+  :focus-visible {
+    --_b--ring-width: 3px;
+    --_b--ring-offset: 3px;
+
+    box-shadow: 0 0 0 calc(var(--_b--ring-offset) + var(--_b--ring-width)) Canvas;
+    outline: var(--_b--ring-width) solid CanvasText;
+    outline-offset: var(--_b--ring-offset);
+  }
+}
