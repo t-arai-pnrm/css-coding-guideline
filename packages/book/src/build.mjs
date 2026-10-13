@@ -6,9 +6,11 @@
  */
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
-import { extractPage, keyOf } from './extract.mjs';
+import { JSDOM, VirtualConsole } from 'jsdom';
+import { extractPage, keyOf, rewriteLinks } from './extract.mjs';
 import { createCapturer } from './capture.mjs';
 import { allPages, DIST, volumePages } from './pages.mjs';
+import { VOLUMES } from '../config/volumes.mjs';
 import { createIndexer, loadTerms, renderIndex } from './indexer.mjs';
 import { BASE, pageUrl } from '../../../src/lib/site.mjs';
 import { BASELINE_CHECKED } from '../../../src/lib/book.mjs';
@@ -98,6 +100,55 @@ ${body}
 </html>
 `;
 
+/** 前付けの HTML の中のリンクを、本文と同じ紙の参照にする */
+const printLinks = (html, key) => {
+  const dom = new JSDOM(`<body>${html}</body>`);
+  const body = dom.window.document.body;
+  rewriteLinks(dom.window.document, body, key, ctx);
+  return body.innerHTML;
+};
+
+/** 巻の設定の短い文を HTML にする（`code` と [文字列](/パス/#見出し) だけを扱う） */
+const inline = (text) =>
+  text
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\((\/[^)]+)\)/g, (match, label, path) => `<a href="${BASE}${path}">${label}</a>`);
+
+// 扉の後の「この巻について」：前提、到達目標、確かめる問い、次の巻（最後の巻は付録と補足サイト）
+const preface = volume.preface
+  ? printLinks(
+      `<section class="volume-preface">
+<h1>この巻について</h1>
+<h2>前提とすること</h2>
+<p>${inline(volume.preface.prerequisite)}</p>
+<h2>この巻で身につくこと</h2>
+<p>${inline(volume.preface.goal)}</p>
+<h2>身についたかを確かめる</h2>
+<p>${inline(volume.preface.check)}</p>
+<h2>${volume.number === VOLUMES.length ? '巻末の付録と補足サイト' : '次の巻へ'}</h2>
+<p>${inline(volume.preface.next)}</p>
+</section>`,
+      'volume-preface',
+    )
+  : '';
+
+// 巻2と巻3の前付けに、「最小の構成で始める」の命名の早見表を写す。巻1を開かずに、コード例の名前を見分けられるようにする
+const cheatSheet = async () => {
+  if (!volume.cheatSheet) return '';
+  const html = join(DIST, 'introduction/quick-start/index.html');
+  const doc = new JSDOM(await readFile(html, 'utf8'), { virtualConsole: new VirtualConsole() }).window.document;
+  const heading = doc.querySelector('.sl-markdown-content h2[id="命名の早見表"]');
+  if (!heading) throw new Error('最小の構成で始めるに「命名の早見表」がありません。先に pnpm build を実行してください。');
+  const start = heading.closest('.sl-heading-wrapper') ?? heading;
+  const parts = [];
+  for (let node = start.nextElementSibling; node && !node.matches('h2, .sl-heading-wrapper.level-h2'); node = node.nextElementSibling) parts.push(node);
+  for (const part of parts) for (const element of part.querySelectorAll('.sl-anchor-link')) element.remove();
+  return printLinks(`<section class="naming-cheatsheet">
+<h1>命名の早見表</h1>
+${parts.map((part) => part.outerHTML).join('\n')}
+</section>`, 'naming-cheatsheet');
+};
+
 // 扉と目次：章の概要と節を、ページ番号付きで並べる
 const toc = pages
   .map((page) => `<li class="${page.slug === 'index' ? 'toc-chapter' : 'toc-section'}"><a href="#page-${keyOf(page.id)}">${page.title}</a></li>`)
@@ -107,6 +158,8 @@ const front = `<section class="title-page">
 <p class="volume-title">巻${volume.number}　${volume.title}</p>
 <p class="book-version">試し組み（v${version}）</p>
 </section>
+${preface}
+${await cheatSheet()}
 <section class="publication-info">
 <h1>この試し組みの使い方</h1>
 <p>本文とサンプルの版：v${version}。未確認の原稿を含む試し組みです。対応状況は${BASELINE_CHECKED}確認のデータで、全ブラウザの実機検証を表すものではありません。</p>

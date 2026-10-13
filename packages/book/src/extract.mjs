@@ -47,6 +47,45 @@ const widthsOf = (figure, setting, mentioned) => {
   return narrow === wide ? [wide] : [narrow, wide];
 };
 
+/**
+ * 要素の中のリンクを、紙の参照にする。ページ内の参照は id の前置きに合わせ、
+ * 同じ巻のページは「（p.N）」になる参照に、別の巻と採録しないページは「（巻N）」「（補足サイト）」を添える。
+ * 扉の後に置く前付けでも使う。
+ */
+export const rewriteLinks = (doc, content, key, ctx) => {
+  for (const anchor of content.querySelectorAll('a[href]')) {
+    const href = anchor.getAttribute('href');
+    if (href.startsWith('#')) {
+      anchor.setAttribute('href', `#${key}--${decodeURIComponent(href.slice(1))}`);
+      continue;
+    }
+    const target = parseHref(href);
+    if (!target) continue;
+    const targetPage = ctx.pages.get(target.page);
+    if (!targetPage) {
+      anchor.setAttribute('href', `${SITE}${href}`);
+      continue;
+    }
+    if (/^(こちら|ここ|詳細|このページ|リンク)$/.test(anchor.textContent.trim())) anchor.textContent = targetPage.title;
+    const inVolume = ctx.volumePageIds.has(targetPage.id);
+    const isRule = target.hash.startsWith('rule-');
+    if (inVolume) {
+      const hash = target.hash ? `${keyOf(targetPage.id)}--${target.hash}` : `page-${keyOf(targetPage.id)}`;
+      anchor.setAttribute('href', `#${hash}`);
+      anchor.classList.add(isRule ? 'xref-rule' : 'xref');
+      if (isRule) anchor.dataset.label = targetPage.label ?? '';
+    } else {
+      // 採録しない付録や試し組みで省略したページにページ番号を付けない。
+      const where = targetPage.volume === ctx.volumeNumber ? 'この試し組みでは省略' : targetPage.volume ? `巻${targetPage.volume}` : '補足サイト';
+      if (targetPage.volume && targetPage.volume !== ctx.volumeNumber) anchor.removeAttribute('href');
+      else anchor.setAttribute('href', pageUrl(targetPage.id) + (target.hash ? `#${target.hash}` : ''));
+      anchor.classList.add('xref-out');
+      const suffix = isRule ? `（${targetPage.label ?? ''}、${where}）` : `（${where}）`;
+      anchor.after(doc.createTextNode(suffix));
+    }
+  }
+};
+
 export const extractPage = async (page, ctx) => {
   // サイトの CSS のネストを jsdom が解釈できずに出す警告は、組版に関係しないので捨てる
   const dom = new JSDOM(await readFile(page.html, 'utf8'), { virtualConsole: new VirtualConsole() });
@@ -214,38 +253,7 @@ export const extractPage = async (page, ctx) => {
   // id をページの中で一意にする
   for (const element of content.querySelectorAll('[id]')) element.id = `${key}--${element.id}`;
 
-  // リンク
-  for (const anchor of content.querySelectorAll('a[href]')) {
-    const href = anchor.getAttribute('href');
-    if (href.startsWith('#')) {
-      anchor.setAttribute('href', `#${key}--${decodeURIComponent(href.slice(1))}`);
-      continue;
-    }
-    const target = parseHref(href);
-    if (!target) continue;
-    const targetPage = ctx.pages.get(target.page);
-    if (!targetPage) {
-      anchor.setAttribute('href', `${SITE}${href}`);
-      continue;
-    }
-    if (/^(こちら|ここ|詳細|このページ|リンク)$/.test(anchor.textContent.trim())) anchor.textContent = targetPage.title;
-    const inVolume = ctx.volumePageIds.has(targetPage.id);
-    const isRule = target.hash.startsWith('rule-');
-    if (inVolume) {
-      const hash = target.hash ? `${keyOf(targetPage.id)}--${target.hash}` : `page-${keyOf(targetPage.id)}`;
-      anchor.setAttribute('href', `#${hash}`);
-      anchor.classList.add(isRule ? 'xref-rule' : 'xref');
-      if (isRule) anchor.dataset.label = targetPage.label ?? '';
-    } else {
-      // 採録しない付録や試し組みで省略したページにページ番号を付けない。
-      const where = targetPage.volume === ctx.volumeNumber ? 'この試し組みでは省略' : targetPage.volume ? `巻${targetPage.volume}` : '補足サイト';
-      if (targetPage.volume && targetPage.volume !== ctx.volumeNumber) anchor.removeAttribute('href');
-      else anchor.setAttribute('href', pageUrl(targetPage.id) + (target.hash ? `#${target.hash}` : ''));
-      anchor.classList.add('xref-out');
-      const suffix = isRule ? `（${targetPage.label ?? ''}、${where}）` : `（${where}）`;
-      anchor.after(doc.createTextNode(suffix));
-    }
-  }
+  rewriteLinks(doc, content, key, ctx);
 
   for (const heading of content.querySelectorAll('h2')) {
     if (heading.textContent !== '参考リンク') continue;

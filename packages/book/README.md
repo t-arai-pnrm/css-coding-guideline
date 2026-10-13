@@ -14,7 +14,7 @@ pnpm --filter css-coding-guideline-book pdf  # out/vol1.pdf を作る
 
 ## 設定
 
-- `config/volumes.mjs`：巻と章の対応、巻3に載せる付録
+- `config/volumes.mjs`：巻と章の対応、巻のタイトル、巻3に載せる付録、扉の後の「この巻について」（前提、到達目標、確かめる問い、次の巻）の文、命名の早見表を前付けに写すか（`cheatSheet`）。早見表は「最小の構成で始める」の同じ見出しから写すので、原稿を直せば紙にも反映される
 - `config/demo-selection.json`：デモ（`src/demos/` のディレクトリ名）ごとに、紙に静止図を載せるか（`print`）と、撮る幅（`widths`、省略するとデモの幅のボタンから狭い幅と広い幅を選ぶ）
 - `config/code-selection.json`：紙で抜粋する長い設定のタイトル、行の範囲、全文の取得案内。Web版のコードは変えない。原稿を更新したら、抜粋が説明と一致するかを見直す。
 
