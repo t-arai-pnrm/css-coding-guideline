@@ -1,0 +1,16 @@
+@layer base {
+  :root {
+    /*
+     * ヘッダーを固定するときだけ、スクロールで見せる範囲からヘッダーの高さを除く。
+     * 値は、ヘッダーの ._header-inner の min-block-size とそろえる。
+     */
+    @media (height >= calc(600 / 16 * 1rem)) {
+      scroll-padding-block-start: calc(72 / 16 * 1rem);
+    }
+
+    /* モーダルが開いている間、ページのスクロールを止める */
+    &:has(:modal) {
+      overflow: hidden;
+    }
+  }
+}

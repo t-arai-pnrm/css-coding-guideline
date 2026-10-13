@@ -1,0 +1,197 @@
+---
+title: "21-10 料金プランを作る"
+description: "料金のページに、3つのプランを横に並べ、おすすめのプランを紺で目立たせます。プランごとに中身の量が違っても、価格やボタンの位置が横一列にそろうかを確かめる節です。"
+sidebar:
+  order: 10
+---
+
+import Demo from '../../../components/Demo.astro';
+import pricingInitialHtml from '../../../demos/exercise/pricing-1/index.html?raw';
+import pricingInitialCss from '../../../demos/exercise/pricing-1/style.css?raw';
+import pricingChangedHtml from '../../../demos/exercise/pricing-2/index.html?raw';
+import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
+
+料金のページに、3つの料金プランを並べます。各プランには、プランの名前、価格、短い説明、含まれる項目のリスト、相談のボタンを、この順で縦に並べます。プランは1pxの枠線で囲んで角を12px丸め、内側に24pxの余白を取ります。項目のリストは、各項目の前にティールの「✓」を置きます。
+
+真ん中の「スタンダード」は、おすすめのプランです。プランを紺で塗り、名前の横に「おすすめ」の印を置き、相談のボタンを主ボタンにします。ほかの2つのプランのボタンは、副ボタンです（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。
+
+3つのプランは、列の最小幅を240px相当として横に並べます。3列が入らない幅では、2列にせず、1列に積みます。プランの間は24pxです。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/pricing/start/index.html)）から始め、中間版（[index.html](/exercise-files/pricing/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/pricing/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/pricing/start/`、`exercise/pricing/middle/`、`exercise/pricing/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)
+- [7-9 Gridでアイテムをそろえる](/layout/grid-alignment/)
+- [9-2 BEMからの書き直しとバリエーション](/notation/variants/)
+- [10-1 何をコンポーネントにするか](/components/what-is-a-component/)
+- [12-4 switcher：n列と1列を幅で切り替える](/compositions/switcher/)
+- [15-4 ダークモード](/color-media/dark-mode/)
+
+## 予想する
+
+本文を読む前に、3つのプランの並べ方を考えてみてください。列の最小幅と最大数から列数を決める `grid` で並べると、幅を狭めていったときに、どんな並びが途中に現れるでしょうか。
+
+おすすめのプランの見た目を、どう選ぶかも予想します。編集者がおすすめのプランを入れ替えたときに、直す場所がHTMLだけで済むか、紺の面の上のボタンと文字の色を何で切り替えるかを決めてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点の料金プランです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たした料金プラン：3列か1列で並び、おすすめのプランは紺で塗られる" html={pricingInitialHtml} css={pricingInitialCss} />
+
+幅を1024pxや1280pxにすると、3つのプランが3列に並びます。768px以下では、2列を飛ばして1列に積まれます。おすすめのプランは紺の面に白い文字で、相談のボタンは白い主ボタン、「✓」は明るいティールになります。「おすすめ」の印が文字で表示され、色を見分けられなくても、どのプランがおすすめかが分かれば完成です。
+
+## プランは一覧の子要素にする
+
+プランは、一覧のコンポーネント `pricing-plans` の子要素として書きます。プランは料金の一覧の中でしか使わず、後で説明するように、プランをまたいだ位置合わせも一覧が受け持つからです（`local-parts-stay-in-parent`）。
+
+```html title="🙆‍♂ Recommended: 一覧に switcher を付け、おすすめのプランは data-variant で選ぶ"
+<ul class="scoped pricing-plans | switcher">
+  <li class="_plan">
+    <div class="_name | cluster">
+      <h3>ライト</h3>
+    </div>
+    <p class="_price">50万円から<small>（税別）</small></p>
+    <p class="_description">5ページで会社を紹介したい方に。</p>
+    <ul class="_features">…</ul>
+    <a class="scoped action-control" href="#contact-light" data-variant="secondary">このプランで相談する</a>
+  </li>
+  <li class="_plan" data-variant="recommended">
+    <div class="_name | cluster">
+      <h3>スタンダード</h3>
+      <p class="_badge">おすすめ</p>
+    </div>
+    <!-- ... -->
+  </li>
+  <!-- ... -->
+</ul>
+```
+
+プランの並べ方は、12-4の `switcher` に任せます。`grid` のように列が1つずつ減ると、2列になった幅で、3つ目のプランだけが次の行に取り残されます。`switcher` は、指定の列数が収まる幅なら3列に、収まらなければ1列にします（`grid-switcher-for-fixed-sets`）。列数、列の最小幅、間隔は、一覧のCSSで公開プロパティに渡します。3列が並ぶのは、240×3＋24×2で768px相当以上のときです。
+
+## おすすめのプランは種類として選ぶ
+
+おすすめかどうかは、置き場所ではなく、編集者がプランごとに選ぶ情報です。そこで、プランの `data-variant="recommended"` で選びます（「[9-2 BEMからの書き直しとバリエーション](/notation/variants/)」）。紺の面は、21-2の紺の帯と同じく、配色を暗くして作ります。
+
+```css title="🙆‍♂ Recommended: おすすめのプランだけ配色を暗くし、中の色はトークンに切り替えさせる"
+@scope (.scoped.pricing-plans) to (.scoped) {
+  ._plan {
+    padding: 24px;
+    border: 1px solid var(--border--base);
+    border-radius: var(--rounded--lg);
+
+    &[data-variant="recommended"] {
+      border-color: transparent;
+      color-scheme: dark;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+    }
+  }
+}
+```
+
+紺の面の中の相談のボタンは、白い主ボタンになり、「✓」と「おすすめ」の印は明るいティールに変わります。どれもトークンが配色に合わせて切り替えるので、おすすめのプランのための色の指定は、この1か所だけです（「[15-4 ダークモード](/color-media/dark-mode/#一部のコンポーネントだけを暗い配色にする)」）。
+
+「おすすめ」は、色だけでなく、HTMLの文字でも示します。紺で塗っただけでは、色を見分けにくい人やスクリーンリーダーを使う人に、どれがおすすめかが伝わりません（`no-color-only-information`）。項目の前の「✓」は、項目の文字だけで内容が伝わる飾りなので、`::before` の生成コンテンツで入れ、代替テキストを空にします。リストの印を変えるときは、`::marker` ではなく `::before` で描きます（`marker-color-and-font-size-only`）。
+
+## 要件が変わる
+
+プランの中身が固まり、説明の長さと含まれる項目の数が、プランごとに違う原稿が届きました。ライトは説明が1行で項目が3つ、スタンダードは説明が3行で項目が5つ、プレミアムは説明が4行で項目が7つです。カンプでは、3つのプランの価格、説明、項目のリスト、ボタンの上端が、それぞれ横一列にそろっています。
+
+本文を読む前に、3列に並んだとき何がずれるかを考えてみてください。ずれをそろえる方法として、説明や項目のリストに `min-block-size` で高さを与える方法や、ボタンを `margin-block-start: auto` で下に押しやる方法が思い浮かぶかもしれません。それぞれで、何がそろい、何がそろわないかを予想してから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点の料金プランです。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えた料金プラン：中身の量が違っても、価格、項目、ボタンの位置がそろう" html={pricingChangedHtml} css={pricingChangedCss} />
+
+幅を1024pxや1280pxにすると、3つのプランの項目のリストとボタンの上端が、それぞれ横一列にそろいます。項目の少ないライトは、リストの下に空きができ、ボタンはほかのプランと同じ高さに置かれます。768px以下で1列に積んだときは、プランごとに中身の高さだけになり、余分な空きが残らなければ完成です。
+
+## 高さを固定せず、subgrid で行をそろえる
+
+ずれをそろえるために、説明や項目のリストに高さを与えると、中身の量の想定を値として埋め込むことになります。
+
+```css title="🙅‍♂ Not Recommended: 説明と項目のリストに、いちばん長いプランに合わせた高さを与える"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.pricing-plans) to (.scoped) {
+  ._description {
+    min-block-size: calc(96 / 16 * 1rem);
+  }
+
+  ._features {
+    min-block-size: calc(208 / 16 * 1rem);
+  }
+}
+```
+
+説明や項目が増えれば、値を測り直すことになり、1列に積んだときにも、短いプランの下に意味のない空きが残ります。ボタンを `margin-block-start: auto` で下に押しやる方法では、そろうのはボタンだけで、項目のリストの上端はそろいません（`subgrid-for-aligned-rows`）。
+
+本書では、各プランを `subgrid` にして、一覧のグリッドの行に参加させます。プランの5つの子要素が、一覧の5つの行に1つずつ入るので、同じ行に並んだ要素のうち、いちばん高いものに合わせて行の高さが決まります（「[7-9 Gridでアイテムをそろえる](/layout/grid-alignment/#サブグリッドでカードの行をそろえる)」）。
+
+```css title="🙆‍♂ Recommended: 各プランを5行にまたがらせ、一覧の行を subgrid で使う"
+@scope (.scoped.pricing-plans) to (.scoped) {
+  ._plan {
+    display: block grid;
+    grid-template-rows: subgrid;
+    grid-row: span 5;
+    row-gap: 16px;
+  }
+}
+```
+
+`grid-row: span 5` で各プランを一覧の5行にまたがらせ、`grid-template-rows: subgrid` でその行をそのまま使います。プランの中の行の間隔は、`row-gap` で一覧の間隔とは別に決めます。1列に積んだときは、各プランが自分の5行を持つので、行の高さはそのプランの中身だけで決まります。
+
+この書き方が成り立つのは、どのプランも5つの子要素を持っているからです。「おすすめ」の印を名前の横に置き、`._name` の中に入れたのは、おすすめのプランだけ行が1つ増えないようにするためでもあります。
+
+## 振り返り
+
+直したのは、各プランを `subgrid` にした `pricing-plans.css` の3行と、プランの原稿です。直さずに済んだのは、`switcher` の値、おすすめのプランの配色、`action-control` です。そろえる仕組みを、プランの中ではなく一覧のグリッドの行に持たせたので、中身の量が変わっても値を測り直す必要がありません。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- プランをまたいだ位置合わせを、プランではなく一覧が受け持つと予想できたか。プランを別のコンポーネントにしていたなら、一覧のどこで5行にまたがらせるかを説明できるか。
+- 説明や項目が増えても、値を測り直さずに済むことを、`subgrid` の行の決まり方から説明できるか。
+- 1列に積んだとき、余分な空きが残らないか。
+
+## 判断の問い
+
+### 問い1
+
+4つ目のプランが増えることになりました。どこを直しますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+一覧のCSSの `--switcher--column-count` を4にします。4列が並ぶのは、240×4＋24×3で1032px相当以上のときになるので、その幅のカンプがあるか、列の最小幅を変えるかをデザイナーと確かめます。各プランの `subgrid` と、おすすめのプランの指定は直しません。プランの数は、行のそろえ方に関わらないからです（`grid-switcher-for-fixed-sets`）。
+
+</details>
+
+### 問い2
+
+おすすめのプランだけ、価格の下に「初回のご相談の方に限り、10%引き」という行を足したい、と言われました。どう書きますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+新しい子要素として足すと、おすすめのプランだけが6行になり、ほかのプランの5行と食い違って、行がそろわなくなります。この行は価格についての補足なので、`._price` の中に入れます。どのプランにも価格の補足を置くデザインにするなら、すべてのプランに6つ目の子要素を足して `span 6` にし、補足のないプランの行は空けます。どちらにするかは、補足がおすすめのプランだけのものか、どのプランにも出しうるものかで決めます。
+
+</details>
+
+## この節で使ったルール
+
+- [`local-parts-stay-in-parent`](/components/what-is-a-component/#rule-local-parts-stay-in-parent)：親の中でしか意味を持たない区画は、別のコンポーネントにしません。
+- [`grid-switcher-for-fixed-sets`](/compositions/grid/#rule-grid-switcher-for-fixed-sets)：数が決まっていて揃いで見せたいアイテムは、`switcher` で並べます。
+- [`composition-configurable-via-props`](/components/compositions-and-utilities/#rule-composition-configurable-via-props)：コンポジションの間隔や列数は、公開プロパティで受け取ります。
+- [`variant-attribute-per-axis`](/notation/variants/#rule-variant-attribute-per-axis)：見た目の種類は、`data-variant` の属性で表します。
+- [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：`color-scheme` を指定した要素では、`color` と `background-color` をトークンで指定し直します。
+- [`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)：情報を、色の違いだけで伝えません。
+- [`marker-color-and-font-size-only`](/pseudo/generated-content/#rule-marker-color-and-font-size-only)：リストの印を変えるときは、`::marker` ではなく `::before` で描きます。
+- [`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)：装飾の記号を生成コンテンツで入れるときは、代替テキストを空にします。
+- [`subgrid-for-aligned-rows`](/layout/grid-alignment/#rule-subgrid-for-aligned-rows)：並べたカードの中の位置をそろえるときは、固定の高さではなく、サブグリッドを使います。
+- [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは、中身の量の想定で固定しません。

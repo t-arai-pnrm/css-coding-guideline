@@ -1,0 +1,46 @@
+@layer components {
+  /**
+   * サイトのヘッダー。
+   * ビューポートの高さが十分なときだけ上端に留め、留まっている間だけ下の境界線を見せる。
+   */
+  @scope (.scoped.site-header) to (.scoped) {
+    :scope {
+      container: --scoped / scroll-state;
+
+      @media (height >= calc(600 / 16 * 1rem)) {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: var(--z--header);
+      }
+    }
+
+    /* scroll-padding-block-start（base レイヤーの :root）と同じ高さにそろえる */
+    ._header-inner {
+      --apart--row-gap: 8px;
+      --apart--column-gap: 32px;
+      --apart--alignment: center;
+
+      min-block-size: calc(72 / 16 * 1rem);
+      padding-block: 8px;
+      border-block-end: 1px solid transparent;
+      background-color: var(--background--base);
+
+      @container --scoped scroll-state(stuck: block-start) {
+        border-block-end-color: var(--border--strong);
+      }
+    }
+
+    ._logo {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      font-kerning: normal;
+      line-height: var(--text--title--leading);
+    }
+
+    ._actions {
+      --cluster--row-gap: 8px;
+      --cluster--column-gap: 16px;
+      --cluster--alignment: center;
+    }
+  }
+}

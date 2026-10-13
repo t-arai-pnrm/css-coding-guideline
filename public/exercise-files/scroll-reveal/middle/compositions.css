@@ -1,0 +1,28 @@
+@layer compositions {
+  /* 12-4 switcher：幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にする */
+  .switcher {
+    --_c--row-gap: var(--switcher--gap, var(--switcher--row-gap, 0px));
+    --_c--column-gap: var(--switcher--gap, var(--switcher--column-gap, 0px));
+    --_c--column-count: var(--switcher--column-count, 3);
+    --_c--column-min-width: var(--switcher--column-min-width, calc(320 / 16 * 1rem));
+
+    /* 列の最小幅で指定の列数を並べるのに必要な幅 */
+    --_c--threshold: calc(
+      var(--_c--column-min-width) * var(--_c--column-count) + var(--_c--column-gap) * (var(--_c--column-count) - 1)
+    );
+
+    /* 指定の列数でちょうど埋まる1列の幅。auto-fit がこれより多くの列を作らないようにする */
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-count) - 1)) / var(--_c--column-count)
+    );
+
+    display: block grid;
+
+    /* 閾値より狭いと sign() が -1 になり、列の最小幅が 100%（1列）になる */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr)
+    );
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+}

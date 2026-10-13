@@ -1,0 +1,23 @@
+@layer components {
+  /**
+   * ヘッダーの上に置くお知らせの帯。
+   * ヘッダーと一緒には留めず、スクロールすると画面の外へ出る。
+   */
+  @scope (.scoped.notice-bar) to (.scoped) {
+    :scope {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: var(--rounded--md);
+      color-scheme: dark;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+      text-align: center;
+    }
+
+    a {
+      text-decoration-line: underline;
+    }
+  }
+}

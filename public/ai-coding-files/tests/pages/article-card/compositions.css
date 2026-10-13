@@ -43,5 +43,12 @@
     display: block flex;
     flex-wrap: wrap;
     gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    /* 最後の行に子が1つだけ取り残されないよう、各行の長さをそろえる */
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
   }
 }

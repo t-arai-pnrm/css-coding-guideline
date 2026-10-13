@@ -2,17 +2,17 @@
  * 第21章の演習を手元で進めるためのファイルを、演習のデモから生成する。
  * 出力先は `public/exercise-files/` で、サイトの `/exercise-files/` から読める。
  *
- * - `base.css`：レイヤーの順序宣言、共通トークン（tokens レイヤー）、kiso.css（reset レイヤー）、デモのベーススタイル
- * - `card-start/`：21-2の開始版。カードの HTML と、置く側のスタイルだけ
- * - `<節のスラッグ>/`：各節を終えた時点の完成版。節 N の開始版は、節 N−1 の完成版
- * - `review/`：21-8でレビューするプルリクエストの版
+ * - `base.css`：レイヤーの順序宣言、共通トークンと演習のサイトのトークン（tokens レイヤー）、kiso.css（reset レイヤー）、デモのベーススタイル
+ * - `<節のスラッグ>/start/`：開始版。その節で作るファイルだけを空にし、ほかの部品は完成した状態にする
+ * - `<節のスラッグ>/middle/`：中間版。最初の要件を終えた時点（デモの `<スラッグ>-1`）
+ * - `<節のスラッグ>/finished/`：完成版。要件の変更を終えた時点（デモの `<スラッグ>-2`）
+ * - `review/`：21-15でレビューするプルリクエストの版
  *
  * 本のデモは1つの `style.css` にまとめているが、配布版では本文のとおり、責任ごとにファイルを分ける。
- * `@scope (.scoped.<名前>)` のブロックを `<名前>.css` に、コンポジションのレイヤーを `compositions.css` に切り出し、
+ * `@scope (.scoped.<名前>)` のブロックを `<名前>.css` に、コンポジションのレイヤーを `compositions.css` に、
+ * パターンのレイヤーを `patterns.css` に、ベーススタイルの追加（`@layer base`）を `site-base.css` に切り出し、
  * それぞれ元の `@layer` で包み直す。レイヤーの順序は `base.css` で宣言しているので、読み込む順番には左右されない。
- *
- * 21-4以降は、トップページ（`index.html`）と記事ページ（`article.html`）の両方を置き、同じカードと一覧の CSS を読ませる。
- * トップページの HTML は、各デモのディレクトリの `top.html`（配布専用）から、`page-top` のスタイルは21-3のデモから取る。
+ * `--<名前>--…` の `@keyframes` は、`<名前>.css` の先頭に、レイヤーの外のまま置く。
  *
  * 土台のスタイルは `src/lib/demo.ts` のデモと同じものを使う。演習のデモを変えたら、このスクリプトを実行し直す。
  */
@@ -26,14 +26,37 @@ const outDir = join(root, 'public/exercise-files');
 const demoDir = 'src/demos/exercise';
 const read = (path) => readFileSync(join(root, path), 'utf8');
 
-/** 演習の節（スラッグ）。並びは節の順番。 */
+/**
+ * 演習の節。並びは節の順番。
+ * `empty` は開始版で空にするファイル（その節で書くもの）、`startFrom` は開始版で前の節の状態に戻すファイル。
+ */
 const SECTIONS = [
-  { slug: 'card', title: '21-2 カードを作る' },
-  { slug: 'list', title: '21-3 一覧に並べる' },
-  { slug: 'sidebar', title: '21-4 サイドバーにも置く' },
-  { slug: 'content-changes', title: '21-5 内容の変化に耐える' },
-  { slug: 'clickable-card', title: '21-6 カード全体を押せるようにする' },
-  { slug: 'featured', title: '21-7 特集の見た目を足す' },
+  { slug: 'buttons', title: '21-2 ボタンとセクション見出しを作る', empty: ['action-control.css', 'patterns.css'] },
+  { slug: 'card-grid', title: '21-3 カード一覧とサイドバーを作る', empty: ['article-card.css'] },
+  {
+    slug: 'article-list',
+    title: '21-4 記事リストを作る',
+    empty: ['article-row.css', 'article-list.css', 'category-filter.css'],
+  },
+  { slug: 'footer', title: '21-5 フッターを作る', empty: ['site-footer.css'] },
+  {
+    slug: 'sticky-header',
+    title: '21-6 固定ヘッダーを作る',
+    empty: ['site-header.css', 'global-nav.css', 'site-base.css'],
+  },
+  {
+    slug: 'drawer',
+    title: '21-7 ドロワーメニューを作る',
+    empty: ['site-drawer.css'],
+    startFrom: { demo: 'sticky-header-1', files: ['site-header.css', 'global-nav.css', 'site-base.css'] },
+  },
+  { slug: 'hero', title: '21-8 ヒーローを作る', empty: ['hero.css'] },
+  { slug: 'faq', title: '21-9 よくある質問を作る', empty: ['faq-list.css'] },
+  { slug: 'pricing', title: '21-10 料金プランを作る', empty: ['pricing-plans.css'] },
+  { slug: 'steps', title: '21-11 制作の流れを作る', empty: ['steps.css'] },
+  { slug: 'contact-form', title: '21-12 お問い合わせフォームを作る', empty: ['contact-form.css'] },
+  { slug: 'scroll-reveal', title: '21-13 スクロールに合わせて表示する', withoutReveal: true },
+  { slug: 'assemble', title: '21-14 ページに組み上げる', empty: ['page-top.css'] },
 ];
 
 /* ---------- 土台 ---------- */
@@ -47,11 +70,14 @@ const pickConstant = (name) => {
 };
 
 const tokenFiles = ['colors', 'shadows', 'sizes', 'typography', 'motion', 'z-index'];
-const tokens = tokenFiles.map((name) => read(`src/demos/tokens/${name}.css`)).join('\n');
+const tokens = [
+  ...tokenFiles.map((name) => read(`src/demos/tokens/${name}.css`)),
+  read(`${demoDir}/site-tokens.css`),
+].join('\n');
 const require = createRequire(import.meta.url);
 const kiso = readFileSync(require.resolve('kiso.css/kiso.css'), 'utf8');
 
-const baseCss = `/* 演習の土台。本書のデモと同じレイヤー、共通トークン、リセットCSS（kiso.css）、ベーススタイル。このファイルは変えない。 */
+const baseCss = `/* 演習の土台。本書のデモと同じレイヤー、共通トークン、演習のサイトのトークン、リセットCSS（kiso.css）、ベーススタイル。このファイルは変えない。 */
 ${pickConstant('LAYER_ORDER')}
 
 @layer tokens {
@@ -115,23 +141,41 @@ const splitTopLevel = (css) => {
   return items;
 };
 
+/** レイヤーごとの出力先。pages と components は @scope ごとに分ける */
+const LAYER_FILES = { tokens: 'tokens.css', base: 'site-base.css', compositions: 'compositions.css', patterns: 'patterns.css' };
+
 /**
- * デモの `style.css` を、ファイル名ごとの CSS に分ける。
+ * デモの CSS を、ファイル名ごとの CSS に分ける。
  * 戻り値は `Map<ファイル名, CSS>`。
  */
 const splitDemoCss = (css, source) => {
   const files = new Map();
+  const unlayered = new Map();
   // chunk は、元のファイルと同じく @layer の中の字下げ（2文字）を付けた CSS
   const add = (name, layer, chunk) => {
     const prev = files.get(name);
     const body = chunk.replace(/^\n+/, '').trimEnd();
     files.set(name, prev ? `${prev.slice(0, -2)}\n${body}\n}\n` : `@layer ${layer} {\n${body}\n}\n`);
   };
+  let pendingTop = [];
   for (const item of splitTopLevel(css)) {
+    if (item.type === 'comment') {
+      pendingTop.push(item.text);
+      continue;
+    }
+    // --<名前>--… の @keyframes は、その名前のファイルにレイヤーの外のまま置く
+    const keyframes = item.type === 'block' && item.prelude.match(/^@keyframes\s+--([\w]+(?:-[a-z]+)*?)--/);
+    if (keyframes) {
+      const name = `${keyframes[1]}.css`;
+      unlayered.set(name, `${unlayered.get(name) ?? ''}${[...pendingTop, item.text].join('\n')}\n\n`);
+      pendingTop = [];
+      continue;
+    }
+    pendingTop = [];
     const layer = item.type === 'block' && item.prelude.match(/^@layer\s+([\w-]+)$/)?.[1];
     if (!layer) throw new Error(`${source}: @layer の外に書かれた項目があります：${item.text.slice(0, 40)}`);
-    if (layer === 'compositions' || layer === 'tokens') {
-      add(`${layer}.css`, layer, item.body);
+    if (LAYER_FILES[layer]) {
+      add(LAYER_FILES[layer], layer, item.body);
       continue;
     }
     // pages と components は、@scope のブロックごとにファイルを分ける。直前のコメントは同じファイルに入れる
@@ -141,7 +185,7 @@ const splitDemoCss = (css, source) => {
         pending.push(child.text);
         continue;
       }
-      // @scope の外に書いたルール（21-8のレビューの悪い例）は、セレクタの最初のクラスのファイルに入れる
+      // @scope の外に書いたルール（21-15のレビューの悪い例）は、セレクタの最初のクラスのファイルに入れる
       const name =
         child.prelude?.match(/^@scope\s*\(\.scoped\.([\w-]+)\)/)?.[1] ?? child.prelude?.match(/\.([\w-]+)/)?.[1];
       if (!name) throw new Error(`${source}: @layer ${layer} の中に、どのファイルに入れるか決められない項目があります`);
@@ -149,96 +193,123 @@ const splitDemoCss = (css, source) => {
       pending = [];
     }
   }
+  for (const [name, css] of unlayered) files.set(name, `${css}${files.get(name) ?? ''}`.trimEnd() + '\n');
   return files;
+};
+
+/** その節で読者が書くファイルを、空の @layer にする */
+const emptyFile = (name, css) => {
+  const layer = css.match(/@layer\s+([\w-]+)\s*\{/)?.[1] ?? 'components';
+  const scope = css.match(/@scope \(\.scoped\.([\w-]+)\)/)?.[1];
+  const what = scope ? `${scope}（.scoped.${scope}）のスタイル` : { base: 'ベーススタイルの追加', patterns: 'パターンのスタイル' }[layer];
+  return `@layer ${layer} {\n  /* ここに${what}を書く */\n}\n`;
+};
+
+/** 21-13の開始版：スクロールに合わせた表示の指定（@supports の中と、それを切り替える値）を外す */
+const withoutReveal = (css) => {
+  let out = css.replace(/\/\*[^*]*\*\/\n@keyframes --page-top--in-view \{[\s\S]*?\n\}\n\n?/, '');
+  // @supports (animation-timeline: view()) … のブロックを、字下げごと取り除く
+  const marker = /\n( *)(\/\*[^\n]*\*\/\n\1)?@supports \(animation-timeline: view\(\)\) and \(animation-range: entry\) \{/;
+  for (let m = out.match(marker); m; m = out.match(marker)) {
+    const start = m.index;
+    let i = out.indexOf('{', start);
+    let depth = 0;
+    for (; i < out.length; i++) {
+      if (out[i] === '{') depth++;
+      else if (out[i] === '}' && --depth === 0) break;
+    }
+    out = out.slice(0, start) + out.slice(i + 1);
+  }
+  return (
+    out
+      .replace(/\n *--_in-view: --false;\n/g, '\n')
+      .replace(/\n *--translate-from--y-value: 24px;\n/g, '\n')
+      // 波かっこの内側の端に残った空行を詰め、中身のなくなったルールを直前のコメントごと消す
+      .replace(/\{\n(?: *\n)+/g, '{\n')
+      .replace(/\n(?: *\n)+( *\})/g, '\n$1')
+      .replace(/\n(?: *\/\*[^\n]*\*\/\n)? *[^\n{}]+\{\n *\}\n/g, '\n')
+      .replace(/\n\n\n+/g, '\n\n')
+  );
 };
 
 /* ---------- HTML ---------- */
 
-const LAYER_RANK = { tokens: 0, compositions: 1, pages: 2, components: 3, patterns: 4, utilities: 5 };
-const layerOf = (css) => css.match(/^@layer\s+([\w-]+)/)[1];
+const LAYER_RANK = { tokens: 0, base: 1, compositions: 2, pages: 3, components: 4, patterns: 5, utilities: 6 };
+const rankOf = (css) => LAYER_RANK[css.match(/@layer\s+([\w-]+)\s*\{/)?.[1] ?? 'pages'];
+const isPageCss = (css) => /@layer\s+pages\s*\{/.test(css);
 
 /** HTML が使う CSS だけを、レイヤーの順に読み込む。ページのスタイルは、HTML のルートが使うものだけにする。 */
 const linksFor = (html, files) =>
   [...files]
-    .filter(([name, css]) => layerOf(css) !== 'pages' || html.includes(`scoped ${name.replace(/\.css$/, '')}`))
-    .sort(([, a], [, b]) => LAYER_RANK[layerOf(a)] - LAYER_RANK[layerOf(b)])
+    .filter(([name, css]) => !isPageCss(css) || html.includes(`scoped ${name.replace(/\.css$/, '')}`))
+    .sort(([, a], [, b]) => rankOf(a) - rankOf(b))
     .map(([name]) => `  <link rel="stylesheet" href="${name}">`)
     .join('\n');
 
-const page = ({ title, html, files }) => `<!doctype html>
+const page = ({ title, html, files, js }) => `<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>${title}</title>
-  <link rel="stylesheet" href="../base.css">
-${linksFor(html, files)}
+  <link rel="stylesheet" href="${files.base ?? '../../base.css'}">
+${linksFor(html, files.css)}
 </head>
 <body>
 ${html.trimEnd()}
-</body>
+${js ? '<script src="script.js"></script>\n' : ''}</body>
 </html>
 `;
 
 /* ---------- 書き出し ---------- */
 
-const write = (dir, pages, files) => {
+const write = (dir, { title, html, css, js, base }) => {
   mkdirSync(join(outDir, dir), { recursive: true });
-  for (const [name, html] of Object.entries(pages)) writeFileSync(join(outDir, dir, name), html);
-  for (const [name, css] of files) writeFileSync(join(outDir, dir, name), css);
+  writeFileSync(join(outDir, dir, 'index.html'), page({ title, html, files: { css, base }, js }));
+  for (const [name, text] of css) writeFileSync(join(outDir, dir, name), text);
+  if (js) writeFileSync(join(outDir, dir, 'script.js'), js);
+};
+
+const demo = (name) => {
+  const dir = `${demoDir}/${name}`;
+  const cssPath = existsSync(join(root, dir, 'style.css')) ? `${dir}/style.css` : `${dir}/style.bad.css`;
+  const jsPath = join(root, dir, 'script.js');
+  return {
+    html: read(`${dir}/index.html`),
+    css: splitDemoCss(read(cssPath), cssPath),
+    js: existsSync(jsPath) ? readFileSync(jsPath, 'utf8') : undefined,
+  };
 };
 
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'base.css'), baseCss);
 
-const listFiles = splitDemoCss(read(`${demoDir}/list/style.css`), 'list/style.css');
-const pageTopCss = listFiles.get('page-top.css');
+for (const section of SECTIONS) {
+  const { slug, title } = section;
+  const middle = demo(`${slug}-1`);
+  const finished = demo(`${slug}-2`);
 
-for (const { slug, title } of SECTIONS) {
-  const files = splitDemoCss(read(`${demoDir}/${slug}/style.css`), `${slug}/style.css`);
-  const html = read(`${demoDir}/${slug}/index.html`);
-  const topPath = `${demoDir}/${slug}/top.html`;
-  if (existsSync(join(root, topPath))) {
-    // 記事ページの段階。トップページも同じカードと一覧の CSS で表示する
-    files.set('page-top.css', pageTopCss);
-    write(
-      slug,
-      {
-        'index.html': page({ title: `${title}（完成版）トップページ`, html: read(topPath), files }),
-        'article.html': page({ title: `${title}（完成版）記事ページ`, html, files }),
-      },
-      files,
-    );
-  } else {
-    write(slug, { 'index.html': page({ title: `${title}（完成版）`, html, files }) }, files);
+  const start = { ...middle, css: new Map(middle.css) };
+  for (const name of section.empty ?? []) start.css.set(name, emptyFile(name, middle.css.get(name) ?? ''));
+  if (section.startFrom) {
+    const from = demo(section.startFrom.demo);
+    for (const name of section.startFrom.files) start.css.set(name, from.css.get(name));
   }
+  if (section.withoutReveal) {
+    for (const [name, css] of start.css) start.css.set(name, withoutReveal(css));
+  }
+
+  write(`${slug}/start`, { ...start, title: `${title}（開始版）` });
+  write(`${slug}/middle`, { ...middle, title: `${title}（中間版）` });
+  write(`${slug}/finished`, { ...finished, title: `${title}（完成版）` });
 }
 
-// 21-2の開始版は、カードのスタイルを書く前の状態。置く側のスタイルと、空のカードのファイルを置く
-const cardFiles = splitDemoCss(read(`${demoDir}/card/style.css`), 'card/style.css');
-cardFiles.set('article-card.css', '@layer components {\n  /* ここに記事カード（.scoped.article-card）のスタイルを書く */\n}\n');
-write(
-  'card-start',
-  { 'index.html': page({ title: '21-2 カードを作る（開始版）', html: read(`${demoDir}/card/index.html`), files: cardFiles }) },
-  cardFiles,
-);
+// 21-15でレビューするプルリクエスト。デモでは使うコンポジションだけを書いているが、配布版ではプロジェクトの全体を置く
+const review = demo('review');
+// コンポジションはプロジェクトで共有するファイルなので、21-3を終えた時点のもの（grid と cluster を含む）を使う
+review.css.set('compositions.css', demo('card-grid-2').css.get('compositions.css'));
+write('review', { ...review, title: '21-15 レビューするプルリクエスト', base: '../base.css' });
 
-// 21-8でレビューするプルリクエスト。デモでは使うコンポジションだけを書いているが、配布版ではプロジェクトの全体を置く
-const reviewFiles = splitDemoCss(read(`${demoDir}/review/style.bad.css`), 'review/style.bad.css');
-// コンポジションはプロジェクトで共有するファイルなので、21-7を終えた時点のもの（cluster を含む）を使う
-reviewFiles.set('compositions.css', splitDemoCss(read(`${demoDir}/featured/style.css`), 'featured/style.css').get('compositions.css'));
-write(
-  'review',
-  {
-    'index.html': page({
-      title: '21-8 レビューするプルリクエスト',
-      html: read(`${demoDir}/review/index.html`),
-      files: reviewFiles,
-    }),
-  },
-  reviewFiles,
-);
-
-console.log(`public/exercise-files/ に ${SECTIONS.length + 2} 個の版と base.css を書き出しました。`);
+console.log(`public/exercise-files/ に ${SECTIONS.length} 節×3 の版と、レビューの版と base.css を書き出しました。`);

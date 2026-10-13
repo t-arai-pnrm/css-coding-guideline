@@ -1,0 +1,31 @@
+@layer components {
+  /* ヘッダーのナビゲーション */
+  @scope (.scoped.global-nav) to (.scoped) {
+    /* 外側の cluster の間隔を継承しないよう、リンクの間は0にし、余白はリンクの padding で取る */
+    ul {
+      --cluster--gap: 0;
+    }
+
+    a {
+      display: block flex;
+      align-items: center;
+      min-block-size: max(24px, 24 / 16 * 1rem);
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-radius: var(--rounded--md);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--background--hover);
+      }
+    }
+  }
+}

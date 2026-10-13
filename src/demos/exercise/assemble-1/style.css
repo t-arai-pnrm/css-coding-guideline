@@ -1,0 +1,751 @@
+@layer base {
+  :root {
+    /*
+     * ヘッダーを固定するときだけ、スクロールで見せる範囲からヘッダーの高さを除く。
+     * 値は、ヘッダーの ._header-inner の min-block-size とそろえる。
+     */
+    @media (height >= calc(600 / 16 * 1rem)) {
+      scroll-padding-block-start: calc(72 / 16 * 1rem);
+    }
+
+    /* モーダルが開いている間、ページのスクロールを止める */
+    &:has(:modal) {
+      overflow: hidden;
+    }
+  }
+}
+
+@layer compositions {
+  /* 12-2 cluster：子を横に並べ、入りきらなければ折り返す */
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    /* 最後の行に子が1つだけ取り残されないよう、各行の長さをそろえる */
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+
+  /* 12-3 apart：子要素を両端に分ける */
+  .apart {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--apart--gap, var(--apart--row-gap, 0)) var(--apart--gap, var(--apart--column-gap, 0));
+    justify-content: space-between;
+    align-items: var(--apart--alignment, normal);
+
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+
+  /* 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む */
+  .sidebar {
+    --_c--row-gap: var(--sidebar--gap, var(--sidebar--row-gap, 0px));
+    --_c--column-gap: var(--sidebar--gap, var(--sidebar--column-gap, 0px));
+    --_c--main-min-width: var(--sidebar--main-min-width, calc(480 / 16 * 1rem));
+    --_c--side-width: var(--sidebar--side-width, calc(320 / 16 * 1rem));
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+
+    & > .main-column {
+      flex-grow: 9999;
+      flex-basis: var(--_c--main-min-width);
+    }
+
+    & > .side-column {
+      flex-grow: 1;
+      flex-basis: var(--_c--side-width);
+    }
+  }
+
+  /* 12-9 pile：子要素を同じセルに重ねる */
+  .pile {
+    display: block grid;
+    grid-template-areas: "--pile";
+    isolation: isolate;
+
+    & > * {
+      grid-area: --pile;
+      place-self: var(--pile--placement, var(--pile--alignment, normal)) var(--pile--placement, var(--pile--justification, normal));
+    }
+  }
+
+  /* 12-4 switcher：幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にする */
+  .switcher {
+    --_c--row-gap: var(--switcher--gap, var(--switcher--row-gap, 0px));
+    --_c--column-gap: var(--switcher--gap, var(--switcher--column-gap, 0px));
+    --_c--column-count: var(--switcher--column-count, 3);
+    --_c--column-min-width: var(--switcher--column-min-width, calc(320 / 16 * 1rem));
+
+    /* 列の最小幅で指定の列数を並べるのに必要な幅 */
+    --_c--threshold: calc(
+      var(--_c--column-min-width) * var(--_c--column-count) + var(--_c--column-gap) * (var(--_c--column-count) - 1)
+    );
+
+    /* 指定の列数でちょうど埋まる1列の幅。auto-fit がこれより多くの列を作らないようにする */
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-count) - 1)) / var(--_c--column-count)
+    );
+
+    display: block grid;
+
+    /* 閾値より狭いと sign() が -1 になり、列の最小幅が 100%（1列）になる */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr)
+    );
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+
+  /* 12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる */
+  .primary-layout {
+    --_c--content-max-width: var(--primary-layout--content-max-width, calc(1680 / 16 * 1rem));
+    --_c--gutter: var(--primary-layout--gutter, 20px);
+    --_c--narrow-reduction: var(--primary-layout--narrow-reduction, 20px);
+    --_c--wide-increase: var(--primary-layout--wide-increase, 60px);
+    --_c--ex-wide-increase: var(--primary-layout--ex-wide-increase, 40px);
+    --_c--row-gap: var(--primary-layout--row-gap, 0px);
+
+    display: block grid;
+    grid-template-columns:
+      [--full-start]
+      minmax(var(--_c--gutter), 1fr)
+      [--ex-wide-start]
+      minmax(0, var(--_c--ex-wide-increase))
+      [--wide-start]
+      minmax(0, var(--_c--wide-increase))
+      [--content-start]
+      minmax(0, var(--_c--narrow-reduction))
+      [--narrow-start]
+      min(100% - var(--_c--gutter) * 2, var(--_c--content-max-width) - var(--_c--narrow-reduction) * 2)
+      [--narrow-end]
+      minmax(0, var(--_c--narrow-reduction))
+      [--content-end]
+      minmax(0, var(--_c--wide-increase))
+      [--wide-end]
+      minmax(0, var(--_c--ex-wide-increase))
+      [--ex-wide-end]
+      minmax(var(--_c--gutter), 1fr)
+      [--full-end];
+    row-gap: var(--_c--row-gap);
+
+    & > * {
+      grid-column: --content;
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-top) to (.scoped) {
+    /* 帯は間を空けずに積む。上下の余白と背景は、各帯が持つ */
+    :scope {
+      display: block grid;
+    }
+
+    ._band {
+      --primary-layout--content-max-width: calc(1080 / 16 * 1rem);
+      --primary-layout--row-gap: 24px;
+
+      padding-block: 64px;
+    }
+
+    ._strengths-band,
+    ._column-band {
+      background-color: var(--background--surface);
+    }
+
+    /* 同じ背景の帯が続く境目は、後ろの帯の上の余白を詰める */
+    ._strengths-band + ._column-band,
+    ._flow-band + ._cta-band {
+      padding-block-start: 0;
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._strengths {
+      --switcher--column-min-width: calc(200 / 16 * 1rem);
+      --switcher--gap: 24px;
+    }
+
+    ._strength {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      padding: 24px;
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--base);
+
+      & > h3 {
+        font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+        line-height: var(--text--subtitle--leading);
+      }
+
+      & > p {
+        color: var(--foreground--muted);
+        font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+        line-height: var(--text--body-compact--leading);
+      }
+    }
+  }
+}
+
+@layer components {
+  /**
+   * ボタンの見た目の操作部品。
+   * ルートは <a> にも <button> にも付けるので、名前に link や button を使わない。
+   */
+  @scope (.scoped.action-control) to (.scoped) {
+    :scope {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+      --_background: var(--background--inverse);
+      --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+      --_hocus: --false;
+
+      display: inline flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      min-block-size: var(--_hit-size);
+      padding-block: 12px;
+      padding-inline: 28px;
+      border: 1px solid transparent;
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--subtitle--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[data-variant="secondary"] {
+        --_background: transparent;
+        --_background--hocus: var(--background--hover);
+
+        border-color: var(--border--strong);
+        color: var(--foreground--base);
+      }
+
+      &[data-variant="text"] {
+        --_background: transparent;
+        --_background--hocus: transparent;
+
+        padding-block: 0;
+        padding-inline: 0;
+        color: var(--foreground--accent);
+      }
+
+      &:is(:any-link, :enabled):hover {
+        @media (any-hover) {
+          --_hocus: --true;
+
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        --_hocus: --true;
+
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    /* ホバーを受けるルートは動かさず、矢印だけを動かす */
+    ._arrow {
+      @container style(--_hocus: --true) {
+        translate: 4px 0;
+      }
+    }
+  }
+
+  /**
+   * 紺の面に、セクションの見出しとボタンを置く誘導の帯。
+   * 中の要素の色は、light-dark() を含むトークンが、この要素の配色で切り替える。
+   */
+  @scope (.scoped.cta-band) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      justify-items: center;
+      padding-block: 64px;
+      padding-inline: 24px;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+      text-align: center;
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._lead {
+      color: var(--foreground--muted);
+    }
+
+    ._actions {
+      --cluster--justification: center;
+    }
+  }
+
+  /**
+   * サイトのヘッダー。
+   * ビューポートの高さが十分なときだけ上端に留め、留まっている間だけ下の境界線を見せる。
+   * 置かれた幅が狭く、ナビゲーションが1行に収まらないときは、メニューのボタンに切り替える。
+   */
+  @scope (.scoped.site-header) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size scroll-state;
+
+      @media (height >= calc(600 / 16 * 1rem)) {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: var(--z--header);
+      }
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._header-inner {
+      --apart--row-gap: 8px;
+      --apart--column-gap: 32px;
+      --apart--alignment: center;
+      --_density: --compact;
+
+      min-block-size: calc(72 / 16 * 1rem);
+      padding-block: 8px;
+      border-block-end: 1px solid transparent;
+      background-color: var(--background--base);
+
+      /*
+       * ロゴ、ナビゲーション、お問い合わせのボタンが1行に収まる幅。
+       * ロゴの文字（152）＋間隔＋ナビゲーションの文字（322）と左右の余白（24px が5つ）＋間隔＋ボタンの文字（96）と余白と枠線
+       */
+      @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 322 / 16 * 1rem + 5 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
+        --_density: --spacious;
+      }
+
+      @container --scoped scroll-state(stuck: block-start) {
+        border-block-end-color: var(--border--strong);
+      }
+    }
+
+    ._logo {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      font-kerning: normal;
+      line-height: var(--text--title--leading);
+    }
+
+    ._actions {
+      --cluster--row-gap: 8px;
+      --cluster--column-gap: 16px;
+      --cluster--alignment: center;
+
+      @container style(--_density: --compact) {
+        display: none;
+      }
+    }
+
+    ._menu {
+      @container style(--_density: --spacious) {
+        display: none;
+      }
+    }
+  }
+
+  /**
+   * ナビゲーション。
+   * ドロワーのように縦に並べたい場所では、置く側が --global-nav--stacked: --true を渡す。
+   *
+   * @prop {ident} --global-nav--stacked [--false] - 縦に並べるときに --true
+   */
+  @scope (.scoped.global-nav) to (.scoped) {
+    :scope {
+      --_stacked: var(--global-nav--stacked, --false);
+    }
+
+    /* 外側の cluster の間隔を継承しないよう、リンクの間は0にし、余白はリンクの padding で取る */
+    ul {
+      --cluster--gap: 0;
+
+      @container style(--_stacked: --true) {
+        flex-direction: column;
+      }
+    }
+
+    a {
+      display: block flex;
+      align-items: center;
+      min-block-size: max(24px, 24 / 16 * 1rem);
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-radius: var(--rounded--md);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      @container style(--_stacked: --true) {
+        padding-block: 16px;
+        font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+        line-height: var(--text--subtitle--leading);
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--background--hover);
+      }
+    }
+  }
+
+  /**
+   * 狭い画面のナビゲーションを入れるドロワー。
+   * command 属性でモーダルとして開き、右から現れる。動きを減らす設定では、フェードだけにする。
+   */
+  @scope (.scoped.site-drawer) to (.scoped) {
+    :scope {
+      --_translate-from: 0;
+
+      z-index: var(--z--top);
+      inline-size: min(100% - 48px, calc(360 / 16 * 1rem));
+      block-size: 100%;
+      margin-inline-end: 0;
+      padding: 24px;
+      background-color: var(--background--overlay);
+      transition-duration: var(--duration--slow);
+      transition-property: display, overlay, opacity, translate;
+      transition-timing-function: var(--ease--out-quint);
+      transition-behavior: allow-discrete;
+
+      /* 動きを減らす設定のときは、起点が 0 のままなので、フェードだけが残る */
+      @media (prefers-reduced-motion: no-preference) {
+        --_translate-from: 100% 0;
+      }
+
+      &:modal {
+        display: block grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 24px;
+
+        @starting-style {
+          opacity: 0;
+          translate: var(--_translate-from);
+        }
+      }
+
+      &:not(:modal) {
+        opacity: 0;
+        translate: var(--_translate-from);
+      }
+    }
+
+    ._drawer-header {
+      display: block grid;
+      justify-items: end;
+    }
+
+    ._navigation {
+      --global-nav--stacked: --true;
+
+      overflow-y: auto;
+      overscroll-behavior-block: contain;
+    }
+  }
+
+  /**
+   * トップページの冒頭に置くメインビジュアル。
+   * 紺の配色にし、画像の上に暗い層を重ねて、どの画像でも白い文字を読めるようにする。
+   */
+  @scope (.scoped.hero) to (.scoped) {
+    :scope {
+      overflow: clip;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+
+      /* 画像を読み込めなかったときも、紺の面の上で文字を読める */
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+
+      /*
+       * 擬似要素は .pile > * で選ばれないので、自分で同じエリアに置く。
+       * 紺の不透明度が 85% あれば、真っ白な画像の上でも、ヒーローの文字はどれも 4.5:1 を超える
+       */
+      &::before {
+        content: "";
+        grid-area: --pile;
+        background-color: color-mix(in oklab, var(--background--base) 85%, transparent);
+      }
+    }
+
+    img {
+      z-index: var(--z--backwards);
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      block-size: 100%;
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 24px;
+      justify-items: start;
+      max-inline-size: calc(640 / 16 * 1rem);
+      padding-block: 64px;
+      padding-inline: 40px;
+    }
+
+    h1 {
+      margin-block: unset;
+      font-feature-settings: "palt";
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      font-kerning: normal;
+      line-height: var(--text--display--leading);
+
+      @supports (word-break: auto-phrase) {
+        text-wrap: balance;
+        word-break: auto-phrase;
+      }
+    }
+
+    ._lead {
+      color: var(--foreground--muted);
+    }
+  }
+
+  /**
+   * 制作の流れ。
+   * 置かれた幅が足りれば横に、足りなければ縦に並べ、番号と線でステップの順番を示す。
+   */
+  @scope (.scoped.steps) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ol {
+      --_density: --compact;
+
+      display: block grid;
+      gap: 24px;
+      counter-reset: --step;
+
+      /* 5つのステップを、1つ140px相当以上の幅で横に並べられる幅 */
+      @container --scoped (inline-size >= calc(5 * 140 / 16 * 1rem + 4 * 24px)) {
+        --_density: --spacious;
+
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
+      }
+    }
+
+    li {
+      position: relative;
+      display: block grid;
+      grid-template-columns: calc(40 / 16 * 1rem) 1fr;
+      gap: 8px 16px;
+      align-content: start;
+      counter-increment: --step;
+
+      @container style(--_density: --spacious) {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      /* 番号。順番は ol が伝えるので、読み上げない */
+      &::before {
+        content: counter(--step) / "";
+        display: block grid;
+        grid-row: span 2;
+        place-items: center;
+        inline-size: calc(40 / 16 * 1rem);
+        aspect-ratio: 1;
+        border-radius: var(--rounded--full);
+        background-color: var(--background--inverse);
+        color: var(--foreground--inverse);
+        font-weight: var(--font-weight--bold);
+
+        @container style(--_density: --spacious) {
+          grid-row: auto;
+        }
+      }
+
+      /* 次のステップの番号へつなぐ線。次のステップがある項目にだけ引く */
+      &:has(+ li)::after {
+        content: "";
+        position: absolute;
+        inset-block: calc(40 / 16 * 1rem) -24px;
+        inset-inline-start: calc(20 / 16 * 1rem - 1px);
+        inline-size: 2px;
+        background-color: var(--border--strong);
+
+        @container style(--_density: --spacious) {
+          inset-block: calc(20 / 16 * 1rem - 1px) auto;
+          inset-inline: calc(50% + 20 / 16 * 1rem) calc(-50% - 24px + 20 / 16 * 1rem);
+          inline-size: auto;
+          block-size: 2px;
+        }
+      }
+    }
+
+    h3 {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    p {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+
+  /**
+   * サイトのフッター。
+   * 紺の面にするため配色を暗くし、中の色はトークンの light-dark() に切り替えさせる。
+   */
+  @scope (.scoped.site-footer) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 48px;
+      padding-block: 56px 32px;
+      padding-inline: 32px;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+    }
+
+    ._top {
+      --sidebar--side-width: calc(280 / 16 * 1rem);
+      --sidebar--main-min-width: calc(480 / 16 * 1rem);
+      --sidebar--row-gap: 40px;
+      --sidebar--column-gap: 56px;
+    }
+
+    ._company {
+      display: block grid;
+      gap: 24px;
+      align-content: start;
+    }
+
+    /* 実際のサイトでは SVG のロゴを置く。文字の大きさは、ロゴのためだけの値なので直接書く */
+    ._logo {
+      font-size: calc(24 / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      font-kerning: normal;
+      line-height: var(--text--display--leading);
+    }
+
+    address {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body--leading);
+    }
+
+    ._groups {
+      --cluster--row-gap: 32px;
+      --cluster--column-gap: 56px;
+    }
+
+    ._group {
+      display: block grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    h2 {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    ._group-links {
+      display: block grid;
+      gap: 4px;
+    }
+
+    ._bottom {
+      --apart--row-gap: 16px;
+      --apart--column-gap: 32px;
+      --apart--alignment: center;
+
+      padding-block-start: 24px;
+      border-block-start: 1px solid var(--border--base);
+    }
+
+    ._policy-links {
+      --cluster--column-gap: 24px;
+    }
+
+    a {
+      display: block flex;
+      align-items: center;
+      min-block-size: max(24px, 24 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+
+      &:any-link:hover {
+        @media (any-hover) {
+          color: var(--foreground--base);
+          text-decoration-line: underline;
+        }
+      }
+
+      &:focus-visible {
+        color: var(--foreground--base);
+        text-decoration-line: underline;
+      }
+    }
+
+    ._copyright {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}
+
+@layer patterns {
+  /* セクションの見出しの上に添える、英字の小見出し */
+  .eyebrow {
+    color: var(--foreground--brand);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    font-kerning: normal;
+    line-height: var(--text--caption--leading);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* セクションの見出し */
+  .section-heading {
+    font-feature-settings: "palt";
+    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-kerning: normal;
+    line-height: var(--text--display--leading);
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}

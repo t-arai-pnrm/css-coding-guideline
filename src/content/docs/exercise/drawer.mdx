@@ -1,0 +1,292 @@
+---
+title: "21-7 ドロワーメニューを作る"
+description: "ヘッダーのナビゲーションが1行に収まらない幅で、メニューのボタンから開くドロワーに切り替えます。切り替える幅をどこから決め、どこに書くかと、同じナビゲーションを縦に並べ直す方法を確かめる節です。"
+sidebar:
+  order: 7
+---
+
+import Demo from '../../../components/Demo.astro';
+import drawerInitialHtml from '../../../demos/exercise/drawer-1/index.html?raw';
+import drawerInitialCss from '../../../demos/exercise/drawer-1/style.css?raw';
+import drawerChangedHtml from '../../../demos/exercise/drawer-2/index.html?raw';
+import drawerChangedCss from '../../../demos/exercise/drawer-2/style.css?raw';
+
+狭い画面のナビゲーションを作ります。ヘッダーの幅が、ロゴ、ナビゲーション、お問い合わせのボタンを1行に並べられないほど狭いときは、ナビゲーションとお問い合わせのボタンを隠し、代わりに「メニュー」のボタンを置きます。メニューのボタンは、21-2で作った副ボタンです（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。
+
+メニューのボタンを押すと、画面の右から、幅360px相当のドロワーが現れます。ドロワーには、閉じるボタン、縦に並べたナビゲーション、お問い合わせのボタンを置きます。縦に並べたナビゲーションのリンクは、16px相当の文字で、上下に16pxの余白を取ります。
+
+ドロワーを開いている間は、背面のページの操作とスクロールを止めます。Escキー、閉じるボタン、ドロワーの外のどれを押しても閉じます。ドロワーは開くときと閉じるときに右から動かし、動きを減らす設定ではフェードだけにします。ヘッダーそのものは、21-6で作った固定ヘッダーです（「[21-6 固定ヘッダーを作る](/exercise/sticky-header/)」）。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/drawer/start/index.html)）から始め、中間版（[index.html](/exercise-files/drawer/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/drawer/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/drawer/start/`、`exercise/drawer/middle/`、`exercise/drawer/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [8-2 ベーススタイルに書くもの](/reset/base-styles/)
+- [10-6 スタイルクエリで状態を伝える](/components/style-queries/)
+- [10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)
+- [13-2 ブレイクポイントの決め方](/responsive/breakpoints/)
+- [13-3 コンテナサイズクエリ](/responsive/container-size-queries/)
+- [17-6 開閉するUI](/interaction/disclosure/)
+- [18-7 出現と退場](/motion/entry-and-exit/)
+
+## 予想する
+
+本文を読む前に、メニューのボタンに切り替える幅をいくつにするかを考えてみてください。スマートフォンとタブレットの境目としてよく使われる768pxにするのか、ほかの値にするのか、その値をどこから決めるかを予想します。切り替えで変わるのは、ナビゲーション、お問い合わせのボタン、メニューのボタンの3つです。その幅が何か所に現れるかも数えます。
+
+ドロワーを作る要素も予想します。`div` をJavaScriptで開閉するのか、HTMLの開閉の機能を使うのか。ドロワーのナビゲーションに、ヘッダーと同じ `global-nav` を使うかどうかも決めてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のページです。デモの高さは560pxです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたページ：ナビゲーションが1行に収まらない幅では、メニューのボタンからドロワーを開く" html={drawerInitialHtml} css={drawerInitialCss} height="560px" />
+
+幅を1024pxや1280pxにすると、ヘッダーにナビゲーションとお問い合わせのボタンが1行に並びます。768px以下では、それらが隠れ、メニューのボタンが表示されます。メニューのボタンを押すと、ドロワーが右から現れ、背面が暗くなり、背面のページはスクロールしません。キーボードで操作すると、フォーカスはドロワーの中だけを移り、Escキーで閉じると、フォーカスがメニューのボタンへ戻れば完成です。
+
+## 切り替える幅を中身から決める
+
+メニューのボタンに切り替える幅を、画面の幅768pxのようなデバイスの幅で決めると、ナビゲーションの項目や文言が変わったときに合わなくなります。切り替える必要があるのは、ヘッダーの中身が1行に収まらなくなる幅で、それは中身の幅で決まるからです（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
+
+```css title="🙅‍♂ Not Recommended: デバイスの幅で、3つの要素をそれぞれ切り替える"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.site-header) to (.scoped) {
+  ._actions {
+    @media (width < calc(768 / 16 * 1rem)) {
+      display: none;
+    }
+  }
+
+  ._menu {
+    @media (width >= calc(768 / 16 * 1rem)) {
+      display: none;
+    }
+  }
+}
+```
+
+この書き方には、もう1つの問題があります。同じ閾値が、隠す側と表示する側の2か所に書かれていて、片方だけを直すと、ナビゲーションとメニューのボタンが両方とも表示されたり、両方とも消えたりする幅ができます。
+
+本書では、ヘッダーのルートをコンテナにし、コンテナサイズクエリを `._header-inner` の1か所にだけ書きます。クエリは幅の状態をフラグ `--_density` に切り替え、ナビゲーションとメニューのボタンは、そのフラグを読みます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。
+
+```css title="🙆‍♂ Recommended: 中身が1行に収まる幅を式で書き、フラグを読んで2つの要素を切り替える"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size scroll-state;
+  }
+
+  /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+  ._header-inner {
+    --_density: --compact;
+
+    /*
+     * ロゴ、ナビゲーション、お問い合わせのボタンが1行に収まる幅。
+     * ロゴの文字（152）＋間隔＋ナビゲーションの文字（322）と左右の余白（24px が5つ）＋間隔＋ボタンの文字（96）と余白と枠線
+     */
+    @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 322 / 16 * 1rem + 5 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
+      --_density: --spacious;
+    }
+  }
+
+  ._actions {
+    @container style(--_density: --compact) {
+      display: none;
+    }
+  }
+
+  ._menu {
+    @container style(--_density: --spacious) {
+      display: none;
+    }
+  }
+}
+```
+
+閾値の式は、1行に並ぶものの幅を足したものです。文字の幅はブラウザで測った値を `rem` に変換し、`padding` や `gap` のような `px` の値はそのまま足します（`threshold-as-formula`）。ユーザーが文字を大きくすると、文字の項だけが大きくなり、切り替える幅も一緒に広がります。どの値が何の幅かは、クエリの直前のコメントに残しています。
+
+画面の幅ではなくヘッダーの幅を問い合わせたのは、ヘッダーがコンポーネントだからです（`query-choice-by-layer`）。ルートのコンテナの種類には、21-6で使った `scroll-state` に `inline-size` を足しています。
+
+## ドロワーは dialog をモーダルで開く
+
+ドロワーは `<dialog>` で作り、メニューのボタンの `command="show-modal"` でモーダルとして開きます。開閉のためのJavaScriptは要りません（「[17-6 開閉するUI](/interaction/disclosure/)」）。
+
+```html title="🙆‍♂ Recommended: command 属性でドロワーをモーダルとして開き、閉じる"
+<div class="_menu">
+  <button class="scoped action-control" type="button" data-variant="secondary" commandfor="site-drawer" command="show-modal">メニュー</button>
+</div>
+
+<dialog class="scoped site-drawer" id="site-drawer" aria-label="メニュー" closedby="any">
+  <div class="_drawer-header">
+    <button class="scoped action-control" type="button" data-variant="secondary" commandfor="site-drawer" command="close">閉じる</button>
+  </div>
+  <div class="_navigation">
+    <nav class="scoped global-nav" aria-label="メイン">…</nav>
+  </div>
+  <a class="scoped action-control" href="#contact">お問い合わせ</a>
+</dialog>
+```
+
+モーダルとして開いたダイアログは、外側の要素をすべて操作できなくし、フォーカスもダイアログの中だけを移ります。Escキーで閉じ、閉じたあとはフォーカスが開いたボタンへ戻ります。どれもブラウザの機能なので、フォーカスを閉じ込める処理を自分で書きません（`no-custom-focus-trap`）。ドロワーの外を押して閉じる動作は、`closedby="any"` に任せます。背面のスクロールは、ベーススタイルの `:root:has(:modal)` で止めます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+
+開閉の動きは、`@starting-style` と `transition-behavior: allow-discrete` で付けます（「[18-7 出現と退場](/motion/entry-and-exit/#ダイアログの開閉を動かす)」）。
+
+```css title="🙆‍♂ Recommended: 動き始めの位置を変数にし、動きを減らす設定ではフェードだけにする"
+@scope (.scoped.site-drawer) to (.scoped) {
+  :scope {
+    --_translate-from: 0;
+
+    transition-duration: var(--duration--slow);
+    transition-property: display, overlay, opacity, translate;
+    transition-timing-function: var(--ease--out-quint);
+    transition-behavior: allow-discrete;
+
+    @media (prefers-reduced-motion: no-preference) {
+      --_translate-from: 100% 0;
+    }
+
+    &:modal {
+      @starting-style {
+        opacity: 0;
+        translate: var(--_translate-from);
+      }
+    }
+
+    &:not(:modal) {
+      opacity: 0;
+      translate: var(--_translate-from);
+    }
+  }
+}
+```
+
+動き始めの位置を `--_translate-from` にまとめ、動きを減らす設定のときは0のままにします。画面の端から大きく動くパネルは、動きを減らす設定ではフェードに置き換えます（`simplify-large-motion-when-reduced`）。
+
+## 同じナビゲーションを縦に並べる
+
+ドロワーのナビゲーションには、ヘッダーと同じ `global-nav` を使います。リンクの中身はどちらも同じで、違うのは並べ方だけだからです。並べ方の違いは、置き場所の違いなので、置く側のドロワーが公開プロパティのフラグを渡し、`global-nav` がそれを読みます（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」）。
+
+```css title="🙆‍♂ Recommended: ドロワーは包む要素でフラグを渡し、ナビゲーションは内部プロパティに受けて読む"
+@scope (.scoped.site-drawer) to (.scoped) {
+  ._navigation {
+    --global-nav--stacked: --true;
+
+    overflow-y: auto;
+    overscroll-behavior-block: contain;
+  }
+}
+
+@scope (.scoped.global-nav) to (.scoped) {
+  :scope {
+    --_stacked: var(--global-nav--stacked, --false);
+  }
+
+  ul {
+    --cluster--gap: 0;
+
+    @container style(--_stacked: --true) {
+      flex-direction: column;
+    }
+  }
+
+  a {
+    @container style(--_stacked: --true) {
+      padding-block: 16px;
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+  }
+}
+```
+
+ヘッダーは何も渡さないので、ナビゲーションは横に並んだままです。渡せる公開プロパティは、`global-nav` のCSSの先頭の説明ブロックに、`@prop` で型とデフォルト値を書いておきます（「[9-10 コメントの書き方](/notation/comments/)」）。ドロワーのナビゲーションは、項目が増えて画面に収まらなくなると、`._navigation` の中だけがスクロールし、その端で背面へスクロールが連鎖しないようにしています（`overscroll-contain-in-overlay`）。
+
+## 要件が変わる
+
+よくある質問のページができたので、ナビゲーションに「よくある質問」を足すことになりました。項目は6つになり、「お役立ちコラム」と「採用情報」の間に入ります。ドロワーにも、同じ項目を足します。
+
+本文を読む前に、直す場所を予想してみてください。ナビゲーションのHTMLのほかに、CSSで直す値はあるでしょうか。直さなかった場合に、どの幅で何が起きるかも考えてから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のページです。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたページ：項目が増えた分だけ、ドロワーに切り替える幅が広がる" html={drawerChangedHtml} css={drawerChangedCss} height="560px" />
+
+幅を1024pxや1280pxにすると、6つの項目とお問い合わせのボタンが、ヘッダーに1行で並びます。デモの幅を1024pxから少しずつ狭めると、約950pxで、ナビゲーションが折り返す前にメニューのボタンへ切り替わります。ドロワーには、6つの項目が縦に並べば完成です。
+
+## 式の中のナビゲーションの項だけを直す
+
+CSSで直したのは、閾値の式の中の、ナビゲーションの文字の幅と余白の数の2つの値だけです。「よくある質問」の6文字の分だけ文字の幅が増え、余白が1つ増えました。
+
+```css title="🙆‍♂ Recommended: ナビゲーションの文字の幅と余白の数を、項目に合わせて直す"
+@scope (.scoped.site-header) to (.scoped) {
+  ._header-inner {
+    --_density: --compact;
+
+    @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 406 / 16 * 1rem + 6 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
+      --_density: --spacious;
+    }
+  }
+}
+```
+
+この値を直さなかった場合、切り替える幅は前の約850pxのままです。850pxから950pxの間では、ナビゲーションが1行に収まらず、ヘッダーが2行に折り返します。768pxで切り替える書き方では、項目の数にかかわらず、770pxから950pxの間で同じことが起きていました。閾値を中身の幅の式にしておいたので、どの項を直せばよいかが、変わった中身から分かります。
+
+ドロワーのCSSは直していません。ドロワーのナビゲーションは縦に並ぶので、項目が増えても列に収まり、収まらなくなれば `._navigation` の中がスクロールします。
+
+## 振り返り
+
+直したのは、2つのナビゲーションのHTMLと、ヘッダーのCSSの閾値の式です。式の中で直したのは、ナビゲーションの文字の幅と余白の数の2つの値です。閾値を書いているのは `._header-inner` の1か所だけなので、ナビゲーションとメニューのボタンの切り替えが食い違う幅はできません。
+
+直さずに済んだのは、ドロワー、`global-nav`、お問い合わせのボタンのCSSです。ドロワーの開閉はブラウザの機能に任せ、縦の並びは置く側から渡したフラグで決めていたので、項目の数には関わりませんでした。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 切り替える幅は、画面の幅ではなく、ヘッダーの中身の幅から決まると予想できたか。768pxのようなデバイスの幅で書いていたなら、項目が増えたときに折り返す幅を挙げられるか。
+- 閾値を書いた場所は1か所か。隠す側と表示する側に分けて書いていたなら、片方だけを直したときに何が起きるかを説明できるか。
+- ドロワーのナビゲーションを縦に並べる条件を、ドロワーのCSSから `global-nav` の中を選んで書いていないか。
+
+## 判断の問い
+
+### 問い1
+
+ナビゲーションの「お役立ちコラム」を「コラム」へ短くすることになりました。閾値の式の値を直さないと、何が起きますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+文字の幅が4文字分（56px相当）短くなったのに、閾値はそのままなので、ナビゲーションが1行に収まる幅でも、メニューのボタンに切り替わります。表示が崩れることはありませんが、ナビゲーションを並べられる幅でも、ドロワーを開く手間が増えます。文言を変えたときも、式の中のナビゲーションの文字の幅を直します（`breakpoint-from-content`）。
+
+</details>
+
+### 問い2
+
+ドロワーを `<dialog>` のモーダルではなく、`popover` 属性で開くパネルにしてもよいですか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+このドロワーには向きません。`popover` で開いた要素はモーダルにならないので、背面のページを操作できたままになり、フォーカスもパネルの外へ出ます。画面の高さいっぱいに広がり、背面を覆うドロワーは、モーダルの `<dialog>` で作ります。`popover` は、ボタンの近くに出す小さなメニューやツールチップのように、背面を操作できたままでよい表示に使います（`native-disclosure-elements`）。
+
+</details>
+
+## この節で使ったルール
+
+- [`breakpoint-from-content`](/responsive/breakpoints/#rule-breakpoint-from-content)：ブレイクポイントはデバイスの幅ではなく、レイアウトが崩れる幅から決めます。
+- [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を `calc()` の式で書きます。
+- [`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)：閾値の式には、`gap`、`padding`、`border` を省かずに含めます。
+- [`query-choice-by-layer`](/responsive/escalation/#rule-query-choice-by-layer)：コンポーネントのスタイルでは、コンテナサイズクエリを優先します。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリはフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)：開閉するUIは、`<dialog>` や `popover` 属性のようなHTMLの機能で作ります。
+- [`dialog-command-attributes`](/interaction/disclosure/#rule-dialog-command-attributes)：モーダルの開閉は、`command` 属性と `commandfor` 属性で行います。
+- [`dialog-closedby-any`](/interaction/disclosure/#rule-dialog-closedby-any)：背景のクリックで閉じるモーダルは、`closedby="any"` で作ります。
+- [`no-custom-focus-trap`](/interaction/disclosure/#rule-no-custom-focus-trap)：モーダルに、独自のフォーカストラップを実装しません。
+- [`modal-scroll-lock-root`](/reset/base-styles/#rule-modal-scroll-lock-root)：モーダル表示中の背面のスクロールは、`:root:has(:modal)` で止めます。
+- [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：ドロワーの中でスクロールする要素には、スクロールの連鎖を止める指定をします。
+- [`starting-style-for-entry`](/motion/entry-and-exit/#rule-starting-style-for-entry)：`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。
+- [`simplify-large-motion-when-reduced`](/motion/reduced-motion/#rule-simplify-large-motion-when-reduced)：大きな動きは、動きを減らす設定のときにフェードへ置き換えます。
+- [`placement-via-public-flag`](/components/placement-and-child-states/#rule-placement-via-public-flag)：置き場所によって見た目を変えるときは、置く側が公開プロパティのフラグを渡します。
+- [`top-layer-z-index-top`](/components/boundaries/#rule-top-layer-z-index-top)：トップレイヤーに表示する `<dialog>` にも、`z-index: var(--z--top)` を指定します。

@@ -1,0 +1,45 @@
+<div class="scoped page-contact">
+  <hgroup class="_heading">
+    <p class="eyebrow" lang="en">Contact</p>
+    <h1 class="section-heading">お問い合わせ</h1>
+  </hgroup>
+  <!-- デモの中で送信しても画面が切り替わらないように、method="dialog" にしている -->
+  <form class="scoped contact-form" method="dialog">
+    <div class="_field">
+      <label class="_label" for="contact-name">お名前 <span class="_required">必須</span></label>
+      <input class="_text-control" id="contact-name" type="text" name="name" autocomplete="name" required>
+      <p class="_error" id="contact-name-error">お名前を入力してください。</p>
+    </div>
+    <div class="_field">
+      <label class="_label" for="contact-email">メールアドレス <span class="_required">必須</span></label>
+      <input class="_text-control" id="contact-email" type="email" name="email" autocomplete="email" required aria-describedby="contact-email-hint">
+      <p class="_hint" id="contact-email-hint">例：name@example.com</p>
+      <p class="_error" id="contact-email-error">メールアドレスを、name@example.com の形で入力してください。</p>
+    </div>
+    <div class="_field">
+      <label class="_label" for="contact-tel">電話番号</label>
+      <input class="_text-control" id="contact-tel" type="tel" name="tel" autocomplete="tel">
+    </div>
+    <div class="_field">
+      <label class="_label" for="contact-type">お問い合わせの種類 <span class="_required">必須</span></label>
+      <select class="_text-control" id="contact-type" name="type" required>
+        <option value="">選んでください</option>
+        <option value="consultation">制作のご相談</option>
+        <option value="estimate">お見積りのご依頼</option>
+        <option value="recruit">採用について</option>
+        <option value="other">その他</option>
+      </select>
+      <p class="_error" id="contact-type-error">お問い合わせの種類を選んでください。</p>
+    </div>
+    <div class="_field">
+      <label class="_label" for="contact-message">お問い合わせ内容 <span class="_required">必須</span></label>
+      <textarea class="_text-control" id="contact-message" name="message" required></textarea>
+      <p class="_error" id="contact-message-error">お問い合わせ内容を入力してください。</p>
+    </div>
+    <div class="_field">
+      <label class="_agree"><input id="contact-agree" type="checkbox" name="agree" required><span><a href="#privacy">個人情報の取り扱い</a>に同意する <span class="_required">必須</span></span></label>
+      <p class="_error" id="contact-agree-error">個人情報の取り扱いに同意してください。</p>
+    </div>
+    <button class="scoped action-control" type="submit">送信する</button>
+  </form>
+</div>

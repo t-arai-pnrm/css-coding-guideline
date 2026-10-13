@@ -1,0 +1,185 @@
+@layer base {
+  /* サイト全体で使う @keyframes（18-6） */
+  @keyframes --fade-in {
+    from {
+      opacity: var(--fade-in--from-value, 0);
+    }
+  }
+
+  @keyframes --translate-from {
+    from {
+      translate: var(--translate-from--x-value, 0) var(--translate-from--y-value, 0);
+    }
+  }
+}
+
+/* 登録していないカスタムプロパティは、キーフレームの50%の時点で値が切り替わる */
+@keyframes --page-top--in-view {
+  from {
+    --_in-view: --false;
+  }
+
+  to {
+    --_in-view: --true;
+  }
+}
+
+@layer compositions {
+  /* 12-4 switcher：幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にする */
+  .switcher {
+    --_c--row-gap: var(--switcher--gap, var(--switcher--row-gap, 0px));
+    --_c--column-gap: var(--switcher--gap, var(--switcher--column-gap, 0px));
+    --_c--column-count: var(--switcher--column-count, 3);
+    --_c--column-min-width: var(--switcher--column-min-width, calc(320 / 16 * 1rem));
+
+    /* 列の最小幅で指定の列数を並べるのに必要な幅 */
+    --_c--threshold: calc(
+      var(--_c--column-min-width) * var(--_c--column-count) + var(--_c--column-gap) * (var(--_c--column-count) - 1)
+    );
+
+    /* 指定の列数でちょうど埋まる1列の幅。auto-fit がこれより多くの列を作らないようにする */
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-count) - 1)) / var(--_c--column-count)
+    );
+
+    display: block grid;
+
+    /* 閾値より狭いと sign() が -1 になり、列の最小幅が 100%（1列）になる */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr)
+    );
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-top) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 160px;
+      padding-block-end: 240px;
+    }
+
+    ._intro {
+      color: var(--foreground--muted);
+    }
+
+    /* セクションのルートは、画面に入ったきっかけを作るだけで、自分は動かない */
+    ._section {
+      --_in-view: --false;
+
+      @supports (animation-timeline: view()) and (animation-range: entry) {
+        animation-name: --page-top--in-view;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+
+    ._section-body {
+      --translate-from--y-value: 24px;
+
+      display: block grid;
+      gap: 24px;
+
+      @supports (animation-timeline: view()) and (animation-range: entry) {
+        animation-name: --fade-in;
+        animation-duration: var(--duration--reveal);
+        animation-timing-function: var(--ease--out-quint);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+
+        /* いちばん近い祖先（._section）の --_in-view を問い合わせる */
+        @container style(--_in-view: --true) {
+          animation-play-state: running;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+          animation-name: --fade-in, --translate-from;
+        }
+      }
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._strengths {
+      --switcher--column-min-width: calc(200 / 16 * 1rem);
+      --switcher--gap: 24px;
+    }
+
+    ._strength {
+      --_stagger: 80ms;
+      --translate-from--y-value: 24px;
+
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      padding: 24px;
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+
+      /* 強みのカードは、画面に入ったあと、1枚ずつ少し遅らせて出す */
+      @supports (animation-timeline: view()) and (animation-range: entry) {
+        animation-name: --fade-in;
+        animation-duration: var(--duration--reveal);
+        animation-timing-function: var(--ease--out-quint);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+
+        @supports (z-index: sibling-index()) {
+          animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
+        }
+
+        @container style(--_in-view: --true) {
+          animation-play-state: running;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+          animation-name: --fade-in, --translate-from;
+        }
+      }
+
+      & > h3 {
+        font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+        line-height: var(--text--subtitle--leading);
+      }
+
+      & > p {
+        color: var(--foreground--muted);
+        font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+        line-height: var(--text--body-compact--leading);
+      }
+    }
+  }
+}
+
+@layer patterns {
+  /* セクションの見出しの上に添える、英字の小見出し */
+  .eyebrow {
+    color: var(--foreground--brand);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    font-kerning: normal;
+    line-height: var(--text--caption--leading);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* セクションの見出し */
+  .section-heading {
+    font-feature-settings: "palt";
+    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-kerning: normal;
+    line-height: var(--text--display--leading);
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}

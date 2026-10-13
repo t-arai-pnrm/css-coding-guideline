@@ -1,0 +1,204 @@
+---
+title: "21-13 スクロールに合わせて表示する"
+description: "トップページの各セクションを、スクロールして画面に入ったところで1回だけ浮き上がらせます。スクリプトを使わずに演出を付け、対応していない環境や動きを減らす設定でも内容が読めるかを確かめる節です。"
+sidebar:
+  order: 13
+---
+
+import Demo from '../../../components/Demo.astro';
+import scrollRevealInitialHtml from '../../../demos/exercise/scroll-reveal-1/index.html?raw';
+import scrollRevealInitialCss from '../../../demos/exercise/scroll-reveal-1/style.css?raw';
+import scrollRevealChangedHtml from '../../../demos/exercise/scroll-reveal-2/index.html?raw';
+import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/style.css?raw';
+
+トップページの各セクションを、スクロールして画面に入ったところで、下から24px浮き上がりながら現れるようにします。再生は1回だけで、600msかけて動かします。上へ戻してからもう一度スクロールしても、現れたセクションは表示されたままにします。
+
+動きを減らす設定では、浮き上がりを付けずに、フェードだけで現します。スクロール駆動アニメーションを使えないブラウザでは、演出を付けず、最初から表示します。どの環境でも、演出のせいで内容が読めなくなることは避けます。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/scroll-reveal/start/index.html)）から始め、中間版（[index.html](/exercise-files/scroll-reveal/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/scroll-reveal/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/scroll-reveal/start/`、`exercise/scroll-reveal/middle/`、`exercise/scroll-reveal/finished/` にあります。開始版の `page-top.css` には、セクションの並べ方だけが入っていて、表示の演出はまだありません。サイト全体で使う `@keyframes` は、開始版から `site-base.css` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)
+- [10-6 スタイルクエリで状態を伝える](/components/style-queries/)
+- [18-2 動きを減らす設定に対応する](/motion/reduced-motion/)
+- [18-6 @keyframesを設計する](/motion/keyframes/)
+- [18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/)
+- [18-9 スクロールに合わせて動かす](/motion/scroll-driven/)
+
+## 予想する
+
+本文を読む前に、画面に入ったことをどう知るかを考えてみてください。`IntersectionObserver` のスクリプトで属性を付けるのか、CSSだけで作るのか。どちらの場合も、最初に要素を透明にしておく指定を、どの条件の中に書けば、演出が動かない環境で内容が消えたままにならないでしょうか。
+
+演出を書く場所も予想します。セクションの見出しやカードのコンポーネントに書くのか、トップページのCSSに書くのか。同じ部品をほかのページへ置くとき、演出を付けたくない場合も考えてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のトップページです。デモの高さは560pxで、デモの中をスクロールできます。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたトップページ：各セクションが、画面に入ったところで1回だけ現れる" html={scrollRevealInitialHtml} css={scrollRevealInitialCss} height="560px" />
+
+デモの中を下へスクロールすると、各セクションが画面に入ったところで、下から浮き上がりながら現れます。上へ戻してからもう一度スクロールしても、現れたセクションは表示されたままです。スクロール駆動アニメーションを使えないFirefoxでは、すべてのセクションが最初から表示されます。動きを減らす設定にすると、浮き上がりがなくなり、フェードだけで現れれば完成です。
+
+## 画面に入ったきっかけを view() で作る
+
+画面に入ったことは、スクロール駆動アニメーションの `view()` のタイムラインで知ります。ただし、見た目そのものをスクロールの位置で動かすと、スクロールを止めたとき表示が途中のまま残り、動きの速さもスクロールの速さに左右されます。そこで、`view()` のタイムラインはきっかけにだけ使い、見た目は時間で進むアニメーションが再生します（「[18-9 スクロールに合わせて動かす](/motion/scroll-driven/#画面に入ったら1回だけ再生する)」）。
+
+```css title="🙆‍♂ Recommended: セクションのルートで --_in-view を切り替え、中身の一時停止したアニメーションを再生する"
+@keyframes --page-top--in-view {
+  from {
+    --_in-view: --false;
+  }
+
+  to {
+    --_in-view: --true;
+  }
+}
+
+@scope (.scoped.page-top) to (.scoped) {
+  ._section {
+    --_in-view: --false;
+
+    @supports (animation-timeline: view()) and (animation-range: entry) {
+      animation-name: --page-top--in-view;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+
+  ._section-body {
+    --translate-from--y-value: 24px;
+
+    @supports (animation-timeline: view()) and (animation-range: entry) {
+      animation-name: --fade-in;
+      animation-duration: var(--duration--reveal);
+      animation-timing-function: var(--ease--out-quint);
+      animation-fill-mode: both;
+      animation-play-state: paused;
+
+      @container style(--_in-view: --true) {
+        animation-play-state: running;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation-name: --fade-in, --translate-from;
+      }
+    }
+  }
+}
+```
+
+セクションのルートの `._section` は、`view()` のタイムラインで自分の位置を測り、要素の30%が画面に入った位置で `--_in-view` を `--true` に切り替えます。登録していないカスタムプロパティは補間されないので、キーフレームの中間で値が切り替わります。中身の `._section-body` は、一時停止したアニメーションの最初の見た目で待機し、`@container style(--_in-view: --true)` が当てはまったところで再生します。要素は自分自身の値を問い合わせられないので、切り替える要素と再生する要素を分けています。
+
+動きは、サイト全体で使う `--fade-in` と `--translate-from` の `@keyframes` を組み合わせます。浮き上がる量は、`--translate-from--y-value` で渡します（「[18-6 @keyframesを設計する](/motion/keyframes/)」）。`--_in-view` を切り替える `@keyframes` は、このページだけで使うので、ページの名前を付けています。
+
+## 対応していない環境と、動きを減らす設定
+
+アニメーションの指定は、すべて `@supports (animation-timeline: view()) and (animation-range: entry)` の中に書きます。待機の見た目（透明で、24px下にある状態）は、`@keyframes` の `from` と `animation-fill-mode: both` が作るので、アニメーションが当たらない環境では、待機の見た目も当たりません。Firefoxでは、内容が最初から表示されます（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
+
+動きを減らす設定には、浮き上がりの `--translate-from` だけを `prefers-reduced-motion: no-preference` の中で加えて対応します。フェードは、動きを減らす設定でも残してよい動きなので、条件の外に書きます（`motion-only-with-no-preference`）。600msの再生時間は、機能的な動きの目安より長くなります。ページを読み進める間に一度だけ再生する装飾なので、例外として扱います。
+
+演出は、トップページのCSS（`page-top`）に書きました。セクションの見出しのパターンも、カードも、自分が画面に入ったかどうかを知りません。同じ見出しやカードをほかのページへ置くとき、演出を付けないこともできます。
+
+## 要件が変わる
+
+「私たちの強み」のセクションでは、3枚のカードを、セクションが画面に入ったあと、左から順に、80msの間隔で遅らせて浮き上がらせることになりました。ほかのセクションは、これまでどおりセクション全体で現れます。カードがもっと増えても、最後のカードが動き始めるまでの時間は、400ms以内にします。
+
+本文を読む前に、遅らせる量をどう決めるかを考えてみてください。カードごとに `:nth-child()` で `animation-delay` を書くのか、順番から計算するのか。カードが増えたときに、何を書き足すことになるかも予想してから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のトップページです。「私たちの強み」は、いちばん下のセクションです。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたトップページ：強みのカードを、1枚ずつ遅らせて出す" html={scrollRevealChangedHtml} css={scrollRevealChangedCss} height="560px" />
+
+幅を1024pxや1280pxにして、デモの中を「私たちの強み」まで下へスクロールすると、3枚のカードが左から順に、80msずつ遅れて現れます。768px以下でカードが縦に並んだときは、上から順に現れます。`sibling-index()` に対応していない環境では、3枚が同時に現れれば完成です。
+
+## 遅れを sibling-index() で計算する
+
+各カードの遅れは、`sibling-index()` で兄弟の中の順番から計算します。カードごとに `:nth-child()` で値を書く必要はなく、カードが増えても書き足すものはありません。
+
+```css title="🙆‍♂ Recommended: 順番から遅れを計算し、上限を5枚目までにする"
+@scope (.scoped.page-top) to (.scoped) {
+  ._strength {
+    --_stagger: 80ms;
+    --translate-from--y-value: 24px;
+
+    @supports (animation-timeline: view()) and (animation-range: entry) {
+      animation-name: --fade-in;
+      animation-duration: var(--duration--reveal);
+      animation-timing-function: var(--ease--out-quint);
+      animation-fill-mode: both;
+      animation-play-state: paused;
+
+      @supports (z-index: sibling-index()) {
+        animation-delay: calc(min(sibling-index() - 1, 5) * var(--_stagger));
+      }
+
+      @container style(--_in-view: --true) {
+        animation-play-state: running;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation-name: --fade-in, --translate-from;
+      }
+    }
+  }
+}
+```
+
+`min()` で順番の上限を5にしているので、カードがいくつあっても、最後のカードが動き始めるのは400ms後です。カードの再生のきっかけも、セクションのルートの `--_in-view` です。`--_in-view` は継承するので、セクションの中のカードからも、同じスタイルクエリで読めます。
+
+`sibling-index()` は、2026年8月にBaselineの「新しく利用可能」になったばかりです。遅れは装飾なので、`@supports (z-index: sibling-index())` の中に書き、未対応の環境では遅れなしで同時に現れるようにしています（`sibling-functions-for-decoration`）。ずらす間隔の80msは、並びの順番を伝える演出として使える上限です（「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/#頻度の低いuiで要素をずらして出す)」）。
+
+## 振り返り
+
+直したのは、トップページのCSSで、強みのカードに遅れを付けたアニメーションを足したことだけです。HTML、ほかのセクションの演出、カードの見た目は直していません。きっかけをセクションのルートの `--_in-view` 1つにまとめていたので、カードの演出も、同じフラグを読むだけで足せました。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 演出が動かない環境で、内容が透明のまま残らないことを、`@supports` と `animation-fill-mode` から説明できるか。
+- 遅れを順番から計算すると予想できたか。`:nth-child()` で書いていたなら、カードが増えたときに書き足す行を数えられるか。
+- 演出をコンポーネントではなくページのCSSに書いた理由を、同じ部品をほかのページに置く場面から説明できるか。
+
+## 判断の問い
+
+### 問い1
+
+セクションの `opacity` を、`view()` のタイムラインで直接0から1へ動かす書き方にしない理由は何ですか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`view()` のタイムラインで動かすと、アニメーションの進み具合がスクロールの位置で決まるからです。スクロールを途中で止めると、セクションは半透明のまま残り、ゆっくりスクロールすれば動きもゆっくりになります。画面に入ったとき1回だけ再生する演出では、`view()` のタイムラインをきっかけとしてだけ使い、見た目は時間で進むアニメーションが動かします（`reveal-once-with-style-query`）。
+
+</details>
+
+### 問い2
+
+Firefoxでも演出を付けてほしい、と言われました。どうしますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`IntersectionObserver` で、画面に入った要素へ属性を付ける方法に切り替えます。待機のスタイルは、スクリプトが監視を始めたあとにルートへ付ける `data-motion-mode="motion"` を条件にして書きます。スクリプトの読み込みに失敗した環境で、内容が透明のまま残らないようにするためです（`motion-mode-attribute`）。演出の要否そのものも確かめます。演出がなくても内容は読めるので、対応していない環境で演出を付けないことは、多くの場合許容できます。
+
+</details>
+
+## この節で使ったルール
+
+- [`scroll-linked-method`](/motion/scroll-driven/#rule-scroll-linked-method)：画面に入ったとき1回だけ動かす演出は、`view()` のタイムラインで切り替えたカスタムプロパティを、スタイルクエリで問い合わせて作ります。
+- [`reveal-once-with-style-query`](/motion/scroll-driven/#rule-reveal-once-with-style-query)：一時停止したアニメーションを `@container style(--_in-view: --true)` で再生し、全体を `@supports` で囲みます。
+- [`scroll-animation-explicit-range`](/motion/scroll-driven/#rule-scroll-animation-explicit-range)：スクロール駆動アニメーションは、`animation-range` で範囲を明示します。
+- [`keyframes-single-property`](/motion/keyframes/#rule-keyframes-single-property)：グローバルな `@keyframes` は1つのプロパティだけを変え、`animation-name` で組み合わせます。
+- [`keyframes-api-properties`](/motion/keyframes/#rule-keyframes-api-properties)：動きの起点は、`@keyframes` が参照するカスタムプロパティで渡します。
+- [`animation-longhand-fill-mode`](/motion/keyframes/#rule-animation-longhand-fill-mode)：アニメーションはロングハンドで書き、`animation-fill-mode` は `both` を第一候補にします。
+- [`motion-only-with-no-preference`](/motion/reduced-motion/#rule-motion-only-with-no-preference)：装飾的な動きのうちフェード以外は、`prefers-reduced-motion: no-preference` の中で指定します。
+- [`sibling-functions-for-decoration`](/pseudo/child-index/#rule-sibling-functions-for-decoration)：`sibling-index()` は、遅延のような装飾の値に限って、`@supports` の中で使います。
+- [`motion-mode-attribute`](/motion/scroll-driven/#rule-motion-mode-attribute)：JavaScriptで動かす演出の準備のスタイルは、準備を終えたときに付ける属性を条件にします。

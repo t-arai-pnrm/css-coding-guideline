@@ -1,0 +1,288 @@
+---
+title: "21-4 記事リストを作る"
+description: "コラムのカテゴリーのページに、横長のサムネイルと抜粋を並べた記事のリストと、カテゴリーの絞り込みを置きます。行のどこを押しても記事へ移動でき、CMSから届く内容が変わっても崩れないかを確かめる節です。"
+sidebar:
+  order: 4
+---
+
+import Demo from '../../../components/Demo.astro';
+import articleListInitialHtml from '../../../demos/exercise/article-list-1/index.html?raw';
+import articleListInitialCss from '../../../demos/exercise/article-list-1/style.css?raw';
+import articleListChangedHtml from '../../../demos/exercise/article-list-2/index.html?raw';
+import articleListChangedCss from '../../../demos/exercise/article-list-2/style.css?raw';
+
+コラムのカテゴリーのページを作ります。コラム一覧のカテゴリーの一覧（「[21-3 カード一覧とサイドバーを作る](/exercise/card-grid/)」）から移動した先のページで、同じカテゴリーの記事を新しい順に、抜粋まで読めるリストで並べます。ページの上には、ほかのカテゴリーのページへ移る絞り込みを置きます。
+
+絞り込みは、「すべて」と4つのカテゴリーへのリンクを、8px空けて横に並べたものです。各リンクは、角を丸めた1pxの枠線で囲み、14px相当の太字にします。今いるカテゴリーのリンクだけは、ティールで塗って文字を白にします。
+
+記事のリストは、行の間と、リストの上下に1pxの線を引きます。各行は上下に24pxの余白を取り、左に16:9の比率で幅220px相当のサムネイルを、右に日付とカテゴリー、見出し、抜粋を並べます。サムネイルと文字の間は28pxです。文字の側が280px相当より狭くなる幅では、サムネイルを上に、文字をその下に16px空けて置きます。行のどこを押しても記事へ移動でき、ホバーとフォーカスのときは、見出しに下線を出し、サムネイルを少し明るくします（`filter: brightness(1.08)`）。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/article-list/start/index.html)）から始め、中間版（[index.html](/exercise-files/article-list/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/article-list/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/article-list/start/`、`exercise/article-list/middle/`、`exercise/article-list/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)
+- [11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)
+- [12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)
+- [16-10 区切り線を引く](/decoration/separators/)
+- [17-3 状態を属性で表す](/interaction/state-attributes/)
+- [17-4 カード全体をリンクにする](/interaction/card-link/)
+
+## 予想する
+
+本文を読む前に、行の間の線を、行と一覧のどちらに持たせるかを考えてみてください。サムネイルが上に回る幅を、どの値から決め、どこに書くかも予想します。
+
+行のどこを押しても記事へ移動できるようにする方法も考えます。行を `<a>` で包むと、何が起きるでしょうか。絞り込みで今いるカテゴリーを、どの属性で示すかも決めてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のカテゴリーのページです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたカテゴリーのページ：行のどこを押しても記事へ移動する" html={articleListInitialHtml} css={articleListInitialCss} />
+
+幅が768px以上なら、各行の左に220pxのサムネイルが、右に文字が並びます。幅を480pxや320pxにすると、サムネイルが行の幅いっぱいに広がって上に回り、文字はその下に並びます。どの幅でも、行の間と上下に線が引かれ、抜粋の上を押しても記事へ移動します。キーボードで見出しのリンクにフォーカスすると、行の外周にフォーカスリングが出れば完成です。
+
+## 線を一覧の gap に描く
+
+線は、行を並べる一覧（`article-list`）に描かせます。行の間の線は、2つの行の間にあるものなので、片方の行の `border` にすると、末尾の行の線を打ち消す指定が要ります（「[16-10 区切り線を引く](/decoration/separators/)」）。行（`article-row`）は、自分が一覧の何番目にあるかを知らずに済みます。
+
+```css title="🙆‍♂ Recommended: 行の間の線は一覧の gap に、上下の線は一覧の枠線に描く"
+@scope (.scoped.article-list) to (.scoped) {
+  :scope {
+    display: block grid;
+    row-gap: 1px;
+    border-block: 1px solid var(--border--base);
+    row-rule: 1px solid var(--border--base);
+  }
+}
+```
+
+行の間の線は、gap decorationsの `row-rule` で `gap` に描きます。対応しているのはChromeとEdgeだけで、ほかのブラウザでは線が描かれません。それでも、行の上下の24pxの余白で区切りは読み取れるので、線は対応している環境での改善として足します。リストの上下の線は、行の間の線ではなく一覧の外枠なので、一覧の `border-block` で描きます。
+
+## 画像と文字の並びを sidebar に任せる
+
+サムネイルと文字の並びは、幅の決まったサイドと、伸び縮みするメインの2つを横に並べ、狭ければ縦に積む配置です。そこで、行のルートに `sidebar` のコンポジションを付け、値は行のCSSから渡します（「[12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)」）。
+
+```html title="🙆‍♂ Recommended: 行のルートに sidebar を付け、画像をサイドに、文字をメインにする"
+<article class="scoped article-row | sidebar">
+  <img class="side-column" src="…" alt="" width="640" height="360">
+  <div class="_body | main-column">
+    <p class="_meta | cluster"><time datetime="2026-09-25">2026.09.25</time><span class="_category">ノウハウ</span></p>
+    <h2><a href="#article-access-numbers">サイトリニューアルの前に、アクセス解析で確かめておきたい5つの数字</a></h2>
+    <p class="_excerpt">リニューアルの効果は、公開前の数字と比べて初めて分かります。…</p>
+  </div>
+</article>
+```
+
+```css title="🙆‍♂ Recommended: sidebar の値は、行のルートで公開プロパティに渡す"
+@scope (.scoped.article-row) to (.scoped) {
+  :scope {
+    --sidebar--side-width: calc(220 / 16 * 1rem);
+    --sidebar--main-min-width: calc(280 / 16 * 1rem);
+    --sidebar--row-gap: 16px;
+    --sidebar--column-gap: 28px;
+
+    align-items: center;
+    padding-block: 24px;
+  }
+}
+```
+
+サムネイルが上に回るのは、220＋28＋280で528px相当より行が狭くなったときです。この値はどこにも書いていません。サムネイルの幅か、文字の側の最小幅を変えれば、回り込む幅も一緒に変わります。値を行のCSSに書いたのは、3つの値が行のデザインそのもので、置く側が行ごとに変える値ではないからです。HTMLの `style` 属性で渡すと、同じ値を行の数だけ書くことになります。
+
+`align-items: center` は、横に並んだとき、文字のまとまりをサムネイルの上下の中央へそろえます。画像が交差軸に引き伸ばされることも防げます（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#画像を本文の高さに引き伸ばさない)」）。
+
+## 見出しのリンクを行いっぱいに広げる
+
+行を `<a>` で包むと、行の中身すべてがリンクのテキストになり、スクリーンリーダーは日付から抜粋までを続けてリンクとして読み上げます。そこで、リンクは見出しの `<a>` だけのままにし、その `::after` を行いっぱいに広げます（「[17-4 カード全体をリンクにする](/interaction/card-link/)」）。
+
+```css title="🙆‍♂ Recommended: 見出しのリンクを行いっぱいに広げ、状態はルートの --_has-hocus にまとめる"
+@scope (.scoped.article-row) to (.scoped) {
+  :scope {
+    --_has-hocus: --false;
+
+    position: relative;
+
+    &:has(h2 a:any-link:hover) {
+      @media (any-hover) {
+        --_has-hocus: --true;
+      }
+    }
+
+    &:has(h2 a:focus-visible) {
+      --_has-hocus: --true;
+
+      outline: 3px solid CanvasText;
+      outline-offset: 3px;
+    }
+  }
+
+  img {
+    @container style(--_has-hocus: --true) {
+      filter: brightness(1.08);
+    }
+  }
+
+  h2 a {
+    @container style(--_has-hocus: --true) {
+      text-decoration-line: underline;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    &:focus-visible {
+      outline-color: transparent;
+    }
+  }
+}
+```
+
+見出しのリンクのホバーとフォーカスは、ルートの `:has()` で `--_has-hocus` のフラグにまとめ、サムネイルと見出しのリンクがフラグを読みます。子孫の状態を親でまとめるフラグなので、自分の `:hover` で立てる `--_hocus` とは名前を分けています（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/#子の状態で親を変えるときのhas)」）。フォーカスリングは、押せる範囲と同じ行の外周に出し、見出しのリンク自身のリングは色だけを透明にします。
+
+## 今いるカテゴリーを aria-current で示す
+
+絞り込みは、各カテゴリーのページへのリンクです。今いるページのリンクには `aria-current="page"` を付け、スクリーンリーダーにも、今いるページだと伝えます。CSSは、この属性を状態のセレクタにして見た目を変えます。状態のためのクラスは足しません（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。
+
+```css title="🙆‍♂ Recommended: 今いるページのリンクは、内部プロパティの値だけを変える"
+@scope (.scoped.category-filter) to (.scoped) {
+  a {
+    --_background: transparent;
+    --_background--hocus: var(--background--hover);
+
+    border: 1px solid var(--border--base);
+    background-color: var(--_background);
+
+    &[aria-current="page"] {
+      --_background: var(--background--accent);
+      --_background--hocus: oklch(from var(--background--accent) calc(l - 0.06) c h);
+
+      border-color: transparent;
+      color: var(--foreground--on-accent);
+    }
+
+    &:any-link:hover {
+      @media (any-hover) {
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    &:focus-visible {
+      background-color: var(--_background--hocus);
+    }
+  }
+}
+```
+
+書き方は、21-2の `action-control` と同じです。状態ごとに内部プロパティの値を変え、ホバーとフォーカスの背景は1か所で読みます（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。今いるページのリンクを塗る色は、選んだ状態を示す `--background--accent` で、ホバーのときは相対カラー構文で少し暗くします。
+
+## 要件が変わる
+
+CMSで記事の登録が始まり、カンプになかった記事が入ってきました。1つの記事に複数のカテゴリーを登録できるようになり、カテゴリーは、それぞれのカテゴリーのページへのリンクとして表示します。見出しがカンプの2倍の長さの記事、サムネイルのない記事、「Internationalization」のような長い英単語を含む見出しの記事もあります。
+
+本文を読む前に、どの内容で何が崩れそうかを考えてみてください。サムネイルのない記事で、空いた左の列がどうなるかを予想します。カテゴリーをリンクにしたとき、見出しのリンクの `::after` が行を覆っていることで何が起きるかも考えます。直すファイルと、直さずに済むファイルを分けてから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のカテゴリーのページです。カテゴリーが3つの長い見出しの記事、サムネイルのない記事、長い英単語を含む記事を並べています。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたカテゴリーのページ：カテゴリーのリンクだけは、行の手前で押せる" html={articleListChangedHtml} css={articleListChangedCss} />
+
+どの幅でも、長い見出しは折り返して行が縦に伸び、長い英単語は行の幅で折り返します。サムネイルのない記事は、文字が行の幅いっぱいに広がり、空いた列は残りません。カテゴリーのリンクを押すとカテゴリーのページへ、それ以外の場所を押すと記事へ移動し、カテゴリーのリンクにホバーしても見出しには下線が出なければ完成です。
+
+## 直さずに済んだ内容
+
+長い見出し、サムネイルのない記事、長い英単語のために直したCSSはありません。行の高さを固定していないので、長い見出しは折り返して行を伸ばします。長い英単語は、リセットCSSのkiso.cssが指定している `overflow-wrap: anywhere` で、行の幅を超える前に折り返します（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#長い単語やurlで崩れないようにする)」）。
+
+サムネイルのない記事は、`sidebar` の子が `main-column` の1つだけになります。`main-column` は余った幅をすべて受け取るので、文字が行の幅いっぱいに広がり、サムネイルのための列は残りません。前半でサムネイルの列を `grid-template-columns` の固定の列にしていたら、空いた列を消す条件を足すことになっていたはずです。
+
+## カテゴリーのリンクを手前に出す
+
+直す必要があったのは、カテゴリーがリンクになったことへの対応です。見出しのリンクの `::after` は行全体を覆うので、そのままではカテゴリーのリンクも覆い、カテゴリーを押しても記事へ移動します。そこで、カテゴリーのリンクを相対的な `z-index` で手前に出し、行のルートを重なりの単位にします。
+
+```css title="🙆‍♂ Recommended: カテゴリーのリンクを手前に出し、行のルートで重なりを閉じる"
+@scope (.scoped.article-row) to (.scoped) {
+  :scope {
+    /* ... */
+    position: relative;
+    isolation: isolate;
+  }
+
+  ._category-link {
+    position: relative;
+    z-index: var(--z--forwards);
+    display: block flex;
+    align-items: center;
+    min-block-size: max(24px, 24 / 16 * 1rem);
+    padding-inline: 8px;
+    border-radius: var(--rounded--sm);
+    background-color: var(--background--accent-subtle);
+    color: var(--foreground--accent);
+  }
+}
+```
+
+ルートの `isolation: isolate` は、行を新しいスタッキングコンテキストにして、カテゴリーの `z-index` を行の中だけで比べさせるための指定です。ページの固定ヘッダーのような、ほかの部品の重なり順と干渉しません（`isolation-for-relative-z-index`）。前半では行の中に `z-index` がなかったので、この指定も書いていませんでした。
+
+カテゴリーの色も、ラベルからリンクに変わったので、ブランドの色からリンクの色の `--foreground--accent` に替えました。リンクになった分、押せる範囲として24px相当の高さも確保しています（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。
+
+見出しの下線の条件は、前半の `:has(h2 a:any-link:hover)` のままで直していません。条件を見出しのリンクに絞っていたので、手前のカテゴリーのリンクにホバーしてもフラグは立たず、記事へ移動するような合図は出ません。前半で `:has(a:any-link:hover)` と書いていたら、ここで条件を直すことになります。
+
+## 振り返り
+
+直したのは、行のHTMLとCSSです。HTMLでは、カテゴリーの `<span>` をリンクのリストに替え、`<p>` の `._meta` を `<div>` にしました。CSSでは、ルートに `isolation: isolate` を足し、カテゴリーのリンクを手前に出しました。
+
+直さずに済んだのは、一覧の `article-list`、絞り込みの `category-filter`、コンポジション、行の配置と見出しのCSSです。長い見出しや長い英単語は、高さを固定せず、リセットCSSの折り返しに任せていたので崩れませんでした。サムネイルのない記事は、配置を `sidebar` が受け持っていたので、条件を足さなくても1列で表示されました。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 内容の変化のうち、直す必要があるのはリンクが増えたことだけだと予想できたか。サムネイルのない記事のために `:not(:has(img))` のような条件を足していたなら、それが要らない並べ方を選べるか。
+- カテゴリーのリンクを手前に出したとき、行の外の部品と重なり順が干渉しないことを、`isolation` から説明できるか。
+- 見出しの下線とサムネイルの明るさの条件が、ルートの `:has()` の1か所にまとまっているか。
+
+## 判断の問い
+
+### 問い1
+
+行の間の線を、各行の `border-block-end` で描き、最後の行だけ `:last-child` で打ち消す書き方と比べて、一覧の `gap` に描く書き方は何を受け持っていますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+行の間に何を描くかを、一覧が受け持っています。行の `border` で描くと、行は自分が最後かどうかで見た目を変えることになり、一覧の外に同じ行を1つだけ置いたときにも線が付きます（`separators-in-gap`、`no-last-child-border-reset`）。一覧の `gap` に描けば、行は線のことを知らずに済み、行の数が変わっても末尾の打ち消しは要りません。
+
+</details>
+
+### 問い2
+
+絞り込みで今いるカテゴリーを示すのに、リンクに `class="is-current"` を付ける書き方と、`aria-current="page"` を付ける書き方があります。どちらを選びますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`aria-current="page"` を選びます。クラスは見た目だけを変え、スクリーンリーダーには今いるページだと伝わりません。`aria-current` なら、支援技術に伝える状態と、見た目を変えるセレクタが1つの属性にそろうので、片方だけを付け忘れることがありません（`state-by-pseudo-class-or-aria`）。
+
+</details>
+
+## この節で使ったルール
+
+- [`separators-in-gap`](/decoration/separators/#rule-separators-in-gap)：並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描きます。
+- [`gap-decorations-progressive`](/decoration/separators/#rule-gap-decorations-progressive)：gap decorationsは、線がなくても内容を読める区切りに使います。
+- [`sidebar-before-queries`](/compositions/sidebar/#rule-sidebar-before-queries)：メインとサイドを横に並べ、狭ければ縦に積む配置は、`sidebar` で組みます。
+- [`no-stretched-media-in-flex`](/layout-practice/defensive/#rule-no-stretched-media-in-flex)：Flexboxで画像を文章と横に並べるときは、交差軸に引き伸ばしません。
+- [`stretched-link-for-card`](/interaction/card-link/#rule-stretched-link-for-card)：カード全体をリンクにするときは、見出しのリンクの `::after` を広げ、フォーカスリングはカードに出します。
+- [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーは操作できる状態に限定し、`@media (any-hover)` の中に書きます。
+- [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
+- [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria)：状態のスタイルは、状態クラスではなく、擬似クラスやARIA属性で選びます。
+- [`design-for-content-changes`](/layout-practice/defensive/#rule-design-for-content-changes)：テキストが2倍の長さになったら、画像がなかったらと考え、そのパターンで表示を確かめます。
+- [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは `block-size` で固定しません。
+- [`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index)：内部の要素で相対的な `z-index` を使うコンポーネントは、ルートに `isolation: isolate` を指定します。
+- [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：`z-index` の値は、数値を直接書かずにトークンで指定します。
+- [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素には、24px相当の最小の大きさを確保します。

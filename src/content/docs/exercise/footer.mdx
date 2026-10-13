@@ -1,0 +1,226 @@
+---
+title: "21-5 フッターを作る"
+description: "すべてのページの下に置く、紺のフッターを作ります。会社の情報、リンクのまとまり、ポリシーのリンクと著作権の表示を、置かれた幅に合わせて並べる節です。"
+sidebar:
+  order: 5
+---
+
+import Demo from '../../../components/Demo.astro';
+import footerInitialHtml from '../../../demos/exercise/footer-1/index.html?raw';
+import footerInitialCss from '../../../demos/exercise/footer-1/style.css?raw';
+import footerChangedHtml from '../../../demos/exercise/footer-2/index.html?raw';
+import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
+
+すべてのページの下に置く、フッターを作ります。フッターは紺の面で、上の段の左に会社の情報を、右にサイトの中のリンクのまとまりを置きます。下の段には、ポリシーなどのリンクと、著作権の表示を置きます。
+
+上の段の会社の情報は、幅280px相当の列に、ロゴ、社名、住所、電話番号を並べます。リンクのまとまりは、16px相当の太字の見出しの下に、リンクを縦に並べたもので、「事業内容」「実績紹介」「会社概要」「採用情報」の4つを56px空けて横に並べます。会社の情報とリンクのまとまりの間も56pxです。画面が狭いときは、会社の情報の下にリンクのまとまりを回し、まとまりが1行に収まらなければ折り返します。
+
+下の段は、上の段と1pxの線で区切り、左にポリシーなどのリンクを、右に著作権の表示を置きます。収まらない幅では、著作権の表示を次の行へ回します。見出しは白、住所とリンクは14px相当の淡いグレーで、リンクは、ホバーとフォーカスのとき白くし、下線を出します。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/footer/start/index.html)）から始め、中間版（[index.html](/exercise-files/footer/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/footer/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/footer/start/`、`exercise/footer/middle/`、`exercise/footer/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [9-3 名前に使う語](/notation/terminology/)
+- [12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)
+- [12-3 apart：子要素を両端に分ける](/compositions/apart/)
+- [12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)
+- [14-5 文字の役割と色](/typography/text-roles/)
+- [15-4 ダークモード](/color-media/dark-mode/)
+
+## 予想する
+
+本文を読む前に、紺の面の上の文字とリンクの色を、どこに何と書くかを考えてみてください。21-2で紺の帯を作ったときの書き方が、そのまま使えるかも確かめます（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。
+
+4つのリンクのまとまりの並べ方も予想します。4列のグリッドにして、狭い画面ではメディアクエリで2列に減らす書き方が思い浮かぶかもしれません。そのとき、列の数を書く場所がいくつになるかを数えてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のフッターです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたフッター：会社の情報とリンクのまとまりが、幅に合わせて並び替わる" html={footerInitialHtml} css={footerInitialCss} />
+
+幅を1280pxや1024pxにすると、会社の情報の右に、4つのリンクのまとまりが1行に並びます。768pxでは、リンクのまとまりが会社の情報の下に回り、4つが1行に並びます。480pxではまとまりが2行に、320pxでは1つずつに折り返します。どの幅でも、見出しは白、住所とリンクは淡いグレーで、キーボードでリンクに移動すると、リンクが白くなって下線が出れば完成です。
+
+## 紺の面を配色で作る
+
+フッターの紺の面は、21-2の紺の帯と同じく、ルートの配色を暗くして作ります。ルートに `color-scheme: dark` を指定し、同じ要素で背景色と文字色をトークンで指定し直します（「[15-4 ダークモード](/color-media/dark-mode/#一部のコンポーネントだけを暗い配色にする)」）。
+
+```css title="🙆‍♂ Recommended: フッターのルートで配色を暗くし、中の色はトークンで指定する"
+@scope (.scoped.site-footer) to (.scoped) {
+  :scope {
+    color-scheme: dark;
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+  }
+
+  address {
+    color: var(--foreground--muted);
+  }
+
+  a {
+    color: var(--foreground--muted);
+
+    &:any-link:hover {
+      @media (any-hover) {
+        color: var(--foreground--base);
+        text-decoration-line: underline;
+      }
+    }
+
+    &:focus-visible {
+      color: var(--foreground--base);
+      text-decoration-line: underline;
+    }
+  }
+}
+```
+
+フッターの中では、淡いグレーの文字も、`--foreground--muted` で指定します。紺の面の上では、このトークンがダークの値の淡いグレーになるので、白い面の上のグレーと書き分ける必要がありません。文字を `opacity` や半透明の白で薄くしないのは、下にある面の色と混ざって、面ごとにコントラスト比が変わるからです（「[14-5 文字の役割と色](/typography/text-roles/)」）。
+
+## 会社の情報とリンクを sidebar で並べる
+
+上の段は、幅の決まった会社の情報と、伸び縮みするリンクのまとまりを横に並べ、狭ければ縦に積む配置です。21-4の記事の行と同じく、`sidebar` のコンポジションを付け、値はフッターのCSSから渡します（「[21-4 記事リストを作る](/exercise/article-list/)」）。
+
+```html title="🙆‍♂ Recommended: 上の段に sidebar を、リンクのまとまりに cluster を、下の段に apart を付ける"
+<footer class="scoped site-footer">
+  <div class="_top | sidebar">
+    <div class="_company | side-column">…</div>
+    <nav class="_navigation | main-column" aria-label="サイトの案内">
+      <div class="_groups | cluster">
+        <div class="_group">
+          <h2>事業内容</h2>
+          <ul class="_group-links">…</ul>
+        </div>
+        <!-- ... -->
+      </div>
+    </nav>
+  </div>
+  <div class="_bottom | apart">
+    <ul class="_policy-links | cluster">…</ul>
+    <p class="_copyright" lang="en"><small>&copy; 2026 Example Studio Inc.</small></p>
+  </div>
+</footer>
+```
+
+```css title="🙆‍♂ Recommended: コンポジションの値は、フッターの子要素で公開プロパティに渡す"
+@scope (.scoped.site-footer) to (.scoped) {
+  ._top {
+    --sidebar--side-width: calc(280 / 16 * 1rem);
+    --sidebar--main-min-width: calc(480 / 16 * 1rem);
+    --sidebar--row-gap: 40px;
+    --sidebar--column-gap: 56px;
+  }
+
+  ._groups {
+    --cluster--row-gap: 32px;
+    --cluster--column-gap: 56px;
+  }
+
+  ._bottom {
+    --apart--row-gap: 16px;
+    --apart--column-gap: 32px;
+    --apart--alignment: center;
+
+    padding-block-start: 24px;
+    border-block-start: 1px solid var(--border--base);
+  }
+}
+```
+
+会社の情報とリンクのまとまりが横に並ぶのは、280＋56＋480で816px相当の幅があるときです。上の段と下の段は、並びが入れ替わることのない2つの区画なので、間の線は下の段の上の枠線で描きます。下の段の `apart` は、ポリシーのリンクと著作権の表示を両端に分け、収まらなくなると著作権の表示を次の行へ回します（「[12-3 apart：子要素を両端に分ける](/compositions/apart/)」）。
+
+クラスの名前は、要素の役割で付けています。サイトの中を移動するリンクの集まりなので `navigation` で、2種類のリンクのリストは、どちらも `ul` なので `._group-links` と `._policy-links` で区別します（「[9-3 名前に使う語](/notation/terminology/)」）。
+
+## リンクのまとまりの数をCSSに書かない
+
+リンクのまとまりを並べるときにやりがちなのは、カンプの列の数をそのままグリッドに書く方法です。
+
+```css title="🙅‍♂ Not Recommended: カンプの列の数をグリッドに書き、狭い画面の列の数をメディアクエリで書く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.site-footer) to (.scoped) {
+  ._groups {
+    display: block grid;
+    grid-template-columns: repeat(4, max-content);
+    column-gap: 56px;
+
+    @media (width < calc(768 / 16 * 1rem)) {
+      grid-template-columns: repeat(2, max-content);
+    }
+  }
+}
+```
+
+この書き方では、列の数が2か所に書かれます。まとまりが1つ増えれば、両方を書き換えることになります。しかも、列の数を切り替える条件が画面の幅なので、上の段で会社の情報の横に並んでいるのか、下に回っているのかを考慮できません。
+
+本書では、`cluster` に並べ方を任せます。各まとまりは中身の幅で並び、行に収まらなくなったまとまりが次の行へ折り返します（「[12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)」）。CSSに書くのは間隔だけで、列の数はどこにも書きません。
+
+## 要件が変わる
+
+コラムの記事が増えてきたので、フッターに「お役立ちコラム」のまとまりを足すことになりました。まとまりは5つになり、新しいまとまりには、カテゴリーのページとセミナーの資料、用語集、すべての記事への7つのリンクが並びます。ほかのまとまりより、縦に長いまとまりです。
+
+本文を読む前に、直すファイルと行の数を予想してみてください。5つ目のまとまりが1行に収まらない幅では、どこで折り返すでしょうか。縦に長いまとまりの隣で、ほかのまとまりの見出しの位置がずれないかも考えます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のフッターです。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたフッター：5つ目のまとまりも、収まらなければ次の行へ折り返す" html={footerChangedHtml} css={footerChangedCss} />
+
+幅を1280pxにすると、5つのまとまりが1行に並びます。1024pxと768pxでは、まとまりが2行に分かれます。320pxでは、5つのまとまりが1つずつ縦に並びます。縦に長いまとまりの隣でも、どのまとまりの見出しも、同じ行のほかのまとまりの見出しとそろっていれば完成です。
+
+## 直さずに済んだCSS
+
+この変更で直したのは、まとまりを1つ足したHTMLだけで、CSSは1行も変えていません。`cluster` はまとまりの数を知らずに並べているので、5つ目のまとまりも、収まる行がなければ次の行へ折り返します。`flex-wrap: balance` に対応している環境では、各行の長さがそろうように折り返します。
+
+縦に長いまとまりがあっても、各まとまりの高さを固定していないので、行の高さが伸びるだけです。各まとまりの見出しは、まとまりの上端に置かれているので、隣のまとまりと高さが違っても見出しの位置はそろいます。上の段の `sidebar` も、メインの列の中身が増えたことを知らずに済みます。
+
+## 振り返り
+
+直したのは、フッターのHTMLだけです。最初の要件で、紺の面をルートの配色で作り、並べ方を3つのコンポジションに任せていたので、まとまりの数が変わってもCSSに直す場所がありませんでした。21-2で作った紺の帯と同じ書き方を、フッターにもそのまま使えています。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- まとまりの数が変わっても、CSSを直さずに済むと予想できたか。列の数をグリッドに書いていたなら、まとまりが増えたときに直す場所をすべて挙げられるか。
+- 狭い幅で並びが変わる条件を、画面の幅ではなく、置かれた幅や中身の幅から説明できるか。
+- フッターの中の色に、紺の面のための条件を書いていないか。
+
+## 判断の問い
+
+### 問い1
+
+リンクのまとまりを、`grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(120 / 16 * 1rem)), 1fr))` で並べる書き方もあります。`cluster` で並べる書き方と比べて、まとまりの幅の決まり方はどう違いますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+グリッドでは、どのまとまりも同じ幅の列に入ります。列の幅は120px相当以上で、余った幅を列で等分するので、短いリンクだけのまとまりも、長いリンクのあるまとまりと同じ幅になります。`cluster` では、各まとまりが中身の幅で並び、間隔だけがそろいます。どちらも列の数を書かないので、まとまりが増えてもCSSは直さずに済みます。列の線をそろえたいデザインならグリッドを、カンプのように中身の幅で詰めて並べたいなら `cluster` を選びます（`compositions-for-layout-patterns`）。
+
+</details>
+
+### 問い2
+
+フッターの住所の文字を、`color: oklch(100% 0 none / 70%)` のような半透明の白で薄くしてよいですか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+薄くしません。半透明の文字は、下にある面の色と混ざった色で表示されるので、面の色が変わるとコントラスト比も変わります。白い面に同じ部品を置けば、文字がほとんど見えなくなります。控えめな文字は、不透明な `--foreground--muted` で指定し、紺の面ではトークンのダークの値に任せます（`two-text-colors`）。
+
+</details>
+
+## この節で使ったルール
+
+- [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：`color-scheme` を指定した要素では、`color` と `background-color` をトークンで指定し直します。
+- [`two-text-colors`](/typography/text-roles/#rule-two-text-colors)：文字色は、重要度の段階を表す不透明なトークンから選び、`opacity` や半透明の色で薄くしません。
+- [`sidebar-before-queries`](/compositions/sidebar/#rule-sidebar-before-queries)：メインとサイドを横に並べ、狭ければ縦に積む配置は、`sidebar` で組みます。
+- [`compositions-for-layout-patterns`](/components/compositions-and-utilities/#rule-compositions-for-layout-patterns)：積む、並べて折り返すといった、コンポーネントに依存しない配置は、コンポジションで書きます。
+- [`composition-configurable-via-props`](/components/compositions-and-utilities/#rule-composition-configurable-via-props)：コンポジションの間隔や列数は、公開プロパティで受け取ります。
+- [`navigation-not-menu`](/notation/terminology/#rule-navigation-not-menu)：サイトの中を移動する導線は `navigation` と呼びます。
+- [`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)：`@scope` の中の要素はタイプセレクタで選び、同じ種類の要素を役割で区別するときだけ子クラスを付けます。
+- [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
+- [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは `block-size` で固定しません。

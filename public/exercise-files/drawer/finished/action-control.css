@@ -1,0 +1,71 @@
+@layer components {
+  /**
+   * ボタンの見た目の操作部品。
+   * ルートは <a> にも <button> にも付けるので、名前に link や button を使わない。
+   */
+  @scope (.scoped.action-control) to (.scoped) {
+    :scope {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+      --_background: var(--background--inverse);
+      --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+      --_hocus: --false;
+
+      display: inline flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      min-block-size: var(--_hit-size);
+      padding-block: 12px;
+      padding-inline: 28px;
+      border: 1px solid transparent;
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--subtitle--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[data-variant="secondary"] {
+        --_background: transparent;
+        --_background--hocus: var(--background--hover);
+
+        border-color: var(--border--strong);
+        color: var(--foreground--base);
+      }
+
+      &[data-variant="text"] {
+        --_background: transparent;
+        --_background--hocus: transparent;
+
+        padding-block: 0;
+        padding-inline: 0;
+        color: var(--foreground--accent);
+      }
+
+      &:is(:any-link, :enabled):hover {
+        @media (any-hover) {
+          --_hocus: --true;
+
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        --_hocus: --true;
+
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    /* ホバーを受けるルートは動かさず、矢印だけを動かす */
+    ._arrow {
+      @container style(--_hocus: --true) {
+        translate: 4px 0;
+      }
+    }
+  }
+}

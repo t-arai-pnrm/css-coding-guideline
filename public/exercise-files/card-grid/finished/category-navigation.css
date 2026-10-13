@@ -1,0 +1,41 @@
+@layer components {
+  /* サイドバーのカテゴリーの一覧。この節では完成したものを使う */
+  @scope (.scoped.category-navigation) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    h2 {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    a {
+      display: block flex;
+      gap: 8px;
+      justify-content: space-between;
+      padding-block: 12px;
+      padding-inline: 4px;
+      border-block-end: 1px solid var(--border--base);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+
+      &::after {
+        content: "›" / "";
+        color: var(--foreground--muted);
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--background--hover);
+      }
+    }
+  }
+}

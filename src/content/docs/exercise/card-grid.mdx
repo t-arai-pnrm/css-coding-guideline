@@ -1,0 +1,270 @@
+---
+title: "21-3 カード一覧とサイドバーを作る"
+description: "コラム一覧のページで、記事のカードをメインの列に並べ、サイドの列にカテゴリーの一覧を置きます。カードが置かれた列の幅に合わせて表示され、同じカードを幅の違う場所に置いても崩れないかを確かめる節です。"
+sidebar:
+  order: 3
+---
+
+import Demo from '../../../components/Demo.astro';
+import cardGridInitialHtml from '../../../demos/exercise/card-grid-1/index.html?raw';
+import cardGridInitialCss from '../../../demos/exercise/card-grid-1/style.css?raw';
+import cardGridChangedHtml from '../../../demos/exercise/card-grid-2/index.html?raw';
+import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?raw';
+
+コラム一覧のページを作ります。ページの上に英字の小見出しと「お役立ちコラム」の見出しを置き、その下を、記事のカードを並べるメインの列と、カテゴリーの一覧を置くサイドの列に分けます。メインの列の最小幅は480px相当、サイドの列の幅は240px相当、列の間は40pxです。画面が狭いときは、サイドの列をメインの下に回します。
+
+記事のカードは、画像、日付とカテゴリー、見出しのリンクを、この順で上から並べます。画像は16:9の比率で角を4px丸め、カードは1pxの枠線で囲んで角を12px丸め、内側に16pxの余白を取ります。日付とカテゴリーは12px相当の小さな文字で、カテゴリーは淡いティールの背景に濃いティールの文字のラベルにします。メインの列では、列の最小幅を280px相当として、カードを多くても2列に並べ、カードの間を24px空けます。
+
+ページの見出しには、21-2で作った `eyebrow` と `section-heading` のパターンを使います（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。サイドの列のカテゴリーの一覧（`category-navigation`）は、この節の主題ではないので、開始版に完成したものを入れています。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/card-grid/start/index.html)）から始め、中間版（[index.html](/exercise-files/card-grid/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/card-grid/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/card-grid/start/`、`exercise/card-grid/middle/`、`exercise/card-grid/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [7-4 大きさの決まり方](/layout/sizing/)
+- [10-2 コンポーネントの境界を守る](/components/boundaries/)
+- [10-6 スタイルクエリで状態を伝える](/components/style-queries/)
+- [12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)
+- [12-6 grid：列の最小幅と最大数から列数を決める](/compositions/grid/)
+- [13-2 ブレイクポイントの決め方](/responsive/breakpoints/)
+- [13-3 コンテナサイズクエリ](/responsive/container-size-queries/)
+- [13-4 コンテナの副作用とコンテナ単位](/responsive/container-units-and-side-effects/)
+- [16-1 画像の配置と比率](/decoration/images/)
+
+## 予想する
+
+本文を読む前に、カードのCSS（`article-card.css`）に何を書くかを考えてみてください。カンプのカードの幅、カードの間の24px、2列という列の数は、カードとページのどちらのCSSに書くでしょうか。
+
+ページの2カラムを、メディアクエリで組むかどうかも予想します。サイドの列がメインの下に回る幅を何pxにするか、その値をどこに書くかを決めてから読み進めると、あとで見比べられます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のコラム一覧です。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたコラム一覧：カードの幅と列の数は、置かれた列で決まる" html={cardGridInitialHtml} css={cardGridInitialCss} />
+
+幅を1280pxや1024pxにすると、メインとサイドの2カラムになり、カードは2列に並びます。768pxでは、サイドの列がメインの下に回り、カードは2列のまま、表示の幅いっぱいに広がります。320pxでは、カードは1列（272px）です。どの幅でも、画像が16:9の比率を保ち、開発者ツールでカードのルートを選んだときに `margin` がすべて0であれば完成です。
+
+## カードに幅と外側の余白を持たせない
+
+カードを作るときにやりがちなのは、カンプで測った幅と、次のカードとの間隔を、カード自身に書いてしまうことです。
+
+```css title="🙅‍♂ Not Recommended: カンプで測った幅と下の間隔を、カードのルートに書く"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    inline-size: calc(304 / 16 * 1rem);
+    margin-block-end: 24px;
+  }
+}
+```
+
+この書き方は、カードがコラム一覧のメインの列に2列で並ぶことを前提にしています。サイドの列に置けば304px相当では入りきらず、最後のカードの下にも24pxの余白が残ります。置き場所が増えるたびに、置く側がこの値を打ち消すことになります。
+
+カードのルートには、幅も外側の余白も書きません（`no-external-layout-on-root`）。カードが決めるのは、中の配置、画像の比率、文字の階層だけです（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+```css title="🙆‍♂ Recommended: カードは中の配置と枠線だけを決め、画像は列の幅いっぱいに広げる"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--border--base);
+    border-radius: var(--rounded--lg);
+  }
+
+  img {
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--rounded--sm);
+    object-fit: cover;
+  }
+
+  ._body {
+    display: block grid;
+    gap: 8px;
+  }
+}
+```
+
+ルートの `gap` と `padding` は、カードの外ではなく、カードの中の余白です。置き場所に依存しないので、ルートに書いてかまいません。`img` は、グリッドのアイテムでも自然には幅いっぱいに広がらない置換要素なので、`stretch` で広げ、高さは `aspect-ratio` で決めます（「[7-4 大きさの決まり方](/layout/sizing/)」、「[16-1 画像の配置と比率](/decoration/images/)」）。
+
+日付とカテゴリーは、`<p class="_meta | cluster">` にまとめて横に並べます。カテゴリーのラベルは操作できない飾りなので、21-2の小見出しと同じく、ブランドの色の `--foreground--brand` と `--background--brand-subtle` で塗ります。
+
+## 列の数を grid に、2カラムを sidebar に任せる
+
+カードの幅と間隔は、並べる側が決めます。メインの列は、列の最小幅を280px相当、最大数を2、間隔を24pxにした `grid` で並べます。ページの2カラムは、メインの最小幅を480px相当、サイドの幅を240px相当、間隔を40pxにした `sidebar` で組みます。
+
+```html title="🙆‍♂ Recommended: 2カラムを sidebar に、カードの列を grid に任せ、値は style 属性で渡す"
+<div class="scoped page-column">
+  <hgroup class="_page-heading">
+    <p class="eyebrow" lang="en">Blog</p>
+    <h1 class="section-heading">お役立ちコラム</h1>
+  </hgroup>
+  <div class="sidebar" style="--sidebar--main-min-width: calc(480 / 16 * 1rem); --sidebar--side-width: calc(240 / 16 * 1rem); --sidebar--gap: 40px">
+    <section class="_latest | main-column">
+      <h2>新着記事</h2>
+      <ul class="grid" style="--grid--column-min-width: calc(280 / 16 * 1rem); --grid--column-max-count: 2; --grid--gap: 24px">
+        <li><article class="scoped article-card">…</article></li>
+        <!-- ... -->
+      </ul>
+    </section>
+    <aside class="side-column">
+      <nav class="scoped category-navigation" aria-labelledby="category-heading">…</nav>
+    </aside>
+  </div>
+</div>
+```
+
+`sidebar` は、メインの最小幅、サイドの幅、間隔の合計（480＋240＋40で760px相当）が収まる間は横に並べ、収まらなくなると縦に積みます。768pxの表示では、デモの枠の左右の余白を除いた幅が720pxなので、縦に積まれます。2カラムを切り替える幅をメディアクエリで書かずに済み、合計の値が変わっても、どこかの閾値を書き直す必要がありません（「[12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)」）。
+
+`grid` は、列の最小幅を下回らない範囲で、最大数までの列を作ります。メインの列が584px相当（280×2＋24）より狭ければ1列に、広ければ2列になります（「[12-6 grid：列の最小幅と最大数から列数を決める](/compositions/grid/)」）。カードの幅は、どの幅でも、`grid` が作った列の幅そのものです。
+
+## 要件が変わる
+
+記事の閲覧数を集計できるようになり、サイドの列のカテゴリーの一覧の下に、人気記事の3件を置くことになりました。人気記事にも、新着と同じ `article-card` を使います。ただし、カンプのサイドの列のカードは、96px相当の小さな画像が左に、日付、カテゴリー、見出しが右に並びます。枠線と内側の余白はありません。見出しも、新着の18px相当より小さい16px相当です。
+
+本文を読む前に、カードの形を切り替える条件を考えてみてください。広い画面では、メインの列の新着のカードと、サイドの列の人気記事のカードが同時に表示されます。この2種類のカードを区別できる条件は何で、その条件を読むのはページとカードのどちらでしょうか。置き場所で変わるのは、画像の位置、枠線と余白、見出しの大きさの3つです。それぞれを切り替える閾値が何か所に分かれそうかも、見積もってから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のコラム一覧です。サイドの列のカテゴリーの一覧の下に、人気記事を置いています。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたコラム一覧：同じカードが、置かれた幅で形を変える" html={cardGridChangedHtml} css={cardGridChangedCss} />
+
+幅を1280pxにすると、メインの列の新着のカードは、前半と同じく画像が上にある形です。サイドの列の人気記事は幅240pxで、96px相当の画像が左に、日付とカテゴリーと見出しが右に並び、枠線はありません。768pxでは、サイドの列がメインの下に回り、人気記事の一覧は2列（352px）になります。このとき人気記事のカードは、新着と同じ、画像が上にある形へ切り替わります。320pxでは、すべてのカードが1列（272px）で、画像が上にある形です。
+
+## 画面の幅ではなく、置かれた幅で切り替える
+
+カードの形を切り替える条件に、画面の幅は使えません。1280pxの画面には、464pxの新着のカードと、240pxの人気記事のカードが同時に表示されています。画面の幅は1つなので、同じ画面に並ぶ2種類のカードを、画面の幅では区別できません。サイドの列がメインの下に回った768pxでは、人気記事のカードも352pxの広さを持ちます。
+
+そこで、カードの中の切り替えには、カードが置かれた幅を問い合わせるコンテナサイズクエリを使います（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。ページの段組みはページの側で、カードの中の配置はカードの側で決めるという分担です。サイドの列にいるかどうかを、カードは知る必要がありません。
+
+## ルートをコンテナにし、枠線を ._layout へ移す
+
+カードのルートを、`--scoped` という名前のコンテナにします。ただし、コンテナにした要素は、自分の幅を条件にして自分のスタイルを変えられません。前半のカードは、ルートが `display: block grid` で画像と文字のまとまりを並べていたので、このグリッドの列を切り替えるには、ルートの内側にもう1段の要素が要ります。
+
+```html title="🙆‍♂ Recommended: コンテナのルートの内側に、配置を受け持つ ._layout を置く"
+<article class="scoped article-card">
+  <div class="_layout">
+    <img src="…" alt="" width="640" height="360">
+    <div class="_body">
+      <p class="_meta | cluster"><time datetime="2026-09-25">2026.09.25</time><span class="_category">ノウハウ</span></p>
+      <h3><a href="#article-access-numbers">サイトリニューアルの前に、アクセス解析で確かめておきたい5つの数字</a></h3>
+    </div>
+  </div>
+</article>
+```
+
+ルートにあった枠線と内側の余白も、`._layout` へ移します。コンテナにする要素へ `padding` や `border` を付けると、クエリが問い合わせる幅は、カードを置いた列の幅より狭くなり、閾値が意図とずれるからです（「[13-4 コンテナの副作用とコンテナ単位](/responsive/container-units-and-side-effects/)」）。しかも、狭い形のカードには枠線がないので、枠線は形を切り替える要素と同じ場所にあるほうが、条件をまとめて書けます。
+
+前半のカードに `._layout` を入れておく必要はありませんでした。置き場所がメインの列だけの間は、形を切り替える要件がなかったからです。問い合わせないコンテナは、副作用だけを残します。HTMLを1段足すのは、2つ目の置き場所が加わった今です。
+
+## 閾値を1か所に書き、フラグで伝える
+
+置かれた幅で変わる3つの見た目に、それぞれ同じコンテナサイズクエリを書くと、閾値が3か所に分かれます。1か所を直し忘れると、どの幅のカンプにもない中間の形ができます。そこで、コンテナサイズクエリは `._layout` のルールにだけ書き、幅の状態をフラグ `--_density` にして伝えます。
+
+```css title="🙆‍♂ Recommended: コンテナサイズクエリは ._layout だけに書き、見出しはフラグを読む"
+@scope (.scoped.article-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+  ._layout {
+    --_density: --compact;
+
+    display: block grid;
+    grid-template-columns: calc(96 / 16 * 1rem) 1fr;
+    gap: 12px;
+    align-items: start;
+
+    /* サイドの列の幅（240px 相当）より広く、一覧の列の最小幅（280px 相当）より狭い幅 */
+    @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
+      --_density: --spacious;
+
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+    }
+  }
+
+  h3 {
+    font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+    line-height: var(--text--subtitle--leading);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
+    }
+  }
+}
+```
+
+`._layout` は、クエリの外でデフォルトの `--_density: --compact` を宣言し、クエリの中で `--spacious` に切り替えます。狭い形をクエリの外に、広い形との差分だけを `>=` の条件の中に書く向きです。`._layout` 自身の列、間隔、枠線は、フラグを切り替えるのと同じクエリの中で変えます。フラグを宣言した要素は、自分のフラグをスタイルクエリで問い合わせられないからです。見出しは、閾値を書かずにフラグを読みます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。
+
+閾値の260px相当は、サイドの列の240px相当と、メインの列の最小幅の280px相当の間を取った値です。240px相当ちょうどにしないのは、`sidebar` のサイドが、横に並ぶと余った幅のわずかな端数を受け取り、240pxを少し上回るからです。間の値にしておけば、サイドの幅や列の最小幅を少し変えても、どちらの置き場所も閾値をまたぎません。どの幅とどの幅の間を取ったのかは、クエリの直前のコメントに残しています（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
+
+## 振り返り
+
+直したのは、カードの `article-card.css` とHTML、そしてページのHTMLとCSSです。`article-card.css` では、ルートをコンテナにし、グリッドと枠線をルートから `._layout` に移して、フラグとコンテナサイズクエリを足しました。見出しには、フラグを読むスタイルクエリを1つ足しています。ページでは、サイドの列に人気記事のセクションを足し、カテゴリーの一覧との間隔を、サイドの列の `gap` で空けました。
+
+直さずに済んだのは、`compositions.css` の `grid` と `sidebar`、カテゴリーの一覧、見出しのパターンです。新着の列は280px相当以上なので、カードは閾値を上回って広い形になり、前半と同じ見た目のままです。前半でカードのルートに幅と外側の余白を持たせなかったので、カードの幅は置かれた列の幅で決まり、カードはその幅を見て形だけを選びます。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- カードの形を切り替える判断を、ページではなくカード自身が受け持つと予想できたか。ページのCSSや `.side-column` を条件にしていたなら、サイドの列が縦に積まれた768pxで、人気記事のカードがどの形になるかを確かめたか。
+- カードのCSSを直したあと、新着のカードが広い形のままであることを、閾値と列の最小幅の大小から説明できるか。
+- 閾値を書いたのは何か所か。画像の列、枠線、見出しのそれぞれにクエリを書いていたなら、1つのフラグにまとめたとき、どの宣言が消えるか。
+
+## 判断の問い
+
+### 問い1
+
+サイドの列のときだけ画像を左に置こうと、ページのCSSへ `.side-column .article-card ._layout { grid-template-columns: … }` を書きました。この書き方の問題はどこにありますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+ページのCSSが、カードの中の要素を選んで見た目を上書きしています（`no-other-component-internals`）。カードの `._layout` の名前や構造を変えると、ページのCSSも直すことになり、詳細度の競争も起こります。サイドの列のほかに狭い置き場所が増えれば、そのたびに同じ指定を足すことになります。
+
+条件そのものもずれています。768pxの画面ではサイドの列が縦に積まれ、人気記事のカードは352pxの広さがあります。それでも `.side-column` の中にあるので、画像は左に置かれたままです。カードが置かれた幅で切り替える書き方なら、この幅では画像が上の形になります。
+
+</details>
+
+### 問い2
+
+トップページに、新着記事のカードを4列に並べる一覧を置くことになり、`grid` の列の最小幅に200px相当を渡しました。広い画面で4列に並んだカードは、どちらの形になりますか。カードとページのどちらで、何を決めますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+列の幅が260px相当を下回ると、カードは画像が左の狭い形になります。カードは置かれた幅だけを見ているので、列が狭ければ、トップページでも狭い形を選びます。
+
+広い形で4列に並べたいなら、ページの側で列の最小幅を260px相当より大きくし、4列が入らない幅では列を減らします。4列の狭い形でよいなら、何も直しません。どちらの形で並べるかは並べる側の判断で、カードのCSSに置き場所ごとの条件を足す必要はありません（`parent-owns-child-placement`）。
+
+</details>
+
+## この節で使ったルール
+
+- [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、外側の余白や配置の指定を書きません。
+- [`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)：子のコンポーネントの配置と外側の余白は、親の `gap` やグリッドで指定します。
+- [`stretch-over-width-100`](/layout/sizing/#rule-stretch-over-width-100)：幅いっぱいに広げる指定が要る要素には、`stretch` を使います。
+- [`aspect-ratio-for-ratios`](/decoration/images/#rule-aspect-ratio-for-ratios)：要素の縦横比は `aspect-ratio` で決めます。
+- [`img-width-height-attributes`](/decoration/images/#rule-img-width-height-attributes)：`<img>` には、画像の実際の大きさを `width` と `height` の属性で書きます。
+- [`sidebar-before-queries`](/compositions/sidebar/#rule-sidebar-before-queries)：メインとサイドを横に並べ、狭ければ縦に積む配置は、クエリで閾値を書かず、`sidebar` で組みます。
+- [`sidebar-two-direct-children`](/compositions/sidebar/#rule-sidebar-two-direct-children)：`sidebar` の直接の子は2つだけにし、`.main-column` と `.side-column` を付けます。
+- [`grid-max-count-over-queries`](/compositions/grid/#rule-grid-max-count-over-queries)：列の数に上限がある一覧は、メディアクエリで列数を切り替えず、`grid` に列の最小幅と最大数を渡します。
+- [`no-container-just-in-case`](/responsive/container-units-and-side-effects/#rule-no-container-just-in-case)：`container` は、実際に問い合わせる要素にだけ指定します。
+- [`no-padding-on-container`](/responsive/container-units-and-side-effects/#rule-no-padding-on-container)：コンテナにする要素には `padding` や `border` を指定しません。
+- [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)：ルートは `container: --scoped / inline-size` とし、`@container --scoped (…)` で問い合わせます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリはフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を式で書き、分解しても意味が増えない値はそのまま書きます。
+- [`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)：ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしません。

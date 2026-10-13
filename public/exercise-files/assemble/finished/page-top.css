@@ -1,0 +1,55 @@
+@layer pages {
+  @scope (.scoped.page-top) to (.scoped) {
+    /* 帯は間を空けずに積む。上下の余白と背景は、CMS が出力する面の役割で決める */
+    :scope {
+      display: block grid;
+
+      & > [data-surface] {
+        --primary-layout--content-max-width: calc(1080 / 16 * 1rem);
+        --primary-layout--row-gap: 24px;
+
+        padding-block: 64px;
+      }
+
+      & > [data-surface="muted"] {
+        background-color: var(--background--surface);
+      }
+
+      /* 同じ面の帯が続く境目は、後ろの帯の上の余白を詰める */
+      & > [data-surface="base"] + [data-surface="base"],
+      & > [data-surface="muted"] + [data-surface="muted"] {
+        padding-block-start: 0;
+      }
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._strengths {
+      --switcher--column-min-width: calc(200 / 16 * 1rem);
+      --switcher--gap: 24px;
+    }
+
+    ._strength {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      padding: 24px;
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--base);
+
+      & > h3 {
+        font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+        line-height: var(--text--subtitle--leading);
+      }
+
+      & > p {
+        color: var(--foreground--muted);
+        font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+        line-height: var(--text--body-compact--leading);
+      }
+    }
+  }
+}

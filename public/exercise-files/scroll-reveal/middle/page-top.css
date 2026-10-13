@@ -1,0 +1,91 @@
+/* 登録していないカスタムプロパティは、キーフレームの50%の時点で値が切り替わる */
+@keyframes --page-top--in-view {
+  from {
+    --_in-view: --false;
+  }
+
+  to {
+    --_in-view: --true;
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-top) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 160px;
+      padding-block-end: 240px;
+    }
+
+    ._intro {
+      color: var(--foreground--muted);
+    }
+
+    /* セクションのルートは、画面に入ったきっかけを作るだけで、自分は動かない */
+    ._section {
+      --_in-view: --false;
+
+      @supports (animation-timeline: view()) and (animation-range: entry) {
+        animation-name: --page-top--in-view;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+
+    ._section-body {
+      --translate-from--y-value: 24px;
+
+      display: block grid;
+      gap: 24px;
+
+      @supports (animation-timeline: view()) and (animation-range: entry) {
+        animation-name: --fade-in;
+        animation-duration: var(--duration--reveal);
+        animation-timing-function: var(--ease--out-quint);
+        animation-fill-mode: both;
+        animation-play-state: paused;
+
+        /* いちばん近い祖先（._section）の --_in-view を問い合わせる */
+        @container style(--_in-view: --true) {
+          animation-play-state: running;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+          animation-name: --fade-in, --translate-from;
+        }
+      }
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._strengths {
+      --switcher--column-min-width: calc(200 / 16 * 1rem);
+      --switcher--gap: 24px;
+    }
+
+    ._strength {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      padding: 24px;
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+
+      & > h3 {
+        font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+        line-height: var(--text--subtitle--leading);
+      }
+
+      & > p {
+        color: var(--foreground--muted);
+        font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+        line-height: var(--text--body-compact--leading);
+      }
+    }
+  }
+}

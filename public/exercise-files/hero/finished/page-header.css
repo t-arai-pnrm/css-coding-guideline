@@ -1,0 +1,55 @@
+@layer components {
+  /**
+   * 下層ページの冒頭に置く、ページ名とパンくずリスト。
+   * ヒーローとは役割と中身が違うので、別のコンポーネントにし、見た目はトークンでそろえる。
+   */
+  @scope (.scoped.page-header) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      padding-block: 32px 48px;
+      padding-inline: 40px;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+    }
+
+    ol {
+      --cluster--column-gap: 8px;
+
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    li {
+      /* 区切りの記号は飾りなので、代替テキストを空にする */
+      & + li::before {
+        content: "›" / "";
+        margin-inline-end: 8px;
+      }
+    }
+
+    a {
+      &:any-link:hover {
+        @media (any-hover) {
+          text-decoration-line: underline;
+        }
+      }
+
+      &:focus-visible {
+        text-decoration-line: underline;
+      }
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h1 {
+      margin-block: unset;
+    }
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>21-7 ドロワーメニューを作る（開始版）</title>
+  <link rel="stylesheet" href="../../base.css">
+  <link rel="stylesheet" href="site-base.css">
+  <link rel="stylesheet" href="compositions.css">
+  <link rel="stylesheet" href="page-demo.css">
+  <link rel="stylesheet" href="action-control.css">
+  <link rel="stylesheet" href="site-header.css">
+  <link rel="stylesheet" href="global-nav.css">
+  <link rel="stylesheet" href="site-drawer.css">
+  <link rel="stylesheet" href="patterns.css">
+</head>
+<body>
+<header class="scoped site-header">
+  <div class="_header-inner | apart">
+    <a class="_logo" href="#top" lang="en">Example Studio</a>
+    <div class="_actions | cluster">
+      <nav class="scoped global-nav" aria-label="メイン">
+        <ul class="cluster">
+          <li><a href="#service">事業内容</a></li>
+          <li><a href="#works">実績紹介</a></li>
+          <li><a href="#company">会社概要</a></li>
+          <li><a href="#column">お役立ちコラム</a></li>
+          <li><a href="#recruit">採用情報</a></li>
+        </ul>
+      </nav>
+      <a class="scoped action-control" href="#contact">お問い合わせ</a>
+    </div>
+    <div class="_menu">
+      <button class="scoped action-control" type="button" data-variant="secondary" commandfor="site-drawer" command="show-modal">メニュー</button>
+    </div>
+  </div>
+</header>
+<dialog class="scoped site-drawer" id="site-drawer" aria-label="メニュー" closedby="any">
+  <div class="_drawer-header">
+    <button class="scoped action-control" type="button" data-variant="secondary" commandfor="site-drawer" command="close">閉じる</button>
+  </div>
+  <div class="_navigation">
+    <nav class="scoped global-nav" aria-label="メイン">
+      <ul class="cluster">
+        <li><a href="#service">事業内容</a></li>
+        <li><a href="#works">実績紹介</a></li>
+        <li><a href="#company">会社概要</a></li>
+        <li><a href="#column">お役立ちコラム</a></li>
+        <li><a href="#recruit">採用情報</a></li>
+      </ul>
+    </nav>
+  </div>
+  <a class="scoped action-control" href="#contact">お問い合わせ</a>
+</dialog>
+<main class="scoped page-demo">
+  <hgroup class="_heading">
+    <p class="eyebrow" lang="en">Service</p>
+    <h1 class="section-heading">制作のご相談</h1>
+  </hgroup>
+  <p>コーポレートサイトの新規制作から、公開後の運用まで承ります。狭い画面では、ヘッダーの「メニュー」のボタンから、ナビゲーションを開きます。</p>
+</main>
+</body>
+</html>

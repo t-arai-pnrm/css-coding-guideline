@@ -1,0 +1,239 @@
+---
+title: "21-8 ヒーローを作る"
+description: "トップページの冒頭に、画像の上に見出しとボタンを重ねたメインビジュアルを作ります。どんな画像に差し替えても文字が読め、文字が増えても枠からはみ出さないかを確かめる節です。"
+sidebar:
+  order: 8
+---
+
+import Demo from '../../../components/Demo.astro';
+import heroInitialHtml from '../../../demos/exercise/hero-1/index.html?raw';
+import heroInitialCss from '../../../demos/exercise/hero-1/style.css?raw';
+import heroChangedHtml from '../../../demos/exercise/hero-2/index.html?raw';
+import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
+
+トップページの冒頭に置く、メインビジュアル（ヒーロー）を作ります。制作事例の画像の上に、英字の小見出し、36px相当の見出し、リード文、主ボタンと副ボタンを、左に寄せて上下の中央に置きます。文字のまとまりの幅は640px相当までで、内側に上下64px、左右40pxの余白を取ります。
+
+画像は、CMSで差し替えます。明るい画像に差し替えても白い文字が読めるように、画像の上に紺の半透明の層を重ねます。画像を読み込めなかったときも、文字が読めるようにします。画面が狭く、文字のまとまりが画像より高くなったときは、ヒーロー全体を文字に合わせて伸ばします。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/hero/start/index.html)）から始め、中間版（[index.html](/exercise-files/hero/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/hero/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/hero/start/`、`exercise/hero/middle/`、`exercise/hero/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [10-1 何をコンポーネントにするか](/components/what-is-a-component/)
+- [12-9 pile：子要素を同じセルに重ねる](/compositions/pile/)
+- [15-4 ダークモード](/color-media/dark-mode/)
+- [16-1 画像の配置と比率](/decoration/images/)
+- [16-2 画像の形式と読み込み](/decoration/image-loading/)
+
+## 予想する
+
+本文を読む前に、画像の上に文字を重ねる方法を考えてみてください。文字のまとまりを `position: absolute` で画像の上に置くと、画面が狭くなって文字が高くなったときに何が起きるでしょうか。
+
+紺の層の上に置く白い文字と、白い主ボタンを、どう指定するかも予想します。21-2で紺の帯を作ったときの書き方を使えるかを確かめます（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のヒーローです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたヒーロー：画像の上に紺の層を重ね、文字に合わせて高さが伸びる" html={heroInitialHtml} css={heroInitialCss} />
+
+幅を1280pxにすると、画像の16:9の比率でヒーローの高さが決まり、文字のまとまりが左側の上下の中央に置かれます。幅を320pxにすると、文字のまとまりが画像より高くなり、ヒーロー全体が文字に合わせて伸びます。画像も伸びた高さいっぱいに広がり、縦横比を保ったまま切り取られます。主ボタンは白い面に紺の文字、副ボタンは白に近い枠線で表示されれば完成です。
+
+## 画像と文字を pile で重ねる
+
+画像と文字のまとまりは、`pile` で同じグリッドのセルに重ねます。どちらもレイアウトの流れに残るので、ヒーローの高さは、画像と文字のまとまりのうち高いほうで決まります（「[12-9 pile：子要素を同じセルに重ねる](/compositions/pile/)」）。
+
+```html title="🙆‍♂ Recommended: ヒーローのルートに pile を付け、文字のまとまりの位置は style 属性で渡す"
+<section class="scoped hero | pile" aria-labelledby="hero-heading">
+  <img src="…" alt="" width="1600" height="900" fetchpriority="high">
+  <div class="_body" style="--pile--alignment: center">
+    <p class="eyebrow" lang="en">Web Design &amp; Development</p>
+    <h1 id="hero-heading">伝わるサイトを、運用できる形で届けます</h1>
+    <p class="_lead">コーポレートサイトと採用サイトの制作から、公開後の更新と改善まで。…</p>
+    <div class="_actions | cluster" style="--cluster--gap: 16px">…</div>
+  </div>
+</section>
+```
+
+```css title="🙆‍♂ Recommended: 画像をセルいっぱいに広げ、文字のまとまりより奥に回す"
+@scope (.scoped.hero) to (.scoped) {
+  img {
+    z-index: var(--z--backwards);
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  ._body {
+    display: block grid;
+    gap: 24px;
+    justify-items: start;
+    max-inline-size: calc(640 / 16 * 1rem);
+    padding-block: 64px;
+    padding-inline: 40px;
+  }
+}
+```
+
+文字のまとまりを上下の中央に置く `--pile--alignment: center` は、動かしたい `._body` の `style` 属性で渡します。`pile` のルートで渡すと、継承で画像にも同じ配置がかかるからです。画像の `block-size: 100%` は、行の高さを求める段階では `auto` として扱われます。文字が低いあいだは画像の縦横比で、文字が高くなれば文字の高さで、行の高さが決まります。
+
+画像は、最初に表示される画像なので、`loading="lazy"` を付けず、`fetchpriority="high"` で先に読み込ませます（「[16-2 画像の形式と読み込み](/decoration/image-loading/)」）。内容を伝える画像ではなく、見出しが同じことを伝えているので、`alt` は空にします。
+
+## 紺の配色で、白い文字と白いボタンにする
+
+ヒーローの中の文字とボタンの色は、21-2の紺の帯と同じく、ルートの配色を暗くして切り替えます。ルートに `color-scheme: dark` を指定し、背景色と文字色をトークンで指定し直せば、中の `action-control` は白い主ボタンに、小見出しは明るいティールに変わります（「[15-4 ダークモード](/color-media/dark-mode/#一部のコンポーネントだけを暗い配色にする)」）。
+
+```css title="🙆‍♂ Recommended: 紺の配色にし、画像と文字の間に紺の層を重ねる"
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    overflow: clip;
+    border-radius: var(--rounded--lg);
+    color-scheme: dark;
+
+    /* 画像を読み込めなかったときも、紺の面の上で文字を読める */
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+
+    &::before {
+      content: "";
+      grid-area: --pile;
+      background-color: color-mix(in oklab, var(--background--base) 85%, transparent);
+    }
+  }
+}
+```
+
+紺の層は、ルートの `::before` で作ります。擬似要素は `.pile > *` で選ばれないので、`grid-area: --pile` を自分で指定して同じセルに置きます。`::before` は画像より前のアイテムなので、画像の `z-index: var(--z--backwards)` で画像を層の奥に回しています。`pile` のルートが重なりの単位を作るので、この `-1` がヒーローの背景より奥に回ることはありません。
+
+層の不透明度は、文字のコントラスト比から決めました。紺を85%重ねれば、真っ白な画像の上でも、白い見出しは8.9:1、淡いグレーのリード文は6.0:1、明るいティールの小見出しは5.5:1で、どれも4.5:1を超えます（`pile-scrim-for-text-on-image`）。小見出しの色は `eyebrow` のパターンが持っていて、ヒーローからは変えられないので、層の側で濃さを確保しています（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/#見出しのパターンに書くもの書かないもの)」）。ルートの `background-color` は、画像を読み込めなかったときの備えです（`text-on-image-fallback-background`）。
+
+## 要件が変わる
+
+下層ページの冒頭にも、ヒーローの低い版を置くことになりました。よくある質問のページなら、紺の帯の上にパンくずリスト、その下に英字の小見出しとページ名を置きます。画像、リード文、ボタンはありません。帯の内側には、上32px、下48px、左右40pxの余白を取ります。パンくずリストは12px相当の淡いグレーの文字で、項目の間に「›」を置きます。
+
+本文を読む前に、低い版をヒーローの種類（`data-variant="compact"` など）にするか、別のコンポーネントにするかを考えてみてください。どちらを選ぶと、ヒーローのCSSにどんな条件が増えるかも予想します。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のトップページのヒーローと、よくある質問のページの冒頭です。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えた2つの冒頭：ヒーローはそのまま、下層ページには別の部品を置く" html={heroChangedHtml} css={heroChangedCss} />
+
+どの幅でも、トップページのヒーローは変更の前と同じ表示です。下の、よくある質問のページの冒頭は、ヒーローと同じ紺の帯で、パンくずリストの「ホーム」と「よくある質問」の間に「›」が入ります。パンくずリストのリンクは、ホバーとフォーカスのときに下線が出れば完成です。
+
+## ヒーローに種類を足さない
+
+低い版は紺の帯で、ヒーローと見た目が似ています。そこで、ヒーローに `compact` の種類を足したくなりますが、その場合、種類ごとの違いがヒーローのCSSに条件として積み重なります。
+
+```css title="🙅‍♂ Not Recommended: 下層ページの帯を、ヒーローの種類として足す"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.hero) to (.scoped) {
+  :scope {
+    &[data-variant="compact"] {
+      &::before {
+        content: none;
+      }
+    }
+  }
+
+  img,
+  ._lead,
+  ._actions {
+    &:is(:scope[data-variant="compact"] *) {
+      display: none;
+    }
+  }
+
+  h1 {
+    &:is(:scope[data-variant="compact"] *) {
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    }
+  }
+}
+```
+
+この書き方では、画像、紺の層、リード文、ボタンの4つを、種類ごとに消す条件が要ります。パンくずリストのような、低い版だけの要素を足すときも、ヒーローのCSSを書き換えます。ヒーローのデザインを変えるときは、低い版への影響を、条件の組み合わせごとに確かめます。
+
+2つは、役割と中身が違います。ヒーローはトップページで事業を伝え、行動を促す部品で、低い版は下層ページのページ名と現在地を示す部品です。見た目が似ていても、役割や中に入る内容が違うものは、別のコンポーネントにします（「[10-1 何をコンポーネントにするか](/components/what-is-a-component/)」）。
+
+## 別のコンポーネントにし、見た目はトークンでそろえる
+
+下層ページの冒頭は、`page-header` という別のコンポーネントにします。紺の帯は、ヒーローと同じく `color-scheme: dark` とトークンで作るので、2つのコンポーネントの見た目は、同じトークンを参照することでそろいます（`share-look-with-tokens`）。
+
+```css title="🙆‍♂ Recommended: 別のコンポーネントでも、同じトークンを参照して見た目をそろえる"
+@scope (.scoped.page-header) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 24px;
+    padding-block: 32px 48px;
+    padding-inline: 40px;
+    border-radius: var(--rounded--lg);
+    color-scheme: dark;
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+  }
+
+  li {
+    & + li::before {
+      content: "›" / "";
+      margin-inline-end: 8px;
+    }
+  }
+}
+```
+
+パンくずリストの区切りの「›」は、`::before` の生成コンテンツで入れ、代替テキストを空にします。区切りは見た目の飾りで、スクリーンリーダーは `<ol>` の項目として順番を伝えるからです（`empty-alt-for-decorative-content`）。今いるページのリンクには、`aria-current="page"` を付けています。
+
+パンくずリストは、`page-header` の中の要素として書き、別のコンポーネントにはしていません。どの下層ページでも、ページ名の帯の中にだけ置くからです。
+
+## 振り返り
+
+直したのは、新しく作った `page-header.css` と、下層ページのHTMLです。ヒーローのCSSは直していません。別のコンポーネントにしたので、ヒーローには低い版のための条件が1つもなく、ヒーローを変えるときに下層ページへの影響を確かめる必要もありません。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 低い版を、ヒーローの種類ではなく、別のコンポーネントにすると予想できたか。種類にしていたなら、消す条件をいくつ書いたかを数えられるか。
+- 2つの紺の帯の見た目がそろう理由を、共有しているトークンから説明できるか。
+- ヒーローの文字のコントラスト比を、明るい画像に差し替えたときにも確かめたか。
+
+## 判断の問い
+
+### 問い1
+
+文字のまとまりを、画像の明るい部分を避けて右下に置きたい画像があります。どこで位置を変えますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+文字のまとまりの `style` 属性で、`--pile--placement: end` を渡します。画像ごとの判断なので、CMSでヒーローを登録するときに、位置を選べるようにします。`pile` のルートで渡すと、継承で画像にも同じ配置がかかり、画像がセルいっぱいに広がらなくなります（`pile-placement-on-target-child`）。ヒーローのCSSに種類を足す必要はありません。
+
+</details>
+
+### 問い2
+
+ヒーローの画像を、`<img>` ではなくCSSの `background-image` で指定してもよいですか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+この要件では `<img>` にします。画像はCMSで差し替えるので、HTMLで画像を指定できるほうが扱いやすく、`fetchpriority` で先に読み込ませることや、`srcset` で幅に合った画像を選ばせることもできます。`background-image` は、デザインで決まった模様やグラデーションのように、内容と関係のない背景に使います（「[12-9 pile：子要素を同じセルに重ねる](/compositions/pile/#pile-を使わない場面と注意点)」）。
+
+</details>
+
+## この節で使ったルール
+
+- [`pile-placement-on-target-child`](/compositions/pile/#rule-pile-placement-on-target-child)：`pile` の子の位置は、動かしたい子の `style` 属性で渡します。
+- [`pile-no-grid-placement-on-children`](/compositions/pile/#rule-pile-no-grid-placement-on-children)：`pile` の子に、コンポーネントのCSSで `grid-area` を指定しません（擬似要素は例外です）。
+- [`pile-scrim-for-text-on-image`](/compositions/pile/#rule-pile-scrim-for-text-on-image)：画像の上に文字を重ねるときは、間に暗い層を置き、どの画像でもコントラスト比を保ちます。
+- [`text-on-image-fallback-background`](/decoration/images/#rule-text-on-image-fallback-background)：画像の上に文字を載せるときは、画像が表示されなくても文字を読める背景色を指定します。
+- [`no-lazy-loading-first-view`](/decoration/image-loading/#rule-no-lazy-loading-first-view)：ファーストビューの画像には、`loading="lazy"` を指定しません。
+- [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：`color-scheme` を指定した要素では、`color` と `background-color` をトークンで指定し直します。
+- [`component-split-by-role`](/components/what-is-a-component/#rule-component-split-by-role)：見た目が似ていても、役割や中に入る内容が異なるものは、別のコンポーネントにします。
+- [`share-look-with-tokens`](/components/what-is-a-component/#rule-share-look-with-tokens)：別のコンポーネントの間で見た目をそろえたいときは、同じトークンを参照します。
+- [`local-parts-stay-in-parent`](/components/what-is-a-component/#rule-local-parts-stay-in-parent)：親の中でしか意味を持たない区画は、別のコンポーネントにしません。
+- [`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)：装飾の記号を生成コンテンツで入れるときは、代替テキストを空にします。

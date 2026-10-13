@@ -1,0 +1,37 @@
+@layer compositions {
+  /* 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む */
+  .sidebar {
+    --_c--row-gap: var(--sidebar--gap, var(--sidebar--row-gap, 0px));
+    --_c--column-gap: var(--sidebar--gap, var(--sidebar--column-gap, 0px));
+    --_c--main-min-width: var(--sidebar--main-min-width, calc(480 / 16 * 1rem));
+    --_c--side-width: var(--sidebar--side-width, calc(320 / 16 * 1rem));
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+
+    & > .main-column {
+      flex-grow: 9999;
+      flex-basis: var(--_c--main-min-width);
+    }
+
+    & > .side-column {
+      flex-grow: 1;
+      flex-basis: var(--_c--side-width);
+    }
+  }
+
+  /* 12-2 cluster：子を横に並べ、入りきらなければ折り返す */
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    /* 最後の行に子が1つだけ取り残されないよう、各行の長さをそろえる */
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+}

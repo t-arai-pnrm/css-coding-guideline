@@ -1,0 +1,212 @@
+---
+title: "21-11 制作の流れを作る"
+description: "サービスのページに、番号と線でつないだ制作の流れを作ります。置かれた幅で横と縦の並びを切り替え、ステップの数が変わったときに直す場所が少なく済むかを確かめる節です。"
+sidebar:
+  order: 11
+---
+
+import Demo from '../../../components/Demo.astro';
+import stepsInitialHtml from '../../../demos/exercise/steps-1/index.html?raw';
+import stepsInitialCss from '../../../demos/exercise/steps-1/style.css?raw';
+import stepsChangedHtml from '../../../demos/exercise/steps-2/index.html?raw';
+import stepsChangedCss from '../../../demos/exercise/steps-2/style.css?raw';
+
+サービスのページに、制作の流れを5つのステップで示します。各ステップは、紺の丸の中の番号、16px相当の太字のステップ名、14px相当の淡いグレーの説明からなります。
+
+置かれた幅が広いときは、5つのステップを横に並べて中央にそろえ、隣り合う番号の間を線でつなぎます。幅が足りないときは、ステップを縦に並べ、番号を左に、ステップ名と説明を右に置いて、番号の間を縦の線でつなぎます。横に並べるのは、1つのステップに140px相当以上の幅を取れるときで、ステップの間は24pxです。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/steps/start/index.html)）から始め、中間版（[index.html](/exercise-files/steps/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/steps/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/steps/start/`、`exercise/steps/middle/`、`exercise/steps/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)
+- [7-8 Gridの基礎](/layout/grid-basics/)
+- [10-6 スタイルクエリで状態を伝える](/components/style-queries/)
+- [13-2 ブレイクポイントの決め方](/responsive/breakpoints/)
+- [16-7 文字とリストの装飾](/decoration/text-ornaments/)
+
+## 予想する
+
+本文を読む前に、番号をどこに書くかを考えてみてください。HTMLに「1」から「5」を書くのか、CSSで数えるのか。途中にステップが1つ増えたら、どちらを直すことになるでしょうか。
+
+線の引き方も予想します。線は、隣り合う番号の間にだけ引くので、最後のステップには引きません。最後のステップをどう除くか、横と縦で線の向きを変える条件をいくつ書くことになるかを数えてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点の制作の流れです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たした制作の流れ：置かれた幅で横と縦の並びを切り替え、番号を線でつなぐ" html={stepsInitialHtml} css={stepsInitialCss} />
+
+幅を1024pxや1280pxにすると、5つのステップが横に1行で並び、番号の間が横の線でつながります。768px以下では、ステップが縦に並び、番号の間が縦の線でつながります。どちらの並びでも、最後のステップの番号の先には線がなく、線が番号に重ならなければ完成です。
+
+## 番号をカウンターで数える
+
+番号は、HTMLに書かず、CSSのカウンターで数えます。`<ol>` で `counter-reset` し、各 `<li>` で `counter-increment` すれば、ステップの増減に合わせて、番号は自動で振り直されます。番号を丸で囲むので、`::marker` ではなく `::before` に描きます（「[16-7 文字とリストの装飾](/decoration/text-ornaments/)」）。
+
+```css title="🙆‍♂ Recommended: ol で数え始め、li ごとに数え、::before に番号を描く"
+@scope (.scoped.steps) to (.scoped) {
+  ol {
+    counter-reset: --step;
+  }
+
+  li {
+    counter-increment: --step;
+
+    &::before {
+      content: counter(--step) / "";
+      display: block grid;
+      place-items: center;
+      inline-size: calc(40 / 16 * 1rem);
+      aspect-ratio: 1;
+      border-radius: var(--rounded--full);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+    }
+  }
+}
+```
+
+番号の代替テキストは空にします。順番は `<ol>` がスクリーンリーダーに伝えるので、番号を読み上げると、同じ情報が重なるからです（`empty-alt-for-decorative-content`）。カウンターの名前は、本書で自分が付ける名前と同じく、`--` で始めます。
+
+## 列の数を書かずに横に並べる
+
+横と縦の並びは、置かれた幅で切り替えます。コンポーネントのルートをコンテナにし、`<ol>` のルールにだけコンテナサイズクエリを書いて、幅の状態をフラグ `--_density` にします。横に並べるときは、列の数を `repeat(5, 1fr)` のように書かず、`grid-auto-flow: column` でステップの数だけ列を作ります（「[7-8 Gridの基礎](/layout/grid-basics/)」）。
+
+```css title="🙆‍♂ Recommended: ステップの数だけ列を作り、横に並べられる幅を式で書く"
+@scope (.scoped.steps) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+  ol {
+    --_density: --compact;
+
+    display: block grid;
+    gap: 24px;
+
+    /* 5つのステップを、1つ140px相当以上の幅で横に並べられる幅 */
+    @container --scoped (inline-size >= calc(5 * 140 / 16 * 1rem + 4 * 24px)) {
+      --_density: --spacious;
+
+      grid-auto-columns: 1fr;
+      grid-auto-flow: column;
+    }
+  }
+}
+```
+
+閾値は、ステップの数、1つのステップの最小幅、間隔の数から、横に並べられる条件をそのまま式にしたものです（`threshold-as-formula`）。各ステップの中の並び（番号を上にするか左にするか）と、線の向きは、このフラグを読んで切り替えます。閾値を書いたのは、この1か所だけです。
+
+## 次のステップがある項目に線を引く
+
+線は、各ステップの `::after` で、自分の番号から次のステップの番号までを引きます。最後のステップを除くために、すべてのステップに線を引いてから最後だけを打ち消すのではなく、次のステップがある項目だけを `:has(+ li)` で選びます。
+
+```css title="🙆‍♂ Recommended: 次のステップがある項目だけを選び、線の向きはフラグで切り替える"
+@scope (.scoped.steps) to (.scoped) {
+  li {
+    position: relative;
+
+    &:has(+ li)::after {
+      content: "";
+      position: absolute;
+      inset-block: calc(40 / 16 * 1rem) -24px;
+      inset-inline-start: calc(20 / 16 * 1rem - 1px);
+      inline-size: 2px;
+      background-color: var(--border--strong);
+
+      @container style(--_density: --spacious) {
+        inset-block: calc(20 / 16 * 1rem - 1px) auto;
+        inset-inline: calc(50% + 20 / 16 * 1rem) calc(-50% - 24px + 20 / 16 * 1rem);
+        inline-size: auto;
+        block-size: 2px;
+      }
+    }
+  }
+}
+```
+
+縦に並べたときは、自分の番号の下端から、ステップの間隔の24pxだけ下へ伸ばし、次の番号の上端まで線を引きます。横に並べたときは、自分の番号の右端から、次のステップの番号の左端まで引きます。各ステップの幅は等しいので、次の番号の中心は、自分の中心から「ステップの幅（`100%`）＋間隔」だけ右にあります。`:has()` の起点は `li` に絞り、引数も `+ li` で直後の兄弟だけを調べています（「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」）。
+
+## 要件が変わる
+
+公開前の確認の工程も、制作の流れとして示すことになりました。「実装」と「公開と運用」の間へ「確認とテスト」のステップを足し、ステップは6つになります。1つのステップの最小幅とステップの間隔は、これまでと同じです。
+
+本文を読む前に、直す場所を予想してみてください。番号、列の数、線、横に並べる幅のうち、どれを直すことになるでしょうか。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点の制作の流れです。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えた制作の流れ：6つのステップを、番号を振り直して並べる" html={stepsChangedHtml} css={stepsChangedCss} />
+
+幅を1024pxや1280pxにすると、6つのステップが横に1行で並び、番号が1から6まで振り直されています。デモの幅を1024pxから少し狭め、1つのステップに140px相当を取れなくなると、縦の並びに切り替わります。どちらの並びでも、6つ目のステップの先に線がなければ完成です。
+
+## 閾値の式の中のステップの数だけを直す
+
+直したのは、HTMLにステップを1つ足したことと、閾値の式の中のステップの数と間隔の数の2つの値です。
+
+```css title="🙆‍♂ Recommended: 閾値の式のステップの数と間隔の数を、6つに合わせて直す"
+@scope (.scoped.steps) to (.scoped) {
+  ol {
+    --_density: --compact;
+
+    @container --scoped (inline-size >= calc(6 * 140 / 16 * 1rem + 5 * 24px)) {
+      --_density: --spacious;
+    }
+  }
+}
+```
+
+番号はカウンターが振り直し、列は `grid-auto-flow: column` がステップの数だけ作り、線は次のステップがある項目に自動で引かれます。どれも、ステップの数をCSSに書いていなかったので、直さずに済みました。ステップの数がCSSに残っているのは閾値の式だけで、ここを直し忘れると、狭い幅でも横に並び、1つのステップが140px相当より狭くなります。
+
+最初の要件で `grid-template-columns: repeat(5, 1fr)` と書いていたら、6つ目のステップは次の行の左端に回り、5つ目と6つ目の間の線は、行をまたいで引けなくなります。HTMLに番号を書いていたら、「公開と運用」の番号も書き換えることになります。
+
+## 振り返り
+
+直したのは、ステップを1つ足したHTMLと、閾値の式の2つの値です。ステップの数を、番号、列、線のどれにも書かず、横に並べられる条件の式の中だけに残していたので、数が変わったときに直す場所が1か所に決まっていました。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- ステップが増えたときに直す場所を、閾値の式だけだと予想できたか。番号や列の数を書いていたなら、それぞれを挙げられるか。
+- 最後のステップに線がない理由を、`:has(+ li)` の条件から説明できるか。
+- 横と縦を切り替える条件が、`<ol>` のクエリの1か所にまとまっているか。
+
+## 判断の問い
+
+### 問い1
+
+最後のステップの線を消すために、すべての `li` に `::after` で線を引き、`li:last-child::after { content: none; }` で打ち消す書き方と比べて、`:has(+ li)` で選ぶ書き方は何が違いますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+打ち消す書き方は、線を引く指定と消す指定の2つに分かれ、線の見た目を変えるときに、消す側も確かめることになります。`:has(+ li)` は、線が要る項目だけを最初から選ぶので、指定は1つで済みます。区切り線を末尾で打ち消さないという考え方（`no-last-child-border-reset`）と同じで、線が要る条件をそのまま書いています。
+
+</details>
+
+### 問い2
+
+ステップが10個になりました。閾値の式の値を直すと、横に並べるには1616px相当が要り、ほとんどの画面で縦の並びになります。どうしますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+CSSで工夫する前に、デザイナーと確かめます。10のステップを1行に並べるデザインが成り立つ画面は限られるので、縦の並びでよいのか、2行に分けて並べるのか、ステップをまとめて数を減らすのかは、デザインの判断だからです（「[3-2 実装の前にデザイナーと確かめること](/design-reproduction/designer-questions/)」）。2行に分けるなら、行の終わりで線を折り返す必要があり、この節の線の引き方は使えません。
+
+</details>
+
+## この節で使ったルール
+
+- [`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)：装飾の文字を生成コンテンツで入れるときは、代替テキストを空にします。
+- [`marker-color-and-font-size-only`](/pseudo/generated-content/#rule-marker-color-and-font-size-only)：番号を囲むような装飾は、`::marker` ではなく `::before` で描きます。
+- [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)：ルートは `container: --scoped / inline-size` とし、`@container --scoped (…)` で問い合わせます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリはフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を `calc()` の式で書きます。
+- [`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)：閾値の式には、`gap` を省かずに含めます。
+- [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)：`:has()` の起点は狭い要素にし、引数は `+` などで範囲を絞ります。
+- [`no-last-child-border-reset`](/decoration/separators/#rule-no-last-child-border-reset)：線を引いてから末尾の要素だけを打ち消す書き方をしません。

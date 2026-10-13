@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>21-9 よくある質問を作る（開始版）</title>
+  <link rel="stylesheet" href="../../base.css">
+  <link rel="stylesheet" href="site-base.css">
+  <link rel="stylesheet" href="compositions.css">
+  <link rel="stylesheet" href="page-demo.css">
+  <link rel="stylesheet" href="faq-list.css">
+  <link rel="stylesheet" href="patterns.css">
+</head>
+<body>
+<div class="scoped page-demo">
+  <hgroup class="_heading">
+    <p class="eyebrow" lang="en">FAQ</p>
+    <h2 class="section-heading">よくあるご質問</h2>
+  </hgroup>
+  <div class="scoped faq-list">
+    <div class="_filter | cluster" role="group" aria-label="カテゴリーで絞り込む" hidden>
+      <button type="button" aria-pressed="true" data-category="all">すべて</button>
+      <button type="button" aria-pressed="false" data-category="price">料金・お見積り</button>
+      <button type="button" aria-pressed="false" data-category="process">制作の流れ</button>
+      <button type="button" aria-pressed="false" data-category="operation">公開後の運用</button>
+    </div>
+    <div class="_items">
+      <details name="faq" data-category="price" open>
+        <summary>費用はどれくらいかかりますか？</summary>
+        <div class="_answer">
+          <p>ページ数や機能によって変わりますが、コーポレートサイトは100万円からが目安です。まずはご要望をお聞きし、お見積りを無料でお出しします。</p>
+        </div>
+      </details>
+      <details name="faq" data-category="price">
+        <summary>お見積りに費用はかかりますか？</summary>
+        <div class="_answer">
+          <p>かかりません。ご要望をお聞きしたうえで、2週間ほどでお見積りをお出しします。</p>
+        </div>
+      </details>
+      <details name="faq" data-category="process">
+        <summary>公開までの期間はどれくらいですか？</summary>
+        <div class="_answer">
+          <p>コーポレートサイトの場合、ご相談から公開までは3〜4か月が目安です。</p>
+        </div>
+      </details>
+      <details name="faq" data-category="process">
+        <summary>地方の会社でも依頼できますか？</summary>
+        <div class="_answer">
+          <p>はい。打ち合わせはオンラインで行い、撮影が必要なときは伺います。</p>
+        </div>
+      </details>
+      <details name="faq" data-category="operation">
+        <summary>公開後の更新は自分たちでできますか？</summary>
+        <div class="_answer">
+          <p>できます。公開前に、CMSの操作方法を担当の方にお伝えします。</p>
+        </div>
+      </details>
+      <details name="faq" data-category="operation">
+        <summary>サーバーの管理も任せられますか？</summary>
+        <div class="_answer">
+          <p>はい。サーバーとドメインの契約と管理を、運用プランの中でお引き受けします。</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

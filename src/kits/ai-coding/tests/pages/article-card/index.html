@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>article-card のテストページ</title>
-  <!-- 演習の 21-7 を終えた時点の CSS。自分のプロジェクトでは、プロジェクトの CSS を読み込む -->
+  <!-- 演習の 21-3 を終えた時点の CSS。自分のプロジェクトでは、プロジェクトの CSS を読み込む -->
   <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="compositions.css">
   <link rel="stylesheet" href="article-card.css">
@@ -40,30 +40,18 @@
   <section class="_wide" id="wide" aria-label="広い置き場所">
     <article class="scoped article-card">
       <div class="_layout">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%238fa8d8'/%3E%3C/svg%3E" alt="" width="640" height="360">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%231b2540'/%3E%3C/svg%3E" alt="" width="640" height="360">
         <div class="_body">
-          <ul class="_tags | cluster">
-            <li><a class="_tag-link" href="#tag-design">デザイン</a></li>
-            <li><a class="_tag-link" href="#tag-css">CSS</a></li>
-            <li><a class="_tag-link" href="#tag-accessibility">アクセシビリティ</a></li>
-            <li><a class="_tag-link" href="#tag-performance">パフォーマンス</a></li>
-            <li><a class="_tag-link" href="#tag-typography">タイポグラフィ</a></li>
-          </ul>
+          <p class="_meta | cluster"><time datetime="2026-10-01">2026.10.01</time><span class="_category">ノウハウ</span></p>
           <h3><a href="#article-long-title">カンプの2倍の長さの見出しが入ったときに、カードの高さと下の要素の位置がどう変わるかを確かめるための記事</a></h3>
-          <time datetime="2026-10-01">2026年10月1日</time>
-          <p class="_excerpt">抜粋も長めにして、広い形で抜粋が表示されることを確かめます。</p>
         </div>
       </div>
     </article>
     <article class="scoped article-card">
       <div class="_layout">
         <div class="_body">
-          <ul class="_tags | cluster">
-            <li><a class="_tag-link" href="#tag-css">CSS</a></li>
-          </ul>
+          <p class="_meta | cluster"><time datetime="2026-09-30">2026.09.30</time><span class="_category">セミナーのお知らせとイベントのレポート</span></p>
           <h3><a href="#article-no-image">画像のない記事</a></h3>
-          <time datetime="2026-09-30">2026年9月30日</time>
-          <p class="_excerpt">画像がないときは、本文だけで1列になります。</p>
         </div>
       </div>
     </article>
@@ -73,14 +61,19 @@
   <section class="_narrow" id="narrow" aria-label="狭い置き場所">
     <article class="scoped article-card">
       <div class="_layout">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%23d99a7a'/%3E%3C/svg%3E" alt="" width="640" height="360">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%230e7c7b'/%3E%3C/svg%3E" alt="" width="640" height="360">
         <div class="_body">
-          <ul class="_tags | cluster">
-            <li><a class="_tag-link" href="#tag-design">デザイン</a></li>
-          </ul>
+          <p class="_meta | cluster"><time datetime="2026-09-28">2026.09.28</time><span class="_category">事例</span></p>
+          <h3><a href="#article-narrow">狭い置き場所では、画像を左に置き、見出しを小さくする</a></h3>
+        </div>
+      </div>
+    </article>
+    <article class="scoped article-card">
+      <div class="_layout">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%230e7c7b'/%3E%3C/svg%3E" alt="" width="640" height="360">
+        <div class="_body">
+          <p class="_meta | cluster"><time datetime="2026-09-25">2026.09.25</time><span class="_category">ノウハウ</span></p>
           <h3><a href="#article-long-word">Supercalifragilisticexpialidociousのような長い英単語を含む見出し</a></h3>
-          <time datetime="2026-09-25">2026年9月25日</time>
-          <p class="_excerpt">狭い形では、抜粋を表示しません。</p>
         </div>
       </div>
     </article>

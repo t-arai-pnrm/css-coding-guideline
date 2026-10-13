@@ -1,0 +1,302 @@
+---
+title: "21-2 ボタンとセクション見出しを作る"
+description: "サイトのどのページにも出てくる、ボタンの見た目のリンクと、英字の小見出しを添えたセクションの見出しを作ります。ホバーとフォーカスで変わるボタンと、変わらない見出しを、それぞれ何として書くかを決める節です。"
+sidebar:
+  order: 2
+---
+
+import Demo from '../../../components/Demo.astro';
+import buttonsInitialHtml from '../../../demos/exercise/buttons-1/index.html?raw';
+import buttonsInitialCss from '../../../demos/exercise/buttons-1/style.css?raw';
+import buttonsChangedHtml from '../../../demos/exercise/buttons-2/index.html?raw';
+import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
+
+サイトのどのページにも出てくる部品を、2つ作ります。1つは、お問い合わせや資料請求へ誘導する、ボタンの見た目のリンクです。もう1つは、英字の小見出しを上に添えた、セクションの見出しです。
+
+ボタンの見た目には3つの種類があります。主ボタンは紺で塗って文字を白にし、副ボタンは背景を塗らずに1pxの枠線で囲みます。どちらも角を丸めた高さ約48pxの形で、左右の内側に28pxの余白を取ります。3つ目は、ティールの文字の後ろに矢印を置いたリンクです。ホバーとフォーカスのときは、主ボタンは紺をページの背景の色へ少し寄せ、副ボタンには淡い背景を付け、文字のリンクは矢印だけを右へ4pxずらします。
+
+セクションの見出しは、ティールの英字の小見出し（12px相当、太字、字間0.16em、大文字）の下に、36px相当の太字の見出しを8px空けて置きます。カンプのセクションでは、見出しの下にリード文、その下に主ボタンと副ボタンを16px空けて横に並べ、最後に文字のリンクを置いています。見出し、リード文、ボタンの並び、文字のリンクの間は、どれも24pxです。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/buttons/start/index.html)）から始め、中間版（[index.html](/exercise-files/buttons/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/buttons/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/buttons/start/`、`exercise/buttons/middle/`、`exercise/buttons/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [9-2 BEMからの書き直しとバリエーション](/notation/variants/)
+- [9-3 名前に使う語](/notation/terminology/)
+- [10-1 何をコンポーネントにするか](/components/what-is-a-component/)
+- [10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)
+- [10-6 スタイルクエリで状態を伝える](/components/style-queries/)
+- [15-4 ダークモード](/color-media/dark-mode/)
+- [17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)
+- [17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)
+
+## 予想する
+
+本文を読む前に、2つの部品をそれぞれ何として書くかを考えてみてください。本書では、HTMLの構造や状態を持つものをコンポーネントにし、構造と状態を持たない見た目の断片をパターンにします。ボタンの見た目のリンクと、小見出しと見出しの組は、どちらに当たるでしょうか。ボタンの見た目のリンクに `button` という名前を付けてよいかも、要素の種類から考えます。
+
+余白を書く場所も予想します。小見出しと見出しの間の8pxと、セクションの中の24pxを、部品のCSSに書くのか、部品を置く側のCSS（この節では `page-demo.css`）に書くのかです。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のセクションです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたセクション：ボタンの3つの種類と、小見出しを添えた見出し" html={buttonsInitialHtml} css={buttonsInitialCss} />
+
+幅が480px以上なら、主ボタンと副ボタンが横に並びます。幅を320pxにすると、2つのボタンは1行に収まらないので、副ボタンが次の行へ折り返します。キーボードで移動すると、どのボタンにもフォーカスリングが出て、ホバーのときと同じ見た目になります。文字のリンクは、ホバーとフォーカスのときに矢印だけが右へずれ、文字の位置は変わりません。
+
+## ボタンはコンポーネントに、見出しはパターンにする
+
+2つの部品の分類は、状態で見た目が変わるかで分かれます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#パターンにするかコンポーネントにするか)」）。ボタンの見た目は、ホバーとフォーカスで変わり、矢印のような子要素も持つので、コンポーネントにします。小見出しと見出しの組は、状態で変わらず、すべての置き場所でそろえたい構造もありません。
+
+小見出しと見出しを包む要素を、`section-intro` のようなコンポーネントにしたくなるかもしれません。しかし、この組で決めたいのは文字の見た目だけで、包む要素の種類や、リード文を置くかどうかは、セクションごとに違います（「[10-1 何をコンポーネントにするか](/components/what-is-a-component/)」）。そこで、小見出しに `eyebrow`、見出しに `section-heading` のパターンを付け、包む `<hgroup>` はセクションの子要素として書きます。
+
+```html title="🙆‍♂ Recommended: ボタンはコンポーネントのルートに、見出しの文字にはパターンを付ける"
+<section class="_section">
+  <hgroup class="_heading">
+    <p class="eyebrow" lang="en">Service</p>
+    <h2 class="section-heading">制作のご相談</h2>
+  </hgroup>
+  <p class="_lead">コーポレートサイトの新規制作から、公開後の運用まで承ります。…</p>
+  <div class="_actions | cluster" style="--cluster--gap: 16px">
+    <a class="scoped action-control" href="#contact">お問い合わせ</a>
+    <a class="scoped action-control" href="#document" data-variant="secondary">サービス資料を見る</a>
+  </div>
+  <a class="scoped action-control" href="#works" data-variant="text">制作実績を見る<span class="_arrow" aria-hidden="true">→</span></a>
+</section>
+```
+
+ボタンの見た目のコンポーネントは、`button` ではなく `action-control` と名付けます。ここで付ける要素は、ページを移動する `<a>` です。`<a>` は見た目がボタンでも `link` と呼ぶので、`button` と付けると名前と要素が食い違います（「[9-3 名前に使う語](/notation/terminology/)」）。一方で、21-12のお問い合わせフォームでは、送信の `<button>` にも同じ見た目を使います{/* 21-12の執筆後にリンクする: /exercise/contact-form/ */}。そのため、名前を `link` にもせず、要素を選ばない名前にしました。
+
+小見出しの `lang="en"` は、英字の組み方をブラウザに伝えるためのものです。矢印は読み上げても意味を足さない飾りなので、`aria-hidden="true"` で読み上げから外します。
+
+## 種類を data-variant の1つの軸で分ける
+
+3つの種類は、`data-variant` の値で分けます。主ボタンを属性のないデフォルトにし、`secondary` と `text` を足します。3つは同時に選ばない、1つの軸の値なので、属性は1つで足ります（「[9-2 BEMからの書き直しとバリエーション](/notation/variants/)」）。
+
+```css title="🙆‍♂ Recommended: 種類ごとに内部プロパティの値だけを変え、状態の指定は1か所に書く"
+@scope (.scoped.action-control) to (.scoped) {
+  :scope {
+    --_background: var(--background--inverse);
+    --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+
+    border: 1px solid transparent;
+    background-color: var(--_background);
+    color: var(--foreground--inverse);
+
+    &[data-variant="secondary"] {
+      --_background: transparent;
+      --_background--hocus: var(--background--hover);
+
+      border-color: var(--border--strong);
+      color: var(--foreground--base);
+    }
+
+    &[data-variant="text"] {
+      --_background: transparent;
+      --_background--hocus: transparent;
+
+      padding-block: 0;
+      padding-inline: 0;
+      color: var(--foreground--accent);
+    }
+  }
+}
+```
+
+種類ごとに書き換えるのは、背景の内部プロパティと、枠線と文字の色だけです。ホバーとフォーカスの背景は、どの種類でも `--_background--hocus` を読むので、状態のセレクタを種類ごとに書き分ける必要がありません。主ボタンにも透明な1pxの枠線を置いておき、副ボタンでは色だけを変えて描きます。そうしておけば、2つの種類の高さがそろいます。
+
+文字のリンクの色は、リンクを表す `--foreground--accent` で指定します。小見出しも同じティールに見えますが、こちらは操作できない飾りなので、ブランドの色の `--foreground--brand` を使います（「[21-1 題材と準備](/exercise/setup/#カンプとトークンの対応)」）。
+
+## ホバーとフォーカスを同じ見た目にし、矢印だけを動かす
+
+ホバーは、操作できる状態のリンクとボタンに絞り、`@media (any-hover)` の中に書きます。キーボードで操作する人にも同じ合図を出すため、`:focus-visible` にも同じ背景を指定します（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。
+
+```css title="🙆‍♂ Recommended: ルートで --_hocus を立て、矢印はフラグを読んで動かす"
+@scope (.scoped.action-control) to (.scoped) {
+  :scope {
+    --_hit-size: max(24px, 24 / 16 * 1rem);
+    --_hocus: --false;
+
+    min-block-size: var(--_hit-size);
+
+    @media (any-pointer: coarse) {
+      --_hit-size: max(44px, 44 / 16 * 1rem);
+    }
+
+    &:is(:any-link, :enabled):hover {
+      @media (any-hover) {
+        --_hocus: --true;
+
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    &:focus-visible {
+      --_hocus: --true;
+
+      background-color: var(--_background--hocus);
+    }
+  }
+
+  ._arrow {
+    @container style(--_hocus: --true) {
+      translate: 4px 0;
+    }
+  }
+}
+```
+
+矢印を動かすのに、ルートの `translate` は使いません。ホバーを受けている要素自身が動くと、カーソルが要素の端から外れてホバーが切れ、元に戻るとまた当たる、という繰り返しでちらつくからです。ルートでは状態のフラグ `--_hocus` を立てるだけにし、矢印がスタイルクエリでそれを読んで動きます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/#ホバーとフォーカスの状態をフラグにする)」）。
+
+文字のリンクは上下の余白を0にしたので、文字の高さだけでは押せる範囲が小さくなります。`min-block-size` で24px相当を確保し、指で操作する環境では44px相当に広げます（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。背景の色の変化にトランジションを付けていないのは、キーボードでフォーカスを移したときにも同じ指定が動くからです。
+
+## 見出しのパターンに書くもの、書かないもの
+
+パターンは `patterns` レイヤーに置き、文字の見た目だけを書きます。`patterns` はコンポーネントより後ろのレイヤーなので、パターンに書いたプロパティは、置かれたセクションのCSSから変えられなくなります（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#パターンに書いてよいプロパティ)」）。
+
+```css title="🙆‍♂ Recommended: パターンには文字の見た目だけを書き、余白は置く側に任せる"
+@layer patterns {
+  .eyebrow {
+    color: var(--foreground--brand);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    font-kerning: normal;
+    line-height: var(--text--caption--leading);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .section-heading {
+    font-feature-settings: "palt";
+    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-kerning: normal;
+    line-height: var(--text--display--leading);
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}
+```
+
+小見出しの色は、パターンに書きました。このサイトの小見出しは、どのセクションに置いてもブランドの色で、置く側で変えることはないからです。見出しの色は書かず、置かれた場所の文字色を継承させます。和文の見出しには、約物を詰める `palt` と、文節で折り返す `auto-phrase` を指定します（「[14-2 和文組版を整える](/typography/japanese-typesetting/)」、「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」）。
+
+余白は、パターンとボタンのどちらにも書きません。小見出しと見出しの間の8pxは `._heading` の `gap` で、セクションの中の24pxは `._section` の `gap` で、置く側の `page-demo.css` に書きます（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。見出しの大きさを外から変える公開プロパティも、まだ作りません。大きさを変える要件が、まだないからです。
+
+## 要件が変わる
+
+サービスのページの最後に、紺の帯を置くことになりました。帯には、英字の小見出し、見出し、リード文と、この節で作った主ボタンと副ボタンを、中央そろえで置きます。カンプの帯は、背景が紺で、見出しは白、小見出しは明るいティールです。主ボタンは白い面に紺の文字で、副ボタンは枠線と文字が白に近い色です。
+
+本文を読む前に、紺の帯の上でボタンの色を変える方法を考えてみてください。思いつきやすいのは、`action-control` に紺の面のための種類（`data-variant="on-dark"` など）を足す方法と、帯のCSSから帯の中のボタンを選んで色を上書きする方法です。ボタンに色の公開プロパティを足し、帯から値を渡す方法もあります。どの方法を選ぶと直すファイルがいくつになるか、21-5で作る紺のフッター{/* 21-5の執筆後にリンクする: /exercise/footer/ */}へボタンを置くとき、もう一度直すことになるかを予想してから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のページです。最初のセクションの下に、紺の帯を置いています。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたページ：同じボタンが、紺の帯の中では白い主ボタンになる" html={buttonsChangedHtml} css={buttonsChangedCss} />
+
+どの幅でも、帯の中の主ボタンは白い面に紺の文字で、副ボタンは白に近い枠線と文字になります。小見出しは明るいティールに、リード文は淡いグレーに変わります。ホバーとフォーカスのときは、帯の中の主ボタンは白を紺へ少し寄せた色に、副ボタンは淡い白の背景になります。帯の外のセクションは、変更の前と同じ見た目のままであれば完成です。
+
+## ボタンに紺の面のための種類を足さない
+
+紺の面のための種類を足す方法では、置き場所の違いをボタンの種類として扱うことになります。
+
+```css title="🙅‍♂ Not Recommended: 紺の面に置くときの見た目を、ボタンの種類として足す"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.action-control) to (.scoped) {
+  :scope {
+    &[data-variant="on-dark"] {
+      --_background: oklch(100% 0 none);
+
+      color: oklch(26% 0.05 265deg);
+    }
+  }
+}
+```
+
+紺の面に置いた副ボタンも要るので、`on-dark` は主ボタンと副ボタンの両方に掛け合わせる別の軸になり、組み合わせの数だけ指定が増えます。紺の面が21-5のフッターのように増えるたびに、その中のボタンのHTMLへ属性を足すことにもなります。帯のCSSからボタンを選んで上書きする方法は、ほかのコンポーネントの中身を選ぶので採りません（`no-other-component-internals`）。色の公開プロパティで渡す方法では、背景、文字、枠線、ホバーの背景と、種類ごとに渡す値が増えていきます。
+
+## 帯の配色を暗くし、トークンに切り替えさせる
+
+本書では、ボタンを直さずに、帯の配色を暗くします。帯のルートに `color-scheme: dark` を指定し、同じ要素で文字色と背景色をトークンで指定し直します（「[15-4 ダークモード](/color-media/dark-mode/#一部のコンポーネントだけを暗い配色にする)」）。
+
+```css title="🙆‍♂ Recommended: 帯のルートで配色を暗くし、文字色と背景色を指定し直す"
+@scope (.scoped.cta-band) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 24px;
+    justify-items: center;
+    padding-block: 64px;
+    padding-inline: 24px;
+    border-radius: var(--rounded--lg);
+    color-scheme: dark;
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+    text-align: center;
+  }
+}
+```
+
+演習のトークンは、セマンティクスの値を `light-dark()` で持っています。サイト全体はライトの配色に固定していますが、トークンのダークの値には、紺の面で使う色を入れてあります。登録していないカスタムプロパティは、`var()` で参照した要素の配色で値が決まります。そのため、帯の中の `action-control` が参照する `--background--inverse` は白に、`--foreground--inverse` は紺になります。小見出しの `--foreground--brand` も、明るいティールに切り替わります。
+
+帯の背景を `--background--base` にしたのも、同じ仕組みによるものです。ページの背景のトークンは、帯の中ではダークの値の紺になります。帯は新しいコンポーネントとして `cta-band.css` に書き、帯とセクションの間の64pxは、置く側の `page-demo.css` の `gap` で空けます。
+
+## 振り返り
+
+直したのは、新しく作った `cta-band.css` と帯のHTML、そして帯との間隔を足した `page-demo.css` です。直さずに済んだのは、`action-control.css` と、2つのパターンです。ボタンは色をセマンティクスのトークンだけで指定し、色の値を直接書いていなかったので、置かれた面の配色に合わせて色が変わりました。
+
+紺の面に置くことは、ボタンが知る必要のない情報です。面の配色を決めるのは面の側で、ボタンは「主ボタンは文字色で塗る」という役割だけを持っています。21-5のフッターも紺の面なので、同じように `color-scheme: dark` を指定すれば、ボタンやリンクの色を書き分けずに済みます。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 紺の面で色が変わる理由を、ボタンではなく面の配色が受け持つと予想できたか。ボタンに種類や公開プロパティを足していたなら、紺の面がもう1つ増えたときに、どこを直すかを挙げられるか。
+- 帯の外のボタンの色が変わらないことを、`color-scheme` が継承する範囲から説明できるか。
+- ボタンのCSSに、紺の面かどうかを分ける条件が残っていないか。
+
+## 判断の問い
+
+### 問い1
+
+フォームの送信ボタン（`<button type="submit">`）にも `action-control` を付けます。ホバーの条件を `&:is(:any-link, :enabled):hover` にしたことで、どんな見た目を防げていますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+押せない状態の要素に、押せるかのような合図が出ることを防げています。`disabled` 属性の付いた送信ボタンは `:enabled` に当たらないので、ホバーしても背景が変わりません。`href` のない `<a>` も `:any-link` に当たらないので、同じく変わりません（`hover-operable-in-any-hover`）。条件を付けずに `&:hover` と書くと、送信できない状態のボタンにもホバーの背景が付き、押せるように見えます。
+
+</details>
+
+### 問い2
+
+21-5で作るフッターは、紺の面の上に、文字のリンクを並べます。フッターのリンクの色を、ライトの面のリンクと変えるために、何を書きますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+フッターのルートに `color-scheme: dark` を指定し、同じ要素で `color` と `background-color` をトークンで指定し直すだけです（`redeclare-colors-with-color-scheme`）。リンクの色をトークンで指定していれば、紺の面ではトークンのダークの値に切り替わるので、リンクの側に色を書き分ける必要はありません。フッターの中に `action-control` を置いた場合も、帯と同じく白い主ボタンになります。
+
+</details>
+
+## この節で使ったルール
+
+- [`no-component-for-look-only`](/components/what-is-a-component/#rule-no-component-for-look-only)：見た目が共通だという理由だけで、コンポーネントを作りません。
+- [`pattern-leaves-component-properties`](/components/compositions-and-utilities/#rule-pattern-leaves-component-properties)：パターンには、重ねるコンポーネントが指定しないプロパティだけを書きます。
+- [`one-term-one-meaning`](/notation/terminology/#rule-one-term-one-meaning)：名前に使う語は、プロジェクトの中で1つの意味だけで使います。
+- [`variant-attribute-per-axis`](/notation/variants/#rule-variant-attribute-per-axis)：独立して選ばれるバリエーションの軸は、軸ごとに別の属性で表します。
+- [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーは操作できる状態に限定し、`@media (any-hover)` の中に書きます。
+- [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
+- [`hover-target-stays-still`](/interaction/states-and-focus/#rule-hover-target-stays-still)：ホバーで動かすのは、ホバーを受ける要素ではなく、子要素か擬似要素です。
+- [`hocus-via-style-query`](/components/style-queries/#rule-hocus-via-style-query)：ホバーとフォーカスで子要素を変えるときは、`--_hocus` を立ててスタイルクエリで読みます。
+- [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素には24px相当の大きさを確保し、指で操作する環境では44px相当にします。
+- [`no-motion-on-focus-visible`](/interaction/states-and-focus/#rule-no-motion-on-focus-visible)：キーボード操作によるフォーカスの移動に、トランジションを掛けません。
+- [`palt-for-headings`](/typography/japanese-typesetting/#rule-palt-for-headings)：見出しには `font-kerning: normal` を指定し、日本語では `palt` で詰めます。
+- [`auto-phrase-for-headings`](/typography/size-and-line-breaks/#rule-auto-phrase-for-headings)：和文の見出しには、`word-break: auto-phrase` と `text-wrap: balance` を指定します。
+- [`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)：子のコンポーネントの配置と外側の余白は、親の `gap` などで指定します。
+- [`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)：ほかのコンポーネントのルートや内部の要素を、セレクタで選んで上書きしません。
+- [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：`color-scheme` を指定した要素では、`color` と `background-color` をトークンで指定し直します。
+- [`light-dark-in-semantic-tokens`](/color-media/dark-mode/#rule-light-dark-in-semantic-tokens)：暗い配色の色は、セマンティクスのトークンに `light-dark()` で持たせます。

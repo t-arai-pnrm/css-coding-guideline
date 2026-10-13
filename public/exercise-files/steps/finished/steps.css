@@ -1,0 +1,89 @@
+@layer components {
+  /**
+   * 制作の流れ。
+   * 置かれた幅が足りれば横に、足りなければ縦に並べ、番号と線でステップの順番を示す。
+   */
+  @scope (.scoped.steps) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ol {
+      --_density: --compact;
+
+      display: block grid;
+      gap: 24px;
+      counter-reset: --step;
+
+      /* 6つのステップを、1つ140px相当以上の幅で横に並べられる幅 */
+      @container --scoped (inline-size >= calc(6 * 140 / 16 * 1rem + 5 * 24px)) {
+        --_density: --spacious;
+
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
+      }
+    }
+
+    li {
+      position: relative;
+      display: block grid;
+      grid-template-columns: calc(40 / 16 * 1rem) 1fr;
+      gap: 8px 16px;
+      align-content: start;
+      counter-increment: --step;
+
+      @container style(--_density: --spacious) {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      /* 番号。順番は ol が伝えるので、読み上げない */
+      &::before {
+        content: counter(--step) / "";
+        display: block grid;
+        grid-row: span 2;
+        place-items: center;
+        inline-size: calc(40 / 16 * 1rem);
+        aspect-ratio: 1;
+        border-radius: var(--rounded--full);
+        background-color: var(--background--inverse);
+        color: var(--foreground--inverse);
+        font-weight: var(--font-weight--bold);
+
+        @container style(--_density: --spacious) {
+          grid-row: auto;
+        }
+      }
+
+      /* 次のステップの番号へつなぐ線。次のステップがある項目にだけ引く */
+      &:has(+ li)::after {
+        content: "";
+        position: absolute;
+        inset-block: calc(40 / 16 * 1rem) -24px;
+        inset-inline-start: calc(20 / 16 * 1rem - 1px);
+        inline-size: 2px;
+        background-color: var(--border--strong);
+
+        @container style(--_density: --spacious) {
+          inset-block: calc(20 / 16 * 1rem - 1px) auto;
+          inset-inline: calc(50% + 20 / 16 * 1rem) calc(-50% - 24px + 20 / 16 * 1rem);
+          inline-size: auto;
+          block-size: 2px;
+        }
+      }
+    }
+
+    h3 {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    p {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}

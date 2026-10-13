@@ -1,0 +1,234 @@
+---
+title: "21-9 よくある質問を作る"
+description: "よくある質問のページに、カテゴリーで絞り込める、1つずつ開くアコーディオンを作ります。開閉をHTMLの機能に任せ、回答の中身が変わってもアコーディオンのCSSを直さずに済むかを確かめる節です。"
+sidebar:
+  order: 9
+---
+
+import Demo from '../../../components/Demo.astro';
+import faqInitialHtml from '../../../demos/exercise/faq-1/index.html?raw';
+import faqInitialCss from '../../../demos/exercise/faq-1/style.css?raw';
+import faqInitialJs from '../../../demos/exercise/faq-1/script.js?raw';
+import faqChangedHtml from '../../../demos/exercise/faq-2/index.html?raw';
+import faqChangedCss from '../../../demos/exercise/faq-2/style.css?raw';
+import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
+
+よくある質問のページに、質問と回答の一覧を作ります。質問は、淡いグレーの面に、紺の丸い「Q」の印と質問の文を並べ、右端に「+」を置きます。質問を押すと、その下に回答が開き、「+」が「−」に変わります。回答の前には、淡いティールの丸い「A」の印を付けます。
+
+開けるのは1つだけで、別の質問を開くと、開いていた質問は閉じます。開閉には高さが伸び縮みする動きを付け、動きを減らす設定では付けません。
+
+一覧の上には、「すべて」と3つのカテゴリーの絞り込みのボタンを中央にそろえて置き、押したカテゴリーの質問だけを表示します。絞り込みは、ページを移動せず、同じページの中で切り替えます。ボタンの見た目は、21-4のカテゴリーの絞り込みと同じです（「[21-4 記事リストを作る](/exercise/article-list/)」）。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/faq/start/index.html)）から始め、中間版（[index.html](/exercise-files/faq/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/faq/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/faq/start/`、`exercise/faq/middle/`、`exercise/faq/finished/` にあります。絞り込みを動かす `script.js` も、同じディレクトリにあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [5-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)
+- [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)
+- [9-3 名前に使う語](/notation/terminology/)
+- [17-3 状態を属性で表す](/interaction/state-attributes/)
+- [17-6 開閉するUI](/interaction/disclosure/)
+- [18-7 出現と退場](/motion/entry-and-exit/)
+
+## 予想する
+
+本文を読む前に、開閉を何で作るかを考えてみてください。`div` とクラスの付け外しで作るのか、HTMLの開閉の機能を使うのか。1つだけを開く動作を、JavaScriptを書かずに作れるかも予想します。
+
+絞り込みのボタンについても考えます。21-4の絞り込みと見た目は同じですが、21-4はほかのページへのリンクで、こちらは同じページの中で表示を切り替えるボタンです。同じコンポーネントにするか、別にするかを決めてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のよくある質問の一覧です。絞り込みは、デモに含めたスクリプトで動きます。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたよくある質問：1つずつ開き、カテゴリーで絞り込める" html={faqInitialHtml} css={faqInitialCss} js={faqInitialJs} />
+
+最初の質問が開いた状態で表示されます。ほかの質問を押すと、その質問が開き、最初の質問は閉じます。「公開後の運用」のボタンを押すと、そのボタンだけがティールで塗られ、2つの質問だけが残ります。キーボードでは、Tabキーで質問に移り、Enterキーで開閉できれば完成です。
+
+## 質問と回答を details で開閉する
+
+質問と回答は、`<details>` と `<summary>` で作ります。開閉はブラウザが受け持つので、キーボードでの操作や、開閉の状態の読み上げも、スクリプトなしで動きます。複数の `<details>` に同じ `name` 属性を付けると、1つを開いたときにほかが閉じます（「[17-6 開閉するUI](/interaction/disclosure/)」）。
+
+```html title="🙆‍♂ Recommended: 同じ name 属性の details で、1つだけを開くアコーディオンにする"
+<details name="faq" data-category="price" open>
+  <summary>費用はどれくらいかかりますか？</summary>
+  <div class="_answer">
+    <p>ページ数や機能によって変わりますが、コーポレートサイトは100万円からが目安です。…</p>
+  </div>
+</details>
+```
+
+「Q」と「A」の印、「+」と「−」の印は、`::before` と `::after` の生成コンテンツで入れ、代替テキストを空にします。質問であることは `<summary>` が、開閉の状態はブラウザが伝えるので、印を読み上げても情報は増えません（「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」）。
+
+```css title="🙆‍♂ Recommended: 印は生成コンテンツで入れ、開いた状態は [open] で選ぶ"
+@scope (.scoped.faq-list) to (.scoped) {
+  summary {
+    display: block grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+
+    &::before {
+      content: "Q" / "";
+    }
+
+    &::after {
+      content: "+" / "";
+    }
+
+    &:is(details[open] > *)::after {
+      content: "−" / "";
+    }
+  }
+
+  ._answer {
+    &::before {
+      content: "A" / "";
+    }
+  }
+}
+```
+
+開いた状態は、`[open]` 属性で選びます。`:open` 擬似クラスは、対応していないブラウザでセレクタリストごと無効になるからです（「[5-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)」）。`<summary>` を `display: block grid` にすると、ブラウザが付ける開閉の三角の印も消えます。開閉の動きは、`::details-content` の高さと不透明度を動かします。書き方は「[18-7 出現と退場](/motion/entry-and-exit/#details-の開閉を動かす)」と同じです。
+
+## 絞り込みのボタンは状態を属性で表す
+
+絞り込みは、同じページの中で表示を切り替える操作なので、`<a>` ではなく `<button>` で作ります。押されている状態は `aria-pressed` で表し、CSSはその属性を見て見た目を変えます。スクリプトが受け持つのは、`aria-pressed` と、各質問の `hidden` 属性を切り替えることだけです（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。
+
+```html title="🙆‍♂ Recommended: 絞り込みのボタンは hidden にしておき、スクリプトの初期化が終わってから表示する"
+<div class="_filter | cluster" role="group" aria-label="カテゴリーで絞り込む" hidden>
+  <button type="button" aria-pressed="true" data-category="all">すべて</button>
+  <button type="button" aria-pressed="false" data-category="price">料金・お見積り</button>
+  <!-- ... -->
+</div>
+```
+
+ボタンの並びは、HTMLで `hidden` にしておき、スクリプトの初期化が終わってから表示します。スクリプトが動かない環境では、押しても何も起きないボタンが並ぶ代わりに、すべての質問がそのまま並びます。質問の側は最初から表示しておき、スクリプトが絞り込むときにだけ隠します。
+
+見た目は21-4の `category-filter` と同じですが、同じコンポーネントにはしません。21-4はほかのページへ移るリンクの並びで、今いるページを `aria-current` で示します。こちらは、同じページの中の表示を切り替えるボタンで、押した状態を `aria-pressed` で示します。1つのコンポーネントにすると、要素の種類と状態の属性ごとに条件が分かれます。そこで、ボタンの並びは `faq-list` の中の要素として書き、見た目は同じトークンを参照してそろえます（`share-look-with-tokens`）。状態ごとに内部プロパティの値を変える書き方も、21-4と同じです。
+
+## 要件が変わる
+
+回答をCMSで編集することになりました。回答には、段落のほかに、表、箇条書き、ほかのページへのリンクが入ります。表は1pxの枠線で囲み、リンクはティールの文字に下線を引き、箇条書きには黒丸を付けます。段落、表、箇条書きの間は12px空けます。
+
+本文を読む前に、表、箇条書き、リンクの見た目を、どこに書くかを考えてみてください。回答は、編集者がCMSで入力するので、要素にクラスを付けられません。`faq-list` のCSSに `._answer table` のように書くのか、ほかの場所に書くのか、その書き方を、ほかのページのCMSの本文でも使えるかを予想してから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のよくある質問の一覧です。費用についての回答に表が、公開後の更新についての回答に箇条書きが入っています。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたよくある質問：回答の中の表と箇条書きは、別のコンポーネントが受け持つ" html={faqChangedHtml} css={faqChangedCss} js={faqChangedJs} />
+
+最初の質問の回答に、3行の表と、下線の付いたリンクが表示されます。幅を320pxにしても、表は回答の幅に収まります。公開後の更新についての質問を開くと、黒丸の付いた3つの項目が表示されます。アコーディオンの開閉と絞り込みが、変更の前と同じように動けば完成です。
+
+## 回答の中を rich-text に任せる
+
+回答の中の要素を、`faq-list` のCSSから選んで見た目を付けると、`faq-list` がCMSの本文のすべての要素を知ることになります。
+
+```css title="🙅‍♂ Not Recommended: アコーディオンのCSSから、回答の中の要素を選ぶ"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.faq-list) to (.scoped) {
+  ._answer {
+    table {
+      border-collapse: collapse;
+    }
+
+    ul {
+      list-style-type: disc;
+    }
+  }
+}
+```
+
+子要素のクラスの下にある要素を、タイプセレクタで選んでいます（`no-type-under-child-class`）。編集者が見出しや引用を入れれば、そのたびに `faq-list` へ書き足すことになります。同じCMSの本文をお知らせの記事にも置くなら、同じ指定を別のコンポーネントにも書きます。
+
+本書では、編集者が自由にHTMLを入れる領域を、別のコンポーネントにします。名前は、見出し、段落、リストを含む編集領域を表す `rich-text` です（「[9-3 名前に使う語](/notation/terminology/)」）。回答の `._answer` の中に `rich-text` を置き、要素の見た目と要素の間の間隔は、`rich-text` が受け持ちます。
+
+```html title="🙆‍♂ Recommended: 回答の中に、CMSの本文を受け持つ rich-text を置く"
+<div class="_answer">
+  <div class="scoped rich-text">
+    <p>ページ数や機能によって変わります。サイトの種類ごとの目安は、次のとおりです。</p>
+    <table>…</table>
+    <p>詳しくは<a href="#pricing">料金プランのページ</a>をご覧ください。…</p>
+  </div>
+</div>
+```
+
+```css title="🙆‍♂ Recommended: 編集領域の中は、要素の種類で選び、間隔も自分で作る"
+@scope (.scoped.rich-text) to (.scoped) {
+  :scope {
+    & > * + * {
+      margin-block-start: 12px;
+    }
+  }
+
+  ul {
+    padding-inline-start: 1.5em;
+    list-style-type: disc;
+  }
+
+  a {
+    color: var(--foreground--accent);
+    text-decoration-line: underline;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+}
+```
+
+`rich-text` の中は、編集者が要素にクラスを付けられないので、要素の種類で選びます。要素の間の12pxも、`rich-text` 自身の `& > * + *` で作ります。`prose` のコンポジションは付けません。`prose` は子ごとに `style` 属性で間隔を渡す前提で、編集者はそれを書けないからです（`prose-not-on-cms-body`）。
+
+`faq-list` の `@scope` の範囲は、`to (.scoped)` で `rich-text` のルートの手前までです。`faq-list` のCSSが回答の中の要素に届かないので、編集者が回答に `<details>` やボタンを入れても、アコーディオンの見た目は混ざりません（「[9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)」）。
+
+## 振り返り
+
+直したのは、回答のHTMLと、新しく作った `rich-text.css` です。`faq-list` のCSSとスクリプトは直していません。回答の中身が段落から表と箇条書きに変わっても、アコーディオンが受け持つのは、質問と回答の枠と印、開閉、絞り込みだけだからです。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 回答の中の見た目を、`faq-list` ではなく別のコンポーネントが受け持つと予想できたか。`._answer table` のように書いていたなら、編集者が別の要素を入れたときに直す場所を挙げられるか。
+- `faq-list` のCSSが、回答の中に届かないことを、`@scope` の範囲から説明できるか。
+- 絞り込みのボタンと21-4のリンクを、条件で分ける1つのコンポーネントにしていないか。
+
+## 判断の問い
+
+### 問い1
+
+質問の文を、見出しで移動できるように `<summary><h3>…</h3></summary>` にしたい、と言われました。どう答えますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`<summary>` の中に見出しを入れません。`<summary>` の中では見出しの役割が失われ、見出しで移動する人は、結局その項目にたどり着けません（`no-heading-in-summary`）。見出しの構造が必要なら、`<details>` をやめ、見出しとボタンで開閉し、閉じたパネルを `hidden="until-found"` で隠すアコーディオンにします（「[17-6 開閉するUI](/interaction/disclosure/)」）。
+
+</details>
+
+### 問い2
+
+絞り込みのスクリプトが読み込めなかった環境で、ページはどう表示されますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+絞り込みのボタンは、HTMLの `hidden` のまま表示されず、すべての質問が並びます。アコーディオンの開閉は `<details>` が受け持つので、スクリプトがなくても動きます。初期のHTMLで質問を隠し、スクリプトで表示する作りにしていたら、スクリプトが動かない環境では、質問が1つも表示されなくなります（`hide-panels-after-init`）。
+
+</details>
+
+## この節で使ったルール
+
+- [`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)：開閉するUIは、`<details>` のようなHTMLの機能で作ります。
+- [`details-name-for-exclusive`](/interaction/disclosure/#rule-details-name-for-exclusive)：1つだけを開くアコーディオンは、同じ `name` 属性を付けた `<details>` で作ります。
+- [`details-content-for-panel`](/interaction/disclosure/#rule-details-content-for-panel)：`<details>` の開閉する部分の開閉の動きは、`::details-content` に指定します。
+- [`open-attribute-for-details-dialog`](/pseudo/open-states/#rule-open-attribute-for-details-dialog)：`<details>` の開いた状態は、`[open]` 属性セレクタで選びます。
+- [`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)：装飾の文字を生成コンテンツで入れるときは、代替テキストを空にします。
+- [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria)：状態のスタイルは、状態クラスではなく、ARIA属性などで選びます。
+- [`hide-panels-after-init`](/interaction/disclosure/#rule-hide-panels-after-init)：開閉するパネルは初期のHTMLでは隠さず、初期化が成功してからJavaScriptで隠します。
+- [`share-look-with-tokens`](/components/what-is-a-component/#rule-share-look-with-tokens)：別のコンポーネントの間で見た目をそろえたいときは、同じトークンを参照します。
+- [`no-type-under-child-class`](/components/boundaries/#rule-no-type-under-child-class)：子要素のクラスの下にある要素を、タイプセレクタで選びません。
+- [`prose-not-on-cms-body`](/compositions/prose/#rule-prose-not-on-cms-body)：CMSで編集者が入力する本文エリアには、`prose` を付けません。
+- [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)：コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書きます。

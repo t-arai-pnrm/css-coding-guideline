@@ -1,0 +1,61 @@
+@layer components {
+  /**
+   * トップページの冒頭に置くメインビジュアル。
+   * 紺の配色にし、画像の上に暗い層を重ねて、どの画像でも白い文字を読めるようにする。
+   */
+  @scope (.scoped.hero) to (.scoped) {
+    :scope {
+      overflow: clip;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+
+      /* 画像を読み込めなかったときも、紺の面の上で文字を読める */
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+
+      /*
+       * 擬似要素は .pile > * で選ばれないので、自分で同じエリアに置く。
+       * 紺の不透明度が 85% あれば、真っ白な画像の上でも、ヒーローの文字はどれも 4.5:1 を超える
+       */
+      &::before {
+        content: "";
+        grid-area: --pile;
+        background-color: color-mix(in oklab, var(--background--base) 85%, transparent);
+      }
+    }
+
+    img {
+      z-index: var(--z--backwards);
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      block-size: 100%;
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 24px;
+      justify-items: start;
+      max-inline-size: calc(640 / 16 * 1rem);
+      padding-block: 64px;
+      padding-inline: 40px;
+    }
+
+    h1 {
+      margin-block: unset;
+      font-feature-settings: "palt";
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      font-kerning: normal;
+      line-height: var(--text--display--leading);
+
+      @supports (word-break: auto-phrase) {
+        text-wrap: balance;
+        word-break: auto-phrase;
+      }
+    }
+
+    ._lead {
+      color: var(--foreground--muted);
+    }
+  }
+}

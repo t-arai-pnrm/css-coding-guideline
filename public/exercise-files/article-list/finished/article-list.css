@@ -1,0 +1,11 @@
+@layer components {
+  /* 記事の行を並べ、行の間と上下に線を引く一覧 */
+  @scope (.scoped.article-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      row-gap: 1px;
+      border-block: 1px solid var(--border--base);
+      row-rule: 1px solid var(--border--base);
+    }
+  }
+}

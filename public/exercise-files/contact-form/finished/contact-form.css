@@ -1,0 +1,107 @@
+@layer components {
+  /**
+   * お問い合わせのフォーム。
+   * 入力欄は1列に並べ、ラベルを入力欄の上に置く。
+   */
+  @scope (.scoped.contact-form) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      justify-items: start;
+      accent-color: var(--background--accent);
+
+      & > ._field {
+        justify-self: stretch;
+      }
+    }
+
+    ._field {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._required {
+      margin-inline-start: 4px;
+      padding-inline: 6px;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._text-control {
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-color: var(--border--strong);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--base);
+
+      /* iOS の拡大を防ぐため 16px を下限にし、それ以上なら 1rem に追従する */
+      font-size: max(16px, 1rem);
+
+      &:is(:user-invalid, [aria-invalid="true"]) {
+        border-color: var(--foreground--danger);
+      }
+    }
+
+    textarea {
+      --_rows: 4lh;
+      --_max-rows: 10lh;
+
+      /* 高さを行数だけで書くため、content-box に戻す */
+      box-sizing: unset;
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      min-block-size: var(--_rows);
+
+      @supports (field-sizing: content) {
+        max-block-size: var(--_max-rows);
+        resize: none;
+        field-sizing: content;
+      }
+    }
+
+    ._hint {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    /* 入力の誤り。入力して離れた後か、送信しようとした後にだけ表示する */
+    ._error {
+      display: none;
+      color: var(--foreground--danger);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      &:is(._field:has(:is(:user-invalid, [aria-invalid="true"])) *) {
+        display: block flow;
+      }
+    }
+
+    ._agree {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+
+      & > input {
+        flex-shrink: 0;
+        inline-size: 1lh;
+        block-size: 1lh;
+      }
+    }
+
+    a {
+      color: var(--foreground--accent);
+      text-decoration-line: underline;
+    }
+  }
+}

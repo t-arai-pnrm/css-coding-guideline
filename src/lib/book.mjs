@@ -155,7 +155,7 @@ export const PARTS = [
   },
   {
     label: '第VI部 演習編',
-    chapters: [{ number: 21, dir: 'exercise', title: '記事の一覧を作る' }],
+    chapters: [{ number: 21, dir: 'exercise', title: 'コーポレートサイトを作る' }],
   },
 ];
 

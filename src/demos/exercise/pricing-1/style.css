@@ -1,0 +1,246 @@
+@layer compositions {
+  /* 12-2 cluster：子を横に並べ、入りきらなければ折り返す */
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    /* 最後の行に子が1つだけ取り残されないよう、各行の長さをそろえる */
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+
+  /* 12-4 switcher：幅が閾値以上なら指定の列数で並べ、閾値を下回ったら1列にする */
+  .switcher {
+    --_c--row-gap: var(--switcher--gap, var(--switcher--row-gap, 0px));
+    --_c--column-gap: var(--switcher--gap, var(--switcher--column-gap, 0px));
+    --_c--column-count: var(--switcher--column-count, 3);
+    --_c--column-min-width: var(--switcher--column-min-width, calc(320 / 16 * 1rem));
+
+    /* 列の最小幅で指定の列数を並べるのに必要な幅 */
+    --_c--threshold: calc(
+      var(--_c--column-min-width) * var(--_c--column-count) + var(--_c--column-gap) * (var(--_c--column-count) - 1)
+    );
+
+    /* 指定の列数でちょうど埋まる1列の幅。auto-fit がこれより多くの列を作らないようにする */
+    --_c--column-preferred-width: calc(
+      (100% - var(--_c--column-gap) * (var(--_c--column-count) - 1)) / var(--_c--column-count)
+    );
+
+    display: block grid;
+
+    /* 閾値より狭いと sign() が -1 になり、列の最小幅が 100%（1列）になる */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(var(--_c--column-preferred-width), sign(100% - var(--_c--threshold)) * -100%), 1fr)
+    );
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-pricing) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+      text-align: center;
+    }
+  }
+}
+
+@layer components {
+  /**
+   * ボタンの見た目の操作部品。
+   * ルートは <a> にも <button> にも付けるので、名前に link や button を使わない。
+   */
+  @scope (.scoped.action-control) to (.scoped) {
+    :scope {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+      --_background: var(--background--inverse);
+      --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+      --_hocus: --false;
+
+      display: inline flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      min-block-size: var(--_hit-size);
+      padding-block: 12px;
+      padding-inline: 28px;
+      border: 1px solid transparent;
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--subtitle--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[data-variant="secondary"] {
+        --_background: transparent;
+        --_background--hocus: var(--background--hover);
+
+        border-color: var(--border--strong);
+        color: var(--foreground--base);
+      }
+
+      &[data-variant="text"] {
+        --_background: transparent;
+        --_background--hocus: transparent;
+
+        padding-block: 0;
+        padding-inline: 0;
+        color: var(--foreground--accent);
+      }
+
+      &:is(:any-link, :enabled):hover {
+        @media (any-hover) {
+          --_hocus: --true;
+
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        --_hocus: --true;
+
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    /* ホバーを受けるルートは動かさず、矢印だけを動かす */
+    ._arrow {
+      @container style(--_hocus: --true) {
+        translate: 4px 0;
+      }
+    }
+  }
+
+  /**
+   * 料金プランの一覧。
+   * 各プランは、この一覧の中でしか使わないので、子要素として書く。
+   */
+  @scope (.scoped.pricing-plans) to (.scoped) {
+    :scope {
+      --switcher--column-count: 3;
+      --switcher--column-min-width: calc(240 / 16 * 1rem);
+      --switcher--gap: 24px;
+    }
+
+    ._plan {
+      display: block grid;
+      gap: 16px;
+      align-content: start;
+      padding: 24px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+
+      /* おすすめのプランは、紺の配色にする。中のボタンや文字の色は、トークンが切り替える */
+      &[data-variant="recommended"] {
+        border-color: transparent;
+        color-scheme: dark;
+        background-color: var(--background--base);
+        color: var(--foreground--base);
+      }
+    }
+
+    /* おすすめの印は名前の横に置き、名前の行の高さを変えない */
+    ._name {
+      --cluster--gap: 8px;
+      --cluster--alignment: center;
+    }
+
+    ._badge {
+      padding-inline: 8px;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--brand-subtle);
+      color: var(--foreground--brand);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--caption--leading);
+    }
+
+    h3 {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
+    }
+
+    ._price {
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--display--leading);
+
+      /* 税の表示は、価格の桁数によらず次の行に置き、価格の行の高さをそろえる */
+      & > small {
+        display: block flow;
+        color: var(--foreground--muted);
+        font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--regular);
+      }
+    }
+
+    ._description {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._features {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+
+      & > li {
+        display: block grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+
+        /* 含まれる項目の印。項目の文字だけで内容は伝わるので、読み上げない */
+        &::before {
+          content: "✓" / "";
+          color: var(--foreground--brand);
+          font-weight: var(--font-weight--bold);
+        }
+      }
+    }
+  }
+}
+
+@layer patterns {
+  /* セクションの見出しの上に添える、英字の小見出し */
+  .eyebrow {
+    color: var(--foreground--brand);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    font-kerning: normal;
+    line-height: var(--text--caption--leading);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* セクションの見出し */
+  .section-heading {
+    font-feature-settings: "palt";
+    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-kerning: normal;
+    line-height: var(--text--display--leading);
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}

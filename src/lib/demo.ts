@@ -5,13 +5,15 @@ import sizeTokens from '../demos/tokens/sizes.css?raw';
 import motionTokens from '../demos/tokens/motion.css?raw';
 import typographyTokens from '../demos/tokens/typography.css?raw';
 import zIndexTokens from '../demos/tokens/z-index.css?raw';
+import exerciseTokens from '../demos/exercise/site-tokens.css?raw';
 
 /**
  * デモの土台。
  * - `kiso`: 本書が推奨する環境（レイヤーの順序宣言、`tokens` レイヤーに入れた共通トークン、`reset` レイヤーに入れた kiso.css、ベーススタイル）
+ * - `exercise`: `kiso` の共通トークンの後に、第21章の演習のサイトのトークンを同じ `tokens` レイヤーで重ねる
  * - `none`: ブラウザのデフォルトスタイルのまま
  */
-export type DemoBase = 'kiso' | 'none';
+export type DemoBase = 'kiso' | 'exercise' | 'none';
 
 /**
  * デモの配色。
@@ -94,10 +96,11 @@ export const buildSrcdoc = ({
     `<meta name="color-scheme" content="${scheme === 'auto' ? 'light dark' : scheme}">`,
   ];
   if (scheme === 'auto') head.push(`<script>${THEME_SYNC}</script>`);
-  if (base === 'kiso') {
+  if (base === 'kiso' || base === 'exercise') {
+    const tokens = base === 'exercise' ? `${TOKENS}\n${exerciseTokens}` : TOKENS;
     head.push(
       `<style>${LAYER_ORDER}</style>`,
-      `<style>@layer tokens {\n${TOKENS}\n}</style>`,
+      `<style>@layer tokens {\n${tokens}\n}</style>`,
       `<style>@layer reset {\n${kisoCss}\n}</style>`,
       `<style>${DEMO_BASE}</style>`,
     );

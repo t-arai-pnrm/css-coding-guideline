@@ -1,0 +1,223 @@
+@layer pages {
+  @scope (.scoped.page-contact) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+      max-inline-size: calc(640 / 16 * 1rem);
+      margin-inline: auto;
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h1 {
+      margin-block: unset;
+    }
+  }
+}
+
+@layer components {
+  /**
+   * お問い合わせのフォーム。
+   * 入力欄は1列に並べ、ラベルを入力欄の上に置く。
+   */
+  @scope (.scoped.contact-form) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      justify-items: start;
+      accent-color: var(--background--accent);
+
+      & > ._field {
+        justify-self: stretch;
+      }
+    }
+
+    ._field {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._required {
+      margin-inline-start: 4px;
+      padding-inline: 6px;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._text-control {
+      padding-block: 12px;
+      padding-inline: 16px;
+      border-color: var(--border--strong);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--base);
+
+      /* iOS の拡大を防ぐため 16px を下限にし、それ以上なら 1rem に追従する */
+      font-size: max(16px, 1rem);
+
+      &:is(:user-invalid, [aria-invalid="true"]) {
+        border-color: var(--foreground--danger);
+      }
+    }
+
+    textarea {
+      --_rows: 4lh;
+      --_max-rows: 10lh;
+
+      /* 高さを行数だけで書くため、content-box に戻す */
+      box-sizing: unset;
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      min-block-size: var(--_rows);
+
+      @supports (field-sizing: content) {
+        max-block-size: var(--_max-rows);
+        resize: none;
+        field-sizing: content;
+      }
+    }
+
+    ._hint {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    /* 入力の誤り。入力して離れた後か、送信しようとした後にだけ表示する */
+    ._error {
+      display: none;
+      color: var(--foreground--danger);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      &:is(._field:has(:is(:user-invalid, [aria-invalid="true"])) *) {
+        display: block flow;
+      }
+    }
+
+    ._agree {
+      display: block flex;
+      gap: 8px;
+      align-items: center;
+
+      & > input {
+        flex-shrink: 0;
+        inline-size: 1lh;
+        block-size: 1lh;
+      }
+    }
+
+    a {
+      color: var(--foreground--accent);
+      text-decoration-line: underline;
+    }
+  }
+
+  /**
+   * ボタンの見た目の操作部品。
+   * ルートは <a> にも <button> にも付けるので、名前に link や button を使わない。
+   */
+  @scope (.scoped.action-control) to (.scoped) {
+    :scope {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+      --_background: var(--background--inverse);
+      --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+      --_hocus: --false;
+
+      display: inline flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      min-block-size: var(--_hit-size);
+      padding-block: 12px;
+      padding-inline: 28px;
+      border: 1px solid transparent;
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--subtitle--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[data-variant="secondary"] {
+        --_background: transparent;
+        --_background--hocus: var(--background--hover);
+
+        border-color: var(--border--strong);
+        color: var(--foreground--base);
+      }
+
+      &[data-variant="text"] {
+        --_background: transparent;
+        --_background--hocus: transparent;
+
+        padding-block: 0;
+        padding-inline: 0;
+        color: var(--foreground--accent);
+      }
+
+      &:is(:any-link, :enabled):hover {
+        @media (any-hover) {
+          --_hocus: --true;
+
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        --_hocus: --true;
+
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    /* ホバーを受けるルートは動かさず、矢印だけを動かす */
+    ._arrow {
+      @container style(--_hocus: --true) {
+        translate: 4px 0;
+      }
+    }
+  }
+}
+
+@layer patterns {
+  /* セクションの見出しの上に添える、英字の小見出し */
+  .eyebrow {
+    color: var(--foreground--brand);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    font-kerning: normal;
+    line-height: var(--text--caption--leading);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* セクションの見出し */
+  .section-heading {
+    font-feature-settings: "palt";
+    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-kerning: normal;
+    line-height: var(--text--display--leading);
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}

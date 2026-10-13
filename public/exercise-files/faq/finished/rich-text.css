@@ -1,0 +1,51 @@
+@layer components {
+  /**
+   * CMS で編集する本文。
+   * 編集者は要素にクラスを付けられないので、要素の種類で選ぶ。
+   */
+  @scope (.scoped.rich-text) to (.scoped) {
+    :scope {
+      & > * + * {
+        margin-block-start: 12px;
+      }
+    }
+
+    ul {
+      padding-inline-start: 1.5em;
+      list-style-type: disc;
+    }
+
+    a {
+      color: var(--foreground--accent);
+      text-decoration-line: underline;
+
+      &:any-link:hover {
+        @media (any-hover) {
+          text-decoration-thickness: 2px;
+        }
+      }
+
+      &:focus-visible {
+        text-decoration-thickness: 2px;
+      }
+    }
+
+    table {
+      border-collapse: collapse;
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    th,
+    td {
+      padding-block: 8px;
+      padding-inline: 12px;
+      border: 1px solid var(--border--strong);
+      text-align: start;
+    }
+
+    th {
+      background-color: var(--background--base);
+    }
+  }
+}

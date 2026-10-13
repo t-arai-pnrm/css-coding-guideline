@@ -1,0 +1,66 @@
+@layer components {
+  /**
+   * サイトのヘッダー。
+   * ビューポートの高さが十分なときだけ上端に留め、留まっている間だけ下の境界線を見せる。
+   * 置かれた幅が狭く、ナビゲーションが1行に収まらないときは、メニューのボタンに切り替える。
+   */
+  @scope (.scoped.site-header) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size scroll-state;
+
+      @media (height >= calc(600 / 16 * 1rem)) {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: var(--z--header);
+      }
+    }
+
+    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+    ._header-inner {
+      --apart--row-gap: 8px;
+      --apart--column-gap: 32px;
+      --apart--alignment: center;
+      --_density: --compact;
+
+      min-block-size: calc(72 / 16 * 1rem);
+      padding-block: 8px;
+      border-block-end: 1px solid transparent;
+      background-color: var(--background--base);
+
+      /*
+       * ロゴ、ナビゲーション、お問い合わせのボタンが1行に収まる幅。
+       * ロゴの文字（152）＋間隔＋ナビゲーションの文字（406）と左右の余白（24px が6つ）＋間隔＋ボタンの文字（96）と余白と枠線
+       */
+      @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 406 / 16 * 1rem + 6 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
+        --_density: --spacious;
+      }
+
+      @container --scoped scroll-state(stuck: block-start) {
+        border-block-end-color: var(--border--strong);
+      }
+    }
+
+    ._logo {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      font-kerning: normal;
+      line-height: var(--text--title--leading);
+    }
+
+    ._actions {
+      --cluster--row-gap: 8px;
+      --cluster--column-gap: 16px;
+      --cluster--alignment: center;
+
+      @container style(--_density: --compact) {
+        display: none;
+      }
+    }
+
+    ._menu {
+      @container style(--_density: --spacious) {
+        display: none;
+      }
+    }
+  }
+}

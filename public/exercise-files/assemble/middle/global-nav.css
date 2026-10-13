@@ -1,0 +1,50 @@
+@layer components {
+  /**
+   * ナビゲーション。
+   * ドロワーのように縦に並べたい場所では、置く側が --global-nav--stacked: --true を渡す。
+   *
+   * @prop {ident} --global-nav--stacked [--false] - 縦に並べるときに --true
+   */
+  @scope (.scoped.global-nav) to (.scoped) {
+    :scope {
+      --_stacked: var(--global-nav--stacked, --false);
+    }
+
+    /* 外側の cluster の間隔を継承しないよう、リンクの間は0にし、余白はリンクの padding で取る */
+    ul {
+      --cluster--gap: 0;
+
+      @container style(--_stacked: --true) {
+        flex-direction: column;
+      }
+    }
+
+    a {
+      display: block flex;
+      align-items: center;
+      min-block-size: max(24px, 24 / 16 * 1rem);
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-radius: var(--rounded--md);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      @container style(--_stacked: --true) {
+        padding-block: 16px;
+        font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+        line-height: var(--text--subtitle--leading);
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--background--hover);
+      }
+    }
+  }
+}

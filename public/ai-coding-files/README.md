@@ -19,7 +19,7 @@
 | `CLAUDE.md` | `CLAUDE.md`（CSS に関わる部分の例） |
 | `playwright.config.ts` | プロジェクトのルート（開発サーバーのコマンドと URL に書き換える） |
 | `tests/design-values.spec.ts` | `tests/design-values.spec.ts` |
-| `tests/pages/article-card/` | `tests/pages/article-card/`（テストページと、演習の 21-7 を終えた時点の CSS） |
+| `tests/pages/article-card/` | `tests/pages/article-card/`（テストページと、演習の 21-3 を終えた時点の CSS） |
 
 Codex、Cursor、GitHub Copilot では、`skills/` の6つを `.agents/skills/` に置きます。フックと `settings.json` は Claude Code の仕組みなので、ほかのツールでは使えません。
 

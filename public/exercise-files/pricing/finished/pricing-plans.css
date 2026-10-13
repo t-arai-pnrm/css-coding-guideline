@@ -1,0 +1,95 @@
+@layer components {
+  /**
+   * 料金プランの一覧。
+   * 各プランは、この一覧の中でしか使わないので、子要素として書く。
+   */
+  @scope (.scoped.pricing-plans) to (.scoped) {
+    :scope {
+      --switcher--column-count: 3;
+      --switcher--column-min-width: calc(240 / 16 * 1rem);
+      --switcher--gap: 24px;
+    }
+
+    ._plan {
+      display: block grid;
+
+      /* 名前、価格、説明、含まれる項目、ボタンの5行を、一覧のグリッドの行に参加させる */
+      grid-template-rows: subgrid;
+      grid-row: span 5;
+      row-gap: 16px;
+      padding: 24px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+
+      /* おすすめのプランは、紺の配色にする。中のボタンや文字の色は、トークンが切り替える */
+      &[data-variant="recommended"] {
+        border-color: transparent;
+        color-scheme: dark;
+        background-color: var(--background--base);
+        color: var(--foreground--base);
+      }
+    }
+
+    /* おすすめの印は名前の横に置き、名前の行の高さを変えない */
+    ._name {
+      --cluster--gap: 8px;
+      --cluster--alignment: center;
+    }
+
+    ._badge {
+      padding-inline: 8px;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--brand-subtle);
+      color: var(--foreground--brand);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--caption--leading);
+    }
+
+    h3 {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
+    }
+
+    ._price {
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--display--leading);
+
+      /* 税の表示は、価格の桁数によらず次の行に置き、価格の行の高さをそろえる */
+      & > small {
+        display: block flow;
+        color: var(--foreground--muted);
+        font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+        font-weight: var(--font-weight--regular);
+      }
+    }
+
+    ._description {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._features {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+
+      & > li {
+        display: block grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+
+        /* 含まれる項目の印。項目の文字だけで内容は伝わるので、読み上げない */
+        &::before {
+          content: "✓" / "";
+          color: var(--foreground--brand);
+          font-weight: var(--font-weight--bold);
+        }
+      }
+    }
+  }
+}

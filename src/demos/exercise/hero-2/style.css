@@ -1,0 +1,248 @@
+@layer compositions {
+  /* 12-9 pile：子要素を同じセルに重ねる */
+  .pile {
+    display: block grid;
+    grid-template-areas: "--pile";
+    isolation: isolate;
+
+    & > * {
+      grid-area: --pile;
+      place-self: var(--pile--placement, var(--pile--alignment, normal)) var(--pile--placement, var(--pile--justification, normal));
+    }
+  }
+
+  /* 12-2 cluster：子を横に並べ、入りきらなければ折り返す */
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    /* 最後の行に子が1つだけ取り残されないよう、各行の長さをそろえる */
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 48px;
+    }
+  }
+}
+
+@layer components {
+  /**
+   * ボタンの見た目の操作部品。
+   * ルートは <a> にも <button> にも付けるので、名前に link や button を使わない。
+   */
+  @scope (.scoped.action-control) to (.scoped) {
+    :scope {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+      --_background: var(--background--inverse);
+      --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+      --_hocus: --false;
+
+      display: inline flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      min-block-size: var(--_hit-size);
+      padding-block: 12px;
+      padding-inline: 28px;
+      border: 1px solid transparent;
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--subtitle--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[data-variant="secondary"] {
+        --_background: transparent;
+        --_background--hocus: var(--background--hover);
+
+        border-color: var(--border--strong);
+        color: var(--foreground--base);
+      }
+
+      &[data-variant="text"] {
+        --_background: transparent;
+        --_background--hocus: transparent;
+
+        padding-block: 0;
+        padding-inline: 0;
+        color: var(--foreground--accent);
+      }
+
+      &:is(:any-link, :enabled):hover {
+        @media (any-hover) {
+          --_hocus: --true;
+
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        --_hocus: --true;
+
+        background-color: var(--_background--hocus);
+      }
+    }
+
+    /* ホバーを受けるルートは動かさず、矢印だけを動かす */
+    ._arrow {
+      @container style(--_hocus: --true) {
+        translate: 4px 0;
+      }
+    }
+  }
+
+  /**
+   * トップページの冒頭に置くメインビジュアル。
+   * 紺の配色にし、画像の上に暗い層を重ねて、どの画像でも白い文字を読めるようにする。
+   */
+  @scope (.scoped.hero) to (.scoped) {
+    :scope {
+      overflow: clip;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+
+      /* 画像を読み込めなかったときも、紺の面の上で文字を読める */
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+
+      /*
+       * 擬似要素は .pile > * で選ばれないので、自分で同じエリアに置く。
+       * 紺の不透明度が 85% あれば、真っ白な画像の上でも、ヒーローの文字はどれも 4.5:1 を超える
+       */
+      &::before {
+        content: "";
+        grid-area: --pile;
+        background-color: color-mix(in oklab, var(--background--base) 85%, transparent);
+      }
+    }
+
+    img {
+      z-index: var(--z--backwards);
+      inline-size: -webkit-fill-available;
+      inline-size: stretch;
+      block-size: 100%;
+      object-fit: cover;
+    }
+
+    ._body {
+      display: block grid;
+      gap: 24px;
+      justify-items: start;
+      max-inline-size: calc(640 / 16 * 1rem);
+      padding-block: 64px;
+      padding-inline: 40px;
+    }
+
+    h1 {
+      margin-block: unset;
+      font-feature-settings: "palt";
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      font-kerning: normal;
+      line-height: var(--text--display--leading);
+
+      @supports (word-break: auto-phrase) {
+        text-wrap: balance;
+        word-break: auto-phrase;
+      }
+    }
+
+    ._lead {
+      color: var(--foreground--muted);
+    }
+  }
+
+  /**
+   * 下層ページの冒頭に置く、ページ名とパンくずリスト。
+   * ヒーローとは役割と中身が違うので、別のコンポーネントにし、見た目はトークンでそろえる。
+   */
+  @scope (.scoped.page-header) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+      padding-block: 32px 48px;
+      padding-inline: 40px;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+    }
+
+    ol {
+      --cluster--column-gap: 8px;
+
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    li {
+      /* 区切りの記号は飾りなので、代替テキストを空にする */
+      & + li::before {
+        content: "›" / "";
+        margin-inline-end: 8px;
+      }
+    }
+
+    a {
+      &:any-link:hover {
+        @media (any-hover) {
+          text-decoration-line: underline;
+        }
+      }
+
+      &:focus-visible {
+        text-decoration-line: underline;
+      }
+    }
+
+    ._heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h1 {
+      margin-block: unset;
+    }
+  }
+}
+
+@layer patterns {
+  /* セクションの見出しの上に添える、英字の小見出し */
+  .eyebrow {
+    color: var(--foreground--brand);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    font-kerning: normal;
+    line-height: var(--text--caption--leading);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* セクションの見出し */
+  .section-heading {
+    font-feature-settings: "palt";
+    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-kerning: normal;
+    line-height: var(--text--display--leading);
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}

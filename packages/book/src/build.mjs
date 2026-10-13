@@ -167,7 +167,7 @@ ${await cheatSheet()}
 <p>図は指定した幅での静止画です。ホバー、フォーカス、スクロール、アニメーション、表示の設定による変化は、Web版で操作して確かめてください。</p>
 <h2>サンプルと補足</h2>
 <p class="support-url"><a href="${pageUrl('book-support')}">${pageUrl('book-support')}</a></p>
-<p>v${version}のZIPを選び、README.mdの手順に従ってください。デモはHTMLにCSSと必要なJavaScriptを含めています。第21章には開始版と完成版、第20章には設定の全文があります。</p>
+<p>v${version}のZIPを選び、README.mdの手順に従ってください。デモはHTMLにCSSと必要なJavaScriptを含めています。第21章には開始版、中間版、完成版、第20章には設定の全文があります。</p>
 <img class="support-qr" src="assets/book-support-qr.svg" alt="補足サイトのURLを表すQRコード">
 <h2>環境とライセンス</h2>
 <p>実務配信の例：Node.js 22.12以降、Vite ${sampleManifest.dependencies.vite}。リセット：kiso.css ${sampleManifest.dependencies.kiso}。対応データ：web-features ${sampleManifest.dependencies.webFeatures}。ファイルのSHA-256と依存関係はmanifest.jsonに記録しています。</p>

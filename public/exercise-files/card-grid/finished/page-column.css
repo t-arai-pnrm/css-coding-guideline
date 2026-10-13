@@ -1,0 +1,35 @@
+@layer pages {
+  @scope (.scoped.page-column) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 40px;
+    }
+
+    ._page-heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h1 {
+      margin-block: unset;
+    }
+
+    ._latest,
+    ._popular {
+      display: block grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    ._side {
+      display: block grid;
+      gap: 40px;
+      align-content: start;
+    }
+
+    h2 {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
+    }
+  }
+}

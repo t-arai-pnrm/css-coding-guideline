@@ -1,0 +1,48 @@
+@layer components {
+  /* カテゴリーの絞り込み。各カテゴリーのページへのリンクを並べ、今のページを示す */
+  @scope (.scoped.category-filter) to (.scoped) {
+    ul {
+      --cluster--gap: 8px;
+    }
+
+    a {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+      --_background: transparent;
+      --_background--hocus: var(--background--hover);
+
+      display: block flex;
+      align-items: center;
+      min-block-size: var(--_hit-size);
+      padding-block: 8px;
+      padding-inline: 20px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[aria-current="page"] {
+        --_background: var(--background--accent);
+        --_background--hocus: oklch(from var(--background--accent) calc(l - 0.06) c h);
+
+        border-color: transparent;
+        color: var(--foreground--on-accent);
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--_background--hocus);
+      }
+    }
+  }
+}

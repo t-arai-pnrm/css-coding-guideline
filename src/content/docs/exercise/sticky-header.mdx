@@ -1,0 +1,198 @@
+---
+title: "21-6 固定ヘッダーを作る"
+description: "すべてのページの上に置く、スクロールしても画面の上端に留まるヘッダーを作ります。留まっている間だけ境界線を出し、ページ内リンクの移動先がヘッダーに隠れないかを確かめる節です。"
+sidebar:
+  order: 6
+---
+
+import Demo from '../../../components/Demo.astro';
+import stickyHeaderInitialHtml from '../../../demos/exercise/sticky-header-1/index.html?raw';
+import stickyHeaderInitialCss from '../../../demos/exercise/sticky-header-1/style.css?raw';
+import stickyHeaderChangedHtml from '../../../demos/exercise/sticky-header-2/index.html?raw';
+import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/style.css?raw';
+
+すべてのページの上に置く、固定ヘッダーを作ります。左にサイトのロゴを、右にナビゲーションの5つのリンクと、21-2で作ったお問い合わせのボタン（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）を並べます。ヘッダーは白い面で、高さは72px相当です。
+
+ページを下へスクロールしても、ヘッダーは画面の上端に留まります。ただし、画面の高さが600px相当に満たないときは留めません。上端に留まっている間だけ、ヘッダーの下端に境界線を出します。ページ内リンクで見出しへ移動したときは、見出しがヘッダーに隠れず、ヘッダーのすぐ下へ表示されるようにします。
+
+狭い画面のナビゲーションは、21-7で作ります{/* 21-7の執筆後にリンクする: /exercise/drawer/ */}。この節では、ヘッダーが1行に収まる1024px以上の幅で確かめます。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/sticky-header/start/index.html)）から始め、中間版（[index.html](/exercise-files/sticky-header/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/sticky-header/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/sticky-header/start/`、`exercise/sticky-header/middle/`、`exercise/sticky-header/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [7-10 positionの基礎](/layout/positioning/)
+- [10-2 コンポーネントの境界を守る](/components/boundaries/)
+- [11-7 固定ヘッダー](/layout-practice/sticky-header/)
+- [12-3 apart：子要素を両端に分ける](/compositions/apart/)
+- [17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)
+
+## 予想する
+
+本文を読む前に、ヘッダーを留める方法と、留める条件を考えてみてください。`position: fixed` と `position: sticky` のどちらを使い、画面の幅と高さのどちらで条件を書くでしょうか。
+
+ページ内リンクの移動先をヘッダーの下に出すための指定も予想します。その指定を書くのは、ヘッダーのCSSか、ページをスクロールさせている要素か。ヘッダーの高さの値が何か所に現れるかも数えてから読み進めます。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のページです。デモの高さは640pxで、ページの中をスクロールできます。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたページ：ヘッダーが上端に留まり、留まっている間だけ境界線が出る" html={stickyHeaderInitialHtml} css={stickyHeaderInitialCss} height="640px" widths={[1024, 1280]} />
+
+デモの中を下へスクロールすると、ヘッダーは上端に留まり、留まっている間だけ下端に境界線が出ます。目次の「会社概要」を押すと、「会社概要」の見出しの小見出しが、ヘッダーのすぐ下に表示されます。境界線は、`scroll-state()` のクエリに対応したChrome系のブラウザでだけ表示されます。ほかのブラウザでも、ヘッダーが留まり、見出しが隠れなければ完成です。
+
+## ヘッダーを sticky で留める
+
+ヘッダーは、`position: sticky` で上端に留めます。`fixed` と違って通常フローに場所を持ったまま留まるので、本文の先頭をヘッダーの高さだけ下げる余白が要りません。留めるのは、ビューポートの高さが600px相当以上のときだけです。横向きのスマートフォンや拡大した画面で、留めたヘッダーが本文を読める範囲を狭めないようにするためです（「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」）。
+
+```css title="🙆‍♂ Recommended: 高さが十分なときだけ、ヘッダーのルートを上端に留める"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    container: --scoped / scroll-state;
+
+    @media (height >= calc(600 / 16 * 1rem)) {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: var(--z--header);
+    }
+  }
+}
+```
+
+コンポーネントのルートには、置かれた場所での位置を決める指定を書かないのが原則です。ただし、ビューポートに留めるグローバルヘッダーの `position: sticky` と `inset` は、この原則の例外です（`no-external-layout-on-root`）。ヘッダーはどのページでも同じ位置に置かれ、留める動きそのものが部品の役割だからです。`z-index` は、ページ全体の重なり順を決めるトークン `--z--header` で指定します（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+`sticky` の要素が留まれるのは、親の範囲の中だけです。ヘッダーを `<body>` の直下に置いているので、ページの最後まで留まります（「[7-10 positionの基礎](/layout/positioning/)」）。
+
+## 留まっている間だけ境界線を出す
+
+留まっているかどうかは、ルートを `scroll-state` のコンテナにし、`scroll-state(stuck: block-start)` で問い合わせます。コンテナクエリで変えられるのはコンテナの子孫だけなので、境界線は、ルートの内側の `._header-inner` に描きます。
+
+```css title="🙆‍♂ Recommended: 内側の要素に透明な境界線を置き、留まっている間だけ色を付ける"
+@scope (.scoped.site-header) to (.scoped) {
+  ._header-inner {
+    min-block-size: calc(72 / 16 * 1rem);
+    padding-block: 8px;
+    border-block-end: 1px solid transparent;
+    background-color: var(--background--base);
+
+    @container --scoped scroll-state(stuck: block-start) {
+      border-block-end-color: var(--border--strong);
+    }
+  }
+}
+```
+
+境界線は、最初から透明な線を置いておき、色だけを変えます。留まったときに線の太さを増やすとヘッダーの高さも変わり、ブラウザがスクロール位置を押し戻すことがあるからです（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まったときに高さを変えない)」）。`scroll-state()` のクエリに対応していない環境では、線がないまま留まるだけで、ヘッダーの機能は損なわれません。
+
+ナビゲーションは、ヘッダーとは別の `global-nav` のコンポーネントにしました。21-7では、同じナビゲーションを狭い画面のドロワーにも置くからです。リンクの間は `gap` で空けず、各リンクの左右の `padding` で空けています。ホバーで背景が付く項目の間に隙間があると、カーソルが隙間を通る間だけ背景が消えるからです（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。ナビゲーションの `ul` には `--cluster--gap: 0` を渡しています。渡さないと、外側の `._actions` の `cluster` に渡した16pxの間隔を継承するからです（「[12-1 stack：子要素を縦に積み、間隔をそろえる](/compositions/stack/)」）。
+
+## 移動先をヘッダーの下に出す
+
+ページ内リンクで移動したときに、見出しをヘッダーの下に出すには、ページをスクロールさせているルートに `scroll-padding-block-start` を指定します。スクロールで内容を見せる範囲から、ヘッダーの高さを除く指定です。
+
+```css title="🙆‍♂ Recommended: ヘッダーを留めるときだけ、スクロールで見せる範囲からヘッダーの高さを除く"
+@layer base {
+  :root {
+    @media (height >= calc(600 / 16 * 1rem)) {
+      scroll-padding-block-start: calc(72 / 16 * 1rem);
+    }
+  }
+}
+```
+
+この指定は、ヘッダーのコンポーネントではなく、ページのスクロールを受け持つルートのものなので、`base` レイヤーの `:root` に書きます。閾値はヘッダーを留める条件とそろえ、留めない画面では余白を残しません。値の72px相当は、ヘッダーの `._header-inner` の `min-block-size` と同じ値です。2つのファイルに同じ値があるので、どちらにも、もう一方とそろえていることをコメントで残しています。
+
+## 要件が変わる
+
+セミナーの告知のために、ヘッダーの上にお知らせの帯を置くことになりました。帯は、紺の面の中央に、白い文字のリンクを置いたもので、高さは約40pxです。帯はヘッダーと一緒には留めず、スクロールすると画面の外へ出てかまいません。帯が画面から出たあとは、これまでどおりヘッダーが上端に留まります。
+
+本文を読む前に、帯をどこに置くかを考えてみてください。帯とヘッダーを1つの要素で包んで置く方法と、帯をヘッダーの前に並べて置く方法があります。それぞれで、ヘッダーは上端に留まるでしょうか。ページ内リンクの移動先のための `scroll-padding-block-start` を直す必要があるかも予想します。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のページです。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたページ：お知らせの帯は画面の外へ出て、ヘッダーだけが留まる" html={stickyHeaderChangedHtml} css={stickyHeaderChangedCss} height="640px" widths={[1024, 1280]} />
+
+スクロールする前は、ヘッダーの上にお知らせの帯が表示されます。下へスクロールすると、帯は画面の外へ出て、ヘッダーが上端に留まり、境界線が出ます。目次のリンクを押したときは、変更の前と同じく、見出しがヘッダーのすぐ下に表示されれば完成です。
+
+## 帯とヘッダーを1つの要素で包まない
+
+帯とヘッダーをまとめて扱いたくなり、1つの要素で包むと、ヘッダーは留まらなくなります。
+
+```html title="🙅‍♂ Not Recommended: お知らせの帯とヘッダーを、1つの要素で包む"
+<!-- 🙅‍♂ Not Recommended -->
+<div class="_page-top">
+  <p class="scoped notice-bar">…</p>
+  <header class="scoped site-header">…</header>
+</div>
+```
+
+`sticky` の要素がずれられるのは、親の要素の範囲の中だけです。包んだ要素の高さは帯とヘッダーの合計なので、ヘッダーがずれる余地は帯の高さの分しかなく、包んだ要素が画面の外へ出ると、ヘッダーも一緒に出ていきます（「[7-10 positionの基礎](/layout/positioning/)」）。そこで、帯はヘッダーの前に、`<body>` の直下に並べて置きます。ヘッダーの親は `<body>` のままなので、帯が画面の外へ出たあとも、ヘッダーはページの最後まで留まります。
+
+帯は、ヘッダーとは別のコンポーネント（`notice-bar`）にします。帯は告知があるときだけ置くもので、ヘッダーの中に入れると、ヘッダーの高さが告知の有無で変わります。紺の面は、21-2と同じく、帯のルートの配色を暗くして作ります。
+
+```css title="🙆‍♂ Recommended: お知らせの帯は、ルートの配色を暗くした別のコンポーネントにする"
+@scope (.scoped.notice-bar) to (.scoped) {
+  :scope {
+    padding-block: 8px;
+    padding-inline: 16px;
+    color-scheme: dark;
+    background-color: var(--background--base);
+    color: var(--foreground--base);
+    text-align: center;
+  }
+}
+```
+
+帯をヘッダーの外に置いたので、ヘッダーが留まっている間の高さは72px相当のままです。ルートの `scroll-padding-block-start` も、ヘッダーの `min-block-size` も直さずに済みます。
+
+## 振り返り
+
+直したのは、お知らせの帯の `notice-bar.css` を新しく作ったことと、ページのHTMLで帯をヘッダーの前に置いたことだけです。直さずに済んだのは、ヘッダーとナビゲーションのCSS、`base` レイヤーの `scroll-padding-block-start` です。帯が留まらない要件だったので、留まる部分の高さが変わらず、高さの値を書いた2か所のどちらにも触れずに済みました。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 帯とヘッダーを包んだときに、ヘッダーが留まらなくなることを予想できたか。包んでいたなら、`sticky` の要素がずれられる範囲から理由を説明できるか。
+- 帯を置いたあとも、ページ内リンクの移動先が隠れないことを、留まる部分の高さから説明できるか。
+- ヘッダーの高さの値を書いた場所を、すべて挙げられるか。
+
+## 判断の問い
+
+### 問い1
+
+お知らせの帯もヘッダーと一緒に留めたい、と要件が変わりました。どこを直しますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+留まる部分の高さが、帯の分だけ増えます。帯をヘッダーの中に入れて一緒に留めるなら、ルートの `scroll-padding-block-start` を、ヘッダーと帯の高さの合計に直します（`sticky-header-height-query`）。帯を別の要素のまま、`inset-block-start: 0` で留め、ヘッダーを帯の高さだけ下に留める方法もありますが、帯の高さをヘッダーの `inset-block-start` にも書くことになり、高さの値を書く場所が増えます。
+
+留まる部分が高くなると、画面の高さの低い環境で本文を読める範囲が狭くなります。留める条件の600px相当を引き上げるかも、デザイナーと確かめます。
+
+</details>
+
+### 問い2
+
+留まったときに、ヘッダーの高さを72pxから56pxに縮めたい、と言われました。どう答えますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+まず、高さではなく、色や境界線のように寸法の変わらないもので見た目を変える案を出します。`sticky` の要素は通常フローに場所を持つので、留まったときに高さが縮むと後ろの内容が動き、ブラウザがスクロール位置を押し戻して、ヘッダーが伸び縮みを繰り返すことがあるからです。縮める必要があるなら、ルートに `overflow-anchor: none` を指定してスクロールアンカリングを止めます。ただし、ページ全体のスクロールアンカリングが止まり、`scroll-padding-block-start` の値も、留まっているときの高さに合わせて考え直すことになります（`scroll-state-for-sticky-styles`）。
+
+</details>
+
+## この節で使ったルール
+
+- [`sticky-header-height-query`](/layout-practice/sticky-header/#rule-sticky-header-height-query)：ヘッダーは、ビューポートの高さが十分なときだけ固定します。
+- [`scroll-state-for-sticky-styles`](/layout-practice/sticky-header/#rule-scroll-state-for-sticky-styles)：留まっている間だけ見た目を変えるときは、`scroll-state()` のクエリを使い、変えるのは装飾に限ります。
+- [`sticky-needs-inset`](/layout/positioning/#rule-sticky-needs-inset)：`position: sticky` には、留めたい軸の `inset-block-start` などを1つ以上指定します。
+- [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、外側の配置の指定を書きません（グローバルヘッダーの `sticky` は例外です）。
+- [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：`z-index` の値は、数値を直接書かずにトークンで指定します。
+- [`no-gaps-between-hover-items`](/interaction/hit-area-and-touch/#rule-no-gaps-between-hover-items)：ホバーで背景が付く項目の間は、`gap` ではなく各項目の `padding` で空けます。
+- [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：`color-scheme` を指定した要素では、`color` と `background-color` をトークンで指定し直します。

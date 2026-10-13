@@ -1,0 +1,106 @@
+@layer components {
+  /**
+   * サイトのフッター。
+   * 紺の面にするため配色を暗くし、中の色はトークンの light-dark() に切り替えさせる。
+   */
+  @scope (.scoped.site-footer) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 48px;
+      padding-block: 56px 32px;
+      padding-inline: 32px;
+      border-radius: var(--rounded--lg);
+      color-scheme: dark;
+      background-color: var(--background--base);
+      color: var(--foreground--base);
+    }
+
+    ._top {
+      --sidebar--side-width: calc(280 / 16 * 1rem);
+      --sidebar--main-min-width: calc(480 / 16 * 1rem);
+      --sidebar--row-gap: 40px;
+      --sidebar--column-gap: 56px;
+    }
+
+    ._company {
+      display: block grid;
+      gap: 24px;
+      align-content: start;
+    }
+
+    /* 実際のサイトでは SVG のロゴを置く。文字の大きさは、ロゴのためだけの値なので直接書く */
+    ._logo {
+      font-size: calc(24 / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      font-kerning: normal;
+      line-height: var(--text--display--leading);
+    }
+
+    address {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body--leading);
+    }
+
+    ._groups {
+      --cluster--row-gap: 32px;
+      --cluster--column-gap: 56px;
+    }
+
+    ._group {
+      display: block grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    h2 {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    ._group-links {
+      display: block grid;
+      gap: 4px;
+    }
+
+    ._bottom {
+      --apart--row-gap: 16px;
+      --apart--column-gap: 32px;
+      --apart--alignment: center;
+
+      padding-block-start: 24px;
+      border-block-start: 1px solid var(--border--base);
+    }
+
+    ._policy-links {
+      --cluster--column-gap: 24px;
+    }
+
+    a {
+      display: block flex;
+      align-items: center;
+      min-block-size: max(24px, 24 / 16 * 1rem);
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+
+      &:any-link:hover {
+        @media (any-hover) {
+          color: var(--foreground--base);
+          text-decoration-line: underline;
+        }
+      }
+
+      &:focus-visible {
+        color: var(--foreground--base);
+        text-decoration-line: underline;
+      }
+    }
+
+    ._copyright {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}

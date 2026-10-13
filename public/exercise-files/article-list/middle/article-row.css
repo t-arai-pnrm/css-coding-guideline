@@ -1,0 +1,94 @@
+@layer components {
+  /**
+   * 記事の行。
+   * 見出しのリンクを行いっぱいに広げ、行のどこを押しても記事へ移動する。
+   */
+  @scope (.scoped.article-row) to (.scoped) {
+    :scope {
+      --sidebar--side-width: calc(220 / 16 * 1rem);
+      --sidebar--main-min-width: calc(280 / 16 * 1rem);
+      --sidebar--row-gap: 16px;
+      --sidebar--column-gap: 28px;
+      --_has-hocus: --false;
+
+      position: relative;
+      align-items: center;
+      padding-block: 24px;
+
+      &:has(h2 a:any-link:hover) {
+        @media (any-hover) {
+          --_has-hocus: --true;
+        }
+      }
+
+      &:has(h2 a:focus-visible) {
+        --_has-hocus: --true;
+
+        outline: 3px solid CanvasText;
+        outline-offset: 3px;
+      }
+    }
+
+    img {
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--md);
+      object-fit: cover;
+
+      @container style(--_has-hocus: --true) {
+        filter: brightness(1.08);
+      }
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._meta {
+      --cluster--row-gap: 4px;
+      --cluster--column-gap: 12px;
+      --cluster--alignment: center;
+
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._category {
+      padding-inline: 8px;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--brand-subtle);
+      color: var(--foreground--brand);
+      font-weight: var(--font-weight--bold);
+    }
+
+    h2 {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
+    }
+
+    h2 a {
+      @container style(--_has-hocus: --true) {
+        text-decoration-line: underline;
+      }
+
+      /* 見出しのリンクの ::after を行いっぱいに広げ、行のどこを押しても記事へ移動する */
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+
+      /* フォーカスリングは行の外周に出すので、リンク自身の outline は色だけを透明にする */
+      &:focus-visible {
+        outline-color: transparent;
+      }
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}

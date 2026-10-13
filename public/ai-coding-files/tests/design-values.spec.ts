@@ -20,7 +20,6 @@ const ROWS = [
   { selector: '#narrow .article-card h3', property: 'font-size', value: 'calc(var(--text--subtitle--font-size) / 16 * 1rem)' },
   { selector: '#wide .article-card h3', property: 'font-size', value: 'calc(var(--text--title--font-size) / 16 * 1rem)' },
   { selector: '#wide .article-card time', property: 'color', value: 'var(--foreground--muted)' },
-  { selector: '#narrow .article-card ._excerpt', property: 'display', value: 'none' },
 ];
 
 for (const width of WIDTHS) {

@@ -1,0 +1,254 @@
+@layer compositions {
+  /* 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む */
+  .sidebar {
+    --_c--row-gap: var(--sidebar--gap, var(--sidebar--row-gap, 0px));
+    --_c--column-gap: var(--sidebar--gap, var(--sidebar--column-gap, 0px));
+    --_c--main-min-width: var(--sidebar--main-min-width, calc(480 / 16 * 1rem));
+    --_c--side-width: var(--sidebar--side-width, calc(320 / 16 * 1rem));
+
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--_c--row-gap) var(--_c--column-gap);
+
+    & > .main-column {
+      flex-grow: 9999;
+      flex-basis: var(--_c--main-min-width);
+    }
+
+    & > .side-column {
+      flex-grow: 1;
+      flex-basis: var(--_c--side-width);
+    }
+  }
+
+  /* 12-2 cluster：子を横に並べ、入りきらなければ折り返す */
+  .cluster {
+    display: block flex;
+    flex-wrap: wrap;
+    gap: var(--cluster--gap, var(--cluster--row-gap, 0)) var(--cluster--gap, var(--cluster--column-gap, 0));
+    justify-content: var(--cluster--justification, normal);
+    align-items: var(--cluster--alignment, normal);
+
+    /* 最後の行に子が1つだけ取り残されないよう、各行の長さをそろえる */
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance;
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.page-category) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    ._page-heading {
+      display: block grid;
+      gap: 8px;
+    }
+
+    h1 {
+      margin-block: unset;
+    }
+  }
+}
+
+@layer components {
+  /* カテゴリーの絞り込み。各カテゴリーのページへのリンクを並べ、今のページを示す */
+  @scope (.scoped.category-filter) to (.scoped) {
+    ul {
+      --cluster--gap: 8px;
+    }
+
+    a {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+      --_background: transparent;
+      --_background--hocus: var(--background--hover);
+
+      display: block flex;
+      align-items: center;
+      min-block-size: var(--_hit-size);
+      padding-block: 8px;
+      padding-inline: 20px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--full);
+      background-color: var(--_background);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
+
+      &[aria-current="page"] {
+        --_background: var(--background--accent);
+        --_background--hocus: oklch(from var(--background--accent) calc(l - 0.06) c h);
+
+        border-color: transparent;
+        color: var(--foreground--on-accent);
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--_background--hocus);
+        }
+      }
+
+      &:focus-visible {
+        background-color: var(--_background--hocus);
+      }
+    }
+  }
+
+  /* 記事の行を並べ、行の間と上下に線を引く一覧 */
+  @scope (.scoped.article-list) to (.scoped) {
+    :scope {
+      display: block grid;
+      row-gap: 1px;
+      border-block: 1px solid var(--border--base);
+      row-rule: 1px solid var(--border--base);
+    }
+  }
+
+  /**
+   * 記事の行。
+   * 見出しのリンクを行いっぱいに広げ、行のどこを押しても記事へ移動する。
+   */
+  @scope (.scoped.article-row) to (.scoped) {
+    :scope {
+      --sidebar--side-width: calc(220 / 16 * 1rem);
+      --sidebar--main-min-width: calc(280 / 16 * 1rem);
+      --sidebar--row-gap: 16px;
+      --sidebar--column-gap: 28px;
+      --_has-hocus: --false;
+
+      position: relative;
+      align-items: center;
+      padding-block: 24px;
+      isolation: isolate;
+
+      &:has(h2 a:any-link:hover) {
+        @media (any-hover) {
+          --_has-hocus: --true;
+        }
+      }
+
+      &:has(h2 a:focus-visible) {
+        --_has-hocus: --true;
+
+        outline: 3px solid CanvasText;
+        outline-offset: 3px;
+      }
+    }
+
+    img {
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--md);
+      object-fit: cover;
+
+      @container style(--_has-hocus: --true) {
+        filter: brightness(1.08);
+      }
+    }
+
+    ._body {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._meta {
+      --cluster--row-gap: 4px;
+      --cluster--column-gap: 12px;
+      --cluster--alignment: center;
+
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    ul {
+      --cluster--gap: 4px;
+    }
+
+    /* 見出しのリンクの ::after より手前に出し、カテゴリーのリンクとして押せるようにする */
+    ._category-link {
+      position: relative;
+      z-index: var(--z--forwards);
+      display: block flex;
+      align-items: center;
+      min-block-size: max(24px, 24 / 16 * 1rem);
+      padding-inline: 8px;
+      border-radius: var(--rounded--sm);
+      background-color: var(--background--accent-subtle);
+      color: var(--foreground--accent);
+      font-weight: var(--font-weight--bold);
+
+      &:any-link:hover {
+        @media (any-hover) {
+          text-decoration-line: underline;
+        }
+      }
+
+      &:focus-visible {
+        text-decoration-line: underline;
+      }
+    }
+
+    h2 {
+      font-size: calc(var(--text--title--font-size) / 16 * 1rem);
+      line-height: var(--text--title--leading);
+    }
+
+    h2 a {
+      @container style(--_has-hocus: --true) {
+        text-decoration-line: underline;
+      }
+
+      /* 見出しのリンクの ::after を行いっぱいに広げ、行のどこを押しても記事へ移動する */
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+
+      /* フォーカスリングは行の外周に出すので、リンク自身の outline は色だけを透明にする */
+      &:focus-visible {
+        outline-color: transparent;
+      }
+    }
+
+    ._excerpt {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}
+
+@layer patterns {
+  /* セクションの見出しの上に添える、英字の小見出し */
+  .eyebrow {
+    color: var(--foreground--brand);
+    font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+    font-weight: var(--font-weight--bold);
+    font-kerning: normal;
+    line-height: var(--text--caption--leading);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* セクションの見出し */
+  .section-heading {
+    font-feature-settings: "palt";
+    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-kerning: normal;
+    line-height: var(--text--display--leading);
+
+    @supports (word-break: auto-phrase) {
+      text-wrap: balance;
+      word-break: auto-phrase;
+    }
+  }
+}

@@ -1,0 +1,190 @@
+---
+title: "21-12 お問い合わせフォームを作る"
+description: "お問い合わせのページに、ラベル、入力欄、必須の印、送信ボタンを並べたフォームを作ります。入力の誤りを、入力する前には出さず、入力したあとに色と文章で伝えられるかを確かめる節です。"
+sidebar:
+  order: 12
+---
+
+import Demo from '../../../components/Demo.astro';
+import contactFormInitialHtml from '../../../demos/exercise/contact-form-1/index.html?raw';
+import contactFormInitialCss from '../../../demos/exercise/contact-form-1/style.css?raw';
+import contactFormChangedHtml from '../../../demos/exercise/contact-form-2/index.html?raw';
+import contactFormChangedCss from '../../../demos/exercise/contact-form-2/style.css?raw';
+import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.js?raw';
+
+お問い合わせのページに、フォームを作ります。項目は、お名前、メールアドレス、電話番号、お問い合わせの種類、お問い合わせ内容と、個人情報の取り扱いへの同意です。電話番号のほかは必須で、ラベルの横に紺の小さな「必須」の印を置きます。最後に、21-2で作った主ボタンの見た目で「送信する」のボタンを置きます（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。
+
+各項目は、14px相当の太字のラベルの下に入力欄を置き、項目の間を24px空けます。入力欄は1pxの枠線で囲んで角を8px丸め、内側に上下12px、左右16pxの余白を取ります。メールアドレスの入力欄の下には、「例：name@example.com」と入力例を示します。お問い合わせ内容の入力欄は、4行分の高さから始め、入力に合わせて10行分まで伸ばします。フォームの幅は640px相当までです。
+
+手元で進めるときは、開始版（[index.html](/exercise-files/contact-form/start/index.html)）から始め、中間版（[index.html](/exercise-files/contact-form/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/contact-form/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/contact-form/start/`、`exercise/contact-form/middle/`、`exercise/contact-form/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+
+この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
+
+- [5-6 フォームの状態を表す擬似クラス](/pseudo/form-states/)
+- [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)
+- [10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)
+- [17-7 フォーム部品](/interaction/forms/)
+
+## 予想する
+
+本文を読む前に、「必須」の印をHTMLに書くか、CSSの生成コンテンツで入れるかを考えてみてください。送信ボタンには、21-2の `action-control` をそのまま付けられるでしょうか。21-2では `<a>` に付けていましたが、ここでは `<button>` に付けます。
+
+入力欄の文字の大きさも予想します。デザインで入力欄の文字を14pxにしたいと言われたら、そのまま書いてよいでしょうか。
+
+## 合格条件
+
+次のデモが、最初の要件を満たした時点のお問い合わせのフォームです。
+
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたお問い合わせのフォーム：ラベル、必須の印、入力例、送信ボタン" html={contactFormInitialHtml} css={contactFormInitialCss} />
+
+どの幅でも、項目は1列に並び、ラベルは入力欄の上に置かれます。お問い合わせ内容に5行以上入力すると、入力欄が伸び、10行を超えると中でスクロールします。送信ボタンは、ホバーとフォーカスのときに、21-2の主ボタンと同じ見た目に変わります。キーボードで操作すると、各入力欄にフォーカスリングが出れば完成です。
+
+## 必須の印はHTMLに書く
+
+「必須」の印は、ラベルの中の `<span>` としてHTMLに書きます。必須であることは、入力する人が知る必要のある情報なので、`::after` の生成コンテンツでは入れません（`no-meaningful-generated-content`）。入力欄には `required` 属性も付け、ブラウザにも必須であることを伝えます。
+
+```html title="🙆‍♂ Recommended: 必須の印はラベルの中に書き、入力例は aria-describedby で入力欄に関連付ける"
+<div class="_field">
+  <label class="_label" for="contact-email">メールアドレス <span class="_required">必須</span></label>
+  <input class="_text-control" id="contact-email" type="email" name="email" autocomplete="email" required aria-describedby="contact-email-hint">
+  <p class="_hint" id="contact-email-hint">例：name@example.com</p>
+</div>
+```
+
+入力例の段落は、`aria-describedby` で入力欄に関連付けます。入力欄にフォーカスしたとき、スクリーンリーダーがラベルに続けて入力例を読み上げます。文字を入力する入力欄、`<select>`、`<textarea>` には、同じ見た目を付けるために `._text-control` のクラスを付けています。要素の種類は違っても、役割は同じ入力欄だからです。
+
+## 送信ボタンにも action-control を付ける
+
+送信ボタンは、`<button type="submit">` に21-2の `action-control` を付けるだけで作れます。21-2では、`<a>` と `<button>` のどちらにも付ける部品として名前を決め、ホバーの条件を `&:is(:any-link, :enabled):hover` にしていました。そのため、CSSは直しません（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#パターンにするかコンポーネントにするか)」）。`disabled` にした送信ボタンは `:enabled` に当たらないので、押せない間はホバーしても見た目が変わりません。
+
+## 入力欄の文字の大きさと高さ
+
+入力欄の文字の大きさは、`max(16px, 1rem)` にします。iOSのSafariは、16px未満の入力欄にフォーカスするとページを拡大し、拡大はユーザーが縮小するまで戻りません（「[17-7 フォーム部品](/interaction/forms/#入力欄の大きさと文字サイズ)」）。デザインで14pxにしたいと言われたら、そのまま書かず、16pxで成り立つデザインにできないかを相談します。
+
+```css title="🙆‍♂ Recommended: 入力欄の文字は16pxを下限にし、textarea の高さは行数で決める"
+@scope (.scoped.contact-form) to (.scoped) {
+  ._text-control {
+    padding-block: 12px;
+    padding-inline: 16px;
+    border-color: var(--border--strong);
+    border-radius: var(--rounded--md);
+    background-color: var(--background--base);
+    font-size: max(16px, 1rem);
+  }
+
+  textarea {
+    --_rows: 4lh;
+    --_max-rows: 10lh;
+
+    box-sizing: unset;
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
+    min-block-size: var(--_rows);
+
+    @supports (field-sizing: content) {
+      max-block-size: var(--_max-rows);
+      resize: none;
+      field-sizing: content;
+    }
+  }
+}
+```
+
+お問い合わせ内容の `<textarea>` は、`field-sizing: content` で入力に合わせて伸ばし、最小と最大の高さを `lh` 単位の行数で決めます。高さを行数だけで書けるように、`box-sizing` を `content-box` に戻しています（`field-sizing-for-textarea`）。同意のチェックボックスは、色をティールにするだけなので、作り直さずに `accent-color` で色を変えます（`accent-color-for-color-only`）。
+
+## 要件が変わる
+
+入力の誤りを、項目ごとに示す要件が加わりました。誤りのある入力欄は枠線を赤くし、何をどう直せばよいかを、その下の赤い太字の文章で示します。ただし、ページを開いた時点や、入力している途中には表示しません。誤りを表示するのは、入力して次の項目へ移ったあとと、送信しようとしたあとです。スクリーンリーダーにも、誤りがあることと、その文章を伝えます。
+
+本文を読む前に、誤りの見た目をどの擬似クラスで選ぶかを考えてみてください。`:invalid` で選ぶと、ページを開いた時点で何が起きるでしょうか。誤りの文章を、CSSだけで表示したとき、スクリーンリーダーに伝わるかも予想してから読み進めます。
+
+## 変更後の合格条件
+
+次のデモが、要件の変更を終えた時点のお問い合わせのフォームです。誤りをスクリーンリーダーに伝える処理は、デモに含めたスクリプトで動きます。
+
+<Demo base="exercise" scheme="light" title="要件の変更を終えたお問い合わせのフォーム：入力したあとにだけ、誤りを色と文章で示す" html={contactFormChangedHtml} css={contactFormChangedCss} js={contactFormChangedJs} />
+
+ページを開いた時点では、誤りは1つも表示されません。何も入力せずに「送信する」を押すと、必須の5つの項目の枠線が赤くなり、それぞれの下に誤りの文章が表示されます。メールアドレスに「name」とだけ入力して次の項目へ移ると、その項目だけに誤りが表示され、正しく入力し直すと消えれば完成です。
+
+## 誤りは :user-invalid で選ぶ
+
+誤りの見た目は、`:invalid` ではなく `:user-invalid` に指定します。`required` を付けた空の入力欄は、何も入力していなくても `:invalid` に当てはまるので、ページを開いた時点で、すべての必須の項目が赤くなります。`:user-invalid` は、入力して離れたあとか、送信しようとしたあとにだけ当てはまります（`user-invalid-for-errors`）。
+
+```css title="🙆‍♂ Recommended: 入力欄の枠線と誤りの文章を、:user-invalid と aria-invalid の両方で切り替える"
+@scope (.scoped.contact-form) to (.scoped) {
+  ._text-control {
+    border-color: var(--border--strong);
+
+    &:is(:user-invalid, [aria-invalid="true"]) {
+      border-color: var(--foreground--danger);
+    }
+  }
+
+  ._error {
+    display: none;
+    color: var(--foreground--danger);
+    font-weight: var(--font-weight--bold);
+
+    &:is(._field:has(:is(:user-invalid, [aria-invalid="true"])) *) {
+      display: block flow;
+    }
+  }
+}
+```
+
+誤りの文章は、HTMLに書いておき、項目の中に誤りのある入力欄があるときだけ表示します。誤りは赤い色だけでなく、何をどう直せばよいかの文章でも伝えます（`no-color-only-information`）。
+
+## スクリーンリーダーに伝える部分だけをスクリプトに任せる
+
+`:user-invalid` が変えるのは見た目だけで、誤りがあることはスクリーンリーダーに伝わりません。表示した文章も、入力欄と関連付けなければ、入力欄へのフォーカスで読み上げられません。そこで、誤りのある入力欄へスクリプトで `aria-invalid="true"` を付け、誤りの文章の `id` を `aria-describedby` に足します（「[17-7 フォーム部品](/interaction/forms/#user-invalid-による入力エラーの表示)」）。
+
+スクリプトが受け持つのは、この2つの属性だけです。見た目は、CSSが `:user-invalid` と `[aria-invalid="true"]` のどちらでも同じになるように、`:is()` でまとめて指定しています（`native-and-aria-state-together`）。サーバーで検証した結果を、HTMLの `aria-invalid="true"` として返す場合も、同じ見た目になります。
+
+## 振り返り
+
+直したのは、各項目に誤りの文章を足したHTMLと、入力欄の枠線と誤りの文章の指定、支援技術に伝えるスクリプトです。フォームの並び、ラベル、必須の印、送信ボタンは直していません。最初の要件で、入力欄に共通の `._text-control` を付けていたので、誤りの見た目も1か所に書けました。
+
+予想と見比べたら、自分の変更を次の3つの点で見直します。
+
+- 誤りの見た目を `:user-invalid` で選ぶと予想できたか。`:invalid` で書いていたなら、ページを開いた時点の表示を確かめたか。
+- 誤りが、色だけでなく文章でも伝わっているか。入力欄にフォーカスしたとき、スクリーンリーダーが誤りの文章を読み上げるかを確かめたか。
+- スクリプトが見た目を変えていないか。見た目の条件が、CSSの1か所にまとまっているか。
+
+## 判断の問い
+
+### 問い1
+
+「必須」の印を、ラベルに `data-required` 属性を付け、`::after { content: "必須"; }` で入れる書き方にしたい、と言われました。どう答えますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+HTMLに書くように答えます。必須であることは入力する人が知る必要のある情報で、生成コンテンツの文字は、スクリーンリーダーやブラウザによって読み上げられないことがあり、コピーもできません（`no-meaningful-generated-content`）。印の見た目は、HTMLに書いた `<span class="_required">` のCSSでそろえます。
+
+</details>
+
+### 問い2
+
+誤りの文章を、`._error` に `hidden` 属性を付けておき、スクリプトで外して表示する書き方にすると、何が変わりますか。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えと解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+誤りを表示するかどうかを、スクリプトが受け持つようになります。スクリプトが読み込めなかった環境では、`:user-invalid` が当てはまっても文章が表示されず、枠線の色だけが変わります。この節の書き方では、表示はCSSの `:user-invalid` が受け持ち、スクリプトは支援技術に伝える属性だけを付けるので、スクリプトがなくても見た目の誤りの表示は動きます。
+
+</details>
+
+## この節で使ったルール
+
+- [`no-meaningful-generated-content`](/pseudo/generated-content/#rule-no-meaningful-generated-content)：必須の印のように、読み手が知る必要のある文字を、生成コンテンツで入れません。
+- [`input-font-size-min-1rem`](/interaction/forms/#rule-input-font-size-min-1rem)：入力欄の文字サイズは、1rem（16px相当）以上にします。
+- [`field-sizing-for-textarea`](/interaction/forms/#rule-field-sizing-for-textarea)：`<textarea>` には `field-sizing: content` を指定し、最小と最大の高さを `lh` 単位で決めます。
+- [`accent-color-for-color-only`](/interaction/forms/#rule-accent-color-for-color-only)：チェックボックスの色を変えるだけなら、`accent-color` を使います。
+- [`user-invalid-for-errors`](/interaction/forms/#rule-user-invalid-for-errors)：入力エラーの見た目は、`:invalid` ではなく `:user-invalid` に指定します。
+- [`native-and-aria-state-together`](/pseudo/form-states/#rule-native-and-aria-state-together)：同じ状態をネイティブの属性とARIA属性で表すときは、まとめて指定します。
+- [`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)：入力エラーのような情報を、色の違いだけで伝えません。
+- [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーは、`&:enabled:hover` のように操作できる状態に限定します。

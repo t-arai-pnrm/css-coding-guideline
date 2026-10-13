@@ -1,0 +1,49 @@
+/*
+ * 第21章の演習のサイト（エグザンプル・スタジオ株式会社）のトークン。
+ * 共通トークンの後に同じ tokens レイヤーで読み込み、セマンティクスの値を紺とティールに差し替える。
+ * 名前は共通トークンと同じなので、デモの CSS は共通トークンのときと同じ書き方で参照する。
+ *
+ * サイト全体はライトの配色に固定する。light-dark() のダークの値は、紺の面に置いた要素で使う。
+ */
+:root {
+  /* プリミティブ */
+  --color--navy--700: oklch(37% 0.05 265deg);
+  --color--navy--800: oklch(31% 0.05 265deg);
+  --color--navy--900: oklch(26% 0.05 265deg);
+  --color--slate--50: oklch(97.5% 0.004 265deg);
+  --color--slate--300: oklch(84% 0.012 265deg);
+  --color--slate--500: oklch(54% 0.02 265deg);
+  --color--teal--50: oklch(96% 0.025 190deg);
+  --color--teal--300: oklch(80% 0.12 185deg);
+  --color--teal--600: oklch(53% 0.09 192deg);
+  --color--teal--700: oklch(47% 0.08 192deg);
+
+  /*
+   * 面。ライトではページを白にし、区切りたい面を淡いグレーで塗る。
+   * 紺の面では、ページの背景が紺になり、高い面ほど明るくする。
+   */
+  --background--base: light-dark(oklch(100% 0 none), var(--color--navy--900));
+  --background--surface: light-dark(var(--color--slate--50), var(--color--navy--800));
+  --background--overlay: light-dark(oklch(100% 0 none), var(--color--navy--800));
+  --background--raised: light-dark(oklch(100% 0 none), var(--color--navy--700));
+
+  /* 主ボタンのように、文字色で塗る面 */
+  --background--inverse: light-dark(var(--color--navy--900), oklch(100% 0 none));
+  --background--accent: light-dark(var(--color--teal--700), var(--color--teal--300));
+  --foreground--base: light-dark(var(--color--navy--900), oklch(97% 0.006 265deg));
+  --foreground--muted: light-dark(var(--color--slate--500), var(--color--slate--300));
+  --foreground--accent: light-dark(var(--color--teal--700), var(--color--teal--300));
+  --foreground--inverse: light-dark(oklch(100% 0 none), var(--color--navy--900));
+  --foreground--on-accent: light-dark(oklch(100% 0 none), var(--color--navy--900));
+
+  /*
+   * ブランドの色。英字の小見出しやカテゴリーのラベルのような、操作できない飾りに使う。
+   * リンク、フォーカスリング、選んだ状態には、ここではなく accent を使う。
+   */
+  --foreground--brand: light-dark(var(--color--teal--600), var(--color--teal--300));
+  --background--brand-subtle: light-dark(var(--color--teal--50), color-mix(in oklab, var(--color--teal--300) 16%, transparent));
+
+  /* 文字の役割。セクションの見出しを大きく、カードの見出しを控えめにする */
+  --text--display--font-size: 36;
+  --text--title--font-size: 18;
+}
