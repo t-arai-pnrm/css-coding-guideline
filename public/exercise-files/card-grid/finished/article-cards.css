@@ -38,6 +38,22 @@
         padding: 16px;
         border: 1px solid var(--border--base);
         border-radius: var(--rounded--lg);
+        box-shadow: var(--shadow--card);
+        background-color: var(--background--surface);
+        transition-duration: var(--duration--base);
+        transition-property: box-shadow;
+        transition-timing-function: var(--ease--out-quint);
+
+        /* 見出しのリンクにホバーしたら、影を深くする。カードの位置は動かさない */
+        &:has(a:any-link:hover) {
+          @media (any-hover) {
+            box-shadow: var(--shadow--card-hover);
+          }
+        }
+
+        &:has(a:focus-visible) {
+          box-shadow: var(--shadow--card-hover);
+        }
       }
     }
 
@@ -45,7 +61,7 @@
       inline-size: -webkit-fill-available;
       inline-size: stretch;
       aspect-ratio: 16 / 9;
-      border-radius: var(--rounded--sm);
+      border-radius: var(--rounded--md);
       object-fit: cover;
 
       /* 画像が左の形では、日付とカテゴリー、見出しの2行にまたがらせる */
@@ -62,6 +78,11 @@
       color: var(--foreground--muted);
       font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
       line-height: var(--text--caption--leading);
+    }
+
+    time {
+      font-family: var(--font-family--latin);
+      font-variant-numeric: tabular-nums;
     }
 
     ._category {

@@ -7,6 +7,16 @@
       display: block grid;
       gap: 8px;
       align-content: start;
+      padding-block: 16px 8px;
+      padding-inline: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+    }
+
+    /* 項目の間にだけ線を引き、パネルの縁と線が重ならないようにする */
+    li + li {
+      border-block-start: 1px solid var(--border--base);
     }
 
     h2 {
@@ -20,7 +30,6 @@
       justify-content: space-between;
       padding-block: 12px;
       padding-inline: 4px;
-      border-block-end: 1px solid var(--border--base);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
 

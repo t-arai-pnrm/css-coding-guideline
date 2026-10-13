@@ -59,6 +59,7 @@
       --_hit-size: max(24px, 24 / 16 * 1rem);
       --_background: var(--background--inverse);
       --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+      --_shadow: var(--shadow--button);
       --_hocus: --false;
 
       display: inline flex;
@@ -70,6 +71,7 @@
       padding-inline: 28px;
       border: 1px solid transparent;
       border-radius: var(--rounded--full);
+      box-shadow: var(--_shadow);
       background-color: var(--_background);
       color: var(--foreground--inverse);
       font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
@@ -83,6 +85,7 @@
       &[data-variant="secondary"] {
         --_background: transparent;
         --_background--hocus: var(--background--hover);
+        --_shadow: none;
 
         border-color: var(--border--strong);
         color: var(--foreground--base);
@@ -91,6 +94,7 @@
       &[data-variant="text"] {
         --_background: transparent;
         --_background--hocus: transparent;
+        --_shadow: none;
 
         padding-block: 0;
         padding-inline: 0;
@@ -163,11 +167,20 @@
     }
 
     h1 {
+      /* .section-heading と同じく、幅360pxで32px、幅1024pxで display（48px）にする */
+      --_min: 32;
+      --_slope: calc((var(--text--display--font-size) - var(--_min)) / (1024 - 360));
+
       margin-block: unset;
       font-feature-settings: "palt";
-      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      font-size: clamp(
+        calc(var(--_min) / 16 * 1rem),
+        calc((var(--_min) - 360 * var(--_slope)) / 16 * 1rem + var(--_slope) * 100svi),
+        calc(var(--text--display--font-size) / 16 * 1rem)
+      );
       font-kerning: normal;
       line-height: var(--text--display--leading);
+      letter-spacing: -0.02em;
 
       @supports (word-break: auto-phrase) {
         text-wrap: balance;
@@ -238,21 +251,36 @@
 @layer patterns {
   /* セクションの見出しの上に添える、英字の小見出し */
   .eyebrow {
+    inline-size: fit-content;
+    padding-block: 4px;
+    padding-inline: 12px;
+    border-radius: var(--rounded--full);
+    background-color: var(--background--brand-subtle);
     color: var(--foreground--brand);
+    font-family: var(--font-family--latin);
     font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
     font-weight: var(--font-weight--bold);
     font-kerning: normal;
     line-height: var(--text--caption--leading);
-    letter-spacing: 0.16em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   /* セクションの見出し */
   .section-heading {
+    /* 幅360pxで32px、幅1024pxで display（48px）になるよう、2つの幅から傾きと切片を求める */
+    --_min: 32;
+    --_slope: calc((var(--text--display--font-size) - var(--_min)) / (1024 - 360));
+
     font-feature-settings: "palt";
-    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-size: clamp(
+      calc(var(--_min) / 16 * 1rem),
+      calc((var(--_min) - 360 * var(--_slope)) / 16 * 1rem + var(--_slope) * 100svi),
+      calc(var(--text--display--font-size) / 16 * 1rem)
+    );
     font-kerning: normal;
     line-height: var(--text--display--leading);
+    letter-spacing: -0.02em;
 
     @supports (word-break: auto-phrase) {
       text-wrap: balance;

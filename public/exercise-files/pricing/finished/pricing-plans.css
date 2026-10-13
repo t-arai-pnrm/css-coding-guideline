@@ -20,6 +20,8 @@
       padding: 24px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--card);
+      background-color: var(--background--surface);
 
       /* おすすめのプランは、紺の配色にする。中のボタンや文字の色は、トークンが切り替える */
       &[data-variant="recommended"] {
@@ -52,9 +54,11 @@
     }
 
     ._price {
-      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      font-family: var(--font-family--latin);
+      font-size: calc(var(--text--price--font-size) / 16 * 1rem);
       font-weight: var(--font-weight--bold);
-      line-height: var(--text--display--leading);
+      font-variant-numeric: tabular-nums;
+      line-height: var(--text--price--leading);
 
       /* 税の表示は、価格の桁数によらず次の行に置き、価格の行の高さをそろえる */
       & > small {

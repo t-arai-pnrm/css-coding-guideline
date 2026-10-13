@@ -2,7 +2,8 @@
  * 第21章の演習を手元で進めるためのファイルを、演習のデモから生成する。
  * 出力先は `public/exercise-files/` で、サイトの `/exercise-files/` から読める。
  *
- * - `base.css`：レイヤーの順序宣言、共通トークンと演習のサイトのトークン（tokens レイヤー）、kiso.css（reset レイヤー）、デモと演習のベーススタイル
+ * - `base.css`：レイヤーの順序宣言、共通トークンと演習のサイトのトークン（tokens レイヤー）、kiso.css（reset レイヤー）、デモと演習のベーススタイル、欧文の書体の `@font-face`
+ * - `fonts/`：欧文の書体のファイルとライセンス（`src/demos/exercise/fonts/` を写す）
  * - `<節のスラッグ>/start/`：開始版。その節で作るファイルだけを空にし、ほかの部品は完成した状態にする
  * - `<節のスラッグ>/middle/`：中間版。最初の要件を終えた時点（デモの `<スラッグ>-1`）
  * - `<節のスラッグ>/finished/`：完成版。要件の変更を終えた時点（デモの `<スラッグ>-2`）
@@ -16,7 +17,7 @@
  *
  * 土台のスタイルは `src/lib/demo.ts` のデモと同じものを使う。演習のデモを変えたら、このスクリプトを実行し直す。
  */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -92,6 +93,8 @@ ${kiso}
 }
 
 ${pickConstant('DEMO_BASE')}
+
+${pickConstant('EXERCISE_FONT_FACE')}
 
 ${pickConstant('EXERCISE_BASE')}
 `;
@@ -352,6 +355,7 @@ const demo = (name) => {
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'base.css'), baseCss);
+cpSync(join(root, demoDir, 'fonts'), join(outDir, 'fonts'), { recursive: true });
 
 for (const section of SECTIONS) {
   const { slug, title } = section;
@@ -379,4 +383,4 @@ const review = demo('review');
 review.css.set('compositions.css', demo('card-grid-2').css.get('compositions.css'));
 write('review', { ...review, title: '21-15 レビューするプルリクエスト', base: '../base.css' });
 
-console.log(`public/exercise-files/ に ${SECTIONS.length} 節×3 の版と、レビューの版と base.css を書き出しました。`);
+console.log(`public/exercise-files/ に ${SECTIONS.length} 節×3 の版と、レビューの版と base.css と fonts/ を書き出しました。`);

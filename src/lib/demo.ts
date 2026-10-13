@@ -77,6 +77,19 @@ const DEMO_BASE = `@layer base {
 }`;
 
 /**
+ * 第21章の演習のサイトの欧文の書体（14-1）。見出しと英字の小見出しの飾りなので、読み込みを待たない `optional` にする。
+ * `src` は、配布用の `base.css` から見た相対パスで書く。デモでは `buildSrcdoc` が、サイトの `/exercise-files/fonts/` に置き換える。
+ */
+const EXERCISE_FONT_FACE = `@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url("fonts/inter-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}`;
+
+/**
  * 第21章の演習のサイトのベーススタイル。演習は1つのサイトを作るので、本書のベーススタイル（第8章、第14章）を通して当てる。
  * 解説のデモでは、話題と関係のない見た目の差を増やさないよう、`DEMO_BASE` だけにしている。
  */
@@ -91,6 +104,10 @@ const EXERCISE_BASE = `@layer base {
 
   :lang(en) {
     font-kerning: normal;
+  }
+
+  :is(:heading, h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-family--latin);
   }
 
   :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
@@ -148,7 +165,11 @@ export const buildSrcdoc = ({
       `<style>@layer reset {\n${kisoCss}\n}</style>`,
       `<style>${DEMO_BASE}</style>`,
     );
-    if (base === 'exercise') head.push(`<style>${EXERCISE_BASE}</style>`);
+    if (base === 'exercise') {
+      const siteBase = (import.meta.env?.BASE_URL ?? '/').replace(/\/?$/, '/');
+      const fontFace = EXERCISE_FONT_FACE.replace('url("fonts/', `url("${siteBase}exercise-files/fonts/`);
+      head.push(`<style>${fontFace}</style>`, `<style>${EXERCISE_BASE}</style>`);
+    }
   }
   head.push(`<style>\n${css}\n</style>`);
   const script = js ? `<script type="module">\n${js}\n</script>` : '';

@@ -8,6 +8,7 @@
       --_hit-size: max(24px, 24 / 16 * 1rem);
       --_background: var(--background--inverse);
       --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+      --_shadow: var(--shadow--button);
       --_hocus: --false;
 
       display: inline flex;
@@ -19,6 +20,7 @@
       padding-inline: 28px;
       border: 1px solid transparent;
       border-radius: var(--rounded--full);
+      box-shadow: var(--_shadow);
       background-color: var(--_background);
       color: var(--foreground--inverse);
       font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
@@ -32,6 +34,7 @@
       &[data-variant="secondary"] {
         --_background: transparent;
         --_background--hocus: var(--background--hover);
+        --_shadow: none;
 
         border-color: var(--border--strong);
         color: var(--foreground--base);
@@ -40,6 +43,7 @@
       &[data-variant="text"] {
         --_background: transparent;
         --_background--hocus: transparent;
+        --_shadow: none;
 
         padding-block: 0;
         padding-inline: 0;

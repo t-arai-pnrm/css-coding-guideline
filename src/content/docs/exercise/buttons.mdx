@@ -13,9 +13,9 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 サイトのどのページにも出てくる部品を、2つ作ります。1つは、お問い合わせや資料請求へ誘導する、ボタンの見た目のリンクです。もう1つは、英字の小見出しを上に添えた、セクションの見出しです。
 
-ボタンの見た目には3つの種類があります。主ボタンは紺で塗って文字を白にし、副ボタンは背景を塗らずに1pxの枠線で囲みます。どちらも角を丸めた高さ約48pxの形で、左右の内側に28pxの余白を取ります。3つ目は、ティールの文字の後ろに矢印を置いたリンクです。ホバーとフォーカスのときは、主ボタンは紺をページの背景の色へ少し寄せ、副ボタンには淡い背景を付け、文字のリンクは矢印だけを右へ4pxずらします。
+ボタンの見た目には3つの種類があります。主ボタンは紺で塗って文字を白にし、副ボタンは背景を塗らずに1pxの枠線で囲みます。どちらも角を丸めた高さ約48pxの形で、左右の内側に28pxの余白を取り、主ボタンにだけ紺の淡い影を落とします。3つ目は、ティールの文字の後ろに矢印を置いたリンクです。ホバーとフォーカスのときは、主ボタンは紺をページの背景の色へ少し寄せ、副ボタンには淡い背景を付け、文字のリンクは矢印だけを右へ4pxずらします。
 
-セクションの見出しは、ティールの英字の小見出し（12px相当、太字、字間0.16em、大文字）の下に、36px相当の太字の見出しを8px空けて置きます。カンプのセクションでは、見出しの下にリード文、その下に主ボタンと副ボタンを16px空けて横に並べ、最後に文字のリンクを置いています。見出し、リード文、ボタンの並び、文字のリンクの間は、どれも24pxです。
+セクションの見出しは、ティールの英字の小見出し（12px相当、太字、字間0.08em、大文字）の下に、太字の見出しを8px空けて置きます。小見出しは、上下4px、左右12pxの内側の余白を取った、淡いティールの丸いラベルです。見出しは、幅360pxで32px相当、幅1024pxで48px相当になり、その間は幅に比例して大きくなります。小見出しと見出しの英字には、欧文の書体のInterを使います。カンプのセクションでは、見出しの下にリード文、その下に主ボタンと副ボタンを16px空けて横に並べ、最後に文字のリンクを置いています。見出し、リード文、ボタンの並び、文字のリンクの間は、どれも24pxです。
 
 手元で進めるときは、開始版（[index.html](/exercise-files/buttons/start/index.html)）から始め、中間版（[index.html](/exercise-files/buttons/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/buttons/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/buttons/start/`、`exercise/buttons/middle/`、`exercise/buttons/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
 
@@ -48,7 +48,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 2つの部品の分類は、状態で見た目が変わるかで分かれます（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#パターンにするかコンポーネントにするか)」）。ボタンの見た目は、ホバーとフォーカスで変わり、矢印のような子要素も持つので、コンポーネントにします。小見出しと見出しの組は、状態で変わらず、すべての置き場所でそろえたい構造もありません。
 
-小見出しと見出しを包む要素を、`section-intro` のようなコンポーネントにしたくなるかもしれません。しかし、この組で決めたいのは文字の見た目だけで、包む要素の種類や、リード文を置くかどうかは、セクションごとに違います（「[10-1 何をコンポーネントにするか](/components/what-is-a-component/)」）。そこで、小見出しに `eyebrow`、見出しに `section-heading` のパターンを付け、包む `<hgroup>` はセクションの子要素として書きます。
+小見出しと見出しを包む要素を、`section-intro` のようなコンポーネントにしたくなるかもしれません。しかし、この組で決めたいのは見た目だけで、包む要素の種類や、リード文を置くかどうかは、セクションごとに違います（「[10-1 何をコンポーネントにするか](/components/what-is-a-component/)」）。そこで、小見出しに `eyebrow`、見出しに `section-heading` のパターンを付け、包む `<hgroup>` はセクションの子要素として書きます。
 
 ```html title="🙆‍♂ Recommended: ボタンはコンポーネントのルートに、見出しの文字にはパターンを付ける"
 <section class="_section">
@@ -78,14 +78,17 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
   :scope {
     --_background: var(--background--inverse);
     --_background--hocus: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+    --_shadow: var(--shadow--button);
 
     border: 1px solid transparent;
+    box-shadow: var(--_shadow);
     background-color: var(--_background);
     color: var(--foreground--inverse);
 
     &[data-variant="secondary"] {
       --_background: transparent;
       --_background--hocus: var(--background--hover);
+      --_shadow: none;
 
       border-color: var(--border--strong);
       color: var(--foreground--base);
@@ -94,6 +97,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
     &[data-variant="text"] {
       --_background: transparent;
       --_background--hocus: transparent;
+      --_shadow: none;
 
       padding-block: 0;
       padding-inline: 0;
@@ -103,7 +107,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 }
 ```
 
-種類ごとに書き換えるのは、背景の内部プロパティと、枠線と文字の色だけです。ホバーとフォーカスの背景は、どの種類でも `--_background--hocus` を読むので、状態のセレクタを種類ごとに書き分ける必要がありません。主ボタンにも透明な1pxの枠線を置いておき、副ボタンでは色だけを変えて描きます。そうしておけば、2つの種類の高さがそろいます。
+種類ごとに書き換えるのは、背景と影の内部プロパティと、枠線と文字の色だけです。ホバーとフォーカスの背景は、どの種類でも `--_background--hocus` を読むので、状態のセレクタを種類ごとに書き分ける必要がありません。主ボタンにも透明な1pxの枠線を置いておき、副ボタンでは色だけを変えて描きます。そうしておけば、2つの種類の高さがそろいます。
 
 文字のリンクの色は、リンクを表す `--foreground--accent` で指定します。小見出しも同じティールに見えますが、こちらは操作できない飾りなので、ブランドの色の `--foreground--brand` を使います（「[21-1 題材と準備](/exercise/setup/#カンプとトークンの対応)」）。
 
@@ -152,25 +156,40 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 ## 見出しのパターンに書くもの、書かないもの
 
-パターンは `patterns` レイヤーに置き、文字の見た目だけを書きます。`patterns` はコンポーネントより後ろのレイヤーなので、パターンに書いたプロパティは、置かれたセクションのCSSから変えられなくなります（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#パターンに書いてよいプロパティ)」）。
+パターンは `patterns` レイヤーに置き、小見出しと見出しの見た目だけを書きます。`patterns` はコンポーネントより後ろのレイヤーなので、パターンに書いたプロパティは、置かれたセクションのCSSから変えられなくなります（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#パターンに書いてよいプロパティ)」）。
 
-```css title="🙆‍♂ Recommended: パターンには文字の見た目だけを書き、余白は置く側に任せる"
+```css title="🙆‍♂ Recommended: パターンには小見出しと見出しの見た目だけを書き、外側の余白は置く側に任せる"
 @layer patterns {
   .eyebrow {
+    inline-size: fit-content;
+    padding-block: 4px;
+    padding-inline: 12px;
+    border-radius: var(--rounded--full);
+    background-color: var(--background--brand-subtle);
     color: var(--foreground--brand);
+    font-family: var(--font-family--latin);
     font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
     font-weight: var(--font-weight--bold);
     font-kerning: normal;
     line-height: var(--text--caption--leading);
-    letter-spacing: 0.16em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   .section-heading {
+    /* 幅360pxで32px、幅1024pxで display（48px）になるよう、2つの幅から傾きと切片を求める */
+    --_min: 32;
+    --_slope: calc((var(--text--display--font-size) - var(--_min)) / (1024 - 360));
+
     font-feature-settings: "palt";
-    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-size: clamp(
+      calc(var(--_min) / 16 * 1rem),
+      calc((var(--_min) - 360 * var(--_slope)) / 16 * 1rem + var(--_slope) * 100svi),
+      calc(var(--text--display--font-size) / 16 * 1rem)
+    );
     font-kerning: normal;
     line-height: var(--text--display--leading);
+    letter-spacing: -0.02em;
 
     @supports (word-break: auto-phrase) {
       text-wrap: balance;
@@ -180,13 +199,13 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 }
 ```
 
-小見出しの色は、パターンに書きました。このサイトの小見出しは、どのセクションに置いてもブランドの色で、置く側で変えることはないからです。見出しの色は書かず、置かれた場所の文字色を継承させます。和文の見出しには、約物を詰める `palt` と、文節で折り返す `auto-phrase` を指定します（「[14-2 和文組版を整える](/typography/japanese-typesetting/)」、「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」）。
+小見出しの色は、パターンに書きました。このサイトの小見出しは、どのセクションに置いてもブランドの色で、置く側で変えることはないからです。内側の余白と丸い背景もパターンに書き、`inline-size: fit-content` でラベルを文字の幅に縮めます。見出しの大きさは、`clamp()` で幅360pxの32px相当から幅1024pxの `display`（48px相当）まで、幅に比例して変えます。見出しの色は書かず、置かれた場所の文字色を継承させます。和文の見出しには、約物を詰める `palt` と、文節で折り返す `auto-phrase` を指定します（「[14-2 和文組版を整える](/typography/japanese-typesetting/)」、「[14-4 文字サイズと改行](/typography/size-and-line-breaks/)」）。
 
-余白は、パターンとボタンのどちらにも書きません。小見出しと見出しの間の8pxは `._heading` の `gap` で、セクションの中の24pxは `._section` の `gap` で、置く側の `page-demo.css` に書きます（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。見出しの大きさを外から変える公開プロパティも、まだ作りません。大きさを変える要件が、まだないからです。
+外側の余白は、パターンとボタンのどちらにも書きません。小見出しと見出しの間の8pxは `._heading` の `gap` で、セクションの中の24pxは `._section` の `gap` で、置く側の `page-demo.css` に書きます（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。見出しの大きさを外から変える公開プロパティも、まだ作りません。大きさを変える要件が、まだないからです。
 
 ## 要件が変わる
 
-サービスのページの最後に、紺の帯を置くことになりました。帯には、英字の小見出し、見出し、リード文と、この節で作った主ボタンと副ボタンを、中央そろえで置きます。カンプの帯は、背景が紺で、見出しは白、小見出しは明るいティールです。主ボタンは白い面に紺の文字で、副ボタンは枠線と文字が白に近い色です。
+サービスのページの最後に、紺の帯を置くことになりました。帯には、英字の小見出し、見出し、リード文と、この節で作った主ボタンと副ボタンを、中央そろえで置きます。カンプの帯は、背景が紺で、右上にティールの光がにじみ、見出しは白、小見出しは明るいティールです。主ボタンは白い面に紺の文字で、副ボタンは枠線と文字が白に近い色です。
 
 本文を読む前に、紺の帯の上でボタンの色を変える方法を考えてみてください。思いつきやすいのは、`action-control` に紺の面のための種類（`data-variant="on-dark"` など）を足す方法と、帯のCSSから帯の中のボタンを選んで色を上書きする方法です。ボタンに色の公開プロパティを足し、帯から値を渡す方法もあります。どの方法を選ぶと直すファイルがいくつになるか、21-5で作る紺のフッター{/* 21-5の執筆後にリンクする: /exercise/footer/ */}へボタンを置くとき、もう一度直すことになるかを予想してから読み進めます。
 
@@ -231,6 +250,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
     padding-inline: 24px;
     border-radius: var(--rounded--lg);
     color-scheme: dark;
+    background-image: var(--background-image--brand-glow);
     background-color: var(--background--base);
     color: var(--foreground--base);
     text-align: center;
@@ -240,7 +260,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 演習のトークンは、セマンティクスの値を `light-dark()` で持っています。サイト全体はライトの配色に固定していますが、トークンのダークの値には、紺の面で使う色を入れてあります。登録していないカスタムプロパティは、`var()` で参照した要素の配色で値が決まります。そのため、帯の中の `action-control` が参照する `--background--inverse` は白に、`--foreground--inverse` は紺になります。小見出しの `--foreground--brand` も、明るいティールに切り替わります。
 
-帯の背景を `--background--base` にしたのも、同じ仕組みによるものです。ページの背景のトークンは、帯の中ではダークの値の紺になります。帯は新しいコンポーネントとして `cta-band.css` に書き、帯とセクションの間の64pxは、置く側の `page-demo.css` の `gap` で空けます。
+帯の背景を `--background--base` にしたのも、同じ仕組みによるものです。ページの背景のトークンは、帯の中ではダークの値の紺になります。その上に、ティールの光を描いたグラデーションのトークン `--background-image--brand-glow` を重ねます。小見出しは文字の幅のラベルなので、見出しを包む `._heading` でも `justify-items: center` を指定し、帯の中央にそろえます。帯は新しいコンポーネントとして `cta-band.css` に書き、帯とセクションの間の64pxは、置く側の `page-demo.css` の `gap` で空けます。
 
 ## 振り返り
 

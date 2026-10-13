@@ -30,7 +30,10 @@
       min-block-size: calc(72 / 16 * 1rem);
       padding-block: 8px;
       border-block-end: 1px solid transparent;
-      background-color: var(--background--base);
+      background-color: var(--background--surface);
+      transition-duration: var(--duration--base);
+      transition-property: border-block-end-color, box-shadow;
+      transition-timing-function: var(--ease--out-quint);
 
       /*
        * ロゴ、ナビゲーション、お問い合わせのボタンが1行に収まる幅。
@@ -41,7 +44,8 @@
       }
 
       @container --scoped scroll-state(stuck: block-start) {
-        border-block-end-color: var(--border--strong);
+        border-block-end-color: var(--border--base);
+        box-shadow: var(--shadow--card);
       }
     }
 

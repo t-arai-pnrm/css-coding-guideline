@@ -205,20 +205,21 @@
   --color--navy--700: oklch(37% 0.05 265deg);
   --color--navy--800: oklch(31% 0.05 265deg);
   --color--navy--900: oklch(26% 0.05 265deg);
-  --color--slate--50: oklch(97.5% 0.004 265deg);
-  --color--slate--300: oklch(84% 0.012 265deg);
-  --color--slate--500: oklch(54% 0.02 265deg);
+  --color--slate--50: oklch(97.5% 0.003 265deg);
+  --color--slate--300: oklch(86% 0.006 265deg);
+  --color--slate--500: oklch(53% 0.012 265deg);
   --color--teal--50: oklch(96% 0.025 190deg);
+  --color--teal--200: oklch(89% 0.07 185deg);
   --color--teal--300: oklch(80% 0.12 185deg);
   --color--teal--600: oklch(53% 0.09 192deg);
   --color--teal--700: oklch(47% 0.08 192deg);
 
   /*
-   * 面。ライトではページを白にし、区切りたい面を淡いグレーで塗る。
+   * 面。ライトではページを淡いグレーにし、カードやパネルを白い面にして浮かせる。
    * 紺の面では、ページの背景が紺になり、高い面ほど明るくする。
    */
-  --background--base: light-dark(oklch(100% 0 none), var(--color--navy--900));
-  --background--surface: light-dark(var(--color--slate--50), var(--color--navy--800));
+  --background--base: light-dark(var(--color--slate--50), var(--color--navy--900));
+  --background--surface: light-dark(oklch(100% 0 none), var(--color--navy--800));
   --background--overlay: light-dark(oklch(100% 0 none), var(--color--navy--800));
   --background--raised: light-dark(oklch(100% 0 none), var(--color--navy--700));
 
@@ -234,13 +235,57 @@
   /*
    * ブランドの色。英字の小見出しやカテゴリーのラベルのような、操作できない飾りに使う。
    * リンク、フォーカスリング、選んだ状態には、ここではなく accent を使う。
+   * 紺の面では、ピルの淡い背景の上でもコントラスト比 4.5:1 を保つよう、文字をより明るいティールにする。
    */
-  --foreground--brand: light-dark(var(--color--teal--600), var(--color--teal--300));
+  --foreground--brand: light-dark(var(--color--teal--600), var(--color--teal--200));
   --background--brand-subtle: light-dark(var(--color--teal--50), color-mix(in oklab, var(--color--teal--300) 16%, transparent));
 
-  /* 文字の役割。セクションの見出しを大きく、カードの見出しを控えめにする */
-  --text--display--font-size: 36;
+  /*
+   * 枠線。面を区切る線は髪の毛ほどに淡くし、線の太さではなく面の段差とホバーの影で区切りを示す。
+   * 入力欄の枠のように、見分けられる必要のある線には strong を使う。
+   */
+  --border--base: color-mix(in oklab, var(--foreground--base) 8%, transparent);
+
+  /*
+   * 文字の役割。セクションの見出しを大きく、カードの見出しを控えめにする。
+   * display は、広い画面での最大の大きさ。狭い画面では .section-heading が clamp() で縮める
+   */
+  --text--display--font-size: 48;
+  --text--display--leading: 1.2;
+
+  /* 料金の数字。見出しより小さく、3列に並べても1行に収まる大きさにする */
+  --text--price--font-size: 36;
+  --text--price--leading: var(--leading--tight);
   --text--title--font-size: 18;
+
+  /*
+   * 欧文の書体。見出し、英字の小見出し、価格の数字に使う。
+   * Inter は欧文だけを収めているので、和文は後ろの総称ファミリーで表示される。
+   */
+  --font-family--latin: "Inter", sans-serif;
+
+  /*
+   * 角丸。カードとパネルを大きく丸め、中の画像とラベルを1段ずつ小さくする。
+   * カードの内側の余白（16px）を引いた値を画像の角丸にすると、外と内の角が同じ中心でそろう（28 - 16 = 12）
+   */
+  --rounded--sm: 6px;
+  --rounded--md: 12px;
+  --rounded--lg: 28px;
+
+  /*
+   * 影。共通トークンの --shadow--* は縁取りの線を含むので、線を border で別に引くカードには、線のない影を使う。
+   * 強制カラーモードでは影が消えるので、カードの境目は border で残す。
+   */
+  --shadow--card: 0 1px 2px 0 oklch(0% 0 none / 4%), 0 8px 24px -8px color-mix(in oklab, var(--color--navy--900) 14%, transparent);
+  --shadow--card-hover: 0 2px 4px 0 oklch(0% 0 none / 5%), 0 16px 40px -12px color-mix(in oklab, var(--color--navy--900) 24%, transparent);
+
+  /* 文字色で塗った主ボタン。上の縁に光を入れ、紺の淡い影を落とす */
+  --shadow--button: inset 0 1px 0 0 oklch(100% 0 none / 16%), 0 1px 2px 0 oklch(0% 0 none / 12%), 0 4px 12px -2px color-mix(in oklab, var(--color--navy--900) 30%, transparent);
+
+  /* 紺の面ににじませる光。誘導の帯のように、ブランドを見せる紺の面に重ねる */
+  --background-image--brand-glow:
+    radial-gradient(120% 90% at 85% 0%, color-mix(in oklab, var(--color--teal--600) 55%, transparent), transparent 60%),
+    radial-gradient(80% 70% at 0% 100%, color-mix(in oklab, var(--color--navy--700) 60%, transparent), transparent 70%);
 }
 
 }
@@ -813,6 +858,15 @@
   }
 }
 
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url("fonts/inter-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @layer base {
   :root {
     text-underline-offset: 25%;
@@ -824,6 +878,10 @@
 
   :lang(en) {
     font-kerning: normal;
+  }
+
+  :is(:heading, h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-family--latin);
   }
 
   :is(:heading, h1, h2, h3, h4, h5, h6, caption) {

@@ -11,7 +11,7 @@ import pricingInitialCss from '../../../demos/exercise/pricing-1/style.css?raw';
 import pricingChangedHtml from '../../../demos/exercise/pricing-2/index.html?raw';
 import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 
-料金のページに、3つの料金プランを並べます。各プランには、プランの名前、価格、短い説明、含まれる項目のリスト、相談のボタンを、この順で縦に並べます。プランは1pxの枠線で囲んで角を12px丸め、内側に24pxの余白を取ります。項目のリストは、各項目の前にティールの「✓」を置きます。
+料金のページに、3つの料金プランを並べます。各プランには、プランの名前、価格、短い説明、含まれる項目のリスト、相談のボタンを、この順で縦に並べます。プランは白い面にして、ごく淡い1pxの枠線で囲み、淡い影を落として角を28px丸め、内側に24pxの余白を取ります。価格は36px相当の太字で、数字は欧文の書体のInterで桁の幅をそろえます。項目のリストは、各項目の前にティールの「✓」を置きます。
 
 真ん中の「スタンダード」は、おすすめのプランです。プランを紺で塗り、名前の横に「おすすめ」の印を置き、相談のボタンを主ボタンにします。ほかの2つのプランのボタンは、副ボタンです（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。
 
@@ -80,6 +80,8 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
     padding: 24px;
     border: 1px solid var(--border--base);
     border-radius: var(--rounded--lg);
+    box-shadow: var(--shadow--card);
+    background-color: var(--background--surface);
 
     &[data-variant="recommended"] {
       border-color: transparent;

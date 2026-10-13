@@ -129,13 +129,29 @@
       padding: 16px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--lg);
+      box-shadow: var(--shadow--card);
+      background-color: var(--background--surface);
+      transition-duration: var(--duration--base);
+      transition-property: box-shadow;
+      transition-timing-function: var(--ease--out-quint);
+
+      /* 見出しのリンクにホバーしたら、影を深くする。カードの位置は動かさない */
+      &:has(a:any-link:hover) {
+        @media (any-hover) {
+          box-shadow: var(--shadow--card-hover);
+        }
+      }
+
+      &:has(a:focus-visible) {
+        box-shadow: var(--shadow--card-hover);
+      }
     }
 
     img {
       inline-size: -webkit-fill-available;
       inline-size: stretch;
       aspect-ratio: 16 / 9;
-      border-radius: var(--rounded--sm);
+      border-radius: var(--rounded--md);
       object-fit: cover;
     }
 
@@ -147,6 +163,11 @@
       color: var(--foreground--muted);
       font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
       line-height: var(--text--caption--leading);
+    }
+
+    time {
+      font-family: var(--font-family--latin);
+      font-variant-numeric: tabular-nums;
     }
 
     ._category {
@@ -187,6 +208,16 @@
       display: block grid;
       gap: 8px;
       align-content: start;
+      padding-block: 16px 8px;
+      padding-inline: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+    }
+
+    /* 項目の間にだけ線を引き、パネルの縁と線が重ならないようにする */
+    li + li {
+      border-block-start: 1px solid var(--border--base);
     }
 
     h2 {
@@ -200,7 +231,6 @@
       justify-content: space-between;
       padding-block: 12px;
       padding-inline: 4px;
-      border-block-end: 1px solid var(--border--base);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
 
@@ -225,21 +255,36 @@
 @layer patterns {
   /* セクションの見出しの上に添える、英字の小見出し */
   .eyebrow {
+    inline-size: fit-content;
+    padding-block: 4px;
+    padding-inline: 12px;
+    border-radius: var(--rounded--full);
+    background-color: var(--background--brand-subtle);
     color: var(--foreground--brand);
+    font-family: var(--font-family--latin);
     font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
     font-weight: var(--font-weight--bold);
     font-kerning: normal;
     line-height: var(--text--caption--leading);
-    letter-spacing: 0.16em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   /* セクションの見出し */
   .section-heading {
+    /* 幅360pxで32px、幅1024pxで display（48px）になるよう、2つの幅から傾きと切片を求める */
+    --_min: 32;
+    --_slope: calc((var(--text--display--font-size) - var(--_min)) / (1024 - 360));
+
     font-feature-settings: "palt";
-    font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+    font-size: clamp(
+      calc(var(--_min) / 16 * 1rem),
+      calc((var(--_min) - 360 * var(--_slope)) / 16 * 1rem + var(--_slope) * 100svi),
+      calc(var(--text--display--font-size) / 16 * 1rem)
+    );
     font-kerning: normal;
     line-height: var(--text--display--leading);
+    letter-spacing: -0.02em;
 
     @supports (word-break: auto-phrase) {
       text-wrap: balance;

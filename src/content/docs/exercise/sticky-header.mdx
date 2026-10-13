@@ -13,7 +13,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 すべてのページの上に置く、固定ヘッダーを作ります。左にサイトのロゴを、右にナビゲーションの5つのリンクと、21-2で作ったお問い合わせのボタン（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）を並べます。ヘッダーは白い面で、高さは72px相当です。
 
-ページを下へスクロールしても、ヘッダーは画面の上端に留まります。ただし、画面の高さが600px相当に満たないときは留めません。上端に留まっている間だけ、ヘッダーの下端に境界線を出します。ページ内リンクで見出しへ移動したときは、見出しがヘッダーに隠れず、ヘッダーのすぐ下へ表示されるようにします。
+ページを下へスクロールしても、ヘッダーは画面の上端に留まります。ただし、画面の高さが600px相当に満たないときは留めません。上端に留まっている間だけ、ヘッダーの下端に境界線を出し、淡い影を落とします。ページ内リンクで見出しへ移動したときは、見出しがヘッダーに隠れず、ヘッダーのすぐ下へ表示されるようにします。
 
 狭い画面のナビゲーションは、21-7で作ります{/* 21-7の執筆後にリンクする: /exercise/drawer/ */}。この節では、ヘッダーが1行に収まる1024px以上の幅で確かめます。
 
@@ -39,7 +39,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 <Demo base="exercise" scheme="light" title="最初の要件を満たしたページ：ヘッダーが上端に留まり、留まっている間だけ境界線が出る" html={stickyHeaderInitialHtml} css={stickyHeaderInitialCss} height="640px" widths={[1024, 1280]} />
 
-デモの中を下へスクロールすると、ヘッダーは上端に留まり、留まっている間だけ下端に境界線が出ます。目次の「会社概要」を押すと、「会社概要」の見出しの小見出しが、ヘッダーのすぐ下に表示されます。境界線は、`scroll-state()` のクエリに対応したChrome系のブラウザでだけ表示されます。ほかのブラウザでも、ヘッダーが留まり、見出しが隠れなければ完成です。
+デモの中を下へスクロールすると、ヘッダーは上端に留まり、留まっている間だけ下端に境界線と影が出ます。目次の「会社概要」を押すと、「会社概要」の見出しの小見出しが、ヘッダーのすぐ下に表示されます。境界線と影は、`scroll-state()` のクエリに対応したChrome系のブラウザでだけ表示されます。ほかのブラウザでも、ヘッダーが留まり、見出しが隠れなければ完成です。
 
 ## ヘッダーを sticky で留める
 
@@ -67,22 +67,26 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 留まっているかどうかは、ルートを `scroll-state` のコンテナにし、`scroll-state(stuck: block-start)` で問い合わせます。コンテナクエリで変えられるのはコンテナの子孫だけなので、境界線は、ルートの内側の `._header-inner` に描きます。
 
-```css title="🙆‍♂ Recommended: 内側の要素に透明な境界線を置き、留まっている間だけ色を付ける"
+```css title="🙆‍♂ Recommended: 内側の要素に透明な境界線を置き、留まっている間だけ色と影を付ける"
 @scope (.scoped.site-header) to (.scoped) {
   ._header-inner {
     min-block-size: calc(72 / 16 * 1rem);
     padding-block: 8px;
     border-block-end: 1px solid transparent;
-    background-color: var(--background--base);
+    background-color: var(--background--surface);
+    transition-duration: var(--duration--base);
+    transition-property: border-block-end-color, box-shadow;
+    transition-timing-function: var(--ease--out-quint);
 
     @container --scoped scroll-state(stuck: block-start) {
-      border-block-end-color: var(--border--strong);
+      border-block-end-color: var(--border--base);
+      box-shadow: var(--shadow--card);
     }
   }
 }
 ```
 
-境界線は、最初から透明な線を置いておき、色だけを変えます。留まったときに線の太さを増やすとヘッダーの高さも変わり、ブラウザがスクロール位置を押し戻すことがあるからです（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まったときに高さを変えない)」）。`scroll-state()` のクエリに対応していない環境では、線がないまま留まるだけで、ヘッダーの機能は損なわれません。
+境界線は、最初から透明な線を置いておき、色だけを変えます。影も同じクエリの中で付け、線の色と影をトランジションで切り替えます。留まったときに線の太さを増やすとヘッダーの高さも変わり、ブラウザがスクロール位置を押し戻すことがあるからです（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まったときに高さを変えない)」）。`scroll-state()` のクエリに対応していない環境では、線と影がないまま留まるだけで、ヘッダーの機能は損なわれません。
 
 ナビゲーションは、ヘッダーとは別の `global-nav` のコンポーネントにしました。21-7では、同じナビゲーションを狭い画面のドロワーにも置くからです。リンクの間は `gap` で空けず、各リンクの左右の `padding` で空けています。ホバーで背景が付く項目の間に隙間があると、カーソルが隙間を通る間だけ背景が消えるからです（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。リンクの高さは、21-2の文字のリンクと同じく `--_hit-size` で受け、指で操作できる環境では44px相当に広げます（`hit-area-min-size`）。ナビゲーションの `ul` には `--cluster--gap: 0` を渡しています。渡さないと、外側の `._actions` の `cluster` に渡した16pxの間隔を継承するからです（「[12-1 stack：子要素を縦に積み、間隔をそろえる](/compositions/stack/)」）。
 
@@ -114,7 +118,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 <Demo base="exercise" scheme="light" title="要件の変更を終えたページ：お知らせの帯は画面の外へ出て、ヘッダーだけが留まる" html={stickyHeaderChangedHtml} css={stickyHeaderChangedCss} height="640px" widths={[1024, 1280]} />
 
-スクロールする前は、ヘッダーの上にお知らせの帯が表示されます。下へスクロールすると、帯は画面の外へ出て、ヘッダーが上端に留まり、境界線が出ます。目次のリンクを押したときは、変更の前と同じく、見出しがヘッダーのすぐ下に表示されれば完成です。
+スクロールする前は、ヘッダーの上にお知らせの帯が表示されます。下へスクロールすると、帯は画面の外へ出て、ヘッダーが上端に留まり、境界線と影が出ます。目次のリンクを押したときは、変更の前と同じく、見出しがヘッダーのすぐ下に表示されれば完成です。
 
 ## 帯とヘッダーを1つの要素で包まない
 
