@@ -1,8 +1,8 @@
 # 第17章 インタラクション：ルール
 
-- ガイドラインのバージョン: 0.55.3（2026-10-13 生成）
-- ルールの数: 39
-- 本文: 約12.6万字
+- ガイドラインのバージョン: 0.56.0（2026-10-13 生成）
+- ルールの数: 40
+- 本文: 約14万字
 - 読む条件: ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,14 +12,15 @@
 
 ## この章の節
 
-- `interaction` 第17章 インタラクション（約7,300字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/
+- `interaction` 第17章 インタラクション（約7,500字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/
 - `interaction/states-and-focus` 17-1 ホバーとフォーカスを表す（約1.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/states-and-focus/
 - `interaction/hit-area-and-touch` 17-2 押せる範囲とタッチ操作（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/
 - `interaction/state-attributes` 17-3 状態を属性で表す（約6,700字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/
 - `interaction/card-link` 17-4 カード全体をリンクにする（約2,300字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/
-- `interaction/disclosure` 17-5 開閉するUI（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
-- `interaction/forms` 17-6 フォーム部品（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
-- `interaction/carousel` 17-7 CSSでカルーセルを作る（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
+- `interaction/hiding-elements` 17-5 要素を隠す方法を選ぶ（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hiding-elements/
+- `interaction/disclosure` 17-6 開閉するUI（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
+- `interaction/forms` 17-7 フォーム部品（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
+- `interaction/carousel` 17-8 CSSでカルーセルを作る（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
 
 ## 17-1 ホバーとフォーカスを表す
 
@@ -99,7 +100,16 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/
   - 補足: カードの中にほかのリンクやボタンを置くときは、それらを `::after` より手前に重ねます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/#rule-stretched-link-for-card
 
-## 17-5 開閉するUI
+## 17-5 要素を隠す方法を選ぶ
+
+https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hiding-elements/
+
+- 【推奨・実装上の判断】読み上げさせたい要素は `.-visually-hidden` で見た目だけを消し、`display: none`（`hidden` 属性）と `visibility: hidden` は支援技術からも消したいときに使う。見た目を消したら、フォーカスと読み上げから外れているか（または残っているか）を、隠す目的と照らして確かめる。（`hide-by-purpose`）
+  - 理由: `display: none` で隠したラベルは読み上げられず、`opacity: 0` や `clip-path` だけで隠したリンクは見えないままフォーカスと読み上げの対象に残り、どちらも見た目の確認だけでは気付けないため。
+  - 補足: 見た目を残して支援技術からだけ消すときは `aria-hidden="true"`、操作とフォーカスまで止めるときは `inert` 属性を使います。`aria-hidden="true"` は、フォーカスできる要素とその祖先には付けません。`.-visually-hidden` を付けたリンクやボタンは、見えないままフォーカスを受けるので、スキップリンクのようにフォーカスの間だけ見せる要素には `.-visually-hidden-focusable` を使います。確かめるときは、キーボードで一巡し、開発者ツールでアクセシビリティツリーを見ます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hiding-elements/#rule-hide-by-purpose
+
+## 17-6 開閉するUI
 
 https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
 
@@ -145,7 +155,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
   - 補足: 余白や背景は、内側の要素に指定します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/#rule-no-box-style-on-until-found
 
-## 17-6 フォーム部品
+## 17-7 フォーム部品
 
 https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
 
@@ -180,7 +190,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
   - 理由: 拡大して読む必要のあるユーザーが、ページを拡大できなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/#rule-no-maximum-scale
 
-## 17-7 CSSでカルーセルを作る
+## 17-8 CSSでカルーセルを作る
 
 https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
 

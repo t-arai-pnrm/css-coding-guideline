@@ -1,6 +1,6 @@
 ---
 title: "16-4 clip-pathとマスクで見せる範囲を決める"
-description: "三角形のような図形は clip-path で描き、polygon() の値をトークンにします。同じ大きさの層を2つ重ね、上の層を選んだ範囲だけ切り抜くと、選んだタブの色を1つの列で描き、その範囲をトランジションで動かせます。スクロールできる領域の端は mask-image のグラデーションで薄くし、スクロール駆動アニメーションで、スクロールできる側の端だけを薄くします。"
+description: "三角形のような図形は clip-path で描き、polygon() の値をトークンにします。同じ大きさの層を2つ重ね、上の層を選んだ範囲だけ切り抜くと、選んだタブの色を1つの列で描き、その範囲をトランジションで動かせます。スクロールできる領域の端は mask-image のグラデーションで薄くし、スクロール駆動アニメーションで、スクロールできる側の端だけを薄くします。重なった要素の周りの隙間は、背景色の縁ではなく、奥の要素をマスクで切り抜いて作ります。"
 sidebar:
   order: 4
 ---
@@ -15,12 +15,14 @@ import segmentedCss from '../../../demos/decoration/segmented-tabs/style.css?raw
 import segmentedJs from '../../../demos/decoration/segmented-tabs/script.js?raw';
 import scrollFadeHtml from '../../../demos/decoration/scroll-fade-edges/index.html?raw';
 import scrollFadeCss from '../../../demos/decoration/scroll-fade-edges/style.css?raw';
+import avatarCutoutHtml from '../../../demos/decoration/avatar-cutout/index.html?raw';
+import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?raw';
 
 三角形のような図形は、`border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のような名前のトークンにします。`clip-path` は要素の見える範囲を図形で決め、`mask-image` は画像の不透明度で決めます。どちらも要素の大きさと位置を変えないので、見える範囲を変えてもレイアウトは変わりません。
 
-選んだタブの背景色と文字色を変えるときは、選んだときの色で描いた列を通常の列に重ね、上の列を選んだタブの範囲だけ `clip-path` で切り抜きます。切り抜く範囲を `transition` で動かせば、選んだ色が隣のタブへ滑って移ります。スクロールできる領域の端で続きを示すときは、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定し、スクロール駆動アニメーションで、まだスクロールできる側の端だけを薄くします。
+選んだタブの背景色と文字色を変えるときは、選んだときの色で描いた列を通常の列に重ね、上の列を選んだタブの範囲だけ `clip-path` で切り抜きます。切り抜く範囲を `transition` で動かせば、選んだ色が隣のタブへ滑って移ります。スクロールできる領域の端で続きを示すときは、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定し、スクロール駆動アニメーションで、まだスクロールできる側の端だけを薄くします。アバターに重ねたバッジの周りに隙間を見せるときは、バッジに背景色の縁を付けず、奥のアバターを `radial-gradient()` のマスクで円く切り抜きます。
 
-単色のアイコンをマスクで描く方法は「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で、`clip-path` の `shape()` で輪郭を描く方法と、マスクの合成で枠線やドーナツグラフを描く方法は「[16-8 輪郭と枠線を描く](/decoration/outlines/)」で説明しています。
+単色のアイコンをマスクで描く方法は「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で、`clip-path` の `shape()` で輪郭を描く方法と、マスクの合成で枠線やドーナツグラフを描く方法は「[16-9 輪郭と枠線を描く](/decoration/outlines/)」で説明しています。
 
 ## 図形は clip-path で描く
 
@@ -258,6 +260,110 @@ import scrollFadeCss from '../../../demos/decoration/scroll-fade-edges/style.css
 
 スクロールできる方向は、`scroll-state(scrollable: inline-end)` のコンテナクエリでも判定できます（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まっている間だけ見た目を変える)」）。しかし、コンテナクエリで変えられるのはコンテナの子孫だけなので、スクロールコンテナ自身の `mask-image` は切り替えられません。条件が成り立つかどうかで切り替わるので、端に近づくにつれて幅を狭めることもできません。`scroll-state()` のクエリに対応しているのはChrome系のブラウザだけです。端を薄くするのには、スクロール駆動アニメーションを使います。
 
+## 重なった要素の周りをマスクで切り抜く
+
+アバターの右下に重ねた状態のバッジや、少しずつ重ねて並べたアバターでは、手前の要素の周りに細い隙間を見せて、奥の要素と見分けられるようにします。よく使われるのは、手前の要素に、背景と同じ色の `border` や `box-shadow` で縁を付ける方法です。{/* 要確認: 出典なし。アバターとバッジの隙間をマスクで切り抜く方法 */}
+
+```css title="🙅‍♂ Not Recommended: ページの背景と同じ色の影で、バッジの縁を描く"
+/* 🙅‍♂ Not Recommended */
+._badge {
+  /* ... */
+  box-shadow: 0 0 0 3px var(--background--base);
+}
+```
+
+この縁は、透明な隙間ではなく、背景の色で塗った輪です。置いた場所の背景がページの背景と同じ色のときだけ、隙間に見えます。カードやダイアログの面に置くと、縁の色が面の色からずれます。ライトモードでは面がどれも白に近く目立ちませんが、ダークモードでは高い面ほど背景を明るくするので、暗い輪が浮きます（「[16-5 面・影・角丸](/decoration/surfaces/)」）。背景が写真やグラデーションなら、どの色を選んでも合いません。
+
+縁を塗る代わりに、奥の要素の、手前の要素と重なる部分を `mask-image` で切り抜きます。切り抜いた部分は透明になるので、そこには置いた場所の背景がそのまま見えます。円く切り抜くマスクは、中心から一定の半径までが透明な `radial-gradient()` で書けます。
+
+```css title="🙆‍♂ Recommended: バッジの大きさと隙間の幅から、アバターを切り抜く円を計算する"
+@scope (.scoped.status-avatar) to (.scoped) {
+  :scope {
+    --_size: 40px;
+    --_badge-size: 12px;
+    --_gap: 3px;
+
+    /* バッジの中心。バッジはアバターの右下の角に、外接する正方形の角を合わせて置く */
+    --_badge-x: calc(var(--_size) - var(--_badge-size) / 2);
+    --_badge-y: calc(var(--_size) - var(--_badge-size) / 2);
+
+    /* 切り抜く円の半径。バッジの半径に、見せたい隙間の幅を足す */
+    --_cutout-radius: calc(var(--_badge-size) / 2 + var(--_gap));
+
+    position: relative;
+    display: inline grid;
+    inline-size: var(--_size);
+    aspect-ratio: 1;
+
+    &:dir(rtl) {
+      --_badge-x: calc(var(--_badge-size) / 2);
+    }
+  }
+
+  ._avatar {
+    mask-image: radial-gradient(circle at var(--_badge-x) var(--_badge-y), transparent var(--_cutout-radius), #000 calc(var(--_cutout-radius) + 1px));
+    border-radius: var(--rounded--full);
+  }
+
+  ._badge {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    inline-size: var(--_badge-size);
+    aspect-ratio: 1;
+    border-radius: var(--rounded--full);
+  }
+}
+```
+
+切り抜く円の中心と半径は、バッジの大きさと隙間の幅から決まる値です。計算した結果の `34px` や `9px` を書かず、式のまま書いて、それぞれの値にカスタムプロパティで名前を付けます（「[6-3 計算関数で根拠を式に残す](/values/math-functions/#rule-name-calc-operands)」）。バッジを大きくしたり、隙間を広げたりしても、切り抜く円が一緒に変わります。透明から黒への境目を1pxずらしているのは、円の縁をなめらかにするためです（「[16-8 角の形を変える](/decoration/shapes/)」の反り返るタブのマスクと同じ書き方です）。
+
+`radial-gradient()` の中心の位置は、左上から数えます。バッジは `inset-inline-end` で書字方向の末尾の側に置いているので、右から左へ書く言語では左下に移ります。そこで、`:dir(rtl)` で中心の横の位置だけを、左端からバッジの半径の位置に変えます。
+
+<Demo title="背景色の影で描いた縁は面によって浮き、マスクで切り抜いた隙間はどの面にもなじむ" html={avatarCutoutHtml} css={avatarCutoutCss} />
+
+デモの各段の左は、ページの背景と同じ色の影でバッジとアバターの縁を描き、右は奥のアバターをマスクで切り抜いています。1段目のページの背景の上では、左右の見た目は変わりません。2段目のカードの面の上では、ダークモードにすると、左だけ縁が暗い輪として見えます。3段目のグラデーションの上では、ライトモードとダークモードのどちらでも左の縁が浮き、右の隙間にはグラデーションが透けて見えます（Chromeで確認）。
+
+重ねて並べたアバターも、同じ考え方で切り抜きます。各アバターの末尾の側に、次のアバターと重なる部分を、次のアバターの半径に隙間の幅を足した円で切り抜きます。最後のアバターには重なる相手がいないので、マスクを指定しません。
+
+```css title="🙆‍♂ Recommended: 次のアバターと重なる部分を、各アバターから切り抜く"
+@scope (.scoped.avatar-stack) to (.scoped) {
+  :scope {
+    --_size: 32px;
+    --_overlap: 10px;
+    --_gap: 3px;
+
+    /* 次のアバターの中心。自分の幅から重なりを引いた位置に、次のアバターの半径を足す */
+    --_next-x: calc(var(--_size) - var(--_overlap) + var(--_size) / 2);
+
+    /* 切り抜く円の半径。次のアバターの半径に、見せたい隙間の幅を足す */
+    --_cutout-radius: calc(var(--_size) / 2 + var(--_gap));
+
+    display: block flex;
+
+    & > * + * {
+      margin-inline-start: calc(var(--_overlap) * -1);
+    }
+
+    &:dir(rtl) {
+      --_next-x: calc(var(--_overlap) - var(--_size) / 2);
+    }
+  }
+
+  ._avatar {
+    inline-size: var(--_size);
+    aspect-ratio: 1;
+    border-radius: var(--rounded--full);
+
+    &:not(:last-child) {
+      mask-image: radial-gradient(circle at var(--_next-x) 50%, transparent var(--_cutout-radius), #000 calc(var(--_cutout-radius) + 1px));
+    }
+  }
+}
+```
+
+マスクは、切り抜いた要素の `outline` と `box-shadow` も切り取ります（前の見出しで、スクロールコンテナのフォーカスリングが消えたのと同じです）。アバターをリンクにしてフォーカスリングを出すときは、リングを切り抜かない要素に出すか、`outline-offset` を負の値にして、リングを切り抜いていない範囲の内側に収めます。{/* 要検証: ブラウザ。負の outline-offset のリングがバッジの切り抜きに掛かったときの見え方 */}
+
 ## ガイドライン
 
 <Guideline />
@@ -268,5 +374,6 @@ import scrollFadeCss from '../../../demos/decoration/scroll-fade-edges/style.css
 - [clip-path - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/clip-path)
 - [xywh() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/basic-shape/xywh)
 - [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)
+- [radial-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/radial-gradient)
 - [scroll() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline/scroll)
 - [Scroll-driven Animations Module Level 1 | W3C](https://drafts.csswg.org/scroll-animations-1/)

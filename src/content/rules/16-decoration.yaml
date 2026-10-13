@@ -130,6 +130,16 @@
   page: decoration/clipping-and-masks
   since: 0.21.0
 
+- id: cutout-overlap-with-mask
+  level: 推奨
+  kind: judgment
+  rule: 重なった要素の周りに隙間を見せるときは、手前の要素に背景と同じ色の `border` や `box-shadow` を付けず、奥の要素の重なる部分を `mask-image` で切り抜く。切り抜く位置と大きさは、手前の要素の大きさと隙間の幅から `calc()` で求める。
+  reason: 背景の色で塗った縁は、置いた場所の背景がページの背景と同じときにしか隙間に見えず、カードの面やダークモード、写真やグラデーションの上では輪として浮くため。
+  note: '円く切り抜くマスクは `radial-gradient()` で書き、透明から黒への境目を1pxずらして縁をなめらかにします。中心の横の位置は左から数えるので、`inset-inline-end` で置いた要素を切り抜くときは `:dir(rtl)` で位置を反転させます。マスクは切り抜いた要素の `outline` と `box-shadow` も切り取るので、フォーカスリングは切り抜かない要素に出します。'
+  aiProne: true
+  page: decoration/clipping-and-masks
+  since: 0.56.0
+
 # 16-5 面・影・角丸
 - id: surface-levels-by-role
   level: 推奨
@@ -177,7 +187,7 @@
   page: decoration/surfaces
   since: 0.4.0
 
-# 16-6 文字とリストの装飾
+# 16-7 文字とリストの装飾
 - id: marker-for-list-number-style
   level: 推奨
   kind: judgment
@@ -206,7 +216,7 @@
   page: decoration/text-ornaments
   since: 0.25.0
 
-# 16-7 角の形を変える
+# 16-8 角の形を変える
 - id: corner-shape-guard-when-broken
   level: 推奨
   kind: spec
@@ -236,7 +246,7 @@
   page: decoration/shapes
   since: 0.25.0
 
-# 16-8 輪郭と枠線を描く
+# 16-9 輪郭と枠線を描く
 - id: guard-new-shapes-with-supports
   level: 推奨
   kind: spec
@@ -276,7 +286,7 @@
   page: decoration/outlines
   since: 0.25.0
 
-# 16-9 区切り線を引く
+# 16-10 区切り線を引く
 - id: separators-in-gap
   level: 推奨
   kind: spec
@@ -314,4 +324,4 @@
   page: decoration/separators
   since: 0.25.0
 
-# 16-10 印刷のスタイル
+# 16-11 印刷のスタイル

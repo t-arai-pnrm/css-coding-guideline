@@ -1,0 +1,50 @@
+@layer components {
+  @scope (.scoped.gradient-patterns) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(calc(200 / 16 * 1rem), 100%), 1fr));
+      gap: 16px;
+    }
+
+    ._item {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._sample {
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
+
+      &[data-pattern="stripes"] {
+        background-image: repeating-linear-gradient(-45deg, var(--background--active) 0 8px, transparent 0 16px);
+      }
+
+      &[data-pattern="grid"] {
+        --_line: color-mix(in oklab, var(--background--surface), var(--foreground--base) 12%);
+
+        background-image:
+          linear-gradient(var(--_line) 2px, transparent 2px),
+          linear-gradient(90deg, var(--_line) 2px, transparent 2px),
+          linear-gradient(var(--_line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--_line) 1px, transparent 1px);
+        background-position:
+          -2px -2px,
+          -2px -2px,
+          -1px -1px,
+          -1px -1px;
+        background-size:
+          50px 50px,
+          50px 50px,
+          10px 10px,
+          10px 10px;
+      }
+    }
+
+    ._caption {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}

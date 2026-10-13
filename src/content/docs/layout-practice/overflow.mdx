@@ -182,7 +182,7 @@ Flexboxでも組めますが、本書ではGridを選びます。Gridなら、�
 
 本文がそのまま行のアイテムのときは、`1fr` でも `minmax(0, 1fr)` でも本文だけがスクロールしました。Flexboxで組んだ場合も、包む要素の `min-block-size` を0にすると収まりました（Chromeで確認）。{/* 要検証: ブラウザ。Safari と Firefox で、本文を包む要素の行が 1fr だとパネルの外へはみ出し、minmax(0, 1fr) で収まること */}
 
-本文の `overscroll-behavior-block: contain` は、端までスクロールしたときに背面のページへスクロールが連鎖するのを止めます。kiso.cssは `<dialog>` と `[popover]` の要素自体にしか指定していないので、スクロールする本文にも指定します（「[17-5 開閉するUI](/interaction/disclosure/)」の「スクロールの連鎖を止める」）。
+本文の `overscroll-behavior-block: contain` は、端までスクロールしたときに背面のページへスクロールが連鎖するのを止めます。kiso.cssは `<dialog>` と `[popover]` の要素自体にしか指定していないので、スクロールする本文にも指定します（「[17-6 開閉するUI](/interaction/disclosure/)」の「スクロールの連鎖を止める」）。
 
 ## 中央に寄せたスクロール領域の先頭が切れる
 

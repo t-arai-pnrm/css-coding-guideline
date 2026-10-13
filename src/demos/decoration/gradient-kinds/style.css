@@ -1,0 +1,43 @@
+@layer components {
+  @scope (.scoped.gradient-kinds) to (.scoped) {
+    :scope {
+      --_from: var(--background--inverse);
+      --_to: var(--background--surface);
+
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(calc(160 / 16 * 1rem), 100%), 1fr));
+      gap: 16px;
+    }
+
+    ._item {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._sample {
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+
+      /* 色空間の指定に対応していない環境でも、面が消えないようにする */
+      background-color: var(--_to);
+
+      &[data-kind="linear"] {
+        background-image: linear-gradient(in oklch to bottom right, var(--_from), var(--_to));
+      }
+
+      &[data-kind="radial"] {
+        background-image: radial-gradient(in oklch circle at 30% 30%, var(--_from), var(--_to));
+      }
+
+      &[data-kind="conic"] {
+        background-image: conic-gradient(in oklch from 0deg at 50% 50%, var(--_from), var(--_to), var(--_from));
+      }
+    }
+
+    ._caption {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+  }
+}

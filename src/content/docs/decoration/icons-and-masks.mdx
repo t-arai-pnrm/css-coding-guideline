@@ -1,6 +1,6 @@
 ---
 title: "16-3 アイコンとSVG"
-description: "単色のアイコンは、擬似要素の mask-image かインライン SVG で描き、文字色に合わせて塗ります。インライン SVG の fill や stroke は currentColor にし、状態ごとにアイコンの色を指定し直さず、文字色だけを切り替えます。意味を持つインライン SVG のアイコンは aria-hidden で読み上げから外し、隣に視覚的に隠したテキストを置きます。マスク、インライン SVG、img の使い分けも扱います。"
+description: "単色のアイコンは、擬似要素の mask-image かインライン SVG で描き、文字色に合わせて塗ります。インライン SVG の fill や stroke は currentColor にし、状態ごとにアイコンの色を指定し直さず、文字色だけを切り替えます。意味を持つインライン SVG のアイコンは aria-hidden で読み上げから外し、隣に視覚的に隠したテキストを置きます。マスク、インライン SVG、img の使い分けと、同じアイコンを symbol にまとめて use で参照するスプライト（シャドウツリーとスタイルの届き方、2色目の渡し方、同じオリジンの制約）も扱います。"
 sidebar:
   order: 3
 ---
@@ -17,7 +17,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 意味を持つインラインSVGのアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置きます。マスク、インラインSVG、外部のファイルを読み込む `<img>` のどれで描くかは、文字色に合わせたいか、HTMLにアイコンを書けるかで選びます。
 
-三角形のような図形を `clip-path` で描く方法と、マスクのグラデーションでスクロールできる領域の端を薄くする方法は、「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」で説明しています。マスクの合成で枠線やドーナツグラフを描く方法は、「[16-8 輪郭と枠線を描く](/decoration/outlines/)」にあります。
+三角形のような図形を `clip-path` で描く方法と、マスクのグラデーションでスクロールできる領域の端を薄くする方法は、「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」で説明しています。マスクの合成で枠線やドーナツグラフを描く方法は、「[16-9 輪郭と枠線を描く](/decoration/outlines/)」にあります。
 
 ## アイコンをマスクで描く
 
@@ -120,7 +120,7 @@ button {
 
 ### インラインSVGの代替テキスト
 
-意味を持つアイコンをインラインSVGで置くときは、SVGに `aria-hidden="true"` を付けて読み上げの対象から外し、隣に視覚的に隠したテキストを置きます。
+意味を持つアイコンをインラインSVGで置くときは、SVGに `aria-hidden="true"` を付けて読み上げの対象から外し、隣に視覚的に隠したテキストを置きます。視覚的に隠す `.-visually-hidden` の定義は「[17-5 要素を隠す方法を選ぶ](/interaction/hiding-elements/)」にあります。
 
 ```html
 <a href="https://example.com/" target="_blank">
@@ -153,6 +153,76 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 文字色に合わせる必要があるアイコンは、`mask-image` かインラインSVGのどちらかになります。HTMLに手を入れずにCSSだけで足したい装飾なら `mask-image` を、HTMLの中で意味を持たせたいアイコンならインラインSVGを選びます。強制カラーモードの補正は、どちらも「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。
 
+## 同じアイコンを何度も置くときのスプライト
+
+同じアイコンをページの中で何度も置くなら、形を `<symbol>` に一度だけ書き、置く場所では `<use href="#id">` で参照します。インラインSVGをそのまま繰り返すと、同じパスのデータが置いた数だけHTMLに並び、形を直すときもすべての箇所を書き換えることになります。`<symbol>` はそれ自体では描画されず、`<use>` で参照された場所にだけ表示されます。{/* 要確認: 出典なし。スプライトを使う場面の判断 */}
+
+```html
+<!-- body の先頭に一度だけ置く -->
+<svg aria-hidden="true" style="display: none">
+  <symbol id="icon-check" viewBox="0 0 24 24">
+    <path d="M4 12L10 18L20 6" />
+  </symbol>
+</svg>
+
+<!-- 置く場所では参照するだけ -->
+<svg class="icon" aria-hidden="true" fill="none" stroke="currentColor">
+  <use href="#icon-check" />
+</svg>
+```
+
+`viewBox` は `<symbol>` に書き、表示する大きさは参照する側の `svg` 要素で決めます。大きさを `.icon` の `inline-size: 1em` と `aspect-ratio: 1` で決める点は、インラインSVGと変わりません。色も、参照する側の `svg` 要素に `fill="currentColor"` か `stroke="currentColor"` を書き、`<symbol>` の中の図形には色を書きません。こうすると、図形は `<use>` を通して `svg` 要素の値を継承するので、「[アイコンは currentColor で文字色に合わせる](#アイコンは-currentcolor-で文字色に合わせる)」と同じく文字色に合わせられます。「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」の補正も、`svg` 要素の属性で対象を選ぶので、そのまま当たります。{/* 要検証: ブラウザ。強制カラーモードで、svg 要素の fill と stroke の補正が use で参照した図形に継承されること */}
+
+### `<use>` の中身へのスタイルの届き方
+
+`<use>` で参照した図形は、`<use>` 要素のシャドウツリーに複製されます。外の文書に書いたスタイルのルールは、この複製した要素には当たりません。そのため、`.button path` のように、置いた場所の祖先から中の図形を選ぶことはできません。Chromeで確かめたところ、`.button path` に指定した `fill` は効かず、図形は `svg` 要素から継承した色のままでした。
+
+```css title="🙅‍♂ Not Recommended: 置いた場所の祖先から、use の中の図形を選ぶ"
+/* 🙅‍♂ Not Recommended */
+.button {
+  & path {
+    fill: var(--foreground--danger);
+  }
+}
+```
+
+一方、`<symbol>` の中の元の図形に当たるルールは、複製した図形にも当たります。ただし、どこに置いた複製にも同じように当たるので、場所ごとに見た目を変える用途には使えません。複製した図形が置いた場所によって変えられるのは、シャドウツリーのホストである `<use>` 要素から継承した値だけです。
+
+### 2色目の色の渡し方
+
+2色目が要るアイコンでは、`<symbol>` の中の図形の `fill` にカスタムプロパティを書き、置く側でその値を指定します。カスタムプロパティは継承するので、`<use>` の外で指定した値が、シャドウツリーの中の図形まで届きます。代替値を `currentColor` にしておけば、指定しない場所では1色のアイコンとして表示されます。Chromeでは、`fill` 属性に書いた `var()` が、置いた場所で指定した値に置き換わりました。{/* 要検証: ブラウザ。Firefox と Safari で、symbol の中の fill 属性に書いた var() が、use の外で指定したカスタムプロパティを受け取ること */}
+
+```html
+<symbol id="icon-alert" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" />
+  <path fill="var(--icon--secondary-fill, currentColor)" d="M11 6H13V14H11ZM11 16H13V18H11Z" />
+</symbol>
+```
+
+```css title="🙆‍♂ Recommended: 2色目は、置く側のカスタムプロパティで渡す"
+@scope (.scoped.notice) to (.scoped) {
+  :scope {
+    --icon--secondary-fill: var(--background--base);
+  }
+}
+```
+
+2色目は図形の要素に書いた値なので、15-5の `svg` 要素に対する強制カラーモードの補正は、2色目の図形には届きません。強制カラーモードで1色目と2色目の区別が要るなら、そのコンポーネントの中で、`--icon--secondary-fill` をシステムカラー（`Canvas` など）に指定し直します。図形ごとに違う指定がいくつも要るアイコンは、カスタムプロパティの数が増えて宣言と参照を追いにくくなるので、スプライトにせず、インラインSVGのまま置きます。{/* 要確認: 出典なし。2色目の強制カラーモードでの扱いと、インラインSVGに戻す目安 */}{/* 要検証: ブラウザ。強制カラーモードで、カスタムプロパティで渡した2色目が元の色のまま残ること */}
+
+### 外部のファイルのスプライト
+
+スプライトは外部のSVGファイルにまとめ、`<use href="/icons.svg#icon-check">` のようにファイルの後ろに `#` とIDを付けて参照できます。ファイルはブラウザにキャッシュされるので、多くのページで同じアイコンを使うなら、各ページのHTMLに `<symbol>` を書くより転送量が減ります。{/* 要確認: 出典なし。外部ファイルのスプライトを選ぶ場面 */}
+
+ただし、外部のファイルを参照できるのは、ページと同じオリジンのファイルだけです。SVG 2の仕様は、`<use>` で別のオリジンのファイルやdata URLを参照することを認めておらず、CORSで許可する方法もありません。アイコンのファイルを別のオリジンのCDNに置く構成では、外部のファイルのスプライトは使えません。
+
+### スプライトのアイコンの代替テキスト
+
+代替テキストの付け方は、「[インラインSVGの代替テキスト](#インラインsvgの代替テキスト)」と同じです。参照する側の `svg` 要素に `aria-hidden="true"` を付け、意味のあるアイコンには隣に視覚的に隠したテキストを置きます。違うのは、`<symbol>` をまとめた `svg` 要素も、`aria-hidden="true"` と `display: none` で読み上げと表示の両方から外しておく点です。{/* 要確認: 出典なし。スプライトをまとめた svg 要素の隠し方 */}
+
+### スプライトを選ぶ場面
+
+スプライトは、インラインSVGの書き方の1つです。文字色に合わせられることと代替テキストの付け方はインラインSVGと同じで、違うのは形をどこに書くかだけです。同じアイコンが1ページに何度も出てくるとき（一覧の各行のアイコンなど）や、サイトの全体で同じ種類のアイコンを使い回すときは、スプライトを選びます。1か所にしか出てこないアイコンや、図形ごとに色や動きを変えるアイコンは、インラインSVGをそのまま置きます。HTMLに手を入れずにCSSだけで足す装飾なら、これまでどおり `mask-image` を選びます。{/* 要確認: 出典なし。スプライトとインラインSVGの使い分け */}
+
 ## ガイドライン
 
 <Guideline />
@@ -162,3 +232,6 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 - [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月。`aspect-ratio`、`clip-path`、`currentColor` の例）
 - [インラインSVGの代替テキストはどうするべきか](https://www.tak-dcxi.com/article/how-to-handle-alt-text-for-inline-svg/)（TAKLOG、2024年3月）
 - [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)
+- [`<use>` - SVG | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Reference/Element/use)
+- [`<symbol>` - SVG | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Reference/Element/symbol)
+- [Scalable Vector Graphics (SVG) 2 — Document Structure](https://www.w3.org/TR/SVG2/struct.html)（W3C。`<use>` のシャドウツリー、スタイルの継承、外部のファイルの制約）

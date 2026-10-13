@@ -1,7 +1,7 @@
 # AIが誤りやすいルール
 
-- ガイドラインのバージョン: 0.55.3（2026-10-13 生成）
-- ルールの数: 290
+- ガイドラインのバージョン: 0.56.0（2026-10-13 生成）
+- ルールの数: 292
 
 AIが生成するコードで特に誤りやすいルールです。CSSを書く前とレビューの前に、必ず確認してください。1件1行で、強度とルールの本文と ID だけを並べています。理由と補足は、章ごとのファイル（`references/<章>.md`）を ID で検索して読んでください。
 
@@ -286,6 +286,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【禁止】ファーストビューに表示される画像に、`loading="lazy"` を指定しない。（`no-lazy-loading-first-view`）
 - 【推奨】`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せる。（`no-decoding-async`）
 - 【推奨】三角形などの図形は `border` の組み合わせではなく `clip-path` で描き、`polygon()` の値は `--shape--triangle-bottom` のようなトークンにする。（`clip-path-shape-tokens`）
+- 【推奨】重なった要素の周りに隙間を見せるときは、手前の要素に背景と同じ色の `border` や `box-shadow` を付けず、奥の要素の重なる部分を `mask-image` で切り抜く。切り抜く位置と大きさは、手前の要素の大きさと隙間の幅から `calc()` で求める。（`cutout-overlap-with-mask`）
 - 【推奨】ダークモードでは、高い面ほど背景を明るくし、面の高さを影だけで表さない。（`lighter-surface-in-dark-mode`）
 - 【推奨】行ごとに背景や枠線を敷く装飾は、インラインの要素に `-webkit-box-decoration-break: clone` と `box-decoration-break: clone` を併記して描く。（`inline-decoration-clone-with-prefix`）
 - 【推奨】`corner-shape` は、無視されても角丸のまま崩れない宣言ならそのまま書き、`scoop` の擬似要素のように未対応の環境で形が崩れる指定だけを `@supports (corner-shape: …)` の中に書く。（`corner-shape-guard-when-broken`）
@@ -303,6 +304,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】ホバーで変える見た目は、`:focus-visible` にも同じように指定する。（`hover-with-focus-visible`）
 - 【非推奨】ホバーやフォーカスの変化を `opacity` で表さない。（`no-opacity-for-hover`）
 - 【推奨】状態のスタイルは、`.is-active` のような状態クラスを使わず、擬似クラス（`:disabled` など）、HTML 要素の属性（`target` など）、ARIA 属性（`aria-expanded` など）、`data-*` 属性の優先順位でセレクタを選ぶ。（`state-by-pseudo-class-or-aria`）
+- 【推奨】読み上げさせたい要素は `.-visually-hidden` で見た目だけを消し、`display: none`（`hidden` 属性）と `visibility: hidden` は支援技術からも消したいときに使う。見た目を消したら、フォーカスと読み上げから外れているか（または残っているか）を、隠す目的と照らして確かめる。（`hide-by-purpose`）
 - 【推奨】開閉する UI は、`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` のような HTML の機能で作り、`div` とクラスの付け外しで作らない。（`native-disclosure-elements`）
 - 【推奨】`<dialog>` のモーダルにできないドロワーで背面を操作できなくするときは、`interactivity: inert` ではなく、JavaScript で背面の要素に `inert` 属性を付ける。（`inert-attribute-for-background`）
 - 【推奨】タブやアコーディオンの閉じたパネルは `hidden="until-found"` で隠し、`display: none` で隠さない。（`hidden-until-found-for-panels`）

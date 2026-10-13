@@ -1,6 +1,6 @@
 ---
 title: "14-2 和文組版を整える"
-description: "和文組版の土台は、text-autospace、text-spacing-trim、line-breakの3つの初期値です。本文はベタ組みにし、見出しだけをpaltとカーニングで詰めます。言語ごとの切り替えはlang属性と:lang()で行います。"
+description: "和文組版の土台は、text-autospace、text-spacing-trim、line-breakの3つの初期値です。本文はベタ組みにし、見出しだけをpaltとカーニングで詰めます。ページの一部を縦書きにするときは、回さずにwriting-modeで組みます。言語ごとの切り替えはlang属性と:lang()で行います。"
 sidebar:
   order: 2
 ---
@@ -12,6 +12,8 @@ import trimHtml from '../../../demos/typography/autospace-trim/index.html?raw';
 import trimCss from '../../../demos/typography/autospace-trim/style.css?raw';
 import paltHtml from '../../../demos/typography/heading-palt/index.html?raw';
 import paltCss from '../../../demos/typography/heading-palt/style.css?raw';
+import verticalHtml from '../../../demos/typography/vertical-catch/index.html?raw';
+import verticalCss from '../../../demos/typography/vertical-catch/style.css?raw';
 
 和文組版の土台は、`:root` に指定する3つの初期値です。`text-autospace: normal` で和文と英数字の間にアキを入れ、`text-spacing-trim: trim-start` で約物のアキを詰め、`line-break: strict` で厳格な禁則を適用します。そのうえで、本文は文字を詰めないベタ組みにし、見出しだけを `palt` とカーニングで詰めます。
 
@@ -194,6 +196,66 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 `hanging` にはChromeが2026年3月に対応し、本書の対象のブラウザはすべて対応しています。注釈の要素には `role="note"` を付けます。注釈を箇条書きにするときは、`ul` と `li` の役割を消さないように、`ul` を `div` で包み、その `div` に `role="note"` を付けます。
 
+## 横組みのページに置く縦書き
+
+見出しの飾りやキャッチコピーのように、横組みのページの一部だけを縦書きにするときは、`writing-mode: vertical-rl` で組みます。`rotate: 90deg` や `transform: rotate(90deg)` で回しても縦に並んで見えますが、中身は横書きの行を倒しただけです。
+
+```css title="🙅‍♂ Not Recommended: 横書きの行を回して縦に見せる"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.hero) to (.scoped) {
+  ._catch-text {
+    rotate: 90deg;
+  }
+}
+```
+
+```css title="🙆‍♂ Recommended: 見出しを縦書きで組み、行の長さを論理プロパティで決める"
+@scope (.scoped.hero) to (.scoped) {
+  ._catch-text {
+    max-inline-size: calc(160 / 16 * 1rem);
+    writing-mode: vertical-rl;
+
+    &:lang(ja) {
+      font-feature-settings: "vpal";
+    }
+  }
+}
+```
+
+回した行では、和文の文字が横倒しになり、句読点も縦書きの位置（字面の右上）に来ません。`rotate` は描画だけを変えるので、レイアウトの箱は回す前の横長のまま残り、周りの要素はその箱を避けて並びます。`writing-mode` で組めば、ブラウザが縦書き用の字形と約物の位置を使い、箱の大きさも縦書きの行から決まります。縦書きの見出しを詰めるときは、上の例のように、`palt` の代わりに `"vpal"` を指定します（「見出しの詰め」）。{/* 要確認: 出典なし。縦書きをrotateやtransformで作らず、writing-modeで組むこと */}
+
+1文字ずつ `br` や `span` で区切って縦に積む方法も避けます。文字の向きは保てますが、コピーした文字に改行が混ざり、ページ内検索では区切りをまたぐ語が見つからなくなります。スクリーンリーダーでは、1文字ずつ区切って読み上げられることもあります。{/* 要検証: ブラウザ。1文字ずつ区切った見出しのページ内検索とスクリーンリーダーでの読み上げ */}
+
+次のデモでは、同じ見出しを、上の枠では `rotate` で回し、下の枠では `writing-mode: vertical-rl` で組んでいます。上の見出しは文字が横に倒れ、「10」も寝たままで、回した文字が枠の上下にはみ出します。下の見出しは文字が立ち、「10」が1文字ぶんの幅に収まり、本文は見出しの隣に並びます。
+
+<Demo title="rotateで回した見出しと、writing-modeで縦書きにした見出し" html={verticalHtml} css={verticalCss} variant="neutral" />
+
+<Baseline id="writing-mode" />
+
+縦書きの中の英数字は、初期値の `text-orientation: mixed` では横に倒して組まれます。日付の「10」のような2桁の数字は、`text-combine-upright: all` を指定した `span` で囲み、1文字ぶんの幅に横並びで収めます。この組み方を縦中横といいます。`all` は囲んだ文字をすべて1文字ぶんに詰めるので、4桁の年や長い単語を囲むと、文字が潰れて読めなくなります。「CSS」のような数文字の略語を1文字ずつ立てたいときは、`text-orientation: upright` を指定します。欧文の単語や文は、`mixed` のまま横に倒したほうが読みやすいので、`upright` は短い略語にとどめます。{/* 要確認: 出典なし。縦中横を2桁の数字に、uprightを短い略語に限ること */}
+
+```css title="🙆‍♂ Recommended: 縦書きの中の英数字の向きを決めるユーティリティ"
+@layer utilities {
+  .-combine-upright {
+    text-combine-upright: all;
+  }
+
+  .-upright {
+    text-orientation: upright;
+  }
+}
+```
+
+<Baseline id="text-combine-upright" />
+
+<Baseline id="text-orientation" />
+
+どちらも、どの文字を囲むかをHTMLで決めます。CMSで入力する文章に使うなら、入力の段階で `span` を付けられるかを先に確かめます。付けられない文章では、数字の多い文を縦書きにしないほうが崩れません。
+
+縦書きの箱では、論理プロパティの向きが入れ替わります。`inline-size` は高さに、`block-size` は幅になり、`margin-block` は左右の余白になります。上の例の `max-inline-size` は、縦書きでも1行の長さを決める指定のまま働きます。反対に、横書きで行の長さを `width` で決めていた要素を縦書きにすると、`width` は行の並ぶ方向の大きさに変わり、行の長さは制限されなくなります。方向の基準は「[7-2 通常フローの基礎](/layout/normal-flow/)」で、論理プロパティを使う理由は「[9-9 論理プロパティと論理値](/notation/logical-properties/)」で説明しています。
+
+行の長さを指定しないと、横書きの親に置いた縦書きの要素は、親の高さが決まっていなければ、ビューポートの高さを上限に1行を伸ばします。短いキャッチコピーなら問題になりませんが、文が長いと、画面の高さいっぱいまで伸びてから折り返します。縦書きの見出しには、上の例のように `max-inline-size` で行の長さの上限を指定しておきます。{/* 要検証: ブラウザ。高さの決まらない親に置いた縦書きの要素の行の長さ */}
+
 ## lang属性による言語ごとの切り替え
 
 この節で紹介した指定の多くは、`:lang(ja)` と `:lang(en)` で言語ごとに切り替えています。前提になるのは、HTMLの `lang` 属性です。`html` 要素に `lang="ja"` を付け、英文の段落や引用のように、ほかの言語で書いた部分にはその言語の `lang` を付けます。
@@ -214,5 +276,9 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 - [font-kerning - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-kerning)
 - [font-feature-settings - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/font-feature-settings)
 - [hanging-punctuation - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/hanging-punctuation)
+- [writing-mode - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/writing-mode)
+- [text-combine-upright - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-combine-upright)
+- [text-orientation - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/text-orientation)
+- [CSS Writing Modes Level 4 - 7.3.1. Available Space in Orthogonal Flows](https://www.w3.org/TR/css-writing-modes-4/#orthogonal-auto)
 - [日本語Webサイトを意識したモダンリセットCSS「kiso.css」をリリースしました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
 - [デザイナーとフロントエンドエンジニアに知ってほしいWebのフォント周りのお話](https://zenn.dev/tak_dcxi/articles/588fbc205251043dc357)（TAK、2020年10月。本書と一部の方針が異なります）

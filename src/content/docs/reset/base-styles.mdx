@@ -194,7 +194,7 @@ window.addEventListener("load", () => {
 
 スクロールを止めるとスクロールバーが消え、その幅の分だけコンテンツが横にずれます。kiso.cssが `:root` に指定している `scrollbar-gutter: stable` は、スクロールバーの有無にかかわらずその幅の領域を確保するので、ダイアログを開閉してもレイアウトはずれません。
 
-`overflow: hidden` の代わりに `overflow: clip` を使う方法もあります。FirefoxとSafariで確かめたところ、`:root` の `overflow: clip` でも背面のスクロールは止まりました。それでも本書は `hidden` のままにします。ルートに指定した `overflow` はビューポートに伝わり、ビューポートでは `clip` が `hidden` として扱われるので、ルートでは2つの値の働きは変わりません。値を替えても得られるものがなく、`hidden` なら、`clip` で背面を固定できなかった古い版のFirefoxでも同じように止まります。また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。
+`overflow: hidden` の代わりに `overflow: clip` を使う方法もあります。FirefoxとSafariで確かめたところ、`:root` の `overflow: clip` でも背面のスクロールは止まりました。それでも本書は `hidden` のままにします。ルートに指定した `overflow` はビューポートに伝わり、ビューポートでは `clip` が `hidden` として扱われるので、ルートでは2つの値の働きは変わりません。値を替えても得られるものがなく、`hidden` なら、`clip` で背面を固定できなかった古い版のFirefoxでも同じように止まります。また、iOSのSafariでは、この方法でも背面のスクロールを完全には止められません。完全に止める必要がある場合は、JavaScriptを併用します。ダイアログそのものの実装は、「[17-6 開閉するUI](/interaction/disclosure/)」で扱います。
 
 ## スクロールバーの領域と見た目
 

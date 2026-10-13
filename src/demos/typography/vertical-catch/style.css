@@ -1,0 +1,67 @@
+@layer components {
+  @scope (.scoped.vertical-catch) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._label-text {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._hero {
+      display: block grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      padding: 24px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+
+      & > ._catch-text {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      & > ._lead-text {
+        grid-column: 1;
+        grid-row: 1;
+      }
+    }
+
+    ._catch-text {
+      max-inline-size: calc(160 / 16 * 1rem);
+      writing-mode: vertical-rl;
+      font-size: calc(var(--text--display--font-size) / 16 * 1rem);
+      line-height: var(--text--display--leading);
+
+      &:lang(ja) {
+        font-feature-settings: "vpal";
+      }
+
+      /* 比較のために、縦書きにせず、横書きの行を回す */
+      &[data-method="rotate"] {
+        writing-mode: unset;
+        rotate: 90deg;
+      }
+    }
+
+    ._lead-text {
+      line-height: var(--text--body--leading);
+    }
+  }
+}
+
+@layer utilities {
+  .-combine-upright {
+    text-combine-upright: all;
+  }
+}

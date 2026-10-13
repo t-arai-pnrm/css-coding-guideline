@@ -91,6 +91,8 @@ import achromaticCss from '../../../demos/color-media/achromatic-hue/style.css?r
 
 <Baseline id="gradient-interpolation" />
 
+グラデーションの種類の選び方、境界をくっきり分ける停止位置、繰り返す模様の描き方は、「[16-6 グラデーションを描く](/decoration/gradients/)」で説明しています。
+
 ## 無彩色の色相を none にする
 
 グレーのような無彩色を `oklch()` で書くときは、色相を `0deg` ではなく `none` にします。`none` は、その成分の値が欠落していることを表すキーワードです。彩度が0の色は色相を変えても見た目が変わらないので、`oklch(90% 0 0deg)` と `oklch(90% 0 none)` は同じグレーに見えます。違いが出るのは、ほかの色との間を補間するときです。

@@ -1,0 +1,87 @@
+@layer components {
+  @scope (.scoped.hiding-methods) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._methods {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+    }
+
+    ._legend {
+      margin-block-end: 8px;
+      font-weight: var(--font-weight--bold);
+    }
+
+    ._method {
+      display: inline flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    ._links {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* 場所が残るかが分かるように、リンクを枠で囲む */
+    ._link {
+      padding-block: 4px;
+      padding-inline: 12px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+    }
+
+    /* script.js が data-hiding に選んだ隠し方を入れる。CSS の隠し方だけをここで指定する */
+    ._target {
+      &[data-hiding="visibility"] {
+        visibility: hidden;
+      }
+
+      &[data-hiding="opacity"] {
+        opacity: 0;
+      }
+    }
+
+    ._status {
+      color: var(--foreground--muted);
+    }
+
+    /* 隠したリンクにフォーカスがあるかを、見えない場合でも文字で示す */
+    ._status-in {
+      display: none;
+
+      &:is(:scope:has(._target:focus) *) {
+        display: revert;
+        color: var(--foreground--danger);
+      }
+    }
+
+    ._status-out {
+      &:is(:scope:has(._target:focus) *) {
+        display: none;
+      }
+    }
+  }
+}
+
+@layer utilities {
+  .-visually-hidden {
+    position: fixed;
+    inset: 0;
+    contain: strict;
+    display: revert;
+    visibility: unset;
+    inline-size: 4px;
+    block-size: 4px;
+    margin: unset;
+    padding: unset;
+    border: unset;
+    opacity: 0;
+    pointer-events: none;
+  }
+}

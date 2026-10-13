@@ -1,6 +1,6 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.55.3（2026-10-13 生成）
+- ガイドラインのバージョン: 0.56.0（2026-10-13 生成）
 - ルールの数: 30
 - 本文: 約8.5万字
 - 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
@@ -50,7 +50,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/#rule-no-root-font-size-change
 - 【必須・仕様上の制約】`line-height` は単位のない数値で指定する。（`unitless-line-height`）
   - 理由: 単位のある値は計算後の長さのまま子要素に継承され、文字サイズの違う子要素で行が重なったり空きすぎたりするため。
-  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-6）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
+  - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-7）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
   - 自動チェック: Stylelint: `declaration-property-unit-allowed-list`
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/px-and-rem/#rule-unitless-line-height
 - 【推奨・本書の規約】サイズのトークンは単位のない数値（px 相当）で持ち、使う場所で `calc(var(--spacing--md) / 16 * 1rem)` や `calc(var(--spacing--md) * 1px)` に変換する。（`unitless-size-tokens`）
@@ -147,7 +147,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/#rule-typed-attr-fallback
 - 【推奨・実装上の判断】`if()` は、要素自身に定義したカスタムプロパティを `style()` で調べるときにだけ使い、条件1つと `else` の形で書く。（`if-for-own-custom-property`）
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
-  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-7 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
+  - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-8 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/#rule-if-for-own-custom-property
 - 【必須・仕様上の制約】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。

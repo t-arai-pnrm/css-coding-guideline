@@ -1,6 +1,6 @@
 ---
 title: "第17章 インタラクション"
-description: "ホバーとフォーカスの表し方、押せる範囲、状態を表す属性、カード全体のリンク、ダイアログやアコーディオンのような開閉するUI、フォーム部品、CSSで作るカルーセルを扱う章です。操作の振る舞いはできるだけブラウザの機能に任せます。"
+description: "ホバーとフォーカスの表し方、押せる範囲、状態を表す属性、カード全体のリンク、要素の隠し方、ダイアログやアコーディオンのような開閉するUI、フォーム部品、CSSで作るカルーセルを扱う章です。操作の振る舞いはできるだけブラウザの機能に任せます。"
 sidebar:
   label: "概要"
   order: 0
@@ -18,21 +18,22 @@ sidebar:
 
 ## この章の節
 
-この章は次の7つの節で構成しています。17-1から17-4は、どの部品にも関わる操作の基本で、17-5から17-7は、部品ごとの作り方です。
+この章は次の8つの節で構成しています。17-1から17-5は、どの部品にも関わる操作の基本で、17-6から17-8は、部品ごとの作り方です。
 
 - [17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)：`any-hover` によるホバーの書き方、`:focus-visible` との対応、キーボード操作とトランジション、透明度ではなく色で表す変化
 - [17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)：操作する要素の最小の大きさ、余白を付ける要素、項目の間に隙間を作らない並べ方、`user-select` と `touch-action` を指定する範囲
 - [17-3 状態を属性で表す](/interaction/state-attributes/)：擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順で選ぶ状態のセレクタ、`:focus-within` と `:has(:focus-visible)` の使い分け
 - [17-4 カード全体をリンクにする](/interaction/card-link/)：見出しのリンクの `::after` を広げる方法と、フォーカスリングの出し方
-- [17-5 開閉するUI](/interaction/disclosure/)：`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` の使い分け、ドロワーの背面に付ける `inert` 属性
-- [17-6 フォーム部品](/interaction/forms/)：`accent-color`、`input` 自体に描くチェックボックス、`switch` 属性、`:user-invalid`、入力欄の文字サイズ
-- [17-7 CSSでカルーセルを作る](/interaction/carousel/)：スクロールスナップを土台にした `::scroll-button()` と `::scroll-marker`、隠れているスライドを外す `interactivity: inert`、自動再生をしない判断
+- [17-5 要素を隠す方法を選ぶ](/interaction/hiding-elements/)：見た目、場所、支援技術、操作とフォーカスのどれから消すかで選ぶ隠し方と、`.-visually-hidden` の定義
+- [17-6 開閉するUI](/interaction/disclosure/)：`<dialog>`、`popover` 属性、`<details>`、`hidden="until-found"` の使い分け、ドロワーの背面に付ける `inert` 属性
+- [17-7 フォーム部品](/interaction/forms/)：`accent-color`、`input` 自体に描くチェックボックス、`switch` 属性、`:user-invalid`、入力欄の文字サイズ
+- [17-8 CSSでカルーセルを作る](/interaction/carousel/)：スクロールスナップを土台にした `::scroll-button()` と `::scroll-marker`、隠れているスライドを外す `interactivity: inert`、自動再生をしない判断
 
 トランジションとアニメーション、開閉するUIの出現と退場の動き、View Transitionsによる画面の切り替えは、第18章「[モーション](/motion/)」で扱います。フォーカスリングの定義、スムーススクロール、モーダル表示中の背面の固定は、ベーススタイルに書くものとして「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で扱います。強制カラーモードでの部品の見え方は「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で扱います。この章のコード例では、説明に関係しない `@layer` の記述を省略しています。デモのCSSには省略せずに書いています。
 
 ## 初めて読むとき
 
-初めて読むときは、「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」「[17-3 状態を属性で表す](/interaction/state-attributes/)」を読みます。17-4のカード全体のリンクは、第21章の「[21-6 カード全体を押せるようにする](/exercise/clickable-card/)」の前に読んでください。17-2の押せる範囲と、17-5以降の部品ごとの作り方は、その部品を作るときに読んでください。
+初めて読むときは、「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」「[17-3 状態を属性で表す](/interaction/state-attributes/)」を読みます。17-4のカード全体のリンクは、第21章の「[21-6 カード全体を押せるようにする](/exercise/clickable-card/)」の前に読んでください。17-2の押せる範囲、17-5の隠し方の選び方、17-6以降の部品ごとの作り方は、その部品を作るときに読んでください。
 
 ## 最初に押さえるルール
 
@@ -64,7 +65,7 @@ sidebar:
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-`<details>` の `open` 属性から読み取り、`.is-open` は付けません。`open` 属性は、`<summary>` を押したときも、キーボードで開閉したときも、対応したブラウザでページ内検索の結果として自動で開いたときも、ブラウザが付け外しします。状態を表すセレクタは、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に選ぶので、HTML要素の属性がある状態にクラスを足すと、同じ状態を2か所で管理することになります（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。`:open` 擬似クラスもありますが、Safariが対応したのは26.5からなので、本書の対象のすべてでは使えません（「[17-5 開閉するUI](/interaction/disclosure/)」）。
+`<details>` の `open` 属性から読み取り、`.is-open` は付けません。`open` 属性は、`<summary>` を押したときも、キーボードで開閉したときも、対応したブラウザでページ内検索の結果として自動で開いたときも、ブラウザが付け外しします。状態を表すセレクタは、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に選ぶので、HTML要素の属性がある状態にクラスを足すと、同じ状態を2か所で管理することになります（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。`:open` 擬似クラスもありますが、Safariが対応したのは26.5からなので、本書の対象のすべてでは使えません（「[17-6 開閉するUI](/interaction/disclosure/)」）。
 
 ```css title="🙆‍♂ Recommended: 開閉の状態を open 属性から読み、summary のホバーをフォーカスとそろえる"
 @scope (.scoped.faq-list) to (.scoped) {

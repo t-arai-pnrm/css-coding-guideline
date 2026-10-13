@@ -1,0 +1,166 @@
+@layer pages {
+  @scope (.scoped.cutout-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+    }
+
+    :is(._legend, ._heading) {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--regular);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._row {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._panel {
+      display: block grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 16px;
+      border-radius: var(--rounded--lg);
+
+      &[data-surface="raised"] {
+        box-shadow: var(--shadow--sm);
+        background-color: var(--background--raised);
+      }
+
+      &[data-surface="gradient"] {
+        background-image: linear-gradient(in oklab to right, var(--background--raised), var(--background--inverse));
+      }
+    }
+
+    ._case {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.status-avatar) to (.scoped) {
+    :scope {
+      --_size: 40px;
+      --_badge-size: 12px;
+      --_gap: 3px;
+
+      /* バッジの中心。バッジはアバターの右下の角に、外接する正方形の角を合わせて置く */
+      --_badge-x: calc(var(--_size) - var(--_badge-size) / 2);
+      --_badge-y: calc(var(--_size) - var(--_badge-size) / 2);
+
+      /* 切り抜く円の半径。バッジの半径に、見せたい隙間の幅を足す */
+      --_cutout-radius: calc(var(--_badge-size) / 2 + var(--_gap));
+      --_mask: radial-gradient(circle at var(--_badge-x) var(--_badge-y), transparent var(--_cutout-radius), #000 calc(var(--_cutout-radius) + 1px));
+      --_ring: none;
+
+      position: relative;
+      display: inline grid;
+      flex-shrink: 0;
+      inline-size: var(--_size);
+      aspect-ratio: 1;
+
+      &:dir(rtl) {
+        --_badge-x: calc(var(--_badge-size) / 2);
+      }
+
+      /* 比べるための指定。マスクを外し、ページの背景の色の影でバッジの縁を描く */
+      &[data-cutout="shadow"] {
+        --_mask: none;
+        --_ring: 0 0 0 var(--_gap) var(--background--base);
+      }
+    }
+
+    ._avatar {
+      display: block grid;
+      place-items: center;
+      mask-image: var(--_mask);
+      border-radius: var(--rounded--full);
+      background-color: var(--foreground--muted);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._badge {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline-end: 0;
+      inline-size: var(--_badge-size);
+      aspect-ratio: 1;
+      border-radius: var(--rounded--full);
+      box-shadow: var(--_ring);
+      background-color: var(--foreground--success);
+    }
+  }
+
+  @scope (.scoped.avatar-stack) to (.scoped) {
+    :scope {
+      --_size: 32px;
+      --_overlap: 10px;
+      --_gap: 3px;
+
+      /* 次のアバターの中心。自分の幅から重なりを引いた位置に、次のアバターの半径を足す */
+      --_next-x: calc(var(--_size) - var(--_overlap) + var(--_size) / 2);
+
+      /* 切り抜く円の半径。次のアバターの半径に、見せたい隙間の幅を足す */
+      --_cutout-radius: calc(var(--_size) / 2 + var(--_gap));
+      --_mask: radial-gradient(circle at var(--_next-x) 50%, transparent var(--_cutout-radius), #000 calc(var(--_cutout-radius) + 1px));
+      --_ring: none;
+
+      display: block flex;
+
+      & > * + * {
+        margin-inline-start: calc(var(--_overlap) * -1);
+      }
+
+      &:dir(rtl) {
+        --_next-x: calc(var(--_overlap) - var(--_size) / 2);
+      }
+
+      /* 比べるための指定。マスクを外し、ページの背景の色の影で各アバターの縁を描く */
+      &[data-cutout="shadow"] {
+        --_mask: none;
+        --_ring: 0 0 0 var(--_gap) var(--background--base);
+      }
+    }
+
+    ._avatar {
+      display: block grid;
+      place-items: center;
+      inline-size: var(--_size);
+      aspect-ratio: 1;
+      border-radius: var(--rounded--full);
+      box-shadow: var(--_ring);
+      background-color: var(--foreground--muted);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+
+      /* 最後のアバターには、重なる相手がいないので切り抜かない */
+      &:not(:last-child) {
+        mask-image: var(--_mask);
+      }
+    }
+  }
+}
+
+@layer utilities {
+  .-visually-hidden {
+    position: fixed;
+    inset: 0;
+    contain: strict;
+    inline-size: 4px;
+    block-size: 4px;
+    margin: unset;
+    padding: unset;
+    border: unset;
+    opacity: 0;
+    pointer-events: none;
+  }
+}

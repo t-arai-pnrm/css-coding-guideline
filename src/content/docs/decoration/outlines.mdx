@@ -1,8 +1,8 @@
 ---
-title: 16-8 輪郭と枠線を描く
+title: 16-9 輪郭と枠線を描く
 description: 角丸のタブや吹き出しのような輪郭は clip-path の shape() で描き、吹き出しの枠線は同じ輪郭を border-shape に渡して対応した環境だけに足します。グラデーションの枠線は background-clip の border-area で描きます。どの環境でもグラデーションの枠線が必要なときと、ドーナツグラフは、擬似要素とマスクで描きます。未対応の環境で何も描かれなくならないように @supports で切り替え、強制カラーモードと当たり判定への影響も確かめます。
 sidebar:
-  order: 8
+  order: 9
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -21,7 +21,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 要素の輪郭は `clip-path` の `shape()` で、枠線の塗りは `background-clip: border-area` で描きます。どちらも、以前は複数の擬似要素やマスクの重ね合わせで作っていた形を、1つか2つの宣言で書けるようにする機能です。`shape()` はすべての主要なブラウザが対応していますが、`border-area` は対応が分かれています。
 
-`border-area` は、未対応の環境で宣言全体が無効になり、何も描かれなくなることがあります。そのため、未対応の環境での見え方を先に確かめ、`@supports` で従来の書き方に切り替えます。角の形だけを変える `corner-shape` は「[16-7 角の形を変える](/decoration/shapes/)」で扱います。`polygon()` で図形を切り抜く書き方は「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」で、`mask-image` でアイコンを描く基本は「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で説明しています。
+`border-area` は、未対応の環境で宣言全体が無効になり、何も描かれなくなることがあります。そのため、未対応の環境での見え方を先に確かめ、`@supports` で従来の書き方に切り替えます。角の形だけを変える `corner-shape` は「[16-8 角の形を変える](/decoration/shapes/)」で扱います。`polygon()` で図形を切り抜く書き方は「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」で、`mask-image` でアイコンを描く基本は「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」で説明しています。
 
 ## 輪郭を描く方法の違い
 
@@ -33,7 +33,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 `shape()` は、`clip-path` などで使う図形の関数です。`polygon()` は頂点を直線でつなぐことしかできず、`path()` はSVGのパスの文字列なので、`%` や `calc()`、カスタムプロパティが使えませんでした。`shape()` は、直線と曲線の命令をCSSの値で書けるので、要素の大きさに合わせて伸び縮みする輪郭を描けます。
 
-次の例は、「[16-7 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
+次の例は、「[16-8 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
 
 ```css title="🙆‍♂ Recommended: 反り返るタブを、擬似要素1つの shape() で描く"
 @scope (.scoped.tab-list) to (.scoped) {

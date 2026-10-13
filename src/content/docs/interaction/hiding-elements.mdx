@@ -1,0 +1,212 @@
+---
+title: "17-5 要素を隠す方法を選ぶ"
+description: "要素を隠す方法は、見た目、場所、支援技術、操作とフォーカスのどれから消したいかで選びます。読み上げさせたいテキストは.-visually-hiddenで見た目だけを消し、display: noneとvisibility: hiddenは支援技術からも消したいときに使います。opacity: 0やclip-pathだけで隠した要素は、フォーカスと読み上げの対象に残ります。"
+sidebar:
+  order: 5
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import hidingHtml from '../../../demos/interaction/hiding-methods/index.html?raw';
+import hidingCss from '../../../demos/interaction/hiding-methods/style.css?raw';
+import hidingJs from '../../../demos/interaction/hiding-methods/script.js?raw';
+
+要素を隠す方法は、何から消したいかで選びます。読み上げさせたいテキストは `.-visually-hidden` で見た目だけを消し、`display: none` と `visibility: hidden` は、支援技術からも消したいときに使います。見た目を消したら、フォーカスと読み上げから外れているか（または残っているか）を、目的と照らして確かめます。
+
+## 隠す目的を4つに分ける
+
+「隠す」には、目的の違う4つの操作が含まれます。1つ目は、見た目だけを消し、スクリーンリーダーには読ませることです。アイコンだけのリンクに添える名前や、「カテゴリ：」のような補足のラベルがこれに当たります。2つ目は逆に、見た目は残して支援技術からだけ消すことで、隣のテキストと同じ意味を持つアイコンが代表です。
+
+3つ目は、閉じたメニューや選ばれていないタブのパネルのように、見た目と支援技術の両方から消すことです。4つ目は、見た目と読み上げは残し、操作とフォーカスだけを止めることで、ドロワーを開いている間の背面がこれに当たります。
+
+```html title="🙆‍♂ Recommended: 目的ごとに隠し方を変える"
+<!-- 見た目だけを消す：アイコンのリンクの名前 -->
+<span class="-visually-hidden">新しいウィンドウが開きます</span>
+
+<!-- 支援技術からだけ消す：隣のテキストと同じ意味のアイコン -->
+<svg class="icon" aria-hidden="true">…</svg>
+
+<!-- 両方から消す：閉じたパネル -->
+<div class="_panel" hidden>…</div>
+
+<!-- 操作とフォーカスだけを止める：ドロワーを開いている間の背面 -->
+<main inert>…</main>
+```
+
+隠し方を目的から選ばないと、どれか1つを使い回すことになります。`display: none` を使い回せば補足のラベルが読まれなくなり、`opacity: 0` を使い回せば、閉じたメニューのリンクにフォーカスが移ります。
+
+## `display: none` と `hidden` 属性で両方から消す
+
+`display: none` は、要素の箱を作らない指定です。見た目から消え、場所を取らず、アクセシビリティツリーからも外れ、フォーカスもできません。条件によって表示する要素を切り替えるときは、状態をHTMLの `hidden` 属性で表し、CSSで `display: none` を書くのは、画面の幅のようにCSSの中で決まる条件に限ります。状態を属性で表す理由は「[17-3 状態を属性で表す](/interaction/state-attributes/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: CSS の中で決まる条件で隠すときだけ display: none を書く"
+@scope (.scoped.global-header) to (.scoped) {
+  ._drawer-button {
+    @media (width >= calc(768 / 16 * 1rem)) {
+      display: none;
+    }
+  }
+}
+```
+
+`hidden` 属性は、ブラウザのデフォルトスタイルでは `display: none` の通常の宣言なので、コンポーネントが `display` を指定すると表示されてしまいます。本書の環境では、kiso.cssが `reset` レイヤーで `[hidden]` に `display: none !important` を指定しているので、この衝突は起きません。仕組みは「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」と「[7-12 display: contentsで箱をなくす](/layout/display-contents/)」で説明しています。コンポーネントの中で、`[hidden]` の指定を書き直す必要はありません。
+
+`hidden` 属性で隠した要素も、DOMの兄弟としては残ります。`* + *` の間隔や `:nth-child()` の数え方に影響する点は、「[12-11 prose](/compositions/prose/)」と「[5-4 子要素の位置で選ぶ](/pseudo/child-index/)」で扱います。閉じたパネルの中身をページ内検索で見つけられるようにしたいときは、`hidden="until-found"` を使います（「[17-6 開閉するUI](/interaction/disclosure/)」）。
+
+## `visibility: hidden` で場所を残して消す
+
+`visibility: hidden` は、場所を残したまま、見た目と支援技術の両方から消します。フォーカスもできません。`display` と違い、トランジションの中で切り替わる時点が決まっているので、閉じるアニメーションを終えてから隠すパネルに向いています（「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/)」）。
+
+```css title="🙅‍♂ Not Recommended: visibility: hidden の中で、子要素だけ visible に戻す"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.mega-menu) to (.scoped) {
+  ._panel {
+    visibility: hidden;
+  }
+
+  ._panel-heading {
+    visibility: visible;
+  }
+}
+```
+
+`visibility` は継承するプロパティで、子要素に `visible` を指定すると、その子だけが表示され、読み上げとフォーカスの対象にも戻ります。Chromeで、`visibility: hidden` のリンクの中に `visible` の要素を置くと、その要素の文字がアクセシビリティツリーに現れることを確かめました。パネルを隠したつもりで一部だけが残るので、隠した要素の中では `visibility` を指定し直しません。
+
+## `.-visually-hidden` で見た目だけを消す
+
+見た目だけを消して読み上げさせるには、ユーティリティの `.-visually-hidden` を使います。本書では、`position: fixed` で4pxの箱にし、`opacity: 0` で透明にする形で定義します。
+
+```css title="🙆‍♂ Recommended: 見た目だけを消し、読み上げの対象に残す"
+@layer utilities {
+  .-visually-hidden {
+    position: fixed;
+    inset: 0;
+    contain: strict;
+    display: revert;
+    visibility: unset;
+    inline-size: 4px;
+    block-size: 4px;
+    margin: unset;
+    padding: unset;
+    border: unset;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+```
+
+広く使われている定義は、1pxの箱を `clip` や `clip-path` で切り取る形です。本書が4pxにしているのは、1pxの箱では環境によって読み上げられない可能性があるためです。{/* 要検証: ブラウザ。1px の箱が読み上げられない環境の有無（スクリーンリーダーとブラウザの組み合わせ） */}`position: fixed` はビューポートを基準に置くので、祖先の配置に左右されず、横スクロールの原因にもなりません。`contain: strict` で、中の文字が箱の大きさに影響せず、箱の外にも描かれないようにし、`pointer-events: none` で、透明な箱がクリックを受けないようにしています。
+
+`display: revert` と `visibility: unset` は、コンポーネントが同じ要素に `display: none` や `visibility: hidden` を指定していても、読み上げの対象に戻すための宣言です。ユーティリティは `utilities` レイヤーに置くので、どのコンポーネントの指定よりも優先され、`!important` は要りません（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。ユーティリティにする範囲は「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で説明しています。
+
+`.-visually-hidden` は見た目を消すだけなので、リンクやボタンに付けると、見えないままフォーカスを受けます。スキップリンクのように、フォーカスを受けたときだけ見せたい要素には、フォーカスの間は隠さない変種を使います。
+
+```css title="🙆‍♂ Recommended: フォーカスを受けている間だけ表示する"
+@layer utilities {
+  .-visually-hidden-focusable {
+    &:not(:focus, :focus-within) {
+      position: fixed;
+      inset: 0;
+      contain: strict;
+      display: revert;
+      visibility: unset;
+      inline-size: 4px;
+      block-size: 4px;
+      margin: unset;
+      padding: unset;
+      border: unset;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+}
+```
+
+```html title="🙆‍♂ Recommended: スキップリンクに、フォーカスの間は隠さない変種を付ける"
+<a class="_skip-link | -visually-hidden-focusable" href="#main">本文へ移動</a>
+```
+
+フォームのチェックボックスやラジオボタンを `.-visually-hidden` で隠し、隣の要素で描き直す方法は採りません。フォーカスリングと状態を隣の要素につなぎ直す手間がかかるからです。見た目を変えるときは、`input` 自体に描きます（「[17-7 フォーム部品](/interaction/forms/)」）。
+
+コンテナサイズクエリで狭いときだけラベルを隠すように、条件によって視覚的に隠すときは、ユーティリティのクラスを付け外しできません。そのときは、同じ種類の宣言をコンポーネントの中に書きます（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
+
+## `aria-hidden` と `inert` で支援技術や操作から外す
+
+`aria-hidden="true"` は、見た目と操作を残したまま、要素と子孫をアクセシビリティツリーから外します。隣のテキストと同じ意味を持つアイコンや、飾りのSVGに付けます。意味を持つアイコンの名前は、SVGに `aria-hidden="true"` を付けたうえで、隣に `.-visually-hidden` のテキストを置いて伝えます（「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」）。
+
+```html title="🙆‍♂ Recommended: アイコンを読み上げから外し、名前は隣のテキストで伝える"
+<a href="/feed.xml">
+  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">…</svg>
+  RSSフィード
+</a>
+```
+
+`aria-hidden="true"` は、フォーカスできる要素とその祖先には付けません。フォーカスは移るのに、読み上げでは何もない場所に止まったように扱われるからです。Chromeで確かめたところ、`aria-hidden="true"` のリンクにTabキーでフォーカスが移り、フォーカスがある間はアクセシビリティツリーにも現れました。
+
+`inert` 属性は、見た目を残したまま、クリック、フォーカス、アクセシビリティツリーのすべてから要素と子孫を外します。ドロワーを開いている間の背面（「[17-6 開閉するUI](/interaction/disclosure/#ドロワーの背面を不活性にする方法)」）や、`grid-template-rows` を0にして畳んだアコーディオンの中身（「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」）のように、操作させたくない範囲に付けます。
+
+<Baseline id="inert" name="inert 属性" />
+
+CSSから同じ状態にする `interactivity: inert` もありますが、Baselineになっていないので、カルーセルのように未対応の環境でも機能が損なわれない場面に限って使います（「[17-8 CSSでカルーセルを作る](/interaction/carousel/)」）。
+
+## 4つの観点で隠し方を比べる
+
+ここまでの隠し方と、透明にするだけの `opacity: 0`、切り抜くだけの `clip-path` を、見た目、場所、支援技術、操作とフォーカスの4つの観点で比べると、次の表になります。{/* 要確認: 出典なし。4つの観点による隠し方の比較 */}
+
+| 隠し方 | 見た目から消えるか | 場所を取るか | 支援技術から消えるか | 操作とフォーカスができるか |
+| --- | --- | --- | --- | --- |
+| `display: none`、`hidden` 属性 | 消える | 取らない | 消える | できない |
+| `visibility: hidden` | 消える | 取る | 消える | できない |
+| `.-visually-hidden` | 消える | 取らない | 残る | フォーカスはできる |
+| `aria-hidden="true"` | 残る | 取る | 消える（フォーカスの間は残る） | できる |
+| `inert` 属性 | 残る | 取る | 消える | できない |
+| `opacity: 0` | 消える | 取る | 残る | できる |
+| `clip-path: inset(50%)` | 消える | 取る | 残る | できる |
+
+`opacity: 0` と `clip-path` は、描画の結果を変えるだけで、要素の存在には触れません。そのため、見えなくなった要素も、読み上げとフォーカスの対象に残ります。閉じたメニューを透明にするだけだと、Tabキーで見えないリンクにフォーカスが移り、キーボードで操作するユーザーにはフォーカスが消えたように見えます。
+
+```css title="🙅‍♂ Not Recommended: 閉じたメニューを透明にするだけで隠す"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.global-header) to (.scoped) {
+  ._menu {
+    opacity: 0;
+
+    &:is(:scope:has(._menu-button[aria-expanded="true"]) *) {
+      opacity: 1;
+    }
+  }
+}
+```
+
+一方、スクロールに合わせて現す要素のように、動き出す前も読み上げとページ内検索の対象に残したい要素では、`opacity` で透明にすることが目的に合います（「[18-9 スクロールに合わせて動かす](/motion/scroll-driven/)」）。`clip-path` で現すパネルも、閉じた後は `visibility: hidden` で隠します（「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/)」）。どちらも、透明にしたことや切り抜いたことではなく、支援技術とフォーカスに残るかどうかで判断しています。
+
+次のデモでは、「隠すリンク」に7つの隠し方を切り替えて付けられます。「前のリンク」にフォーカスしてからTabキーを押すと、フォーカスが「隠すリンク」に移ったかが、下の行に表示されます。
+
+<Demo title="隠し方を切り替えて、場所が残るか、Tabキーでフォーカスが移るかを比べる" html={hidingHtml} css={hidingCss} js={hidingJs} widths={[]} />
+
+`hidden` 属性と `.-visually-hidden` では、「前のリンク」と「後ろのリンク」の間が詰まります。`visibility: hidden`、`opacity: 0`、`aria-hidden="true"`、`inert` 属性では、「隠すリンク」の場所が空いたまま残ります。Tabキーでフォーカスが「隠すリンク」に移るのは、隠さない場合に加えて、`opacity: 0`、`.-visually-hidden`、`aria-hidden="true"` の3つです。特に `opacity: 0` と `.-visually-hidden` では、リンクが見えないままフォーカスを受けます。Chromeで、7つの隠し方のそれぞれについて、この結果とアクセシビリティツリーの内容が表のとおりになることを確かめました。
+
+## 目的から隠し方を選ぶ
+
+読み上げさせたいテキストは、`.-visually-hidden` で隠します。見た目と支援技術の両方から消したいときは、状態として切り替えるなら `hidden` 属性、CSSの条件で切り替えるなら `display: none` を使います。場所を残したいときや、閉じるアニメーションを終えてから隠したいときは、`visibility: hidden` を使います。見た目は残して支援技術からだけ消すなら `aria-hidden="true"`、操作とフォーカスまで止めるなら `inert` 属性です。
+
+どの方法を選んでも、見た目を消したら、Tabキーでフォーカスが移らないか、読み上げに残っていないかを確かめます。見た目の確認だけでは、`opacity: 0` で残ったリンクや、`display: none` で消えたラベルに気付けないからです。確かめるには、キーボードで一巡するほか、ブラウザの開発者ツールでアクセシビリティツリーを見ます。
+
+アイコンだけのボタンの名前は、ボタンの中に `.-visually-hidden` のテキストを置いて付けます。ふつうのテキストなので、翻訳ツールにも訳され、参照のIDを管理する必要もありません。例外は、同じ名前のボタンが一覧にいくつも並び、ページ内検索でその名前が何度も当たると困る場合です。そのときは、名前を書いた要素を `display: none` で隠し、ボタンから `aria-labelledby` で参照します。`display: none` の要素も、`aria-labelledby` で参照すれば名前の計算に使われ、ページ内検索には当たりません。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [インラインSVGの代替テキストはどうするべきか](https://www.tak-dcxi.com/article/how-to-handle-alt-text-for-inline-svg/)（TAKLOG、2024年3月。本書と一部の方針が異なります）
+- [display - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/display)
+- [visibility - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/visibility)
+- [hidden - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Global_attributes/hidden)
+- [aria-hidden - Accessibility | MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-hidden)
+- [inert - HTML | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Global_attributes/inert)
+- [interactivity - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/interactivity)
+- [HTML Standard - The hidden attribute](https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute)（WHATWG）
+- [Accessible Rich Internet Applications (WAI-ARIA) 1.2 - aria-hidden](https://www.w3.org/TR/wai-aria-1.2/#aria-hidden)（W3C）

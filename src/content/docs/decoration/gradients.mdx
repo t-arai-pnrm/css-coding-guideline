@@ -1,0 +1,173 @@
+---
+title: "16-6 グラデーションを描く"
+description: "グラデーションの関数は、色が変わる向きで選びます。直線の方向に変わるなら linear-gradient()、点からの距離で変わるなら radial-gradient()、点の周りの角度で変わるなら conic-gradient() を使い、色が混ざるグラデーションには補間の色空間を書きます。境界をくっきり分けるときは後ろの色の停止位置を 0 にし、縞は repeating-linear-gradient() で、方眼は background-size のタイルで描きます。"
+sidebar:
+  order: 6
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import kindsHtml from '../../../demos/decoration/gradient-kinds/index.html?raw';
+import kindsCss from '../../../demos/decoration/gradient-kinds/style.css?raw';
+import patternsHtml from '../../../demos/decoration/gradient-patterns/index.html?raw';
+import patternsCss from '../../../demos/decoration/gradient-patterns/style.css?raw';
+
+グラデーションの関数は、色が変わる向きで選びます。直線の方向に沿って変わるなら `linear-gradient()`、1つの点からの距離で変わるなら `radial-gradient()`、1つの点の周りを回る角度で変わるなら `conic-gradient()` です。色が混ざるグラデーションには、`in oklch` のように補間の色空間を書きます。
+
+グラデーションは画像として扱われるので、`background-image` のほかに、`mask-image` や `border-image` のように画像を受け取るプロパティにも指定できます。色の境界をくっきり分ければ、帯や縞、方眼のような模様も1つの要素の背景で描けます。マスクでの使い方は「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」と「[16-9 輪郭と枠線を描く](/decoration/outlines/)」で説明しています。
+
+## グラデーションの種類は、色が変わる向きで選ぶ
+
+3つの関数は、画像の各点の色を何で決めるかが違います。`linear-gradient()` は、グラデーションの線に沿った位置で色を決めます。線の向きは `90deg` のような角度か、`to bottom right` のようなキーワードで書きます。角度は `0deg` が上向きで、時計回りに増えます。`radial-gradient()` は、中心からの距離で色を決め、`circle` か `ellipse` の形と、`at` に続けた中心の位置を書きます。`conic-gradient()` は、中心の周りの角度で色を決め、`from` に始まりの角度を、`at` に中心の位置を書きます。
+
+```css title="🙆‍♂ Recommended: 色が変わる向きに合わせて関数を選ぶ"
+._band {
+  background-image: linear-gradient(in oklch to bottom right, var(--background--inverse), var(--background--surface));
+  background-color: var(--background--surface);
+}
+
+._glow {
+  background-image: radial-gradient(in oklch circle at 30% 30%, var(--background--inverse), var(--background--surface));
+  background-color: var(--background--surface);
+}
+
+._wheel {
+  background-image: conic-gradient(in oklch from 0deg at 50% 50%, var(--background--inverse), var(--background--surface), var(--background--inverse));
+  background-color: var(--background--surface);
+}
+```
+
+次のデモでは、同じ2色を3つの関数でつないでいます。`linear-gradient()` は左上の角から右下の角へ、`radial-gradient()` は左上寄りの中心から外側へ、`conic-gradient()` は中心の真上から時計回りに色が変わります。
+
+<Demo title="同じ2色を、3種類のグラデーションでつなぐ" html={kindsHtml} css={kindsCss} />
+
+`conic-gradient()` の最後の色を最初の色と同じにしているのは、1周した位置で色がつながるようにするためです。最後の色を省くと、真上の線で最後の色と最初の色が突き合わさり、境界がくっきり見えます。`radial-gradient()` は、大きさを書かなければ `farthest-corner` になり、最後の色が中心から最も遠い角に届きます。ポインターの周りを照らすスポットライトのように、広がる大きさを決めたいときは `circle 160px` のように半径を書きます（「[18-10 動きの負荷を抑える](/motion/performance/#カスタムプロパティを毎フレーム更新するとき)」）。
+
+`linear-gradient()` の向きを表すキーワードには、`to inline-end` のような論理方向がありません。書字方向で見た目が変わらない書き方は「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/#スクロールできる領域の端をマスクで薄くする)」で説明しています。
+
+<Baseline id="gradients" name="グラデーション" />
+
+<Baseline id="conic-gradients" name="conic-gradient()" />
+
+## 停止位置を同じにすると、境界がくっきり分かれる
+
+各色の後ろには、その色になる位置（停止位置）を書けます。位置を書かない色は、前後の停止位置の間に等しい間隔で並びます。隣り合う2色の停止位置を同じにすると、その位置で色が混ざらずに切り替わり、境界がくっきり分かれます。
+
+境界を分けるとき、同じ位置を前の色と後ろの色に2回ずつ書くと、境界を動かすたびに2か所を直すことになります。
+
+```css title="🙅‍♂ Not Recommended: 同じ境界の位置を、前の色と後ろの色に2回ずつ書く"
+/* 🙅‍♂ Not Recommended */
+._ratio {
+  background-image: linear-gradient(to right, var(--background--inverse) 30%, var(--background--active) 30%, var(--background--active) 70%, var(--background--surface) 70%);
+}
+```
+
+仕様では、前のどの停止位置よりも小さい停止位置は、それまでで最も大きい停止位置に置き換わります。そこで、後ろの色の停止位置を `0` にすると、「前の色が終わった位置から」という意味になり、境界を1か所に書くだけで済みます。1つの色に2つの位置を並べる書き方（`色 開始 終了`）は、同じ色を2回書いたのと同じで、その色が開始から終了までを塗ります。
+
+```css title="🙆‍♂ Recommended: 後ろの色の停止位置を 0 にして、境界を1か所に書く"
+._ratio {
+  --_first: 30%;
+  --_second: 70%;
+
+  background-image: linear-gradient(to right, var(--background--inverse) var(--_first), var(--background--active) 0 var(--_second), var(--background--surface) 0);
+}
+```
+
+2色目の `0` は30%に、3色目の `0` は70%に置き換わります。最後の色は、最後の停止位置から画像の終わりまでを塗ります。境界がカスタムプロパティ1つで決まるので、値を外から渡す部品に向いています。進み具合を表すバー（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）と、`conic-gradient()` で割合を塗るドーナツグラフ（「[16-9 輪郭と枠線を描く](/decoration/outlines/#ドーナツグラフ)」）も、この書き方で境界を1か所にしています。
+
+## 繰り返す模様は、タイルか repeating-* で描く
+
+縞や方眼のような繰り返す模様は、境界をくっきり分けたグラデーションを繰り返して描きます。繰り返し方は2つあります。1つは、`background-size` で画像を小さなタイルにし、`background-repeat` の初期値の `repeat` で敷き詰める方法です。もう1つは、`repeating-linear-gradient()` のような `repeating-*` の関数で、停止位置の並びをグラデーションの線に沿って繰り返す方法です。要素の辺と平行な線はタイルで、斜めの縞は `repeating-*` で描きます。
+
+斜めの縞をタイルで描くと、タイルの辺で縞がずれないように、タイルの大きさと縞の角度を合わせて計算することになります。`repeating-linear-gradient()` なら、繰り返しはグラデーションの線に沿って起きるので、停止位置に書いた長さがそのまま、縞に垂直な方向の幅になります。{/* 要確認: 出典なし。斜めの縞を repeating-linear-gradient() で描く判断 */}
+
+```css title="🙆‍♂ Recommended: 斜めの縞は、停止位置の並びを繰り返して描く"
+._placeholder {
+  background-image: repeating-linear-gradient(-45deg, var(--background--active) 0 8px, transparent 0 16px);
+  background-color: var(--background--surface);
+}
+```
+
+方眼は、線を1本だけ描いたグラデーションをタイルにして重ねます。次の例は、太い線を50pxごとに、細い線を10pxごとに引きます。1枚目と3枚目は横の線、`90deg` を付けた2枚目と4枚目は縦の線で、どれもタイルの始まりに線の太さだけ色を塗り、残りを透明にしています。`background-position` を線の太さだけ負の方向にずらすのは、要素の上端と左端に線が重ならないようにするためです。線の色は背景色に文字色を少し混ぜて作るので、ライトとダークのどちらでも背景になじみます。
+
+```css title="🙆‍♂ Recommended: 線を1本描いたグラデーションをタイルにして、方眼を作る"
+._paper {
+  --_line: color-mix(in oklab, var(--background--surface), var(--foreground--base) 12%);
+
+  background-image:
+    linear-gradient(var(--_line) 2px, transparent 2px),
+    linear-gradient(90deg, var(--_line) 2px, transparent 2px),
+    linear-gradient(var(--_line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--_line) 1px, transparent 1px);
+  background-position:
+    -2px -2px,
+    -2px -2px,
+    -1px -1px,
+    -1px -1px;
+  background-size:
+    50px 50px,
+    50px 50px,
+    10px 10px,
+    10px 10px;
+  background-color: var(--background--surface);
+}
+```
+
+次のデモの1つ目は斜めの縞、2つ目は方眼です。縞は、箱の幅を変えても8pxの幅と16pxの周期を保ちます。方眼は、細い線の5マスごとに太い線が重なります。
+
+<Demo title="斜めの縞と、タイルにした方眼" html={patternsHtml} css={patternsCss} />
+
+## 補間の色空間を書く
+
+色が混ざるグラデーションには、`in oklch` のように補間の色空間を書きます。書かないときの色空間は色の書き方で変わり、旧来の書き方の色だけをつなぐと、彩度の高い2色の中間が灰色にくすみます。理由とデモは「[15-1 色の形式と色空間](/color-media/color/#グラデーションは補間の色空間を指定する)」にあります。色空間の指定に対応していない環境では宣言ごと無視されるので、`background-color` も書いておきます。
+
+```css title="🙆‍♂ Recommended: 色が混ざるグラデーションに、補間の色空間と背景色を書く"
+._banner {
+  background-image: linear-gradient(in oklch 90deg, var(--background--inverse), var(--background--surface));
+  background-color: var(--background--surface);
+}
+```
+
+停止位置を同じにして境界を分けただけのグラデーションには、色の混ざる区間がないので、補間の色空間は表示に影響しません。前の2つの見出しの例に `in oklch` を書いていないのは、このためです。
+
+`transparent` へ向かうグラデーションも、色空間を書いたうえで `transparent` のまま書けます。仕様では、グラデーションの補間は、各チャンネルに不透明度を掛けた値（乗算済みアルファ）で行うので、`transparent` の黒が中間の色に混ざりません。{/* 要検証: ブラウザ。色から transparent へのグラデーションの中間が暗くならないこと */}
+
+## 単色の画像として使う
+
+`linear-gradient(色 0 0)` は、1つの色に2つの停止位置 `0` を書いたグラデーションです。最後の停止位置より後ろは最後の色で塗られるので、画像全体が1色になります。`background-color` だけで塗れる場面では使いません。使うのは、画像しか受け取らないプロパティに単色を指定したいときと、`background-color` の上に重ねる層が要るときです。
+
+```css title="🙆‍♂ Recommended: 単色の画像を border-image で左右に広げる"
+._band {
+  border-image: linear-gradient(var(--background--surface) 0 0) fill 0 / / 0 100lvi;
+}
+```
+
+この例では、`border-image` の `fill` で中央の領域も塗り、最後の値で画像を左右に `100lvi` ずつはみ出させています。`border-image` のはみ出しは、レイアウトとスクロールできる範囲に影響しないので、背景の色だけが画面の端まで広がり、横スクロールは起きません。背景を画面幅に広げるほかの方法との使い分けは「[11-6 重なりと全幅](/layout-practice/layering/#画面幅いっぱいに広げる)」で説明しています。
+
+ほかの節でも、単色の画像を同じ理由で使っています。`background-image` の単色のグラデーションを `background-color` のシステムカラーの上に重ねると、強制カラーモードでグラデーションが消えたときに下の色が見えます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#グラデーションを重ねる方法)」）。`mask-image` に2枚の単色の画像を指定し、`mask-clip` と `mask-composite` で合成すると、枠線の部分だけを残せます（「[16-9 輪郭と枠線を描く](/decoration/outlines/#どの環境でもグラデーションの枠線にする)」）。
+
+単色の画像は、`conic-gradient(currentColor 0 0)` のように、どの関数で書いても同じ画像になります。CSS Images Module Level 4では色を1つだけ書く `conic-gradient(#000)` も認められていますが、`色 0 0` の形は、色が2つ以上必要だったLevel 3の書き方でも有効です。{/* 要検証: ブラウザ。色を1つだけ書いたグラデーションに対応した各ブラウザの版 */}
+
+## この節で使ったルール
+
+この節の書き方は、ほかの節のルールを組み合わせたもので、この節だけのルールは置いていません。使ったルールは次のとおりです。
+
+- [`gradient-interpolation-space`](/color-media/color/#rule-gradient-interpolation-space)：彩度の高い2色以上をつなぐグラデーションには、`linear-gradient(in oklch, …)` のように補間の色空間を書きます。
+- [`scroll-edge-fade-with-mask`](/decoration/clipping-and-masks/#rule-scroll-edge-fade-with-mask)：スクロールできる領域の端は、スクロールコンテナの `mask-image` に両端が透明になるグラデーションを指定して薄くします。
+- [`gradient-border-method`](/decoration/outlines/#rule-gradient-border-method)：グラデーションの枠線は `background-clip: border-area` で描き、どの環境でも必要なときだけ、擬似要素とマスクの合成で描きます。
+- [`background-current-for-shapes`](/color-media/forced-colors/#rule-background-current-for-shapes)：マスクや `clip-path` で切り抜いて `background-color` で塗る図形は、強制カラーモードで切り替わるカスタムプロパティから色を受け取ります。
+- [`full-bleed-via-layout-first`](/layout-practice/layering/#rule-full-bleed-via-layout-first)：要素を画面の幅まで広げるときは、まずレイアウトのガターの列を使い、ビューポート単位で広げるのは背景の装飾と横スクロールの領域だけにします。
+
+## 参考リンク
+
+{/* 記事のタイトルに同じ助詞が続くため、参考リンクの一覧だけ textlint の検査を止める */}
+{/* textlint-disable ja-technical-writing/no-doubled-joshi */}
+
+- [linear-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/linear-gradient)
+- [radial-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/radial-gradient)
+- [conic-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/conic-gradient)
+- [repeating-linear-gradient() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/repeating-linear-gradient)
+- [border-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/border-image)
+- [CSS Images Module Level 3 | W3C](https://www.w3.org/TR/css-images-3/)（グラデーションの関数と、停止位置を置き換える規則）
+- [CSS Images Module Level 4 | W3C](https://drafts.csswg.org/css-images-4/)（`conic-gradient()` と補間の色空間）
+- [2024年6月にXに投稿したCSSテクニックのまとめ](https://www.tak-dcxi.com/article/summary-of-css-techniques-posted-on-x-in-june-2024/)（TAKLOG、2024年7月。`linear-gradient(色 0 0)` を単色の画像として使う例）

@@ -1,8 +1,8 @@
 ---
-title: "17-6 フォーム部品"
+title: "17-7 フォーム部品"
 description: "フォーム部品は、色を変えるだけならaccent-colorで済ませ、作り直すときはinput自体にappearance: noneを指定して描きます。スイッチはswitch属性、入力エラーは:user-invalidで示し、入力欄の文字サイズは1rem以上にします。<select>の見た目は、対応した環境でだけappearance: base-selectで変えます。"
 sidebar:
-  order: 6
+  order: 7
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -65,7 +65,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 }
 ```
 
-`display: none` や `visibility: hidden` で隠した `input` は、キーボードでフォーカスできません。Tabキーで操作するユーザーは、チェックボックスを操作できなくなります。透明にして残す方法でも、フォーカスリングを隣の要素に描き直す手間がかかり、隣接セレクタや `:has()` で状態をつなぐ必要もあります。
+`display: none` や `visibility: hidden` で隠した `input` は、キーボードでフォーカスできません。Tabキーで操作するユーザーは、チェックボックスを操作できなくなります。透明にして残す方法でも、フォーカスリングを隣の要素に描き直す手間がかかり、隣接セレクタや `:has()` で状態をつなぐ必要もあります。隠し方ごとに何から外れるかは、「[17-5 要素を隠す方法を選ぶ](/interaction/hiding-elements/)」で比べています。
 
 見た目を作り直すときは、`input` 自体に `appearance: none` を指定して、ブラウザの見た目だけを消します。そのうえで、`input` の枠と背景、`::before` で描いたチェックマークで見た目を作ります。
 

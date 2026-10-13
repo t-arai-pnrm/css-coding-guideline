@@ -141,7 +141,18 @@
   page: interaction/card-link
   since: 0.1.0
 
-# 17-5 開閉する UI
+# 17-5 要素を隠す方法を選ぶ
+- id: hide-by-purpose
+  level: 推奨
+  kind: judgment
+  rule: '読み上げさせたい要素は `.-visually-hidden` で見た目だけを消し、`display: none`（`hidden` 属性）と `visibility: hidden` は支援技術からも消したいときに使う。見た目を消したら、フォーカスと読み上げから外れているか（または残っているか）を、隠す目的と照らして確かめる。'
+  reason: '`display: none` で隠したラベルは読み上げられず、`opacity: 0` や `clip-path` だけで隠したリンクは見えないままフォーカスと読み上げの対象に残り、どちらも見た目の確認だけでは気付けないため。'
+  note: '見た目を残して支援技術からだけ消すときは `aria-hidden="true"`、操作とフォーカスまで止めるときは `inert` 属性を使います。`aria-hidden="true"` は、フォーカスできる要素とその祖先には付けません。`.-visually-hidden` を付けたリンクやボタンは、見えないままフォーカスを受けるので、スキップリンクのようにフォーカスの間だけ見せる要素には `.-visually-hidden-focusable` を使います。確かめるときは、キーボードで一巡し、開発者ツールでアクセシビリティツリーを見ます。'
+  aiProne: true
+  page: interaction/hiding-elements
+  since: 0.56.0
+
+# 17-6 開閉する UI
 - id: native-disclosure-elements
   level: 推奨
   kind: judgment
@@ -247,7 +258,7 @@
   page: interaction/disclosure
   since: 0.1.0
 
-# 17-6 フォーム部品
+# 17-7 フォーム部品
 - id: accent-color-for-color-only
   level: 推奨
   kind: judgment
@@ -327,7 +338,7 @@
   page: interaction/forms
   since: 0.1.0
 
-# 17-7 CSS でカルーセルを作る
+# 17-8 CSS でカルーセルを作る
 - id: no-autoplay-carousel
   level: 禁止
   kind: judgment
