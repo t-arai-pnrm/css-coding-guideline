@@ -167,7 +167,7 @@
   kind: spec
   rule: 'フォーカスできる要素や、順番に意味のある要素を並べた Flexbox で、`order` や `row-reverse`・`column-reverse` によって見た目の順番を入れ替えない。'
   reason: 読み上げの順番とキーボードでフォーカスが移る順番は HTML の順番のままなので、見た目の順番と食い違うため。
-  note: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、2026年10月の時点で Baseline ではありません。それでも並べ替えるときは、ルール `reading-flow-when-reordered` に従って `reading-flow` を指定します。
+  note: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、Baseline ではありません。それでも並べ替えるときは、ルール `reading-flow-when-reordered` に従って `reading-flow` を指定します。
   aiProne: true
   page: layout/flexbox-basics
   since: 0.5.0
@@ -233,7 +233,7 @@
   kind: spec
   rule: HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。
   reason: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
-  note: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は2026年10月の時点で Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
+  note: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
   page: layout/grid-basics
   since: 0.1.0
 

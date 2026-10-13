@@ -134,7 +134,7 @@ import wrapCss from '../../../demos/compositions/apart-wrap/style.css?raw';
 
 <Baseline id="flexbox-flex-wrap-balance" name="flex-wrap: balance" />
 
-2026年9月時点では、`flex-wrap: balance` に対応しているのはChromeとEdgeの150以降だけです。未対応のブラウザでは `@supports` の中が適用されず、外側の `flex-wrap: wrap` のまま折り返します。子を2つに保っていれば、どちらのブラウザでも同じ表示になるので、`balance` は子が多いときの見え方を整える段階的な強化として扱えます。同じブロックに `flex-wrap` を2回書いても未対応のブラウザは後者を捨てますが、`@supports` に分けておくと、対応状況がそろったときに消す範囲がはっきりします。
+`flex-wrap: balance` に対応しているのはChromeとEdgeの150以降だけです。未対応のブラウザでは `@supports` の中が適用されず、外側の `flex-wrap: wrap` のまま折り返します。子を2つに保っていれば、どちらのブラウザでも同じ表示になるので、`balance` は子が多いときの見え方を整える段階的な強化として扱えます。同じブロックに `flex-wrap` を2回書いても未対応のブラウザは後者を捨てますが、`@supports` に分けておくと、対応状況がそろったときに消す範囲がはっきりします。
 
 次のデモでは、折り返したときの並び方を4つの書き方で比べています。Aは子が2つの `apart`、Bは同じ2つの子を `auto` の `margin` で両端に分けたもの、Cは子が3つの `apart`、Dは子が4つの `apart` です。幅を320pxにすると、どれも折り返します。
 

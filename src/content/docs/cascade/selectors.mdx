@@ -201,7 +201,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 }
 ```
 
-`&:is(.faq-item[open] *)` は、「開いている `.faq-item` の子孫である、この要素」という意味です。`.faq-item` は `<details class="faq-item">` で、開いているときだけ `open` 属性を持ちます（2026年9月、Chrome 152で確認）。アイコンのスタイルが `.faq-icon` のルールにまとまるので、状態による変化を探しやすくなります。`@scope` の中では、`.faq-item[open]` の代わりにスコープのルートを指す `:scope[open]` と書けます（「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」）。
+`&:is(.faq-item[open] *)` は、「開いている `.faq-item` の子孫である、この要素」という意味です。`.faq-item` は `<details class="faq-item">` で、開いているときだけ `open` 属性を持ちます。アイコンのスタイルが `.faq-icon` のルールにまとまるので、状態による変化を探しやすくなります。`@scope` の中では、`.faq-item[open]` の代わりにスコープのルートを指す `:scope[open]` と書けます（「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」）。
 
 同じ指定は、`.faq-item[open] .faq-icon` という別のルールとしても書けます。しかし、`.faq-icon` のルールの中にネストして書くなら、ネストしたセレクタを `&` で始めるという本書の規約から、この形になります。ネストの仕組みは「[4-5 CSSネストの基礎](/cascade/nesting/)」で、規約は第9章「[9-5 ネストの書き方](/notation/nesting/)」で説明します。
 

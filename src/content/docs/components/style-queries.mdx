@@ -257,11 +257,11 @@ import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
 
 ## 補足と注意点
 
-フラグを立てた要素自身の値を、そのフラグで切り替えたい場面もあります。その選択肢が `if()` で、`if(style(--_density: --spacious): 24px; else: 12px)` のように、要素自身に定義したカスタムプロパティの値で1つの値を切り替えられます。ただし、`if()` に対応しているのはChrome 137以降とEdgeだけで、FirefoxとSafariは対応していません（2026年10月確認）。仕様もCSS Values 5のEditor's Draftの段階です。使うなら、「[6-5 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」のルールに従い、前に従来の宣言を書いて、条件1つと `else` の形にとどめます。
+フラグを立てた要素自身の値を、そのフラグで切り替えたい場面もあります。その選択肢が `if()` で、`if(style(--_density: --spacious): 24px; else: 12px)` のように、要素自身に定義したカスタムプロパティの値で1つの値を切り替えられます。ただし、`if()` に対応しているのはChrome 137以降とEdgeだけで、FirefoxとSafariは対応していません。仕様もCSS Values 5のEditor's Draftの段階です。使うなら、「[6-5 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」のルールに従い、前に従来の宣言を書いて、条件1つと `else` の形にとどめます。
 
 <Baseline id="if" name="if()" />
 
-スタイルクエリは、Chrome 111、Safari 18、Firefox 151で使えるようになり、2026年5月にBaselineの新しく利用可能（Newly available）になりました（2026年10月確認）。本書の対象のSafari 18でも動きます。一方、`style(--_columns > 2)` のような範囲の比較は、ChromeとFirefoxが対応しているもののSafariが対応していないので、使いません。フラグは値が一致するかどうかだけで判定できる識別子にしておけば、範囲の比較は要りません。
+スタイルクエリは、Chrome 111、Safari 18、Firefox 151で使えるようになり、2026年5月にBaselineの新しく利用可能（Newly available）になりました。本書の対象のSafari 18でも動きます。一方、`style(--_columns > 2)` のような範囲の比較は、ChromeとFirefoxが対応しているもののSafariが対応していないので、使いません。フラグは値が一致するかどうかだけで判定できる識別子にしておけば、範囲の比較は要りません。
 
 <Baseline id="style-query-range-syntax" name="スタイルクエリの範囲の比較" />
 

@@ -31,8 +31,8 @@ import spotlightJs from '../../../demos/motion/spotlight/script.js?raw';
 | 優先度 | 方法 | フレームごとの描き直し | 進行を計算するスレッド |
 | --- | --- | --- | --- |
 | 高 | `opacity`、`translate`、`scale`、`rotate`、これらを動かすスクロール駆動アニメーション | 起きない | コンポジタ |
-| 確かめて使う | `clip-path`、`background-color`、`filter` の `brightness()` など | 値によっては起きない（Chrome 154） | 値によってはコンポジタ（Chrome 154） |
-| 確かめて使う | `filter` の `drop-shadow()`、`blur()` | 起きない（Chrome 154） | メイン（Chrome 154） |
+| 確かめて使う | `clip-path`、`background-color`、`filter` の `brightness()` など | 値によっては起きない（Chrome） | 値によってはコンポジタ（Chrome） |
+| 確かめて使う | `filter` の `drop-shadow()`、`blur()` | 起きない（Chrome） | メイン（Chrome） |
 | 中 | JavaScriptから変形や不透明度を更新する方法、FLIP | 起きない | メイン |
 | 低 | `color`、`border-color`、`box-shadow` など | 起きる。負荷は描く面積による | メイン |
 | 避ける | `inline-size`、`block-size`、`padding`、`inset` など | レイアウトから起きる | メイン |
@@ -40,7 +40,7 @@ import spotlightJs from '../../../demos/motion/spotlight/script.js?raw';
 
 優先度が高いのは、主要なブラウザで合成だけで動かせる `opacity` と変形です。スクロール駆動アニメーションも、動かすのが `opacity` や変形なら、スクロールの位置に合わせてコンポジタのスレッドで処理できます。`clip-path`、`background-color`、`filter` は、従来はペイントが起きるプロパティでした。Chromeでは、これらのアニメーションでも描き直しを避けられる場合がありますが、ブラウザと値によって結果が変わるので、基本の候補とは分けています。{/* 要検証: ブラウザ。Firefox と Safari で、clip-path、background-color、filter のアニメーションで描き直しが起きるか、進行がコンポジタのスレッドに移るか */}
 
-Chrome 154で、それぞれを1秒間トランジションさせ、パフォーマンスのトレースで描き直し（Paint）の回数と、アニメーションがコンポジタのスレッドに移ったかを調べました（2026年10月確認）。`clip-path`、`background-color`、`filter` の `brightness()`、`drop-shadow()`、`blur()` は、動き出すときの数回を除いて描き直しが起きませんでした。`box-shadow` と `color` は毎フレーム描き直されました。進行がコンポジタのスレッドに移ったのは、`clip-path`、`background-color`、`brightness()` です。`drop-shadow()` と `blur()` は、描き直しは起きませんが、進行の計算はフレームごとにメインスレッドで行われました。Chromiumの実装には、画素を移動するフィルター（`drop-shadow()`、`blur()` など）をコンポジタでアニメーションさせない判定があるからです。そのため、メインスレッドが詰まると止まる点が、`opacity` や変形と違います。
+Chromeで、それぞれを1秒間トランジションさせ、パフォーマンスのトレースで描き直し（Paint）の回数と、アニメーションがコンポジタのスレッドに移ったかを調べました。`clip-path`、`background-color`、`filter` の `brightness()`、`drop-shadow()`、`blur()` は、動き出すときの数回を除いて描き直しが起きませんでした。`box-shadow` と `color` は毎フレーム描き直されました。進行がコンポジタのスレッドに移ったのは、`clip-path`、`background-color`、`brightness()` です。`drop-shadow()` と `blur()` は、描き直しは起きませんが、進行の計算はフレームごとにメインスレッドで行われました。Chromiumの実装には、画素を移動するフィルター（`drop-shadow()`、`blur()` など）をコンポジタでアニメーションさせない判定があるからです。そのため、メインスレッドが詰まると止まる点が、`opacity` や変形と違います。
 
 ここでいう描き直しは、DevToolsのPaintに記録される、メインスレッドで画素を描く処理のことです。描き直しが起きなくても、GPUの側でフィルターを当てる処理は毎フレーム行われるので、`filter` の負荷がなくなるわけではありません（後の見出しの「`filter` と `backdrop-filter` のコスト」）。
 
@@ -283,7 +283,7 @@ button.addEventListener('click', () => {
 
 最初の画面に入る要素には指定しません。最初の描画で画面の中にあると判断された要素は、そのまま描画されるので、描画を省く効果がありません。また、`content-visibility: auto` は、描画を省いていない間も、レイアウト、スタイル、ペイントの封じ込めを掛けたままにします。`contain: content` と同じく、はみ出した影が切り取られ、スタッキングコンテキストと固定配置の包含ブロックが作られます（「[7-10 positionの基礎](/layout/positioning/)」）。
 
-仕様では、描画を省いた中身も、ページ内検索、Tabキーでのフォーカスの移動、アクセシビリティツリーの対象に残ります。Chrome 85〜89には、描画を省いた中の見出しがスクリーンリーダーの見出しの一覧に出ない不具合があり、Chrome 90で修正されました（2026年10月、不具合の報告の記事で確認）。指定したら、ページ内検索、Tabキー、スクリーンリーダーの見出しの一覧で中身に届くかを確かめます。
+仕様では、描画を省いた中身も、ページ内検索、Tabキーでのフォーカスの移動、アクセシビリティツリーの対象に残ります。Chrome 85〜89には、描画を省いた中の見出しがスクリーンリーダーの見出しの一覧に出ない不具合があり、Chrome 90で修正されました（不具合の報告の記事で確認）。指定したら、ページ内検索、Tabキー、スクリーンリーダーの見出しの一覧で中身に届くかを確かめます。
 
 閉じたアコーディオンのパネルのように、ユーザーが開くまで隠しておく中身には、`content-visibility: auto` ではなく `hidden="until-found"` を使います。`hidden="until-found"` は中身を隠したまま、ページ内検索で見つかったときに表示する仕組みです。`content-visibility: auto` は、見えている内容の描画の順番を変えるだけで、何も隠しません。使い分けは「[17-5 開閉するUI](/interaction/disclosure/)」で説明しています。
 
@@ -293,7 +293,7 @@ button.addEventListener('click', () => {
 
 ## 負荷をDevToolsで確かめる
 
-動きの負荷は、コードを読むだけでは判断しきれません。同じプロパティでも、ブラウザや値によって合成で処理されるかどうかが変わるからです。ここではChromeのDevToolsの機能を紹介します（2026年10月確認）。
+動きの負荷は、コードを読むだけでは判断しきれません。同じプロパティでも、ブラウザや値によって合成で処理されるかどうかが変わるからです。ここではChromeのDevToolsの機能を紹介します。
 
 Performanceパネルでは、動きを再生している間の処理を記録できます。記録した結果には、フレームごとにかかった時間と、Layout、Paint、Compositeといった処理が時系列で並ぶので、どの処理がフレームの時間を超えているかが分かります。CPUの速度を落とす設定（CPU throttling）を使うと、メインスレッドの処理が遅い端末での振る舞いを確かめられます。
 

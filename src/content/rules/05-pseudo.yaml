@@ -115,7 +115,7 @@
   level: 推奨
   kind: spec
   rule: '`sibling-index()` と `sibling-count()` は、色相や遅延のように未対応の環境で失われても困らない装飾の値に限って使い、`@supports (z-index: sibling-index())` の中に書いて、外に未対応の環境で使う値を書く。'
-  reason: '2026年10月の時点で、本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。'
+  reason: '本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。'
   note: '件数で見た目を切り替える処理は数量クエリで書きます（ルール `quantity-query-for-count-conditions`）。レイアウトの要に使わない理由は、第1章のルール `no-unsupported-layout-features` と同じです。数える対象は `:nth-child()` と同じで、`hidden` 属性で隠した要素も数えます。'
   aiProne: true
   page: pseudo/child-index
@@ -218,7 +218,7 @@
   level: 推奨
   kind: spec
   rule: '`:empty` は、空白や改行が入らないことを確かめた要素にだけ使い、テンプレートや CMS が改行を出力しうる要素の判定に使わない。'
-  reason: '2026年10月の時点のブラウザでは、空白や改行だけを含む要素にも `:empty` が当てはまらず、見た目では空の要素が空として扱われないため。'
+  reason: 'ブラウザでは、空白や改行だけを含む要素にも `:empty` が当てはまらず、見た目では空の要素が空として扱われないため。'
   note: 'コメントだけを含む要素には `:empty` が当てはまります。Selectors Level 4 の草案は空白だけの要素も空とみなす定義に変わりましたが、その定義どおりに実装したブラウザはありません。'
   aiProne: true
   page: pseudo/open-states

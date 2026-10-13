@@ -1,8 +1,8 @@
 # 第5章 擬似クラスと擬似要素：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 28
-- 本文: 約15.4万字
+- 本文: 約15.3万字
 - 読む条件: :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -91,7 +91,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/
   - 補足: 子要素の間隔を作るために、`:last-child` や `:first-child` で余白を打ち消すことはしません。間隔は親の `gap`（第11章のルール `gap-over-child-margin`）か、コンポジション `prose` で作ります。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/#rule-select-roles-not-positions
 - 【推奨・仕様上の制約】`sibling-index()` と `sibling-count()` は、色相や遅延のように未対応の環境で失われても困らない装飾の値に限って使い、`@supports (z-index: sibling-index())` の中に書いて、外に未対応の環境で使う値を書く。（`sibling-functions-for-decoration`）
-  - 理由: 2026年10月の時点で、本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。
+  - 理由: 本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。
   - 補足: 件数で見た目を切り替える処理は数量クエリで書きます（ルール `quantity-query-for-count-conditions`）。レイアウトの要に使わない理由は、第1章のルール `no-unsupported-layout-features` と同じです。数える対象は `:nth-child()` と同じで、`hidden` 属性で隠した要素も数えます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/child-index/#rule-sibling-functions-for-decoration
 
@@ -146,7 +146,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/
   - 補足: `:modal` は `requestFullscreen()` で全画面表示にした要素にも当てはまります。背面のスクロールを止める `:root:has(:modal)` は、第8章のルール `modal-scroll-lock-root` で定めています。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/#rule-modal-pseudo-for-modal-styles
 - 【推奨・仕様上の制約】`:empty` は、空白や改行が入らないことを確かめた要素にだけ使い、テンプレートや CMS が改行を出力しうる要素の判定に使わない。（`empty-without-whitespace`）
-  - 理由: 2026年10月の時点のブラウザでは、空白や改行だけを含む要素にも `:empty` が当てはまらず、見た目では空の要素が空として扱われないため。
+  - 理由: ブラウザでは、空白や改行だけを含む要素にも `:empty` が当てはまらず、見た目では空の要素が空として扱われないため。
   - 補足: コメントだけを含む要素には `:empty` が当てはまります。Selectors Level 4 の草案は空白だけの要素も空とみなす定義に変わりましたが、その定義どおりに実装したブラウザはありません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/pseudo/open-states/#rule-empty-without-whitespace
 

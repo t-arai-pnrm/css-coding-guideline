@@ -1,8 +1,8 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 61
-- 本文: 約26.7万字
+- 本文: 約26.6万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -23,12 +23,12 @@
 - `layout-practice/anchor-positioning` 11-8 アンカーポジショニング（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/anchor-positioning/
 - `layout-practice/overlap-detection` 11-9 要素どうしの重なりを検出する（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/overlap-detection/
 - `layout-practice/root-scroller` 11-10 ページのスクロールとルートスクローラー（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/root-scroller/
-- `layout-practice/masonry` 11-11 grid-lanesで石積みのレイアウトを組む（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/masonry/
+- `layout-practice/masonry` 11-11 grid-lanesで石積みのレイアウトを組む（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/masonry/
 - `layout-practice/reading-flow` 11-12 表示順と読み上げ順を合わせる（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/reading-flow/
 - `layout-practice/icon-alignment` 11-13 アイコンを配置する（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/icon-alignment/
 - `layout-practice/float` 11-14 floatで文章を回り込ませる（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/float/
-- `layout-practice/tables` 11-15 表を組む（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/
-- `layout-practice/truncation-and-skeletons` 11-16 文字の切り詰めと読み込み中の表示（約8,300字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/truncation-and-skeletons/
+- `layout-practice/tables` 11-15 表を組む（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/
+- `layout-practice/truncation-and-skeletons` 11-16 文字の切り詰めと読み込み中の表示（約8,200字）https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/truncation-and-skeletons/
 
 ## 11-1 レイアウト手法の選び方
 
@@ -185,7 +185,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/sticky-header
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/sticky-header/#rule-sticky-header-height-query
 - 【推奨・実装上の判断】`sticky` の要素が留まっている間だけ見た目を変えるときは、`scroll` イベントではなく `container-type: scroll-state` と `@container scroll-state(stuck: …)` を使い、変える内容は見えなくても操作に困らない装飾に限る。（`scroll-state-for-sticky-styles`）
   - 理由: スクロールのたびに JavaScript で位置を調べる処理が要らなくなり、クエリに対応していない環境でも装飾が付かないだけで済むため。
-  - 補足: コンテナクエリなので、変えられるのはコンテナの子孫だけです。2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。
+  - 補足: コンテナクエリなので、変えられるのはコンテナの子孫だけです。対応しているのは Chrome 系のブラウザだけです。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/sticky-header/#rule-scroll-state-for-sticky-styles
 
 ## 11-8 アンカーポジショニング
@@ -299,7 +299,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/
 
 - 【推奨・実装上の判断】表は置かれた場所の幅に合わせて縮めず、`min-inline-size` で最小の幅を決め、表を包む要素に `overflow-x: auto` を指定して、それより狭い場所では横にスクロールさせる。（`table-min-size-with-scroller`）
   - 理由: 表は列の最小の幅の合計までしか縮まないので、`overflow-wrap: anywhere` のもとでは列が1〜2文字の幅まで縮んで数値の途中でも折り返し、折り返せない中身があればページ全体が横にはみ出すため。
-  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、修正前のブラウザでは表として読み上げられなくなるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（2026年10月時点、ルール `physical-only-where-no-logical`）。
+  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、修正前のブラウザでは表として読み上げられなくなるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（ルール `physical-only-where-no-logical`）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout-practice/tables/#rule-table-min-size-with-scroller
 - 【推奨・仕様上の制約】表には `caption` で名前を付け、見出しのセルは `th` にして、列の見出しには `scope="col"`、行の見出しには `scope="row"` を付ける。（`table-caption-and-scope`）
   - 理由: 支援技術が、表の名前と、各セルがどの見出しに属するかを伝えられるため。

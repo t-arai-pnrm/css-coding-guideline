@@ -90,7 +90,7 @@
   kind: spec
   rule: '`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。'
   reason: '初期値の `auto` は親の値が `none` なら `none` として扱われるので、広い範囲に指定すると、文章のコピーや、選択した文字を読み上げや翻訳の機能に渡す操作ができなくなるため。'
-  note: 'Safari は接頭辞なしの `user-select` に対応していないので（2026年10月）、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome 152 で確認）。'
+  note: 'Safari は接頭辞なしの `user-select` に対応していないので、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome で確認）。'
   page: interaction/hit-area-and-touch
   since: 0.21.0
 
@@ -278,7 +278,7 @@
   level: 推奨
   kind: spec
   rule: '`<select>` の見た目を `appearance: base-select` で変えるときは、`::picker(select)`、`::picker-icon`、`option::checkmark` の指定も含めて `@supports (appearance: base-select)` の中に書く。'
-  reason: '未対応の環境（2026年10月の時点では Firefox）でブラウザの標準の `<select>` のまま表示させ、`base-select` を前提にした余白や枠線が標準の部品に当たるのを防ぐため。'
+  reason: '未対応の環境（Firefox）でブラウザの標準の `<select>` のまま表示させ、`base-select` を前提にした余白や枠線が標準の部品に当たるのを防ぐため。'
   note: '`appearance: base-select` は、`<select>` と `::picker(select)` の両方に指定します。選んだ項目の中身をボタンに表示するには、`<select>` の最初の子に `<button>` を置き、その中に `<selectedcontent>` を書きます。`<div>` と JavaScript でドロップダウンを作り直すことはしません。'
   page: interaction/forms
   since: 0.21.0

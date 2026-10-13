@@ -40,7 +40,7 @@ import percentCss from '../../../demos/layout/box-model-percent/style.css?raw';
 
 <Demo title="min-content、max-content、fit-content の幅の違い" html={intrinsicHtml} css={intrinsicCss} variant="neutral" widths={[]} />
 
-幅を中身に合わせる目的で `display: inline-block` や `float` に変えると、要素が前後の文字と同じ行に並ぶなど、外側の振る舞いまで変わります。`fit-content` なら、ブロックのまま幅だけが変わります。{/* 要確認: 出典なし */}2026年10月の時点で、すべての主要なブラウザが対応しています。
+幅を中身に合わせる目的で `display: inline-block` や `float` に変えると、要素が前後の文字と同じ行に並ぶなど、外側の振る舞いまで変わります。`fit-content` なら、ブロックのまま幅だけが変わります。{/* 要確認: 出典なし */}すべての主要なブラウザが対応しています。
 
 <Baseline id="fit-content" />
 
@@ -105,7 +105,7 @@ import percentCss from '../../../demos/layout/box-model-percent/style.css?raw';
 }
 ```
 
-`stretch` は比較的新しい値で、Chrome 138とSafari 27から使えます。それより前のバージョンでも、同じ働きの値を `-webkit-fill-available` という名前で使えます。Firefoxは2026年10月の時点で `stretch` に対応していませんが、`-webkit-fill-available` には対応しています。公開されている資料では、Firefoxの対応は `width` と `height` に限られていますが、2026年10月に最新版のFirefoxで確かめたところ、`inline-size` にも効きました。
+`stretch` は比較的新しい値で、Chrome 138とSafari 27から使えます。それより前のバージョンでも、同じ働きの値を `-webkit-fill-available` という名前で使えます。Firefoxは `stretch` に対応していませんが、`-webkit-fill-available` には対応しています。公開されている資料では、Firefoxの対応は `width` と `height` に限られていますが、Firefoxで確かめたところ、`inline-size` にも効きました。
 
 <Baseline id="stretch" />
 

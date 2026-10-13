@@ -126,7 +126,7 @@ MCPサーバーを設定したら、3つのことを確かめます。1つ目は
 
 2つ目は、ルールを引けることです。AIに「`get_rule` で `query-range-syntax` を引いて」と頼むと、強度が「必須」であること、範囲構文で書くというルールの本文と理由、掲載しているページ（13-5「メディアクエリ」）のURLが返ります。
 
-3つ目は、CSSを検査できることです。次のCSSを `lint_css` で検査させると、`display: flex` の1値の構文が1件の違反として返り、本書のルール `display-two-value-syntax` が添えられます（2026年10月確認）。
+3つ目は、CSSを検査できることです。次のCSSを `lint_css` で検査させると、`display: flex` の1値の構文が1件の違反として返り、本書のルール `display-two-value-syntax` が添えられます。
 
 ```css title="🙅‍♂ Not Recommended: lint_css で検査する、1値の構文の display"
 /* 🙅‍♂ Not Recommended */

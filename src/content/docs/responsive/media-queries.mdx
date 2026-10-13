@@ -115,7 +115,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 ## メディア特性の使い分け
 
-メディアクエリは、画面の幅のほかに、ユーザーの設定や入力の手段も調べられます。本書では、メディア特性を次のように使い分けます。判断は、web-featuresの対応状況と本書のほかのルールにもとづいています（2026年10月確認）。
+メディアクエリは、画面の幅のほかに、ユーザーの設定や入力の手段も調べられます。本書では、メディア特性を次のように使い分けます。判断は、web-featuresの対応状況と本書のほかのルールにもとづいています。
 
 | メディア特性 | 判断 | 理由と説明している場所 |
 | --- | --- | --- |
@@ -145,7 +145,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 {/* 要確認: 出典なし */}`display-mode` は、ホーム画面に追加したWebアプリの表示のされ方を調べるメディア特性です。本書が対象にするコーポレートサイトやLPでは分岐が要らず、`fullscreen` の値はSafariとデスクトップのFirefoxが対応していません。`color-gamut` と `dynamic-range` は対応がそろっていますが、`oklch()` で書いた色が画面で表示できる範囲を超えると、ブラウザが近い色に置き換えて描画するので、通常は分岐を書かずに済みます。
 
-`@custom-media` は、`@custom-media --wide (width >= calc(768 / 16 * 1rem));` のように条件に名前を付けて使い回す仕様です。ブラウザが対応すれば、メディアクエリの条件に `var()` を書けない問題（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）を解決できますが、2026年10月の時点ではどのブラウザも対応していません。
+`@custom-media` は、`@custom-media --wide (width >= calc(768 / 16 * 1rem));` のように条件に名前を付けて使い回す仕様です。ブラウザが対応すれば、メディアクエリの条件に `var()` を書けない問題（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）を解決できますが、どのブラウザも対応していません。
 
 <Baseline id="custom-media-queries" name="@custom-media" />
 
@@ -201,7 +201,7 @@ import pageCss from '../../../demos/responsive/page-layout/style.css?raw';
 
 <Baseline id="prefers-reduced-transparency" name="prefers-reduced-transparency メディア特性" />
 
-2026年10月の時点で、`prefers-reduced-transparency` に対応しているのはChrome系のブラウザだけです。対応していない環境では条件が成り立たず、半透明のまま表示されます。そのため、半透明の状態でも文字と背景のコントラストが足りる色を選んだうえで、設定に応じてさらに読みやすくする指定として書きます。
+`prefers-reduced-transparency` に対応しているのはChrome系のブラウザだけです。対応していない環境では条件が成り立たず、半透明のまま表示されます。そのため、半透明の状態でも文字と背景のコントラストが足りる色を選んだうえで、設定に応じてさらに読みやすくする指定として書きます。
 
 ## ガイドライン
 

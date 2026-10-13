@@ -81,7 +81,7 @@ import drawerJs from '../../../demos/interaction/drawer-inert/script.js?raw';
 
 <Baseline id="dialog-closedby" name="closedby 属性" />
 
-2026年10月の時点で、`command` 属性と `commandfor` 属性はChrome 135、Firefox 144、Safari 26.2から対応していますが、`closedby` 属性はSafariが未対応です。`command` 属性に対応していないブラウザでは、ボタンを押してもダイアログが開きません。私は、Web標準で使えるようになる機能はポリフィルを入れてでも使う方針なので、`invokers-polyfill` と、私が作った `dialog-closedby-polyfill` を読み込んでいます。`closedby` 属性に対応していなくても、Escキーと閉じるボタンでは閉じられます。
+`command` 属性と `commandfor` 属性はChrome 135、Firefox 144、Safari 26.2から対応していますが、`closedby` 属性はSafariが未対応です。`command` 属性に対応していないブラウザでは、ボタンを押してもダイアログが開きません。私は、Web標準で使えるようになる機能はポリフィルを入れてでも使う方針なので、`invokers-polyfill` と、私が作った `dialog-closedby-polyfill` を読み込んでいます。`closedby` 属性に対応していなくても、Escキーと閉じるボタンでは閉じられます。
 
 `command` 属性には、`--` で始まる独自の値（カスタムコマンド）も書けます。カスタムコマンドのボタンを押すと、ブラウザは何も操作せず、対象の要素に `command` イベントを発生させます。イベントの `command` プロパティにはコマンドの値が、`source` プロパティには押されたボタンが入ります。処理は対象の要素の側に1つ書くだけで済み、ボタンごとにクリックの処理を付ける必要はありません。
 
@@ -141,7 +141,7 @@ button.addEventListener('click', () => {
 
 <Demo title="ドロワーを開いている間は、背面の本文に inert 属性が付き、リンクにフォーカスが移らない" html={drawerHtml} css={drawerCss} js={drawerJs} widths={[]} />
 
-CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります。`.global-header:has(._drawer-button[aria-expanded="true"]) ~ *` のように後ろの兄弟を選べば、ページ全体を調べ直さずに済みます。Chrome 152では、この形で背面のリンクにフォーカスできなくなることを確かめました（2026年10月、Chrome 152で確認）。ただし、`interactivity` がBaselineになるまでは、`inert` 属性の代わりにはしません。
+CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります。`.global-header:has(._drawer-button[aria-expanded="true"]) ~ *` のように後ろの兄弟を選べば、ページ全体を調べ直さずに済みます。Chromeでは、この形で背面のリンクにフォーカスできなくなることを確かめました。ただし、`interactivity` がBaselineになるまでは、`inert` 属性の代わりにはしません。
 
 <Baseline id="interactivity" name="interactivity" />
 
@@ -166,7 +166,7 @@ CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります�
 
 <Baseline id="overscroll-behavior" compatKey="css.properties.overscroll-behavior-block" name="overscroll-behavior-block" />
 
-上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（2026年9月確認）。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
+上の表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています。モーダルを開いている間の背面のスクロールは、`:root:has(:modal)` で止めています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
 
 ## `popover` 属性による小さな表示
 
@@ -200,7 +200,7 @@ CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります�
 
 `<summary>` の中に見出しの要素は入れません。`<summary>` の中では見出しの役割が失われ、見出しで移動するユーザーが項目にたどり着けなくなります。見出しの構造が必要なら、後で説明する `hidden="until-found"` の方法を使います。デフォルトの三角のマーカーは、kiso.cssが `summary` の `list-style-type` を空にして消しています。
 
-開いているときのスタイルは、`[open]` 属性のセレクタで書きます。`:open` という擬似クラスもありますが、Safariは26.5から対応したので、2026年9月の時点では本書の対象のすべてでは使えません。
+開いているときのスタイルは、`[open]` 属性のセレクタで書きます。`:open` という擬似クラスもありますが、Safariは26.5から対応したので、本書の対象のすべてでは使えません。
 
 開閉する部分を `::details-content` で選び、高さと不透明度を動かす方法は、「[18-7 出現と退場](/motion/entry-and-exit/)」で説明します。
 
@@ -254,7 +254,7 @@ const initializeDisclosure = (link) => {
 
 <Baseline id="hidden-until-found" name='hidden="until-found"' />
 
-Safariは、2026年9月の時点で `hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、閉じたパネルの中身はページ内検索で見つかりません。ただし、隠すのは初期化が成功した後なので、開閉の処理は動き、JavaScriptが動かない環境では最初から中身が表示されています。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[8-1 壊さないリセット](/reset/kiso/)」）。
+Safariは、`hidden="until-found"` に対応していません。未対応の環境では通常の `hidden` として扱われ、閉じたパネルの中身はページ内検索で見つかりません。ただし、隠すのは初期化が成功した後なので、開閉の処理は動き、JavaScriptが動かない環境では最初から中身が表示されています。なお、リセットCSSに `[hidden] { display: none !important; }` と書くと、`until-found` まで `display: none` で隠れてしまいます。kiso.cssは、`until-found` をこの指定から外しています（「[8-1 壊さないリセット](/reset/kiso/)」）。
 
 ## 開閉するUIで確かめる状態
 

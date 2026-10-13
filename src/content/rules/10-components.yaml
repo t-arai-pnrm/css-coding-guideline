@@ -159,7 +159,7 @@
   kind: spec
   rule: 'トップレイヤーに表示する `<dialog>` や `popover` 属性の要素にも、`z-index: var(--z--top)`（値は `calc(infinity)`）を指定する。'
   reason: '`transition-property: overlay` に対応していないブラウザでは、閉じるアニメーションの途中で z-index の大きい要素の下に潜り込むことがあるため。'
-  note: 2026年9月の時点で、`overlay` に対応しているのは Chromium 系のブラウザだけです。
+  note: '`overlay` に対応しているのは Chromium 系のブラウザだけです。'
   page: components/boundaries
   since: 0.1.0
 
@@ -397,7 +397,7 @@
   kind: convention
   rule: 'スタイルクエリで問い合わせるフラグの値は、`--compact` のような `--` で始まる識別子にし、オンとオフの2値の状態は `--true` と `--false` にそろえる。'
   reason: 'スタイルクエリは値が一致するかどうかだけを調べるので、`1` や `true` が混ざると、書き間違えても条件が成り立たないだけで誤りに気付けないため。`--` で始めれば、自分で付けた名前だと分かる。'
-  note: '`--color-scheme: --light` のように、2値でも状態の名前そのものを値にするフラグは、そのままにします。範囲の比較（`style(--_columns > 2)`）はSafariが対応していないので使いません（2026年10月確認）。'
+  note: '`--color-scheme: --light` のように、2値でも状態の名前そのものを値にするフラグは、そのままにします。範囲の比較（`style(--_columns > 2)`）はSafariが対応していないので使いません。'
   aiProne: true
   page: components/style-queries
   since: 0.23.0

@@ -30,7 +30,7 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 
 生成コンテンツは、DOMに含まれません。画面には表示されても、HTMLに書いた文字と同じようには扱われません。私は見出しの副題を `content: attr(data-subtitle)` で表示する書き方について、機械翻訳されず、選択してコピーできず、ページ内検索の対象にもならないことを記事に書きました。
 
-読み上げも当てになりません。MDNは、生成コンテンツはDOMに含まれないので、支援技術とブラウザの組み合わせによっては読み上げられないと説明しています。WCAGの達成方法の文書には、装飾でない内容を `::before` と `::after` で挿入することを、達成基準1.3.1の失敗例として挙げたもの（F87）がありました。現在は、ブラウザとスクリーンリーダーの対応が進んだことを理由として廃止扱いです。ただし、文字を選択できないといった使い勝手の問題は残るとされています（2026年10月確認）。読み上げられる環境が増えても、翻訳、コピー、検索の対象にならないことと、ユーザーがスタイルを無効にすると内容が失われることは変わりません。
+読み上げも当てになりません。MDNは、生成コンテンツはDOMに含まれないので、支援技術とブラウザの組み合わせによっては読み上げられないと説明しています。WCAGの達成方法の文書には、装飾でない内容を `::before` と `::after` で挿入することを、達成基準1.3.1の失敗例として挙げたもの（F87）がありました。現在は、ブラウザとスクリーンリーダーの対応が進んだことを理由として廃止扱いです。ただし、文字を選択できないといった使い勝手の問題は残るとされています。読み上げられる環境が増えても、翻訳、コピー、検索の対象にならないことと、ユーザーがスタイルを無効にすると内容が失われることは変わりません。
 
 この性質は、次のような指定で問題になります。入力欄のラベルに「必須」を、価格に「円（税込）」を、CSSで足す書き方です。見た目は整いますが、読み上げで「必須」が伝わらなければ、ユーザーは入力が必須の項目を知らないまま送信します。翻訳した画面では、金額の数字だけが訳され、単位だけが日本語のまま残ります。
 
@@ -96,9 +96,9 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 
 擬似要素は、要素の子として内容の前後に作られます。そのため、子を持てない要素には作られません。MDNは、`img` のように中身が外部の資源で決まる置換要素には、`::before` を適用できないと説明しています。`video` や `iframe` も置換要素です。`img` に `::after` でキャプションや枠を足そうとしても表示されないので、`figure` や `div` で包み、包んだ要素の擬似要素で描きます。
 
-ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示している `img` に限り、`::before` と `::after` が表示されます。しかし、Safariでは表示されず（WebKitのバグ155227。2016年に報告され、2026年10月の時点で未解決）、CSS 2.1も置換要素と擬似要素の関係を十分には定めていません。そのため本書では、壊れた画像の表示を擬似要素で整える書き方に頼りません。
+ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示している `img` に限り、`::before` と `::after` が表示されます。しかし、Safariでは表示されず（WebKitのバグ155227。2016年に報告され、未解決）、CSS 2.1も置換要素と擬似要素の関係を十分には定めていません。そのため本書では、壊れた画像の表示を擬似要素で整える書き方に頼りません。
 
-`input` も、テキストの入力欄などでは擬似要素が表示されません（2026年10月、Chrome 152で確認）。例外は、`appearance: none` を指定したチェックボックスとラジオボタンです。第17章「[17-6 フォーム部品](/interaction/forms/)」では、`input` 自体に `appearance: none` を指定し、`::before` でチェックマークを描いています。
+`input` も、テキストの入力欄などでは擬似要素が表示されません。例外は、`appearance: none` を指定したチェックボックスとラジオボタンです。第17章「[17-6 フォーム部品](/interaction/forms/)」では、`input` 自体に `appearance: none` を指定し、`::before` でチェックマークを描いています。
 
 ## 装飾の記号は代替テキストを空にする
 
@@ -119,7 +119,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 <Baseline id="alt-text-generated-content" name="content の代替テキスト" />
 
-代替テキストの構文には、2024年7月にFirefox 128が対応し、主要なブラウザがそろいました。Safariは17.4から対応しているので、本書の対象のブラウザはすべて対応しています（2026年10月確認）。対応していないブラウザでは、`content` の宣言全体が無効になり、擬似要素は作られません。装飾が消えるだけなので、内容と操作は損なわれません。
+代替テキストの構文には、2024年7月にFirefox 128が対応し、主要なブラウザがそろいました。Safariは17.4から対応しているので、本書の対象のブラウザはすべて対応しています。対応していないブラウザでは、`content` の宣言全体が無効になり、擬似要素は作られません。装飾が消えるだけなので、内容と操作は損なわれません。
 
 `content: ""` で作る文字のない箱には、代替テキストは要りません。読み上げる文字がもともとないからです。反対に、擬似要素そのものが操作の対象になる場合は、代替テキストを空にせず、名前を書きます。カルーセルの前後のボタンを `::scroll-button()` で作るときは、`content: "←" / "前の事例"` のように、ボタンの名前を代替テキストで渡します。この例は第17章「[17-7 CSSでカルーセルを作る](/interaction/carousel/)」で説明しています。
 
@@ -135,7 +135,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 ## `::marker` と `::selection` の制約
 
-`::marker` は、リストの項目の印（マーカー）を選ぶ擬似要素です。指定できるのは、`color`、`font-*`、`content` など、文字に関わる一部のプロパティだけです。さらに、Safariが反映するのは `color` と `font-size` の2つに限られます（2026年10月確認）。web-featuresでも、`::marker` はSafariの対応が不十分なため、Baselineに入っていません。
+`::marker` は、リストの項目の印（マーカー）を選ぶ擬似要素です。指定できるのは、`color`、`font-*`、`content` など、文字に関わる一部のプロパティだけです。さらに、Safariが反映するのは `color` と `font-size` の2つに限られます。web-featuresでも、`::marker` はSafariの対応が不十分なため、Baselineに入っていません。
 
 <Baseline id="marker" />
 
@@ -156,7 +156,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 <Demo title="::marker で色と大きさを変えたリストと、::before で印を描いたリスト" html={markerHtml} css={markerCss} />
 
-`::selection` は、ユーザーが選択した範囲を選ぶ擬似要素です。指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` など、ごく一部です。`background-image` は無視されます。iOSのSafariは `::selection` に対応していないので、選択範囲はシステムの色のままになります（2026年10月確認）。
+`::selection` は、ユーザーが選択した範囲を選ぶ擬似要素です。指定できるのは、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` など、ごく一部です。`background-image` は無視されます。iOSのSafariは `::selection` に対応していないので、選択範囲はシステムの色のままになります。
 
 <Baseline id="selection" />
 
@@ -195,7 +195,7 @@ CSS.highlights.set('search-result', new Highlight(range));
 
 <Baseline id="highlight" name="::highlight() と CSS Custom Highlight API" />
 
-2026年3月にFirefox 149が `::highlight()` に対応し、主要なブラウザがそろいました。Safariは17.2から対応しているので、本書の対象のブラウザはすべて対応しています（2026年10月確認）。指定できるプロパティは `::selection` とほぼ同じで、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。CSS Pseudo-Elements Level 4は、ハイライトの擬似要素で使えるプロパティを、レイアウトを変えないものに限っています。`padding` や `font-weight` で範囲を目立たせることはできません。
+2026年3月にFirefox 149が `::highlight()` に対応し、主要なブラウザがそろいました。Safariは17.2から対応しているので、本書の対象のブラウザはすべて対応しています。指定できるプロパティは `::selection` とほぼ同じで、`color`、`background-color`、`text-decoration` とその関連のプロパティ、`text-shadow` などに限られます。CSS Pseudo-Elements Level 4は、ハイライトの擬似要素で使えるプロパティを、レイアウトを変えないものに限っています。`padding` や `font-weight` で範囲を目立たせることはできません。
 
 ハイライトは、範囲を目立たせても、文書の内容は変えません。MDNによれば、`Highlight` の `type` で綴りや文法の誤りといった意味を支援技術に伝えられますが、対応は環境と種類によって異なります。CSSやJavaScriptが動かない環境では、範囲そのものが表示されません。そのため、内容の一部として読み手に伝える強調は、`<mark>` で書きます。`<mark>` は、周りの文脈との関連で目印を付けた範囲を表す要素で、検索結果のページで検索語に付ける目印のような、ページを開いた時点で決まっている強調に合っています。
 
@@ -226,7 +226,7 @@ CSS.highlights.set('search-result', new Highlight(range));
 
 <Demo title="::first-letter は開き括弧と次の1字を選び、::first-line の範囲は幅で変わる" html={firstLetterHtml} css={firstLetterCss} widths={[320, 480, 768]} />
 
-`::first-line` が選ぶ範囲は、要素の幅と文字の大きさで決まります。幅の狭い画面では、同じ段落でも1行に入る文字が減り、太字になる範囲も短くなります。1行目だけを要約として目立たせるような、範囲に意味を持たせる使い方はできません。使うとしても、どこで区切れても意味が変わらない装飾にとどめます。{/* 要確認: 出典なし */}最初の文字を数行分の高さに沈める `initial-letter` は、本書では扱いません。2026年10月の時点で接頭辞なしの `initial-letter` に対応しているのはChrome系のブラウザだけで、Safariは接頭辞付きの `-webkit-initial-letter` だけに対応しています。
+`::first-line` が選ぶ範囲は、要素の幅と文字の大きさで決まります。幅の狭い画面では、同じ段落でも1行に入る文字が減り、太字になる範囲も短くなります。1行目だけを要約として目立たせるような、範囲に意味を持たせる使い方はできません。使うとしても、どこで区切れても意味が変わらない装飾にとどめます。{/* 要確認: 出典なし */}最初の文字を数行分の高さに沈める `initial-letter` は、本書では扱いません。接頭辞なしの `initial-letter` に対応しているのはChrome系のブラウザだけで、Safariは接頭辞付きの `-webkit-initial-letter` だけに対応しています。
 
 フォームの部品に付いた擬似要素のうち、入力欄の例文を選ぶ `::placeholder` と、ファイルの選択ボタンを選ぶ `::file-selector-button` は、「[5-6 フォームの状態を表す擬似クラス](/pseudo/form-states/)」で扱います。
 
@@ -242,7 +242,7 @@ CSS.highlights.set('search-result', new Highlight(range));
 - [::before - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/::before)
 - [content - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/content)
 - [CSS 2.1: Generated content](https://www.w3.org/TR/CSS21/generate.html)（置換要素と `:before`・`:after` の関係を十分には定めていないことの注記）
-- [Bug 155227 - WebKit Bugzilla](https://bugs.webkit.org/show_bug.cgi?id=155227)（読み込みに失敗した `img` の擬似要素。2026年10月確認）
+- [Bug 155227 - WebKit Bugzilla](https://bugs.webkit.org/show_bug.cgi?id=155227)（読み込みに失敗した `img` の擬似要素）
 - [CSS Generated Content Module Level 3: Alternative Text for Accessibility](https://drafts.csswg.org/css-content-3/#alt)
 - [Failure F87](https://www.w3.org/WAI/WCAG22/Techniques/failures/F87)（W3C。装飾でない内容を `::before` と `::after` で挿入する失敗例。現在は廃止扱い）
 - [主題と副題のマークアップにはhgroupを使用する](https://www.tak-dcxi.com/article/use-hgroup-for-marking-up-the-main-heading-and-subheading/)（TAKLOG、2024年5月。副題を生成コンテンツで表示しない理由）

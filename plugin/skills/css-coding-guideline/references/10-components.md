@@ -1,6 +1,6 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 51
 - 本文: 約16.1万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
@@ -95,7 +95,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/#rule-isolation-for-relative-z-index
 - 【推奨・仕様上の制約】トップレイヤーに表示する `<dialog>` や `popover` 属性の要素にも、`z-index: var(--z--top)`（値は `calc(infinity)`）を指定する。（`top-layer-z-index-top`）
   - 理由: `transition-property: overlay` に対応していないブラウザでは、閉じるアニメーションの途中で z-index の大きい要素の下に潜り込むことがあるため。
-  - 補足: 2026年9月の時点で、`overlay` に対応しているのは Chromium 系のブラウザだけです。
+  - 補足: `overlay` に対応しているのは Chromium 系のブラウザだけです。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/boundaries/#rule-top-layer-z-index-top
 
 ## 10-3 コンポジションとユーティリティ
@@ -210,7 +210,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/#rule-hocus-via-style-query
 - 【必須・本書の規約】スタイルクエリで問い合わせるフラグの値は、`--compact` のような `--` で始まる識別子にし、オンとオフの2値の状態は `--true` と `--false` にそろえる。（`state-flag-values`）
   - 理由: スタイルクエリは値が一致するかどうかだけを調べるので、`1` や `true` が混ざると、書き間違えても条件が成り立たないだけで誤りに気付けないため。`--` で始めれば、自分で付けた名前だと分かる。
-  - 補足: `--color-scheme: --light` のように、2値でも状態の名前そのものを値にするフラグは、そのままにします。範囲の比較（`style(--_columns > 2)`）はSafariが対応していないので使いません（2026年10月確認）。
+  - 補足: `--color-scheme: --light` のように、2値でも状態の名前そのものを値にするフラグは、そのままにします。範囲の比較（`style(--_columns > 2)`）はSafariが対応していないので使いません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/components/style-queries/#rule-state-flag-values
 
 ## 10-7 置き場所と子の状態を伝える

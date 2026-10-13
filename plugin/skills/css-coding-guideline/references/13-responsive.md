@@ -1,6 +1,6 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 39
 - 本文: 約11万字
 - 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area
@@ -154,7 +154,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/responsive/media-queries/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/responsive/media-queries/#rule-prefers-contrast-more-for-faint-borders
 - 【推奨・実装上の判断】半透明の背景や `backdrop-filter` の上に文字を置く部品は、`@media (prefers-reduced-transparency: reduce)` の中で背景を不透明にする。（`reduced-transparency-opaque-background`）
   - 理由: OS で透明度を下げる設定にしているユーザーが、背景に左右されずに文字を読める状態を保つため。
-  - 補足: 2026年10月の時点で対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
+  - 補足: 対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/responsive/media-queries/#rule-reduced-transparency-opaque-background
 
 ## 13-6 375px未満の画面の扱い

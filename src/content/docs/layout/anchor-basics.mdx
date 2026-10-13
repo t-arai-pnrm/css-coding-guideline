@@ -113,7 +113,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 <Baseline id="anchor-positioning" compatKey="html.elements.button.popovertarget.implicit_anchor_reference" name="popovertarget による暗黙のアンカー" />
 
-`popovertarget` の暗黙のアンカーは、Chrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです（2026年10月確認）。ポップオーバーの開閉そのものは、「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。
+`popovertarget` の暗黙のアンカーは、Chrome 133、Firefox 147、Safari 26で使えます。`commandfor` ではChrome 135、Firefox 147、Safari 26.2からです。ポップオーバーの開閉そのものは、「[17-5 開閉するUI](/interaction/disclosure/)」で扱います。
 
 ## `anchor()` と `anchor-size()` でアンカーの辺と大きさを参照する
 
@@ -195,7 +195,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 一度切り替わった位置は、元の位置に空きができても自動では戻らず、再びはみ出したときに選び直されます。スクロールのたびに位置が行き来しないようにするためです。書いた順ではなく空きの大きさで選ばせるときは、`position-try-order: most-block-size` のように指定します。`position-try` は、この2つをまとめて書く一括指定です。
 
-`position-visibility` は、配置した要素を隠す条件を決めるプロパティです。初期値の `anchors-visible` では、アンカーがスクロールなどで完全に見えなくなると、配置した要素も見えなくなります。`no-overflow` は包含ブロックからはみ出したときに隠し、`always` は常に表示します。`position-visibility` はSafariでは26.2から使えます（2026年10月確認）。
+`position-visibility` は、配置した要素を隠す条件を決めるプロパティです。初期値の `anchors-visible` では、アンカーがスクロールなどで完全に見えなくなると、配置した要素も見えなくなります。`no-overflow` は包含ブロックからはみ出したときに隠し、`always` は常に表示します。`position-visibility` はSafariでは26.2から使えます。
 
 <Baseline id="anchor-positioning" compatKey="css.properties.position-try-fallbacks" name="position-try-fallbacks" />
 
@@ -228,7 +228,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 <Baseline id="anchor-positioning" compatKey="css.properties.anchor-name" name="アンカーポジショニング（anchor-name）" />
 
-`anchor-name` と `anchor()` は、Chrome 125、Firefox 147、Safari 26で対応し、2026年1月に主要なブラウザがそろいました。一方、機能全体のBaselineは「一部のブラウザのみ」のままです。`position-visibility` の一部の値のように、Safari 27だけが対応していて、ほかのブラウザが対応していないものが含まれているからです（2026年10月確認）。いずれにしても、本書の対象のSafari 18系は対応していません。
+`anchor-name` と `anchor()` は、Chrome 125、Firefox 147、Safari 26で対応し、2026年1月に主要なブラウザがそろいました。一方、機能全体のBaselineは「一部のブラウザのみ」のままです。`position-visibility` の一部の値のように、Safari 27だけが対応していて、ほかのブラウザが対応していないものが含まれているからです。いずれにしても、本書の対象のSafari 18系は対応していません。
 
 未対応の環境では、アンカーを基準にした配置の指定がすべて無視されます。ポップオーバーは、ブラウザの既定のスタイルの `inset: 0` と `margin: auto` で画面の中央に置かれる仕組みなので、kiso.cssが `margin` を解除していると、画面の左上に寄ります。絶対配置の要素は静的位置に置かれ、ほかの内容に重なることもあります。第1章のルールに従い、アンカーポジショニングはレイアウトの要として使いません（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。指定を `@supports` の中に書き、その外には、未対応の環境でも内容を読めて操作できる配置を書きます。
 
@@ -249,7 +249,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 HTMLは、暗黙のアンカーの例と同じです。`margin: revert` は、kiso.cssが解除した `margin` を、ブラウザのデフォルトスタイルの `auto` に戻す指定です。未対応の環境では、デフォルトスタイルの `inset: 0` と合わせて、ポップオーバーが画面の中央に表示されます。ボタンの近くではありませんが、内容を読むことも、閉じることもできます。`@supports` の条件には、実際に使う値を書きます。`anchor-name` に対応していても、`position-area` の一部の値に対応していないブラウザがあるからです。
 
-`position-area` を指定したときに `auto` の `margin` を0として扱うようになったのは、Chrome 143、Firefox 148、Safari 26.2からです（2026年10月確認）。それより前のブラウザでは、未対応の環境のために戻した `auto` の `margin` が残り、要素が選んだ領域の中央に寄ります。そのため、`@supports` の中では、ボタンとの間隔を含めて `margin` を指定し直しています。
+`position-area` を指定したときに `auto` の `margin` を0として扱うようになったのは、Chrome 143、Firefox 148、Safari 26.2からです。それより前のブラウザでは、未対応の環境のために戻した `auto` の `margin` が残り、要素が選んだ領域の中央に寄ります。そのため、`@supports` の中では、ボタンとの間隔を含めて `margin` を指定し直しています。
 
 ポップオーバーではない要素は、`position: absolute` ごと `@supports` の中に書きます。先の2つのデモの説明は、未対応の環境ではボタンの後ろの通常フローに表示されます。位置は変わりますが、ほかの内容には重なりません。
 

@@ -1,6 +1,6 @@
 # 第14章 タイポグラフィと和文組版：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 32
 - 本文: 約7.8万字
 - 読む条件: font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割
@@ -122,7 +122,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/typography/size-and-line-brea
 
 - 【推奨・実装上の判断】和文の見出しには、`@supports (word-break: auto-phrase)` の中で `word-break: auto-phrase` と `text-wrap: balance` を指定する。（`auto-phrase-for-headings`）
   - 理由: 文節の区切りで折り返し、各行の長さもそろうので、見出しが読みやすくなるため。
-  - 補足: 2026年9月の時点で対応しているのは Chrome 系のブラウザだけで、ほかのブラウザでは通常の折り返しになります。英文の見出しには `text-wrap: balance` を指定します。
+  - 補足: 対応しているのは Chrome 系のブラウザだけで、ほかのブラウザでは通常の折り返しになります。英文の見出しには `text-wrap: balance` を指定します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/typography/size-and-line-breaks/#rule-auto-phrase-for-headings
 - 【非推奨・実装上の判断】本文の段落には、`word-break: auto-phrase`、`text-wrap: balance`、手動の改行を使わない。（`no-auto-phrase-for-body`）
   - 理由: 段落の中に不自然なすき間ができ、画面の幅が変わると改行の位置も崩れて読みにくくなるため。

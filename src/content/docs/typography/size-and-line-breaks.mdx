@@ -119,7 +119,7 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 
 <Baseline id="word-break-auto-phrase" />
 
-`word-break: auto-phrase` に対応しているのは、2026年9月の時点でChrome系のブラウザだけです。和文の `text-wrap: balance` を `@supports` の中に入れているのは、文節の区切りが分からない環境では、行の長さだけをそろえても単語の途中の改行が残るからです。対応していない環境では、通常の折り返しのままになります。本書のサイトの見出しも、この指定で折り返しています。
+`word-break: auto-phrase` に対応しているのは、Chrome系のブラウザだけです。和文の `text-wrap: balance` を `@supports` の中に入れているのは、文節の区切りが分からない環境では、行の長さだけをそろえても単語の途中の改行が残るからです。対応していない環境では、通常の折り返しのままになります。本書のサイトの見出しも、この指定で折り返しています。
 
 次のデモで、幅ごとに比べてください。Chrome系のブラウザでは、下の見出しが文節の区切りで折り返し、各行の長さもそろいます。
 
@@ -129,7 +129,7 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 
 英文の見出しには `text-wrap: balance` を指定します。kiso.cssは英文の見出しに `text-wrap: pretty` を指定していますが、見出しは行の長さをそろえたほうが整って見えるので、ベーススタイルで上書きしています。`text-align: center` を指定するときも、`text-wrap: balance` と組み合わせます。
 
-反対に、枠線や背景のある左揃えの要素には、`text-wrap: balance` を指定しません。行の長さはそろっても、要素の幅は変わらないからです。幅400pxの枠に3行の英文を入れて試すと、各行の幅は約300pxにそろい、枠の右側に約100pxのすき間が残りました（2026年10月、Chrome 152で確認）。中央揃えならすき間は左右に分かれますが、左揃えでは右に偏り、枠の中で文字が左に寄って見えます。
+反対に、枠線や背景のある左揃えの要素には、`text-wrap: balance` を指定しません。行の長さはそろっても、要素の幅は変わらないからです。幅400pxの枠に3行の英文を入れて試すと、各行の幅は約300pxにそろい、枠の右側に約100pxのすき間が残りました。中央揃えならすき間は左右に分かれますが、左揃えでは右に偏り、枠の中で文字が左に寄って見えます。
 
 全称セレクタで、すべての要素に `text-wrap: balance` を指定することもしません。ボタンの文言や表のセルのように、行の長さをそろえる必要のない要素まで折り返しが変わります。また、次の見出しで述べるように、`balance` は一定の行数以下のブロックにしか適用されないので、同じ指定でも段落の長さによって折り返し方が変わります。
 
@@ -137,7 +137,7 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 
 ## 本文の折り返し
 
-本文の段落には、`word-break: auto-phrase` と `text-wrap: balance` のどちらも指定しません。文節で折り返すと、長い文章では行末に不自然なすき間が生まれ、かえって読みにくくなります。`text-wrap: balance` は処理の負荷が大きく、Chromeでは6行以下、Firefoxでは10行以下のブロックにしか適用されません（2026年9月、MDNで確認）。
+本文の段落には、`word-break: auto-phrase` と `text-wrap: balance` のどちらも指定しません。文節で折り返すと、長い文章では行末に不自然なすき間が生まれ、かえって読みにくくなります。`text-wrap: balance` は処理の負荷が大きく、Chromeでは6行以下、Firefoxでは10行以下のブロックにしか適用されません（MDNで確認）。
 
 英文の段落には、kiso.cssが `text-wrap: pretty` を指定しています。最後の行に1単語だけが残る状態を避ける指定です。一方、和文には `text-wrap: pretty` を指定しません。Safariの不具合で、和文の `pretty` が `balance` と似た折り返しになるからです（2026年8月時点）。
 
@@ -212,7 +212,7 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 
 ```css title="🙆‍♂ Recommended: 行数を制限するユーティリティ"
 .-line-clamp {
-  /* 行数の制限は、接頭辞付きの指定でしか動かない（2026年9月） */
+  /* 行数の制限は、接頭辞付きの指定でしか動かない */
   /* stylelint-disable-next-line value-no-vendor-prefix */
   display: -webkit-box;
   overflow-block: clip;

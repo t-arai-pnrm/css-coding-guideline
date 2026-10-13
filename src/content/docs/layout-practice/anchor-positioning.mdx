@@ -87,7 +87,7 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
 
 ルートの `position: relative` は、文字数の表示の包含ブロックをこの部品に限る指定です。未対応の環境では、文字数は `position: absolute` ごと無視され、入力欄の後ろの通常フローに表示されます。行末側に空きがないときに表示を切り替えたいなら、7-11で説明した `position-try-fallbacks` を加えます。
 
-`anchor-scope` は、Chrome 131、Firefox 147、Safari 26で対応しています（2026年10月確認）。ポップオーバーの暗黙のアンカーには名前がないので、ツールチップには `anchor-scope` は要りません。
+`anchor-scope` は、Chrome 131、Firefox 147、Safari 26で対応しています。ポップオーバーの暗黙のアンカーには名前がないので、ツールチップには `anchor-scope` は要りません。
 
 <Baseline id="anchor-positioning" compatKey="css.properties.anchor-scope" name="anchor-scope" />
 
@@ -208,13 +208,13 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
 }
 ```
 
-`position-try` は、`position-try-order` と `position-try-fallbacks` の一括指定です。`min-inline-size: anchor-size(inline)` は、メニューの幅を開いたボタンの幅以上にする指定です。`position-try-order` はFirefoxでは148から使えます（2026年10月確認）。
+`position-try` は、`position-try-order` と `position-try-fallbacks` の一括指定です。`min-inline-size: anchor-size(inline)` は、メニューの幅を開いたボタンの幅以上にする指定です。`position-try-order` はFirefoxでは148から使えます。
 
-位置が反転したときに吹き出しの矢印の向きを変える `@container anchored(fallback: flip-block)` は、2026年10月の時点でChrome 143以降だけが対応しているので、本書では採用しません。ほかのブラウザでは、反転しても矢印が吹き出しと反対の側を指すからです。位置が反転しうる吹き出しには矢印を付けないか、矢印がなくても、どのボタンの説明かが分かるデザインにします。{/* 要確認: 出典なし */}
+位置が反転したときに吹き出しの矢印の向きを変える `@container anchored(fallback: flip-block)` は、Chrome 143以降だけが対応しているので、本書では採用しません。ほかのブラウザでは、反転しても矢印が吹き出しと反対の側を指すからです。位置が反転しうる吹き出しには矢印を付けないか、矢印がなくても、どのボタンの説明かが分かるデザインにします。{/* 要確認: 出典なし */}
 
 <Baseline id="container-anchor-position-queries" />
 
-`position-area` と `position-try-fallbacks` は離散的に切り替わるので、反転するときの位置の変化をトランジションで滑らかにはできません。アンカーが動いたときの `anchor()` の値の変化を補間できるのも、Chrome 125以降とSafari 26以降だけです（2026年10月確認）。
+`position-area` と `position-try-fallbacks` は離散的に切り替わるので、反転するときの位置の変化をトランジションで滑らかにはできません。アンカーが動いたときの `anchor()` の値の変化を補間できるのも、Chrome 125以降とSafari 26以降だけです。
 
 <Baseline id="anchor-positioning-animations" />
 

@@ -172,8 +172,8 @@
   level: 非推奨
   kind: judgment
   rule: 影を変えるときに、`box-shadow` を `transition` や `animation` で動かさない。
-  reason: '`box-shadow` の変化は毎フレーム影を描き直し、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではコマ落ちしやすいため。`filter: drop-shadow()` のトランジションは、Chrome 154 では毎フレームの描き直しが起きなかった（進行の計算はメインスレッドに残り、GPU でフィルターを当てる負荷も残る）。'
-  note: '影を動かすときは、`filter` に `drop-shadow()` の影のトークン（本書のデモでは `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を指定して動かします。`box-shadow` 用のトークンは渡せないので、別のトークンにします。`drop-shadow()` は広がりと `inset` を持たず、ぼかしは `box-shadow` の半分の値でほぼ同じ広がりになります（Chrome 154 で確認）。縁取りのように動かさない影は `box-shadow` のままにします。トランジションの前後では `drop-shadow()` の数をそろえます。`box-shadow` の影と同じ見た目になるとは限らないので、並べて確かめます。'
+  reason: '`box-shadow` の変化は毎フレーム影を描き直し、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではコマ落ちしやすいため。`filter: drop-shadow()` のトランジションは、Chrome では毎フレームの描き直しが起きなかった（進行の計算はメインスレッドに残り、GPU でフィルターを当てる負荷も残る）。'
+  note: '影を動かすときは、`filter` に `drop-shadow()` の影のトークン（本書のデモでは `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を指定して動かします。`box-shadow` 用のトークンは渡せないので、別のトークンにします。`drop-shadow()` は広がりと `inset` を持たず、ぼかしは `box-shadow` の半分の値でほぼ同じ広がりになります（Chrome で確認）。縁取りのように動かさない影は `box-shadow` のままにします。トランジションの前後では `drop-shadow()` の数をそろえます。`box-shadow` の影と同じ見た目になるとは限らないので、並べて確かめます。'
   page: decoration/surfaces
   since: 0.4.0
 
@@ -300,7 +300,7 @@
   level: 推奨
   kind: judgment
   rule: gap decorations は、線がなくても内容を読める区切りに使い、線がないと境界が分からないときは `box-shadow` で同じ位置に線を描いたうえで、対応している環境の改善として足す。
-  reason: 2026年10月時点で対応しているのは Chrome と Edge だけで、未対応の環境では線が描かれないため。
+  reason: 対応しているのは Chrome と Edge だけで、未対応の環境では線が描かれないため。
   note: 'Grid と Flexbox の `column-rule` は、未対応の環境では無視されるだけなので、線を足すだけなら `@supports` は要りません。`box-shadow` の線と切り替えるときは `@supports not` の中に `box-shadow` を書き、強制カラーモードでは `outline` に切り替えます（ルール `no-box-shadow-only-boundary`）。'
   page: decoration/separators
   since: 0.25.0

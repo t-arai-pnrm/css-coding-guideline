@@ -102,7 +102,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 }
 ```
 
-インライン要素が複数の行にまたがると、背景、`border`、`padding` は、各行の断片に分けて描かれます。デフォルトでは1つの帯を行の端で切ったように描かれ、行の端の `padding` と角丸は失われます。各行の断片を独立した箱として描きたいときは、`box-decoration-break: clone` を指定します。Safariは接頭辞付きの `-webkit-box-decoration-break` だけに対応しています（2026年10月確認）。{/* 要確認: 出典なし */}見出しの行ごとに背景を敷く使い方と、上下の行と重ならない `line-height` の決め方は、「[16-6 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
+インライン要素が複数の行にまたがると、背景、`border`、`padding` は、各行の断片に分けて描かれます。デフォルトでは1つの帯を行の端で切ったように描かれ、行の端の `padding` と角丸は失われます。各行の断片を独立した箱として描きたいときは、`box-decoration-break: clone` を指定します。Safariは接頭辞付きの `-webkit-box-decoration-break` だけに対応しています。{/* 要確認: 出典なし */}見出しの行ごとに背景を敷く使い方と、上下の行と重ならない `line-height` の決め方は、「[16-6 文字とリストの装飾](/decoration/text-ornaments/)」で説明しています。
 
 <Baseline id="box-decoration-break" />
 
@@ -112,7 +112,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
   border-radius: 4px;
   background-color: oklch(92% 0.08 90deg);
 
-  /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年10月） */
+  /* Safari は接頭辞なしの box-decoration-break に対応していない */
   /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
@@ -195,7 +195,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 効かない指定は、残しておくと読む人を誤らせます。`gap` が書いてあれば子の間隔はそこで決まっていると読まれますが、実際の間隔は子の `margin` です。FlexboxやGridでだけ働くプロパティは、`display` を `flex` か `grid` にした要素にだけ書きます（[`no-flex-grid-props-in-flow`](/layout/normal-flow/#rule-no-flex-grid-props-in-flow)）。
 
-例外が `align-content` です。2024年から、ブロックコンテナにも使えるようになりました（2026年10月確認）。親を `display: block grid` に変えなくても、`align-content: center` だけで、中身を上下の中央に置けます。ただし、`justify-content` はブロックコンテナでは効かないので、左右の中央寄せは `margin-inline: auto` で書きます。{/* 要確認: 出典なし */}
+例外が `align-content` です。2024年から、ブロックコンテナにも使えるようになりました。親を `display: block grid` に変えなくても、`align-content: center` だけで、中身を上下の中央に置けます。ただし、`justify-content` はブロックコンテナでは効かないので、左右の中央寄せは `margin-inline: auto` で書きます。{/* 要確認: 出典なし */}
 
 <Baseline id="align-content-block" name="ブロックコンテナの align-content" />
 

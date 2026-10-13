@@ -11,7 +11,7 @@ import Guideline from '../../../components/Guideline.astro';
 import masonryHtml from '../../../demos/layout-practice/masonry-cards/index.html?raw';
 import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?raw';
 
-高さの違う項目を、新着順のような横方向の順番を保ったまま隙間なく詰めるレイアウトは、`display: block grid-lanes` で書きます。Pinterestの一覧のような、いわゆるMasonry（石積み）のレイアウトです。Gridを拡張した仕様なので、列は `grid-template-columns` でそのまま指定できます。2026年10月の時点で対応しているのはSafari 26.4以降だけなので、外側に通常のGridを書き、`@supports (display: block grid-lanes)` の中で切り替えます。
+高さの違う項目を、新着順のような横方向の順番を保ったまま隙間なく詰めるレイアウトは、`display: block grid-lanes` で書きます。Pinterestの一覧のような、いわゆるMasonry（石積み）のレイアウトです。Gridを拡張した仕様なので、列は `grid-template-columns` でそのまま指定できます。対応しているのはSafari 26.4以降だけなので、外側に通常のGridを書き、`@supports (display: block grid-lanes)` の中で切り替えます。
 
 項目は、そのときいちばん短い列へ順に詰められます。見た目の順番は、おおむね左上から右下へ進みますが、HTMLの順番と完全には一致しません。上から下へ読む順番のリストを段に分けたいだけなら、`grid-lanes` ではなく、古くからある `columns` を使います。
 
@@ -85,7 +85,7 @@ import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?r
 
 初期値の `normal` は `1em` として扱われます。値を大きくすると、項目は多少の高さの差を無視して、前の項目の隣の列へ順に置かれやすくなり、並び順は読みやすくなる代わりに、列の下端のそろい方は粗くなります。値を小さくすると、その逆になります。
 
-`infinite` を指定すると、列の高さを一切見ずに、項目を1列ずつ順に置きます。仕様は、この値では隣り合う項目が縦に大きく離れた位置へ置かれ、読み手が混乱しうると注記し、`1em` では小さすぎる場合も `infinite` ではなく大きめの長さを指定するよう勧めています（2026年10月確認）。そのため、まず初期値で並べ、項目が左右へ飛んで見えるときだけ値を大きくします。
+`infinite` を指定すると、列の高さを一切見ずに、項目を1列ずつ順に置きます。仕様は、この値では隣り合う項目が縦に大きく離れた位置へ置かれ、読み手が混乱しうると注記し、`1em` では小さすぎる場合も `infinite` ではなく大きめの長さを指定するよう勧めています。そのため、まず初期値で並べ、項目が左右へ飛んで見えるときだけ値を大きくします。
 
 `flow-tolerance` は `grid-lanes` のコンテナだけに適用されるプロパティです。未対応の環境では無視されるので、`@supports` で囲む必要はありませんが、`grid-lanes` の指定と一緒に消せるように同じブロックに書いています。
 
@@ -152,7 +152,7 @@ import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?r
 
 そのため、順序に意味のある項目には `grid-lanes` で `span` や線の番号による配置を使いません。ランキングや手順のように順番そのものが内容になる一覧は、`grid-lanes` に向いていません。新着順の一覧のように、おおよその順番が伝われば足りる並びに使います。
 
-仕様は、項目に固有の順番がない場合には、`reading-flow` プロパティで読み上げとフォーカスの順番を見た目に合わせる方法も挙げています。ただし、2026年10月の時点で `reading-flow` に対応しているのはChrome系のブラウザだけで、`grid-lanes` に対応しているのはSafariだけです。両方を同時に使える環境はまだありません。`reading-flow` については「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
+仕様は、項目に固有の順番がない場合には、`reading-flow` プロパティで読み上げとフォーカスの順番を見た目に合わせる方法も挙げています。ただし、`reading-flow` に対応しているのはChrome系のブラウザだけで、`grid-lanes` に対応しているのはSafariだけです。両方を同時に使える環境はまだありません。`reading-flow` については「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
 
 ## `columns` との使い分け
 
@@ -172,11 +172,11 @@ import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?r
 }
 ```
 
-`columns` に幅と数を両方書くと、幅は段の最小幅、数は段の上限になります。コンテナが指定の幅より狭いときは1段になり、段の幅はコンテナに合わせて縮みます（2026年10月、Chrome 152で確認）。項目には `break-inside: avoid` を指定し、1つの項目が段の境目で分かれないようにします。
+`columns` に幅と数を両方書くと、幅は段の最小幅、数は段の上限になります。コンテナが指定の幅より狭いときは1段になり、段の幅はコンテナに合わせて縮みます。項目には `break-inside: avoid` を指定し、1つの項目が段の境目で分かれないようにします。
 
-`columns` には、Gridの感覚で書くと失敗する点が2つあります。1つ目は、`column-width` に `%` を受け付けないことです。Gridの `minmax(min(100%, …), 1fr)` の癖で `column-width: min(100%, 15rem)` と書くと、値が不正になって宣言ごと無視されます（2026年10月、Chrome 152で確認）。段の幅をコンテナの幅に比例させたいときは、`%` の代わりに名前付きのコンテナの `cqi` を使います。
+`columns` には、Gridの感覚で書くと失敗する点が2つあります。1つ目は、`column-width` に `%` を受け付けないことです。Gridの `minmax(min(100%, …), 1fr)` の癖で `column-width: min(100%, 15rem)` と書くと、値が不正になって宣言ごと無視されます。段の幅をコンテナの幅に比例させたいときは、`%` の代わりに名前付きのコンテナの `cqi` を使います。
 
-2つ目は、2段目以降の先頭の項目に付けた `margin-block-start` が切り取られることです。段の境目で分かれた場所に接する `margin` は、断片化の仕様で切り捨てられます（2026年10月、Chrome 152で確認）。1段目の先頭だけに余白が残り、段の上端がそろいません。上のコード例では、項目の間隔を `margin` ではなく `padding-block` で空けています。
+2つ目は、2段目以降の先頭の項目に付けた `margin-block-start` が切り取られることです。段の境目で分かれた場所に接する `margin` は、断片化の仕様で切り捨てられます。1段目の先頭だけに余白が残り、段の上端がそろいません。上のコード例では、項目の間隔を `margin` ではなく `padding-block` で空けています。
 
 一方で、フッターのメニューが「見出しとリンクのまとまり」をいくつも並べたものなら、`grid-lanes` が向いています。数の決まっていないまとまりを、長さが違っても均一に並べられるからです。使い分けの基準は、項目を読む順番です。1つのリストを上から下へ読ませるなら `columns`、見出しとリンクのまとまりやカードを横方向の順番で並べながら高さの違いを詰めるなら `grid-lanes` を選びます。
 
@@ -186,7 +186,7 @@ import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?r
 
 ## 参考リンク
 
-- [CSS Grid Layout Module Level 3（Editor's Draft）](https://drafts.csswg.org/css-grid-3/)（CSSワーキンググループ、2026年10月確認）
+- [CSS Grid Layout Module Level 3（Editor's Draft）](https://drafts.csswg.org/css-grid-3/)（CSSワーキンググループ）
 - [Introducing CSS Grid Lanes](https://webkit.org/blog/17660/introducing-css-grid-lanes/)（WebKit Blog、2025年12月）
 - [columns - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/columns)
 - [break-inside - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/break-inside)

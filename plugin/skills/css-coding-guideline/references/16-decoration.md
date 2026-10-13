@@ -1,8 +1,8 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 33
-- 本文: 約17.3万字
+- 本文: 約17.2万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,10 +15,10 @@
 - `decoration` 第16章 画像・装飾（約4,700字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/
 - `decoration/images` 16-1 画像の配置と比率（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/images/
 - `decoration/image-loading` 16-2 画像の形式と読み込み（約4,800字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/image-loading/
-- `decoration/icons-and-masks` 16-3 アイコンとSVG（約10,000字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
+- `decoration/icons-and-masks` 16-3 アイコンとSVG（約9,900字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/icons-and-masks/
 - `decoration/clipping-and-masks` 16-4 clip-pathとマスクで見せる範囲を決める（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/clipping-and-masks/
 - `decoration/surfaces` 16-5 面・影・角丸（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
-- `decoration/text-ornaments` 16-6 文字とリストの装飾（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
+- `decoration/text-ornaments` 16-6 文字とリストの装飾（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/text-ornaments/
 - `decoration/shapes` 16-7 角の形を変える（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/shapes/
 - `decoration/outlines` 16-8 輪郭と枠線を描く（約2.8万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/outlines/
 - `decoration/separators` 16-9 区切り線を引く（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/
@@ -115,8 +115,8 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/
   - 補足: 本書のデモでは、層のオフセットとぼかしを1、3、6、12、24、48pxとし、広がりをその半分の負の値にしています。最も低い段階は1pxの縁取りだけで、枠線の代わりに使えます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/#rule-shadow-tokens-light-source
 - 【非推奨・実装上の判断】影を変えるときに、`box-shadow` を `transition` や `animation` で動かさない。（`no-animate-layered-shadow`）
-  - 理由: `box-shadow` の変化は毎フレーム影を描き直し、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではコマ落ちしやすいため。`filter: drop-shadow()` のトランジションは、Chrome 154 では毎フレームの描き直しが起きなかった（進行の計算はメインスレッドに残り、GPU でフィルターを当てる負荷も残る）。
-  - 補足: 影を動かすときは、`filter` に `drop-shadow()` の影のトークン（本書のデモでは `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を指定して動かします。`box-shadow` 用のトークンは渡せないので、別のトークンにします。`drop-shadow()` は広がりと `inset` を持たず、ぼかしは `box-shadow` の半分の値でほぼ同じ広がりになります（Chrome 154 で確認）。縁取りのように動かさない影は `box-shadow` のままにします。トランジションの前後では `drop-shadow()` の数をそろえます。`box-shadow` の影と同じ見た目になるとは限らないので、並べて確かめます。
+  - 理由: `box-shadow` の変化は毎フレーム影を描き直し、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではコマ落ちしやすいため。`filter: drop-shadow()` のトランジションは、Chrome では毎フレームの描き直しが起きなかった（進行の計算はメインスレッドに残り、GPU でフィルターを当てる負荷も残る）。
+  - 補足: 影を動かすときは、`filter` に `drop-shadow()` の影のトークン（本書のデモでは `--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を指定して動かします。`box-shadow` 用のトークンは渡せないので、別のトークンにします。`drop-shadow()` は広がりと `inset` を持たず、ぼかしは `box-shadow` の半分の値でほぼ同じ広がりになります（Chrome で確認）。縁取りのように動かさない影は `box-shadow` のままにします。トランジションの前後では `drop-shadow()` の数をそろえます。`box-shadow` の影と同じ見た目になるとは限らないので、並べて確かめます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/surfaces/#rule-no-animate-layered-shadow
 
 ## 16-6 文字とリストの装飾
@@ -186,7 +186,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/
   - 理由: 打ち消せるのは並び全体の最後の要素だけで、折り返した行の末尾や、列数が変わるグリッドの末尾の列には線が残るため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/#rule-no-last-child-border-reset
 - 【推奨・実装上の判断】gap decorations は、線がなくても内容を読める区切りに使い、線がないと境界が分からないときは `box-shadow` で同じ位置に線を描いたうえで、対応している環境の改善として足す。（`gap-decorations-progressive`）
-  - 理由: 2026年10月時点で対応しているのは Chrome と Edge だけで、未対応の環境では線が描かれないため。
+  - 理由: 対応しているのは Chrome と Edge だけで、未対応の環境では線が描かれないため。
   - 補足: Grid と Flexbox の `column-rule` は、未対応の環境では無視されるだけなので、線を足すだけなら `@supports` は要りません。`box-shadow` の線と切り替えるときは `@supports not` の中に `box-shadow` を書き、強制カラーモードでは `outline` に切り替えます（ルール `no-box-shadow-only-boundary`）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/decoration/separators/#rule-gap-decorations-progressive
 - 【必須・仕様上の制約】gap decorations の対応を `@supports` で判定するときは、`column-rule` ではなく `column-rule-inset` のような gap decorations で加わったプロパティを条件にする。（`gap-decorations-supports-condition`）

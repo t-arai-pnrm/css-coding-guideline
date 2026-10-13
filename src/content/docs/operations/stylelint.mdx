@@ -56,7 +56,7 @@ export default {
 
 プロパティの並び順は、著者が公開しているtaks-stylelint-orderに従います。CSSの仕様のモジュールを単位に、プロパティを47のグループに分けて並べた設定です。これとは別に、ブロックの中の並び（カスタムプロパティ、宣言、`@supports`、`@container`、`@media`、ネストしたルール）を `order/order` で決めています。どちらも `stylelint --fix` で自動で並べ替えられるので、並び順を覚える必要はありません。並び順の規約は「[9-7 プロパティの並び順](/notation/property-order/)」で説明しています。
 
-stylelint-plugin-display-multi-keyword-syntaxも、著者が公開しているプラグインです。`display: flex` のような1値の構文を見つけ、`block flex` のような2値構文で書くように求めます。`none` や `contents` のように、2値構文のない値は対象外です。プラグインの自動修正のオプション（`fix`）は本書の設定では指定していませんが、`stylelint --fix` で実行すると、このルールの違反も2値構文に書き換わります（2026年10月、0.1.1で確認）。
+stylelint-plugin-display-multi-keyword-syntaxも、著者が公開しているプラグインです。`display: flex` のような1値の構文を見つけ、`block flex` のような2値構文で書くように求めます。`none` や `contents` のように、2値構文のない値は対象外です。プラグインの自動修正のオプション（`fix`）は本書の設定では指定していませんが、`stylelint --fix` で実行すると、このルールの違反も2値構文に書き換わります。
 
 stylelint-plugin-logical-cssは、論理プロパティと論理的な単位を求めるプラグインです。本書では、物理プロパティ（`width` や `margin-top`）を見つける `require-logical-properties` を、警告として有効にしています。物理的な単位（`svw` や `cqw`）を見つける `require-logical-units` も、同じく警告です。`float: left` のような値のキーワードを見つける `require-logical-keywords` は、有効にしていません。`overflow-x` と `overflow-y` は、対応する論理プロパティがまだ使いにくいため、対象から外しています。
 
@@ -132,7 +132,7 @@ Stylelintには、`unit-disallowed-list` や `declaration-property-value-disallo
 
 Stylelintのルールは、デフォルトではエラーとして報告されます。`severity: 'warning'` を指定すると、警告になります。本書の設定で警告にしているのは、ビューポート単位の禁止、`z-index` の数値の禁止、論理プロパティと論理的な単位の2つのルールです。
 
-警告とエラーの違いは、終了コードに表れます。エラーが1つでもあると、Stylelintは失敗の終了コードを返し、CIの検査も失敗します。警告だけなら成功の終了コードを返すので、CIは通ります（2026年9月、Stylelint 17.15.0で確認）。警告でも失敗させたいときは、`--max-warnings 0` を付けて実行します。
+警告とエラーの違いは、終了コードに表れます。エラーが1つでもあると、Stylelintは失敗の終了コードを返し、CIの検査も失敗します。警告だけなら成功の終了コードを返すので、CIは通ります。警告でも失敗させたいときは、`--max-warnings 0` を付けて実行します。
 
 私は、置き換え先を人が選ぶ必要のあるルールは警告にするものだと考えています。`vw` を `svi`、`dvi`、`lvi` のどれに置き換えるか、`z-index: 10` をどのトークンに置き換えるかは、機械的には決められません。物理プロパティも、画面の切り欠きを避ける場合のように、意図して使う場面があります。反対に、`display` の構文や色の関数の書き方は、正解が1つに決まるのでエラーにしています。
 
@@ -172,7 +172,7 @@ body {
 npm install --save-dev stylelint stylelint-config-standard stylelint-order taks-stylelint-order stylelint-plugin-logical-css stylelint-plugin-display-multi-keyword-syntax postcss-selector-parser
 ```
 
-`.astro` や `.vue` のファイルの `<style>` も検査する場合は、postcss-htmlも入れます。本書の設定は、Stylelint 17.15.0で動くことを確認しています（2026年10月）。
+`.astro` や `.vue` のファイルの `<style>` も検査する場合は、postcss-htmlも入れます。本書の設定が動くStylelintの版は、「[本書の読み方](/introduction/how-to-read/#確認した環境)」にまとめています。
 
 次に、本書のリポジトリから [`stylelint.config.mjs`](https://github.com/t-arai-pnrm/css-coding-guideline/blob/main/stylelint.config.mjs) と [`stylelint/` ディレクトリ](https://github.com/t-arai-pnrm/css-coding-guideline/tree/main/stylelint)を、プロジェクトのルートにコピーします。独自ルールは `./stylelint/…` という相対パスで読み込むので、ディレクトリは設定ファイルと同じ階層に置きます。設定のうち、次の3か所は本書のリポジトリに固有なので、自分のプロジェクトに合わせて直します。
 

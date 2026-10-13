@@ -74,7 +74,7 @@ sidebar:
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-Aです。単独の `1fr` は `minmax(auto, 1fr)` で、下限が `auto` の列は、置かれたアイテムの最小幅より狭くなりません。グリッドアイテムの `min-inline-size` の初期値 `auto` は0ではなく、中身から決まる最小幅として扱われます。入力欄の最小幅はブラウザが `size` 属性から決めるので、左の列はその幅まで広がり、右の列が押しつぶされます。Chrome 152では、左の列が280px、右の列が24pxになりました（2026年10月確認）。
+Aです。単独の `1fr` は `minmax(auto, 1fr)` で、下限が `auto` の列は、置かれたアイテムの最小幅より狭くなりません。グリッドアイテムの `min-inline-size` の初期値 `auto` は0ではなく、中身から決まる最小幅として扱われます。入力欄の最小幅はブラウザが `size` 属性から決めるので、左の列はその幅まで広がり、右の列が押しつぶされます。Chromeでは、左の列が280px、右の列が24pxになりました。
 
 Bでは、アイテムの最小幅が0なので、列の下限も0になり、2つの列は `gap` を除いた幅を等分した152pxずつ（(320 − 16) ÷ 2）になります。入力欄は列の幅に合わせて縮みます（「[7-8 Gridの基礎](/layout/grid-basics/)」）。本書では、この `min-inline-size: 0` を次の章のベーススタイルとして全要素に指定し、列ごとに `minmax(0, 1fr)` と書かずに済ませます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/#rule-global-min-inline-size-zero)」）。
 

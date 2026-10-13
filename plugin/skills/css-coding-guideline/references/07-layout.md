@@ -1,6 +1,6 @@
 # 第7章 レイアウトの仕組み：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 41
 - 本文: 約27.6万字
 - 読む条件: display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `layout` 第7章 レイアウトの仕組み（約7,300字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/
+- `layout` 第7章 レイアウトの仕組み（約7,200字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/
 - `layout/fundamentals` 7-1 レイアウトの基礎（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/
 - `layout/normal-flow` 7-2 通常フローの基礎（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/
 - `layout/box-model` 7-3 ボックスモデルの基礎（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/
@@ -124,7 +124,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/#rule-flexbox-check-auto-min-size
 - 【非推奨・仕様上の制約】フォーカスできる要素や、順番に意味のある要素を並べた Flexbox で、`order` や `row-reverse`・`column-reverse` によって見た目の順番を入れ替えない。（`flexbox-no-visual-reorder`）
   - 理由: 読み上げの順番とキーボードでフォーカスが移る順番は HTML の順番のままなので、見た目の順番と食い違うため。
-  - 補足: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、2026年10月の時点で Baseline ではありません。それでも並べ替えるときは、ルール `reading-flow-when-reordered` に従って `reading-flow` を指定します。
+  - 補足: 順番に意味がなく、フォーカスできる要素も含まない並び（装飾の画像と本文など）は対象外です。見た目の順番に合わせてフォーカスを移す `reading-flow` は、Baseline ではありません。それでも並べ替えるときは、ルール `reading-flow-when-reordered` に従って `reading-flow` を指定します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout/flexbox-basics/#rule-flexbox-no-visual-reorder
 - 【推奨・実装上の判断】2カラムのどちらを先に縮めるかを決めるときは、先に縮める列に `flex-shrink: 9999` のような大きな値と `min-inline-size` を指定し、もう一方の列に `flex-shrink: 0` を指定しない。（`large-flex-shrink-for-shrink-order`）
   - 理由: 不足は `flex-shrink` と `flex-basis` の積の比で配られるので、大きな値の列がほぼすべてを受け持ち、最小幅に届いてから残りがもう一方に配られるため。`flex-shrink: 0` はどの幅でも縮まなくなり、狭い幅ではみ出す。
@@ -156,7 +156,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/#rule-grid-area-names-match-children
 - 【推奨・仕様上の制約】HTML は見た目の順番ではなく文書構造の順番（見出しから）で書き、見た目の順番が違うときは Grid の配置で入れ替える。（`source-order-for-reading`）
   - 理由: スクリーンリーダーの読み上げや、CSS が効かない環境でも、内容が意味の通る順番で伝わるため。
-  - 補足: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は2026年10月の時点で Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
+  - 補足: フォーカスできる要素の順番を入れ替えると、キーボードで移動する順番が見た目と食い違います。Grid の配置で入れ替えるときは、同じルールに `reading-flow` を指定します（ルール `reading-flow-when-reordered`）。`reading-flow` は Chrome と Edge の137以降だけが対応しているので、HTML の順番を直す代わりには使いません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/layout/grid-basics/#rule-source-order-for-reading
 - 【非推奨・仕様上の制約】順序に意味のある要素（フォーカスできる要素、手順、ランキング）を並べた Grid に、`grid-auto-flow: dense` を指定しない。（`no-dense-for-ordered-items`）
   - 理由: 見た目の順番だけが入れ替わり、キーボードで移動する順番や読み上げの順番と食い違うため。

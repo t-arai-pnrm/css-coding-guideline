@@ -15,7 +15,7 @@ import wrapCss from '../../../demos/layout-practice/reading-flow-wrap-reverse/st
 
 スクリーンリーダーの読み上げとTabキーのフォーカスは、DOMの順番で進みます。GridやFlexboxで見た目だけを並べ替えると、目で追う順番と、耳やキーボードで追う順番が食い違います。本書では、まずDOMの順番を読む順に合わせ、そのうえで並べ替えを伴うコンテナには `reading-flow` を指定します。
 
-`reading-flow` は、読み上げとフォーカスの順番を見た目の順番に合わせるプロパティです。2026年10月の時点で対応しているのはChromeとEdgeの137以降だけで、未対応のブラウザではDOMの順番のまま読まれます。この節では、`reading-flow` の値の選び方と、子の順番を個別に上書きする `order` と `reading-order` の値を1か-1に限る理由も説明します。
+`reading-flow` は、読み上げとフォーカスの順番を見た目の順番に合わせるプロパティです。対応しているのはChromeとEdgeの137以降だけで、未対応のブラウザではDOMの順番のまま読まれます。この節では、`reading-flow` の値の選び方と、子の順番を個別に上書きする `order` と `reading-order` の値を1か-1に限る理由も説明します。
 
 <Baseline id="reading-flow" />
 
@@ -33,7 +33,7 @@ CSSには、DOMの順番を変えずに見た目の順番だけを変える指�
 
 並べ替えの問題に対して最初にすることは、DOMの順番を、内容を読む順番に合わせることです。WCAGも、1.3.2を満たす方法として、DOMの順番を見た目の順番に合わせる方法（C27）を挙げています。見出し、本文、操作のように意味の通る順番でHTMLを書けば、CSSが効かなくても内容が伝わります。この考え方は、「[7-8 Gridの基礎](/layout/grid-basics/)」のルール [`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading) と同じです。
 
-`reading-flow` を指定しても、DOMの順番を直さずに済むわけではありません。2026年10月の時点では、SafariとFirefoxは `reading-flow` に対応していないので、これらのブラウザの利用者にはDOMの順番で読まれます。DOMの順番と見た目の順番のどちらで読んでも、意味が通る状態にしておく必要があります。
+`reading-flow` を指定しても、DOMの順番を直さずに済むわけではありません。SafariとFirefoxは `reading-flow` に対応していないので、これらのブラウザの利用者にはDOMの順番で読まれます。DOMの順番と見た目の順番のどちらで読んでも、意味が通る状態にしておく必要があります。
 
 たとえば、DOMの順番が見出し、本文、ボタンで、見た目では見出しの横にボタンを上げたカードを考えます。DOMの順番なら「見出し、本文、ボタン」、見た目の順番なら「見出し、ボタン、本文」と読まれ、どちらでも内容は伝わります。一方、手順の3番目を先頭に表示するような並べ替えでは、どちらかの順番で意味が崩れます。こうした並べ替えは、`reading-flow` では解決しません。
 
@@ -154,7 +154,7 @@ FlexboxとGridの子の `order` も、同じ規則に従います。`order` は�
 
 子の `order`、`grid-row`、`grid-column` による並べ替えは検出できません。これらは子のルールに書かれ、どのコンテナの中で使われるかがCSSだけでは決まらないからです。子の側で並べ替えるときは、親のコンテナに `reading-flow` があるかを自分で確かめます。
 
-未対応のブラウザは `reading-flow` の宣言を無視し、DOMの順番で読みます。`@supports` で分岐する必要はありません。高さの違う項目を詰める `grid-lanes` でも、見た目とDOMの順番が離れます。2026年10月の時点で、`grid-lanes` と `reading-flow` の両方に対応したブラウザはありません（「[11-11 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」）。
+未対応のブラウザは `reading-flow` の宣言を無視し、DOMの順番で読みます。`@supports` で分岐する必要はありません。高さの違う項目を詰める `grid-lanes` でも、見た目とDOMの順番が離れます。`grid-lanes` と `reading-flow` の両方に対応したブラウザはありません（「[11-11 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」）。
 
 ## ガイドライン
 

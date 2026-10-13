@@ -215,7 +215,7 @@
   kind: judgment
   rule: スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `view()` のタイムラインで切り替えたカスタムプロパティを `@container style()` で問い合わせて作り、`scroll` イベントで毎回位置を計算しない。
   reason: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
-  note: 'Firefox でも演出を出したい場合と、スクロールを戻しても再生を途中で止めたくない場合は、`IntersectionObserver` で属性を切り替えます。1回だけ動かす演出を CSS だけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しています。'
+  note: 'Firefox でも演出を出したい場合と、スクロールを戻しても再生を途中で止めたくない場合は、`IntersectionObserver` で属性を切り替えます。1回だけ動かす演出を CSS だけで書く `timeline-trigger` と `animation-trigger` は、Chrome 系のブラウザだけが対応しています。'
   aiProne: true
   page: motion/scroll-driven
   since: 0.1.0
@@ -253,7 +253,7 @@
   kind: judgment
   rule: '動かすプロパティは `opacity` と変形（`translate`、`scale`、`rotate`）を優先し、`clip-path`、`background-color`、`filter` は描き直しが起きないことを確かめたうえで使い、`inline-size` や `inset` のようにレイアウトが変わるプロパティは避ける。'
   reason: '`opacity` と変形のアニメーションは、レイアウトと描き直しが起きず、進行もコンポジタのスレッドで計算されるので、メインスレッドが忙しいときにも滑らかに動くため。`clip-path`、`background-color`、`filter` で描き直しを避けられるかは、ブラウザと値によって変わる。'
-  note: '影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします（`no-animate-layered-shadow`）。Chrome 154 では、`clip-path`（角丸を付けて大きさ0から動かす場合を除く）、`background-color`、`filter` のアニメーションで描き直し（DevTools の Paint）は起きませんでした。ただし、`drop-shadow()` と `blur()` は、進行の計算がメインスレッドに残ります。描き直しが起きなくても、GPU でフィルターを当てる処理の負荷は残ります。`color`、`border-color`、`box-shadow` はペイントが起きるので、小さい要素の短い変化に限ります。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。'
+  note: '影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします（`no-animate-layered-shadow`）。Chrome では、`clip-path`（角丸を付けて大きさ0から動かす場合を除く）、`background-color`、`filter` のアニメーションで描き直し（DevTools の Paint）は起きませんでした。ただし、`drop-shadow()` と `blur()` は、進行の計算がメインスレッドに残ります。描き直しが起きなくても、GPU でフィルターを当てる処理の負荷は残ります。`color`、`border-color`、`box-shadow` はペイントが起きるので、小さい要素の短い変化に限ります。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。'
   page: motion/performance
   since: 0.1.0
 

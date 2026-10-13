@@ -15,7 +15,7 @@ import linesCss from '../../../demos/decoration/separator-lines/style.css?raw';
 import gridHtml from '../../../demos/decoration/bordered-grid/index.html?raw';
 import gridCss from '../../../demos/decoration/bordered-grid/style.css?raw';
 
-並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描きます。gap decorations（`column-rule` と `row-rule` をGridとFlexboxの `gap` に描く機能）を使えば、線は要素の間にだけ描かれ、折り返しや列数が変わっても行の端に余計な線が残りません。ただし、2026年10月の時点で対応しているのはChromeとEdgeだけです。
+並んだ要素の間の区切り線は、各要素の `border` ではなく、要素の間の `gap` に描きます。gap decorations（`column-rule` と `row-rule` をGridとFlexboxの `gap` に描く機能）を使えば、線は要素の間にだけ描かれ、折り返しや列数が変わっても行の端に余計な線が残りません。ただし、対応しているのはChromeとEdgeだけです。
 
 そのため、gap decorationsは、線がなくても内容を読めて操作できる場面で、プログレッシブ・エンハンスメントとして使います。未対応の環境でも線が要るときは、`gap` を線の太さにして、各要素の `box-shadow` で同じ位置に線を描きます。
 
@@ -54,7 +54,7 @@ gap decorationsは、マルチカラムの段の間に線を引く `column-rule`
 
 Flexboxでは、列の間の線はフレックスラインごとに、その行の高さ（交差軸の大きさ）で描かれます。線は項目と項目の間の `gap` にだけ描かれるので、行の末尾の項目の後ろには線が引かれず、前の例の `:last-child` の問題は起きません。
 
-2026年10月の時点で、gap decorationsに対応しているのは、ChromeとEdgeの149以降だけです。FirefoxとSafariは対応していません。未対応の環境では、GridとFlexboxに指定した `column-rule` は無視され、線が描かれないだけで、レイアウトは変わりません。
+gap decorationsに対応しているのは、ChromeとEdgeの149以降だけです。FirefoxとSafariは対応していません。未対応の環境では、GridとFlexboxに指定した `column-rule` は無視され、線が描かれないだけで、レイアウトは変わりません。
 
 <Baseline id="gap-decorations" />
 
@@ -80,7 +80,7 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 
 デモでは、幅を320pxや480pxにすると、リンクが2行以上に折り返します。gap decorationsに対応している環境（Chrome）では、同じ行のリンクの間に灰色の点が1つずつ入り、行の端には入りません。未対応の環境では点が描かれず、リンクの間隔だけが残ります。
 
-`dotted` の線は、線の太さと同じ大きさの点の並びとして描かれます。線の太さを `1ex` にし、`column-rule-inset` で上下の端を「行の高さ（`1lh`）から点の大きさを引いた残りの半分」ずつ縮めます。線の長さが点1つ分になり、行の中央に丸い点が1つだけ残ります（2026年10月、Chrome 152で確認）。点の大きさを `ex` で決めているのは、点が区切りの文字「・」の代わりなので、文字の大きさに比例させるためです。
+`dotted` の線は、線の太さと同じ大きさの点の並びとして描かれます。線の太さを `1ex` にし、`column-rule-inset` で上下の端を「行の高さ（`1lh`）から点の大きさを引いた残りの半分」ずつ縮めます。線の長さが点1つ分になり、行の中央に丸い点が1つだけ残ります。点の大きさを `ex` で決めているのは、点が区切りの文字「・」の代わりなので、文字の大きさに比例させるためです。
 
 この例では、`@supports` を書いていません。未対応の環境では `column-rule` が無視され、点のないリンクの並びになるだけで、リンクの間隔は `cluster` の `gap` で保たれるからです。元にした私のCodePenでは点の大きさを列の間隔に足していますが、本書では間隔を `cluster` に任せ、リンクの位置を環境によらずそろえています。
 
@@ -170,7 +170,7 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 
 gap decorationsに対応しているかを `@supports` で判定するときは、条件に `column-rule` を使いません。`column-rule` はマルチカラムのプロパティとして、FirefoxとSafariも以前から対応しているので、`@supports (column-rule: 1px solid)` は未対応の環境でも真になります。条件には、`column-rule-inset` のような、gap decorationsで加わったプロパティを書きます。
 
-強制カラーモードでは、`box-shadow` が `none` になり、影で描いた線は消えます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)」）。そこで、2つ目と3つ目の例では、`@media (forced-colors: active)` の中で同じ太さの `outline` を描いています。`outline` は広げた影と同じく、ボックスの外側に描かれるので、線の位置は変わりません。2つ目の例では、`outline` も `clip-path` で上下を切り取られ、縦線だけが残ります（2026年10月、Chrome 152で確認）。`outline-color` はシステムカラーに置き換わるので、色は指定しません。{/* 要検証: ブラウザ。Firefox の強制カラーモードで、outline に置き換えた線の表示を確認していない */}
+強制カラーモードでは、`box-shadow` が `none` になり、影で描いた線は消えます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)」）。そこで、2つ目と3つ目の例では、`@media (forced-colors: active)` の中で同じ太さの `outline` を描いています。`outline` は広げた影と同じく、ボックスの外側に描かれるので、線の位置は変わりません。2つ目の例では、`outline` も `clip-path` で上下を切り取られ、縦線だけが残ります。`outline-color` はシステムカラーに置き換わるので、色は指定しません。{/* 要検証: ブラウザ。Firefox の強制カラーモードで、outline に置き換えた線の表示を確認していない */}
 
 gap decorationsの線の色は、強制カラーモードではシステムカラーで描かれます。CSS Color Adjustment Module Level 1が、強制カラーモードで置き換わるプロパティに `rule-color` を挙げているからです。`rule-color` は、`column-rule-color` と `row-rule-color` の一括指定です。{/* 要検証: ブラウザ。強制カラーモードで row-rule-color と column-rule-color の線が実際にシステムカラーで描かれるか */}1つ目の例の点も、強制カラーモードではシステムカラーの点として残ります。
 

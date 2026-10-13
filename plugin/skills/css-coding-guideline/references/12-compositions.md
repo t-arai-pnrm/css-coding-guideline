@@ -1,6 +1,6 @@
 # 第12章 レイアウトコンポジション：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 37
 - 本文: 約17.1万字
 - 読む条件: 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン
@@ -54,7 +54,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/compositions/cluster/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/compositions/cluster/#rule-cluster-apart-for-two-ends
 - 【推奨・実装上の判断】`flex-wrap: balance` は `@supports (flex-wrap: balance)` の中に書き、その外には `flex-wrap: wrap` を書く。（`cluster-balance-inside-supports`）
   - 理由: 新しい値に頼った指定であることが条件から読み取れ、未対応の環境では通常の折り返しのまま表示でき、すべての対象ブラウザが対応したときに分岐ごと消せるため。
-  - 補足: 2026年10月時点で `flex-wrap: balance` に対応しているのは Chrome と Edge の150以降だけです。
+  - 補足: `flex-wrap: balance` に対応しているのは Chrome と Edge の150以降だけです。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/compositions/cluster/#rule-cluster-balance-inside-supports
 - 【推奨・仕様上の制約】入れ子にした `cluster` で行と列の間隔を別々に指定するときは、`--cluster--gap: initial` も渡し、外側から継承した一括の間隔を打ち消す。（`cluster-reset-inherited-gap`）
   - 理由: カスタムプロパティは継承し、フォールバックの連鎖では一括の `--cluster--gap` が個別の指定より優先されるので、打ち消さないと内側の `--cluster--row-gap` と `--cluster--column-gap` が使われないため。

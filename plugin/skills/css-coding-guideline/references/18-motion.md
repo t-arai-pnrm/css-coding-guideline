@@ -1,6 +1,6 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 31
 - 本文: 約20.1万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
@@ -20,7 +20,7 @@
 - `motion/transition-techniques` 18-5 トランジションを応用する（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/transition-techniques/
 - `motion/keyframes` 18-6 @keyframesを設計する（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/keyframes/
 - `motion/entry-and-exit` 18-7 出現と退場（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/entry-and-exit/
-- `motion/overlays-and-stagger` 18-8 重ねて出すパネルと順に出す要素（約2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/overlays-and-stagger/
+- `motion/overlays-and-stagger` 18-8 重ねて出すパネルと順に出す要素（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/overlays-and-stagger/
 - `motion/scroll-driven` 18-9 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
 - `motion/performance` 18-10 動きの負荷を抑える（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
 - `motion/view-transitions` 18-11 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/motion/view-transitions/
@@ -147,7 +147,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/
 
 - 【推奨・実装上の判断】スクロール位置に合わせて連続して変わる動きはスクロール駆動アニメーションで、画面に入ったときに1回だけ動かす演出は `view()` のタイムラインで切り替えたカスタムプロパティを `@container style()` で問い合わせて作り、`scroll` イベントで毎回位置を計算しない。（`scroll-linked-method`）
   - 理由: スクロールのたびに位置を計算する処理はメインスレッドを占有し、動きがかくつく原因になるため。
-  - 補足: Firefox でも演出を出したい場合と、スクロールを戻しても再生を途中で止めたくない場合は、`IntersectionObserver` で属性を切り替えます。1回だけ動かす演出を CSS だけで書く `timeline-trigger` と `animation-trigger` は、2026年10月の時点で Chrome 系のブラウザだけが対応しています。
+  - 補足: Firefox でも演出を出したい場合と、スクロールを戻しても再生を途中で止めたくない場合は、`IntersectionObserver` で属性を切り替えます。1回だけ動かす演出を CSS だけで書く `timeline-trigger` と `animation-trigger` は、Chrome 系のブラウザだけが対応しています。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/scroll-driven/#rule-scroll-linked-method
 - 【推奨・実装上の判断】画面に入ったら1回だけ再生する演出は、ルートの `view()` のタイムラインで登録していないカスタムプロパティを `--false` から `--true` に切り替え、子の一時停止したアニメーションを `@container style(--_in-view: --true)` の中で `running` にし、全体を `@supports (animation-timeline: view()) and (animation-range: entry)` で囲む。（`reveal-once-with-style-query`）
   - 理由: 見た目の変化を時間で進むアニメーションで再生するので、スクロールを止めた位置で途中のまま残らず、スクロール駆動アニメーションに対応していない環境では演出なしで内容を表示できるため。
@@ -167,7 +167,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/
 
 - 【推奨・実装上の判断】動かすプロパティは `opacity` と変形（`translate`、`scale`、`rotate`）を優先し、`clip-path`、`background-color`、`filter` は描き直しが起きないことを確かめたうえで使い、`inline-size` や `inset` のようにレイアウトが変わるプロパティは避ける。（`animate-composite-properties`）
   - 理由: `opacity` と変形のアニメーションは、レイアウトと描き直しが起きず、進行もコンポジタのスレッドで計算されるので、メインスレッドが忙しいときにも滑らかに動くため。`clip-path`、`background-color`、`filter` で描き直しを避けられるかは、ブラウザと値によって変わる。
-  - 補足: 影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします（`no-animate-layered-shadow`）。Chrome 154 では、`clip-path`（角丸を付けて大きさ0から動かす場合を除く）、`background-color`、`filter` のアニメーションで描き直し（DevTools の Paint）は起きませんでした。ただし、`drop-shadow()` と `blur()` は、進行の計算がメインスレッドに残ります。描き直しが起きなくても、GPU でフィルターを当てる処理の負荷は残ります。`color`、`border-color`、`box-shadow` はペイントが起きるので、小さい要素の短い変化に限ります。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。
+  - 補足: 影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします（`no-animate-layered-shadow`）。Chrome では、`clip-path`（角丸を付けて大きさ0から動かす場合を除く）、`background-color`、`filter` のアニメーションで描き直し（DevTools の Paint）は起きませんでした。ただし、`drop-shadow()` と `blur()` は、進行の計算がメインスレッドに残ります。描き直しが起きなくても、GPU でフィルターを当てる処理の負荷は残ります。`color`、`border-color`、`box-shadow` はペイントが起きるので、小さい要素の短い変化に限ります。アコーディオンの高さのように、ほかに方法のない場合は例外です。`will-change` は CSS に書いたままにしません（`will-change-temporarily`）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/motion/performance/#rule-animate-composite-properties
 - 【必須・実装上の判断】`will-change` は CSS に書いたままにせず、どうしても必要なときだけ、動きの直前に JavaScript で付けて、終わったら外す。（`will-change-temporarily`）
   - 理由: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。

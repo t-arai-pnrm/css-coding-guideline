@@ -1,8 +1,8 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 49
-- 本文: 約12.1万字
+- 本文: 約12万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -17,7 +17,7 @@
 - `notation/variants` 9-2 BEMからの書き直しとバリエーション（約8,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/variants/
 - `notation/terminology` 9-3 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/
 - `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/scope-and-nesting/
-- `notation/nesting` 9-5 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/
+- `notation/nesting` 9-5 ネストの書き方（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting/
 - `notation/nesting-criteria` 9-6 ネストの判断基準（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/nesting-criteria/
 - `notation/property-order` 9-7 プロパティの並び順（約3,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/property-order/
 - `notation/modern-syntax` 9-8 モダンな記法にそろえる（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/modern-syntax/
@@ -233,7 +233,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/#rule-logical-properties
 - 【推奨・仕様上の制約】対応する論理的な書き方がないもの（メディアクエリの `width`、`translate` の値、`transform-origin`、`background-position`、`mask-position` など）は物理で書き、1つのルールの中で論理と物理が混ざることを許す。（`physical-only-where-no-logical`）
   - 理由: CSS の仕様そのものが論理と物理の両方を含んでおり、論理で書けないものまで論理に寄せようとすると、`direction` を配置に使うハックのような副作用のある回避策が増えるため。
-  - 補足: 論理で書けるものは、ルール `logical-properties` に従って論理で書きます。`overflow-inline` と `overflow-block` は Safari 26 から対応したので、本書の対象のブラウザでは `overflow-x` と `overflow-y` を使います（2026年10月時点）。書字方向で値を変える必要があるときは、`:dir(rtl)` で分岐します。
+  - 補足: 論理で書けるものは、ルール `logical-properties` に従って論理で書きます。`overflow-inline` と `overflow-block` は Safari 26 から対応したので、本書の対象のブラウザでは `overflow-x` と `overflow-y` を使います。書字方向で値を変える必要があるときは、`:dir(rtl)` で分岐します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/notation/logical-properties/#rule-physical-only-where-no-logical
 - 【推奨・実装上の判断】レビューでは、論理プロパティと物理プロパティが混ざっていること（`margin-inline` と `width` が同じルールにあるなど）だけを理由に指摘しない。（`no-logical-nitpicking`）
   - 理由: 混在しても表示の結果は変わらず、指摘のやり取りが、`margin: 0 auto` の副作用や内容のあふれのような、先に直すべき問題から注意をそらすため。

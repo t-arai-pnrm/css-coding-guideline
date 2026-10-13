@@ -1,6 +1,6 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 30
 - 本文: 約8.5万字
 - 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
@@ -130,7 +130,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-function
 
 - 【推奨・本書の規約】長さを単位のない数値に変えるときは、`calc(100svi / 1px)` のように単位のついた値で割り（typed arithmetic）、`tan(atan2(長さ, 1px))` で単位を外さない。（`typed-arithmetic-to-unitless`）
   - 理由: 式がそのまま割り算として読め、角度を経由する三角関数の回り道が要らないため。
-  - 補足: デザインカンプの値は、これまでどおり `calc(40 / 1280 * 100svi)` のように単位のない数値で割り、`40px / 1280px` とは書きません。2026年10月の時点で、Firefoxの安定版は単位のついた値での割り算に対応していない（158で対応する予定）ので、宣言が無効になっても内容を読める場面で使います。Chromeでは、この割り算で定義した長さがブラウザのズームで拡大縮小されないので、文字サイズにはremの下限を付けます。
+  - 補足: デザインカンプの値は、これまでどおり `calc(40 / 1280 * 100svi)` のように単位のない数値で割り、`40px / 1280px` とは書きません。Firefoxの安定版は単位のついた値での割り算に対応していない（158で対応する予定）ので、宣言が無効になっても内容を読める場面で使います。Chromeでは、この割り算で定義した長さがブラウザのズームで拡大縮小されないので、文字サイズにはremの下限を付けます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless
 
 ## 6-5 if()とattr()で条件と属性を値にする
@@ -138,7 +138,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/values/advanced-math-function
 https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/
 
 - 【推奨・実装上の判断】型付きの `attr()` は、`<textarea>` の `rows` のように HTML がすでに持っている属性の値を CSS でも使うときに限り、コンポーネントに値を渡す手段は `style` 属性の公開プロパティのままにする。（`attr-for-html-attributes`）
-  - 理由: 型付きの `attr()` に未対応のブラウザがあり（2026年10月確認）、同じ値を属性と `style` 属性の2か所に書くことも避けられるため。
+  - 理由: 型付きの `attr()` に未対応のブラウザがあり、同じ値を属性と `style` 属性の2か所に書くことも避けられるため。
   - 補足: `data-variant` のように選択肢から1つを選ぶバリエーションは、属性セレクタで書きます。`attr()` の値は `url()` に使えないので、背景画像は `style` 属性の公開プロパティで渡します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/values/if-and-attr/#rule-attr-for-html-attributes
 - 【必須・仕様上の制約】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）

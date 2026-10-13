@@ -40,13 +40,13 @@ env(safe-area-inset-bottom)
 env(safe-area-inset-bottom, 16px)
 ```
 
-`env()` には、`var()` と同じく第2引数にフォールバックの値を書けます。ただし、第2引数が使われるのは、ブラウザがその名前の環境変数を知らない場合だけです。`env(safe-area-inset-bottom, 16px)` と書いても、パソコンのブラウザでは環境変数が0として存在するので、値は16pxではなく0になります。一方、`env(unknown-name, 16px)` のように知らない名前を書くと16pxになります（2026年10月、Chrome 152で確認）。
+`env()` には、`var()` と同じく第2引数にフォールバックの値を書けます。ただし、第2引数が使われるのは、ブラウザがその名前の環境変数を知らない場合だけです。`env(safe-area-inset-bottom, 16px)` と書いても、パソコンのブラウザでは環境変数が0として存在するので、値は16pxではなく0になります。一方、`env(unknown-name, 16px)` のように知らない名前を書くと16pxになります。
 
 セーフエリアがない画面でも余白を残したいときは、第2引数ではなく、次の節で説明する `max()` を使います。
 
 <Baseline id="safe-area-inset" name="セーフエリアの環境変数" />
 
-`env()` と `safe-area-inset-*` は、2020年1月にすべての主要なブラウザで使えるようになった機能です（2026年10月確認）。本書の対象のブラウザはすべて対応しているので、固定の値の宣言を前に書いておく二段構えのフォールバックも要りません。対象のブラウザが対応している機能のフォールバックは書かないという方針は、「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/#rule-remove-unneeded-fallbacks)」で説明しています。
+`env()` と `safe-area-inset-*` は、2020年1月にすべての主要なブラウザで使えるようになった機能です。本書の対象のブラウザはすべて対応しているので、固定の値の宣言を前に書いておく二段構えのフォールバックも要りません。対象のブラウザが対応している機能のフォールバックは書かないという方針は、「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/#rule-remove-unneeded-fallbacks)」で説明しています。
 
 ## 通常の余白と組み合わせる
 
@@ -154,9 +154,9 @@ iframeの中では、実機のセーフエリアは再現できません。ifram
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 ```
 
-ただし、`interactive-widget` に対応しているのは、Android版のChrome 108以降とFirefox 133以降です（2026年10月確認）。WebKitには実装されていますが、Safariではまだ出荷されていません。Safariではデフォルトの `resizes-visual` と同じ動作になるので、`resizes-content` だけを頼りにレイアウトを組むわけにはいきません。入力欄の少ないコーポレートサイトやメディアでは指定せず、チャットの入力欄のように、キーボードの上に常に見えている必要があるUIでだけ検討します。{/* 要確認: 出典なし */}
+ただし、`interactive-widget` に対応しているのは、Android版のChrome 108以降とFirefox 133以降です。WebKitには実装されていますが、Safariではまだ出荷されていません。Safariではデフォルトの `resizes-visual` と同じ動作になるので、`resizes-content` だけを頼りにレイアウトを組むわけにはいきません。入力欄の少ないコーポレートサイトやメディアでは指定せず、チャットの入力欄のように、キーボードの上に常に見えている必要があるUIでだけ検討します。{/* 要確認: 出典なし */}
 
-キーボードの位置と大きさを `env(keyboard-inset-*)` で読む方法もあります。ただし、この環境変数が値を持つのは、キーボードをページの上に重ねる設定のときだけです。設定には、Virtual Keyboard APIの `overlaysContent` か、`interactive-widget=overlays-content` を使います。{/* 要確認: 出典なし */} Virtual Keyboard API自体も、Chromium系のブラウザでしか使えません（2026年10月確認）。
+キーボードの位置と大きさを `env(keyboard-inset-*)` で読む方法もあります。ただし、この環境変数が値を持つのは、キーボードをページの上に重ねる設定のときだけです。設定には、Virtual Keyboard APIの `overlaysContent` か、`interactive-widget=overlays-content` を使います。{/* 要確認: 出典なし */} Virtual Keyboard API自体も、Chromium系のブラウザでしか使えません。
 
 ## ビューポート単位との関係
 
@@ -164,7 +164,7 @@ iframeの中では、実機のセーフエリアは再現できません。ifram
 
 `viewport-fit=cover` を指定すると、ビューポートは切り欠きのある範囲まで広がります。たとえば `min-block-size: 100svb` の画面いっぱいのヒーローは、背景が画面の端まで届く一方で、上下の端の文字はノッチやホームインジケーターに重なることがあります。ヒーローの中身にも、上下のセーフエリアを `padding` で空けます。
 
-セーフエリアの値は、ブラウザのUIの出入りによって変わることがあります。ツールバーが引っ込むと、それまでツールバーが覆っていた下端にホームインジケーターが現れ、`safe-area-inset-bottom` が変わります。{/* 要確認: 出典なし */} 変化しない最大の値を表す `safe-area-max-inset-*` も仕様にありますが、2026年10月の時点で対応しているのはChromium系のブラウザだけです。{/* 要確認: 出典なし */}
+セーフエリアの値は、ブラウザのUIの出入りによって変わることがあります。ツールバーが引っ込むと、それまでツールバーが覆っていた下端にホームインジケーターが現れ、`safe-area-inset-bottom` が変わります。{/* 要確認: 出典なし */} 変化しない最大の値を表す `safe-area-max-inset-*` も仕様にありますが、対応しているのはChromium系のブラウザだけです。{/* 要確認: 出典なし */}
 
 ## 実機での確認
 

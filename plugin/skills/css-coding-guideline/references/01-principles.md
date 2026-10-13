@@ -1,6 +1,6 @@
 # 第1章 CSSのマインドセット：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 15
 - 本文: 約5.5万字
 - 読む条件: 新しい機能、ブラウザの対応状況、フォールバック、@supports
@@ -55,7 +55,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/#rule-check-safari-support-first
 - 【必須・実装上の判断】対象のブラウザの一部しか対応していない機能は、未対応の環境でも内容を読めて操作できる場合に限って、プログレッシブ・エンハンスメントとして使う。（`progressive-enhancement-if-harmless`）
   - 理由: 対応した環境の体験を良くしつつ、未対応の環境のユーザーを切り捨てないため。
-  - 補足: 2026年9月時点では、`text-wrap: pretty`、`word-break: auto-phrase`、`field-sizing`、`text-box`、ドキュメント間のビュートランジションが使いやすい例です。
+  - 補足: `text-wrap: pretty`、`word-break: auto-phrase`、`field-sizing`、`text-box`、ドキュメント間のビュートランジションが使いやすい例です。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/#rule-progressive-enhancement-if-harmless
 - 【推奨・実装上の判断】プログレッシブ・エンハンスメントとして使う機能は、その宣言を外した表示を確かめてから使う。同じ機能を複数の箇所で使うときは、箇所ごとに確かめる。（`verify-fallback-by-removal`）
   - 理由: 未対応の環境では宣言が無視されるだけなので、宣言を外した表示を見れば、読めて操作できるかを、未対応のブラウザなしで判断できるため。
@@ -63,7 +63,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/#rule-verify-fallback-by-removal
 - 【禁止・仕様上の制約】対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。（`no-unsupported-layout-features`）
   - 理由: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
-  - 補足: 2026年10月時点では、アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
+  - 補足: アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/#rule-no-unsupported-layout-features
 - 【推奨・仕様上の制約】新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。（`supports-for-dependent-declarations`）
   - 理由: 未対応の環境で、従来の手段まで取り上げてしまうのを防ぐため。
@@ -84,6 +84,6 @@ https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/
   - 理由: 既存のプロパティの新しい仕様を Chrome が先に実装することが多く、Chrome だけで確認すると、ほかのブラウザとの差に気づけないため。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/#rule-no-chrome-only-check
 - 【禁止・仕様上の制約】ブロックレイアウトの要素に、`justify-self` や `justify-items` を指定しない。（`no-justify-self-in-block-layout`）
-  - 理由: 2026年9月時点で対応しているのは Chrome だけで、Safari と Firefox では無視されるため。
+  - 理由: 対応しているのは Chrome だけで、Safari と Firefox では無視されるため。
   - 補足: ブロックの中央寄せには `margin-inline: auto` を使います。`display` を grid からブロックに戻すときは、指定が残っていないかを確かめます。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/principles/browser-support/#rule-no-justify-self-in-block-layout

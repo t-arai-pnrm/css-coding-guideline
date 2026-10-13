@@ -54,7 +54,7 @@ FlexboxとGridも、同じ基準で動きます。`flex-direction: row` の主�
 
 一方で、CSSには物理的な方向でしか書けないものも多く残っています。メディアクエリの条件はビューポートの `width` と `height` で書きます。`translate` の値は横と縦の順で、`transform-origin`、`background-position`、`mask-position` には書字方向を基準にしたキーワードがありません。現実のCSSは、論理と物理が混ざった状態にあります。
 
-`overflow-x` と `overflow-y` に対応する `overflow-inline` と `overflow-block` は、Safariが26から対応しました。本書が対象にするSafari 18系では使えないので、2026年10月の時点では物理プロパティで書きます。本書のStylelintの設定でも、この2つは警告の対象から外しています（「[19-1 Stylelintでルールを守る](/operations/stylelint/)」）。
+`overflow-x` と `overflow-y` に対応する `overflow-inline` と `overflow-block` は、Safariが26から対応しました。本書が対象にするSafari 18系では使えないので、物理プロパティで書きます。本書のStylelintの設定でも、この2つは警告の対象から外しています（「[19-1 Stylelintでルールを守る](/operations/stylelint/)」）。
 
 こうしたものは、物理で書きます。論理で書けるものは論理で書き、書けないものは物理で書くので、次の例のように、1つのルールの中に `overflow-x` と `padding-block-end` を並べる場合も出てきます。仕様に論理と物理の両方がある以上、コードでの混在は避けられません。書字方向で背景の位置を変える必要があるなら、後で説明する `:dir(rtl)` で分岐します。
 
@@ -142,11 +142,11 @@ body {
 
 ## 補足と注意点
 
-論理的な配置の書き方は、今後も増えていきます。ブロックレイアウトの `justify-self` が使えるようになれば、ブロックの中央寄せは `max-inline-size` と `justify-self: center` で書けます。2026年9月時点の対応データでは、対応しているのはChromeとEdgeだけなので、今は `margin-inline: auto` を使います（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
+論理的な配置の書き方は、今後も増えていきます。ブロックレイアウトの `justify-self` が使えるようになれば、ブロックの中央寄せは `max-inline-size` と `justify-self: center` で書けます。対応データでは、対応しているのはChromeとEdgeだけなので、今は `margin-inline: auto` を使います（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
 
 <Baseline id="justify-self-block" name="ブロックレイアウトの justify-self" />
 
-絶対配置の要素にも、`justify-self` と `place-self` が使えるようになりました。Chromeは122、Firefoxは134、Safariは26から対応していますが、本書が対象にするSafari 18系では使えません（2026年10月時点）。対象のブラウザがそろえば、`left: 50%` と `translate: -50%` で中央に置く書き方は使われなくなっていくはずです。今は、「[7-10 positionの基礎](/layout/positioning/)」で説明している `inset: 0` と `margin: auto` で中央に置きます。
+絶対配置の要素にも、`justify-self` と `place-self` が使えるようになりました。Chromeは122、Firefoxは134、Safariは26から対応していますが、本書が対象にするSafari 18系では使えません。対象のブラウザがそろえば、`left: 50%` と `translate: -50%` で中央に置く書き方は使われなくなっていくはずです。今は、「[7-10 positionの基礎](/layout/positioning/)」で説明している `inset: 0` と `margin: auto` で中央に置きます。
 
 本書は論理プロパティを優先しますが、ほかのプロジェクトにそれを強制するつもりはありません。既存のプロジェクトが物理プロパティでそろっているなら、無理に混ぜず、そのプロジェクトの統一を優先します。本書の規約を採用したプロジェクトなら、物理プロパティはStylelintの警告で見つかるので、レビューで人が指摘する必要もありません。
 

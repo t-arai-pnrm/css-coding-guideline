@@ -21,7 +21,7 @@ import formCss from '../../../demos/interaction/form-controls/style.css?raw';
 
 ほかにも、入力欄には `text-autospace: no-autospace` を指定して、入力中に和文と英数字の間へアキが入るのを防いでいます。ボタンには `touch-action: manipulation` を指定して、iOSで連続してタップしたときの拡大を防ぎ、押せる部品のカーソルを `pointer` にしています。`<textarea>` は、縦方向にだけリサイズできます。詳しくは「[8-1 壊さないリセット](/reset/kiso/)」で説明しています。
 
-CSSではありませんが、入力欄には `autocomplete` 属性で入力する内容の種類（`name`、`email`、`postal-code` など）を正しく指定します。ブラウザの自動入力が働き、入力の手間と誤りを減らせます。ログインのフォームでは、多くのブラウザがパスワードマネージャーのために `autocomplete="off"` を無視します（MDN、2026年9月確認）。
+CSSではありませんが、入力欄には `autocomplete` 属性で入力する内容の種類（`name`、`email`、`postal-code` など）を正しく指定します。ブラウザの自動入力が働き、入力の手間と誤りを減らせます。ログインのフォームでは、多くのブラウザがパスワードマネージャーのために `autocomplete="off"` を無視します（MDN）。
 
 ## `accent-color` で色を変える
 
@@ -39,7 +39,7 @@ CSSではありませんが、入力欄には `autocomplete` 属性で入力す�
 
 <Baseline id="accent-color" />
 
-web-featuresのデータでは、SafariはSafari 26.2からの対応になっています。MDNの互換性データによると、それより前のSafariも `accent-color` に対応していますが、チェックマークの色を背景に合わせて調整しません（2026年9月確認）。本書の対象のSafariでも色は変わるので、チェックマークとのコントラストが十分に取れる色を選べば使えます。
+web-featuresのデータでは、SafariはSafari 26.2からの対応になっています。MDNの互換性データによると、それより前のSafariも `accent-color` に対応していますが、チェックマークの色を背景に合わせて調整しません。本書の対象のSafariでも色は変わるので、チェックマークとのコントラストが十分に取れる色を選べば使えます。
 
 なお、リセットCSSで、すべての `input` へ一律に `appearance: none` を指定するのは禁止です。チェックボックスやラジオボタンの見た目が消え、画面から見えなくなるからです（「[8-1 壊さないリセット](/reset/kiso/)」）。
 
@@ -110,7 +110,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 <Baseline id="customizable-select" name="カスタマイズ可能な <select>" />
 
-2026年10月の時点で対応しているのは、Chrome系のブラウザ（135以降）とSafari 27で、Firefoxは対応していません。本書では、Baselineでない機能はプログレッシブ・エンハンスメントとして使います。対応していない環境では、ブラウザの標準の `<select>` のまま表示されれば十分です。HTMLは、選んだ項目を表示するボタンを、`<select>` の最初の子に置きます。
+対応しているのは、Chrome系のブラウザ（135以降）とSafari 27で、Firefoxは対応していません。本書では、Baselineでない機能はプログレッシブ・エンハンスメントとして使います。対応していない環境では、ブラウザの標準の `<select>` のまま表示されれば十分です。HTMLは、選んだ項目を表示するボタンを、`<select>` の最初の子に置きます。
 
 ```html title="選んだ項目の中身を、ボタンの中に写す"
 <select name="sort">
@@ -181,7 +181,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 <Baseline id="switch-control" name="switch 属性" />
 
-2026年9月の時点で、`switch` 属性に対応しているのはSafariだけです。ほかのブラウザでは、ふつうのチェックボックスとして扱われます。操作は損なわれないので、チェックボックスとして読み上げられることを許容できるなら、プログレッシブ・エンハンスメントとして使えます。すべての環境で「スイッチ」として読み上げる必要がある場合は、`<input type="checkbox" switch role="switch">` のように `role="switch"` を加えます。`role="switch"` を付けたチェックボックスは、スクリーンリーダーにオンとオフの状態を伝えます。`<button>` と `aria-pressed` の組み合わせは、押した状態を表す「トグルボタン」になり、オンとオフの意味にはならないので、スイッチの代わりには使いません。
+`switch` 属性に対応しているのはSafariだけです。ほかのブラウザでは、ふつうのチェックボックスとして扱われます。操作は損なわれないので、チェックボックスとして読み上げられることを許容できるなら、プログレッシブ・エンハンスメントとして使えます。すべての環境で「スイッチ」として読み上げる必要がある場合は、`<input type="checkbox" switch role="switch">` のように `role="switch"` を加えます。`role="switch"` を付けたチェックボックスは、スクリーンリーダーにオンとオフの状態を伝えます。`<button>` と `aria-pressed` の組み合わせは、押した状態を表す「トグルボタン」になり、オンとオフの意味にはならないので、スイッチの代わりには使いません。
 
 見た目は、`appearance: none` を指定した `input` 自体に描きます。`::after` をつまみに、`::before` をつまみの手前の余白にして、オンのときに `::before` を伸ばしてつまみを押し出します。
 
@@ -317,7 +317,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 ①で `box-sizing` を `content-box` に戻すのは、高さを行数だけで書くためです。kiso.cssはすべての要素を `border-box` にしています。そのままでは `min-block-size` に `padding` と `border` が含まれるので、3行分の高さを `calc(3lh + 2em + 2px)` のような足し算で求めることになります。`content-box` なら `min-block-size` は内容の領域の高さなので、`3lh` がそのまま3行分になります。`box-sizing` は継承しないプロパティなので、`unset` は初期値の `content-box` になります。
 
-②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。2026年10月の時点で `stretch` に対応していないFirefoxも、`-webkit-fill-available` で同じように広がります（「[7-4 大きさの決まり方](/layout/sizing/#rule-stretch-over-width-100)」）。
+②で `100%` を使わないのは、`content-box` では `100%` に `padding` と `border` が足され、入力欄が親からはみ出すからです。`stretch` を指定すると、`margin` を含めた箱が親の幅にちょうど収まります。`stretch` に対応していないブラウザのために、先に `-webkit-fill-available` を書いています。`stretch` に対応していないFirefoxも、`-webkit-fill-available` で同じように広がります（「[7-4 大きさの決まり方](/layout/sizing/#rule-stretch-over-width-100)」）。
 
 ③の `min-block-size` で、行数は `rows` 属性ではなく `--_rows` で決まります。`field-sizing: content` に対応した環境では、`rows` 属性はもともと高さに使われません（「[6-5 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」）。
 

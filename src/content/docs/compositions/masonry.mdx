@@ -94,7 +94,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 }
 ```
 
-この形では、外側の `display` が、2026年10月の時点ではSafari以外のすべてのブラウザで無効な宣言です。外側を読んでも、多くの環境で実際に効いている指定が分かりません。本書は、すべての対象のブラウザで効く指定を外側に書き、新しい機能を条件付きで重ねる順番にそろえます。条件式も11-11の例と同じ `@supports (display: block grid-lanes)` になるので、全ブラウザが対応した時点で、この文字列を検索すれば分岐をまとめて見つけられます。
+この形では、外側の `display` が、Safari以外のすべてのブラウザで無効な宣言です。外側を読んでも、多くの環境で実際に効いている指定が分かりません。本書は、すべての対象のブラウザで効く指定を外側に書き、新しい機能を条件付きで重ねる順番にそろえます。条件式も11-11の例と同じ `@supports (display: block grid-lanes)` になるので、全ブラウザが対応した時点で、この文字列を検索すれば分岐をまとめて見つけられます。
 
 ## 公開プロパティと渡し方
 
@@ -195,7 +195,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 
 `masonry` を入れ子にする場面はほとんどありません。`grid-lanes` の列の中にさらに石積みを作っても、読み手には並び順がいっそう追いにくくなるだけだからです。項目の中の配置には、`stack` や `cluster` のような、子の並びが順番どおりになるコンポジションを使います。
 
-未対応の環境のフォールバックは、通常のGridです。2026年10月の時点で `grid-lanes` に対応しているのはSafari 26.4以降だけなので、ほとんどの読み手は、行ごとに高さのそろったGridで一覧を見ます。隙間は残りますが、すべての項目が読めて操作でき、列の数も対応している環境と同じなので、プログレッシブ・エンハンスメントとして使えます。対応状況が変わるまでは、Gridの見た目で問題がないことを確認してから `masonry` を選びます。
+未対応の環境のフォールバックは、通常のGridです。`grid-lanes` に対応しているのはSafari 26.4以降だけなので、ほとんどの読み手は、行ごとに高さのそろったGridで一覧を見ます。隙間は残りますが、すべての項目が読めて操作でき、列の数も対応している環境と同じなので、プログレッシブ・エンハンスメントとして使えます。対応状況が変わるまでは、Gridの見た目で問題がないことを確認してから `masonry` を選びます。
 
 ## ガイドライン
 
@@ -203,7 +203,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 
 ## 参考リンク
 
-- [CSS Grid Layout Module Level 3（Editor's Draft）](https://drafts.csswg.org/css-grid-3/)（CSSワーキンググループ、2026年10月確認）
+- [CSS Grid Layout Module Level 3（Editor's Draft）](https://drafts.csswg.org/css-grid-3/)（CSSワーキンググループ）
 - [Introducing CSS Grid Lanes](https://webkit.org/blog/17660/introducing-css-grid-lanes/)（WebKit Blog、2025年12月）
 - [@supports - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/@supports)
 - [repeat() - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/repeat)

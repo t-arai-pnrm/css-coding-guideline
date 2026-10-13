@@ -1,6 +1,6 @@
 # 第17章 インタラクション：ルール
 
-- ガイドラインのバージョン: 0.55.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.55.2（2026-10-13 生成）
 - ルールの数: 39
 - 本文: 約12.6万字
 - 読む条件: ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル
@@ -18,7 +18,7 @@
 - `interaction/state-attributes` 17-3 状態を属性で表す（約6,700字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/state-attributes/
 - `interaction/card-link` 17-4 カード全体をリンクにする（約2,300字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/card-link/
 - `interaction/disclosure` 17-5 開閉するUI（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/disclosure/
-- `interaction/forms` 17-6 フォーム部品（約2.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
+- `interaction/forms` 17-6 フォーム部品（約2.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
 - `interaction/carousel` 17-7 CSSでカルーセルを作る（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/interaction/carousel/
 
 ## 17-1 ホバーとフォーカスを表す
@@ -67,7 +67,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touc
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-pseudo-hit-area-no-overlap
 - 【推奨・仕様上の制約】`user-select: none` は、`<label>` で作った切り替えや `role="tab"` のタブのように、連打や長押しで文字が選択されて困る操作部品にだけ指定し、本文や `body` には指定しない。（`user-select-none-for-controls`）
   - 理由: 初期値の `auto` は親の値が `none` なら `none` として扱われるので、広い範囲に指定すると、文章のコピーや、選択した文字を読み上げや翻訳の機能に渡す操作ができなくなるため。
-  - 補足: Safari は接頭辞なしの `user-select` に対応していないので（2026年10月）、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome 152 で確認）。
+  - 補足: Safari は接頭辞なしの `user-select` に対応していないので、`-webkit-user-select` を、理由のコメントと Stylelint の無効化のコメントを添えて併記します。`<button>` の文字は、ダブルクリックしても選択されません（Chrome で確認）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/hit-area-and-touch/#rule-user-select-none-for-controls
 - 【禁止・仕様上の制約】`html`、`body`、全称セレクタのようにページ全体に及ぶセレクタに `touch-action: none` を指定しない。（`no-global-touch-action-none`）
   - 理由: ブラウザは触れた要素からスクロールする祖先までの `touch-action` を重ね合わせて許す操作を決めるので、ページ全体でスクロールとピンチでの拡大が止まるため。
@@ -160,7 +160,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/
   - 補足: `inline-size` と `block-size` の両方を指定します。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/#rule-no-aspect-ratio-on-input
 - 【推奨・仕様上の制約】`<select>` の見た目を `appearance: base-select` で変えるときは、`::picker(select)`、`::picker-icon`、`option::checkmark` の指定も含めて `@supports (appearance: base-select)` の中に書く。（`base-select-in-supports`）
-  - 理由: 未対応の環境（2026年10月の時点では Firefox）でブラウザの標準の `<select>` のまま表示させ、`base-select` を前提にした余白や枠線が標準の部品に当たるのを防ぐため。
+  - 理由: 未対応の環境（Firefox）でブラウザの標準の `<select>` のまま表示させ、`base-select` を前提にした余白や枠線が標準の部品に当たるのを防ぐため。
   - 補足: `appearance: base-select` は、`<select>` と `::picker(select)` の両方に指定します。選んだ項目の中身をボタンに表示するには、`<select>` の最初の子に `<button>` を置き、その中に `<selectedcontent>` を書きます。`<div>` と JavaScript でドロップダウンを作り直すことはしません。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/interaction/forms/#rule-base-select-in-supports
 - 【推奨・実装上の判断】スイッチは `<input type="checkbox" switch>` で作り、`switch` 属性に対応していない環境でチェックボックスとして扱われることを許容する。（`switch-attribute-progressive`）

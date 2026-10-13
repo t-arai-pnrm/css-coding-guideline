@@ -138,7 +138,7 @@ import clusterCss from '../../../demos/compositions/cluster/style.css?raw';
 
 <Baseline id="flexbox-flex-wrap-balance" name="flex-wrap: balance" />
 
-2026年10月の時点で、`flex-wrap: balance` に対応しているのはChromeとEdgeの150以降だけで、SafariとFirefoxは対応していません（2026年10月確認）。未対応の環境では `@supports` の中が読まれず、外側の `flex-wrap: wrap` のまま普通に折り返します。崩れではなく行の長さがそろわないだけなので、プログレッシブ・エンハンスメントとして使えます。
+`flex-wrap: balance` に対応しているのはChromeとEdgeの150以降だけで、SafariとFirefoxは対応していません。未対応の環境では `@supports` の中が読まれず、外側の `flex-wrap: wrap` のまま普通に折り返します。崩れではなく行の長さがそろわないだけなので、プログレッシブ・エンハンスメントとして使えます。
 
 同じプロパティを `flex-wrap: wrap; flex-wrap: balance;` と2回書いても、未対応の環境では後の宣言が無視されるので、動作は同じです。しかし、この書き方では、後から読んだ人が単なる重複と見なして片方を消すおそれがあります。`@supports (flex-wrap: balance)` の中に書けば、新しい値に頼った指定であることが条件から読み取れ、すべての対象ブラウザが対応したときに分岐ごと消せます。
 

@@ -220,11 +220,11 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 
 `-webkit-` のようなベンダープレフィックスは、接頭辞なしでは対象のブラウザで動かないものを除いて書きません。本書の対象のブラウザ（Safari 18系の最終版以降と、ほかの主要なブラウザの最新版）は、ほとんどの機能に接頭辞なしで対応しています。たとえば `backdrop-filter` は、Safari 18から接頭辞なしで使えます。
 
-書く必要があるのは、`-webkit-font-smoothing` のように標準のプロパティがないものと、Safariがまだ接頭辞なしに対応していないものです。2026年9月時点では、`box-decoration-break` と `user-select` がこれにあたります。後者はStylelintの `property-no-vendor-prefix` に検出されるので、無効化のコメントと理由を添えて書きます。
+書く必要があるのは、`-webkit-font-smoothing` のように標準のプロパティがないものと、Safariがまだ接頭辞なしに対応していないものです。`box-decoration-break` と `user-select` がこれにあたります。後者はStylelintの `property-no-vendor-prefix` に検出されるので、無効化のコメントと理由を添えて書きます。
 
 ```css title="🙆‍♂ Recommended: 必要なプレフィックスには理由を残す"
 ._marker {
-  /* Safari は接頭辞なしの box-decoration-break に対応していない（2026年9月） */
+  /* Safari は接頭辞なしの box-decoration-break に対応していない */
   /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
