@@ -32,6 +32,13 @@
 
         border-color: transparent;
         color: var(--foreground--on-accent);
+
+        /* 強制カラーモードでは塗りが消え、選んだ項目を見分けられなくなるので、下線を引く */
+        @media (forced-colors: active) {
+          text-decoration-line: underline;
+          text-decoration-thickness: 2px;
+          text-underline-offset: 25%;
+        }
       }
 
       &:any-link:hover {

@@ -1,3 +1,26 @@
+/**
+ * コンポジション。子の並べ方だけを受け持ち、間隔や幅は公開プロパティで受け取る。
+ *
+ * 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む
+ * @prop {length} --sidebar--main-min-width [calc(480 / 16 * 1rem)] - メインの最小幅（これを確保できないと縦に積む）
+ * @prop {length} --sidebar--side-width     [calc(320 / 16 * 1rem)] - 横に並べたときのサイドの幅
+ * @prop {length} --sidebar--gap            [0px]                   - 行と列の間隔（一括）
+ * @prop {length} --sidebar--row-gap        [0px]                   - 縦に積んだときの間隔
+ * @prop {length} --sidebar--column-gap     [0px]                   - 横に並べたときの間隔
+ *
+ * 12-2 cluster：子を横に並べ、入りきらなければ折り返す
+ * @prop {length}  --cluster--gap           [0]      - 行と列の間隔（一括。個別の指定より優先する）
+ * @prop {length}  --cluster--row-gap       [0]      - 行の間隔
+ * @prop {length}  --cluster--column-gap    [0]      - 列の間隔
+ * @prop {keyword} --cluster--justification [normal] - 主軸の配置（justify-content）
+ * @prop {keyword} --cluster--alignment     [normal] - 交差軸の配置（align-items）
+ *
+ * 12-3 apart：子要素を両端に分ける
+ * @prop {length}  --apart--gap        [0]      - 行と列の間隔（一括）
+ * @prop {length}  --apart--row-gap    [0]      - 行の間隔
+ * @prop {length}  --apart--column-gap [0]      - 列の間隔（両端の要素の最小の間隔）
+ * @prop {keyword} --apart--alignment  [normal] - 交差軸の配置（align-items）
+ */
 @layer compositions {
   /* 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む */
   .sidebar {

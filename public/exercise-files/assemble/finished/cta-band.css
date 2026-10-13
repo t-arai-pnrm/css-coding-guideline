@@ -1,8 +1,8 @@
+/**
+ * 紺の面に、セクションの見出しとボタンを置く誘導の帯。
+ * 中の要素の色は、light-dark() を含むトークンが、この要素の配色で切り替える。
+ */
 @layer components {
-  /**
-   * 紺の面に、セクションの見出しとボタンを置く誘導の帯。
-   * 中の要素の色は、light-dark() を含むトークンが、この要素の配色で切り替える。
-   */
   @scope (.scoped.cta-band) to (.scoped) {
     :scope {
       display: block grid;
@@ -15,6 +15,7 @@
       background-color: var(--background--base);
       color: var(--foreground--base);
       text-align: center;
+      text-wrap: balance;
     }
 
     ._heading {

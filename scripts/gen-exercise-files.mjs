@@ -144,6 +144,28 @@ const splitTopLevel = (css) => {
 /** レイヤーごとの出力先。pages と components は @scope ごとに分ける */
 const LAYER_FILES = { tokens: 'tokens.css', base: 'site-base.css', compositions: 'compositions.css', patterns: 'patterns.css' };
 
+/** 字下げを外した説明ブロック（`/** … *\/`）を、ファイルの先頭に置く形にする */
+const dedentDocBlock = (comment) => comment.replace(/^ +\*/gm, ' *');
+
+/**
+ * `/** *\/` の形式はファイルの先頭の説明ブロックだけに使うので（ルール `doc-block-file-top-only`）、
+ * 複数のコンポジションを入れる compositions.css では、各コンポジションの説明ブロックの `@prop` を先頭の説明ブロックに集め、
+ * 本体には1行目だけを通常のコメントとして残す。
+ */
+const hoistCompositionDocs = (css) => {
+  const sections = [];
+  const body = css.replace(/^( *)\/\*\*\n\1 \* ([^\n]+?)。\n((?:\1 \*[^\n]*\n)*?)\1 \*\/\n/gm, (_, indent, title, rest) => {
+    const props = rest
+      .split('\n')
+      .map((line) => line.replace(/^ *\* ?/, ''))
+      .filter((line) => line.startsWith('@prop'));
+    sections.push(` * ${title}\n${props.map((line) => ` * ${line}`).join('\n')}`);
+    return `${indent}/* ${title} */\n`;
+  });
+  if (sections.length === 0) return css;
+  return `/**\n * コンポジション。子の並べ方だけを受け持ち、間隔や幅は公開プロパティで受け取る。\n *\n${sections.join('\n *\n')}\n */\n${body}`;
+};
+
 /**
  * デモの CSS を、ファイル名ごとの CSS に分ける。
  * 戻り値は `Map<ファイル名, CSS>`。
@@ -151,6 +173,7 @@ const LAYER_FILES = { tokens: 'tokens.css', base: 'site-base.css', compositions:
 const splitDemoCss = (css, source) => {
   const files = new Map();
   const unlayered = new Map();
+  const headers = new Map();
   // chunk は、元のファイルと同じく @layer の中の字下げ（2文字）を付けた CSS
   const add = (name, layer, chunk) => {
     const prev = files.get(name);
@@ -189,11 +212,16 @@ const splitDemoCss = (css, source) => {
       const name =
         child.prelude?.match(/^@scope\s*\(\.scoped\.([\w-]+)\)/)?.[1] ?? child.prelude?.match(/\.([\w-]+)/)?.[1];
       if (!name) throw new Error(`${source}: @layer ${layer} の中に、どのファイルに入れるか決められない項目があります`);
-      add(`${name}.css`, layer, `  ${[...pending, child.text].join('\n  ')}`);
+      // 説明ブロックは @layer の中に入れず、ファイルの先頭に置く（ルール `file-header-doc-block`）
+      const docs = pending.filter((comment) => comment.startsWith('/**'));
+      if (docs.length > 0 && !headers.has(`${name}.css`)) headers.set(`${name}.css`, docs.map(dedentDocBlock).join('\n'));
+      add(`${name}.css`, layer, `  ${[...pending.filter((comment) => !docs.includes(comment)), child.text].join('\n  ')}`);
       pending = [];
     }
   }
   for (const [name, css] of unlayered) files.set(name, `${css}${files.get(name) ?? ''}`.trimEnd() + '\n');
+  for (const [name, header] of headers) files.set(name, `${header}\n${files.get(name)}`);
+  if (files.has('compositions.css')) files.set('compositions.css', hoistCompositionDocs(files.get('compositions.css')));
   return files;
 };
 

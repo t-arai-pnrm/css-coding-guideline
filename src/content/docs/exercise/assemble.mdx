@@ -8,8 +8,10 @@ sidebar:
 import Demo from '../../../components/Demo.astro';
 import assembleInitialHtml from '../../../demos/exercise/assemble-1/index.html?raw';
 import assembleInitialCss from '../../../demos/exercise/assemble-1/style.css?raw';
+import assembleInitialJs from '../../../demos/exercise/assemble-1/script.js?raw';
 import assembleChangedHtml from '../../../demos/exercise/assemble-2/index.html?raw';
 import assembleChangedCss from '../../../demos/exercise/assemble-2/style.css?raw';
+import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw';
 
 21-2から21-13で作った部品を使い、トップページを組み上げます。上から、固定ヘッダー、ヒーロー、「私たちの強み」、「お役立ちコラム」、「制作の流れ」、紺の誘導の帯、フッターの順に並べます。ヘッダーは、狭い画面ではドロワーを開くメニューのボタンに切り替わります（「[21-7 ドロワーメニューを作る](/exercise/drawer/)」）。
 
@@ -34,7 +36,7 @@ import assembleChangedCss from '../../../demos/exercise/assemble-2/style.css?raw
 
 次のデモが、最初の要件を満たした時点のトップページです。デモの高さは720pxで、デモの中をスクロールできます。
 
-<Demo base="exercise" scheme="light" title="最初の要件を満たしたトップページ：部品を直さずに、帯の余白、背景、幅をページの側で決める" html={assembleInitialHtml} css={assembleInitialCss} height="720px" />
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたトップページ：部品を直さずに、帯の余白、背景、幅をページの側で決める" html={assembleInitialHtml} css={assembleInitialCss} js={assembleInitialJs} height="720px" />
 
 幅を1280pxにすると、ヒーロー、強み、コラム、制作の流れ、誘導の帯の中身が、どれも1080pxの幅にそろいます。「私たちの強み」と「お役立ちコラム」の淡いグレーの帯は続いて1つの面に見え、その境目の余白は64pxです。320pxでも横にはみ出さず、ヘッダーはメニューのボタンに、制作の流れは縦の並びに切り替われば完成です。
 
@@ -110,7 +112,7 @@ import assembleChangedCss from '../../../demos/exercise/assemble-2/style.css?raw
 
 次のデモが、要件の変更を終えた時点のトップページです。
 
-<Demo base="exercise" scheme="light" title="要件の変更を終えたトップページ：並べ替えたブロックの背景と余白を、面の役割で決める" html={assembleChangedHtml} css={assembleChangedCss} height="720px" />
+<Demo base="exercise" scheme="light" title="要件の変更を終えたトップページ：並べ替えたブロックの背景と余白を、面の役割で決める" html={assembleChangedHtml} css={assembleChangedCss} js={assembleChangedJs} height="720px" />
 
 「お役立ちコラム」と「お知らせ」の淡いグレーのブロックは続いて1つの面に見え、その境目の余白は64pxです。白のブロックと淡いグレーのブロックの境目は、どこでも上下64pxずつ空きます。部品の見た目と幅は、変更の前と変わらなければ完成です。
 

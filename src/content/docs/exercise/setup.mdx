@@ -70,9 +70,9 @@ sidebar:
 
 CSSは、本文の説明と同じく、責任ごとにファイルを分けています。コンポーネントは、1つにつき1つのファイルです（`action-control.css` や `article-card.css` など）。ほかに、コンポジションの `compositions.css`、パターンの `patterns.css`、ページのCSSがあります。21-6からは、ページのスクロールのように、ルートの要素に指定する `base` レイヤーの追加を `site-base.css` に置きます。開始版では、その節で作るファイルが空の `@layer` だけになっていて、ほかの部品は完成しています。各ファイルの中身は、本書のデモと同じ `@layer` で包んであり、レイヤーの順序は `base.css` の先頭で宣言しています。
 
-`base.css` には、レイヤーの順序の宣言、本書のデモの共通トークン、この演習のサイトのトークン、リセットCSSのkiso.css、ベーススタイルが入っていて、演習では変えません。HTMLは、`<link>` で `../../base.css` を読み込んだあと、そのページで使うCSSのファイルを読み込みます。21-9のすべての段階と21-12の完成版は、CSSだけでは作れない状態の切り替えのために、`<script>` で `script.js` も読み込みます。画像はHTMLに `data:` URIのSVGとして埋め込んであるので、用意する画像のファイルはありません。
+`base.css` には、レイヤーの順序の宣言、本書のデモの共通トークン、この演習のサイトのトークン、リセットCSSのkiso.css、ベーススタイルが入っていて、演習では変えません。HTMLは、`<link>` で `../../base.css` を読み込んだあと、そのページで使うCSSのファイルを読み込みます。21-9のすべての段階と21-12の完成版は、CSSだけでは作れない状態の切り替えのために、`<script>` で `script.js` も読み込みます。21-7と21-14のすべての段階の `script.js` は、ドロワーを開く `command` 属性に対応していないブラウザのために、ポリフィルをCDNから読み込みます。画像はHTMLに `data:` URIのSVGとして埋め込んであるので、用意する画像のファイルはありません。
 
-同じファイルは、このサイトの `/exercise-files/` にも、ZIPの `exercise/` と同じ構成で置いてあります。たとえば、共通のファイルは [base.css](/exercise-files/base.css)、21-2の開始版は [index.html](/exercise-files/buttons/start/index.html) です。ZIPを使わずに1つずつ保存する場合は、HTMLの `<link>` と `<script>` に書かれたファイル名で保存し、`base.css` を節のディレクトリの親に置きます。`script.js` を保存し忘れると、21-9では絞り込みのボタンが表示されず、21-12の完成版では、誤りを支援技術に伝える属性が切り替わりません。21-12の完成版のスクリプトは、[script.js](/exercise-files/contact-form/finished/script.js) です。
+同じファイルは、このサイトの `/exercise-files/` にも、ZIPの `exercise/` と同じ構成で置いてあります。たとえば、共通のファイルは [base.css](/exercise-files/base.css)、21-2の開始版は [index.html](/exercise-files/buttons/start/index.html) です。ZIPを使わずに1つずつ保存する場合は、HTMLの `<link>` と `<script>` に書かれたファイル名で保存し、`base.css` を節のディレクトリの親に置きます。`script.js` を保存し忘れると、21-9では絞り込みのボタンが表示されず、21-12の完成版では、誤りを支援技術に伝える属性が切り替わりません。21-7と21-14では、`command` 属性に対応していないブラウザで、メニューのボタンを押してもドロワーが開きません。21-12の完成版のスクリプトは、[script.js](/exercise-files/contact-form/finished/script.js) です。
 
 HTMLはブラウザで直接開けるので、開発用のサーバーは要りません。幅による切り替えは、ブラウザのウィンドウの幅を変えるか、開発者ツールのデバイスモードで幅を指定して確かめます。
 

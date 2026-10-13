@@ -1,8 +1,9 @@
 // 絞り込みのボタンを表示し、押したボタンの aria-pressed と、各質問の hidden を切り替える
-for (const root of document.querySelectorAll('.faq-list')) {
-  const filter = root.querySelector('._filter');
-  const buttons = filter.querySelectorAll('button');
-  const items = root.querySelectorAll('details');
+// 回答の中（CMSで入力する本文）に details やボタンが入っても触れないように、faq-list の直下の要素だけを選ぶ
+for (const root of document.querySelectorAll('.scoped.faq-list')) {
+  const filter = root.querySelector(':scope > ._filter');
+  const buttons = filter.querySelectorAll(':scope > button');
+  const items = root.querySelectorAll(':scope > ._items > details');
 
   for (const button of buttons) {
     button.addEventListener('click', () => {

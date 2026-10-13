@@ -1,12 +1,17 @@
+/**
+ * サイトのヘッダー。
+ * ビューポートの高さが十分なときだけ上端に留め、留まっている間だけ下の境界線を見せる。
+ * 置かれた幅が狭く、ナビゲーションが1行に収まらないときは、メニューのボタンに切り替える。
+ */
 @layer components {
-  /**
-   * サイトのヘッダー。
-   * ビューポートの高さが十分なときだけ上端に留め、留まっている間だけ下の境界線を見せる。
-   * 置かれた幅が狭く、ナビゲーションが1行に収まらないときは、メニューのボタンに切り替える。
-   */
   @scope (.scoped.site-header) to (.scoped) {
     :scope {
-      container: --scoped / inline-size scroll-state;
+      container: --scoped / inline-size;
+
+      /* scroll-state に対応していない環境でも、幅のコンテナを失わないようにする */
+      @supports (container-type: inline-size scroll-state) {
+        container: --scoped / inline-size scroll-state;
+      }
 
       @media (height >= calc(600 / 16 * 1rem)) {
         position: sticky;

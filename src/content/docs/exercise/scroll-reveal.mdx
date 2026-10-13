@@ -120,7 +120,7 @@ import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/styl
 
 各カードの遅れは、`sibling-index()` で兄弟の中の順番から計算します。カードごとに `:nth-child()` で値を書く必要はなく、カードが増えても書き足すものはありません。
 
-```css title="🙆‍♂ Recommended: 順番から遅れを計算し、上限を5枚目までにする"
+```css title="🙆‍♂ Recommended: 順番から遅れを計算し、6枚目以降は同じ遅れにする"
 @scope (.scoped.page-top) to (.scoped) {
   ._strength {
     --_stagger: 80ms;
@@ -149,7 +149,7 @@ import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/styl
 }
 ```
 
-`min()` で順番の上限を5にしているので、カードがいくつあっても、最後のカードが動き始めるのは400ms後です。カードの再生のきっかけも、セクションのルートの `--_in-view` です。`--_in-view` は継承するので、セクションの中のカードからも、同じスタイルクエリで読めます。
+`min()` で、1を引いた順番の上限を5にしているので、遅れは1枚目の0msから80msずつ増え、6枚目以降はどれも400msです。カードがいくつあっても、最後のカードが動き始めるまでの遅れは、400msを超えません。カードの再生のきっかけも、セクションのルートの `--_in-view` です。`--_in-view` は継承するので、セクションの中のカードからも、同じスタイルクエリで読めます。
 
 `sibling-index()` は、2026年8月にBaselineの「新しく利用可能」になったばかりです。遅れは装飾なので、`@supports (z-index: sibling-index())` の中に書き、未対応の環境では遅れなしで同時に現れるようにしています（`sibling-functions-for-decoration`）。ずらす間隔の80msは、並びの順番を伝える演出として使える上限です（「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/#頻度の低いuiで要素をずらして出す)」）。
 

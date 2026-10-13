@@ -24,6 +24,7 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 - [10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)
 - [11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)
 - [12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)
+- [15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)
 - [16-10 区切り線を引く](/decoration/separators/)
 - [17-3 状態を属性で表す](/interaction/state-attributes/)
 - [17-4 カード全体をリンクにする](/interaction/card-link/)
@@ -162,6 +163,13 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 
       border-color: transparent;
       color: var(--foreground--on-accent);
+
+      /* 強制カラーモードでは塗りが消え、選んだ項目を見分けられなくなるので、下線を引く */
+      @media (forced-colors: active) {
+        text-decoration-line: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 25%;
+      }
     }
 
     &:any-link:hover {
@@ -178,6 +186,8 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 ```
 
 書き方は、21-2の `action-control` と同じです。状態ごとに内部プロパティの値を変え、ホバーとフォーカスの背景は1か所で読みます（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。今いるページのリンクを塗る色は、選んだ状態を示す `--background--accent` で、ホバーのときは相対カラー構文で少し暗くします。
+
+今いるページのリンクは、塗りと枠線の有無で見分けます。強制カラーモードでは `background-color` がシステムカラーに置き換わり、塗りが消えて、どのリンクも同じ枠線と文字色になります。色の違いだけが手がかりになる状態なので、強制カラーモードのときだけ、今いるページのリンクに下線を引きます（「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。選択のシステムカラーの `Highlight` で塗り直す方法もありますが、強制カラーモードでは文字の後ろにページの背景色の板（バックプレート）が敷かれ、`HighlightText` の文字が読めなくなります。`forced-color-adjust: none` で強制カラーモードを外せば塗れますが、ユーザーが選んだ配色を打ち消すことになります。下線なら、配色はユーザーの選んだとおりのまま、線の有無で見分けられます。
 
 ## 要件が変わる
 
@@ -286,6 +296,8 @@ CMSで記事の登録が始まり、カンプになかった記事が入って�
 - [`stretched-link-for-card`](/interaction/card-link/#rule-stretched-link-for-card)：カード全体をリンクにするときは、見出しのリンクの `::after` を広げ、フォーカスリングはカードに出します。
 - [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーは操作できる状態に限定し、`@media (any-hover)` の中に書きます。
 - [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
+- [`no-color-only-information`](/color-media/forced-colors/#rule-no-color-only-information)：リンク、状態、入力エラーのような情報を、色の違いだけで伝えません。
+- [`forced-colors-system-colors`](/color-media/forced-colors/#rule-forced-colors-system-colors)：強制カラーモードに合わせて色を指定し直すときは、システムカラーを使います。
 - [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria)：状態のスタイルは、状態クラスではなく、擬似クラスやARIA属性で選びます。
 - [`design-for-content-changes`](/layout-practice/defensive/#rule-design-for-content-changes)：テキストが2倍の長さになったら、画像がなかったらと考え、そのパターンで表示を確かめます。
 - [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは `block-size` で固定しません。

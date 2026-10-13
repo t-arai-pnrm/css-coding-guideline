@@ -8,8 +8,10 @@ sidebar:
 import Demo from '../../../components/Demo.astro';
 import drawerInitialHtml from '../../../demos/exercise/drawer-1/index.html?raw';
 import drawerInitialCss from '../../../demos/exercise/drawer-1/style.css?raw';
+import drawerInitialJs from '../../../demos/exercise/drawer-1/script.js?raw';
 import drawerChangedHtml from '../../../demos/exercise/drawer-2/index.html?raw';
 import drawerChangedCss from '../../../demos/exercise/drawer-2/style.css?raw';
+import drawerChangedJs from '../../../demos/exercise/drawer-2/script.js?raw';
 
 狭い画面のナビゲーションを作ります。ヘッダーの幅が、ロゴ、ナビゲーション、お問い合わせのボタンを1行に並べられないほど狭いときは、ナビゲーションとお問い合わせのボタンを隠し、代わりに「メニュー」のボタンを置きます。メニューのボタンは、21-2で作った副ボタンです（「[21-2 ボタンとセクション見出しを作る](/exercise/buttons/)」）。
 
@@ -39,7 +41,7 @@ import drawerChangedCss from '../../../demos/exercise/drawer-2/style.css?raw';
 
 次のデモが、最初の要件を満たした時点のページです。デモの高さは560pxです。
 
-<Demo base="exercise" scheme="light" title="最初の要件を満たしたページ：ナビゲーションが1行に収まらない幅では、メニューのボタンからドロワーを開く" html={drawerInitialHtml} css={drawerInitialCss} height="560px" />
+<Demo base="exercise" scheme="light" title="最初の要件を満たしたページ：ナビゲーションが1行に収まらない幅では、メニューのボタンからドロワーを開く" html={drawerInitialHtml} css={drawerInitialCss} js={drawerInitialJs} height="560px" />
 
 幅を1024pxや1280pxにすると、ヘッダーにナビゲーションとお問い合わせのボタンが1行に並びます。768px以下では、それらが隠れ、メニューのボタンが表示されます。メニューのボタンを押すと、ドロワーが右から現れ、背面が暗くなり、背面のページはスクロールしません。キーボードで操作すると、フォーカスはドロワーの中だけを移り、Escキーで閉じると、フォーカスがメニューのボタンへ戻れば完成です。
 
@@ -71,7 +73,12 @@ import drawerChangedCss from '../../../demos/exercise/drawer-2/style.css?raw';
 ```css title="🙆‍♂ Recommended: 中身が1行に収まる幅を式で書き、フラグを読んで2つの要素を切り替える"
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
-    container: --scoped / inline-size scroll-state;
+    container: --scoped / inline-size;
+
+    /* scroll-state に対応していない環境でも、幅のコンテナを失わないようにする */
+    @supports (container-type: inline-size scroll-state) {
+      container: --scoped / inline-size scroll-state;
+    }
   }
 
   /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
@@ -105,9 +112,11 @@ import drawerChangedCss from '../../../demos/exercise/drawer-2/style.css?raw';
 
 画面の幅ではなくヘッダーの幅を問い合わせたのは、ヘッダーがコンポーネントだからです（`query-choice-by-layer`）。ルートのコンテナの種類には、21-6で使った `scroll-state` に `inline-size` を足しています。
 
+ただし、`inline-size scroll-state` を1つの宣言に書くと、`scroll-state` に対応していないブラウザでは宣言全体が無効になり、`inline-size` のコンテナまで失われます。すると、幅のクエリが成り立たず、広い画面でもナビゲーションが隠れたままになります。そこで、`inline-size` だけの宣言を先に書き、`scroll-state` を足した宣言は `@supports` の中に置きます（`supports-for-dependent-declarations`）。21-6のヘッダーは `scroll-state` だけのコンテナだったので、未対応の環境では境界線が出ないだけで済んでいました。
+
 ## ドロワーは dialog をモーダルで開く
 
-ドロワーは `<dialog>` で作り、メニューのボタンの `command="show-modal"` でモーダルとして開きます。開閉のためのJavaScriptは要りません（「[17-6 開閉するUI](/interaction/disclosure/)」）。
+ドロワーは `<dialog>` で作り、メニューのボタンの `command="show-modal"` でモーダルとして開きます。`showModal()` を呼ぶ処理を自分で書く必要はありません（「[17-6 開閉するUI](/interaction/disclosure/)」）。
 
 ```html title="🙆‍♂ Recommended: command 属性でドロワーをモーダルとして開き、閉じる"
 <div class="_menu">
@@ -123,6 +132,15 @@ import drawerChangedCss from '../../../demos/exercise/drawer-2/style.css?raw';
   </div>
   <a class="scoped action-control" href="#contact">お問い合わせ</a>
 </dialog>
+```
+
+ただし、`command` 属性と `commandfor` 属性に対応したのはSafari 26.2からで、本書が対象にするSafari 18.6では、メニューのボタンを押してもドロワーが開きません。狭い画面ではナビゲーションにたどり着けなくなるので、対応していないブラウザでだけポリフィルを読み込みます（`dialog-command-attributes`）。デモと配布版の `script.js` は、この処理だけを書いたファイルです。
+
+```js title="🙆‍♂ Recommended: command 属性に対応していないブラウザでだけ、ポリフィルを読み込む"
+// command 属性と commandfor 属性に対応していないブラウザでは、メニューのボタンでドロワーを開けるようにポリフィルを読み込む
+if (!('command' in HTMLButtonElement.prototype)) {
+  import('https://cdn.jsdelivr.net/npm/invokers-polyfill@1.0.4/invoker.min.js');
+}
 ```
 
 モーダルとして開いたダイアログは、外側の要素をすべて操作できなくし、フォーカスもダイアログの中だけを移ります。Escキーで閉じ、閉じたあとはフォーカスが開いたボタンへ戻ります。どれもブラウザの機能なので、フォーカスを閉じ込める処理を自分で書きません（`no-custom-focus-trap`）。ドロワーの外を押して閉じる動作は、`closedby="any"` に任せます。背面のスクロールは、ベーススタイルの `:root:has(:modal)` で止めます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。
@@ -209,7 +227,7 @@ import drawerChangedCss from '../../../demos/exercise/drawer-2/style.css?raw';
 
 次のデモが、要件の変更を終えた時点のページです。
 
-<Demo base="exercise" scheme="light" title="要件の変更を終えたページ：項目が増えた分だけ、ドロワーに切り替える幅が広がる" html={drawerChangedHtml} css={drawerChangedCss} height="560px" />
+<Demo base="exercise" scheme="light" title="要件の変更を終えたページ：項目が増えた分だけ、ドロワーに切り替える幅が広がる" html={drawerChangedHtml} css={drawerChangedCss} js={drawerChangedJs} height="560px" />
 
 幅を1024pxや1280pxにすると、6つの項目とお問い合わせのボタンが、ヘッダーに1行で並びます。デモの幅を1024pxから少しずつ狭めると、約950pxで、ナビゲーションが折り返す前にメニューのボタンへ切り替わります。ドロワーには、6つの項目が縦に並べば完成です。
 
@@ -281,8 +299,9 @@ CSSで直したのは、閾値の式の中の、ナビゲーションの文字�
 - [`query-choice-by-layer`](/responsive/escalation/#rule-query-choice-by-layer)：コンポーネントのスタイルでは、コンテナサイズクエリを優先します。
 - [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリはフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
 - [`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)：開閉するUIは、`<dialog>` や `popover` 属性のようなHTMLの機能で作ります。
-- [`dialog-command-attributes`](/interaction/disclosure/#rule-dialog-command-attributes)：モーダルの開閉は、`command` 属性と `commandfor` 属性で行います。
+- [`dialog-command-attributes`](/interaction/disclosure/#rule-dialog-command-attributes)：モーダルの開閉は、`command` 属性と `commandfor` 属性で行い、対応していないブラウザのためにポリフィルを読み込みます。
 - [`dialog-closedby-any`](/interaction/disclosure/#rule-dialog-closedby-any)：背景のクリックで閉じるモーダルは、`closedby="any"` で作ります。
+- [`supports-for-dependent-declarations`](/principles/browser-support/#rule-supports-for-dependent-declarations)：新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書きます。
 - [`no-custom-focus-trap`](/interaction/disclosure/#rule-no-custom-focus-trap)：モーダルに、独自のフォーカストラップを実装しません。
 - [`modal-scroll-lock-root`](/reset/base-styles/#rule-modal-scroll-lock-root)：モーダル表示中の背面のスクロールは、`:root:has(:modal)` で止めます。
 - [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：ドロワーの中でスクロールする要素には、スクロールの連鎖を止める指定をします。

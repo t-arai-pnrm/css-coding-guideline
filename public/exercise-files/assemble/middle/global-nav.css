@@ -1,10 +1,10 @@
+/**
+ * ナビゲーション。
+ * ドロワーのように縦に並べたい場所では、置く側が --global-nav--stacked: --true を渡す。
+ *
+ * @prop {ident} --global-nav--stacked [--false] - 縦に並べるときに --true
+ */
 @layer components {
-  /**
-   * ナビゲーション。
-   * ドロワーのように縦に並べたい場所では、置く側が --global-nav--stacked: --true を渡す。
-   *
-   * @prop {ident} --global-nav--stacked [--false] - 縦に並べるときに --true
-   */
   @scope (.scoped.global-nav) to (.scoped) {
     :scope {
       --_stacked: var(--global-nav--stacked, --false);

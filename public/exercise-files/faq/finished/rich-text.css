@@ -1,8 +1,8 @@
+/**
+ * CMS で編集する本文。
+ * 編集者は要素にクラスを付けられないので、要素の種類で選ぶ。
+ */
 @layer components {
-  /**
-   * CMS で編集する本文。
-   * 編集者は要素にクラスを付けられないので、要素の種類で選ぶ。
-   */
   @scope (.scoped.rich-text) to (.scoped) {
     :scope {
       & > * + * {
@@ -30,10 +30,27 @@
       }
     }
 
+    /* 表を包む枠。表が回答の幅に収まらないときは、ページではなくこの枠の中で横にスクロールさせる */
+    [role="region"] {
+      overflow-x: auto;
+    }
+
+    /*
+     * 編集者が入れる表は、列の数も中身も決まっていないので、最小の幅を式で決められない。
+     * 数字や英単語の途中では折り返さないようにして、収まらない分は包む枠の中でスクロールさせる。
+     */
     table {
       border-collapse: collapse;
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-variant-numeric: tabular-nums;
       line-height: var(--text--body-compact--leading);
+      overflow-wrap: normal;
+    }
+
+    caption {
+      padding-block-end: 8px;
+      font-weight: var(--font-weight--bold);
+      text-align: start;
     }
 
     th,

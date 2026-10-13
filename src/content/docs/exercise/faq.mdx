@@ -26,6 +26,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 - [5-7 開閉と表示の状態を表す擬似クラス](/pseudo/open-states/)
 - [5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)
 - [9-3 名前に使う語](/notation/terminology/)
+- [11-15 表を組む](/layout-practice/tables/)
 - [17-3 状態を属性で表す](/interaction/state-attributes/)
 - [17-6 開閉するUI](/interaction/disclosure/)
 - [18-7 出現と退場](/motion/entry-and-exit/)
@@ -104,7 +105,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 
 ボタンの並びは、HTMLで `hidden` にしておき、スクリプトの初期化が終わってから表示します。スクリプトが動かない環境では、押しても何も起きないボタンが並ぶ代わりに、すべての質問がそのまま並びます。質問の側は最初から表示しておき、スクリプトが絞り込むときにだけ隠します。
 
-見た目は21-4の `category-filter` と同じですが、同じコンポーネントにはしません。21-4はほかのページへ移るリンクの並びで、今いるページを `aria-current` で示します。こちらは、同じページの中の表示を切り替えるボタンで、押した状態を `aria-pressed` で示します。1つのコンポーネントにすると、要素の種類と状態の属性ごとに条件が分かれます。そこで、ボタンの並びは `faq-list` の中の要素として書き、見た目は同じトークンを参照してそろえます（`share-look-with-tokens`）。状態ごとに内部プロパティの値を変える書き方も、21-4と同じです。
+見た目は21-4の `category-filter` と同じですが、同じコンポーネントにはしません。21-4はほかのページへ移るリンクの並びで、今いるページを `aria-current` で示します。こちらは、同じページの中の表示を切り替えるボタンで、押した状態を `aria-pressed` で示します。1つのコンポーネントにすると、要素の種類と状態の属性ごとに条件が分かれます。そこで、ボタンの並びは `faq-list` の中の要素として書き、見た目は同じトークンを参照してそろえます（`share-look-with-tokens`）。状態ごとに内部プロパティの値を変える書き方も、強制カラーモードのときだけ押した項目に下線を引くことも、21-4と同じです。
 
 ## 要件が変わる
 
@@ -118,7 +119,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 
 <Demo base="exercise" scheme="light" title="要件の変更を終えたよくある質問：回答の中の表と箇条書きは、別のコンポーネントが受け持つ" html={faqChangedHtml} css={faqChangedCss} js={faqChangedJs} />
 
-最初の質問の回答に、3行の表と、下線の付いたリンクが表示されます。幅を320pxにしても、表は回答の幅に収まります。公開後の更新についての質問を開くと、黒丸の付いた3つの項目が表示されます。アコーディオンの開閉と絞り込みが、変更の前と同じように動けば完成です。
+最初の質問の回答に、名前の付いた3行の表と、下線の付いたリンクが表示されます。幅を320pxにしても、表は回答の幅に収まります。ブラウザの文字サイズの設定を大きくして収まらなくなったときは、金額の数字の途中では折り返さず、ページではなく表の枠の中で横にスクロールします。公開後の更新についての質問を開くと、黒丸の付いた3つの項目が表示されます。アコーディオンの開閉と絞り込みが、変更の前と同じように動けば完成です。
 
 ## 回答の中を rich-text に任せる
 
@@ -147,7 +148,12 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 <div class="_answer">
   <div class="scoped rich-text">
     <p>ページ数や機能によって変わります。サイトの種類ごとの目安は、次のとおりです。</p>
-    <table>…</table>
+    <div role="region" aria-labelledby="faq-price-caption" tabindex="0">
+      <table>
+        <caption id="faq-price-caption">サイトの種類ごとの費用の目安</caption>
+        …
+      </table>
+    </div>
     <p>詳しくは<a href="#pricing">料金プランのページ</a>をご覧ください。…</p>
   </div>
 </div>
@@ -171,15 +177,27 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
     text-decoration-line: underline;
   }
 
+  [role="region"] {
+    overflow-x: auto;
+  }
+
   table {
     border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: normal;
   }
 }
 ```
 
 `rich-text` の中は、編集者が要素にクラスを付けられないので、要素の種類で選びます。要素の間の12pxも、`rich-text` 自身の `& > * + *` で作ります。`prose` のコンポジションは付けません。`prose` は子ごとに `style` 属性で間隔を渡す前提で、編集者はそれを書けないからです（`prose-not-on-cms-body`）。
 
+表は、`caption` で名前を付け、`role="region"` と `tabindex="0"` を付けた枠で包みます（「[11-15 表を組む](/layout-practice/tables/)」）。枠の名前は `aria-labelledby` で `caption` から借ります。この枠と `caption` は、CMSの表のブロックが出力する前提です。11-15の表は、列の幅を足した式で最小の幅を `min-inline-size` に決めていました。編集者が入れる表は、列の数と中身が決まっていないので、式を書けません。そこで、表の中だけ `overflow-wrap` を `normal` に戻し、kiso.cssの `anywhere` で `100万円から` の `100` が途中で折り返されないようにします。数字や英単語の幅が表の最小の幅になり、収まらない分は枠の中でスクロールします。{/* 要確認: 著者の判断。CMSの表で、式の min-inline-size の代わりに overflow-wrap: normal で最小の幅を決めてよいか */}
+
+金額の列は、末尾ではなく先頭で揃えています。どの列が数値かを `rich-text` からは決められず、この列は `から` の付いた文として読ませるからです。数字の幅は `tabular-nums` でそろえます。
+
 `faq-list` の `@scope` の範囲は、`to (.scoped)` で `rich-text` のルートの手前までです。`faq-list` のCSSが回答の中の要素に届かないので、編集者が回答に `<details>` やボタンを入れても、アコーディオンの見た目は混ざりません（「[9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)」）。
+
+スクリプトにも、同じ境界を引いておきます。`root.querySelectorAll('details')` のように子孫をすべて選ぶと、編集者が回答に入れた `<details>` まで絞り込みの対象になり、カテゴリーの属性がないので、質問を残したまま回答の一部が隠れます。デモのスクリプトは、`:scope > ._items > details` のように `faq-list` の直下の要素だけを選ぶので、回答の中身が変わっても直さずに済みます。
 
 ## 振り返り
 
@@ -231,4 +249,6 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 - [`share-look-with-tokens`](/components/what-is-a-component/#rule-share-look-with-tokens)：別のコンポーネントの間で見た目をそろえたいときは、同じトークンを参照します。
 - [`no-type-under-child-class`](/components/boundaries/#rule-no-type-under-child-class)：子要素のクラスの下にある要素を、タイプセレクタで選びません。
 - [`prose-not-on-cms-body`](/compositions/prose/#rule-prose-not-on-cms-body)：CMSで編集者が入力する本文エリアには、`prose` を付けません。
+- [`table-caption-and-scope`](/layout-practice/tables/#rule-table-caption-and-scope)：表には `caption` で名前を付け、見出しのセルは `th` にして `scope` を付けます。
+- [`table-min-size-with-scroller`](/layout-practice/tables/#rule-table-min-size-with-scroller)：表は置かれた場所の幅に合わせて縮めず、それより狭い場所では、表を包む要素の中で横にスクロールさせます。
 - [`scope-with-donut`](/cascade/scope/#rule-scope-with-donut)：コンポーネントのスタイルは、`@scope (.scoped.<名前>) to (.scoped)` の中に書きます。

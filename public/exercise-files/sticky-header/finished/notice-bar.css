@@ -1,8 +1,8 @@
+/**
+ * ヘッダーの上に置くお知らせの帯。
+ * ヘッダーと一緒には留めず、スクロールすると画面の外へ出る。
+ */
 @layer components {
-  /**
-   * ヘッダーの上に置くお知らせの帯。
-   * ヘッダーと一緒には留めず、スクロールすると画面の外へ出る。
-   */
   @scope (.scoped.notice-bar) to (.scoped) {
     :scope {
       padding-block: 8px;
@@ -14,6 +14,7 @@
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
       text-align: center;
+      text-wrap: balance;
     }
 
     a {
