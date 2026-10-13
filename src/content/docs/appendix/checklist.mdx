@@ -208,6 +208,7 @@ AIが生成したCSSでは、Stylelintで検出できない誤りが残りやす
 - [ ] 上書きが効かない原因を調べずに足した `!important` がないか（[`no-important-for-specificity`](/cascade/cascade-basics/#rule-no-important-for-specificity)）
 - [ ] `._list` や `._link` のように、要素の種類を言い換えただけの子クラスをすべての要素に付けていないか（[`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）
 - [ ] 宣言を1つずつ言い換えたコメントが付いていないか（[`comments-why-only`](/notation/comments/#rule-comments-why-only)）
+- [ ] `DESIGN.md` に色や余白の値を書き写さず、値で表せない判断だけを書いて、トークンを名前で参照しているか（[`design-md-without-values`](/ai-coding/setup/#rule-design-md-without-values)）
 - [ ] AIの出力を直した内容を、プロジェクトの規約の文書に書き足したか（[`record-ai-corrections`](/ai-coding/verify-output/#rule-record-ai-corrections)）
 - [ ] 既存のCSSの監査では、AIに一覧を作らせるだけにし、直す項目を人が選んでから直したか（[`audit-list-before-fix`](/ai-coding/audit/#rule-audit-list-before-fix)）
 - [ ] 作業を並行させたとき、同じファイルを2つのエージェントに書き換えさせていないか（[`single-writer-per-file`](/ai-coding/audit/#rule-single-writer-per-file)）

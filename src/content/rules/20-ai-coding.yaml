@@ -19,6 +19,14 @@
   note: Claude Code では本書のプラグインを入れ、ほかのツールではスキルと MCP サーバーを設定します。どちらも使えないツールでは、`AGENTS.md` からスキルのルール集の URL を参照させます（付録J「AIツールで使う」）。
   page: ai-coding/setup
   since: 0.1.0
+- id: design-md-without-values
+  level: 推奨
+  kind: judgment
+  rule: 値で表せないデザインの判断（色の使い場所、文字の役割の使い分け、部品の変種）は `DESIGN.md` に書き、色、文字サイズ、余白、角丸の値は書かずに、トークンを名前で参照する。
+  reason: 使い方の判断はトークンからは読み取れず、AI がその場で選ぶことになる一方で、値を文章にも書くと、トークンを変えたときに文章の側だけが古いまま残り、どちらに従うかが決まらなくなるため。
+  note: 節の見出しは Google Labs の DESIGN.md の仕様の8つを借り、値を書く YAML の front matter は書きません。`CLAUDE.md` には、UI を書く前と plan を書く前に `DESIGN.md` を読むことを1行で書きます。
+  page: ai-coding/setup
+  since: 0.59.0
 
 # 20-3 MCPサーバーを役割で使い分ける
 - id: no-verbatim-design-output

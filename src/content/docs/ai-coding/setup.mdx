@@ -1,6 +1,6 @@
 ---
 title: "20-2 AIに読ませる規約を用意する"
-description: "AIには、書く前に本書のルールをスキルかMCPサーバーで読ませ、プロジェクトの判断基準はCLAUDE.mdに書きます。本書のルールで足りることはIDで参照し、本文を写しません。既存のプロジェクトでは、最初にAIにCSSの構成を説明させ、理解のずれを直してから規約を書き足します。"
+description: "AIには、書く前に本書のルールをスキルかMCPサーバーで読ませ、プロジェクトの判断基準はCLAUDE.mdに書きます。本書のルールで足りることはIDで参照し、本文を写しません。値で表せないデザインの判断はDESIGN.mdに書き、値はトークンを名前で参照します。既存のプロジェクトでは、最初にAIにCSSの構成を説明させ、理解のずれを直してから規約を書き足します。"
 sidebar:
   order: 2
 ---
@@ -8,6 +8,7 @@ sidebar:
 import { Code } from '@astrojs/starlight/components';
 import Guideline from '../../../components/Guideline.astro';
 import claudeMd from '../../../kits/ai-coding/CLAUDE.md?raw';
+import designMd from '../../../kits/ai-coding/DESIGN.md?raw';
 
 AIにCSSを書かせる前に、2種類の規約を読ませます。1つは本書のルールで、スキルかMCPサーバーで読ませます。もう1つはプロジェクトの判断基準で、`CLAUDE.md` のような、AIが作業のたびに読む指示のファイルに書きます。
 
@@ -52,7 +53,23 @@ AIが古い書き方や誤った書き方をしがちなルールには、印を
 
 指示のファイルは、書き足すだけでなく、要らなくなった指示を消すことも必要です。モデルの版が上がると、以前は書かなければ守れなかった指示を、書かなくても守れるようになることもあります。古い指示が残ると、読ませる量が増えるうえに、新しい規約と食い違う指示が混ざります。見直す機会は、タスクを終えるときに設けます（「[20-8 生成したコードを確かめ、教訓を残す](/ai-coding/verify-output/)」）。
 
-デザインの決まりを、`DESIGN.md` のような文章のファイルにまとめてAIに読ませる方法もあります。本書では、色、文字サイズ、余白、角丸の値はトークンのファイルを正本にし、文章のファイルに同じ値を書き写しません（「[10-4 デザイントークン](/components/design-tokens/)」）。値を2か所で持つと、トークンを変えたときに文章の側だけが古いまま残り、AIがどちらに従えばよいかが決まらなくなるからです。`CLAUDE.md` には、トークンのファイルの場所と、トークンにない値をどう扱うかの判断基準だけを書きます。
+## `DESIGN.md` に値で表せない判断を書く
+
+トークンのファイルから分かるのは、使える値の一覧です。どの値をどこに使うかは、トークンからは読み取れません。たとえば、accentの色のトークンがあっても、それをリンク、フォーカスリング、選んだ状態にだけ使うという判断は、トークンのファイルのどこにも書かれていません。この判断を知らないAIは、目立たせたいボタンの背景にもaccentを使います。値はすべてトークンで書かれていてlintも通るので、この食い違いは検査では見つかりません。
+
+こうした値で表せない判断は、`DESIGN.md` に書いてAIに読ませます（`design-md-without-values`）。書くのは、色の役割と使う場面、文字の役割の使い分け、面と角丸の使い分け、部品の種類と変種です。値は書かず、トークンを名前で参照します。色、文字サイズ、余白、角丸の値はトークンのファイルを正本にします（「[10-4 デザイントークン](/components/design-tokens/)」）。値を2か所で持つと、トークンを変えたときに文章の側だけが古いまま残り、AIがどちらに従えばよいかが決まらなくなるからです。名前の参照も古くなることはありますが、なくなった名前は検索すれば見つかります。
+
+`CLAUDE.md` と分けるのは、読ませる場面が違うからです。`CLAUDE.md` は作業のたびに読まれるので、トークンのファイルの場所と、トークンにない値をどう扱うかのように、どの作業にも要る判断基準だけを書き、短く保ちます。`DESIGN.md` は、UIを書く前とplanを書く前に読ませ、そのことを `CLAUDE.md` に1行で書きます。
+
+節の立て方は、Google Labsが公開しているDESIGN.mdの仕様から借ります。借りるのは、Overview、Colors、Typography、Layout、Elevation & Depth、Shapes、Components、Do's and Don'tsの8つの見出しです。見出しをそろえておけば、プロジェクトが変わっても、どの節に何を書くかで迷いません。ただし、この仕様は、YAMLのfront matterに色や文字の値を書き、その値を正本として扱います。front matterは省けるので、本書ではfront matterを書かず、見出しの構成だけを借ります。仕様はまだalpha（試験的な段階）で、見出しや書式が変わることもあります。
+
+ひな形の `DESIGN.md` の例を次に示します。例の項目は、本書のデモのトークンの決まり（付録I「[デモの共通トークン](/appendix/demo-tokens/)」）から取っています。プロジェクトに写したら、トークンの名前と判断を、そのプロジェクトのものに書き換えます。
+
+{/* 要確認: 出典なし。ひな形の DESIGN.md の「主ボタンは1つの画面に1つ」と「強調を足す前に減らせないかを考える」の項目 */}
+
+<Code code={designMd} lang="md" title="DESIGN.md（値で表せないデザインの判断の例）" />
+
+`DESIGN.md` に書いた判断は、計画と監査でも使います。Figmaのデザインが判断と食い違うときは、AIに推測で合わせさせず、planの確認事項に書かせます（「[20-5 Figmaのデザインから計画を立てる](/ai-coding/from-figma/#値をトークンに対応づける)」）。既存のCSSの監査では、「一貫性」の視点で、判断との食い違いを一覧にさせます（「[20-9 既存のCSSの監査と移行をAIに任せる](/ai-coding/audit/#視点を分けて一覧にさせる)」）。
 
 ## 既存のプロジェクトで最初にすること
 
@@ -86,3 +103,4 @@ Claude Codeの許可の設定（`.claude/settings.json` の `permissions`）で�
 - [Automate actions with hooks - Claude Code Docs](https://code.claude.com/docs/en/hooks-guide)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - [AGENTS.md](https://agents.md/)
+- [google-labs-code/design.md - GitHub](https://github.com/google-labs-code/design.md)

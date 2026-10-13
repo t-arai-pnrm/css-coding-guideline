@@ -6,8 +6,8 @@ license: CC-BY-4.0
 
 # CSSコーディングガイドライン Skill
 
-- ガイドラインのバージョン: 0.58.2（2026-10-13 生成）
-- ルールの数: 608（うち AI が誤りやすいもの 292）
+- ガイドラインのバージョン: 0.59.0（2026-10-13 生成）
+- ルールの数: 609（うち AI が誤りやすいもの 292）
 - 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
 
 ## 基本原則
@@ -117,7 +117,7 @@ Figma などのデザインツールのデザインから書くときは、「20
 | 第17章 インタラクション | `references/17-interaction.md` | 40 | 約14.2万字 | ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル |
 | 第18章 モーション | `references/18-motion.md` | 31 | 約20.2万字 | transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions |
 | 第19章 実務での運用 | `references/19-operations.md` | 27 | 約6.4万字 | Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入 |
-| 第20章 AIにコーディングさせる | `references/20-ai-coding.md` | 16 | 約8.2万字 | AIが書いたCSS、Figmaなどのデザインツールから書いたCSS |
+| 第20章 AIにコーディングさせる | `references/20-ai-coding.md` | 17 | 約8.7万字 | AIが書いたCSS、Figmaなどのデザインツールから書いたCSS |
 
 ## トークンの例
 

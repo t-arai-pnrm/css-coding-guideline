@@ -1,8 +1,8 @@
 # 第20章 AIにコーディングさせる：ルール
 
-- ガイドラインのバージョン: 0.58.2（2026-10-13 生成）
-- ルールの数: 16
-- 本文: 約8.2万字
+- ガイドラインのバージョン: 0.59.0（2026-10-13 生成）
+- ルールの数: 17
+- 本文: 約8.7万字
 - 読む条件: AIが書いたCSS、Figmaなどのデザインツールから書いたCSS
 
 このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,16 +12,16 @@
 
 ## この章の節
 
-- `ai-coding` 第20章AIにコーディングさせる（約4,500字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/
+- `ai-coding` 第20章AIにコーディングさせる（約4,600字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/
 - `ai-coding/roles` 20-1 AIに任せる範囲と人が担う範囲（約4,200字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/roles/
-- `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約7,700字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/
+- `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/
 - `ai-coding/mcp-servers` 20-3 MCPサーバーを役割で使い分ける（約1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/mcp-servers/
 - `ai-coding/tasks` 20-4 タスクの単位で進める（約1.5万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/tasks/
-- `ai-coding/from-figma` 20-5 Figmaのデザインから計画を立てる（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/from-figma/
+- `ai-coding/from-figma` 20-5 Figmaのデザインから計画を立てる（約1.2万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/from-figma/
 - `ai-coding/implementation` 20-6 実装と検証を回す（約1.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/implementation/
 - `ai-coding/pitfalls` 20-7 AIが誤りやすいパターン（約6,400字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/pitfalls/
 - `ai-coding/verify-output` 20-8 生成したコードを確かめ、教訓を残す（約5,300字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/verify-output/
-- `ai-coding/audit` 20-9 既存のCSSの監査と移行をAIに任せる（約7,200字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/audit/
+- `ai-coding/audit` 20-9 既存のCSSの監査と移行をAIに任せる（約7,800字）https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/audit/
 
 ## 20-1 AIに任せる範囲と人が担う範囲
 
@@ -40,6 +40,10 @@ https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/
   - 理由: AI が誤りやすいルールを、書く前に確認させられるため。
   - 補足: Claude Code では本書のプラグインを入れ、ほかのツールではスキルと MCP サーバーを設定します。どちらも使えないツールでは、`AGENTS.md` からスキルのルール集の URL を参照させます（付録J「AIツールで使う」）。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/#rule-ai-read-rules-first
+- 【推奨・実装上の判断】値で表せないデザインの判断（色の使い場所、文字の役割の使い分け、部品の変種）は `DESIGN.md` に書き、色、文字サイズ、余白、角丸の値は書かずに、トークンを名前で参照する。（`design-md-without-values`）
+  - 理由: 使い方の判断はトークンからは読み取れず、AI がその場で選ぶことになる一方で、値を文章にも書くと、トークンを変えたときに文章の側だけが古いまま残り、どちらに従うかが決まらなくなるため。
+  - 補足: 節の見出しは Google Labs の DESIGN.md の仕様の8つを借り、値を書く YAML の front matter は書きません。`CLAUDE.md` には、UI を書く前と plan を書く前に `DESIGN.md` を読むことを1行で書きます。
+  - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/ai-coding/setup/#rule-design-md-without-values
 
 ## 20-3 MCPサーバーを役割で使い分ける
 
