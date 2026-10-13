@@ -1,0 +1,84 @@
+@layer components {
+  @scope (.scoped.shadow-lift) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    ._group {
+      display: block grid;
+      gap: 16px;
+    }
+
+    ._heading {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--regular);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._row {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+
+    ._card {
+      display: block grid;
+      gap: 4px;
+      padding: 16px;
+      border-radius: var(--rounded--lg);
+      box-shadow: var(--_box-shadow);
+      background-color: var(--background--surface);
+      color: var(--foreground--base);
+      text-decoration: none;
+      filter: var(--_filter);
+      transition-duration: var(--duration--base);
+      transition-timing-function: var(--ease--out-quint);
+
+      /* 比べる2つの書き方。止まっているときと持ち上げたときの影を、書き方ごとに決める */
+      &[data-shadow="box-shadow"] {
+        --_box-shadow: var(--shadow--sm);
+        --_box-shadow-raised: var(--shadow--md);
+        --_filter: none;
+        --_filter-raised: none;
+
+        transition-property: box-shadow;
+      }
+
+      &[data-shadow="drop-shadow"] {
+        --_box-shadow: var(--shadow--xs);
+        --_box-shadow-raised: var(--shadow--xs);
+        --_filter: var(--drop-shadow--sm);
+        --_filter-raised: var(--drop-shadow--md);
+
+        transition-property: filter;
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          box-shadow: var(--_box-shadow-raised);
+          filter: var(--_filter-raised);
+        }
+      }
+
+      /* 下の段は、持ち上げた後の影を止めたまま並べる */
+      &[data-state="raised"] {
+        box-shadow: var(--_box-shadow-raised);
+        filter: var(--_filter-raised);
+      }
+    }
+
+    ._title {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    ._meta {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}
