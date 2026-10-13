@@ -212,22 +212,28 @@ CMSで記事の登録が始まり、カンプになかった記事が入って�
   }
 
   ._category-link {
+    --_hit-size: max(24px, 24 / 16 * 1rem);
+
     position: relative;
     z-index: var(--z--forwards);
     display: block flex;
     align-items: center;
-    min-block-size: max(24px, 24 / 16 * 1rem);
+    min-block-size: var(--_hit-size);
     padding-inline: 8px;
     border-radius: var(--rounded--sm);
     background-color: var(--background--accent-subtle);
     color: var(--foreground--accent);
+
+    @media (any-pointer: coarse) {
+      --_hit-size: max(44px, 44 / 16 * 1rem);
+    }
   }
 }
 ```
 
 ルートの `isolation: isolate` は、行を新しいスタッキングコンテキストにして、カテゴリーの `z-index` を行の中だけで比べさせるための指定です。ページの固定ヘッダーのような、ほかの部品の重なり順と干渉しません（`isolation-for-relative-z-index`）。前半では行の中に `z-index` がなかったので、この指定も書いていませんでした。
 
-カテゴリーの色も、ラベルからリンクに変わったので、ブランドの色からリンクの色の `--foreground--accent` に替えました。リンクになった分、押せる範囲として24px相当の高さも確保しています（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。
+カテゴリーの色も、ラベルからリンクに変わったので、ブランドの色からリンクの色の `--foreground--accent` に替えました。リンクになった分、押せる範囲として24px相当の高さも確保し、指で操作できる環境では44px相当に広げています（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。擬似要素で見た目を変えずに広げる書き方は採りません。カテゴリーのリンクは、行全体を覆う見出しのリンクの上にあるので、広げた範囲が見出しのリンクに重なるからです（`pseudo-hit-area-no-overlap`）。
 
 見出しの下線の条件は、前半の `:has(h2 a:any-link:hover)` のままで直していません。条件を見出しのリンクに絞っていたので、手前のカテゴリーのリンクにホバーしてもフラグは立たず、記事へ移動するような合図は出ません。前半で `:has(a:any-link:hover)` と書いていたら、ここで条件を直すことになります。
 
@@ -285,4 +291,5 @@ CMSで記事の登録が始まり、カンプになかった記事が入って�
 - [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは `block-size` で固定しません。
 - [`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index)：内部の要素で相対的な `z-index` を使うコンポーネントは、ルートに `isolation: isolate` を指定します。
 - [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：`z-index` の値は、数値を直接書かずにトークンで指定します。
-- [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素には、24px相当の最小の大きさを確保します。
+- [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素には24px相当の大きさを確保し、指で操作する環境では44px相当にします。
+- [`pseudo-hit-area-no-overlap`](/interaction/hit-area-and-touch/#rule-pseudo-hit-area-no-overlap)：擬似要素で押せる範囲を広げるときは、隣の操作する要素に重ねません。

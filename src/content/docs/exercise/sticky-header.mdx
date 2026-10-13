@@ -84,7 +84,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 境界線は、最初から透明な線を置いておき、色だけを変えます。留まったときに線の太さを増やすとヘッダーの高さも変わり、ブラウザがスクロール位置を押し戻すことがあるからです（「[11-7 固定ヘッダー](/layout-practice/sticky-header/#留まったときに高さを変えない)」）。`scroll-state()` のクエリに対応していない環境では、線がないまま留まるだけで、ヘッダーの機能は損なわれません。
 
-ナビゲーションは、ヘッダーとは別の `global-nav` のコンポーネントにしました。21-7では、同じナビゲーションを狭い画面のドロワーにも置くからです。リンクの間は `gap` で空けず、各リンクの左右の `padding` で空けています。ホバーで背景が付く項目の間に隙間があると、カーソルが隙間を通る間だけ背景が消えるからです（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。ナビゲーションの `ul` には `--cluster--gap: 0` を渡しています。渡さないと、外側の `._actions` の `cluster` に渡した16pxの間隔を継承するからです（「[12-1 stack：子要素を縦に積み、間隔をそろえる](/compositions/stack/)」）。
+ナビゲーションは、ヘッダーとは別の `global-nav` のコンポーネントにしました。21-7では、同じナビゲーションを狭い画面のドロワーにも置くからです。リンクの間は `gap` で空けず、各リンクの左右の `padding` で空けています。ホバーで背景が付く項目の間に隙間があると、カーソルが隙間を通る間だけ背景が消えるからです（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。リンクの高さは、21-2の文字のリンクと同じく `--_hit-size` で受け、指で操作できる環境では44px相当に広げます（`hit-area-min-size`）。ナビゲーションの `ul` には `--cluster--gap: 0` を渡しています。渡さないと、外側の `._actions` の `cluster` に渡した16pxの間隔を継承するからです（「[12-1 stack：子要素を縦に積み、間隔をそろえる](/compositions/stack/)」）。
 
 ## 移動先をヘッダーの下に出す
 
@@ -195,4 +195,5 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 - [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、外側の配置の指定を書きません（グローバルヘッダーの `sticky` は例外です）。
 - [`z-index-tokens-only`](/components/boundaries/#rule-z-index-tokens-only)：`z-index` の値は、数値を直接書かずにトークンで指定します。
 - [`no-gaps-between-hover-items`](/interaction/hit-area-and-touch/#rule-no-gaps-between-hover-items)：ホバーで背景が付く項目の間は、`gap` ではなく各項目の `padding` で空けます。
+- [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素には24px相当の大きさを確保し、指で操作する環境では44px相当にします。
 - [`redeclare-colors-with-color-scheme`](/color-media/dark-mode/#rule-redeclare-colors-with-color-scheme)：`color-scheme` を指定した要素では、`color` と `background-color` をトークンで指定し直します。

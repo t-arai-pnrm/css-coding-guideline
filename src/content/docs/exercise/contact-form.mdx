@@ -16,7 +16,7 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 各項目は、14px相当の太字のラベルの下に入力欄を置き、項目の間を24px空けます。入力欄は1pxの枠線で囲んで角を8px丸め、内側に上下12px、左右16pxの余白を取ります。メールアドレスの入力欄の下には、「例：name@example.com」と入力例を示します。お問い合わせ内容の入力欄は、4行分の高さから始め、入力に合わせて10行分まで伸ばします。フォームの幅は640px相当までです。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/contact-form/start/index.html)）から始め、中間版（[index.html](/exercise-files/contact-form/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/contact-form/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/contact-form/start/`、`exercise/contact-form/middle/`、`exercise/contact-form/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/contact-form/start/index.html)）から始め、中間版（[index.html](/exercise-files/contact-form/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/contact-form/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/contact-form/start/`、`exercise/contact-form/middle/`、`exercise/contact-form/finished/` にあります。完成版には、誤りを支援技術に伝える属性を切り替える `script.js`（[script.js](/exercise-files/contact-form/finished/script.js)）も、同じディレクトリにあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
 
 この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
 
@@ -94,7 +94,7 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 ## 要件が変わる
 
-入力の誤りを、項目ごとに示す要件が加わりました。誤りのある入力欄は枠線を赤くし、何をどう直せばよいかを、その下の赤い太字の文章で示します。ただし、ページを開いた時点や、入力している途中には表示しません。誤りを表示するのは、入力して次の項目へ移ったあとと、送信しようとしたあとです。スクリーンリーダーにも、誤りがあることと、その文章を伝えます。
+入力の誤りを、項目ごとに示す要件が加わりました。誤りのある項目には、何をどう直せばよいかを、その下の赤い太字の文章で示し、入力欄の枠線も赤くします。同意のチェックボックスは、枠線を変えずに文章だけで示します。ただし、ページを開いた時点や、その項目に初めて入力している途中には表示しません。誤りを表示するのは、入力して次の項目へ移ったあとと、送信しようとしたあとです。一度表示した項目は、入力し直している間も、正しい値になった時点で表示を消し、誤った値になればその場で表示します。スクリーンリーダーにも、誤りがあることと、その文章を伝えます。
 
 本文を読む前に、誤りの見た目をどの擬似クラスで選ぶかを考えてみてください。`:invalid` で選ぶと、ページを開いた時点で何が起きるでしょうか。誤りの文章を、CSSだけで表示したとき、スクリーンリーダーに伝わるかも予想してから読み進めます。
 
@@ -104,11 +104,11 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 <Demo base="exercise" scheme="light" title="要件の変更を終えたお問い合わせのフォーム：入力したあとにだけ、誤りを色と文章で示す" html={contactFormChangedHtml} css={contactFormChangedCss} js={contactFormChangedJs} />
 
-ページを開いた時点では、誤りは1つも表示されません。何も入力せずに「送信する」を押すと、必須の5つの項目の枠線が赤くなり、それぞれの下に誤りの文章が表示されます。メールアドレスに「name」とだけ入力して次の項目へ移ると、その項目だけに誤りが表示され、正しく入力し直すと消えれば完成です。
+ページを開いた時点では、誤りは1つも表示されません。何も入力せずに「送信する」を押すと、必須の5つの項目のそれぞれの下に誤りの文章が表示されます。枠線が赤くなるのは、お名前、メールアドレス、お問い合わせの種類、お問い合わせ内容の4つの入力欄です。同意のチェックボックスの枠線は変わりません。ページを開き直し、メールアドレスに「name」と入力している途中には誤りが表示されず、次の項目へ移ると、その項目だけに誤りが表示されます。メールアドレスの入力欄に戻って続きを入力し、メールアドレスの形式に合った時点で、入力している途中でも誤りが消えれば完成です。
 
 ## 誤りは :user-invalid で選ぶ
 
-誤りの見た目は、`:invalid` ではなく `:user-invalid` に指定します。`required` を付けた空の入力欄は、何も入力していなくても `:invalid` に当てはまるので、ページを開いた時点で、すべての必須の項目が赤くなります。`:user-invalid` は、入力して離れたあとか、送信しようとしたあとにだけ当てはまります（`user-invalid-for-errors`）。
+誤りの見た目は、`:invalid` ではなく `:user-invalid` に指定します。`required` を付けた空の入力欄は、何も入力していなくても `:invalid` に当てはまるので、ページを開いた時点で、すべての必須の項目が赤くなります。`:user-invalid` は、入力して離れたあとか、送信しようとしたあとにだけ当てはまります（`user-invalid-for-errors`）。一度当てはまるようになった入力欄では、入力し直している間も、値が正しいかどうかに合わせて、その場で切り替わります。要件で、表示しないのを初めて入力している途中に限ったのはこのためです。入力し直している途中も誤りを隠すには、入力中かどうかをスクリプトで管理することになり、表示の条件がCSSの1か所に収まらなくなります。
 
 ```css title="🙆‍♂ Recommended: 入力欄の枠線と誤りの文章を、:user-invalid と aria-invalid の両方で切り替える"
 @scope (.scoped.contact-form) to (.scoped) {
@@ -133,6 +133,8 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 ```
 
 誤りの文章は、HTMLに書いておき、項目の中に誤りのある入力欄があるときだけ表示します。誤りは赤い色だけでなく、何をどう直せばよいかの文章でも伝えます（`no-color-only-information`）。
+
+同意のチェックボックスには `._text-control` を付けていないので、枠線は赤くなりません。チェックボックスは、`accent-color` で色だけを変えた標準の部品のままにしています（`accent-color-for-color-only`）。枠線を誤りの色にするには、`appearance: none` で作り直すことになりますが、誤りは文章で伝わるので、作り直すほどの理由はありません。チェックボックスの誤りは、下の文章だけで伝えます。
 
 ## スクリーンリーダーに伝える部分だけをスクリプトに任せる
 

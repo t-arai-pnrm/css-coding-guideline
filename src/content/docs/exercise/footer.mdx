@@ -15,7 +15,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 上の段の会社の情報は、幅280px相当の列に、ロゴ、社名、住所、電話番号を並べます。リンクのまとまりは、16px相当の太字の見出しの下に、リンクを縦に並べたもので、「事業内容」「実績紹介」「会社概要」「採用情報」の4つを56px空けて横に並べます。会社の情報とリンクのまとまりの間も56pxです。画面が狭いときは、会社の情報の下にリンクのまとまりを回し、まとまりが1行に収まらなければ折り返します。
 
-下の段は、上の段と1pxの線で区切り、左にポリシーなどのリンクを、右に著作権の表示を置きます。収まらない幅では、著作権の表示を次の行へ回します。見出しは白、住所とリンクは14px相当の淡いグレーで、リンクは、ホバーとフォーカスのとき白くし、下線を出します。
+下の段は、上の段と1pxの線で区切り、左にポリシーなどのリンクを、右に著作権の表示を置きます。収まらない幅では、著作権の表示を次の行へ回します。見出しは白、住所とリンクは14px相当の淡いグレーで、リンクは、ホバーとフォーカスのとき白くし、下線を出します。リンクの高さは24px相当以上にし、指で操作できる環境では44px相当にします。
 
 手元で進めるときは、開始版（[index.html](/exercise-files/footer/start/index.html)）から始め、中間版（[index.html](/exercise-files/footer/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/footer/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/footer/start/`、`exercise/footer/middle/`、`exercise/footer/finished/` にあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
 
@@ -132,6 +132,24 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 クラスの名前は、要素の役割で付けています。サイトの中を移動するリンクの集まりなので `navigation` で、2種類のリンクのリストは、どちらも `ul` なので `._group-links` と `._policy-links` で区別します（「[9-3 名前に使う語](/notation/terminology/)」）。
 
+リンクのまとまりでは、リンクを4pxの間隔で縦に詰めて並べるので、文字の高さのままでは、指で押し分けにくくなります。21-2の文字のリンクと同じく、高さを `--_hit-size` で受けて24px相当を確保し、指で操作できる環境では44px相当に広げます（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。切り替えるのは値だけなので、`min-block-size` の指定は1か所のままです。
+
+```css title="🙆‍♂ Recommended: リンクの高さを内部のプロパティで受け、指で操作する環境では値だけを変える"
+@scope (.scoped.site-footer) to (.scoped) {
+  a {
+    --_hit-size: max(24px, 24 / 16 * 1rem);
+
+    display: block flex;
+    align-items: center;
+    min-block-size: var(--_hit-size);
+
+    @media (any-pointer: coarse) {
+      --_hit-size: max(44px, 44 / 16 * 1rem);
+    }
+  }
+}
+```
+
 ## リンクのまとまりの数をCSSに書かない
 
 リンクのまとまりを並べるときにやりがちなのは、カンプの列の数をそのままグリッドに書く方法です。
@@ -223,4 +241,5 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 - [`navigation-not-menu`](/notation/terminology/#rule-navigation-not-menu)：サイトの中を移動する導線は `navigation` と呼びます。
 - [`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)：`@scope` の中の要素はタイプセレクタで選び、同じ種類の要素を役割で区別するときだけ子クラスを付けます。
 - [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
+- [`hit-area-min-size`](/interaction/hit-area-and-touch/#rule-hit-area-min-size)：操作する要素には24px相当の大きさを確保し、指で操作する環境では44px相当にします。
 - [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)：要素の高さは `block-size` で固定しません。

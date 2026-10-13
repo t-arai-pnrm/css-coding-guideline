@@ -220,9 +220,11 @@
     }
 
     a {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+
       display: block flex;
       align-items: center;
-      min-block-size: max(24px, 24 / 16 * 1rem);
+      min-block-size: var(--_hit-size);
       padding-block: 8px;
       padding-inline: 12px;
       border-radius: var(--rounded--md);
@@ -234,6 +236,10 @@
         padding-block: 16px;
         font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
         line-height: var(--text--subtitle--leading);
+      }
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
       }
 
       &:any-link:hover {

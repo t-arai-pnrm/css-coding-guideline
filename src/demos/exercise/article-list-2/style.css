@@ -174,16 +174,22 @@
 
     /* 見出しのリンクの ::after より手前に出し、カテゴリーのリンクとして押せるようにする */
     ._category-link {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+
       position: relative;
       z-index: var(--z--forwards);
       display: block flex;
       align-items: center;
-      min-block-size: max(24px, 24 / 16 * 1rem);
+      min-block-size: var(--_hit-size);
       padding-inline: 8px;
       border-radius: var(--rounded--sm);
       background-color: var(--background--accent-subtle);
       color: var(--foreground--accent);
       font-weight: var(--font-weight--bold);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
 
       &:any-link:hover {
         @media (any-hover) {

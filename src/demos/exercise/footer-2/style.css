@@ -128,12 +128,18 @@
     }
 
     a {
+      --_hit-size: max(24px, 24 / 16 * 1rem);
+
       display: block flex;
       align-items: center;
-      min-block-size: max(24px, 24 / 16 * 1rem);
+      min-block-size: var(--_hit-size);
       color: var(--foreground--muted);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
+
+      @media (any-pointer: coarse) {
+        --_hit-size: max(44px, 44 / 16 * 1rem);
+      }
 
       &:any-link:hover {
         @media (any-hover) {
