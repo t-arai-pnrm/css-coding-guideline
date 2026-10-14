@@ -1,6 +1,6 @@
 # 第2章 CSS設計の考え方：ルール
 
-- ガイドラインのバージョン: 0.59.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.60.0（2026-10-14 生成）
 - ルールの数: 7
 - 本文: 約2.7万字
 - 読む条件: コンポーネントの分け方、共通化、上書きの多い設計
@@ -12,10 +12,10 @@
 
 ## この章の節
 
-- `design-mindset` 第2章 CSS設計の考え方（約3,000字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/
+- `design-mindset` 第2章 CSS設計の考え方（約3,100字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/
 - `design-mindset/what-is-css-design` 2-1 CSS設計のマインドセット（約3,000字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/what-is-css-design/
 - `design-mindset/css-mindset` 2-2 CSSで考えるための6つの視点（約7,700字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/css-mindset/
-- `design-mindset/maintainability` 2-3 保守しやすさを最優先にする（約1.3万字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainability/
+- `design-mindset/maintainability` 2-3 保守しやすさを最優先にする（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainability/
 
 ## 2-3 保守しやすさを最優先にする
 
@@ -27,7 +27,7 @@ https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainabilit
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainability/#rule-maintainability-first
 - 【推奨・実装上の判断】似た記述の重複は許容し、共通化は同じものが3回現れてから、役割まで同じかを確かめて検討する。（`rule-of-three`）
   - 理由: 早すぎる共通化は影響範囲を広げ、一部だけ変えたいときに修飾クラスや上書きの分岐が増えるため。
-  - 補足: 一緒に変わるべき値だけを、デザイントークンで共有します。共通化の単位は、「画像と文章を横に並べる」程度の配置の共通点ではなく、役割まで同じ実質的な部品にします。
+  - 補足: 回数の目安を当てるのは、似たCSSの記述を共通のスタイルにまとめる判断です。HTMLの構造や属性を1つの定義で管理したい部品は、回数を待たずに `component-decision-tests` の3つの問いでコンポーネントにするかを決めます。一緒に変わるべき値だけを、デザイントークンで共有します。共通化の単位は、「画像と文章を横に並べる」程度の配置の共通点ではなく、役割まで同じ実質的な部品にします。
   - 詳細: https://t-arai-pnrm.github.io/css-coding-guideline/design-mindset/maintainability/#rule-rule-of-three
 - 【必須・実装上の判断】宣言はひとつひとつ、なぜ必要かを説明できるものだけを書く。（`explainable-declarations`）
   - 理由: 余計な宣言はほかのセレクタとぶつかり、どの値が勝つかが状況しだいになるうえ、打ち消すための上書きが増えるため。

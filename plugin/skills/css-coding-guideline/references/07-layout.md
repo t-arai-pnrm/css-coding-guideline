@@ -1,6 +1,6 @@
 # 第7章 レイアウトの仕組み：ルール
 
-- ガイドラインのバージョン: 0.59.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.60.0（2026-10-14 生成）
 - ルールの数: 41
 - 本文: 約27.9万字
 - 読む条件: display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `layout` 第7章 レイアウトの仕組み（約7,400字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/
+- `layout` 第7章 レイアウトの仕組み（約7,600字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/
 - `layout/fundamentals` 7-1 レイアウトの基礎（約2.1万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/fundamentals/
 - `layout/normal-flow` 7-2 通常フローの基礎（約2.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/normal-flow/
 - `layout/box-model` 7-3 ボックスモデルの基礎（約1.9万字）https://t-arai-pnrm.github.io/css-coding-guideline/layout/box-model/

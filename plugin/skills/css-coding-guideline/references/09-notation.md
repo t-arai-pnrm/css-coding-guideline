@@ -1,6 +1,6 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.59.1（2026-10-13 生成）
+- ガイドラインのバージョン: 0.60.0（2026-10-14 生成）
 - ルールの数: 49
 - 本文: 約12万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `notation` 第9章 記法の規約（約7,700字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/
+- `notation` 第9章 記法の規約（約7,800字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/
 - `notation/naming` 9-1 命名規則（約1.6万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/naming/
 - `notation/variants` 9-2 BEMからの書き直しとバリエーション（約8,900字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/variants/
 - `notation/terminology` 9-3 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/css-coding-guideline/notation/terminology/
