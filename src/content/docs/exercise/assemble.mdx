@@ -104,7 +104,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 
 ## 要件が変わる
 
-トップページをCMSで編集することになりました。編集者は、セクションを「ブロック」として並べ替えたり、足したりできます。各ブロックの背景は、編集者が「淡いグレー」か「白」から選び、CMSはその値を、ブロックを包む要素に `data-surface="base"` か `data-surface="muted"` として出力します。
+トップページをCMSで編集することになりました。編集者は、セクションを「ブロック」として並べ替えたり、足したりできます。各ブロックの背景は、編集者が「淡いグレー」か「白」から選び、CMSはその値を、ブロックを包む要素に `data-surface="base"` か `data-surface="surface"` として出力します。
 
 試しに編集者が並べ替えたページでは、「お役立ちコラム」が「制作の流れ」の後ろへ移り、その後ろに、白い「お知らせ」のブロックが加わりました。本文を読む前に、前半で書いた2つの組の指定で、この並びの余白がどうなるかを考えてみてください。編集者が次にどう並べ替えても崩れない書き方を予想してから読み進めます。
 
@@ -125,7 +125,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 ```html title="🙆‍♂ Recommended: CMSに、ブロックの面の役割を data-surface として出力させる"
 <main class="scoped page-top">
   <div class="_block | primary-layout" data-surface="base">…</div>
-  <section class="_block | primary-layout" data-surface="muted">…</section>
+  <section class="_block | primary-layout" data-surface="surface">…</section>
   <!-- ... -->
 </main>
 ```
@@ -142,19 +142,19 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
       padding-block: 64px;
     }
 
-    & > [data-surface="muted"] {
+    & > [data-surface="surface"] {
       background-color: var(--background--surface);
     }
 
     & > [data-surface="base"] + [data-surface="base"],
-    & > [data-surface="muted"] + [data-surface="muted"] {
+    & > [data-surface="surface"] + [data-surface="surface"] {
       padding-block-start: 0;
     }
   }
 }
 ```
 
-同じ面が続く境目は、どのブロックが並んでも、面の値の組み合わせだけで決まります。値は `white` のような色の名前ではなく、`muted` のような面の役割の名前にしています。デザインで白い面を別の色に変えても、CMSの設定と出力する属性はそのままで、直すのはページのCSSの1行だけです。
+同じ面が続く境目は、どのブロックが並んでも、面の値の組み合わせだけで決まります。値は `white` のような色の名前ではなく、背景のトークン（`--background--base` と `--background--surface`）と同じ、面の役割の名前にしています。デザインで白い面を別の色に変えても、CMSの設定と出力する属性はそのままで、直すのはページのCSSの1行だけです。
 
 ## 振り返り
 
