@@ -98,10 +98,15 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 ```css title="🙆‍♂ Recommended: 各カードを4行にまたがらせ、一覧の行を subgrid で使う"
 @scope (.scoped.article-cards) to (.scoped) {
+  :scope {
+    & > ._card {
+      grid-row: span 4;
+    }
+  }
+
   ._card {
     display: block grid;
     grid-template-rows: subgrid;
-    grid-row: span 4;
     row-gap: 12px;
     padding: 16px;
     border: 1px solid var(--border--base);

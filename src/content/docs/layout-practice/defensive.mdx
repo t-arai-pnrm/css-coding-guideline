@@ -246,18 +246,18 @@ Flexboxで画像と本文を横に並べるときは、画像へ `align-self: st
   gap: 12px;
 
   & > ._thumbnail {
+    flex-shrink: 0;
     align-self: start;
   }
 }
 
 ._thumbnail {
-  flex-shrink: 0;
   inline-size: 120px;
   aspect-ratio: 16 / 9;
 }
 ```
 
-`align-self` は親のFlexboxによって意味が決まる宣言なので、親のルールの中で直下の子にネストして書きます。並べるのがGridなら、この指定は要りません。グリッドアイテムは、縦横比を持つときは引き伸ばされず、始点に置かれるからです（「[7-9 Gridでアイテムをそろえる](/layout/grid-alignment/)」）。
+`flex-shrink` と `align-self` は親のFlexboxによって意味が決まる宣言なので、親のルールの中で直下の子にネストして書きます。並べるのがGridなら、この指定は要りません。グリッドアイテムは、縦横比を持つときは引き伸ばされず、始点に置かれるからです（「[7-9 Gridでアイテムをそろえる](/layout/grid-alignment/)」）。
 
 ## Flexboxでは折り返しを既定にする
 

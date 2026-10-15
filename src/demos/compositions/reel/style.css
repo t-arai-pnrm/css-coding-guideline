@@ -27,6 +27,10 @@
 @layer components {
   @scope (.scoped.related-articles) to (.scoped) {
     :scope {
+      & > ._item {
+        scroll-snap-align: start;
+      }
+
       &[data-snap] {
         scroll-snap-type: inline mandatory;
       }
@@ -35,7 +39,6 @@
     ._item {
       /* カードを行の高さまで伸ばし、隣のカードと下端をそろえる */
       display: block grid;
-      scroll-snap-align: start;
     }
 
     ._card {

@@ -8,6 +8,10 @@
       --switcher--column-count: 3;
       --switcher--column-min-width: calc(240 / 16 * 1rem);
       --switcher--gap: 24px;
+
+      & > ._plan {
+        grid-row: span 5;
+      }
     }
 
     ._plan {
@@ -15,7 +19,6 @@
 
       /* 名前、価格、説明、含まれる項目、ボタンの5行を、一覧のグリッドの行に参加させる */
       grid-template-rows: subgrid;
-      grid-row: span 5;
       row-gap: 16px;
       padding: 24px;
       border: 1px solid var(--border--base);

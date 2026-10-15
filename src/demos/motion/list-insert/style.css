@@ -7,6 +7,10 @@
       max-inline-size: calc(400 / 16 * 1rem);
       margin-inline: auto;
       padding-block: 24px;
+
+      & > ._list {
+        justify-self: stretch;
+      }
     }
 
     button {
@@ -18,7 +22,6 @@
     ._list {
       display: block grid;
       gap: 8px;
-      justify-self: stretch;
     }
 
     /* JavaScript で append() した項目も、最初のスタイル計算で @starting-style の値から動き始める */

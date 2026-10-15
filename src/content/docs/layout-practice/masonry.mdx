@@ -163,11 +163,14 @@ import masonryCss from '../../../demos/layout-practice/masonry-cards/style.css?r
   ul {
     column-gap: 32px;
     columns: calc(200 / 16 * 1rem) 4;
+
+    & > li {
+      break-inside: avoid;
+    }
   }
 
   li {
     padding-block: 4px;
-    break-inside: avoid;
   }
 }
 ```

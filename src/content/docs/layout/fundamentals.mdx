@@ -131,8 +131,15 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 }
 
 /* フレックスアイテム：幅を出発点のまま保ち、縮ませない */
+._media {
+  display: block flex;
+
+  & > ._thumbnail {
+    flex-shrink: 0;
+  }
+}
+
 ._thumbnail {
-  flex-shrink: 0;
   inline-size: calc(96 / 16 * 1rem);
 }
 ```

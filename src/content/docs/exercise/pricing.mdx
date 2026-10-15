@@ -134,10 +134,15 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: 各プランを5行にまたがらせ、一覧の行を subgrid で使う"
 @scope (.scoped.pricing-plans) to (.scoped) {
+  :scope {
+    & > ._plan {
+      grid-row: span 5;
+    }
+  }
+
   ._plan {
     display: block grid;
     grid-template-rows: subgrid;
-    grid-row: span 5;
     row-gap: 16px;
   }
 }

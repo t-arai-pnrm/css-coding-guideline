@@ -125,11 +125,14 @@
   @scope (.scoped.related-articles) to (.scoped) {
     :scope {
       scroll-snap-type: inline mandatory;
+
+      & > ._item {
+        scroll-snap-align: start;
+      }
     }
 
     ._item {
       display: block grid;
-      scroll-snap-align: start;
     }
 
     ._card {

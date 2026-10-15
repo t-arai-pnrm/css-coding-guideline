@@ -225,12 +225,15 @@ Atomic Designの用語で言えば、Button、Link、Iconのようなatomはコ�
     --grid--column-min-width: calc(280 / 16 * 1rem);
     --grid--column-max-count: 2;
     --grid--gap: 24px;
+
+    & > ._card {
+      grid-row: span 4;
+    }
   }
 
   ._card {
     display: block grid;
     grid-template-rows: subgrid;
-    grid-row: span 4;
     row-gap: 12px;
   }
 }

@@ -104,10 +104,10 @@ Gridなら、親が `grid-auto-flow: column` で子を列として並べ、`grid
 @scope (.scoped.related-articles) to (.scoped) {
   :scope {
     scroll-snap-type: inline mandatory;
-  }
 
-  ._item {
-    scroll-snap-align: start;
+    & > ._item {
+      scroll-snap-align: start;
+    }
   }
 }
 ```

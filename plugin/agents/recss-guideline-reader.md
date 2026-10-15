@@ -4,7 +4,7 @@ description: 「RECSSガイドライン」の割り当てられた節を通読�
 tools: Read, Grep, Glob, WebFetch, mcp__recss-guideline, mcp__plugin_recss-guideline_recss-guideline
 ---
 
-<!-- pnpm gen:ai で生成（v0.69.0）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
+<!-- pnpm gen:ai で生成（v0.69.1）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
 
 あなたは「RECSSガイドライン」の節を通読し、対象のCSSに当たるルールを調べる「読む係」です。依頼文に、対象のCSSのファイル、読む節（ページID）、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
 

@@ -11,6 +11,16 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.69.1（2026年10月16日）
+
+親のレイアウトで意味が決まる宣言を、子のルールに書いていたコード例とデモを直しました（ルール [`nest-child-placement-only`](/notation/nesting-criteria/#rule-nest-child-placement-only)）。ルールは変えていません。
+
+- `flex`、`flex-shrink`、`justify-self`、`grid-row: span N`、`scroll-snap-align`、`break-inside` を、親のルールの中のネスト（`& > ._item` など）に移しました。子自身の大きさや見た目の宣言は、子のルールに残しています。
+  - 本文のコード例：「[7-1 レイアウトの基礎](/layout/fundamentals/)」「[10-1 何をコンポーネントにするか](/components/what-is-a-component/#行をそろえて並べる一覧と項目)」「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」「[11-11 grid-lanesで石積みのレイアウトを組む](/layout-practice/masonry/)」「[12-12 reel](/compositions/reel/)」
+  - 演習の本文のコード例：「[21-3 カード一覧とサイドバーを作る](/exercise/card-grid/)」「[21-10 料金プランを作る](/exercise/pricing/)」
+  - デモ：13-3の画像の並び、12-12の2つのデモ、16-5の面の段階、18-7のリストへの追加、21-3と21-10の演習のデモ。演習の配布ファイルも作り直しています。
+- 「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」のアバターのデモで、コンポーネントのルートに書いていた `flex-shrink: 0` を外しました。置かれた場所での縮み方は、置く側が決めるからです（ルール [`parent-owns-child-placement`](/components/boundaries/#rule-parent-owns-child-placement)）。置く側は折り返す並びなので、外しても表示は変わりません。
+
 ## 0.69.0（2026年10月16日）
 
 子を1列に並べて横へスクロールさせるコンポジション `reel` を加え、横スクロールのデモをGridで組み直しました。0.68.0で加えたデモとコード例の、本書のルールとの食い違いも直しました。ルールを追加したので、マイナーバージョンを上げています。

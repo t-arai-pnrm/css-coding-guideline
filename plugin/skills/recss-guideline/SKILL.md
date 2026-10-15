@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # RECSSガイドライン Skill
 
-- ガイドラインのバージョン: 0.69.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.69.1（2026-10-15 生成）
 - ルールの数: 616（うち AI が誤りやすいもの 295）
 - 本書: https://t-arai-pnrm.github.io/recss-guideline/
 
