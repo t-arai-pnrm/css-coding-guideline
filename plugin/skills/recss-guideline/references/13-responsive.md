@@ -1,8 +1,8 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.67.1（2026-10-15 生成）
-- ルールの数: 39
-- 本文: 約11.1万字
+- ガイドラインのバージョン: 0.68.0（2026-10-15 生成）
+- ルールの数: 40
+- 本文: 約11.6万字
 - 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,7 +15,7 @@
 - `responsive` 第13章 レスポンシブデザイン（約7,800字）https://t-arai-pnrm.github.io/recss-guideline/responsive/
 - `responsive/escalation` 13-1 検討する順番（約8,500字）https://t-arai-pnrm.github.io/recss-guideline/responsive/escalation/
 - `responsive/breakpoints` 13-2 ブレイクポイントの決め方（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/
-- `responsive/container-size-queries` 13-3 コンテナサイズクエリ（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/
+- `responsive/container-size-queries` 13-3 コンテナサイズクエリ（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/
 - `responsive/container-units-and-side-effects` 13-4 コンテナの副作用とコンテナ単位（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/
 - `responsive/media-queries` 13-5 メディアクエリ（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/
 - `responsive/min-viewport-width` 13-6 375px未満の画面で配置を保つ例外（約7,300字）https://t-arai-pnrm.github.io/recss-guideline/responsive/min-viewport-width/
@@ -93,6 +93,10 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/
   - 理由: アイコンを `aria-hidden="true"` にしている場合、ラベルまで消すとリンクやボタンの名前がなくなるため。幅の違う複数の場所に置いても、修飾クラスなしで切り替えられる。
   - 補足: 隠し方は `.-visually-hidden` と同じ考え方です。ユーティリティのクラスはクエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/#rule-hide-label-visually-in-container-query
+- 【推奨・実装上の判断】要素が画面のどれだけを占めるかで見た目を変えるときは、`@container --scoped (inline-size >= 70svi)` のように、コンテナの幅をビューポート単位と比べる。（`container-query-screen-ratio`）
+  - 理由: 折り返しのように、どの要素が画面の幅のほとんどを占めるかをブラウザが決める並びでも、要素ごとに判定でき、メディアクエリの閾値を置き場所ごとに持たなくて済むため。
+  - 補足: 境の割合は、切り替える2つの状態の割合の間に置き、その根拠をコメントに書きます。基準は親ではなく画面の幅なので、最大幅を決めて中央に寄せた領域の中では、広い画面ほど割合が下がります。ビューポート単位は `vw` ではなく `svi` で書きます（`no-vw-vh`）。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/#rule-container-query-screen-ratio
 - 【非推奨・実装上の判断】`zoom` による縮小は最後の手段にとどめ、使うときは、ルートの直下で中身を包む要素に `@container --scoped (inline-size < 最小幅)` の条件を付けて、`zoom: min(progress(100cqi, 0px, 最小幅), 1)` と書く。（`zoom-as-last-resort`）
   - 理由: 文字も含めてすべてが縮小され、レイアウトの問題を解決せずに隠してしまうため。先にイントリンシックなレイアウトとコンテナサイズクエリで組み替え、それでも想定の最小幅を下回ると破綻するコンポーネントに限る。
   - 補足: `1` を上限にして、拡大には使いません。`progress()` に未対応の環境では縮小されないので、縮小しなくても読めて操作できる状態を保ちます（プログレッシブ・エンハンスメント）。文字サイズを縮める代わりにも使いません。

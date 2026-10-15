@@ -51,8 +51,8 @@
   level: 必須
   kind: judgment
   rule: コンポーネント、子要素、パターンの名前は、見た目ではなく役割で付ける（`._big-title` ではなく `._heading`）。
-  reason: 見た目の名前はデザインが変わると実態とずれるが、役割の名前なら見た目を変えても名前を変えずに済むため。
-  note: ユーティリティは1つのことしかしないので、`.-text-center` のように効果をそのまま名前にします。
+  reason: 見た目の名前はデザインが変わると実態とずれ、幅や設定で姿が変わる要素では、デザインを変える前から狭い画面で実態とずれるため。役割の名前なら、見た目を変えても名前を変えずに済む。
+  note: ユーティリティは1つのことしかしないので、`.-text-center` のように効果をそのまま名前にします。`data-size="small"` のように使う側が選んだ値は、見た目の語でもかまいません。避けるのは、`._two-columns` のように幅や設定によって変わる結果を名前にすることです。
   page: notation/naming
   since: 0.1.0
 
@@ -61,7 +61,7 @@
   kind: judgment
   rule: '`container`、`button`、`columns` のように HTML や CSS で意味が決まっている語を、別の意味の名前に使わない。'
   reason: 名前から CSS の機能や HTML の要素を連想させ、読む人の誤解を招くため。
-  note: '`<a>` の要素は、見た目がボタンでも `link` と呼びます。`.container` のクラスについては、第13章のルール `no-container-utility-class` も参照してください。'
+  note: '`<a>` の要素は、見た目がボタンでも `link` と呼びます。`list` は、`<ul>` か `<ol>` で書いた並びと、それを1つだけ包むコンポーネントのルートにだけ使います（ARIA の `tablist` ロールを持つ要素は `tab-list` と呼べます）。`.container` のクラスについては、第13章のルール `no-container-utility-class` も参照してください。'
   page: notation/naming
   since: 0.1.0
 
@@ -147,7 +147,7 @@
   kind: convention
   rule: '`columns` の語は段組み（マルチカラム）の配置にだけ使い、Flexbox や Grid の列には使わない。'
   reason: CSS の `columns` プロパティを連想させ、配置の方式を誤解させるため。
-  note: Grid の配置には `grid` を使い、Flexbox で列を並べる要素に名前が必要なら `flex-columns` のように方式を含めます。`row` は配置の結果を表す語なので、要素の名前にしません。
+  note: Grid の配置には `grid` を使い、Flexbox で列を並べる要素に名前が必要なら `flex-columns` のように方式を含めます。方式を含めるのは方式そのものが要素の責務であるときだけで、幅によって方式が変わる要素には役割の名前を付けます。`row` は配置の結果を表す語なので、要素の名前にしません。
   aiProne: true
   page: notation/terminology
   since: 0.13.0

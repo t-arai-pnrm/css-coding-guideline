@@ -186,7 +186,7 @@ Firefoxは `display: none` へのトランジションに対応していませ�
 `<details>` の開閉する部分は、`::details-content` 擬似要素で選べます。以前は、余白を付けたり高さを動かしたりするために、中身を `div` で包む必要がありました。`::details-content` を使えば包む要素は要らず、閉じる動きまでCSSだけで書けます。
 
 ```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす"
-@scope (.scoped.faq-list) to (.scoped) {
+@scope (.scoped.faq-accordion) to (.scoped) {
   details {
     &::details-content {
       overflow: clip;
@@ -226,7 +226,7 @@ Firefoxは `display: none` へのトランジションに対応していませ�
 SafariとFirefoxでも高さを動かすよう求められた場合に限り、`::details-content` をグリッドにして、`grid-template-rows` を `0fr` と `1fr` で切り替えます。`fr` の値は、`interpolate-size` がなくても補間されます。この方法では、行の高さを0まで縮めるために、中身を1つの要素で包みます。
 
 ```html title="中身を1つの要素で包む HTML の例"
-<details name="faq-list">
+<details name="faq-accordion">
   <summary>注文をキャンセルできますか？</summary>
   <div class="_answer">
     <p>発送の準備が始まる前であれば、マイページの注文履歴からキャンセルできます。</p>
@@ -235,7 +235,7 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 ```
 
 ```css title="🙆‍♂ Recommended: grid-template-rows で高さを動かす"
-@scope (.scoped.faq-list) to (.scoped) {
+@scope (.scoped.faq-accordion) to (.scoped) {
   details {
     &::details-content {
       display: block grid;

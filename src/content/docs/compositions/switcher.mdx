@@ -111,7 +111,7 @@ import switcherCss from '../../../demos/compositions/switcher/style.css?raw';
 コンポーネントの中で `switcher` を使うときは、`switcher` のクラスを付けた要素の直下に項目を置きます。`switcher` が決めるのは直下の子の並び方と間隔だけで、子の中身には関与しません。この役割分担は「[10-2 コンポーネントの境界を守る](/components/boundaries/)」で説明した「配置は置く側が持つ」という考え方にもとづいています。コンポーネント側では、項目に幅や `margin` を指定せず、次の例のように各項目の見た目だけを書きます。
 
 ```css title="🙆‍♂ Recommended: コンポーネントは項目の見た目だけを書く"
-@scope (.scoped.feature-list) to (.scoped) {
+@scope (.scoped.feature-section) to (.scoped) {
   section,
   li {
     padding: 16px;
@@ -172,7 +172,7 @@ import switcherCss from '../../../demos/compositions/switcher/style.css?raw';
 
 2つの `switcher` は、それぞれ自分の幅だけで閾値を判定しています。ビューポートの幅を見ていないので、同じHTMLを狭いサイドバーに置けば、ビューポートが広くても1列になります。下の `switcher` は子が5つあるので、4列のときは2行目に1つだけが置かれます。この挙動は、後の「子の数が列数と違うとき」で説明します。
 
-デモのCSSのうち、コンポーネント（`feature-list`）が書いているのは、各項目の枠線、背景、見出しの文字サイズだけです。並び方と間隔は、すべてコンポジションと `style` 属性で決まっています。
+デモのCSSのうち、コンポーネント（`feature-section`）が書いているのは、各項目の枠線、背景、見出しの文字サイズだけです。並び方と間隔は、すべてコンポジションと `style` 属性で決まっています。
 
 ## 補足と注意点
 
@@ -197,7 +197,7 @@ import switcherCss from '../../../demos/compositions/switcher/style.css?raw';
 同じ切り替えは、コンテナサイズクエリでも書けます。ただし、要素は自分自身をコンテナにして判定できないので、親にコンテナを指定し、子の `grid-template-columns` を条件で切り替える形になります。次の例は、「数値で確かめる」と同じ列数3、列の最小幅320px相当、列の間隔24pxで書いています。
 
 ```css title="列数の切り替えを、コンテナサイズクエリで書く"
-@scope (.scoped.feature-list) to (.scoped) {
+@scope (.scoped.feature-section) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
   }

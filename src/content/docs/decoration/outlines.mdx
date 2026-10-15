@@ -36,9 +36,9 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 次の例は、「[16-8 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
 
 ```css title="🙆‍♂ Recommended: 反り返るタブを、擬似要素1つの shape() で描く"
-@scope (.scoped.tab-list) to (.scoped) {
+@scope (.scoped.category-navigation) to (.scoped) {
   ._tab {
-    --_radius: var(--tab-list--radius, 12px);
+    --_radius: var(--category-navigation--radius, 12px);
 
     position: relative;
     padding-block: 8px;
@@ -80,7 +80,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 擬似要素をタブより左右に半径の分だけ広げ、その輪郭を `shape()` で切り抜いています。左下から始めて、外側へ反った曲線、左上の角丸、上の辺、右上の角丸、右下の反った曲線の順に、輪郭を一周します。`curve to 終点 with 制御点` は2次ベジェ曲線なので、正確な四分円ではありませんが、この大きさの角では見分けがつきません。{/* 要確認: 出典なし */}
 
-`shape()` の値は長く、そのままでは何を描いているのか読み取れません。そこで、半径を `--_radius` に入れ、すべての座標をその半径から計算します。角の大きさを変えるときは、公開用の `--tab-list--radius` を変えるだけで済み、座標を書き直す必要がありません。輪郭の高さは半径の2倍以上必要なので、タブの高さに対して半径を大きくしすぎないようにします。
+`shape()` の値は長く、そのままでは何を描いているのか読み取れません。そこで、半径を `--_radius` に入れ、すべての座標をその半径から計算します。角の大きさを変えるときは、公開用の `--category-navigation--radius` を変えるだけで済み、座標を書き直す必要がありません。輪郭の高さは半径の2倍以上必要なので、タブの高さに対して半径を大きくしすぎないようにします。
 
 `shape()` は、2026年2月にすべての主要なブラウザで使えるようになりました。Safariは18.4から対応しているので、本書の対象（Safari 18系の最終版以降）では使えます。それより古い環境で `clip-path` が無効になると、背面の擬似要素が切り抜かれずに左右へはみ出すので、`@supports not` の中で幅を戻し、上だけを `border-radius` で丸めます。
 

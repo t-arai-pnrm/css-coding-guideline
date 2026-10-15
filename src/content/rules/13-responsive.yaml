@@ -150,6 +150,15 @@
   page: responsive/container-size-queries
   since: 0.3.0
 
+- id: container-query-screen-ratio
+  level: 推奨
+  kind: judgment
+  rule: 要素が画面のどれだけを占めるかで見た目を変えるときは、`@container --scoped (inline-size >= 70svi)` のように、コンテナの幅をビューポート単位と比べる。
+  reason: 折り返しのように、どの要素が画面の幅のほとんどを占めるかをブラウザが決める並びでも、要素ごとに判定でき、メディアクエリの閾値を置き場所ごとに持たなくて済むため。
+  note: 境の割合は、切り替える2つの状態の割合の間に置き、その根拠をコメントに書きます。基準は親ではなく画面の幅なので、最大幅を決めて中央に寄せた領域の中では、広い画面ほど割合が下がります。ビューポート単位は `vw` ではなく `svi` で書きます（`no-vw-vh`）。
+  page: responsive/container-size-queries
+  since: 0.68.0
+
 - id: zoom-as-last-resort
   level: 非推奨
   kind: judgment

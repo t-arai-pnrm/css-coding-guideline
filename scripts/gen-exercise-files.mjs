@@ -52,7 +52,7 @@ const SECTIONS = [
     startFrom: { demo: 'sticky-header-1', files: ['site-header.css', 'global-nav.css', 'site-base.css'] },
   },
   { slug: 'hero', title: '21-8 ヒーローを作る', empty: ['hero.css'] },
-  { slug: 'faq', title: '21-9 よくある質問を作る', empty: ['faq-list.css'] },
+  { slug: 'faq', title: '21-9 よくある質問を作る', empty: ['faq-accordion.css'] },
   { slug: 'pricing', title: '21-10 料金プランを作る', empty: ['pricing-plans.css'] },
   { slug: 'steps', title: '21-11 制作の流れを作る', empty: ['steps.css'] },
   { slug: 'contact-form', title: '21-12 お問い合わせフォームを作る', empty: ['contact-form.css'] },

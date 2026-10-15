@@ -118,9 +118,9 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 下の端が外側へ反り返るタブは、`corner-shape: scoop` で書けます。タブの背面に、左右へ角丸の半径だけはみ出した擬似要素を置き、上の2つの角をえぐります。擬似要素の上の角がえぐれることで、タブの両脇の外側に、内側へ反った曲線が残ります。
 
 ```css title="🙆‍♂ Recommended: 対応している環境だけ、scoop で反り返りを付ける"
-@scope (.scoped.tab-list) to (.scoped) {
+@scope (.scoped.category-navigation) to (.scoped) {
   ._tab {
-    --_radius: var(--tab-list--radius, 12px);
+    --_radius: var(--category-navigation--radius, 12px);
 
     position: relative;
     padding-block: 8px;

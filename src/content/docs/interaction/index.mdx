@@ -52,7 +52,7 @@ sidebar:
 よくある質問を `<details>` と `<summary>` で並べたアコーディオンで、開いている項目だけ背景色を変え、`<summary>` の右端の矢印を半回転させたいと言われました。開閉に合わせて、JavaScriptで `<details>` に `.is-open` クラスを付け外しする案が出ています。開閉の状態は、どの要素の何から読み取りますか。あわせて、`<summary>` にホバーの見た目を付けるときの書き方も考えてください。
 
 ```html
-<div class="scoped faq-list">
+<div class="scoped faq-accordion">
   <details class="_item">
     <summary class="_question">送料はかかりますか？<span class="_icon" aria-hidden="true"></span></summary>
     <p>…</p>
@@ -68,7 +68,7 @@ sidebar:
 `<details>` の `open` 属性から読み取り、`.is-open` は付けません。`open` 属性は、`<summary>` を押したときも、キーボードで開閉したときも、対応したブラウザでページ内検索の結果として自動で開いたときも、ブラウザが付け外しします。状態を表すセレクタは、擬似クラス、HTML要素の属性、ARIA属性、`data-*` 属性の順に選ぶので、HTML要素の属性がある状態にクラスを足すと、同じ状態を2か所で管理することになります（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。`:open` 擬似クラスもありますが、Safariが対応したのは26.5からなので、本書の対象のすべてでは使えません（「[17-6 開閉するUI](/interaction/disclosure/)」）。
 
 ```css title="🙆‍♂ Recommended: 開閉の状態を open 属性から読み、summary のホバーをフォーカスとそろえる"
-@scope (.scoped.faq-list) to (.scoped) {
+@scope (.scoped.faq-accordion) to (.scoped) {
   ._item {
     &[open] {
       background-color: var(--background--surface);

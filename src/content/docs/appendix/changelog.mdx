@@ -11,6 +11,20 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.68.0（2026年10月16日）
+
+要素が画面のどれだけを占めるかで見た目を切り替える書き方を加え、命名の説明を補って、本書の部品の名前を `list` の語の意味にそろえました。ルールを追加し、既存のルールの理由と補足を変えたので、マイナーバージョンを上げています。
+
+- 「[9-1 命名規則](/notation/naming/#見た目の名前と役割の名前)」に、幅や設定で姿が変わる要素では、デザインを変える前から見た目の名前が実態とずれることを書きました。使う側が選んだ値（`data-size="small"` など）は見た目の語でもよいこと、総称の名前は要素を置いた理由から名付けたときに生まれること、名前の1文に責務がいくつも並ぶときは要素を分けることも加えました。
+- 「[9-3 名前に使う語](/notation/terminology/#要素と配置の語)」に、`list` の語を、`<ul>` か `<ol>` で書いた並びと、それを1つだけ包むコンポーネントのルートに限ることを加えました。`flex-columns` のように配置の方式を名前に含めるのは、方式そのものが要素の責務であるときだけだと補いました。
+- この使い方に合わせて、本書のデモとコード例の部品の名前を変えました。`faq-list` は `faq-accordion`（17-6、18-7、21-9など）にしました。`tab-list` は `category-navigation`（16-8、16-9）と `product-tabs`（17-3）に分けました。`feature-list` は `feature-section`（12-5）に、`notice-list` は `notice-section`（21-15）に、`cta-list` は `cta-links` にしました。付録Hのコード例では、`list` と呼ぶ要素を `<ul>` で書き直しました。演習の配布ファイルも、新しい名前で作り直しています。
+- 「[11-6 重なりと全幅](/layout-practice/layering/)」のコード例で、隙間を内部プロパティにまとめ、`overflow-x` を論理プロパティの `overflow-inline` に直しました。
+- ルール [`name-by-role`](/notation/naming/#rule-name-by-role) の理由と補足、[`no-redefining-web-terms`](/notation/naming/#rule-no-redefining-web-terms) と [`columns-for-multicol`](/notation/terminology/#rule-columns-for-multicol) の補足を、上の説明に合わせて直しました。
+- 「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/#画面に対する割合で切り替える)」に、コンテナの幅をビューポート単位と比べて、画面に対する割合で切り替える方法とデモを加えました。折り返す並びのように、どの要素が画面の幅のほとんどを占めるかをブラウザが決める場面でも、要素ごとに判定できます。
+- ルールを追加しました。
+  - [`container-query-screen-ratio`](/responsive/container-size-queries/#rule-container-query-screen-ratio)：要素が画面のどれだけを占めるかで見た目を変えるときは、コンテナの幅をビューポート単位と比べます。
+- ルール [`viewport-units-with-media-queries`](/values/viewport-and-container-units/#rule-viewport-units-with-media-queries) の補足に、要素の幅と画面の幅を比べるときは、コンポーネントの中でもビューポート単位を使うという例外を書きました。「[16-8 角の形を変える](/decoration/shapes/#画面いっぱいのときだけ角丸を消す)」の角丸の書き方も、この例外に当たります。「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」の本文にも、同じ内容の1文を加えました。
+
 ## 0.67.1（2026年10月15日）
 
 初めて読む順番と掲載の順番を近づけ、縦に積む方法の使い分けを1つの表にまとめました。ルールは変えていません。

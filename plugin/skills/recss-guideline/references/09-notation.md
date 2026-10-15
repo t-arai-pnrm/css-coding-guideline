@@ -1,8 +1,8 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.67.1（2026-10-15 生成）
+- ガイドラインのバージョン: 0.68.0（2026-10-15 生成）
 - ルールの数: 49
-- 本文: 約12.3万字
+- 本文: 約12.5万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,9 +13,9 @@
 ## この章の節
 
 - `notation` 第9章 記法の規約（約8,500字）https://t-arai-pnrm.github.io/recss-guideline/notation/
-- `notation/naming` 9-1 命名規則（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/notation/naming/
+- `notation/naming` 9-1 命名規則（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/notation/naming/
 - `notation/variants` 9-2 BEMからの書き直しとバリエーション（約9,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/variants/
-- `notation/terminology` 9-3 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
+- `notation/terminology` 9-3 名前に使う語（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
 - `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/
 - `notation/nesting` 9-5 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/
 - `notation/nesting-criteria` 9-6 ネストの判断基準（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/
@@ -48,12 +48,12 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/naming/
   - 補足: 種類が1つだけなら `|` を書きません。ルートと親の子要素のクラスは同じ要素に付けないので（`parent-owns-child-placement`）、2つが並ぶことはありません。CMSが出力するブロックのクラスは、ルートのグループの先頭に置きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/naming/#rule-group-classes-with-pipe
 - 【必須・実装上の判断】コンポーネント、子要素、パターンの名前は、見た目ではなく役割で付ける（`._big-title` ではなく `._heading`）。（`name-by-role`）
-  - 理由: 見た目の名前はデザインが変わると実態とずれるが、役割の名前なら見た目を変えても名前を変えずに済むため。
-  - 補足: ユーティリティは1つのことしかしないので、`.-text-center` のように効果をそのまま名前にします。
+  - 理由: 見た目の名前はデザインが変わると実態とずれ、幅や設定で姿が変わる要素では、デザインを変える前から狭い画面で実態とずれるため。役割の名前なら、見た目を変えても名前を変えずに済む。
+  - 補足: ユーティリティは1つのことしかしないので、`.-text-center` のように効果をそのまま名前にします。`data-size="small"` のように使う側が選んだ値は、見た目の語でもかまいません。避けるのは、`._two-columns` のように幅や設定によって変わる結果を名前にすることです。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/naming/#rule-name-by-role
 - 【禁止・実装上の判断】`container`、`button`、`columns` のように HTML や CSS で意味が決まっている語を、別の意味の名前に使わない。（`no-redefining-web-terms`）
   - 理由: 名前から CSS の機能や HTML の要素を連想させ、読む人の誤解を招くため。
-  - 補足: `<a>` の要素は、見た目がボタンでも `link` と呼びます。`.container` のクラスについては、第13章のルール `no-container-utility-class` も参照してください。
+  - 補足: `<a>` の要素は、見た目がボタンでも `link` と呼びます。`list` は、`<ul>` か `<ol>` で書いた並びと、それを1つだけ包むコンポーネントのルートにだけ使います（ARIA の `tablist` ロールを持つ要素は `tab-list` と呼べます）。`.container` のクラスについては、第13章のルール `no-container-utility-class` も参照してください。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/naming/#rule-no-redefining-web-terms
 - 【非推奨・実装上の判断】`wrapper`、`block`、`module`、`widget` のように、責務を表さない総称を名前に使わない。（`no-vague-names`）
   - 理由: 何のための要素なのかが名前から分からず、責務の境界もあいまいになるため。
@@ -99,7 +99,7 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/#rule-gutter-vs-gap
 - 【必須・本書の規約】`columns` の語は段組み（マルチカラム）の配置にだけ使い、Flexbox や Grid の列には使わない。（`columns-for-multicol`）
   - 理由: CSS の `columns` プロパティを連想させ、配置の方式を誤解させるため。
-  - 補足: Grid の配置には `grid` を使い、Flexbox で列を並べる要素に名前が必要なら `flex-columns` のように方式を含めます。`row` は配置の結果を表す語なので、要素の名前にしません。
+  - 補足: Grid の配置には `grid` を使い、Flexbox で列を並べる要素に名前が必要なら `flex-columns` のように方式を含めます。方式を含めるのは方式そのものが要素の責務であるときだけで、幅によって方式が変わる要素には役割の名前を付けます。`row` は配置の結果を表す語なので、要素の名前にしません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/#rule-columns-for-multicol
 - 【推奨・実装上の判断】サイトの中を移動する導線は `navigation`（または `nav`）、操作を実行したり選んだりする選択肢の一覧は `menu` と呼ぶ。（`navigation-not-menu`）
   - 理由: HTML の `<menu>` 要素と ARIA の `menu` ロールは操作の一覧を表すので、導線を `menu` と呼ぶと、メニューの振る舞いを実装すべきだと誤解させるため。

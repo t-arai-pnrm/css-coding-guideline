@@ -1,8 +1,8 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.67.1（2026-10-15 生成）
+- ガイドラインのバージョン: 0.68.0（2026-10-15 生成）
 - ルールの数: 30
-- 本文: 約8.8万字
+- 本文: 約8.9万字
 - 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -81,7 +81,7 @@ https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-unit
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-units/#rule-lvb-for-fixed-background
 - 【推奨・実装上の判断】ビューポート単位は、ページ全体の余白やヒーローのようにメディアクエリと対になる値に使い、置き場所が変わるコンポーネントの中では使わない。（`viewport-units-with-media-queries`）
   - 理由: ビューポート単位はページ全体の状態と結びついた値で、コンポーネントが置かれた場所の幅とは関係がないため。
-  - 補足: コンポーネントの中で幅に応じて変える値は、名前付きのコンテナと `cqi` で書きます（13-3）。
+  - 補足: コンポーネントの中で幅に応じて変える値は、名前付きのコンテナと `cqi` で書きます（13-3）。要素の幅と画面の幅を比べて、要素が画面のどれだけを占めるかを調べるときは、コンポーネントの中でも使います（`container-query-screen-ratio`、`full-bleed-radius-with-sign`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-units/#rule-viewport-units-with-media-queries
 - 【禁止・仕様にもとづく制約】文字サイズをビューポート単位だけで決めない（`font-size: 4svi` など）。（`no-viewport-only-font-size`）
   - 理由: ユーザーの文字サイズの設定が無視され、Chrome 系のブラウザではズームしても文字が大きくならないことがあるため。

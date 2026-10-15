@@ -1,4 +1,4 @@
-const tabs = [...document.querySelectorAll('.scoped.tab-list [role="tab"]')];
+const tabs = [...document.querySelectorAll('.scoped.product-tabs [role="tab"]')];
 const panelOf = (tab) => document.getElementById(tab.getAttribute('aria-controls'));
 
 // 選んだタブだけを aria-selected="true" にする。見た目はこの属性から決まる

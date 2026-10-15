@@ -183,13 +183,13 @@ CSSだけで書く場合は、`:has()` の起点をヘッダーに絞ります�
 その場で開閉する項目は、`<details>` と `<summary>` で作ります。JavaScriptなしでキーボードでも開閉でき、対応したブラウザでは、ページ内検索で中身が見つかったときに自動で開きます。同じ `name` 属性を付けた `<details>` は、1つを開くとほかが閉じる、排他的なアコーディオンになります。
 
 ```html title="name 属性で1つだけ開くアコーディオン"
-<section class="scoped faq-list" aria-labelledby="faq-list-heading">
-  <h2 id="faq-list-heading">よくある質問</h2>
-  <details name="faq-list" open>
+<section class="scoped faq-accordion" aria-labelledby="faq-accordion-heading">
+  <h2 id="faq-accordion-heading">よくある質問</h2>
+  <details name="faq-accordion" open>
     <summary>送料はかかりますか？</summary>
     <p>…</p>
   </details>
-  <details name="faq-list">
+  <details name="faq-accordion">
     <summary>注文をキャンセルできますか？</summary>
     <p>…</p>
   </details>

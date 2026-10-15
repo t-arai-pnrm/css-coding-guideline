@@ -1,0 +1,63 @@
+@layer pages {
+  @scope (.scoped.demo-page) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 32px;
+    }
+
+    ._split {
+      display: block grid;
+      gap: 24px;
+
+      /* ページの段組みはビューポートで切り替える */
+      @media (width >= calc(720 / 16 * 1rem)) {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
+
+    ._text {
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+
+    h2 {
+      font-size: var(--text--subtitle--font-size);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    ._list {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    ._item {
+      flex: 1 1 calc(240 / 16 * 1rem);
+
+      & > * + * {
+        margin-block-start: 8px;
+      }
+    }
+  }
+}
+
+@layer components {
+  @scope (.scoped.adaptive-image) to (.scoped) {
+    :scope {
+      container: --scoped / inline-size;
+    }
+
+    ._image {
+      aspect-ratio: 4 / 3;
+      border-radius: var(--rounded--md);
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+
+      /* 横に並ぶと画面の幅の5割未満、1つで1行を占めると8割以上になる。その間の7割を境にする */
+      @container --scoped (inline-size >= 70svi) {
+        aspect-ratio: 16 / 9;
+      }
+    }
+  }
+}

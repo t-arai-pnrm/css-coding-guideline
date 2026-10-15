@@ -180,13 +180,14 @@ z-indexは、どの要素にも効くわけではありません。効くのは�
   }
 
   ._scroller {
+    --_gap: 16px;
     --_gutter: calc((100lvi - 100cqi) / 2);
 
     display: block grid;
-    grid-auto-columns: calc((100cqi - 16px * 2) / 3);
+    grid-auto-columns: calc((100cqi - var(--_gap) * 2) / 3);
     grid-auto-flow: column;
-    gap: 16px;
-    overflow-x: auto;
+    gap: var(--_gap);
+    overflow-inline: auto;
     overscroll-behavior-inline: contain;
     margin-inline: calc(var(--_gutter) * -1);
     padding-inline: var(--_gutter);

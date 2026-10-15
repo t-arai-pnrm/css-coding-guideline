@@ -63,9 +63,9 @@ Vueの例で、下限の違いを確かめます。一覧の部品の中に、�
 
 ```vue title="NewsList.vue（親の部品）"
 <template>
-  <div class="list">
-    <NewsCard />
-  </div>
+  <ul class="list">
+    <li><NewsCard /></li>
+  </ul>
 </template>
 
 <style scoped>
@@ -97,11 +97,13 @@ Vueは、`<style scoped>` のセレクタの末尾に部品ごとの `data-v-…
 ```
 
 ```html title="Vueが変換した後のHTML（イメージ）"
-<div class="list" data-v-1111>
-  <article class="card" data-v-2222 data-v-1111>
-    <h3 class="title" data-v-2222>…</h3>
-  </article>
-</div>
+<ul class="list" data-v-1111>
+  <li data-v-1111>
+    <article class="card" data-v-2222 data-v-1111>
+      <h3 class="title" data-v-2222>…</h3>
+    </article>
+  </li>
+</ul>
 ```
 
 親の `.title[data-v-1111]` は、子の部品の中の見出しには当たりません。一方、親の `.card[data-v-1111]` は、子の部品のルートの `<article>` に当たり、枠線が付きます。Vueでは、子の部品のルートまでが親のスコープに入ります。
@@ -124,11 +126,13 @@ Vueは、`<style scoped>` のセレクタの末尾に部品ごとの `data-v-…
 ```
 
 ```html
-<div class="scoped news-list">
-  <article class="scoped news-card">
-    <h3 class="_title">…</h3>
-  </article>
-</div>
+<ul class="scoped news-list">
+  <li>
+    <article class="scoped news-card">
+      <h3 class="_title">…</h3>
+    </article>
+  </li>
+</ul>
 ```
 
 ルートは、Vueでは部品のテンプレートの要素がそのまま範囲になり、本書では `@scope` の前置きの `.scoped.<名前>` で指定します。下限は、Vueでは子の部品のルートの内側にあり、本書では `to (.scoped)` に当てはまる子の部品のルートそのものです。下限の要素はスコープの外なので、`news-list` のルールは `news-card` のルートにも当たりません。Vueに移植するときは、親の部品のセレクタが子の部品のルートにも当たるようになるので、セレクタを書き換えるときに、子のルートと同じクラスを親が選んでいないかを確かめます。スロットの内容も、受け持つ側が逆になります。Vueは、子の部品のスロットに渡した内容を、渡した親の部品のものとして扱うので、子の `scoped` のスタイルはデフォルトでは当たらず、当てるには `:slotted()` を使います。本書の書き方では、スロットの内容は子の部品のルートの内側に描画されるので、子の `@scope` が当たり、親の `@scope` は下限で止まります。

@@ -50,7 +50,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 
 ## レビューするプルリクエスト
 
-同じ時期に、トップページに「お知らせ」の一覧を足すプルリクエストが出ました。お知らせのカード（`notice-card.css`）と一覧（`notice-list.css`）を足し、トップページのCSS（`page-top.css`）と一覧のテンプレートを変えています。次のデモは、プルリクエストのコードをそのまま表示したものです。
+同じ時期に、トップページに「お知らせ」の一覧を足すプルリクエストが出ました。お知らせのカード（`notice-card.css`）と一覧（`notice-section.css`）を足し、トップページのCSS（`page-top.css`）と一覧のテンプレートを変えています。次のデモは、プルリクエストのコードをそのまま表示したものです。
 
 <Demo base="exercise" scheme="light" title="レビューするプルリクエスト：お知らせの一覧に6つの誤りがある" html={reviewHtml} css={reviewBadCss} variant="not-recommended" />
 
@@ -60,7 +60,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 
 見つけた問題ごとに、根拠、修正案、ラベルを書きます。根拠には、どのルールや仕様に反しているかと、どの表示や操作で問題が現れるかを書きます。ラベルは、直さなければならない指摘の `MUST`、好みが入りうる提案の `IMO`、質問の `Q` のどれかです（「[19-2 レビューの進め方](/operations/review/#指摘の深刻度ラベル)」）。
 
-手元で試すときは、配布版の[index.html](/exercise-files/review/index.html)（サンプル一式のZIPでは `exercise/review/index.html`）を開きます。同じディレクトリの `notice-card.css`、`notice-list.css`、`page-top.css`、`compositions.css` が、プルリクエストのCSSです。書き終えたら、次の見出しからの解説と見比べ、見落とした誤りと、ラベルの付け方の違いを確かめます。
+手元で試すときは、配布版の[index.html](/exercise-files/review/index.html)（サンプル一式のZIPでは `exercise/review/index.html`）を開きます。同じディレクトリの `notice-card.css`、`notice-section.css`、`page-top.css`、`compositions.css` が、プルリクエストのCSSです。書き終えたら、次の見出しからの解説と見比べ、見落とした誤りと、ラベルの付け方の違いを確かめます。
 
 ## 表示と操作に現れる症状
 
@@ -232,7 +232,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 
 組み上げたトップページは、確かめた範囲では直さずに済みました。
 
-プルリクエストで直すのは、お知らせのカードの `notice-card.css`、トップページの `page-top.css`（上書きの削除）、一覧のテンプレート（公開プロパティの名前と `cluster` のクラス）です。一覧の `notice-list.css` と `grid` コンポジションは直さずに済みます。6つの誤りは、この章の部品が守ってきた規約と1つずつ対応します。誤り1から3は、外側の余白を持たないこと、名前付きのコンテナとフラグ、`--_has-hocus` で伝えるホバーとフォーカスに当たります。誤り4から6は、置く側から内部を選ばないこと、`@prop` の一覧、`cluster` で並べるタグに当たります。
+プルリクエストで直すのは、お知らせのカードの `notice-card.css`、トップページの `page-top.css`（上書きの削除）、一覧のテンプレート（公開プロパティの名前と `cluster` のクラス）です。一覧の `notice-section.css` と `grid` コンポジションは直さずに済みます。6つの誤りは、この章の部品が守ってきた規約と1つずつ対応します。誤り1から3は、外側の余白を持たないこと、名前付きのコンテナとフラグ、`--_has-hocus` で伝えるホバーとフォーカスに当たります。誤り4から6は、置く側から内部を選ばないこと、`@prop` の一覧、`cluster` で並べるタグに当たります。
 
 これで演習は終わりです。章の概要の「[この章で判断できるようになること](/exercise/#この章で判断できるようになること)」に戻り、要件の変更を受け持つのが部品、コンポジション、置く側のページのどれかを見分けられるようになったかを振り返ってください。この節のレビューで見た項目は、付録D「[レビューのチェックリスト](/appendix/checklist/)」に、19-2の順番で並んでいます。
 
