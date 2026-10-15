@@ -22,9 +22,9 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
 
 - [9-3 名前に使う語](/notation/terminology/)
-- [12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)
-- [12-3 apart：子要素を両端に分ける](/compositions/apart/)
-- [12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)
+- [12-3 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)
+- [12-4 apart：子要素を両端に分ける](/compositions/apart/)
+- [12-6 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)
 - [14-5 文字の役割と色](/typography/text-roles/)
 - [15-4 ダークモード](/color-media/dark-mode/)
 
@@ -128,7 +128,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 }
 ```
 
-会社の情報とリンクのまとまりが横に並ぶのは、280＋56＋480で816px相当の幅があるときです。上の段と下の段は、並びが入れ替わることのない2つの区画なので、間の線は下の段の上の枠線で描きます。下の段の `apart` は、ポリシーのリンクと著作権の表示を両端に分け、収まらなくなると著作権の表示を次の行へ回します（「[12-3 apart：子要素を両端に分ける](/compositions/apart/)」）。
+会社の情報とリンクのまとまりが横に並ぶのは、280＋56＋480で816px相当の幅があるときです。上の段と下の段は、並びが入れ替わることのない2つの区画なので、間の線は下の段の上の枠線で描きます。下の段の `apart` は、ポリシーのリンクと著作権の表示を両端に分け、収まらなくなると著作権の表示を次の行へ回します（「[12-4 apart：子要素を両端に分ける](/compositions/apart/)」）。
 
 クラスの名前は、要素の役割で付けています。サイトの中を移動するリンクの集まりなので `navigation` で、2種類のリンクのリストは、どちらも `ul` なので `._group-links` と `._policy-links` で区別します（「[9-3 名前に使う語](/notation/terminology/)」）。
 
@@ -171,7 +171,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 この書き方では、列の数が2か所に書かれます。まとまりが1つ増えれば、両方を書き換えることになります。しかも、列の数を切り替える条件が画面の幅なので、上の段で会社の情報の横に並んでいるのか、下に回っているのかを考慮できません。
 
-本書では、`cluster` に並べ方を任せます。各まとまりは中身の幅で並び、行に収まらなくなったまとまりが次の行へ折り返します（「[12-2 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)」）。CSSに書くのは間隔だけで、列の数はどこにも書きません。
+本書では、`cluster` に並べ方を任せます。各まとまりは中身の幅で並び、行に収まらなくなったまとまりが次の行へ折り返します（「[12-3 cluster：子を横に並べ、入りきらなければ折り返す](/compositions/cluster/)」）。CSSに書くのは間隔だけで、列の数はどこにも書きません。
 
 ## 要件が変わる
 

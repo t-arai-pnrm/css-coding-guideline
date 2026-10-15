@@ -20,7 +20,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
 
 - [10-1 何をコンポーネントにするか](/components/what-is-a-component/)
-- [12-9 pile：子要素を同じセルに重ねる](/compositions/pile/)
+- [12-10 pile：子要素を同じセルに重ねる](/compositions/pile/)
 - [15-4 ダークモード](/color-media/dark-mode/)
 - [16-1 画像の配置と比率](/decoration/images/)
 - [16-2 画像の形式と読み込み](/decoration/image-loading/)
@@ -41,7 +41,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 
 ## 画像と文字を pile で重ねる
 
-画像と文字のまとまりは、`pile` で同じグリッドのセルに重ねます。どちらもレイアウトの流れに残るので、ヒーローの高さは、画像と文字のまとまりのうち高いほうで決まります（「[12-9 pile：子要素を同じセルに重ねる](/compositions/pile/)」）。
+画像と文字のまとまりは、`pile` で同じグリッドのセルに重ねます。どちらもレイアウトの流れに残るので、ヒーローの高さは、画像と文字のまとまりのうち高いほうで決まります（「[12-10 pile：子要素を同じセルに重ねる](/compositions/pile/)」）。
 
 ```html title="🙆‍♂ Recommended: ヒーローのルートに pile を付け、文字のまとまりの位置は style 属性で渡す"
 <section class="scoped hero | pile" aria-labelledby="hero-heading">
@@ -221,7 +221,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-この要件では `<img>` にします。画像はCMSで差し替えるので、HTMLで画像を指定できるほうが扱いやすく、`fetchpriority` で先に読み込ませることや、`srcset` で幅に合った画像を選ばせることもできます。`background-image` は、デザインで決まった模様やグラデーションのように、内容と関係のない背景に使います（「[12-9 pile：子要素を同じセルに重ねる](/compositions/pile/#pile-を使わない場面と注意点)」）。
+この要件では `<img>` にします。画像はCMSで差し替えるので、HTMLで画像を指定できるほうが扱いやすく、`fetchpriority` で先に読み込ませることや、`srcset` で幅に合った画像を選ばせることもできます。`background-image` は、デザインで決まった模様やグラデーションのように、内容と関係のない背景に使います（「[12-10 pile：子要素を同じセルに重ねる](/compositions/pile/#pile-を使わない場面と注意点)」）。
 
 </details>
 

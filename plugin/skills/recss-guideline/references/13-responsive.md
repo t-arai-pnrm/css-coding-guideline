@@ -1,6 +1,6 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.67.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.67.1（2026-10-15 生成）
 - ルールの数: 39
 - 本文: 約11.1万字
 - 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area
@@ -193,7 +193,7 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/#rule-safe-area-combine-with-max
 - 【推奨・仕様にもとづく制約】セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。（`safe-area-background-to-edge`）
   - 理由: `viewport-fit=cover` を指定する目的は背景を端まで描くことで、`margin` や外側の要素の `padding` で空けると、背景が途切れた帯ができるため。
-  - 補足: セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（12-10 `primary-layout` など）にセーフエリアを入れます。
+  - 補足: セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（12-11 `primary-layout` など）にセーフエリアを入れます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/#rule-safe-area-background-to-edge
 - 【必須・仕様にもとづく制約】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
   - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。

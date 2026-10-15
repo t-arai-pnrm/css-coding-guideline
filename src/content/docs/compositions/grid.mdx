@@ -1,8 +1,8 @@
 ---
-title: "12-6 grid：列の最小幅と最大数から列数を決める"
+title: "12-7 grid：列の最小幅と最大数から列数を決める"
 description: "grid は、列の最小幅と最大数を受け取り、置かれた場所の幅から列の数を自動で決めるコンポジションです。メディアクエリを使わずに、カードの一覧の列を1列から最大数まで1つずつ増減させます。"
 sidebar:
-  order: 6
+  order: 7
 ---
 
 import Demo from '../../../components/Demo.astro';
@@ -153,7 +153,7 @@ import switcherCss from '../../../demos/compositions/grid-switcher/style.css?raw
 
 ## `switcher` との使い分け
 
-`grid` とよく似たコンポジションに、`switcher` があります。どちらも列の最小幅を受け取り、幅が足りなくなると列を減らします。違うのは減り方で、`grid` は最大数から1列ずつ減り、`switcher` は指定の列数から一気に1列になります（`switcher` の仕組みは「[12-4 switcher](/compositions/switcher/)」で説明しています）。
+`grid` とよく似たコンポジションに、`switcher` があります。どちらも列の最小幅を受け取り、幅が足りなくなると列を減らします。違うのは減り方で、`grid` は最大数から1列ずつ減り、`switcher` は指定の列数から一気に1列になります（`switcher` の仕組みは「[12-5 switcher](/compositions/switcher/)」で説明しています）。
 
 次のデモでは、3つのアイテムを、最小幅200px相当、最大3列の `grid` と、同じ値の `switcher` で並べています。768pxではどちらも3列です。480pxでは、`grid` は2列になって3つ目のアイテムが2行目に1つだけ残り、`switcher` は3つとも縦に積まれます。
 
@@ -161,7 +161,7 @@ import switcherCss from '../../../demos/compositions/grid-switcher/style.css?raw
 
 使い分けの基準は、アイテムの数が決まっているかどうかです。サービスの特徴を3つ並べる、料金プランを3つ並べるといった、数が決まっていて揃いで見せたいアイテムには `switcher` を使います。3つのうち1つだけが2行目に回ると、揃いの印象が崩れるからです。件数が変わり、どこで折り返しても意味が変わらない一覧には `grid` を使います。
 
-アイテムの高さがばらばらで、行をそろえずに隙間を詰めたいときは、`grid` ではなく `masonry` を使います（「[12-8 masonry](/compositions/masonry/)」）。メインとサイドのように、幅の違う2つの領域を並べるときは `sidebar` です（「[12-5 sidebar](/compositions/sidebar/)」）。`grid` の列はすべて同じ幅になるので、幅の違う領域には向きません。
+アイテムの高さがばらばらで、行をそろえずに隙間を詰めたいときは、`grid` ではなく `masonry` を使います（「[12-9 masonry](/compositions/masonry/)」）。メインとサイドのように、幅の違う2つの領域を並べるときは `sidebar` です（「[12-6 sidebar](/compositions/sidebar/)」）。`grid` の列はすべて同じ幅になるので、幅の違う領域には向きません。
 
 ## 補足と注意点
 

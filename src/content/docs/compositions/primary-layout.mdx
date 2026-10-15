@@ -1,8 +1,8 @@
 ---
-title: "12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる"
+title: "12-11 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる"
 description: "primary-layout は、左右のガターと5段階の幅（フル、超ワイド、ワイド、コンテンツ、ナロー）の列を持つグリッドです。子はデフォルトでコンテンツ幅に置かれ、full-column などのクラスで幅を選びます。"
 sidebar:
-  order: 10
+  order: 11
 ---
 
 import Demo from '../../../components/Demo.astro';
@@ -203,11 +203,11 @@ import primaryLayoutCss from '../../../demos/compositions/primary-layout/style.c
 </article>
 ```
 
-このHTMLは、クラスを見るだけで各要素の幅が分かります。`primary-layout` の行の間隔はタイトルや図版のようなブロックの間の余白で、本文の段落の間隔は `_body` に付けた `prose` が受け持ちます（「[12-11 prose](/compositions/prose/)」）。
+このHTMLは、クラスを見るだけで各要素の幅が分かります。`primary-layout` の行の間隔はタイトルや図版のようなブロックの間の余白で、本文の段落の間隔は `_body` に付けた `prose` が受け持ちます（「[12-2 prose](/compositions/prose/)」）。
 
 ## 補足と注意点
 
-`primary-layout` は、ページやセクションのように、画面の幅を基準に左右の余白と最大幅を決めたい場所で使います。カードの中やサイドバーの中のように、置かれた場所の幅に合わせて列を組む配置には使いません。そうした配置には、列の数を幅から決める「[12-6 grid](/compositions/grid/)」や、メインとサイドの2カラムにする「[12-5 sidebar](/compositions/sidebar/)」が向いています。
+`primary-layout` は、ページやセクションのように、画面の幅を基準に左右の余白と最大幅を決めたい場所で使います。カードの中やサイドバーの中のように、置かれた場所の幅に合わせて列を組む配置には使いません。そうした配置には、列の数を幅から決める「[12-7 grid](/compositions/grid/)」や、メインとサイドの2カラムにする「[12-6 sidebar](/compositions/sidebar/)」が向いています。
 
 `100%` はグリッド自身の幅を指すので、フル幅はビューポートの幅ではなく、`primary-layout` を付けた要素の幅です。サイドバーのあるページのメインエリアに置けば、フル幅はメインエリアの端までになります。画面の端まで広げたいなら、`primary-layout` を画面の幅いっぱいの要素に付けます。
 

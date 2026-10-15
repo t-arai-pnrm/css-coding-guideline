@@ -1,8 +1,8 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.67.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.67.1（2026-10-15 生成）
 - ルールの数: 61
-- 本文: 約26.8万字
+- 本文: 約26.9万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,7 +13,7 @@
 ## この章の節
 
 - `layout-practice` 第11章 レイアウトを組む（約7,100字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/
-- `layout-practice/choosing` 11-1 レイアウト手法の選び方（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/choosing/
+- `layout-practice/choosing` 11-1 レイアウト手法の選び方（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/choosing/
 - `layout-practice/spacing` 11-2 余白を設計する（約3.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/spacing/
 - `layout-practice/defensive` 11-3 サイズと内容の変化に耐える（約2.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/defensive/
 - `layout-practice/overflow` 11-4 はみ出しとスクロール（約2.4万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/overflow/

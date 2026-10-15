@@ -24,7 +24,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 - [9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)
 - [10-2 コンポーネントの境界を守る](/components/boundaries/)
 - [11-2 余白を設計する](/layout-practice/spacing/)
-- [12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる](/compositions/primary-layout/)
+- [12-11 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる](/compositions/primary-layout/)
 
 ## 予想する
 
@@ -98,7 +98,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 
 ## 帯の中身の幅を primary-layout で決める
 
-帯の中身の幅は、帯に付けた `primary-layout` で決めます。`primary-layout` は、左右にガターの列を持つグリッドで、直下の子を中央のコンテンツの列に置きます（「[12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる](/compositions/primary-layout/)」）。コンテンツの幅の1080px相当は、帯で `--primary-layout--content-max-width` に渡しています。
+帯の中身の幅は、帯に付けた `primary-layout` で決めます。`primary-layout` は、左右にガターの列を持つグリッドで、直下の子を中央のコンテンツの列に置きます（「[12-11 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる](/compositions/primary-layout/)」）。コンテンツの幅の1080px相当は、帯で `--primary-layout--content-max-width` に渡しています。
 
 ヒーロー、強みのカード、制作の流れのどの部品にも、`max-inline-size` は書きません。部品は置かれた列の幅に広がるので、幅を変えるときに直すのは、帯に渡した1つの値だけです。帯の中の見出しと部品の間の24pxも、`--primary-layout--row-gap` で帯から渡しています。
 

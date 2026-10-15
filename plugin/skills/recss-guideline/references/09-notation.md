@@ -1,8 +1,8 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.67.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.67.1（2026-10-15 生成）
 - ルールの数: 49
-- 本文: 約12.2万字
+- 本文: 約12.3万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `notation` 第9章 記法の規約（約7,600字）https://t-arai-pnrm.github.io/recss-guideline/notation/
+- `notation` 第9章 記法の規約（約8,500字）https://t-arai-pnrm.github.io/recss-guideline/notation/
 - `notation/naming` 9-1 命名規則（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/notation/naming/
 - `notation/variants` 9-2 BEMからの書き直しとバリエーション（約9,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/variants/
 - `notation/terminology` 9-3 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/

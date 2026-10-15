@@ -52,7 +52,7 @@ import hidingJs from '../../../demos/interaction/hiding-methods/script.js?raw';
 
 `hidden` 属性は、ブラウザのデフォルトスタイルでは `display: none` の通常の宣言なので、コンポーネントが `display` を指定すると表示されてしまいます。本書の環境では、kiso.cssが `reset` レイヤーで `[hidden]` に `display: none !important` を指定しているので、この衝突は起きません。仕組みは「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」と「[7-12 display: contentsで箱をなくす](/layout/display-contents/)」で説明しています。コンポーネントの中で、`[hidden]` の指定を書き直す必要はありません。
 
-`hidden` 属性で隠した要素も、DOMの兄弟としては残ります。`* + *` の間隔や `:nth-child()` の数え方に影響する点は、「[12-11 prose](/compositions/prose/)」と「[5-4 子要素の位置で選ぶ](/pseudo/child-index/)」で扱います。閉じたパネルの中身をページ内検索で見つけられるようにしたいときは、`hidden="until-found"` を使います（「[17-6 開閉するUI](/interaction/disclosure/)」）。
+`hidden` 属性で隠した要素も、DOMの兄弟としては残ります。`* + *` の間隔や `:nth-child()` の数え方に影響する点は、「[12-2 prose](/compositions/prose/)」と「[5-4 子要素の位置で選ぶ](/pseudo/child-index/)」で扱います。閉じたパネルの中身をページ内検索で見つけられるようにしたいときは、`hidden="until-found"` を使います（「[17-6 開閉するUI](/interaction/disclosure/)」）。
 
 ## `visibility: hidden` で場所を残して消す
 

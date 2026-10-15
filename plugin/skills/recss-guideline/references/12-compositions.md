@@ -1,8 +1,8 @@
 # 第12章 レイアウトコンポジション：ルール
 
-- ガイドラインのバージョン: 0.67.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.67.1（2026-10-15 生成）
 - ルールの数: 37
-- 本文: 約17.2万字
+- 本文: 約17.1万字
 - 読む条件: 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,16 +14,16 @@
 
 - `compositions` 第12章 レイアウトコンポジション（約4,200字）https://t-arai-pnrm.github.io/recss-guideline/compositions/
 - `compositions/stack` 12-1 stack：子要素を縦に積み、間隔をそろえる（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/stack/
-- `compositions/cluster` 12-2 cluster：子を横に並べ、入りきらなければ折り返す（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/cluster/
-- `compositions/apart` 12-3 apart：子要素を両端に分ける（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/apart/
-- `compositions/switcher` 12-4 switcher：n列と1列を幅で切り替える（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/switcher/
-- `compositions/sidebar` 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/sidebar/
-- `compositions/grid` 12-6 grid：列の最小幅と最大数から列数を決める（約2万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/grid/
-- `compositions/columns` 12-7 columns：上から下へ読むリストを段に分ける（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/columns/
-- `compositions/masonry` 12-8 masonry：高さの違う子を短い列へ詰めて並べる（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/masonry/
-- `compositions/pile` 12-9 pile：子要素を同じセルに重ねる（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/pile/
-- `compositions/primary-layout` 12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/
-- `compositions/prose` 12-11 prose：子ごとに変えられる間隔で、本文の流れを作る（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/
+- `compositions/prose` 12-2 prose：子ごとに変えられる間隔で、本文の流れを作る（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/
+- `compositions/cluster` 12-3 cluster：子を横に並べ、入りきらなければ折り返す（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/cluster/
+- `compositions/apart` 12-4 apart：子要素を両端に分ける（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/apart/
+- `compositions/switcher` 12-5 switcher：n列と1列を幅で切り替える（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/switcher/
+- `compositions/sidebar` 12-6 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/sidebar/
+- `compositions/grid` 12-7 grid：列の最小幅と最大数から列数を決める（約2万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/grid/
+- `compositions/columns` 12-8 columns：上から下へ読むリストを段に分ける（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/columns/
+- `compositions/masonry` 12-9 masonry：高さの違う子を短い列へ詰めて並べる（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/masonry/
+- `compositions/pile` 12-10 pile：子要素を同じセルに重ねる（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/pile/
+- `compositions/primary-layout` 12-11 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/
 
 ## 12-1 stack：子要素を縦に積み、間隔をそろえる
 
@@ -44,7 +44,27 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/stack/
   - 補足: 子が別のコンポーネントのルートなら、そのコンポーネントの中には書かず、置く側のコンポーネントが子クラスで指定します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/stack/#rule-stack-align-self-start
 
-## 12-2 cluster：子を横に並べ、入りきらなければ折り返す
+## 12-2 prose：子ごとに変えられる間隔で、本文の流れを作る
+
+https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/
+
+- 【推奨・実装上の判断】`prose` の中で特定の間だけ間隔を変えるときは、`margin` を足さず、その間の後ろにある子に `--prose--space` を渡す。（`prose-space-on-following-child`）
+  - 理由: `margin-block-start` の `var(--prose--space)` は子要素の上で解決されるので、渡した子の前の間隔だけが変わり、打ち消しや差分の計算が要らないため。
+  - 補足: 見出しの前を広げるなら見出しに、見出しの直後を詰めるなら見出しの次の要素に渡します。値は `style` 属性で渡し、画面の幅で変えるときや複数の子にまとめて渡すときはコンポーネントの CSS で渡します。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-space-on-following-child
+- 【必須・本書の規約】`prose` の `--prose--space` はルートで内部プロパティに受け直さず、子要素の `margin-block-start` の `var()` で直接参照する。（`prose-no-internal-property`）
+  - 理由: ルートで受け直すと `var()` がルートの上で解決され、子には解決済みの値が継承されるので、子に渡した `--prose--space` が効かなくなるため。
+  - 補足: 公開プロパティを `:scope` で内部プロパティに受ける規約（第10章のルール `receive-public-property-with-fallback`）の例外です。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-no-internal-property
+- 【推奨・本書の規約】`prose` の中に `prose` を入れるときは、内側のルートの `--prose--space` を外側との間隔に使い、内側の間隔は内側の子に渡す。（`prose-nested-inner-space`）
+  - 理由: ルートに渡した値は継承によって内側の子にも届き、外側との間隔と内側の間隔が同じ値になってしまうため。
+  - 補足: 例：`._note { & > * { --prose--space: calc(var(--spacing--xxs) / 16 * 1rem); } }`
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-nested-inner-space
+- 【非推奨・本書の規約】CMS で編集者が入力する本文エリア（`.wysiwyg` など）には `prose` を付けず、`prose` は本文エリアとその前後の要素を並べる外側に使う。（`prose-not-on-cms-body`）
+  - 理由: 編集者は子に `style` 属性を付けられないうえ、本文エリアの余白のルールと同じ `margin-block-start` を指定し合い、`compositions` レイヤーの `prose` が黙って負けるため。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-not-on-cms-body
+
+## 12-3 cluster：子を横に並べ、入りきらなければ折り返す
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/cluster/
 
@@ -61,7 +81,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/cluster/
   - 補足: 内側でも一括の `--cluster--gap` を渡すなら、外側の値は上書きされるので不要です。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/cluster/#rule-cluster-reset-inherited-gap
 
-## 12-3 apart：子要素を両端に分ける
+## 12-4 apart：子要素を両端に分ける
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/apart/
 
@@ -76,7 +96,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/apart/
   - 理由: `space-between` は行に要素が1つしかないとき行頭に置くが、`auto` の `margin` は2行目でも余った空間を吸収して要素を行末に寄せるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/apart/#rule-apart-auto-margin-for-wrapped-end
 
-## 12-4 switcher：n列と1列を幅で切り替える
+## 12-5 switcher：n列と1列を幅で切り替える
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/switcher/
 
@@ -93,7 +113,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/switcher/
   - 補足: `switcher` では、`grid-template-columns` が `none` に戻り、どの幅でも1列になります。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/switcher/#rule-switcher-gap-default-with-unit
 
-## 12-5 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む
+## 12-6 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/sidebar/
 
@@ -113,7 +133,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/sidebar/
   - 理由: フレックスアイテムは中身の最小幅より狭くならず、折り返しの判定にも大きいほうが使われるので、指定より広い幅で折り返すようになるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/sidebar/#rule-sidebar-widths-above-min-content
 
-## 12-6 grid：列の最小幅と最大数から列数を決める
+## 12-7 grid：列の最小幅と最大数から列数を決める
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/grid/
 
@@ -130,7 +150,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/grid/
   - 理由: `grid` は列が1つずつ減るので、幅によっては1つのアイテムだけが次の行に残り、揃いの印象が崩れるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/grid/#rule-grid-switcher-for-fixed-sets
 
-## 12-7 columns：上から下へ読むリストを段に分ける
+## 12-8 columns：上から下へ読むリストを段に分ける
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/columns/
 
@@ -147,7 +167,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/columns/
   - 補足: 負のマージンはルートには付けず、内側の要素に付けます。ルートに付けると、親の `gap` や隣の要素との間隔が変わります。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/columns/#rule-columns-negative-margin-in-flow-root
 
-## 12-8 masonry：高さの違う子を短い列へ詰めて並べる
+## 12-9 masonry：高さの違う子を短い列へ詰めて並べる
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/masonry/
 
@@ -160,7 +180,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/masonry/
   - 補足: `infinite` は渡しません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/masonry/#rule-masonry-tolerance-default-normal
 
-## 12-9 pile：子要素を同じセルに重ねる
+## 12-10 pile：子要素を同じセルに重ねる
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/pile/
 
@@ -180,7 +200,7 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/pile/
   - 理由: `pile` の子は親の大きさに反映されて枠の中に収まり、`isolation: isolate` で重なり順も `pile` の中に閉じるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/pile/#rule-pile-not-for-overflowing-layers
 
-## 12-10 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる
+## 12-11 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる
 
 https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/
 
@@ -194,23 +214,3 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/
 - 【推奨・本書の規約】コンポジションの子に付けて置き場所を選ぶクラスは、`full-column` のように接頭辞を付けずに名付け、`& > .full-column` のように直下の子に限って効かせる。（`primary-layout-child-classes-unprefixed`）
   - 理由: `_` はコンポーネントの子要素、`-` はどこでも効くユーティリティの印なので、どちらでもないコンポジションの一部であることを名前とセレクタで示すため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/#rule-primary-layout-child-classes-unprefixed
-
-## 12-11 prose：子ごとに変えられる間隔で、本文の流れを作る
-
-https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/
-
-- 【推奨・実装上の判断】`prose` の中で特定の間だけ間隔を変えるときは、`margin` を足さず、その間の後ろにある子に `--prose--space` を渡す。（`prose-space-on-following-child`）
-  - 理由: `margin-block-start` の `var(--prose--space)` は子要素の上で解決されるので、渡した子の前の間隔だけが変わり、打ち消しや差分の計算が要らないため。
-  - 補足: 見出しの前を広げるなら見出しに、見出しの直後を詰めるなら見出しの次の要素に渡します。値は `style` 属性で渡し、画面の幅で変えるときや複数の子にまとめて渡すときはコンポーネントの CSS で渡します。
-  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-space-on-following-child
-- 【必須・本書の規約】`prose` の `--prose--space` はルートで内部プロパティに受け直さず、子要素の `margin-block-start` の `var()` で直接参照する。（`prose-no-internal-property`）
-  - 理由: ルートで受け直すと `var()` がルートの上で解決され、子には解決済みの値が継承されるので、子に渡した `--prose--space` が効かなくなるため。
-  - 補足: 公開プロパティを `:scope` で内部プロパティに受ける規約（第10章のルール `receive-public-property-with-fallback`）の例外です。
-  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-no-internal-property
-- 【推奨・本書の規約】`prose` の中に `prose` を入れるときは、内側のルートの `--prose--space` を外側との間隔に使い、内側の間隔は内側の子に渡す。（`prose-nested-inner-space`）
-  - 理由: ルートに渡した値は継承によって内側の子にも届き、外側との間隔と内側の間隔が同じ値になってしまうため。
-  - 補足: 例：`._note { & > * { --prose--space: calc(var(--spacing--xxs) / 16 * 1rem); } }`
-  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-nested-inner-space
-- 【非推奨・本書の規約】CMS で編集者が入力する本文エリア（`.wysiwyg` など）には `prose` を付けず、`prose` は本文エリアとその前後の要素を並べる外側に使う。（`prose-not-on-cms-body`）
-  - 理由: 編集者は子に `style` 属性を付けられないうえ、本文エリアの余白のルールと同じ `margin-block-start` を指定し合い、`compositions` レイヤーの `prose` が黙って負けるため。
-  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/#rule-prose-not-on-cms-body

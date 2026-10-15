@@ -1,8 +1,8 @@
 ---
-title: "12-2 cluster：子を横に並べ、入りきらなければ折り返す"
+title: "12-3 cluster：子を横に並べ、入りきらなければ折り返す"
 description: "タグの一覧やボタンの並びのように、子を同じ側に寄せて横に並べ、入りきらなければ折り返す配置は cluster で書きます。間隔は一括と行・列別の公開プロパティで受け取り、デフォルト値は0にします。"
 sidebar:
-  order: 2
+  order: 3
 ---
 
 import Baseline from '../../../components/Baseline.astro';
@@ -146,7 +146,7 @@ import clusterCss from '../../../demos/compositions/cluster/style.css?raw';
 
 ### `apart` との使い分け
 
-`cluster` と `apart` は、どちらもFlexboxで子を横に並べ、入りきらなければ折り返します。違いは寄せ方で、`cluster` は子をまとめて同じ側に寄せ、`apart`（「[12-3 apart](/compositions/apart/)」。子を両端に分ける）は `justify-content: space-between` で子を両端に分けます。ヘッダーのロゴとナビゲーション、フッターの著作権表記とリンク集のように、2つのまとまりを左右に分けるなら `apart` です。
+`cluster` と `apart` は、どちらもFlexboxで子を横に並べ、入りきらなければ折り返します。違いは寄せ方で、`cluster` は子をまとめて同じ側に寄せ、`apart`（「[12-4 apart](/compositions/apart/)」。子を両端に分ける）は `justify-content: space-between` で子を両端に分けます。ヘッダーのロゴとナビゲーション、フッターの著作権表記とリンク集のように、2つのまとまりを左右に分けるなら `apart` です。
 
 `cluster` に `--cluster--justification: space-between` を渡しても、見た目の上では両端に分けられます。しかし、子が3つ以上ある `cluster` で `space-between` を使うと、行ごとに子の数が違うので間隔がばらつき、最後の行に子が2つ残れば左右の端に離れて置かれます。
 
