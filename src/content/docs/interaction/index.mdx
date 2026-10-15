@@ -101,7 +101,7 @@ sidebar:
 }
 ```
 
-矢印は `<summary>` の中の子要素なので、`&:is(._item[open] *)` で祖先の `<details>` の状態を読みます。回転は大きな変動にあたるので、トランジションは `prefers-reduced-motion: no-preference` の中に書きます（「[18-7 出現と退場](/motion/entry-and-exit/)」）。`<summary>` には無効の状態がないので、ホバーは `&:any-link:hover` や `&:enabled:hover` で絞らずに `&:hover` と書き、`@media (any-hover)` の中に置きます。同じ見た目を `:focus-visible` にも指定し、キーボードで操作するユーザーにも同じ手がかりを渡します（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。
+矢印は `<summary>` の中の子要素なので、`&:is(._item[open] *)` で祖先の `<details>` の状態を読みます。回転は大きな変動にあたるので、トランジションは `prefers-reduced-motion: no-preference` の中に書きます（「[18-7 出現と退場](/motion/entry-and-exit/)」）。`<summary>` には無効の状態がないので、ホバーは `&:any-link:hover` や `&:enabled:hover` で絞らずに `&:hover` と書き、`@media (any-hover)` の中に置きます。同じ見た目を `:focus-visible` にも指定し、キーボードで操作するユーザーにも同じ手がかりを示します（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。
 
 </details>
 
@@ -113,7 +113,7 @@ sidebar:
 
 操作に応じた振る舞いが要るときは、JavaScriptで作り直す前に、ブラウザの要素や属性で足りないかを見ます。状態に合わせて見た目を変えたいなら、クラスを足さず、その状態をブラウザや支援技術に伝えている擬似クラスや属性をセレクタにします。
 
-押し損じや、ホバーの背景が途切れるといった症状は、余白を外側の要素や項目の間の隙間に置いていないかを疑い、操作する要素自身の `padding` に移します。ホバーで変えた見た目は、`:focus-visible` でもキーボードの利用者に同じ手がかりが出ているかを確かめます。
+押し損じや、ホバーの背景が途切れるといった症状は、余白を外側の要素や項目の間の隙間に置いていないかを調べ、操作する要素自身の `padding` に移します。ホバーで変えた見た目は、`:focus-visible` でもキーボードの利用者に同じ手がかりが出ているかを確かめます。
 
 ## 次の章へ
 

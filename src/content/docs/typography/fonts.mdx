@@ -142,7 +142,7 @@ URLに `display=swap` を指定しておくと、Webフォントの読み込み�
 </noscript>
 ```
 
-この読み込み方は、インラインのイベントハンドラー（`onload` 属性）を実行できることが条件です。CSPの `script-src-attr 'none'` などで許可しないサイトでは、スタイルシートを取得できても `onload` が動かず、`rel` が `preload` のままで適用されません。`<noscript>` はJavaScriptが有効な環境では使われないので、救済になりません。許可しないサイトでは、通常の `<link rel="stylesheet">` を使うか、CSPで許可したスクリプトから `load` イベントを登録して `rel` を書き換えます。通常の `stylesheet` はレンダリングをブロックしますが、`preconnect` と `display=swap` は同じように使えるので、遅れは小さくできます。
+この読み込み方は、インラインのイベントハンドラー（`onload` 属性）を実行できることが条件です。CSPの `script-src-attr 'none'` などで許可しないサイトでは、スタイルシートを取得できても `onload` が動かず、`rel` が `preload` のままで適用されません。`<noscript>` はJavaScriptが有効な環境では使われないので、代わりになりません。許可しないサイトでは、通常の `<link rel="stylesheet">` を使うか、CSPで許可したスクリプトから `load` イベントを登録して `rel` を書き換えます。通常の `stylesheet` はレンダリングをブロックしますが、`preconnect` と `display=swap` は同じように使えるので、遅れは小さくできます。
 
 ### 代わりのフォントの寸法をWebフォントに近づける
 
@@ -167,7 +167,7 @@ URLに `display=swap` を指定しておくと、Webフォントの読み込み�
 
 数値は説明のための例です。値は、2つのフォントのファイルに入っている寸法（平均の字幅、アセント、ディセントなど）から計算します。手で見当を付けずに、Capsizeやfontaineのようなツールで計算します。Next.jsのように、フレームワークがこの `@font-face` を自動で作る場合もあります。{/* 要確認: 出典なし */}
 
-代わりのフォントはOSによって違うので、1組の値ですべての環境のずれがなくなるわけではありません。上の例はArialを基準にしているので、Arialのない環境では補正が適用されません。また、`size-adjust` はすべての主要なブラウザで使えますが、`ascent-override` などの3つの記述子は、Safariが対応していません。対応していない環境では補正の一部が適用されないだけで、表示が壊れることはありません。
+代わりのフォントはOSによって違うので、1組の値ですべての環境のずれがなくなるわけではありません。上の例はArialを基準にしているので、Arialのない環境では補正が適用されません。また、`size-adjust` はすべての主要なブラウザで使えますが、`ascent-override` などの3つの記述子は、Safariが対応していません。対応していない環境では補正の一部が適用されないだけで、表示が崩れることはありません。
 
 <Baseline id="font-metric-overrides" name="ascent-override、descent-override、line-gap-override" />
 

@@ -161,7 +161,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 <Demo title="対応している環境では、枠線がグラデーションになる" html={gradientBorderHtml} css={gradientBorderCss} />
 
-`border-color: transparent` は、`@supports` の中に書きます。外に書くと、未対応の環境では背景の切り抜きが効かないまま枠線だけが透明になり、枠線が消えるからです。`@supports` で分けておけば、未対応の環境では単色の枠線として表示されます。グラデーションの枠線は装飾なので、多くの場合は単色の枠線で足ります。
+`border-color: transparent` は、`@supports` の中に書きます。外に書くと、未対応の環境では背景が枠線の部分に切り抜かれないまま枠線だけが透明になり、枠線が消えるからです。`@supports` で分けておけば、未対応の環境では単色の枠線として表示されます。グラデーションの枠線は装飾なので、多くの場合は単色の枠線で足ります。
 
 `border-area` は、Safari 18.2以降とChrome 150以降が対応しています。Firefoxは未対応です。
 

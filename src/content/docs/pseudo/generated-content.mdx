@@ -74,7 +74,7 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 
 `::before` と `::after` は、`content` に `none` 以外の値を指定したときだけ作られます。`content` の初期値は `normal` で、`::before` と `::after` では `none` として計算されるからです。MDNによれば、`content` の値が無効な場合も、擬似要素は作られません。図形だけを描くときも、`content: ""` で中身が空の箱を作る必要があります。
 
-作られた箱は、`display` を指定しなければインラインです。空のインラインの箱には `inline-size` と `block-size` が効かないので、線や図形を描くときは箱の種類を変えます。親がフレックスコンテナかグリッドコンテナなら、擬似要素はそのアイテムになり、`display` を指定しなくても大きさが効きます。絶対配置した擬似要素も、ブロックの箱になります。空の擬似要素に `display: inline flow-root` を指定してアイコンを描く例は、第16章「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」にあります。
+作られた箱は、`display` を指定しなければインラインです。空のインラインの箱には `inline-size` と `block-size` が働かないので、線や図形を描くときは箱の種類を変えます。親がフレックスコンテナかグリッドコンテナなら、擬似要素はそのアイテムになり、`display` を指定しなくても大きさの指定が働きます。絶対配置した擬似要素も、ブロックの箱になります。空の擬似要素に `display: inline flow-root` を指定してアイコンを描く例は、第16章「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」にあります。
 
 ```css title="🙆‍♂ Recommended: 空の擬似要素で図形を描くときは、content と箱の種類を指定する"
 @scope (.scoped.status-label) to (.scoped) {
@@ -129,7 +129,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 <Demo title="見出しの線、リストのチェック、リンクの矢印を擬似要素で描く" html={sectionHtml} css={sectionCss} />
 
-見出しの線は、`content: ""` で作った文字のない箱です。見出しを `display: block flex` にしているので、擬似要素はフレックスアイテムになり、`block-size` が効きます。幅は指定せず、`border-inline-start` の太さに任せています。高さの `1lh` は1行の高さなので、見出しの文字の大きさを変えても、線の長さが行に合います。線は背景色ではなく `border-inline-start` で描いています。強制カラーモードでは背景色が消えますが、枠線は残るからです（第15章「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
+見出しの線は、`content: ""` で作った文字のない箱です。見出しを `display: block flex` にしているので、擬似要素はフレックスアイテムになり、`block-size` が働きます。幅は指定せず、`border-inline-start` の太さに任せています。高さの `1lh` は1行の高さなので、見出しの文字の大きさを変えても、線の長さが行に合います。線は背景色ではなく `border-inline-start` で描いています。強制カラーモードでは背景色が消えますが、枠線は残るからです（第15章「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」）。
 
 チェックの記号と矢印は文字なので、代替テキストを空にしています。リストの項目は `display: block grid` にして、記号を1列目に、本文を2列目に置いています。本文が2行に折り返しても、2行目が記号の下に回り込みません。リストの印を消すのに `list-style: none` を使わない理由は、次の見出しで説明します。
 

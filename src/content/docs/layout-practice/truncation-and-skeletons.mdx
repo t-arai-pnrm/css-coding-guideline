@@ -93,7 +93,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 <Baseline id="overflow-clip-margin" compatKey="css.properties.overflow-clip-margin.content-box" name="overflow-clip-margin: content-box" />
 
-`content-box` の値には、Firefoxが148から対応しています。Chromeも104から対応していますが、両方の軸を `clip` にしたときだけ効く部分的な実装なので、上の表では未対応として扱われています。Chromeで確かめたところ、ブロック方向だけを切り取る行数制限のユーティリティでは効きませんでした。Safariは対応していません。未対応の環境では次の行がのぞいたままになるので、本書では今のところ採用せず、余白を外側の要素に持たせます。
+`content-box` の値には、Firefoxが148から対応しています。Chromeも104から対応していますが、両方の軸を `clip` にしたときだけ反映される部分的な実装なので、上の表では未対応として扱われています。Chromeで確かめたところ、ブロック方向だけを切り取る行数制限のユーティリティでは反映されませんでした。Safariは対応していません。未対応の環境では次の行がのぞいたままになるので、本書では今のところ採用せず、余白を外側の要素に持たせます。
 
 ## 読み込み中の表示を読み込み後と同じ寸法にする
 

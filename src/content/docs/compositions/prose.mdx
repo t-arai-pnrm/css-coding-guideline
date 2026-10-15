@@ -71,7 +71,7 @@ import proseCss from '../../../demos/compositions/prose/style.css?raw';
 
 この振る舞いは、`var()` を書いた宣言がどの要素にあるかで決まります。`margin-block-start` は子要素に指定されているので、`var(--prose--space)` も子要素の上で解決されます。ルートに書いた値は、子に継承されて初めて使われます。
 
-そのため、`prose` には内部プロパティを置きません。ほかのコンポジションのように、ルートで `--_c--space: var(--prose--space, 0)` と受け直すと、`var()` はルートの上で解決され、子には解決済みの値が継承されます。子に `--prose--space` を渡しても `--_c--space` は計算し直されないので、子ごとの上書きが効かなくなります。公開プロパティを内部プロパティで受ける書き方（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）の、意図した例外です。
+そのため、`prose` には内部プロパティを置きません。ほかのコンポジションのように、ルートで `--_c--space: var(--prose--space, 0)` と受け直すと、`var()` はルートの上で解決され、子には解決済みの値が継承されます。子に `--prose--space` を渡しても `--_c--space` は計算し直されないので、子ごとの上書きが反映されなくなります。公開プロパティを内部プロパティで受ける書き方（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）の、意図した例外です。
 
 ## 子ごとに間隔を渡す
 
@@ -142,7 +142,7 @@ import proseCss from '../../../demos/compositions/prose/style.css?raw';
 
 CMSで編集者が入力する本文エリアには、`prose` を使いません。編集者は要素にクラスや `style` 属性を付けられないので、子ごとに値を渡すという `prose` の使い方ができないからです。本文エリアでは、「[19-5 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」のように、`.wysiwyg` の `@scope` の中で、見出しの前の余白を要素の種類のセレクタで決めます。
 
-本文エリアの要素に `prose` を重ねて付けることもしません。`.wysiwyg` の余白のルールと `prose` のルールが、同じ子の `margin-block-start` を指定することになります。`components` レイヤーは `compositions` レイヤーより後なので、`prose` の値は黙って負け、HTMLに書いた `prose` のクラスが何の働きもしなくなります。先の記事の例のように、`prose` は本文エリアとその前後の要素を並べる外側に使い、本文エリアの中の余白は `.wysiwyg` に任せます。
+本文エリアの要素に `prose` を重ねて付けることもしません。`.wysiwyg` の余白のルールと `prose` のルールが、同じ子の `margin-block-start` を指定することになります。`components` レイヤーは `compositions` レイヤーより後なので、`prose` の値は警告もなく上書きされ、HTMLに書いた `prose` のクラスが何の働きもしなくなります。先の記事の例のように、`prose` は本文エリアとその前後の要素を並べる外側に使い、本文エリアの中の余白は `.wysiwyg` に任せます。
 
 ## 補足と注意点
 

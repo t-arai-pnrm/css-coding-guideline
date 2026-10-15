@@ -16,7 +16,7 @@ import listInsertHtml from '../../../demos/motion/list-insert/index.html?raw';
 import listInsertCss from '../../../demos/motion/list-insert/style.css?raw';
 import listInsertJs from '../../../demos/motion/list-insert/script.js?raw';
 
-`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。表示された瞬間の見た目を `@starting-style` で指定し、`display` と `overlay` をトランジションの対象に加えれば、ポップオーバーやダイアログの開閉の両方をCSSだけで動かせます。`@starting-style` の宣言は通常のカスケードで競うので、元の規則の中に書きます。退場を動かす必要がなければ、`@keyframes` の `from` で出現だけを動かすほうが壊れにくくなります。
+`display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。表示された瞬間の見た目を `@starting-style` で指定し、`display` と `overlay` をトランジションの対象に加えれば、ポップオーバーやダイアログの開閉の両方をCSSだけで動かせます。`@starting-style` の宣言は通常のカスケードで競うので、元の規則の中に書きます。退場を動かす必要がなければ、`@keyframes` の `from` で出現だけを動かすほうが、開始値がほかの規則で上書きされずに済みます。
 
 DOMに追加した要素も `@starting-style` の値から動き始めますが、`remove()` で削除した要素の退場はCSSだけでは動かせません。`<details>` の開閉は、`::details-content` の高さと不透明度をトランジションで動かします。ページの上に重ねて出すパネル、要素をずらして出す演出、ツールチップの表示の遅延は、「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/)」で扱います。
 
@@ -86,9 +86,9 @@ Firefoxは `display: none` へのトランジションに対応していませ�
 
 `@starting-style` そのものは詳細度を持たず、中の宣言は、囲んでいるセレクタの詳細度で比べられます。開いた状態のセレクタの中に書けば元の規則と同じ詳細度になり、後に書いた `@starting-style` がソース順で優先されます。元の規則から離して別のセレクタで書くと、そのセレクタの詳細度で比べられるので、より詳細度の高い規則に開始値を上書きされることがあります。
 
-開始値が効かないときに、`!important` や詳細度を上げるセレクタで解決しようとすると、ほかの状態のスタイルまで上書きしてしまいます。競合している規則を見つけ、`@starting-style` を元の規則の中に移すほうが確実です。詳細度の設計は「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
+開始値が使われないときに、`!important` や詳細度を上げるセレクタで解決しようとすると、ほかの状態のスタイルまで上書きしてしまいます。競合している規則を見つけ、`@starting-style` を元の規則の中に移すほうが確実です。詳細度の設計は「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」で説明しています。
 
-出現だけを動かせば足りるなら、`@keyframes` の `from` を使うほうが壊れにくくなります。アニメーションの値は、通常の宣言よりカスケードで優先されるので、ほかの規則に開始値を上書きされません。退場も動かしたいとき、つまり `display: none` へ戻る動きまで扱うときに、`@starting-style` を使います。
+出現だけを動かせば足りるなら、`@keyframes` の `from` を使うほうが安全です。アニメーションの値は、通常の宣言よりカスケードで優先されるので、ほかの規則に開始値を上書きされません。退場も動かしたいとき、つまり `display: none` へ戻る動きまで扱うときに、`@starting-style` を使います。
 
 ```css title="🙆‍♂ Recommended: 出現だけを @keyframes で動かす"
 @scope (.scoped.toast) to (.scoped) {

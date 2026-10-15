@@ -18,7 +18,7 @@ import containingBlockCss from '../../../demos/layout/layout-containing-block/st
 import stackingHtml from '../../../demos/layout/layout-stacking-context/index.html?raw';
 import stackingCss from '../../../demos/layout/layout-stacking-context/style.css?raw';
 
-CSSのレイアウトは、1つの仕組みではなく、通常フロー、Flexbox、Grid、位置指定（`position`）といった複数の方式の組み合わせでできています。同じ `margin` や `inline-size` でも、要素がどの方式の中に置かれているかで、効き方が変わります。指定が思いどおりに効かないときは、値を足す前に、その要素がどの方式の中にあり、大きさや位置の基準になる要素（包含ブロック）と、重なり順を決める範囲（スタッキングコンテキスト）がどれかを確かめます。
+CSSのレイアウトは、1つの仕組みではなく、通常フロー、Flexbox、Grid、位置指定（`position`）といった複数の方式の組み合わせでできています。同じ `margin` や `inline-size` でも、要素がどの方式の中に置かれているかで、働き方が変わります。指定が思いどおりに効かないときは、値を足す前に、その要素がどの方式の中にあり、大きさや位置の基準になる要素（包含ブロック）と、重なり順を決める範囲（スタッキングコンテキスト）がどれかを確かめます。
 
 この節で新しく判断するのは、効かない指定の原因を方式の規則、包含ブロック、スタッキングコンテキストのどれかから特定し、規則どおりの直し方を選ぶことです。CSSを方式ごとのアルゴリズムの集まりとして捉え、プロパティをその入力として読む見方は、「[1-3 CSSはレイアウトのアルゴリズムの集まりである](/principles/layout-algorithms/)」で説明しています。各方式の詳しい規則は、続く7-2〜7-10で説明します。
 
@@ -93,7 +93,7 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 つまり、要素がどの方式で並ぶかは、親の `display` の内側の値で決まります。親を `display: block grid` に変えると、子は通常フローではなくGridの規則で並び、子に書いた `margin` や `inline-size` の意味も変わります。要素自身の `display` を見ても、その要素がどう並ぶかは分かりません。
 
-次のデモでは、`inline-size: 96px` と `padding-block: 16px` を指定した同じ `<span>` を、2つの親に入れています。通常フローの親では、`<span>` はインラインのまま行に流れ、幅は無視され、上下の `padding` は行の高さに加わりません。親を `display: block flex` にすると、同じ指定がアイテムの幅と高さとして効きます。
+次のデモでは、`inline-size: 96px` と `padding-block: 16px` を指定した同じ `<span>` を、2つの親に入れています。通常フローの親では、`<span>` はインラインのまま行に流れ、幅は無視され、上下の `padding` は行の高さに加わりません。親を `display: block flex` にすると、同じ指定がアイテムの幅と高さとして働きます。
 
 <Demo title="親の display を変えると、子の同じ指定の効き方が変わる" html={parentDisplayHtml} css={parentDisplayCss} variant="neutral" />
 
@@ -121,7 +121,7 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 <Demo title="同じ inline-size: 280px が、置かれた方式によって無視される、はみ出す、縮む" html={inlineSizeHtml} css={inlineSizeCss} variant="neutral" />
 
-直し方も、方式の規則に合わせて選びます。リンクに幅を持たせたいなら、値を変えずに `display: inline flow-root` を指定して、幅を持てる種類の箱へ変えます。フレックスアイテムが縮みすぎるときは、縮む量を決めているのは幅ではなく `flex-shrink` と最小幅なので、そちらで守ります（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」）。
+直し方も、方式の規則に合わせて選びます。リンクに幅を持たせたいなら、値を変えずに `display: inline flow-root` を指定して、幅を持てる種類の箱へ変えます。フレックスアイテムが縮みすぎるときは、縮む量を決めているのは幅ではなく `flex-shrink` と最小幅なので、そちらで縮みすぎを防ぎます（「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」）。
 
 ```css title="🙆‍♂ Recommended: 方式の規則に合わせて、幅を決める指定を選ぶ"
 /* 通常フローのインライン：幅を持てる種類の箱に変える */
@@ -169,7 +169,7 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 <Demo title="親がスタッキングコンテキストを作ると、子の z-index は親の外と比べられない" html={stackingHtml} css={stackingCss} variant="neutral" />
 
-`z-index` が効くかどうかも、方式で変わります。通常フローの要素は、`position` を指定しないと `z-index` が効きませんが、フレックスアイテムとグリッドアイテムは、`position` がなくても効きます。スタッキングコンテキストは、`opacity` が1未満の要素や、`transform` を持つ要素などでも作られます。意図して作るときは `isolation: isolate` を使います（「[11-6 重なりと全幅](/layout-practice/layering/)」）。
+`z-index` が働くかどうかも、方式で変わります。通常フローの要素は、`position` を指定しないと `z-index` が働きませんが、フレックスアイテムとグリッドアイテムは、`position` がなくても働きます。スタッキングコンテキストは、`opacity` が1未満の要素や、`transform` を持つ要素などでも作られます。意図して作るときは `isolation: isolate` を使います（「[11-6 重なりと全幅](/layout-practice/layering/)」）。
 
 ```css title="🙆‍♂ Recommended: z-index の数値を使わずにスタッキングコンテキストを作る"
 ._card {
@@ -220,7 +220,7 @@ Flexboxは、アイテムの中身の大きさから出発して、余った空�
 
 ここまでの仕組みを、効かない指定を調べる順番にまとめます。まず親の `display` の内側の値を見て、要素が通常フロー、Flexbox、Gridのどれで並ぶかを確かめます。次に要素自身の `position` と `float` を見て、その流れから外れていないかを確かめます。最後に、そのプロパティがその方式で何を意味するか、包含ブロックとスタッキングコンテキストがどの要素かを確かめます（ルール [`identify-layout-mode-first`](/layout/fundamentals/#rule-identify-layout-mode-first)）。プロパティの意味は、7-2〜7-10の各節や、MDNのプロパティのページ（冒頭の説明と、公式定義の「適用対象」）で確かめられます。
 
-ブラウザの開発者ツールも、この確認に使えます。Chromeの開発者ツールは、正しい宣言でもほかの指定の都合で効いていないものを薄い文字で表示し、横のアイコンにその理由を示します（Chrome 108から）。Firefoxの開発者ツールにも、同じように効いていない宣言を示す機能があり（Firefox 70から）、インライン要素に書いた `width` には、インライン要素には効かないという理由が表示されます。
+ブラウザの開発者ツールも、この確認に使えます。Chromeの開発者ツールは、正しい宣言でもほかの指定の都合で働いていないものを薄い文字で表示し、横のアイコンにその理由を示します（Chrome 108から）。Firefoxの開発者ツールにも、同じように働いていない宣言を示す機能があり（Firefox 70から）、インライン要素に書いた `width` には、インライン要素では働かないという理由が表示されます。
 
 ## ガイドライン
 

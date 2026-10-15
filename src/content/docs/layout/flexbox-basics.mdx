@@ -93,11 +93,11 @@ Flexboxの不具合には、よく見かける型があります。2つのアイ
 | `align-self` | 交差軸 | そのアイテムだけ | アイテム |
 | `align-content` | 交差軸 | 折り返してできた行のまとまりと、行の間隔 | コンテナ |
 
-`justify-content` は、主軸の余りを、アイテムの前後や間にどう分けるかを決めます。Flexboxは主軸の配置を行の中のまとまりとして扱うので、`justify-items` と `justify-self` は効きません。主軸で1つだけを離すときは、`auto` の `margin` を使います。
+`justify-content` は、主軸の余りを、アイテムの前後や間にどう分けるかを決めます。Flexboxは主軸の配置を行の中のまとまりとして扱うので、`justify-items` と `justify-self` は働きません。主軸で1つだけを離すときは、`auto` の `margin` を使います。
 
 `align-items` は、各アイテムを、自分のいる行の中で交差軸のどこに置くかを決めます。初期値の `normal` は、フレックスアイテムでは `stretch` として扱われるので、交差軸の大きさを指定していないアイテムは行の高さいっぱいに伸びます。`align-self` は、同じ指定をアイテムの側から1つだけ上書きします。
 
-`align-content` は、折り返してできた行を、コンテナの交差軸のどこに置くかを決めます。`flex-wrap` が初期値の `nowrap` のコンテナは1行のコンテナとして扱われ、`align-content` は効きません。
+`align-content` は、折り返してできた行を、コンテナの交差軸のどこに置くかを決めます。`flex-wrap` が初期値の `nowrap` のコンテナは1行のコンテナとして扱われ、`align-content` は働きません。
 
 次のデモは、高さ160pxのコンテナで配置のプロパティを比べたものです。2つ目のアイテムだけ高さを変えています。1つ目では3つのアイテムが行頭、中央、行末に分かれ、2つ目では3つともコンテナの上下の中央に並び、3つ目ではCだけが下端に置かれます。4つ目では、折り返した2行のまとまりが、`align-content: end` でコンテナの下端に移っています。
 
@@ -219,7 +219,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 <Demo title="flex-grow: 1 と flex: 1 の伸ばし方の違い" html={flexOneHtml} css={flexOneCss} widths={[]} />
 
-このように別物なので、`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（ルール [`longhand-for-partial-change`](/design-mindset/maintainability/#rule-longhand-for-partial-change) の補足）。ただし、`flex: 1` で幅がそろうのは、アイテムの `padding` と `border` が同じ場合だけです。その理由は、次の「`flex: 1` でも列の幅がそろわない場合」で説明します。
+このように意味が違うので、`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（ルール [`longhand-for-partial-change`](/design-mindset/maintainability/#rule-longhand-for-partial-change) の補足）。ただし、`flex: 1` で幅がそろうのは、アイテムの `padding` と `border` が同じ場合だけです。その理由は、次の「`flex: 1` でも列の幅がそろわない場合」で説明します。
 
 表の `flex: 1` の `flex-basis` を `0%` としたのは、ブラウザの実装に合わせたためです。仕様では、`flex: 1` は `flex: 1 1 0` に等しいと定義されています。しかし、主要なブラウザは `0%` として扱い、ブラウザの実装を検証するテスト（Web Platform Tests）も、算出値が `0%` になることを確かめています。コンテナの幅が決まっている横並びでは、`0%` も0pxに解決されるので、どちらでも結果は変わりません。
 
@@ -231,7 +231,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 `overflow` を `hidden` や `auto` にしてスクロールコンテナになったアイテムは、自動の最小幅が0になります。ただし、`overflow: hidden` で止めると中身が切り取られ、URLや入力欄の一部が見えなくなります。隠すのではなく、最小幅を0にして、中身を折り返させるかスクロールさせます。
 
-本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で説明しています。
+本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。要素の縮みすぎを `flex-shrink: 0` ではなく `min-inline-size: fit-content` で防ぐ理由は、「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 長いURLを含む本文を、最小幅を0にして折り返させる"
 ._body {

@@ -67,7 +67,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 }
 ```
 
-`align-self` を指定しないと、交差軸の `stretch` で、高さが行の高さまで伸びます。`aspect-ratio` は、高さが伸ばされると効きません。高さ60pxのフレックスコンテナで試すと、`inline-size: 1em` と `aspect-ratio: 1` を指定した20pxのアイコンは、20×60pxになりました。`flex: none` を指定しないと、リンクの文字が折り返すほど親が狭いときに、幅が縮みます。親の幅を60pxにすると、幅は約4pxでした。デモでは、親の `align-items: center` で高さが伸びないので、`flex: none` だけを指定しています。
+`align-self` を指定しないと、交差軸の `stretch` で、高さが行の高さまで伸びます。`aspect-ratio` は、高さが伸ばされると使われません。高さ60pxのフレックスコンテナで試すと、`inline-size: 1em` と `aspect-ratio: 1` を指定した20pxのアイコンは、20×60pxになりました。`flex: none` を指定しないと、リンクの文字が折り返すほど親が狭いときに、幅が縮みます。親の幅を60pxにすると、幅は約4pxでした。デモでは、親の `align-items: center` で高さが伸びないので、`flex: none` だけを指定しています。
 
 `background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
 
@@ -199,7 +199,7 @@ button {
 
 ### `<use>` の中身へのスタイルの届き方
 
-`<use>` で参照した図形は、`<use>` 要素のシャドウツリーに複製されます。外の文書に書いたスタイルのルールは、この複製した要素には当たりません。そのため、`.button path` のように、置いた場所の祖先から中の図形を選ぶことはできません。Chromeで確かめたところ、`.button path` に指定した `fill` は効かず、図形は `svg` 要素から継承した色のままでした。
+`<use>` で参照した図形は、`<use>` 要素のシャドウツリーに複製されます。外の文書に書いたスタイルのルールは、この複製した要素には当たりません。そのため、`.button path` のように、置いた場所の祖先から中の図形を選ぶことはできません。Chromeで確かめたところ、`.button path` に指定した `fill` は当たらず、図形は `svg` 要素から継承した色のままでした。
 
 ```css title="🙅‍♂ Not Recommended: 置いた場所の祖先から、use の中の図形を選ぶ"
 /* 🙅‍♂ Not Recommended */

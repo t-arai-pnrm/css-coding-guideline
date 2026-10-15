@@ -24,7 +24,7 @@ sidebar:
 | `height: 100vh` | `min-block-size: 100svb` | 挙動：モバイルでブラウザのUIが表示されていると、要素が見切れる | [`no-vw-vh`](/values/viewport-and-container-units/#rule-no-vw-vh)、[`prefer-svi-svb`](/values/viewport-and-container-units/#rule-prefer-svi-svb) | AI |
 | `width: 100vw` や `margin-inline: calc(50% - 50vw)` で画面の端まで広げる | レイアウトのガターの列まで広げる（`grid-column: --full`）。背景だけなら `calc((100lvi - 100%) / -2)`（`lvi` もクラシックなスクロールバーの幅を含むので、ルートで横方向のはみ出しを `clip` する前提の条件付き） | 挙動：スクロールバーが幅を取る環境で、横スクロールが起きる | [`full-bleed-via-layout-first`](/layout-practice/layering/#rule-full-bleed-via-layout-first)、[`full-bleed-offset-formula`](/layout-practice/layering/#rule-full-bleed-offset-formula) | AI |
 | `font-size: 5vw` | `clamp()` の最小値と最大値をremにし、推奨値をremと `svi` の和にする | 挙動：文字サイズの設定が無視され、ズームしても大きくならないことがある | [`no-viewport-only-font-size`](/values/viewport-and-container-units/#rule-no-viewport-only-font-size)、[`clamp-rem-bounds`](/values/math-functions/#rule-clamp-rem-bounds) | AI |
-| `font-size: 14px` | `font-size: calc(14 / 16 * 1rem)` | 挙動：ブラウザの文字サイズの設定が効かない | [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)、[`px-to-rem-formula`](/values/px-and-rem/#rule-px-to-rem-formula) | AI |
+| `font-size: 14px` | `font-size: calc(14 / 16 * 1rem)` | 挙動：ブラウザの文字サイズの設定が反映されない | [`font-size-in-rem`](/values/px-and-rem/#rule-font-size-in-rem)、[`px-to-rem-formula`](/values/px-and-rem/#rule-px-to-rem-formula) | AI |
 | `html { font-size: 62.5% }` | ルートの文字サイズはブラウザの設定のままにし、`calc(24 / 16 * 1rem)` の式で変換する | 挙動：16pxを前提にremで書かれた外部のCSSが崩れる | [`no-root-font-size-change`](/values/px-and-rem/#rule-no-root-font-size-change) | AI |
 | `line-height: 24px`、`line-height: 1.5em` | `line-height: 1.5` | 挙動：文字サイズの違う子要素で、行が重なったり空きすぎたりする | [`unitless-line-height`](/values/px-and-rem/#rule-unitless-line-height) | AI |
 | `tan(atan2(100svi, 1px))` | `calc(100svi / 1px)` | 本書の方針 | [`typed-arithmetic-to-unitless`](/values/advanced-math-functions/#rule-typed-arithmetic-to-unitless) | AI |
@@ -95,14 +95,14 @@ sidebar:
 | --- | --- | --- | --- | --- |
 | `grid-template-areas` や `flex-direction: row-reverse` だけで並べ替える | 同じルールに `reading-flow` を指定する。まずHTMLの順番を読む順に合わせる | 挙動：キーボードと読み上げの順が、見た目の順とずれる | [`reading-flow-when-reordered`](/layout-practice/reading-flow/#rule-reading-flow-when-reordered) | AI |
 | 何にでも `width: 100%` | 書かない。ブロックレベルの要素は親の幅いっぱいに広がる | 挙動：左右のマージンや `box-sizing: content-box` と組み合わさると、親からはみ出す | [`no-redundant-width-100`](/design-mindset/maintainability/#rule-no-redundant-width-100) | AI |
-| 子要素に `height: 100%` | 親を `display: block grid` にして `stretch` に任せる | 挙動：親の高さが明示されていないと効かない | [`stretch-over-height-100`](/layout/sizing/#rule-stretch-over-height-100) | AI |
+| 子要素に `height: 100%` | 親を `display: block grid` にして `stretch` に任せる | 挙動：親の高さが明示されていないと働かない | [`stretch-over-height-100`](/layout/sizing/#rule-stretch-over-height-100) | AI |
 | 子要素の `margin-bottom` と `:last-child { margin-bottom: 0; }` | 親の `gap` | 本書の方針 | [`gap-over-child-margin`](/layout-practice/spacing/#rule-gap-over-child-margin) | AI |
 | 見出しの `margin-bottom` と、段落の `margin-bottom` を `:last-child` で打ち消す書き方 | `& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` で選んだ後ろの要素の `margin-block-start` | 挙動：要素が欠けたり並びが変わったりすると、余計な余白が残る | [`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator) | AI |
 | `height: 400px` | 下限は `min-block-size`、上限は `max-block-size`、比率は `aspect-ratio` | 挙動：文字が増えたり大きくなったりすると、中身があふれる | [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height) | AI |
 | アイコンの `width: 24px; height: 24px;` | `inline-size` と `aspect-ratio: 1` | 本書の方針 | [`min-block-size-over-fixed-height`](/layout-practice/defensive/#rule-min-block-size-over-fixed-height) | AI |
 | `grid-template-columns: repeat(3, minmax(0, 1fr))` | `repeat(3, 1fr)` | 本書の方針 | [`fr-without-minmax-zero`](/layout-practice/defensive/#rule-fr-without-minmax-zero) | AI |
 | `minmax(360px, 1fr)` | `minmax(min(100%, 360px), 1fr)` | 挙動：コンテナが360pxより狭いと、はみ出す | [`minmax-min-capped-at-100-percent`](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent) | AI |
-| `overflow-x: hidden` | `overflow-x: clip` | 挙動：中の `position: sticky` が効かなくなる | [`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden) | AI |
+| `overflow-x: hidden` | `overflow-x: clip` | 挙動：中の `position: sticky` が働かなくなる | [`overflow-clip-over-hidden`](/layout-practice/overflow/#rule-overflow-clip-over-hidden) | AI |
 | スクロールする要素の `align-content: center` | `align-content: safe center` | 挙動：中身がはみ出すと、先頭側がスクロールで戻れない位置に置かれる | [`safe-center-for-scrollable`](/layout-practice/overflow/#rule-safe-center-for-scrollable) | AI |
 | `top: 50%; left: 50%; transform: translate(-50%, -50%);` | `inset: 0; margin: auto;`。Gridの中なら `place-items: center` | 本書の方針 | [`absolute-centering-with-margin-auto`](/layout/positioning/#rule-absolute-centering-with-margin-auto) | AI |
 | カードの見出しの高さを `min-height` やJavaScriptでそろえる | サブグリッド（`grid-template-rows: subgrid`） | 本書の方針 | [`subgrid-for-aligned-rows`](/layout/grid-alignment/#rule-subgrid-for-aligned-rows) | AI |
@@ -158,7 +158,7 @@ sidebar:
 | よく見かける書き方 | 本書の書き方 | 理由 | ルール | AI |
 | --- | --- | --- | --- | --- |
 | 条件なしの `:hover`、画面の幅での判定 | `@media (any-hover)` の中に書く | 挙動：タッチ操作の端末で、タップしたあとにホバーの状態が残る | [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover) | AI |
-| `@media (hover: hover)` | `@media (any-hover)` の中に書く | 挙動：主な入力がタッチの端末では、トラックパッドなどをつないでもホバーが効かない | [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover) | AI |
+| `@media (hover: hover)` | `@media (any-hover)` の中に書く | 挙動：主な入力がタッチの端末では、トラックパッドなどをつないでもホバーのスタイルが適用されない | [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover) | AI |
 | `:hover` だけに見た目の変化を指定する | `:focus-visible` にも同じ見た目を指定する | 挙動：キーボードで操作すると、変化が見えない | [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible) | AI |
 | ホバーで `opacity: 0.7` | 背景色や文字色を別の色に変える | 挙動：文字まで透けて、コントラストが下がる | [`no-opacity-for-hover`](/interaction/states-and-focus/#rule-no-opacity-for-hover) | AI |
 | `.is-active`、`.is-open` の状態クラス | `:checked` などの擬似クラスや `[aria-selected="true"]` | 本書の方針 | [`state-by-pseudo-class-or-aria`](/interaction/state-attributes/#rule-state-by-pseudo-class-or-aria) | AI |

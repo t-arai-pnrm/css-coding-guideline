@@ -68,7 +68,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 この例では、`._section` が `padding` と `border` を持たないので、見出しの32pxはセクションの外側にできます。
 
-3つ目の場面は、中身のない要素です。`padding`、`border`、中身のいずれもなく、高さが0の要素では、自分の `margin-block-start` と `margin-block-end` が隣り合って1つにまとまり、さらに前後の兄弟の `margin` と相殺します。空の要素の `margin` は、前後の余白を通り抜けて1か所に吸収されるわけです。CMSの本文に入った空の `<p>` が余白を増やさないのは、この規則によるものです。
+3つ目の場面は、中身のない要素です。`padding`、`border`、中身のいずれもなく、高さが0の要素では、自分の `margin-block-start` と `margin-block-end` が隣り合って1つにまとまり、さらに前後の兄弟の `margin` と相殺します。空の要素の `margin` は、前後の余白を通り抜けて1か所にまとまります。CMSの本文に入った空の `<p>` が余白を増やさないのは、この規則によるものです。
 
 <Figure src="layout/margin-collapse-cases" alt="margin が相殺する3つの場面を、上から順に3つの図で示したもの。margin は、アクセント色の半透明の破線の帯で描いている。1つ目は兄弟どうしで、上の要素Aの下の24pxの帯と、下の要素Bの上の40pxの帯が重なって1つになり、間は64pxではなく40pxになる。2つ目は親と最初の子で、親にborderとpaddingがないため、最初の子の上の24pxの帯が親の外へ出て、親の背景の外に空きができる。3つ目は中身のない要素で、高さ0の空の要素の上下のmarginも、前後のmarginと1つにまとまり、AとBの間は最大の32pxになる。" />
 
@@ -140,7 +140,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 一方で、最初の子の `margin-block-start` は、親の高さに関係なく親の外へ出ます。空の要素も、0より大きい `block-size` か `min-block-size` を指定すると上下の `margin` が隣り合わなくなり、通り抜けは起きません（値が0なら、指定していても通り抜けます）。
 
-`gap` は、通常フローのブロックコンテナには効きません。`gap` が働くのはFlexbox、Grid、段組みで、FlexboxとGridではそもそも相殺が起きません。フレックスアイテムとグリッドアイテムの `margin` は、隣のアイテムや親の `margin` と相殺せず、`gap` に足されます。`gap: 16px` の中で要素に `margin-block-start: 24px` を付けると、間は40pxになります。
+`gap` は、通常フローのブロックコンテナでは働きません。`gap` が働くのはFlexbox、Grid、段組みで、FlexboxとGridではそもそも相殺が起きません。フレックスアイテムとグリッドアイテムの `margin` は、隣のアイテムや親の `margin` と相殺せず、`gap` に足されます。`gap: 16px` の中で要素に `margin-block-start: 24px` を付けると、間は40pxになります。
 
 新しいブロック整形コンテキストを作る要素は、子の `margin` を外へ出しません。`display: flow-root`、`overflow` が `visible` と `clip` 以外の要素、`float` した要素、`inline flow-root` の要素がこれにあたります。また、`float` した要素と絶対配置の要素は通常フローから外れるので、自分の `margin` がほかの要素の `margin` と相殺することもありません。ルート要素（`<html>`）の `margin` も相殺しません。
 
@@ -166,7 +166,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 }
 ```
 
-`overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が効かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が効かなくなる理由は「[7-10 positionの基礎](/layout/positioning/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
+`overflow: hidden` でも相殺は止まりますが、要素がスクロールコンテナになり、中の `position: sticky` が働かなくなるほか、はみ出した影やフォーカスリングが切り取られます。`position: sticky` が働かなくなる理由は「[7-10 positionの基礎](/layout/positioning/)」で説明しています。1pxの `padding` は、相殺を止めるための指定であることがコードから読み取れず、レイアウトの高さも1px変わります。
 
 次のデモでは、同じ2つの子要素を、3種類の親に入れています。1つ目の子は上に32px、下に24px、2つ目の子は上に40px、下に32pxの `margin` を持ちます。点線の枠は親を囲む要素で、親の外へ出た余白がその内側に見えます。
 

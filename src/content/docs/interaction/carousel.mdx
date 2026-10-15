@@ -293,7 +293,7 @@ if (!CSS.supports('selector(::scroll-button(*))')) {
 
 `::scroll-button()` を使える環境では、スクリプトは `CSS.supports('selector(::scroll-button(*))')` でそれを調べ、ボタンを隠したままにします。2つの仕組みを重ねると、同じ役割のボタンが2組表示されるからです。`@supports` で隠す方法もありますが、`hidden` 属性で隠しておいてスクリプトで表示すれば、スクリプトが読み込めなかった環境に、押しても動かないボタンが残りません。
 
-止まっていないスライドを外す `interactivity: inert` は、このボタンとは独立に働きます。`scroll-state()` のコンテナクエリと `interactivity` に対応しているのも、`::scroll-button()` に対応したChrome系のブラウザだけです。スクリプトのボタンが表示されるSafariやFirefoxでは、隠れているスライドもTabキーの対象に残ります。それでも、フォーカスが移ったスライドまでブラウザがスクロールし、そのスクロールの終わりで `update()` が動くので、ボタンの状態は表示に合います。Chromeで、`interactivity` を `auto` に戻し、4枚目のリンクにフォーカスを移したところ、そのスライドまでスクロールし、「次の事例」のボタンが無効になりました（Chromeで確認）。{/* 要検証: ブラウザ。Safari と Firefox で、スクリプトのボタンの scrollBy() とスクロールスナップ、dir="rtl" での符号、scrollend による無効化が Chrome と同じに動くか */}
+止まっていないスライドを外す `interactivity: inert` は、このボタンとは独立に働きます。`scroll-state()` のコンテナクエリと `interactivity` に対応しているのも、`::scroll-button()` に対応したChrome系のブラウザだけです。スクリプトのボタンが表示されるSafariやFirefoxでは、隠れているスライドもTabキーの対象に残ります。それでも、フォーカスが移ったスライドまでブラウザがスクロールし、そのスクロールの終わりで `update()` が動くので、ボタンの状態は表示に合います。Chromeで、`interactivity` を `auto` に戻し、4枚目のリンクにフォーカスを移したところ、そのスライドまでスクロールし、「次の事例」のボタンが無効になりました。{/* 要検証: ブラウザ。Safari と Firefox で、スクリプトのボタンの scrollBy() とスクロールスナップ、dir="rtl" での符号、scrollend による無効化が Chrome と同じに動くか */}
 
 ## カルーセルで確かめる状態
 
