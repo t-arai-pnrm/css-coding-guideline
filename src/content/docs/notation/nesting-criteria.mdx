@@ -134,8 +134,10 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 ```css title="🙆‍♂ Recommended: 祖先の状態を子のルールの中に書く"
 @scope (.scoped.accordion-trigger) to (.scoped) {
   ._icon {
-    transition-duration: var(--duration--fast);
-    transition-property: rotate;
+    @media (prefers-reduced-motion: no-preference) {
+      transition-duration: var(--duration--fast);
+      transition-property: rotate;
+    }
 
     &:is(:scope[aria-expanded="true"] *) {
       rotate: 180deg;

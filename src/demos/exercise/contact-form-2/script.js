@@ -1,4 +1,4 @@
-// 入力の誤りを、支援技術にも伝える。見た目は CSS の :user-invalid が受け持つ
+// 独自の誤りの文章を入力欄に関連付ける属性（aria-describedby、aria-invalid）を付ける。見た目は CSS の :user-invalid が受け持つ
 for (const field of document.querySelectorAll('.contact-form ._field')) {
   const control = field.querySelector('input, select, textarea');
   const error = field.querySelector('._error');

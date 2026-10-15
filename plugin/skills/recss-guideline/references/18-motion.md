@@ -1,13 +1,13 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 31
 - 本文: 約20.1万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -45,7 +45,7 @@ https://t-arai-pnrm.github.io/recss-guideline/motion/purpose/
 
 https://t-arai-pnrm.github.io/recss-guideline/motion/reduced-motion/
 
-- 【必須・仕様上の制約】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定する。（`motion-only-with-no-preference`）
+- 【必須・仕様にもとづく制約】装飾的な動きのうちフェード以外は `@media (prefers-reduced-motion: no-preference)` の中で指定する。（`motion-only-with-no-preference`）
   - 理由: WCAG 2.2 の達成基準2.3.3（レベル AAA）は、操作をきっかけに起きる本質的でない動きのアニメーションを無効にできることを求めており、装飾的な動きはなくても情報が欠けないため。設定がないときにだけ動きを付ければ、動きを減らす設定をしているユーザーに、めまいや吐き気の原因になる動きを見せずに済むため。
   - 補足: WCAG の「動きのアニメーション」には、要素の大きさ、形、位置が変わって見えない色や不透明度の変化は含まれないので、位置と大きさの変わらないフェードは条件の外に書いてかまいません。全称セレクタと `!important` で全体の動きを止める書き方には頼りません。機能的な動きの扱いは `simplify-large-motion-when-reduced` で定めます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/reduced-motion/#rule-motion-only-with-no-preference
@@ -93,7 +93,7 @@ https://t-arai-pnrm.github.io/recss-guideline/motion/transitions-and-keyframes/
   - 理由: 動かすプロパティが一目で分かり、サイトの中で動きの速さと質感がそろうため。
   - 補足: `transition-behavior: allow-discrete` も、略記の `transition` に含めず、ロングハンドで書きます。略記に入れると、`allow-discrete` を解釈できないブラウザでは宣言全体が無効になり、ほかのプロパティのトランジションまで失われるためです。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/transitions-and-keyframes/#rule-transition-longhand-with-tokens
-- 【推奨・仕様上の制約】操作の途中で取り消されることがある動きは `@keyframes` ではなくトランジションで書き、タブやセグメンテッドコントロールのように続けて押される UI では、再生時間を100〜150msにするか、動きを省く。（`interruptible-with-transition`）
+- 【推奨・実装上の判断】操作の途中で取り消されることがある動きは `@keyframes` ではなくトランジションで書き、タブやセグメンテッドコントロールのように続けて押される UI では、再生時間を100〜150msにするか、動きを省く。（`interruptible-with-transition`）
   - 理由: トランジションは途中の状態から逆向きに戻るが、`@keyframes` のアニメーションは途中で止めると値が飛び、続けて押すと動きが操作に追いつかないため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/transitions-and-keyframes/#rule-interruptible-with-transition
 
@@ -101,7 +101,7 @@ https://t-arai-pnrm.github.io/recss-guideline/motion/transitions-and-keyframes/
 
 https://t-arai-pnrm.github.io/recss-guideline/motion/transition-techniques/
 
-- 【推奨・仕様上の制約】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
+- 【推奨・本書の規約】状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。（`transition-duration-per-direction`）
   - 理由: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
   - 補足: どちらの再生時間もトークンから選びます。例外は、長押しで確定するボタンの進み具合のように、入る側の動きが押し続けた時間そのものを表す場合です。このときは入る側の状態にだけ、確定までの時間（トークンの段階にない値なので、公開用のカスタムプロパティで受け取る）と `linear` を書き、基本のルールにはトランジションを書きません。離したら、判定と同じく進み具合を0に戻すためです。確定は表示のトランジションではなく JavaScript のタイマーで判定し、ボタンの上で離したときに行います。進み具合は確定に要る情報なので、動きを減らす設定でも残し、`transition-property` を絞ったうえで条件の外に書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/transition-techniques/#rule-transition-duration-per-direction
@@ -110,7 +110,7 @@ https://t-arai-pnrm.github.io/recss-guideline/motion/transition-techniques/
 
 https://t-arai-pnrm.github.io/recss-guideline/motion/keyframes/
 
-- 【推奨・仕様上の制約】アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書き、`animation-fill-mode` は `both` を第一候補にする。（`animation-longhand-fill-mode`）
+- 【推奨・本書の規約】アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書き、`animation-fill-mode` は `both` を第一候補にする。（`animation-longhand-fill-mode`）
   - 理由: 略記は `animation-timeline` と `animation-range` もリセットするため。また、`both` にしないと、遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
   - 補足: `transition-longhand-with-tokens` と対になるルールです。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/keyframes/#rule-animation-longhand-fill-mode
@@ -136,7 +136,7 @@ https://t-arai-pnrm.github.io/recss-guideline/motion/entry-and-exit/
   - 理由: JavaScript でクラスを付け外しするタイミングを調整しなくても、CSS だけで出現と退場の両方を動かせるため。
   - 補足: `@starting-style` は、開いた状態のセレクタの中に書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/entry-and-exit/#rule-starting-style-for-entry
-- 【推奨・仕様上の制約】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
+- 【推奨・仕様にもとづく制約】`@starting-style` で動かすプロパティは、詳細度の高い規則やインラインスタイルで指定しない。`@starting-style` は元の規則の中に書く。出現だけを動かすなら `@keyframes` の `from` を使う。（`starting-style-not-overridden`）
   - 理由: `@starting-style` の宣言は通常のカスケードで競い合い、より強い指定があると開始値にならず、トランジションが起きないため。
   - 補足: `!important` や詳細度を上げるセレクタで解決しようとしません。ほかの状態のスタイルまで上書きしてしまうためです。`@keyframes` の値は通常の宣言より優先されます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/entry-and-exit/#rule-starting-style-not-overridden
@@ -173,7 +173,7 @@ https://t-arai-pnrm.github.io/recss-guideline/motion/performance/
   - 理由: 指定し続けると合成レイヤーが作られたままになり、GPU のメモリを無駄に使うため。
   - 補足: 外す処理は `transitionend` だけでなく `transitioncancel` にも登録します。動きを減らす設定などでトランジションが起きないときは付けません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/performance/#rule-will-change-temporarily
-- 【推奨・仕様上の制約】`content-visibility: auto` は最初の画面より下にある大きなブロックにだけ指定し、`contain-intrinsic-block-size: auto <長さ>` を組で書く。（`content-visibility-with-intrinsic-size`）
+- 【推奨・仕様にもとづく制約】`content-visibility: auto` は最初の画面より下にある大きなブロックにだけ指定し、`contain-intrinsic-block-size: auto <長さ>` を組で書く。（`content-visibility-with-intrinsic-size`）
   - 理由: 描画を省いている間は中身の大きさが0として扱われるので、見積もりの大きさがないとスクロールバーの長さとスクロールの位置が飛ぶため。`auto` を付けると、一度描画したあとは実際の大きさを覚えて使うため。
   - 補足: 物理の `contain-intrinsic-size` や `contain-intrinsic-height` ではなく、論理の `contain-intrinsic-block-size` を使います。ページ内検索、Tab キーでの移動、スクリーンリーダーの読み上げで中身に届くかを確かめます。閉じたパネルのように、見つかるまで隠しておく中身には `hidden="until-found"` を使います。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/performance/#rule-content-visibility-with-intrinsic-size
@@ -182,7 +182,7 @@ https://t-arai-pnrm.github.io/recss-guideline/motion/performance/
 
 https://t-arai-pnrm.github.io/recss-guideline/motion/view-transitions/
 
-- 【禁止・仕様上の制約】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
+- 【禁止・仕様にもとづく制約】同時に表示される複数の要素に、同じ `view-transition-name` を付けない。（`view-transition-name-unique`）
   - 理由: 名前が重複すると撮影に失敗し、ほかの要素やページ全体の動きも含めて、切り替え全体のアニメーションが行われなくなるため。
   - 補足: 固定の名前は、ページに1つしかない要素にだけ付けます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/motion/view-transitions/#rule-view-transition-name-unique

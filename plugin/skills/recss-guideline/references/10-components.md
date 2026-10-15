@@ -1,25 +1,25 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 52
-- 本文: 約16.7万字
+- 本文: 約16.8万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
 
 - `components` 第10章 コンポーネントとカスタムプロパティ（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/components/
 - `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/components/what-is-a-component/
-- `components/boundaries` 10-2 コンポーネントの境界を守る（約3万字）https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/
+- `components/boundaries` 10-2 コンポーネントの境界を守る（約3.1万字）https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/
 - `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/compositions-and-utilities/
 - `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/components/design-tokens/
-- `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
-- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
-- `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/placement-and-child-states/
+- `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
+- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
+- `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/placement-and-child-states/
 - `components/web-components` 10-8 Web Components（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/components/web-components/
 
 ## 10-1 何をコンポーネントにするか
@@ -94,10 +94,10 @@ https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/
   - 理由: ページ全体の重なり順と、コンポーネントの中の前後関係を分けて管理できるため。
   - 補足: 重なり順は、まず HTML の順番で解決し、足りないときだけ相対的な z-index を使います。子のコンポーネントどうしの前後は、ルートに相対的な z-index を持たせず、親のコンポーネントが子を包む Outer の要素で指定します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/#rule-z-index-absolute-root-relative-inside
-- 【必須・仕様上の制約】内部の要素で相対的な z-index を使うコンポーネントは、ルートに `isolation: isolate` を指定する。（`isolation-for-relative-z-index`）
+- 【必須・仕様にもとづく制約】内部の要素で相対的な z-index を使うコンポーネントは、ルートに `isolation: isolate` を指定する。（`isolation-for-relative-z-index`）
   - 理由: 内部の z-index がほかのコンポーネントと干渉せず、-1 の要素がルートや親の背景の下に隠れることもなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/#rule-isolation-for-relative-z-index
-- 【推奨・仕様上の制約】トップレイヤーに表示する `<dialog>` や `popover` 属性の要素にも、`z-index: var(--z--top)`（値は `calc(infinity)`）を指定する。（`top-layer-z-index-top`）
+- 【推奨・実装上の判断】トップレイヤーに表示する `<dialog>` や `popover` 属性の要素にも、`z-index: var(--z--top)`（値は `calc(infinity)`）を指定する。（`top-layer-z-index-top`）
   - 理由: `transition-property: overlay` に対応していないブラウザでは、閉じるアニメーションの途中で z-index の大きい要素の下に潜り込むことがあるため。
   - 補足: `overlay` に対応しているのは Chromium 系のブラウザだけです。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/#rule-top-layer-z-index-top
@@ -127,7 +127,7 @@ https://t-arai-pnrm.github.io/recss-guideline/components/compositions-and-utilit
   - 理由: その場の都合で共通の部品を増やすと、共通の部品が何のためにあるのかが分からなくなるため。
   - 補足: 「ここだけ影がほしい」のような都合だけで、パターンやコンポーネントを作りません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/compositions-and-utilities/#rule-adjust-locally-first
-- 【推奨・仕様上の制約】パターンには、重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は `--<パターン>--<プロパティ>` の公開プロパティで受け取る。（`pattern-leaves-component-properties`）
+- 【推奨・本書の規約】パターンには、重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は `--<パターン>--<プロパティ>` の公開プロパティで受け取る。（`pattern-leaves-component-properties`）
   - 理由: `patterns` は `components` より後ろのレイヤーにあり、パターンを付けた要素では、コンポーネントの CSS（状態や `@container` の中の指定を含む）が同じプロパティに詳細度を上げても勝てないため。
   - 補足: 公開プロパティは、パターンの中で宣言せず、`--_p--size: var(--icon--size, 1em);` のように `--_p--` で始まる内部プロパティに受けて、デフォルト値をフォールバックに書きます。`:hover` などの状態で見た目が変わるものは、パターンにせずコンポーネントにします。強さはレイヤーの順番で決まるので、パターンのセレクタを `:where()` で包んで詳細度を下げる必要はありません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/compositions-and-utilities/#rule-pattern-leaves-component-properties
@@ -178,9 +178,9 @@ https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
   - 理由: 外から変えてよい値と、内部の都合の値を名前で見分けられるため。
   - 補足: コンポジションは `--_c--`、パターンは `--_p--`、ユーティリティは `--_u--`、ベースのスタイルは `--_b--` で始めます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-internal-property-prefix
-- 【必須・仕様上の制約】公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書く。（`receive-public-property-with-fallback`）
+- 【必須・本書の規約】公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書く。（`receive-public-property-with-fallback`）
   - 理由: コンポーネント自身で宣言すると、親から継承した値がその宣言に負けて届かなくなるため。
-  - 補足: 例：`--_radius: var(--card--radius, 8px);`
+  - 補足: 例：`--_radius: var(--card--radius, 8px);`。`@property` で登録して `initial-value` を持たせた公開プロパティ（アニメーションさせる値など）は、この規約の例外で、宣言の中で直接読んでかまいません。未定義にならないのでフォールバックが要らず、内部プロパティに受け直すと、アニメーションさせるプロパティと宣言で読むプロパティが分かれてしまうためです。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-receive-public-property-with-fallback
 - 【必須・本書の規約】状態やモードで変わる値は、`--_background--hocus` のように `--` で区切った接尾辞で表し、デフォルトの状態には接尾辞を付けない。（`state-suffix-for-custom-properties`）
   - 理由: 状態ごとの値を `:scope` の先頭に並べて見渡せ、状態のセレクタでは参照を切り替えるだけで済むため。
@@ -193,8 +193,9 @@ https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
 - 【推奨・実装上の判断】`@property` は、型の指定やアニメーションが必要なカスタムプロパティにだけ使い、トークンの定義には使わない。（`at-property-only-when-needed`）
   - 理由: 登録すると値を定義した要素で計算されるなど振る舞いが変わり、不要な登録は予期しない結果を招くため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-at-property-only-when-needed
-- 【必須・仕様上の制約】`@property` では、`syntax`、`inherits`、`initial-value` の3つの記述子を省略しない。（`at-property-all-descriptors`）
-  - 理由: `syntax` か `inherits` が欠けると、`@property` のルールごと無視されるため。
+- 【必須・仕様にもとづく制約】`@property` では `syntax`、`inherits`、`initial-value` の3つの記述子を書き、`initial-value` は `syntax` が `"*"` のときも省略しない。（`at-property-all-descriptors`）
+  - 理由: `syntax` と `inherits` は必須で、どちらかが欠けると `@property` のルールごと無効になるため。`initial-value` も、`syntax` が `"*"` 以外なら必須で、欠けたり、計算上独立した値でなかったり（`3em` のように、要素の文字サイズに依存して決まる値）すると、ルールごと無効になる。
+  - 補足: `syntax` が `"*"` のときは仕様上 `initial-value` を省略できますが、読む人が初期値を探さずに済むように書くのは本書の方針です。根拠は CSS Properties and Values API Level 1 の `@property` の節です。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-at-property-all-descriptors
 - 【推奨・実装上の判断】トランジションやアニメーションで値を動かすカスタムプロパティは、`inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介さずに直接動かす。（`animated-property-no-inherit`）
   - 理由: 継承するカスタムプロパティを動かすと、子孫の要素すべてでスタイルの計算がフレームごとに繰り返され、カスタムプロパティを介すと合成処理だけで済まなくなるため。
@@ -234,7 +235,7 @@ https://t-arai-pnrm.github.io/recss-guideline/components/web-components/
   - 理由: 要素名がコンポーネントの名前を受け持ち、`scoped` クラスが外側のスコープの下限になるので、ほかのコンポーネントと同じ規約で境界を作れるため。
   - 補足: 名前のクラス（`scoped <名前>` の `<名前>`）は付けません。カスタム要素の中に `<style>` を置いて前置きのない `@scope` で書く方法は、部品を置いた数だけ同じ `<style>` が出力され、CSS がコンポーネントごとのファイルにまとまらないので使いません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/web-components/#rule-custom-element-as-scope-root
-- 【必須・仕様上の制約】カスタム要素のルートには、`display: block flow` のように `display` を明示する。（`custom-element-root-display`）
+- 【必須・仕様にもとづく制約】カスタム要素のルートには、`display: block flow` のように `display` を明示する。（`custom-element-root-display`）
   - 理由: カスタム要素にはブラウザのデフォルトスタイルがなく、`display` が初期値の `inline` になるので、中にブロックの要素を置くと幅の指定が効かず、背景や枠線も中身を囲む形で描かれないため。
   - 補足: Shadow DOM で作る部品では、`:host` に書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/web-components/#rule-custom-element-root-display
@@ -253,7 +254,7 @@ https://t-arai-pnrm.github.io/recss-guideline/components/web-components/
   - 理由: Shadow DOM の境界がスコープの役目を果たすので、短いセレクタでも外に漏れず、ページのセレクタも中に当たらないため。
   - 補足: CSS は `<template>` の中の `<style>` に書き、`attachShadow()` で作った Shadow DOM に複製します。ネスト、`@media (any-hover)` の中のホバー、`prefers-reduced-motion: no-preference` の中の動きは、Light DOM と同じ規約で書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/web-components/#rule-shadow-dom-host-and-element-selectors
-- 【推奨・仕様上の制約】Shadow DOM の中では、ページのトークンをカスタムプロパティで参照し、kiso.css のリセットやユーティリティに頼っていた指定は中に書く。（`shadow-dom-restate-page-styles`）
+- 【推奨・仕様にもとづく制約】Shadow DOM の中では、ページのトークンをカスタムプロパティで参照し、kiso.css のリセットやユーティリティに頼っていた指定は中に書く。（`shadow-dom-restate-page-styles`）
   - 理由: カスタムプロパティは継承で境界を越えて届くが、ページのリセットとユーティリティのクラスは中の要素に当たらないため。
   - 補足: たとえば、ボタンの `font` と `color` はブラウザのデフォルトに戻るので `inherit` を指定し、`.-visually-hidden` と同じ指定は中の要素に直接書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/web-components/#rule-shadow-dom-restate-page-styles

@@ -11,6 +11,29 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.64.0（2026年10月15日）
+
+販売を想定したレビューで見つかった、説明の誤りと、本文・ルール・推奨例の食い違いを直しました。ルールの性質と文を変えたので、マイナーバージョンを上げています。
+
+- ルールの性質の表示名を「仕様上の制約」から「仕様にもとづく制約」に改め、根拠が仕様や挙動にあるという意味で、その書き方を仕様が義務づけているとは限らないことを「[本書の読み方](/introduction/how-to-read/#ルールの強度と性質id)」に書きました。あわせて、本書の方針を根拠にしていたルールの性質を見直し、27件を「本書の規約」に、26件を「実装上の判断」に移しました。強度は変えていません。
+- 「[本書の読み方](/introduction/how-to-read/#コード例のラベル)」に、`🙆‍♂ Recommended` のCSSはその節の主題に限らず、すべての必須と禁止のルールに合うように書くことを加えました。これに合わせて、推奨例を直しました。
+  - 「[9-6 ネストの判断基準](/notation/nesting-criteria/)」と「[9-5 ネストの書き方](/notation/nesting/)」で、回転と拡大のトランジションを `prefers-reduced-motion: no-preference` の中に移しました。
+  - 「[6-5 if()とattr()で条件と属性を値にする](/values/if-and-attr/)」と「[15-3 背景から文字色を決める](/color-media/contrast-text/)」で、公開プロパティを内部プロパティに受け直してから使う形にしました。
+  - 共通トークンにない変数（`--background--muted`、`--foreground--link`、`--border--accent`、`--color--warning--*` など）を参照していたコード例を、共通トークンに置き換えました。
+  - 影だけで縁を描いていたデモと推奨例に、強制カラーモードで `outline` を描く指定を加えました。
+- 「[素のCSSで書く理由](/introduction/why-plain-css/)」と付録H「[CSS-in-JSと素のCSSの比較](/appendix/css-in-js/)」で、`@scope` だけをフレームワークのスコープに置き換えればよいとしていた説明を直しました。`:scope` によるルートの指定、子の部品のルートへの適用、スロットの扱いも書き換えが要ります。付録Hには、Vueのscoped CSSの親子の変換例を加え、本書の `@scope` との範囲の違いを示しました。「[19-6 既存のサイトに段階的に導入する](/operations/adoption/)」などで、VueのscopedがCSS Modulesと同じくクラス名を書き換えるとしていた説明も、属性を足す仕組みとして分けました。
+- 「[17-7 フォーム部品](/interaction/forms/)」と「[21-12 お問い合わせフォームを作る](/exercise/contact-form/)」で、`:user-invalid` の誤りはスクリーンリーダーに伝わらないとしていた説明を直しました。ネイティブの検証の状態は支援技術に伝わります。独自のエラー文は表示するだけでは入力欄に関連付けられないので、`aria-describedby` で関連付けます。
+- 「[6-3 計算関数で根拠を式に残す](/values/math-functions/)」で、`clamp()` の最大値を最小値の2.5倍以内にする目安を、ズームの最大が500%の環境で文字を2倍にできる条件として書き直しました。拡大しても内容や機能を失わないかは、19-3の手順で別に確かめます。
+- 「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で、`@property` の3つの記述子のうち、仕様が必須とする条件と、本書が常に書く方針とを分けて説明しました。
+- 付録I「[デモの共通トークン](/appendix/demo-tokens/)」と「[16-5 面・影・角丸](/decoration/surfaces/)」で、影のトークンを枠線の代わりに使えるとしていた説明に、強制カラーモードの条件を添えました。
+- 「[20-6 実装と検証を回す](/ai-coding/implementation/)」と第20章のひな形で、自動テストの対象を「Chromium、Firefox、PlaywrightのWebKit」とし、実機のSafariとiOSでの確認と分けました。配布する `playwright.config.ts` にFirefoxを加え、briefのひな形のブラウザにもFirefoxを加えています。
+- ルールの文を変えました。
+  - [`at-property-all-descriptors`](/components/custom-properties/#rule-at-property-all-descriptors)：`initial-value` は `syntax` が `"*"` のときも省略しない、と文に書き、仕様の条件と本書の方針を理由と補足に分けました。
+  - [`fluid-font-size-max-ratio`](/values/math-functions/#rule-fluid-font-size-max-ratio)：2.5倍の根拠を、ズームの最大が500%の環境での十分条件として書きました。
+  - [`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)：`@property` で登録して `initial-value` を持つ公開プロパティは、直接読んでよい例外として補足に書きました。
+  - [`no-unrequested-css-framework`](/ai-coding/pitfalls/#rule-no-unrequested-css-framework)：フレームワークのスコープへ移すときに書き換える範囲を、補足に書きました。
+  - [`shadow-tokens-light-source`](/decoration/surfaces/#rule-shadow-tokens-light-source)：いちばん低い影を境界に使うときの強制カラーモードの条件を、補足に書きました。
+
 ## 0.63.2（2026年10月15日）
 
 「[16-2 画像の形式と読み込み](/decoration/image-loading/#画像の形式)」の補足を整えました。ルールは変えていません。

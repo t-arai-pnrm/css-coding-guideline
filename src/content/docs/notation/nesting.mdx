@@ -99,7 +99,11 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 /* 🙅‍♂ Not Recommended */
 [popover] {
   transition-duration: var(--duration--fast);
-  transition-property: opacity, scale;
+  transition-property: opacity;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: opacity, scale;
+  }
 }
 
 [popover]:popover-open {
@@ -116,7 +120,11 @@ AIにCSSを書かせると、この連結の形がよく出てきます。素の
 @scope (.scoped.share-menu) to (.scoped) {
   [popover] {
     transition-duration: var(--duration--fast);
-    transition-property: opacity, scale;
+    transition-property: opacity;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-property: opacity, scale;
+    }
 
     &:popover-open {
       @starting-style {

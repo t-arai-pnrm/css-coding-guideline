@@ -113,7 +113,7 @@
 
 - id: sibling-functions-for-decoration
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: '`sibling-index()` と `sibling-count()` は、色相や遅延のように未対応の環境で失われても困らない装飾の値に限って使い、`@supports (z-index: sibling-index())` の中に書いて、外に未対応の環境で使う値を書く。'
   reason: '本書の対象のブラウザのうち Safari 18 系が対応しておらず、カスタムプロパティに入れた式は未対応の環境でもそのまま受け取られて、それを使う宣言が計算値の時点で無効になるため。'
   note: '件数で見た目を切り替える処理は数量クエリで書きます（ルール `quantity-query-for-count-conditions`）。レイアウトの要に使わない理由は、第1章のルール `no-unsupported-layout-features` と同じです。数える対象は `:nth-child()` と同じで、`hidden` 属性で隠した要素も数えます。'
@@ -186,7 +186,7 @@
 # 5-7 開閉と表示の状態を表す擬似クラス
 - id: open-attribute-for-details-dialog
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: '`<details>` と `<dialog>` の開いた状態は `[open]` 属性セレクタで選び、対象のすべてのブラウザが対応するまで `:open` を使わない。'
   reason: '`<details>` と `<dialog>` では `[open]` と `:open` の当てはまる条件が同じで、`:open` に対応していないブラウザ（Safari 26.4 以前）では、`:open` を含むルールがセレクタリストごと無効になるため。'
   note: '`<select>` や `<input>` のピッカーを開いている状態は `:open` でしか選べないので、対応していない環境で見た目が変わらなくても困らない装飾に限り、ほかのセレクタと分けたルールに書きます。詳細度は `[open]` も `:open` も 0.1.0 です。'

@@ -125,7 +125,7 @@
   kind: convention
   rule: プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。
   reason: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
-  note: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第10章のルール `utility-single-purpose`）。Vue の `<style scoped>` や Astro の `<style>` のように、フレームワークがスコープの仕組みを持つ場合は `@scope` だけをそれに置き換え、命名、レイヤー、コンテナ名の規約は残します。
+  note: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第10章のルール `utility-single-purpose`）。Vue の `<style scoped>` や Astro の `<style>` のように、フレームワークがスコープの仕組みを持つ場合も、設計の原則、公開プロパティの受け渡し、命名、レイヤー、コンテナ名の規約は残します。スコープの移植では、`:scope` や `&:is(:scope[…] *)` をルートのクラスを使ったセレクタに書き換え、子のコンポーネントのルートへの適用とスロットの扱いをフレームワークに合わせます（Vue の scoped CSS は、子のコンポーネントのルート要素に親のスタイルも当て、`to (.scoped)` の下限とは範囲が違います）。
   aiProne: true
   page: ai-coding/pitfalls
   since: 0.3.0

@@ -195,7 +195,7 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
   padding-inline: if(media(width >= calc(768 / 16 * 1rem)): 24px; else: 16px);
   background-color: if(
     style(--_variant: --primary): if(style(--_hocus: --true): var(--color--accent--700); else: var(--color--accent--600));
-    style(--_variant: --danger): var(--color--error--600);
+    style(--_variant: --danger): var(--color--red--600);
     else: var(--color--neutral--50)
   );
 }
@@ -249,7 +249,9 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 ```css title="🙆‍♂ Recommended: style 属性で渡した url() を、公開プロパティで受け取る"
 @scope (.scoped.hero) to (.scoped) {
   :scope {
-    background-image: var(--hero--background-image, none);
+    --_background-image: var(--hero--background-image, none);
+
+    background-image: var(--_background-image);
     background-size: cover;
   }
 }

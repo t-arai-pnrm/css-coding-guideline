@@ -79,7 +79,7 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 }
 ```
 
-最も低い `--shadow--xs` は、ぼかしのない1pxの縁取りです。`border` と違って要素の大きさに加わらないので、カードの枠線の代わりに使えます。上の段階はどれも `--shadow--xs` を含むので、影を付けた面には必ず縁取りが付きます。枠線を `border` で引くときは、`--border--base` の色を使います。値は `color-mix(in oklab, var(--foreground--base) 12%, transparent)` です。文字色を透明と混ぜているので、どの面の上でも同じようになじみます（「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」）。
+最も低い `--shadow--xs` は、ぼかしのない1pxの縁取りです。`border` と違って要素の大きさに加わらないので、通常の表示ではカードの縁取りに使えます。強制カラーモードでは `box-shadow` が消えるので、操作できる範囲や情報の区切りを示す境界に使うときは、そこで同じ太さの `outline` を描きます（[ルール `no-box-shadow-only-boundary`](/color-media/forced-colors/#rule-no-box-shadow-only-boundary)）。上の段階はどれも `--shadow--xs` を含むので、影を付けた面には必ず縁取りが付きます。枠線を `border` で引くときは、`--border--base` の色を使います。値は `color-mix(in oklab, var(--foreground--base) 12%, transparent)` です。文字色を透明と混ぜているので、どの面の上でも同じようになじみます（「[15-2 相対カラー構文で派生色を作る](/color-media/relative-color/)」）。
 
 <Demo title="同じ影のトークンを、ライトモードとダークモードの背景に置いたとき" html={shadowHtml} css={shadowCss} />
 
@@ -131,6 +131,13 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
     transition-duration: var(--duration--base);
     transition-property: filter;
     transition-timing-function: var(--ease--out-quint);
+
+    /* 強制カラーモードでは影が消えるので、縁を outline で描く。フォーカスリングは上書きしない */
+    &:not(:focus-visible) {
+      @media (forced-colors: active) {
+        outline: 1px solid;
+      }
+    }
 
     &:any-link:hover {
       @media (any-hover) {

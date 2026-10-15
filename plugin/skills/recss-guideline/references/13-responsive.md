@@ -1,13 +1,13 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 39
 - 本文: 約11.1万字
 - 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -55,7 +55,7 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/
   - 理由: 案件の中でブレイクポイントの値がばらばらになるのを防ぐため。
   - 補足: Sass の変数や Tailwind CSS の設定のように、ビルド時に値へ展開される変数が対象です。CSS のカスタムプロパティは、メディアクエリの条件では使えません（`no-var-in-query`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/#rule-framework-breakpoint-variables
-- 【必須・仕様上の制約】ブレイクポイントは rem で指定し、`calc(640 / 16 * 1rem)` のようにピクセル値からの変換を式で書く。（`breakpoint-in-rem`）
+- 【必須・仕様にもとづく制約】ブレイクポイントは rem で指定し、`calc(640 / 16 * 1rem)` のようにピクセル値からの変換を式で書く。（`breakpoint-in-rem`）
   - 理由: 文字サイズを大きくしているユーザーは実質的に使える幅が狭くなるので、rem で指定すれば切り替えもそれに追従するため。式にすれば、元のピクセル値も読み取れる。
   - 補足: 閾値の式に px で指定した `gap` や `padding` を含めるときは、その項だけ rem へ換算せず、px のまま足します（`threshold-as-formula`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/#rule-breakpoint-in-rem
@@ -63,10 +63,10 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/
   - 理由: 数値の根拠がコードに残り、列数や隙間を変えたときにも直しやすいため。
   - 補足: 根拠を式にしたほうが意図が明確になるときと、列数、個数、隙間、最小幅を後で変える可能性があるときに式にします。分解しても意味が増えない固定の値は、そのまま書いてかまいません。根拠のない値を `calc(48rem)` のように包むだけにはしません。一度しか使わない長い式には、何列・何個分なのかをコメントで補います。式の各項は、その値を宣言したときの単位で書きます。rem で指定した幅は変換の式で、px で指定した `gap`、`padding`、`border` は px のまま足し、`calc(560 / 16 * 1rem + 240 / 16 * 1rem + 32px)` のように書きます。px の値まで rem に換算すると、ユーザーが文字サイズを変えたときに閾値の中でだけ隙間が広がり、実際に並べられる幅とずれます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/#rule-threshold-as-formula
-- 【必須・仕様上の制約】閾値の式には、レイアウトが成り立つ条件に関わる `gap`、`padding`、`border` を省かずに含める。（`threshold-includes-gap-and-padding`）
+- 【必須・仕様にもとづく制約】閾値の式には、レイアウトが成り立つ条件に関わる `gap`、`padding`、`border` を省かずに含める。（`threshold-includes-gap-and-padding`）
   - 理由: 省くと閾値が実際に並べられる幅より狭くなり、切り替わった直後の幅で中身がはみ出したり詰まったりするため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/#rule-threshold-includes-gap-and-padding
-- 【禁止・仕様上の制約】`@media` の条件と、コンテナサイズクエリの条件の中で `var()` を使わない。（`no-var-in-query`）
+- 【禁止・仕様にもとづく制約】`@media` の条件と、コンテナサイズクエリの条件の中で `var()` を使わない。（`no-var-in-query`）
   - 理由: メディアクエリの条件ではカスタムプロパティを参照できず、コンテナサイズクエリの条件では仕様で認められていても対象のブラウザでそろって動かず、値が問い合わせるコンテナで解決されて意図とずれやすいため。
   - 補足: スタイルクエリで `style(--a: var(--b))` のようにカスタムプロパティどうしを比べる条件は、対象にしません。同じ閾値を複数の要素で使いたいときは、閾値を変数にせず、フラグを宣言する要素だけにコンテナサイズクエリを書き、ほかの子孫はスタイルクエリで切り替えます（`density-via-style-query`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/#rule-no-var-in-query
@@ -89,7 +89,7 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/
 - 【必須・本書の規約】コンテナサイズクエリの条件では、`width` ではなく `inline-size` を使う。（`container-query-inline-size`）
   - 理由: 書字方向に依存しない、論理的な指定にそろえるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/#rule-container-query-inline-size
-- 【推奨・仕様上の制約】アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナサイズクエリの中で `display: none` ではなく視覚的に隠す指定を書く。（`hide-label-visually-in-container-query`）
+- 【推奨・仕様にもとづく制約】アイコンとラベルを並べた部品で、置かれた場所が狭いときにラベルを隠すなら、コンテナサイズクエリの中で `display: none` ではなく視覚的に隠す指定を書く。（`hide-label-visually-in-container-query`）
   - 理由: アイコンを `aria-hidden="true"` にしている場合、ラベルまで消すとリンクやボタンの名前がなくなるため。幅の違う複数の場所に置いても、修飾クラスなしで切り替えられる。
   - 補足: 隠し方は `.-visually-hidden` と同じ考え方です。ユーティリティのクラスはクエリの条件で付け外しできないので、同じ種類の指定をコンポーネントの中に書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/#rule-hide-label-visually-in-container-query
@@ -102,19 +102,19 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/
 
 https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/
 
-- 【非推奨・仕様上の制約】`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。（`no-container-just-in-case`）
+- 【非推奨・実装上の判断】`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。（`no-container-just-in-case`）
   - 理由: コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/#rule-no-container-just-in-case
-- 【禁止・仕様上の制約】`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。（`no-container-on-page-root`）
+- 【禁止・仕様にもとづく制約】`html`、`body`、ページ全体のレイアウト要素をコンテナにしない。（`no-container-on-page-root`）
   - 理由: ページ全体の切り替えはメディアクエリの役割であり、古い実装では中にある `position: fixed` の要素が正しく配置されなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/#rule-no-container-on-page-root
-- 【禁止・仕様上の制約】幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。（`no-container-on-intrinsic-size`）
+- 【禁止・仕様にもとづく制約】幅が中身で決まる要素（インライン要素、`fit-content` の要素、`flex-basis` を指定していない flex アイテムなど）をコンテナにしない。（`no-container-on-intrinsic-size`）
   - 理由: インライン方向のサイズの封じ込めが働き、幅が極端に小さく計算されるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/#rule-no-container-on-intrinsic-size
 - 【非推奨・実装上の判断】コンテナにする要素には `padding` や `border` を指定せず、レイアウトは子要素で行う。（`no-padding-on-container`）
   - 理由: コンテナの幅の計算がずれ、クエリの閾値や `cqi` の値が意図とずれるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/#rule-no-padding-on-container
-- 【必須・仕様上の制約】`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。（`cqi-needs-named-container`）
+- 【必須・仕様にもとづく制約】`cqi` は、名前付きのコンテナがあると言い切れる子孫の要素でだけ使う。（`cqi-needs-named-container`）
   - 理由: 有効なコンテナがないと小さいビューポート単位（`svi`）として計算され、置き場所によって値の意味が変わるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/#rule-cqi-needs-named-container
 - 【非推奨・実装上の判断】`container-type: size` と、それを前提にした `cqb`、`cqh`、`cqmin`、`cqmax` は使わない。（`no-container-type-size`）
@@ -138,13 +138,13 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/
 - 【推奨・実装上の判断】メディアクエリでは狭い画面向けのスタイルを基本に書き、広い画面で必要な差分だけを `width >=` の条件の中に書く。（`mobile-first-queries`）
   - 理由: 狭い画面のレイアウトのほうが単純なことが多く、打ち消すための指定が増えずに済むため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/#rule-mobile-first-queries
-- 【禁止・仕様上の制約】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
+- 【禁止・仕様にもとづく制約】`device-width`、`device-height`、`device-aspect-ratio` をメディアクエリの条件に使わない。幅は `width` で判定する。（`no-device-width-feature`）
   - 理由: これらは端末の画面そのものの大きさを調べ、ウィンドウの幅や分割表示、ズームで変わる実際の表示領域を反映しないため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/#rule-no-device-width-feature
-- 【非推奨・仕様上の制約】レイアウトの切り替えを `orientation` で判定しない。使える幅は `width` で判定する。（`no-orientation-for-layout`）
+- 【非推奨・実装上の判断】レイアウトの切り替えを `orientation` で判定しない。使える幅は `width` で判定する。（`no-orientation-for-layout`）
   - 理由: `orientation` が比べるのはビューポートの幅と高さで、端末の向きではないため。縦向きの端末でもソフトウェアキーボードが出るとビューポートが横長になり、`landscape` と判定されることがある。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/#rule-no-orientation-for-layout
-- 【推奨・仕様上の制約】操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。（`any-pointer-not-width-for-input`）
+- 【推奨・仕様にもとづく制約】操作の手段に合わせて変える指定は、画面の幅ではなく `@media (any-pointer: fine)` や `@media (any-pointer: coarse)` で判定する。（`any-pointer-not-width-for-input`）
   - 理由: 画面の幅と入力の手段は対応しないため。`pointer` は主な入力だけを調べるので、タブレットにマウスをつないだ場合のように、使える入力が複数ある環境の一方を取りこぼす。
   - 補足: `pointer` を使ってよいのは、主な入力の精度だけに合わせたいときに限る。ホバーの判定は `any-hover` を使う（第17章）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/#rule-any-pointer-not-width-for-input
@@ -183,19 +183,19 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/design-comp-pattern/
 
 https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/
 
-- 【必須・仕様上の制約】`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。（`safe-area-inset-with-viewport-fit-cover`）
+- 【必須・仕様にもとづく制約】`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。（`safe-area-inset-with-viewport-fit-cover`）
   - 理由: `cover` を指定するとブラウザはページをセーフエリアの内側に寄せなくなり、余白を書かないと、ノッチやホームインジケーターのある端末でだけ内容が隠れるため。
   - 補足: 画面の端まで描画する必要がないページでは、`viewport-fit` をデフォルトの `auto` のままにします。パソコンのブラウザではセーフエリアがすべて0なので、実機か iOS シミュレーターで確かめます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/#rule-safe-area-inset-with-viewport-fit-cover
-- 【推奨・仕様上の制約】セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。（`safe-area-combine-with-max`）
+- 【推奨・仕様にもとづく制約】セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。（`safe-area-combine-with-max`）
   - 理由: セーフエリアの値は切り欠きやシステムの UI が占める幅そのもので、長方形の画面では0になるため。比べるか足すかは、余白の一部をセーフエリアで兼ねてよいかで決まる。
   - 補足: `env()` の第2引数は、ブラウザがその名前の環境変数を知らないときだけ使われます。`env(safe-area-inset-bottom, 16px)` と書いても、セーフエリアのない画面では16pxではなく0になります。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/#rule-safe-area-combine-with-max
-- 【推奨・仕様上の制約】セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。（`safe-area-background-to-edge`）
+- 【推奨・仕様にもとづく制約】セーフエリアの余白は、背景を持つ要素の `padding` に入れ、背景は画面の端まで塗り、中身だけをセーフエリアの内側に寄せる。（`safe-area-background-to-edge`）
   - 理由: `viewport-fit=cover` を指定する目的は背景を端まで描くことで、`margin` や外側の要素の `padding` で空けると、背景が途切れた帯ができるため。
   - 補足: セクションの背景を端まで広げるなら、`body` ではなく、ページのレイアウトのガター（12-10 `primary-layout` など）にセーフエリアを入れます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/#rule-safe-area-background-to-edge
-- 【必須・仕様上の制約】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
+- 【必須・仕様にもとづく制約】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
   - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
   - 補足: 横向きの画面では左右にもセーフエリアがあるので、左右の端に接するバーやボタンには `env(safe-area-inset-left)` と `env(safe-area-inset-right)` も加えます。対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/#rule-safe-area-fixed-bottom

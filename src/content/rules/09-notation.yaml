@@ -173,7 +173,7 @@
 
 - id: renaming-terms-is-breaking
   level: 推奨
-  kind: spec
+  kind: convention
   rule: 公開プロパティやコンポーネントの名前に使った語を変えるときは、互換性のない変更として扱い、使っている箇所をすべて同時に直す。
   reason: 公開プロパティの名前が変わると、古い名前で値を渡している呼び出し側が、エラーを出さずにデフォルト値に戻るため。
   page: notation/terminology
@@ -265,7 +265,7 @@
 
 - id: conditions-inside-rules
   level: 必須
-  kind: spec
+  kind: convention
   rule: '`@media` と `@container` は、`@scope` やファイルの直下に置かず、各セレクタの中に書く。'
   reason: 条件のブロックが元のルールより前に並ぶと、同じ詳細度の元のルールが後から勝ち、上書きが効かなくなるため。
   note: ルート要素の条件は `:scope` の中に書きます。`@supports` も同じようにセレクタの中に書きます。

@@ -33,6 +33,10 @@
       box-shadow: var(--shadow--md);
       background-color: var(--background--raised);
 
+      @media (forced-colors: active) {
+        outline: 1px solid;
+      }
+
       /* 比べるための指定。内側にも外側と同じ値を使う */
       &[data-radius="same"] {
         --_inner-radius: var(--_radius);

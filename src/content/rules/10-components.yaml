@@ -165,7 +165,7 @@
 
 - id: top-layer-z-index-top
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: 'トップレイヤーに表示する `<dialog>` や `popover` 属性の要素にも、`z-index: var(--z--top)`（値は `calc(infinity)`）を指定する。'
   reason: '`transition-property: overlay` に対応していないブラウザでは、閉じるアニメーションの途中で z-index の大きい要素の下に潜り込むことがあるため。'
   note: '`overlay` に対応しているのは Chromium 系のブラウザだけです。'
@@ -226,7 +226,7 @@
 
 - id: pattern-leaves-component-properties
   level: 推奨
-  kind: spec
+  kind: convention
   rule: パターンには、重ねるコンポーネントが指定しないプロパティだけを書き、コンポーネントの側で変える値は `--<パターン>--<プロパティ>` の公開プロパティで受け取る。
   reason: '`patterns` は `components` より後ろのレイヤーにあり、パターンを付けた要素では、コンポーネントの CSS（状態や `@container` の中の指定を含む）が同じプロパティに詳細度を上げても勝てないため。'
   note: '公開プロパティは、パターンの中で宣言せず、`--_p--size: var(--icon--size, 1em);` のように `--_p--` で始まる内部プロパティに受けて、デフォルト値をフォールバックに書きます。`:hover` などの状態で見た目が変わるものは、パターンにせずコンポーネントにします。強さはレイヤーの順番で決まるので、パターンのセレクタを `:where()` で包んで詳細度を下げる必要はありません。'
@@ -329,10 +329,10 @@
 
 - id: receive-public-property-with-fallback
   level: 必須
-  kind: spec
+  kind: convention
   rule: 公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書く。
   reason: コンポーネント自身で宣言すると、親から継承した値がその宣言に負けて届かなくなるため。
-  note: '例：`--_radius: var(--card--radius, 8px);`'
+  note: '例：`--_radius: var(--card--radius, 8px);`。`@property` で登録して `initial-value` を持たせた公開プロパティ（アニメーションさせる値など）は、この規約の例外で、宣言の中で直接読んでかまいません。未定義にならないのでフォールバックが要らず、内部プロパティに受け直すと、アニメーションさせるプロパティと宣言で読むプロパティが分かれてしまうためです。'
   aiProne: true
   page: components/custom-properties
   since: 0.1.0
@@ -367,8 +367,9 @@
 - id: at-property-all-descriptors
   level: 必須
   kind: spec
-  rule: '`@property` では、`syntax`、`inherits`、`initial-value` の3つの記述子を省略しない。'
-  reason: '`syntax` か `inherits` が欠けると、`@property` のルールごと無視されるため。'
+  rule: '`@property` では `syntax`、`inherits`、`initial-value` の3つの記述子を書き、`initial-value` は `syntax` が `"*"` のときも省略しない。'
+  reason: '`syntax` と `inherits` は必須で、どちらかが欠けると `@property` のルールごと無効になるため。`initial-value` も、`syntax` が `"*"` 以外なら必須で、欠けたり、計算上独立した値でなかったり（`3em` のように、要素の文字サイズに依存して決まる値）すると、ルールごと無効になる。'
+  note: '`syntax` が `"*"` のときは仕様上 `initial-value` を省略できますが、読む人が初期値を探さずに済むように書くのは本書の方針です。根拠は CSS Properties and Values API Level 1 の `@property` の節です。'
   page: components/custom-properties
   since: 0.1.0
 

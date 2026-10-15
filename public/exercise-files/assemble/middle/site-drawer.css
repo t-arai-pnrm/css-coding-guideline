@@ -19,6 +19,10 @@
       transition-timing-function: var(--ease--out-quint);
       transition-behavior: allow-discrete;
 
+      @media (forced-colors: active) {
+        outline: 1px solid;
+      }
+
       /* 動きを減らす設定のときは、起点が 0 のままなので、フェードだけが残る */
       @media (prefers-reduced-motion: no-preference) {
         --_translate-from: 100% 0;

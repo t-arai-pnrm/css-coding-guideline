@@ -1,13 +1,13 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 30
 - 本文: 約8.8万字
 - 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -27,7 +27,7 @@ https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/
   - 理由: 文字サイズの設定を尊重しつつ、余白や線まで大きくなって読みにくくなるのを防ぐため。
   - 補足: すべてを rem にする書き方も、すべてを px にする書き方も、この基準に合いません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/#rule-unit-by-text-scaling
-- 【必須・仕様上の制約】`font-size` は rem（要素の文字サイズに比例させるなら em）で指定し、px を使わない。（`font-size-in-rem`）
+- 【必須・仕様にもとづく制約】`font-size` は rem（要素の文字サイズに比例させるなら em）で指定し、px を使わない。（`font-size-in-rem`）
   - 理由: px で指定した文字は、ブラウザの文字サイズの設定を変えても大きくならないため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/#rule-font-size-in-rem
 - 【推奨・実装上の判断】段落の間の縦の余白、テキストを含む要素の幅、ボタンの最小の高さのように、文字と一緒に大きくなるべき寸法は rem で指定する。（`text-related-sizes-in-rem`）
@@ -45,10 +45,10 @@ https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/
   - 理由: デザインカンプのピクセル値をそのまま読み取れ、計算の手間と誤りも減るため。
   - 補足: `clamp()`、`min()`、`max()` の中では、`calc()` を省いて `24 / 16 * 1rem` と書けます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/#rule-px-to-rem-formula
-- 【禁止・仕様上の制約】`html { font-size: 62.5% }` のように、rem の計算を簡単にする目的でルートの文字サイズを変えない。（`no-root-font-size-change`）
+- 【禁止・実装上の判断】`html { font-size: 62.5% }` のように、rem の計算を簡単にする目的でルートの文字サイズを変えない。（`no-root-font-size-change`）
   - 理由: 16px を前提に rem で書かれた外部の CSS が崩れ、px で指定した場合はユーザーの文字サイズの設定も効かなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/#rule-no-root-font-size-change
-- 【必須・仕様上の制約】`line-height` は単位のない数値で指定する。（`unitless-line-height`）
+- 【必須・仕様にもとづく制約】`line-height` は単位のない数値で指定する。（`unitless-line-height`）
   - 理由: 単位のある値は計算後の長さのまま子要素に継承され、文字サイズの違う子要素で行が重なったり空きすぎたりするため。
   - 補足: 見出しや本文ごとの値と、`line-height: 1` を使わない理由は第14章で扱います。例外は、インラインの要素の行ごとに座布団を敷くときに、座布団の高さから `line-height` を長さで決める場合です（16-7）。この場合は、座布団の中に文字サイズの違う子要素を置かず、理由のコメントを添えて Stylelint の警告を無効にします。
   - 自動チェック: Stylelint: `declaration-property-unit-allowed-list`
@@ -64,7 +64,7 @@ https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/
 
 https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-units/
 
-- 【禁止・仕様上の制約】`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` を使わない。（`no-vw-vh`）
+- 【禁止・実装上の判断】`vw`、`vh`、`vi`、`vb`、`vmin`、`vmax` を使わない。（`no-vw-vh`）
   - 理由: ブラウザの UI が引っ込んだ最も大きい画面（ラージビューポート）が基準で、どの状態に合わせたいのかがコードから読み取れず、モバイルでは UI が表示された状態で要素が見切れたり、スクロールバーの幅の分だけ横スクロールが起きたりするため。
   - 補足: 代わりに `svi` や `svb` などを使います。
   - 自動チェック: Stylelint: `unit-disallowed-list`（警告）
@@ -83,7 +83,7 @@ https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-unit
   - 理由: ビューポート単位はページ全体の状態と結びついた値で、コンポーネントが置かれた場所の幅とは関係がないため。
   - 補足: コンポーネントの中で幅に応じて変える値は、名前付きのコンテナと `cqi` で書きます（13-3）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-units/#rule-viewport-units-with-media-queries
-- 【禁止・仕様上の制約】文字サイズをビューポート単位だけで決めない（`font-size: 4svi` など）。（`no-viewport-only-font-size`）
+- 【禁止・仕様にもとづく制約】文字サイズをビューポート単位だけで決めない（`font-size: 4svi` など）。（`no-viewport-only-font-size`）
   - 理由: ユーザーの文字サイズの設定が無視され、Chrome 系のブラウザではズームしても文字が大きくならないことがあるため。
   - 補足: 画面の幅に合わせて変えるなら、`clamp()` で rem と組み合わせます（6-3）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-units/#rule-no-viewport-only-font-size
@@ -111,7 +111,7 @@ https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/
   - 理由: クエリの数が減り、切り替わる幅の前後で値が急に変わることもなくなるため。
   - 補足: タグやアイコンのように、大きさを変える必要のない要素には使いません（13-1）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/#rule-fluid-values-with-clamp
-- 【必須・仕様上の制約】文字サイズのように、ユーザーの設定に追従させる値を `clamp()` で書くときは、最小値と最大値を rem にし、推奨値を rem と相対単位（`svi` か `cqi`）の和にする。（`clamp-rem-bounds`）
+- 【必須・仕様にもとづく制約】文字サイズのように、ユーザーの設定に追従させる値を `clamp()` で書くときは、最小値と最大値を rem にし、推奨値を rem と相対単位（`svi` か `cqi`）の和にする。（`clamp-rem-bounds`）
   - 理由: 相対単位だけの推奨値では、文字サイズの設定やズームが効かなくなるため。
   - 補足: ページ全体の値には `svi` を、コンポーネントの中の値には名前付きのコンテナの `cqi` を使います。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/#rule-clamp-rem-bounds
@@ -119,9 +119,9 @@ https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/
   - 理由: 数値だけでは、どの幅でどの値になるのかを読み取れず、値を変えるときに計算をやり直せないため。
   - 補足: 基準の幅と値は、カスタムプロパティを使った式にするか、少なくともコメントに残します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/#rule-clamp-from-slope-intercept
-- 【推奨・仕様上の制約】文字サイズを `clamp()` で流体的にするときは、最大値を最小値の2.5倍以内にする。（`fluid-font-size-max-ratio`）
-  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、Chrome と Firefox のデスクトップ版では最大500%のズームで最小値は5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大でき、WCAG 2.1 の達成基準1.4.4を満たせるため。
-  - 補足: 2.5倍は、Chrome と Firefox のズームの最大の500%から導いた十分条件です。超える場合は、最小値を上げるか最大値を下げます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
+- 【推奨・仕様にもとづく制約】文字サイズを `clamp()` で流体的にするときは、最大値を最小値の2.5倍以内にする。（`fluid-font-size-max-ratio`）
+  - 理由: 推奨値の相対単位の部分はブラウザのズームで大きくならないが、ズームの最大が500%の環境（Chrome と Firefox のデスクトップ版）では最小値が5倍になるので、最大値が最小値の2.5倍以内なら、どの幅でも文字を2倍以上に拡大できるため。
+  - 補足: 2.5倍は、ズームの最大が500%の環境で文字を2倍にできる十分条件で、ズームの最大がそれより小さい環境では、より小さい比が要ります。超える場合は、最小値を上げるか最大値を下げます。WCAG 2.1 の達成基準1.4.4が求める、拡大した後も内容や機能が失われないことは、これとは別にルール `verify-text-resize-200` で確かめます。最小値と最大値を rem にするルール `clamp-rem-bounds` と組み合わせて使います。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/#rule-fluid-font-size-max-ratio
 
 ## 6-4 計算関数を応用する
@@ -141,7 +141,7 @@ https://t-arai-pnrm.github.io/recss-guideline/values/if-and-attr/
   - 理由: 型付きの `attr()` に未対応のブラウザがあり、同じ値を属性と `style` 属性の2か所に書くことも避けられるため。
   - 補足: `data-variant` のように選択肢から1つを選ぶバリエーションは、属性セレクタで書きます。`attr()` の値は `url()` に使えないので、背景画像は `style` 属性の公開プロパティで渡します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/if-and-attr/#rule-attr-for-html-attributes
-- 【必須・仕様上の制約】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）
+- 【必須・仕様にもとづく制約】`content` 以外のプロパティで `attr()` を使うときは、型と第2引数を書き、その宣言を型付きの `attr()` を条件にした `@supports` の中に書いて、外に未対応の環境で使う宣言を書く。（`typed-attr-fallback`）
   - 理由: 宣言に `var()` が含まれると、未対応の環境でも宣言は計算値の時点で無効になって前の宣言に戻らず、対応した環境でも属性がないか型として読めないと、宣言がプロパティの初期値に戻るため。
   - 補足: 第2引数は、対応した環境でしか使われないので、未対応の環境のフォールバックにはなりません。`@supports` の条件は `min-block-size: calc(attr(rows type(<number>), 3) * 1lh)` のように型付きで書き、`var()` を含めません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/if-and-attr/#rule-typed-attr-fallback
@@ -149,7 +149,7 @@ https://t-arai-pnrm.github.io/recss-guideline/values/if-and-attr/
   - 理由: スタイルクエリは親の要素の値しか調べられず、それ以外の分岐は `@media`、`@supports`、状態のセレクタと接尾辞の内部プロパティで書くほうが、状態の一覧を読み取れるため。
   - 補足: `media()` と `supports()` は使わず、各セレクタの中の `@media` と `@supports` で書きます。例外は、1つの長さを段階ごとの値に置き換える対応表です（16-8 の `squircle` の倍率など）。状態の分岐ではないので、条件を複数並べてかまいません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/if-and-attr/#rule-if-for-own-custom-property
-- 【必須・仕様上の制約】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
+- 【必須・仕様にもとづく制約】`if()` を含む宣言の前に未対応の環境で使う宣言を書き、`if()` には必ず `else` の値を書く。（`if-fallback-and-else`）
   - 理由: 未対応の環境では `if()` を含む宣言が捨てられ、対応した環境ではどの条件も成り立たないと、前の宣言ではなく初期値か継承した値になるため。
   - 補足: 前の宣言に戻るのは、`if()` を含む宣言に `var()` がない場合だけです。`var()` を含むと計算値の時点で無効になり、前の宣言に戻らないので、`@supports` の中に書くか、スタイルクエリや状態のセレクタで書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/values/if-and-attr/#rule-if-fallback-and-else

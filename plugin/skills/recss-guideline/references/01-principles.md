@@ -1,13 +1,13 @@
 # 第1章 CSSのマインドセット：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 15
-- 本文: 約5.4万字
+- 本文: 約5.5万字
 - 読む条件: 新しい機能、ブラウザの対応状況、フォールバック、@supports
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -19,7 +19,7 @@
 - `principles/fundamentals` 1-4 基礎を固める（約3,100字）https://t-arai-pnrm.github.io/recss-guideline/principles/fundamentals/
 - `principles/no-memorizing` 1-5 解決策を丸暗記しない（約5,700字）https://t-arai-pnrm.github.io/recss-guideline/principles/no-memorizing/
 - `principles/tips` 1-6 Tipsとの付き合い方（約6,000字）https://t-arai-pnrm.github.io/recss-guideline/principles/tips/
-- `principles/options` 1-7 選択肢を多く持つ（約5,500字）https://t-arai-pnrm.github.io/recss-guideline/principles/options/
+- `principles/options` 1-7 選択肢を多く持つ（約5,600字）https://t-arai-pnrm.github.io/recss-guideline/principles/options/
 
 ## 1-1 CSSはブラウザへの「提案」である
 
@@ -61,11 +61,11 @@ https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/
   - 理由: 未対応の環境では宣言が無視されるだけなので、宣言を外した表示を見れば、読めて操作できるかを、未対応のブラウザなしで判断できるため。
   - 補足: 宣言のコメントアウトか、開発者ツールでの無効化で確かめます。案件の基準を決めるときは、未対応の環境での体験、自サイトのアクセス解析のブラウザ分布、使えなかったときの害の大きさを合わせて見ます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-verify-fallback-by-removal
-- 【禁止・仕様上の制約】対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。（`no-unsupported-layout-features`）
+- 【禁止・実装上の判断】対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。（`no-unsupported-layout-features`）
   - 理由: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
   - 補足: アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-no-unsupported-layout-features
-- 【推奨・仕様上の制約】新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。（`supports-for-dependent-declarations`）
+- 【推奨・仕様にもとづく制約】新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書く。（`supports-for-dependent-declarations`）
   - 理由: 未対応の環境で、従来の手段まで取り上げてしまうのを防ぐため。
   - 補足: 例：`field-sizing: content` を使うときの `resize: none` と `max-block-size`。新しいプロパティそのものは、未対応の環境で無視されるので `@supports` で囲む必要はありません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-supports-for-dependent-declarations
@@ -73,17 +73,17 @@ https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/
   - 理由: 使われないコードが残り、読む人に「まだ対応していないブラウザがある」と誤解させるため。
   - 補足: 例：`lh` 単位は Safari 16.4 で対応しているので、`@supports not (top: 1lh)` の分岐は不要です。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-remove-unneeded-fallbacks
-- 【推奨・仕様上の制約】フォールバックは、新しいプロパティならそのまま書き、`var()` を含まない新しい値なら従来の宣言を前に書くか `@supports` の中に書き、`var()` を含む宣言と、ほかの宣言もまとめて切り替える宣言は必ず `@supports` の中に書く。（`fallback-method-by-invalidation`）
+- 【推奨・仕様にもとづく制約】フォールバックは、新しいプロパティならそのまま書き、`var()` を含まない新しい値なら従来の宣言を前に書くか `@supports` の中に書き、`var()` を含む宣言と、ほかの宣言もまとめて切り替える宣言は必ず `@supports` の中に書く。（`fallback-method-by-invalidation`）
   - 理由: `var()` を含む宣言は計算値の時点で無効になり、前に書いた宣言に戻らないため。まとめて切り替える宣言は、`@supports` の条件で意図が読め、不要になったときに検索して消せるため。
   - 補足: 従来の宣言を前に書くときは、同じプロパティの重複が誤記に見えないように、未対応の環境で使う値であることをコメントで書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-fallback-method-by-invalidation
-- 【必須・仕様上の制約】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。（`scripting-for-js-dependent-styles`）
+- 【必須・実装上の判断】JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。（`scripting-for-js-dependent-styles`）
   - 理由: JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-scripting-for-js-dependent-styles
 - 【必須・実装上の判断】表示の確認は Chrome だけで済ませず、Safari（iOS を含む）と Firefox でも行う。（`no-chrome-only-check`）
   - 理由: 既存のプロパティの新しい仕様を Chrome が先に実装することが多く、Chrome だけで確認すると、ほかのブラウザとの差に気づけないため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-no-chrome-only-check
-- 【禁止・仕様上の制約】ブロックレイアウトの要素に、`justify-self` や `justify-items` を指定しない。（`no-justify-self-in-block-layout`）
+- 【禁止・仕様にもとづく制約】ブロックレイアウトの要素に、`justify-self` や `justify-items` を指定しない。（`no-justify-self-in-block-layout`）
   - 理由: 対応しているのは Chrome だけで、Safari と Firefox では無視されるため。
   - 補足: ブロックの中央寄せには `margin-inline: auto` を使います。`display` を grid からブロックに戻すときは、指定が残っていないかを確かめます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/#rule-no-justify-self-in-block-layout

@@ -127,7 +127,7 @@
 
 - id: interruptible-with-transition
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: 操作の途中で取り消されることがある動きは `@keyframes` ではなくトランジションで書き、タブやセグメンテッドコントロールのように続けて押される UI では、再生時間を100〜150msにするか、動きを省く。
   reason: トランジションは途中の状態から逆向きに戻るが、`@keyframes` のアニメーションは途中で止めると値が飛び、続けて押すと動きが操作に追いつかないため。
   page: motion/transitions-and-keyframes
@@ -136,7 +136,7 @@
 # 18-5 トランジションを応用する
 - id: transition-duration-per-direction
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '状態に入るときと外れるときで再生時間を変えるなら、基本のルールに長い再生時間を、入る側の状態のルールに短い再生時間を書く。入る側の再生時間も `prefers-reduced-motion: no-preference` の中に書く。'
   reason: 反応の速さと、戻るときの自然さを両立できるため。`transition-property` の初期値は `all` なので、条件の外に書くと、動きを減らす設定でもすべてのプロパティが動くため。
   note: 'どちらの再生時間もトークンから選びます。例外は、長押しで確定するボタンの進み具合のように、入る側の動きが押し続けた時間そのものを表す場合です。このときは入る側の状態にだけ、確定までの時間（トークンの段階にない値なので、公開用のカスタムプロパティで受け取る）と `linear` を書き、基本のルールにはトランジションを書きません。離したら、判定と同じく進み具合を0に戻すためです。確定は表示のトランジションではなく JavaScript のタイマーで判定し、ボタンの上で離したときに行います。進み具合は確定に要る情報なので、動きを減らす設定でも残し、`transition-property` を絞ったうえで条件の外に書きます。'
@@ -146,7 +146,7 @@
 # 18-6 @keyframes を設計する
 - id: animation-longhand-fill-mode
   level: 推奨
-  kind: spec
+  kind: convention
   rule: 'アニメーションは `animation` の略記ではなく、`animation-name` などのロングハンドで書き、`animation-fill-mode` は `both` を第一候補にする。'
   reason: 略記は `animation-timeline` と `animation-range` もリセットするため。また、`both` にしないと、遅延の間は開始前の見た目のままで、終わった瞬間にもとの値へ戻り、見た目が飛ぶため。
   note: '`transition-longhand-with-tokens` と対になるルールです。'

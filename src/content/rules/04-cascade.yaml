@@ -87,7 +87,7 @@
 
 - id: where-for-base-selectors
   level: 必須
-  kind: spec
+  kind: convention
   rule: '`@layer` を使えない場合に限り、ベーススタイルのセレクタを `:where()` で包み、詳細度を 0 にする（例：`:where(a:any-link)`）。'
   reason: 'レイヤーがなければ優先順位が読み込む順番と詳細度だけで決まり、`a:any-link`（0.1.1）のような指定をクラス1つでは上書きできなくなるため。'
   note: '`@layer` を使う場合は、ベーススタイルを `base` レイヤーに素のセレクタ（`a:any-link`、`:focus-visible`、`:root:has(:modal)` など）で書きます。後のレイヤーの指定は詳細度に関係なく勝つので、コンポーネントのクラス1つで上書きできます。リセット CSS の kiso.css が `:where()` で書かれているのは、レイヤーなしでも使える配布物だからです。上書きされる前提のデフォルト値（リセットで消した `list-style-type` を戻す `:where(ul, ol)` など）は、`@layer` や `@scope` の中でも `:where()` で詳細度を 0 にしてかまいません（`is-for-state-selectors`）。'
@@ -153,7 +153,7 @@
 
 - id: declared-layer-names-only
   level: 必須
-  kind: spec
+  kind: convention
   rule: '`@layer` と `@import` の `layer()` には、先頭の `@layer` 文で宣言した9つのレイヤー名だけを使う。'
   reason: 宣言していない名前はエラーにならず、最後に宣言したレイヤーより後ろに新しいレイヤーとして作られるので、打ち間違えると順番が崩れるため。
   lint: 'Stylelint: `layer-name-pattern`'
@@ -162,7 +162,7 @@
 
 - id: third-party-in-vendors
   level: 推奨
-  kind: spec
+  kind: convention
   rule: 自分で読み込むサードパーティのCSSは、`@import url("…") layer(vendors);` で `vendors` レイヤーに入れる。
   reason: レイヤーの外に置くとどのスタイルよりも強くなり、自分のコンポーネントから上書きできなくなるため。
   page: cascade/layers

@@ -255,7 +255,7 @@
 
 - id: check-stacking-context-first
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: 重なり順がおかしいときは、z-index の値を大きくする前に、どのスタッキングコンテキストの中で比べられているかを確かめる。
   reason: z-index は同じスタッキングコンテキストの中でしか比べられず、祖先のコンテキストの順位を超えられないため。
   note: '不要なコンテキストは指定を外して消し、必要なものは `isolation: isolate` で意図して作ります。`html` 要素は最初からコンテキストを作ります。z-index の値の決め方と `isolation` は、第10章のルール `z-index-tokens-only`、`isolation-for-relative-z-index` で扱います。'
@@ -294,7 +294,7 @@
 # 11-7 固定ヘッダー
 - id: sticky-header-height-query
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: 'ヘッダーを固定するときは、`@media (height >= calc(600 / 16 * 1rem))` のように、ビューポートの高さが十分なときだけ固定する。'
   reason: 高さの低い画面や拡大した画面では、固定したヘッダーが画面の多くを覆い、フォーカスした要素も隠すため。
   note: 'ヘッダーの高さが決まっているなら、同じ条件でルートに `scroll-padding-block-start` を指定し、スクロールで見せる範囲からヘッダーの分を除きます。閾値の600px相当は目安です。'

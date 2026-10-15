@@ -163,7 +163,7 @@
 # 13-4 コンテナの副作用とコンテナ単位
 - id: no-container-just-in-case
   level: 非推奨
-  kind: spec
+  kind: judgment
   rule: '`container` は、コンテナサイズクエリか `cqi` で実際に問い合わせる要素にだけ指定し、「とりあえず」すべてのルートや要素に付けない。'
   reason: 'コンテナにすると、インライン方向のサイズの封じ込めで幅が中身から決まらなくなり、`subgrid` も使えなくなるため。問い合わせないコンテナは、副作用だけを残す。'
   aiProne: true
@@ -257,7 +257,7 @@
 
 - id: no-orientation-for-layout
   level: 非推奨
-  kind: spec
+  kind: judgment
   rule: 'レイアウトの切り替えを `orientation` で判定しない。使える幅は `width` で判定する。'
   reason: '`orientation` が比べるのはビューポートの幅と高さで、端末の向きではないため。縦向きの端末でもソフトウェアキーボードが出るとビューポートが横長になり、`landscape` と判定されることがある。'
   page: responsive/media-queries

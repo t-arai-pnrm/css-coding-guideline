@@ -32,13 +32,13 @@ Safari 18系にも対応する場合や、切り替える明度や色を自分�
   }
 
   &[data-variant="warning"] {
-    background-color: var(--color--warning--400);
+    background-color: var(--color--accent--400);
     color: oklch(0% 0 0deg);
   }
 }
 ```
 
-このコードでは、背景色を変えるたびに文字色も見直す必要があります。`--color--warning--400` を少し暗い段階に替えたら、黒い文字のままでよいのか、白にすべきかを、誰かが判断しなければなりません。ダークモードで背景色の段階が替わる場合も同じで、配色ごとに文字色の組み合わせが増えます。
+このコードでは、背景色を変えるたびに文字色も見直す必要があります。`--color--accent--400` を少し暗い段階に替えたら、黒い文字のままでよいのか、白にすべきかを、誰かが判断しなければなりません。ダークモードで背景色の段階が替わる場合も同じで、配色ごとに文字色の組み合わせが増えます。
 
 背景色がCSSの外から来る場合は、さらに困ります。CMSで編集者がラベルの色を選べる場合、選べる色を確認済みの候補に限っていても、どの候補が使われるかはCSSを書く時点では分かりません。この節で扱うのは、コントラスト比を確認済みの限られた背景色について、文字色を背景色から自動で決める書き方です。どのような色が来ても読みやすさを保証する方法ではありません。
 
@@ -176,11 +176,13 @@ Safari 26より前の環境でも、未登録のカスタムプロパティ `--_
 ```css title="🙆‍♂ Recommended: 画像が表示されなかった場合の背景色を、文字色から決める"
 @scope (.scoped.image-banner) to (.scoped) {
   :scope {
+    --_foreground: var(--image-banner--foreground, oklch(100% 0 0deg));
+
     display: block grid;
     grid-template-areas: "--pile";
     background-color: oklch(from currentColor sign(0.7 - l) 0 h);
     background-color: contrast-color(currentColor);
-    color: var(--image-banner--foreground, oklch(100% 0 0deg));
+    color: var(--_foreground);
 
     & > img,
     & > ._body {
@@ -208,7 +210,7 @@ Safari 26より前の環境でも、未登録のカスタムプロパティ `--_
 :root {
   --background--info: var(--color--accent--600);
   --foreground--on-info: oklch(100% 0 0deg);
-  --background--warning: var(--color--warning--400);
+  --background--warning: var(--color--accent--400);
   --foreground--on-warning: oklch(0% 0 0deg);
 }
 ```

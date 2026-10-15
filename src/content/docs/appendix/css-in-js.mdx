@@ -25,7 +25,7 @@ CSS-in-JSの利点として、型安全性もよく挙げられます。StyleX�
 
 ただし、この利点がどこまで決定的かには、疑問の余地があります。CSSそのものが、不正な値を受け付けない型付きの言語の性質を持っているからです。各プロパティは受け付ける値の文法を仕様で定めていて、`color: 16px` のように文法に合わない宣言を、ブラウザは解釈の段階で無視します。無視された宣言の代わりには、同じ要素に当てはまるほかの宣言が使われ、それもなければ継承した値か初期値になります。
 
-2つの検査には違いもあります。ブラウザは無効な宣言を黙って捨てるだけで、誤りを知らせません。一方、TypeScriptの型検査は、コードを書いている段階で誤りを示します。
+2つの検査には違いもあります。ブラウザは無効な宣言を無視するだけで、誤りを知らせません。一方、TypeScriptの型検査は、コードを書いている段階で誤りを示します。
 
 素のCSSでも、Stylelintのルール `declaration-property-value-no-unknown` を使えば、`color: 16px` のような値を書いた時点で見つけられます。本書のStylelintの設定でも、このルールを有効にしています（[19-1 Stylelintでルールを守る](/operations/stylelint/)）。
 
@@ -55,7 +55,83 @@ CSS-in-JSの多くは、生成した一意なクラス名を付けて、スタ�
 
 `@scope` は、部品のスタイルが外の要素に当たるのを防ぎますが、外のスタイルが中に入ってくるのは防ぎません。本書は、この性質をグローバルなスタイルとの共存に使います。リセットCSSとベースのスタイルは部品の中まで届かせ、それらと部品のスタイルの優先順位はカスケードレイヤーで決めます（[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)）。
 
-フレームワークが、部品のファイルにスコープ付きのCSSを書く仕組みを標準で備えていることもあります。Vueの単一ファイルコンポーネントの `<style scoped>` や、Astroのコンポーネントの `<style>` は、書いたセレクタに部品ごとの属性やクラスを足し、その部品のHTMLにだけ当たるように変換します。この仕組みを使う現場では、本書の書き方から `@scope` だけをフレームワークのスコープに置き換えます。ルートのクラス、子要素の `._kebab`、内部プロパティの `--_prop`、カスケードレイヤー、コンテナ名の `--scoped` といった規約は、そのまま使います。
+フレームワークが、部品のファイルにスコープ付きのCSSを書く仕組みを標準で備えていることもあります。Vueの単一ファイルコンポーネントの `<style scoped>` や、Astroのコンポーネントの `<style>` は、書いたセレクタに部品ごとの属性やクラスを足し、その部品のHTMLにだけ当たるように変換します。この仕組みを使う現場でも、本書の設計の原則と、公開プロパティで値を受け渡す方法はそのまま使えます。子要素の `._kebab`、内部プロパティの `--_prop`、カスケードレイヤー、コンテナ名の `--scoped` といった規約も残せます。
+
+ただし、`@scope` の行を消してフレームワークのスコープに任せるだけでは、移植は終わりません。`@scope` を外すと、`:scope` や `&:is(:scope[data-variant="featured"] *)` は部品のルートを指さなくなるので、ルートのクラスを使ったセレクタに書き換えます。さらに、スタイルが当たる範囲の下限も、フレームワークごとに本書と違います。入れ子にした子の部品のルートと、スロットで受け取る内容の扱いは、使うフレームワークの仕様に合わせて書き直します。
+
+Vueの例で、下限の違いを確かめます。一覧の部品の中に、カードの部品を入れ子にします。
+
+```vue title="NewsList.vue（親の部品）"
+<template>
+  <div class="list">
+    <NewsCard />
+  </div>
+</template>
+
+<style scoped>
+.list { display: block grid; gap: 16px; }
+.card { border: 1px solid; }
+.title { font-weight: bold; }
+</style>
+```
+
+```vue title="NewsCard.vue（子の部品）"
+<template>
+  <article class="card">
+    <h3 class="title">…</h3>
+  </article>
+</template>
+
+<style scoped>
+.card { padding: 16px; }
+</style>
+```
+
+Vueは、`<style scoped>` のセレクタの末尾に部品ごとの `data-v-…` 属性のセレクタを足し、その部品のテンプレートの要素に同じ属性を付けます。Vueの公式ドキュメントは、子の部品のルート要素には親と子の両方のscoped CSSが当たると説明しています。親が子のルートを配置できるようにするための仕様です。変換後のCSSとHTMLは、次のような形になります（属性の値は説明のための仮のものです）。
+
+```css title="Vueが変換した後のCSS（イメージ）"
+.list[data-v-1111] { display: block grid; gap: 16px; }
+.card[data-v-1111] { border: 1px solid; }
+.title[data-v-1111] { font-weight: bold; }
+.card[data-v-2222] { padding: 16px; }
+```
+
+```html title="Vueが変換した後のHTML（イメージ）"
+<div class="list" data-v-1111>
+  <article class="card" data-v-2222 data-v-1111>
+    <h3 class="title" data-v-2222>…</h3>
+  </article>
+</div>
+```
+
+親の `.title[data-v-1111]` は、子の部品の中の見出しには当たりません。一方、親の `.card[data-v-1111]` は、子の部品のルートの `<article>` に当たり、枠線が付きます。Vueでは、子の部品のルートまでが親のスコープに入ります。
+
+本書の書き方では、同じ入れ子は次のようになります。
+
+```css title="🙆‍♂ Recommended: 入れ子にした部品のルートは、下限で親のスコープから外れる"
+@scope (.scoped.news-list) to (.scoped) {
+  :scope {
+    display: block grid;
+    gap: 16px;
+  }
+}
+
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    padding: 16px;
+  }
+}
+```
+
+```html
+<div class="scoped news-list">
+  <article class="scoped news-card">
+    <h3 class="_title">…</h3>
+  </article>
+</div>
+```
+
+ルートは、Vueでは部品のテンプレートの要素がそのまま範囲になり、本書では `@scope` の前置きの `.scoped.<名前>` で指定します。下限は、Vueでは子の部品のルートの内側にあり、本書では `to (.scoped)` に当てはまる子の部品のルートそのものです。下限の要素はスコープの外なので、`news-list` のルールは `news-card` のルートにも当たりません。Vueに移植するときは、親の部品のセレクタが子の部品のルートにも当たるようになるので、セレクタを書き換えるときに、子のルートと同じクラスを親が選んでいないかを確かめます。スロットの内容も、受け持つ側が逆になります。Vueは、子の部品のスロットに渡した内容を、渡した親の部品のものとして扱うので、子の `scoped` のスタイルはデフォルトでは当たらず、当てるには `:slotted()` を使います。本書の書き方では、スロットの内容は子の部品のルートの内側に描画されるので、子の `@scope` が当たり、親の `@scope` は下限で止まります。
 
 置き換えたときは、詳細度の変わり方に注意が要ります。Vueの `scoped` は、`.example` を `.example[data-v-f3f3eg9]` のように属性セレクタを足して変換するので、詳細度が属性セレクタ1つ分上がります。Astroも、デフォルトの設定では `data-astro-cid-*` の属性セレクタを足すので、同じように上がります。ただし、設定 `scopedStyleStrategy` を `"where"` にすれば、`:where()` で包んで詳細度を変えません。
 
@@ -103,7 +179,7 @@ CSSは、値の計算や条件による切り替えの機能を増やしてき�
 
 ## Webサイト制作で素のCSSを選ぶ理由
 
-ここまでの論点を本書の題材に当てはめた結論は、「[素のCSSで書く理由](/introduction/why-plain-css/)」にまとめています。静的なサイトとCMSで同じ書き方を使えることと、どの道具を使う現場でも役に立つ知識になることが主な理由です。そのページでは、フレームワークのスコープの仕組みを使う場合は `@scope` だけを置き換えることと、採用していない道具をAIに持ち込ませないルール `no-unrequested-css-framework` も説明しています。
+ここまでの論点を本書の題材に当てはめた結論は、「[素のCSSで書く理由](/introduction/why-plain-css/)」にまとめています。静的なサイトとCMSで同じ書き方を使えることと、どの道具を使う現場でも役に立つ知識になることが主な理由です。そのページでは、フレームワークのスコープの仕組みを使う場合に、設計の原則と公開プロパティの受け渡しを残し、スコープの指定をフレームワークに合わせて書き換えることも説明しています。採用していない道具をAIに持ち込ませないルール `no-unrequested-css-framework` も、そのページで扱っています。
 
 このルールが求めているのは、採用していない道具を持ち込まないことです。プロジェクトがTailwind CSSやCSS-in-JSを採用しているなら、その方針に従います。大規模なアプリケーションを多くの開発者で作り、ビルドの仕組みをJavaScriptのフレームワークにそろえられる現場では、StyleXのような道具の利点が大きくなります。{/* 要確認: 出典なし。StyleXのような道具の利点が大きくなる現場の条件 */}Tailwind CSSを使う現場で本書の考え方を生かす方法は、「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」のコラムで説明しています。
 
@@ -116,7 +192,7 @@ CSSは、値の計算や条件による切り替えの機能を増やしてき�
 - [Static types | StyleX](https://stylexjs.com/docs/learn/static-types/)
 - [StyleX: A styling library for CSS at scale](https://engineering.fb.com/2025/11/11/web/stylex-a-styling-library-for-css-at-scale/)（Engineering at Meta、2025年11月）
 - [The Basics | styled-components](https://styled-components.com/docs/basics)
-- [SFC CSS Features | Vue.js](https://vuejs.org/api/sfc-css-features.html)（`<style scoped>` の変換）
+- [SFC CSS Features: Scoped CSS | Vue.js](https://vuejs.org/api/sfc-css-features.html#scoped-css)（`<style scoped>` の変換と、子の部品のルート要素の扱い）
 - [Styles and CSS | Astro Docs](https://docs.astro.build/en/guides/styling/)（スコープ付きのスタイル）
 - [Configuration Reference: scopedStyleStrategy | Astro Docs](https://docs.astro.build/en/reference/configuration-reference/#scopedstylestrategy)
 - [CSS エラー処理 - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/Guides/Syntax/Error_handling)

@@ -12,7 +12,7 @@
 
 - id: no-inline-block-for-rows
   level: 非推奨
-  kind: spec
+  kind: judgment
   rule: '要素を横に並べるために `display: inline-block`（`inline flow-root`）を使わず、親を Flexbox か Grid にして `gap` で間隔を決める。'
   reason: タグの間の改行や空白が匿名のインラインボックスになり、親の `font-size` で幅の変わる隙間が要素の間に入るため。
   note: '`inline flow-root` は、文中のインライン要素に上下の余白や幅を持たせたいときに使います。'
@@ -125,7 +125,7 @@
 # 7-6 マージンの相殺
 - id: margin-collapse-no-empty-spacers
   level: 非推奨
-  kind: spec
+  kind: judgment
   rule: '余白を作るために、空の要素、`<br>`、`<p>&nbsp;</p>` を置かない。'
   reason: '中身のない要素は上下の `margin` が相殺して通り抜けるので余白にならず、`&nbsp;` や `<br>` の行は行の高さで余白が決まり、文字の大きさで変わるため。'
   note: 余白は、前後の要素の `margin` か、親の `gap` や `grid-template` で作ります。CMS の本文に入った空の段落は、通常フローでは相殺で消えますが、`gap` で並べた領域では `gap` の2つ分の間隔になります。
@@ -154,7 +154,7 @@
 
 - id: flexbox-check-auto-min-size
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: 'フレックスアイテムが縮まずにはみ出すときは、固定の幅を足したり `overflow: hidden` で隠したりする前に、自動の最小幅（`min-inline-size: auto`）が中身の最小幅になっていないかを確かめる。'
   reason: 'フレックスアイテムの `min-inline-size: auto` は中身の最小幅（`min-content`）として扱われ、`flex-shrink` で縮む量を計算してもそれより小さくならないため。`overflow: hidden` でも最小幅は0になるが、中身を切り取って隠すだけになる。'
   note: '本書のベーススタイルでは、全称セレクタの `min-inline-size: 0`（第8章のルール `global-min-inline-size-zero`）で前もって防いでいます。`flex-direction: column` のコンテナでは、同じことが `min-block-size` で起きます。'
@@ -286,7 +286,7 @@
 # 7-10 positionの基礎
 - id: containing-block-inside-component
   level: 推奨
-  kind: spec
+  kind: judgment
   rule: '`position: absolute` の要素の基準にする祖先には、同じコンポーネントの中で `position: relative` を指定する。'
   reason: 基準がコンポーネントの外の祖先に決まると、置く場所によって位置が変わるため。
   page: layout/positioning

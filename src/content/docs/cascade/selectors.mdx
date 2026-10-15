@@ -28,7 +28,7 @@ input[type="submit"] {
 
 /* 0.1.0 なので、上の 0.1.1 に負ける */
 .submit-button {
-  background-color: var(--background--muted);
+  background-color: var(--background--surface);
 }
 
 #news h2 {
@@ -101,7 +101,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 @layer base {
   a {
     &:any-link {
-      color: var(--foreground--link);
+      color: var(--foreground--accent);
     }
   }
 
@@ -123,7 +123,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 ```css title="🙆‍♂ Recommended: レイヤーを使えないときは、ベーススタイルのセレクタを :where() で包む"
 :where(a:any-link) {
-  color: var(--foreground--link);
+  color: var(--foreground--accent);
 }
 ```
 

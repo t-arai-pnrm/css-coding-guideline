@@ -12,7 +12,7 @@
 
 - id: reset-in-reset-layer
   level: 必須
-  kind: spec
+  kind: convention
   rule: 'リセット CSS は `@import url("kiso.css") layer(reset);` のように、`reset` レイヤーに読み込む。'
   reason: ベースやコンポーネントのレイヤーより弱くなり、それらの指定が詳細度に関係なくリセットに勝つため。
   note: 'レイヤーを使わない環境（CMS など）では、`@import url("kiso.css");` とレイヤーなしで読み込み、ほかの CSS より前に置きます。'

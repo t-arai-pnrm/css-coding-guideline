@@ -4,7 +4,7 @@
  */
 import { readFileSync } from 'node:fs';
 
-export const RULE_KINDS = { spec: '仕様上の制約', judgment: '実装上の判断', convention: '本書の規約' };
+export const RULE_KINDS = { spec: '仕様にもとづく制約', judgment: '実装上の判断', convention: '本書の規約' };
 export const LEVELS = ['必須', '推奨', '非推奨', '禁止'];
 
 /** 全角と半角、大文字と小文字の違いを無視して比べる。 */

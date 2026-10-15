@@ -271,7 +271,11 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 <Baseline id="user-pseudos" compatKey="css.selectors.user-invalid" name=":user-invalid" />
 
-エラーは、色だけで伝えないようにします。上の例では、入力例を示すヒントの文字を太くしています。また、`:user-invalid` が変えるのは見た目だけで、スクリーンリーダーには伝わりません。エラーの内容を読み上げさせるには、`aria-invalid` や、エラーの文章を関連付ける `aria-describedby` を、JavaScriptで設定します。
+エラーは、色だけで伝えないようにします。上の例では、入力例を示すヒントの文字を太くしています。
+
+`:user-invalid` で付けた色や枠線は、見た目を変えるだけで、意味を足しません。誤りがあるという状態は、`required` 属性などによるブラウザの制約の検証が受け持ちます。操作した後や送信しようとした後の検証の結果は、アクセシビリティAPIにinvalidの状態として公開されます（HTML-AAM）。
+
+一方、CSSで表示した独自のエラー文は、表示しただけでは入力欄の説明として関連付けられません。そこで、独自のエラー文の `id` を、JavaScriptで入力欄の `aria-describedby` に加えます。あわせて `aria-invalid` を付けるのは、サーバーで検証した結果のように、ブラウザの制約の検証の外で決まる誤りも、同じ形で伝えるためです。ただし、これらの属性を付けたことと、エラー文がその場で自動的に読み上げられることは別です。`aria-describedby` で関連付けた文章は、入力欄にフォーカスしたとき、説明として読み上げられます。文章が表示されたその場で通知されるとは限りません。{/* 要検証: ブラウザ。VoiceOverでの入力エラーの通知（ネイティブ検証の invalid、aria-describedby のエラー文） */}
 
 次のデモでは、メールアドレスの欄に不正な値を入れて欄を離れるか、何も入力せずに「送信する」を押すと、エラーの表示を確かめられます。ラジオボタンは `accent-color` で色だけを変え、同意のチェックボックスとスイッチは `input` 自体に描いています。開発者ツールで強制カラーモードを再現すると、未選択のチェックボックスにチェックマークが出ないことも確かめられます。
 
@@ -382,6 +386,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 - [kiso.cssを公開しました](https://www.tak-dcxi.com/article/introduce-kiso-css/)（TAKLOG、2025年6月）
 - [accent-color - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/accent-color)
 - [:user-invalid - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/:user-invalid)
+- [HTML Accessibility API Mappings 1.0（required 属性）](https://www.w3.org/TR/html-aam-1.0/#att-required)（W3C。ネイティブの制約の検証の状態をinvalidとして公開する）
 - [field-sizing - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing)
 - [Customizable select elements - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select)
 - [::picker() - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/::picker)

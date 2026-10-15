@@ -36,6 +36,13 @@
       transition-duration: var(--duration--base);
       transition-timing-function: var(--ease--out-quint);
 
+      /* 強制カラーモードでは影が消えるので、縁を outline で描く。フォーカスリングは上書きしない */
+      &:not(:focus-visible) {
+        @media (forced-colors: active) {
+          outline: 1px solid;
+        }
+      }
+
       /* 比べる2つの書き方。止まっているときと持ち上げたときの影を、書き方ごとに決める */
       &[data-shadow="box-shadow"] {
         --_box-shadow: var(--shadow--sm);

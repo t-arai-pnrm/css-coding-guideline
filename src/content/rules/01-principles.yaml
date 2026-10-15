@@ -77,7 +77,7 @@
 
 - id: no-unsupported-layout-features
   level: 禁止
-  kind: spec
+  kind: judgment
   rule: 対象のブラウザの一部が対応していないレイアウトの機能を、レイアウトの要として使わない。
   reason: 未対応の環境では指定が無視され、表示の崩れや内容の重なりにつながるため。
   note: アンカーポジショニング、絶対配置の要素への `place-self`、`sibling-index()` と `sibling-count()` が該当します。装飾的な演出に限り、`@supports` で従来の表現を用意して使えます（`sibling-index()` の書き方は `sibling-functions-for-decoration`）。
@@ -115,7 +115,7 @@
 
 - id: scripting-for-js-dependent-styles
   level: 必須
-  kind: spec
+  kind: judgment
   rule: 'JavaScript で表示を切り替える前提のスタイル（表示する前の状態として要素を隠すなど）は、`@media (scripting: enabled)` の中に書き、さらに初期化に成功した JavaScript が付ける属性を条件にする。'
   reason: 'JavaScript が無効な環境や、スクリプトの読み込みや実行に失敗した環境で、内容が隠れたままになるのを防ぐため。`scripting: enabled` は JavaScript が有効なことしか表さない。'
   aiProne: true

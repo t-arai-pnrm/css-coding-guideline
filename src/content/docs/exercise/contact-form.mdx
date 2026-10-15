@@ -16,7 +16,7 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 各項目は、14px相当の太字のラベルの下に入力欄を置き、項目の間を24px空けます。入力欄は白い面にして、1pxの枠線で囲んで角を12px丸め、内側に上下12px、左右16pxの余白を取ります。メールアドレスの入力欄の下には、「例：name@example.com」と入力例を示します。お問い合わせ内容の入力欄は、4行分の高さから始め、入力に合わせて10行分まで伸ばします。フォームの幅は640px相当までです。
 
-手元で進めるときは、開始版（[index.html](/exercise-files/contact-form/start/index.html)）から始め、中間版（[index.html](/exercise-files/contact-form/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/contact-form/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/contact-form/start/`、`exercise/contact-form/middle/`、`exercise/contact-form/finished/` にあります。完成版には、誤りを支援技術に伝える属性を切り替える `script.js`（[script.js](/exercise-files/contact-form/finished/script.js)）も、同じディレクトリにあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
+手元で進めるときは、開始版（[index.html](/exercise-files/contact-form/start/index.html)）から始め、中間版（[index.html](/exercise-files/contact-form/middle/index.html)）と見比べます。後半の要件の変更は、中間版から始めて、完成版（[index.html](/exercise-files/contact-form/finished/index.html)）と見比べます。サンプル一式のZIPでは、それぞれ `exercise/contact-form/start/`、`exercise/contact-form/middle/`、`exercise/contact-form/finished/` にあります。完成版には、誤りの文章を入力欄に関連付ける属性を切り替える `script.js`（[script.js](/exercise-files/contact-form/finished/script.js)）も、同じディレクトリにあります。準備は「[21-1 題材と準備](/exercise/setup/#手元で進める準備)」で説明しています。
 
 この節で使うルールは、次の節で説明しています。読んでいない節があれば、先に読んでから取り組んでください。
 
@@ -100,7 +100,7 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 ## 変更後の合格条件
 
-次のデモが、要件の変更を終えた時点のお問い合わせのフォームです。誤りをスクリーンリーダーに伝える処理は、デモに含めたスクリプトで動きます。
+次のデモが、要件の変更を終えた時点のお問い合わせのフォームです。誤りの文章を入力欄に関連付ける処理は、デモに含めたスクリプトで動きます。
 
 <Demo base="exercise" scheme="light" title="要件の変更を終えたお問い合わせのフォーム：入力したあとにだけ、誤りを色と文章で示す" html={contactFormChangedHtml} css={contactFormChangedCss} js={contactFormChangedJs} />
 
@@ -136,20 +136,22 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 同意のチェックボックスには `._text-control` を付けていないので、枠線は赤くなりません。チェックボックスは、`accent-color` で色だけを変えた標準の部品のままにしています（`accent-color-for-color-only`）。枠線を誤りの色にするには、`appearance: none` で作り直すことになりますが、誤りは文章で伝わるので、作り直すほどの理由はありません。チェックボックスの誤りは、下の文章だけで伝えます。
 
-## スクリーンリーダーに伝える部分だけをスクリプトに任せる
+## 誤りの文章を入力欄に関連付ける部分だけをスクリプトに任せる
 
-`:user-invalid` が変えるのは見た目だけで、誤りがあることはスクリーンリーダーに伝わりません。表示した文章も、入力欄と関連付けなければ、入力欄へのフォーカスで読み上げられません。そこで、誤りのある入力欄へスクリプトで `aria-invalid="true"` を付け、誤りの文章の `id` を `aria-describedby` に足します（「[17-7 フォーム部品](/interaction/forms/#user-invalid-による入力エラーの表示)」）。
+`:user-invalid` で付けた赤い枠線は、見た目を変えるだけで、意味を足しません。誤りがあるという状態は、`required` 属性などによるブラウザの制約の検証が、支援技術にも伝えます。一方、CSSで表示した誤りの文章は、表示しただけでは入力欄の説明として関連付けられません。そこで、誤りのある入力欄の `aria-describedby` に、スクリプトで誤りの文章の `id` を足します（「[17-7 フォーム部品](/interaction/forms/#user-invalid-による入力エラーの表示)」）。
 
-スクリプトが受け持つのは、この2つの属性だけです。見た目は、CSSが `:user-invalid` と `[aria-invalid="true"]` のどちらでも同じになるように、`:is()` でまとめて指定しています（`native-and-aria-state-together`）。サーバーで検証した結果を、HTMLの `aria-invalid="true"` として返す場合も、同じ見た目になります。
+あわせて `aria-invalid="true"` も付けます。サーバーで検証した結果のように、ブラウザの制約の検証の外で決まる誤りも、同じ属性で伝えられるようにするためです。ただし、属性を付けても、誤りの文章が表示された瞬間に読み上げられるとは限りません。`aria-describedby` で関連付けた文章は、入力欄にフォーカスしたとき、説明として読み上げられます。{/* 要検証: ブラウザ。VoiceOverでの入力エラーの通知（ネイティブ検証の invalid、aria-describedby のエラー文） */}
+
+スクリプトが受け持つのは、`aria-describedby` と `aria-invalid` の2つの属性だけです。見た目は、CSSが `:user-invalid` と `[aria-invalid="true"]` のどちらでも同じになるように、`:is()` でまとめて指定しています（`native-and-aria-state-together`）。サーバーで検証した結果を、HTMLの `aria-invalid="true"` として返す場合も、同じ見た目になります。
 
 ## 振り返り
 
-直したのは、各項目に誤りの文章を足したHTMLと、入力欄の枠線と誤りの文章の指定、支援技術に伝えるスクリプトです。フォームの並び、ラベル、必須の印、送信ボタンは直していません。最初の要件で、入力欄に共通の `._text-control` を付けていたので、誤りの見た目も1か所に書けました。
+直したのは、各項目に誤りの文章を足したHTMLと、入力欄の枠線と誤りの文章の指定、誤りの文章を入力欄に関連付けるスクリプトです。フォームの並び、ラベル、必須の印、送信ボタンは直していません。最初の要件で、入力欄に共通の `._text-control` を付けていたので、誤りの見た目も1か所に書けました。
 
 予想と見比べたら、自分の変更を次の3つの点で見直します。
 
 - 誤りの見た目を `:user-invalid` で選ぶと予想できたか。`:invalid` で書いていたなら、ページを開いた時点の表示を確かめたか。
-- 誤りが、色だけでなく文章でも伝わっているか。入力欄にフォーカスしたとき、スクリーンリーダーが誤りの文章を読み上げるかを確かめたか。
+- 誤りが、色だけでなく文章でも伝わっているか。誤りの文章が入力欄の説明として関連付けられているかを、開発者ツールのアクセシビリティの表示で確かめたか。
 - スクリプトが見た目を変えていないか。見た目の条件が、CSSの1か所にまとまっているか。
 
 ## 判断の問い
@@ -176,7 +178,7 @@ HTMLに書くように答えます。必須であることは入力する人が�
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-誤りを表示するかどうかを、スクリプトが受け持つようになります。スクリプトが読み込めなかった環境では、`:user-invalid` が当てはまっても文章が表示されず、枠線の色だけが変わります。この節の書き方では、表示はCSSの `:user-invalid` が受け持ち、スクリプトは支援技術に伝える属性だけを付けるので、スクリプトがなくても見た目の誤りの表示は動きます。
+誤りを表示するかどうかを、スクリプトが受け持つようになります。スクリプトが読み込めなかった環境では、`:user-invalid` が当てはまっても文章が表示されず、枠線の色だけが変わります。この節の書き方では、表示はCSSの `:user-invalid` が受け持ち、スクリプトは誤りの文章を入力欄に関連付ける属性だけを付けるので、スクリプトがなくても見た目の誤りの表示は動きます。
 
 </details>
 

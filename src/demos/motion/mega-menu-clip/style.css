@@ -52,6 +52,10 @@
       transition-property: clip-path, opacity, visibility;
       transition-timing-function: var(--ease--out-quint);
 
+      @media (forced-colors: active) {
+        outline: 1px solid;
+      }
+
       /* 動きを減らす設定のときは見える範囲を変えず、フェードだけを残す */
       @media (prefers-reduced-motion: no-preference) {
         --_clip-from: inset(0 -24px 100%);

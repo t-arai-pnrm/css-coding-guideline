@@ -1,13 +1,13 @@
 # 第8章 リセットとベーススタイル：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 23
 - 本文: 約4.9万字
 - 読む条件: リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -25,7 +25,7 @@ https://t-arai-pnrm.github.io/recss-guideline/reset/kiso/
   - 理由: 詳細度が 0 で上書きしやすく、和文向けの初期値が入っていて、ブラウザの便利なデフォルトを壊さないため。
   - 補足: ほかのリセット CSS を使う場合も、セレクタの詳細度が 0 で、破壊的なリセットをしないものを選びます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/kiso/#rule-reset-kiso-css
-- 【必須・仕様上の制約】リセット CSS は `@import url("kiso.css") layer(reset);` のように、`reset` レイヤーに読み込む。（`reset-in-reset-layer`）
+- 【必須・本書の規約】リセット CSS は `@import url("kiso.css") layer(reset);` のように、`reset` レイヤーに読み込む。（`reset-in-reset-layer`）
   - 理由: ベースやコンポーネントのレイヤーより弱くなり、それらの指定が詳細度に関係なくリセットに勝つため。
   - 補足: レイヤーを使わない環境（CMS など）では、`@import url("kiso.css");` とレイヤーなしで読み込み、ほかの CSS より前に置きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/kiso/#rule-reset-in-reset-layer
@@ -58,11 +58,11 @@ https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/
 - 【推奨・実装上の判断】ベーススタイルのフォーカスリングは、`:focus-visible` に `CanvasText` の `outline` と `Canvas` の `box-shadow` を重ねた二重リングで定義する。（`focus-ring-double`）
   - 理由: 背景が明るくても暗くても2色のどちらかが背景と区別でき、システムカラーなのでダークモードや強制カラーモードにも追従するため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/#rule-focus-ring-double
-- 【禁止・仕様上の制約】フォーカスリングを `box-shadow` だけで描かない。（`focus-ring-not-box-shadow-only`）
+- 【禁止・仕様にもとづく制約】フォーカスリングを `box-shadow` だけで描かない。（`focus-ring-not-box-shadow-only`）
   - 理由: 強制カラーモードでは `box-shadow` が `none` になり、フォーカスの位置が見えなくなるため。
   - 補足: `box-shadow` は、`outline` で描いたリングを補う用途に限って使います。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/#rule-focus-ring-not-box-shadow-only
-- 【禁止・仕様上の制約】`html` や `:root` に、`scroll-behavior: smooth` を無条件に指定しない。（`no-global-smooth-scroll`）
+- 【禁止・仕様にもとづく制約】`html` や `:root` に、`scroll-behavior: smooth` を無条件に指定しない。（`no-global-smooth-scroll`）
   - 理由: キーボードでのフォーカス移動や `scrollTo()` のスクロールまでなめらかになり、動きを減らす設定をしているユーザーにもアニメーションが適用されるため。
   - 補足: カルーセルのような個別のスクロールコンテナに指定するのは問題ありません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/#rule-no-global-smooth-scroll
@@ -70,7 +70,7 @@ https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/
   - 理由: ページ内リンクで移動するときだけなめらかにし、フラグメント付きの URL で表示した直後や、キーボードでフォーカスを移すとき、動きを減らす設定をしているときは即座にスクロールさせるため。
   - 補足: `data-loaded` 属性は、JavaScript で `load` イベントのときにルート要素に付けます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/#rule-smooth-scroll-conditional
-- 【推奨・仕様上の制約】`[id]` と `:focus` に `scroll-margin-block-start` を指定し、ページ内リンクの移動先やフォーカスした要素が固定ヘッダーに隠れないようにする。（`scroll-margin-for-targets`）
+- 【推奨・仕様にもとづく制約】`[id]` と `:focus` に `scroll-margin-block-start` を指定し、ページ内リンクの移動先やフォーカスした要素が固定ヘッダーに隠れないようにする。（`scroll-margin-for-targets`）
   - 理由: 移動先の見出しやフォーカスした要素が、固定ヘッダーの下に隠れて見えなくなるのを防ぐため。
   - 補足: 本書のベーススタイルでは `4rlh` を目安にしています。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/#rule-scroll-margin-for-targets
@@ -107,15 +107,15 @@ https://t-arai-pnrm.github.io/recss-guideline/reset/global-pitfalls/
   - 理由: レイアウトは文脈によって必要なものが変わるので、ほかの文脈で打ち消しの指定が増え、打ち消し忘れによる不具合も起きやすいため。
   - 補足: 全称セレクタの `min-inline-size: 0`（8-2）は、フレックスアイテムとグリッドアイテムの最小幅だけを変える例外です。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/global-pitfalls/#rule-no-layout-properties-in-base
-- 【禁止・仕様上の制約】`outline: none` や `outline: 0` で、フォーカスリングを消さない。（`no-outline-none`）
+- 【禁止・仕様にもとづく制約】`outline: none` や `outline: 0` で、フォーカスリングを消さない。（`no-outline-none`）
   - 理由: キーボードで操作するユーザーが、フォーカスの位置を見失うため。
   - 補足: クリックしたときにリングが出る問題は、ブラウザが `:focus-visible` で解決しています。見た目を変えたいときは、消さずに定義し直します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/global-pitfalls/#rule-no-outline-none
-- 【必須・仕様上の制約】リストのマーカーは、`list-style: none` ではなく `list-style-type: ""` で消す。（`list-style-type-empty-string`）
+- 【必須・仕様にもとづく制約】リストのマーカーは、`list-style: none` ではなく `list-style-type: ""` で消す。（`list-style-type-empty-string`）
   - 理由: Safari の VoiceOver は、`list-style: none` を指定したリストをリストとして読み上げないため。
   - 補足: kiso.css を使えば、`ul`、`ol`、`menu` のマーカーは消えています。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/global-pitfalls/#rule-list-style-type-empty-string
-- 【禁止・仕様上の制約】ダークモードに対応していないサイトで、`color-scheme: light dark` を指定しない。（`no-color-scheme-without-dark-mode`）
+- 【禁止・仕様にもとづく制約】ダークモードに対応していないサイトで、`color-scheme: light dark` を指定しない。（`no-color-scheme-without-dark-mode`）
   - 理由: ダークモードの環境で、サイトが色を指定していない部分だけが暗い配色になり、文字色と背景色が同化することがあるため。
   - 補足: 暗い背景だけのサイトでは、`<meta name="color-scheme" content="dark">` を指定します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/reset/global-pitfalls/#rule-no-color-scheme-without-dark-mode

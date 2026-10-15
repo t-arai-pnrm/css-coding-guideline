@@ -1,13 +1,13 @@
 # 第20章 AIにコーディングさせる：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 17
-- 本文: 約8.7万字
+- 本文: 約8.8万字
 - 読む条件: AIが書いたCSS、Figmaなどのデザインツールから書いたCSS
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -19,7 +19,7 @@
 - `ai-coding/tasks` 20-4 タスクの単位で進める（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/tasks/
 - `ai-coding/from-figma` 20-5 Figmaのデザインから計画を立てる（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/from-figma/
 - `ai-coding/implementation` 20-6 実装と検証を回す（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/implementation/
-- `ai-coding/pitfalls` 20-7 AIが誤りやすいパターン（約6,300字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/pitfalls/
+- `ai-coding/pitfalls` 20-7 AIが誤りやすいパターン（約6,500字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/pitfalls/
 - `ai-coding/verify-output` 20-8 生成したコードを確かめ、教訓を残す（約5,300字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/verify-output/
 - `ai-coding/audit` 20-9 既存のCSSの監査と移行をAIに任せる（約7,700字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/audit/
 
@@ -105,7 +105,7 @@ https://t-arai-pnrm.github.io/recss-guideline/ai-coding/pitfalls/
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/ai-coding/pitfalls/#rule-verify-support-claims
 - 【推奨・本書の規約】プロジェクトで採用を決めていない限り、Tailwind CSS のユーティリティや CSS-in-JS で書かず、コンポーネントのクラスと `@scope` で書く。（`no-unrequested-css-framework`）
   - 理由: ユーティリティだけで組む前提を持ち込むと、本書の設計（スコープ、公開プロパティ、レイヤー）と食い違い、規約で確かめられないコードになるため。
-  - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第10章のルール `utility-single-purpose`）。Vue の `<style scoped>` や Astro の `<style>` のように、フレームワークがスコープの仕組みを持つ場合は `@scope` だけをそれに置き換え、命名、レイヤー、コンテナ名の規約は残します。
+  - 補足: ユーティリティは `.-visually-hidden` のような単機能のクラスに限ります（第10章のルール `utility-single-purpose`）。Vue の `<style scoped>` や Astro の `<style>` のように、フレームワークがスコープの仕組みを持つ場合も、設計の原則、公開プロパティの受け渡し、命名、レイヤー、コンテナ名の規約は残します。スコープの移植では、`:scope` や `&:is(:scope[…] *)` をルートのクラスを使ったセレクタに書き換え、子のコンポーネントのルートへの適用とスロットの扱いをフレームワークに合わせます（Vue の scoped CSS は、子のコンポーネントのルート要素に親のスタイルも当て、`to (.scoped)` の下限とは範囲が違います）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/ai-coding/pitfalls/#rule-no-unrequested-css-framework
 - 【推奨・実装上の判断】AI にレイアウトを書かせるときは、配置を `grid-template-areas` で定義し、エリアに名前を付けるよう先に指示する。（`ai-layout-with-grid-areas`）
   - 理由: 指示しないと Flexbox と `position: absolute` に偏り、親の1か所で決まるはずの配置が子要素の指定に散らばるため。

@@ -65,7 +65,7 @@ const server = () => {
         kind: z
           .enum(['spec', 'judgment', 'convention'])
           .optional()
-          .describe('性質。spec は仕様上の制約、judgment は実装上の判断、convention は本書の規約。'),
+          .describe('性質。spec は仕様にもとづく制約、judgment は実装上の判断、convention は本書の規約。'),
         aiProne: z.boolean().optional().describe('true でAIが誤りやすいルールだけに絞る。'),
         limit: z.number().int().min(1).max(200).optional().describe('返す件数の上限（既定は30）'),
       }),

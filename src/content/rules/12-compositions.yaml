@@ -22,7 +22,7 @@
 
 - id: stack-nested-gap
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '`stack` を入れ子にするときは、内側の `stack` にも `--stack--gap` を渡し、間隔を空けない場合も `0` と明示する。'
   reason: カスタムプロパティは継承されるので、値を渡さない内側の `stack` には、デフォルト値の `0` ではなく外側の値が使われるため。
   page: compositions/stack
@@ -30,7 +30,7 @@
 
 - id: stack-align-self-start
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '`stack` の子のうち、ボタンやリンクのように中身の幅で見せたい要素には、置く側の CSS で `align-self: start` を指定する。'
   reason: '`align-items` のデフォルト値 `normal` はフレックスアイテムでは `stretch` と同じに振る舞い、子が `stack` の幅いっぱいに広がるため。'
   note: 子が別のコンポーネントのルートなら、そのコンポーネントの中には書かず、置く側のコンポーネントが子クラスで指定します。
@@ -60,7 +60,7 @@
 
 - id: cluster-reset-inherited-gap
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '入れ子にした `cluster` で行と列の間隔を別々に指定するときは、`--cluster--gap: initial` も渡し、外側から継承した一括の間隔を打ち消す。'
   reason: 'カスタムプロパティは継承し、フォールバックの連鎖では一括の `--cluster--gap` が個別の指定より優先されるので、打ち消さないと内側の `--cluster--row-gap` と `--cluster--column-gap` が使われないため。'
   note: '内側でも一括の `--cluster--gap` を渡すなら、外側の値は上書きされるので不要です。'
@@ -80,7 +80,7 @@
 
 - id: apart-column-gap-as-minimum
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '`apart` には、両端の要素の最小の間隔を `--apart--column-gap`（または `--apart--gap`）で渡す。'
   reason: '`space-between` が配る余白は幅が狭くなると0まで減るので、列の間隔がないと、両端の要素が接するまで折り返さないため。'
   page: compositions/apart
@@ -88,7 +88,7 @@
 
 - id: apart-auto-margin-for-wrapped-end
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '折り返した2行目でも行末側の要素を行末に寄せたいときは、`apart` ではなく、その要素に `margin-inline-start: auto` を指定する。'
   reason: '`space-between` は行に要素が1つしかないとき行頭に置くが、`auto` の `margin` は2行目でも余った空間を吸収して要素を行末に寄せるため。'
   page: compositions/apart
@@ -135,7 +135,7 @@
   since: 0.5.0
 - id: sidebar-two-direct-children
   level: 必須
-  kind: spec
+  kind: convention
   rule: '`sidebar` の直接の子は2つだけにし、それぞれに `.main-column` と `.side-column` を付ける。'
   reason: '`flex-grow` と `flex-basis` は2つのクラスにだけ指定されており、クラスのない子や3つ目の子が加わると、折り返す幅の計算が成り立たなくなるため。'
   note: '`:first-child` のような位置で選ばず、クラスで役割を指定するので、サイドを先に書いてもメインとサイドは入れ替わらない。'
@@ -197,7 +197,7 @@
 # 12-7 columns：上から下へ読むリストを段に分ける
 - id: columns-single-list-child
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '`columns` コンポジションの直下には段に分けるリストを1つだけ置き、見出しなどはその外に置く。'
   reason: 段組みと負のマージンは直下の子すべてに付くので、リスト以外の要素を入れると、その要素まで段組みになり、余白も崩れるため。
   note: '項目の `li` や `div` は、段組みを付けたリストの直下に置きます。`dl` では用語と説明を `div` で包むと、まとめて段の境目で分かれなくなります。'
@@ -246,7 +246,7 @@
 # 12-9 pile：子要素を同じセルに重ねる
 - id: pile-placement-on-target-child
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '`pile` の子の位置を変えるときは、`--pile--placement` などの公開プロパティを、`.pile` ではなく動かしたい子の `style` 属性で渡す。'
   reason: '`.pile` で渡すと、継承ですべての子に同じ配置がかかり、大きさを指定していない背景用の要素が中身の大きさに縮むため。'
   note: '`--pile--placement` に渡すキーワードは1つだけです。方向ごとに違う値を使うときは、`--pile--alignment` と `--pile--justification` を個別に指定します。'
@@ -256,7 +256,7 @@
 
 - id: pile-no-grid-placement-on-children
   level: 禁止
-  kind: spec
+  kind: convention
   rule: '`pile` の子に、コンポーネントの CSS で `grid-area`、`grid-row`、`grid-column` を指定しない。'
   reason: '`components` レイヤーが `compositions` レイヤーより優先されるので、子が `--pile` のエリアから外れて重ならなくなるため。'
   note: '`.pile > *` で選ばれない `::before` と `::after` は例外で、重ねるならコンポーネントの側で `grid-area: --pile` を指定します。'
@@ -294,7 +294,7 @@
 
 - id: primary-layout-center-column-subtract-both-sides
   level: 必須
-  kind: spec
+  kind: convention
   rule: 中央の列の最大幅は、コンテンツ幅の最大値から、その両側に足す列の上限を2本分引いて求める（`var(--_c--content-max-width) - var(--_c--narrow-reduction) * 2`）。
   reason: 片側の分しか引かないと、コンテンツ幅が指定した最大値より列1本分だけ広くなるため。
   aiProne: true
@@ -322,7 +322,7 @@
 
 - id: prose-no-internal-property
   level: 必須
-  kind: spec
+  kind: convention
   rule: '`prose` の `--prose--space` はルートで内部プロパティに受け直さず、子要素の `margin-block-start` の `var()` で直接参照する。'
   reason: 'ルートで受け直すと `var()` がルートの上で解決され、子には解決済みの値が継承されるので、子に渡した `--prose--space` が効かなくなるため。'
   note: 公開プロパティを `:scope` で内部プロパティに受ける規約（第10章のルール `receive-public-property-with-fallback`）の例外です。
@@ -332,7 +332,7 @@
 
 - id: prose-nested-inner-space
   level: 推奨
-  kind: spec
+  kind: convention
   rule: '`prose` の中に `prose` を入れるときは、内側のルートの `--prose--space` を外側との間隔に使い、内側の間隔は内側の子に渡す。'
   reason: 'ルートに渡した値は継承によって内側の子にも届き、外側との間隔と内側の間隔が同じ値になってしまうため。'
   note: '例：`._note { & > * { --prose--space: calc(var(--spacing--xxs) / 16 * 1rem); } }`'
@@ -341,7 +341,7 @@
 
 - id: prose-not-on-cms-body
   level: 非推奨
-  kind: spec
+  kind: convention
   rule: CMS で編集者が入力する本文エリア（`.wysiwyg` など）には `prose` を付けず、`prose` は本文エリアとその前後の要素を並べる外側に使う。
   reason: 編集者は子に `style` 属性を付けられないうえ、本文エリアの余白のルールと同じ `margin-block-start` を指定し合い、`compositions` レイヤーの `prose` が黙って負けるため。
   page: compositions/prose

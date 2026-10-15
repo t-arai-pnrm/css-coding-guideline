@@ -151,7 +151,7 @@
 # 14-3 行の高さとハーフレディング
 - id: base-line-height-min
   level: 必須
-  kind: spec
+  kind: judgment
   rule: ベースの `line-height` は 1.5 以上にして、各要素に継承させる。
   reason: 行の間が狭いと、認知に障害のある人を含め、読んでいる行を目で追いにくくなるため。
   note: WCAG 2.1 の達成基準 1.4.8 は 1.5 倍以上の行送りを達成できる仕組みを求める基準で、初期値を 1.5 以上にするのは本書の方針です。kiso.css は 1.5 を指定しています。見出しは、ベースより狭い値を個別に指定します。ユーザーが行の高さを 1.5 倍に上書きしても中身が切れないことも求められます（WCAG 2.1 の達成基準 1.4.12）。
@@ -160,7 +160,7 @@
 
 - id: no-line-height-one
   level: 禁止
-  kind: spec
+  kind: judgment
   rule: '`line-height: 1` を指定しない。'
   reason: 文言の変更、画面の幅、文字サイズの設定、機械翻訳で改行が起きたとき、行が重なって読めなくなることがあるため。
   note: 上下の余白を詰めたいときは、`text-box-trim` でハーフレディングを取り除きます。
@@ -226,7 +226,7 @@
 
 - id: no-text-wrap-pretty-for-japanese
   level: 非推奨
-  kind: spec
+  kind: judgment
   rule: '和文には `text-wrap: pretty` を指定しない。'
   reason: Safari で、和文の `pretty` が `balance` と似た折り返しになる不具合があるため。
   note: '英文の段落には `text-wrap: pretty` を指定します（kiso.css で指定済み）。'

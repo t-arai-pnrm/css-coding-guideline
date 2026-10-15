@@ -119,15 +119,15 @@ getComputedStyle(card).paddingBlockStart; // '0px'（対応表では 16px）
 
 <Code code={playwrightConfig} lang="ts" title="playwright.config.ts" />
 
-設定では、テストページを静的なファイルのサーバーで配信し、ChromeとSafariのエンジンで確かめます。自分のプロジェクトで使うときは、`webServer` と `baseURL` を、プロジェクトの開発サーバーのコマンドとURLに書き換え、テストページも開発サーバーで配信します。
+設定では、テストページを静的なファイルのサーバーで配信し、Chromium、Firefox、PlaywrightのWebKitで自動確認します。PlaywrightのWebKitはSafariそのものではなく、Safariより先の実装を含むこともあります。SafariとiOSでの表示は、実機で別に確かめます（「[19-3 表示と操作を確かめる](/operations/verification/)」）。自分のプロジェクトで使うときは、`webServer` と `baseURL` を、プロジェクトの開発サーバーのコマンドとURLに書き換え、テストページも開発サーバーで配信します。
 
 ```sh title="Playwrightを入れて、テストを実行する"
 npm install --save-dev @playwright/test
-npx playwright install chromium webkit
+npx playwright install chromium firefox webkit
 npx playwright test
 ```
 
-配布物の3つのファイルをプロジェクトのルートに置き、この3つのコマンドを実行すると、ChromeとSafariのエンジンで、確かめる5つの幅のテストが実行されます。私が試したときは、10件がすべて通りました。テストの値を1つ誤らせると、そのテストは、期待した値と実際の計算値を並べて失敗します。
+配布物の3つのファイルをプロジェクトのルートに置き、この3つのコマンドを実行すると、確かめる5つの幅のテストが3つのブラウザで実行され、15件になります。私がChromiumとPlaywrightのWebKitで試したときは、10件がすべて通りました。{/* 要検証: ブラウザ。Firefoxのプロジェクトを足した15件が通るか */}テストの値を1つ誤らせると、そのテストは、期待した値と実際の計算値を並べて失敗します。
 
 ## デザインと同じ幅で見比べる
 
@@ -153,11 +153,11 @@ AIにテストを通させようとすると、差の原因を調べずに基準
 | 完了条件 | 判定 | 証拠 |
 | --- | --- | --- |
 | lint とビルドがエラーなしで通る | 合格 | `pnpm lint:css` と `pnpm build` が終了コード0 |
-| 確かめる幅のすべてで、横スクロールが出ない | 合格 | tests/design-values.spec.ts を5つの幅で実行 |
-| plan の値の対応表の値が、計算値と一致する | 合格 | tests/design-values.spec.ts の6行がすべて一致 |
+| 確かめる幅のすべてで、横スクロールが出ない | 合格 | tests/design-values.spec.ts を5つの幅で実行（Chromium、Firefox、Playwright の WebKit での自動確認） |
+| plan の値の対応表の値が、計算値と一致する | 合格 | tests/design-values.spec.ts で、対応表の対象行がすべて一致 |
 | recss-guideline スキルのレビューで、「必須」と「禁止」の違反が0件 | 合格 | 第9章、第10章、第13章を通読してレビュー。「推奨」の指摘2件は決定ログに記録 |
 | デザインと同じ幅のスクリーンショットで、意図が再現できている | 未確認 | 375px と 1280px の画像を並べた。人が判定する項目 |
-| Safari で表示が崩れない | 未確認 | WebKit での確認を実行していない |
+| 実機の Safari と iOS の Safari で表示が崩れない | 未確認 | Playwright の WebKit での自動確認は通ったが、実機では確かめていない |
 ```
 
 実行していない検査と、人が判定する項目は「未確認」と書かせます（`report-unverified-honestly`）。AIは、確かめられなかった項目を、ほかの項目の結果から推して「問題なし」とまとめることがあります。そう報告されると、人はその項目を確かめる機会を失い、崩れが公開まで残ります。未確認の項目は、`/task-done` の前に人が確かめます。

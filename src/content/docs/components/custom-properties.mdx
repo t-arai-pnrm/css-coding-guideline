@@ -117,7 +117,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
   :scope {
     --_background: var(--background--base);
     --_background--hocus: var(--background--surface);
-    --_background--selected: var(--background--muted);
+    --_background--selected: var(--background--active);
     --_foreground: var(--foreground--base);
   }
 
@@ -244,7 +244,7 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
   :scope {
     min-block-size: 8px;
     border-radius: var(--rounded--full);
-    background-image: linear-gradient(to right, var(--background--accent) calc(var(--progress-bar--value) * 1%), var(--background--muted) 0);
+    background-image: linear-gradient(to right, var(--background--accent) calc(var(--progress-bar--value) * 1%), var(--background--surface) 0);
 
     @media (prefers-reduced-motion: no-preference) {
       transition-duration: var(--duration--slow);
@@ -255,7 +255,9 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 }
 ```
 
-型を登録しておくと、数値ではない値が渡されたときは無効になり、初期値の `0` が使われます。公開プロパティの入り口で、型に合わない値を無効にできます。3つの記述子（`syntax`、`inherits`、`initial-value`）は省略しません。`syntax` と `inherits` のどちらかが欠けると、`@property` のルールごと無視されます。
+型を登録しておくと、数値ではない値が渡されたときは無効になり、初期値の `0` が使われます。公開プロパティの入り口で、型に合わない値を無効にできます。
+
+仕様では、`syntax` と `inherits` は必須の記述子で、どちらかが欠けると `@property` のルールごと無効になります。`initial-value` も、`syntax` が `"*"` 以外なら必須です。その値は、要素の文字サイズやほかのカスタムプロパティによらず計算できる、計算上独立した値でなければならず、`em` や `var()` を含む値を書くと、やはりルールごと無効になります。`syntax` が `"*"` のときだけは `initial-value` を省略できますが、本書ではこの場合も省略せず、3つの記述子をすべて書きます。読む人が、初期値をほかの場所で探さなくて済むからです。
 
 もう1つは、値を型に沿って計算させたい場合です。`<length>` 型で登録したプロパティは、値を指定した要素の時点で絶対的な長さに計算され、子孫にはその長さが引き継がれます（あとで説明する `1em` の例を参照）。また、`style` 属性で要素ごとに渡した値が、さらに内側の要素へ継承されては困るときは、`inherits: false` で登録すれば継承を止められます。
 

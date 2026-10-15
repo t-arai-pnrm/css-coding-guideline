@@ -1,13 +1,13 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 49
 - 本文: 約12.1万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -16,8 +16,8 @@
 - `notation/naming` 9-1 命名規則（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/notation/naming/
 - `notation/variants` 9-2 BEMからの書き直しとバリエーション（約9,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/variants/
 - `notation/terminology` 9-3 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
-- `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/
-- `notation/nesting` 9-5 ネストの書き方（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/
+- `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/
+- `notation/nesting` 9-5 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/
 - `notation/nesting-criteria` 9-6 ネストの判断基準（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/
 - `notation/property-order` 9-7 プロパティの並び順（約3,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/property-order/
 - `notation/modern-syntax` 9-8 モダンな記法にそろえる（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/modern-syntax/
@@ -109,7 +109,7 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
   - 理由: `text` では、段落なのか CMS の本文のような編集領域なのかを区別できないため。
   - 補足: 子要素の名前は役割で付けるので、多くは `._lead` や `._body` のような役割の名前になります。種類を示したいときは、段落を `paragraph`、編集領域を `rich-text` と呼びます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/#rule-no-text-only-name
-- 【推奨・仕様上の制約】公開プロパティやコンポーネントの名前に使った語を変えるときは、互換性のない変更として扱い、使っている箇所をすべて同時に直す。（`renaming-terms-is-breaking`）
+- 【推奨・本書の規約】公開プロパティやコンポーネントの名前に使った語を変えるときは、互換性のない変更として扱い、使っている箇所をすべて同時に直す。（`renaming-terms-is-breaking`）
   - 理由: 公開プロパティの名前が変わると、古い名前で値を渡している呼び出し側が、エラーを出さずにデフォルト値に戻るため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/#rule-renaming-terms-is-breaking
 - 【推奨・実装上の判断】クラス名に番号を使わない（`._card-1` と `._card-2` ではなく、役割の名前、`data-variant` のような属性、`:nth-child()` で区別する）。（`no-numbers-in-class-names`）
@@ -125,7 +125,7 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/
   - 理由: `scoped` クラスが外側のスコープの下限（`to (.scoped)`）になり、入れ子のコンポーネントとの境界になるため。
   - 自動チェック: Stylelint に対応する設定がないため、レビューで確認する（HTML の `class` 属性と `@scope` の前置きは、どちらも Stylelint の検査の対象外）
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/#rule-scoped-class-on-root
-- 【推奨・仕様上の制約】スコープのルート要素は `:scope` で選び、`@scope` の直下では `&` を使わない。（`scope-root-with-scope-pseudo`）
+- 【推奨・仕様にもとづく制約】スコープのルート要素は `:scope` で選び、`@scope` の直下では `&` を使わない。（`scope-root-with-scope-pseudo`）
   - 理由: `@scope` の直下の `&` を `:where(:scope)` として扱うブラウザは新しく、Safari では 26.2 以降に限られるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/#rule-scope-root-with-scope-pseudo
 - 【推奨・本書の規約】ページ固有のスタイルは、ページのルート要素に `scoped page-<スラッグ>` を付け、`@scope (.scoped.page-<スラッグ>) to (.scoped)` の中に書く。（`page-scope-root`）
@@ -153,10 +153,10 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/
   - 理由: 親のセレクタとの関係（自身の状態か、直下の子か、子孫か）が先頭を見ただけで分かり、ネストが長くなっても、どれが親を指すかを読み違えないため。
   - 自動チェック: Stylelint: `selector-nested-pattern`
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/#rule-nested-selector-ampersand
-- 【禁止・仕様上の制約】`&__title` や `&--large` のように、`&` に文字をつなげてクラス名を作らない。（`no-nesting-concatenation`）
+- 【禁止・仕様にもとづく制約】`&__title` や `&--large` のように、`&` に文字をつなげてクラス名を作らない。（`no-nesting-concatenation`）
   - 理由: Sass の書き方で、素の CSS では無効なセレクタになり、ルールごと無視されるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/#rule-no-nesting-concatenation
-- 【必須・仕様上の制約】`@media` と `@container` は、`@scope` やファイルの直下に置かず、各セレクタの中に書く。（`conditions-inside-rules`）
+- 【必須・本書の規約】`@media` と `@container` は、`@scope` やファイルの直下に置かず、各セレクタの中に書く。（`conditions-inside-rules`）
   - 理由: 条件のブロックが元のルールより前に並ぶと、同じ詳細度の元のルールが後から勝ち、上書きが効かなくなるため。
   - 補足: ルート要素の条件は `:scope` の中に書きます。`@supports` も同じようにセレクタの中に書きます。
   - 自動チェック: Stylelint: `book/conditions-inside-rules`（本書の独自ルール）
@@ -170,7 +170,7 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/
   - 理由: 親のレイアウトを変えるときに一緒に見直す宣言が親のルールの中にまとまり、子を別の親に移しても子自身の見た目が失われないため。
   - 補足: `float`、`shape-outside`、`position` と `inset`、`scroll-snap-align`、`break-inside`、要素の間の `margin` も、親のレイアウトや親のスクロールによって意味が決まるので、直下の子へのネストに書けます。子の大きさ（`inline-size`、`aspect-ratio`）や色、`padding`、`border` は子のルールに書きます。コンポジションは子にクラスを付けられないので、直下の子を選んで配置を書きます。子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第10章のルール `parent-owns-child-placement` で扱います。親が `display: contents` にした要素を挟んでいても、その箱がないので子は実質的な直下の子です。サブグリッドの `article` の `grid-column` は、親の `ul` のルールに `& article` と書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/#rule-nest-child-placement-only
-- 【推奨・仕様上の制約】詳細度の違うセレクタを並べたセレクタリスト（`button, ._selected-count`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。（`no-nesting-under-selector-list`）
+- 【推奨・仕様にもとづく制約】詳細度の違うセレクタを並べたセレクタリスト（`button, ._selected-count`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。（`no-nesting-under-selector-list`）
   - 理由: `&` の詳細度は親のセレクタリストを `:is()` で包んだものと同じになり、詳細度の低いほうのセレクタで一致した要素にも、リストの中でいちばん高い詳細度が付くため。
   - 補足: 宣言だけのセレクタリストと、条件付きのアットルールのネストは、詳細度を変えないので対象にしません。
   - 自動チェック: Stylelint に対応する設定がないため、レビューで確認する
@@ -231,7 +231,7 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/logical-properties/
   - 補足: 端末の切り欠きに合わせる `env(safe-area-inset-left)` のように、物理的な方向に意味がある値は物理プロパティで書き、Stylelint の無効化コメントと理由を添えます。論理で書けないものの扱いはルール `physical-only-where-no-logical` に従います。横書きのサイトでは、`margin-inline` を左右の余白として扱ってかまいません。
   - 自動チェック: Stylelint: `logical-css/require-logical-properties`（警告）
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/logical-properties/#rule-logical-properties
-- 【推奨・仕様上の制約】対応する論理的な書き方がないもの（メディアクエリの `width`、`translate` の値、`transform-origin`、`background-position`、`mask-position` など）は物理で書き、1つのルールの中で論理と物理が混ざることを許す。（`physical-only-where-no-logical`）
+- 【推奨・仕様にもとづく制約】対応する論理的な書き方がないもの（メディアクエリの `width`、`translate` の値、`transform-origin`、`background-position`、`mask-position` など）は物理で書き、1つのルールの中で論理と物理が混ざることを許す。（`physical-only-where-no-logical`）
   - 理由: CSS の仕様そのものが論理と物理の両方を含んでおり、論理で書けないものまで論理に寄せようとすると、`direction` を配置に使うハックのような副作用のある回避策が増えるため。
   - 補足: 論理で書けるものは、ルール `logical-properties` に従って論理で書きます。`overflow-inline` と `overflow-block` は Safari 26 から対応したので、本書の対象のブラウザでは `overflow-x` と `overflow-y` を使います。書字方向で値を変える必要があるときは、`:dir(rtl)` で分岐します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/logical-properties/#rule-physical-only-where-no-logical

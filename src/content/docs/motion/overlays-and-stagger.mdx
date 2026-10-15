@@ -40,6 +40,10 @@ import tooltipJs from '../../../demos/motion/tooltip-delay/script.js?raw';
     transition-property: clip-path, opacity, visibility;
     transition-timing-function: var(--ease--out-quint);
 
+    @media (forced-colors: active) {
+      outline: 1px solid;
+    }
+
     @media (prefers-reduced-motion: no-preference) {
       --_clip-from: inset(0 -24px 100%);
     }

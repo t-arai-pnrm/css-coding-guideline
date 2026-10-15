@@ -148,7 +148,9 @@ document.addEventListener('pointermove', (event) => {
 
 @scope (.scoped.spotlight) to (.scoped) {
   :scope {
-    background-image: radial-gradient(circle 160px at var(--spotlight--x) var(--spotlight--y), var(--background--muted), transparent);
+    --_glow: color-mix(in oklab, var(--foreground--base) 15%, transparent);
+
+    background-image: radial-gradient(circle 160px at var(--spotlight--x) var(--spotlight--y), var(--_glow), transparent);
   }
 }
 ```

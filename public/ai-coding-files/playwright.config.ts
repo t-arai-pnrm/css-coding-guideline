@@ -18,9 +18,12 @@ export default defineConfig({
     url: 'http://localhost:4173',
     reuseExistingServer: true,
   },
-  // Chrome と Safari のエンジンで確かめる（19-3 の確かめるブラウザ）
+  // 本書の対象ブラウザ（Chrome、Safari、Firefox）のエンジンで自動確認する。
+  // Playwright の WebKit は Safari そのものではなく、Safari より先の実装を含むこともある。
+  // Safari と iOS での表示は、実機で別に確かめる。
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
 });

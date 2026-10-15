@@ -1,13 +1,13 @@
 # 第14章 タイポグラフィと和文組版：ルール
 
-- ガイドラインのバージョン: 0.63.2（2026-10-15 生成）
+- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
 - ルールの数: 32
 - 本文: 約8.4万字
 - 読む条件: font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
-性質は3種類です。「仕様上の制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
+性質は3種類です。「仕様にもとづく制約」はCSS・HTML・ブラウザの振る舞いやWCAGから導かれ、守らないと表示や操作が崩れます。「実装上の判断」は状況とトレードオフで決まり、適用する条件があります。「本書の規約」は一貫性のために本書が選んだ約束で、ほかの約束を選んでも同じように成り立ちます。
 背景とコード例は、各節の本文にあります。本文は MCP の `get_page`（ページID）か、URL で読みます。
 
 ## この章の節
@@ -27,7 +27,7 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/
   - 理由: 主要な OS に読みやすい和文フォントが入っており、ユーザーが自分で設定した読みやすいフォントも尊重できるため。
   - 補足: kiso.css で指定済みです。欧文のフォントを使うときも、最後に `sans-serif` を置き、和文は総称ファミリーに任せます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/#rule-font-family-sans-serif
-- 【非推奨・仕様上の制約】日本語のサイトでは、`font-family` に `system-ui` を使わない。（`no-system-ui-for-japanese`）
+- 【非推奨・仕様にもとづく制約】日本語のサイトでは、`font-family` に `system-ui` を使わない。（`no-system-ui-for-japanese`）
   - 理由: Windows では Noto Sans JP ではなく、游ゴシックの画面表示用の書体が使われるため。
   - 補足: 海外製のフレームワークやリセット CSS（Tailwind CSS の初期設定など）が `system-ui` を指定していることがあるので、導入時に確かめます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/#rule-no-system-ui-for-japanese
@@ -50,7 +50,7 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/
   - 理由: 代わりのフォントから Web フォントに切り替わるときの、字幅や行の高さの違いによるレイアウトのずれを小さくできるため。
   - 補足: 値はフォントのファイルの寸法から、Capsize や fontaine のようなツールで計算します。`ascent-override`、`descent-override`、`line-gap-override` は Safari が対応していません（2026年9月）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/#rule-fallback-font-metric-overrides
-- 【非推奨・仕様上の制約】和文を含む要素に `font-size-adjust` を指定しない。（`no-font-size-adjust-for-japanese`）
+- 【非推奨・仕様にもとづく制約】和文を含む要素に `font-size-adjust` を指定しない。（`no-font-size-adjust-for-japanese`）
   - 理由: 和文の文字も欧文のフォントの x-height などの比に合わせて拡大・縮小され、デザインで決めた文字サイズから外れることがあるため。
   - 補足: 欧文だけのページで書体の字面をそろえるときは、`:root` に `font-size-adjust: from-font` を一度だけ指定します。`ic-width` と `ic-height` は和文のフォントでは比がほぼ1になり、補正されません。Web フォントの読み込みの前後のずれは、`@font-face` の `size-adjust` で抑えます（`fallback-font-metric-overrides`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/#rule-no-font-size-adjust-for-japanese
@@ -63,7 +63,7 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/
 
 https://t-arai-pnrm.github.io/recss-guideline/typography/japanese-typesetting/
 
-- 【必須・仕様上の制約】`html` 要素と、ほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替える。（`lang-for-typesetting`）
+- 【必須・仕様にもとづく制約】`html` 要素と、ほかの言語で書いた部分に `lang` 属性を付け、言語ごとの組版を `:lang()` で切り替える。（`lang-for-typesetting`）
   - 理由: 和文と欧文では適した組版が異なり、`lang` がないと言語に合った指定を当て分けられないため。
   - 補足: ブラウザの翻訳機能で言語が変わると、`:lang(ja)` の指定は外れます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/japanese-typesetting/#rule-lang-for-typesetting
@@ -86,7 +86,7 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/japanese-typesetting/
   - 理由: 大きな文字では約物や仮名の周りのアキが目立ち、詰めたほうが引き締まって読みやすいため。
   - 補足: 縦書きでは `"vpal"` を使います。見出し以外を詰めたいときは `.-kerning` のようなユーティリティを使います。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/japanese-typesetting/#rule-palt-for-headings
-- 【推奨・仕様上の制約】`hanging-punctuation` は段落にだけ指定し、インライン方向の `padding` と組み合わせる。（`hanging-punctuation-with-padding`）
+- 【推奨・仕様にもとづく制約】`hanging-punctuation` は段落にだけ指定し、インライン方向の `padding` と組み合わせる。（`hanging-punctuation-with-padding`）
   - 理由: ぶら下げた約物は要素の幅の外に出るので、余白がないと親からはみ出し、横スクロールの原因になるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/japanese-typesetting/#rule-hanging-punctuation-with-padding
 
@@ -94,11 +94,11 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/japanese-typesetting/
 
 https://t-arai-pnrm.github.io/recss-guideline/typography/line-height/
 
-- 【必須・仕様上の制約】ベースの `line-height` は 1.5 以上にして、各要素に継承させる。（`base-line-height-min`）
+- 【必須・実装上の判断】ベースの `line-height` は 1.5 以上にして、各要素に継承させる。（`base-line-height-min`）
   - 理由: 行の間が狭いと、認知に障害のある人を含め、読んでいる行を目で追いにくくなるため。
   - 補足: WCAG 2.1 の達成基準 1.4.8 は 1.5 倍以上の行送りを達成できる仕組みを求める基準で、初期値を 1.5 以上にするのは本書の方針です。kiso.css は 1.5 を指定しています。見出しは、ベースより狭い値を個別に指定します。ユーザーが行の高さを 1.5 倍に上書きしても中身が切れないことも求められます（WCAG 2.1 の達成基準 1.4.12）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/line-height/#rule-base-line-height-min
-- 【禁止・仕様上の制約】`line-height: 1` を指定しない。（`no-line-height-one`）
+- 【禁止・実装上の判断】`line-height: 1` を指定しない。（`no-line-height-one`）
   - 理由: 文言の変更、画面の幅、文字サイズの設定、機械翻訳で改行が起きたとき、行が重なって読めなくなることがあるため。
   - 補足: 上下の余白を詰めたいときは、`text-box-trim` でハーフレディングを取り除きます。
   - 自動チェック: Stylelint: `declaration-property-value-disallowed-list`（警告）
@@ -127,7 +127,7 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/
 - 【非推奨・実装上の判断】本文の段落には、`word-break: auto-phrase`、`text-wrap: balance`、手動の改行を使わない。（`no-auto-phrase-for-body`）
   - 理由: 段落の中に不自然なすき間ができ、画面の幅が変わると改行の位置も崩れて読みにくくなるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/#rule-no-auto-phrase-for-body
-- 【非推奨・仕様上の制約】和文には `text-wrap: pretty` を指定しない。（`no-text-wrap-pretty-for-japanese`）
+- 【非推奨・実装上の判断】和文には `text-wrap: pretty` を指定しない。（`no-text-wrap-pretty-for-japanese`）
   - 理由: Safari で、和文の `pretty` が `balance` と似た折り返しになる不具合があるため。
   - 補足: 英文の段落には `text-wrap: pretty` を指定します（kiso.css で指定済み）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/#rule-no-text-wrap-pretty-for-japanese
@@ -139,7 +139,7 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/
   - 理由: 英単語や URL が混ざると、両端をそろえるために行の中に大きなすき間ができるため。
   - 補足: 1行で収まる表の見出しを均等に割り付けるなら、`text-align-last: justify` を使えます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/#rule-no-text-align-justify
-- 【推奨・仕様上の制約】`word-break` は初期値のままにし、長い単語や URL のはみ出しは `overflow-wrap: anywhere` で防ぐ。（`overflow-wrap-over-word-break`）
+- 【推奨・仕様にもとづく制約】`word-break` は初期値のままにし、長い単語や URL のはみ出しは `overflow-wrap: anywhere` で防ぐ。（`overflow-wrap-over-word-break`）
   - 理由: `word-break: break-all` は次の行に移せば収まる英単語まで途中で分けてしまうが、`overflow-wrap: anywhere` は収まらない単語だけを折り返すため。
   - 補足: kiso.css は `:root` に `overflow-wrap: anywhere` を指定しています。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/#rule-overflow-wrap-over-word-break
@@ -154,7 +154,7 @@ https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/
 - 【推奨・実装上の判断】見出しの改行を手で制御するときは、`:lang(ja)` のときだけ効く `.-br` と `.-wbr` のユーティリティを使い、ほかの言語では `display: contents` にする。（`line-break-utilities-for-japanese`）
   - 理由: 手動の改行は日本語の都合なので、翻訳で言語が変わったときには通常の折り返しに戻すため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/#rule-line-break-utilities-for-japanese
-- 【推奨・仕様上の制約】行数を制限するときは、`-webkit-line-clamp` に `display: -webkit-box` と `-webkit-box-orient: block-axis` を組み合わせ、はみ出しは `overflow-block: clip` で隠す。（`line-clamp-with-overflow-clip`）
+- 【推奨・仕様にもとづく制約】行数を制限するときは、`-webkit-line-clamp` に `display: -webkit-box` と `-webkit-box-orient: block-axis` を組み合わせ、はみ出しは `overflow-block: clip` で隠す。（`line-clamp-with-overflow-clip`）
   - 理由: 接頭辞のない `line-clamp` はまだ使えず、`overflow: hidden` ではぶら下げた約物が切れたり、スクロールバーが出たりするため。
   - 補足: `overflow-block` に対応していない Safari 18 のために、`@supports not (overflow-block: clip)` の中で `overflow-y: clip` を指定します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/#rule-line-clamp-with-overflow-clip
