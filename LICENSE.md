@@ -4,7 +4,7 @@
 
 ## 文章：CC BY 4.0
 
-原稿（`src/content/docs/`）、ルールの定義（`src/content/rules/`）、それらから生成したスキルのルール集（`plugin/skills/`）と MCP サーバーのデータは、[クリエイティブ・コモンズ 表示 4.0 国際（CC BY 4.0）](https://creativecommons.org/licenses/by/4.0/legalcode.ja)で公開しています。出典（「CSSコーディングガイドライン」、TAK、https://t-arai-pnrm.github.io/css-coding-guideline/）を示せば、転載、翻訳、改変ができます。
+原稿（`src/content/docs/`）、ルールの定義（`src/content/rules/`）、それらから生成したスキルのルール集（`plugin/skills/`）と MCP サーバーのデータは、[クリエイティブ・コモンズ 表示 4.0 国際（CC BY 4.0）](https://creativecommons.org/licenses/by/4.0/legalcode.ja)で公開しています。出典（「RECSSガイドライン」、TAK、https://t-arai-pnrm.github.io/recss-guideline/）を示せば、転載、翻訳、改変ができます。
 
 ## コード：MIT-0
 

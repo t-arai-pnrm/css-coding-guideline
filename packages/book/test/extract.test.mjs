@@ -33,7 +33,7 @@ test('紙に採録しない付録へ巻番号や架空のページ番号を付�
     ['layout/sizing', { id: 'layout/sizing', volume: 1 }],
     ['components', { id: 'components', volume: 2 }],
   ]);
-  const doc = await render('<p><a href="/css-coding-guideline/appendix/demo-tokens/">付録I</a></p><p><a href="/css-coding-guideline/layout/sizing/">7-4</a></p><p><a href="/css-coding-guideline/components/">第10章</a></p>', { context: { pages } });
+  const doc = await render('<p><a href="/recss-guideline/appendix/demo-tokens/">付録I</a></p><p><a href="/recss-guideline/layout/sizing/">7-4</a></p><p><a href="/recss-guideline/components/">第10章</a></p>', { context: { pages } });
   assert.match(doc.body.textContent, /付録I（補足サイト）/);
   assert.match(doc.body.textContent, /7-4（この試し組みでは省略）/);
   assert.match(doc.body.textContent, /第10章（巻2）/);
@@ -52,7 +52,7 @@ test('規約の性質と適用条件を保ち、解答を本文の後へ移す',
 
 test('前提案内は本文に残し、参考資料URLは末尾でなくても印刷する', async () => {
   const pages = new Map([['layout/sizing', { id: 'layout/sizing', volume: 1 }]]);
-  const doc = await render('<p>先に幅の前提を確かめます。「<a href="/css-coding-guideline/layout/sizing/">7-4</a>」で説明しています。</p><h2>参考リンク</h2><ul><li><a href="https://example.com">資料</a></li></ul><p>章末の案内</p>', { context: { pages, volumePageIds: new Set(['layout', 'layout/sizing']) } });
+  const doc = await render('<p>先に幅の前提を確かめます。「<a href="/recss-guideline/layout/sizing/">7-4</a>」で説明しています。</p><h2>参考リンク</h2><ul><li><a href="https://example.com">資料</a></li></ul><p>章末の案内</p>', { context: { pages, volumePageIds: new Set(['layout', 'layout/sizing']) } });
   assert.match(doc.querySelector('section > p').textContent, /先に幅の前提.*7-4.*説明しています/);
   assert.equal(doc.querySelectorAll('.notes').length, 0);
   assert.equal(doc.querySelector('ul').className, 'reference-list');

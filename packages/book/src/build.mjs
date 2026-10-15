@@ -86,7 +86,7 @@ const linkAcross = (html, file) =>
 
 const version = JSON.parse(await readFile(join(HERE, '../../package.json'), 'utf8')).version;
 const sampleManifest = JSON.parse(await readFile(join(HERE, '../../public/sample-files', `v${version}`, 'manifest.json'), 'utf8'));
-const title = `CSSコーディングガイドライン 巻${volume.number} ${volume.title}`;
+const title = `RECSSガイドライン 巻${volume.number} ${volume.title}`;
 const documentOf = (body) => `<!doctype html>
 <html lang="ja">
 <head>
@@ -154,7 +154,7 @@ const toc = pages
   .map((page) => `<li class="${page.slug === 'index' ? 'toc-chapter' : 'toc-section'}"><a href="#page-${keyOf(page.id)}">${page.title}</a></li>`)
   .join('\n');
 const front = `<section class="title-page">
-<p class="book-title">CSSコーディングガイドライン</p>
+<p class="book-title">RECSSガイドライン</p>
 <p class="volume-title">巻${volume.number}　${volume.title}</p>
 <p class="book-version">試し組み（v${version}）</p>
 </section>

@@ -1,12 +1,12 @@
-# css-coding-guideline-mcp
+# recss-guideline-mcp
 
-「[CSSコーディングガイドライン](https://t-arai-pnrm.github.io/css-coding-guideline/)」のルールと本文を引き、CSS を本書の Stylelint の設定で検査する MCP サーバーです。ルールと本文のデータを同梱しているので、起動したあとはネットワークに接続しません。Node.js 20.19 以降で動きます。
+「[RECSSガイドライン](https://t-arai-pnrm.github.io/recss-guideline/)」のルールと本文を引き、CSS を本書の Stylelint の設定で検査する MCP サーバーです。ルールと本文のデータを同梱しているので、起動したあとはネットワークに接続しません。Node.js 20.19 以降で動きます。
 
-各ツールでの設定方法は、本書の付録J「[AIツールで使う](https://t-arai-pnrm.github.io/css-coding-guideline/appendix/ai-tools/)」にあります。Claude Code では、スキルとこのサーバーをまとめたプラグインを入れられます。
+各ツールでの設定方法は、本書の付録J「[AIツールで使う](https://t-arai-pnrm.github.io/recss-guideline/appendix/ai-tools/)」にあります。Claude Code では、スキルとこのサーバーをまとめたプラグインを入れられます。
 
 ```sh
-claude plugin marketplace add t-arai-pnrm/css-coding-guideline
-claude plugin install css-coding-guideline@css-coding-guideline
+claude plugin marketplace add t-arai-pnrm/recss-guideline
+claude plugin install recss-guideline@recss-guideline
 ```
 
 ほかのツールでは、stdio のサーバーとして登録します。
@@ -14,9 +14,9 @@ claude plugin install css-coding-guideline@css-coding-guideline
 ```json
 {
   "mcpServers": {
-    "css-coding-guideline": {
+    "recss-guideline": {
       "command": "npx",
-      "args": ["-y", "css-coding-guideline-mcp@0.60.2"]
+      "args": ["-y", "recss-guideline-mcp@0.61.0"]
     }
   }
 }
@@ -36,11 +36,11 @@ claude plugin install css-coding-guideline@css-coding-guideline
 
 ## 版
 
-パッケージの版は、本書のバージョンと同じです。チームで共有する設定では、`css-coding-guideline-mcp@0.60.2` のように版を固定してください。変更点は付録F「[更新履歴](https://t-arai-pnrm.github.io/css-coding-guideline/appendix/changelog/)」にあります。
+パッケージの版は、本書のバージョンと同じです。チームで共有する設定では、`recss-guideline-mcp@0.61.0` のように版を固定してください。変更点は付録F「[更新履歴](https://t-arai-pnrm.github.io/recss-guideline/appendix/changelog/)」にあります。
 
 ## 開発
 
-このパッケージは、本書のリポジトリ（[t-arai-pnrm/css-coding-guideline](https://github.com/t-arai-pnrm/css-coding-guideline)）の `packages/mcp/` にあります。同梱するデータ（`data/`）はコミットしていないので、リポジトリのルートで `pnpm gen:ai` を実行して作ります。`pnpm test:mcp` で、すべてのツールを1回ずつ呼んで確かめます。
+このパッケージは、本書のリポジトリ（[t-arai-pnrm/recss-guideline](https://github.com/t-arai-pnrm/recss-guideline)）の `packages/mcp/` にあります。同梱するデータ（`data/`）はコミットしていないので、リポジトリのルートで `pnpm gen:ai` を実行して作ります。`pnpm test:mcp` で、すべてのツールを1回ずつ呼んで確かめます。
 
 ## ライセンス
 

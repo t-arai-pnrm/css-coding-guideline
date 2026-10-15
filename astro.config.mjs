@@ -58,9 +58,9 @@ export default defineConfig({
   },
   integrations: [
     starlight({
-      title: 'CSSコーディングガイドライン',
+      title: 'RECSSガイドライン',
       description:
-        'CSSの記法と設計の知識をまとめた、実務のためのコーディングガイドライン。',
+        '理由を説明でき、変化に耐えるCSSの書き方を、基礎から学び直すためのガイドライン。',
       // 公開前なので、検索エンジンに載せない
       head: [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } }],
       locales: {

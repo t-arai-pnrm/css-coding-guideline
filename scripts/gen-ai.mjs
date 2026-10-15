@@ -2,7 +2,7 @@
  * ルールの定義（src/content/rules/*.yaml）と原稿から、AI 向けの配布物を生成する。
  *
  * コミットするもの（GitHub から入れるため）
- * - plugin/skills/css-coding-guideline/: Agent Skill。SKILL.md と、章ごとのルール集（references/）
+ * - plugin/skills/recss-guideline/: Agent Skill。SKILL.md と、章ごとのルール集（references/）
  * - plugin/.claude-plugin/plugin.json、plugin/.mcp.json: Claude Code のプラグイン
  * - .claude-plugin/marketplace.json: プラグインのマーケットプレイス
  * - packages/mcp/package.json の version: 本のバージョンにそろえる
@@ -24,12 +24,12 @@ import {
   RULE_KINDS,
 } from './lib/guideline-data.mjs';
 
-const SKILL_NAME = 'css-coding-guideline';
+const SKILL_NAME = 'recss-guideline';
 const PLUGIN_DIR = join(ROOT, 'plugin');
 const SKILL_DIR = join(PLUGIN_DIR, 'skills', SKILL_NAME);
 const MCP_DIR = join(ROOT, 'packages/mcp');
 const MCP_DATA_DIR = join(MCP_DIR, 'data');
-const MCP_PACKAGE = 'css-coding-guideline-mcp';
+const MCP_PACKAGE = 'recss-guideline-mcp';
 const TOKENS_DIR = join(ROOT, 'src/demos/tokens');
 const TOKEN_FILES = ['colors.css', 'shadows.css', 'sizes.css', 'typography.css', 'motion.css', 'z-index.css'];
 
@@ -67,15 +67,15 @@ const formatChars = (chars) =>
 // 定義がないときに渡す依頼文（references/review.md）の3か所に同じものを出す。
 // モデルは書かない。利用者の環境の設定と、スキルに書いた階層（軽い・高性能）で決まる。
 
-const READER = 'css-guideline-reader';
-const JUDGE = 'css-guideline-judge';
+const READER = 'recss-guideline-reader';
+const JUDGE = 'recss-guideline-judge';
 
 const READER_DESCRIPTION =
-  '「CSSコーディングガイドライン」の割り当てられた節を通読し、対象のCSSに当たるルールのチェック表を返す。css-coding-guideline スキルのレビューで、読む係として使う。';
+  '「RECSSガイドライン」の割り当てられた節を通読し、対象のCSSに当たるルールのチェック表を返す。recss-guideline スキルのレビューで、読む係として使う。';
 const JUDGE_DESCRIPTION =
-  '読む係のチェック表をもとに、「CSSコーディングガイドライン」のルールと照合してレビューの指摘を判断する。css-coding-guideline スキルのレビューで、判断する係として使う。';
+  '読む係のチェック表をもとに、「RECSSガイドライン」のルールと照合してレビューの指摘を判断する。recss-guideline スキルのレビューで、判断する係として使う。';
 
-const READER_BODY = `あなたは「CSSコーディングガイドライン」の節を通読し、対象のCSSに当たるルールを調べる「読む係」です。依頼文に、対象のCSSのファイル、読む節（ページID）、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
+const READER_BODY = `あなたは「RECSSガイドライン」の節を通読し、対象のCSSに当たるルールを調べる「読む係」です。依頼文に、対象のCSSのファイル、読む節（ページID）、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
 
 ## 手順
 
@@ -186,7 +186,7 @@ const chapterReference = (chapter) => {
 - 本文: ${formatChars(chapter.chars)}
 - 読む条件: ${chapter.review}${chapter.always ? '（常に読む）' : ''}
 
-このファイルは「CSSコーディングガイドライン」のルールから自動生成しています。直接編集しないでください。
+このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 ${LEVELS_AND_KINDS}
 背景とコード例は、各節の本文にあります。本文は MCP の \`get_page\`（ページID）か、URL で読みます。
 
@@ -227,11 +227,11 @@ const chapterIndex = chapters
 
 const skillMd = `---
 name: ${SKILL_NAME}
-description: 「CSSコーディングガイドライン」に従ってCSSを書く・直す・レビューする。レビューでは関係する章を通読し、指摘をルールと照合してから報告する。CSSの記法、命名、カスケードとレイヤー、@scope、単位、レスポンシブ、タイポグラフィと和文組版、色、モーション、CMSでの運用などを扱うタスクで使う。
+description: 「RECSSガイドライン」に従ってCSSを書く・直す・レビューする。レビューでは関係する章を通読し、指摘をルールと照合してから報告する。CSSの記法、命名、カスケードとレイヤー、@scope、単位、レスポンシブ、タイポグラフィと和文組版、色、モーション、CMSでの運用などを扱うタスクで使う。
 license: CC-BY-4.0
 ---
 
-# CSSコーディングガイドライン Skill
+# RECSSガイドライン Skill
 
 - ガイドラインのバージョン: ${version}（${today} 生成）
 - ルールの数: ${rules.length}（うち AI が誤りやすいもの ${aiProne.length}）
@@ -251,7 +251,7 @@ ${LEVELS_AND_KINDS}
 
 ## ルールと本文の読み方
 
-- MCP サーバー \`css-coding-guideline\`（npm の \`${MCP_PACKAGE}\`）が使えるときは、そのツールで読む。\`list_chapters\` で章と節と字数、\`get_page\` で節の本文、\`get_rule\` でルールを引き、\`lint_css\` で本書の Stylelint の設定で検査する。使えないときは、\`references/\` のファイルと、節の URL の本文を読む。
+- MCP サーバー \`recss-guideline\`（npm の \`${MCP_PACKAGE}\`）が使えるときは、そのツールで読む。\`list_chapters\` で章と節と字数、\`get_page\` で節の本文、\`get_rule\` でルールを引き、\`lint_css\` で本書の Stylelint の設定で検査する。使えないときは、\`references/\` のファイルと、節の URL の本文を読む。
 - 節は全文で読む。\`get_page\` は \`heading\` を付けずに呼ぶ。\`heading\` と \`search_rules\` は、一度読んだ節やルールに戻って確かめるときに使う。
 - ルールを当てはめる前に、補足まで読む。補足には、適用範囲と例外が書いてある。
 - プロジェクトに独自の規約（\`CLAUDE.md\`、\`AGENTS.md\` など）があれば、そちらを優先する。本書のルールと違う点は「食い違い」として示す。
@@ -418,13 +418,13 @@ for (const chapter of chapters.filter((entry) => entry.rules.length > 0)) {
 
 // ── プラグインとマーケットプレイス ─────────────────────────────────────
 
-const pluginDescription = '「CSSコーディングガイドライン」に従ってCSSを書き、レビューするためのスキルと MCP サーバー';
+const pluginDescription = '「RECSSガイドライン」に従ってCSSを書き、レビューするためのスキルと MCP サーバー';
 const author = { name: 'TAK', url: 'https://www.tak-dcxi.com/' };
 
 await mkdir(join(PLUGIN_DIR, '.claude-plugin'), { recursive: true });
 await writeJson(join(PLUGIN_DIR, '.claude-plugin/plugin.json'), {
   name: SKILL_NAME,
-  displayName: 'CSSコーディングガイドライン',
+  displayName: 'RECSSガイドライン',
   version,
   description: pluginDescription,
   author,

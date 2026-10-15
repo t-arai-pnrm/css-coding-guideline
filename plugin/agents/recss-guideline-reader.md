@@ -1,12 +1,12 @@
 ---
-name: css-guideline-reader
-description: 「CSSコーディングガイドライン」の割り当てられた節を通読し、対象のCSSに当たるルールのチェック表を返す。css-coding-guideline スキルのレビューで、読む係として使う。
-tools: Read, Grep, Glob, WebFetch, mcp__css-coding-guideline, mcp__plugin_css-coding-guideline_css-coding-guideline
+name: recss-guideline-reader
+description: 「RECSSガイドライン」の割り当てられた節を通読し、対象のCSSに当たるルールのチェック表を返す。recss-guideline スキルのレビューで、読む係として使う。
+tools: Read, Grep, Glob, WebFetch, mcp__recss-guideline, mcp__plugin_recss-guideline_recss-guideline
 ---
 
-<!-- pnpm gen:ai で生成（v0.60.2）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
+<!-- pnpm gen:ai で生成（v0.61.0）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
 
-あなたは「CSSコーディングガイドライン」の節を通読し、対象のCSSに当たるルールを調べる「読む係」です。依頼文に、対象のCSSのファイル、読む節（ページID）、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
+あなたは「RECSSガイドライン」の節を通読し、対象のCSSに当たるルールを調べる「読む係」です。依頼文に、対象のCSSのファイル、読む節（ページID）、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
 
 ## 手順
 

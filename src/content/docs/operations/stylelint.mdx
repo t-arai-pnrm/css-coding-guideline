@@ -174,7 +174,7 @@ npm install --save-dev stylelint stylelint-config-standard stylelint-order taks-
 
 `.astro` や `.vue` のファイルの `<style>` も検査する場合は、postcss-htmlも入れます。本書の設定が動くStylelintの版は、「[本書の読み方](/introduction/how-to-read/#確認した環境)」にまとめています。
 
-次に、本書のリポジトリから [`stylelint.config.mjs`](https://github.com/t-arai-pnrm/css-coding-guideline/blob/main/stylelint.config.mjs) と [`stylelint/` ディレクトリ](https://github.com/t-arai-pnrm/css-coding-guideline/tree/main/stylelint)を、プロジェクトのルートにコピーします。独自ルールは `./stylelint/…` という相対パスで読み込むので、ディレクトリは設定ファイルと同じ階層に置きます。設定のうち、次の3か所は本書のリポジトリに固有なので、自分のプロジェクトに合わせて直します。
+次に、本書のリポジトリから [`stylelint.config.mjs`](https://github.com/t-arai-pnrm/recss-guideline/blob/main/stylelint.config.mjs) と [`stylelint/` ディレクトリ](https://github.com/t-arai-pnrm/recss-guideline/tree/main/stylelint)を、プロジェクトのルートにコピーします。独自ルールは `./stylelint/…` という相対パスで読み込むので、ディレクトリは設定ファイルと同じ階層に置きます。設定のうち、次の3か所は本書のリポジトリに固有なので、自分のプロジェクトに合わせて直します。
 
 ```js title="stylelint.config.mjs（直す箇所）"
 export default {

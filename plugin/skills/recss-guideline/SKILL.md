@@ -1,14 +1,14 @@
 ---
-name: css-coding-guideline
-description: 「CSSコーディングガイドライン」に従ってCSSを書く・直す・レビューする。レビューでは関係する章を通読し、指摘をルールと照合してから報告する。CSSの記法、命名、カスケードとレイヤー、@scope、単位、レスポンシブ、タイポグラフィと和文組版、色、モーション、CMSでの運用などを扱うタスクで使う。
+name: recss-guideline
+description: 「RECSSガイドライン」に従ってCSSを書く・直す・レビューする。レビューでは関係する章を通読し、指摘をルールと照合してから報告する。CSSの記法、命名、カスケードとレイヤー、@scope、単位、レスポンシブ、タイポグラフィと和文組版、色、モーション、CMSでの運用などを扱うタスクで使う。
 license: CC-BY-4.0
 ---
 
-# CSSコーディングガイドライン Skill
+# RECSSガイドライン Skill
 
-- ガイドラインのバージョン: 0.60.2（2026-10-14 生成）
+- ガイドラインのバージョン: 0.61.0（2026-10-15 生成）
 - ルールの数: 609（うち AI が誤りやすいもの 292）
-- 本書: https://t-arai-pnrm.github.io/css-coding-guideline/
+- 本書: https://t-arai-pnrm.github.io/recss-guideline/
 
 ## 基本原則
 
@@ -25,7 +25,7 @@ license: CC-BY-4.0
 
 ## ルールと本文の読み方
 
-- MCP サーバー `css-coding-guideline`（npm の `css-coding-guideline-mcp`）が使えるときは、そのツールで読む。`list_chapters` で章と節と字数、`get_page` で節の本文、`get_rule` でルールを引き、`lint_css` で本書の Stylelint の設定で検査する。使えないときは、`references/` のファイルと、節の URL の本文を読む。
+- MCP サーバー `recss-guideline`（npm の `recss-guideline-mcp`）が使えるときは、そのツールで読む。`list_chapters` で章と節と字数、`get_page` で節の本文、`get_rule` でルールを引き、`lint_css` で本書の Stylelint の設定で検査する。使えないときは、`references/` のファイルと、節の URL の本文を読む。
 - 節は全文で読む。`get_page` は `heading` を付けずに呼ぶ。`heading` と `search_rules` は、一度読んだ節やルールに戻って確かめるときに使う。
 - ルールを当てはめる前に、補足まで読む。補足には、適用範囲と例外が書いてある。
 - プロジェクトに独自の規約（`CLAUDE.md`、`AGENTS.md` など）があれば、そちらを優先する。本書のルールと違う点は「食い違い」として示す。
@@ -76,7 +76,7 @@ Figma などのデザインツールのデザインから書くときは、「20
 
 読了表の節を、合計8万字以内のまとまりに分け、まとまりごとに1つの「読む係」のサブエージェントへ割り当てる。章の途中で分けてよい。読む係は、節を全文で読み、節のすべてのルールについて、対象のCSSに「当たる」「当たらない」「判断できない」を書いたチェック表を返す。
 
-- サブエージェントの種類: `css-guideline-reader`（プラグインから入れたときは `css-coding-guideline:css-guideline-reader`）。この定義がないときは、汎用のサブエージェントに、`references/review.md` の「読む係への依頼文」を渡す。
+- サブエージェントの種類: `recss-guideline-reader`（プラグインから入れたときは `recss-guideline:recss-guideline-reader`）。この定義がないときは、汎用のサブエージェントに、`references/review.md` の「読む係への依頼文」を渡す。
 - モデル: ユーザーやプロジェクトの指定があれば、それに従う。なければ、軽いモデルを指定する（Claude Code では `haiku`）。Codex では、定義に書いた推論の強さと、利用者の設定（`config.toml` の `[agents]`）に任せる。
 - サブエージェントを使えないときは、自分で節を1つずつ読み、1つ読み終えるたびに、その節のチェック表を書いてから次の節に進む。
 
@@ -86,7 +86,7 @@ Figma などのデザインツールのデザインから書くときは、「20
 
 判断は、高性能なモデルで行う。判断する係は、チェック表の欠けを確かめ、関係する章のルールを補足まで全部読み、対象のCSSを自分でも見直す。そのうえで、指摘を1件ずつ照合し、「確認済み」「却下（理由）」「食い違い」に振り分ける。手順は `references/review.md` の「判断する係への依頼文」にある。
 
-- Claude Code: 判断する係のサブエージェント `css-guideline-judge`（プラグインから入れたときは `css-coding-guideline:css-guideline-judge`）に、対象のCSS、関係する章、読了表、読む係が返したすべての結果、プロジェクトの規約のパスを渡す。モデルは、ユーザーやプロジェクトの指定がなければ `opus` を指定する。定義がないときは、汎用のサブエージェントに「判断する係への依頼文」を渡す。
+- Claude Code: 判断する係のサブエージェント `recss-guideline-judge`（プラグインから入れたときは `recss-guideline:recss-guideline-judge`）に、対象のCSS、関係する章、読了表、読む係が返したすべての結果、プロジェクトの規約のパスを渡す。モデルは、ユーザーやプロジェクトの指定がなければ `opus` を指定する。定義がないときは、汎用のサブエージェントに「判断する係への依頼文」を渡す。
 - Codex など、判断する係を高性能なモデルで呼べないとき: メインのセッションが、「判断する係への依頼文」の手順で自分で判断する。
 
 完了条件: チェック表がすべての節でそろい、すべての指摘が3つのどれかに振り分けられ、確認済みの指摘に、ルールIDと根拠の節がある。
@@ -99,23 +99,23 @@ Figma などのデザインツールのデザインから書くときは、「20
 
 | 章 | ファイル | ルールの数 | 本文 | 読む条件 |
 | --- | --- | --- | --- | --- |
-| 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.5万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
+| 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.4万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
 | 第2章 CSS設計の考え方 | `references/02-design-mindset.md` | 7 | 約2.7万字 | コンポーネントの分け方、共通化、上書きの多い設計 |
 | 第4章 カスケードを制御する | `references/04-cascade.md` | 23 | 約8万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
 | 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.4万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |
 | 第6章 値と単位 | `references/06-values.md` | 30 | 約8.8万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
-| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約27.9万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
+| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約27.8万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
 | 第8章 リセットとベーススタイル | `references/08-reset.md` | 23 | 約4.9万字 | リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル |
 | 第9章 記法の規約 | `references/09-notation.md` | 49 | 約12万字 | **常に読む**。すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法） |
-| 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 52 | 約16.3万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
-| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 61 | 約26.8万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
+| 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 52 | 約16.2万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
+| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 61 | 約26.7万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
 | 第12章 レイアウトコンポジション | `references/12-compositions.md` | 37 | 約17.2万字 | 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン |
-| 第13章 レスポンシブデザイン | `references/13-responsive.md` | 39 | 約11万字 | @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area |
+| 第13章 レスポンシブデザイン | `references/13-responsive.md` | 39 | 約10.9万字 | @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area |
 | 第14章 タイポグラフィと和文組版 | `references/14-typography.md` | 32 | 約8.4万字 | font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割 |
 | 第15章 色 | `references/15-color-media.md` | 23 | 約9.2万字 | 色の指定（oklch()、color-mix()、相対カラー構文）、ダークモード、強制カラーモード、コントラスト |
-| 第16章 画像・装飾 | `references/16-decoration.md` | 34 | 約21.1万字 | 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷 |
-| 第17章 インタラクション | `references/17-interaction.md` | 40 | 約14.2万字 | ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル |
-| 第18章 モーション | `references/18-motion.md` | 31 | 約20.2万字 | transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions |
+| 第16章 画像・装飾 | `references/16-decoration.md` | 34 | 約21万字 | 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷 |
+| 第17章 インタラクション | `references/17-interaction.md` | 40 | 約14.1万字 | ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル |
+| 第18章 モーション | `references/18-motion.md` | 31 | 約20.1万字 | transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions |
 | 第19章 実務での運用 | `references/19-operations.md` | 27 | 約6.4万字 | Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入 |
 | 第20章 AIにコーディングさせる | `references/20-ai-coding.md` | 17 | 約8.7万字 | AIが書いたCSS、Figmaなどのデザインツールから書いたCSS |
 

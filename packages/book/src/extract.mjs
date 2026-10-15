@@ -17,7 +17,7 @@ const SITE_BASE = `${BASE}/`;
 /** ページの ID（components/style-queries）を、id 属性に使える形にする */
 export const keyOf = (pageId) => pageId.replaceAll('/', '_');
 
-/** /css-coding-guideline/components/style-queries/#x を { page: 'components/style-queries', hash: 'x' } にする */
+/** /recss-guideline/components/style-queries/#x を { page: 'components/style-queries', hash: 'x' } にする */
 const parseHref = (href) => {
   if (!href.startsWith(SITE_BASE)) return null;
   const [path, hash = ''] = href.slice(SITE_BASE.length).split('#');

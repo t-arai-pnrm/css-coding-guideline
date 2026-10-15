@@ -1,6 +1,6 @@
 /**
  * MCP サーバーを stdio で起動し、すべてのツールを1回ずつ呼んで結果を確かめる。
- * `pnpm --filter css-coding-guideline-mcp smoke` で実行する。
+ * `pnpm --filter recss-guideline-mcp smoke` で実行する。
  */
 import { spawn } from 'node:child_process';
 import { createInterface } from 'node:readline';
@@ -66,7 +66,7 @@ try {
   await call('get_page', { page: '13-5', heading: '範囲構文' }, { expect: /部分だけ[\s\S]*## 範囲構文で書く/ });
   await call(
     'get_page',
-    { page: 'https://t-arai-pnrm.github.io/css-coding-guideline/cascade/layers/' },
+    { page: 'https://t-arai-pnrm.github.io/recss-guideline/cascade/layers/' },
     { expect: /4-3[\s\S]*この節の全文[\s\S]*この節の終わり/ },
   );
   await call('get_page', { page: '存在しないページ' }, { expectError: true });

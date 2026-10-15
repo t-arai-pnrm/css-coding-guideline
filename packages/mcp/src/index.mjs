@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 「CSSコーディングガイドライン」の MCP サーバー（stdio）。
+ * 「RECSSガイドライン」の MCP サーバー（stdio）。
  * ルールの検索と参照、節の本文の取得、本書の Stylelint 設定での検査を提供する。
  */
 import { readFileSync } from 'node:fs';
@@ -32,7 +32,7 @@ const formatRule = (rule) => {
   return lines.join('\n');
 };
 
-const INSTRUCTIONS = `「CSSコーディングガイドライン」（v${guideline.version}、${guideline.site}）のルールと本文を返し、CSSを本書のStylelint設定で検査するサーバーです。
+const INSTRUCTIONS = `「RECSSガイドライン」（v${guideline.version}、${guideline.site}）のルールと本文を返し、CSSを本書のStylelint設定で検査するサーバーです。
 - CSSを書く前に、search_rules の aiProne: true で「AIが誤りやすいルール」を確認し、書く内容に関係する節を get_page で読んでください。
 - レビューでは、関係する章を通読してから指摘します。list_chapters の「読む条件」で章を選び（「常に読む」の章は必ず含める）、その章のすべての節を get_page で heading を付けずに全文で読みます。heading と search_rules は、読んだ節やルールに戻って確かめるときに使います。
 - 指摘は、自分のものもサブエージェントのものも、get_rule でルールの補足（適用範囲と例外）まで照合し、「確認済み」「却下（理由）」「食い違い」に振り分けてから報告します。報告には、読んだ節の一覧を付けます。
@@ -40,19 +40,19 @@ const INSTRUCTIONS = `「CSSコーディングガイドライン」（v${guideli
 - 判断の根拠には、ルールのID（例: query-range-syntax）を添えてください。強度は「必須」「推奨」「非推奨」「禁止」の4段階で、「必須」と「禁止」は、補足に書いた適用範囲と例外を除いて必ず守ります。
 - プロジェクトに独自の規約があれば、そちらを優先し、本書のルールと違う点は「食い違い」として示します。
 - レビューは、本文を通読する「読む係」（軽いモデル）と、ルールと照合して判断する「判断する係」（高性能なモデル）に分けられます。ユーザーやプロジェクトがモデルを指定していれば、それに従います。判断する係は、search_rules に page と detail: true を渡して、読む係のチェック表に欠けがないかを確かめます。
-- スキル css-coding-guideline があれば、その「レビューするとき」の手順に従ってください。`;
+- スキル recss-guideline があれば、その「レビューするとき」の手順に従ってください。`;
 
 const formatChars = (chars) => `約${chars.toLocaleString('ja-JP')}字`;
 
 const server = () => {
-  const mcp = new McpServer({ name: 'css-coding-guideline', version }, { instructions: INSTRUCTIONS });
+  const mcp = new McpServer({ name: 'recss-guideline', version }, { instructions: INSTRUCTIONS });
 
   mcp.registerTool(
     'search_rules',
     {
       title: 'ルールを探す',
       description:
-        'CSSコーディングガイドラインのルールを、語句、章、節、強度、性質、AIが誤りやすいかで絞り込みます。語句は空白で区切るとすべてを含むものに絞り、ルールのID、本文、理由、補足、掲載ページのタイトルから探します。結果は既定ではルールの1行の要約で、detail: true で理由と補足まで返します。節や章のルールを漏れなく読むときは、page か chapter に detail: true と limit: 200 を組み合わせます。',
+        'RECSSガイドラインのルールを、語句、章、節、強度、性質、AIが誤りやすいかで絞り込みます。語句は空白で区切るとすべてを含むものに絞り、ルールのID、本文、理由、補足、掲載ページのタイトルから探します。結果は既定ではルールの1行の要約で、detail: true で理由と補足まで返します。節や章のルールを漏れなく読むときは、page か chapter に detail: true と limit: 200 を組み合わせます。',
       inputSchema: z.object({
         query: z.string().optional().describe('探す語句（例: "コンテナ クエリ"、"vh"、"focus"）。空白区切りはAND。'),
         chapter: z
@@ -163,7 +163,7 @@ const server = () => {
           .filter(Boolean)
           .join('\n');
       const body = [
-        `CSSコーディングガイドライン v${guideline.version}（${guideline.generatedAt} 生成）\n${guideline.site}`,
+        `RECSSガイドライン v${guideline.version}（${guideline.generatedAt} 生成）\n${guideline.site}`,
         'レビューでは、「読む条件」に当たる章と「常に読む」の章を選び、その章のすべての節を get_page で全文読む。1回に読む量は、合計8万字ほどを目安にまとまりに分ける。',
         `## ${introduction.label}\n\n${pageLines(introduction.pages)}`,
         ...parts.map((part) => `## ${part.label}\n\n${part.chapters.map(chapterLine).join('\n')}`),
@@ -215,4 +215,4 @@ const server = () => {
 };
 
 serveStdio(server);
-console.error(`css-coding-guideline MCP サーバー v${version}（ガイドライン v${guideline.version}）を stdio で起動しました。`);
+console.error(`recss-guideline MCP サーバー v${version}（ガイドライン v${guideline.version}）を stdio で起動しました。`);

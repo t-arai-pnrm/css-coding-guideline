@@ -7,10 +7,10 @@
 export const SITE = 'https://t-arai-pnrm.github.io';
 
 /** GitHub Pages のプロジェクトサイトとして、サブパスで公開する。 */
-export const BASE = '/css-coding-guideline';
+export const BASE = '/recss-guideline';
 
 /** ページ ID（例: `responsive/escalation`、トップは空文字）から公開 URL を作る。 */
 export const pageUrl = (id) => (id ? `${SITE}${BASE}/${id}/` : `${SITE}${BASE}/`);
 
 /** GitHub のリポジトリ。 */
-export const REPOSITORY = 't-arai-pnrm/css-coding-guideline';
+export const REPOSITORY = 't-arai-pnrm/recss-guideline';

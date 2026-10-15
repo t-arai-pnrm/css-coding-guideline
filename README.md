@@ -1,8 +1,8 @@
-# CSSコーディングガイドライン
+# RECSSガイドライン
 
-CSS の記法と設計の知識をまとめた、実務のためのコーディングガイドラインです。著者は TAK。本文は Web で公開しています。
+Reasonable Enduring CSS の略で、理由を説明でき、変化に耐える CSS の書き方を、基礎から学び直すためのガイドラインです。著者は TAK。本文は Web で公開しています。
 
-https://t-arai-pnrm.github.io/css-coding-guideline/
+https://t-arai-pnrm.github.io/recss-guideline/
 
 ## 書籍のサンプルと紙版
 
@@ -18,11 +18,11 @@ ZIPとmanifestは`public/sample-files/`に版別に保存します。展開先�
 本書のルールは、ほかのプロジェクトの AI ツールから参照できます。Claude Code では、スキルと MCP サーバーをまとめたプラグインを入れます。
 
 ```sh
-claude plugin marketplace add t-arai-pnrm/css-coding-guideline
-claude plugin install css-coding-guideline@css-coding-guideline
+claude plugin marketplace add t-arai-pnrm/recss-guideline
+claude plugin install recss-guideline@recss-guideline
 ```
 
-Cursor、Codex、GitHub Copilot では、スキルを `npx skills add t-arai-pnrm/css-coding-guideline` で入れ、MCP サーバー（npm の [`css-coding-guideline-mcp`](./packages/mcp/)）を各ツールの設定に登録します。ツールごとの手順は、付録J「[AIツールで使う](https://t-arai-pnrm.github.io/css-coding-guideline/appendix/ai-tools/)」にあります。
+Cursor、Codex、GitHub Copilot では、スキルを `npx skills add t-arai-pnrm/recss-guideline` で入れ、MCP サーバー（npm の [`recss-guideline-mcp`](./packages/mcp/)）を各ツールの設定に登録します。ツールごとの手順は、付録J「[AIツールで使う](https://t-arai-pnrm.github.io/recss-guideline/appendix/ai-tools/)」にあります。
 
 ## リポジトリの構成
 

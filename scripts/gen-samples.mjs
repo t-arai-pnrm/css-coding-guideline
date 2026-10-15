@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 const read = (file) => readFile(join(root, file), 'utf8');
 const version = JSON.parse(await read('package.json')).version;
 const out = join(root, 'public/sample-files', `v${version}`);
-const archive = join(root, 'public/sample-files', `css-coding-guideline-v${version}.zip`);
+const archive = join(root, 'public/sample-files', `recss-guideline-v${version}.zip`);
 const snapshot = archive.replace(/\.zip$/, '.manifest.json');
 const support = join(root, 'public/book-support');
 const escape = (text) => String(text).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -52,7 +52,7 @@ await cp(join(out, 'quick-start'), join(out, 'practical'), { recursive: true });
 const astroVersion = JSON.parse(await readFile(require.resolve('astro/package.json'), 'utf8')).version;
 const astroRequire = createRequire(require.resolve('astro/package.json'));
 const viteVersion = JSON.parse(await readFile(astroRequire.resolve('vite/package.json'), 'utf8')).version;
-await put('practical/package.json', `${JSON.stringify({ name: 'css-guideline-sample', private: true, type: 'module', engines: { node: '>=22.12.0' }, scripts: { dev: 'vite', build: 'vite build', preview: 'vite preview' }, devDependencies: { vite: viteVersion } }, null, 2)}\n`);
+await put('practical/package.json', `${JSON.stringify({ name: 'recss-guideline-sample', private: true, type: 'module', engines: { node: '>=22.12.0' }, scripts: { dev: 'vite', build: 'vite build', preview: 'vite preview' }, devDependencies: { vite: viteVersion } }, null, 2)}\n`);
 
 const demos = [];
 for (const entry of await readdir(join(root, 'src/content/docs'), { withFileTypes: true })) {
@@ -87,7 +87,7 @@ for (const entry of await readdir(join(root, 'src/content/docs'), { withFileType
   }
 }
 demos.sort((a, b) => a.chapter - b.chapter || a.order - b.order || a.id.localeCompare(b.id, 'ja', { numeric: true }));
-await put('README.md', `# CSSコーディングガイドライン v${version} のサンプル\n\n原稿の版：${version}。ブラウザの対応状況：${BASELINE_CHECKED}確認のデータ。\n\n## 最小構成\n\nquick-start/index.htmlをブラウザで開きます。淡い灰色のカードに、青い見出し、日付、本文が出れば開始できます。見出しの色はarticleのstyle属性で変えます。\n\n## 実務配信への移行\n\npractical/でnpm install、npm run buildを実行します。Node.js 22.12以降で、Vite ${viteVersion}がcss/style.cssの@importを展開します。dist/index.htmlとdist/assets/のCSSを配信します。npm run previewでカードの見た目を確認します。インストールにはネットワークが必要です。\n\n## デモと演習\n\ndemos/のHTMLには、Web版と同じ共通トークン、リセット、CSS、必要なJavaScriptを含めています。デモ番号とファイルの対応はmanifest.jsonにあります。演習はexercise/の開始版、中間版、完成版を使います。ai-coding/は第20章のひな形です。\n\n## 検証と更新\n\nmanifest.jsonに、元の依存関係と各ファイルのSHA-256を記録しています。刊行した版を再現するときは、その版のZIPを保存して使います。依存するブラウザの機能には対応状況の差があり、全デモの全状態を検証した記録ではありません。\n\n文章：CC BY 4.0、コード：MIT-0。出典：CSSコーディングガイドライン、TAK、${pageUrl('')}\n`);
+await put('README.md', `# RECSSガイドライン v${version} のサンプル\n\n原稿の版：${version}。ブラウザの対応状況：${BASELINE_CHECKED}確認のデータ。\n\n## 最小構成\n\nquick-start/index.htmlをブラウザで開きます。淡い灰色のカードに、青い見出し、日付、本文が出れば開始できます。見出しの色はarticleのstyle属性で変えます。\n\n## 実務配信への移行\n\npractical/でnpm install、npm run buildを実行します。Node.js 22.12以降で、Vite ${viteVersion}がcss/style.cssの@importを展開します。dist/index.htmlとdist/assets/のCSSを配信します。npm run previewでカードの見た目を確認します。インストールにはネットワークが必要です。\n\n## デモと演習\n\ndemos/のHTMLには、Web版と同じ共通トークン、リセット、CSS、必要なJavaScriptを含めています。デモ番号とファイルの対応はmanifest.jsonにあります。演習はexercise/の開始版、中間版、完成版を使います。ai-coding/は第20章のひな形です。\n\n## 検証と更新\n\nmanifest.jsonに、元の依存関係と各ファイルのSHA-256を記録しています。刊行した版を再現するときは、その版のZIPを保存して使います。依存するブラウザの機能には対応状況の差があり、全デモの全状態を検証した記録ではありません。\n\n文章：CC BY 4.0、コード：MIT-0。出典：RECSSガイドライン、TAK、${pageUrl('')}\n`);
 
 const files = [];
 const hashes = async (dir, prefix = '') => {
@@ -114,12 +114,14 @@ if (version.startsWith('0.') || !previous) {
 }
 
 const rows = demos.map((demo) => `<tr><td>デモ${escape(demo.id)}</td><td>${escape(demo.title)}</td><td><a href="${escape(demo.url)}">説明と操作</a></td><td><a href="../sample-files/v${version}/${escape(demo.file)}">サンプル</a></td></tr>`).join('\n');
+// 0.60.2 までの ZIP は旧書名「CSSコーディングガイドライン」のファイル名のまま残している
 const savedVersions = (await readdir(dirname(out)))
-  .map((name) => name.match(/^css-coding-guideline-v([\d.]+)\.zip$/)?.[1])
+  .map((name) => name.match(/^((?:recss-guideline|css-coding-guideline)-v([\d.]+))\.zip$/))
   .filter(Boolean)
-  .sort((a, b) => b.localeCompare(a, 'en', { numeric: true }));
-const versionList = savedVersions.map((saved) => `<li>v${escape(saved)}${saved.startsWith('0.') ? '（試し組み）' : ''}：<a href="../sample-files/css-coding-guideline-v${saved}.zip">サンプル一式</a>／<a href="../sample-files/css-coding-guideline-v${saved}.manifest.json">版とファイルの記録</a></li>`).join('');
-await writeFile(join(support, 'index.html'), `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>書籍の補足とサンプル</title></head><body><h1>CSSコーディングガイドラインの補足</h1><p>現在の原稿：v${version}。執筆中の試し組み用です。刊行版の正誤表は、刊行したときに版ごとに追加します。</p><p><a href="../sample-files/css-coding-guideline-v${version}.zip">v${version}のサンプル一式（ZIP）</a>／<a href="../sample-files/v${version}/manifest.json">ファイルと版の記録</a>／<a href="${pageUrl('appendix/changelog')}">刊行後の変更を調べるための更新履歴</a></p><p>紙面にあるデモ番号から、次の一覧を探してください。サンプルには同じ版のCSS・HTML・JavaScriptを含めています。説明のリンクは更新されるWeb版を開きます。</p><table><thead><tr><th>番号</th><th>内容</th><th>Web版</th><th>原稿と同じ版</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+  .map(([, base, saved]) => ({ base, saved }))
+  .sort((a, b) => b.saved.localeCompare(a.saved, 'en', { numeric: true }));
+const versionList = savedVersions.map(({ base, saved }) => `<li>v${escape(saved)}${saved.startsWith('0.') ? '（試し組み）' : ''}：<a href="../sample-files/${base}.zip">サンプル一式</a>／<a href="../sample-files/${base}.manifest.json">版とファイルの記録</a></li>`).join('');
+await writeFile(join(support, 'index.html'), `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>書籍の補足とサンプル</title></head><body><h1>RECSSガイドラインの補足</h1><p>現在の原稿：v${version}。執筆中の試し組み用です。刊行版の正誤表は、刊行したときに版ごとに追加します。</p><p><a href="../sample-files/recss-guideline-v${version}.zip">v${version}のサンプル一式（ZIP）</a>／<a href="../sample-files/v${version}/manifest.json">ファイルと版の記録</a>／<a href="${pageUrl('appendix/changelog')}">刊行後の変更を調べるための更新履歴</a></p><p>紙面にあるデモ番号から、次の一覧を探してください。サンプルには同じ版のCSS・HTML・JavaScriptを含めています。説明のリンクは更新されるWeb版を開きます。</p><table><thead><tr><th>番号</th><th>内容</th><th>Web版</th><th>原稿と同じ版</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
 const supportFile = join(support, 'index.html');
 await writeFile(supportFile, (await readFile(supportFile, 'utf8')).replace('<table>', `<h2>紙面の版から選ぶ</h2><p>冒頭の版と同じZIPを選んでください。古い版のデモ番号とファイル名は、その版の記録か、ZIP内のmanifest.jsonで調べられます。</p><ul>${versionList}</ul><h2>現在の原稿のデモ一覧（v${version}）</h2><table>`));
 process.stdout.write(`v${version}: デモ${demos.length}件、${files.length}ファイルを ${archive} にまとめました。\n`);

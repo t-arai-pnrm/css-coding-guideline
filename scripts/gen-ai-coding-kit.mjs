@@ -19,7 +19,7 @@ const outDir = join(root, 'public/ai-coding-files');
 const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const mcpJson = join(srcDir, 'mcp.json');
 const current = readFileSync(mcpJson, 'utf8');
-const synced = current.replace(/css-coding-guideline-mcp@\d+\.\d+\.\d+/, `css-coding-guideline-mcp@${version}`);
+const synced = current.replace(/recss-guideline-mcp@\d+\.\d+\.\d+/, `recss-guideline-mcp@${version}`);
 if (synced !== current) {
   writeFileSync(mcpJson, synced);
   console.log(`mcp.json の版を ${version} にそろえた`);

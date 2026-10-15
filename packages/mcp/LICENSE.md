@@ -3,7 +3,7 @@
 このパッケージは、コードとデータで別のライセンスにしています。
 
 - `src/`（MCP サーバーのコード）と `data/stylelint/`（本書の Stylelint の設定と独自ルール）：MIT No Attribution（MIT-0）
-- `data/guideline.json`（本書のルールと本文）：[クリエイティブ・コモンズ 表示 4.0 国際（CC BY 4.0）](https://creativecommons.org/licenses/by/4.0/legalcode.ja)。出典は「CSSコーディングガイドライン」、TAK、https://t-arai-pnrm.github.io/css-coding-guideline/
+- `data/guideline.json`（本書のルールと本文）：[クリエイティブ・コモンズ 表示 4.0 国際（CC BY 4.0）](https://creativecommons.org/licenses/by/4.0/legalcode.ja)。出典は「RECSSガイドライン」、TAK、https://t-arai-pnrm.github.io/recss-guideline/
 
 ```
 MIT No Attribution
