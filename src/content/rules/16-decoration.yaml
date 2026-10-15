@@ -103,11 +103,12 @@
   page: decoration/icons-and-masks
   since: 0.1.0
 
-- id: inline-svg-hidden-with-text
+- id: inline-svg-accessible-name
   level: 推奨
   kind: judgment
-  rule: '意味を持つインライン SVG のアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。'
-  reason: '`<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。'
+  rule: '意味を持つインライン SVG のアイコンには、`role="img"` と `aria-label` で名前を付ける。名前をページ内検索や選択してのコピーの対象にしたいときは、SVG を `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。'
+  reason: '`role="img"` を付けると SVG の図形がまとめて1つの画像として扱われ、`aria-label` の名前が支援技術に伝わるため。`aria-label` は主要なブラウザの翻訳機能でも訳されるが、ページ内検索とコピーの対象にはならない。'
+  note: '装飾だけのアイコンと、隣のテキストと同じ意味のアイコンは、`aria-hidden="true"` にして名前を付けません。'
   page: decoration/icons-and-masks
   since: 0.1.0
 

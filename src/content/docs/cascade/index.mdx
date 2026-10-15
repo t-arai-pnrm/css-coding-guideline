@@ -79,6 +79,39 @@ h2 {
 
 </details>
 
+## 手を動かす課題
+
+判断の問いでは、宣言の勝ち負けを説明できるかを確かめました。ここでは、「[最小の構成で始める](/introduction/quick-start/)」で作ったお知らせのカードに、実際に負ける宣言を作り、原因を突き止めて直します。
+
+既存のサイトから引き継いだ `css/legacy.css` を、エントリーポイントの `style.css` の最後に `@import url("./legacy.css");` を書いて読み込んだ場面で考えます。`legacy.css` には、`h2 { color: var(--foreground--muted); }` の1つのルールだけが書かれています。読み込むと、カードの見出しが青から灰色に変わります。`news-card.css` と `legacy.css` の中身は変えずに、見出しを青に戻してください。`!important` や、詳細度を上げるセレクタは使いません。
+
+合格の条件は2つです。カードの見出しが青に戻ることと、開発者ツールのスタイルのパネルで、直す前に勝っていた宣言と、それが勝った理由（レイヤー、詳細度、出現順のどれか）を言えることです。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えの例と解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+`legacy.css` をレイヤーに入れて読み込みます。素のタイプセレクタで見出しの色を決めるルールなので、`base` レイヤーが合います。
+
+```css title="🙆‍♂ Recommended: 引き継いだCSSを base レイヤーに入れて読み込む"
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+
+@import url("kiso.css") layer(reset);
+@import url("./tokens/colors.css") layer(tokens);
+@import url("./tokens/sizes.css") layer(tokens);
+@import url("./legacy.css") layer(base);
+@import url("./components/news-card.css") layer(components);
+```
+
+直す前に勝っていたのは、`legacy.css` の `h2` の宣言です。レイヤーの外で読み込んだ宣言は、すべてのレイヤーより後ろの暗黙のレイヤーとして扱われます。レイヤーの順番は詳細度より先に比べられるので、この宣言が勝ちます。`news-card.css` の `h2` も詳細度は同じですが、比べる前にレイヤーの順番で負けています。`base` に入れると、`components` の宣言がレイヤーの順番で勝つので、見出しは青に戻ります（「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」）。
+
+`legacy.css` の中で `.news-card h2` のように詳細度を上げても、レイヤーに入れていない宣言には勝てません。詳細度を上げて直そうとして効かなかったときは、まずレイヤーの書き忘れを疑います。
+
+答えの例のファイル一式は、[補足サイト](/book-support/index.html)のサンプル一式の `tasks/04-cascade/` にあります。
+
+</details>
+
 ## この章の判断のまとめ
 
 宣言が効かないときは、カスケードが比べる順に、レイヤー、詳細度、スコープの近さ、出現順のどこで負けたかを確かめます。上書きが要るときも詳細度は上げず、優先順位の問題ならレイヤーの順番を、上書きされる側の詳細度が高すぎるなら `:where()` を、入れ子のコンポーネントにスタイルが漏れるなら `@scope` の下限を見直します。ただし、`@scope` が限るのは自分のルールが当たる範囲なので、外から入ってくるスタイルは、レイヤーとCSSの読み込み方の問題として扱います。

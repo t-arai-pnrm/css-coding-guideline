@@ -46,7 +46,7 @@ sidebar:
 - [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)：コンポーネントのルートに、`margin` や `grid-area` のような、置かれ方で決まるレイアウトの指定を書きません。
 - [`public-property-naming`](/components/custom-properties/#rule-public-property-naming)：外から変えてよい値は、`--card--radius` のような `--<コンポーネント>--<プロパティ>` の公開プロパティにします。
 - [`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)：公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書きます。
-- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリは、コンポーネントの中でフラグを宣言する1つのルールだけに書き、ほかの子孫はスタイルクエリでフラグを読みます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：同じ閾値で見た目の変わる子要素が2つ以上あるときは、コンテナサイズクエリをフラグを宣言する1つのルールだけに書き、ほかの子孫はスタイルクエリでフラグを読みます。変わる要素が1つだけなら、フラグを作らず、その要素のルールにクエリを直接書きます。
 
 ## 判断の問い
 
@@ -62,6 +62,59 @@ sidebar:
 カードを並べる側に書きます。サイドバーのリストに `gap` を指定するか、`stack` のようなコンポジションに間隔を渡します。カードどうしの間隔は、カードの置き方の問題で、それを知っているのは並べる側だからです（`parent-owns-child-placement`）。
 
 カードのルートに `margin` を書くと、新着の一覧や関連記事のような、ほかの置き場所でも同じ余白が付きます（`no-external-layout-on-root`）。サイドバーのときだけ余白を変えるために、カードの中で置き場所を判定し始めると、カードが自分の置かれ方を知ることになり、境界が崩れます（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
+
+</details>
+
+## 手を動かす課題
+
+判断の問いでは、間隔をどこに書くかを選びました。ここでは、「[最小の構成で始める](/introduction/quick-start/)」のお知らせのカードを2か所に置き、片方の置き場所でだけ見た目を変えます。第4章の課題を終えたファイルから始めてかまいません。
+
+`index.html` に、主欄の `main` 要素と、サイドバーの `aside` 要素を置き、それぞれに `ul` でカードを2枚ずつ並べます。主欄では、カードどうしの間隔と、カードの内側の余白を、どちらも24pxにします。サイドバーでは、どちらも16pxにします。`news-card.css` には `main` や `aside` を書かず、置く側のCSSでもカードのクラスや `h2` を選ばないでください。
+
+合格の条件は2つです。`news-card.css` を読んでも、カードがサイドバーに置かれることが分からないことと、サイドバーのための指定がどのファイルのどの行にあり、それが主欄のカードに影響しない理由を説明できることです。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えの例と解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+カードどうしの間隔は並べる側が持ち、内側の余白はカードが公開プロパティで受け取ります。カードは、内側の余白を `--news-card--padding` で受け、`:scope` で内部プロパティに受けてデフォルト値を書きます。`tokens/sizes.css` には、16pxに当たる `--spacing--sm: 16;` を足しておきます。
+
+```css title="🙆‍♂ Recommended: カードは内側の余白を公開プロパティで受け取る"
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    --_accent: var(--news-card--accent, var(--foreground--accent));
+    --_padding: var(--news-card--padding, calc(var(--spacing--md) * 1px));
+
+    display: block grid;
+    gap: calc(var(--spacing--xxs) * 1px);
+    padding: var(--_padding);
+    border-radius: var(--rounded--md);
+    background-color: var(--background--surface);
+  }
+}
+```
+
+並べる側には、「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」の `stack` を使います。`stack` のCSSを `css/compositions/stack.css` に置き、エントリーポイントで `layer(compositions)` として読み込みます。値は、置く側の `ul` の `style` 属性で渡します。サイドバーの `ul` に書いた `--news-card--padding` は、継承で中の2枚のカードにまとめて届きます。
+
+```html title="index.html の body の中"
+<main>
+  <ul class="stack" style="--stack--gap: calc(var(--spacing--md) * 1px)">
+    <li><article class="scoped news-card">…</article></li>
+    <li><article class="scoped news-card">…</article></li>
+  </ul>
+</main>
+<aside>
+  <ul class="stack" style="--stack--gap: calc(var(--spacing--sm) * 1px); --news-card--padding: calc(var(--spacing--sm) * 1px)">
+    <li><article class="scoped news-card">…</article></li>
+    <li><article class="scoped news-card">…</article></li>
+  </ul>
+</aside>
+```
+
+サイドバーのための指定は、`aside` の中の `ul` の `style` 属性の1か所だけです。値は継承でその `ul` の子孫にしか届かないので、主欄のカードはデフォルト値の24pxのままです。カードの中で `aside` を判定していないので、3つ目の置き場所が増えても、カードのCSSは変わりません（`parent-owns-child-placement`、`receive-public-property-with-fallback`）。
+
+答えの例のファイル一式は、[補足サイト](/book-support/index.html)のサンプル一式の `tasks/10-components/` にあります。
 
 </details>
 

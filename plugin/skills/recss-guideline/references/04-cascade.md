@@ -1,8 +1,8 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.61.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.62.0（2026-10-15 生成）
 - ルールの数: 23
-- 本文: 約8万字
+- 本文: 約8.1万字
 - 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `cascade` 第4章 カスケードを制御する（約4,400字）https://t-arai-pnrm.github.io/recss-guideline/cascade/
+- `cascade` 第4章 カスケードを制御する（約6,100字）https://t-arai-pnrm.github.io/recss-guideline/cascade/
 - `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/cascade-basics/
 - `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/selectors/
 - `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約2万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/layers/

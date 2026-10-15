@@ -1,8 +1,8 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.61.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.62.0（2026-10-15 生成）
 - ルールの数: 52
-- 本文: 約16.2万字
+- 本文: 約16.7万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,13 +12,13 @@
 
 ## この章の節
 
-- `components` 第10章 コンポーネントとカスタムプロパティ（約8,800字）https://t-arai-pnrm.github.io/recss-guideline/components/
+- `components` 第10章 コンポーネントとカスタムプロパティ（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/components/
 - `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/components/what-is-a-component/
 - `components/boundaries` 10-2 コンポーネントの境界を守る（約3万字）https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/
 - `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/compositions-and-utilities/
 - `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/components/design-tokens/
 - `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
-- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.1万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
+- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
 - `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/placement-and-child-states/
 - `components/web-components` 10-8 Web Components（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/components/web-components/
 
@@ -204,7 +204,7 @@ https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
 
 https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
 
-- 【必須・本書の規約】コンテナサイズクエリ（`@container --scoped (…)`）は、コンポーネントの中で、フラグを宣言する1つの要素のルールだけに書く。その要素はクエリの外で `--_density: --compact` をデフォルト値として宣言してクエリの中で `--_density: --spacious` に切り替え、ほかの子孫は `@container style(--_density: --spacious)` で切り替える。（`density-via-style-query`）
+- 【必須・本書の規約】同じ閾値で見た目の変わる子要素が2つ以上あるときは、コンテナサイズクエリ（`@container --scoped (…)`）を、コンポーネントの中で、フラグを宣言する1つの要素のルールだけに書く。その要素はクエリの外で `--_density: --compact` をデフォルト値として宣言してクエリの中で `--_density: --spacious` に切り替え、ほかの子孫は `@container style(--_density: --spacious)` で切り替える。（`density-via-style-query`）
   - 理由: 閾値が1か所にまとまり、変えるときに直す場所が1つで済むため。子要素ごとにコンテナサイズクエリを書くと、直し忘れたときに、どの幅のデザインにもない中間の状態ができる。
   - 補足: フラグを宣言した要素自身はスタイルクエリで問い合わせられないので、その要素の見た目は同じサイズクエリの中で変えます。`:scope` に書いた `@container --scoped (…)` は外側のコンポーネントを問い合わせるので、フラグは `._body` のようなルートの子孫に置きます。3段階が要るときだけ `--regular` を足し、`--compact`、`--regular`、`--spacious` の順に切り替えます。狭いときの見た目がブラウザのデフォルトのスタイルを打ち消すもの（表を縦に積む、ラベルを隠すなど）は、広いときに戻す宣言が要らないよう、`@container style(--_density: --compact)` の側に書いてかまいません。サイズクエリを書く要素が1つだけで、フラグを読む子孫がない場合はフラグを宣言しません。切り替えが4段階以上あり、閾値の式そのもの（列の最小幅と間隔の掛け算など）を見せる必要がある場合は、例外としてサイズクエリを子のルールに残します。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/#rule-density-via-style-query

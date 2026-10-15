@@ -208,7 +208,7 @@ CSSで工夫する前に、デザイナーと確かめます。10のステップ
 - [`empty-alt-for-decorative-content`](/pseudo/generated-content/#rule-empty-alt-for-decorative-content)：装飾の文字を生成コンテンツで入れるときは、代替テキストを空にします。
 - [`marker-color-and-font-size-only`](/pseudo/generated-content/#rule-marker-color-and-font-size-only)：番号を囲むような装飾は、`::marker` ではなく `::before` で描きます。
 - [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)：ルートは `container: --scoped / inline-size` とし、`@container --scoped (…)` で問い合わせます。
-- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリはフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：同じ閾値で変わる子要素が2つ以上あるときは、コンテナサイズクエリをフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
 - [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を `calc()` の式で書きます。
 - [`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)：閾値の式には、`gap` を省かずに含めます。
 - [`has-narrow-anchor`](/pseudo/has/#rule-has-narrow-anchor)：`:has()` の起点は狭い要素にし、引数は `+` などで範囲を絞ります。

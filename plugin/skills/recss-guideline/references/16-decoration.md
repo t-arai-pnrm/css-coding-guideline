@@ -1,8 +1,8 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.61.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.62.0（2026-10-15 生成）
 - ルールの数: 34
-- 本文: 約21万字
+- 本文: 約21.2万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,7 +15,7 @@
 - `decoration` 第16章 画像・装飾（約5,200字）https://t-arai-pnrm.github.io/recss-guideline/decoration/
 - `decoration/images` 16-1 画像の配置と比率（約3.3万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/images/
 - `decoration/image-loading` 16-2 画像の形式と読み込み（約5,200字）https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/
-- `decoration/icons-and-masks` 16-3 アイコンとSVG（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/
+- `decoration/icons-and-masks` 16-3 アイコンとSVG（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/
 - `decoration/clipping-and-masks` 16-4 clip-pathとマスクで見せる範囲を決める（約3.5万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/clipping-and-masks/
 - `decoration/surfaces` 16-5 面・影・角丸（約2.5万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/surfaces/
 - `decoration/gradients` 16-6 グラデーションを描く（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/gradients/
@@ -79,9 +79,10 @@ https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/
   - 理由: 文字色を切り替えるだけでアイコンも追従し、色を2か所に書く必要がなくなるため。
   - 補足: `border` の色も、省略すれば `currentColor` になります。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/#rule-icon-current-color
-- 【推奨・実装上の判断】意味を持つインライン SVG のアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。（`inline-svg-hidden-with-text`）
-  - 理由: `<title>` や `aria-label` と違って、機械翻訳、ページ内検索、選択してのコピーの対象になるため。
-  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/#rule-inline-svg-hidden-with-text
+- 【推奨・実装上の判断】意味を持つインライン SVG のアイコンには、`role="img"` と `aria-label` で名前を付ける。名前をページ内検索や選択してのコピーの対象にしたいときは、SVG を `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置く。（`inline-svg-accessible-name`）
+  - 理由: `role="img"` を付けると SVG の図形がまとめて1つの画像として扱われ、`aria-label` の名前が支援技術に伝わるため。`aria-label` は主要なブラウザの翻訳機能でも訳されるが、ページ内検索とコピーの対象にはならない。
+  - 補足: 装飾だけのアイコンと、隣のテキストと同じ意味のアイコンは、`aria-hidden="true"` にして名前を付けません。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/#rule-inline-svg-accessible-name
 
 ## 16-4 clip-pathとマスクで見せる範囲を決める
 

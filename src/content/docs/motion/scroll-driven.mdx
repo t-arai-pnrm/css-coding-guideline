@@ -19,6 +19,8 @@ import pinCss from '../../../demos/motion/horizontal-pin/style.css?raw';
 
 どの方法でも、演出に対応していない環境では、要素を動き始める前の見た目で待たせません。CSSだけの方法は、`@supports (animation-timeline: view()) and (animation-range: entry)` で囲みます。JavaScriptを使う方法は、準備を終えてルートに `data-motion-mode="motion"` を付けたときだけ待たせます。待機中の見た目は `@keyframes` の `from` に任せ、`opacity: 0` を別に書きません。演出が動かない環境でも、動きを減らす設定の環境でも、すべての内容を読めるようにするためです。
 
+初めて読むときは、「連続した変化か、1回の変化か」で手段の選び方を押さえ、「スクロール駆動アニメーションで値を連続して変える」と「画面に入ったら1回だけ再生する」を読みます。`IntersectionObserver` で属性を切り替える方法は、Firefoxでも演出を出すときに読みます。横に流れるセクションとJavaScriptで毎フレーム同期する方法は、その演出を作る場面が来てから戻ってください。
+
 ## スクロールのたびに位置を計算する問題
 
 以前は、スクロールに合わせた動きを `scroll` イベントで作るのが一般的でした。スクロールのたびに `scrollTop` や `getBoundingClientRect()` で位置を読み、その値からスタイルを書き換えます。
@@ -128,82 +130,6 @@ Firefoxはスクロール駆動アニメーションに対応していません�
 ```
 
 2つの例で、動きを減らす設定への扱いが違います。ヘッダーの背景はフェードだけなので、条件の外に書いています。パララックスは、スクロールに合わせて要素を移動させる大きな変動にあたるので、`no-preference` の中でだけ指定し、設定があるときは無効化します。判断の4段階は「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」で説明しています。
-
-## 縦のスクロールで横に流れるセクション
-
-縦にスクロールする間だけセクションを画面に留め、中の列を横に流す演出も、スクロール駆動アニメーションで作れます。セクションの高さを横に並んだ列の全体の幅と同じだけ取り、その高さをスクロールする間に、列を `translate` で左へ動かします。動く量はスクロールした量で決まるので、スクロールを止めれば列も止まり、上へ戻せば右へ戻ります。
-
-この演出は、外側の `._body` と、列を横に並べた `._list` の2つの要素で作ります。`._body` には `view-timeline-name` でタイムラインの名前を付け、`min-block-size` に列の全体の幅を指定します。`._list` は `position: sticky` と `inset-block-start: 0` で画面の上端に留め、`animation-timeline` にそのタイムラインの名前を指定して動かします。`._body` が画面の上端を越えている間、`._list` は画面に留まったまま横へ動き、`._body` の下端が来ると一緒に上へ流れていきます。
-
-```css title="🙆‍♂ Recommended: 縦のスクロールに合わせて、留めた列を横に動かす"
-@keyframes --translate-to {
-  to {
-    translate: var(--translate-to--x-value, 0) var(--translate-to--y-value, 0);
-  }
-}
-
-@scope (.scoped.horizontal-pin) to (.scoped) {
-  :scope {
-    --_column-width: var(--horizontal-pin--column-width, min(calc(640 / 16 * 1rem), 100cqi));
-    --_column-count: var(--horizontal-pin--column-count, 6);
-    --_column-gap: var(--horizontal-pin--column-gap, 24px);
-    --_scroller-width: calc(var(--_column-width) * var(--_column-count) + var(--_column-gap) * (var(--_column-count) - 1));
-
-    container: --scoped / inline-size;
-  }
-
-  ._body {
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-
-    @supports (animation-timeline: view()) and (animation-range: contain) {
-      @media (prefers-reduced-motion: no-preference) {
-        overflow: clip;
-        min-block-size: var(--_scroller-width);
-        view-timeline-name: --horizontal-pin;
-      }
-    }
-  }
-
-  ._list {
-    display: block grid;
-    grid-auto-columns: var(--_column-width);
-    grid-auto-flow: column;
-    column-gap: var(--_column-gap);
-
-    @supports (animation-timeline: view()) and (animation-range: contain) {
-      @media (prefers-reduced-motion: no-preference) {
-        --translate-to--x-value: calc(-100% + 100cqi);
-
-        position: sticky;
-        inset-block-start: 0;
-        align-content: center;
-        min-inline-size: var(--_scroller-width);
-        min-block-size: 100svb;
-        animation-name: --translate-to;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: --horizontal-pin;
-        animation-range: contain 0% contain 100%;
-      }
-    }
-  }
-}
-```
-
-範囲の `contain 0% contain 100%` は、要素が画面より高いときは、要素の上端が画面の上端に達してから、下端が画面の下端に達するまでを表します。これは `._list` が画面に留まっている間と同じなので、列は、留まり始めた位置から動き始め、ページとともに流れ出す直前で止まります。移動の量は `calc(-100% + 100cqi)` です。`translate` の `%` は要素自身の幅が基準なので、列の全体の幅からルートのコンテナの幅を引いた分だけ左へ動き、最後の列がコンテナの右端にそろって止まります。`._body` の高さを列の全体の幅にしているので、縦にスクロールする量と横に動く量は、画面の高さとコンテナの幅の差の分だけずれますが、ほぼ対応します。
-
-`--translate-to` は、「[18-6 @keyframesを設計する](/motion/keyframes/)」のサイト全体で使う `--translate-from` と対になる `@keyframes` です。`translate` だけを変え、`from` を省いて、もとの位置から `--translate-to--x-value` で渡した位置まで動かします。中間のフレームも、同時に動かすほかのプロパティもないので、コンポーネントの名前は付けず、`base/keyframes.css` に置きます。
-
-列は画面より広いので、`._body` ではみ出しを切り取ります。ここで `overflow: hidden` を使うと、`._body` がスクロールコンテナになり、`._list` はページではなく `._body` を基準に留まろうとします。`._body` は中身の高さまで伸びていてスクロールしないので、列は留まらずにページと一緒に流れていきます。`overflow: clip` はスクロールコンテナを作らないので、`sticky` の基準をページのスクロールに保ったまま、はみ出しだけを切り取れます。`contain: paint` でも切り取れますが、中の `position: fixed` の基準を変えてしまうので使いません（「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」）。
-
-`._list` の高さは `min-block-size: 100svb` で、画面の高さを最小値にしています。コンポーネントの中でビューポート単位を使うのは例外ですが、この列は `sticky` で画面に留めるので、高さの基準も画面です。`dvb` を使うと、スクロール中にブラウザのUIが出入りするたびに高さが変わり、留めた列が上下にずれます（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
-
-留める指定と動かす指定は、どちらも `@supports` と `prefers-reduced-motion: no-preference` の中にまとめます。スクロールに合わせた横の移動は、画面の大部分を占める要素の移動なので、大きな変動にあたります（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。条件に合わないときは、`._body` が `overflow-x: auto` で横スクロールの領域となり、列を指やスクロールバーで動かして見ます。`sticky` と `._body` の高さを条件の外で指定すると、動かない環境では、列の先頭だけが留まって見えたまま、列の幅の分だけ縦のスクロールが続き、後ろの列を見る手段がなくなります。
-
-<Demo title="縦のスクロールに合わせて、留めた画像の列が横に流れる" html={pinHtml} css={pinCss} height="480px" />
-
-デモの枠の中を下へスクロールすると、画像の列が枠の上端に留まり、右から左へ流れます。最後の画像が右端にそろうと、列は次の段落と一緒に上へ流れていきます。`--_column-count` は、列の数と一致させる必要があります。列の数を変えたら、`--horizontal-pin--column-count` に新しい数を渡します。
 
 ## 画面に入ったら1回だけ再生する
 
@@ -360,6 +286,84 @@ root?.setAttribute('data-motion-mode', reduced ? 'reduced' : 'motion');
   }
 }
 ```
+
+ここまでが、スクロールに合わせた動きを作るための基本の道筋です。続く2つの見出しは応用です。セクションを画面に留めて中の列を横に流す演出を作るときと、CSSだけでは作れない分岐をJavaScriptで制御するときに読んでください。
+
+## 縦のスクロールで横に流れるセクション
+
+縦にスクロールする間だけセクションを画面に留め、中の列を横に流す演出も、スクロール駆動アニメーションで作れます。セクションの高さを横に並んだ列の全体の幅と同じだけ取り、その高さをスクロールする間に、列を `translate` で左へ動かします。動く量はスクロールした量で決まるので、スクロールを止めれば列も止まり、上へ戻せば右へ戻ります。
+
+この演出は、外側の `._body` と、列を横に並べた `._list` の2つの要素で作ります。`._body` には `view-timeline-name` でタイムラインの名前を付け、`min-block-size` に列の全体の幅を指定します。`._list` は `position: sticky` と `inset-block-start: 0` で画面の上端に留め、`animation-timeline` にそのタイムラインの名前を指定して動かします。`._body` が画面の上端を越えている間、`._list` は画面に留まったまま横へ動き、`._body` の下端が来ると一緒に上へ流れていきます。
+
+```css title="🙆‍♂ Recommended: 縦のスクロールに合わせて、留めた列を横に動かす"
+@keyframes --translate-to {
+  to {
+    translate: var(--translate-to--x-value, 0) var(--translate-to--y-value, 0);
+  }
+}
+
+@scope (.scoped.horizontal-pin) to (.scoped) {
+  :scope {
+    --_column-width: var(--horizontal-pin--column-width, min(calc(640 / 16 * 1rem), 100cqi));
+    --_column-count: var(--horizontal-pin--column-count, 6);
+    --_column-gap: var(--horizontal-pin--column-gap, 24px);
+    --_scroller-width: calc(var(--_column-width) * var(--_column-count) + var(--_column-gap) * (var(--_column-count) - 1));
+
+    container: --scoped / inline-size;
+  }
+
+  ._body {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+
+    @supports (animation-timeline: view()) and (animation-range: contain) {
+      @media (prefers-reduced-motion: no-preference) {
+        overflow: clip;
+        min-block-size: var(--_scroller-width);
+        view-timeline-name: --horizontal-pin;
+      }
+    }
+  }
+
+  ._list {
+    display: block grid;
+    grid-auto-columns: var(--_column-width);
+    grid-auto-flow: column;
+    column-gap: var(--_column-gap);
+
+    @supports (animation-timeline: view()) and (animation-range: contain) {
+      @media (prefers-reduced-motion: no-preference) {
+        --translate-to--x-value: calc(-100% + 100cqi);
+
+        position: sticky;
+        inset-block-start: 0;
+        align-content: center;
+        min-inline-size: var(--_scroller-width);
+        min-block-size: 100svb;
+        animation-name: --translate-to;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --horizontal-pin;
+        animation-range: contain 0% contain 100%;
+      }
+    }
+  }
+}
+```
+
+範囲の `contain 0% contain 100%` は、要素が画面より高いときは、要素の上端が画面の上端に達してから、下端が画面の下端に達するまでを表します。これは `._list` が画面に留まっている間と同じなので、列は、留まり始めた位置から動き始め、ページとともに流れ出す直前で止まります。移動の量は `calc(-100% + 100cqi)` です。`translate` の `%` は要素自身の幅が基準なので、列の全体の幅からルートのコンテナの幅を引いた分だけ左へ動き、最後の列がコンテナの右端にそろって止まります。`._body` の高さを列の全体の幅にしているので、縦にスクロールする量と横に動く量は、画面の高さとコンテナの幅の差の分だけずれますが、ほぼ対応します。
+
+`--translate-to` は、「[18-6 @keyframesを設計する](/motion/keyframes/)」のサイト全体で使う `--translate-from` と対になる `@keyframes` です。`translate` だけを変え、`from` を省いて、もとの位置から `--translate-to--x-value` で渡した位置まで動かします。中間のフレームも、同時に動かすほかのプロパティもないので、コンポーネントの名前は付けず、`base/keyframes.css` に置きます。
+
+列は画面より広いので、`._body` ではみ出しを切り取ります。ここで `overflow: hidden` を使うと、`._body` がスクロールコンテナになり、`._list` はページではなく `._body` を基準に留まろうとします。`._body` は中身の高さまで伸びていてスクロールしないので、列は留まらずにページと一緒に流れていきます。`overflow: clip` はスクロールコンテナを作らないので、`sticky` の基準をページのスクロールに保ったまま、はみ出しだけを切り取れます。`contain: paint` でも切り取れますが、中の `position: fixed` の基準を変えてしまうので使いません（「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」）。
+
+`._list` の高さは `min-block-size: 100svb` で、画面の高さを最小値にしています。コンポーネントの中でビューポート単位を使うのは例外ですが、この列は `sticky` で画面に留めるので、高さの基準も画面です。`dvb` を使うと、スクロール中にブラウザのUIが出入りするたびに高さが変わり、留めた列が上下にずれます（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
+
+留める指定と動かす指定は、どちらも `@supports` と `prefers-reduced-motion: no-preference` の中にまとめます。スクロールに合わせた横の移動は、画面の大部分を占める要素の移動なので、大きな変動にあたります（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。条件に合わないときは、`._body` が `overflow-x: auto` で横スクロールの領域となり、列を指やスクロールバーで動かして見ます。`sticky` と `._body` の高さを条件の外で指定すると、動かない環境では、列の先頭だけが留まって見えたまま、列の幅の分だけ縦のスクロールが続き、後ろの列を見る手段がなくなります。
+
+<Demo title="縦のスクロールに合わせて、留めた画像の列が横に流れる" html={pinHtml} css={pinCss} height="480px" />
+
+デモの枠の中を下へスクロールすると、画像の列が枠の上端に留まり、右から左へ流れます。最後の画像が右端にそろうと、列は次の段落と一緒に上へ流れていきます。`--_column-count` は、列の数と一致させる必要があります。列の数を変えたら、`--horizontal-pin--column-count` に新しい数を渡します。
 
 ## JavaScriptで毎フレーム同期する場合
 

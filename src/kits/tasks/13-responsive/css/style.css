@@ -1,0 +1,14 @@
+/**
+ * サイト全体のスタイルの入り口。
+ * レイヤーの順番を宣言し、各ファイルをレイヤーに割り当てる。
+ * 引き継いだ legacy.css は base レイヤーに入れ、components の宣言に勝たせない。
+ */
+@layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
+
+@import url("kiso.css") layer(reset);
+@import url("./tokens/colors.css") layer(tokens);
+@import url("./tokens/sizes.css") layer(tokens);
+@import url("./legacy.css") layer(base);
+@import url("./compositions/stack.css") layer(compositions);
+@import url("./compositions/sidebar.css") layer(compositions);
+@import url("./components/news-card.css") layer(components);

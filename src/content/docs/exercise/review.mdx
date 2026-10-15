@@ -295,7 +295,7 @@ import reviewBadCss from '../../../demos/exercise/review/style.bad.css?raw';
 - [`container-query-inline-size`](/responsive/container-size-queries/#rule-container-query-inline-size)：コンテナサイズクエリの条件では、`width` ではなく `inline-size` を使います。
 - [`breakpoint-in-rem`](/responsive/breakpoints/#rule-breakpoint-in-rem)：ブレイクポイントはremで指定し、ピクセル値からの変換を式で書きます。
 - [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を `calc()` の式で書きます。
-- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリは、フラグを宣言する1つの要素のルールだけに書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：同じ閾値で変わる子要素が2つ以上あるときは、コンテナサイズクエリをフラグを宣言する1つの要素のルールだけに書き、ほかの子孫はスタイルクエリで切り替えます。
 - [`hover-operable-in-any-hover`](/interaction/states-and-focus/#rule-hover-operable-in-any-hover)：ホバーのスタイルは操作できる状態に限定し、`@media (any-hover)` の中に書きます。
 - [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)：ホバーで変える見た目は、`:focus-visible` にも同じように指定します。
 - [`hocus-via-style-query`](/components/style-queries/#rule-hocus-via-style-query)：ホバーとフォーカスで子要素の見た目を変えるときは、フラグを立てて `@container style()` で切り替えます。子孫の状態をほかの子孫に伝えるときは、`&:has()` で `--_has-hocus` を立てます。

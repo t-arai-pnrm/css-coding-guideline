@@ -1,6 +1,6 @@
 ---
 title: "16-3 アイコンとSVG"
-description: "単色のアイコンは、擬似要素の mask-image かインライン SVG で描き、文字色に合わせて塗ります。インライン SVG の fill や stroke は currentColor にし、状態ごとにアイコンの色を指定し直さず、文字色だけを切り替えます。意味を持つインライン SVG のアイコンは aria-hidden で読み上げから外し、隣に視覚的に隠したテキストを置きます。マスク、インライン SVG、img の使い分けと、同じアイコンを symbol にまとめて use で参照するスプライト（シャドウツリーとスタイルの届き方、2色目の渡し方、同じオリジンの制約）も扱います。"
+description: "単色のアイコンは、擬似要素の mask-image かインライン SVG で描き、文字色に合わせて塗ります。インライン SVG の fill や stroke は currentColor にし、状態ごとにアイコンの色を指定し直さず、文字色だけを切り替えます。意味を持つインライン SVG のアイコンには、role 属性の img と aria-label で名前を付け、ページ内検索の対象にしたい名前は視覚的に隠したテキストで添えます。マスク、インライン SVG、img の使い分けと、同じアイコンを symbol にまとめて use で参照するスプライト（シャドウツリーとスタイルの届き方、2色目の渡し方、同じオリジンの制約）も扱います。"
 sidebar:
   order: 3
 ---
@@ -15,7 +15,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 単色のアイコンは、擬似要素の `mask-image` かインラインSVGで描き、どちらも文字色に合わせて塗ります。マスクで描くなら `background-color` で塗り、インラインSVGなら `fill` や `stroke` を `currentColor` にします。文字色を変えるだけでアイコンも一緒に変わるので、状態ごとにアイコンの色を指定し直す必要がありません。
 
-意味を持つインラインSVGのアイコンは `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置きます。マスク、インラインSVG、外部のファイルを読み込む `<img>` のどれで描くかは、文字色に合わせたいか、HTMLにアイコンを書けるかで選びます。
+意味を持つインラインSVGのアイコンには、`role="img"` と `aria-label` で名前を付けます。名前をページ内検索やコピーの対象にしたいときは、SVGを `aria-hidden="true"` にし、隣に視覚的に隠したテキストを置きます。マスク、インラインSVG、外部のファイルを読み込む `<img>` のどれで描くかは、文字色に合わせたいか、HTMLにアイコンを書けるかで選びます。
 
 三角形のような図形を `clip-path` で描く方法と、マスクのグラデーションでスクロールできる領域の端を薄くする方法は、「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」で説明しています。マスクの合成で枠線やドーナツグラフを描く方法は、「[16-9 輪郭と枠線を描く](/decoration/outlines/)」にあります。
 
@@ -132,7 +132,21 @@ button {
 
 ### インラインSVGの代替テキスト
 
-意味を持つアイコンをインラインSVGで置くときは、SVGに `aria-hidden="true"` を付けて読み上げの対象から外し、隣に視覚的に隠したテキストを置きます。視覚的に隠す `.-visually-hidden` の定義は「[17-5 要素を隠す方法を選ぶ](/interaction/hiding-elements/)」にあります。
+意味を持つアイコンをインラインSVGで置くときは、`svg` 要素に `role="img"` と `aria-label` を付けて名前を付けます。`role="img"` を付けると、SVGの中の図形がまとめて1つの画像として扱われ、`aria-label` の値がその名前になります。装飾だけのアイコンや、隣のテキストと同じ意味のアイコンには、`aria-hidden="true"` を付けて読み上げの対象から外します。
+
+```html
+<a href="https://example.com/" target="_blank">
+  関連資料
+  <svg class="icon" role="img" aria-label="新しいウィンドウが開きます" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path d="M17 2H22V7" />
+    <path d="M13 11L21.5 2.5" />
+  </svg>
+</a>
+```
+
+`aria-label` の値は、Chrome、Edge、Firefox、Safariの翻訳機能とGoogle翻訳では訳されることが確かめられています（参考リンクの検証）。翻訳サービスによっては訳されないものもあります。また、`aria-label` の値は、ページ内検索と、選択してのコピーの対象になりません。
+
+名前をページ内検索で見つけられるようにしたいときや、コピーした文章に含めたいときは、SVGに `aria-hidden="true"` を付け、隣に視覚的に隠したテキストを置きます。視覚的に隠す `.-visually-hidden` の定義は「[17-5 要素を隠す方法を選ぶ](/interaction/hiding-elements/)」に、ユーティリティの扱いは「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」にあります。
 
 ```html
 <a href="https://example.com/" target="_blank">
@@ -145,21 +159,19 @@ button {
 </a>
 ```
 
-SVGの中の `<title>` や `aria-label` で名前を付ける方法もありますが、これらは機械翻訳されず、ページ内検索の対象にもなりません。ふつうのテキストとして置けば、翻訳、検索、選択してのコピーのすべてに対応できます。視覚的に隠すユーティリティは「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/)」で扱います。
-
 ### 単色のアイコンの描き方を選ぶ
 
 単色のアイコンを置く方法は、擬似要素の `mask-image`、インラインSVG、外部のファイルを読み込む `<img>` の3つです。どれを選ぶかは、文字色に合わせたいか、HTMLにアイコンを書けるかで決まります。違いを次の表にまとめます。
 
 | 方法 | 色を文字色に合わせる | 強制カラーモード | 代替テキスト | 向く場面 |
 | --- | --- | --- | --- | --- |
-| 擬似要素の `mask-image` | `background-color` で合わせられる | 背景色が消えるので、`--background-current` でシステムカラーに戻す | `content` の代替テキストで付けられるが、翻訳されないので、意味があれば隣にテキストを置く | 矢印や外部リンクの印のように、CSSだけで足す装飾 |
-| インラインSVG | `fill` や `stroke` の `currentColor` で合わせられる | 色が置き換わらないことがあるので、`fill` と `stroke` をシステムカラーに固定する | `aria-hidden="true"` にして、隣に視覚的に隠したテキストを置く | 意味のあるアイコンや、線と塗りを使い分ける複雑な形 |
+| 擬似要素の `mask-image` | `background-color` で合わせられる | 背景色が消えるので、`--background-current` でシステムカラーに戻す | `content` の代替テキストで付けられるが、ページ内検索の対象にならないので、意味があれば隣にテキストを置く | 矢印や外部リンクの印のように、CSSだけで足す装飾 |
+| インラインSVG | `fill` や `stroke` の `currentColor` で合わせられる | 色が置き換わらないことがあるので、`fill` と `stroke` をシステムカラーに固定する | `role="img"` と `aria-label` で付ける。ページ内検索の対象にしたいときは、`aria-hidden="true"` にして隣に視覚的に隠したテキストを置く | 意味のあるアイコンや、線と塗りを使い分ける複雑な形 |
 | 外部のファイルの `<img>` | 合わせられない。画像の中の色のまま | 影響を受けないので、背景に溶け込むなら `filter` で塗りつぶす | `alt` 属性で付ける | 色を変えないロゴや、多色の画像 |
 
 {/* 要確認: 出典なし。「向く場面」の列と、<img> のSVGがページの文字色を受け取らないこと */}
 
-擬似要素の `content` には、`content: "" / "新しいウィンドウが開きます"` のように、スラッシュの後ろに代替テキストを書けます。この文字列は読み上げられますが、インラインSVGの `<title>` と同じく、機械翻訳やページ内検索の対象になりません。Chrome、Firefox、Safariのどれでも、ページ内検索で代替テキストの文字列は見つかりませんでした。そのため、意味のあるアイコンでは、マスクで描く場合も、隣に視覚的に隠したテキストを置きます。装飾だけのアイコンには、代替テキストを書きません。{/* 要検証: ブラウザ。content の代替テキストが機械翻訳の対象にならないこと（ページ内検索は 2026年10月13日に window.find() で確認済み） */}
+擬似要素の `content` には、`content: "" / "新しいウィンドウが開きます"` のように、スラッシュの後ろに代替テキストを書けます。この文字列は読み上げられますが、ページ内検索の対象になりません。Chrome、Firefox、Safariのどれでも、ページ内検索で代替テキストの文字列は見つかりませんでした。そのため、意味のあるアイコンでは、マスクで描く場合も、隣に視覚的に隠したテキストを置きます。装飾だけのアイコンには、代替テキストを書きません。{/* 要検証: ブラウザ。content の代替テキストが機械翻訳の対象にならないこと（ページ内検索は 2026年10月13日に window.find() で確認済み） */}
 
 <Baseline id="alt-text-generated-content" name="生成コンテンツの代替テキスト" />
 
@@ -229,7 +241,7 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 
 ### スプライトのアイコンの代替テキスト
 
-代替テキストの付け方は、「[インラインSVGの代替テキスト](#インラインsvgの代替テキスト)」と同じです。参照する側の `svg` 要素に `aria-hidden="true"` を付け、意味のあるアイコンには隣に視覚的に隠したテキストを置きます。違うのは、`<symbol>` をまとめた `svg` 要素も、`aria-hidden="true"` と `display: none` で読み上げと表示の両方から外しておく点です。{/* 要確認: 出典なし。スプライトをまとめた svg 要素の隠し方 */}
+代替テキストの付け方は、「[インラインSVGの代替テキスト](#インラインsvgの代替テキスト)」と同じです。意味のあるアイコンは、参照する側の `svg` 要素に `role="img"` と `aria-label` を付けます。装飾だけのアイコンや、名前を視覚的に隠したテキストで添えるアイコンは、`aria-hidden="true"` にします。違うのは、`<symbol>` をまとめた `svg` 要素も、`aria-hidden="true"` と `display: none` で読み上げと表示の両方から外しておく点です。{/* 要確認: 出典なし。スプライトをまとめた svg 要素の隠し方 */}
 
 ### スプライトを選ぶ場面
 
@@ -242,7 +254,9 @@ SVGの中の `<title>` や `aria-label` で名前を付ける方法もありま�
 ## 参考リンク
 
 - [あなたが教わってるそのCSSテクニックはもう古い](https://www.tak-dcxi.com/article/that-css-technique-you-learned-is-outdated/)（TAKLOG、2024年3月。`aspect-ratio`、`clip-path`、`currentColor` の例）
-- [インラインSVGの代替テキストはどうするべきか](https://www.tak-dcxi.com/article/how-to-handle-alt-text-for-inline-svg/)（TAKLOG、2024年3月）
+- [インラインSVGの代替テキストはどうするべきか](https://www.tak-dcxi.com/article/how-to-handle-alt-text-for-inline-svg/)（TAKLOG、2024年3月。視覚的に隠したテキストを添える方法。`aria-label` の扱いは本書と異なります）
+- [LIFULL アクセシビリティガイドライン：マークアップの実装（画像の代替テキスト）](https://lifull.github.io/accessibility-guidelines/impl-markup.html#image-alternative)（`svg` 要素に `role="img"` と `aria-label` で代替テキストを付ける）
+- [aria-label の機械翻訳の検証](https://gist.github.com/tsmd/8377b4e589269c56fe86b99c5297653f)（GitHub Gist、2025年5月。主要なブラウザの翻訳機能とGoogle翻訳で `aria-label` が訳されることの確認）
 - [mask-image - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/mask-image)
 - [vector-effect - SVG | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Reference/Attribute/vector-effect)
 - [`<use>` - SVG | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Reference/Element/use)

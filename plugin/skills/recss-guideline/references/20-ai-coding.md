@@ -1,6 +1,6 @@
 # 第20章 AIにコーディングさせる：ルール
 
-- ガイドラインのバージョン: 0.61.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.62.0（2026-10-15 生成）
 - ルールの数: 17
 - 本文: 約8.7万字
 - 読む条件: AIが書いたCSS、Figmaなどのデザインツールから書いたCSS
@@ -14,13 +14,13 @@
 
 - `ai-coding` 第20章AIにコーディングさせる（約4,400字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/
 - `ai-coding/roles` 20-1 AIに任せる範囲と人が担う範囲（約4,200字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/roles/
-- `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/setup/
+- `ai-coding/setup` 20-2 AIに読ませる規約を用意する（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/setup/
 - `ai-coding/mcp-servers` 20-3 MCPサーバーを役割で使い分ける（約1万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/mcp-servers/
 - `ai-coding/tasks` 20-4 タスクの単位で進める（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/tasks/
 - `ai-coding/from-figma` 20-5 Figmaのデザインから計画を立てる（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/from-figma/
 - `ai-coding/implementation` 20-6 実装と検証を回す（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/implementation/
 - `ai-coding/pitfalls` 20-7 AIが誤りやすいパターン（約6,300字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/pitfalls/
-- `ai-coding/verify-output` 20-8 生成したコードを確かめ、教訓を残す（約5,200字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/verify-output/
+- `ai-coding/verify-output` 20-8 生成したコードを確かめ、教訓を残す（約5,300字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/verify-output/
 - `ai-coding/audit` 20-9 既存のCSSの監査と移行をAIに任せる（約7,700字）https://t-arai-pnrm.github.io/recss-guideline/ai-coding/audit/
 
 ## 20-1 AIに任せる範囲と人が担う範囲

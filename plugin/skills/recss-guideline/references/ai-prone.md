@@ -1,6 +1,6 @@
 # AIが誤りやすいルール
 
-- ガイドラインのバージョン: 0.61.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.62.0（2026-10-15 生成）
 - ルールの数: 292
 
 AIが生成するコードで特に誤りやすいルールです。CSSを書く前とレビューの前に、必ず確認してください。1件1行で、強度とルールの本文と ID だけを並べています。理由と補足は、章ごとのファイル（`references/<章>.md`）を ID で検索して読んでください。
@@ -160,7 +160,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】コンポーネントの中だけで使う値は、`--_` で始まる内部プロパティにする。（`internal-property-prefix`）
 - 【必須】公開プロパティはコンポーネント自身では宣言せず、`:scope` で内部プロパティに受けて、デフォルト値を `var()` のフォールバックに書く。（`receive-public-property-with-fallback`）
 - 【推奨】公開プロパティの値は、できるだけ呼び出し側の `style` 属性で渡す。（`pass-values-via-style-attribute`）
-- 【必須】コンテナサイズクエリ（`@container --scoped (…)`）は、コンポーネントの中で、フラグを宣言する1つの要素のルールだけに書く。その要素はクエリの外で `--_density: --compact` をデフォルト値として宣言してクエリの中で `--_density: --spacious` に切り替え、ほかの子孫は `@container style(--_density: --spacious)` で切り替える。（`density-via-style-query`）
+- 【必須】同じ閾値で見た目の変わる子要素が2つ以上あるときは、コンテナサイズクエリ（`@container --scoped (…)`）を、コンポーネントの中で、フラグを宣言する1つの要素のルールだけに書く。その要素はクエリの外で `--_density: --compact` をデフォルト値として宣言してクエリの中で `--_density: --spacious` に切り替え、ほかの子孫は `@container style(--_density: --spacious)` で切り替える。（`density-via-style-query`）
 - 【必須】親や自身のホバーとフォーカスで子要素や擬似要素の見た目を変えるときは、`--_hocus: --false` をデフォルト値として宣言し、`&:any-link:hover`（`@media (any-hover)` の中）と `&:focus-visible` で `--_hocus: --true` に切り替え、子要素と擬似要素は `@container style(--_hocus: --true)` で切り替える。（`hocus-via-style-query`）
 - 【必須】スタイルクエリで問い合わせるフラグの値は、`--compact` のような `--` で始まる識別子にし、オンとオフの2値の状態は `--true` と `--false` にそろえる。（`state-flag-values`）
 - 【推奨】カスタム要素で作る部品は、カスタム要素そのものに `scoped` クラスを付けてルートにし、CSS は外部のファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書く。（`custom-element-as-scope-root`）

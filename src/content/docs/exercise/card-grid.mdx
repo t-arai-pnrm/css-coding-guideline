@@ -332,7 +332,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 - [`no-container-just-in-case`](/responsive/container-units-and-side-effects/#rule-no-container-just-in-case)：`container` は、実際に問い合わせる要素にだけ指定します。
 - [`no-padding-on-container`](/responsive/container-units-and-side-effects/#rule-no-padding-on-container)：コンテナにする要素には `padding` や `border` を指定しません。
 - [`container-name-required`](/responsive/container-size-queries/#rule-container-name-required)：ルートは `container: --scoped / inline-size` とし、`@container --scoped (…)` で問い合わせます。
-- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：コンテナサイズクエリはフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：同じ閾値で変わる子要素が2つ以上あるときは、コンテナサイズクエリをフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
 - [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を式で書き、分解しても意味が増えない値はそのまま書きます。
 - [`no-other-component-internals`](/components/boundaries/#rule-no-other-component-internals)：ほかのコンポーネントのルートや内部の要素を、セレクタで選んで見た目を上書きしません。
 - [`receive-public-property-with-fallback`](/components/custom-properties/#rule-receive-public-property-with-fallback)：公開プロパティは `:scope` で受け、デフォルト値を `var()` のフォールバックに書きます。

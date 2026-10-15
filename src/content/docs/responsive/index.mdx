@@ -65,6 +65,46 @@ sidebar:
 
 </details>
 
+## 手を動かす課題
+
+判断の問いでは、切り替えにどのクエリを使うかを選びました。ここでは、第10章の「[手を動かす課題](/components/#手を動かす課題)」で主欄とサイドバーに置いたカードを使い、同じ画面の幅のまま、置かれた幅でカードの形を変えます。
+
+まず、主欄とサイドバーを横に並べます。`main` と `aside` を「[12-5 sidebar](/compositions/sidebar/)」の `sidebar` で包み、`main` に `main-column`、`aside` に `side-column` のクラスを付けます。`sidebar` のCSSは `css/compositions/sidebar.css` に置き、`layer(compositions)` として読み込みます。そのうえで、カードの幅が480px以上のときだけ、見出しの文字の大きさを20pxから24pxにしてください。
+
+合格の条件は2つです。画面の幅が1280pxのとき、主欄のカードの見出しは24px、サイドバーのカードの見出しは20pxになることです。また、主欄とサイドバーが縦に積まれる768pxのときは、どちらのカードの見出しも24pxになることです。画面の幅ではなくカードの幅で決まっていれば、この2つは同時に満たされます。
+
+<details>
+{/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
+<summary>答えの例と解説</summary>
+{/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
+
+カードのルートをコンテナにし、見出しのルールの中に、カードの幅を問い合わせるコンテナサイズクエリを書きます。
+
+```css title="🙆‍♂ Recommended: カードの幅が480px以上のときだけ、見出しを大きくする"
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    container: --scoped / inline-size;
+  }
+
+  h2 {
+    color: var(--_accent);
+    font-size: calc(20 / 16 * 1rem);
+
+    @container --scoped (inline-size >= calc(480 / 16 * 1rem)) {
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+}
+```
+
+1280pxのとき、サイドバーの幅は `sidebar` のデフォルトの320pxなので、そこに置いたカードは480pxに届かず、見出しは20pxのままです。768pxで縦に積まれると、サイドバーのカードも主欄と同じ幅に広がり、見出しが24pxになります。`@media (width >= …)` で書くと、1280pxではサイドバーのカードまで24pxになり、768pxでは画面の幅だけで決まるので、置き場所の違いを表せません（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
+
+この課題で変わるのは見出しの1つだけなので、フラグを作らず、見出しのルールにクエリを直接書いています。同じ幅で日付の位置や余白も変えるなら、クエリはフラグを立てる1つのルールにまとめ、ほかの要素はフラグを読みます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。
+
+答えの例のファイル一式は、[補足サイト](/book-support/index.html)のサンプル一式の `tasks/13-responsive/` にあります。
+
+</details>
+
 ## この章の判断のまとめ
 
 幅の違いで崩れたら、クエリを足す前に、静的な指定や折り返し、列数の自動調整で済まないかを確かめます。クエリが要るなら基準で選び、ページ全体の骨組みやビューポートに固定する要素はメディアクエリ、幅の違う複数の場所に置くコンポーネントはコンテナサイズクエリです。列数が増減するだけならイントリンシックな方法で足り、並び順や組み合わせが変わる組み替えになって初めてクエリを使います。

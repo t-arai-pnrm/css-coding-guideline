@@ -1,0 +1,40 @@
+/**
+ * お知らせのカード。
+ * 一覧としての並べ方は、置く側のレイアウトが受け持つ。
+ * カードの幅が480px以上のときだけ、見出しを大きくする。
+ *
+ * @prop {color}  --news-card--accent  [var(--foreground--accent)]       - 見出しの色
+ * @prop {length} --news-card--padding [calc(var(--spacing--md) * 1px)] - 内側の余白
+ *
+ * @example
+ * <article class="scoped news-card" style="--news-card--padding: calc(var(--spacing--sm) * 1px)">
+ *   ...
+ * </article>
+ */
+
+@scope (.scoped.news-card) to (.scoped) {
+  :scope {
+    --_accent: var(--news-card--accent, var(--foreground--accent));
+    --_padding: var(--news-card--padding, calc(var(--spacing--md) * 1px));
+
+    container: --scoped / inline-size;
+    display: block grid;
+    gap: calc(var(--spacing--xxs) * 1px);
+    padding: var(--_padding);
+    border-radius: var(--rounded--md);
+    background-color: var(--background--surface);
+  }
+
+  h2 {
+    color: var(--_accent);
+    font-size: calc(20 / 16 * 1rem);
+
+    @container --scoped (inline-size >= calc(480 / 16 * 1rem)) {
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+
+  time {
+    color: var(--foreground--muted);
+  }
+}

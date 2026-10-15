@@ -33,6 +33,8 @@ Flexboxは、アイテムの中身の大きさを出発点にして、余った�
 
 この節では、その計算を数値で追い、`flex: 1` の意味やアイテムが縮まない原因を説明します。FlexboxとGridを含むレイアウトの手法の選び方は「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」で扱います。
 
+初めて読むときは、「主軸と交差軸」から「FlexboxとGridの使い分け」までを順に読みます。軸、配置、余った空間と足りない空間の配り方、`flex: 1` の意味、自動の最小幅を押さえれば、最初の見出しで挙げる症状の原因を説明できます。最後の2つの見出し（`flex: 1` でも列の幅がそろわない場合、`flex-shrink` で縮める順番）は応用です。必要な場面が来てから読んでください。
+
 <Baseline id="flexbox" />
 
 ## Flexboxの指定が思いどおりにならないとき
@@ -223,6 +225,85 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 違いが出るのは、`flex-direction: column` で、コンテナの高さが中身で決まる場合です。パーセントの基準になる主軸の大きさが決まっていないので、`0%` は解決できず、`flex-basis` は `content` として扱われます。アイテムは0からではなく中身の高さから伸びるので、等分にはなりません。高さの決まっていない縦のFlexboxでも0を起点にしたいなら、`flex: 1 1 0` と3つの値を書きます。単位のない0は、前に2つの数値があるときだけ `flex-basis` として読まれるので、`flex: 1 0` のように省略すると、0は `flex-shrink` になります。
 
+## アイテムが縮まない原因になる自動の最小幅
+
+フレックスアイテムが縮まずにはみ出すときは、`flex-shrink` より先に最小幅を確かめます。`min-inline-size`（`min-width`）の初期値 `auto` は、通常のブロックでは0として扱われますが、フレックスアイテムでは中身の最小幅（`min-content`）として扱われます。`flex-shrink` で縮む量を計算しても、この最小幅より小さくはならないので、長いURLや `<input>`、横にスクロールさせる表を含むアイテムは親からはみ出します。
+
+`overflow` を `hidden` や `auto` にしてスクロールコンテナになったアイテムは、自動の最小幅が0になります。ただし、`overflow: hidden` で止めると中身が切り取られ、URLや入力欄の一部が見えなくなります。隠すのではなく、最小幅を0にして、中身を折り返させるかスクロールさせます。
+
+本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で説明しています。
+
+```css title="🙆‍♂ Recommended: 長いURLを含む本文を、最小幅を0にして折り返させる"
+._body {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+```
+
+次のデモは、ベーススタイルを使わない環境で、アイコンと長いURLを幅280pxまでのコンテナに並べたものです。1段目では本文が自動の最小幅で止まり、URLがコンテナの外へはみ出します。2段目では、本文が最小幅0まで縮み、URLが行の途中で折り返します。
+
+<Demo title="自動の最小幅で縮まない本文と、min-inline-size: 0 で縮む本文" html={minSizeHtml} css={minSizeCss} base="none" scheme="light" widths={[]} />
+
+`flex-direction: column` では、同じことが高さで起き、`min-block-size: auto` が中身の高さとして扱われます。高さを決めた縦のFlexboxで、スクロールさせたいアイテムがはみ出すときは、そのアイテムに `overflow: auto` か `min-block-size: 0` を指定します。
+
+## 折り返しと間隔
+
+初期値の `flex-wrap: nowrap` では、入りきらないアイテムは縮み、縮みきるとはみ出します。`flex-wrap: wrap` なら、次の行へ回ります。要素の数が運用で変わる並びには、折り返しを指定しておきます（[`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items)）。
+
+折り返したFlexboxでは、行ごとに空間を配ります。`flex-grow` を指定したアイテムは行ごとに伸びるので、最後の行に1つだけ残ったアイテムは、行の幅いっぱいに広がります。行をまたいで列の位置をそろえる仕組みはないので、格子状にそろえたい並びはGridで組みます。
+
+アイテムの間隔は、アイテムの `margin` ではなく、コンテナの `gap` で作ります（[`gap-over-child-margin`](/layout-practice/spacing/#rule-gap-over-child-margin)）。`gap` はアイテムの間にだけ入るので、行の端に余計な余白ができません。`gap` の分は、配る空間を計算する前に差し引かれます。
+
+```css title="🙆‍♂ Recommended: 数の変わるタグを折り返し、間隔を gap で作る"
+._tags {
+  display: block flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+```
+
+次のデモは、同じタグの並びを `nowrap` と `wrap` で比べたものです。タグには、中身の幅より縮まないよう `min-inline-size: fit-content` を指定しています。幅を狭めると、`nowrap` の段ではタグがコンテナの外へはみ出し、`wrap` の段では次の行へ回ります。行の間にも、アイテムの間と同じ `gap` が入ります。9つのタグを1行に並べると768pxより広くなるので、どの幅でも `nowrap` の段ははみ出し、`wrap` の段は狭い幅ほど行が増えます。
+
+<Demo title="flex-wrap: nowrap と wrap の比較" html={wrapGapHtml} css={wrapGapCss} widths={[320, 480, 768]} />
+
+<Baseline id="flexbox-gap" name="Flexbox の gap" />
+
+フレックスアイテムの `auto` の `margin` は、`flex-grow` で配った後の余りを吸収し、`justify-content` より先に適用されます。最後のリンクだけを行末へ寄せる使い方は、11-1のルール [`flex-auto-margin-for-end-items`](/layout-practice/choosing/#rule-flex-auto-margin-for-end-items) で扱っています。
+
+## 見た目の順番と読み上げの順番
+
+`order` はアイテムを値の小さい順に並べ直し、`row-reverse` と `column-reverse` は並びを逆にします。本書では、`order` の値に `1` か `-1` だけを使います（[`order-one-or-minus-one`](/layout-practice/reading-flow/#rule-order-one-or-minus-one)）。変わるのは見た目の順番だけなので、読み上げの順番と、Tabキーでフォーカスが移る順番はHTMLの順番のままです。
+
+フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（[`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)）。
+
+並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、Baselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
+
+```css title="🙆‍♂ Recommended: HTML では見出しを先に書き、装飾の画像だけを見た目の先頭に出す"
+._card {
+  display: block flex;
+  flex-direction: column;
+  gap: 8px;
+
+  & > ._image {
+    order: -1;
+  }
+}
+```
+
+次のデモは、見出し、本文、装飾の画像の順に書いたカードです。2つ目のカードでは、画像に `order: -1` を指定して見た目の先頭に出しています。読み上げの順番は、どちらのカードも見出しから始まります。
+
+<Demo title="order で装飾の画像だけを見た目の先頭に出す" html={orderHtml} css={orderCss} />
+
+<Baseline id="reading-flow" />
+
+## FlexboxとGridの使い分け
+
+FlexboxとGridは、大きさを決める向きが違います。Flexboxはアイテムの中身の大きさから出発して余りや不足を配り、Gridは先に親で行と列を決めてアイテムをそのセルに置きます。タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すなら、Flexboxが向いています（[`flexbox-for-content-sized-items`](/layout-practice/choosing/#rule-flexbox-for-content-sized-items)）。
+
+一方、列の数と幅を親で決めたい並びや、行をまたいで位置をそろえたい並びは、Gridで組みます。使い分けの基準と例は「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」に、Gridの仕組みは「[7-8 Gridの基礎](/layout/grid-basics/)」にまとめています。
+
+ここまでが、Flexboxの指定を理由から説明するための基本の道筋です。続く2つの見出しは、計算を細かく追う応用です。`flex: 1` を指定しても列の幅がそろわないときと、2カラムのどちらを先に縮めるかを決めたいときに読んでください。
+
 ## `flex: 1` でも列の幅がそろわない場合
 
 `flex: 1` を指定したアイテムでも、インライン方向の `padding` か `border` がアイテムごとに違うと、幅はそろいません。`box-sizing` が `border-box` でも `content-box` でも同じです。3つのアイテムのうち、奇数番目に左右1rem、偶数番目に左右3remの `padding` を付けると、真ん中のアイテムだけが、左右の差を合わせた4rem分広くなります。
@@ -280,27 +361,6 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 タブの並びのように、どのアイテムにも同じ `padding` を付けるなら、`flex: 1` でも幅はそろいます。`flex: 1` には、Gridのように列の数を親で決めなくても、子の数に合わせて等分できるという大きな利点があります。そのため本書では、`flex: 1` をルールで禁じません。Gridを選ぶのは、アイテムによって `padding` や `border` が変わりうる並びと、運用で中身や装飾が変わっても列の幅を確実に保ちたい並びです。
 
-## アイテムが縮まない原因になる自動の最小幅
-
-フレックスアイテムが縮まずにはみ出すときは、`flex-shrink` より先に最小幅を確かめます。`min-inline-size`（`min-width`）の初期値 `auto` は、通常のブロックでは0として扱われますが、フレックスアイテムでは中身の最小幅（`min-content`）として扱われます。`flex-shrink` で縮む量を計算しても、この最小幅より小さくはならないので、長いURLや `<input>`、横にスクロールさせる表を含むアイテムは親からはみ出します。
-
-`overflow` を `hidden` や `auto` にしてスクロールコンテナになったアイテムは、自動の最小幅が0になります。ただし、`overflow: hidden` で止めると中身が切り取られ、URLや入力欄の一部が見えなくなります。隠すのではなく、最小幅を0にして、中身を折り返させるかスクロールさせます。
-
-本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。縮みすぎる要素を `flex-shrink: 0` ではなく `min-inline-size: fit-content` で守る理由は、「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で説明しています。
-
-```css title="🙆‍♂ Recommended: 長いURLを含む本文を、最小幅を0にして折り返させる"
-._body {
-  min-inline-size: 0;
-  overflow-wrap: anywhere;
-}
-```
-
-次のデモは、ベーススタイルを使わない環境で、アイコンと長いURLを幅280pxまでのコンテナに並べたものです。1段目では本文が自動の最小幅で止まり、URLがコンテナの外へはみ出します。2段目では、本文が最小幅0まで縮み、URLが行の途中で折り返します。
-
-<Demo title="自動の最小幅で縮まない本文と、min-inline-size: 0 で縮む本文" html={minSizeHtml} css={minSizeCss} base="none" scheme="light" widths={[]} />
-
-`flex-direction: column` では、同じことが高さで起き、`min-block-size: auto` が中身の高さとして扱われます。高さを決めた縦のFlexboxで、スクロールさせたいアイテムがはみ出すときは、そのアイテムに `overflow: auto` か `min-block-size: 0` を指定します。
-
 ## 縮める順番を `flex-shrink` で決める
 
 `flex-shrink` には、0か1以外の値を使う場面もあります。2カラムのどちらを先に縮めるかを決める場面です。メインとサイドを並べたとき、`flex-shrink` が初期値の1のままだと、不足は `flex-basis` の比で両方に配られます。メインの `flex-basis` が800px、サイドが400pxなら、不足の3分の2をメインが受け持ちます。そのため、縦に積む手前の中間の幅では、サイドに余裕があるのにメインが狭くなります。
@@ -348,62 +408,6 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 | 928px | メイン602.66px、サイド301.34px | メイン664px、サイド240px |
 
 メインに `flex-shrink: 0` を指定しても、中間の幅ではメインの幅を保てます。ただし、メインがどの幅でも縮まなくなるので、コンテナが「800＋240＋24」の1064pxより狭くなると、メインがはみ出します。大きな値の `flex-shrink` は、縮める順番だけを決め、メインが縮む余地を残します。縦に積む切り替えは、この指定とは別に、コンテナサイズクエリや「[12-5 sidebar](/compositions/sidebar/)」の折り返し（`flex-grow` の差と `flex-basis` で縦に積む方式）で行います。`flex-shrink` の値は、縦に積むまでの中間の幅で、どちらの列を先に狭めるかを決めます。
-
-## 折り返しと間隔
-
-初期値の `flex-wrap: nowrap` では、入りきらないアイテムは縮み、縮みきるとはみ出します。`flex-wrap: wrap` なら、次の行へ回ります。要素の数が運用で変わる並びには、折り返しを指定しておきます（[`flex-wrap-for-variable-items`](/layout-practice/defensive/#rule-flex-wrap-for-variable-items)）。
-
-折り返したFlexboxでは、行ごとに空間を配ります。`flex-grow` を指定したアイテムは行ごとに伸びるので、最後の行に1つだけ残ったアイテムは、行の幅いっぱいに広がります。行をまたいで列の位置をそろえる仕組みはないので、格子状にそろえたい並びはGridで組みます。
-
-アイテムの間隔は、アイテムの `margin` ではなく、コンテナの `gap` で作ります（[`gap-over-child-margin`](/layout-practice/spacing/#rule-gap-over-child-margin)）。`gap` はアイテムの間にだけ入るので、行の端に余計な余白ができません。`gap` の分は、配る空間を計算する前に差し引かれます。
-
-```css title="🙆‍♂ Recommended: 数の変わるタグを折り返し、間隔を gap で作る"
-._tags {
-  display: block flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-```
-
-次のデモは、同じタグの並びを `nowrap` と `wrap` で比べたものです。タグには、中身の幅より縮まないよう `min-inline-size: fit-content` を指定しています。幅を狭めると、`nowrap` の段ではタグがコンテナの外へはみ出し、`wrap` の段では次の行へ回ります。行の間にも、アイテムの間と同じ `gap` が入ります。9つのタグを1行に並べると768pxより広くなるので、どの幅でも `nowrap` の段ははみ出し、`wrap` の段は狭い幅ほど行が増えます。
-
-<Demo title="flex-wrap: nowrap と wrap の比較" html={wrapGapHtml} css={wrapGapCss} widths={[320, 480, 768]} />
-
-<Baseline id="flexbox-gap" name="Flexbox の gap" />
-
-フレックスアイテムの `auto` の `margin` は、`flex-grow` で配った後の余りを吸収し、`justify-content` より先に適用されます。最後のリンクだけを行末へ寄せる使い方は、11-1のルール [`flex-auto-margin-for-end-items`](/layout-practice/choosing/#rule-flex-auto-margin-for-end-items) で扱っています。
-
-## 見た目の順番と読み上げの順番
-
-`order` はアイテムを値の小さい順に並べ直し、`row-reverse` と `column-reverse` は並びを逆にします。本書では、`order` の値に `1` か `-1` だけを使います（[`order-one-or-minus-one`](/layout-practice/reading-flow/#rule-order-one-or-minus-one)）。変わるのは見た目の順番だけなので、読み上げの順番と、Tabキーでフォーカスが移る順番はHTMLの順番のままです。
-
-フォーカスできる要素を並べ替えると、キーボードで操作する人には、フォーカスが前後に飛ぶように見えます。手順やランキングでは、読み上げの順番が見た目と食い違い、内容が誤って伝わります。HTMLは文書構造の順番で書き、見た目の順番が違うなら、まずHTMLの順番を見直します（[`source-order-for-reading`](/layout/grid-basics/#rule-source-order-for-reading)）。
-
-並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、Baselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
-
-```css title="🙆‍♂ Recommended: HTML では見出しを先に書き、装飾の画像だけを見た目の先頭に出す"
-._card {
-  display: block flex;
-  flex-direction: column;
-  gap: 8px;
-
-  & > ._image {
-    order: -1;
-  }
-}
-```
-
-次のデモは、見出し、本文、装飾の画像の順に書いたカードです。2つ目のカードでは、画像に `order: -1` を指定して見た目の先頭に出しています。読み上げの順番は、どちらのカードも見出しから始まります。
-
-<Demo title="order で装飾の画像だけを見た目の先頭に出す" html={orderHtml} css={orderCss} />
-
-<Baseline id="reading-flow" />
-
-## FlexboxとGridの使い分け
-
-FlexboxとGridは、大きさを決める向きが違います。Flexboxはアイテムの中身の大きさから出発して余りや不足を配り、Gridは先に親で行と列を決めてアイテムをそのセルに置きます。タグやメニューのように、中身の量で幅が決まる要素を並べて折り返すなら、Flexboxが向いています（[`flexbox-for-content-sized-items`](/layout-practice/choosing/#rule-flexbox-for-content-sized-items)）。
-
-一方、列の数と幅を親で決めたい並びや、行をまたいで位置をそろえたい並びは、Gridで組みます。使い分けの基準と例は「[11-1 レイアウト手法の選び方](/layout-practice/choosing/)」に、Gridの仕組みは「[7-8 Gridの基礎](/layout/grid-basics/)」にまとめています。
 
 ## ガイドライン
 
