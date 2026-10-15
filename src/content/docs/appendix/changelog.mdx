@@ -11,6 +11,20 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.67.0（2026年10月15日）
+
+追加のレビューで見つかった、推奨例と対象のブラウザの食い違い、説明の不正確な箇所を直しました。ルールを分けて追加したので、マイナーバージョンを上げています。
+
+- 「[17-8 CSSでカルーセルを作る](/interaction/carousel/)」の推奨のスクリプトで、`scrollend` イベントに対応していない環境（Safari 26.1まで）では `scroll` イベントで判定するようにしました。本書の対象のブラウザにはこの環境が含まれるので、注意書きだけでなくコードで対応します。
+- 「[17-7 フォーム部品](/interaction/forms/)」に、Safari 26.0から26.3では `@scope` の中のルールが入力欄に当たらないので、そのとき変わる見た目と保たれる操作を書き、確かめる状態の表に加えました。
+- 「[12-11 prose：子ごとに変えられる間隔で、本文の流れを作る](/compositions/prose/)」で、CMSの本文エリアに `prose` を使わない理由を、余白を `.wysiwyg` に集める本書の方針として書き直しました。
+- 「[4-6 カスタムプロパティの基礎](/cascade/custom-properties-basics/)」の冒頭で、フォールバックが使われる条件を「未定義などで保証された無効値になったとき」に直しました。ルール [`no-cascade-fallback-for-var`](/cascade/custom-properties-basics/#rule-no-cascade-fallback-for-var) の補足も合わせました。
+- 「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」に、共通のスタイルシートで1回だけ登録する共有の名前（13-4の `--_root-cqi`）を、登録名にコンポーネントの名前を含める助言の例外として書きました。
+- 「[16-9 輪郭と枠線を描く](/decoration/outlines/)」のドーナツグラフの説明で、確かめた結果の文に残っていた別の変数名を、掲載したコードの `--count-up--value` にそろえました。
+- ルールを分けました。
+  - [`at-property-all-descriptors`](/components/custom-properties/#rule-at-property-all-descriptors)：仕様が必須とする記述子（`syntax`、`inherits`、`"*"` 以外のときの `initial-value`）だけを書くルールにしました。性質は「仕様にもとづく制約」のままです。
+  - [`at-property-initial-value-always`](/components/custom-properties/#rule-at-property-initial-value-always)：`syntax` が `"*"` のときも `initial-value` を書く、という本書の方針を、「本書の規約」のルールとして加えました。
+
 ## 0.66.0（2026年10月15日）
 
 表示と操作の確認に、400%の拡大とテキストの間隔を加え、本書独自の規約を選ぶ条件の示し方を整えました。ルールを追加したので、マイナーバージョンを上げています。

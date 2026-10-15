@@ -1,6 +1,6 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.66.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.67.0（2026-10-15 生成）
 - ルールの数: 24
 - 本文: 約9.2万字
 - 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
@@ -136,5 +136,5 @@ https://t-arai-pnrm.github.io/recss-guideline/cascade/custom-properties-basics/
 
 - 【非推奨・仕様にもとづく制約】`var()` を使う宣言の前に同じプロパティの値を書いて、フォールバックの代わりにしない。（`no-cascade-fallback-for-var`）
   - 理由: `var()` を含む宣言は、置き換えた後に無効と分かっても前の宣言に戻らず、計算値の時点で無効になって `unset` と同じ結果になるため。
-  - 補足: 参照先が未定義のときの値は、`var()` の2つ目の引数に書きます。2つ目の引数が使われるのは未定義のときだけで、合わない値が入っているときには使われません。未対応の関数と `var()` を組み合わせるときは `@supports` の中に書き（第1章のルール `fallback-method-by-invalidation`）、値の型を保証したいカスタムプロパティは `@property` で登録します（「10-5 公開プロパティと内部プロパティ」）。
+  - 補足: 参照先が未定義のときの値は、`var()` の2つ目の引数に書きます。2つ目の引数が使われるのは、未定義などで参照先が保証された無効値のときで、合わない値が入っているときには使われません。未対応の関数と `var()` を組み合わせるときは `@supports` の中に書き（第1章のルール `fallback-method-by-invalidation`）、値の型を保証したいカスタムプロパティは `@property` で登録します（「10-5 公開プロパティと内部プロパティ」）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/cascade/custom-properties-basics/#rule-no-cascade-fallback-for-var

@@ -367,11 +367,20 @@
 - id: at-property-all-descriptors
   level: 必須
   kind: spec
-  rule: '`@property` では `syntax`、`inherits`、`initial-value` の3つの記述子を書き、`initial-value` は `syntax` が `"*"` のときも省略しない。'
+  rule: '`@property` では `syntax` と `inherits` の記述子を書き、`syntax` が `"*"` 以外なら `initial-value` も書く。'
   reason: '`syntax` と `inherits` は必須で、どちらかが欠けると `@property` のルールごと無効になるため。`initial-value` も、`syntax` が `"*"` 以外なら必須で、欠けたり、計算上独立した値でなかったり（`3em` のように、要素の文字サイズに依存して決まる値）すると、ルールごと無効になる。'
-  note: '`syntax` が `"*"` のときは仕様上 `initial-value` を省略できますが、読む人が初期値を探さずに済むように書くのは本書の方針です。根拠は CSS Properties and Values API Level 1 の `@property` の節です。'
+  note: 根拠は CSS Properties and Values API Level 1 の `@property` の節です。`syntax` が `"*"` のときの `initial-value` は、ルール `at-property-initial-value-always` で扱います。
   page: components/custom-properties
   since: 0.1.0
+
+- id: at-property-initial-value-always
+  level: 必須
+  kind: convention
+  rule: '`@property` の `initial-value` は、`syntax` が `"*"` で仕様上省略できるときも書く。'
+  reason: 3つの記述子がいつもそろっていれば、読む人が初期値をほかの場所で探さずに済むため。
+  note: '`syntax` が `"*"` のときに `initial-value` を省略しても、`@property` は無効になりません。省略したときの初期値は「保証された無効値」です。書くのは本書の方針で、仕様の条件はルール `at-property-all-descriptors` で扱います。'
+  page: components/custom-properties
+  since: 0.67.0
 
 - id: animated-property-no-inherit
   level: 推奨

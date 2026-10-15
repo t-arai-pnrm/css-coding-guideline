@@ -1,7 +1,7 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.66.0（2026-10-15 生成）
-- ルールの数: 52
+- ガイドラインのバージョン: 0.67.0（2026-10-15 生成）
+- ルールの数: 53
 - 本文: 約16.8万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
@@ -193,10 +193,14 @@ https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
 - 【推奨・実装上の判断】`@property` は、型の指定やアニメーションが必要なカスタムプロパティにだけ使い、トークンの定義には使わない。（`at-property-only-when-needed`）
   - 理由: 登録すると値を定義した要素で計算されるなど振る舞いが変わり、不要な登録は予期しない結果を招くため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-at-property-only-when-needed
-- 【必須・仕様にもとづく制約】`@property` では `syntax`、`inherits`、`initial-value` の3つの記述子を書き、`initial-value` は `syntax` が `"*"` のときも省略しない。（`at-property-all-descriptors`）
+- 【必須・仕様にもとづく制約】`@property` では `syntax` と `inherits` の記述子を書き、`syntax` が `"*"` 以外なら `initial-value` も書く。（`at-property-all-descriptors`）
   - 理由: `syntax` と `inherits` は必須で、どちらかが欠けると `@property` のルールごと無効になるため。`initial-value` も、`syntax` が `"*"` 以外なら必須で、欠けたり、計算上独立した値でなかったり（`3em` のように、要素の文字サイズに依存して決まる値）すると、ルールごと無効になる。
-  - 補足: `syntax` が `"*"` のときは仕様上 `initial-value` を省略できますが、読む人が初期値を探さずに済むように書くのは本書の方針です。根拠は CSS Properties and Values API Level 1 の `@property` の節です。
+  - 補足: 根拠は CSS Properties and Values API Level 1 の `@property` の節です。`syntax` が `"*"` のときの `initial-value` は、ルール `at-property-initial-value-always` で扱います。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-at-property-all-descriptors
+- 【必須・本書の規約】`@property` の `initial-value` は、`syntax` が `"*"` で仕様上省略できるときも書く。（`at-property-initial-value-always`）
+  - 理由: 3つの記述子がいつもそろっていれば、読む人が初期値をほかの場所で探さずに済むため。
+  - 補足: `syntax` が `"*"` のときに `initial-value` を省略しても、`@property` は無効になりません。省略したときの初期値は「保証された無効値」です。書くのは本書の方針で、仕様の条件はルール `at-property-all-descriptors` で扱います。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-at-property-initial-value-always
 - 【推奨・実装上の判断】トランジションやアニメーションで値を動かすカスタムプロパティは、`inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介さずに直接動かす。（`animated-property-no-inherit`）
   - 理由: 継承するカスタムプロパティを動かすと、子孫の要素すべてでスタイルの計算がフレームごとに繰り返され、カスタムプロパティを介すと合成処理だけで済まなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/#rule-animated-property-no-inherit
