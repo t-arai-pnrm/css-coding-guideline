@@ -11,6 +11,15 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.63.0（2026年10月15日）
+
+画像の形式の選び方に、JPEG XLとWebPを加えました。ルールを変えたので、マイナーバージョンを上げています。
+
+- 「[16-2 画像の形式と読み込み](/decoration/image-loading/#画像の形式)」で、画像の形式を役割で選ぶようにしました。写真と、以前ならPNGで書き出していたエッジや形が大事な画像はAVIFにします。テキストの下に敷くLCPの候補の写真や、画質を重視する写真は、AVIFより高度なプログレッシブ表示ができるJPEG XLを優先します。JPEG XLはBaselineではないので、`<picture>` の `<source type="image/jxl">` に置き、`<img>` にAVIFを書きます。ビルドを頻繁に繰り返すプロジェクトや開発の段階では、作る側の都合でWebPを選ぶこともできます。
+- 「[16-1 画像の配置と比率](/decoration/images/#背景の写真も-img-で置く)」の背景の写真の例から、形式の選び方へ案内しました。
+- ルールを変えました。
+  - [`image-format-by-role`](/decoration/image-loading/#rule-image-format-by-role)（旧 `avif-for-photos`）：AVIFで書き出す対象に、エッジや形が大事な画像を加えました。LCPの候補の写真と画質を重視する写真にはJPEG XLを使い、WebPを選んでよい場面を補足に書いています。IDも、内容と合うものに変えています。
+
 ## 0.62.0（2026年10月15日）
 
 技術レビューで見つかった説明の誤りと、推奨例とルールの食い違いを直し、初めて読むときの4つの単位に、手を動かして確かめる課題を加えました。本書独自の規約には、正しく動く代案との比較を書き足しました。ルールの文を変えたので、マイナーバージョンを上げています。
@@ -319,7 +328,7 @@ AIに読ませるデザインの判断のファイル `DESIGN.md` を扱い、AI
   - 18-5「出現と退場」を、「[18-7 出現と退場](/motion/entry-and-exit/)」と「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/)」に分けました。
   - 後ろの節は、18-9〜18-11に番号を改めました。
 - ルールの掲載ページを改めました。
-  - 16-2へ：[`sizes-by-tool`](/decoration/image-loading/#rule-sizes-by-tool)、[`no-lazy-loading-first-view`](/decoration/image-loading/#rule-no-lazy-loading-first-view)、[`no-decoding-async`](/decoration/image-loading/#rule-no-decoding-async)、[`avif-for-photos`](/decoration/image-loading/#rule-avif-for-photos)
+  - 16-2へ：[`sizes-by-tool`](/decoration/image-loading/#rule-sizes-by-tool)、[`no-lazy-loading-first-view`](/decoration/image-loading/#rule-no-lazy-loading-first-view)、[`no-decoding-async`](/decoration/image-loading/#rule-no-decoding-async)、[`avif-for-photos`](/decoration/image-loading/#rule-image-format-by-role)
   - 16-4へ：[`clip-path-shape-tokens`](/decoration/clipping-and-masks/#rule-clip-path-shape-tokens)、[`scroll-edge-fade-with-mask`](/decoration/clipping-and-masks/#rule-scroll-edge-fade-with-mask)
   - 18-5へ：[`transition-duration-per-direction`](/motion/transition-techniques/#rule-transition-duration-per-direction)
   - 18-6へ：[`animation-longhand-fill-mode`](/motion/keyframes/#rule-animation-longhand-fill-mode)、[`keyframes-single-property`](/motion/keyframes/#rule-keyframes-single-property)、[`keyframes-omit-obvious-frame`](/motion/keyframes/#rule-keyframes-omit-obvious-frame)

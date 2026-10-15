@@ -1,8 +1,8 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.62.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.63.0（2026-10-15 生成）
 - ルールの数: 34
-- 本文: 約21.2万字
+- 本文: 約21.4万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,9 +12,9 @@
 
 ## この章の節
 
-- `decoration` 第16章 画像・装飾（約5,200字）https://t-arai-pnrm.github.io/recss-guideline/decoration/
+- `decoration` 第16章 画像・装飾（約5,300字）https://t-arai-pnrm.github.io/recss-guideline/decoration/
 - `decoration/images` 16-1 画像の配置と比率（約3.3万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/images/
-- `decoration/image-loading` 16-2 画像の形式と読み込み（約5,200字）https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/
+- `decoration/image-loading` 16-2 画像の形式と読み込み（約7,400字）https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/
 - `decoration/icons-and-masks` 16-3 アイコンとSVG（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/
 - `decoration/clipping-and-masks` 16-4 clip-pathとマスクで見せる範囲を決める（約3.5万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/clipping-and-masks/
 - `decoration/surfaces` 16-5 面・影・角丸（約2.5万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/surfaces/
@@ -66,10 +66,10 @@ https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/
 - 【推奨・実装上の判断】`<img>` に `decoding="async"` を指定せず、デフォルトの `auto` に任せる。（`no-decoding-async`）
   - 理由: キャッシュのない通常の読み込みでは `sync` と `async` に目立った性能の差がなく、キャッシュがあるときに `async` だと、画像以外が先に表示されて画像があとから現れ、画面がちらつくため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/#rule-no-decoding-async
-- 【推奨・実装上の判断】写真のような画像は、AVIF で書き出す。（`avif-for-photos`）
-  - 理由: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
-  - 補足: AVIF への変換は WebP より時間がかかるので、画像の多いサイトではビルドの時間を見積もります。
-  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/#rule-avif-for-photos
+- 【推奨・実装上の判断】写真と、エッジや形が大事な画像は AVIF で書き出す。テキストの下に敷く LCP の候補の写真や、画質を重視する写真は、JPEG XL を `<picture>` の `<source type="image/jxl">` に置き、`<img>` に AVIF を書く。（`image-format-by-role`）
+  - 理由: AVIF は WebP より10〜30%ほど小さく、可逆圧縮と透過にも対応し、すべての主要なブラウザが対応しているため。JPEG XL は AVIF より高度なプログレッシブ表示ができ、読み込みの途中から全体像を見せられるが、Baseline ではないため。
+  - 補足: AVIF への変換は WebP の2倍以上の時間がかかります。ビルドを頻繁に繰り返すプロジェクトや開発の段階では、作る側の都合で WebP を選んでもかまいません。図形で描けるイラストやアイコンは、画像のファイルにせず SVG にします。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/#rule-image-format-by-role
 
 ## 16-3 アイコンとSVG
 

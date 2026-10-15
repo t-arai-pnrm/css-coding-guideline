@@ -243,7 +243,7 @@ img {
 </div>
 ```
 
-背景の `<img>` は絶対配置にせず、前の項目のコード例のように、本文と同じグリッドのエリアに置きます。重ねるだけの入れ物なら、コンポジションの「[12-9 pile](/compositions/pile/)」（すべての子を同じセルに重ねる）を使えます。どちらも、本文が増えれば枠が伸び、画像はその高さに合わせて `cover` で切り取られます。画像をHTMLで先に書けば、`z-index` を使わなくても本文が手前に描かれます。このヒーローの写真はLCPの候補になるので、`fetchpriority="high"` を指定しています（「[16-2 画像の形式と読み込み](/decoration/image-loading/#rule-no-lazy-loading-first-view)」）。
+背景の `<img>` は絶対配置にせず、前の項目のコード例のように、本文と同じグリッドのエリアに置きます。重ねるだけの入れ物なら、コンポジションの「[12-9 pile](/compositions/pile/)」（すべての子を同じセルに重ねる）を使えます。どちらも、本文が増えれば枠が伸び、画像はその高さに合わせて `cover` で切り取られます。画像をHTMLで先に書けば、`z-index` を使わなくても本文が手前に描かれます。このヒーローの写真はLCPの候補になるので、`fetchpriority="high"` を指定しています（「[16-2 画像の形式と読み込み](/decoration/image-loading/#rule-no-lazy-loading-first-view)」）。テキストの下に敷くLCPの候補の写真は、JPEG XLを優先する画像でもあります。`<picture>` でAVIFを代わりに添える書き方は、同じ16-2の「[画像の形式](/decoration/image-loading/#画像の形式)」で説明しています。
 
 ```css title="🙆‍♂ Recommended: 敷き詰めるパターンは background-image で描く"
 ._section {

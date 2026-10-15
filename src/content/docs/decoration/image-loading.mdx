@@ -1,6 +1,6 @@
 ---
 title: "16-2 画像の形式と読み込み"
-description: "写真のような画像は AVIF で書き出し、srcset と sizes で表示される幅に合った画像を読み込ませます。sizes の値は手で計算せず、ツールで確かめて決めます。ファーストビューの画像は遅延読み込みにせず、fetchpriority の high は LCP の候補になる画像にだけ指定します。decoding 属性は書かず、デフォルトの auto に任せます。"
+description: "写真と、エッジや形が大事な画像は AVIF で書き出し、LCP の候補の写真や画質を重視する写真には JPEG XL を AVIF の代わりとともに使います。srcset と sizes で表示される幅に合った画像を読み込ませます。sizes の値は手で計算せず、ツールで確かめて決めます。ファーストビューの画像は遅延読み込みにせず、fetchpriority の high は LCP の候補になる画像にだけ指定します。decoding 属性は書かず、デフォルトの auto に任せます。"
 sidebar:
   order: 2
 ---
@@ -8,7 +8,7 @@ sidebar:
 import Baseline from '../../../components/Baseline.astro';
 import Guideline from '../../../components/Guideline.astro';
 
-写真のような画像はAVIFで書き出し、`srcset` と `sizes` の属性で、レイアウトの中で表示される幅に合った大きさの画像を読み込ませます。表示される幅はCSSのレイアウトで決まるので、`sizes` の値は手で計算せず、ツールで確かめて決めます。
+写真と、エッジや形が大事な画像はAVIFで書き出し、テキストの下に敷くLCPの候補の写真や画質を重視する写真には、JPEG XLをAVIFの代わりとともに使います。`srcset` と `sizes` の属性で、レイアウトの中で表示される幅に合った大きさの画像を読み込ませます。表示される幅はCSSのレイアウトで決まるので、`sizes` の値は手で計算せず、ツールで確かめて決めます。
 
 ファーストビューに表示される画像には `loading="lazy"` を指定せず、LCPの候補になる画像にだけ `fetchpriority="high"` を指定します。`decoding` 属性は書かず、デフォルトの `auto` に任せます。どれも、画像をいつ、どの大きさで読み込むかをブラウザに伝える指定で、表示の速さに関わります。
 
@@ -16,7 +16,40 @@ import Guideline from '../../../components/Guideline.astro';
 
 ## 画像の形式
 
-写真のような画像は、AVIFで書き出します。AVIFは、WebPより10〜30%ほど小さく、2024年1月にすべての主要なブラウザで使えるようになりました。Webページで表示する画像では、ブラウザの対応を理由にJPEGやPNGを主な形式にする必要はもうありません。ただし、AVIFへの変換はWebPの2倍以上の時間がかかるので、画像の多いサイトでは、ビルドの時間を見積もっておきます。
+画像の形式は、画像の役割で選びます。写真と、ロゴや図表のようにエッジや形の正確さが大事な画像は、AVIFで書き出します。テキストの下に背景として敷くLCPの候補の写真や、画質を重視する写真は、JPEG XLを優先し、対応していない環境のためのAVIFを添えます。イラストやアイコンのような図形で描けるものは、画像のファイルではなくSVGで描きます（「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」）。
+
+AVIFは、WebPより10〜30%ほど小さく、2024年1月にすべての主要なブラウザで使えるようになりました。可逆圧縮と透過にも対応しているので、以前ならPNGで書き出していた、エッジや形がはっきりした画像にも使えます。Webページで表示する画像では、ブラウザの対応を理由にJPEGやPNGを主な形式にする必要はもうありません。
+
+<Baseline id="avif" />
+
+JPEG XLは、AVIFより高度なプログレッシブ表示ができる形式です。読み込みの途中から、粗い全体像を表示し、データが届くにつれて細部を描き足していきます。ページでいちばん大きく表示され、テキストの下に敷くヒーローの写真のように、早く何かを見せたい画像ほど、この性質が生きます。JPEG XLの画像は、可逆圧縮のまま画質を保つこともできます。
+
+ただし、JPEG XLはBaselineではありません。Safariは17から対応し、Firefoxは158で正式に対応しました。ChromeとEdgeも対応を進めています。{/* 要確認: 出典なし。Chrome と Edge が JPEG XL に対応した版と、既定で有効か */}そのため、JPEG XLは `<picture>` の `<source>` に `type="image/jxl"` を付けて置き、`<img>` にはAVIFを書きます。ブラウザは、`<source>` を上から順に調べ、対応している形式の最初のものを選びます。どれにも対応していなければ `<img>` の画像を使います。
+
+<Baseline id="jpegxl" name="JPEG XL" />
+
+```html title="🙆‍♂ Recommended: LCPの候補の写真を、JPEG XLを先に、AVIFを代わりにして渡す"
+<picture>
+  <source
+    type="image/jxl"
+    srcset="hero-800.jxl 800w, hero-1600.jxl 1600w"
+    sizes="100vw"
+  />
+  <img
+    src="hero-800.avif"
+    srcset="hero-800.avif 800w, hero-1600.avif 1600w"
+    sizes="100vw"
+    width="1600"
+    height="900"
+    alt=""
+    fetchpriority="high"
+  />
+</picture>
+```
+
+`<source>` には、`<img>` と同じ `srcset` の幅と `sizes` を書きます。`<source>` が選ばれても、`width` と `height`、`alt`、`fetchpriority` は `<img>` の属性が使われます。CSSの `background-image` で形式を出し分けるときは、`image-set()` の `type()` で同じことができます。ただし、背景の写真を `background-image` で敷く書き方には、読み込みの遅れなどの問題があります（「[16-1 画像の配置と比率](/decoration/images/#背景の写真も-img-で置く)」）。
+
+AVIFへの変換は、WebPの2倍以上の時間がかかります。画像の多いサイトでは、ビルドの時間を見積もっておきます。ビルドを頻繁に繰り返すプロジェクトや、画像の差し替えが続く開発の段階では、変換の速いWebPを使う選択肢もあります。これは見る人ではなく作る側の都合による選択なので、公開する画像の形式を、ビルドの時間と見比べてあらためて決めます。
 
 ## レスポンシブ画像
 

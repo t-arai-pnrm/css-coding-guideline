@@ -84,12 +84,12 @@
   page: decoration/image-loading
   since: 0.18.0
 
-- id: avif-for-photos
+- id: image-format-by-role
   level: 推奨
   kind: judgment
-  rule: 写真のような画像は、AVIF で書き出す。
-  reason: WebP より10〜30%ほど小さく、すべての主要なブラウザが対応しているため。
-  note: AVIF への変換は WebP より時間がかかるので、画像の多いサイトではビルドの時間を見積もります。
+  rule: '写真と、エッジや形が大事な画像は AVIF で書き出す。テキストの下に敷く LCP の候補の写真や、画質を重視する写真は、JPEG XL を `<picture>` の `<source type="image/jxl">` に置き、`<img>` に AVIF を書く。'
+  reason: 'AVIF は WebP より10〜30%ほど小さく、可逆圧縮と透過にも対応し、すべての主要なブラウザが対応しているため。JPEG XL は AVIF より高度なプログレッシブ表示ができ、読み込みの途中から全体像を見せられるが、Baseline ではないため。'
+  note: 'AVIF への変換は WebP の2倍以上の時間がかかります。ビルドを頻繁に繰り返すプロジェクトや開発の段階では、作る側の都合で WebP を選んでもかまいません。図形で描けるイラストやアイコンは、画像のファイルにせず SVG にします。'
   page: decoration/image-loading
   since: 0.1.0
 
