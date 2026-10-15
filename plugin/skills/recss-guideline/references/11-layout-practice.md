@@ -1,6 +1,6 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.68.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.69.0（2026-10-15 生成）
 - ルールの数: 61
 - 本文: 約26.9万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
@@ -299,7 +299,7 @@ https://t-arai-pnrm.github.io/recss-guideline/layout-practice/tables/
 
 - 【推奨・実装上の判断】表は置かれた場所の幅に合わせて縮めず、`min-inline-size` で最小の幅を決め、表を包む要素に `overflow-x: auto` を指定して、それより狭い場所では横にスクロールさせる。（`table-min-size-with-scroller`）
   - 理由: 表は列の最小の幅の合計までしか縮まないので、`overflow-wrap: anywhere` のもとでは列が1〜2文字の幅まで縮んで数値の途中でも折り返し、折り返せない中身があればページ全体が横にはみ出すため。
-  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、修正前のブラウザでは表として読み上げられなくなるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（ルール `physical-only-where-no-logical`）。
+  - 補足: 表の `display` を変えて表自体をスクロールさせる書き方は、修正前のブラウザでは表として読み上げられなくなるので使いません。包む要素には `role="region"`、`caption` を指す `aria-labelledby`、`tabindex="0"` を付けます。表以外の横スクロールの一覧も、項目にフォーカスできる要素がなければ同じ付け方をします（第12章のルール `reel-region-without-focusable-items`）。`overflow-inline` は Safari 26 から対応したので、`overflow-x` を使います（ルール `physical-only-where-no-logical`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/layout-practice/tables/#rule-table-min-size-with-scroller
 - 【推奨・仕様にもとづく制約】表には `caption` で名前を付け、見出しのセルは `th` にして、列の見出しには `scope="col"`、行の見出しには `scope="row"` を付ける。（`table-caption-and-scope`）
   - 理由: 支援技術が、表の名前と、各セルがどの見出しに属するかを伝えられるため。

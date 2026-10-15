@@ -11,6 +11,20 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.69.0（2026年10月16日）
+
+子を1列に並べて横へスクロールさせるコンポジション `reel` を加え、横スクロールのデモをGridで組み直しました。0.68.0で加えたデモとコード例の、本書のルールとの食い違いも直しました。ルールを追加したので、マイナーバージョンを上げています。
+
+- 「[12-12 reel](/compositions/reel/)」を加えました。Gridの `grid-auto-flow: column` で並べ、項目の幅を親の `grid-auto-columns` で決める理由と、スクロールスナップを使う側で付ける判断を説明しています。両端の余白を `primary-layout` の本文の端とそろえる方法と、フォーカスできる要素のない一覧をキーボードで操作する方法も書きました。第12章の概要の「目的から選ぶ」の表と、「本書の読み方」の表にも加えました。
+- 「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/#スクロールできる領域の端をマスクで薄くする)」のタグの列を、Flexboxと `flex-shrink: 0` から、Gridの `grid-auto-columns: max-content` に組み直しました。タグの `white-space: nowrap` も要らなくなったので外しています。「[17-8 CSSでカルーセルを作る](/interaction/carousel/)」からも12-12へリンクしました。
+- 「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/#画面に対する割合で切り替える)」のデモで、見出しの文字サイズに単位のないトークンをそのまま渡していて、宣言が無効になっていました。`calc()` でremに変換するように直しました。図と説明文のように構成の決まった子の間隔は、子の `margin` ではなく `stack` の `gap` で作るように直しました（ルール [`stack-vs-prose`](/compositions/stack/#rule-stack-vs-prose)）。
+- 0.68.0で、「[11-6 重なりと全幅](/layout-practice/layering/)」のコード例の `overflow-x` を `overflow-inline` に変えていました。`overflow-inline` はSafariが26から対応したプロパティなので、`overflow-x` に戻しました（ルール [`physical-only-where-no-logical`](/notation/logical-properties/#rule-physical-only-where-no-logical)）。
+- 「[11-15 表を組む](/layout-practice/tables/)」のコード例とデモ、「[5-4 子要素の位置で選ぶ](/pseudo/child-index/)」の縞模様のデモのセレクタを直しました。`thead th` や `tbody tr` のように子孫結合子で書いていた箇所を、`th` や `tr` のルールの中にネストした `&:is(thead *)` と `&:is(tbody *)` にしています。表示は変わりません。
+- ルール [`table-min-size-with-scroller`](/layout-practice/tables/#rule-table-min-size-with-scroller) の補足に、表以外の横スクロールの一覧も同じ付け方をすることを書きました。
+- ルールを追加しました。
+  - [`reel-grid-auto-columns`](/compositions/reel/#rule-reel-grid-auto-columns)：子を折り返さずに横へ並べてスクロールさせる一覧は、`reel` で並べ、項目の幅を親の `grid-auto-columns` で決めます。
+  - [`reel-region-without-focusable-items`](/compositions/reel/#rule-reel-region-without-focusable-items)：項目にフォーカスできる要素がない横スクロールの一覧には、`role="region"`、`aria-labelledby`、`tabindex="0"` を付けます。
+
 ## 0.68.0（2026年10月16日）
 
 要素が画面のどれだけを占めるかで見た目を切り替える書き方を加え、命名の説明を補って、本書の部品の名前を `list` の語の意味にそろえました。ルールを追加し、既存のルールの理由と補足を変えたので、マイナーバージョンを上げています。

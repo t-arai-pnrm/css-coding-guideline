@@ -1,0 +1,186 @@
+---
+title: "12-12 reel：子を横に1列に並べ、入りきらない分をスクロールさせる"
+description: "関連記事のカードやタグの列のように、子を折り返さずに横へ並べ、入りきらない分を横にスクロールさせる配置は reel で書きます。Grid の grid-auto-flow: column で並べ、項目の幅は子ではなく親の grid-auto-columns で決めます。止まる位置をそろえるスクロールスナップは、中身に合わせて使う側で付けます。"
+sidebar:
+  order: 12
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import reelHtml from '../../../demos/compositions/reel/index.html?raw';
+import reelCss from '../../../demos/compositions/reel/style.css?raw';
+import reelInsetHtml from '../../../demos/compositions/reel-inset/index.html?raw';
+import reelInsetCss from '../../../demos/compositions/reel-inset/style.css?raw';
+
+関連記事のカード、タグの列、商品のサムネイルのように、子を折り返さずに横へ並べ、入りきらない分を横にスクロールさせる配置は、コンポジション `reel` で書きます。`reel` は、Gridの `grid-auto-flow: column` で子を列として並べ、項目の幅を親の `grid-auto-columns` で決めます。公開プロパティは、項目の幅の `--reel--item-size`、間隔の `--reel--gap`、両端の余白の `--reel--inset` の3つです。
+
+スクロールが止まる位置をそろえるスクロールスナップは、`reel` には含めません。カードのように1つずつ見せたい項目には付け、タグのように小さな項目には付けないというように、中身で判断が分かれるからです。項目にリンクやボタンがあれば、キーボードでの操作のために足す指定はありません。
+
+## 横スクロールをFlexboxで組むと起きること
+
+横スクロールは、Flexboxでも組めます。ただ、フレックスアイテムは `flex-shrink` の初期値が `1` なので、並べただけでは、はみ出す前に子が縮みます。スクロールさせるには、すべての子に `flex-shrink: 0` を付けて縮まないようにし、幅も子の側で決める必要があります。
+
+```css title="🙅‍♂ Not Recommended: 縮まない指定と幅を、子の側で決める"
+/* 🙅‍♂ Not Recommended */
+.tag-row {
+  display: block flex;
+  gap: 8px;
+  overflow-x: auto;
+
+  & > li {
+    flex-shrink: 0;
+  }
+}
+```
+
+この書き方では、並び方の指定が親と子に分かれます。子に `flex-shrink: 0` を付け忘れると、狭い場所で子が縮み、文字が折り返したり、はみ出したりします。項目の幅を変えたいときも、子のルールを探して直すことになります。
+
+Gridなら、親が `grid-auto-flow: column` で子を列として並べ、`grid-auto-columns` で列の幅を決めます。グリッドの列は、指定した幅より縮まないので、子には何も書かずに済みます。並び方と項目の幅が親の1か所に集まり、HTMLに `class="reel"` とあるだけで、横にスクロールする並びだと読み取れます。
+
+## reel の書き方
+
+`reel` の実装は次のとおりです。ファイルの先頭には、公開プロパティの一覧をJSDocの形式で書きます。
+
+```css title="🙆‍♂ Recommended: 子を列として並べ、項目の幅と間隔を公開プロパティで受け取る"
+/**
+ * 子要素をインライン方向に1列に並べ、入りきらない分を横にスクロールさせる。
+ * 項目の幅は、子ではなく reel を付けた要素が決める。
+ *
+ * @prop {length} --reel--item-size [max-content] - 項目の幅（grid-auto-columns）
+ * @prop {length} --reel--gap       [0]           - 項目の間隔
+ * @prop {length} --reel--inset     [0]           - 両端の余白と、スナップで止まる位置の内側の余白
+ *
+ * @example
+ * <ul class="reel" style="--reel--item-size: min(80%, calc(280 / 16 * 1rem)); --reel--gap: calc(var(--spacing--sm) / 16 * 1rem)">
+ *   <li>…</li>
+ * </ul>
+ */
+.reel {
+  display: block grid;
+  grid-auto-columns: var(--reel--item-size, max-content);
+  grid-auto-flow: column;
+  gap: var(--reel--gap, 0);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-inline: var(--reel--inset, 0);
+  scroll-padding-inline: var(--reel--inset, 0);
+}
+```
+
+| 公開プロパティ | 意味 | デフォルト値 |
+|---|---|---|
+| `--reel--item-size` | 項目の幅。`grid-auto-columns` の値 | `max-content` |
+| `--reel--gap` | 項目の間隔 | `0` |
+| `--reel--inset` | 両端の余白と、スナップで止まる位置の内側の余白 | `0` |
+
+`overflow-inline` ではなく `overflow-x` を使うのは、`overflow-inline` にSafariが26から対応したためです（[ルール：論理で書けないものは物理で書く](/notation/logical-properties/#rule-physical-only-where-no-logical)）。間隔のデフォルト値を `0` にする理由は、ほかのコンポジションと同じで、置く文脈で決まる値を使う側で渡させるためです（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#rule-composition-default-gap-zero)」）。
+
+### 項目の幅を親で決める
+
+`--reel--item-size` のデフォルト値の `max-content` は、項目の中身の幅をそのまま列の幅にします。タグのように中身の量で幅が決まる項目は、何も渡さずに並べられます。中身の幅が列の幅になるので、タグの文字は折り返さず、`white-space: nowrap` も要りません。
+
+カードのように幅をそろえたい項目には、`min(80%, calc(280 / 16 * 1rem))` のような値を渡します。`grid-auto-columns` の `%` は、`reel` の内容の幅（両端の余白を除いた幅）を基準にします。幅を最大でも80%にすると、狭い場所でも隣のカードの端が見えるので、横に続きのあることが伝わります。
+
+```html title="🙆‍♂ Recommended: 項目の幅と間隔を、使う側から渡す"
+<ul
+  class="scoped related-articles | reel"
+  style="--reel--item-size: min(80%, calc(280 / 16 * 1rem)); --reel--gap: calc(var(--spacing--sm) / 16 * 1rem)"
+>
+  <li class="_item">…</li>
+  <li class="_item">…</li>
+</ul>
+```
+
+グリッドの子は、行の高さまで伸びます。カードの本文の量が違っても、同じ行のカードは下端がそろいます。
+
+## 止まる位置をそろえる
+
+スクロールが終わったときに、カードの先頭で止まるようにするには、スクロールスナップを使います。スクロールコンテナに `scroll-snap-type` を、項目に `scroll-snap-align` を指定します。`scroll-snap-type` だけでは止まる位置が決まらないので、2つをそろえて書きます。
+
+<Baseline id="scroll-snap" />
+
+```css title="🙆‍♂ Recommended: カードを並べるコンポーネントで、スナップを付ける"
+@scope (.scoped.related-articles) to (.scoped) {
+  :scope {
+    scroll-snap-type: inline mandatory;
+  }
+
+  ._item {
+    scroll-snap-align: start;
+  }
+}
+```
+
+スナップは、`reel` ではなく、使う側のコンポーネントで付けます。カードのように1つずつ見せたい項目では、`mandatory` で必ずどれかの項目の先頭に止めると、カードが途中で切れたまま止まりません。タグのように小さな項目では、止まる位置が細かすぎて、少しずつ送りたいときに引き戻されるので、スナップを付けません。画面より大きな項目を並べるときは、止める位置の近くでだけ止める `proximity` にします。`mandatory` では、項目の途中を読もうとしても、端まで送られてしまうからです。
+
+次のデモの2つの列は、同じカードを同じ `reel` で並べ、2つ目の列だけに `data-snap` 属性でスナップを付けています。幅を480pxにして2つ目の列を少しだけ送ると、指を離したところで次のカードの先頭まで送られます。1つ目の列は、送った位置のまま止まります。
+
+<Demo title="同じカードの列で、スナップの有無を比べる" html={reelHtml} css={reelCss} widths={[320, 480, 768]} />
+
+## 両端の余白を本文の端にそろえる
+
+横にスクロールする並びは、画面の端まで広げると、続きが画面の外にあることが伝わりやすくなります。ただ、端まで広げると、最初の項目も画面の左端から始まり、見出しや本文の左端とずれます。`--reel--inset` に本文の左端までの距離を渡すと、`padding-inline` で最初の項目を本文の左端に置き、`scroll-padding-inline` でスナップの止まる位置も同じ所にそろえます。
+
+```html title="🙆‍♂ Recommended: 画面の端まで広げ、最初の項目を本文の左端にそろえる"
+<div class="primary-layout" style="--primary-layout--content-max-width: calc(640 / 16 * 1rem)">
+  <h2>関連する記事</h2>
+  <ul
+    class="scoped related-articles | full-column reel"
+    style="--reel--inset: max(20px, (100% - calc(640 / 16 * 1rem)) / 2)"
+  >
+    …
+  </ul>
+</div>
+```
+
+「[12-11 primary-layout](/compositions/primary-layout/)」の中では、`full-column` を付けた子が画面の端まで広がります。本文の左端までの距離は、ガターの最小幅（`20px`）と、画面の幅からコンテンツ幅を引いた残りの半分のうち、大きいほうです。`padding` の `%` は包含ブロックの幅を、`scroll-padding` の `%` はスクロールポート（スクロールで表示される範囲）の幅を基準にします。全幅に置いた `reel` では2つの幅が同じなので、`100%` を含む同じ式を両方に使えます。負の `margin` で外へ広げるときは2つの幅がずれるので、「[11-6 重なりと全幅](/layout-practice/layering/)」のようにコンテナ単位で書きます。
+
+次のデモでは、幅を1024pxにすると、見出しと最初のカードが、どちらも左から192pxの位置にそろいます。カードを1枚分送ると、次のカードが同じ192pxの位置で止まります。末尾まで送ったときも、最後のカードの後ろに同じ192pxの余白が残ります。
+
+<Demo title="画面の端まで広げた列の最初のカードを、見出しの左端にそろえる" html={reelInsetHtml} css={reelInsetCss} widths={[320, 768, 1024]} />
+
+## キーボードで操作できるようにする
+
+項目にリンクやボタンがあれば、キーボードで操作するために足す指定はありません。Tabキーで画面の外の項目にフォーカスが移ると、ブラウザがその項目の位置まで一覧をスクロールします。Chromeで、上のデモのリンクをTabキーでたどり、5枚目のカードまで一覧が送られることを確かめました。{/* 要検証: ブラウザ。Safari と Firefox で、Tab キーで画面外の項目のリンクにフォーカスしたとき、reel がその位置までスクロールすること */}
+
+項目が画像だけでフォーカスできる要素がないときは、キーボードでは一覧をスクロールできません。スクロールコンテナにキーボードでフォーカスできるかは、ブラウザによって違うからです。この場合は、`reel` を付けた要素に `tabindex="0"` を付けて、Tabキーで一覧にフォーカスし、矢印キーで送れるようにします。フォーカスできる要素には名前が要るので、`role="region"` を付け、見出しから `aria-labelledby` で名前を借ります。表を横にスクロールさせる枠と同じ付け方です（「[11-15 表を組む](/layout-practice/tables/)」）。
+
+```html title="🙆‍♂ Recommended: フォーカスできる要素のない一覧は、一覧そのものにフォーカスさせる"
+<h2 id="gallery-heading">作例</h2>
+<ul class="reel" role="region" aria-labelledby="gallery-heading" tabindex="0">
+  <li><img src="…" alt="…"></li>
+  …
+</ul>
+```
+
+## 補足と注意点
+
+### `cluster` との使い分け
+
+`reel` と「[12-3 cluster](/compositions/cluster/)」は、どちらも子を横に並べます。違いは入りきらないときで、`cluster` は次の行へ折り返し、`reel` は1列のまま横にスクロールさせます。すべての項目が一度に見えることを優先するなら `cluster` を、縦の場所を取らないことを優先するなら `reel` を選びます。タグの数が数個に限られるなら、折り返しても縦に伸びるのはわずかなので、`cluster` を使います。
+
+横にスクロールさせると、画面に入らない項目は、スクロールしないと見えません。ページの主な内容や、比べながら選ぶ項目を `reel` に入れると、見落とされることがあります。`reel` は、関連記事やタグのように、一部を見れば役割が伝わる並びに使います。
+
+### スクロールの連鎖と「戻る」の操作
+
+`reel` には `overscroll-behavior-inline: contain` を指定しています。端までスクロールしたあとの横のスワイプが、ページの横スクロールや、ブラウザの「戻る」の操作として扱われるのを防ぐためです。インライン方向にだけ指定するので、`reel` の上で縦にスワイプしたときは、これまでどおりページが縦にスクロールします。
+
+<Baseline id="overscroll-behavior" compatKey="css.properties.overscroll-behavior-inline" name="overscroll-behavior-inline" />
+
+表示が「一部のブラウザのみ」なのは、はみ出しのないスクロールコンテナにも適用されるという新しい仕様を含むためで、スクロールする要素にはSafariも16から対応しています（「[17-6 開閉するUI](/interaction/disclosure/)」）。
+
+### カルーセルや装飾と組み合わせる
+
+ボタンやインジケーターで1枚ずつ送るカルーセルは、`reel` と同じGridの横スクロールに、`::scroll-button()` と `::scroll-marker` を足して作ります（「[17-8 CSSでカルーセルを作る](/interaction/carousel/)」）。スクロールできる側の端を薄くして続きを示す方法は、「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/#スクロールできる領域の端をマスクで薄くする)」で説明しています。項目がスクロールの位置に合わせて大きさや不透明度を変える演出は、`view()` のタイムラインで作れます（「[18-9 スクロールに合わせて動かす](/motion/scroll-driven/)」）。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [grid-auto-flow - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/grid-auto-flow)
+- [CSS スクロールスナップ - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll_snap)
+- [overscroll-behavior - CSS | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior)
+- [The Reel](https://every-layout.dev/layouts/reel/)（Every Layout）

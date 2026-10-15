@@ -1,3 +1,11 @@
+@layer compositions {
+  .stack {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--stack--gap, 0);
+  }
+}
+
 @layer pages {
   @scope (.scoped.demo-page) to (.scoped) {
     :scope {
@@ -16,14 +24,8 @@
       }
     }
 
-    ._text {
-      & > * + * {
-        margin-block-start: 8px;
-      }
-    }
-
-    h2 {
-      font-size: var(--text--subtitle--font-size);
+    ._heading {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
       line-height: var(--text--subtitle--leading);
     }
 
@@ -34,11 +36,8 @@
     }
 
     ._item {
+      /* 240pxを折り返しの閾値にし、残った幅を分け合って伸びる。1つで1行を占めると、行の幅いっぱいになる */
       flex: 1 1 calc(240 / 16 * 1rem);
-
-      & > * + * {
-        margin-block-start: 8px;
-      }
     }
   }
 }

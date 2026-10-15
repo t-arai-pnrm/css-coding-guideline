@@ -21,13 +21,15 @@
       border-block-end: 1px solid var(--border--base);
     }
 
-    thead th {
-      border-block-end-width: 2px;
+    th {
+      &:is(thead *) {
+        border-block-end-width: 2px;
+      }
     }
 
-    tbody tr {
-      /* hidden 属性の付いていない行だけを数え、その中の偶数番目に背景を付ける */
-      &:nth-child(even of :not([hidden])) {
+    tr {
+      &:is(tbody *):nth-child(even of :not([hidden])) {
+        /* hidden 属性の付いていない行だけを数え、その中の偶数番目に背景を付ける */
         background-color: var(--background--active);
       }
     }

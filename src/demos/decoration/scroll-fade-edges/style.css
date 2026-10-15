@@ -52,7 +52,9 @@
       --_fade: 32px;
       --_direction: to right;
 
-      display: block flex;
+      display: block grid;
+      grid-auto-columns: max-content;
+      grid-auto-flow: column;
       gap: 8px;
       overflow-x: auto;
       padding-block: 4px;
@@ -72,10 +74,6 @@
       }
     }
 
-    ._item {
-      flex-shrink: 0;
-    }
-
     ._tag {
       display: block flow-root;
       padding: 4px 12px;
@@ -84,7 +82,6 @@
       color: inherit;
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
-      white-space: nowrap;
       text-decoration-line: none;
 
       &:any-link:hover {

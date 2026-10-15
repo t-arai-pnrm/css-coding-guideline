@@ -175,12 +175,16 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 端を薄くするときは、スクロールコンテナの `mask-image` に、両端が透明になるグラデーションを指定します。マスクは要素の中身そのものを透かすので、背景が何色でも、端の項目が途中で薄れて、続きがあるように見えます。マスクに使われるのはグラデーションの不透明度だけなので、`#000` は「そのまま見せる」範囲を表しているだけです。
 
+タグの列は、Gridの `grid-auto-flow: column` で1列に並べ、`grid-auto-columns: max-content` で各タグを文字の幅のまま並べています。横にスクロールさせる並びの組み方は、「[12-12 reel](/compositions/reel/)」で説明しています。
+
 ```css title="🙆‍♂ Recommended: スクロールコンテナの両端を、マスクのグラデーションで薄くする"
 @scope (.scoped.tag-scroller) to (.scoped) {
   ul {
     --_fade: 24px;
 
-    display: block flex;
+    display: block grid;
+    grid-auto-columns: max-content;
+    grid-auto-flow: column;
     gap: 8px;
     overflow-x: auto;
     mask-image: linear-gradient(to right, transparent, #000 var(--_fade), #000 calc(100% - var(--_fade)), transparent);
@@ -228,7 +232,9 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
     --_fade: 32px;
     --_direction: to right;
 
-    display: block flex;
+    display: block grid;
+    grid-auto-columns: max-content;
+    grid-auto-flow: column;
     gap: 8px;
     overflow-x: auto;
 

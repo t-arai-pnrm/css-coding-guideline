@@ -53,7 +53,7 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
 }
 ```
 
-スライドの `li` には `_slide` のクラスを付け、グリッドの列として並べ、`grid-auto-columns` で1枚の幅を決めます。`100%` なら1枚ずつ、`calc((100% - 16px * 2) / 3)` なら3枚ずつ見える形になります。`scroll-snap-type: inline mandatory` は、インライン方向のスクロールが終わったとき、必ずどれかのスライドの位置で止める指定です。`overscroll-behavior-inline: contain` は、端までスクロールしたときに、横のスワイプがブラウザの「戻る」の操作として扱われるのを防ぎます。
+スライドの `li` には `_slide` のクラスを付け、グリッドの列として並べ、`grid-auto-columns` で1枚の幅を決めます。`100%` なら1枚ずつ、`calc((100% - 16px * 2) / 3)` なら3枚ずつ見える形になります。`scroll-snap-type: inline mandatory` は、インライン方向のスクロールが終わったとき、必ずどれかのスライドの位置で止める指定です。`overscroll-behavior-inline: contain` は、端までスクロールしたときに、横のスワイプがブラウザの「戻る」の操作として扱われるのを防ぎます。ボタンやインジケーターを除いた横スクロールの部分は、コンポジション `reel` と同じ組み方です（「[12-12 reel](/compositions/reel/)」）。
 
 `scroll-behavior: smooth` は、後で足すボタンやインジケーターを押したときのスクロールを滑らかにします。`::scroll-marker` を押したときは、スクロールコンテナの `scroll-behavior` が `smooth` なら滑らかに、`auto` なら即座に移動しました。動きを減らす設定のユーザーには移動を即座に済ませたいので、`prefers-reduced-motion: no-preference` の条件の中に書きます。ページ全体の `scroll-behavior` の扱いは「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」で説明しています。
 

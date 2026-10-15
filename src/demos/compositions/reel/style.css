@@ -1,0 +1,89 @@
+@layer compositions {
+  /**
+   * 子要素をインライン方向に1列に並べ、入りきらない分を横にスクロールさせる。
+   * 項目の幅は、子ではなく reel を付けた要素が決める。
+   *
+   * @prop {length} --reel--item-size [max-content] - 項目の幅（grid-auto-columns）
+   * @prop {length} --reel--gap       [0]           - 項目の間隔
+   * @prop {length} --reel--inset     [0]           - 両端の余白と、スナップで止まる位置の内側の余白
+   *
+   * @example
+   * <ul class="reel" style="--reel--item-size: min(80%, calc(280 / 16 * 1rem)); --reel--gap: calc(var(--spacing--sm) / 16 * 1rem)">
+   *   <li>…</li>
+   * </ul>
+   */
+  .reel {
+    display: block grid;
+    grid-auto-columns: var(--reel--item-size, max-content);
+    grid-auto-flow: column;
+    gap: var(--reel--gap, 0);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-inline: var(--reel--inset, 0);
+    scroll-padding-inline: var(--reel--inset, 0);
+  }
+}
+
+@layer components {
+  @scope (.scoped.related-articles) to (.scoped) {
+    :scope {
+      &[data-snap] {
+        scroll-snap-type: inline mandatory;
+      }
+    }
+
+    ._item {
+      /* カードを行の高さまで伸ばし、隣のカードと下端をそろえる */
+      display: block grid;
+      scroll-snap-align: start;
+    }
+
+    ._card {
+      display: block grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
+    }
+
+    ._thumbnail {
+      aspect-ratio: 16 / 9;
+      border-radius: var(--rounded--sm);
+      background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
+    }
+
+    ._title {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    ._date {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}
+
+@layer pages {
+  @scope (.scoped.reel-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+    }
+
+    ._row {
+      display: block grid;
+      gap: 8px;
+    }
+
+    ._heading {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--regular);
+      line-height: var(--text--caption--leading);
+    }
+  }
+}

@@ -1,7 +1,7 @@
 # AIが誤りやすいルール
 
-- ガイドラインのバージョン: 0.68.0（2026-10-15 生成）
-- ルールの数: 293
+- ガイドラインのバージョン: 0.69.0（2026-10-15 生成）
+- ルールの数: 295
 
 AIが生成するコードで特に誤りやすいルールです。CSSを書く前とレビューの前に、必ず確認してください。1件1行で、強度とルールの本文と ID だけを並べています。理由と補足は、章ごとのファイル（`references/<章>.md`）を ID で検索して読んでください。
 
@@ -226,6 +226,8 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【推奨】`pile` で画像の上に文字を重ねるときは、文字と画像の間に暗い層を置き、どの画像でも文字のコントラスト比が保たれるようにする。（`pile-scrim-for-text-on-image`）
 - 【推奨】`primary-layout` の子の幅は、子に最大幅や負の `margin` を書かず、`full-column` などのクラスか `grid-column: --wide` のような線の名前で選ぶ。（`primary-layout-width-by-line-names`）
 - 【必須】中央の列の最大幅は、コンテンツ幅の最大値から、その両側に足す列の上限を2本分引いて求める（`var(--_c--content-max-width) - var(--_c--narrow-reduction) * 2`）。（`primary-layout-center-column-subtract-both-sides`）
+- 【推奨】子を折り返さずに横へ並べてスクロールさせる一覧は、Flexbox で子に `flex-shrink: 0` を付けて組まず、`reel`（Grid の `grid-auto-flow: column`）で並べ、項目の幅を親の `grid-auto-columns` で決める。（`reel-grid-auto-columns`）
+- 【推奨】項目にフォーカスできる要素がない横スクロールの一覧には、`role="region"`、見出しを指す `aria-labelledby`、`tabindex="0"` を付ける。（`reel-region-without-focusable-items`）
 - 【推奨】`prose` の中で特定の間だけ間隔を変えるときは、`margin` を足さず、その間の後ろにある子に `--prose--space` を渡す。（`prose-space-on-following-child`）
 - 【必須】`prose` の `--prose--space` はルートで内部プロパティに受け直さず、子要素の `margin-block-start` の `var()` で直接参照する。（`prose-no-internal-property`）
 

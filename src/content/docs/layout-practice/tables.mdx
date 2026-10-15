@@ -116,21 +116,23 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
     border-block-end: 1px solid var(--border--base);
   }
 
-  thead th {
-    position: sticky;
-    inset-block-start: 0;
-    background-color: var(--background--base);
+  th {
+    &:is(thead *) {
+      position: sticky;
+      inset-block-start: 0;
+      background-color: var(--background--base);
 
-    &:first-child {
-      inset-inline-start: 0;
-      z-index: var(--z--forwards);
+      &:first-child {
+        inset-inline-start: 0;
+        z-index: var(--z--forwards);
+      }
     }
-  }
 
-  tbody th {
-    position: sticky;
-    inset-inline-start: 0;
-    background-color: var(--background--surface);
+    &:is(tbody *) {
+      position: sticky;
+      inset-inline-start: 0;
+      background-color: var(--background--surface);
+    }
   }
 }
 ```

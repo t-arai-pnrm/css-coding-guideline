@@ -39,25 +39,27 @@
       border-block-end: 1px solid var(--border--base);
     }
 
-    thead th {
-      position: sticky;
-      inset-block-start: 0;
-      border-block-end: 2px solid var(--border--strong);
-      background-color: var(--background--base);
+    th {
+      &:is(thead *) {
+        position: sticky;
+        inset-block-start: 0;
+        border-block-end: 2px solid var(--border--strong);
+        background-color: var(--background--base);
 
-      /* 左上の角のセルは、縦にも横にも留めて、ほかの留めたセルより前に出す */
-      &:first-child {
-        inset-inline-start: 0;
-        z-index: var(--z--forwards);
-        border-inline-end: 1px solid var(--border--base);
+        /* 左上の角のセルは、縦にも横にも留めて、ほかの留めたセルより前に出す */
+        &:first-child {
+          inset-inline-start: 0;
+          z-index: var(--z--forwards);
+          border-inline-end: 1px solid var(--border--base);
+        }
       }
-    }
 
-    tbody th {
-      position: sticky;
-      inset-inline-start: 0;
-      border-inline-end: 1px solid var(--border--base);
-      background-color: var(--background--surface);
+      &:is(tbody *) {
+        position: sticky;
+        inset-inline-start: 0;
+        border-inline-end: 1px solid var(--border--base);
+        background-color: var(--background--surface);
+      }
     }
 
     td {

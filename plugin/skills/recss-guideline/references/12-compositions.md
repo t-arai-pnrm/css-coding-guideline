@@ -1,9 +1,9 @@
 # 第12章 レイアウトコンポジション：ルール
 
-- ガイドラインのバージョン: 0.68.0（2026-10-15 生成）
-- ルールの数: 37
-- 本文: 約17.1万字
-- 読む条件: 要素を縦に積む、横に並べる、列に分けるなど、繰り返し使うレイアウトのパターン
+- ガイドラインのバージョン: 0.69.0（2026-10-15 生成）
+- ルールの数: 39
+- 本文: 約19.2万字
+- 読む条件: 要素を縦に積む、横に並べる、横にスクロールさせる、列に分けるなど、繰り返し使うレイアウトのパターン
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `compositions` 第12章 レイアウトコンポジション（約4,200字）https://t-arai-pnrm.github.io/recss-guideline/compositions/
+- `compositions` 第12章 レイアウトコンポジション（約4,400字）https://t-arai-pnrm.github.io/recss-guideline/compositions/
 - `compositions/stack` 12-1 stack：子要素を縦に積み、間隔をそろえる（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/stack/
 - `compositions/prose` 12-2 prose：子ごとに変えられる間隔で、本文の流れを作る（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/
 - `compositions/cluster` 12-3 cluster：子を横に並べ、入りきらなければ折り返す（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/cluster/
@@ -24,6 +24,7 @@
 - `compositions/masonry` 12-9 masonry：高さの違う子を短い列へ詰めて並べる（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/masonry/
 - `compositions/pile` 12-10 pile：子要素を同じセルに重ねる（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/pile/
 - `compositions/primary-layout` 12-11 primary-layout：コンテンツ幅とガターを決め、子に5段階の幅を選ばせる（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/
+- `compositions/reel` 12-12 reel：子を横に1列に並べ、入りきらない分をスクロールさせる（約2.1万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/reel/
 
 ## 12-1 stack：子要素を縦に積み、間隔をそろえる
 
@@ -214,3 +215,16 @@ https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/
 - 【推奨・本書の規約】コンポジションの子に付けて置き場所を選ぶクラスは、`full-column` のように接頭辞を付けずに名付け、`& > .full-column` のように直下の子に限って効かせる。（`primary-layout-child-classes-unprefixed`）
   - 理由: `_` はコンポーネントの子要素、`-` はどこでも効くユーティリティの印なので、どちらでもないコンポジションの一部であることを名前とセレクタで示すため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/primary-layout/#rule-primary-layout-child-classes-unprefixed
+
+## 12-12 reel：子を横に1列に並べ、入りきらない分をスクロールさせる
+
+https://t-arai-pnrm.github.io/recss-guideline/compositions/reel/
+
+- 【推奨・実装上の判断】子を折り返さずに横へ並べてスクロールさせる一覧は、Flexbox で子に `flex-shrink: 0` を付けて組まず、`reel`（Grid の `grid-auto-flow: column`）で並べ、項目の幅を親の `grid-auto-columns` で決める。（`reel-grid-auto-columns`）
+  - 理由: グリッドの列は指定した幅より縮まないので、子に縮まない指定や幅を書かずに済み、並び方と項目の幅が親の1か所に集まるため。
+  - 補足: スクロールスナップは `reel` に含めず、使う側のコンポーネントで付けます。カードのように1つずつ見せる項目には `mandatory` を使い、タグのように小さな項目には付けず、画面より大きな項目には `proximity` を使います。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/reel/#rule-reel-grid-auto-columns
+- 【推奨・仕様にもとづく制約】項目にフォーカスできる要素がない横スクロールの一覧には、`role="region"`、見出しを指す `aria-labelledby`、`tabindex="0"` を付ける。（`reel-region-without-focusable-items`）
+  - 理由: スクロールコンテナにキーボードでフォーカスできるかはブラウザによって違い、フォーカスできる要素がないと、キーボードでは画面の外の項目を見られないため。
+  - 補足: 項目にリンクやボタンがあれば、Tab キーで移ったときにブラウザがその位置までスクロールするので、付けません。表を包む要素も同じ付け方をします（第11章のルール `table-min-size-with-scroller`）。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/compositions/reel/#rule-reel-region-without-focusable-items

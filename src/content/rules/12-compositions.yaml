@@ -309,6 +309,27 @@
   page: compositions/primary-layout
   since: 0.5.0
 
+# 12-12 reel：子を横に1列に並べ、入りきらない分をスクロールさせる
+- id: reel-grid-auto-columns
+  level: 推奨
+  kind: judgment
+  rule: '子を折り返さずに横へ並べてスクロールさせる一覧は、Flexbox で子に `flex-shrink: 0` を付けて組まず、`reel`（Grid の `grid-auto-flow: column`）で並べ、項目の幅を親の `grid-auto-columns` で決める。'
+  reason: グリッドの列は指定した幅より縮まないので、子に縮まない指定や幅を書かずに済み、並び方と項目の幅が親の1か所に集まるため。
+  note: 'スクロールスナップは `reel` に含めず、使う側のコンポーネントで付けます。カードのように1つずつ見せる項目には `mandatory` を使い、タグのように小さな項目には付けず、画面より大きな項目には `proximity` を使います。'
+  aiProne: true
+  page: compositions/reel
+  since: 0.69.0
+
+- id: reel-region-without-focusable-items
+  level: 推奨
+  kind: spec
+  rule: '項目にフォーカスできる要素がない横スクロールの一覧には、`role="region"`、見出しを指す `aria-labelledby`、`tabindex="0"` を付ける。'
+  reason: スクロールコンテナにキーボードでフォーカスできるかはブラウザによって違い、フォーカスできる要素がないと、キーボードでは画面の外の項目を見られないため。
+  note: '項目にリンクやボタンがあれば、Tab キーで移ったときにブラウザがその位置までスクロールするので、付けません。表を包む要素も同じ付け方をします（第11章のルール `table-min-size-with-scroller`）。'
+  aiProne: true
+  page: compositions/reel
+  since: 0.69.0
+
 # 12-2 prose：子ごとに変えられる間隔で、本文の流れを作る
 - id: prose-space-on-following-child
   level: 推奨
