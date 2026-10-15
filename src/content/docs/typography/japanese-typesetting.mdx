@@ -1,6 +1,6 @@
 ---
 title: "14-2 和文組版を整える"
-description: "和文組版の土台は、text-autospace、text-spacing-trim、line-breakの3つの初期値です。本文はベタ組みにし、見出しだけをpaltとカーニングで詰めます。ページの一部を縦書きにするときは、回さずにwriting-modeで組みます。言語ごとの切り替えはlang属性と:lang()で行います。"
+description: "和文組版で最初に決めるのは、text-autospace、text-spacing-trim、line-breakの3つの初期値です。本文はベタ組みにし、見出しだけをpaltとカーニングで詰めます。ページの一部を縦書きにするときは、回さずにwriting-modeで組みます。言語ごとの切り替えはlang属性と:lang()で行います。"
 sidebar:
   order: 2
 ---
@@ -15,7 +15,7 @@ import paltCss from '../../../demos/typography/heading-palt/style.css?raw';
 import verticalHtml from '../../../demos/typography/vertical-catch/index.html?raw';
 import verticalCss from '../../../demos/typography/vertical-catch/style.css?raw';
 
-和文組版の土台は、`:root` に指定する3つの初期値です。`text-autospace: normal` で和文と英数字の間にアキを入れ、`text-spacing-trim: trim-start` で約物のアキを詰め、`line-break: strict` で厳格な禁則を適用します。そのうえで、本文は文字を詰めないベタ組みにし、見出しだけを `palt` とカーニングで詰めます。
+和文組版で最初に決めるのは、`:root` に指定する3つの初期値です。`text-autospace: normal` で和文と英数字の間にアキを入れ、`text-spacing-trim: trim-start` で約物のアキを詰め、`line-break: strict` で厳格な禁則を適用します。そのうえで、本文は文字を詰めないベタ組みにし、見出しだけを `palt` とカーニングで詰めます。
 
 これらの指定のうち、`text-autospace` は文字の種類を手がかりにします。一方、`line-break` の一部の規則や、見出しの `palt` の切り替えは、`lang` 属性で決まる言語を手がかりにしています。
 

@@ -51,6 +51,10 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 ## 原稿の書き方（要点）
 
 - 文章の規範は、スキル `japanese-tech-writing`（gist fd287c3133457c4fd8f5601d34aa817d）に従う。次の執筆スタイルと衝突したら、スキルを優先する。体裁（節の流れ、コード例のラベル、字数）は、このファイルの定めのままにする。
+- 書いた後の推敲には、スキル `yomiyasu`（`.claude/skills/yomiyasu/`、nanaism/yomiyasu、MIT）を使う。書くときの規範は `japanese-tech-writing` のままで、`yomiyasu` は、非生物主語と比喩動詞、名詞の連続、過剰な装飾を直す推敲とリンターに使う。
+  - 2つのスキルが食い違ったら、`japanese-tech-writing` とこのファイルの定めを優先する。否定対比は、読み手が実際に誤解しそうな解釈を退けるときだけ残す。
+  - `yomiyasu` の対象は地の文だけにする。コードブロックとそのタイトル（`🙆‍♂ Recommended` の絵文字を含む）、インラインコード、MDX のコンポーネント、frontmatter、`prh.yml` の用語は変えない。
+  - 推敲で主張や断定の強さ、事実を変えない。リンターの指摘が本書の定めと衝突したら、本書の定めを残す。
 - 著者の執筆スタイルに従う。
   - です・ます調で書き、結論から話す。
   - 1段落は2〜4文。
@@ -159,6 +163,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
    - `node scripts/lint-examples.mjs <MDX ファイル>`：Recommended のコード例
    - `node node_modules/stylelint/bin/stylelint.mjs "src/demos/<章>/**/*.css"`：デモの CSS（`pnpm exec` は権限で拒否される）
    - `node node_modules/textlint/bin/textlint.js <MDX ファイル>`：原稿
+   - `python3 .claude/skills/yomiyasu/scripts/yomiyasu_lint.py <MDX ファイル>`：原稿の比喩動詞、名詞の連続、過剰な装飾（スキル `yomiyasu`）。コード例のラベルの絵文字への指摘は無視する。`sentence_end_repetition`（です・ます調では文末が続く）、`negative_parallelism` と `negative_parallelism_density`（技術的な区別の否定対比）、`excess_list`（章の概要の節の一覧）は本書の文体と合わないので見ない。比喩、語彙、前置きの指摘だけを推敲の候補にし、文字どおりの意味で使っている語は残す。ソフトウェアの「版」は本書の用語なので、`translated_term` の「版」の指摘は無視する（「メジャーバージョン」「バージョン番号」「バージョン管理」のような複合語はバージョンと書く）。「土台」は、リセットCSSとベーススタイルを指す場合と「〜をもとに作る」の意味では残し、「判断の土台」のような抽象的な比喩では使わない
    - `node scripts/find-unnested-states.mjs <MDX や CSS のファイル>`：要素自身の状態をネストせずに連結しているセレクタ（ルール `nest-own-states`）。詳細度の説明などで連結を見せる例は、意図して残してよい
    - `node scripts/find-type-under-child.mjs <MDX や CSS のファイル>`：子要素のクラスの下をタイプセレクタで選んでいるセレクタ（ルール `no-type-under-child-class`）。CMSの本文のようにクラスを付けられない領域は、意図して残してよい
    - YAML の構文：`node -e "require('yaml').parse(require('fs').readFileSync('<ファイル>','utf8'))"`
