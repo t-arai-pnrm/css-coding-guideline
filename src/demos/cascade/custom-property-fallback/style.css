@@ -1,0 +1,41 @@
+@layer components {
+  @scope (.scoped.accent-cases) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+    }
+
+    ._case {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+      padding: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+
+      /* 子の ._item は、ここで宣言した値を継承する */
+      &[data-case="inherited"] {
+        --_accent: var(--foreground--danger);
+      }
+
+      /* 色ではない値も、カスタムプロパティとしては受け付けられる */
+      &[data-case="invalid"] {
+        --_accent: 20px;
+      }
+    }
+
+    ._label {
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      line-height: var(--text--caption--leading);
+    }
+
+    ._item {
+      padding-inline-start: 12px;
+
+      /* --_accent が未定義のときだけ、フォールバックの色が使われる */
+      border-inline-start: 6px solid var(--_accent, var(--border--strong));
+    }
+  }
+}

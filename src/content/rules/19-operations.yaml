@@ -146,6 +146,24 @@
   page: operations/verification
   since: 0.35.0
 
+- id: verify-reflow-400
+  level: 必須
+  kind: spec
+  rule: 幅1280 CSS pxのウィンドウでページを400%に拡大し、ページ全体に横スクロールが出ず、固定した部品が本文やフォーカスした要素を覆わないことを確かめる。
+  reason: 'WCAGの達成基準1.4.10が、幅320 CSS px相当で2方向のスクロールなしに内容と機能を使えることを求めており、ズームでは高さも縮むので、幅を狭めただけでは固定した部品の覆い方を再現できないため。'
+  note: 表、地図、図のように2次元の配置が要る部分は、その部分の中だけで横にスクロールさせてかまいません。周りの見出しや操作は例外になりません。
+  page: operations/verification
+  since: 0.66.0
+
+- id: verify-text-spacing-override
+  level: 必須
+  kind: spec
+  rule: '行の高さを文字サイズの1.5倍、段落の後ろの余白を2倍、字間を0.12倍、語間を0.16倍に `!important` で上書きし、文字が切れず、重ならず、部品の中身が隠れないことを確かめる。'
+  reason: 'WCAGの達成基準1.4.12が、利用者がテキストの間隔をこの値まで広げても内容や機能が失われないことを求めており、高さを固定した箱は上書きした時点で文字を切るため。'
+  note: '和文の部分では語間は変わらず、字間を広げると字面が離れます。見るのは読みやすさではなく、欠けや重なりがないかです。'
+  page: operations/verification
+  since: 0.66.0
+
 - id: verify-keyboard-and-display-settings
   level: 推奨
   kind: judgment

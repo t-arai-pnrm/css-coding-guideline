@@ -207,21 +207,9 @@ import propsCss from '../../../demos/components/public-properties/style.css?raw'
 
 ## 公開プロパティに無効な値を渡したときのフォールバック
 
-`var()` のフォールバックが使われるのは、参照したカスタムプロパティが定義されていないときだけです。公開プロパティに、プロパティに合わない値が渡されたときには使われません。たとえば `style="--info-card--radius: large"` と渡すと、`var(--info-card--radius, 8px)` は `large` に置き換わります。`border-radius: large` という無効な宣言になり、`8px` は使われません。
+`var()` のフォールバックが使われるのは、参照したカスタムプロパティが定義されていないときだけです。公開プロパティに、プロパティに合わない値が渡されたときには使われません。たとえば `style="--info-card--radius: large"` と渡すと、`var(--info-card--radius, 8px)` は `large` に置き換わります。`border-radius: large` という合わない値になり、`8px` は使われません。
 
-普通の宣言なら、無効な値は構文を解釈する時点で捨てられ、前に書いた宣言が使われます。一方、`var()` を含む宣言は、値を置き換えるまで有効かどうかが分かりません。置き換えた後で無効と分かった宣言は「計算値の時点で無効（invalid at computed-value time）」になり、`unset` を指定したのと同じ結果になります。継承するプロパティなら親の値に、継承しないプロパティなら初期値になるということです。
-
-そのため、次のように前の行に安全な値を書いておいても、フォールバックの役には立ちません。`--info-card--radius` に `large` が渡されると、2行目の宣言が勝ったうえで無効になり、`border-radius` は初期値の `0` になります。
-
-```css title="🙅‍♂ Not Recommended: 前の宣言がフォールバックになると期待する"
-/* 🙅‍♂ Not Recommended */
-@scope (.scoped.info-card) to (.scoped) {
-  :scope {
-    border-radius: 8px;
-    border-radius: var(--info-card--radius, 8px);
-  }
-}
-```
+このとき宣言は「計算値の時点で無効」になり、`border-radius` は初期値の `0` になります。`var()` を含む宣言は、前に書いた同じプロパティの宣言にも戻りません。この仕組みは「[4-6 カスタムプロパティの基礎](/cascade/custom-properties-basics/)」で説明しています。
 
 登録していない公開プロパティでは、渡された値の型をCSSの側で確かめる手段がありません。JSDocの `@prop` に型を書き、呼び出し側が正しい値を渡せるようにしておきます。型の確認が欠かせない値は、次の見出しの `@property` で登録すると、無効な値を受けたときにカスタムプロパティ自身の初期値や継承した値に戻せます。
 

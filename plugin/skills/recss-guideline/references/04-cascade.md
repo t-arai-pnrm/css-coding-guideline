@@ -1,8 +1,8 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
-- ルールの数: 23
-- 本文: 約8.1万字
+- ガイドラインのバージョン: 0.66.0（2026-10-15 生成）
+- ルールの数: 24
+- 本文: 約9.2万字
 - 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,12 +12,13 @@
 
 ## この章の節
 
-- `cascade` 第4章 カスケードを制御する（約6,100字）https://t-arai-pnrm.github.io/recss-guideline/cascade/
-- `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/cascade-basics/
+- `cascade` 第4章 カスケードを制御する（約6,400字）https://t-arai-pnrm.github.io/recss-guideline/cascade/
+- `cascade/cascade-basics` 4-1 カスケード・詳細度・継承（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/cascade-basics/
 - `cascade/selectors` 4-2 セレクタで詳細度を設計する（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/selectors/
 - `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約2万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/layers/
 - `cascade/scope` 4-4 @scopeでスタイルを閉じ込める（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/scope/
 - `cascade/nesting` 4-5 CSSネストの基礎（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/nesting/
+- `cascade/custom-properties-basics` 4-6 カスタムプロパティの基礎（約1万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/custom-properties-basics/
 
 ## 4-1 カスケード・詳細度・継承
 
@@ -128,3 +129,12 @@ https://t-arai-pnrm.github.io/recss-guideline/cascade/nesting/
   - 理由: 素の CSS のネストは文字列の展開ではなく、`&` が `:is()` と同じ決まり方で一致と詳細度を決めるので、Sass の展開結果で読むと、当たる要素や詳細度を取り違えるため。
   - 補足: `.a .b { .c & {} }` は `.c :is(.a .b)` になり、Sass の `.c .a .b` と違って、`.a .c .b` の並びにも当てはまります。親が1つのセレクタなら、詳細度は展開した結果と同じです。`&__title` のように `&` に文字をつなげる書き方は無効です（第9章のルール `no-nesting-concatenation`）。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/cascade/nesting/#rule-nesting-read-as-is
+
+## 4-6 カスタムプロパティの基礎
+
+https://t-arai-pnrm.github.io/recss-guideline/cascade/custom-properties-basics/
+
+- 【非推奨・仕様にもとづく制約】`var()` を使う宣言の前に同じプロパティの値を書いて、フォールバックの代わりにしない。（`no-cascade-fallback-for-var`）
+  - 理由: `var()` を含む宣言は、置き換えた後に無効と分かっても前の宣言に戻らず、計算値の時点で無効になって `unset` と同じ結果になるため。
+  - 補足: 参照先が未定義のときの値は、`var()` の2つ目の引数に書きます。2つ目の引数が使われるのは未定義のときだけで、合わない値が入っているときには使われません。未対応の関数と `var()` を組み合わせるときは `@supports` の中に書き（第1章のルール `fallback-method-by-invalidation`）、値の型を保証したいカスタムプロパティは `@property` で登録します（「10-5 公開プロパティと内部プロパティ」）。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/cascade/custom-properties-basics/#rule-no-cascade-fallback-for-var

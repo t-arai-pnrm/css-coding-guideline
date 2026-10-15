@@ -1,6 +1,6 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
+- ガイドラインのバージョン: 0.66.0（2026-10-15 生成）
 - ルールの数: 39
 - 本文: 約11.1万字
 - 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area
@@ -18,7 +18,7 @@
 - `responsive/container-size-queries` 13-3 コンテナサイズクエリ（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/
 - `responsive/container-units-and-side-effects` 13-4 コンテナの副作用とコンテナ単位（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/container-units-and-side-effects/
 - `responsive/media-queries` 13-5 メディアクエリ（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/
-- `responsive/min-viewport-width` 13-6 375px未満の画面の扱い（約7,300字）https://t-arai-pnrm.github.io/recss-guideline/responsive/min-viewport-width/
+- `responsive/min-viewport-width` 13-6 375px未満の画面で配置を保つ例外（約7,300字）https://t-arai-pnrm.github.io/recss-guideline/responsive/min-viewport-width/
 - `responsive/design-comp-pattern` 13-7 カンプの幅で全体を拡大・縮小しない（約8,200字）https://t-arai-pnrm.github.io/recss-guideline/responsive/design-comp-pattern/
 - `responsive/safe-area` 13-8 セーフエリアに対応する（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/
 
@@ -157,7 +157,7 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/
   - 補足: 対応しているのは Chrome 系のブラウザだけです。半透明のままでもコントラストが足りる色を選んだうえで、追加の対策として書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/media-queries/#rule-reduced-transparency-opaque-background
 
-## 13-6 375px未満の画面の扱い
+## 13-6 375px未満の画面で配置を保つ例外
 
 https://t-arai-pnrm.github.io/recss-guideline/responsive/min-viewport-width/
 

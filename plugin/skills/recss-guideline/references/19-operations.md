@@ -1,8 +1,8 @@
 # 第19章 実務での運用：ルール
 
-- ガイドラインのバージョン: 0.64.0（2026-10-15 生成）
-- ルールの数: 27
-- 本文: 約6.6万字
+- ガイドラインのバージョン: 0.66.0（2026-10-15 生成）
+- ルールの数: 29
+- 本文: 約7万字
 - 読む条件: Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,7 +15,7 @@
 - `operations` 第19章 実務での運用（約7,000字）https://t-arai-pnrm.github.io/recss-guideline/operations/
 - `operations/stylelint` 19-1 Stylelintでルールを守る（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/operations/stylelint/
 - `operations/review` 19-2 レビューの進め方（約4,700字）https://t-arai-pnrm.github.io/recss-guideline/operations/review/
-- `operations/verification` 19-3 表示と操作を確かめる（約9,900字）https://t-arai-pnrm.github.io/recss-guideline/operations/verification/
+- `operations/verification` 19-3 表示と操作を確かめる（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/operations/verification/
 - `operations/devtools` 19-4 表示の崩れを開発者ツールで調べる（約9,500字）https://t-arai-pnrm.github.io/recss-guideline/operations/devtools/
 - `operations/wysiwyg` 19-5 CMSのWYSIWYG本文にスタイルを当てる（約8,500字）https://t-arai-pnrm.github.io/recss-guideline/operations/wysiwyg/
 - `operations/adoption` 19-6 既存のサイトに段階的に導入する（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/operations/adoption/
@@ -91,6 +91,14 @@ https://t-arai-pnrm.github.io/recss-guideline/operations/verification/
 - 【必須・仕様にもとづく制約】ブラウザのズームと文字サイズの設定をそれぞれ200%にしても、内容が欠けず、操作できることを確かめる。（`verify-text-resize-200`）
   - 理由: WCAGの達成基準1.4.4が、支援技術なしで文字を200%まで拡大しても内容や機能が失われないことを求めているため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/operations/verification/#rule-verify-text-resize-200
+- 【必須・仕様にもとづく制約】幅1280 CSS pxのウィンドウでページを400%に拡大し、ページ全体に横スクロールが出ず、固定した部品が本文やフォーカスした要素を覆わないことを確かめる。（`verify-reflow-400`）
+  - 理由: WCAGの達成基準1.4.10が、幅320 CSS px相当で2方向のスクロールなしに内容と機能を使えることを求めており、ズームでは高さも縮むので、幅を狭めただけでは固定した部品の覆い方を再現できないため。
+  - 補足: 表、地図、図のように2次元の配置が要る部分は、その部分の中だけで横にスクロールさせてかまいません。周りの見出しや操作は例外になりません。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/operations/verification/#rule-verify-reflow-400
+- 【必須・仕様にもとづく制約】行の高さを文字サイズの1.5倍、段落の後ろの余白を2倍、字間を0.12倍、語間を0.16倍に `!important` で上書きし、文字が切れず、重ならず、部品の中身が隠れないことを確かめる。（`verify-text-spacing-override`）
+  - 理由: WCAGの達成基準1.4.12が、利用者がテキストの間隔をこの値まで広げても内容や機能が失われないことを求めており、高さを固定した箱は上書きした時点で文字を切るため。
+  - 補足: 和文の部分では語間は変わらず、字間を広げると字面が離れます。見るのは読みやすさではなく、欠けや重なりがないかです。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/operations/verification/#rule-verify-text-spacing-override
 - 【推奨・実装上の判断】キーボードだけで操作し、強制カラーモード、動きを減らす設定、グレースケールの表示を再現して確かめる。（`verify-keyboard-and-display-settings`）
   - 理由: フォーカスの見え方と移動の順番、色に頼った表現、止まらない動きは、コードを読むだけでは見落としやすく、条件を再現すると見つかるため。
   - 補足: 強制カラーモードと動きを減らす設定は、Chromeの開発者ツールの「Rendering」パネルで再現できます。

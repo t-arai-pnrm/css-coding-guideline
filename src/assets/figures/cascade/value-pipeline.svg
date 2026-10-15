@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 572" width="480" height="572">
+  <title>宣言から使用値までの6つの段階</title>
+  <!-- 1. 構文解析 -->
+  <rect class="_box" x="0" y="4" width="270" height="60" rx="8"/>
+  <circle class="_arrow" cx="28" cy="34" r="13"/>
+  <text class="_text" x="28" y="39" font-size="14" font-weight="700" text-anchor="middle">1</text>
+  <text class="_text" x="54" y="30" font-size="17" font-weight="700">構文解析</text>
+  <text class="_text-muted" x="54" y="51" font-size="13">var() を含む宣言は検査を先送り</text>
+  <path class="_arrow" d="M270 34 H292"/>
+  <polygon class="_arrowhead" points="300,34 291,29 291,39"/>
+  <rect class="_box" x="300" y="10" width="176" height="48" rx="12" stroke-dasharray="4 3"/>
+  <text class="_text" x="388" y="30" font-size="13" text-anchor="middle">合わない宣言を捨てる</text>
+  <text class="_text" x="388" y="48" font-size="13" text-anchor="middle">前の宣言が使われる</text>
+  <path class="_arrow" d="M135 64 V84"/>
+  <polygon class="_arrowhead" points="135,92 130,83 140,83"/>
+  <!-- 2. カスケード -->
+  <rect class="_box" x="0" y="92" width="270" height="60" rx="8"/>
+  <circle class="_arrow" cx="28" cy="122" r="13"/>
+  <text class="_text" x="28" y="127" font-size="14" font-weight="700" text-anchor="middle">2</text>
+  <text class="_text" x="54" y="118" font-size="17" font-weight="700">カスケード</text>
+  <text class="_text-muted" x="54" y="139" font-size="13">当たる宣言から1つを選ぶ</text>
+  <path class="_arrow" d="M135 152 V172"/>
+  <polygon class="_arrowhead" points="135,180 130,171 140,171"/>
+  <!-- 3. 継承と初期値 -->
+  <rect class="_box" x="0" y="180" width="270" height="60" rx="8"/>
+  <circle class="_arrow" cx="28" cy="210" r="13"/>
+  <text class="_text" x="28" y="215" font-size="14" font-weight="700" text-anchor="middle">3</text>
+  <text class="_text" x="54" y="206" font-size="17" font-weight="700">継承と初期値</text>
+  <text class="_text-muted" x="54" y="227" font-size="13">宣言がなければ補い、指定値に</text>
+  <path class="_arrow" d="M135 240 V260"/>
+  <polygon class="_arrowhead" points="135,268 130,259 140,259"/>
+  <!-- 4. var() の置き換え -->
+  <rect class="_box -accent" x="0" y="268" width="270" height="60" rx="8"/>
+  <circle class="_arrow" cx="28" cy="298" r="13"/>
+  <text class="_text-accent" x="28" y="303" font-size="14" font-weight="700" text-anchor="middle">4</text>
+  <text class="_text-accent" x="54" y="294" font-size="17" font-weight="700">var() の置き換え</text>
+  <text class="_text-muted" x="54" y="315" font-size="13">カスタムプロパティの値を代入</text>
+  <path class="_arrow" d="M270 298 H292"/>
+  <polygon class="_arrowhead" points="300,298 291,293 291,303"/>
+  <rect class="_box -accent" x="300" y="274" width="176" height="48" rx="12" stroke-dasharray="4 3"/>
+  <text class="_text-accent" x="388" y="294" font-size="13" text-anchor="middle">合わなければ計算値の</text>
+  <text class="_text-accent" x="388" y="312" font-size="13" text-anchor="middle">時点で無効（unset）</text>
+  <path class="_arrow" d="M135 328 V348"/>
+  <polygon class="_arrowhead" points="135,356 130,347 140,347"/>
+  <!-- 5. 計算値 -->
+  <rect class="_box" x="0" y="356" width="270" height="60" rx="8"/>
+  <circle class="_arrow" cx="28" cy="386" r="13"/>
+  <text class="_text" x="28" y="391" font-size="14" font-weight="700" text-anchor="middle">5</text>
+  <text class="_text" x="54" y="382" font-size="17" font-weight="700">計算値</text>
+  <text class="_text-muted" x="54" y="403" font-size="13">em などを絶対値に。子孫へ継承</text>
+  <path class="_arrow" d="M135 416 V436"/>
+  <polygon class="_arrowhead" points="135,444 130,435 140,435"/>
+  <!-- 6. 使用値 -->
+  <rect class="_box" x="0" y="444" width="270" height="60" rx="8"/>
+  <circle class="_arrow" cx="28" cy="474" r="13"/>
+  <text class="_text" x="28" y="479" font-size="14" font-weight="700" text-anchor="middle">6</text>
+  <text class="_text" x="54" y="470" font-size="17" font-weight="700">使用値</text>
+  <text class="_text-muted" x="54" y="491" font-size="13">レイアウトから % などを解決</text>
+  <!-- 凡例 -->
+  <rect class="_box -accent" x="0" y="548" width="16" height="16" rx="3"/>
+  <text class="_text-muted" x="26" y="561" font-size="13">var() を含む宣言が無効と分かる段</text>
+</svg>
