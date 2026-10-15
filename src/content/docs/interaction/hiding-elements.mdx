@@ -133,7 +133,7 @@ import hidingJs from '../../../demos/interaction/hiding-methods/script.js?raw';
 
 ## `aria-hidden` と `inert` で支援技術や操作から外す
 
-`aria-hidden="true"` は、見た目と操作を残したまま、要素と子孫をアクセシビリティツリーから外します。隣のテキストと同じ意味を持つアイコンや、飾りのSVGに付けます。意味を持つアイコンの名前は、SVGに `aria-hidden="true"` を付けたうえで、隣に `.-visually-hidden` のテキストを置いて伝えます（「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」）。
+`aria-hidden="true"` は、見た目と操作を残したまま、要素と子孫をアクセシビリティツリーから外します。隣のテキストと同じ意味を持つアイコンや、飾りのSVGに付けます。意味を持つアイコンには付けず、SVGに `role="img"` と `aria-label` で名前を付けます。名前をページ内検索やコピーの対象にしたいときだけ、SVGに `aria-hidden="true"` を付けたうえで、隣に `.-visually-hidden` のテキストを置いて伝えます（「[16-3 アイコンとSVG](/decoration/icons-and-masks/#インラインsvgの代替テキスト)」）。
 
 ```html title="🙆‍♂ Recommended: アイコンを読み上げから外し、名前は隣のテキストで伝える"
 <a href="/feed.xml">
