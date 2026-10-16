@@ -1,7 +1,7 @@
 # AIが誤りやすいルール
 
-- ガイドラインのバージョン: 0.70.2（2026-10-16 生成）
-- ルールの数: 295
+- ガイドラインのバージョン: 0.71.0（2026-10-16 生成）
+- ルールの数: 296
 
 AIが生成するコードで特に誤りやすいルールです。CSSを書く前とレビューの前に、必ず確認してください。1件1行で、強度とルールの本文と ID だけを並べています。理由と補足は、章ごとのファイル（`references/<章>.md`）を ID で検索して読んでください。
 
@@ -255,6 +255,7 @@ AIが生成するコードで特に誤りやすいルールです。CSSを書く
 - 【必須】`<meta name="viewport">` に `viewport-fit=cover` を指定したら、文字やボタンを `env(safe-area-inset-*)` で確保した範囲の内側に置き、上下左右と横向きの画面で確認する。（`safe-area-inset-with-viewport-fit-cover`）
 - 【推奨】セーフエリアの値は単独で余白にせず、左右のガターや端に接するバーの余白は `max(16px, env(safe-area-inset-left))` のように通常の余白と比べ、端から浮かせる要素の位置は `calc(16px + env(safe-area-inset-bottom))` のように足す。（`safe-area-combine-with-max`）
 - 【必須】画面の下端に `position: fixed` で固定するバーやボタンには、`env(safe-area-inset-bottom)` を加える。（`safe-area-fixed-bottom`）
+- 【必須】溢れを検知して隠す要素は、`visibility: hidden` で隠し、`display: none` にしない。（`hide-overflow-source-with-visibility`）
 
 ## 第14章 タイポグラフィと和文組版（references/14-typography.md）
 

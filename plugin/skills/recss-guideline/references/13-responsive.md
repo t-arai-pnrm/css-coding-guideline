@@ -1,9 +1,9 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.70.2（2026-10-16 生成）
-- ルールの数: 40
-- 本文: 約11.6万字
-- 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area
+- ガイドラインのバージョン: 0.71.0（2026-10-16 生成）
+- ルールの数: 42
+- 本文: 約13万字
+- 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、ナビゲーションの折りたたみ、safe-area
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
 強度は「必須」「推奨」「非推奨」「禁止」の4段階です。「必須」と「禁止」は、各ルールの補足に書いた適用範囲と例外を除いて必ず守り、「推奨」と「非推奨」は理由があれば外れてかまいません。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `responsive` 第13章 レスポンシブデザイン（約7,800字）https://t-arai-pnrm.github.io/recss-guideline/responsive/
+- `responsive` 第13章 レスポンシブデザイン（約8,000字）https://t-arai-pnrm.github.io/recss-guideline/responsive/
 - `responsive/escalation` 13-1 検討する順番（約8,500字）https://t-arai-pnrm.github.io/recss-guideline/responsive/escalation/
 - `responsive/breakpoints` 13-2 ブレイクポイントの決め方（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/
 - `responsive/container-size-queries` 13-3 コンテナサイズクエリ（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/
@@ -21,6 +21,7 @@
 - `responsive/min-viewport-width` 13-6 375px未満の画面で配置を保つ例外（約7,300字）https://t-arai-pnrm.github.io/recss-guideline/responsive/min-viewport-width/
 - `responsive/design-comp-pattern` 13-7 カンプの幅で全体を拡大・縮小しない（約8,200字）https://t-arai-pnrm.github.io/recss-guideline/responsive/design-comp-pattern/
 - `responsive/safe-area` 13-8 セーフエリアに対応する（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/
+- `responsive/overflow-collapse` 13-9 収まらなくなったらナビゲーションを折りたたむ（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/overflow-collapse/
 
 ## 13-1 検討する順番
 
@@ -203,3 +204,16 @@ https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/
   - 理由: ホームインジケーターと重なり、ボタンを押すつもりの操作でホーム画面に戻ってしまうため。
   - 補足: 横向きの画面では左右にもセーフエリアがあるので、左右の端に接するバーやボタンには `env(safe-area-inset-left)` と `env(safe-area-inset-right)` も加えます。対象のブラウザはすべて `env()` に対応しているので、固定の値の宣言を前に書く二段構えのフォールバックは書きません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/safe-area/#rule-safe-area-fixed-bottom
+
+## 13-9 収まらなくなったらナビゲーションを折りたたむ
+
+https://t-arai-pnrm.github.io/recss-guideline/responsive/overflow-collapse/
+
+- 【推奨・実装上の判断】ナビゲーションのように項目の数や文言が変わる横並びを、1行に収まらなくなったらメニューのボタンに切り替えるときは、各部の幅を足した閾値のクエリではなく、スクロールタイムラインで横並び自身の溢れを検知したフラグで切り替える。（`collapse-nav-on-overflow`）
+  - 理由: 切り替える幅が実際の中身から決まり、CMSで項目や文言が増えても、文字の大きさやフォントが変わっても、閾値を直さずに済むため。
+  - 補足: ルートで `--_overflowing: --false` を宣言し、`timeline-scope` で受け取った横並びのスクロールタイムラインに、最初と最後で `--_overflowing: --true` にするアニメーションを結び付けます。横並びの列は `minmax(0, auto)` で縮められるようにし、両端の列は中身より縮めません。隠したナビゲーションと同じ項目を、ドロワーにも置きます。スクロール駆動アニメーションに対応していない環境では、フラグが常に `--true` になり、折りたたんだ表示になります。配置を組み替える切り替えには使わず、閾値を式で書きます（ルール `threshold-as-formula`）。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/overflow-collapse/#rule-collapse-nav-on-overflow
+- 【必須・仕様にもとづく制約】溢れを検知して隠す要素は、`visibility: hidden` で隠し、`display: none` にしない。（`hide-overflow-source-with-visibility`）
+  - 理由: `display: none` にすると溢れが消えてタイムラインが無効になり、フラグが戻って再び表示される切り替えを繰り返すため。
+  - 補足: `visibility: hidden` の要素は、レイアウトに場所を残したまま、フォーカスと支援技術からは外れます。スクロールバーが場所を取る環境で、溢れた瞬間に高さが変わらないように、溢れを測る要素には `scrollbar-width: none` も指定します。
+  - 詳細: https://t-arai-pnrm.github.io/recss-guideline/responsive/overflow-collapse/#rule-hide-overflow-source-with-visibility
