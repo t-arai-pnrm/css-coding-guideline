@@ -1,23 +1,5 @@
 @layer components {
   @scope (.scoped.normal-flow-directions) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-      gap: 16px;
-    }
-
-    /* 縦書きの親の論理プロパティは親自身の書字方向で解釈されるので、見出しとの間は gap で空ける */
-    section {
-      display: block grid;
-      gap: 8px;
-      align-content: start;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     ._parent {
       padding: 8px;
       border: 1px dashed var(--border--strong);

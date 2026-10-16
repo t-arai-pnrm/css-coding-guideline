@@ -3,12 +3,6 @@
    * 文字を左右から離す余白を、段落の margin で作る場合と、包む要素の padding で作る場合を比べる。
    */
   @scope (.scoped.text-element-spacing) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
-      gap: 16px;
-    }
-
     ._body {
       padding-block: 16px;
       border: 1px solid var(--border--base);
@@ -22,11 +16,11 @@
       &[data-spacing="wrapper-padding"] {
         padding-inline: 16px;
       }
-    }
 
-    /* 比べるために、段落にだけ横の margin を付ける */
-    ._indented-text {
-      margin-inline: 16px;
+      /* 比べるために、段落にだけ横の margin を付ける */
+      & > ._indented-text {
+        margin-inline: 16px;
+      }
     }
 
     h3 {

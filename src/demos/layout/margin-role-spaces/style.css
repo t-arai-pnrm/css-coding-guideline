@@ -7,6 +7,11 @@
       padding: 16px;
       border: 1px dashed var(--border--strong);
       background-color: var(--background--active);
+
+      /* margin は gap に足され、その領域には親の背景が見える */
+      & > ._item[data-margin] {
+        margin-block: 12px;
+      }
     }
 
     ._item {
@@ -16,11 +21,6 @@
       color: var(--foreground--on-accent);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
-
-      /* margin は gap に足され、その領域には親の背景が見える */
-      &[data-margin] {
-        margin-block: 12px;
-      }
     }
   }
 }

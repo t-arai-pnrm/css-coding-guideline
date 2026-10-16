@@ -7,15 +7,19 @@
       aspect-ratio: 16 / 9;
       border-radius: var(--rounded--md);
       background-color: oklch(30% 0.03 250deg);
+
+      & > ._label {
+        /* 包含ブロックいっぱいの範囲を作り、残りを margin: auto で均等に分ける */
+        position: absolute;
+        inset: 0;
+        margin: auto;
+      }
     }
 
     ._label {
-      /* 包含ブロックいっぱいの範囲を作り、内容の大きさに縮めて、残りを margin: auto で均等に分ける */
-      position: absolute;
-      inset: 0;
+      /* 内容の大きさに縮める */
       inline-size: fit-content;
       block-size: fit-content;
-      margin: auto;
       padding-block: 8px;
       padding-inline: 16px;
       border-radius: var(--rounded--full);

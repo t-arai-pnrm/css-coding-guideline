@@ -30,9 +30,6 @@ import percentCss from '../../../demos/layout/box-model-percent/style.css?raw';
 ```css title="🙆‍♂ Recommended: ブロックのまま、幅だけを中身に合わせる"
 .badge {
   inline-size: fit-content;
-  padding-inline: 8px;
-  border-radius: 4px;
-  background-color: oklch(95% 0.03 250deg);
 }
 ```
 
@@ -53,11 +50,7 @@ import percentCss from '../../../demos/layout/box-model-percent/style.css?raw';
 ```css title="🙆‍♂ Recommended: 固定の下限は、親の幅を超えないようにする"
 .button {
   display: inline flex;
-  justify-content: center;
-  align-items: center;
   min-inline-size: min(100%, calc(240 / 16 * 1rem));
-  padding-block: 12px;
-  padding-inline: 24px;
 }
 ```
 
@@ -82,7 +75,6 @@ import percentCss from '../../../demos/layout/box-model-percent/style.css?raw';
 ```css title="🙅‍♂ Not Recommended: 上の padding の % で縦横の比率を作る"
 /* 🙅‍♂ Not Recommended */
 ._video {
-  position: relative;
   block-size: 0;
   padding-top: 56.25%;
 }

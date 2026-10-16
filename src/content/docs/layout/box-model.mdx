@@ -36,7 +36,7 @@ import unsetCss from '../../../demos/layout/box-model-unset-box-sizing/style.css
   box-sizing: content-box;
   inline-size: calc(50% - 34px);
   padding: 16px;
-  border: 1px solid oklch(85% 0 0deg);
+  border: 1px solid;
 }
 ```
 
@@ -58,7 +58,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 .card {
   inline-size: 50%;
   padding: 16px;
-  border: 1px solid oklch(85% 0 0deg);
+  border: 1px solid;
 }
 ```
 
@@ -115,10 +115,10 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
     --_padding: 24px;
 
     padding: var(--_padding);
-  }
 
-  ._image {
-    margin-inline: calc(var(--_padding) * -1);
+    & > ._image {
+      margin-inline: calc(var(--_padding) * -1);
+    }
   }
 }
 ```
@@ -130,12 +130,10 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 ```css title="🙆‍♂ Recommended: auto の margin で、ログインのリンクを行の末尾に寄せる"
 ._header {
   display: block flex;
-  gap: 16px;
-  align-items: center;
-}
 
-._login {
-  margin-inline-start: auto;
+  & > ._login {
+    margin-inline-start: auto;
+  }
 }
 ```
 
@@ -152,7 +150,6 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 ```css title="🙆‍♂ Recommended: 透明な border を置いておき、選択の状態では色だけを変える"
 @scope (.scoped.tabs) to (.scoped) {
   ._tab {
-    padding-block: 8px;
     border-block-end: 2px solid transparent;
 
     &[aria-selected="true"] {
@@ -180,9 +177,6 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 ._tag {
   display: inline flow-root;
   padding-block: 4px;
-  padding-inline: 8px;
-  border-radius: 4px;
-  background-color: oklch(95% 0.03 250deg);
 }
 ```
 

@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # RECSSガイドライン Skill
 
-- ガイドラインのバージョン: 0.70.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.70.1（2026-10-16 生成）
 - ルールの数: 616（うち AI が誤りやすいもの 295）
 - 本書: https://t-arai-pnrm.github.io/recss-guideline/
 
@@ -101,10 +101,10 @@ Figma などのデザインツールのデザインから書くときは、「20
 | --- | --- | --- | --- | --- |
 | 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.5万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
 | 第2章 CSS設計の考え方 | `references/02-design-mindset.md` | 7 | 約2.7万字 | コンポーネントの分け方、共通化、上書きの多い設計 |
-| 第4章 カスケードを制御する | `references/04-cascade.md` | 24 | 約9.2万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
-| 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.4万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |
-| 第6章 値と単位 | `references/06-values.md` | 30 | 約8.9万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
-| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約28万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
+| 第4章 カスケードを制御する | `references/04-cascade.md` | 24 | 約9万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
+| 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.1万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |
+| 第6章 値と単位 | `references/06-values.md` | 30 | 約8.8万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
+| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約26.8万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
 | 第8章 リセットとベーススタイル | `references/08-reset.md` | 23 | 約4.9万字 | リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル |
 | 第9章 記法の規約 | `references/09-notation.md` | 49 | 約12.6万字 | **常に読む**。すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法） |
 | 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 53 | 約16.9万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |

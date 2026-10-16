@@ -1,21 +1,5 @@
 @layer components {
   @scope (.scoped.implicit-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-      gap: 24px;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     ._grid {
       display: block grid;
       grid-template-columns: repeat(3, 1fr);
@@ -32,6 +16,11 @@
       &[data-rows="auto"] {
         grid-auto-rows: 64px;
       }
+
+      & > [data-side] {
+        grid-column: 1;
+        grid-row: 1 / -1;
+      }
     }
 
     ._item {
@@ -43,8 +32,6 @@
       line-height: var(--text--body-compact--leading);
 
       &[data-side] {
-        grid-column: 1;
-        grid-row: 1 / -1;
         background-color: var(--background--inverse);
         color: var(--foreground--inverse);
       }

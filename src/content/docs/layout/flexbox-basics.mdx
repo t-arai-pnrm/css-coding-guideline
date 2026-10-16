@@ -10,6 +10,7 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import distributionHtml from '../../../demos/layout/flexbox-distribution/index.html?raw';
 import distributionCss from '../../../demos/layout/flexbox-distribution/style.css?raw';
+import distributionFrame from '../../../demos/layout/flexbox-distribution/frame.css?raw';
 import alignmentHtml from '../../../demos/layout/flexbox-alignment/index.html?raw';
 import alignmentCss from '../../../demos/layout/flexbox-alignment/style.css?raw';
 import equalColumnsHtml from '../../../demos/layout/flexbox-equal-columns/index.html?raw';
@@ -20,6 +21,7 @@ import axesHtml from '../../../demos/layout/flexbox-axes/index.html?raw';
 import axesCss from '../../../demos/layout/flexbox-axes/style.css?raw';
 import flexOneHtml from '../../../demos/layout/flexbox-flex-one/index.html?raw';
 import flexOneCss from '../../../demos/layout/flexbox-flex-one/style.css?raw';
+import flexOneFrame from '../../../demos/layout/flexbox-flex-one/frame.css?raw';
 import minSizeHtml from '../../../demos/layout/flexbox-min-size/index.html?raw';
 import minSizeCss from '../../../demos/layout/flexbox-min-size/style.css?raw';
 import wrapGapHtml from '../../../demos/layout/flexbox-wrap-gap/index.html?raw';
@@ -28,6 +30,7 @@ import orderHtml from '../../../demos/layout/flexbox-order/index.html?raw';
 import orderCss from '../../../demos/layout/flexbox-order/style.css?raw';
 import basisSizeHtml from '../../../demos/layout/flexbox-basis-size/index.html?raw';
 import basisSizeCss from '../../../demos/layout/flexbox-basis-size/style.css?raw';
+import basisSizeFrame from '../../../demos/layout/flexbox-basis-size/frame.css?raw';
 
 Flexboxは、アイテムの中身の大きさを出発点にして、余った空間や足りない空間をアイテムに配るレイアウトの方式です。アイテムを並べる向きを主軸、それに直交する向きを交差軸と呼び、`justify-content` は主軸の配置を、`align-items` は交差軸の配置を決めます。伸び縮みの量は、`flex-grow`、`flex-shrink`、`flex-basis` の3つから計算で決まります。
 
@@ -117,15 +120,13 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 次のデモは、この見出しの2つの計算を、幅480pxのコンテナで再現したものです。各アイテムには、`flex-basis` と、配った後の幅を書いています。
 
-<Demo title="flex-grow と flex-shrink による空間の配り方" html={distributionHtml} css={distributionCss} widths={[]} />
+<Demo title="flex-grow と flex-shrink による空間の配り方" html={distributionHtml} css={distributionCss} frame={distributionFrame} widths={[]} />
 
 部品の中では、伸ばすアイテムと大きさを変えないアイテムを分けて指定します。アイコン、本文、ボタンを1行に並べるなら、アイコンは `flex-shrink: 0` で縮む計算から外し、本文は `flex-grow: 1` で余りを受け取ります。
 
 ```css title="🙆‍♂ Recommended: アイコン、伸びる本文、ボタンを1行に並べる"
 ._notice {
   display: block flex;
-  gap: 12px;
-  align-items: center;
 
   & > ._icon {
     flex-shrink: 0;
@@ -177,7 +178,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 次のデモは、幅320pxのコンテナに、`flex-basis: 200px` のアイテムを1つずつ置いたものです。上の3つは横に並べていて、`flex-basis` だけなら200px、`max-inline-size: 120px` を足すと120px、さらに `min-inline-size: 160px` を足すと160pxになります。下の2つは縦に並べていて、`flex-basis: 200px` のアイテムは高さが200pxになり、`inline-size: 200px` のアイテムは幅が200pxのままです。
 
-<Demo title="flex-basis は min と max の範囲に収められ、縦に並べると高さになる" html={basisSizeHtml} css={basisSizeCss} widths={[]} />
+<Demo title="flex-basis は min と max の範囲に収められ、縦に並べると高さになる" html={basisSizeHtml} css={basisSizeCss} frame={basisSizeFrame} widths={[]} />
 
 ## `flex: 1` は `flex-basis` も変える
 
@@ -207,7 +208,6 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 ```css title="🙆‍♂ Recommended: 入力欄だけを、余りの分だけ伸ばす"
 ._search {
   display: block flex;
-  gap: 8px;
 
   & > ._input {
     flex-grow: 1;
@@ -217,7 +217,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 次のデモは、中身の長さが違う2つのアイテムに、`flex-grow: 1` と `flex: 1` を指定したものです。`flex-grow: 1` の段では中身の幅の差が残り、`flex: 1` の段では480pxのコンテナが240pxずつに分かれます。
 
-<Demo title="flex-grow: 1 と flex: 1 の伸ばし方の違い" html={flexOneHtml} css={flexOneCss} widths={[]} />
+<Demo title="flex-grow: 1 と flex: 1 の伸ばし方の違い" html={flexOneHtml} css={flexOneCss} frame={flexOneFrame} widths={[]} />
 
 このように意味が違うので、`flex: 1` を `flex-grow: 1` に書き換えると動きが変わります（ルール [`longhand-for-partial-change`](/design-mindset/maintainability/#rule-longhand-for-partial-change) の補足）。ただし、`flex: 1` で幅がそろうのは、アイテムの `padding` と `border` が同じ場合だけです。その理由は、次の「`flex: 1` でも列の幅がそろわない場合」で説明します。
 
@@ -282,7 +282,6 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 ._card {
   display: block flex;
   flex-direction: column;
-  gap: 8px;
 
   & > ._image {
     order: -1;
@@ -318,11 +317,9 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 /* 🙅‍♂ Not Recommended */
 ._item-group {
   display: block flex;
-  gap: 1rem;
 
   & > * {
     flex: 1;
-    padding-block: 1rlh;
   }
 
   & > :nth-child(odd) {
@@ -339,11 +336,6 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 ._item-group {
   display: block grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-
-  & > * {
-    padding-block: 1rlh;
-  }
 
   & > :nth-child(odd) {
     padding-inline: 1rem;

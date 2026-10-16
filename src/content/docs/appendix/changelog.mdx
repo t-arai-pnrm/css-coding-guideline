@@ -11,6 +11,15 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.70.1（2026年10月16日）
+
+第II部（第4〜7章）のコード例を、その見出しで説明している宣言に絞りました。ルールは変えていません。
+
+- コード例から、主題でない見た目の宣言（色、文字サイズ、角丸、`padding`、`gap` など）を消しました。本文が触れている宣言と、主題の宣言が働くのに要る宣言は残しています。悪い例も同じように削り、問題を起こしている宣言は残しました。
+- 子のルールに書いていた配置の宣言を、親のルールのネストに移しました。親を基準にした `position: absolute` と `inset`、`float`、外側の `margin`（`auto` で寄せる値を含む）です（ルール [`nest-child-placement-only`](/notation/nesting-criteria/#rule-nest-child-placement-only)）。対象は、主に第7章のコード例とデモです。「[7-1 レイアウトの基礎](/layout/fundamentals/)」「[7-2 通常フローの基礎](/layout/normal-flow/)」「[7-3 ボックスモデルの基礎](/layout/box-model/)」にあります。「[7-10 positionの基礎](/layout/positioning/)」「[7-11 アンカーポジショニングの基礎](/layout/anchor-basics/)」にもあります。
+- デモで比べる区画を並べる指定を、0.70.0で加えた共通の足場（`data-demo-layout`）に置き換え、デモのCSSから外しました。区画の幅が結果を左右するデモのために、区画をいつも縦に積む `data-demo-layout="stack"` を加え、付録I「[デモの共通トークン](/appendix/demo-tokens/)」にも書きました。区画の最小幅を240px相当にそろえたので、一部のデモでは、同じ幅でも並ぶ列の数が変わります。
+- 「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」のデモで、`padding-inline-start` と `list-style-type` をkiso.cssの値に戻す指定を、`revert-layer` で書きました。値を直接書かず、戻したい先をキーワードで示しています（ルール [`explicit-rollback-keyword`](/cascade/cascade-basics/#rule-explicit-rollback-keyword)）。
+
 ## 0.70.0（2026年10月16日）
 
 親のレイアウトで意味が決まる宣言は、親のネストに書くと決めました。ルールの補足を変えたので、マイナーバージョンを上げています。本書のコード例とデモは、次の版から部ごとに、この書き方へそろえます。

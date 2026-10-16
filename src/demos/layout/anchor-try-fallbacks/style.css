@@ -18,6 +18,16 @@
       &:last-child {
         align-self: end;
       }
+
+      & > ._tip {
+        @supports (position-area: block-end span-inline-end) {
+          position: absolute;
+          position-area: block-end span-inline-end;
+          position-anchor: --tip-stage;
+          position-try-fallbacks: flip-block;
+          margin-block-start: 8px;
+        }
+      }
     }
 
     ._anchor {
@@ -40,14 +50,6 @@
       background-color: var(--background--raised);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
-
-      @supports (position-area: block-end span-inline-end) {
-        position: absolute;
-        position-area: block-end span-inline-end;
-        position-anchor: --tip-stage;
-        position-try-fallbacks: flip-block;
-        margin-block-start: 8px;
-      }
 
       @media (forced-colors: active) {
         outline: 1px solid;

@@ -17,6 +17,7 @@ import newsHtml from '../../../demos/layout/news-list/index.html?raw';
 import newsCss from '../../../demos/layout/news-list/style.css?raw';
 import imageCardHtml from '../../../demos/layout/image-card-fit-content/index.html?raw';
 import imageCardCss from '../../../demos/layout/image-card-fit-content/style.css?raw';
+import imageCardFrame from '../../../demos/layout/image-card-fit-content/frame.css?raw';
 
 Gridでアイテムをそろえる方法は、そろえる範囲で選びます。1つのセルの中やコンテナの中での位置は、配置のプロパティの `*-items` と `*-content` で、そろえる対象を区別して指定します。並べたカードの中の見出しやボタン、一覧の項目の中の列のように、別々のアイテムの中身をそろえるときは、サブグリッドで親のトラックを共有させます。列の幅は、列ごとに可変か不変かを決めてから、`max-content`、`fit-content()`、`1fr` で書きます。
 
@@ -37,7 +38,6 @@ Gridでそろえたつもりの位置がずれる原因は、大きく2つあり
 article {
   display: block flex;
   flex-direction: column;
-  gap: 8px;
 
   & > p {
     flex-grow: 1;
@@ -71,7 +71,6 @@ article {
 ._icon-list {
   display: block grid;
   grid-template-columns: repeat(4, calc(64 / 16 * 1rem));
-  gap: 16px;
   place-content: center;
   place-items: center;
 }
@@ -127,7 +126,6 @@ article {
     display: block grid;
     grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) 1fr;
     column-gap: 24px;
-    padding-inline: 24px;
 
     & > li {
       grid-column: 1 / -1;
@@ -218,7 +216,7 @@ article {
 
 次のデモでは、幅300px、400px、500pxの画像のカードを並べています。幅を1024pxにすると、画像の列がそれぞれの画像の幅と480px相当の上限で決まり、長いキャプションを付けた2枚目も画像の幅のままです。
 
-<Demo title="fit-content() で、画像の列を画像の幅に合わせる" html={imageCardHtml} css={imageCardCss} />
+<Demo title="fit-content() で、画像の列を画像の幅に合わせる" html={imageCardHtml} css={imageCardCss} frame={imageCardFrame} />
 
 ## 補足と注意点
 

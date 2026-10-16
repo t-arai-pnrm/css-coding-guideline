@@ -10,6 +10,7 @@ import Figure from '../../../components/Figure.astro';
 import Guideline from '../../../components/Guideline.astro';
 import layerOverSpecificityHtml from '../../../demos/cascade/layer-over-specificity/index.html?raw';
 import layerOverSpecificityCss from '../../../demos/cascade/layer-over-specificity/style.css?raw';
+import layerOverSpecificityFrame from '../../../demos/cascade/layer-over-specificity/frame.css?raw';
 import inheritRootHtml from '../../../demos/cascade/inherit-root/index.html?raw';
 import inheritRootCss from '../../../demos/cascade/inherit-root/style.css?raw';
 import revertKeywordsHtml from '../../../demos/cascade/revert-keywords/index.html?raw';
@@ -116,7 +117,7 @@ a:link {}               /* 0.1.1 */
 
 次のデモでは、リンクで作ったボタンの文字がボタンの文字色になり、`base` レイヤーのリンクの青は使われません。
 
-<Demo title="base の a:any-link（0.1.1）より、components のボタン（0.1.0）の色が勝つ" html={layerOverSpecificityHtml} css={layerOverSpecificityCss} widths={[]} />
+<Demo title="base の a:any-link（0.1.1）より、components のボタン（0.1.0）の色が勝つ" html={layerOverSpecificityHtml} css={layerOverSpecificityCss} frame={layerOverSpecificityFrame} widths={[]} />
 
 なお、この節のほかのコード例では、説明に関係しない `@layer` の記述を省略しています。
 

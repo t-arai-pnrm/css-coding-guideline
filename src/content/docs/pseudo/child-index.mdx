@@ -32,9 +32,9 @@ import siblingCss from '../../../demos/pseudo/sibling-index-hue/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: 隠した行も数えて、縞が崩れる"
 /* 🙅‍♂ Not Recommended */
-tbody tr {
-  &:nth-child(even) {
-    background-color: oklch(96% 0.02 260deg);
+tr {
+  &:is(tbody *):nth-child(even) {
+    background-color: var(--background--active);
   }
 }
 ```
@@ -53,8 +53,11 @@ tbody tr {
 
 ```css title="🙆‍♂ Recommended: カードが1枚だけのときは、すべての列にまたがらせる"
 @scope (.scoped.card-grid) to (.scoped) {
-  li {
-    &:only-child {
+  :scope {
+    display: block grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(120 / 16 * 1rem)), 1fr));
+
+    & > :only-child {
       grid-column: 1 / -1;
     }
   }
@@ -84,8 +87,8 @@ tbody tr {
   time {
     /* 先頭から3件の項目の中 */
     &:is(li:nth-child(-n + 3) *) {
-      color: oklch(48% 0.17 260deg);
-      font-weight: 700;
+      color: var(--foreground--accent);
+      font-weight: var(--font-weight--bold);
     }
   }
 }
@@ -105,9 +108,9 @@ Selectors Level 4では、`:nth-child()` と `:nth-last-child()` の引数に `o
 
 ```css title="🙆‍♂ Recommended: 隠した行を除いて数え、縞を付ける"
 @scope (.scoped.stock-table) to (.scoped) {
-  tbody tr {
-    &:nth-child(even of :not([hidden])) {
-      background-color: oklch(96% 0.02 260deg);
+  tr {
+    &:is(tbody *):nth-child(even of :not([hidden])) {
+      background-color: var(--background--active);
     }
   }
 }

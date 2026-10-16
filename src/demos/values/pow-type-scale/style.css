@@ -1,11 +1,5 @@
 @layer components {
   @scope (.scoped.type-scale) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-      gap: 16px;
-    }
-
     ._scale {
       /* 基準の大きさと、1段階ごとに掛ける比率 */
       --_base: 1rem;
@@ -20,10 +14,6 @@
       /* 比率だけを変える。各段階の式は同じ */
       &[data-ratio="1.25"] {
         --_ratio: 1.25;
-      }
-
-      & > * + * {
-        margin-block-start: 8px;
       }
     }
 

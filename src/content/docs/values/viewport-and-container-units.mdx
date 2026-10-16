@@ -57,8 +57,6 @@ import bandCss from '../../../demos/values/full-bleed-band/style.css?raw';
 ```css title="🙆‍♂ Recommended: ヒーローは svb、固定した背景は lvb"
 @scope (.scoped.hero) to (.scoped) {
   :scope {
-    display: block grid;
-    align-content: end;
     min-block-size: 100svb;
   }
 }
@@ -69,7 +67,6 @@ import bandCss from '../../../demos/values/full-bleed-band/style.css?raw';
     inset-inline: 0;
     inset-block-start: 0;
     block-size: 100lvb;
-    background-image: linear-gradient(oklch(95% 0.02 250deg), oklch(85% 0.05 250deg));
   }
 }
 ```
@@ -127,7 +124,7 @@ import bandCss from '../../../demos/values/full-bleed-band/style.css?raw';
   :scope {
     display: block grid;
     grid-template-columns: minmax(16px, 1fr) minmax(0, calc(480 / 16 * 1rem)) minmax(16px, 1fr);
-    background-color: oklch(92% 0.04 250deg);
+    background-color: var(--background--active);
 
     & > * {
       grid-column: 2;

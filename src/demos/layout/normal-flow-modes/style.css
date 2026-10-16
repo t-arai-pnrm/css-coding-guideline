@@ -1,22 +1,5 @@
 @layer components {
   @scope (.scoped.normal-flow-modes) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
-      gap: 16px;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-      align-content: start;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     ._parent {
       padding: 8px;
       border: 1px dashed var(--border--strong);
@@ -30,11 +13,14 @@
       &[data-mode="grid"] {
         display: block grid;
       }
+
+      /* 上下の margin が、方式によって無視されるか効くかを見せる */
+      & > ._inline {
+        margin-block: 8px;
+      }
     }
 
-    /* 上下の margin が、方式によって無視されるか効くかを見せる */
     ._inline {
-      margin-block: 8px;
       padding-inline: 4px;
       background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);
     }

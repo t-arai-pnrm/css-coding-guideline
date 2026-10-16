@@ -35,13 +35,12 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 @scope (.scoped.button-note) to (.scoped) {
   :scope {
     position: relative;
-    display: inline flow-root;
-  }
 
-  ._note {
-    position: absolute;
-    inset-block-start: 100%;
-    inset-inline-start: 0;
+    & > ._note {
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline-start: 0;
+    }
   }
 }
 ```
@@ -60,16 +59,20 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: アンカーに名前を付け、配置する要素から参照する"
 @scope (.scoped.field-note) to (.scoped) {
-  input {
-    anchor-name: --field-note;
+  :scope {
+    position: relative;
+
+    & > ._note {
+      @supports (position-area: block-end span-inline-end) {
+        position: absolute;
+        position-area: block-end span-inline-end;
+        position-anchor: --field-note;
+      }
+    }
   }
 
-  ._note {
-    @supports (position-area: block-end span-inline-end) {
-      position: absolute;
-      position-area: block-end span-inline-end;
-      position-anchor: --field-note;
-    }
+  input {
+    anchor-name: --field-note;
   }
 }
 ```
@@ -121,11 +124,15 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 ```css title="🙆‍♂ Recommended: anchor() で、アンカーの下端と行頭側の辺にそろえる"
 @scope (.scoped.field-note) to (.scoped) {
-  ._note {
-    @supports (anchor-name: --field-note) {
-      position: absolute;
-      inset-block-start: anchor(--field-note end);
-      inset-inline-start: anchor(--field-note start);
+  :scope {
+    position: relative;
+
+    & > ._note {
+      @supports (anchor-name: --field-note) {
+        position: absolute;
+        inset-block-start: anchor(--field-note end);
+        inset-inline-start: anchor(--field-note start);
+      }
     }
   }
 }
@@ -181,13 +188,17 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 }
 
 @scope (.scoped.field-note) to (.scoped) {
-  ._note {
-    @supports (position-area: block-end span-inline-end) {
-      position: absolute;
-      position-area: block-end span-inline-end;
-      position-anchor: --field-note;
-      position-try-fallbacks: flip-block, --field-note-inline-end;
-      margin-block-start: 8px;
+  :scope {
+    position: relative;
+
+    & > ._note {
+      @supports (position-area: block-end span-inline-end) {
+        position: absolute;
+        position-area: block-end span-inline-end;
+        position-anchor: --field-note;
+        position-try-fallbacks: flip-block, --field-note-inline-end;
+        margin-block-start: 8px;
+      }
     }
   }
 }

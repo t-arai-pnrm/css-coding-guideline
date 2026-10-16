@@ -59,11 +59,8 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 ```css title="🙆‍♂ Recommended: HTMLに書いた文字に見た目を当てる"
 @scope (.scoped.form-field) to (.scoped) {
   ._required {
-    margin-inline-start: 8px;
     padding-inline: 4px;
     border: 1px solid;
-    border-radius: 2px;
-    font-size: calc(12 / 16 * 1rem);
   }
 }
 ```
@@ -84,7 +81,7 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
       display: inline flow-root;
       inline-size: 1em;
       aspect-ratio: 1;
-      background-color: oklch(48% 0.17 260deg);
+      background-color: var(--background--accent);
     }
   }
 }
@@ -111,7 +108,6 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
   :scope {
     &::after {
       content: "→" / "";
-      margin-inline-start: 4px;
     }
   }
 }
@@ -145,7 +141,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 @scope (.scoped.point-list) to (.scoped) {
   li {
     &::marker {
-      color: oklch(48% 0.17 260deg);
+      color: var(--foreground--accent);
       font-size: 1.25em;
     }
   }
@@ -215,7 +211,6 @@ CSS.highlights.set('search-result', new Highlight(range));
 @scope (.scoped.lead-text) to (.scoped) {
   p {
     &::first-letter {
-      color: oklch(48% 0.17 260deg);
       font-size: 1.75em;
     }
   }

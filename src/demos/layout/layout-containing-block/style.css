@@ -1,26 +1,11 @@
 @layer components {
   @scope (.scoped.layout-containing-block) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-      gap: 16px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     /* 位置指定された祖先。カードが包含ブロックにならないと、バッジはここを基準にする */
     ._ancestor {
       position: relative;
       padding: 8px;
       padding-block-end: 40px;
       border: 1px dashed var(--border--strong);
-
-      & > * + * {
-        margin-block-start: 8px;
-      }
     }
 
     ._card {
@@ -31,12 +16,15 @@
       &[data-positioned] {
         position: relative;
       }
+
+      & > ._badge {
+        position: absolute;
+        inset-block-end: 8px;
+        inset-inline-end: 8px;
+      }
     }
 
     ._badge {
-      position: absolute;
-      inset-block-end: 8px;
-      inset-inline-end: 8px;
       padding-inline: 8px;
       background-color: var(--background--inverse);
       color: var(--foreground--inverse);

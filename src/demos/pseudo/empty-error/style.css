@@ -1,22 +1,12 @@
 @layer components {
   @scope (.scoped.empty-error) to (.scoped) {
     :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
-      gap: 16px;
       align-items: start;
     }
 
     ._case {
-      display: block grid;
-      gap: 8px;
       padding: 12px;
       border: 1px dashed var(--border--strong);
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
     }
 
     ._error {

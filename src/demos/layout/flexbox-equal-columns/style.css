@@ -1,25 +1,14 @@
 @layer components {
   @scope (.scoped.flexbox-equal-columns) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 24px;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     ._item-group {
       gap: 1rem;
 
       &[data-method="flex"] {
         display: block flex;
+      }
+
+      &[data-method="flex"] > ._item {
+        flex: 1;
       }
 
       &[data-method="grid"] {
@@ -38,10 +27,6 @@
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
       text-align: center;
-
-      &:is(._item-group[data-method="flex"] > *) {
-        flex: 1;
-      }
 
       &:nth-child(odd) {
         padding-inline: 1rem;

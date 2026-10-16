@@ -1,23 +1,6 @@
 /* stylelint-disable declaration-property-value-disallowed-list -- 本文の数値と対応させるため、トークンを使わずに書く */
 @layer components {
   @scope (.scoped.layout-stacking-context) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-      gap: 16px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
-    section {
-      & > h3 + * {
-        margin-block-start: 8px;
-      }
-    }
-
     /* 親と兄弟を同じセルに置いて重ねる */
     ._stage {
       display: block grid;
@@ -29,6 +12,7 @@
 
       & > ._sibling {
         justify-self: end;
+        margin-block-start: 40px;
       }
     }
 
@@ -60,7 +44,6 @@
       align-content: end;
       inline-size: 50%;
       min-block-size: 64px;
-      margin-block-start: 40px;
       padding: 8px;
       background-color: var(--background--inverse);
       color: var(--foreground--inverse);

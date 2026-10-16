@@ -32,7 +32,7 @@ import emptyErrorCss from '../../../demos/pseudo/empty-error/style.css?raw';
 ```css title="🙅‍♂ Not Recommended: 開閉の状態をクラスで表す"
 /* 🙅‍♂ Not Recommended */
 .filter-details.is-open {
-  border-color: oklch(48% 0.17 260deg);
+  border-color: var(--foreground--accent);
 }
 ```
 
@@ -65,7 +65,7 @@ import emptyErrorCss from '../../../demos/pseudo/empty-error/style.css?raw';
 details {
   &:open,
   &[open] {
-    border-color: oklch(48% 0.17 260deg);
+    border-color: var(--foreground--accent);
   }
 }
 ```
@@ -73,10 +73,10 @@ details {
 ```css title="🙆‍♂ Recommended: details の開いた状態を [open] で選ぶ"
 @scope (.scoped.filter-details) to (.scoped) {
   :scope {
-    border: 1px solid oklch(80% 0 0deg);
+    border: 1px solid var(--border--base);
 
     &[open] {
-      border-color: oklch(48% 0.17 260deg);
+      border-color: var(--foreground--accent);
     }
   }
 }
@@ -109,8 +109,6 @@ details {
 ```css title="🙆‍♂ Recommended: 開き方によって、ダイアログの置き方を変える"
 @scope (.scoped.help-dialog) to (.scoped) {
   :scope {
-    padding: 24px;
-
     &:modal {
       max-inline-size: calc(560 / 16 * 1rem);
     }
@@ -148,7 +146,7 @@ details {
     border-inline-start: 4px solid transparent;
 
     &:target {
-      border-inline-start-color: oklch(48% 0.17 260deg);
+      border-inline-start-color: var(--foreground--accent);
     }
   }
 }
@@ -186,16 +184,8 @@ Selectors Level 4の草案では、空白だけを含む要素も空とみなす
 ```css title="🙆‍♂ Recommended: 文言がないときだけ、エラーの領域を隠す"
 @scope (.scoped.text-field) to (.scoped) {
   ._error {
-    color: oklch(50% 0.2 25deg);
-
     &:empty {
       display: none;
-    }
-  }
-
-  :scope {
-    & > * + ._error {
-      margin-block-start: 4px;
     }
   }
 }

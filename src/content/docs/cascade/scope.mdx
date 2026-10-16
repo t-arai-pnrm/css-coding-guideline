@@ -33,7 +33,6 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 /* 🙅‍♂ Not Recommended */
 .news-card .title {
   color: var(--foreground--accent);
-  font-size: calc(24 / 16 * 1rem);
 }
 ```
 
@@ -48,17 +47,11 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 ```css title="スコープのルートだけを書いた @scope"
 @scope (.news-card) {
   :scope {
-    display: block grid;
-    gap: 8px;
     padding: 16px;
   }
 
   h2 {
     font-size: calc(20 / 16 * 1rem);
-  }
-
-  time {
-    color: var(--foreground--muted);
   }
 }
 ```
@@ -66,7 +59,6 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 ```html title="index.html"
 <article class="news-card">
   <h2>お知らせの見出し</h2>
-  <time datetime="2026-09-25">2026年9月25日</time>
 </article>
 ```
 

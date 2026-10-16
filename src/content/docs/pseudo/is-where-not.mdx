@@ -69,7 +69,7 @@ aside h3 {
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.toggle-button) to (.scoped) {
   :scope {
-    background-color: var(--background--surface);
+    background-color: var(--background--active);
 
     &[data-variant="outline"] {
       background-color: transparent;
@@ -77,7 +77,7 @@ aside h3 {
 
     /* 詳細度は 0.1.0 で、上の 0.2.0 に負ける */
     &:where([aria-pressed="true"], [aria-expanded="true"]) {
-      background-color: var(--background--accent);
+      background-color: color-mix(in oklab, var(--foreground--accent) 24%, transparent);
     }
   }
 }
@@ -86,7 +86,7 @@ aside h3 {
 ```css title="🙆‍♂ Recommended: 状態のセレクタは :is() でまとめ、詳細度を残す"
 @scope (.scoped.toggle-button) to (.scoped) {
   :scope {
-    background-color: var(--background--surface);
+    background-color: var(--background--active);
 
     &[data-variant="outline"] {
       background-color: transparent;
@@ -94,7 +94,7 @@ aside h3 {
 
     /* 詳細度は 0.2.0 で、後に書いたほうが勝つ */
     &:is([aria-pressed="true"], [aria-expanded="true"]) {
-      background-color: var(--background--accent);
+      background-color: color-mix(in oklab, var(--foreground--accent) 24%, transparent);
     }
   }
 }

@@ -6,8 +6,13 @@
       max-inline-size: calc(400 / 16 * 1rem);
     }
 
+    p {
+      & > ._sample {
+        margin-block: 12px;
+      }
+    }
+
     ._sample {
-      margin-block: 12px;
       padding-block: 12px;
       padding-inline: 8px;
       background-color: color-mix(in oklab, var(--foreground--accent) 20%, transparent);

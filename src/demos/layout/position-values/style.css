@@ -1,23 +1,5 @@
 @layer components {
   @scope (.scoped.position-values) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 24px;
-
-      /* fixed の B が置かれる上端を空けて、説明文に重ならないようにする */
-      padding-block-start: 40px;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     ._box {
       /* absolute の B の包含ブロックを、この枠にする */
       position: relative;
@@ -32,6 +14,31 @@
       & > * + * {
         margin-block-start: 8px;
       }
+
+      /* 同じ inset を指定し、値ごとの働き方の違いだけを見せる */
+      & > ._target {
+        inset-block-start: 16px;
+        inset-inline-start: 48px;
+      }
+
+      & > [data-position="relative"] {
+        position: relative;
+      }
+
+      & > [data-position="absolute"] {
+        position: absolute;
+      }
+
+      & > [data-position="fixed"] {
+        position: fixed;
+      }
+
+      & > [data-position="sticky"] {
+        position: sticky;
+
+        /* 留まったときに fixed の B と重ならないよう、行の始端から離す */
+        margin-inline-start: calc(160 / 16 * 1rem);
+      }
     }
 
     ._item {
@@ -42,30 +49,8 @@
     }
 
     ._target {
-      /* 同じ inset を指定し、値ごとの働き方の違いだけを見せる */
-      inset-block-start: 16px;
-      inset-inline-start: 48px;
       background-color: var(--background--accent);
       color: var(--foreground--on-accent);
-
-      &[data-position="relative"] {
-        position: relative;
-      }
-
-      &[data-position="absolute"] {
-        position: absolute;
-      }
-
-      &[data-position="fixed"] {
-        position: fixed;
-      }
-
-      &[data-position="sticky"] {
-        position: sticky;
-
-        /* 留まったときに fixed の B と重ならないよう、行の始端から離す */
-        margin-inline-start: calc(160 / 16 * 1rem);
-      }
     }
   }
 }

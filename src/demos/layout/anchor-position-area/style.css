@@ -78,6 +78,15 @@
           border-block-width: 1px;
         }
       }
+
+      & > ._target {
+        @supports (position-area: block-end span-inline-end) {
+          position: absolute;
+          position-area: var(--_area);
+          position-anchor: --area-picker;
+          margin: 4px;
+        }
+      }
     }
 
     ._anchor {
@@ -97,13 +106,6 @@
       background-color: var(--background--raised);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
-
-      @supports (position-area: block-end span-inline-end) {
-        position: absolute;
-        position-area: var(--_area);
-        position-anchor: --area-picker;
-        margin: 4px;
-      }
 
       @media (forced-colors: active) {
         outline: 1px solid;

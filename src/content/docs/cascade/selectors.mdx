@@ -104,16 +104,6 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
       color: var(--foreground--accent);
     }
   }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  caption {
-    font-kerning: normal;
-  }
 }
 ```
 
@@ -192,9 +182,6 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 ```css title="🙆‍♂ Recommended: 祖先の状態による変化を、子のルールの中に書く"
 .faq-icon {
-  inline-size: 1em;
-  aspect-ratio: 1;
-
   &:is(.faq-item[open] *) {
     rotate: 180deg;
   }

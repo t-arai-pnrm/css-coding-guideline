@@ -59,7 +59,6 @@ import boxCss from '../../../demos/layout/display-contents-box/style.css?raw';
 
     display: block flex;
     flex-direction: column;
-    gap: 16px;
 
     @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
       --_density: --spacious;
@@ -106,7 +105,6 @@ import boxCss from '../../../demos/layout/display-contents-box/style.css?raw';
     display: block grid;
     reading-flow: grid-rows;
     grid-template: var(--_template);
-    gap: 16px;
 
     @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
       --_density: --spacious;
@@ -154,7 +152,6 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
   ul {
     display: block grid;
     grid-template-columns: max-content 1fr max-content;
-    column-gap: 16px;
 
     /* li の箱がないので、article が ul の実質的な直下の子になる */
     & article {
@@ -211,7 +208,6 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
         "--title --title"
         "--author --date"
         / 1fr max-content;
-      gap: 8px 16px;
 
       & > ._title {
         grid-area: --title;

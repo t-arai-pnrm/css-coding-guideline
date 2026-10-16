@@ -13,6 +13,7 @@ import spacesHtml from '../../../demos/layout/margin-role-spaces/index.html?raw'
 import spacesCss from '../../../demos/layout/margin-role-spaces/style.css?raw';
 import textSpacingHtml from '../../../demos/layout/text-element-spacing/index.html?raw';
 import textSpacingCss from '../../../demos/layout/text-element-spacing/style.css?raw';
+import textSpacingFrame from '../../../demos/layout/text-element-spacing/frame.css?raw';
 
 `margin` は、要素と前後の要素の間に「最低これだけ離したい」という距離を表すプロパティです。HTMLが縦に長い文書を書くための言語として生まれたことと結び付いた考え方です。ブロック方向で隣り合う `margin` が足し算にならず、大きいほうが採られる仕組み（マージンの相殺）も、この捉え方から説明できます。
 
@@ -159,7 +160,7 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 
 次のデモの上のカードは、段落にだけ横の `margin` を付けたものです。見出しと区切り線はカードの端に接し、段落だけが内側に寄っています。下のカードは、包む要素に `padding-inline` を付けたもので、見出し、段落、区切り線の左右の端がそろっています。
 
-<Demo title="段落の横の margin では端がそろわず、包む要素の padding ではそろう" html={textSpacingHtml} css={textSpacingCss} widths={[]} />
+<Demo title="段落の横の margin では端がそろわず、包む要素の padding ではそろう" html={textSpacingHtml} css={textSpacingCss} frame={textSpacingFrame} widths={[]} />
 
 `display` を変えないのも、同じ理由です。段落を `inline-block` にすると、前後の要素との `margin` の相殺がなくなり、行の折り返し方も変わるので、この節の余白の書き分けが成り立たなくなります。例外は、変える理由を構造から説明できる場合です。リンクの押せる範囲を広げるために `<a>` を `display: block flow` にして `padding` を付けるのは、押せる要素の大きさを決めるためなので、文字の要素の余白には当たりません（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。`code` やバッジのように背景や枠線を持つインラインの要素も、背景の内側に文字との距離を取るために `padding-inline` を持ちます。
 

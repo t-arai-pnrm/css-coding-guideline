@@ -1,22 +1,5 @@
 @layer components {
   @scope (.scoped.margin-collapse-modes) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
-      gap: 16px;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-      align-content: start;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     /* 枠線で、親の外に抜けた余白が見えるようにする */
     ._frame {
       border: 1px dashed var(--border--strong);

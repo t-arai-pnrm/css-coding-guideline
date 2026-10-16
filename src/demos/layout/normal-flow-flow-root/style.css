@@ -1,22 +1,5 @@
 @layer components {
   @scope (.scoped.normal-flow-flow-root) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-      gap: 16px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
-    section {
-      & > h3 + * {
-        margin-block-start: 8px;
-      }
-    }
-
     ._parent {
       border: 1px dashed var(--border--strong);
       background-color: var(--background--accent-subtle);
@@ -24,13 +7,16 @@
       &[data-mode="flow-root"] {
         display: block flow-root;
       }
+
+      & > ._float {
+        float: inline-start;
+        margin-inline-end: 8px;
+      }
     }
 
     ._float {
-      float: inline-start;
       inline-size: 64px;
       aspect-ratio: 1;
-      margin-inline-end: 8px;
       background-color: var(--background--accent);
     }
 

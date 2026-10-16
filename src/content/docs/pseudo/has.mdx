@@ -69,7 +69,6 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 @scope (.scoped.media-object) to (.scoped) {
   :scope {
     display: block grid;
-    gap: 16px;
 
     &:has(> img) {
       grid-template-columns: calc(160 / 16 * 1rem) 1fr;
@@ -86,7 +85,6 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 @scope (.scoped.media-object) to (.scoped) {
   :scope {
     display: block grid;
-    gap: 16px;
 
     &:has(> img:not([hidden])) {
       grid-template-columns: calc(160 / 16 * 1rem) 1fr;
@@ -112,7 +110,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 ```css title="🙆‍♂ Recommended: 選んだ星と、それより前の星を塗る"
 @scope (.scoped.star-rating) to (.scoped) {
   label {
-    color: oklch(80% 0 0deg);
+    color: var(--border--strong);
 
     &:has(> input:checked),
     &:has(~ label > input:checked) {

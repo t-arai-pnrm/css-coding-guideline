@@ -12,6 +12,7 @@ import modesHtml from '../../../demos/layout/normal-flow-modes/index.html?raw';
 import modesCss from '../../../demos/layout/normal-flow-modes/style.css?raw';
 import flowRootHtml from '../../../demos/layout/normal-flow-flow-root/index.html?raw';
 import flowRootCss from '../../../demos/layout/normal-flow-flow-root/style.css?raw';
+import flowRootFrame from '../../../demos/layout/normal-flow-flow-root/frame.css?raw';
 import directionsHtml from '../../../demos/layout/normal-flow-directions/index.html?raw';
 import directionsCss from '../../../demos/layout/normal-flow-directions/style.css?raw';
 import outerDisplayHtml from '../../../demos/layout/normal-flow-outer-display/index.html?raw';
@@ -50,7 +51,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 ```css title="🙆‍♂ Recommended: 方向を論理プロパティで書く"
 ._block {
   padding-inline-start: 8px;
-  border-inline-start: 4px solid;
+  border-inline-start: 4px solid var(--foreground--accent);
 }
 ```
 
@@ -97,7 +98,6 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 ```css title="🙆‍♂ Recommended: アイコンと文字の中央を Flexbox でそろえる"
 ._link {
   display: inline flex;
-  gap: 4px;
   align-items: center;
 }
 ```
@@ -110,7 +110,6 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
   display: inline flow-root;
   overflow: hidden;
   max-inline-size: calc(160 / 16 * 1rem);
-  padding-block: 2px;
   white-space: nowrap;
 }
 ```
@@ -122,7 +121,6 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
   display: inline flow-root;
   overflow: clip;
   max-inline-size: calc(160 / 16 * 1rem);
-  padding-block: 2px;
   white-space: nowrap;
 }
 ```
@@ -169,7 +167,6 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 ```css title="🙆‍♂ Recommended: Flexbox にして gap で間隔を決める"
 .tag-list {
   display: block flex;
-  flex-wrap: wrap;
   gap: 8px;
 }
 ```
@@ -200,19 +197,18 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 次のデモは、`float` した四角と短い本文を入れた親を2つ並べたものです。通常のブロックの親は `float` を高さに含まないので、四角が親の下へはみ出し、次の要素まで回り込みます。親に `display: block flow-root` を指定すると、親が新しいBFCを作り、四角を内側に収めます。
 
-<Demo title="display: flow-root で、float を親の内側に収める" html={flowRootHtml} css={flowRootCss} variant="neutral" />
+<Demo title="display: flow-root で、float を親の内側に収める" html={flowRootHtml} css={flowRootCss} frame={flowRootFrame} variant="neutral" />
 
 画像に文字を回り込ませる部品は、次のように書けます。`float` の値は、書字方向に合わせて `inline-start` のような論理値で書きます。
 
 ```css title="🙆‍♂ Recommended: 回り込みを親の内側に収める"
 ._media {
   display: block flow-root;
-}
 
-._image {
-  float: inline-start;
-  max-inline-size: 40%;
-  margin-inline-end: 16px;
+  & > ._image {
+    float: inline-start;
+    margin-inline-end: 16px;
+  }
 }
 ```
 
@@ -255,10 +251,10 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 ._card {
   display: block flex;
   flex-direction: column;
-}
 
-._button {
-  margin-block-start: auto;
+  & > ._button {
+    margin-block-start: auto;
+  }
 }
 ```
 

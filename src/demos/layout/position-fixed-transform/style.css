@@ -1,13 +1,5 @@
 @layer components {
   @scope (.scoped.fixed-compare) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 16px;
-
-      /* 最後までスクロールしても、固定 2 が右下の固定 1 に重ならないようにする */
-      padding-block-end: 64px;
-    }
-
     ._panel {
       min-block-size: calc(240 / 16 * 1rem);
       padding: 16px;
@@ -17,15 +9,6 @@
       &[data-demo="translate"] {
         translate: 0;
       }
-
-      & > * + * {
-        margin-block-start: 8px;
-      }
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
     }
 
     ._fixed {

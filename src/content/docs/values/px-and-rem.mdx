@@ -29,7 +29,7 @@ html {
 
 .card {
   padding: 1.6rem 2.4rem;
-  border: 0.1rem solid oklch(85% 0 0deg);
+  border: 0.1rem solid;
   border-radius: 0.8rem;
   font-size: 1.6rem;
 }
@@ -76,7 +76,7 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
   :scope {
     max-inline-size: calc(640 / 16 * 1rem);
     padding: 16px 24px;
-    border: 1px solid oklch(85% 0 0deg);
+    border: 1px solid;
     border-radius: 8px;
 
     & > * + p {
@@ -87,7 +87,6 @@ emを使うのは、その要素自身の文字サイズに比例させたい値
   h2 {
     display: block flex;
     gap: 0.5em;
-    align-items: center;
     font-size: calc(20 / 16 * 1rem);
   }
 
@@ -191,6 +190,9 @@ emのほかにも、その要素のフォントの寸法を基準にする単位
 ```css title="🙆‍♂ Recommended: 1行の高さを基準に、アイコンを1行目の中央に置く"
 @scope (.scoped.feature-list) to (.scoped) {
   ._item {
+    display: block flex;
+    align-items: start;
+
     &::before {
       content: "";
       inline-size: 1em;
@@ -225,7 +227,6 @@ remを使ったら、ブラウザの文字サイズの設定を大きくして�
 @scope (.scoped.button) to (.scoped) {
   :scope {
     min-block-size: calc(48 / 16 * 1rem);
-    padding-inline: 24px;
     font-size: 1rem;
   }
 }

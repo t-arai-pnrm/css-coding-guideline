@@ -14,16 +14,20 @@ import stickyCss from '../../../demos/layout/sticky-toc/style.css?raw';
 import stickyBadCss from '../../../demos/layout/sticky-toc/style.bad.css?raw';
 import valuesHtml from '../../../demos/layout/position-values/index.html?raw';
 import valuesCss from '../../../demos/layout/position-values/style.css?raw';
+import valuesFrame from '../../../demos/layout/position-values/frame.css?raw';
 import containingBlockHtml from '../../../demos/layout/position-containing-block/index.html?raw';
 import containingBlockCss from '../../../demos/layout/position-containing-block/style.css?raw';
 import fixedTransformHtml from '../../../demos/layout/position-fixed-transform/index.html?raw';
 import fixedTransformCss from '../../../demos/layout/position-fixed-transform/style.css?raw';
+import fixedTransformFrame from '../../../demos/layout/position-fixed-transform/frame.css?raw';
 import centerHtml from '../../../demos/layout/position-center/index.html?raw';
 import centerCss from '../../../demos/layout/position-center/style.css?raw';
 import stickyInsetHtml from '../../../demos/layout/sticky-inset/index.html?raw';
 import stickyInsetCss from '../../../demos/layout/sticky-inset/style.css?raw';
+import stickyInsetFrame from '../../../demos/layout/sticky-inset/frame.css?raw';
 import stickyClipHtml from '../../../demos/layout/sticky-scroll-container/index.html?raw';
 import stickyClipCss from '../../../demos/layout/sticky-scroll-container/style.css?raw';
+import stickyClipFrame from '../../../demos/layout/sticky-scroll-container/frame.css?raw';
 
 `position` の `static` 以外の値は、働き方で2つに分かれます。`relative` と `sticky` は、親が決めた方式（通常フロー、Flexbox、Grid）に参加したまま、配置された後の位置を `inset` の分だけ補正します。`absolute` と `fixed` は、要素を親の流れから外し、絶対配置という別のレイアウトの方式で置き直します。位置の基準になる「包含ブロック」は、値によって、また祖先の `transform` などの指定によって変わります。
 
@@ -40,12 +44,11 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 @scope (.scoped.tag-list) to (.scoped) {
   :scope {
     display: block flex;
-    flex-wrap: wrap;
     gap: 8px;
-  }
 
-  ._new {
-    position: absolute;
+    & > ._new {
+      position: absolute;
+    }
   }
 }
 ```
@@ -88,7 +91,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 次のデモでは、5つの値のBに、同じ `inset` を指定しています。枠の中をスクロールすると、`fixed` のBは枠の同じ位置に留まり、`sticky` のBは破線の枠の範囲で上端に留まります。スクロールする前の位置では、`static` のBは `inset` が無視されてAとCの間に並び、`relative` のBは元の場所を空けたまま下へ16px、行末側へ48pxずれます。`absolute` のBは流れから外れ、破線の枠の角から同じ距離に置かれます。
 
-<Demo title="同じ inset を指定しても、position の値によって B の置かれ方が変わる" html={valuesHtml} css={valuesCss} variant="neutral" height="360px" />
+<Demo title="同じ inset を指定しても、position の値によって B の置かれ方が変わる" html={valuesHtml} css={valuesCss} frame={valuesFrame} variant="neutral" height="360px" />
 
 ## 包含ブロックはどの祖先で決まるか
 
@@ -107,26 +110,28 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 ```css title="🙅‍♂ Not Recommended: 包含ブロックを作らずに、カードの角にバッジを置く"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.product-card) to (.scoped) {
-  ._badge {
-    position: absolute;
-    inset-block-start: 8px;
-    inset-inline-end: 8px;
+  :scope {
+    & > ._badge {
+      position: absolute;
+      inset-block-start: 8px;
+      inset-inline-end: 8px;
+    }
   }
 }
 ```
 
-この例のバッジが置かれるのは、カードの角ではありません。`position` を指定したカードの外の祖先か、初期包含ブロックの角です。カードを置く場所が変わると、バッジの位置も変わります。包含ブロックは、基準にしたい祖先へ `position: relative` を指定して、はっきり作ります。
+この例のバッジが置かれるのは、カードの角ではありません。`position` を指定したカードの外の祖先か、初期包含ブロックの角です。カードを置く場所が変わると、バッジの位置も変わります。包含ブロックは、基準にしたい祖先へ `position: relative` を指定して、はっきり作ります。`position: absolute` と `inset` は、包含ブロックを作る祖先との組み合わせで意味が決まるので、その祖先のルールの中に `& > ._badge` とネストして書きます（「[9-6 ネストの判断基準](/notation/nesting-criteria/)」）。
 
 ```css title="🙆‍♂ Recommended: コンポーネントのルートで、バッジの包含ブロックを作る"
 @scope (.scoped.product-card) to (.scoped) {
   :scope {
     position: relative;
-  }
 
-  ._badge {
-    position: absolute;
-    inset-block-start: 8px;
-    inset-inline-end: 8px;
+    & > ._badge {
+      position: absolute;
+      inset-block-start: 8px;
+      inset-inline-end: 8px;
+    }
   }
 }
 ```
@@ -147,7 +152,7 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 次のデモでは、2つ目の枠に `translate: 0` を指定しています。見た目は変わりませんが、枠の中をスクロールすると、2つ目の「固定」だけが枠と一緒に流れます。
 
-<Demo title="祖先に translate を指定すると、fixed の要素がその祖先を基準に置かれる" html={fixedTransformHtml} css={fixedTransformCss} variant="neutral" height="320px" />
+<Demo title="祖先に translate を指定すると、fixed の要素がその祖先を基準に置かれる" html={fixedTransformHtml} css={fixedTransformCss} frame={fixedTransformFrame} variant="neutral" height="320px" />
 
 コンテナサイズクエリのための `container-type`（`inline-size` と `size`）は、現在の仕様ではレイアウトの封じ込めを含まないので、包含ブロックを作りません。ただし、以前の仕様に沿って実装したブラウザでは、包含ブロックになることがあります。仕様が変わった経緯とブラウザの対応は、「[13-4 コンテナの副作用とコンテナ単位](/responsive/container-units-and-side-effects/)」で説明しています。固定ヘッダーやモーダルを含む `html` と `body` には、`container-type` を指定しません。
 
@@ -156,12 +161,19 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 絶対配置の要素を中央に置くときは、`translate: -50% -50%` ではなく、`inset: 0` と `margin: auto` を使います。`inset: 0` で包含ブロックいっぱいの範囲を作り、大きさを決めたうえで、残りを `margin: auto` で均等に分けます。
 
 ```css title="🙆‍♂ Recommended: inset: 0 と margin: auto で中央に置く"
-._badge {
-  position: absolute;
-  inset: 0;
+._media {
+  position: relative;
+
+  & > ._label {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+  }
+}
+
+._label {
   inline-size: fit-content;
   block-size: fit-content;
-  margin: auto;
 }
 ```
 
@@ -252,7 +264,7 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 次のデモでは、1つ目の見出しにだけ `inset` を指定していません。枠の中をスクロールすると、1つ目の見出しは本文と一緒に流れ、2つ目の見出しは枠の範囲で上端に留まります。
 
-<Demo title="inset を指定しない sticky の見出しは留まらない" html={stickyInsetHtml} css={stickyInsetCss} variant="neutral" height="240px" />
+<Demo title="inset を指定しない sticky の見出しは留まらない" html={stickyInsetHtml} css={stickyInsetCss} frame={stickyInsetFrame} variant="neutral" height="240px" />
 
 ### 祖先のスクロールコンテナ
 
@@ -283,7 +295,7 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 次のデモでは、1つ目の枠に `overflow-x: hidden` と同じ指定をしています。その枠がスクロールコンテナになるので、中の見出しはページのスクロールに反応せず、本文と一緒に流れます。
 
-<Demo title="祖先がスクロールコンテナになると、sticky の見出しがページのスクロールで留まらない" html={stickyClipHtml} css={stickyClipCss} variant="neutral" height="240px" />
+<Demo title="祖先がスクロールコンテナになると、sticky の見出しがページのスクロールで留まらない" html={stickyClipHtml} css={stickyClipCss} frame={stickyClipFrame} variant="neutral" height="240px" />
 
 スクロールコンテナが意図したものである場合は、別の話です。たとえば、高さを決めて `overflow: auto` にした領域の中で見出しを留めるなら、見出しはその領域の中で留まります。領域に高さがなければスクロールせず、何も起きません。この場合に必要なのは、その領域に高さの上限を決めて、スクロールが起きるようにすることです。ページ全体のスクロールで留める通常の `sticky` では、親に高さを指定する必要はありません。
 

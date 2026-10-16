@@ -1,22 +1,5 @@
 @layer components {
   @scope (.scoped.layout-inline-size-by-mode) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-      gap: 24px 16px;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-      align-content: start;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     /* 親の幅を200pxにそろえ、280pxの指定がどう読まれるかを比べる */
     ._parent {
       inline-size: 200px;

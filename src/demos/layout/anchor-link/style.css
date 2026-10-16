@@ -7,6 +7,16 @@
       gap: 4px;
       justify-items: start;
       padding-block-end: 40px;
+
+      & > ._note {
+        /* 未対応の環境では、input の後ろの通常フローに表示する */
+        @supports (position-area: block-end span-inline-end) {
+          position: absolute;
+          position-area: block-end span-inline-end;
+          position-anchor: --field-note;
+          margin-block-start: 4px;
+        }
+      }
     }
 
     input {
@@ -25,14 +35,6 @@
       background-color: var(--background--raised);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
-
-      /* 未対応の環境では、input の後ろの通常フローに表示する */
-      @supports (position-area: block-end span-inline-end) {
-        position: absolute;
-        position-area: block-end span-inline-end;
-        position-anchor: --field-note;
-        margin-block-start: 4px;
-      }
 
       @media (forced-colors: active) {
         outline: 1px solid;

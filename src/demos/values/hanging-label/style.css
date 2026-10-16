@@ -7,27 +7,32 @@
 
       container: --scoped / inline-size;
       padding-block: 24px;
+
+      & > ._article-inner {
+        margin-inline: auto;
+      }
     }
 
     ._article-inner {
       inline-size: min(100% - 2 * var(--_gutter), var(--_content-width));
-      margin-inline: auto;
       outline: 1px dashed var(--border--strong);
 
       & > * + * {
         margin-block-start: calc(8 / 16 * 1rem);
       }
+
+      & > ._label {
+        /* 本文の外の余白が最小の余白より広い分だけ、最大で --_overhang まで本文の外へ出す */
+        margin-inline-start: clamp(
+          -1 * var(--_overhang),
+          var(--_gutter) - (100cqi - var(--_content-width)) / 2,
+          0px
+        );
+      }
     }
 
     ._label {
       inline-size: fit-content;
-
-      /* 本文の外の余白が最小の余白より広い分だけ、最大で --_overhang まで本文の外へ出す */
-      margin-inline-start: clamp(
-        -1 * var(--_overhang),
-        var(--_gutter) - (100cqi - var(--_content-width)) / 2,
-        0px
-      );
       padding: 2px 8px;
       border-radius: var(--rounded--sm);
       background-color: var(--background--accent);

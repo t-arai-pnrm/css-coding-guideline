@@ -1,0 +1,21 @@
+/* 区画を通常フローのままにする（Grid にすると、float の回り込みを見せられない） */
+@layer components {
+  @scope (.scoped.normal-flow-flow-root) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 16px;
+    }
+
+    h3 {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
+
+    section {
+      & > h3 + * {
+        margin-block-start: 8px;
+      }
+    }
+  }
+}

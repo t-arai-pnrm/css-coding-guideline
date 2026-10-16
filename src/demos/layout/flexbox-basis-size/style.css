@@ -4,22 +4,6 @@
    * 下の2つは、並べる向きを縦にしたときに flex-basis が高さになることを示す。
    */
   @scope (.scoped.flexbox-basis-size) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 16px;
-      overflow-x: auto;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
     ._flexbox {
       display: block flex;
 
@@ -31,6 +15,10 @@
         flex-direction: column;
         align-items: start;
       }
+
+      & > :is([data-case="basis"], [data-case="max"], [data-case="min-max"]) {
+        flex-basis: 200px;
+      }
     }
 
     ._item {
@@ -39,17 +27,11 @@
       font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
       line-height: var(--text--caption--leading);
 
-      &[data-case="basis"] {
-        flex-basis: 200px;
-      }
-
       &[data-case="max"] {
-        flex-basis: 200px;
         max-inline-size: 120px;
       }
 
       &[data-case="min-max"] {
-        flex-basis: 200px;
         min-inline-size: 160px;
         max-inline-size: 120px;
       }

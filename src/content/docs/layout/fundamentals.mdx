@@ -60,14 +60,10 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 ```css title="🙆‍♂ Recommended: レイアウトの方式を、親の display と要素自身の position で選ぶ"
 /* 通常フロー：display を変えない */
-._body {
-  margin-block-start: 16px;
-}
 
 /* Flexbox と Grid：親の display の内側の値で選ぶ */
 ._actions {
   display: block flex;
-  gap: 8px;
 }
 
 ._list {
@@ -75,11 +71,15 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
 }
 
-/* 位置指定：要素自身の position で選ぶ */
-._badge {
-  position: absolute;
-  inset-block-start: 8px;
-  inset-inline-end: 8px;
+/* 位置指定：position で選ぶ */
+._card {
+  position: relative;
+
+  & > ._badge {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
+  }
 }
 ```
 
@@ -155,12 +155,12 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 ```css title="🙆‍♂ Recommended: カードを包含ブロックにして、バッジを角に置く"
 ._card {
   position: relative;
-}
 
-._badge {
-  position: absolute;
-  inset-block-end: 8px;
-  inset-inline-end: 8px;
+  & > ._badge {
+    position: absolute;
+    inset-block-end: 8px;
+    inset-inline-end: 8px;
+  }
 }
 ```
 

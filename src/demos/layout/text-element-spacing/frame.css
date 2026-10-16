@@ -1,0 +1,10 @@
+/* 区画は通常フローのままにして、段落の間の margin を見せる */
+@layer components {
+  @scope (.scoped.text-element-spacing) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+      gap: 16px;
+    }
+  }
+}

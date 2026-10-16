@@ -67,13 +67,12 @@ import zIndex from '../../../demos/tokens/z-index.css?raw';
 
 すべてのデモで、全称セレクタに `min-inline-size: 0` を、`body` に `padding: 24px` と背景色と文字色を指定しています。`min-inline-size: 0` は「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」と同じ指定です。デモのHTMLを自分の環境に写すときは、この余白の分だけ幅が変わります。
 
-比べる区画を並べるデモでは、HTMLの `data-demo-layout="compare"` を付けた要素の直下の区画を、最小幅240px相当の列で横に並べています。狭いときは縦に積みます。各区画の先頭の見出しは、ラベルの大きさ（`--text--body-compact--*`）にしています。
+比べる区画を並べるデモでは、HTMLの `data-demo-layout="compare"` を付けた要素の直下の区画を、最小幅240px相当の列で横に並べています。狭いときは縦に積みます。各区画の先頭の見出しは、ラベルの大きさ（`--text--body-compact--*`）にしています。区画の幅が結果を左右するデモでは、`data-demo-layout="stack"` で、区画をいつも縦に積みます。
 
-```css title='data-demo-layout="compare" の指定'
+```css title='data-demo-layout の指定'
 @layer compositions {
-  [data-demo-layout="compare"] {
+  :is([data-demo-layout="compare"], [data-demo-layout="stack"]) {
     display: block grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
     gap: 16px;
 
     & > * {
@@ -86,6 +85,10 @@ import zIndex from '../../../demos/tokens/z-index.css?raw';
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
     }
+  }
+
+  [data-demo-layout="compare"] {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
   }
 }
 ```

@@ -15,19 +15,22 @@
       padding: 16px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--md);
+
+      & > p {
+        /* ボタンの位置はそろうが、見出しの高さはカードごとに違うまま */
+        flex-grow: 1;
+      }
+
+      & > a {
+        align-self: start;
+      }
     }
 
     h2 {
       font-size: calc(18 / 16 * 1rem);
     }
 
-    p {
-      /* ボタンの位置はそろうが、見出しの高さはカードごとに違うまま */
-      flex-grow: 1;
-    }
-
     a {
-      align-self: start;
       padding-block: 8px;
       padding-inline: 16px;
       border-radius: var(--rounded--sm);

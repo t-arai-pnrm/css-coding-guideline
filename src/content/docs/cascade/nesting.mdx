@@ -18,6 +18,7 @@ import nestedDeclarationsHtml from '../../../demos/cascade/nested-declarations/i
 import nestedDeclarationsCss from '../../../demos/cascade/nested-declarations/style.bad.css?raw';
 import scopeAndNestingHtml from '../../../demos/cascade/scope-and-nesting/index.html?raw';
 import scopeAndNestingCss from '../../../demos/cascade/scope-and-nesting/style.css?raw';
+import scopeAndNestingFrame from '../../../demos/cascade/scope-and-nesting/frame.css?raw';
 
 CSSのネストは、スタイルのルールの中に別のルールを書き、親のセレクタを `&` で参照する仕組みです。見た目はSassのネストと似ていますが、セレクタを文字列としてつなげる機能ではありません。`&` は、親のセレクタを `:is()` で包んだものとして要素に一致し、詳細度もそれに従って決まります。
 
@@ -41,8 +42,6 @@ CSSのネストは、スタイルのルールの中に別のルールを書き�
 
 ```css title="& を省いた書き方と、同じ意味の書き方"
 .card {
-  padding: 16px;
-
   /* & h2 と同じ（.card h2） */
   h2 {
     font-size: calc(20 / 16 * 1rem);
@@ -76,7 +75,7 @@ CSSのネストは、スタイルのルールの中に別のルールを書き�
 .news, #pickup {
   & ._title {
     /* :is(.news, #pickup) ._title と同じで、詳細度は 1.1.0 */
-    font-size: calc(20 / 16 * 1rem);
+    color: var(--foreground--muted);
   }
 }
 ```
@@ -132,7 +131,7 @@ Sassなら、このルールは `.news ._title, #pickup ._title` に展開され
 
 `@scope` とネストは、BEMの3つの単位のうち、違う関係を表します。BEMのblockは独立したコンポーネント、elementはその部品、modifierはblockやelementの状態や種類です。`@scope` は、ルートと下限でblockの範囲を区切り、その中の部品（element）を短いセレクタで選ぶ仕組みです。ネストは、ひとつの要素のルールの中に、その要素自身の状態や種類（modifier）を `&` でまとめる仕組みです。次のデモでは、2枚のカードのうち `data-variant="featured"` を付けた2枚目だけが、ネストした指定によって青い2pxの枠線と24pxの見出しになります。
 
-<Demo title="@scope で部品を、ネストで状態や種類を表す" html={scopeAndNestingHtml} css={scopeAndNestingCss} widths={[]} />
+<Demo title="@scope で部品を、ネストで状態や種類を表す" html={scopeAndNestingHtml} css={scopeAndNestingCss} frame={scopeAndNestingFrame} widths={[]} />
 
 BEMで書けば、`.news-card`、`.news-card__title`、`.news-card--featured` に当たる3つの関係が、それぞれ `@scope` のルート、スコープの中の `h2`、`&` を使ったネストで表されます。ネストで部品の階層をたどる書き方（`:scope { h2 { … } }`）もできますが、`@scope` があれば、部品はスコープの直下に並べられます。ネストを要素自身の状態に使い、部品の選択を `@scope` に任せる規約と、その理由は「[9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)」で説明します。`@scope` の仕様は「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
 

@@ -1,8 +1,8 @@
 # 第5章 擬似クラスと擬似要素：ルール
 
-- ガイドラインのバージョン: 0.70.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.70.1（2026-10-16 生成）
 - ルールの数: 28
-- 本文: 約15.4万字
+- 本文: 約15.1万字
 - 読む条件: :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,13 +14,13 @@
 
 - `pseudo` 第5章 擬似クラスと擬似要素（約6,500字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/
 - `pseudo/basics` 5-1 擬似クラスと擬似要素の基本（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/basics/
-- `pseudo/is-where-not` 5-2 :is()・:where()・:not()（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/is-where-not/
+- `pseudo/is-where-not` 5-2 :is()・:where()・:not()（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/is-where-not/
 - `pseudo/has` 5-3 :has() で祖先と前の兄弟を選ぶ（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/has/
 - `pseudo/child-index` 5-4 子要素の位置で選ぶ（約1.9万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/child-index/
-- `pseudo/quantity-queries` 5-5 数量クエリ（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/quantity-queries/
-- `pseudo/form-states` 5-6 フォームの状態を表す擬似クラス（約2.8万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/form-states/
+- `pseudo/quantity-queries` 5-5 数量クエリ（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/quantity-queries/
+- `pseudo/form-states` 5-6 フォームの状態を表す擬似クラス（約2.7万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/form-states/
 - `pseudo/open-states` 5-7 開閉と表示の状態を表す擬似クラス（約2.1万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/open-states/
-- `pseudo/generated-content` 5-8 生成コンテンツと装飾の擬似要素（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/generated-content/
+- `pseudo/generated-content` 5-8 生成コンテンツと装飾の擬似要素（約2.1万字）https://t-arai-pnrm.github.io/recss-guideline/pseudo/generated-content/
 
 ## 5-1 擬似クラスと擬似要素の基本
 

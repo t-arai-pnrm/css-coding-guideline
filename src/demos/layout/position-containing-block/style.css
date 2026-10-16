@@ -1,21 +1,4 @@
 @layer components {
-  @scope (.scoped.card-compare) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 24px;
-    }
-
-    section {
-      display: block grid;
-      gap: 8px;
-    }
-
-    h3 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-  }
-
   @scope (.scoped.product-card) to (.scoped) {
     :scope {
       /* バッジの包含ブロックを、カードのルートに作る */
@@ -33,6 +16,12 @@
       & > * + * {
         margin-block-start: 8px;
       }
+
+      & > ._badge {
+        position: absolute;
+        inset-block-start: 8px;
+        inset-inline-end: 8px;
+      }
     }
 
     h4 {
@@ -41,9 +30,6 @@
     }
 
     ._badge {
-      position: absolute;
-      inset-block-start: 8px;
-      inset-inline-end: 8px;
       padding-block: 2px;
       padding-inline: 8px;
       border-radius: var(--rounded--sm);
