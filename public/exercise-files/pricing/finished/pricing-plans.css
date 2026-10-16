@@ -56,12 +56,13 @@
       line-height: var(--text--title--leading);
     }
 
+    /* 料金の数字は、この部品だけで使う大きさ。見出しより小さく、3列に並べても1行に収まるようにする */
     ._price {
       font-family: var(--font-family--latin);
-      font-size: calc(var(--text--price--font-size) / 16 * 1rem);
+      font-size: calc(36 / 16 * 1rem);
       font-weight: var(--font-weight--bold);
       font-variant-numeric: tabular-nums;
-      line-height: var(--text--price--leading);
+      line-height: var(--leading--tight);
     }
 
     /* 税の表示は、価格の桁数によらず次の行に置き、価格の行の高さをそろえる */

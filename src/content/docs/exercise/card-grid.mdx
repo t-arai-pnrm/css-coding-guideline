@@ -215,15 +215,22 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 ## 閾値を1か所に書き、フラグで伝える
 
-置かれた幅で変わる4つの見た目に、それぞれ同じコンテナサイズクエリを書くと、閾値が4か所に分かれます。1か所を直し忘れると、どの幅のカンプにもない中間の形ができます。そこで、コンテナサイズクエリは `._card` のルールにだけ書き、幅の状態をフラグ `--_density` にして伝えます。
+置かれた幅で変わる4つの見た目に、それぞれ同じコンテナサイズクエリを書くと、閾値が4か所に分かれます。1か所を直し忘れると、どの幅のカンプにもない中間の形ができます。そこで、コンテナサイズクエリは `._card` のルールにだけ書き、幅の状態をフラグ `--_density` にして伝えます。ただし、カードを一覧の4行にまたがらせる `grid-row: span 4` は、一覧のグリッドでの配置なので、一覧のルールの `& > ._card` に書きます（`nest-child-placement-only`）。`._card` は自分のフラグを問い合わせられないので、ここだけは同じ閾値のクエリをもう1つ書き、値をそろえます。
 
 ```css title="🙆‍♂ Recommended: コンテナサイズクエリは ._card だけに書き、画像、見出し、抜粋はフラグを読む"
 @scope (.scoped.article-cards) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
+
+    /* 一覧のグリッドでの配置なので、ここに書く。閾値は ._card のクエリとそろえる */
+    & > ._card {
+      @container --scoped (inline-size >= calc(260 / 16 * 1rem)) {
+        grid-row: span 4;
+      }
+    }
   }
 
-  /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
+  /* 見た目を切り替えるコンテナサイズクエリは、フラグを宣言するこの要素にだけ書く */
   ._card {
     --_density: --compact;
 
@@ -238,7 +245,6 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
       grid-template-columns: 1fr;
       grid-template-rows: subgrid;
-      grid-row: span 4;
       row-gap: 12px;
       padding: 16px;
       border: 1px solid var(--border--base);

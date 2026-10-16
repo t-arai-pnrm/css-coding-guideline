@@ -83,22 +83,20 @@ article {
 <Baseline id="subgrid" />
 
 ```css title="🙆‍♂ Recommended: カードの行を、並べる側のグリッドの行に参加させる"
-@scope (.scoped.article-cards) to (.scoped) {
-  :scope {
-    display: block grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
-    gap: 24px 16px;
+.article-cards {
+  display: block grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
+  gap: 24px 16px;
 
-    & > article {
-      grid-row: span 3;
-    }
+  & > ._card {
+    grid-row: span 3;
   }
+}
 
-  article {
-    display: block grid;
-    grid-template-rows: subgrid;
-    row-gap: 8px;
-  }
+._card {
+  display: block grid;
+  grid-template-rows: subgrid;
+  row-gap: 8px;
 }
 ```
 
@@ -121,23 +119,23 @@ article {
 サブグリッドは、列をそろえるときにも使えます。日付、カテゴリ、タイトルを1行ずつ並べるニュースの一覧を考えます。列の幅を決める前に、それぞれの列が可変か不変かを考えます。日付は途中で改行されると読みにくいので、改行しない不変の列です。カテゴリは長すぎると窮屈になるので、上限を決めた可変の列にします。タイトルは、残りの幅をすべて使う可変の列です。
 
 ```css title="🙆‍♂ Recommended: 列ごとに可変か不変かを決め、項目の列をサブグリッドでそろえる"
-@scope (.scoped.news-list) to (.scoped) {
-  ul {
+.news-list {
+  & > ._list {
     display: block grid;
     grid-template-columns: max-content fit-content(calc(160 / 16 * 1rem)) 1fr;
     column-gap: 24px;
 
-    & > li {
+    & > ._item {
       grid-column: 1 / -1;
     }
   }
+}
 
-  li {
-    display: block grid;
-    grid-template-columns: subgrid;
-    align-items: baseline;
-    padding-block: 1rlh;
-  }
+._item {
+  display: block grid;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  padding-block: 1rlh;
 }
 ```
 
@@ -154,45 +152,45 @@ article {
 画像の幅がカードごとに違うなら、画像の列は「画像の幅まで広がり、上限で止まる」可変の列です。この列には `fit-content()` が合います。
 
 ```css title="🙆‍♂ Recommended: 画像の列を画像の幅に合わせ、上限で止める"
-@scope (.scoped.image-card) to (.scoped) {
-  :scope {
-    container: --scoped / inline-size;
-  }
+.image-card {
+  container: --image-card / inline-size;
+}
 
-  ._layout {
-    --_density: --compact;
+._layout {
+  --_density: --compact;
 
-    display: block grid;
-    reading-flow: grid-rows;
+  display: block grid;
+  reading-flow: grid-rows;
+  grid-template:
+    "--image --image   --image"
+    ".       --heading .      "
+    ".       --body    .      "
+    / 24px 1fr 24px;
+
+  @container --image-card (inline-size >= calc(240 / 16 * 1rem + 32px + 240 / 16 * 1rem + 32px)) {
+    --_density: --spacious;
+
     grid-template:
-      "--image --image   --image"
-      ".       --heading .      "
-      ".       --body    .      "
-      / 24px 1fr 24px;
-
-    @container --scoped (inline-size >= calc(240 / 16 * 1rem + 32px + 240 / 16 * 1rem + 32px)) {
-      --_density: --spacious;
-
-      grid-template:
-        "--image . --heading ."
-        "--image . --body    ." 1fr
-        / fit-content(calc(480 / 16 * 1rem)) 32px minmax(calc(240 / 16 * 1rem), 1fr) 32px;
-    }
-
-    & > ._figure {
-      grid-area: --image;
-    }
-
-    & > ._heading {
-      grid-area: --heading;
-    }
-
-    & > ._body {
-      grid-area: --body;
-    }
+      "--image . --heading ."
+      "--image . --body    ." 1fr
+      / fit-content(calc(480 / 16 * 1rem)) 32px minmax(calc(240 / 16 * 1rem), 1fr) 32px;
   }
 
-  img {
+  & > ._figure {
+    grid-area: --image;
+  }
+
+  & > ._heading {
+    grid-area: --heading;
+  }
+
+  & > ._body {
+    grid-area: --body;
+  }
+}
+
+._figure {
+  & > img {
     inline-size: 100%;
 
     @container style(--_density: --spacious) {
@@ -200,7 +198,7 @@ article {
     }
   }
 
-  figcaption {
+  & > figcaption {
     contain: inline-size;
   }
 }

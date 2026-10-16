@@ -7,18 +7,18 @@
 
     /* meta 要素の値から、いまの配色をカスタムプロパティにする */
     &:has(meta[name="color-scheme"][content="light only"]) {
-      --color-scheme: --light;
+      --color-scheme--current: --light;
     }
 
     &:has(meta[name="color-scheme"][content="dark only"]) {
-      --color-scheme: --dark;
+      --color-scheme--current: --dark;
     }
 
     &:has(meta[name="color-scheme"][content="light dark"]) {
-      --color-scheme: --light;
+      --color-scheme--current: --light;
 
       @media (prefers-color-scheme: dark) {
-        --color-scheme: --dark;
+        --color-scheme--current: --dark;
       }
     }
   }
@@ -72,13 +72,13 @@
     [data-scheme="dark"] {
       display: none;
 
-      @container style(--color-scheme: --dark) {
+      @container style(--color-scheme--current: --dark) {
         display: inline flow;
       }
     }
 
     [data-scheme="light"] {
-      @container style(--color-scheme: --dark) {
+      @container style(--color-scheme--current: --dark) {
         display: none;
       }
     }
@@ -102,7 +102,7 @@
       inline-size: 100%;
 
       /* 暗い配色では、画像の明るさを抑える */
-      @container style(--color-scheme: --dark) {
+      @container style(--color-scheme--current: --dark) {
         filter: brightness(0.75);
       }
     }

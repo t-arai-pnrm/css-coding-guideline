@@ -49,38 +49,36 @@ import boxCss from '../../../demos/layout/display-contents-box/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: ラッパーの箱をなくし、order で見出しを前へ出す"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.feature) to (.scoped) {
-  :scope {
-    container: --scoped / inline-size;
+.feature {
+  container: --feature / inline-size;
+}
+
+._layout {
+  --_density: --compact;
+
+  display: block flex;
+  flex-direction: column;
+
+  @container --feature (inline-size >= calc(560 / 16 * 1rem)) {
+    --_density: --spacious;
+
+    flex-direction: row;
   }
+}
 
-  ._layout {
-    --_density: --compact;
+._text {
+  display: contents;
 
-    display: block flex;
-    flex-direction: column;
-
-    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
-      --_density: --spacious;
-
-      flex-direction: row;
-    }
+  @container style(--_density: --spacious) {
+    display: block flow;
   }
+}
 
-  ._text {
-    display: contents;
+._headline {
+  order: -1;
 
-    @container style(--_density: --spacious) {
-      display: block flow;
-    }
-  }
-
-  ._headline {
-    order: -1;
-
-    @container style(--_density: --spacious) {
-      order: unset;
-    }
+  @container style(--_density: --spacious) {
+    order: unset;
   }
 }
 ```
@@ -90,41 +88,39 @@ import boxCss from '../../../demos/layout/display-contents-box/style.css?raw';
 同じレイアウトは、Gridの `grid-template` のエリアで組めます。テンプレートを内部用のカスタムプロパティ `--_template` に入れ、コンテナサイズクエリの中ではテンプレートだけを差し替えます。
 
 ```css title="🙆‍♂ Recommended: テンプレートを差し替えて、構造の変化をエリアで書く"
-@scope (.scoped.feature) to (.scoped) {
-  :scope {
-    container: --scoped / inline-size;
+.feature {
+  container: --feature / inline-size;
+}
+
+._layout {
+  --_density: --compact;
+  --_template:
+    "--headline"
+    "--image"
+    "--body";
+
+  display: block grid;
+  reading-flow: grid-rows;
+  grid-template: var(--_template);
+
+  @container --feature (inline-size >= calc(560 / 16 * 1rem)) {
+    --_density: --spacious;
+    --_template:
+      "--image --headline"
+      "--image --body" 1fr
+      / 1fr 1fr;
   }
 
-  ._layout {
-    --_density: --compact;
-    --_template:
-      "--headline"
-      "--image"
-      "--body";
+  & > ._headline {
+    grid-area: --headline;
+  }
 
-    display: block grid;
-    reading-flow: grid-rows;
-    grid-template: var(--_template);
+  & > ._image {
+    grid-area: --image;
+  }
 
-    @container --scoped (inline-size >= calc(560 / 16 * 1rem)) {
-      --_density: --spacious;
-      --_template:
-        "--image --headline"
-        "--image --body" 1fr
-        / 1fr 1fr;
-    }
-
-    & > ._headline {
-      grid-area: --headline;
-    }
-
-    & > ._image {
-      grid-area: --image;
-    }
-
-    & > ._body {
-      grid-area: --body;
-    }
+  & > ._body {
+    grid-area: --body;
   }
 }
 ```
@@ -148,32 +144,32 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 <Baseline id="subgrid" />
 
 ```css title="🙆‍♂ Recommended: li の箱をなくし、article を ul のサブグリッドにする"
-@scope (.scoped.article-list) to (.scoped) {
-  ul {
+.article-list {
+  & > ._list {
     display: block grid;
     grid-template-columns: max-content 1fr max-content;
 
     /* li の箱がないので、article が ul の実質的な直下の子になる */
-    & article {
+    & > ._item > ._article {
       grid-column: 1 / -1;
     }
   }
+}
 
-  li {
-    display: contents;
-  }
+._item {
+  display: contents;
+}
 
-  article {
-    display: block grid;
-    grid-template-columns: subgrid;
-  }
+._article {
+  display: block grid;
+  grid-template-columns: subgrid;
 }
 ```
 
 ```html title="li のロールを明示する"
-<ul>
-  <li role="listitem">
-    <article>…</article>
+<ul class="_list">
+  <li class="_item" role="listitem">
+    <article class="_article">…</article>
   </li>
 </ul>
 ```
@@ -199,32 +195,30 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 タイトル、著者、日付をまとめた `._meta` が、出し入れするラッパーです。狭いときは、自分でグリッドを組み、タイトルを1行目に、著者と日付を2行目に置きます。広いときは `display: contents` で箱をなくすので、3つの子が `article` のサブグリッドの2〜4列目に入ります。エリアの指定を狭いときのスタイルクエリの中に書いているのは、広いときの `article` にそのエリアの名前がないからです。名前の見つからないエリアを指定したアイテムは、明示的なグリッドの外に置かれます。
 
 ```css title="🙆‍♂ Recommended: 狭いときだけラッパーにグリッドを組ませ、広いときは箱をなくす"
-@scope (.scoped.ranking) to (.scoped) {
-  ._meta {
-    @container style(--_density: --compact) {
-      display: block grid;
-      reading-flow: grid-rows;
-      grid-template:
-        "--title --title"
-        "--author --date"
-        / 1fr max-content;
+._meta {
+  @container style(--_density: --compact) {
+    display: block grid;
+    reading-flow: grid-rows;
+    grid-template:
+      "--title --title"
+      "--author --date"
+      / 1fr max-content;
 
-      & > ._title {
-        grid-area: --title;
-      }
-
-      & > ._author {
-        grid-area: --author;
-      }
-
-      & > time {
-        grid-area: --date;
-      }
+    & > ._title {
+      grid-area: --title;
     }
 
-    @container style(--_density: --spacious) {
-      display: contents;
+    & > ._author {
+      grid-area: --author;
     }
+
+    & > time {
+      grid-area: --date;
+    }
+  }
+
+  @container style(--_density: --spacious) {
+    display: contents;
   }
 }
 ```
@@ -246,8 +240,8 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 
 ```css title="🙅‍♂ Not Recommended: hidden 属性の指定がブラウザのデフォルトスタイルだけの環境で、li の箱をなくす"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.article-list) to (.scoped) {
-  li {
+.article-list {
+  & > ._item {
     /* hidden を付けた li も表示される */
     display: contents;
   }

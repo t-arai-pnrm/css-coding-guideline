@@ -36,7 +36,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
     mask-size: contain;
     inline-size: 1em;
     aspect-ratio: 1;
-    background-color: var(--background-current);
+    background-color: var(--background--current);
   }
 }
 ```
@@ -62,14 +62,14 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
     mask-size: contain;
     inline-size: 1em;
     aspect-ratio: 1;
-    background-color: var(--background-current);
+    background-color: var(--background--current);
   }
 }
 ```
 
 `align-self` を指定しないと、交差軸の `stretch` で、高さが行の高さまで伸びます。`aspect-ratio` は、高さが伸ばされると使われません。高さ60pxのフレックスコンテナで試すと、`inline-size: 1em` と `aspect-ratio: 1` を指定した20pxのアイコンは、20×60pxになりました。`flex: none` を指定しないと、リンクの文字が折り返すほど親が狭いときに、幅が縮みます。親の幅を60pxにすると、幅は約4pxでした。デモでは、親の `align-items: center` で高さが伸びないので、`flex: none` だけを指定しています。
 
-`background-color` に `currentColor` を直接書かず、`--background-current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
+`background-color` に `currentColor` を直接書かず、`--background--current` から受け取っているのは、強制カラーモードでアイコンを消さないためです。この仕組みは「[15-5 強制カラーモードとコントラスト](/color-media/forced-colors/)」で説明しています。マスクのプロパティは、2023年12月までにすべての主要なブラウザが接頭辞なしで対応したので、`-webkit-` の接頭辞は要りません。
 
 <Baseline id="masks" name="マスク（mask-image など）" />
 
@@ -165,7 +165,7 @@ button {
 
 | 方法 | 色を文字色に合わせる | 強制カラーモード | 代替テキスト | 向く場面 |
 | --- | --- | --- | --- | --- |
-| 擬似要素の `mask-image` | `background-color` で合わせられる | 背景色が消えるので、`--background-current` でシステムカラーに戻す | `content` の代替テキストで付けられるが、ページ内検索の対象にならないので、意味があれば隣にテキストを置く | 矢印や外部リンクの印のように、CSSだけで足す装飾 |
+| 擬似要素の `mask-image` | `background-color` で合わせられる | 背景色が消えるので、`--background--current` でシステムカラーに戻す | `content` の代替テキストで付けられるが、ページ内検索の対象にならないので、意味があれば隣にテキストを置く | 矢印や外部リンクの印のように、CSSだけで足す装飾 |
 | インラインSVG | `fill` や `stroke` の `currentColor` で合わせられる | 色が置き換わらないことがあるので、`fill` と `stroke` をシステムカラーに固定する | `role="img"` と `aria-label` で付ける。ページ内検索の対象にしたいときは、`aria-hidden="true"` にして隣に視覚的に隠したテキストを置く | 意味のあるアイコンや、線と塗りを使い分ける複雑な形 |
 | 外部のファイルの `<img>` | 合わせられない。画像の中の色のまま | 影響を受けないので、背景に溶け込むなら `filter` で塗りつぶす | `alt` 属性で付ける | 色を変えないロゴや、多色の画像 |
 

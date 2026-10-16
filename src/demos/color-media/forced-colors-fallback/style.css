@@ -6,30 +6,30 @@
 
 @layer base {
   :root {
-    --background-current: currentColor;
+    --background--current: currentColor;
 
     @media (forced-colors: active) {
-      --background-current: CanvasText;
+      --background--current: CanvasText;
     }
   }
 
   :any-link {
     @media (forced-colors: active) {
-      --background-current: LinkText;
+      --background--current: LinkText;
     }
   }
 
   button {
     &:enabled {
       @media (forced-colors: active) {
-        --background-current: ButtonText;
+        --background--current: ButtonText;
       }
     }
   }
 
   :disabled {
     @media (forced-colors: active) {
-      --background-current: GrayText;
+      --background--current: GrayText;
     }
   }
 }
@@ -46,7 +46,7 @@
     }
 
     button {
-      --_icon-color: var(--background-current);
+      --_icon-color: var(--background--current);
 
       display: inline flex;
       gap: 8px;
@@ -77,7 +77,7 @@
     }
 
     a {
-      --_icon-color: var(--background-current);
+      --_icon-color: var(--background--current);
 
       display: inline flex;
       gap: 4px;

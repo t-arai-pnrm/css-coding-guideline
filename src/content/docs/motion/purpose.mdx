@@ -63,6 +63,7 @@ import Guideline from '../../../components/Guideline.astro';
 ```css title="🙆‍♂ Recommended: ショートカットで開いたときは、出現と退場の動きを省く"
 @scope (.scoped.search-dialog) to (.scoped) {
   :scope {
+    z-index: var(--z--top);
     transition-duration: var(--duration--base);
     transition-property: display, overlay, opacity;
     transition-timing-function: var(--ease--out-quint);

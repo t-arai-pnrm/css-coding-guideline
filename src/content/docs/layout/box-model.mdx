@@ -110,15 +110,13 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 次の例では、カードの画像の左右に、カードの `padding` と同じ大きさの負の `margin` を付けています。画像の幅は `auto` のままなので、左右の `padding` の分だけ広がり、カードの端まで届きます。
 
 ```css title="🙆‍♂ Recommended: 負の margin で、親の padding を越えて端まで広げる"
-@scope (.scoped.card) to (.scoped) {
-  :scope {
-    --_padding: 24px;
+.card {
+  --_padding: 24px;
 
-    padding: var(--_padding);
+  padding: var(--_padding);
 
-    & > ._image {
-      margin-inline: calc(var(--_padding) * -1);
-    }
+  & > ._image {
+    margin-inline: calc(var(--_padding) * -1);
   }
 }
 ```
@@ -148,13 +146,11 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 一方、`border` はボックスの大きさに含まれるので、ホバーや選択の状態で `border` を足すと、要素が広がって隣の要素や後ろの行が押し出されます。状態で枠を足すなら、同じ太さの透明な `border` を最初から置いて色だけ変えるか、`outline` や `box-shadow` で描きます。{/* 要確認: 出典なし */}
 
 ```css title="🙆‍♂ Recommended: 透明な border を置いておき、選択の状態では色だけを変える"
-@scope (.scoped.tabs) to (.scoped) {
-  ._tab {
-    border-block-end: 2px solid transparent;
+._tab {
+  border-block-end: 2px solid transparent;
 
-    &[aria-selected="true"] {
-      border-block-end-color: currentColor;
-    }
+  &[aria-selected="true"] {
+    border-block-end-color: currentColor;
   }
 }
 ```

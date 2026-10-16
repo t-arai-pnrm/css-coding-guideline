@@ -16,7 +16,7 @@ claude plugin install recss-guideline@recss-guideline
   "mcpServers": {
     "recss-guideline": {
       "command": "npx",
-      "args": ["-y", "recss-guideline-mcp@0.71.3"]
+      "args": ["-y", "recss-guideline-mcp@0.73.0"]
     }
   }
 }
@@ -36,7 +36,7 @@ claude plugin install recss-guideline@recss-guideline
 
 ## 版
 
-パッケージの版は、本書のバージョンと同じです。チームで共有する設定では、`recss-guideline-mcp@0.71.3` のように版を固定してください。変更点は付録F「[更新履歴](https://t-arai-pnrm.github.io/recss-guideline/appendix/changelog/)」にあります。
+パッケージの版は、本書のバージョンと同じです。チームで共有する設定では、`recss-guideline-mcp@0.73.0` のように版を固定してください。変更点は付録F「[更新履歴](https://t-arai-pnrm.github.io/recss-guideline/appendix/changelog/)」にあります。
 
 ## 開発
 

@@ -103,7 +103,7 @@ sidebar:
 | 検討の順番 | レスポンシブ対応を「静的 → イントリンシック → コンテナサイズクエリ → メディアクエリ」の順に検討し、上の段階で解決できるなら下の段階を使わないという本書の原則です。 | [13-1](/responsive/escalation/) |
 | コンテナクエリ | `@container` で、祖先の要素（コンテナ）の状態を条件にするクエリの総称です。サイズを調べるコンテナサイズクエリ、カスタムプロパティの値を調べるスタイルクエリ、スクロールの状態を調べるスクロール状態クエリの3つを含みます。 | [13-3](/responsive/container-size-queries/) |
 | コンテナサイズクエリ | ビューポートではなく、コンテナの大きさで条件を判定するコンテナクエリです。`container: --scoped / inline-size` でコンポーネントのルートをコンテナにし、`@container --scoped (inline-size >= …)` のように書きます。 | [13-3](/responsive/container-size-queries/) |
-| スタイルクエリ | コンテナのカスタムプロパティの値を条件にするコンテナクエリです。`@container style(--color-scheme: --dark)` のように書きます。 | [6-5](/values/if-and-attr/)、[13-3](/responsive/container-size-queries/)、[15-4](/color-media/dark-mode/) |
+| スタイルクエリ | コンテナのカスタムプロパティの値を条件にするコンテナクエリです。`@container style(--color-scheme--current: --dark)` のように書きます。 | [6-5](/values/if-and-attr/)、[13-3](/responsive/container-size-queries/)、[15-4](/color-media/dark-mode/) |
 | スクロール状態クエリ | `sticky` の要素が留まっているか、スクロールスナップで止まっているかのような、スクロールの状態を条件にするコンテナクエリです。`@container scroll-state(stuck: block-start)` のように書きます。 | [11-7](/layout-practice/sticky-header/)、[17-8](/interaction/carousel/) |
 | ブレイクポイント | レイアウトを切り替える幅です。デバイスの幅ではなく、レイアウトが崩れる幅から決め、remの式で書きます。 | [13-2](/responsive/breakpoints/) |
 | 範囲構文 | `min-width` の代わりに、`(width >= …)` のように不等号でクエリの条件を書く構文です。 | [13-5](/responsive/media-queries/) |

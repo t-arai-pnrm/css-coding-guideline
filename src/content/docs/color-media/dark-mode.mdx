@@ -145,31 +145,31 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 
 ### 色以外のスタイルを配色で変える
 
-画像の明るさや影の強さのように、色以外のスタイルを配色で変えたい場合もあります。テンプレートでは、メタ要素の値から `--color-scheme` というカスタムプロパティを決めておき、スタイルクエリで分岐できるようにしています。
+画像の明るさや影の強さのように、色以外のスタイルを配色で変えたい場合もあります。テンプレートでは、メタ要素の値から `--color-scheme--current` というカスタムプロパティを決めておき、スタイルクエリで分岐できるようにしています。
 
 ```css title="🙆‍♂ Recommended: meta 要素の値から、いまの配色をカスタムプロパティにする"
 :root {
   &:has(meta[name="color-scheme"][content="light only"]) {
-    --color-scheme: --light;
+    --color-scheme--current: --light;
   }
 
   &:has(meta[name="color-scheme"][content="dark only"]) {
-    --color-scheme: --dark;
+    --color-scheme--current: --dark;
   }
 
   &:has(meta[name="color-scheme"][content="light dark"]) {
-    --color-scheme: --light;
+    --color-scheme--current: --light;
 
     @media (prefers-color-scheme: dark) {
-      --color-scheme: --dark;
+      --color-scheme--current: --dark;
     }
   }
 }
 ```
 
-使う側では、`@container style(--color-scheme: --dark)` のように条件を書きます。値を `--` で始めるのは、自分で付けた名前だと分かるようにするためです。スタイルクエリは2026年5月にすべての主要なブラウザで使えるようになったので、本書の対象のブラウザでは問題なく動作します。ただし、色の切り替えは `light-dark()` で足りるので、このフラグを使う場面は多くありません。
+使う側では、`@container style(--color-scheme--current: --dark)` のように条件を書きます。値を `--` で始めるのは、自分で付けた名前だと分かるようにするためです。スタイルクエリは2026年5月にすべての主要なブラウザで使えるようになったので、本書の対象のブラウザでは問題なく動作します。ただし、色の切り替えは `light-dark()` で足りるので、このフラグを使う場面は多くありません。
 
-次のデモでは、ラジオボタンで選んだ値をメタ要素の `content` に書き込み、ラジオボタンの下に `--color-scheme` の値を表示しています。「ダーク」を選ぶと、カードの文字色、背景色、影は `light-dark()` のトークンで切り替わり、イラストの明るさはスタイルクエリで抑えられます。「OSの設定に合わせる」を選んだ状態では、OSの外観の設定を変えると、表示も一緒に変わります。
+次のデモでは、ラジオボタンで選んだ値をメタ要素の `content` に書き込み、ラジオボタンの下に `--color-scheme--current` の値を表示しています。「ダーク」を選ぶと、カードの文字色、背景色、影は `light-dark()` のトークンで切り替わり、イラストの明るさはスタイルクエリで抑えられます。「OSの設定に合わせる」を選んだ状態では、OSの外観の設定を変えると、表示も一緒に変わります。
 
 <Demo title="選んだテーマをメタ要素に書き込み、トークンの色とスタイルクエリで表示を切り替える" html={themeSwitchHtml} css={themeSwitchCss} js={themeSwitchJs} scheme="light dark" />
 

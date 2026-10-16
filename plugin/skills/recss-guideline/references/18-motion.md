@@ -1,8 +1,8 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.71.3（2026-10-16 生成）
+- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
 - ルールの数: 31
-- 本文: 約19.8万字
+- 本文: 約19.9万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,7 +13,7 @@
 ## この章の節
 
 - `motion` 第18章 モーション（約5,900字）https://t-arai-pnrm.github.io/recss-guideline/motion/
-- `motion/purpose` 18-1 動かすかどうかを決める（約9,300字）https://t-arai-pnrm.github.io/recss-guideline/motion/purpose/
+- `motion/purpose` 18-1 動かすかどうかを決める（約9,400字）https://t-arai-pnrm.github.io/recss-guideline/motion/purpose/
 - `motion/reduced-motion` 18-2 動きを減らす設定に対応する（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/motion/reduced-motion/
 - `motion/easing-and-duration` 18-3 イージングと再生時間（約2.4万字）https://t-arai-pnrm.github.io/recss-guideline/motion/easing-and-duration/
 - `motion/transitions-and-keyframes` 18-4 トランジションの基本と中断（約7,200字）https://t-arai-pnrm.github.io/recss-guideline/motion/transitions-and-keyframes/

@@ -11,6 +11,21 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.73.0（2026年10月16日）
+
+サンプルコードのレビューで残っていた、規約どうしの食い違いを直しました。ルールの補足を変えたので、マイナーバージョンを上げています。
+
+- ルールの補足を変えました。
+  - [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：フラグを宣言する要素自身の、親のレイアウトで決まる宣言（`grid-row: span 4` など）は、親のネストに同じ閾値のサイズクエリで書くことにしました。その要素は自分のフラグを問い合わせられないためです。「[21-3 カード一覧とサイドバーを作る](/exercise/card-grid/)」のカードを、この形に直しました。
+  - [`comments-why-only`](/notation/comments/#rule-comments-why-only)：`:has()` の中の結合子や `:nth-child()` の範囲のように、読み解くのに時間のかかるセレクタの条件は、文章にしてかまわないと書きました。「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」のコード例に、そのコメントを足しました。
+  - [`top-layer-z-index-top`](/components/boundaries/#rule-top-layer-z-index-top)：`z-index: var(--z--top)` は、閉じる動きを付けた `<dialog>` と `popover` 属性の要素にだけ指定することにしました。閉じる動きを付けた第18章と21-7のコード例とデモに、この指定を足しています。
+- ベーススタイルの変数の名前を、`--<分類>--<名前>` の形にそろえました（ルール [`token-naming-category-first`](/components/design-tokens/#rule-token-naming-category-first)）。新しい名前は、`--background--current`、`--color-scheme--current`、`--viewport--width` です。もとの名前は、それぞれ `--background-current`、`--color-scheme`、`--window-width` でした。
+- 「[第7章 レイアウトの仕組み](/layout/)」のコード例は、レイアウトの仕組みを見せるため、`@scope` を省いて素のクラスで書くことにしました。概要にそう断り、`@scope` で書いていた例を素のクラスにそろえました。
+- 「[5-5 数量クエリ](/pseudo/quantity-queries/)」の、件数で列の数を決める例は、`>` の有無を見せるためのものだと断りました。
+- 第13章の「手を動かす課題」の答えの解説に、2つのことを書きました。コンテナにしたカードのルートで `padding` を残している理由と、外形の幅で判定するときの直し方です。
+- デモの `style.css` の途中にあった `/** */` の説明ブロックを、`/* */` のコメントにしました。デモは比べるために複数のコンポーネントを1つのファイルに書くことがあり、説明ブロックはファイルの先頭にだけ置きます。
+- 0.72.0の分も含めて、AI向けの配布物と、演習の配布ファイルを作り直しました。
+
 ## 0.72.0（2026年10月16日）
 
 刊行前のレビューで見つかった、推奨のコード例と本書のルールの食い違いを直しました。ルール [`reading-flow-when-reordered`](/layout-practice/reading-flow/#rule-reading-flow-when-reordered) の性質を「本書の規約」に移しています。

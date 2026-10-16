@@ -41,14 +41,12 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 ```css title="🙅‍♂ Not Recommended: Flexbox の子の1つに position: absolute を指定する"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.tag-list) to (.scoped) {
-  :scope {
-    display: block flex;
-    gap: 8px;
+.tag-list {
+  display: block flex;
+  gap: 8px;
 
-    & > ._new {
-      position: absolute;
-    }
+  & > ._new {
+    position: absolute;
   }
 }
 ```
@@ -109,13 +107,11 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 ```css title="🙅‍♂ Not Recommended: 包含ブロックを作らずに、カードの角にバッジを置く"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.product-card) to (.scoped) {
-  :scope {
-    & > ._badge {
-      position: absolute;
-      inset-block-start: 8px;
-      inset-inline-end: 8px;
-    }
+.product-card {
+  & > ._badge {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
   }
 }
 ```
@@ -123,15 +119,13 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 この例のバッジが置かれるのは、カードの角ではありません。`position` を指定したカードの外の祖先か、初期包含ブロックの角です。カードを置く場所が変わると、バッジの位置も変わります。包含ブロックは、基準にしたい祖先へ `position: relative` を指定して、はっきり作ります。`position: absolute` と `inset` は、包含ブロックを作る祖先との組み合わせで意味が決まるので、その祖先のルールの中に `& > ._badge` とネストして書きます（「[9-6 ネストの判断基準](/notation/nesting-criteria/)」）。
 
 ```css title="🙆‍♂ Recommended: コンポーネントのルートで、バッジの包含ブロックを作る"
-@scope (.scoped.product-card) to (.scoped) {
-  :scope {
-    position: relative;
+.product-card {
+  position: relative;
 
-    & > ._badge {
-      position: absolute;
-      inset-block-start: 8px;
-      inset-inline-end: 8px;
-    }
+  & > ._badge {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
   }
 }
 ```
@@ -199,38 +193,34 @@ CSSには、通常フロー、Flexbox、Gridのように、要素の大きさと
 
 ```css title="🙅‍♂ Not Recommended: Grid の子に sticky だけを指定する"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.article-layout) to (.scoped) {
-  :scope {
-    display: block grid;
-    grid-template-columns: 1fr calc(240 / 16 * 1rem);
-    gap: 32px;
-  }
+.article-layout {
+  display: block grid;
+  grid-template-columns: 1fr calc(240 / 16 * 1rem);
+  gap: 32px;
+}
 
-  nav {
-    position: sticky;
-    inset-block-start: 16px;
-  }
+._nav {
+  position: sticky;
+  inset-block-start: 16px;
 }
 ```
 
 GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` として働き、セルの高さいっぱいに伸びます。本文が長ければセルも高いので、目次もそれと同じ高さになります。目次の高さが包含ブロックの高さと等しいと、ずらす余地がなく、目次は留まりません。`align-self: start` を指定すれば、目次は中身の高さで止まり、セルの中に余地ができます。
 
 ```css title="🙆‍♂ Recommended: sticky の子には align-self: start を指定する"
-@scope (.scoped.article-layout) to (.scoped) {
-  :scope {
-    display: block grid;
-    grid-template-columns: 1fr calc(240 / 16 * 1rem);
-    gap: 32px;
+.article-layout {
+  display: block grid;
+  grid-template-columns: 1fr calc(240 / 16 * 1rem);
+  gap: 32px;
 
-    & > nav {
-      align-self: start;
-    }
+  & > ._nav {
+    align-self: start;
   }
+}
 
-  nav {
-    position: sticky;
-    inset-block-start: 16px;
-  }
+._nav {
+  position: sticky;
+  inset-block-start: 16px;
 }
 ```
 
@@ -249,16 +239,14 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 下端や、横にスクロールする領域の端に留めるときも同じです。見出しを上端に、フッターの操作欄を下端に留めるなら、それぞれ `inset-block-start` と `inset-block-end` を指定します。本書では、ほかの場面と同じく、物理プロパティの `top` ではなく論理プロパティで書きます。
 
 ```css title="🙆‍♂ Recommended: 見出しを上端に、操作欄を下端に留める"
-@scope (.scoped.form-section) to (.scoped) {
-  h2 {
-    position: sticky;
-    inset-block-start: 0;
-  }
+._heading {
+  position: sticky;
+  inset-block-start: 0;
+}
 
-  ._actions {
-    position: sticky;
-    inset-block-end: 0;
-  }
+._actions {
+  position: sticky;
+  inset-block-end: 0;
 }
 ```
 
@@ -278,18 +266,14 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 
 ```css title="🙅‍♂ Not Recommended: はみ出しを切り取るために overflow-x: hidden を指定する"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.page-section) to (.scoped) {
-  :scope {
-    overflow-x: hidden;
-  }
+.page-section {
+  overflow-x: hidden;
 }
 ```
 
 ```css title="🙆‍♂ Recommended: はみ出しを切り取るだけなら overflow: clip にする"
-@scope (.scoped.page-section) to (.scoped) {
-  :scope {
-    overflow: clip;
-  }
+.page-section {
+  overflow: clip;
 }
 ```
 
@@ -304,21 +288,19 @@ GridとFlexboxの子は、`align-self` の初期値（`normal`）が `stretch` �
 `sticky` の要素が画面より高いと、要素の下端が見えないまま上端で留まり、末尾に届かなくなります。目次が長い記事のサイドバーは、典型的な例です。要素の高さに上限を決め、上限を超える分は要素の中でスクロールさせます。
 
 ```css title="🙆‍♂ Recommended: 画面より高くなりうる sticky の要素には、高さの上限を決める"
-@scope (.scoped.article-layout) to (.scoped) {
-  :scope {
-    display: block grid;
+.article-layout {
+  display: block grid;
 
-    & > nav {
-      align-self: start;
-    }
+  & > ._nav {
+    align-self: start;
   }
+}
 
-  nav {
-    position: sticky;
-    inset-block-start: 16px;
-    overflow-y: auto;
-    max-block-size: calc(100svb - 16px * 2);
-  }
+._nav {
+  position: sticky;
+  inset-block-start: 16px;
+  overflow-y: auto;
+  max-block-size: calc(100svb - 16px * 2);
 }
 ```
 

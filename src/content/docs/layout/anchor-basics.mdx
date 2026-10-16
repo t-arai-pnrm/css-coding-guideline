@@ -32,15 +32,13 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 ```css title="🙅‍♂ Not Recommended: ボタンと説明を包み、包み込んだ要素の辺から説明の位置を決める"
 /* 🙅‍♂ Not Recommended */
-@scope (.scoped.button-note) to (.scoped) {
-  :scope {
-    position: relative;
+.button-note {
+  position: relative;
 
-    & > ._note {
-      position: absolute;
-      inset-block-start: 100%;
-      inset-inline-start: 0;
-    }
+  & > ._note {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
   }
 }
 ```
@@ -58,22 +56,20 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 アンカーにする要素には `anchor-name` で名前を付け、配置する要素には `position-anchor` でその名前を指定します。名前は、カスタムプロパティと同じく `--` で始まる識別子です（「[9-1 命名規則](/notation/naming/)」）。`position-anchor` で決めたアンカーは「デフォルトのアンカー」と呼ばれ、`position-area` と、名前を省いた `anchor()` の基準になります。
 
 ```css title="🙆‍♂ Recommended: アンカーに名前を付け、配置する要素から参照する"
-@scope (.scoped.field-note) to (.scoped) {
-  :scope {
-    position: relative;
+.field-note {
+  position: relative;
 
-    & > ._note {
-      @supports (position-area: block-end span-inline-end) {
-        position: absolute;
-        position-area: block-end span-inline-end;
-        position-anchor: --field-note;
-      }
+  & > ._note {
+    @supports (position-area: block-end span-inline-end) {
+      position: absolute;
+      position-area: block-end span-inline-end;
+      position-anchor: --field-note;
     }
   }
+}
 
-  input {
-    anchor-name: --field-note;
-  }
+._input {
+  anchor-name: --field-note;
 }
 ```
 
@@ -92,8 +88,8 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 ポップオーバーを開くボタンを基準にするなら、`anchor-name` で名前を付ける必要はありません。`popovertarget` 属性や `commandfor` 属性でボタンとポップオーバーを結び付けると、ボタンがポップオーバーの「暗黙のアンカー」になります。カスタマイズ可能な `<select>` でも、選択肢の一覧（`::picker(select)`）の暗黙のアンカーは `<select>` です。暗黙のアンカーは要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要りません。
 
 ```css title="🙆‍♂ Recommended: 開いたボタンを基準に、名前を付けずにポップオーバーを置く"
-@scope (.scoped.help-tip) to (.scoped) {
-  [popover] {
+.help-tip {
+  & > [popover] {
     @supports (position-area: block-end span-inline-end) {
       position-area: block-end span-inline-end;
     }
@@ -102,7 +98,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 ```
 
 ```html
-<span class="scoped help-tip">
+<span class="help-tip">
   <button type="button" popovertarget="help-tip-1">入力のヒント</button>
   <span id="help-tip-1" popover>半角の数字で入力してください。</span>
 </span>
@@ -123,16 +119,14 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 `anchor()` は、アンカーの辺の位置を返す関数で、`inset` のプロパティにだけ書けます。`inset-block-start: anchor(end)` は、配置する要素のブロック方向の始まりの辺を、アンカーの終わりの辺にそろえる指定です。辺は、`start` や `end` のような論理キーワード、`top` や `left` のような物理キーワード、中央の `center`、割合で指定します。`inside` は書いたプロパティと同じ側の辺を、`outside` は反対側の辺を指すので、`inset: anchor(inside)` と書くと、4辺をアンカーの4辺に重ねられます。
 
 ```css title="🙆‍♂ Recommended: anchor() で、アンカーの下端と行頭側の辺にそろえる"
-@scope (.scoped.field-note) to (.scoped) {
-  :scope {
-    position: relative;
+.field-note {
+  position: relative;
 
-    & > ._note {
-      @supports (anchor-name: --field-note) {
-        position: absolute;
-        inset-block-start: anchor(--field-note end);
-        inset-inline-start: anchor(--field-note start);
-      }
+  & > ._note {
+    @supports (anchor-name: --field-note) {
+      position: absolute;
+      inset-block-start: anchor(--field-note end);
+      inset-inline-start: anchor(--field-note start);
     }
   }
 }
@@ -187,18 +181,16 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
   margin-inline-start: 8px;
 }
 
-@scope (.scoped.field-note) to (.scoped) {
-  :scope {
-    position: relative;
+.field-note {
+  position: relative;
 
-    & > ._note {
-      @supports (position-area: block-end span-inline-end) {
-        position: absolute;
-        position-area: block-end span-inline-end;
-        position-anchor: --field-note;
-        position-try-fallbacks: flip-block, --field-note-inline-end;
-        margin-block-start: 8px;
-      }
+  & > ._note {
+    @supports (position-area: block-end span-inline-end) {
+      position: absolute;
+      position-area: block-end span-inline-end;
+      position-anchor: --field-note;
+      position-try-fallbacks: flip-block, --field-note-inline-end;
+      margin-block-start: 8px;
     }
   }
 }
@@ -219,16 +211,14 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 ポップオーバーはトップレイヤーに表示されるので、祖先の指定にかかわらず、包含ブロックはビューポートになります。祖先の `overflow` で切り取られず、はみ出しも画面の端で判定され、ページのどこにあるボタンもアンカーにできます。そのため、ツールチップやメニューはポップオーバーで作ります。`position: fixed` もビューポートを基準にしますが、祖先に `transform` や `filter` があると、その祖先が包含ブロックになります。
 
 ```css title="🙆‍♂ Recommended: カードの中の説明をポップオーバーにして、はみ出しを画面の端で判定する"
-@scope (.scoped.product-card) to (.scoped) {
-  :scope {
-    position: relative;
-  }
+.product-card {
+  position: relative;
+}
 
-  [popover] {
-    @supports (position-area: block-end span-inline-end) {
-      position-area: block-end span-inline-end;
-      position-try-fallbacks: flip-block;
-    }
+._popover {
+  @supports (position-area: block-end span-inline-end) {
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: flip-block;
   }
 }
 ```
@@ -244,8 +234,8 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 未対応の環境では、アンカーを基準にした配置の指定がすべて無視されます。ポップオーバーは、ブラウザの既定のスタイルの `inset: 0` と `margin: auto` で画面の中央に置かれる仕組みなので、kiso.cssが `margin` を解除していると、画面の左上に寄ります。絶対配置の要素は静的位置に置かれ、ほかの内容に重なることもあります。第1章のルールに従い、アンカーポジショニングはレイアウトの要として使いません（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。指定を `@supports` の中に書き、その外には、未対応の環境でも内容を読めて操作できる配置を書きます。
 
 ```css title="🙆‍♂ Recommended: 未対応の環境では画面の中央に、対応した環境ではボタンの下に表示する"
-@scope (.scoped.help-tip) to (.scoped) {
-  [popover] {
+.help-tip {
+  & > [popover] {
     margin: revert;
 
     @supports (position-area: block-end span-inline-end) {

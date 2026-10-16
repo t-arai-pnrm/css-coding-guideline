@@ -1,6 +1,6 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.71.3（2026-10-16 生成）
+- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
 - ルールの数: 49
 - 本文: 約12.5万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
@@ -22,7 +22,7 @@
 - `notation/property-order` 9-7 プロパティの並び順（約3,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/property-order/
 - `notation/modern-syntax` 9-8 モダンな記法にそろえる（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/modern-syntax/
 - `notation/logical-properties` 9-9 論理プロパティと論理値（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/notation/logical-properties/
-- `notation/comments` 9-10 コメントの書き方（約8,900字）https://t-arai-pnrm.github.io/recss-guideline/notation/comments/
+- `notation/comments` 9-10 コメントの書き方（約9,000字）https://t-arai-pnrm.github.io/recss-guideline/notation/comments/
 
 ## 9-1 命名規則
 
@@ -256,6 +256,7 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/comments/
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/comments/#rule-prop-tag-for-public-properties
 - 【必須・実装上の判断】コードの途中のコメントには「なぜそう書くのか」と「なぜ別の書き方をしないのか」だけを書き、コードが何をしているかは書かない。（`comments-why-only`）
   - 理由: 何をしているかはコードを読めば分かり、コードと食い違ったコメントは誤解のもとになるため。
+  - 補足: `:has()` の中の結合子や `:nth-child()` の範囲のように、読み解くのに時間のかかるセレクタの条件は、「3件以上のとき」のように文章にしてかまいません。セレクタの意味を言い換えるだけで、何をしているかの説明とは違い、読み手が条件を確かめる手間を減らせるためです。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/comments/#rule-comments-why-only
 - 【禁止・実装上の判断】変更の経緯（以前の実装、日付、タスクや計画書の番号）と、コメントアウトしたコードを残さない。（`no-history-comments`）
   - 理由: 経緯はバージョン管理に残っており、コメントに書くと現在のコードを読む妨げになり、時間とともに古くなるため。

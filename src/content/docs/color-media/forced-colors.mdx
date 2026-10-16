@@ -103,35 +103,35 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 `mask-image` や `clip-path` で形を切り抜き、`background-color` で色を塗るアイコンは、背景色を文字色（前景色）のように使っています。強制カラーモードでは、この背景色がページの背景色に置き換わるため、アイコンが見えなくなります。
 
-そこで、背景色をカスタムプロパティ `--background-current` から受け取るようにします。通常は `currentColor` を、強制カラーモードでは文脈に合ったシステムカラーを入れておきます。
+そこで、背景色をカスタムプロパティ `--background--current` から受け取るようにします。通常は `currentColor` を、強制カラーモードでは文脈に合ったシステムカラーを入れておきます。
 
 ```css title="🙆‍♂ Recommended: 強制カラーモードでは、文脈に合ったシステムカラーにする"
 @layer base {
   :root {
-    --background-current: currentColor;
+    --background--current: currentColor;
 
     @media (forced-colors: active) {
-      --background-current: CanvasText;
+      --background--current: CanvasText;
     }
   }
 
   :any-link {
     @media (forced-colors: active) {
-      --background-current: LinkText;
+      --background--current: LinkText;
     }
   }
 
   button {
     &:enabled {
       @media (forced-colors: active) {
-        --background-current: ButtonText;
+        --background--current: ButtonText;
       }
     }
   }
 
   :disabled {
     @media (forced-colors: active) {
-      --background-current: GrayText;
+      --background--current: GrayText;
     }
   }
 }
@@ -139,9 +139,9 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 通常の文字の中では `CanvasText`、リンクの中では `LinkText`、有効なボタンの中では `ButtonText`、無効な要素の中では `GrayText` になります。アイコンは、周りの文字と同じシステムカラーで描かれます。これらの指定は `base` レイヤーに書くので、コンポーネントの側で文脈を足したいときは、クラス1つで上書きできます。レイヤーを使えない環境では、セレクタを `:where()` で包んで詳細度を0にします（[4-2 セレクタで詳細度を設計する](/cascade/selectors/)）{/* CMSの節を公開したらリンクする: /operations/cms/ */}。
 
-アイコンを描く側では、`background-color` に `var(--background-current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」）。
+アイコンを描く側では、`background-color` に `var(--background--current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」）。
 
-```css title="🙆‍♂ Recommended: アイコンの色を --background-current から受け取る"
+```css title="🙆‍♂ Recommended: アイコンの色を --background--current から受け取る"
 ._more {
   &::after {
     content: "";
@@ -154,14 +154,14 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
     mask-size: contain;
     inline-size: 1em;
     aspect-ratio: 1;
-    background-color: var(--background-current);
+    background-color: var(--background--current);
   }
 }
 ```
 
-`background-color` のフォールバックは、一度 `:root` に定義しておけば、あとは `currentColor` の代わりに `var(--background-current)` と書くだけで済みます。
+`background-color` のフォールバックは、一度 `:root` に定義しておけば、あとは `currentColor` の代わりに `var(--background--current)` と書くだけで済みます。
 
-次のデモでは、前の見出しの透明な枠線と、この見出しの `--background-current` を使い、ボタンとリンクを「対策なし」と「対策あり」の2列で並べています。通常の表示では、2列の見た目は同じです。
+次のデモでは、前の見出しの透明な枠線と、この見出しの `--background--current` を使い、ボタンとリンクを「対策なし」と「対策あり」の2列で並べています。通常の表示では、2列の見た目は同じです。
 
 <Demo title="通常の表示では同じでも、強制カラーモードでは差が出るボタンとリンク" html={forcedHtml} css={forcedCss} variant="neutral" />
 
@@ -192,7 +192,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 通常の表示では、グラデーションが `currentColor` で上を塗りつぶすので、下の `CanvasText` は見えません。強制カラーモードではグラデーションが消え、`CanvasText` が見えます。私は最近の案件で、パンくずリストの区切りの矢印をこの方法で描きました。
 
-ただし、この方法では、リンクの中でも色は `CanvasText` のままです（Chromeのエミュレーションで確認）。パンくずリストの区切りのように、通常の文字の文脈でしか使わない図形に向いています。リンクやボタンの中のアイコンには、`--background-current` を使います。
+ただし、この方法では、リンクの中でも色は `CanvasText` のままです（Chromeのエミュレーションで確認）。パンくずリストの区切りのように、通常の文字の文脈でしか使わない図形に向いています。リンクやボタンの中のアイコンには、`--background--current` を使います。
 
 ## インラインSVGと画像のアイコン
 

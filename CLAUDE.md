@@ -30,6 +30,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 🙅‍♂ Not Recommended のデモは `style.bad.css` という名前にする（Stylelint の対象外になる）。
   - 悪い例と良い例、値の違いなどを比べるデモは、1つのデモの中に並べる（`data-*` 属性で片方だけ指定を変える）。比べる2つを別々のデモに分けない。
   - 状態の切り替えに JavaScript が要るデモは、`script.js` を置いて `<Demo js={…}>` に渡す。JavaScript のタブは出さない。CSS と HTML だけで作れるデモには使わない。
+  - デモの `style.css` は、比べるために複数のコンポーネントを1つのファイルに書いてよい（ルール `one-component-per-file` の、デモだけの例外）。そのときは、`/** */` の説明ブロックをファイルの先頭の1つだけにし、途中のコンポーネントの前には `/* */` のコメントを置く。演習（第21章）のデモは、配布ファイルを `@scope` ごとに分けるので、`@scope` ごとの `/** */` を残す。
   - 見せるための足場（比べる区画を並べるグリッド、区画のラベルの文字サイズ、デモの枠の余白を外す `body` の指定）は `style.css` に書かない。区画を並べる要素に `data-demo-layout="compare"` を付け、枠の余白は `<Demo bleed>`（左右だけなら `bleed="inline"`）で外す。仕組みは `src/lib/demo.ts` の `DEMO_FRAME` にあり（演習の配布ファイルには入らない）、付録I に説明がある。それで表せない足場だけを `frame.css` に書き、`<Demo frame={…}>` に渡す（タブと AI 向けの配布物には出ない）。
 - `src/demos/tokens/*.css`: すべてのデモに `@layer tokens` として読み込まれる共通トークン。デモの CSS では宣言し直さずに参照する。デモはサイトのテーマ（ライトとダーク）に追従するので、色はセマンティクスのトークンで書く。特定の色を見せるデモだけは `<Demo scheme="light">` で固定し、値を直接書いてよい。
 - `src/components/`
@@ -136,7 +137,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - コンテナサイズクエリを書くのは、コンポーネントの中でフラグを宣言する1つのルールだけにする。その要素が `--_density: --compact`（既定値として明示）をクエリの中で `--spacious` に切り替え、ほかの子孫は `@container style(--_density: --spacious)` で切り替える。3段階が要るときだけ `--regular` を足す。
 - ホバーとフォーカスで子要素や疑似要素を変えるときは、状態のセレクタで `--_hocus: --true`（既定値 `--false`）を立て、`@container style(--_hocus: --true)` で切り替える。要素自身の見た目は状態のセレクタに直接書き、子から親の向きは `:has()` を使う。状態のフラグの値は `--true` / `--false` にそろえる。
 - ホバーは `&:any-link:hover` か `&:enabled:hover` に絞り、`@media (any-hover)` の中に書く（`<summary>` と `<label>` は除く）。
-- ベーススタイルは `@layer base` の中に素のセレクタで書く。`:where()` で詳細度を0にするのは `@layer` を使えない場合（第19章）だけ。状態のセレクタをまとめるときは `:where()` ではなく `:is()` を使い、詳細度を残す。
+- ベーススタイルは `@layer base` の中に素のセレクタで書く。`:where()` で詳細度を0にするのは、`@layer` を使えない場合（第19章）のベーススタイル、上書きされる前提のデフォルト値、直下の子をネストで選ぶときに詳細度を上げたくない場合（`& > :where(._child)`、4-2）に限る。状態のセレクタをまとめるときは `:where()` ではなく `:is()` を使い、詳細度を残す。
 - `border-box` を取り消すときは `box-sizing: unset` と書く。前の値（ブラウザのデフォルト、リセット、ベース、前のルール）を打ち消すときは、`0` や `none` ではなく `unset`、`revert`、`revert-layer`、`initial` のうち戻したい先に合うキーワードで書く（ルール `explicit-rollback-keyword`）。打ち消しが要らない値は、宣言ごと書かない。`0` そのものがデザインの値なら `0` のままにする。
 - 親の配置で意味が決まる宣言（`flex*`、`grid-area`、`align-self`、`float`、`shape-outside`、`position: absolute` と `inset`、コンポーネントの中の要素を基準にする `position: sticky`、`scroll-snap-align`、`break-inside`、外側の `margin`（`auto` と負の値を含む））は、親のルールの `& > ._child` や `& > .scoped` のネストに書く（ルール `nest-child-placement-only`、`parent-owns-child-placement`）。ページのルートのスクロールに沿わせる `sticky` と、`position: fixed` は例外。子要素の大きさは子のルールに、子のコンポーネントの大きさは置く側のネストに書く。
 - 要素の間のブロック方向の `margin` は、`& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` のように次兄弟結合子で選んだ後ろの要素の `margin-block-start` に付ける。要素自身に条件なしの `margin-block-end` を付けたり、`:last-child` で打ち消したりしない。

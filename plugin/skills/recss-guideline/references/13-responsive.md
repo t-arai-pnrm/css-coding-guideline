@@ -1,6 +1,6 @@
 # 第13章 レスポンシブデザイン：ルール
 
-- ガイドラインのバージョン: 0.71.3（2026-10-16 生成）
+- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
 - ルールの数: 42
 - 本文: 約12.9万字
 - 読む条件: @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、ナビゲーションの折りたたみ、safe-area
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `responsive` 第13章 レスポンシブデザイン（約8,000字）https://t-arai-pnrm.github.io/recss-guideline/responsive/
+- `responsive` 第13章 レスポンシブデザイン（約8,400字）https://t-arai-pnrm.github.io/recss-guideline/responsive/
 - `responsive/escalation` 13-1 検討する順番（約8,400字）https://t-arai-pnrm.github.io/recss-guideline/responsive/escalation/
 - `responsive/breakpoints` 13-2 ブレイクポイントの決め方（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/breakpoints/
 - `responsive/container-size-queries` 13-3 コンテナサイズクエリ（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/responsive/container-size-queries/

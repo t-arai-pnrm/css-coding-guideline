@@ -1,6 +1,6 @@
 # 第19章 実務での運用：ルール
 
-- ガイドラインのバージョン: 0.71.3（2026-10-16 生成）
+- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
 - ルールの数: 29
 - 本文: 約7万字
 - 読む条件: Stylelint、レビュー、CMSの本文エリアやWYSIWYG、既存のサイトへの導入
@@ -17,7 +17,7 @@
 - `operations/review` 19-2 レビューの進め方（約4,700字）https://t-arai-pnrm.github.io/recss-guideline/operations/review/
 - `operations/verification` 19-3 表示と操作を確かめる（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/operations/verification/
 - `operations/devtools` 19-4 表示の崩れを開発者ツールで調べる（約9,500字）https://t-arai-pnrm.github.io/recss-guideline/operations/devtools/
-- `operations/wysiwyg` 19-5 CMSのWYSIWYG本文にスタイルを当てる（約8,400字）https://t-arai-pnrm.github.io/recss-guideline/operations/wysiwyg/
+- `operations/wysiwyg` 19-5 CMSのWYSIWYG本文にスタイルを当てる（約8,500字）https://t-arai-pnrm.github.io/recss-guideline/operations/wysiwyg/
 - `operations/adoption` 19-6 既存のサイトに段階的に導入する（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/operations/adoption/
 
 ## 19-1 Stylelintでルールを守る

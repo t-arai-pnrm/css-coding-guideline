@@ -6,16 +6,16 @@
 
 @layer base {
   :root {
-    --background-current: currentColor;
+    --background--current: currentColor;
 
     @media (forced-colors: active) {
-      --background-current: CanvasText;
+      --background--current: CanvasText;
     }
   }
 
   :any-link {
     @media (forced-colors: active) {
-      --background-current: LinkText;
+      --background--current: LinkText;
     }
   }
 }
@@ -67,7 +67,7 @@
         mask-size: contain;
         inline-size: 1em;
         aspect-ratio: 1;
-        background-color: var(--background-current);
+        background-color: var(--background--current);
       }
     }
   }

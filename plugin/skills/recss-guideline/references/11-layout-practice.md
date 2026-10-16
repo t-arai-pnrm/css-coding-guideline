@@ -1,6 +1,6 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.71.3（2026-10-16 生成）
+- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
 - ルールの数: 61
 - 本文: 約26.6万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
@@ -252,8 +252,8 @@ https://t-arai-pnrm.github.io/recss-guideline/layout-practice/masonry/
 
 https://t-arai-pnrm.github.io/recss-guideline/layout-practice/reading-flow/
 
-- 【必須・仕様にもとづく制約】`grid-template-areas`、`flex-direction: row-reverse | column-reverse`、`flex-wrap: wrap-reverse`、`grid-auto-flow: dense` を書いたルールには、同じルールに `reading-flow` を指定する。（`reading-flow-when-reordered`）
-  - 理由: 見た目の順番が DOM の順番から離れても、対応したブラウザでは読み上げとフォーカスが見た目の順番に追従し、見た目と DOM の順番が一致しているときも読む順番を確かめた印としてコードに残るため。
+- 【必須・本書の規約】`grid-template-areas`、`flex-direction: row-reverse | column-reverse`、`flex-wrap: wrap-reverse`、`grid-auto-flow: dense` を書いたルールには、同じルールに `reading-flow` を指定する。（`reading-flow-when-reordered`）
+  - 理由: 見た目の順番が DOM の順番から離れても、対応したブラウザでは読み上げとフォーカスが見た目の順番に追従し、見た目と DOM の順番が一致しているときも読む順番を確かめた印としてコードに残るため。読む順番を見た目と合わせることは仕様にもとづく要件ですが、並べ替えうる宣言に一律に書くことは本書の規約です。
   - 補足: エリアの文字列を含む `grid-template` と `grid`、逆順を含む `flex-flow` も対象です。Grid には `grid-rows` か `grid-columns`、Flexbox には `flex-visual` か `flex-flow` を選びます。空のセル（`.`）を含まず、エリアの名前が1種類しかないテンプレート（`"--pile"` のように、すべての子を同じセルに重ねるもの）は、並べ替えにならないので対象外です。子の `order` や明示的な `grid-row`・`grid-column` で並べ替えるときも親のコンテナに指定しますが、これは Stylelint では検出できません。
   - 自動チェック: Stylelint: `book/reading-flow-when-reordered`（本書の独自ルール）
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/layout-practice/reading-flow/#rule-reading-flow-when-reordered

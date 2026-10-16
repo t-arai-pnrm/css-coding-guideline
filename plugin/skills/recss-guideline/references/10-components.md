@@ -1,8 +1,8 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.71.3（2026-10-16 生成）
+- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
 - ルールの数: 53
-- 本文: 約16.6万字
+- 本文: 約16.7万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -18,7 +18,7 @@
 - `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/compositions-and-utilities/
 - `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/components/design-tokens/
 - `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
-- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
+- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
 - `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/placement-and-child-states/
 - `components/web-components` 10-8 Web Components（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/components/web-components/
 
@@ -97,9 +97,9 @@ https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/
 - 【必須・仕様にもとづく制約】内部の要素で相対的な z-index を使うコンポーネントは、ルートに `isolation: isolate` を指定する。（`isolation-for-relative-z-index`）
   - 理由: 内部の z-index がほかのコンポーネントと干渉せず、-1 の要素がルートや親の背景の下に隠れることもなくなるため。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/#rule-isolation-for-relative-z-index
-- 【推奨・実装上の判断】トップレイヤーに表示する `<dialog>` や `popover` 属性の要素にも、`z-index: var(--z--top)`（値は `calc(infinity)`）を指定する。（`top-layer-z-index-top`）
+- 【推奨・実装上の判断】トップレイヤーに表示する `<dialog>` や `popover` 属性の要素に閉じる動きを付けるときは、`z-index: var(--z--top)`（値は `calc(infinity)`）も指定する。（`top-layer-z-index-top`）
   - 理由: `transition-property: overlay` に対応していないブラウザでは、閉じるアニメーションの途中で z-index の大きい要素の下に潜り込むことがあるため。
-  - 補足: `overlay` に対応しているのは Chromium 系のブラウザだけです。
+  - 補足: `overlay` に対応しているのは Chromium 系のブラウザだけです。閉じる動きのない要素は、トップレイヤーにある間はほかの要素より前に出るので、指定しません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/#rule-top-layer-z-index-top
 
 ## 10-3 コンポジションとユーティリティ
@@ -211,7 +211,7 @@ https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
 
 - 【必須・本書の規約】同じ閾値で見た目の変わる子要素が2つ以上あるときは、コンテナサイズクエリ（`@container --scoped (…)`）を、コンポーネントの中で、フラグを宣言する1つの要素のルールだけに書く。その要素はクエリの外で `--_density: --compact` をデフォルト値として宣言してクエリの中で `--_density: --spacious` に切り替え、ほかの子孫は `@container style(--_density: --spacious)` で切り替える。（`density-via-style-query`）
   - 理由: 閾値が1か所にまとまり、変えるときに直す場所が1つで済むため。子要素ごとにコンテナサイズクエリを書くと、直し忘れたときに、どの幅のデザインにもない中間の状態ができる。
-  - 補足: フラグを宣言した要素自身はスタイルクエリで問い合わせられないので、その要素の見た目は同じサイズクエリの中で変えます。`:scope` に書いた `@container --scoped (…)` は外側のコンポーネントを問い合わせるので、フラグは `._body` のようなルートの子孫に置きます。3段階が要るときだけ `--regular` を足し、`--compact`、`--regular`、`--spacious` の順に切り替えます。狭いときの見た目がブラウザのデフォルトのスタイルを打ち消すもの（表を縦に積む、ラベルを隠すなど）は、広いときに戻す宣言が要らないよう、`@container style(--_density: --compact)` の側に書いてかまいません。サイズクエリを書く要素が1つだけで、フラグを読む子孫がない場合はフラグを宣言しません。切り替えが4段階以上あり、閾値の式そのもの（列の最小幅と間隔の掛け算など）を見せる必要がある場合は、例外としてサイズクエリを子のルールに残します。
+  - 補足: フラグを宣言した要素自身はスタイルクエリで問い合わせられないので、その要素の見た目は同じサイズクエリの中で変えます。`:scope` に書いた `@container --scoped (…)` は外側のコンポーネントを問い合わせるので、フラグは `._body` のようなルートの子孫に置きます。3段階が要るときだけ `--regular` を足し、`--compact`、`--regular`、`--spacious` の順に切り替えます。狭いときの見た目がブラウザのデフォルトのスタイルを打ち消すもの（表を縦に積む、ラベルを隠すなど）は、広いときに戻す宣言が要らないよう、`@container style(--_density: --compact)` の側に書いてかまいません。サイズクエリを書く要素が1つだけで、フラグを読む子孫がない場合はフラグを宣言しません。切り替えが4段階以上あり、閾値の式そのもの（列の最小幅と間隔の掛け算など）を見せる必要がある場合は、例外としてサイズクエリを子のルールに残します。フラグを宣言する要素自身の、親のレイアウトで決まる宣言（`grid-row: span 4` など）は、親のルールの直下の子へのネスト（`nest-child-placement-only`）に、同じ閾値のサイズクエリで書きます。その要素は自分のフラグを問い合わせられないためで、閾値の値はフラグを宣言するクエリとそろえます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/#rule-density-via-style-query
 - 【必須・本書の規約】親や自身のホバーとフォーカスで子要素や擬似要素の見た目を変えるときは、`--_hocus: --false` をデフォルト値として宣言し、`&:any-link:hover`（`@media (any-hover)` の中）と `&:focus-visible` で `--_hocus: --true` に切り替え、子要素と擬似要素は `@container style(--_hocus: --true)` で切り替える。（`hocus-via-style-query`）
   - 理由: ホバーとフォーカスの2つの条件を1か所に書けば済み、子孫結合子で子を選ぶ書き方（`&:any-link:hover ._icon`）と違って詳細度が上がらず、子の見た目が子のルールにまとまるため。
@@ -219,7 +219,7 @@ https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/#rule-hocus-via-style-query
 - 【必須・本書の規約】スタイルクエリで問い合わせるフラグの値は、`--compact` のような `--` で始まる識別子にし、オンとオフの2値の状態は `--true` と `--false` にそろえる。（`state-flag-values`）
   - 理由: スタイルクエリは値が一致するかどうかだけを調べるので、`1` や `true` が混ざると、書き間違えても条件が成り立たないだけで誤りに気付けないため。`--` で始めれば、自分で付けた名前だと分かる。
-  - 補足: `--color-scheme: --light` のように、2値でも状態の名前そのものを値にするフラグは、そのままにします。範囲の比較（`style(--_columns > 2)`）はSafariが対応していないので使いません。
+  - 補足: `--color-scheme--current: --light` のように、2値でも状態の名前そのものを値にするフラグは、そのままにします。範囲の比較（`style(--_columns > 2)`）はSafariが対応していないので使いません。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/#rule-state-flag-values
 
 ## 10-7 置き場所と子の状態を伝える

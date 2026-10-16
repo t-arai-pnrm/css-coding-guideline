@@ -118,6 +118,7 @@ WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーシ�
   :scope {
     --_translate-from: 0;
 
+    z-index: var(--z--top);
     transition-duration: var(--duration--slow);
     transition-property: display, overlay, opacity, translate;
     transition-timing-function: var(--ease--out-quint);
@@ -157,6 +158,7 @@ WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーシ�
 ```css title="🙆‍♂ Recommended: 動きを減らす設定のときは、フェードの再生時間を短くする"
 @scope (.scoped.tooltip) to (.scoped) {
   :scope {
+    z-index: var(--z--top);
     transition-duration: var(--duration--fast);
     transition-property: display, overlay, opacity;
     transition-timing-function: var(--ease--out-quad);

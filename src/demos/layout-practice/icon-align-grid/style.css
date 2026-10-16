@@ -7,23 +7,23 @@
 
 @layer base {
   :root {
-    --background-current: currentColor;
+    --background--current: currentColor;
 
     @media (forced-colors: active) {
-      --background-current: CanvasText;
+      --background--current: CanvasText;
     }
   }
 
   :any-link {
     @media (forced-colors: active) {
-      --background-current: LinkText;
+      --background--current: LinkText;
     }
   }
 
   button {
     &:enabled {
       @media (forced-colors: active) {
-        --background-current: ButtonText;
+        --background--current: ButtonText;
       }
     }
   }
@@ -61,7 +61,7 @@
 
         /* 1行目の行の高さの中で、上下の中央に置く */
         margin-block: calc((1lh - var(--_icon-size)) / 2);
-        background-color: var(--background-current);
+        background-color: var(--background--current);
       }
     }
 
@@ -104,7 +104,7 @@
         mask-repeat: no-repeat;
         mask-position: center;
         mask-size: 50%;
-        background-color: var(--background-current);
+        background-color: var(--background--current);
       }
     }
 
@@ -136,7 +136,7 @@
         mask-size: contain;
         inline-size: 1em;
         aspect-ratio: 1;
-        background-color: var(--background-current);
+        background-color: var(--background--current);
       }
     }
   }

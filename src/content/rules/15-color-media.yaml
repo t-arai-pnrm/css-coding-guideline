@@ -154,7 +154,7 @@
 - id: background-current-for-shapes
   level: 必須
   kind: convention
-  rule: '`mask-image` や `clip-path` で切り抜き、`background-color` で塗る図形は、`currentColor` を直接指定せず、強制カラーモードでシステムカラーに切り替わるカスタムプロパティ（`--background-current`）から色を受け取る。'
+  rule: '`mask-image` や `clip-path` で切り抜き、`background-color` で塗る図形は、`currentColor` を直接指定せず、強制カラーモードでシステムカラーに切り替わるカスタムプロパティ（`--background--current`）から色を受け取る。'
   reason: 強制カラーモードでは `background-color` がページの背景色に置き換わり、図形が見えなくなるため。
   note: 通常の文字の文脈でしか使わない図形は、`background-image` に `conic-gradient(currentColor 0 0)` を、`background-color` に `CanvasText` を指定する方法でも描けます。
   aiProne: true
