@@ -371,3 +371,23 @@
   aiProne: true
   page: responsive/safe-area
   since: 0.5.0
+
+# 13-9 収まらなくなったらナビゲーションを折りたたむ
+- id: collapse-nav-on-overflow
+  level: 推奨
+  kind: judgment
+  rule: 'ナビゲーションのように項目の数や文言が変わる横並びを、1行に収まらなくなったらメニューのボタンに切り替えるときは、各部の幅を足した閾値のクエリではなく、スクロールタイムラインで横並び自身の溢れを検知したフラグで切り替える。'
+  reason: '切り替える幅が実際の中身から決まり、CMSで項目や文言が増えても、文字の大きさやフォントが変わっても、閾値を直さずに済むため。'
+  note: 'ルートで `--_overflowing: --false` を宣言し、`timeline-scope` で受け取った横並びのスクロールタイムラインに、最初と最後で `--_overflowing: --true` にするアニメーションを結び付けます。横並びの列は `minmax(0, auto)` で縮められるようにし、両端の列は中身より縮めません。隠したナビゲーションと同じ項目を、ドロワーにも置きます。スクロール駆動アニメーションに対応していない環境では、フラグが常に `--true` になり、折りたたんだ表示になります。配置を組み替える切り替えには使わず、閾値を式で書きます（ルール `threshold-as-formula`）。'
+  page: responsive/overflow-collapse
+  since: 0.71.0
+
+- id: hide-overflow-source-with-visibility
+  level: 必須
+  kind: spec
+  rule: '溢れを検知して隠す要素は、`visibility: hidden` で隠し、`display: none` にしない。'
+  reason: '`display: none` にすると溢れが消えてタイムラインが無効になり、フラグが戻って再び表示される切り替えを繰り返すため。'
+  note: '`visibility: hidden` の要素は、レイアウトに場所を残したまま、フォーカスと支援技術からは外れます。スクロールバーが場所を取る環境で、溢れた瞬間に高さが変わらないように、溢れを測る要素には `scrollbar-width: none` も指定します。'
+  aiProne: true
+  page: responsive/overflow-collapse
+  since: 0.71.0

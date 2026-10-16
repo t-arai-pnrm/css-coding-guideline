@@ -1,6 +1,6 @@
 ---
 title: "21-7 ドロワーメニューを作る"
-description: "ヘッダーのナビゲーションが1行に収まらない幅で、メニューのボタンから開くドロワーに切り替えます。切り替える幅をどこから決め、どこに書くかと、同じナビゲーションを縦に並べ直す方法を確かめる節です。"
+description: "ヘッダーのナビゲーションが1行に収まらない幅で、メニューのボタンから開くドロワーに切り替えます。切り替える条件をどう決めるかと、同じナビゲーションを縦に並べ直す方法を確かめる節です。"
 sidebar:
   order: 7
 ---
@@ -27,13 +27,13 @@ import drawerChangedJs from '../../../demos/exercise/drawer-2/script.js?raw';
 - [10-6 スタイルクエリで状態を伝える](/components/style-queries/)
 - [10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)
 - [13-2 ブレイクポイントの決め方](/responsive/breakpoints/)
-- [13-3 コンテナサイズクエリ](/responsive/container-size-queries/)
+- [13-9 収まらなくなったらナビゲーションを折りたたむ](/responsive/overflow-collapse/)
 - [17-6 開閉するUI](/interaction/disclosure/)
 - [18-7 出現と退場](/motion/entry-and-exit/)
 
 ## 予想する
 
-本文を読む前に、メニューのボタンに切り替える幅をいくつにするかを考えてみてください。スマートフォンとタブレットの境目としてよく使われる768pxにするのか、ほかの値にするのか、その値をどこから決めるかを予想します。切り替えで変わるのは、ナビゲーション、お問い合わせのボタン、メニューのボタンの3つです。その幅が何か所に現れるかも数えます。
+本文を読む前に、メニューのボタンに切り替える条件を考えてみてください。スマートフォンとタブレットの境目としてよく使われる768pxにするのか、ほかの値にするのか、そもそも幅の値を書くのかを予想します。切り替えで変わるのは、ナビゲーション、お問い合わせのボタン、メニューのボタンの3つです。その条件を何か所に書くかも数えます。
 
 ドロワーを作る要素も予想します。`div` をJavaScriptで開閉するのか、HTMLの開閉の機能を使うのか。ドロワーのナビゲーションに、ヘッダーと同じ `global-nav` を使うかどうかも決めてから読み進めます。
 
@@ -45,7 +45,7 @@ import drawerChangedJs from '../../../demos/exercise/drawer-2/script.js?raw';
 
 幅を1024pxや1280pxにすると、ヘッダーにナビゲーションとお問い合わせのボタンが1行に並びます。768px以下では、それらが隠れ、メニューのボタンが表示されます。メニューのボタンを押すと、ドロワーが右から現れ、背面が暗くなり、背面のページはスクロールしません。キーボードで操作すると、フォーカスはドロワーの中だけを移り、Escキーで閉じると、フォーカスがメニューのボタンへ戻れば完成です。
 
-## 切り替える幅を中身から決める
+## 1行に収まらなくなったことを条件にする
 
 メニューのボタンに切り替える幅を、画面の幅768pxのようなデバイスの幅で決めると、ナビゲーションの項目や文言が変わったときに合わなくなります。切り替える必要があるのは、ヘッダーの中身が1行に収まらなくなる幅で、それは中身の幅で決まるからです（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
 
@@ -68,51 +68,73 @@ import drawerChangedJs from '../../../demos/exercise/drawer-2/script.js?raw';
 
 この書き方には、もう1つの問題があります。同じ閾値が、隠す側と表示する側の2か所に書かれていて、片方だけを直すと、ナビゲーションとメニューのボタンが両方とも表示されたり、両方とも消えたりする幅ができます。
 
-本書では、ヘッダーのルートをコンテナにし、コンテナサイズクエリを `._header-inner` の1か所にだけ書きます。クエリは幅の状態をフラグ `--_density` に切り替え、ナビゲーションとメニューのボタンは、そのフラグを読みます（「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」）。
+ロゴ、ナビゲーション、お問い合わせのボタンの幅を足した式を閾値にすれば、中身から決められます。ただ、その式は、項目や文言を変えるたびに測り直して直す必要があります。知りたいのは「1行に収まるか」なので、ここでは閾値を書かず、ナビゲーションとお問い合わせのボタンの並び `._actions` が溢れたこと自体を条件にします（「[13-9 収まらなくなったらナビゲーションを折りたたむ](/responsive/overflow-collapse/)」）。
 
-```css title="🙆‍♂ Recommended: 中身が1行に収まる幅を式で書き、フラグを読んで2つの要素を切り替える"
+```css title="🙆‍♂ Recommended: 並びが溢れている間だけフラグを --true にし、3つの要素はフラグを読んで切り替える"
+@keyframes --site-header--detect-overflow {
+  from,
+  to {
+    --_overflowing: --true;
+  }
+}
+
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
-    container: --scoped / inline-size;
+    --_overflowing: --false;
 
-    /* scroll-state に対応していない環境でも、幅のコンテナを失わないようにする */
-    @supports (container-type: inline-size scroll-state) {
-      container: --scoped / inline-size scroll-state;
+    animation: --site-header--detect-overflow linear both;
+    animation-timeline: --actions;
+    timeline-scope: --actions;
+  }
+
+  ._header-inner {
+    & > ._end {
+      flex-grow: 1;
     }
   }
 
-  /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
-  ._header-inner {
-    --_density: --compact;
+  ._end {
+    display: block grid;
 
-    /*
-     * ロゴ、ナビゲーション、お問い合わせのボタンが1行に収まる幅。
-     * ロゴの文字（152）＋間隔＋ナビゲーションの文字（322）と左右の余白（24px が5つ）＋間隔＋ボタンの文字（96）と余白と枠線
-     */
-    @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 322 / 16 * 1rem + 5 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
-      --_density: --spacious;
+    & > * {
+      grid-area: 1 / 1;
+    }
+
+    & > ._menu {
+      justify-self: end;
     }
   }
 
   ._actions {
-    @container style(--_density: --compact) {
-      display: none;
+    contain: inline-size;
+    display: block grid;
+    grid-auto-columns: max-content;
+    grid-auto-flow: column;
+    justify-content: safe end;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-timeline: --actions inline;
+
+    @container style(--_overflowing: --true) {
+      visibility: hidden;
     }
   }
 
   ._menu {
-    @container style(--_density: --spacious) {
-      display: none;
+    @container style(--_overflowing: --false) {
+      visibility: hidden;
     }
   }
 }
 ```
 
-閾値の式は、1行に並ぶものの幅を足したものです。文字の幅はブラウザで測った値を `rem` に変換し、`padding` や `gap` のような `px` の値はそのまま足します（`threshold-as-formula`）。ユーザーが文字を大きくすると、文字の項だけが大きくなり、切り替える幅も一緒に広がります。どの値が何の幅かは、クエリの直前のコメントに残しています。
+`._actions` を横方向へスクロールできる要素にし、スクロールタイムライン `--actions` を作ります。スクロールタイムラインは、スクロールできるはみ出しがない間は無効で、それに結び付けたルートのアニメーションも効果を持ちません。並びが1行に収まらず溢れている間だけ、アニメーションがフラグ `--_overflowing` を `--true` にします。ルートの `timeline-scope` は、子孫の `._actions` が作ったタイムラインを、ルートから参照するための指定です。条件を書いたのは `._actions` の溢れの1つだけで、3つの要素は同じフラグを読むので、切り替えが食い違う幅はできません。
 
-画面の幅ではなくヘッダーの幅を問い合わせたのは、ヘッダーがコンポーネントだからです（`query-choice-by-layer`）。ルートのコンテナの種類には、21-6で使った `scroll-state` に `inline-size` を足しています。
+隠すときは、`display: none` ではなく `visibility: hidden` を使います（`hide-overflow-source-with-visibility`）。`display: none` にすると溢れが消えてフラグが `--false` に戻り、表示されるとまた溢れるので、表示と非表示を繰り返します。`visibility: hidden` の要素は場所を残すので、溢れたままの状態が続きます。
 
-ただし、`inline-size scroll-state` を1つの宣言に書くと、`scroll-state` に対応していないブラウザでは宣言全体が無効になり、`inline-size` のコンテナまで失われます。すると、幅のクエリが成り立たず、広い画面でもナビゲーションが隠れたままになります。そこで、`inline-size` だけの宣言を先に書き、`scroll-state` を足した宣言は `@supports` の中に置きます（`supports-for-dependent-declarations`）。21-6のヘッダーは `scroll-state` だけのコンテナだったので、未対応の環境では境界線と影が出ないだけで済んでいました。
+HTMLでは、`._actions` とメニューのボタン（`._menu`）を `._end` で包み、`._actions` から21-6で付けた `cluster` を外します。並びは折り返さずに溢れてほしいので、`cluster` ではなくGridの1行で組みます。`._actions` と `._menu` は、`._end` のGridの同じセルに重ねます。`._end` は、21-6の `apart` の中でロゴの横に残った幅をすべて受け取り、`._actions` はその幅の中に並びます。`._actions` に `contain: inline-size` を指定すると、その中身の幅が `._end` の幅の計算に入らなくなります。そのため `._end` は、狭い画面でもメニューのボタンの幅があれば、ロゴの横に並びます。ボタンも入らない幅では、21-6と同じように、ロゴの下へ回ります。
+
+`justify-content` に `safe` を付けたのは、溢れた分を行末の側に出し、スクロールできるはみ出しにするためです。`safe` を付けずに `end` で寄せると、溢れた分が行頭の側に出ます。行頭側へのはみ出しはスクロールできないので、タイムラインが無効のまま残ります。Chromeで確かめたところ、`end` で寄せた並びは、溢れても `scrollWidth` が `clientWidth` と同じで、フラグは `--false` のままでした。`scrollbar-width: none` は、スクロールバーが場所を取る環境で、溢れた瞬間にヘッダーの高さが変わらないようにする指定です。ルートのコンテナは、21-6と同じ `scroll-state` だけで、幅のコンテナは要りません。
 
 ## ドロワーは dialog をモーダルで開く
 
@@ -231,50 +253,38 @@ if (!('command' in HTMLButtonElement.prototype)) {
 
 幅を1024pxや1280pxにすると、6つの項目とお問い合わせのボタンが、ヘッダーに1行で並びます。デモの幅を1024pxから少しずつ狭めると、約950pxで、ナビゲーションが折り返す前にメニューのボタンへ切り替わります。ドロワーには、6つの項目が縦に並べば完成です。
 
-## 式の中のナビゲーションの項だけを直す
+## CSSは直さない
 
-CSSで直したのは、閾値の式の中の、ナビゲーションの文字の幅と余白の数の2つの値だけです。「よくある質問」の6文字の分だけ文字の幅が増え、余白が1つ増えました。
+CSSは直していません。直したのは、ヘッダーとドロワーのナビゲーションのHTMLに、「よくある質問」の項目を足したことだけです。
 
-```css title="🙆‍♂ Recommended: ナビゲーションの文字の幅と余白の数を、項目に合わせて直す"
-@scope (.scoped.site-header) to (.scoped) {
-  ._header-inner {
-    --_density: --compact;
+項目が増えると、`._actions` の並びが長くなり、前より広い幅で溢れるようになります。切り替える幅は、約840pxから約950pxへ、項目の分だけ自然に広がりました。幅を足した式を閾値にしていたなら、ナビゲーションの文字の幅と余白の数を直す必要がありました。直し忘れると、約840pxから約950pxの間で、ナビゲーションが1行に収まらず、ヘッダーが2行に折り返します。768pxで切り替える書き方では、項目の数にかかわらず、770pxから950pxの間で同じことが起きます。
 
-    @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 406 / 16 * 1rem + 6 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
-      --_density: --spacious;
-    }
-  }
-}
-```
-
-この値を直さなかった場合、切り替える幅は前の約850pxのままです。850pxから950pxの間では、ナビゲーションが1行に収まらず、ヘッダーが2行に折り返します。768pxで切り替える書き方では、項目の数にかかわらず、770pxから950pxの間で同じことが起きていました。閾値を中身の幅の式にしておいたので、どの項を直せばよいかが、変わった中身から分かります。
-
-ドロワーのCSSは直していません。ドロワーのナビゲーションは縦に並ぶので、項目が増えても列に収まり、収まらなくなれば `._navigation` の中がスクロールします。
+ドロワーのCSSも直していません。ドロワーのナビゲーションは縦に並ぶので、項目が増えても列に収まり、収まらなくなれば `._navigation` の中がスクロールします。
 
 ## 振り返り
 
-直したのは、2つのナビゲーションのHTMLと、ヘッダーのCSSの閾値の式です。式の中で直したのは、ナビゲーションの文字の幅と余白の数の2つの値です。閾値を書いているのは `._header-inner` の1か所だけなので、ナビゲーションとメニューのボタンの切り替えが食い違う幅はできません。
+直したのは、2つのナビゲーションのHTMLだけです。切り替える条件は、ヘッダーの中身が溢れたかどうかで、どこにも幅の値を書いていないので、項目の数に関わりませんでした。条件を書いたのは `._actions` の溢れの1か所だけなので、ナビゲーションとメニューのボタンの切り替えが食い違う幅もできません。
 
-直さずに済んだのは、ドロワー、`global-nav`、お問い合わせのボタンのCSSです。ドロワーの開閉はブラウザの機能に任せ、縦の並びは置く側から渡したフラグで決めていたので、項目の数には関わりませんでした。
+直さずに済んだのは、ヘッダー、ドロワー、`global-nav`、お問い合わせのボタンのCSSです。ドロワーの開閉はブラウザの機能に任せ、縦の並びは置く側から渡したフラグで決めていたので、項目の数には関わりませんでした。
 
 予想と見比べたら、自分の変更を次の3つの点で見直します。
 
-- 切り替える幅は、画面の幅ではなく、ヘッダーの中身の幅から決まると予想できたか。768pxのようなデバイスの幅で書いていたなら、項目が増えたときに折り返す幅を挙げられるか。
-- 閾値を書いた場所は1か所か。隠す側と表示する側に分けて書いていたなら、片方だけを直したときに何が起きるかを説明できるか。
+- 切り替える条件を、画面の幅ではなく、ヘッダーの中身が1行に収まるかどうかで決められたか。768pxのようなデバイスの幅で書いていたなら、項目が増えたときに折り返す幅を挙げられるか。
+- 条件を書いた場所は1か所か。隠す側と表示する側に分けて書いていたなら、片方だけを直したときに何が起きるかを説明できるか。
 - ドロワーのナビゲーションを縦に並べる条件を、ドロワーのCSSから `global-nav` の中を選んで書いていないか。
 
 ## 判断の問い
 
 ### 問い1
 
-ナビゲーションの「お役立ちコラム」を「コラム」へ短くすることになりました。閾値の式の値を直さないと、何が起きますか。
+ヘッダーのナビゲーションを `visibility: hidden` ではなく `display: none` で隠すと、何が起きますか。
 
 <details>
 {/* textlint-disable ja-technical-writing/ja-no-mixed-period */}
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-文字の幅が4文字分（56px相当）短くなったのに、閾値はそのままなので、ナビゲーションが1行に収まる幅でも、メニューのボタンに切り替わります。表示が崩れることはありませんが、ナビゲーションを並べられる幅でも、ドロワーを開く手間が増えます。文言を変えたときも、式の中のナビゲーションの文字の幅を直します（`breakpoint-from-content`）。
+`._actions` を `display: none` にすると、並びがレイアウトから消えて溢れもなくなるので、スクロールタイムラインが無効に戻り、フラグが `--false` になります。するとナビゲーションが再び表示されて溢れ、フラグが `--true` に戻ります。この切り替えが続き、狭い幅でナビゲーションとメニューのボタンが定まりません。溢れを測る要素は、場所を残したまま隠す `visibility: hidden` で隠します（`hide-overflow-source-with-visibility`）。
 
 </details>
 
@@ -294,14 +304,12 @@ CSSで直したのは、閾値の式の中の、ナビゲーションの文字�
 ## この節で使ったルール
 
 - [`breakpoint-from-content`](/responsive/breakpoints/#rule-breakpoint-from-content)：ブレイクポイントはデバイスの幅ではなく、レイアウトが崩れる幅から決めます。
-- [`threshold-as-formula`](/responsive/breakpoints/#rule-threshold-as-formula)：クエリの閾値は、レイアウトが成り立つ条件を `calc()` の式で書きます。
-- [`threshold-includes-gap-and-padding`](/responsive/breakpoints/#rule-threshold-includes-gap-and-padding)：閾値の式には、`gap`、`padding`、`border` を省かずに含めます。
-- [`query-choice-by-layer`](/responsive/escalation/#rule-query-choice-by-layer)：コンポーネントのスタイルでは、コンテナサイズクエリを優先します。
-- [`density-via-style-query`](/components/style-queries/#rule-density-via-style-query)：同じ閾値で変わる子要素が2つ以上あるときは、コンテナサイズクエリをフラグを宣言する1つの要素にだけ書き、ほかの子孫はスタイルクエリで切り替えます。
+- [`collapse-nav-on-overflow`](/responsive/overflow-collapse/#rule-collapse-nav-on-overflow)：項目の数や文言が変わる横並びを、1行に収まらなくなったらメニューのボタンに切り替えるときは、横並び自身の溢れを検知したフラグで切り替えます。
+- [`hide-overflow-source-with-visibility`](/responsive/overflow-collapse/#rule-hide-overflow-source-with-visibility)：溢れを検知して隠す要素は、`visibility: hidden` で隠し、`display: none` にしません。
+- [`state-flag-values`](/components/style-queries/#rule-state-flag-values)：オンとオフの2値のフラグは、`--true` と `--false` にそろえます。
 - [`native-disclosure-elements`](/interaction/disclosure/#rule-native-disclosure-elements)：開閉するUIは、`<dialog>` や `popover` 属性のようなHTMLの機能で作ります。
 - [`dialog-command-attributes`](/interaction/disclosure/#rule-dialog-command-attributes)：モーダルの開閉は、`command` 属性と `commandfor` 属性で行い、対応していないブラウザのためにポリフィルを読み込みます。
 - [`dialog-closedby-any`](/interaction/disclosure/#rule-dialog-closedby-any)：背景のクリックで閉じるモーダルは、`closedby="any"` で作ります。
-- [`supports-for-dependent-declarations`](/principles/browser-support/#rule-supports-for-dependent-declarations)：新しい機能に合わせて既存の宣言も変えるときは、その宣言を `@supports` の中に書きます。
 - [`no-custom-focus-trap`](/interaction/disclosure/#rule-no-custom-focus-trap)：モーダルに、独自のフォーカストラップを実装しません。
 - [`modal-scroll-lock-root`](/reset/base-styles/#rule-modal-scroll-lock-root)：モーダル表示中の背面のスクロールは、`:root:has(:modal)` で止めます。
 - [`overscroll-contain-in-overlay`](/interaction/disclosure/#rule-overscroll-contain-in-overlay)：ドロワーの中でスクロールする要素には、スクロールの連鎖を止める指定をします。

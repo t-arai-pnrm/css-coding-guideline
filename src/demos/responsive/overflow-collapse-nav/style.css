@@ -1,0 +1,119 @@
+@layer components {
+  @keyframes --site-header--detect-overflow {
+    from,
+    to {
+      --_overflowing: --true;
+    }
+  }
+
+  @scope (.scoped.site-header) to (.scoped) {
+    :scope {
+      --_overflowing: --false;
+
+      display: block grid;
+      grid-template-columns: minmax(max-content, 1fr) minmax(0, auto) minmax(max-content, 1fr);
+      column-gap: 16px;
+      align-items: center;
+      padding-block: 8px;
+      padding-inline: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--lg);
+      background-color: var(--background--surface);
+      animation: --site-header--detect-overflow linear both;
+      animation-timeline: --nav-list;
+
+      /* 子孫の ._nav-list が作るスクロールタイムラインを、ルートから参照できるようにする */
+      timeline-scope: --nav-list;
+    }
+
+    ._logo {
+      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--subtitle--leading);
+    }
+
+    ._nav-list {
+      display: block grid;
+      grid-auto-columns: max-content;
+      grid-auto-flow: column;
+      justify-content: safe center;
+      overflow-x: auto;
+      scrollbar-width: none;
+      scroll-timeline: --nav-list inline;
+
+      /* display: none にすると溢れが消えてフラグが戻り、表示と非表示を繰り返す */
+      @container style(--_overflowing: --true) {
+        visibility: hidden;
+      }
+    }
+
+    ._nav-link {
+      display: block flow;
+      padding-block: 8px;
+      padding-inline: 12px;
+      border-radius: var(--rounded--md);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+      text-decoration-line: none;
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+    }
+
+    ._end {
+      display: block grid;
+      place-items: center end;
+
+      /* メニューのボタンとお問い合わせのリンクを、同じセルに重ねる */
+      & > * {
+        grid-area: 1 / 1;
+      }
+    }
+
+    ._contact {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: var(--rounded--md);
+      background-color: var(--background--inverse);
+      color: var(--foreground--inverse);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+      text-decoration-line: none;
+
+      @container style(--_overflowing: --true) {
+        visibility: hidden;
+      }
+
+      &:any-link:hover {
+        @media (any-hover) {
+          background-color: color-mix(in oklab, var(--background--inverse) 80%, var(--background--base));
+        }
+      }
+    }
+
+    ._menu-button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border: 1px solid var(--border--base);
+      border-radius: var(--rounded--md);
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--bold);
+      line-height: var(--text--body-compact--leading);
+
+      @container style(--_overflowing: --false) {
+        visibility: hidden;
+      }
+
+      &:enabled:hover {
+        @media (any-hover) {
+          background-color: var(--background--hover);
+        }
+      }
+    }
+  }
+}

@@ -83,14 +83,9 @@ sidebar:
 ```css title="🙆‍♂ Recommended: カードは内側の余白を公開プロパティで受け取る"
 @scope (.scoped.news-card) to (.scoped) {
   :scope {
-    --_accent: var(--news-card--accent, var(--foreground--accent));
     --_padding: var(--news-card--padding, calc(var(--spacing--md) * 1px));
 
-    display: block grid;
-    gap: calc(var(--spacing--xxs) * 1px);
     padding: var(--_padding);
-    border-radius: var(--rounded--md);
-    background-color: var(--background--surface);
   }
 }
 ```

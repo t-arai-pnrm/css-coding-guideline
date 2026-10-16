@@ -80,13 +80,11 @@ section:has(> .card-wrapper:only-child) {
     --_density: --compact;
 
     display: block grid;
-    gap: 12px;
 
     @container --scoped (inline-size >= calc(240 / 16 * 1rem + 24px + 280 / 16 * 1rem)) {
       --_density: --spacious;
 
       grid-template-columns: calc(240 / 16 * 1rem) 1fr;
-      gap: 24px;
 
       @container style(--_featured: --true) {
         grid-template-columns: 1fr 1fr;

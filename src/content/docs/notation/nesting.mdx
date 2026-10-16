@@ -30,16 +30,11 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 .site-nav {
   ul {
     display: block flex;
-    flex-wrap: wrap;
-    gap: 16px;
 
     li {
       flex-grow: 1;
 
       a {
-        display: block flow;
-        padding-block: 8px;
-
         &[aria-current="page"] {
           font-weight: 700;
         }
@@ -68,8 +63,6 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 @scope (.scoped.site-nav) to (.scoped) {
   ul {
     display: block flex;
-    flex-wrap: wrap;
-    gap: 16px;
 
     & > * {
       flex-grow: 1;
@@ -77,9 +70,6 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
   }
 
   a {
-    display: block flow;
-    padding-block: 8px;
-
     &[aria-current="page"] {
       font-weight: 700;
     }
@@ -100,16 +90,11 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 [popover] {
   transition-duration: var(--duration--fast);
   transition-property: opacity;
-
-  @media (prefers-reduced-motion: no-preference) {
-    transition-property: opacity, scale;
-  }
 }
 
 [popover]:popover-open {
   @starting-style {
     opacity: 0;
-    scale: var(--_scale-from);
   }
 }
 ```
@@ -122,14 +107,9 @@ AIにCSSを書かせると、この連結の形がよく出てきます。素の
     transition-duration: var(--duration--fast);
     transition-property: opacity;
 
-    @media (prefers-reduced-motion: no-preference) {
-      transition-property: opacity, scale;
-    }
-
     &:popover-open {
       @starting-style {
         opacity: 0;
-        scale: 0.95;
       }
     }
   }

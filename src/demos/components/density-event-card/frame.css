@@ -1,0 +1,13 @@
+/* デモを見せるための足場：本文の領域とサイドバーを、ビューポートの幅で縦積みと2対1の横並びに切り替える */
+@layer pages {
+  @scope (.scoped.demo-layout) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+
+      @media (width >= calc(720 / 16 * 1rem)) {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+  }
+}

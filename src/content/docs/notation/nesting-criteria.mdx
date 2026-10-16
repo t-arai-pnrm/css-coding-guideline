@@ -77,12 +77,6 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 @scope (.scoped.choice-list) to (.scoped) {
   ._option {
     display: block flex;
-    gap: 8px;
-    align-items: center;
-
-    &:has(:checked) {
-      background-color: oklch(95% 0.03 250deg);
-    }
 
     & > ._icon {
       flex-shrink: 0;
@@ -111,10 +105,6 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
       inset-block-start: 8px;
       inset-inline-end: 8px;
     }
-  }
-
-  ._badge {
-    padding-inline: 8px;
   }
 }
 ```
@@ -156,11 +146,6 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 ```css title="🙆‍♂ Recommended: 祖先の状態を子のルールの中に書く"
 @scope (.scoped.accordion-trigger) to (.scoped) {
   ._icon {
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--fast);
-      transition-property: rotate;
-    }
-
     &:is(:scope[aria-expanded="true"] *) {
       rotate: 180deg;
     }
@@ -198,37 +183,37 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 @scope (.scoped.action-bar) to (.scoped) {
   button,
   ._selected-count {
-    background-color: oklch(70% 0 0deg);
+    background-color: var(--background--active);
 
     &:enabled {
-      background-color: oklch(50% 0.15 250deg);
+      background-color: var(--background--inverse);
     }
   }
 
   button {
     &[data-variant="danger"] {
-      background-color: oklch(55% 0.2 25deg);
+      background-color: var(--foreground--danger);
     }
   }
 }
 ```
 
-このバーには、操作のボタンと、選択中の件数を示す `._selected-count` が並んでいます。2つは角丸や背景色を共有しているので、1つのセレクタリストにまとめています。`&:enabled` は `:is(button, ._selected-count):enabled` と同じ意味になり、詳細度は `0.2.0` です。`button` で一致した要素にも、`._selected-count` の `0.1.0` が使われます。後ろにある `button[data-variant="danger"]` は `0.1.1` なので負け、削除のボタンは赤になりません。親が `button` だけなら、どちらも `0.1.1` になり、後ろに書いた赤が勝ちます。
+このバーには、操作のボタンと、選択中の件数を示す `._selected-count` が並んでいます。2つは背景色を共有しているので、1つのセレクタリストにまとめています。`&:enabled` は `:is(button, ._selected-count):enabled` と同じ意味になり、詳細度は `0.2.0` です。`button` で一致した要素にも、`._selected-count` の `0.1.0` が使われます。後ろにある `button[data-variant="danger"]` は `0.1.1` なので負け、削除のボタンは赤になりません。親が `button` だけなら、どちらも `0.1.1` になり、後ろに書いた赤が勝ちます。
 
 ```css title="🙆‍♂ Recommended: ネストするルールはセレクタごとに分ける"
 @scope (.scoped.action-bar) to (.scoped) {
   button,
   ._selected-count {
-    background-color: oklch(70% 0 0deg);
+    background-color: var(--background--active);
   }
 
   button {
     &:enabled {
-      background-color: oklch(50% 0.15 250deg);
+      background-color: var(--background--inverse);
     }
 
     &[data-variant="danger"] {
-      background-color: oklch(55% 0.2 25deg);
+      background-color: var(--foreground--danger);
     }
   }
 }

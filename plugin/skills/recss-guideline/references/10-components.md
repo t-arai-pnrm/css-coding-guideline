@@ -1,8 +1,8 @@
 # 第10章 コンポーネントとカスタムプロパティ：ルール
 
-- ガイドラインのバージョン: 0.70.1（2026-10-16 生成）
+- ガイドラインのバージョン: 0.70.2（2026-10-16 生成）
 - ルールの数: 53
-- 本文: 約16.9万字
+- 本文: 約16.6万字
 - 読む条件: すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -13,13 +13,13 @@
 ## この章の節
 
 - `components` 第10章 コンポーネントとカスタムプロパティ（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/components/
-- `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/components/what-is-a-component/
-- `components/boundaries` 10-2 コンポーネントの境界を守る（約3.1万字）https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/
+- `components/what-is-a-component` 10-1 何をコンポーネントにするか（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/components/what-is-a-component/
+- `components/boundaries` 10-2 コンポーネントの境界を守る（約3万字）https://t-arai-pnrm.github.io/recss-guideline/components/boundaries/
 - `components/compositions-and-utilities` 10-3 コンポジションとユーティリティ（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/compositions-and-utilities/
 - `components/design-tokens` 10-4 デザイントークン（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/components/design-tokens/
 - `components/custom-properties` 10-5 公開プロパティと内部プロパティ（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/components/custom-properties/
-- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
-- `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/components/placement-and-child-states/
+- `components/style-queries` 10-6 スタイルクエリで状態を伝える（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/style-queries/
+- `components/placement-and-child-states` 10-7 置き場所と子の状態を伝える（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/components/placement-and-child-states/
 - `components/web-components` 10-8 Web Components（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/components/web-components/
 
 ## 10-1 何をコンポーネントにするか

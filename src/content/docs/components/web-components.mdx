@@ -13,6 +13,7 @@ import menuCss from '../../../demos/components/popover-menu-element/style.css?ra
 import menuJs from '../../../demos/components/popover-menu-element/script.js?raw';
 import themeToggleHtml from '../../../demos/components/theme-toggle-shadow/index.html?raw';
 import themeToggleCss from '../../../demos/components/theme-toggle-shadow/style.css?raw';
+import themeToggleFrame from '../../../demos/components/theme-toggle-shadow/frame.css?raw';
 import themeToggleJs from '../../../demos/components/theme-toggle-shadow/script.js?raw';
 
 カスタム要素で部品を作るときも、CSSの書き方はほかのコンポーネントと変えません。カスタム要素そのものに `scoped` クラスを付けてコンポーネントのルートにし、外部のCSSファイルに `@scope (<要素名>.scoped) to (.scoped)` の形で書きます。カスタム要素にはブラウザのデフォルトスタイルがないので、ルートには `display` を明示します。
@@ -45,12 +46,6 @@ Web Componentsは、カスタム要素、Shadow DOM、`<template>` 要素など�
 @scope (popover-menu.scoped) to (.scoped) {
   :scope {
     display: block flow;
-  }
-
-  button {
-    padding-block: 8px;
-    padding-inline: 16px;
-    border-radius: 8px;
   }
 }
 ```
@@ -163,9 +158,6 @@ customElements.define('theme-toggle', ThemeToggle);
 }
 
 button {
-  padding: 8px;
-  border: 1px solid currentColor;
-  border-radius: 8px;
   background-color: var(--_background);
   color: inherit;
   font: inherit;
@@ -199,7 +191,7 @@ legend {
 
 次のデモは、`<theme-toggle>` のShadow DOMを `<template>` の複製で作り、ボタンで開くポップオーバーのラジオボタンで配色を選べるようにしたものです。Shadow DOMのCSSを読めるよう、デモでは `<template>` をHTMLに置き、スクリプトはそれを複製するだけにしています。ボタンの文字が周りの文と同じ書体と大きさになり、選択肢のラジオボタンに余白が付かないのは、kiso.cssではなく、Shadow DOMの中に書き直した指定によるものです。配色を切り替えると、ページの `:root` で `light-dark()` を使って定義したトークンが境界を越えて届き、ボタンとポップオーバーの背景も変わります（「[15-4 ダークモード](/color-media/dark-mode/)」）。
 
-<Demo title="Shadow DOMの中で :host と kiso.css の代わりの指定を書いた、配色の切り替え" html={themeToggleHtml} css={themeToggleCss} js={themeToggleJs} scheme="light dark" height="16rem" />
+<Demo title="Shadow DOMの中で :host と kiso.css の代わりの指定を書いた、配色の切り替え" html={themeToggleHtml} css={themeToggleCss} frame={themeToggleFrame} js={themeToggleJs} scheme="light dark" height="16rem" />
 
 ## ガイドライン
 

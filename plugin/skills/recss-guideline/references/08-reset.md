@@ -1,8 +1,8 @@
 # 第8章 リセットとベーススタイル：ルール
 
-- ガイドラインのバージョン: 0.70.1（2026-10-16 生成）
+- ガイドラインのバージョン: 0.70.2（2026-10-16 生成）
 - ルールの数: 23
-- 本文: 約4.9万字
+- 本文: 約4.8万字
 - 読む条件: リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,7 +14,7 @@
 
 - `reset` 第8章 リセットとベーススタイル（約4,300字）https://t-arai-pnrm.github.io/recss-guideline/reset/
 - `reset/kiso` 8-1 壊さないリセット（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/reset/kiso/
-- `reset/base-styles` 8-2 ベーススタイルに書くもの（約2.4万字）https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/
+- `reset/base-styles` 8-2 ベーススタイルに書くもの（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/reset/base-styles/
 - `reset/global-pitfalls` 8-3 グローバルに書いてはいけないもの（約8,200字）https://t-arai-pnrm.github.io/recss-guideline/reset/global-pitfalls/
 
 ## 8-1 壊さないリセット

@@ -78,6 +78,14 @@
   }
 }
 
+/* 登録していないカスタムプロパティは、キーフレームの50%の時点で値が切り替わるので、最初と最後を同じ値にする */
+@keyframes --site-header--detect-overflow {
+  from,
+  to {
+    --_overflowing: --true;
+  }
+}
+
 @layer components {
   /**
    * ボタンの見た目の操作部品。
@@ -156,16 +164,18 @@
   /**
    * サイトのヘッダー。
    * ビューポートの高さが十分なときだけ上端に留め、留まっている間だけ下の境界線を見せる。
-   * 置かれた幅が狭く、ナビゲーションが1行に収まらないときは、メニューのボタンに切り替える。
+   * ナビゲーションとお問い合わせのボタンが1行に収まらず溢れたら、メニューのボタンに切り替える。
    */
   @scope (.scoped.site-header) to (.scoped) {
     :scope {
-      container: --scoped / inline-size;
+      --_overflowing: --false;
 
-      /* scroll-state に対応していない環境でも、幅のコンテナを失わないようにする */
-      @supports (container-type: inline-size scroll-state) {
-        container: --scoped / inline-size scroll-state;
-      }
+      container: --scoped / scroll-state;
+      animation: --site-header--detect-overflow linear both;
+      animation-timeline: --actions;
+
+      /* 子孫の ._actions が作るスクロールタイムラインを、ルートから参照できるようにする */
+      timeline-scope: --actions;
 
       @media (height >= calc(600 / 16 * 1rem)) {
         position: sticky;
@@ -174,12 +184,10 @@
       }
     }
 
-    /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
     ._header-inner {
       --apart--row-gap: 8px;
       --apart--column-gap: 32px;
       --apart--alignment: center;
-      --_density: --compact;
 
       min-block-size: calc(72 / 16 * 1rem);
       padding-block: 8px;
@@ -189,17 +197,14 @@
       transition-property: border-block-end-color, box-shadow;
       transition-timing-function: var(--ease--out-quint);
 
-      /*
-       * ロゴ、ナビゲーション、お問い合わせのボタンが1行に収まる幅。
-       * ロゴの文字（152）＋間隔＋ナビゲーションの文字（406）と左右の余白（24px が6つ）＋間隔＋ボタンの文字（96）と余白と枠線
-       */
-      @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 406 / 16 * 1rem + 6 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
-        --_density: --spacious;
-      }
-
       @container --scoped scroll-state(stuck: block-start) {
         border-block-end-color: var(--border--base);
         box-shadow: var(--shadow--card);
+      }
+
+      /* ロゴの横に残った幅を、すべて ._end に渡す */
+      & > ._end {
+        flex-grow: 1;
       }
     }
 
@@ -210,19 +215,45 @@
       line-height: var(--text--title--leading);
     }
 
-    ._actions {
-      --cluster--row-gap: 8px;
-      --cluster--column-gap: 16px;
-      --cluster--alignment: center;
+    /* ナビゲーションとお問い合わせのボタンの並びと、メニューのボタンを、同じセルに重ねる */
+    ._end {
+      display: block grid;
+      align-items: center;
 
-      @container style(--_density: --compact) {
-        display: none;
+      & > * {
+        grid-area: 1 / 1;
+      }
+
+      & > ._menu {
+        justify-self: end;
+      }
+    }
+
+    /*
+     * 1行に収まらず溢れている間だけ、ルートの --_overflowing が --true になる。
+     * contain で幅を中身から決めないようにし、._end が折り返す位置をメニューのボタンの幅で決める。
+     */
+    ._actions {
+      contain: inline-size;
+      display: block grid;
+      grid-auto-columns: max-content;
+      grid-auto-flow: column;
+      column-gap: 16px;
+      justify-content: safe end;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+      scroll-timeline: --actions inline;
+
+      /* display: none にすると溢れが消えてフラグが戻り、表示と非表示を繰り返す */
+      @container style(--_overflowing: --true) {
+        visibility: hidden;
       }
     }
 
     ._menu {
-      @container style(--_density: --spacious) {
-        display: none;
+      @container style(--_overflowing: --false) {
+        visibility: hidden;
       }
     }
   }

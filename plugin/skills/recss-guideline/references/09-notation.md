@@ -1,8 +1,8 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.70.1（2026-10-16 生成）
+- ガイドラインのバージョン: 0.70.2（2026-10-16 生成）
 - ルールの数: 49
-- 本文: 約12.6万字
+- 本文: 約12.5万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,10 +14,10 @@
 
 - `notation` 第9章 記法の規約（約8,500字）https://t-arai-pnrm.github.io/recss-guideline/notation/
 - `notation/naming` 9-1 命名規則（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/notation/naming/
-- `notation/variants` 9-2 BEMからの書き直しとバリエーション（約9,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/variants/
-- `notation/terminology` 9-3 名前に使う語（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
-- `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/
-- `notation/nesting` 9-5 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/
+- `notation/variants` 9-2 BEMからの書き直しとバリエーション（約9,700字）https://t-arai-pnrm.github.io/recss-guideline/notation/variants/
+- `notation/terminology` 9-3 名前に使う語（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
+- `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/
+- `notation/nesting` 9-5 ネストの書き方（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/
 - `notation/nesting-criteria` 9-6 ネストの判断基準（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/
 - `notation/property-order` 9-7 プロパティの並び順（約3,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/property-order/
 - `notation/modern-syntax` 9-8 モダンな記法にそろえる（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/modern-syntax/

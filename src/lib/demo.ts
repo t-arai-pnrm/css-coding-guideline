@@ -63,7 +63,7 @@ const TOKENS = [
  *
  * デモを見せるための足場（本文の主題ではないもの）も、ここに置く。デモの CSS のタブと AI 向けの配布物には出さない。
  * - `body[data-demo-bleed]`: `<Demo bleed>` で付く。デモの枠の余白を外し、要素を枠の端まで届かせる（`inline` は左右だけ）
- * - `[data-demo-layout="compare"]`: 比べる区画を横に並べ、狭ければ縦に積む。各区画の先頭の見出しは、ラベルの大きさにする
+ * - `[data-demo-layout="compare"]`: 比べる区画を横に並べ、狭ければ縦に積む。各区画の先頭の見出しは、ラベルの大きさにする。区画がコンポーネントのルート（`.scoped`）なら、その中には手を出さない
  * - `[data-demo-layout="stack"]`: 区画の幅が結果を左右するデモで、区画をいつも縦に積む。ほかは `compare` と同じ
  * 足場の説明は、付録I「デモの共通トークン」に書く。
  */
@@ -95,13 +95,14 @@ const DEMO_BASE = `@layer base {
     display: block grid;
     gap: 16px;
 
-    & > * {
+    /* 直下の子がコンポーネントのルートなら、その中の配置と見出しはコンポーネントに任せる */
+    & > :not(.scoped) {
       display: block grid;
       gap: 8px;
       align-content: start;
     }
 
-    & > * > :is(h2, h3, h4):first-child {
+    & > :not(.scoped) > :is(h2, h3, h4):first-child {
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
     }

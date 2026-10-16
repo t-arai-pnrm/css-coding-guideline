@@ -26,8 +26,6 @@ import candidatesCss from '../../../demos/components/component-candidates/style.
 ```css title="🙆‍♂ Recommended: 別のコンポーネントのまま、トークンで見た目をそろえる"
 @scope (.scoped.product-card) to (.scoped) {
   :scope {
-    display: block grid;
-    gap: calc(var(--spacing--xs) * 1px);
     padding: calc(var(--spacing--md) * 1px);
     border-radius: var(--rounded--lg);
     background-color: var(--background--surface);
@@ -36,8 +34,6 @@ import candidatesCss from '../../../demos/components/component-candidates/style.
 
 @scope (.scoped.article-card) to (.scoped) {
   :scope {
-    display: block grid;
-    gap: calc(var(--spacing--sm) * 1px);
     padding: calc(var(--spacing--md) * 1px);
     border-radius: var(--rounded--lg);
     background-color: var(--background--surface);
@@ -144,8 +140,6 @@ Atomic Designの用語で言えば、Button、Link、Iconのようなatomはコ�
 @scope (.scoped.card-header) to (.scoped) {
   :scope {
     display: block flex;
-    flex-wrap: wrap;
-    gap: calc(var(--spacing--xs) * 1px);
     justify-content: space-between;
   }
 }
@@ -164,18 +158,8 @@ Atomic Designの用語で言えば、Button、Link、Iconのようなatomはコ�
 
 ```css title="🙆‍♂ Recommended: 区画は親のスコープの中で選び、独立した役割を持つ部品だけをコンポーネントにする"
 @scope (.scoped.product-card) to (.scoped) {
-  :scope {
-    display: block grid;
-    gap: calc(var(--spacing--sm) * 1px);
-    padding: calc(var(--spacing--md) * 1px);
-    border-radius: var(--rounded--lg);
-    background-color: var(--background--surface);
-  }
-
   header {
     display: block flex;
-    flex-wrap: wrap;
-    gap: calc(var(--spacing--xs) * 1px);
     justify-content: space-between;
   }
 
@@ -224,7 +208,6 @@ Atomic Designの用語で言えば、Button、Link、Iconのようなatomはコ�
   :scope {
     --grid--column-min-width: calc(280 / 16 * 1rem);
     --grid--column-max-count: 2;
-    --grid--gap: 24px;
 
     & > ._card {
       grid-row: span 4;
@@ -234,7 +217,6 @@ Atomic Designの用語で言えば、Button、Link、Iconのようなatomはコ�
   ._card {
     display: block grid;
     grid-template-rows: subgrid;
-    row-gap: 12px;
   }
 }
 ```

@@ -67,7 +67,7 @@ import zIndex from '../../../demos/tokens/z-index.css?raw';
 
 すべてのデモで、全称セレクタに `min-inline-size: 0` を、`body` に `padding: 24px` と背景色と文字色を指定しています。`min-inline-size: 0` は「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」と同じ指定です。デモのHTMLを自分の環境に写すときは、この余白の分だけ幅が変わります。
 
-比べる区画を並べるデモでは、HTMLの `data-demo-layout="compare"` を付けた要素の直下の区画を、最小幅240px相当の列で横に並べています。狭いときは縦に積みます。各区画の先頭の見出しは、ラベルの大きさ（`--text--body-compact--*`）にしています。区画の幅が結果を左右するデモでは、`data-demo-layout="stack"` で、区画をいつも縦に積みます。
+比べる区画を並べるデモでは、HTMLの `data-demo-layout="compare"` を付けた要素の直下の区画を、最小幅240px相当の列で横に並べています。狭いときは縦に積みます。各区画の先頭の見出しは、ラベルの大きさ（`--text--body-compact--*`）にしています。区画がコンポーネントのルートなら、その中の配置と見出しはコンポーネントに任せます。区画の幅が結果を左右するデモでは、`data-demo-layout="stack"` で、区画をいつも縦に積みます。
 
 ```css title='data-demo-layout の指定'
 @layer compositions {
@@ -75,13 +75,14 @@ import zIndex from '../../../demos/tokens/z-index.css?raw';
     display: block grid;
     gap: 16px;
 
-    & > * {
+    /* 直下の子がコンポーネントのルートなら、その中の配置と見出しはコンポーネントに任せる */
+    & > :not(.scoped) {
       display: block grid;
       gap: 8px;
       align-content: start;
     }
 
-    & > * > :is(h2, h3, h4):first-child {
+    & > :not(.scoped) > :is(h2, h3, h4):first-child {
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
     }

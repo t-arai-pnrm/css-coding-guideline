@@ -1,17 +1,3 @@
-@layer pages {
-  @scope (.scoped.demo-layout) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 24px;
-
-      /* ページ全体の段組みはビューポートで切り替える */
-      @media (width >= calc(720 / 16 * 1rem)) {
-        grid-template-columns: 2fr 1fr;
-      }
-    }
-  }
-}
-
 @layer components {
   @scope (.scoped.event-card) to (.scoped) {
     :scope {

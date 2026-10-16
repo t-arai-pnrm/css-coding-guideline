@@ -1,0 +1,181 @@
+---
+title: "13-9 収まらなくなったらナビゲーションを折りたたむ"
+description: "ヘッダーのナビゲーションが1行に収まらなくなったらメニューのボタンに切り替える処理は、ブレイクポイントや各部の幅を足した閾値ではなく、ナビゲーション自身の溢れを検知して書けます。溢れている間だけ有効になるスクロールタイムラインでフラグ --_overflowing を立て、スタイルクエリで3つの要素の表示を切り替えます。CMSで項目や文言が増えても、閾値を直さずに、収まらなくなった時点で切り替わります。"
+sidebar:
+  order: 9
+---
+
+import Baseline from '../../../components/Baseline.astro';
+import Demo from '../../../components/Demo.astro';
+import Guideline from '../../../components/Guideline.astro';
+import collapseHtml from '../../../demos/responsive/overflow-collapse-nav/index.html?raw';
+import collapseCss from '../../../demos/responsive/overflow-collapse-nav/style.css?raw';
+
+ヘッダーのナビゲーションが1行に収まらなくなったら、メニューのボタンへ切り替えます。この切り替えは、ナビゲーション自身が溢れたかどうかで判定できます。横並びのリストをスクロールコンテナにしてスクロールタイムラインを付けると、そのタイムラインは中身が溢れている間だけ有効になります。それに結び付けたアニメーションでフラグ `--_overflowing` を `--true` にし、ナビゲーション、お問い合わせのリンク、メニューのボタンが、スタイルクエリでフラグを読みます。
+
+切り替える幅は、ナビゲーションの実際の中身から決まります。閾値をどこにも書かないので、CMSで項目や文言が増えても、ユーザーが文字を大きくしても、CSSを直さずに、収まらなくなった時点で切り替わります。溢れをフラグに変える仕組みは「[11-9 要素どうしの重なりを検出する](/layout-practice/overlap-detection/)」と同じです。この節で使う範囲は、この節の中で説明します。
+
+## 切り替える幅を閾値で決める難しさ
+
+ナビゲーションを折りたたむ幅を、768pxのようなブレイクポイントで決めると、項目の数や文言と関係のない幅で切り替わります。項目が多ければ、切り替わる前にナビゲーションが折り返し、項目が少なければ、並べられる幅でもメニューのボタンになります（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
+
+中身から決めるなら、ロゴ、ナビゲーション、お問い合わせのリンクの幅と、その間の余白を足した式を、コンテナサイズクエリの閾値に書く方法があります。
+
+```css title="🙅‍♂ Not Recommended: 各部の幅を足した閾値を、項目が変わるたびに直す"
+/* 🙅‍♂ Not Recommended */
+@scope (.scoped.site-header) to (.scoped) {
+  ._header-inner {
+    --_density: --compact;
+
+    /* ロゴの文字（152）＋間隔＋ナビゲーションの文字（322）と余白（24px が5つ）＋間隔＋ボタンの文字（96）と余白と枠線 */
+    @container --scoped (inline-size >= calc(152 / 16 * 1rem + 32px + 322 / 16 * 1rem + 5 * 24px + 16px + 96 / 16 * 1rem + 58px)) {
+      --_density: --spacious;
+    }
+  }
+}
+```
+
+この式の文字の幅は、ブラウザで測った値です。項目を足したり文言を変えたりするたびに測り直し、式を直す必要があります。CMSでナビゲーションの項目を編集できるサイトでは、CSSを書いた人の知らないうちに項目が増え、式と実際の幅がずれます。ずれた幅では、ナビゲーションが2行に折り返したり、並べられるのにメニューのボタンになったりします。文字の幅は、表示に使われるフォントでも変わります。{/* 要確認: 出典なし */}
+
+知りたいのは「ナビゲーションが1行に収まるか」なので、収まらなくなったこと自体を条件にすれば、幅を足し合わせる必要はありません。
+
+## 溢れをフラグに変える
+
+まず、ナビゲーションのリスト `._nav-list` を、横方向へスクロールできる要素にします。`overflow-x: auto` を指定し、`scroll-timeline: --nav-list inline` で、行方向のスクロール位置を進み具合にしたタイムラインを作って名前を付けます。仕様では、スクロールできるはみ出しがない間、スクロールタイムラインは無効（inactive）です。無効なタイムラインと結び付けたアニメーションは、効果を持ちません。そのため、アニメーションが働くのは、項目が1行に収まらず溢れている間だけです。
+
+アニメーションは、ヘッダーのルートに結び付けます。ルートの値は継承され、子孫の要素がスタイルクエリで読めるからです。スクロールタイムラインの名前は、既定ではそれを作った要素とその子孫からしか参照できません。ルートに `timeline-scope: --nav-list` を指定すると、子孫のリストが作ったタイムラインを、ルートの `animation-timeline` から参照できます。`animation` の一括指定は `animation-timeline` を初期値に戻すので、`animation-timeline` は `animation` より後に書きます。
+
+```css title="🙆‍♂ Recommended: ナビゲーションが溢れている間だけ、ルートのフラグを --true にする"
+@keyframes --site-header--detect-overflow {
+  from,
+  to {
+    --_overflowing: --true;
+  }
+}
+
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    --_overflowing: --false;
+
+    animation: --site-header--detect-overflow linear both;
+    animation-timeline: --nav-list;
+    timeline-scope: --nav-list;
+  }
+
+  ._nav-list {
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-timeline: --nav-list inline;
+  }
+}
+```
+
+キーフレームには、最初と最後で同じ値 `--true` を書きます。登録していないカスタムプロパティのアニメーションは補間されず、進み具合の半ばで値が切り替わります。最初と最後を同じ値にしておけば、スクロール位置がどこでも、タイムラインが有効な間は常に `--true` になります。ルートに通常の宣言で書いた `--false` は、タイムラインが無効な間の値です。アニメーションの値は、カスケードで通常の宣言より優先されます。
+
+フラグを `@property` で登録する必要はありません。登録していないカスタムプロパティも継承し、スタイルクエリで値を比べられます。Chromeで確かめたところ、構文に `"--true | --false"` を書いた `@property` は、ルールごと無効になりました。仕様の構文の解析手順では、構文に書く名前は英字などの名前の先頭に使える文字で始める必要があり、`-` で始まる名前は書けないからです。登録するなら構文は `"<custom-ident>"` になりますが、値の書き間違いを防げるわけではないので、本書では登録しません。
+
+`overflow-inline` ではなく `overflow-x` を使うのは、`overflow-inline` にSafariが26から対応したためです（ルール `physical-only-where-no-logical`）。`scrollbar-width: none` は、スクロールバーが場所を取る環境で、溢れた瞬間にヘッダーの高さが変わらないようにする指定です。
+
+## 3つの要素をフラグで切り替える
+
+ナビゲーションとお問い合わせのリンクは、フラグが `--true` の間だけ隠し、メニューのボタンは `--false` の間だけ隠します。名前を書かないスタイルクエリは親の値を問い合わせ、フラグは継承するので、ルートで切り替わった値をどの子孫からも読めます。
+
+隠すときは、`display: none` ではなく `visibility: hidden` を使います。ナビゲーションを `display: none` にすると溢れが消え、タイムラインが無効に戻って、フラグが `--false` になります。するとナビゲーションが再び表示されて溢れ、フラグが `--true` に戻ります。この切り替えが続き、表示が定まりません。`visibility: hidden` の要素はレイアウトに場所を残すので、溢れたままの状態が続き、フラグも `--true` のまま定まります。
+
+```css title="🙆‍♂ Recommended: 隠す要素は visibility で隠し、メニューのボタンとお問い合わせのリンクを同じセルに重ねる"
+@scope (.scoped.site-header) to (.scoped) {
+  ._nav-list {
+    @container style(--_overflowing: --true) {
+      visibility: hidden;
+    }
+  }
+
+  ._end {
+    display: block grid;
+    place-items: center end;
+
+    & > * {
+      grid-area: 1 / 1;
+    }
+  }
+
+  ._contact {
+    @container style(--_overflowing: --true) {
+      visibility: hidden;
+    }
+  }
+
+  ._menu-button {
+    @container style(--_overflowing: --false) {
+      visibility: hidden;
+    }
+  }
+}
+```
+
+メニューのボタンとお問い合わせのリンクは、`._end` のGridの同じセルに重ねています。どちらか一方だけが見え、もう一方も場所を残しているので、切り替わってもヘッダーの高さと右端の位置は変わりません。
+
+`visibility: hidden` の要素は、フォーカスの移動と支援技術の読み上げからも外れます。隠したナビゲーションの項目には、メニューのボタンから開くドロワーでたどり着けるようにし、ドロワーにも同じ項目を置きます。ドロワーの作り方は「[21-7 ドロワーメニューを作る](/exercise/drawer/)」で説明しています。
+
+## ナビゲーションの列だけを縮める
+
+溢れを検知するには、幅が足りなくなったときに、ナビゲーションが折り返さず、ほかの要素より先に縮む必要があります。ヘッダーのルートをGridにし、ロゴの列と右端の列は `minmax(max-content, 1fr)` で中身より縮まないようにし、ナビゲーションの列は `minmax(0, auto)` で0まで縮められるようにします。
+
+```css title="🙆‍♂ Recommended: 両端の列は中身より縮めず、ナビゲーションの列だけを0まで縮める"
+@scope (.scoped.site-header) to (.scoped) {
+  :scope {
+    display: block grid;
+    grid-template-columns: minmax(max-content, 1fr) minmax(0, auto) minmax(max-content, 1fr);
+  }
+
+  ._nav-list {
+    display: block grid;
+    grid-auto-columns: max-content;
+    grid-auto-flow: column;
+    justify-content: safe center;
+  }
+}
+```
+
+リストは `grid-auto-flow: column` で項目を1行に並べ、各列を `max-content` にして、項目の中の文字も折り返さないようにします。リストが列の幅より広くなれば、その分が溢れになります。両端の列を `1fr` で同じ幅にしているので、ナビゲーションはヘッダーの中央に並びます。`justify-content` に `safe` を付けるのは、溢れたときに中央寄せのまま先頭側が切れないようにするためです（「[11-4 はみ出しとスクロール](/layout-practice/overflow/)」）。
+
+## デモで確かめる
+
+次のデモには、同じCSSのヘッダーを2つ置いています。違うのは、ナビゲーションの項目の数だけです。
+
+<Demo title="同じCSSのヘッダーが、項目の数に合わせて、収まらなくなった幅でメニューのボタンに切り替わる" html={collapseHtml} css={collapseCss} />
+
+幅を1024pxにすると、どちらのヘッダーもナビゲーションが1行に並びます。768pxでは、項目が4つのヘッダーは並んだまま、項目が7つのヘッダーはメニューのボタンに切り替わります。480pxでは、どちらもメニューのボタンになります。Chromeで確かめたところ、切り替わる幅は、項目が4つのヘッダーで約620px、7つのヘッダーで約930pxでした。どちらの幅もCSSには書いていません。デモのメニューのボタンは、切り替えを見せるためのもので、ドロワーは開きません。
+
+## 閾値のクエリと使い分ける
+
+この技法が向いているのは、ナビゲーションのように、中身の量が変わる横並びを、1行に収まらなくなったら別の表示に置き換える場面です。項目の数や文言を、CSSを書いた人以外が変えるサイトほど、閾値を直さずに済む利点が大きくなります。
+
+カードの画像を上から左に移すような、配置の組み替えには使いません。そうした切り替えは「どの幅なら成り立つか」を設計で決めるものです。閾値を式で書き、コンテナサイズクエリで切り替えます（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。溢れの検知が答えられるのは「いまの中身が1行に収まるか」だけで、収まる幅のうちどこで切り替えるかは決められません。
+
+切り替わるのは、項目がちょうど収まらなくなった時点です。ロゴやお問い合わせのリンクとの間に余裕を残したいときは、その間隔を `column-gap` やリストの `padding-inline` で確保します。どちらもリストの幅の計算に入るので、間隔が保てなくなった時点で切り替わります。{/* 要確認: 著者の判断 */}
+
+## 対応状況と未対応の環境での見え方
+
+この技法には、スクロール駆動アニメーション（`timeline-scope` を含む）と、カスタムプロパティのスタイルクエリが必要です。
+
+<Baseline id="scroll-driven-animations" compatKey="css.properties.timeline-scope" name="timeline-scope" />
+
+<Baseline id="container-style-queries" />
+
+スクロール駆動アニメーションには、Chrome系のブラウザ、Safari 26以降、Firefox 159以降が対応しています（MDNのブラウザ互換性データで確認）。
+
+スクロール駆動アニメーションに対応していない環境では、`animation-timeline` が無視され、ルートのアニメーションは時間で進む通常のアニメーションとして再生されます。長さが0秒で `both` を指定しているので、最後のキーフレームの値が残り、フラグは幅と関係なく `--true` になります。つまり、ナビゲーションは常に折りたたまれ、メニューのボタンからドロワーを開く表示になります。{/* 要検証: ブラウザ。Safari 18で、幅に関係なくメニューのボタンが表示されること */}どの項目にもドロワーからたどり着けるので、`@supports` で分けずに書いています。11-9の飾りでは、同じ振る舞いを避けるために `@supports` を使いました。ここでは、折りたたんだ表示こそが、未対応の環境で見せたい表示です。
+
+## ガイドライン
+
+<Guideline />
+
+## 参考リンク
+
+- [Overflow detection and automatic collapsing in CSS](https://codepen.io/tak-dcxi/pen/myWxvzJ)（TAK、CodePen）
+- [Detect when elements overlap with CSS](https://ishadeed.com/article/css-detect-overlap/)（Ahmad Shadeed、2026年9月）
+- [scroll-timeline - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-timeline)
+- [timeline-scope - CSS | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/timeline-scope)
+- [Scroll-driven Animations](https://drafts.csswg.org/scroll-animations-1/)（W3C。スクロールできるはみ出しがない間、スクロールタイムラインは無効になる）
+- [CSS Properties and Values API Level 1](https://drafts.css-houdini.org/css-properties-values-api-1/#parsing-syntax)（W3C。`@property` の構文の文字列の解析手順）
