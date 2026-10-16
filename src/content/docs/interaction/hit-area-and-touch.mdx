@@ -173,6 +173,10 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 ```css title="🙆‍♂ Recommended: ホバー中の項目の擬似要素を三角形に切り抜き、サブメニューへの通り道にする"
 @scope (.scoped.action-menu) to (.scoped) {
+  :scope {
+    isolation: isolate;
+  }
+
   ._trigger {
     &::before {
       content: "";

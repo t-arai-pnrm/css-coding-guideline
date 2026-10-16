@@ -11,6 +11,20 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.72.0（2026年10月16日）
+
+刊行前のレビューで見つかった、推奨のコード例と本書のルールの食い違いを直しました。ルール [`reading-flow-when-reordered`](/layout-practice/reading-flow/#rule-reading-flow-when-reordered) の性質を「本書の規約」に移しています。
+
+- ルール `reading-flow-when-reordered` の性質を、「仕様にもとづく制約」から「本書の規約」に移しました。読む順番を見た目と合わせることは仕様にもとづく要件ですが、見た目とDOMの順番が一致するときにも書くのは本書の規約だからです。強度は「必須」のままです。「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」にも、この区別を書きました。
+- 「[9-1 命名規則](/notation/naming/)」のグリッドエリアの例に、`reading-flow` を足しました。
+- 「[18-9 スクロールに合わせて動かす](/motion/scroll-driven/)」のヘッダーのルートの `z-index` を、絶対的な `--z--header` に直しました（ルール [`z-index-absolute-root-relative-inside`](/components/boundaries/#rule-z-index-absolute-root-relative-inside)）。内部の `--z--backwards` のために、ルートに `isolation: isolate` も足しています（ルール [`isolation-for-relative-z-index`](/components/boundaries/#rule-isolation-for-relative-z-index)）。
+- 「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」の安全な三角形のデモとコード例で、メニューのルートに `isolation: isolate` を足しました。
+- 「[19-5 CMSのWYSIWYG本文にスタイルを当てる](/operations/wysiwyg/)」のブロック間の余白の例で、`@scope` の直下の `&` を、`:scope` のルールの中のネストに書き直しました（ルール [`scope-root-with-scope-pseudo`](/notation/scope-and-nesting/#rule-scope-root-with-scope-pseudo)）。
+- 付録I「[デモの共通トークン](/appendix/demo-tokens/)」の再生時間の説明を、キーボードでフォーカスが来たときにトランジションを付けないルールに合わせました。
+- 第21章の演習で、料金の数字の大きさをサイトのトークン（`--text--price--*`）から外し、料金表のCSSに直接書きました（ルール [`no-single-use-token`](/components/design-tokens/#rule-no-single-use-token)）。
+- 「[本書について](/introduction/about/)」で、紙の書籍の巻末に載せる付録が3つであることを書きました。AIが出力しがちな書き方の例は、本書が採用しない記法と、用途によって問題を起こす指定に分けました。
+- 付録J「[AIツールで使う](/appendix/ai-tools/)」に、MCPサーバーを本書と同じ版に固定する書き方を足しました。
+
 ## 0.71.3（2026年10月16日）
 
 第I部（第1〜3章）のコード例を、その見出しで説明している宣言に絞りました。第21章の演習のデモには、ロールバックと配置の規約を当てました。ルールは変えていません。

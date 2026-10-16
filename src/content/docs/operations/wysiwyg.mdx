@@ -91,12 +91,14 @@ CMSのWYSIWYGエディタが出力する本文は、`wysiwyg` クラスを付け
 
 ```css title="🙆‍♂ Recommended: 余白は rlh で、見出しと独自ブロックの前だけ広げる"
 @scope (.wysiwyg) {
-  & > * + * {
-    margin-block-start: 1rlh;
-  }
+  :scope {
+    & > * + * {
+      margin-block-start: 1rlh;
+    }
 
-  & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
-    margin-block-start: 2rlh;
+    & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
+      margin-block-start: 2rlh;
+    }
   }
 }
 ```

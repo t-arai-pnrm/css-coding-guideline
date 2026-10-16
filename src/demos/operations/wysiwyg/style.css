@@ -10,12 +10,14 @@
  * 独自ブロック（`cms-` で始まるクラス）の中には、スタイルが届かないようにする。
  */
 @scope (.wysiwyg) {
-  & > * + * {
-    margin-block-start: 1rlh;
-  }
+  :scope {
+    & > * + * {
+      margin-block-start: 1rlh;
+    }
 
-  & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
-    margin-block-start: 2rlh;
+    & > * + :where(h1, h2, h3, h4, h5, h6, [class|="cms"]) {
+      margin-block-start: 2rlh;
+    }
   }
 
   @scope (:scope) to ([class|="cms"]) {

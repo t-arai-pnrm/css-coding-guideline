@@ -413,9 +413,9 @@
 # 11-12 表示順と読み上げ順を合わせる
 - id: reading-flow-when-reordered
   level: 必須
-  kind: spec
+  kind: convention
   rule: '`grid-template-areas`、`flex-direction: row-reverse | column-reverse`、`flex-wrap: wrap-reverse`、`grid-auto-flow: dense` を書いたルールには、同じルールに `reading-flow` を指定する。'
-  reason: 見た目の順番が DOM の順番から離れても、対応したブラウザでは読み上げとフォーカスが見た目の順番に追従し、見た目と DOM の順番が一致しているときも読む順番を確かめた印としてコードに残るため。
+  reason: 見た目の順番が DOM の順番から離れても、対応したブラウザでは読み上げとフォーカスが見た目の順番に追従し、見た目と DOM の順番が一致しているときも読む順番を確かめた印としてコードに残るため。読む順番を見た目と合わせることは仕様にもとづく要件ですが、並べ替えうる宣言に一律に書くことは本書の規約です。
   note: 'エリアの文字列を含む `grid-template` と `grid`、逆順を含む `flex-flow` も対象です。Grid には `grid-rows` か `grid-columns`、Flexbox には `flex-visual` か `flex-flow` を選びます。空のセル（`.`）を含まず、エリアの名前が1種類しかないテンプレート（`"--pile"` のように、すべての子を同じセルに重ねるもの）は、並べ替えにならないので対象外です。子の `order` や明示的な `grid-row`・`grid-column` で並べ替えるときも親のコンテナに指定しますが、これは Stylelint では検出できません。'
   lint: 'Stylelint: `book/reading-flow-when-reordered`（本書の独自ルール）'
   aiProne: true
