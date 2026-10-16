@@ -109,7 +109,7 @@ a:link {}               /* 0.1.1 */
 
 @layer components {
   .button {
-    color: var(--foreground--on-accent);
+    color: var(--foreground--inverse);
   }
 }
 ```
@@ -150,7 +150,7 @@ a:link {}               /* 0.1.1 */
 
 リセットCSSで消したものを一部の場所だけ元に戻すときにも、`revert` を使います。kiso.cssはリストのマーカーを `list-style-type: ""` で消しているので、記事の本文のようにマーカーが必要な場所では、次のように戻します。
 
-```css title="🙆‍♂ Recommended: リセットで消したマーカーを、ブラウザのデフォルトに戻す"
+```css title="🙆‍♂ Recommended: リセットで消したマーカーを、ブラウザのデフォルトに戻す" from="cascade/revert-keywords"
 .article-body {
   & ul,
   & ol {

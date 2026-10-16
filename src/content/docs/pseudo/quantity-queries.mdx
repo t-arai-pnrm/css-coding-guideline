@@ -151,7 +151,7 @@ li:nth-last-child(n + 3) ~ li {
 
 次のデモは、同じピックアップの一覧に、項目を1件、2件、3件、5件入れて並べたものです。列の数は幅から決まり、最小幅は200px相当、多くても3列までにしています。項目が1件のときだけ、親を起点にした `:has()` で列の幅を400px相当に固定し、中央に置いています。変えるのは親の `grid-template-columns` なので、`:has()` で書きます。
 
-```css title="🙆‍♂ Recommended: 列数は幅で決め、1件のときだけ数量クエリで中央に置く" from="pseudo/pickup-count"
+```css title="🙆‍♂ Recommended: 列数は幅で決め、1件のときだけ数量クエリで中央に置く"
 @scope (.scoped.pickup-list) to (.scoped) {
   :scope {
     display: block grid;

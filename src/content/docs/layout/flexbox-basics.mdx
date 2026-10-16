@@ -194,7 +194,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 この違いが、2つのアイテムに `flex-grow: 1` を指定しても幅がそろわない理由です。`flex-grow` は `flex-basis` を除いた余りだけを配るので、`flex-basis` が `auto` のままだと、中身の幅の差がそのまま残ります。`flex: 1` なら、どのアイテムも `flex-basis` が0から始まるので、コンテナの幅のすべてが1：1で配られ、中身の量によらず幅がそろいます。
 
-```css title="🙆‍♂ Recommended: 中身にかかわらず等分するときは、flex で flex-basis も0にする"
+```css title="🙆‍♂ Recommended: 中身にかかわらず等分するときは、flex で flex-basis も0にする" from="layout/flexbox-flex-one"
 ._tab-list {
   display: block flex;
 
@@ -206,7 +206,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 反対に、中身の幅を保ったまま余りだけを足したいときは、`flex-grow` だけを指定します。検索フォームで入力欄だけを伸ばし、ボタンは中身の幅のままにする、といった場面です。どちらも1と書きますが、伸ばし方が違います。
 
-```css title="🙆‍♂ Recommended: 入力欄だけを、余りの分だけ伸ばす"
+```css title="🙆‍♂ Recommended: 入力欄だけを、余りの分だけ伸ばす" from="layout/flexbox-flex-one"
 ._search {
   display: block flex;
 

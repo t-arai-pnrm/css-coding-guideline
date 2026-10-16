@@ -138,7 +138,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 そのため、`::marker` に指定するのは `color` と `font-size` だけにします。印の記号を変える、番号を太くする、印をアイコンにするといった装飾は、Safariだけ元の見た目のまま残ります。こうした装飾が必要なときは、`list-style-type: ""` でマーカーを空にし、`::before` で描きます。`list-style: none` で消すと、SafariのVoiceOverがリストとして読み上げなくなるからです（第8章「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。番号を円で囲む例は第16章「[16-7 文字とリストの装飾](/decoration/text-ornaments/)」にあります。
 
-```css title="🙆‍♂ Recommended: ::marker には color と font-size だけを指定する" from="pseudo/marker-props"
+```css title="🙆‍♂ Recommended: ::marker には color と font-size だけを指定する"
 @scope (.scoped.point-list) to (.scoped) {
   li {
     &::marker {
@@ -208,7 +208,7 @@ CSS.highlights.set('search-result', new Highlight(range));
 
 `::first-letter` は、`::before` で生成した文字があれば、その最初の文字を選びます。生成コンテンツに装飾の記号を入れた要素では、本文の最初の文字ではなく、記号が大きくなります。2つを同じ要素に指定するときは、表示を確かめます。
 
-```css title="🙆‍♂ Recommended: 最初の文字と1行目を、区切りに意味を持たせない装飾にとどめる"
+```css title="🙆‍♂ Recommended: 最初の文字と1行目を、区切りに意味を持たせない装飾にとどめる" from="pseudo/first-letter-line"
 @scope (.scoped.lead-text) to (.scoped) {
   p {
     &::first-letter {

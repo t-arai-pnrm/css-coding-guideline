@@ -3,7 +3,7 @@
  * 🙅‍♂ Not Recommended の例とラベルのないコード例は検証しない。
  * あわせて、コード例の区別の属性（src/lib/code-labels.mjs の use、from、issue）を検査する。
  * - エラー：use と issue の値が違う、from の指す先がない、Not Recommended に issue がない
- * - 警告：from のデモの CSS に、抜粋の行がない（抜粋とデモの食い違い）。同じ見出しの下にデモがあるのに from がない
+ * - 警告：from のデモの CSS に、抜粋の宣言の行がない（抜粋とデモの食い違い）。宣言がすべて同じ見出しの下のデモにあるのに from がない
  * デモの CSS（src/demos）は `pnpm lint:css` で検証する。
  * 引数にファイルを渡すとそのファイルだけを検証する（複数の作業を同時に走らせても衝突しない）。
  *
@@ -39,6 +39,9 @@ const parseFence = (line) => {
   return { indent, fence, lang, ...parseCodeMeta(meta) };
 };
 
+/** 宣言の行（`property: value;`、カスタムプロパティを含む） */
+const DECLARATION = /^-{0,2}[a-z_][\w-]*\s*:\s*.+;$/;
+
 /** デモの CSS の行（前後の空白を除く）。from の抜粋を照らし合わせるのに使う */
 const demoLines = async (from) => {
   for (const name of ['style.css', 'style.bad.css']) {
@@ -54,6 +57,9 @@ const demoLines = async (from) => {
 /** コード例の区別の属性を検査し、エラーと警告を返す */
 const checkLabels = async (source) => {
   const lines = source.split('\n');
+  const demoImports = new Map(
+    [...source.matchAll(/^import (\w+) from '[./]*\/demos\/([^']+?)\/style(?:\.bad)?\.css\?raw';$/gm)].map((match) => [match[1], match[2]]),
+  );
   const problems = [];
   for (let i = 0; i < lines.length; i++) {
     const open = parseFence(lines[i]);
@@ -75,15 +81,26 @@ const checkLabels = async (source) => {
         const missing = lines
           .slice(i + 1, end)
           .map((line) => line.trim())
-          .filter((line) => line && !line.startsWith('/*') && !line.startsWith('*') && line !== '}' && !pool.has(line));
+          // 比べるのは宣言の行だけ。セレクタは、第7章のように素のクラスで書き直すことがある
+          .filter((line) => DECLARATION.test(line) && !pool.has(line));
         if (missing.length) at('warning', `抜粋の ${missing.length} 行が、デモ ${open.from} の CSS にありません（例：${missing[0]}）。`);
       }
       if (!open.from) {
+        // 宣言がすべて、同じ見出しの下のデモの CSS にあるなら、そのデモが全体なので from を求める
         let start = i;
         while (start > 0 && !/^#{2,3} /.test(lines[start])) start--;
         let stop = end;
         while (stop < lines.length && !/^#{2,3} /.test(lines[stop])) stop++;
-        if (lines.slice(start, stop).some((line) => /<Demo\b/.test(line))) at('warning', '同じ見出しの下にデモがあります。全体がデモにあるなら from を付けてください。');
+        const declarations = lines.slice(i + 1, end).map((line) => line.trim()).filter((line) => DECLARATION.test(line));
+        for (const [, demo] of lines.slice(start, stop).join('\n').matchAll(/<Demo\b[\s\S]*?\bcss=\{(\w+)\}/g)) {
+          const from = demoImports.get(demo);
+          if (!from || !declarations.length) continue;
+          const pool = await demoLines(from);
+          if (declarations.every((line) => pool.has(line))) {
+            at('warning', `宣言がすべてデモ ${from} にあります。from="${from}" を付けてください。`);
+            break;
+          }
+        }
       }
     }
     i = end;

@@ -46,7 +46,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 反対に、アキを入れると困る要素もあります。等幅フォントで桁をそろえる `pre`、日付を表す `time`、ユーザーが文字を入力する欄です。入力中にアキが入ると、カーソルの動きが不自然になるおそれがあります。これらの要素では `text-autospace` を無効にし、`pre` では `text-spacing-trim` の詰めも止めます。kiso.cssを使っていれば指定済みです。kiso.cssを使わない場合は、次の指定を `reset` レイヤーに入れます。
 
-```css title="🙆‍♂ Recommended: アキを入れると困る要素で、自動のアキを止める"
+```css title="🙆‍♂ Recommended: アキを入れると困る要素で、自動のアキを止める" from="typography/autospace-trim"
 @layer reset {
   pre {
     text-spacing-trim: space-all;
@@ -235,7 +235,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 縦書きの中の英数字は、初期値の `text-orientation: mixed` では横に倒して組まれます。日付の「10」のような2桁の数字は、`text-combine-upright: all` を指定した `span` で囲み、1文字ぶんの幅に横並びで収めます。この組み方を縦中横といいます。`all` は囲んだ文字をすべて1文字ぶんに詰めるので、4桁の年や長い単語を囲むと、文字が潰れて読めなくなります。「CSS」のような数文字の略語を1文字ずつ立てたいときは、`text-orientation: upright` を指定します。欧文の単語や文は、`mixed` のまま横に倒したほうが読みやすいので、`upright` は短い略語にとどめます。{/* 要確認: 出典なし。縦中横を2桁の数字に、uprightを短い略語に限ること */}
 
-```css title="🙆‍♂ Recommended: 縦書きの中の英数字の向きを決めるユーティリティ" from="typography/vertical-catch"
+```css title="🙆‍♂ Recommended: 縦書きの中の英数字の向きを決めるユーティリティ"
 @layer utilities {
   .-combine-upright {
     text-combine-upright: all;

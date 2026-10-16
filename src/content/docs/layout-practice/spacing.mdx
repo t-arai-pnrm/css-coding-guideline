@@ -218,7 +218,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 そこで、セクションの上下の余白は、各セクションのルートの `padding-block` で作ります。ページの側は、セクションを間隔なしで縦に積むだけにします。`padding` の領域には背景が描かれるので、背景はセクションの端から端まで途切れず、中身と背景の端の間にも余白が確保されます。
 
-```css title="🙆‍♂ Recommended: 上下の余白を、セクション自身の padding-block で作る" from="layout-practice/section-spacing"
+```css title="🙆‍♂ Recommended: 上下の余白を、セクション自身の padding-block で作る"
 @scope (.scoped.news-section) to (.scoped) {
   :scope {
     padding-block: 48px;
@@ -245,7 +245,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 ただし、ページのCSSからは、セクションのルートを選べません。`@scope (.scoped.page-home) to (.scoped)` の範囲は、内側のコンポーネントのルートで打ち切られるからです。そこで、ページは各セクションをOuterの要素（親が子のコンポーネントを包む要素）で包み、Outerどうしの並びを次兄弟結合子で調べます。詰める値は、セクションが公開する上の余白の公開プロパティに渡し、継承でセクションのルートに届けます。
 
-```css title="🙆‍♂ Recommended: 同じ背景が続く境目は、ページの側で後ろのセクションの上の余白を詰める" from="layout-practice/section-adjacent-spacing"
+```css title="🙆‍♂ Recommended: 同じ背景が続く境目は、ページの側で後ろのセクションの上の余白を詰める"
 @scope (.scoped.page-home) to (.scoped) {
   main {
     & > ._news-outer + ._campaign-outer {

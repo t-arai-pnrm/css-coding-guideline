@@ -74,7 +74,7 @@ import comparisonSliderJs from '../../../demos/decoration/comparison-slider/scri
 }
 
 ._avatar {
-  inline-size: 48px;
+  inline-size: 32px;
   aspect-ratio: 1;
   border-radius: var(--rounded--full);
   object-fit: cover;
@@ -107,7 +107,7 @@ import comparisonSliderJs from '../../../demos/decoration/comparison-slider/scri
 
 私のテンプレートでは、ベーススタイルで `<img>` と `<video>` を `cover` にしています。`contain` が必要な画像だけ、コンポーネントで上書きします。切り取る位置は `object-position` で調整できます。人物の顔が写真の上のほうにあるなら、`object-position: 50% 20%` のように上寄りにすれば、顔が切れにくくなります。
 
-```css title="🙆‍♂ Recommended: 画像と動画は cover を既定にする"
+```css title="🙆‍♂ Recommended: 画像と動画は cover を既定にする" from="decoration/object-fit"
 @layer base {
   img,
   video {

@@ -69,7 +69,7 @@ CMSのWYSIWYGエディタが出力する本文は、`wysiwyg` クラスを付け
 
 独自ブロックのスタイルは、ブロックのクラスを起点とする `@scope` で書きます。このスコープは、本文エリアの中で使う前提なので、`to()` を省略します。ブロックの内側に、別のブロックを入れないからです。入れ子にするブロックを作るときは、通常の規約どおり `to (.scoped)` を付けた形で書きます。
 
-```css title="🙆‍♂ Recommended: 独自ブロックのスタイルは、ブロック自身の @scope に書く" from="operations/wysiwyg"
+```css title="🙆‍♂ Recommended: 独自ブロックのスタイルは、ブロック自身の @scope に書く"
 @scope (.cms-custom-section) {
   :scope {
     background-color: var(--background--inverse);

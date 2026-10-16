@@ -293,7 +293,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 縁を塗る代わりに、奥の要素の、手前の要素と重なる部分を `mask-image` で切り抜きます。切り抜いた部分は透明になるので、そこには置いた場所の背景がそのまま見えます。円く切り抜くマスクは、中心から一定の半径までが透明な `radial-gradient()` で書けます。
 
-```css title="🙆‍♂ Recommended: バッジの大きさと隙間の幅から、アバターを切り抜く円を計算する" from="decoration/avatar-cutout"
+```css title="🙆‍♂ Recommended: バッジの大きさと隙間の幅から、アバターを切り抜く円を計算する"
 @scope (.scoped.status-avatar) to (.scoped) {
   :scope {
     --_size: 40px;
@@ -346,7 +346,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 重ねて並べたアバターも、同じ考え方で切り抜きます。各アバターの末尾の側に、次のアバターと重なる部分を、次のアバターの半径に隙間の幅を足した円で切り抜きます。最後のアバターには重なる相手がいないので、マスクを指定しません。
 
-```css title="🙆‍♂ Recommended: 次のアバターと重なる部分を、各アバターから切り抜く" from="decoration/avatar-cutout"
+```css title="🙆‍♂ Recommended: 次のアバターと重なる部分を、各アバターから切り抜く"
 @scope (.scoped.avatar-stack) to (.scoped) {
   :scope {
     --_size: 32px;

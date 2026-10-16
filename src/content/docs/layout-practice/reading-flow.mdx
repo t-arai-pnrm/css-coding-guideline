@@ -61,7 +61,7 @@ Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方�
 
 見た目とDOMの順番が今は一致していても、`reading-flow` を書きます。{/* 要確認: 出典なし */}読む順番を見た目と合わせることは、意味の通る順番を求めるWCAGから導かれる要件です。一方、順番が一致しているときにも書くのは本書の規約で、このルールの性質は「本書の規約」にしています。順番が一致していれば読む順番は変わらないので、書いて困ることはありません。書いてあれば、そのコンテナの読む順番を確かめたことがコードから分かり、あとでテンプレートを書き換えて順番が離れても、読む順番が見た目に追従します。
 
-```css title="🙆‍♂ Recommended: エリアで並べるグリッドに reading-flow を書く" from="layout-practice/reading-flow-card"
+```css title="🙆‍♂ Recommended: エリアで並べるグリッドに reading-flow を書く"
 @scope (.scoped.feature-card) to (.scoped) {
   ._layout {
     display: block grid;

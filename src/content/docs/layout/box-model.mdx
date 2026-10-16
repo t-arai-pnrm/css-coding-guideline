@@ -87,7 +87,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 この要素だけ `box-sizing: unset` にすれば、足し算は要りません。`content-box` では `max-inline-size` が内容の領域の幅を指すので、指定した最大幅がそのまま内容の幅になり、`padding` はその外側に付きます。画面が狭いときは、ブロックの `auto` の幅が `padding` を含めて親に収まるので、はみ出しもしません（ルール `unset-box-sizing-for-content-max-width`）。
 
-```css title="🙆‍♂ Recommended: box-sizing を unset にして、最大幅を内容の幅にする" from="layout/box-model-unset-box-sizing"
+```css title="🙆‍♂ Recommended: box-sizing を unset にして、最大幅を内容の幅にする"
 ._content-inner {
   box-sizing: unset;
   max-inline-size: calc(1140 / 16 * 1rem);
@@ -126,7 +126,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 フレックスアイテムとグリッドアイテムでは、上下の `auto` も余った空間を受け取ります。フレックスアイテムの1つに `margin-inline-start: auto` を付ければ、その要素から後ろが行の末尾に寄ります（「[11-1 レイアウト手法の選び方](/layout-practice/choosing/#rule-flex-auto-margin-for-end-items)」）。
 
-```css title="🙆‍♂ Recommended: auto の margin で、ログインのリンクを行の末尾に寄せる"
+```css title="🙆‍♂ Recommended: auto の margin で、ログインのリンクを行の末尾に寄せる" from="layout/box-model-margin-auto"
 ._header {
   display: block flex;
 

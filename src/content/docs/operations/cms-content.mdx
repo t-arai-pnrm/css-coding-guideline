@@ -68,7 +68,7 @@ WordPressのブロックエディタでは、投稿の本文のブロックが `
 
 WordPressにも、ブロック間の余白を出力する仕組み（`blockGap`）があります。私は、theme.jsonの `settings.spacing.blockGap` を `null` にして、WordPressがこの余白のスタイルを出力しないようにしています。ブロック間の余白を決める場所を、本文エリアのCSSの1か所にまとめるためです。
 
-```css title="🙆‍♂ Recommended: 余白の値を公開プロパティで受け取る"
+```css title="🙆‍♂ Recommended: 余白の値を公開プロパティで受け取る" from="operations/content-flow"
 :is(.content-area, .editor-styles-wrapper .is-root-container) {
   --_flow-space: var(--content-area--flow-space, calc(20 / 16 * 1rem));
   --_space-before-heading: var(--content-area--space-before-heading, calc(48 / 16 * 1rem));

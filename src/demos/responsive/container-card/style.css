@@ -19,11 +19,15 @@
     }
 
     ._layout {
+      --_density: --compact;
+
       display: block grid;
       gap: 12px;
 
       /* コンポーネントの中の配置は、置かれた場所の幅で切り替える */
       @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
+        --_density: --spacious;
+
         grid-template-columns: calc(160 / 16 * 1rem) 1fr;
         align-items: start;
       }

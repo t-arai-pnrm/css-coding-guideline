@@ -73,7 +73,7 @@ $$('*').forEach((el) => {
 }
 ```
 
-```css title="🙆‍♂ Recommended: はみ出した装飾を clip で切り取る"
+```css title="🙆‍♂ Recommended: はみ出した装飾を clip で切り取る" from="layout-practice/sticky-in-clip"
 ._section {
   overflow: clip;
 }
@@ -144,7 +144,7 @@ $$('*').forEach((el) => {
 
 ダイアログやドロワー、ドロップダウンのパネルで、見出しと操作ボタンを見せたまま本文だけをスクロールさせるときは、パネルに `max-block-size` で高さの上限を付けます。パネルを `grid-template-rows: auto minmax(0, 1fr) auto` で3つの行に分け、本文を `overflow-y: auto` でスクロールさせます。
 
-```css title="🙆‍♂ Recommended: 見出しと操作ボタンの行を残し、本文の行だけを縮めてスクロールさせる" from="layout-practice/scroll-body-panel"
+```css title="🙆‍♂ Recommended: 見出しと操作ボタンの行を残し、本文の行だけを縮めてスクロールさせる"
 @scope (.scoped.dialog-panel) to (.scoped) {
   :scope {
     display: block grid;

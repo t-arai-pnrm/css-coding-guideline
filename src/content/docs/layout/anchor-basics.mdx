@@ -88,7 +88,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 ポップオーバーを開くボタンを基準にするなら、`anchor-name` で名前を付ける必要はありません。`popovertarget` 属性や `commandfor` 属性でボタンとポップオーバーを結び付けると、ボタンがポップオーバーの「暗黙のアンカー」になります。カスタマイズ可能な `<select>` でも、選択肢の一覧（`::picker(select)`）の暗黙のアンカーは `<select>` です。暗黙のアンカーは要素どうしの結び付きで決まるので、名前が衝突せず、`anchor-scope` も要りません。
 
-```css title="🙆‍♂ Recommended: 開いたボタンを基準に、名前を付けずにポップオーバーを置く"
+```css title="🙆‍♂ Recommended: 開いたボタンを基準に、名前を付けずにポップオーバーを置く" from="layout/anchor-implicit-popover"
 .help-tip {
   & > [popover] {
     @supports (position-area: block-end span-inline-end) {

@@ -108,9 +108,9 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - Recommended の CSS は、完全なルールとして書く（Stylelint で検証するため）。
   - コードフェンスの開始行に、区別の属性を書く（`src/lib/code-labels.mjs`。Web、紙版、AI 向けの配布物にタイトルの補足として出る）。
     - Recommended の `use`：省略すると `excerpt`（抜粋）。前の状態から変えた箇所だけなら `use="diff"`（第21章の後半、課題の答え）、そのファイルだけで動くなら `use="complete"`。
-    - Recommended の `from`：全体のあるデモのディレクトリ（`src/demos/` からのパス、例：`from="values/fluid-heading"`）か、配布ファイル（`exercise-files/…`、`tasks/…`）。抜粋は、`from` のデモの CSS の行をそのまま使う。デモ番号は書かない（紙版が掲載順から付ける）。
+    - Recommended の `from`：全体のあるデモのディレクトリ（`src/demos/` からのパス、例：`from="values/fluid-heading"`）か、配布ファイル（`exercise-files/…`、`tasks/…`）。抜粋の宣言は、`from` のデモの CSS の宣言をそのまま使う（セレクタは、第7章のように素のクラスに書き直してよい）。値を変えた例や、デモと別の部品の例には `from` を付けない。デモ番号は書かない（紙版が掲載順から付ける）。
     - Not Recommended の `issue`（必須）：表示、操作、アクセシビリティ、性能に問題が出るなら `behavior`（動作の問題）、いまの表示は正しいが本書の規約や設計の判断と異なるなら `convention`（規約との差）。
-    - `pnpm lint:examples` が、値と `from` の指す先と `issue` の付け忘れをエラーに、抜粋とデモの食い違いと、デモがあるのに `from` がない抜粋を警告にする（一覧は `LINT_EXAMPLES_VERBOSE=1`）。
+    - `pnpm lint:examples` が、値と `from` の指す先と `issue` の付け忘れをエラーに、`from` のデモにない抜粋の宣言と、宣言がすべて同じ見出しの下のデモにあるのに `from` がない抜粋を警告にする（一覧は `LINT_EXAMPLES_VERBOSE=1`）。
 - 省略は `/* ... */` と書く。和文と英数字の間にスペースを入れない。
 - 用語の表記は `prh.yml` に合わせる。
   - セレクタ、ブレイクポイント、コンテナクエリ、プロパティ、ブラウザ、ユーザー、レイヤー、デフォルト

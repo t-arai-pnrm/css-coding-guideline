@@ -132,7 +132,7 @@ input {
 
 読み取り専用の入力欄を選びたいときは、属性セレクタで `&[readonly]` と書きます。`readonly` と `disabled` は、意味が違います。`readonly` の入力欄はフォーカスでき、値もフォームと一緒に送信されます。`disabled` の入力欄はフォーカスできず、値も送信されません。見た目も分けて指定します。
 
-```css title="🙆‍♂ Recommended: 読み取り専用と無効を分けて指定する"
+```css title="🙆‍♂ Recommended: 読み取り専用と無効を分けて指定する" from="pseudo/read-only-scope"
 @scope (.scoped.account-form) to (.scoped) {
   input {
     &[readonly] {
@@ -170,7 +170,7 @@ input {
 
 未入力の状態は、`&:placeholder-shown` の側に書きます。`placeholder` 属性のない入力欄では何も起きないので、誤って入力済みの見た目になることはありません。どうしても `:not()` で書く必要があるときは、`&[placeholder]:not(:placeholder-shown)` のように属性の有無も条件にします。
 
-```css title="🙆‍♂ Recommended: 未入力の状態を :placeholder-shown の側に書く"
+```css title="🙆‍♂ Recommended: 未入力の状態を :placeholder-shown の側に書く" from="pseudo/placeholder-shown-scope"
 @scope (.scoped.profile-form) to (.scoped) {
   input {
     &:placeholder-shown {

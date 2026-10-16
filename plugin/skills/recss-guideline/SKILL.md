@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # RECSSガイドライン Skill
 
-- ガイドラインのバージョン: 0.75.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.75.1（2026-10-16 生成）
 - ルールの数: 618（うち AI が誤りやすいもの 296）
 - 本書: https://t-arai-pnrm.github.io/recss-guideline/
 
@@ -101,10 +101,10 @@ Figma などのデザインツールのデザインから書くときは、「20
 | --- | --- | --- | --- | --- |
 | 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.5万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
 | 第2章 CSS設計の考え方 | `references/02-design-mindset.md` | 7 | 約2.7万字 | コンポーネントの分け方、共通化、上書きの多い設計 |
-| 第4章 カスケードを制御する | `references/04-cascade.md` | 24 | 約9万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
+| 第4章 カスケードを制御する | `references/04-cascade.md` | 24 | 約9.1万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
 | 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.3万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |
 | 第6章 値と単位 | `references/06-values.md` | 30 | 約8.9万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
-| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約26.8万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
+| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約26.9万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
 | 第8章 リセットとベーススタイル | `references/08-reset.md` | 23 | 約4.8万字 | リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル |
 | 第9章 記法の規約 | `references/09-notation.md` | 49 | 約12.5万字 | **常に読む**。すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法） |
 | 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 53 | 約16.7万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
@@ -112,7 +112,7 @@ Figma などのデザインツールのデザインから書くときは、「20
 | 第12章 レイアウトコンポジション | `references/12-compositions.md` | 39 | 約19.1万字 | 要素を縦に積む、横に並べる、横にスクロールさせる、列に分けるなど、繰り返し使うレイアウトのパターン |
 | 第13章 レスポンシブデザイン | `references/13-responsive.md` | 42 | 約13万字 | @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、ナビゲーションの折りたたみ、safe-area |
 | 第14章 タイポグラフィと和文組版 | `references/14-typography.md` | 32 | 約8.4万字 | font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割 |
-| 第15章 色 | `references/15-color-media.md` | 23 | 約9.2万字 | 色の指定（oklch()、color-mix()、相対カラー構文）、ダークモード、強制カラーモード、コントラスト |
+| 第15章 色 | `references/15-color-media.md` | 23 | 約9.1万字 | 色の指定（oklch()、color-mix()、相対カラー構文）、ダークモード、強制カラーモード、コントラスト |
 | 第16章 画像・装飾 | `references/16-decoration.md` | 34 | 約21.1万字 | 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷 |
 | 第17章 インタラクション | `references/17-interaction.md` | 40 | 約14.2万字 | ホバー、フォーカス、押せる範囲、タッチ操作、user-select、状態を表す属性（ARIA属性、data-*属性）、カード全体のリンク、開閉するUI（details、dialog、popover）、フォーム部品、カルーセル |
 | 第18章 モーション | `references/18-motion.md` | 31 | 約20万字 | transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions |
