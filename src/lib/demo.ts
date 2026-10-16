@@ -60,12 +60,7 @@ const TOKENS = [
  * kiso.css は `body` に `min-block-size: 100dvb` を指定しているが、そのままだと
  * iframe の高さを中身に合わせられないため、デモでは解除する。
  * テーマに追従させるため、背景と文字の色は `body` にセマンティクスのトークンで指定する。
- *
- * デモを見せるための足場（本文の主題ではないもの）も、ここに置く。デモの CSS のタブと AI 向けの配布物には出さない。
- * - `body[data-demo-bleed]`: `<Demo bleed>` で付く。デモの枠の余白を外し、要素を枠の端まで届かせる（`inline` は左右だけ）
- * - `[data-demo-layout="compare"]`: 比べる区画を横に並べ、狭ければ縦に積む。各区画の先頭の見出しは、ラベルの大きさにする。区画がコンポーネントのルート（`.scoped`）なら、その中には手を出さない
- * - `[data-demo-layout="stack"]`: 区画の幅が結果を左右するデモで、区画をいつも縦に積む。ほかは `compare` と同じ
- * 足場の説明は、付録I「デモの共通トークン」に書く。
+ * 演習の配布ファイルの `base.css` にも、このまま入る（`scripts/gen-exercise-files.mjs`）。
  */
 const DEMO_BASE = `@layer base {
   *,
@@ -79,7 +74,18 @@ const DEMO_BASE = `@layer base {
     padding: 24px;
     background-color: var(--background--base);
     color: var(--foreground--base);
+  }
+}`;
 
+/**
+ * デモを見せるための足場（本文の主題ではないもの）。デモの CSS のタブ、AI 向けの配布物、演習の配布ファイルには出さない。
+ * - `body[data-demo-bleed]`: `<Demo bleed>` で付く。デモの枠の余白を外し、要素を枠の端まで届かせる（`inline` は左右だけ）
+ * - `[data-demo-layout="compare"]`: 比べる区画を横に並べ、狭ければ縦に積む。各区画の先頭の見出しは、ラベルの大きさにする。区画がコンポーネントのルート（`.scoped`）なら、その中には手を出さない
+ * - `[data-demo-layout="stack"]`: 区画の幅が結果を左右するデモで、区画をいつも縦に積む。ほかは `compare` と同じ
+ * 足場の説明は、付録I「デモの共通トークン」に書く。
+ */
+const DEMO_FRAME = `@layer base {
+  body {
     &[data-demo-bleed="all"] {
       padding: unset;
     }
@@ -209,6 +215,7 @@ export const buildSrcdoc = ({
       `<style>@layer tokens {\n${tokens}\n}</style>`,
       `<style>@layer reset {\n${kisoCss}\n}</style>`,
       `<style>${DEMO_BASE}</style>`,
+      `<style>${DEMO_FRAME}</style>`,
     );
     if (base === 'exercise') {
       const siteBase = (import.meta.env?.BASE_URL ?? '/').replace(/\/?$/, '/');

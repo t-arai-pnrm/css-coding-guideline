@@ -30,7 +30,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 🙅‍♂ Not Recommended のデモは `style.bad.css` という名前にする（Stylelint の対象外になる）。
   - 悪い例と良い例、値の違いなどを比べるデモは、1つのデモの中に並べる（`data-*` 属性で片方だけ指定を変える）。比べる2つを別々のデモに分けない。
   - 状態の切り替えに JavaScript が要るデモは、`script.js` を置いて `<Demo js={…}>` に渡す。JavaScript のタブは出さない。CSS と HTML だけで作れるデモには使わない。
-  - 見せるための足場（比べる区画を並べるグリッド、区画のラベルの文字サイズ、デモの枠の余白を外す `body` の指定）は `style.css` に書かない。区画を並べる要素に `data-demo-layout="compare"` を付け、枠の余白は `<Demo bleed>`（左右だけなら `bleed="inline"`）で外す。仕組みは `src/lib/demo.ts` の `DEMO_BASE` にあり、付録I に説明がある。それで表せない足場だけを `frame.css` に書き、`<Demo frame={…}>` に渡す（タブと AI 向けの配布物には出ない）。
+  - 見せるための足場（比べる区画を並べるグリッド、区画のラベルの文字サイズ、デモの枠の余白を外す `body` の指定）は `style.css` に書かない。区画を並べる要素に `data-demo-layout="compare"` を付け、枠の余白は `<Demo bleed>`（左右だけなら `bleed="inline"`）で外す。仕組みは `src/lib/demo.ts` の `DEMO_FRAME` にあり（演習の配布ファイルには入らない）、付録I に説明がある。それで表せない足場だけを `frame.css` に書き、`<Demo frame={…}>` に渡す（タブと AI 向けの配布物には出ない）。
 - `src/demos/tokens/*.css`: すべてのデモに `@layer tokens` として読み込まれる共通トークン。デモの CSS では宣言し直さずに参照する。デモはサイトのテーマ（ライトとダーク）に追従するので、色はセマンティクスのトークンで書く。特定の色を見せるデモだけは `<Demo scheme="light">` で固定し、値を直接書いてよい。
 - `src/components/`
   - `Demo`：ライブデモ

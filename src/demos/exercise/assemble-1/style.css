@@ -210,7 +210,7 @@
     /* 同じ背景の帯が続く境目は、後ろの帯の上の余白を詰める */
     ._strengths-band + ._column-band,
     ._flow-band + ._cta-band {
-      padding-block-start: 0;
+      padding-block-start: unset;
     }
 
     ._heading {
@@ -300,8 +300,8 @@
         --_background--hocus: transparent;
         --_shadow: none;
 
-        padding-block: 0;
-        padding-inline: 0;
+        padding-block: unset;
+        padding-inline: unset;
         color: var(--foreground--accent);
       }
 
@@ -700,7 +700,7 @@
         font-variant-numeric: tabular-nums;
 
         @container style(--_density: --spacious) {
-          grid-row: auto;
+          grid-row: unset;
         }
       }
 
@@ -716,7 +716,7 @@
         @container style(--_density: --spacious) {
           inset-block: calc(20 / 16 * 1rem - 1px) auto;
           inset-inline: calc(50% + 20 / 16 * 1rem) calc(-50% - 24px + 20 / 16 * 1rem);
-          inline-size: auto;
+          inline-size: unset;
           block-size: 2px;
         }
       }

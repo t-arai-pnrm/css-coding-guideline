@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # RECSSガイドライン Skill
 
-- ガイドラインのバージョン: 0.71.2（2026-10-16 生成）
+- ガイドラインのバージョン: 0.71.3（2026-10-16 生成）
 - ルールの数: 618（うち AI が誤りやすいもの 296）
 - 本書: https://t-arai-pnrm.github.io/recss-guideline/
 
@@ -99,7 +99,7 @@ Figma などのデザインツールのデザインから書くときは、「20
 
 | 章 | ファイル | ルールの数 | 本文 | 読む条件 |
 | --- | --- | --- | --- | --- |
-| 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.5万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
+| 第1章 CSSのマインドセット | `references/01-principles.md` | 15 | 約5.4万字 | 新しい機能、ブラウザの対応状況、フォールバック、@supports |
 | 第2章 CSS設計の考え方 | `references/02-design-mindset.md` | 7 | 約2.7万字 | コンポーネントの分け方、共通化、上書きの多い設計 |
 | 第4章 カスケードを制御する | `references/04-cascade.md` | 24 | 約9万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
 | 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.1万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |

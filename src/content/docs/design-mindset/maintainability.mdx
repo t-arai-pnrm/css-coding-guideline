@@ -177,20 +177,24 @@ AIに指示すれば、既存のコード全体へ規約を一度に適用する
 
 ```css title="🙅‍♂ Not Recommended: 一部だけ変えたいのにショートハンドを使う"
 /* 🙅‍♂ Not Recommended */
-._figure {
-  max-inline-size: calc(480 / 16 * 1rem);
-  margin: 0 auto;
-  background: oklch(100% 0 0deg);
+._article {
+  & > ._figure {
+    max-inline-size: calc(480 / 16 * 1rem);
+    margin: 0 auto;
+    background: oklch(100% 0 0deg);
+  }
 }
 ```
 
 `background: oklch(100% 0 0deg)` は、`background-color` だけでなく、`background-image` や `background-size` などもまとめて初期値に戻します。別の場所で設定した背景画像があれば、それも消えます。`margin: 0 auto` は、左右の中央寄せのために、本来触る必要のない上下のマージンまで `0` にします。子要素の間にマージンで余白を入れるレイアウトの中に置くと、その余白を打ち消してしまいます。
 
 ```css title="🙆‍♂ Recommended: 変えたいサブプロパティだけをロングハンドで指定する"
-._figure {
-  max-inline-size: calc(480 / 16 * 1rem);
-  margin-inline: auto;
-  background-color: oklch(100% 0 0deg);
+._article {
+  & > ._figure {
+    max-inline-size: calc(480 / 16 * 1rem);
+    margin-inline: auto;
+    background-color: oklch(100% 0 0deg);
+  }
 }
 ```
 

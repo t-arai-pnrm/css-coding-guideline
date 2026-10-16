@@ -1,0 +1,22 @@
+@layer components {
+  /* 4つの枠を横に並べ、狭ければ折り返す */
+  @scope (.scoped.image-gap) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+      gap: 16px;
+    }
+
+    figure {
+      margin: unset;
+
+      & > * + figcaption {
+        margin-block-start: 8px;
+      }
+    }
+
+    figcaption {
+      font-size: calc(14 / 16 * 1rem);
+    }
+  }
+}

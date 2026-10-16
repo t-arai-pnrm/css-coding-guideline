@@ -107,20 +107,24 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
 
 ```css title="🙅‍♂ Not Recommended: ブロックレイアウトの要素を justify-self で中央に寄せる"
 /* 🙅‍♂ Not Recommended */
-._more-link {
-  display: block flow;
-  inline-size: fit-content;
-  justify-self: center;
+._article {
+  & > ._more-link {
+    display: block flow;
+    inline-size: fit-content;
+    justify-self: center;
+  }
 }
 ```
 
 このコードは、Chromeでは要素が中央に寄りますが、SafariとFirefoxでは `justify-self` が無視され、左に寄ったままです。対応データでは、ブロックレイアウトの `justify-self` に対応しているのは、Chrome 130以降とEdgeだけです。ブロックの中央寄せには、どのブラウザでも同じ結果になる `margin-inline: auto` を使います。レスポンシブ対応で `display` をgridからブロックに戻す場合も、`justify-items` や `justify-self` が残っていないかを確かめます。
 
 ```css title="🙆‍♂ Recommended: ブロックの中央寄せには margin-inline: auto を使う"
-._more-link {
-  display: block flow;
-  inline-size: fit-content;
-  margin-inline: auto;
+._article {
+  & > ._more-link {
+    display: block flow;
+    inline-size: fit-content;
+    margin-inline: auto;
+  }
 }
 ```
 
@@ -144,11 +148,7 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
     --_rows: 3lh;
     --_max-rows: 8lh;
 
-    box-sizing: unset;
-    inline-size: -webkit-fill-available;
-    inline-size: stretch;
     min-block-size: var(--_rows);
-    padding: 1em;
 
     @supports (field-sizing: content) {
       max-block-size: var(--_max-rows);

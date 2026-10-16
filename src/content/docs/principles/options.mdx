@@ -28,16 +28,17 @@ CSSでは、1つの見た目を作る方法が複数あり、どれが適切か�
 ```css title="🙆‍♂ Recommended: テキストを中央に寄せる"
 ._section-title {
   text-align: center;
-  text-wrap: balance;
 }
 ```
 
 では、デザイナーから「見出しが1行なら中央寄せ、複数行なら左揃えにしてほしい」と頼まれたらどうでしょうか。`text-align: center` は、複数行になっても各行を中央に寄せるので、この条件には合いません。この場合は、テキストではなく、見出しの要素そのものを中央に寄せます。
 
 ```css title="🙆‍♂ Recommended: 見出しの要素を中身の幅にして、中央に寄せる"
-._section-title {
-  inline-size: fit-content;
-  margin-inline: auto;
+._section {
+  & > ._section-title {
+    inline-size: fit-content;
+    margin-inline: auto;
+  }
 }
 ```
 
@@ -48,22 +49,22 @@ CSSでは、1つの見た目を作る方法が複数あり、どれが適切か�
 カードを横に並べる場合も、「今はGridの時代だからGridで書く」と決めてしまうのではなく、並べ方の条件から選びます。最後の行に入るカードの数が列の数に満たないとき、そのカードを列の幅のまま並べるか、残りの幅いっぱいに広げるかで、適した方法が変わります。
 
 ```css title="🙆‍♂ Recommended: 最後の行のカードも、列の幅をそろえて並べる"
-._card-grid {
+._grid {
   display: block grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: 16px;
 }
 ```
 
 ```css title="🙆‍♂ Recommended: 最後の行のカードを、残りの幅いっぱいに広げる"
-._card-flex {
+._flex {
   display: block flex;
   flex-wrap: wrap;
   gap: 16px;
 
-  & > * {
+  & > ._card {
     flex-grow: 1;
-    flex-basis: 360px;
+    flex-basis: 200px;
   }
 }
 ```

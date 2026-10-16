@@ -15,6 +15,16 @@
       & > * + * {
         margin-block-start: 16px;
       }
+
+      /* 🙅‍♂ 上下のマージンまで 0 にするので、上の余白の指定を打ち消してしまう */
+      & > ._figure-shorthand {
+        margin: 0 auto;
+      }
+
+      /* 🙆‍♂ 左右のマージンだけを auto にするので、上下の余白は残る */
+      & > ._figure-logical {
+        margin-inline: auto;
+      }
     }
 
     h2 {
@@ -27,16 +37,6 @@
       aspect-ratio: 16 / 9;
       border-radius: var(--rounded--md);
       background-image: linear-gradient(135deg, oklch(82% 0.08 250deg), oklch(72% 0.12 300deg));
-    }
-
-    /* 🙅‍♂ 上下のマージンまで 0 にするので、上の余白の指定を打ち消してしまう */
-    ._figure-shorthand {
-      margin: 0 auto;
-    }
-
-    /* 🙆‍♂ 左右のマージンだけを auto にするので、上下の余白は残る */
-    ._figure-logical {
-      margin-inline: auto;
     }
   }
 }

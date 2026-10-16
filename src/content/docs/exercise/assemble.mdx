@@ -89,7 +89,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 
   ._strengths-band + ._column-band,
   ._flow-band + ._cta-band {
-    padding-block-start: 0;
+    padding-block-start: unset;
   }
 }
 ```
@@ -148,7 +148,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 
     & > [data-surface="base"] + [data-surface="base"],
     & > [data-surface="surface"] + [data-surface="surface"] {
-      padding-block-start: 0;
+      padding-block-start: unset;
     }
   }
 }
@@ -177,7 +177,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 <summary>答えと解説</summary>
 {/* textlint-enable ja-technical-writing/ja-no-mixed-period */}
 
-ページのCSSで、最初のブロックの上の余白を0にします（`& > :first-child { padding-block-start: 0; }`）。ヘッダーの直後かどうかはページの構成で決まることなので、ヒーローのCSSには書きません。ヒーローに負の `margin` や上の余白の打ち消しを書くと、ヒーローを下層ページや別の位置に置いたときにも適用されてしまいます（`parent-owns-child-placement`）。
+ページのCSSで、最初のブロックの上の余白を外します（`& > :first-child { padding-block-start: unset; }`）。ヘッダーの直後かどうかはページの構成で決まることなので、ヒーローのCSSには書きません。ヒーローに負の `margin` や上の余白の打ち消しを書くと、ヒーローを下層ページや別の位置に置いたときにも適用されてしまいます（`parent-owns-child-placement`）。
 
 </details>
 
