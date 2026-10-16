@@ -1,0 +1,19 @@
+/* デモを見せるための足場：区画をパネルにし、先頭の見出しをラベルにする */
+@layer components {
+  @scope (.scoped.demo-page) to (.scoped) {
+    :scope {
+      align-items: start;
+    }
+
+    ._sample {
+      padding: 20px;
+      border-radius: var(--rounded--md);
+      background-color: var(--background--surface);
+
+      & > h3 {
+        color: var(--foreground--muted);
+        font-weight: var(--font-weight--bold);
+      }
+    }
+  }
+}

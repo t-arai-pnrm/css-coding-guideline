@@ -10,6 +10,7 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import flowHtml from '../../../demos/operations/content-flow/index.html?raw';
 import flowCss from '../../../demos/operations/content-flow/style.css?raw';
+import flowFrame from '../../../demos/operations/content-flow/frame.css?raw';
 
 CMSで入力する本文のエリア（本文エリア）のスタイルは、公開ページの本文とエディタの本文の両方に当たるセレクタで、1か所に書きます。WordPressなら `:is(.content-area, .editor-styles-wrapper .is-root-container)` です。こうすれば、編集画面で見た目を確かめながら書いた内容が、公開後もそのままの見た目で表示されます。
 
@@ -43,12 +44,10 @@ WordPressのブロックエディタでは、投稿の本文のブロックが `
 
 ```css title="🙆‍♂ Recommended: 公開ページとエディタの本文を、1つのセレクタで選ぶ"
 :is(.content-area, .editor-styles-wrapper .is-root-container) {
-  color: var(--wp--preset--color--ink);
   line-height: 1.8;
 
   & h2 {
     font-size: calc(24 / 16 * 1rem);
-    line-height: 1.4;
   }
 }
 ```
@@ -108,7 +107,7 @@ WordPressにも、ブロック間の余白を出力する仕組み（`blockGap`�
 
 次のデモでは、同じ本文エリアを2つ並べ、右の本文エリアにだけ `style` 属性で公開プロパティを渡しています。ブロック間の余白と見出しの前の余白だけが広がり、渡していない見出しの後ろの余白はデフォルト値のままです。幅を320pxにすると、2つの本文エリアは縦に積まれ、下が公開プロパティを渡した本文エリアになります。
 
-<Demo title="公開プロパティで、本文エリアのブロック間の余白を上書きする" html={flowHtml} css={flowCss} widths={[320, 768, 1024]} />
+<Demo title="公開プロパティで、本文エリアのブロック間の余白を上書きする" html={flowHtml} css={flowCss} frame={flowFrame} widths={[320, 768, 1024]} />
 
 デモの本文エリアでは、リセットCSSで消したリストのマーカーを `revert` でブラウザのデフォルトに戻しています。本文のリストは、マーカーがなければリストに見えないからです。値を書き直さずに `revert` を使う理由は、「[8-1 壊さないリセット](/reset/kiso/)」で説明しています。
 
@@ -135,7 +134,6 @@ WordPressにも、ブロック間の余白を出力する仕組み（`blockGap`�
   & figcaption {
     /* カンプの #aeaeae は白の背景とのコントラスト比が約2.3:1で、WCAG 2.2 の AA を満たさないため、同じ系統の色に変える */
     color: var(--wp--preset--color--text-muted);
-    font-size: calc(12 / 16 * 1rem);
   }
 }
 ```
@@ -183,14 +181,8 @@ register_block_style(
 
 ```css title="🙆‍♂ Recommended: ブロックスタイルのクラスで、コアのボタンを装飾する"
 .wp-block-button.is-style-site-action .wp-block-button__link {
-  display: block flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-  border-radius: var(--wp--custom--rounded--sm);
   background-color: var(--wp--preset--color--accent);
   color: var(--wp--preset--color--white);
-  font-weight: var(--wp--custom--font-weight--bold);
 }
 ```
 
