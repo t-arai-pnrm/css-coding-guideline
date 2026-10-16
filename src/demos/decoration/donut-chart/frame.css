@@ -1,0 +1,10 @@
+/* デモを見せるための足場：グラフを横に並べる。グラフの大きさは、並べた列の幅で決まる */
+@layer components {
+  @scope (.scoped.donut-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(120 / 16 * 1rem)), 1fr));
+      gap: 24px;
+    }
+  }
+}

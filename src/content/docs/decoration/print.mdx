@@ -48,9 +48,6 @@ import Guideline from '../../../components/Guideline.astro';
 ```css title="🙆‍♂ Recommended: 紙の上で使えない部品を、印刷のときだけ隠す"
 @scope (.scoped.global-nav) to (.scoped) {
   :scope {
-    display: block flex;
-    gap: 16px;
-
     @media print {
       display: none;
     }
@@ -110,7 +107,6 @@ import Guideline from '../../../components/Guideline.astro';
 
 ```css title="🙆‍♂ Recommended: 背景色が意味を持つ要素にだけ exact を指定する"
 ._status-label {
-  padding-inline: 8px;
   border: 1px solid;
   print-color-adjust: exact;
   background-color: var(--_status-color);

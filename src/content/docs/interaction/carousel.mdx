@@ -82,8 +82,6 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
         position: absolute;
         inset-block-start: anchor(center);
         position-anchor: --css-carousel;
-        inline-size: 40px;
-        aspect-ratio: 1;
         translate: 0 -50%;
       }
 
@@ -110,7 +108,6 @@ CSSだけでカルーセルを作れるようになっても、こうした問�
         inline-size: 12px;
         min-block-size: 12px;
         border: 1px solid transparent;
-        border-radius: calc(infinity * 1px);
         background-color: var(--border--strong);
       }
 
@@ -208,19 +205,7 @@ Chrome系のブラウザでは、スクロールバーが消え、ボタンと�
 
 ```css title="🙆‍♂ Recommended: スクリプトで表示するボタンの見た目"
 @scope (.scoped.css-carousel) to (.scoped) {
-  ._buttons {
-    display: block flex;
-    gap: 8px;
-    justify-content: end;
-  }
-
   button {
-    inline-size: 40px;
-    aspect-ratio: 1;
-    border: 1px solid;
-    border-radius: calc(infinity * 1px);
-    background-color: var(--background--surface);
-
     &:disabled {
       opacity: 0.3;
     }

@@ -1,0 +1,11 @@
+/* デモを見せるための足場：見出しを色の付いた面に載せる */
+@layer components {
+  @scope (.scoped.cushion-demo) to (.scoped) {
+    h2 {
+      padding: 24px;
+      border-radius: var(--rounded--md);
+      background-image: linear-gradient(in oklch 135deg, oklch(70% 0.12 200deg), oklch(55% 0.15 280deg));
+      font-size: calc(24 / 16 * 1rem);
+    }
+  }
+}

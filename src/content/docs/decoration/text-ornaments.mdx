@@ -10,10 +10,13 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import markerHtml from '../../../demos/decoration/list-marker/index.html?raw';
 import markerCss from '../../../demos/decoration/list-marker/style.css?raw';
+import markerFrame from '../../../demos/decoration/list-marker/frame.css?raw';
 import strokeHtml from '../../../demos/decoration/text-stroke/index.html?raw';
 import strokeCss from '../../../demos/decoration/text-stroke/style.css?raw';
+import strokeFrame from '../../../demos/decoration/text-stroke/frame.css?raw';
 import cushionHtml from '../../../demos/decoration/text-cushion/index.html?raw';
 import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
+import cushionFrame from '../../../demos/decoration/text-cushion/frame.css?raw';
 
 番号付きリストの番号は `::marker` で色と大きさを変え、番号を円で囲むような装飾が要るときだけ、`::before` に `counter()` で番号を描きます。文字の縁取りは `-webkit-text-stroke` で描いて、`paint-order: stroke fill` で塗りの下に置きます。見出しの行ごとに敷く背景は、インラインの要素に `box-decoration-break: clone` を指定して描きます。
 
@@ -33,7 +36,7 @@ import cushionCss from '../../../demos/decoration/text-cushion/style.css?raw';
 
 `::marker` には、`background` や `border`、`padding` のようなボックスのプロパティを指定できません。番号を円で囲む、太くするといった装飾には足りないので、そのときだけ `list-style-type: ""` でマーカーを空にし、`::before` に `counter()` で番号を描きます。古い記事にある `list-style: none` での書き方は、本書では使いません。理由は「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」で説明しています。
 
-<Demo title="::marker で番号の色を変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} />
+<Demo title="::marker で番号の色を変えたリストと、::before で番号を円で囲んだリスト" html={markerHtml} css={markerCss} frame={markerFrame} />
 
 デモの1つ目は `::marker` で番号を青にしたリスト、2つ目は `::before` で番号を青い円で囲んだリストです。
 
@@ -93,7 +96,7 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 }
 ```
 
-<Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} variant="neutral" scheme="light" />
+<Demo title="paint-order を指定すると、縁取りが塗りの下に描かれる" html={strokeHtml} css={strokeCss} frame={strokeFrame} variant="neutral" scheme="light" />
 
 デモの1つ目は `paint-order` の指定なし、2つ目は `paint-order: stroke fill` です。1つ目では8pxの線が白い文字の内側にも重なって文字が細く見え、2つ目では文字の太さを保ったまま外側に縁取りが付きます。
 
@@ -141,7 +144,7 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 </h2>
 ```
 
-<Demo title="幅が足りずに折り返した行にも、clone なら padding と枠線が付く" html={cushionHtml} css={cushionCss} />
+<Demo title="幅が足りずに折り返した行にも、clone なら padding と枠線が付く" html={cushionHtml} css={cushionCss} frame={cushionFrame} />
 
 デモの1つ目は `box-decoration-break` の指定なし、2つ目は `clone` です。幅を320pxにすると「3月31日まで開催しています」の行が折り返し、1つ目では折り返した位置の行の端に `padding` と枠線が付かず、2つ目では折り返したどの行にも付きます。
 

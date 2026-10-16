@@ -21,10 +21,6 @@
     }
 
     ._preview {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
-      gap: 16px;
-
       /* 簡易的な確認用。実際の確認には OS のグレースケール表示を使う */
       &:is(:scope:has(._switch :checked) *) {
         filter: grayscale(1);
@@ -32,9 +28,6 @@
     }
 
     section {
-      display: block grid;
-      gap: 12px;
-      align-content: start;
       padding: 16px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--md);

@@ -1,20 +1,7 @@
 @layer components {
   @scope (.scoped.zone-layout-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 32px;
-    }
-
-    /* 見出しの次のレイアウトは別のコンポーネントのルートで、このスコープからは選べないので、間隔は section の gap で空ける */
-    section {
-      display: block grid;
-      gap: 8px;
-    }
-
     h2 {
       color: var(--foreground--muted);
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
     }
   }
 

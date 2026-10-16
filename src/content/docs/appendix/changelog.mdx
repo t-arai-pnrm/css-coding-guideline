@@ -11,6 +11,16 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.71.1（2026年10月16日）
+
+第IV部（第11〜18章）のコード例を、その見出しで説明している宣言に絞りました。ルールは変えていません。
+
+- コード例から、主題でない見た目とレイアウトの宣言を消しました。文字（第14章）、色（第15章）、装飾（第16章）、操作（第17章）、動き（第18章）のように、章の主題になっている宣言は残しています。
+- 子のルールに書いていた `position: absolute` と `inset` を、親のルールのネストに移しました（ルール [`nest-child-placement-only`](/notation/nesting-criteria/#rule-nest-child-placement-only)）。「[11-6 重なりと全幅](/layout-practice/layering/)」「[11-8 アンカーポジショニング](/layout-practice/anchor-positioning/)」「[11-9 要素どうしの重なりを検出する](/layout-practice/overlap-detection/)」「[12-10 pile](/compositions/pile/)」「[16-4 clip-pathとマスクで見せる範囲を決める](/decoration/clipping-and-masks/)」のコード例とデモです。
+- 前の値を打ち消す `0` を、`unset` で書きました（ルール [`explicit-rollback-keyword`](/cascade/cascade-basics/#rule-explicit-rollback-keyword)）。「[11-2 余白を設計する](/layout-practice/spacing/)」の悪い例と、第17章、第18章のデモです。
+- デモで比べる区画を並べる指定と、枠の余白を外す指定を、共通の足場（`data-demo-layout` と `bleed`）に置き換えました。
+- 本文の数値を、デモに合わせて直しました。「[12-7 grid](/compositions/grid/)」「[12-8 columns](/compositions/columns/)」「[12-9 masonry](/compositions/masonry/)」では、デモの枠の左右の余白を24pxとして計算し直しています。並ぶ列の数は変わりません。「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」では、閾値の式に合わせて、例の `gap` を16pxにしました。
+
 ## 0.71.0（2026年10月16日）
 
 ヘッダーのナビゲーションを、1行に収まらなくなったらメニューのボタンに切り替える書き方を加え、第21章のヘッダーをこの書き方に組み直しました。第III部（第8〜10章）のコード例も、その見出しで説明している宣言に絞りました。ルールを追加し、既存のルールの理由と補足を変えたので、マイナーバージョンを上げています。

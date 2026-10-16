@@ -27,12 +27,24 @@
         /* 子孫の _measure が作るスクロールタイムラインを、ルートから参照できるようにする */
         timeline-scope: --decoration-gap;
       }
+
+      & > ._decoration {
+        position: absolute;
+        inset-block-start: 16px;
+        inset-inline-start: 16px;
+      }
+
+      /* 円の行末側の辺から本文の行頭側の辺までの範囲を占める */
+      & > ._measure {
+        @supports (anchor-name: --decoration) and (animation-timeline: scroll()) {
+          position: absolute;
+          inset-block: anchor(--decoration start) anchor(--decoration end);
+          inset-inline: anchor(--decoration end) anchor(--content start);
+        }
+      }
     }
 
     ._decoration {
-      position: absolute;
-      inset-block-start: 16px;
-      inset-inline-start: 16px;
       z-index: var(--z--backwards);
       anchor-name: --decoration;
       inline-size: 120px;
@@ -61,11 +73,8 @@
     ._measure {
       display: none;
 
-      /* 円の行末側の辺から本文の行頭側の辺までの範囲を占め、20px の中身がはみ出すかで間隔を測る */
+      /* 20px の中身がはみ出すかで間隔を測る */
       @supports (anchor-name: --decoration) and (animation-timeline: scroll()) {
-        position: absolute;
-        inset-block: anchor(--decoration start) anchor(--decoration end);
-        inset-inline: anchor(--decoration end) anchor(--content start);
         display: block flow;
         overflow-x: auto;
         scrollbar-width: none;

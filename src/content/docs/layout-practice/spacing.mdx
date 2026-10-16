@@ -11,6 +11,7 @@ import Guideline from '../../../components/Guideline.astro';
 import emptyCellsHtml from '../../../demos/layout-practice/empty-grid-cells/index.html?raw';
 import emptyCellsCss from '../../../demos/layout-practice/empty-grid-cells/style.css?raw';
 import siblingMarginHtml from '../../../demos/layout-practice/sibling-margin/index.html?raw';
+import siblingMarginFrame from '../../../demos/layout-practice/sibling-margin/frame.css?raw';
 import siblingMarginBadCss from '../../../demos/layout-practice/sibling-margin/style.bad.css?raw';
 import siblingMarginCss from '../../../demos/layout-practice/sibling-margin/style.css?raw';
 import sectionSpacingHtml from '../../../demos/layout-practice/section-spacing/index.html?raw';
@@ -39,7 +40,7 @@ import sectionAdjacentCss from '../../../demos/layout-practice/section-adjacent-
   }
 
   & > li:last-child {
-    margin-block-end: 0;
+    margin-block-end: unset;
   }
 }
 ```
@@ -339,7 +340,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
   }
 
   & > p:last-child {
-    margin-block-end: 0;
+    margin-block-end: unset;
   }
 }
 ```
@@ -364,9 +365,9 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 次の2つのデモは、同じHTMLに2通りのCSSを当てたものです。左から、見出しだけのカード、見出しと段落のカード、段落の間にリストを挟んだカードを並べ、各要素の箱を点線で示しています。1つ目では、見出しだけのカードの下の余白が8pxだけ広く、リストと後ろの段落の間が空いていません。2つ目では、3枚のカードのどれも、要素の間にだけ余白が空いています。
 
-<Demo title="要素そのものに下の余白を付けると、見出しだけのカードに余白が残り、リストの後ろの間隔がなくなる" html={siblingMarginHtml} css={siblingMarginBadCss} variant="not-recommended" />
+<Demo title="要素そのものに下の余白を付けると、見出しだけのカードに余白が残り、リストの後ろの間隔がなくなる" html={siblingMarginHtml} css={siblingMarginBadCss} frame={siblingMarginFrame} variant="not-recommended" />
 
-<Demo title="前の要素を条件にして後ろの要素の上に余白を付けると、要素の間にだけ余白が空く" html={siblingMarginHtml} css={siblingMarginCss} />
+<Demo title="前の要素を条件にして後ろの要素の上に余白を付けると、要素の間にだけ余白が空く" html={siblingMarginHtml} css={siblingMarginCss} frame={siblingMarginFrame} />
 
 この書き方の対象は、通常フローで縦に積む要素の間隔です。FlexboxやGridの子の間隔は親の `gap` で作り、子に `margin` を足しません。`margin-block-start: auto` で末尾に寄せる指定や、親の `padding` を打ち消す負の値のように、間隔ではなく位置を決める `margin` も対象外です。`:heading` はブラウザの対応が分かれるので、タイプセレクタと並べて `:is()` の中に書きます（「[5-1 擬似クラスと擬似要素の基本](/pseudo/basics/#rule-heading-with-fallback)」）。
 

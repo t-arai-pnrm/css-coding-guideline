@@ -12,6 +12,7 @@ import hoverIndicatorHtml from '../../../demos/layout-practice/hover-indicator/i
 import hoverIndicatorCss from '../../../demos/layout-practice/hover-indicator/style.css?raw';
 import cardTagHtml from '../../../demos/layout-practice/anchored-card-tag/index.html?raw';
 import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.css?raw';
+import cardTagFrame from '../../../demos/layout-practice/anchored-card-tag/frame.css?raw';
 
 ツールチップやメニューのように、ボタンの近くに表示する部品は、ポップオーバーにして、開いたボタンを暗黙のアンカーとして置きます。入力欄の説明のように、名前を付けたアンカーを持つコンポーネントを繰り返し置くときは、ルートの `anchor-scope` で名前の範囲をコンポーネントの中に限ります。カードのタグを画像の角に重ねるように、コンポーネントの中で子要素どうしを重ねるときも、基準にする子要素をアンカーにすれば、HTMLの順序を変えずに位置を決められます。ホバーした項目を背景が追いかける表現のように、なくても困らない装飾なら、未対応の環境では表示されないだけの形で使えます。
 
@@ -68,19 +69,19 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
   :scope {
     position: relative;
     anchor-scope: --counted-field;
+
+    & > ._count {
+      @supports (position-area: inline-end) {
+        position: absolute;
+        position-area: inline-end;
+        position-anchor: --counted-field;
+        margin-inline-start: 8px;
+      }
+    }
   }
 
   input {
     anchor-name: --counted-field;
-  }
-
-  ._count {
-    @supports (position-area: inline-end) {
-      position: absolute;
-      position-area: inline-end;
-      position-anchor: --counted-field;
-      margin-inline-start: 8px;
-    }
   }
 }
 ```
@@ -102,10 +103,12 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
     position: relative;
   }
 
-  ._tag {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-end: 0;
+  ._content {
+    & > ._tag {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-end: 0;
+    }
   }
 }
 ```
@@ -138,13 +141,15 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
     anchor-name: --thumbnail;
   }
 
-  ._tag {
-    @supports (anchor-scope: --thumbnail) {
-      position: absolute;
-      inset-block-start: anchor(start);
-      inset-inline-end: anchor(end);
-      position-anchor: --thumbnail;
-      margin: 8px;
+  ._content {
+    & > ._tag {
+      @supports (anchor-scope: --thumbnail) {
+        position: absolute;
+        inset-block-start: anchor(start);
+        inset-inline-end: anchor(end);
+        position-anchor: --thumbnail;
+        margin: 8px;
+      }
     }
   }
 }
@@ -152,7 +157,7 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
 
 次のデモでは、広い場所のカードは画像と本文が横に並び、狭い場所のカードは縦に積まれます。どちらでも、タグは画像の角に付きます。幅を320pxにすると、広い場所のカードも幅が足りないので縦に積まれますが、タグは画像の右上の角に付いたままです。`anchor-scope` に未対応のブラウザでは、タグは見出しの上の通常の位置に表示されます。
 
-<Demo title="画像と本文の並びが変わっても、タグを画像の角に重ねるカード" html={cardTagHtml} css={cardTagCss} />
+<Demo title="画像と本文の並びが変わっても、タグを画像の角に重ねるカード" html={cardTagHtml} css={cardTagCss} frame={cardTagFrame} />
 
 見た目が変わっても、読み上げの順はHTMLのとおり、タグ、見出し、説明です。タグを画像と一緒に包めば、絶対配置だけでも重ねられます。ただし、記事についての情報が画像の側へ移るので、画像のない記事では同じHTMLを使えません。{/* 要確認: 出典なし */}
 
@@ -167,6 +172,15 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
   :scope {
     position: relative;
     anchor-scope: --thumbnail;
+
+    & > ._lead {
+      @supports (anchor-scope: --thumbnail) {
+        position: absolute;
+        inset-inline: anchor(start) anchor(end);
+        inset-block-end: anchor(end);
+        position-anchor: --thumbnail;
+      }
+    }
   }
 
   ._thumbnail {
@@ -174,15 +188,8 @@ import cardTagCss from '../../../demos/layout-practice/anchored-card-tag/style.c
   }
 
   ._lead {
-    @supports (anchor-scope: --thumbnail) {
-      position: absolute;
-      inset-inline: anchor(start) anchor(end);
-      inset-block-end: anchor(end);
-      position-anchor: --thumbnail;
-      padding: 16px;
-      background-color: oklch(0% 0 0deg / 60%);
-      color: oklch(100% 0 0deg);
-    }
+    background-color: oklch(0% 0 0deg / 60%);
+    color: oklch(100% 0 0deg);
   }
 }
 ```

@@ -74,8 +74,6 @@ CSSの行は、`line-height` の高さを持つ箱として並びます。行の
 ```css title="🙅‍♂ Not Recommended: ハーフレディングをなくすために行の高さを1にする"
 /* 🙅‍♂ Not Recommended */
 ._submit-button {
-  padding-block: 16px;
-  padding-inline: 24px;
   line-height: 1;
 }
 ```
@@ -183,7 +181,7 @@ CSS Inline Layout Module Level 3では、`text-box-trim` を指定できるの�
 
 画像と文章を2カラムで横に並べるときは、文章の側の先頭の要素に `text-box-trim: trim-start` を指定して、画像の上端と文字の上端をそろえます。グリッドで画像と見出しを同じ行に置いても、見出しの1行目の上にはハーフレディングが残るので、文字の上端は画像の上端より下がります。28pxの見出しで `line-height` が1.4なら、1emを基準にして約5.6pxのずれです。見出しの文字が大きいほど、このずれは目立ちます。
 
-次の例では、HTMLを見出し、画像、本文の順に書き、狭い幅では縦に積みます。コンテナの幅が画像の列とテキストの列の最小幅を足した値を超えたら、`--_density` のフラグを `--spacious` に切り替え、画像を左の列の2行分に置きます。本文の行を `1fr` にしているので、見出しの行は見出しの高さだけになり、見出しが画像の上端の横に来ます。ハーフレディングを取り除くのは、見出しに付けた `.-trim-start` です。
+次の例では、HTMLを見出し、画像、本文の順に書き、狭い幅では縦に積みます。コンテナの幅が画像の列とテキストの列の最小幅を足した値を超えたら、`--_density` のフラグを `--spacious` に切り替え、画像を左の列の2行分に置きます。見出しの文字サイズも、フラグが `--spacious` のときに22pxから28pxにします。本文の行を `1fr` にしているので、見出しの行は見出しの高さだけになり、見出しが画像の上端の横に来ます。ハーフレディングを取り除くのは、見出しに付けた `.-trim-start` です。
 
 ```html title="🙆‍♂ Recommended: 画像の横に来る見出しに .-trim-start を付ける"
 <article class="scoped media-text">
@@ -203,11 +201,14 @@ CSS Inline Layout Module Level 3では、`text-box-trim` を指定できるの�
     container: --scoped / inline-size;
   }
 
+  /* コンテナサイズクエリを書くのは、フラグを宣言するこの要素だけ */
   ._body {
     --_density: --compact;
 
     display: block grid;
     reading-flow: grid-rows;
+
+    /* 狭いときは、見出し、画像、本文の順に縦に積む */
     grid-template:
       "--heading"
       "--image"
@@ -218,6 +219,7 @@ CSS Inline Layout Module Level 3では、`text-box-trim` を指定できるの�
     @container --scoped (inline-size >= calc(240 / 16 * 1rem + 24px + 240 / 16 * 1rem)) {
       --_density: --spacious;
 
+      /* 画像を左の列に置き、右の列の上に見出し、その下に本文を置く */
       grid-template:
         "--image --heading"
         "--image --paragraphs" 1fr
@@ -239,7 +241,12 @@ CSS Inline Layout Module Level 3では、`text-box-trim` を指定できるの�
   }
 
   ._heading {
-    line-height: 1.4;
+    font-size: calc(22 / 16 * 1rem);
+    line-height: var(--leading--snug);
+
+    @container style(--_density: --spacious) {
+      font-size: calc(28 / 16 * 1rem);
+    }
   }
 }
 

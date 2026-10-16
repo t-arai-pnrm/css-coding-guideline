@@ -1,20 +1,10 @@
 @layer pages {
   @scope (.scoped.cutout-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 16px;
-    }
-
     :is(._legend, ._heading) {
       color: var(--foreground--muted);
       font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
       font-weight: var(--font-weight--regular);
       line-height: var(--text--caption--leading);
-    }
-
-    ._row {
-      display: block grid;
-      gap: 8px;
     }
 
     ._panel {
@@ -68,6 +58,12 @@
       inline-size: var(--_size);
       aspect-ratio: 1;
 
+      & > ._badge {
+        position: absolute;
+        inset-block-end: 0;
+        inset-inline-end: 0;
+      }
+
       &:dir(rtl) {
         --_badge-x: calc(var(--_badge-size) / 2);
       }
@@ -91,9 +87,6 @@
     }
 
     ._badge {
-      position: absolute;
-      inset-block-end: 0;
-      inset-inline-end: 0;
       inline-size: var(--_badge-size);
       aspect-ratio: 1;
       border-radius: var(--rounded--full);

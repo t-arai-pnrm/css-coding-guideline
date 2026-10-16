@@ -1,32 +1,9 @@
-@layer pages {
+@layer components {
   @scope (.scoped.squircle-radius-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
-      gap: 24px;
-    }
-
-    figure {
-      display: block grid;
-      gap: 8px;
-      justify-items: center;
-    }
-
-    ._pair {
-      display: block flex;
-      gap: 12px;
-    }
-
     ._box {
       inline-size: 88px;
       aspect-ratio: 1;
       background-color: var(--background--inverse);
-    }
-
-    figcaption {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-      text-align: center;
     }
   }
 }

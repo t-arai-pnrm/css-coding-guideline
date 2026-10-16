@@ -1,24 +1,13 @@
 @layer components {
   @scope (.scoped.typesetting-compare) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 16px;
-    }
-
     section {
       padding: 16px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--md);
-
-      & > h2 + p {
-        margin-block-start: 8px;
-      }
     }
 
     h2 {
       color: var(--foreground--muted);
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
     }
 
     p {

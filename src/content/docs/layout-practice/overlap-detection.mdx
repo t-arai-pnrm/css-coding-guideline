@@ -69,10 +69,13 @@ CSSで判定できれば、飾りの見た目に関わる指定が、コンポ�
       animation-timeline: --decoration-gap;
       timeline-scope: --decoration-gap;
     }
+
+    & > ._decoration {
+      position: absolute;
+    }
   }
 
   ._decoration {
-    position: absolute;
     anchor-name: --decoration;
 
     @container style(--_overlapping: --true) {

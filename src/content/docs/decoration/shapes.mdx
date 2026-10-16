@@ -12,10 +12,13 @@ import keywordsHtml from '../../../demos/decoration/corner-shape-keywords/index.
 import keywordsCss from '../../../demos/decoration/corner-shape-keywords/style.css?raw';
 import squircleHtml from '../../../demos/decoration/squircle-button/index.html?raw';
 import squircleCss from '../../../demos/decoration/squircle-button/style.css?raw';
+import squircleFrame from '../../../demos/decoration/squircle-button/frame.css?raw';
 import squircleRadiusHtml from '../../../demos/decoration/squircle-radius/index.html?raw';
 import squircleRadiusCss from '../../../demos/decoration/squircle-radius/style.css?raw';
+import squircleRadiusFrame from '../../../demos/decoration/squircle-radius/frame.css?raw';
 import scoopTabHtml from '../../../demos/decoration/scoop-tab/index.html?raw';
 import scoopTabCss from '../../../demos/decoration/scoop-tab/style.css?raw';
+import scoopTabFrame from '../../../demos/decoration/scoop-tab/frame.css?raw';
 import fullBleedHtml from '../../../demos/decoration/full-bleed-radius/index.html?raw';
 import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?raw';
 
@@ -42,17 +45,13 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 ```css title="🙆‍♂ Recommended: 錠剤型のボタンに corner-shape を1行足す"
 @scope (.scoped.button) to (.scoped) {
   :scope {
-    padding-block: 12px;
-    padding-inline: 32px;
     border-radius: calc(infinity * 1px);
     corner-shape: squircle;
-    background-color: var(--background--inverse);
-    color: var(--foreground--inverse);
   }
 }
 ```
 
-<Demo title="錠剤型のボタンと、corner-shape: squircle を足したボタン" html={squircleHtml} css={squircleCss} variant="neutral" />
+<Demo title="錠剤型のボタンと、corner-shape: squircle を足したボタン" html={squircleHtml} css={squircleCss} frame={squircleFrame} variant="neutral" />
 
 デモの1つ目は `corner-shape` を初期値に戻した錠剤型のボタン、2つ目は `corner-shape: squircle` を足したボタンです。対応している環境（Chrome）では、2つ目のボタンの左右の端が、半円より角張った曲線になります。
 
@@ -99,7 +98,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 }
 ```
 
-<Demo title="左は border-radius の角丸、右は同じ半径を .-corner-squircle に渡したもの" html={squircleRadiusHtml} css={squircleRadiusCss} variant="neutral" />
+<Demo title="左は border-radius の角丸、右は同じ半径を .-corner-squircle に渡したもの" html={squircleRadiusHtml} css={squircleRadiusCss} frame={squircleRadiusFrame} variant="neutral" />
 
 デモでは、半径8px、24px、32pxのそれぞれで、左に `border-radius` の角丸、右に `.-corner-squircle` の正方形を並べています。`corner-shape`、`if()`、スタイルクエリの範囲の比較に対応している環境（Chrome）では、右の角は大きい半径のスクワークルで描かれ、角の見た目の大きさが左に近くなります。未対応の環境では、右も左と同じ角丸になります。
 
@@ -123,11 +122,8 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
     --_radius: var(--category-navigation--radius, 12px);
 
     position: relative;
-    padding-block: 8px;
-    padding-inline: 24px;
     border-start-start-radius: var(--_radius);
     border-start-end-radius: var(--_radius);
-    background-color: var(--background--base);
     isolation: isolate;
 
     @supports (corner-shape: scoop) {
@@ -144,11 +140,15 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
         background-color: inherit;
       }
     }
+
+    &[aria-current="page"] {
+      background-color: var(--background--base);
+    }
   }
 }
 ```
 
-<Demo title="選んでいるタブの下の端が、scoop で外側へ反り返る" html={scoopTabHtml} css={scoopTabCss} />
+<Demo title="選んでいるタブの下の端が、scoop で外側へ反り返る" html={scoopTabHtml} css={scoopTabCss} frame={scoopTabFrame} />
 
 このデモでは、選んでいるタブにだけ背景色を付けています。擬似要素は `background-color: inherit` でタブの背景色を受け取るので、選んでいないタブには反り返りも描かれません。
 
@@ -195,7 +195,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 }
 ```
 
-<Demo title="カードが画面いっぱいに広がったときだけ、角丸が消える" html={fullBleedHtml} css={fullBleedCss} />
+<Demo title="カードが画面いっぱいに広がったときだけ、角丸が消える" html={fullBleedHtml} css={fullBleedCss} bleed="inline" />
 
 このデモでは、カードを置く側が最大幅を720pxにして中央に置いています。幅を768px以上にすると左右に余白ができて角丸が付き、それより狭くすると、カードが画面の端まで広がって角丸が消えます。
 

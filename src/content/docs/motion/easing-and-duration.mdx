@@ -10,12 +10,16 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import originHtml from '../../../demos/motion/scale-in-origin/index.html?raw';
 import originCss from '../../../demos/motion/scale-in-origin/style.css?raw';
+import originFrame from '../../../demos/motion/scale-in-origin/frame.css?raw';
 import pressHtml from '../../../demos/motion/press-feedback/index.html?raw';
 import pressCss from '../../../demos/motion/press-feedback/style.css?raw';
+import pressFrame from '../../../demos/motion/press-feedback/frame.css?raw';
 import springHtml from '../../../demos/motion/spring-easing/index.html?raw';
 import springCss from '../../../demos/motion/spring-easing/style.css?raw';
+import springFrame from '../../../demos/motion/spring-easing/frame.css?raw';
 import easingHtml from '../../../demos/motion/easing-compare/index.html?raw';
 import easingCss from '../../../demos/motion/easing-compare/style.css?raw';
+import easingFrame from '../../../demos/motion/easing-compare/frame.css?raw';
 
 イージングは、CSSの `ease` のようなキーワードではなく、quint系やexpo系のトークンから選びます。現れる動きと消える動きには `out` 系を、画面の上にあるものの移動には `in-out` 系を使い、`linear` は一定の速さで続く動きだけに使います。複数のプロパティを動かすときは、プロパティごとに選び分けます。
 
@@ -29,7 +33,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 次のデモでは、4つの点を同じ240msで同じ距離だけ動かし、イージングだけを変えています。「4つの点を同時に動かす」のチェックボックスを切り替えると、4つの点が同時に動きます。`--ease--out-quint` と `--ease--out-expo` の点は動き始めてすぐに大きく進むので、ほかの2つより先に着いたように感じられます。`ease-in` の点は、最初の数フレームでほとんど動かず、反応が遅れて見えます。イージングを比べるためのデモなので、動きを減らす設定でも動かしています。
 
-<Demo title="同じ再生時間で、イージングだけを変えて4つの点を動かす" html={easingHtml} css={easingCss} variant="neutral" widths={[]} />
+<Demo title="同じ再生時間で、イージングだけを変えて4つの点を動かす" html={easingHtml} css={easingCss} frame={easingFrame} variant="neutral" widths={[]} />
 
 拡大して現れるメニューでよく見かけるのが、次の書き方です。`scale: 0` の点から、要素の中央を起点に、500msかけて `ease` で広がります。
 
@@ -155,7 +159,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 開始値を `no-preference` の中で変えているので、動きを減らす設定のときは拡大と縮小をやめ、フェードだけが残ります（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。`@starting-style` と `transition-behavior` の仕組みは、「[18-7 出現と退場](/motion/entry-and-exit/)」で説明しています。次のデモでは、3種類の要素を、それぞれの開始値と起点で表示できます。3つのボタンを押すと、ツールチップはボタンの上に下端から、ドロップダウンはボタンの下に左上の角から、ダイアログは画面の中央から、少し縮んだ大きさで広がりながら現れます。アンカーポジショニングに対応していない環境では、ツールチップとドロップダウンも画面の中央に出ます。ダイアログはトリガーの近くではなく画面の中央に出るので、起点も中央のままにしています。
 
-<Demo title="ツールチップ、ドロップダウン、ダイアログを、それぞれの開始値と起点で拡大して表示する" html={originHtml} css={originCss} height="20rem" />
+<Demo title="ツールチップ、ドロップダウン、ダイアログを、それぞれの開始値と起点で拡大して表示する" html={originHtml} css={originCss} frame={originFrame} height="20rem" />
 
 ## 配置の向きに合わせて起点を切り替える
 
@@ -204,7 +208,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 次のデモのボタンは、ホバーで背景色を80msで変え、押したときに120msで縮みます。`transition-duration` にカンマ区切りで2つの値を書き、プロパティごとに再生時間を分けています。無効にしたボタンは `:enabled:hover` と `:enabled:active` で除いているので、ホバーと押下のどちらにも反応しません。
 
-<Demo title="ホバーで色を変え、押したときに短く縮める" html={pressHtml} css={pressCss} />
+<Demo title="ホバーで色を変え、押したときに短く縮める" html={pressHtml} css={pressCss} frame={pressFrame} />
 
 トランジションは `:not(:focus-visible)` の中に書き、キーボードでフォーカスを移したときの色の変化は一度で切り替えます。ホバーの見た目を `:focus-visible` にも指定する理由と合わせて、「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」で説明しています。押したときの縮小の再生時間には、押下のためのトークン `--duration--press`（120ms）を使っています。
 
@@ -229,7 +233,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 次のデモでは、同じ距離を動くスイッチのつまみを、`in-out-quint` とばねで比べられます。2つのスイッチを押すと、上のつまみは160msで行き過ぎずに止まり、下のつまみは700msの間に終点を少し行き過ぎてから戻って止まります。
 
-<Demo title="スイッチのつまみを、cubic-bezier() のイージングとばねで動かして比べる" html={springHtml} css={springCss} height="8rem" />
+<Demo title="スイッチのつまみを、cubic-bezier() のイージングとばねで動かして比べる" html={springHtml} css={springCss} frame={springFrame} height="8rem" />
 
 <Baseline id="linear-easing" />
 

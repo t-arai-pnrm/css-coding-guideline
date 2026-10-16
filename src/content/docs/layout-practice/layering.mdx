@@ -24,13 +24,13 @@ import stackingBadCss from '../../../demos/layout-practice/stacking-context/styl
 @scope (.scoped.hero) to (.scoped) {
   :scope {
     position: relative;
-  }
 
-  h2 {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    translate: -50% -50%;
+    & > h2 {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      translate: -50% -50%;
+    }
   }
 }
 ```
@@ -55,11 +55,6 @@ Gridなら、すべての子要素を同じエリアに置くだけで重ねら�
     inline-size: -webkit-fill-available;
     inline-size: stretch;
     block-size: 100%;
-    object-fit: cover;
-  }
-
-  h2 {
-    padding: 24px;
   }
 }
 ```
@@ -78,8 +73,15 @@ z-indexの値は、ページ全体で比べられるわけではありません�
     z-index: 1;
   }
 
+  details {
+    position: relative;
+
+    & > ul {
+      position: absolute;
+    }
+  }
+
   ul {
-    position: absolute;
     z-index: 9999;
   }
 }
@@ -121,6 +123,10 @@ z-indexは、どの要素にも効くわけではありません。効くのは�
   :scope {
     display: block flex;
     isolation: isolate;
+
+    & > :not(:first-child) {
+      margin-inline-start: -8px;
+    }
   }
 
   li {
@@ -132,10 +138,6 @@ z-indexは、どの要素にも効くわけではありません。効くのは�
 
     &:has(> :focus-visible) {
       z-index: var(--z--forwards);
-    }
-
-    &:not(:first-child) {
-      margin-inline-start: -8px;
     }
   }
 }
@@ -188,7 +190,6 @@ z-indexは、どの要素にも効くわけではありません。効くのは�
     grid-auto-flow: column;
     gap: var(--_gap);
     overflow-x: auto;
-    overscroll-behavior-inline: contain;
     margin-inline: calc(var(--_gutter) * -1);
     padding-inline: var(--_gutter);
     scroll-snap-type: inline mandatory;

@@ -10,10 +10,13 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import revealHtml from '../../../demos/motion/reveal-on-view/index.html?raw';
 import revealCss from '../../../demos/motion/reveal-on-view/style.css?raw';
+import revealFrame from '../../../demos/motion/reveal-on-view/frame.css?raw';
 import headerHtml from '../../../demos/motion/scroll-header/index.html?raw';
 import headerCss from '../../../demos/motion/scroll-header/style.css?raw';
+import headerFrame from '../../../demos/motion/scroll-header/frame.css?raw';
 import pinHtml from '../../../demos/motion/horizontal-pin/index.html?raw';
 import pinCss from '../../../demos/motion/horizontal-pin/style.css?raw';
+import pinFrame from '../../../demos/motion/horizontal-pin/frame.css?raw';
 
 スクロールに合わせた動きは、値の変わり方で作り方を選びます。スクロール位置に合わせて連続して変わる値には、CSSのスクロール駆動アニメーションを使い、`animation-range` で範囲を明示します。画面に入った時点で1回だけ変わる演出は、`view()` のタイムラインでカスタムプロパティを切り替え、`@container style()` で時間で進むアニメーションを再生して作ります。Firefoxでも演出を出したいときと、スクロールを戻しても再生を止めたくないときは、`IntersectionObserver` で属性を付けます。JavaScriptで毎フレーム同期するのは、それでも作れない複雑な分岐が必要なときだけです。
 
@@ -97,7 +100,7 @@ Firefoxはスクロール駆動アニメーションに対応していません�
 
 次のデモでは、枠の中をスクロールすると、80pxまでの間にヘッダーの背景が現れ、上へ戻すと薄くなります。スクロール駆動アニメーションに対応していない環境では、アニメーションが当たらないので、背景は最初から表示されています。
 
-<Demo title="スクロールした量に合わせて、ヘッダーの背景をフェードインする" html={headerHtml} css={headerCss} scheme="light" height="320px" />
+<Demo title="スクロールした量に合わせて、ヘッダーの背景をフェードインする" html={headerHtml} css={headerCss} frame={headerFrame} scheme="light" height="320px" />
 
 `view()` では、範囲を名前で指定できます。`entry` は要素が画面に入る間、`exit` は出ていく間、`contain` は要素の全体が画面に収まっている間です。`animation-range: entry 0% entry 100%` のように、名前と割合を組み合わせて細かく絞ることもできます。範囲を絞ると、その前後にアニメーションの当たらない区間ができるので、ここでも `animation-fill-mode: both` を指定します。
 
@@ -183,7 +186,7 @@ Firefoxはスクロール駆動アニメーションに対応していません�
 }
 ```
 
-<Demo title="画面に入ったカードが、1回だけフェードインする" html={revealHtml} css={revealCss} height="360px" />
+<Demo title="画面に入ったカードが、1回だけフェードインする" html={revealHtml} css={revealCss} frame={revealFrame} height="360px" />
 
 デモの枠の中を下へスクロールすると、3枚のカードが画面に入ったところで1枚ずつ現れます。上へ戻してからもう一度スクロールしても、再生を終えたカードは表示されたままです。スクロール駆動アニメーションに対応していない環境では、カードは最初から表示されています。
 
@@ -361,7 +364,7 @@ root?.setAttribute('data-motion-mode', reduced ? 'reduced' : 'motion');
 
 留める指定と動かす指定は、どちらも `@supports` と `prefers-reduced-motion: no-preference` の中にまとめます。スクロールに合わせた横の移動は、画面の大部分を占める要素の移動なので、大きな変動にあたります（「[18-2 動きを減らす設定に対応する](/motion/reduced-motion/)」）。条件に合わないときは、`._body` が `overflow-x: auto` で横スクロールの領域となり、列を指やスクロールバーで動かして見ます。`sticky` と `._body` の高さを条件の外で指定すると、動かない環境では、列の先頭だけが留まって見えたまま、列の幅の分だけ縦のスクロールが続き、後ろの列を見る手段がなくなります。
 
-<Demo title="縦のスクロールに合わせて、留めた画像の列が横に流れる" html={pinHtml} css={pinCss} height="480px" />
+<Demo title="縦のスクロールに合わせて、留めた画像の列が横に流れる" html={pinHtml} css={pinCss} frame={pinFrame} height="480px" />
 
 デモの枠の中を下へスクロールすると、画像の列が枠の上端に留まり、右から左へ流れます。最後の画像が右端にそろうと、列は次の段落と一緒に上へ流れていきます。`--_column-count` は、列の数と一致させる必要があります。列の数を変えたら、`--horizontal-pin--column-count` に新しい数を渡します。
 

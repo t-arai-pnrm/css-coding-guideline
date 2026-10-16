@@ -10,6 +10,7 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import toastHtml from '../../../demos/motion/keyframes-toast/index.html?raw';
 import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
+import toastFrame from '../../../demos/motion/keyframes-toast/frame.css?raw';
 
 `@keyframes` は、ユーティリティクラスのように設計します。サイト全体で使う `@keyframes` は `base/keyframes.css` にまとめ、1つにつき1つのプロパティだけを変えます。自明な `from` と `to` は省略し、動きの起点は `--scale-from--x-value` のようなカスタムプロパティで使う側から受け取ります。特定のUIに結びついた動きは、`--<コンポーネント>--<動きの名前>` の名前でコンポーネントのCSSに置きます。
 
@@ -97,7 +98,7 @@ import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
 
 次のデモでは、同じ `--fade-in` と `--translate-from` を使い、下に出す通知は下から、上に出す通知は上から現れます。「下に通知を出す」と「上に通知を出す」のボタンで、それぞれの通知を開けます。2つの通知で違うのは、`--translate-from--y-value` の値と配置だけです。通知は `popover` 属性で表示しているので、開くたびに `display: none` から表示され、アニメーションも最初から再生されます。
 
-<Demo title="同じ @keyframes に起点だけを渡し、通知を下からと上から出す" html={toastHtml} css={toastCss} height="12rem" />
+<Demo title="同じ @keyframes に起点だけを渡し、通知を下からと上から出す" html={toastHtml} css={toastCss} frame={toastFrame} height="12rem" />
 
 この通知は出現だけを動かし、退場は動かしません。途中で逆向きに戻す動きがないので、取り消される動きをトランジションで書くルール [`interruptible-with-transition`](/motion/transitions-and-keyframes/#rule-interruptible-with-transition) に当たらず、`@keyframes` で書けます（「[18-7 出現と退場](/motion/entry-and-exit/#starting-style-とカスケード)」）。
 
@@ -131,8 +132,6 @@ import toastCss from '../../../demos/motion/keyframes-toast/style.css?raw';
 
 @scope (.scoped.skeleton) to (.scoped) {
   :scope {
-    background-color: var(--color--neutral--100);
-
     @media (prefers-reduced-motion: no-preference) {
       animation-name: --skeleton--pulse;
       animation-duration: 1.5s;

@@ -23,14 +23,12 @@ import pileCss from '../../../demos/compositions/pile/style.css?raw';
 @scope (.scoped.hero) to (.scoped) {
   :scope {
     position: relative;
-  }
 
-  ._body {
-    position: absolute;
-    inset-block-end: 0;
-    inset-inline-end: 0;
-    max-inline-size: calc(560 / 16 * 1rem);
-    padding: calc(var(--spacing--lg) / 16 * 1rem);
+    & > ._body {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline-end: 0;
+    }
   }
 }
 ```

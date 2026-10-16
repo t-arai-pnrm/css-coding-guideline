@@ -154,7 +154,6 @@ Gridの利点が大きいもう1つの例は、ロゴ、ナビゲーション、
 ._header {
   display: block grid;
   grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
-  align-items: center;
 
   & > :last-child {
     justify-self: end;
@@ -266,8 +265,6 @@ Flexboxは、折り返した行を1行ずつ独立して並べます。そのた
 ```css title="🙆‍♂ Recommended: auto の margin で、最後の要素だけを行末へ寄せる"
 ._global-nav {
   display: block flex;
-  gap: 16px;
-  align-items: center;
 
   & > ._account {
     margin-inline-start: auto;

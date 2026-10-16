@@ -1,0 +1,15 @@
+/* デモを見せるための配置。ヘッダーの下に、スクロールできる長さのページを置く */
+@layer pages {
+  @scope (.scoped.scroll-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 24px;
+
+      /* 上のヘッダーをヒーローの上に重ねる */
+      margin-block-start: -56px;
+      padding-block: 120px 240px;
+      padding-inline: 16px;
+      background-image: linear-gradient(oklch(80% 0.08 220deg), oklch(95% 0.02 220deg) 240px);
+    }
+  }
+}

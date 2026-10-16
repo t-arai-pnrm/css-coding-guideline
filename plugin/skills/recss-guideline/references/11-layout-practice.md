@@ -1,8 +1,8 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.71.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.71.1（2026-10-16 生成）
 - ルールの数: 61
-- 本文: 約26.9万字
+- 本文: 約26.6万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -14,19 +14,19 @@
 
 - `layout-practice` 第11章 レイアウトを組む（約7,100字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/
 - `layout-practice/choosing` 11-1 レイアウト手法の選び方（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/choosing/
-- `layout-practice/spacing` 11-2 余白を設計する（約3.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/spacing/
+- `layout-practice/spacing` 11-2 余白を設計する（約3万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/spacing/
 - `layout-practice/defensive` 11-3 サイズと内容の変化に耐える（約2.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/defensive/
-- `layout-practice/overflow` 11-4 はみ出しとスクロール（約2.4万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/overflow/
+- `layout-practice/overflow` 11-4 はみ出しとスクロール（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/overflow/
 - `layout-practice/quantity-layouts` 11-5 件数で配置を組み替える（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/quantity-layouts/
 - `layout-practice/layering` 11-6 重なりと全幅（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/layering/
-- `layout-practice/sticky-header` 11-7 固定ヘッダー（約7,700字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/sticky-header/
+- `layout-practice/sticky-header` 11-7 固定ヘッダー（約7,500字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/sticky-header/
 - `layout-practice/anchor-positioning` 11-8 アンカーポジショニング（約1.9万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/anchor-positioning/
-- `layout-practice/overlap-detection` 11-9 要素どうしの重なりを検出する（約1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/overlap-detection/
+- `layout-practice/overlap-detection` 11-9 要素どうしの重なりを検出する（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/overlap-detection/
 - `layout-practice/root-scroller` 11-10 ページのスクロールとルートスクローラー（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/root-scroller/
 - `layout-practice/masonry` 11-11 grid-lanesで石積みのレイアウトを組む（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/masonry/
 - `layout-practice/reading-flow` 11-12 表示順と読み上げ順を合わせる（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/reading-flow/
 - `layout-practice/icon-alignment` 11-13 アイコンを配置する（約1.9万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/icon-alignment/
-- `layout-practice/float` 11-14 floatで文章を回り込ませる（約1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/float/
+- `layout-practice/float` 11-14 floatで文章を回り込ませる（約10,000字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/float/
 - `layout-practice/tables` 11-15 表を組む（約2.4万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/tables/
 - `layout-practice/truncation-and-skeletons` 11-16 文字の切り詰めと読み込み中の表示（約8,200字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/truncation-and-skeletons/
 

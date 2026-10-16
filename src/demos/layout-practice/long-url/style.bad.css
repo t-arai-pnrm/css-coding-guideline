@@ -12,6 +12,10 @@
       padding: 16px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--md);
+
+      & > h2 + p {
+        margin-block-start: 8px;
+      }
     }
 
     h2 {
@@ -21,10 +25,6 @@
     p {
       /* 折り返すつもりの指定だが、break-word は中身の最小幅を小さくしない */
       overflow-wrap: break-word;
-    }
-
-    h2 + p {
-      margin-block-start: 8px;
     }
   }
 }

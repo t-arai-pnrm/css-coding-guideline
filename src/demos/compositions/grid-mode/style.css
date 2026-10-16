@@ -35,22 +35,6 @@
 
 @layer components {
   @scope (.scoped.mode-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: calc(var(--spacing--lg) / 16 * 1rem);
-    }
-
-    h2 {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-
-    section {
-      & > h2 + * {
-        margin-block-start: calc(var(--spacing--xxs) / 16 * 1rem);
-      }
-    }
-
     li {
       padding: 16px;
       border: 1px solid var(--border--base);

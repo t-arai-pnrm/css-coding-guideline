@@ -69,9 +69,8 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
   ul {
     --_separator-size: 1ex;
 
-    column-rule: var(--_separator-size) dotted oklch(60% 0 0deg);
+    column-rule: var(--_separator-size) dotted var(--foreground--muted);
     column-rule-inset: calc((1lh - var(--_separator-size)) / 2);
-    font-size: calc(14 / 16 * 1rem);
   }
 }
 ```
@@ -94,7 +93,7 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 @scope (.scoped.global-nav) to (.scoped) {
   ul {
     --_rule-width: 1px;
-    --_rule-color: oklch(70% 0 0deg);
+    --_rule-color: var(--border--strong);
 
     display: block flex;
     flex-wrap: wrap;
@@ -137,7 +136,7 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 @scope (.scoped.feature-grid) to (.scoped) {
   :scope {
     --_rule-width: 1px;
-    --_rule-color: oklch(70% 0 0deg);
+    --_rule-color: var(--border--strong);
 
     display: block grid;
     grid-template-columns: repeat(auto-fill, minmax(min(calc(240 / 16 * 1rem), 100%), 1fr));
@@ -146,7 +145,6 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
   }
 
   li {
-    padding: 24px;
     box-shadow: 0 0 0 var(--_rule-width) var(--_rule-color);
 
     @media (forced-colors: active) {

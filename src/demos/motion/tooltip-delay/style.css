@@ -23,6 +23,13 @@
     ._item {
       position: relative;
       display: inline grid;
+
+      & > ._tooltip {
+        position: absolute;
+        inset-inline-start: 50%;
+        inset-block-end: calc(100% + 8px);
+        translate: -50% 0;
+      }
     }
 
     button {
@@ -33,9 +40,6 @@
     }
 
     ._tooltip {
-      position: absolute;
-      inset-inline-start: 50%;
-      inset-block-end: calc(100% + 8px);
       padding-block: 4px;
       padding-inline: 8px;
       border-radius: var(--rounded--sm);
@@ -46,7 +50,6 @@
       line-height: var(--text--caption--leading);
       white-space: nowrap;
       pointer-events: none;
-      translate: -50% 0;
       transition-duration: var(--_tooltip-duration);
       transition-property: opacity;
       transition-timing-function: var(--ease--out-quad);

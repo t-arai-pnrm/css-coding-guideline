@@ -83,7 +83,6 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
     inline-size: 1lh;
     block-size: 1lh;
     border-color: var(--foreground--muted);
-    border-radius: 4px;
     appearance: none;
 
     &:checked {
@@ -136,14 +135,10 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
     @supports (appearance: base-select) {
       padding-block: 8px;
       padding-inline: 12px;
-      border-color: var(--foreground--muted);
       border-radius: 8px;
       appearance: base-select;
 
       &::picker(select) {
-        margin-block-start: 4px;
-        border-color: var(--border--base);
-        border-radius: 8px;
         appearance: base-select;
       }
 
@@ -163,10 +158,6 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
   option {
     @supports (appearance: base-select) {
-      &:checked {
-        font-weight: 700;
-      }
-
       &::checkmark {
         color: var(--foreground--accent);
       }
@@ -291,9 +282,6 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 ._textarea {
   --_rows: 3lh;
   --_max-rows: 8lh;
-  --_border-color: var(--foreground--muted);
-  --_foreground: var(--foreground--base);
-  --_background: var(--background--base);
 
   /* ① box-sizing を初期値（content-box）に戻す */
   box-sizing: unset;
@@ -305,9 +293,6 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
   /* ③ 最小の高さを --_rows 行分にする（行数は rows 属性ではなくここで決める） */
   min-block-size: var(--_rows);
   padding: 1em;
-  border-color: var(--_border-color);
-  background-color: var(--_background);
-  color: var(--_foreground);
 
   /* ④ iOS の拡大を防ぐため 16px を下限にし、それ以上なら 1rem に追従する */
   font-size: max(16px, 1rem);

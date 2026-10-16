@@ -18,14 +18,6 @@
 }
 
 @layer components {
-  @scope (.scoped.donut-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(120 / 16 * 1rem)), 1fr));
-      gap: 24px;
-    }
-  }
-
   @scope (.scoped.donut-chart) to (.scoped) {
     :scope {
       --_value: min(var(--donut-chart--value, 0%), 100%);

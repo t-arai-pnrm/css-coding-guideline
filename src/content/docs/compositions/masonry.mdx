@@ -132,13 +132,10 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
   li {
     padding: 16px;
     border: 1px solid oklch(85% 0 0deg);
-    border-radius: 8px;
   }
 
   ._number {
     color: oklch(45% 0.15 260deg);
-    font-size: calc(20 / 16 * 1rem);
-    font-weight: 700;
   }
 }
 ```
@@ -159,7 +156,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 
 <Demo title="masonry コンポジションで、高さの違う項目を最大4列に詰めて並べる" html={masonryHtml} css={masonryCss} widths={[320, 480, 640, 768, 1024]} />
 
-デモの枠には左右16pxずつの余白があるので、要素の幅は枠の幅より32px狭くなります。768pxの枠では要素の幅が736pxで、最大の列数で割った幅は（736−16×3）÷4で172pxです。172pxの列と16pxの間隔は（736＋16）÷（172＋16）でちょうど4列入ります。`grid-lanes` に対応したSafariでは項目が短い列へ詰められ、対応していないブラウザでは、同じ4列の通常のGridとして、行ごとに高さのそろった状態で表示されます。
+デモの枠には左右24pxずつの余白があるので、要素の幅は枠の幅より48px狭くなります。768pxの枠では要素の幅が720pxで、最大の列数で割った幅は（720−16×3）÷4で168pxです。168pxの列と16pxの間隔は（720＋16）÷（168＋16）でちょうど4列入ります。`grid-lanes` に対応したSafariでは項目が短い列へ詰められ、対応していないブラウザでは、同じ4列の通常のGridとして、行ごとに高さのそろった状態で表示されます。
 
 `--masonry--mode` は、`repeat()` のキーワードを切り替える公開プロパティで、デフォルトは `grid` コンポジションと同じ `auto-fill` です。項目の数が入る列の数より少ないとき、`auto-fill` では空の列が残り、項目は1列分の幅のまま先頭に寄ります。件数が変わる一覧でも列の幅が変わらないので、項目が2件だけのときも、写真の大きさや1行の文字数は件数の多いときと同じです。
 

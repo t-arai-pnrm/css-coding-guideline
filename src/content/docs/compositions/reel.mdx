@@ -25,7 +25,6 @@ import reelInsetCss from '../../../demos/compositions/reel-inset/style.css?raw';
 /* 🙅‍♂ Not Recommended */
 .tag-row {
   display: block flex;
-  gap: 8px;
   overflow-x: auto;
 
   & > li {
@@ -138,7 +137,7 @@ Gridなら、親が `grid-auto-flow: column` で子を列として並べ、`grid
 
 次のデモでは、幅を1024pxにすると、見出しと最初のカードが、どちらも左から192pxの位置にそろいます。カードを1枚分送ると、次のカードが同じ192pxの位置で止まります。末尾まで送ったときも、最後のカードの後ろに同じ192pxの余白が残ります。
 
-<Demo title="画面の端まで広げた列の最初のカードを、見出しの左端にそろえる" html={reelInsetHtml} css={reelInsetCss} widths={[320, 768, 1024]} />
+<Demo title="画面の端まで広げた列の最初のカードを、見出しの左端にそろえる" html={reelInsetHtml} css={reelInsetCss} bleed="inline" widths={[320, 768, 1024]} />
 
 ## キーボードで操作できるようにする
 

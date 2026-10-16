@@ -13,6 +13,12 @@
 
     details {
       position: relative;
+
+      & > ul {
+        position: absolute;
+        inset-block-start: calc(100% + 8px);
+        inset-inline-end: 0;
+      }
     }
 
     summary {
@@ -21,9 +27,6 @@
 
     /* 9999 はヘッダーの中でしか比べられない */
     ul {
-      position: absolute;
-      inset-block-start: calc(100% + 8px);
-      inset-inline-end: 0;
       z-index: 9999;
       inline-size: max-content;
       padding: 12px 16px;

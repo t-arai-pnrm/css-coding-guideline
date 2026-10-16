@@ -13,8 +13,10 @@ import crossfadeCss from '../../../demos/motion/crossfade-blur/style.css?raw';
 import crossfadeJs from '../../../demos/motion/crossfade-blur/script.js?raw';
 import registeredProgressHtml from '../../../demos/motion/registered-progress/index.html?raw';
 import registeredProgressCss from '../../../demos/motion/registered-progress/style.css?raw';
+import registeredProgressFrame from '../../../demos/motion/registered-progress/frame.css?raw';
 import holdHtml from '../../../demos/motion/hold-to-delete/index.html?raw';
 import holdCss from '../../../demos/motion/hold-to-delete/style.css?raw';
+import holdFrame from '../../../demos/motion/hold-to-delete/frame.css?raw';
 import holdJs from '../../../demos/motion/hold-to-delete/script.js?raw';
 
 トランジションは、変化したあとの状態のルールに書いた再生時間で動きます。そのため、入る側の状態に短い再生時間を書けば、押したときは素早く、戻るときはゆっくり動かせます。入る側の状態にだけトランジションを書けば、長押しで確定するボタンのように、押し続けた時間を進み具合で見せ、離したらすぐに0へ戻す動きも作れます。
@@ -65,10 +67,6 @@ import holdJs from '../../../demos/motion/hold-to-delete/script.js?raw';
     --_duration: var(--hold-button--duration, 2s);
 
     display: inline grid;
-    overflow: clip;
-    border: 1px solid currentColor;
-    border-radius: var(--rounded--md);
-    color: var(--foreground--danger);
 
     & > ._label,
     &::before {
@@ -78,10 +76,7 @@ import holdJs from '../../../demos/motion/hold-to-delete/script.js?raw';
     &::before {
       content: attr(data-label) / "";
       clip-path: inset(0 100% 0 0);
-      padding-block: 12px;
-      padding-inline: 24px;
       background-color: var(--foreground--danger);
-      color: var(--foreground--inverse);
 
       @container style(--_holding: --true) {
         clip-path: inset(0);
@@ -94,11 +89,6 @@ import holdJs from '../../../demos/motion/hold-to-delete/script.js?raw';
     &[data-holding="true"] {
       --_holding: --true;
     }
-  }
-
-  ._label {
-    padding-block: 12px;
-    padding-inline: 24px;
   }
 }
 ```
@@ -159,7 +149,7 @@ button.addEventListener('blur', cancel);
 
 次のデモでは、ボタンを押し続けると、赤い層が左から2秒かけて広がり、広がりきると「離すと削除します。」と表示されます。そのままボタンの上で離すと「下書きを削除しました。」と表示されます。広がりきってからボタンの外へポインターを動かすと、層は消え、離しても削除されません。途中で離すと層はすぐに消えて確認のダイアログが開き、押し直すと層は左端から広がり直します。Spaceキーを押し続けても同じように広がり、Enterキーで押すとダイアログが開きます。動きを減らす設定でも、層は同じように広がります。
 
-<Demo title="押し続けて進み具合を広げ、押し切ってからボタンの上で離したら削除するボタン" html={holdHtml} css={holdCss} js={holdJs} widths={[]} height="16rem" />
+<Demo title="押し続けて進み具合を広げ、押し切ってからボタンの上で離したら削除するボタン" html={holdHtml} css={holdCss} frame={holdFrame} js={holdJs} widths={[]} height="16rem" />
 
 ## ぼかしでクロスフェードの重なりを目立たなくする
 
@@ -283,7 +273,7 @@ button.addEventListener('blur', cancel);
 
 次のデモは、上のCSSをそのまま使っています。カードにポインターを乗せるか、キーボードでフォーカスすると、カードが4px持ち上がり、影が濃くなり、枠線が青に変わります。3つの変化は同時に始まり、同時に終わります。ポインターを途中で外すと、3つがそろって途中の状態から戻ります。
 
-<Demo title="登録した1つのカスタムプロパティで、持ち上がる距離、影、枠線の色を一緒に動かす" html={registeredProgressHtml} css={registeredProgressCss} widths={[]} />
+<Demo title="登録した1つのカスタムプロパティで、持ち上がる距離、影、枠線の色を一緒に動かす" html={registeredProgressHtml} css={registeredProgressCss} frame={registeredProgressFrame} widths={[]} />
 
 <Baseline id="registered-custom-properties" name="@property" />
 

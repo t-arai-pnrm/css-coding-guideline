@@ -1,0 +1,10 @@
+/* デモを見せるための配置。一覧を中央の列に置く */
+@layer pages {
+  @scope (.scoped.invite-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: min(100%, calc(400 / 16 * 1rem));
+      justify-content: center;
+    }
+  }
+}

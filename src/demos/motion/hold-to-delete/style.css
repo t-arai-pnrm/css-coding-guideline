@@ -1,11 +1,5 @@
 @layer pages {
   @scope (.scoped.hold-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 12px;
-      justify-items: start;
-    }
-
     ._hint,
     ._status {
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
@@ -29,7 +23,7 @@
 
       display: inline grid;
       overflow: clip;
-      padding: 0;
+      padding: unset;
       border: 1px solid currentColor;
       border-radius: var(--rounded--md);
       background-color: transparent;

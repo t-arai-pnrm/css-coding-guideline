@@ -28,7 +28,6 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
 ._card-list {
   display: block grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(360 / 16 * 1rem), 1fr));
-  gap: 24px;
 }
 
 ._card-title {
@@ -59,7 +58,6 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
 ._card-list {
   display: block grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(360 / 16 * 1rem)), 1fr));
-  gap: 24px;
 }
 
 ._search-field {
@@ -113,9 +111,6 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
     content: "";
     display: inline flow-root;
     mask-image: var(--chevron--rightward);
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
     inline-size: 1em;
     aspect-ratio: 1;
     background-color: var(--background-current);
@@ -196,13 +191,11 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 ```css title="🙆‍♂ Recommended: ボタン全体を fit-content で守り、中のアイコンだけ縮ませない"
 ._search-form {
   display: block flex;
-  gap: 8px;
 }
 
 ._submit-button {
   display: inline flex;
   gap: 8px;
-  align-items: center;
   min-inline-size: fit-content;
 
   & > ._icon {
@@ -228,11 +221,13 @@ Flexboxで画像と本文を横に並べるときは、画像へ `align-self: st
 /* 🙅‍♂ Not Recommended */
 ._media {
   display: block flex;
-  gap: 12px;
+
+  & > ._thumbnail {
+    flex-shrink: 0;
+  }
 }
 
 ._thumbnail {
-  flex-shrink: 0;
   inline-size: 120px;
   aspect-ratio: 16 / 9;
 }
@@ -243,7 +238,6 @@ Flexboxで画像と本文を横に並べるときは、画像へ `align-self: st
 ```css title="🙆‍♂ Recommended: 画像を交差軸の始点に置き、比率を保つ"
 ._media {
   display: block flex;
-  gap: 12px;
 
   & > ._thumbnail {
     flex-shrink: 0;
@@ -268,7 +262,6 @@ Flexboxで要素を横に並べるときは、`flex-wrap: wrap` を既定にし�
 ._header {
   display: block flex;
   gap: 16px;
-  align-items: center;
 }
 ```
 
@@ -279,7 +272,6 @@ Flexboxで要素を横に並べるときは、`flex-wrap: wrap` を既定にし�
   display: block flex;
   flex-wrap: wrap;
   gap: 8px 16px;
-  align-items: center;
 }
 ```
 
@@ -298,7 +290,6 @@ Flexboxで要素を横に並べるときは、`flex-wrap: wrap` を既定にし�
   display: block grid;
   reading-flow: grid-rows;
   grid-template: "--body --media" / 1fr 1fr;
-  gap: 24px;
 
   &:not(:has(> ._media)) {
     grid-template: "--body" / 1fr;

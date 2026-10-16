@@ -10,6 +10,7 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import floatCornerHtml from '../../../demos/layout-practice/float-corner/index.html?raw';
 import floatCornerCss from '../../../demos/layout-practice/float-corner/style.css?raw';
+import floatCornerFrame from '../../../demos/layout-practice/float-corner/frame.css?raw';
 
 文章を要素のまわりに回り込ませる配置には、`float` を使います。画像の横と下に文章を流す配置のほか、モーダルの閉じるボタンや右上の装飾の画像を文章の角に置く配置が当てはまります。値は `right` ではなく `inline-end` のように論理値で書き、`float` の要素を囲む要素には `display: flow-root` を指定します。
 
@@ -25,8 +26,6 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 /* 🙅‍♂ Not Recommended */
 ._body {
   position: relative;
-  padding-block: 16px;
-  padding-inline: 24px;
 
   & > ._close {
     position: absolute;
@@ -95,7 +94,6 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
   inline-size: calc(160 / 16 * 1rem);
   aspect-ratio: 1;
   border-radius: calc(infinity * 1px);
-  object-fit: cover;
 }
 ```
 
@@ -135,7 +133,7 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
 次のデモでは、上のパネルが閉じるボタンの例、下のカードが装飾の画像の例です。パネルをスクロールすると、閉じるボタンが上端に留まります。幅を320pxにすると、見出しと本文がボタンや画像を避けて折り返し、画像より下では幅いっぱいに広がることを確かめられます。
 
-<Demo title="閉じるボタンと装飾の画像を float で文章の角に置く" html={floatCornerHtml} css={floatCornerCss} />
+<Demo title="閉じるボタンと装飾の画像を float で文章の角に置く" html={floatCornerHtml} css={floatCornerCss} frame={floatCornerFrame} />
 
 ## 補足と注意点
 

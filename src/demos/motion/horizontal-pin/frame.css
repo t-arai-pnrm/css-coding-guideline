@@ -1,0 +1,14 @@
+/* デモを見せるための配置。列の前後に、スクロールが要る余白を置く */
+@layer pages {
+  @scope (.scoped.pin-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 48px;
+      padding-block: 48px 240px;
+    }
+
+    ._lead {
+      padding-inline: 16px;
+    }
+  }
+}

@@ -1,24 +1,3 @@
-@layer pages {
-  @scope (.scoped.button-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(200 / 16 * 1rem)), 1fr));
-      gap: 24px;
-    }
-
-    figure {
-      display: block grid;
-      gap: 8px;
-      justify-items: center;
-    }
-
-    figcaption {
-      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
-      line-height: var(--text--body-compact--leading);
-    }
-  }
-}
-
 @layer components {
   @scope (.scoped.button) to (.scoped) {
     :scope {

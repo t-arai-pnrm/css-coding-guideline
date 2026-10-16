@@ -16,21 +16,10 @@
 
 @layer components {
   @scope (.scoped.heading-palt) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 16px;
-    }
-
     ._label-text {
       color: var(--foreground--muted);
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
-    }
-
-    section {
-      & > ._label-text + h2 {
-        margin-block-start: 4px;
-      }
     }
 
     h2 {

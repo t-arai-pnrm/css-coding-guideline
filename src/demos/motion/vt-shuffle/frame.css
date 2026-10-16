@@ -1,0 +1,16 @@
+/* デモを見せるための配置。ボタンと一覧を縦に並べる */
+@layer pages {
+  @scope (.scoped.vt-shuffle-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      gap: 16px;
+      justify-items: start;
+    }
+
+    ._shuffle {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: var(--rounded--sm);
+    }
+  }
+}

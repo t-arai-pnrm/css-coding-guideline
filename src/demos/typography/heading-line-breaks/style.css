@@ -1,5 +1,9 @@
 @layer base {
   :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
+    &:lang(en) {
+      text-wrap: balance;
+    }
+
     &:lang(ja) {
       /* 文節で区切れるブラウザでだけ、行の長さもそろえる */
       @supports (word-break: auto-phrase) {
@@ -12,19 +16,10 @@
 
 @layer components {
   @scope (.scoped.line-break-compare) to (.scoped) {
-    :scope {
-      display: block grid;
-      gap: 16px;
-    }
-
     section {
       padding: 16px;
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--md);
-
-      & > p + h2 {
-        margin-block-start: 8px;
-      }
     }
 
     p {

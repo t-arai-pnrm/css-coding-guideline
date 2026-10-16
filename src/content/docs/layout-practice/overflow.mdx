@@ -68,14 +68,12 @@ $$('*').forEach((el) => {
 ```css title="🙅‍♂ Not Recommended: はみ出した装飾を hidden で切り取る"
 /* 🙅‍♂ Not Recommended */
 ._section {
-  position: relative;
   overflow: hidden;
 }
 ```
 
 ```css title="🙆‍♂ Recommended: はみ出した装飾を clip で切り取る"
 ._section {
-  position: relative;
   overflow: clip;
 }
 ```
@@ -103,12 +101,6 @@ $$('*').forEach((el) => {
   ._panel {
     display: block grid;
     grid-template-rows: 1fr;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition-duration: var(--duration--slow);
-      transition-property: grid-template-rows;
-      transition-timing-function: var(--ease--out-quint);
-    }
 
     /* 閉じている間は、スクリプトで inert 属性を付ける */
     &[inert] {

@@ -14,6 +14,7 @@ import detailsHtml from '../../../demos/motion/details-accordion/index.html?raw'
 import detailsCss from '../../../demos/motion/details-accordion/style.css?raw';
 import listInsertHtml from '../../../demos/motion/list-insert/index.html?raw';
 import listInsertCss from '../../../demos/motion/list-insert/style.css?raw';
+import listInsertFrame from '../../../demos/motion/list-insert/frame.css?raw';
 import listInsertJs from '../../../demos/motion/list-insert/script.js?raw';
 
 `display: none` から表示する要素の出現と退場は、`@starting-style` と `transition-behavior: allow-discrete` で動かします。表示された瞬間の見た目を `@starting-style` で指定し、`display` と `overlay` をトランジションの対象に加えれば、ポップオーバーやダイアログの開閉の両方をCSSだけで動かせます。`@starting-style` の宣言は通常のカスケードで競うので、元の規則の中に書きます。退場を動かす必要がなければ、`@keyframes` の `from` で出現だけを動かすほうが、開始値がほかの規則で上書きされずに済みます。
@@ -134,7 +135,7 @@ Firefoxは `display: none` へのトランジションに対応していませ�
 
 次のデモで「メンバーを招待する」を押すと、追加した項目が8px下からフェードインします。「取り消す」を押した項目は、動かずにすぐ消えます。ページを読み込んだときにある項目も、最初のスタイル計算なので同じように動きます。
 
-<Demo title="append() した項目を @starting-style でフェードインさせ、remove() した項目はすぐに消す" html={listInsertHtml} css={listInsertCss} js={listInsertJs} height="20rem" />
+<Demo title="append() した項目を @starting-style でフェードインさせ、remove() した項目はすぐに消す" html={listInsertHtml} css={listInsertCss} frame={listInsertFrame} js={listInsertJs} height="20rem" />
 
 追加と削除を動かすかどうかは、その一覧を操作する頻度で決めます。招待したメンバーのようにときどき増える一覧なら、出現を短く動かせます。ToDoのように1回の作業で何度も追加と削除を繰り返す一覧は、「[18-1 動かすかどうかを決める](/motion/purpose/)」の頻度の目安に従い、動かさないか最小限にします。
 
@@ -154,7 +155,6 @@ Firefoxは `display: none` へのトランジションに対応していませ�
     transition-behavior: allow-discrete;
 
     &::backdrop {
-      background-color: oklch(0% 0 0deg / 50%);
       transition-duration: inherit;
       transition-property: opacity;
       transition-timing-function: inherit;

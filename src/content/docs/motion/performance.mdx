@@ -10,6 +10,7 @@ import Demo from '../../../components/Demo.astro';
 import Guideline from '../../../components/Guideline.astro';
 import spotlightHtml from '../../../demos/motion/spotlight/index.html?raw';
 import spotlightCss from '../../../demos/motion/spotlight/style.css?raw';
+import spotlightFrame from '../../../demos/motion/spotlight/frame.css?raw';
 import spotlightJs from '../../../demos/motion/spotlight/script.js?raw';
 
 動きの負荷は、変えたプロパティのせいでブラウザがレイアウト、ペイント、合成のどこから処理をやり直すかで決まります。動かすプロパティは、合成だけで処理できる `opacity`、`translate`、`scale`、`rotate` を優先します。`clip-path`、`background-color`、`filter` は、ブラウザと値によっては描き直しを避けられる候補で、DevToolsで確かめてから使います。影を動かすときは、`box-shadow` ではなく `filter: drop-shadow()` を動かします。`inline-size` や `inset` のようにレイアウトが変わるプロパティは、ほかに方法がない場合（アコーディオンの高さなど）に限ります。
@@ -181,7 +182,7 @@ spotlight.addEventListener('pointermove', (event) => {
 
 次のデモは、上のCSSとJavaScriptをそのまま使っています。カードの上でポインターを動かすと、光がポインターに追従します。開発者ツールでカードの中の段落を調べると、`--spotlight--x` は継承されず、初期値の `0px` のままです。
 
-<Demo title="ポインターの位置を、継承しないカスタムプロパティでカードだけに書き込む" html={spotlightHtml} css={spotlightCss} js={spotlightJs} widths={[]} />
+<Demo title="ポインターの位置を、継承しないカスタムプロパティでカードだけに書き込む" html={spotlightHtml} css={spotlightCss} frame={spotlightFrame} js={spotlightJs} widths={[]} />
 
 動かすカスタムプロパティは `inherits: false` で登録し、`opacity` や `translate` だけを動かすならカスタムプロパティを介しません。この2点は、ルール [`animated-property-no-inherit`](/components/custom-properties/#rule-animated-property-no-inherit) で定めています。理由は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 

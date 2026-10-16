@@ -1,0 +1,16 @@
+/* デモを見せるための配置。案内を開くボタンを中央に置く */
+@layer pages {
+  @scope (.scoped.stagger-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      place-items: center;
+      padding-block: 32px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: var(--rounded--sm);
+    }
+  }
+}

@@ -127,7 +127,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
   }
 
   ._highlight {
-    clip-path: xywh(calc(var(--_index) * 100% / var(--_count)) 0 calc(100% / var(--_count)) 100% round calc(infinity * 1px));
+    clip-path: xywh(calc(var(--_index) * 100% / var(--_count)) 0 calc(100% / var(--_count)) 100% round var(--rounded--full));
     background-color: var(--background--accent);
     color: var(--foreground--on-accent);
     pointer-events: none;
@@ -311,6 +311,12 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
     inline-size: var(--_size);
     aspect-ratio: 1;
 
+    & > ._badge {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline-end: 0;
+    }
+
     &:dir(rtl) {
       --_badge-x: calc(var(--_badge-size) / 2);
     }
@@ -322,9 +328,6 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
   }
 
   ._badge {
-    position: absolute;
-    inset-block-end: 0;
-    inset-inline-end: 0;
     inline-size: var(--_badge-size);
     aspect-ratio: 1;
     border-radius: var(--rounded--full);

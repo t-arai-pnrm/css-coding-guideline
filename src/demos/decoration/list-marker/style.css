@@ -1,24 +1,3 @@
-@layer pages {
-  @scope (.scoped.steps-demo) to (.scoped) {
-    :scope {
-      display: block grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
-      gap: 24px;
-    }
-
-    section {
-      display: block grid;
-      gap: 12px;
-      align-content: start;
-    }
-
-    ._heading {
-      font-size: calc(var(--text--subtitle--font-size) / 16 * 1rem);
-      line-height: var(--text--subtitle--leading);
-    }
-  }
-}
-
 @layer components {
   @scope (.scoped.steps) to (.scoped) {
     :scope {

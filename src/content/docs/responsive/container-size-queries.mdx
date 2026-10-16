@@ -36,7 +36,6 @@ import ratioCss from '../../../demos/responsive/screen-ratio-image/style.css?raw
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
     display: block grid;
-    gap: 12px;
 
     @media (width >= calc(768 / 16 * 1rem)) {
       grid-template-columns: calc(160 / 16 * 1rem) 1fr;
@@ -69,7 +68,6 @@ import ratioCss from '../../../demos/responsive/screen-ratio-image/style.css?raw
     --_density: --compact;
 
     display: block grid;
-    gap: 12px;
 
     @container --scoped (inline-size >= calc(400 / 16 * 1rem)) {
       --_density: --spacious;
@@ -103,7 +101,6 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
   ._layout {
     display: block grid;
-    gap: 12px;
 
     @container (width >= 400px) {
       grid-template-columns: calc(160 / 16 * 1rem) 1fr;
@@ -132,9 +129,6 @@ AIが生成するコードでは、次のように名前のないコンテナと
     position: relative;
     display: block flex;
     column-gap: 1em;
-    justify-content: center;
-    align-items: center;
-    padding-block: 12px;
     padding-inline: 24px;
 
     /* アイコン 24px 相当・隙間 16px 相当・ラベル 160px 相当と、左右の余白 24px が並ぶ幅 */
@@ -184,7 +178,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
     --_density: --compact;
 
     display: block grid;
-    gap: 12px;
+    gap: 16px;
 
     /* 画像 160px 相当・隙間 16px・本文の最小幅 240px 相当が並ぶ幅 */
     @container --scoped (inline-size >= calc(160 / 16 * 1rem + 16px + 240 / 16 * 1rem)) {
@@ -219,9 +213,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
   }
 
   ._image {
-    inline-size: 100%;
     aspect-ratio: 4 / 3;
-    object-fit: cover;
 
     /* 横に並ぶと画面の幅の5割未満、1つで1行を占めると8割以上になる。その間の7割を境にする */
     @container --scoped (inline-size >= 70svi) {

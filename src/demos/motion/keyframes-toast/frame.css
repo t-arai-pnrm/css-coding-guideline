@@ -1,0 +1,18 @@
+/* デモを見せるための配置。ボタンを並べ、通知が出る余白を確保する */
+@layer pages {
+  @scope (.scoped.toast-demo) to (.scoped) {
+    :scope {
+      display: block flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      padding-block: 64px;
+    }
+
+    button {
+      padding-block: 8px;
+      padding-inline: 16px;
+      border-radius: var(--rounded--sm);
+    }
+  }
+}
