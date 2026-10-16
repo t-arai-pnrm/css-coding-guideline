@@ -22,7 +22,7 @@ import notAncestorCss from '../../../demos/pseudo/not-ancestor/style.css?raw';
 
 複数の場所にある複数の要素に同じスタイルを当てるとき、セレクタリストは組み合わせの数だけ長くなります。記事とサイドバーの中の `h2` と `h3` を選ぶには、`article h2, article h3, aside h2, aside h3` の4つを並べる必要がありました。場所や要素が1つ増えるたびに、並べるセレクタは掛け算で増えます。
 
-```css title="🙅‍♂ Not Recommended: 場所と要素の組み合わせをすべて並べる"
+```css title="🙅‍♂ Not Recommended: 場所と要素の組み合わせをすべて並べる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 article h2,
 article h3,
@@ -66,7 +66,7 @@ aside h3 {
 
 一方、状態のセレクタは `:where()` で包みません。`:hover`、`:focus-visible`、`:checked`、`[aria-expanded="true"]` のような状態のスタイルは、既定の見た目より優先されるべきだからです。`:where()` で詳細度を0にすると、同じ要素のバリエーションのような、詳細度の高い既定のスタイルに負けます。複数の状態をまとめたいときは、`:is()` で詳細度を残します。
 
-```css title="🙅‍♂ Not Recommended: 状態のセレクタを :where() でまとめる"
+```css title="🙅‍♂ Not Recommended: 状態のセレクタを :where() でまとめる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.toggle-button) to (.scoped) {
   :scope {
@@ -84,7 +84,7 @@ aside h3 {
 }
 ```
 
-```css title="🙆‍♂ Recommended: 状態のセレクタは :is() でまとめ、詳細度を残す"
+```css title="🙆‍♂ Recommended: 状態のセレクタは :is() でまとめ、詳細度を残す" from="pseudo/where-is-state"
 @scope (.scoped.toggle-button) to (.scoped) {
   :scope {
     background-color: var(--background--active);
@@ -126,7 +126,7 @@ aside h3 {
 }
 ```
 
-```css title="🙅‍♂ Not Recommended: :not() を重ねる"
+```css title="🙅‍♂ Not Recommended: :not() を重ねる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.page-nav) to (.scoped) {
   a {
@@ -150,7 +150,7 @@ aside h3 {
 
 Selectors Level 4の `:not()` には、子孫結合子を含むセレクタも書けます。`a:not(nav a)` は、「`nav a` に当てはまらない `a`」、つまり `nav` の中にないリンクを選びます。ネストしたルールの中では、`&:not(nav *)` と書けば、同じ条件を `&` から始められます。
 
-```css title="🙆‍♂ Recommended: 見出しの中にないリンクにだけ下線を引く"
+```css title="🙆‍♂ Recommended: 見出しの中にないリンクにだけ下線を引く" from="pseudo/not-ancestor"
 @scope (.scoped.entry-body) to (.scoped) {
   a {
     &:not(:is(h2, h3) *) {
@@ -164,7 +164,7 @@ Selectors Level 4の `:not()` には、子孫結合子を含むセレクタも�
 
 同じ条件を、祖先の側を否定して書くと、意味が変わります。`:not(h2, h3) a` は、「`h2` でも `h3` でもない祖先を持つ `a`」です。`html` や `body` は `h2` でも `h3` でもないので、この条件はすべてのリンクに当てはまり、見出しの中のリンクも除けません。Chromeで `:not(nav) a` を指定すると、`nav` の中のリンクにもスタイルが当たりました。
 
-```css title="🙅‍♂ Not Recommended: 祖先の側を :not() で否定する"
+```css title="🙅‍♂ Not Recommended: 祖先の側を :not() で否定する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 :not(h2, h3) a {
   text-decoration-line: underline;

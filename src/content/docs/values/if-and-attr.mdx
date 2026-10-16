@@ -44,7 +44,7 @@ import toggleCss from '../../../demos/values/space-toggle-density/style.css?raw'
 
 困るのは、同じ値をHTMLがすでに属性として持っている場合です。`<textarea>` に `field-sizing: content` を指定すると、入力欄は入力した量に合わせて伸び縮みします。その代わり、`rows` 属性で決めていた高さが使われなくなり、空の入力欄は1行分の高さに縮みます。本文の入力欄に `rows="6"` を指定して6行分の高さを用意していても、その高さは失われます。
 
-```html title="🙅‍♂ Not Recommended: rows と同じ値を style 属性でも渡す"
+```html title="🙅‍♂ Not Recommended: rows と同じ値を style 属性でも渡す" issue="convention"
 <!-- 🙅‍♂ Not Recommended -->
 <textarea rows="6" style="--comment-form--min-rows: 6"></textarea>
 ```
@@ -55,7 +55,7 @@ import toggleCss from '../../../demos/values/space-toggle-density/style.css?raw'
 
 型付きの `attr()` は、属性値を指定した型として解釈して返します。`attr(rows type(<number>), 3)` と書くと、`rows` 属性の値を数値として読み、属性がないときや数値として読めないときは、第2引数の `3` を返します。型には `<number>`、`<integer>`、`<length>`、`<color>`、`<custom-ident>` などを指定でき、`attr(data-gap px, 16px)` のように単位を付けて読む書き方もあります。
 
-```css title="🙆‍♂ Recommended: rows 属性の行数を、入力欄の最小の高さにする"
+```css title="🙆‍♂ Recommended: rows 属性の行数を、入力欄の最小の高さにする" from="values/textarea-rows"
 @scope (.scoped.comment-form) to (.scoped) {
   textarea {
     --_max-rows: 10lh;
@@ -128,7 +128,7 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 
 `if()` は、条件と値の組をセミコロンで区切って並べ、最初に成り立った条件の値を返します。条件には、カスタムプロパティの値を調べる `style()`、メディアクエリの `media()`、機能の対応を調べる `supports()` を書けます。どの条件も成り立たなかったときのために、最後に `else` の値を書きます。
 
-```css title="🙆‍♂ Recommended: ルート自身の余白を、ルートで決めたモードで切り替える"
+```css title="🙆‍♂ Recommended: ルート自身の余白を、ルートで決めたモードで切り替える" from="values/if-density"
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
     --_density: --compact;
@@ -186,7 +186,7 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 
 `if()` は、どのプロパティの値の中にも書け、入れ子にもできます。そのため、メディアクエリや状態のセレクタで書いていた分岐を、すべて値の中に書けてしまいます。私は2025年5月から7月にかけて `if()` を試し、便利すぎて使う場面を抑えられなくなると感じました。時短のために使えば、コードが破綻するという考えです。そこで、条件1つと `else` の形で書ける場面に限って、`if()` を使います。
 
-```css title="🙅‍♂ Not Recommended: クエリと状態の分岐を値の中に詰め込む"
+```css title="🙅‍♂ Not Recommended: クエリと状態の分岐を値の中に詰め込む" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._action-button {
   padding-inline: if(media(width >= calc(768 / 16 * 1rem)): 24px; else: 16px);
@@ -210,7 +210,7 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 
 対応した環境では、前の宣言はフォールバックになりません。どの条件も成り立たず、`else` を書いていないとき、`if()` は何も返さず（空の値になり）、宣言は計算値の時点で無効になります。親の文字色が緑の要素に、`color: blue` と `color: if(style(--nope: 1): red)` を続けて書いて試しました。文字色は青ではなく、継承した緑になります。そのため、`if()` には必ず `else` を書きます。
 
-```css title="🙅‍♂ Not Recommended: var() を含む if() を前の宣言に頼って書き、else も書かない"
+```css title="🙅‍♂ Not Recommended: var() を含む if() を前の宣言に頼って書き、else も書かない" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .status-badge {
   color: var(--foreground--base);
@@ -236,7 +236,7 @@ HTMLに書いた値そのものは、CSSで書き換えられません。属性�
 
 `attr()` の値は、URLとしては使えません。属性には、スクリプトが使うトークンのように、スタイルのためではない値が入っていることがあります。その値を外部に送るURLを組み立てられると危険だからです。`url(attr(data-src))`、`image-set()` に文字列で渡す形、カスタムプロパティを経由する形のどれでも、`background-image` は `none` でした。CMSから背景画像を渡すときは、これまでどおり `style` 属性で、`url()` を含む公開プロパティを渡します。
 
-```css title="🙅‍♂ Not Recommended: 属性値から画像のURLを組み立てる"
+```css title="🙅‍♂ Not Recommended: 属性値から画像のURLを組み立てる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .hero {
   background-image: url(attr(data-src));
@@ -261,7 +261,7 @@ HTMLの側では、`style="--hero--background-image: url(/images/hero.jpg)"` の
 
 ルート自身の分岐を、`if()` に未対応の環境でも同じ表示にする必要があるときは、スペーストグルで書きます。スペーストグルは、カスタムプロパティの値を空白にするか `initial` にするかで、`var()` の第2引数を使うかどうかを切り替える書き方です。`if()` が登場する前から使われてきた方法で、すべての主要なブラウザで動きます。ただし、ハックの色が強いので、`if()` がすべての主要なブラウザで使えるようになったら、`if()` に置き換えます。
 
-```css title="🙆‍♂ Recommended: ルート自身の余白を、スペーストグルで切り替える"
+```css title="🙆‍♂ Recommended: ルート自身の余白を、スペーストグルで切り替える" from="values/space-toggle-density"
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
     --_density: --compact;

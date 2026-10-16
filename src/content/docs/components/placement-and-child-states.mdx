@@ -28,7 +28,7 @@ import featuredCss from '../../../demos/components/featured-product-card/style.c
 
 従来は、カードを置く側のセレクタからカードの中を選んで、特集の見た目を書いていました。
 
-```css title="🙅‍♂ Not Recommended: 置く側のセレクタごとに、カードの中を選んで特集の見た目を書く"
+```css title="🙅‍♂ Not Recommended: 置く側のセレクタごとに、カードの中を選んで特集の見た目を書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .pickup-section li:only-child .product-card ._title,
 .campaign-section li:only-child .product-card ._title {
@@ -42,7 +42,7 @@ import featuredCss from '../../../demos/components/featured-product-card/style.c
 
 本書では、置く側はカードの公開プロパティ `--product-card--featured` で、特集として置いたことだけを伝えます。カードはそれを内部プロパティ `--_featured` に受け、自分の幅のフラグ `--_density` と組み合わせて見た目を決めます。カードを包む要素を名前付きのコンテナにして、カードからそのコンテナの幅とフラグを問い合わせる書き方も知られています。
 
-```css title="🙅‍♂ Not Recommended: カードを包む要素のコンテナの幅と、外で立てたフラグを問い合わせる"
+```css title="🙅‍♂ Not Recommended: カードを包む要素のコンテナの幅と、外で立てたフラグを問い合わせる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .card-wrapper {
   container: --card / inline-size;
@@ -61,7 +61,7 @@ section:has(> .card-wrapper:only-child) {
 
 この形では、カードの見た目が、カードの外にある `.card-wrapper` のコンテナと、`section` で立てた名前空間のないフラグ `--featured` に依存します。`.card-wrapper` で包まずに置いた場所では、条件が成り立たないので特集になりません。`--featured` という名前は、どのコンポーネントのためのフラグかが分からず、ほかの部品の同じ名前のフラグと衝突します。値の `true` も、本書がそろえている `--true` と食い違います。そのため本書では、外側のコンテナを問い合わせず、コンポーネントの名前を含む公開プロパティで渡します（「[13-3 コンテナサイズクエリ](/responsive/container-size-queries/)」）。
 
-```css title="🙆‍♂ Recommended: 置く側は公開プロパティでフラグを渡し、カードは幅のフラグと組み合わせる"
+```css title="🙆‍♂ Recommended: 置く側は公開プロパティでフラグを渡し、カードは幅のフラグと組み合わせる" from="components/featured-product-card"
 @scope (.scoped.pickup-section) to (.scoped) {
   li {
     &:only-child {

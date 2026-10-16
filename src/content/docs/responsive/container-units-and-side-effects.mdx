@@ -59,7 +59,7 @@ gridアイテムで避けるのは、`auto`、`max-content`、`fit-content()` �
 
 この方法が要るのは、子孫の一部だけをコンテナにしながら、別の値はカード全体の幅に合わせたい場面です。画像と本文を並べたカードで、本文の中の余白を本文の幅で決めるため、`._body` をコンテナにしているとします。このカードの見出しの文字サイズを `cqi` で書くと、基準は `._body` になります。`._body` の幅は、画像と本文が横に並んだ時点で画像と隙間の分だけ急に狭くなるので、カードが広くなったのに見出しの文字が小さくなります。
 
-```css title="🙆‍♂ Recommended: ルートの幅を、長さに計算してから内側のコンテナの子孫へ渡す"
+```css title="🙆‍♂ Recommended: ルートの幅を、長さに計算してから内側のコンテナの子孫へ渡す" from="responsive/root-cqi-card"
 @property --_root-cqi {
   syntax: "<length>";
   inherits: true;
@@ -117,7 +117,7 @@ gridアイテムで避けるのは、`auto`、`max-content`、`fit-content()` �
 
 前の例のカードでは、画像の列を160px相当に固定していました。画像と本文が横に並ぶのは416px相当からで、カードが720pxに広がっても画像は同じ幅のままなので、伸びるのは本文だけです。見出しの文字サイズもフラグで2段階に切り替えると、閾値の前後で一度に大きくなり、その後はカードの幅が変わっても同じ大きさです。切り替わった直後と、次の閾値の直前とでは、画像と本文の釣り合いが大きく違います。
 
-```css title="🙆‍♂ Recommended: 閾値で配置を切り替え、その間の画像の幅と文字サイズを cqi で変える"
+```css title="🙆‍♂ Recommended: 閾値で配置を切り替え、その間の画像の幅と文字サイズを cqi で変える" from="responsive/fluid-between-card"
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
     container: --scoped / inline-size;

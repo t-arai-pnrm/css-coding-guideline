@@ -43,7 +43,7 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 「必須」の印は、ラベルの中の `<span>` としてHTMLに書きます。必須であることは、入力する人が知る必要のある情報なので、`::after` の生成コンテンツでは入れません（`no-meaningful-generated-content`）。入力欄には `required` 属性も付け、ブラウザにも必須であることを伝えます。
 
-```html title="🙆‍♂ Recommended: 必須の印はラベルの中に書き、入力例は aria-describedby で入力欄に関連付ける"
+```html title="🙆‍♂ Recommended: 必須の印はラベルの中に書き、入力例は aria-describedby で入力欄に関連付ける" from="exercise/contact-form-1"
 <div class="_field">
   <label class="_label" for="contact-email">メールアドレス <span class="_required">必須</span></label>
   <input class="_text-control" id="contact-email" type="email" name="email" autocomplete="email" required aria-describedby="contact-email-hint">
@@ -61,7 +61,7 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 入力欄の文字の大きさは、`max(16px, 1rem)` にします。iOSのSafariは、16px未満の入力欄にフォーカスするとページを拡大し、拡大はユーザーが縮小するまで戻りません（「[17-7 フォーム部品](/interaction/forms/#入力欄の大きさと文字サイズ)」）。デザインで14pxにしたいと言われたら、そのまま書かず、16pxで成り立つデザインにできないかを相談します。
 
-```css title="🙆‍♂ Recommended: 入力欄の文字は16pxを下限にし、textarea の高さは行数で決める"
+```css title="🙆‍♂ Recommended: 入力欄の文字は16pxを下限にし、textarea の高さは行数で決める" from="exercise/contact-form-1"
 @scope (.scoped.contact-form) to (.scoped) {
   ._text-control {
     padding-block: 12px;
@@ -110,7 +110,7 @@ import contactFormChangedJs from '../../../demos/exercise/contact-form-2/script.
 
 誤りの見た目は、`:invalid` ではなく `:user-invalid` に指定します。`required` を付けた空の入力欄は、何も入力していなくても `:invalid` に当てはまるので、ページを開いた時点で、すべての必須の項目が赤くなります。`:user-invalid` は、入力して離れたあとか、送信しようとしたあとにだけ当てはまります（`user-invalid-for-errors`）。一度当てはまるようになった入力欄では、入力し直している間も、値が正しいかどうかに合わせて、その場で切り替わります。要件で、表示しないのを初めて入力している途中に限ったのはこのためです。入力し直している途中も誤りを隠すには、入力中かどうかをスクリプトで管理することになり、表示の条件がCSSの1か所に収まらなくなります。
 
-```css title="🙆‍♂ Recommended: 入力欄の枠線と誤りの文章を、:user-invalid と aria-invalid の両方で切り替える"
+```css title="🙆‍♂ Recommended: 入力欄の枠線と誤りの文章を、:user-invalid と aria-invalid の両方で切り替える" use="diff" from="exercise/contact-form-2"
 @scope (.scoped.contact-form) to (.scoped) {
   ._text-control {
     border-color: var(--border--strong);

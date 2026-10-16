@@ -26,7 +26,7 @@ import hasDirectChildCss from '../../../demos/pseudo/has-direct-child/style.css?
 
 CSSのセレクタには、子要素の数を直接表す仕組みがありません。そのため、テンプレートの側で件数を数え、`is-single` や `has-3-items` のようなクラスを親に付けて出し分けることがよくありました。JavaScriptで描画する一覧なら、項目を追加したり削除したりするたびに、クラスを付け直す処理も必要です。
 
-```css title="🙅‍♂ Not Recommended: テンプレートで数えた件数をクラスにして出し分ける"
+```css title="🙅‍♂ Not Recommended: テンプレートで数えた件数をクラスにして出し分ける" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .pickup-list {
   &.is-single {
@@ -46,7 +46,7 @@ CSSのセレクタには、子要素の数を直接表す仕組みがありま�
 
 この書き方には、親や兄弟を変えられないという限界があります。選ばれるのは数えた子なので、親の `grid-template-columns` や `justify-content` は切り替えられません。ほかの兄弟を変えるには、`li:nth-last-child(n + 3), li:nth-last-child(n + 3) ~ li` のように、`~` の結合子で後ろの兄弟を拾う組を作る必要があります。この組は、「後ろから数えて3番目以降があるなら、全体は3つ以上ある」という逆算をしなければ、意味が取れません。
 
-```css title="🙅‍♂ Not Recommended: 兄弟の見た目を変えるのに、子の側で数える"
+```css title="🙅‍♂ Not Recommended: 兄弟の見た目を変えるのに、子の側で数える" issue="convention"
 /* 🙅‍♂ Not Recommended */
 li:nth-last-child(n + 3),
 li:nth-last-child(n + 3) ~ li {
@@ -93,7 +93,7 @@ li:nth-last-child(n + 3) ~ li {
 
 `:has()` で数えるときも、起点のない `:has()` は書きません。`:has(> :nth-child(3))` とだけ書くと、ページのすべての要素が起点になり、DOMが変わるたびに、ブラウザの調べ直す範囲が広がります。ネストしたルールの中では、必ず `&` から書き始めます（ルール `no-unanchored-has`）。
 
-```css title="🙅‍♂ Not Recommended: 起点と > を省いて数える"
+```css title="🙅‍♂ Not Recommended: 起点と > を省いて数える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 :has(> :nth-child(3)) {
   grid-template-columns: repeat(3, 1fr);
@@ -108,7 +108,7 @@ li:nth-last-child(n + 3) ~ li {
 
 引数の `>` も省けません。`&:has(:nth-child(3))` は、直下の3番目の子ではなく、「子孫のどこかにある、自分の親から見て3番目の要素」を探します。一覧の項目の中に、子要素を3つ以上持つものが1つでもあれば、項目が1つしかなくても当てはまります。子の側で数えるときも同じで、`& > :nth-child(odd):last-child` の `>` を省くと、孫の位置の要素まで選びます。
 
-```css title="🙆‍♂ Recommended: & から書き始め、直下の子だけを数える"
+```css title="🙆‍♂ Recommended: & から書き始め、直下の子だけを数える" from="pseudo/has-direct-child"
 @scope (.scoped.item-list) to (.scoped) {
   :scope {
     display: block grid;
@@ -128,7 +128,7 @@ li:nth-last-child(n + 3) ~ li {
 
 数量クエリを覚えると、列数の切り替えにも使いたくなります。たとえば、項目が2つなら2列、3つ以上なら3列にする、という指定です。
 
-```css title="🙅‍♂ Not Recommended: 件数で列数を決める"
+```css title="🙅‍♂ Not Recommended: 件数で列数を決める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .pickup-list {
   display: block grid;
@@ -151,7 +151,7 @@ li:nth-last-child(n + 3) ~ li {
 
 次のデモは、同じピックアップの一覧に、項目を1件、2件、3件、5件入れて並べたものです。列の数は幅から決まり、最小幅は200px相当、多くても3列までにしています。項目が1件のときだけ、親を起点にした `:has()` で列の幅を400px相当に固定し、中央に置いています。変えるのは親の `grid-template-columns` なので、`:has()` で書きます。
 
-```css title="🙆‍♂ Recommended: 列数は幅で決め、1件のときだけ数量クエリで中央に置く"
+```css title="🙆‍♂ Recommended: 列数は幅で決め、1件のときだけ数量クエリで中央に置く" from="pseudo/pickup-count"
 @scope (.scoped.pickup-list) to (.scoped) {
   :scope {
     display: block grid;

@@ -29,7 +29,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 吹き出しの三角形のような図形は、`clip-path` で描きます。以前は、透明な `border` を組み合わせて三角形を作る方法がよく使われていました。
 
-```css title="🙅‍♂ Not Recommended: border を組み合わせて三角形を作る"
+```css title="🙅‍♂ Not Recommended: border を組み合わせて三角形を作る" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._tooltip {
   &::after {
@@ -47,7 +47,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 この方法では、三角形の大きさを3つの `border` の幅から逆算する必要があり、どの向きの三角形なのかもコードから読み取りにくくなります。`clip-path` なら、要素の幅と縦横比を決めて、形で切り抜くだけです。
 
-```css title="🙆‍♂ Recommended: 形をトークンにして、clip-path で切り抜く"
+```css title="🙆‍♂ Recommended: 形をトークンにして、clip-path で切り抜く" from="decoration/clip-path-triangle"
 :root {
   --shape--triangle-top: polygon(50% 0, 100% 100%, 0 100%);
   --shape--triangle-bottom: polygon(0 0, 100% 0, 50% 100%);
@@ -98,7 +98,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 `clip-path` は、図形を描くだけでなく、同じ大きさの層を2つ重ねて、上の層の一部だけを見せる使い方もできます。横に並んだタブで、選んだタブの背景色と文字色を変える場面で考えます。通常の色で描いたタブの列の上に、選んだときの色で描いた同じ列を重ね、上の列を選んだタブの範囲だけ切り抜きます。{/* 要確認: 出典なし */}
 
-```css title="🙆‍♂ Recommended: 選んだときの色で描いた列を重ね、選んだタブの範囲だけを切り抜く"
+```css title="🙆‍♂ Recommended: 選んだときの色で描いた列を重ね、選んだタブの範囲だけを切り抜く" from="decoration/segmented-tabs"
 @scope (.scoped.segmented-tabs) to (.scoped) {
   :scope {
     --_count: 3;
@@ -203,7 +203,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 上の例は、中身が収まっていてスクロールできないときも両端を薄くし、先頭にいるときも先頭の側を薄くします。端を薄くするのは続きがあることを示すためなので、薄くするのは、その方向にまだスクロールできる端だけにします。そのためには、薄くする幅をスクロールの位置に合わせて変えます。スクロールの位置を進み具合にして値を変える仕組みが、スクロール駆動アニメーションです（「[18-9 スクロールに合わせて動かす](/motion/scroll-driven/)」）。
 
-```css title="🙆‍♂ Recommended: スクロールの位置に合わせて、スクロールできる側の端だけを薄くする"
+```css title="🙆‍♂ Recommended: スクロールの位置に合わせて、スクロールできる側の端だけを薄くする" from="decoration/scroll-fade-edges"
 @property --tag-scroller--fade-start {
   syntax: "<length>";
   inherits: false;
@@ -281,7 +281,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 アバターの右下に重ねた状態のバッジや、少しずつ重ねて並べたアバターでは、手前の要素の周りに細い隙間を見せて、奥の要素と見分けられるようにします。よく使われるのは、手前の要素に、背景と同じ色の `border` や `box-shadow` で縁を付ける方法です。{/* 要確認: 出典なし。アバターとバッジの隙間をマスクで切り抜く方法 */}
 
-```css title="🙅‍♂ Not Recommended: ページの背景と同じ色の影で、バッジの縁を描く"
+```css title="🙅‍♂ Not Recommended: ページの背景と同じ色の影で、バッジの縁を描く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._badge {
   /* ... */
@@ -293,7 +293,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 縁を塗る代わりに、奥の要素の、手前の要素と重なる部分を `mask-image` で切り抜きます。切り抜いた部分は透明になるので、そこには置いた場所の背景がそのまま見えます。円く切り抜くマスクは、中心から一定の半径までが透明な `radial-gradient()` で書けます。
 
-```css title="🙆‍♂ Recommended: バッジの大きさと隙間の幅から、アバターを切り抜く円を計算する"
+```css title="🙆‍♂ Recommended: バッジの大きさと隙間の幅から、アバターを切り抜く円を計算する" from="decoration/avatar-cutout"
 @scope (.scoped.status-avatar) to (.scoped) {
   :scope {
     --_size: 40px;
@@ -346,7 +346,7 @@ import avatarCutoutCss from '../../../demos/decoration/avatar-cutout/style.css?r
 
 重ねて並べたアバターも、同じ考え方で切り抜きます。各アバターの末尾の側に、次のアバターと重なる部分を、次のアバターの半径に隙間の幅を足した円で切り抜きます。最後のアバターには重なる相手がいないので、マスクを指定しません。
 
-```css title="🙆‍♂ Recommended: 次のアバターと重なる部分を、各アバターから切り抜く"
+```css title="🙆‍♂ Recommended: 次のアバターと重なる部分を、各アバターから切り抜く" from="decoration/avatar-cutout"
 @scope (.scoped.avatar-stack) to (.scoped) {
   :scope {
     --_size: 32px;

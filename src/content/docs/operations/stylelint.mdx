@@ -65,7 +65,7 @@ stylelint-plugin-logical-cssは、論理プロパティと論理的な単位を�
 
 本書の設定には、独自ルールを3つ加えています。この節で取り上げる `book/conditions-inside-rules` は、`@media` と `@container` がセレクタの中に書かれていないと、エラーにするルールです。起点のない `:has()` を報告する `book/no-unanchored-has` は「[5-3 :has() で祖先と前の兄弟を選ぶ](/pseudo/has/)」で説明しています。見た目の順番を変えうる配置に `reading-flow` を求める `book/reading-flow-when-reordered` は「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」で説明しています。
 
-```css title="🙅‍♂ Not Recommended: @scope の直下に条件のブロックを置く"
+```css title="🙅‍♂ Not Recommended: @scope の直下に条件のブロックを置く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.card) to (.scoped) {
   @media (width >= calc(768 / 16 * 1rem)) {
@@ -218,7 +218,7 @@ AstroやVueのコンポーネントの `<style>` にもCSSを書くなら、そ�
 
 `npm run lint:css` で検査し、`npm run lint:css:fix` で自動で直せる違反を書き換えます。本書の設定を初めて入れたプロジェクトでよく報告されるのは、`display` の1値構文と物理プロパティです。次のCSSを検査すると、2件が報告されます。
 
-```css title="🙅‍♂ Not Recommended: 1値構文の display と物理プロパティで書く"
+```css title="🙅‍♂ Not Recommended: 1値構文の display と物理プロパティで書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .card {
   display: flex;

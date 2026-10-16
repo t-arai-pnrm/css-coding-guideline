@@ -31,7 +31,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 この方法では、クラスと実際の状態がずれかねません。キーボードでラジオボタンの選択を変えたときや、CMSの編集で画像を消したときに、クラスを付け外す処理を書き漏らすと、見た目と中身が食い違います。状態を表す情報が、HTMLの状態とクラスの2か所に分かれているからです。
 
-```css title="🙅‍♂ Not Recommended: JavaScriptで付け外すクラスで、親の見た目を変える"
+```css title="🙅‍♂ Not Recommended: JavaScriptで付け外すクラスで、親の見た目を変える" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .plan-option.is-checked {
   /* ラジオボタンの選択が変わるたびに、スクリプトで is-checked を付け外す */
@@ -108,7 +108,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 次の例は、星の数で評価を入力する部品です。ラジオボタンを包む `label` を5つ並べ、選んだ星と、それより前の星を塗ります。選んだ星は `&:has(> input:checked)` で、前の星は「後ろの兄弟に、チェックされたラジオボタンを持つ `label` がある」という条件の `&:has(~ label > input:checked)` で選びます。
 
-```css title="🙆‍♂ Recommended: 選んだ星と、それより前の星を塗る"
+```css title="🙆‍♂ Recommended: 選んだ星と、それより前の星を塗る" from="pseudo/star-rating"
 @scope (.scoped.star-rating) to (.scoped) {
   label {
     color: var(--border--strong);
@@ -142,7 +142,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 <Figure src="pseudo/has-not" alt="3枚のカードに、2つのセレクタが当たるかを示した表。カードは、1枚目が画像のimgと説明文のspan、2枚目が説明文のspanだけ、3枚目が画像のimgだけを持つ。上の行のセレクタは .card:has(:not(img)) で、img以外の子孫を持つカードに当たる。1枚目と2枚目に当たり、3枚目には当たらない。画像を持たないカードだけを選ぶ意図とは違う。下の行のセレクタは .card:not(:has(img)) で、imgの子孫を持たないカードに当たる。2枚目だけに当たり、1枚目と3枚目には当たらない。こちらが意図どおりで、画像を持たないカードは2枚目だけである。" />
 
-```css title="🙅‍♂ Not Recommended: 「画像を持たない」のつもりで :has() の中に :not() を入れる"
+```css title="🙅‍♂ Not Recommended: 「画像を持たない」のつもりで :has() の中に :not() を入れる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .card:has(:not(img)) {
   /* 1枚目と2枚目に当てはまる */
@@ -168,7 +168,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 `:has()` の直前に何も書かないと、すべての要素が起点になります。`:has(.foo)` は `*:has(.foo)` と同じで、「`.foo` を子孫に持つ、ページのすべての要素」を選ぶ指定です。ブラウザは、DOMが変わるたびに、ページのすべての要素について条件を調べ直す可能性があります。
 
-```css title="🙅‍♂ Not Recommended: 起点のない :has()"
+```css title="🙅‍♂ Not Recommended: 起点のない :has()" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 :has(> .entry-link) {
   position: relative;
@@ -199,7 +199,7 @@ CSSのセレクタは、長いあいだ、祖先から子孫へ、前の兄弟�
 
 起点があっても、それが広すぎれば同じ問題が起きます。次の例は、どちらもページ全体を起点にしています。ページのどこかで要素が追加されたり、属性が変わったりするたびに、`body` や `:root` の子孫全体から `img` や `[aria-invalid="true"]` を探し直す可能性があります。
 
-```css title="🙅‍♂ Not Recommended: ページ全体を起点に、子孫を広く探す"
+```css title="🙅‍♂ Not Recommended: ページ全体を起点に、子孫を広く探す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 body {
   &:has(img) {

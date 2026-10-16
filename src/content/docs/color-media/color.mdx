@@ -98,7 +98,7 @@ import achromaticCss from '../../../demos/color-media/achromatic-hue/style.css?r
 
 グレーのような無彩色を `oklch()` で書くときは、色相を `0deg` ではなく `none` にします。`none` は、その成分の値が欠落していることを表すキーワードです。彩度が0の色は色相を変えても見た目が変わらないので、`oklch(90% 0 0deg)` と `oklch(90% 0 none)` は同じグレーに見えます。違いが出るのは、ほかの色との間を補間するときです。
 
-```css title="🙅‍♂ Not Recommended: グレーの色相を 0deg と書いて、青と oklch で混ぜる"
+```css title="🙅‍♂ Not Recommended: グレーの色相を 0deg と書いて、青と oklch で混ぜる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._badge {
   background-color: color-mix(in oklch, oklch(90% 0 0deg), oklch(55% 0.2 260deg));

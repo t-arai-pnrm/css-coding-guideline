@@ -23,7 +23,7 @@ import limitsCss from '../../../demos/values/min-max-limits/style.css?raw';
 
 コードを読んでいると、`border-radius: 16px` や `font-size: clamp(1.25rem, 0.614rem + 3.18svi, 3rem)` のような値に出会います。どれも、書いた人が何かを計算して出した数値です。しかし、コードに残っているのは計算の結果だけで、何を計算したのかは分かりません。こうした根拠の読み取れない数値を「マジックナンバー」と呼びます。
 
-```css title="🙅‍♂ Not Recommended: 計算した結果だけを書く"
+```css title="🙅‍♂ Not Recommended: 計算した結果だけを書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .card {
   padding: 8px;
@@ -82,7 +82,7 @@ AIが生成するコードにも、同じ傾向があります。流体的な文
 
 `inline-size: min(100%, 320px)` は、「幅は320pxだが、親の幅は超えない」という意味です。固定の幅が必要な要素でも、狭い場所ではみ出しません。反対に `padding-inline: max(16px, 5%)` は、「左右の余白は親の幅の5%だが、16pxより狭くしない」という意味で、ページの左右の余白によく使います。
 
-```css title="🙆‍♂ Recommended: min() で上限を、max() で下限を決める"
+```css title="🙆‍♂ Recommended: min() で上限を、max() で下限を決める" from="values/min-max-limits"
 @scope (.scoped.page-section) to (.scoped) {
   :scope {
     padding-inline: max(16px, 5%);
@@ -140,7 +140,7 @@ AIが生成するコードにも、同じ傾向があります。流体的な文
 
 上の例では傾きと切片を手で計算しましたが、計算の結果を書けば、それ自体がマジックナンバーになります。基準の幅や値を変えるたびに、計算をやり直す必要もあります。そこで、基準の値を単位のない数値のカスタムプロパティで持ち、傾きと切片の計算もCSSに任せます。
 
-```css title="🙆‍♂ Recommended: 基準の値から、傾きと切片を CSS で計算する"
+```css title="🙆‍♂ Recommended: 基準の値から、傾きと切片を CSS で計算する" from="values/fluid-heading"
 @scope (.scoped.fluid-heading) to (.scoped) {
   h2 {
     --_min-width: 375;
@@ -181,7 +181,7 @@ WCAG 2.1の達成基準1.4.4は、支援技術なしで文字を200%まで拡大
 
 上のデモの24pxから40pxは約1.67倍で、この範囲に収まります。見出しを大きく見せようとして、最小値を小さく、最大値を大きくすると、2.5倍を超えやすくなります。超える場合は、最小値を上げるか、最大値を下げます。
 
-```css title="🙅‍♂ Not Recommended: 最大値を最小値の3倍にし、500%のズームでも2倍にできない幅を作る"
+```css title="🙅‍♂ Not Recommended: 最大値を最小値の3倍にし、500%のズームでも2倍にできない幅を作る" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .hero-title {
   /* 画面の幅 375px で 16px、1280px で 48px */

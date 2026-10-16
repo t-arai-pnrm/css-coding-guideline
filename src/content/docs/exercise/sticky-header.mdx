@@ -45,7 +45,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 ヘッダーは、`position: sticky` で上端に留めます。`fixed` と違って通常フローに場所を持ったまま留まるので、本文の先頭をヘッダーの高さだけ下げる余白が要りません。留めるのは、ビューポートの高さが600px相当以上のときだけです。横向きのスマートフォンや拡大した画面で、留めたヘッダーが本文を読める範囲を狭めないようにするためです（「[11-7 固定ヘッダー](/layout-practice/sticky-header/)」）。
 
-```css title="🙆‍♂ Recommended: 高さが十分なときだけ、ヘッダーのルートを上端に留める"
+```css title="🙆‍♂ Recommended: 高さが十分なときだけ、ヘッダーのルートを上端に留める" from="exercise/sticky-header-1"
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
     container: --scoped / scroll-state;
@@ -67,7 +67,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 留まっているかどうかは、ルートを `scroll-state` のコンテナにし、`scroll-state(stuck: block-start)` で問い合わせます。コンテナクエリで変えられるのはコンテナの子孫だけなので、境界線は、ルートの内側の `._header-inner` に描きます。
 
-```css title="🙆‍♂ Recommended: 内側の要素に透明な境界線を置き、留まっている間だけ色と影を付ける"
+```css title="🙆‍♂ Recommended: 内側の要素に透明な境界線を置き、留まっている間だけ色と影を付ける" from="exercise/sticky-header-1"
 @scope (.scoped.site-header) to (.scoped) {
   ._header-inner {
     min-block-size: calc(72 / 16 * 1rem);
@@ -94,7 +94,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 ページ内リンクで移動したときに、見出しをヘッダーの下に出すには、ページをスクロールさせているルートに `scroll-padding-block-start` を指定します。スクロールで内容を見せる範囲から、ヘッダーの高さを除く指定です。
 
-```css title="🙆‍♂ Recommended: ヘッダーを留めるときだけ、スクロールで見せる範囲からヘッダーの高さを除く"
+```css title="🙆‍♂ Recommended: ヘッダーを留めるときだけ、スクロールで見せる範囲からヘッダーの高さを除く" from="exercise/sticky-header-1"
 @layer base {
   :root {
     @media (height >= calc(600 / 16 * 1rem)) {
@@ -124,7 +124,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 帯とヘッダーをまとめて扱いたくなり、1つの要素で包むと、ヘッダーは留まらなくなります。
 
-```html title="🙅‍♂ Not Recommended: お知らせの帯とヘッダーを、1つの要素で包む"
+```html title="🙅‍♂ Not Recommended: お知らせの帯とヘッダーを、1つの要素で包む" issue="behavior"
 <!-- 🙅‍♂ Not Recommended -->
 <div class="_page-top">
   <p class="scoped notice-bar">…</p>
@@ -136,7 +136,7 @@ import stickyHeaderChangedCss from '../../../demos/exercise/sticky-header-2/styl
 
 帯は、ヘッダーとは別のコンポーネント（`notice-bar`）にします。帯は告知があるときだけ置くもので、ヘッダーの中に入れると、ヘッダーの高さが告知の有無で変わります。紺の面は、21-2と同じく、帯のルートの配色を暗くして作ります。
 
-```css title="🙆‍♂ Recommended: お知らせの帯は、ルートの配色を暗くした別のコンポーネントにする"
+```css title="🙆‍♂ Recommended: お知らせの帯は、ルートの配色を暗くした別のコンポーネントにする" use="diff" from="exercise/sticky-header-2"
 @scope (.scoped.notice-bar) to (.scoped) {
   :scope {
     padding-block: 8px;

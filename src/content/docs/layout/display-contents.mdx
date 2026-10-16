@@ -48,7 +48,7 @@ import boxCss from '../../../demos/layout/display-contents-box/style.css?raw';
 </div>
 ```
 
-```css title="🙅‍♂ Not Recommended: ラッパーの箱をなくし、order で見出しを前へ出す"
+```css title="🙅‍♂ Not Recommended: ラッパーの箱をなくし、order で見出しを前へ出す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .feature {
   container: --feature / inline-size;
@@ -195,7 +195,7 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 
 タイトル、著者、日付をまとめた `._meta` が、出し入れするラッパーです。狭いときは、自分でグリッドを組み、タイトルを1行目に、著者と日付を2行目に置きます。広いときは `display: contents` で箱をなくすので、3つの子が `article` のサブグリッドの2〜4列目に入ります。エリアの指定を狭いときのスタイルクエリの中に書いているのは、広いときの `article` にそのエリアの名前がないからです。名前の見つからないエリアを指定したアイテムは、明示的なグリッドの外に置かれます。
 
-```css title="🙆‍♂ Recommended: 狭いときだけラッパーにグリッドを組ませ、広いときは箱をなくす"
+```css title="🙆‍♂ Recommended: 狭いときだけラッパーにグリッドを組ませ、広いときは箱をなくす" from="layout/display-contents-ranking"
 ._meta {
   @container style(--_density: --compact) {
     display: block grid;
@@ -239,7 +239,7 @@ HTMLは見出しから書き、ラッパーも足していません。配置の�
 
 `display: contents` は、`hidden` 属性も上書きします。ブラウザのデフォルトスタイルは `[hidden] { display: none; }` という通常の宣言なので、作者のCSSで `li { display: contents; }` と書くと、`hidden` を付けた `li` まで表示されます。本書のリセットCSSであるkiso.cssは、`[hidden]` に `display: none !important` を指定しているので、この問題は起きません。kiso.cssを使わない場合は、同じ指定を自分で書きます（「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」）。
 
-```css title="🙅‍♂ Not Recommended: hidden 属性の指定がブラウザのデフォルトスタイルだけの環境で、li の箱をなくす"
+```css title="🙅‍♂ Not Recommended: hidden 属性の指定がブラウザのデフォルトスタイルだけの環境で、li の箱をなくす" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .article-list {
   & > ._item {

@@ -24,7 +24,7 @@ import gridCss from '../../../demos/decoration/bordered-grid/style.css?raw';
 
 メニューの項目の間に縦線を入れるとき、各項目に `border-inline-end` を付け、最後の項目だけ `:last-child` で打ち消す書き方がよく使われます。1行に収まるあいだは、この書き方で項目の間にだけ線が引かれます。
 
-```css title="🙅‍♂ Not Recommended: 各項目の枠線を付け、最後の項目だけ打ち消す"
+```css title="🙅‍♂ Not Recommended: 各項目の枠線を付け、最後の項目だけ打ち消す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .menu {
   display: block flex;
@@ -65,7 +65,7 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 
 最初の例は、フッターのリンクの間に丸い点を置くメニューです。リンクの並びは「[12-3 cluster](/compositions/cluster/)」（子を横に並べ、入りきらなければ折り返すコンポジション）に任せ、コンポーネントは `ul` に区切りの点だけを描きます。点は `column-rule` の線を短く縮めて作るので、HTMLに区切りの文字を書く必要がありません。
 
-```css title="🙆‍♂ Recommended: 点線の線を1つの点の長さまで縮め、行の中央に置く"
+```css title="🙆‍♂ Recommended: 点線の線を1つの点の長さまで縮め、行の中央に置く" from="decoration/separator-dots"
 @scope (.scoped.footer-links) to (.scoped) {
   ul {
     --_separator-size: 1ex;
@@ -90,7 +90,7 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 
 次の例は、グローバルナビゲーションの項目の間に縦線を入れるメニューです。gap decorationsに対応している環境では、列の間隔を線の太さ（1px）にして `column-rule` で線を描き、項目の間の余白は各項目の `padding` で取ります。未対応の環境でも線を見せるために、各項目の `box-shadow` で同じ位置に線を描きます。
 
-```css title="🙆‍♂ Recommended: 列の間隔を線の太さにし、未対応の環境では box-shadow で同じ位置に線を描く"
+```css title="🙆‍♂ Recommended: 列の間隔を線の太さにし、未対応の環境では box-shadow で同じ位置に線を描く" from="decoration/separator-lines"
 @scope (.scoped.global-nav) to (.scoped) {
   ul {
     --_rule-width: 1px;
@@ -133,7 +133,7 @@ Chromeのブログには、試験提供の時点（2025年6月）の記事もあ
 
 3つ目の例は、すべてのセルを枠線で囲むグリッドです。各セルの `border` では隣り合う線が2倍の太さになるので、`gap` と外側の `padding` を線の太さにそろえ、各セルの周りに線の太さだけ広げた `box-shadow` を描きます。
 
-```css title="🙆‍♂ Recommended: gap と padding を線の太さにし、各セルの box-shadow を gap の中で重ねる"
+```css title="🙆‍♂ Recommended: gap と padding を線の太さにし、各セルの box-shadow を gap の中で重ねる" from="decoration/bordered-grid"
 @scope (.scoped.feature-grid) to (.scoped) {
   :scope {
     --_rule-width: 1px;

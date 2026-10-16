@@ -43,7 +43,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 このデモでは、同じ角丸の正方形を5つ並べ、それぞれに `round`、`squircle`、`bevel`、`scoop`、`notch` を指定しています。対応している環境（Chrome）では、四隅が順に、円弧の角丸、スクワークル、斜めの切り落とし、内側へのえぐれ、四角い切り欠きになります。このデモは、`corner-shape` に対応していない環境では、5つとも同じ角丸で表示されます。`notch` のように角丸から最も離れた形でも、未対応の環境では角丸に戻るだけです。
 
-```css title="🙆‍♂ Recommended: 錠剤型のボタンに corner-shape を1行足す"
+```css title="🙆‍♂ Recommended: 錠剤型のボタンに corner-shape を1行足す" from="decoration/squircle-button"
 @scope (.scoped.button) to (.scoped) {
   :scope {
     border-radius: calc(infinity * 1px);
@@ -70,7 +70,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 どれだけ大きくするかは、半径によって変わります。私は、半径から倍率と角の形を決めるユーティリティを使っています。倍率と、大きい半径で `superellipse()` の値を変える境目は、CodePenを作るうえで参考にした記事の値です。記事では、ふつうの角丸とスクワークルを並べて、見た目が合う値を半径ごとに決めています（参考リンクを参照）。
 
-```css title="🙆‍♂ Recommended: 対応した環境だけ、半径に応じて border-radius を大きくする"
+```css title="🙆‍♂ Recommended: 対応した環境だけ、半径に応じて border-radius を大きくする" from="decoration/squircle-radius"
 .-corner-squircle {
   --_u--radius: var(--corner-squircle--radius, 24px);
   --_u--radius-ratio: 1;
@@ -117,7 +117,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 下の端が外側へ反り返るタブは、`corner-shape: scoop` で書けます。タブの背面に、左右へ角丸の半径だけはみ出した擬似要素を置き、上の2つの角をえぐります。擬似要素の上の角がえぐれることで、タブの両脇の外側に、内側へ反った曲線が残ります。
 
-```css title="🙆‍♂ Recommended: 対応している環境だけ、scoop で反り返りを付ける"
+```css title="🙆‍♂ Recommended: 対応している環境だけ、scoop で反り返りを付ける" from="decoration/scoop-tab"
 @scope (.scoped.category-navigation) to (.scoped) {
   ._tab {
     --_radius: var(--category-navigation--radius, 12px);
@@ -161,7 +161,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 カードや画像を、広い画面では角丸で余白の中に置き、狭い画面では画面の端まで広げるデザインはよくあります。画面の端まで広がったときに角丸が残ると、画面の角だけが欠けて見えます。この切り替えをメディアクエリで書くと、角丸を消す幅を、要素の幅ではなくビューポートの幅で決めることになります。
 
-```css title="🙅‍♂ Not Recommended: ビューポートの幅で角丸を付け外しする"
+```css title="🙅‍♂ Not Recommended: ビューポートの幅で角丸を付け外しする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.hero-card) to (.scoped) {
   :scope {
@@ -185,7 +185,7 @@ import fullBleedCss from '../../../demos/decoration/full-bleed-radius/style.css?
 
 2行目のように、左右の余白の合計が20px以下だと、画面いっぱいでなくても角丸は消えます。差がちょうど20pxのときも、`sign()` が0を返すので、角丸は0になります。
 
-```css title="🙆‍♂ Recommended: 要素の幅がビューポートの幅とほぼ等しいときだけ、角丸を0にする"
+```css title="🙆‍♂ Recommended: 要素の幅がビューポートの幅とほぼ等しいときだけ、角丸を0にする" from="decoration/full-bleed-radius"
 @scope (.scoped.hero-card) to (.scoped) {
   :scope {
     --_radius: var(--hero-card--radius, 40px);

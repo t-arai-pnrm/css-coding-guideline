@@ -20,7 +20,7 @@ SNSや技術ブログで流れてくるCSSのTipsは、新しい書き方を知�
 <h2>私たちについて<br>About</h2>
 ```
 
-```css title="🙅‍♂ Not Recommended: ::first-line で見出しの1行目と2行目を描き分ける"
+```css title="🙅‍♂ Not Recommended: ::first-line で見出しの1行目と2行目を描き分ける" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 h2 {
   color: var(--foreground--accent);
@@ -79,7 +79,7 @@ h2 {
 
 この助言の理由を確かめずに使うと、次のようなコードになることがあります。ルート要素の文字サイズを10pxにして、`1rem` を10pxにそろえ、デザインカンプの値を `rem` に換算しやすくするTipsです。
 
-```css title="🙅‍♂ Not Recommended: ルートの文字サイズを10pxに固定して、remの計算を簡単にする"
+```css title="🙅‍♂ Not Recommended: ルートの文字サイズを10pxに固定して、remの計算を簡単にする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 :root {
   font-size: 10px;
@@ -100,7 +100,7 @@ h2 {
 
 次のような2つのTipsがあったとします。1つは、要素の中身を上下左右の中央に置くのに、GridやFlexboxを使わず、ブロックレイアウトのまま `align-content` と `justify-items` を指定すればよいというものです。もう1つは、要素を中身の幅にして左右の中央に置くのは、`justify-self: center` の1行で済むというものです。
 
-```css title="🙅‍♂ Not Recommended: ChromeとEdgeだけが対応する指定をブロックレイアウトで使う"
+```css title="🙅‍♂ Not Recommended: ChromeとEdgeだけが対応する指定をブロックレイアウトで使う" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._hero {
   min-block-size: 100svb;
@@ -123,7 +123,7 @@ Chromeだけで確かめていると、このTipsはどちらも正しく動い�
 
 このTipsからは、対応状況のほかにも学べることがあります。これまで、`justify-items` はGridの中でしか働かなかったので、`display` をGridから通常のブロックに戻せば、指定が残っていても影響はありませんでした。ブロックレイアウトでも働くようになると、戻し忘れた指定が、ブロックに戻した後のレイアウトにも影響します。
 
-```css title="🙅‍♂ Not Recommended: display だけを戻し、Grid のための指定を残す"
+```css title="🙅‍♂ Not Recommended: display だけを戻し、Grid のための指定を残す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._layout {
   display: block grid;

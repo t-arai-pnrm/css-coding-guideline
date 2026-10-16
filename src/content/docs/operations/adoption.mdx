@@ -48,7 +48,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 既存のサイトにレイヤーを入れるときに起きやすいのは、新しいCSSだけをレイヤーに入れて、既存のCSSをレイヤーの外に残す書き方です。レイヤーに入っていないスタイルは、詳細度に関係なく、すべてのレイヤーの中のスタイルに勝ちます。この書き方では、新しいコンポーネントのスタイルが、既存のCSSにある `ul li` のような弱いセレクタにも負けます。
 
-```css title="🙅‍♂ Not Recommended: 新しいCSSだけをレイヤーに入れ、既存のCSSに負ける"
+```css title="🙅‍♂ Not Recommended: 新しいCSSだけをレイヤーに入れ、既存のCSSに負ける" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
 
@@ -92,7 +92,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 既存のコードでは、置く側が部品の中の要素を直接選んでいることがよくあります。次の例では、キャンペーンのページが、カードの見出しの色をページのセレクタから変えています。
 
-```css title="🙅‍♂ Not Recommended: 置く側のセレクタで、カードの中の見出しを選ぶ"
+```css title="🙅‍♂ Not Recommended: 置く側のセレクタで、カードの中の見出しを選ぶ" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .p-campaign .c-card__title {
   color: var(--color--red--600);

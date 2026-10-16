@@ -49,7 +49,7 @@ import drawerChangedJs from '../../../demos/exercise/drawer-2/script.js?raw';
 
 メニューのボタンに切り替える幅を、画面の幅768pxのようなデバイスの幅で決めると、ナビゲーションの項目や文言が変わったときに合わなくなります。切り替える必要があるのは、ヘッダーの中身が1行に収まらなくなる幅で、それは中身の幅で決まるからです（「[13-2 ブレイクポイントの決め方](/responsive/breakpoints/)」）。
 
-```css title="🙅‍♂ Not Recommended: デバイスの幅で、3つの要素をそれぞれ切り替える"
+```css title="🙅‍♂ Not Recommended: デバイスの幅で、3つの要素をそれぞれ切り替える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.site-header) to (.scoped) {
   ._actions {
@@ -70,7 +70,7 @@ import drawerChangedJs from '../../../demos/exercise/drawer-2/script.js?raw';
 
 ロゴ、ナビゲーション、お問い合わせのボタンの幅を足した式を閾値にすれば、中身から決められます。ただ、その式は、項目や文言を変えるたびに測り直して直す必要があります。知りたいのは「1行に収まるか」なので、ここでは閾値を書かず、ナビゲーションとお問い合わせのボタンの並び `._actions` が溢れたこと自体を条件にします（「[13-9 収まらなくなったらナビゲーションを折りたたむ](/responsive/overflow-collapse/)」）。
 
-```css title="🙆‍♂ Recommended: 並びが溢れている間だけフラグを --true にし、3つの要素はフラグを読んで切り替える"
+```css title="🙆‍♂ Recommended: 並びが溢れている間だけフラグを --true にし、3つの要素はフラグを読んで切り替える" from="exercise/drawer-1"
 @keyframes --site-header--detect-overflow {
   from,
   to {
@@ -140,7 +140,7 @@ HTMLでは、`._actions` とメニューのボタン（`._menu`）を `._end` �
 
 ドロワーは `<dialog>` で作り、メニューのボタンの `command="show-modal"` でモーダルとして開きます。`showModal()` を呼ぶ処理を自分で書く必要はありません（「[17-6 開閉するUI](/interaction/disclosure/)」）。
 
-```html title="🙆‍♂ Recommended: command 属性でドロワーをモーダルとして開き、閉じる"
+```html title="🙆‍♂ Recommended: command 属性でドロワーをモーダルとして開き、閉じる" from="exercise/drawer-1"
 <div class="_menu">
   <button class="scoped action-control" type="button" data-variant="secondary" commandfor="site-drawer" command="show-modal">メニュー</button>
 </div>
@@ -158,7 +158,7 @@ HTMLでは、`._actions` とメニューのボタン（`._menu`）を `._end` �
 
 ただし、`command` 属性と `commandfor` 属性に対応したのはSafari 26.2からで、本書が対象にするSafari 18.6では、メニューのボタンを押してもドロワーが開きません。狭い画面ではナビゲーションにたどり着けなくなるので、対応していないブラウザでだけポリフィルを読み込みます（`dialog-command-attributes`）。デモと配布版の `script.js` は、この処理だけを書いたファイルです。
 
-```js title="🙆‍♂ Recommended: command 属性に対応していないブラウザでだけ、ポリフィルを読み込む"
+```js title="🙆‍♂ Recommended: command 属性に対応していないブラウザでだけ、ポリフィルを読み込む" from="exercise/drawer-1"
 // command 属性と commandfor 属性に対応していないブラウザでは、メニューのボタンでドロワーを開けるようにポリフィルを読み込む
 if (!('command' in HTMLButtonElement.prototype)) {
   import('https://cdn.jsdelivr.net/npm/invokers-polyfill@1.0.4/invoker.min.js');
@@ -169,7 +169,7 @@ if (!('command' in HTMLButtonElement.prototype)) {
 
 開閉の動きは、`@starting-style` と `transition-behavior: allow-discrete` で付けます（「[18-7 出現と退場](/motion/entry-and-exit/#ダイアログの開閉を動かす)」）。
 
-```css title="🙆‍♂ Recommended: 動き始めの位置を変数にし、動きを減らす設定ではフェードだけにする"
+```css title="🙆‍♂ Recommended: 動き始めの位置を変数にし、動きを減らす設定ではフェードだけにする" from="exercise/drawer-1"
 @scope (.scoped.site-drawer) to (.scoped) {
   :scope {
     --_translate-from: 0;
@@ -205,7 +205,7 @@ if (!('command' in HTMLButtonElement.prototype)) {
 
 ドロワーのナビゲーションには、ヘッダーと同じ `global-nav` を使います。リンクの中身はどちらも同じで、違うのは並べ方だけだからです。並べ方の違いは、置き場所の違いなので、置く側のドロワーが公開プロパティのフラグを渡し、`global-nav` がそれを読みます（「[10-7 置き場所と子の状態を伝える](/components/placement-and-child-states/)」）。
 
-```css title="🙆‍♂ Recommended: ドロワーは包む要素でフラグを渡し、ナビゲーションは内部プロパティに受けて読む"
+```css title="🙆‍♂ Recommended: ドロワーは包む要素でフラグを渡し、ナビゲーションは内部プロパティに受けて読む" from="exercise/drawer-1"
 @scope (.scoped.site-drawer) to (.scoped) {
   ._navigation {
     --global-nav--stacked: --true;

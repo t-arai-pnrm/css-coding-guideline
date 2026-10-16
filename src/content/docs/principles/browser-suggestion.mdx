@@ -26,7 +26,7 @@ Webページの表示は、実装者には決められない多くの変数に�
 
 次のボタンは、カンプの寸法をそのまま書き写したものです。幅と高さを固定し、ラベルが折り返さないように指定しています。
 
-```css title="🙅‍♂ Not Recommended: カンプの寸法を固定値で書き写す"
+```css title="🙅‍♂ Not Recommended: カンプの寸法を固定値で書き写す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._cta-link {
   display: inline flow-root;
@@ -50,7 +50,7 @@ CSSで挫折やストレスを感じる原因の多くは、自分の書いた�
 
 先ほどのボタンを、提案書の考え方で書き直すと次のようになります。
 
-```css title="🙆‍♂ Recommended: 最小の大きさと余白だけを決め、あとはブラウザに任せる"
+```css title="🙆‍♂ Recommended: 最小の大きさと余白だけを決め、あとはブラウザに任せる" from="principles/flexible-button"
 ._cta-link {
   display: inline flex;
   justify-content: center;
@@ -114,7 +114,7 @@ AIにデザインカンプからコードを書かせると、カンプに書か
 
 宣言を1つ書くたびに、この標準の振る舞いを1つ上書きすることになります。上書きした振る舞いは、想定していない状況でも上書きされたままです。次の例では、幅と高さと線の色を指定し直しています。
 
-```css title="🙅‍♂ Not Recommended: ブラウザが決める値を指定し直す"
+```css title="🙅‍♂ Not Recommended: ブラウザが決める値を指定し直す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._notice {
   inline-size: 100%;

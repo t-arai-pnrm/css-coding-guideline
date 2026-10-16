@@ -31,7 +31,7 @@ import siblingCss from '../../../demos/pseudo/sibling-index-hue/style.css?raw';
 
 位置で選ぶセレクタの誤りは、たいてい「何を数えているか」の取り違えから生まれます。たとえば、商品の表を絞り込み、在庫のない行に `hidden` 属性を付けて隠したとします。行に `:nth-child(even)` で背景を付けていると、隠した行も兄弟として数えられるので、見えている行の縞が崩れます。
 
-```css title="🙅‍♂ Not Recommended: 隠した行も数えて、縞が崩れる"
+```css title="🙅‍♂ Not Recommended: 隠した行も数えて、縞が崩れる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 tr {
   &:is(tbody *):nth-child(even) {
@@ -52,7 +52,7 @@ tr {
 
 もっとも単純な擬似クラスは、`:first-child`、`:last-child`、`:only-child` の3つです。`:first-child` は兄弟の中で最初の要素、`:last-child` は最後の要素、`:only-child` は兄弟を持たない要素に当たります。`:only-child` は、`:first-child:last-child` と同じ要素を選びます。
 
-```css title="🙆‍♂ Recommended: カードが1枚だけのときは、すべての列にまたがらせる"
+```css title="🙆‍♂ Recommended: カードが1枚だけのときは、すべての列にまたがらせる" from="pseudo/only-child-grid"
 @scope (.scoped.card-grid) to (.scoped) {
   :scope {
     display: block grid;
@@ -83,7 +83,7 @@ tr {
 
 範囲を選ぶときは、2つの `:nth-child()` を連結します。`:nth-child(n + 4):nth-child(-n + 6)` は「4番目以降」と「6番目まで」の両方を満たす要素なので、4番目から6番目に当たります。セレクタを連結すると、それぞれの条件のAND（両方を満たす）になるからです。
 
-```css title="🙆‍♂ Recommended: 新着の先頭3件の日付を強調する"
+```css title="🙆‍♂ Recommended: 新着の先頭3件の日付を強調する" from="pseudo/nth-child-first-three"
 @scope (.scoped.news-list) to (.scoped) {
   time {
     /* 先頭から3件の項目の中 */
@@ -107,7 +107,7 @@ Selectors Level 4では、`:nth-child()` と `:nth-last-child()` の引数に `o
 
 この書き方で、最初の見出しの表を直します。`hidden` 属性の付いていない行だけを数えるので、隠した行がいくつあっても、見えている行は1行おきに色が付きます。HTMLは前のデモと同じで、CSSの `:nth-child()` の引数だけを変えています。
 
-```css title="🙆‍♂ Recommended: 隠した行を除いて数え、縞を付ける"
+```css title="🙆‍♂ Recommended: 隠した行を除いて数え、縞を付ける" from="pseudo/striped-table"
 @scope (.scoped.stock-table) to (.scoped) {
   tr {
     &:is(tbody *):nth-child(even of :not([hidden])) {
@@ -139,7 +139,7 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 </ul>
 ```
 
-```css title="🙅‍♂ Not Recommended: 「2番目の ._post」のつもりで :nth-of-type() を使う"
+```css title="🙅‍♂ Not Recommended: 「2番目の ._post」のつもりで :nth-of-type() を使う" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._post:nth-of-type(2) {
   /* 2つ目の li は ._ad なので、どの要素にも当たらない */
@@ -175,7 +175,7 @@ Sが判定するのは、セレクタに当てはまるかどうかだけです�
 
 2026年8月にSafari 26.2が対応し、主要なブラウザの最新版がそろいました（Chrome 138、Firefox 154）。ただし、本書の対象のブラウザのうち、Safari 18系の最終版は対応していません。そのため本書では、未対応の環境で失われても困らない装飾の値に限って使い、`@supports` の中に書きます。レイアウトの要に使わないのは、未対応の環境で表示が崩れるからです（「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」）。
 
-```css title="🙆‍♂ Recommended: 対応した環境でだけ、項目ごとに色相をずらす"
+```css title="🙆‍♂ Recommended: 対応した環境でだけ、項目ごとに色相をずらす" from="pseudo/sibling-index-hue"
 @scope (.scoped.topic-list) to (.scoped) {
   li {
     --_hue: 250deg;

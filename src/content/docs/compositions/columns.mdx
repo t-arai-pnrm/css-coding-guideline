@@ -22,7 +22,7 @@ import columnsCss from '../../../demos/compositions/columns/style.css?raw';
 
 フッターのリンク集を、幅に応じて2段から4段に分ける場面を考えます。段組みの指定は `columns` の1行で済むので、リストに直接書き、項目の間隔は `margin` で空けるのが素直な書き方に見えます。
 
-```css title="🙅‍♂ Not Recommended: リストに段組みを書き、項目の間隔を margin で空ける"
+```css title="🙅‍♂ Not Recommended: リストに段組みを書き、項目の間隔を margin で空ける" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._links {
   columns: calc(200 / 16 * 1rem) 4;
@@ -43,7 +43,7 @@ import columnsCss from '../../../demos/compositions/columns/style.css?raw';
 
 `columns` は、段の最小幅、段の最大数、項目の間隔、段の間隔の4つを公開プロパティで受け取ります。段の最小幅と最大数のデフォルト値は私が使っているテンプレートに従い、間隔は10-3のルールどおり `0` にしています。
 
-```css title="🙆‍♂ Recommended: 直下のリストに段組みを、リストの項目に間隔を付ける"
+```css title="🙆‍♂ Recommended: 直下のリストに段組みを、リストの項目に間隔を付ける" from="compositions/columns"
 /**
  * 直下のリストを、上から下へ読む順番のまま段に分ける。
  * 構造は「.columns > リスト > 項目」で、段組みはリストに、項目の間隔は項目に付ける。

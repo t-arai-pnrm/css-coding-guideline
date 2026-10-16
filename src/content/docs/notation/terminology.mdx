@@ -16,7 +16,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 名前の形がそろっていても、語の意味がそろっていなければ、名前から役割を読み取れません。次のヘッダーは、名前の形は9-1の規約どおりですが、語の選び方に問題があります。
 
-```html title="🙅‍♂ Not Recommended: Web標準と違う意味で語を使う"
+```html title="🙅‍♂ Not Recommended: Web標準と違う意味で語を使う" issue="convention"
 <!-- 🙅‍♂ Not Recommended -->
 <header class="scoped site-header">
   <div class="_container">
@@ -31,7 +31,7 @@ import Guideline from '../../../components/Guideline.astro';
 </header>
 ```
 
-```css title="🙅‍♂ Not Recommended: 1つの語を2つの意味で使う"
+```css title="🙅‍♂ Not Recommended: 1つの語を2つの意味で使う" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.site-header) to (.scoped) {
   ._container {
@@ -151,7 +151,7 @@ HTMLの要素とも食い違っています。`menu` は、HTMLの `<menu>` 要�
 
 クラス名には数字も使いません。`._card-1` や `._card-2` の番号は、要素が何なのかを表さず、並び順を表しているだけです。カードを1枚足したり並べ替えたりすると、番号と実体がずれます。番号を付けたくなるのは、要素の違いがまだ言葉になっていないときです。役割が違うなら役割の名前を、見た目の種類が違うなら `data-variant` のような属性を使います。位置で選びたいだけなら、名前は要らず、`:first-child` や `:nth-child()` で選べます（「[5-4 子要素の位置で選ぶ](/pseudo/child-index/)」）。
 
-```html title="🙅‍♂ Not Recommended: 略語と番号で要素を区別する"
+```html title="🙅‍♂ Not Recommended: 略語と番号で要素を区別する" issue="convention"
 <!-- 🙅‍♂ Not Recommended -->
 <section class="scoped plan-sec">
   <h2 class="_ttl">料金プラン</h2>

@@ -66,7 +66,7 @@ kiso.cssでは、強制カラーモードのときだけ、`<mark>` の色を `H
 
 背景色で範囲を示すボタンやカードでも、枠線を `border: none` で消さないようにします。代わりに `border-color: transparent` で、枠線を透明にしておきます。
 
-```css title="🙅‍♂ Not Recommended: 枠線を消し、強制カラーモードでボタンの範囲を失う"
+```css title="🙅‍♂ Not Recommended: 枠線を消し、強制カラーモードでボタンの範囲を失う" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._primary-button {
   border: none;
@@ -106,7 +106,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 そこで、背景色をカスタムプロパティ `--background--current` から受け取るようにします。通常は `currentColor` を、強制カラーモードでは文脈に合ったシステムカラーを入れておきます。
 
-```css title="🙆‍♂ Recommended: 強制カラーモードでは、文脈に合ったシステムカラーにする"
+```css title="🙆‍♂ Recommended: 強制カラーモードでは、文脈に合ったシステムカラーにする" from="color-media/forced-colors-fallback"
 @layer base {
   :root {
     --background--current: currentColor;
@@ -142,7 +142,7 @@ kiso.cssは、ボタンやフォームの部品に `1px` の実線の枠線を�
 
 アイコンを描く側では、`background-color` に `var(--background--current)` を指定するだけです。`--chevron--rightward` は、矢印のSVGをdata URIにしたトークンです（「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」）。
 
-```css title="🙆‍♂ Recommended: アイコンの色を --background--current から受け取る"
+```css title="🙆‍♂ Recommended: アイコンの色を --background--current から受け取る" from="color-media/forced-colors-fallback"
 ._more {
   &::after {
     content: "";

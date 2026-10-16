@@ -36,7 +36,7 @@ import comparisonSliderJs from '../../../demos/decoration/comparison-slider/scri
 
 `aspect-ratio` が使えなかった頃は、`padding-top` に割合を指定して、縦横比を保っていました。`padding` の割合は親要素の幅を基準に計算されるので、`9 / 16 * 100%` を指定すれば、幅に対して16:9の高さを作れます。
 
-```css title="🙅‍♂ Not Recommended: padding-top の割合で比率を作る"
+```css title="🙅‍♂ Not Recommended: padding-top の割合で比率を作る" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .frame {
   position: relative;
@@ -65,7 +65,7 @@ import comparisonSliderJs from '../../../demos/decoration/comparison-slider/scri
 
 縦横比は `aspect-ratio` で指定します。幅が決まれば、高さは比率から計算されます。擬似要素と絶対配置は要りません。
 
-```css title="🙆‍♂ Recommended: aspect-ratio で比率を決め、object-fit で収める"
+```css title="🙆‍♂ Recommended: aspect-ratio で比率を決め、object-fit で収める" from="decoration/aspect-ratio"
 ._thumbnail {
   inline-size: -webkit-fill-available;
   inline-size: stretch;
@@ -122,7 +122,7 @@ import comparisonSliderJs from '../../../demos/decoration/comparison-slider/scri
 
 <Demo title="block-size: 100% では、画像の元の高さで行が伸び、本文の下が空く" html={fitHeightHtml} css={fitHeightBadCss} variant="not-recommended" />
 
-```css title="🙆‍♂ Recommended: 画像の高さを、同じ行の本文の高さに合わせる"
+```css title="🙆‍♂ Recommended: 画像の高さを、同じ行の本文の高さに合わせる" from="decoration/fit-height"
 img {
   inline-size: -webkit-fill-available;
   inline-size: stretch;
@@ -140,7 +140,7 @@ img {
 
 画像や動画の上に文字を載せるときは、画像が表示されなかった場合に備えて、文字と対になる背景色を指定しておきます。通信の状態によって画像を読み込めないと、白い背景の上に白い文字だけが残り、読めなくなるからです。
 
-```css title="🙆‍♂ Recommended: 画像がなくても白い文字が読める背景色を敷く"
+```css title="🙆‍♂ Recommended: 画像がなくても白い文字が読める背景色を敷く" from="decoration/hero-header"
 @scope (.scoped.hero-header) to (.scoped) {
   :scope {
     display: block grid;
@@ -190,7 +190,7 @@ img {
 
 入稿される画像を受ける箱には、線に加えて、`<img>` に面の背景色を付けておきます。比率と切り取り方を `aspect-ratio` と `object-fit: cover` で決めても、画像が描かれていない間は、箱の中に何も見えないからです。背景色があれば、読み込む前も読み込みに失敗したときも、箱の範囲が面として見え、読み込んだ後と同じ形のまま並びます。
 
-```css title="🙆‍♂ Recommended: 画像の箱に面の背景色と内側の線を付け、画像がなくても範囲を示す"
+```css title="🙆‍♂ Recommended: 画像の箱に面の背景色と内側の線を付け、画像がなくても範囲を示す" from="decoration/image-placeholder"
 ._thumbnail {
   inline-size: -webkit-fill-available;
   inline-size: stretch;
@@ -214,7 +214,7 @@ img {
 
 前の項目のヒーローのように写真を背景に敷くときは、`background-image` ではなく、`object-fit` を指定した `<img>` を背景に置きます。`background-image` を使うのは、小さな画像を繰り返して敷き詰めるパターン画像や、内容と関係のない細かな装飾に限ります。
 
-```css title="🙅‍♂ Not Recommended: 背景の写真を background-image で敷く"
+```css title="🙅‍♂ Not Recommended: 背景の写真を background-image で敷く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._hero {
   background-image: url("hero.avif");
@@ -282,7 +282,7 @@ img {
 
 加工前と加工後のように、同じ構図の2枚の画像を比べるUIは、2枚の `<img>` を同じグリッドのエリアに重ね、上の画像を `clip-path` で切り抜いて作ります。境界の位置は `<input type="range">` で操作し、入力の値はスクリプトでカスタムプロパティに書き込みます。範囲の入力は画像の下に置き、ブラウザの標準の見た目のまま使います。{/* 要確認: 出典なし */}
 
-```css title="🙆‍♂ Recommended: 重ねた上の画像を、境界の位置から右だけ切り抜く"
+```css title="🙆‍♂ Recommended: 重ねた上の画像を、境界の位置から右だけ切り抜く" from="decoration/comparison-slider"
 @scope (.scoped.comparison-slider) to (.scoped) {
   :scope {
     --_position: var(--comparison-slider--position, 50%);

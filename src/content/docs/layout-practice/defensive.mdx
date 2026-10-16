@@ -24,7 +24,7 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
 
 デザインカンプの見出しは、たいていちょうど良い長さで書かれています。しかし、実際に入る見出しは2倍の長さかもしれませんし、英語に翻訳されて単語が長くなるかもしれません。ユーザーが文字サイズを大きくすれば、同じ文章でも行数が増えます。次のコードは、カンプの内容だけを前提に書いた例です。
 
-```css title="🙅‍♂ Not Recommended: デザインカンプの内容だけを前提にしたレイアウト"
+```css title="🙅‍♂ Not Recommended: デザインカンプの内容だけを前提にしたレイアウト" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._card-list {
   display: block grid;
@@ -72,7 +72,7 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
 
 要素の高さは、`block-size` で固定しません。一定の高さが要るときは `min-block-size` で下限を決め、縦横比が決まっている要素は `aspect-ratio` で、上限が要るときは `max-block-size` で決めます。高さを固定すると、内容が増えたときや、ユーザーが文字サイズを大きくしたとき、翻訳で文が長くなったときに、中身が要素の外へあふれます。
 
-```css title="🙅‍♂ Not Recommended: 見出しと説明文を置く帯の高さを固定する"
+```css title="🙅‍♂ Not Recommended: 見出しと説明文を置く帯の高さを固定する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._hero {
   display: block grid;
@@ -83,7 +83,7 @@ CSSを書くときは、「テキストが2倍の長さになったら」「画�
 
 デザインカンプでは、見出しと説明文が320px相当の帯にちょうど収まっています。しかし、見出しが2行になったり文字サイズが大きくなったりすると、中身は帯の高さを超え、下の要素に重なります。`min-block-size` に変えれば、中身が少ないうちは320px相当を保ち、収まらなくなったら帯のほうが伸びます。
 
-```css title="🙆‍♂ Recommended: 高さの下限だけを決める"
+```css title="🙆‍♂ Recommended: 高さの下限だけを決める" from="layout-practice/hero-height"
 ._hero {
   display: block grid;
   align-content: center;
@@ -150,7 +150,7 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 }
 ```
 
-```css title="🙅‍♂ Not Recommended: ベーススタイルで防いでいるはみ出しを、列ごとに防ぎ直す"
+```css title="🙅‍♂ Not Recommended: ベーススタイルで防いでいるはみ出しを、列ごとに防ぎ直す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._cards {
   display: block grid;
@@ -218,7 +218,7 @@ Gridで列を均等に分けるとき、`1fr` と書くことが多いと思い�
 
 Flexboxで画像と本文を横に並べるときは、画像へ `align-self: start` を指定して、交差軸の方向への引き伸ばしを止めます。`align-items` の初期値は `stretch` なので、画像は本文の高さに合わせて縦に伸びます。本文が長くなるほど、画像の比率がカンプから離れていきます。
 
-```css title="🙅‍♂ Not Recommended: 画像を stretch のままにし、本文の高さまで伸ばす"
+```css title="🙅‍♂ Not Recommended: 画像を stretch のままにし、本文の高さまで伸ばす" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._media {
   display: block flex;
@@ -258,7 +258,7 @@ Flexboxで画像と本文を横に並べるときは、画像へ `align-self: st
 
 Flexboxで要素を横に並べるときは、`flex-wrap: wrap` を既定にします。`flex-wrap` の初期値は `nowrap` なので、指定しなければ、入りきらない要素は1行の中で縮み、縮みきると親からはみ出します。ヘッダーのサイト名とアカウントの表示のように、カンプでは余裕のある並びもあります。それでも、文字が長くなったときや、ユーザーが文字を大きくしたとき、狭い場所に置かれたときには入りきらなくなります。
 
-```css title="🙅‍♂ Not Recommended: 折り返しを指定せず、狭いと1行の中で押しつぶされる"
+```css title="🙅‍♂ Not Recommended: 折り返しを指定せず、狭いと1行の中で押しつぶされる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._header {
   display: block flex;

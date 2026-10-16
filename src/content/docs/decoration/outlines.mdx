@@ -38,7 +38,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 次の例は、「[16-8 角の形を変える](/decoration/shapes/)」で `corner-shape: scoop` を使って作った、下の端が反り返るタブを、`shape()` で描いたものです。`shape()` はすべての主要なブラウザが対応しているので、`corner-shape` に対応していない環境でも反り返りが付きます。
 
-```css title="🙆‍♂ Recommended: 反り返るタブを、擬似要素1つの shape() で描く"
+```css title="🙆‍♂ Recommended: 反り返るタブを、擬似要素1つの shape() で描く" from="decoration/shape-tab"
 @scope (.scoped.category-navigation) to (.scoped) {
   ._tab {
     --_radius: var(--category-navigation--radius, 12px);
@@ -96,7 +96,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 吹き出しも、本体としっぽを1つの `shape()` で描けば、擬似要素を使わずに作れます。ただし、`clip-path` は要素の描画を切り抜くだけなので、ふつうの `border` を付けると、しっぽの部分と下の辺の枠線が切り落とされます。枠線を輪郭に沿わせるには、要素の枠線そのものを図形の関数で指定する `border-shape` を使います。`border-shape` に対応しているのはChrome 147以降だけなので、輪郭は `clip-path` で描き、枠線だけを `@supports` で足します。
 
-```css title="🙆‍♂ Recommended: 輪郭を1つのカスタムプロパティにして、clip-path と border-shape で共有する"
+```css title="🙆‍♂ Recommended: 輪郭を1つのカスタムプロパティにして、clip-path と border-shape で共有する" from="decoration/balloon-shape"
 @scope (.scoped.balloon) to (.scoped) {
   :scope {
     --_padding-block: var(--balloon--padding-block, 24px);
@@ -148,7 +148,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 `background-clip: border-area` は、背景を枠線が描かれる部分だけに切り抜く値です。枠線の色を `transparent` にし、背景のグラデーションを `border-area` で切り抜けば、グラデーションの枠線になります。擬似要素とマスクは要りません。
 
-```css title="🙆‍♂ Recommended: 対応している環境だけ、枠線をグラデーションにする"
+```css title="🙆‍♂ Recommended: 対応している環境だけ、枠線をグラデーションにする" from="decoration/gradient-border"
 @scope (.scoped.feature-card) to (.scoped) {
   :scope {
     border: 2px solid var(--color--accent--500);
@@ -177,7 +177,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 ブランドの表現として、Firefoxでもグラデーションの枠線を見せる必要があるなら、擬似要素にグラデーションを敷き、内側をマスクでくり抜きます。マスクの合成（`mask-composite`）は、本書の対象のブラウザのすべてが対応しています。ただし、擬似要素とマスクの指定が増え、`border-area` の2つの宣言に比べて、何を描いているのかがコードから読み取りにくくなります。単色の枠線で足りる場面では、前の例の `border-area` を使います。
 
-```css title="🙆‍♂ Recommended: 擬似要素の透明な枠線にグラデーションを敷き、内側をマスクでくり抜く"
+```css title="🙆‍♂ Recommended: 擬似要素の透明な枠線にグラデーションを敷き、内側をマスクでくり抜く" from="decoration/gradient-border-mask"
 @scope (.scoped.gradient-frame) to (.scoped) {
   :scope {
     --_border-width: var(--gradient-frame--border-width, 2px);
@@ -226,7 +226,7 @@ import balloonCss from '../../../demos/decoration/balloon-shape/style.css?raw';
 
 ドーナツグラフは、`border-area` ではなく、擬似要素の内側をマスクでくり抜いて描きます。グラデーションの枠線は装飾なので単色に縮退させれば済みますが、グラフは割合という情報を表しているので、環境によって形を変えるわけにはいかないからです。`border-area` で描くと、未対応のFirefoxでは中心まで塗った円グラフになり、中心に置いた数値が塗りの上に重なります。マスクの合成（`mask-composite`）なら、本書の対象のブラウザのすべてで同じドーナツの形になります。
 
-```css title="🙆‍♂ Recommended: マスクで輪を作り、割合を中心に数値でも示す"
+```css title="🙆‍♂ Recommended: マスクで輪を作り、割合を中心に数値でも示す" from="decoration/donut-chart"
 @property --count-up--value {
   syntax: "<percentage>";
   inherits: false;

@@ -47,7 +47,7 @@ AIに指示すれば、既存のコード全体へ規約を一度に適用する
 
 とくに注意したいのが、見た目が似ているだけのものを共通化することです。商品のカードと記事のカードは、どちらも角丸の箱に画像と見出しが入っているかもしれません。しかし、載せる情報も、今後増えていく要素も、変更される理由も違います。
 
-```css title="🙅‍♂ Not Recommended: 見た目が似ているカードを1つにまとめ、修飾クラスで分岐する"
+```css title="🙅‍♂ Not Recommended: 見た目が似ているカードを1つにまとめ、修飾クラスで分岐する" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .card {
   padding: 16px;
@@ -116,7 +116,7 @@ AIに指示すれば、既存のコード全体へ規約を一度に適用する
 
 `height: 100%` は、親の高さが明示的に指定されているときにしか期待どおりに動きません。親が `min-height` のように最小値だけを決めている場合には成り立たず、flexやgridのアイテムであれば、指定しなくても `stretch` で高さいっぱいに広がります。
 
-```css title="🙅‍♂ Not Recommended: 何にでも width: 100% と height: 100% を指定する"
+```css title="🙅‍♂ Not Recommended: 何にでも width: 100% と height: 100% を指定する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .card {
   width: 100%;
@@ -147,7 +147,7 @@ AIに指示すれば、既存のコード全体へ規約を一度に適用する
 
 ブレイクポイントなどで、いったん変えた値をデフォルト値に戻したいこともあります。その場合も、値を書き写さずに、`revert`、`revert-layer`、`unset`、`initial` のキーワードで戻り先を示します。
 
-```css title="🙅‍♂ Not Recommended: デフォルト値を書き写して戻す"
+```css title="🙅‍♂ Not Recommended: デフォルト値を書き写して戻す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.prose) to (.scoped) {
   ul {
@@ -176,7 +176,7 @@ AIに指示すれば、既存のコード全体へ規約を一度に適用する
 
 ショートハンドは便利ですが、指定しなかったサブプロパティまで初期値に戻します。そのため、ほかの場所でロングハンドを使って積み上げた設定を、後から意図せずリセットしてしまうことがあります。
 
-```css title="🙅‍♂ Not Recommended: 一部だけ変えたいのにショートハンドを使う"
+```css title="🙅‍♂ Not Recommended: 一部だけ変えたいのにショートハンドを使う" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._article {
   & > ._figure {

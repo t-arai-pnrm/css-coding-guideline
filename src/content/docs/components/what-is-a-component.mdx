@@ -44,7 +44,7 @@ import candidatesCss from '../../../demos/components/component-candidates/style.
 
 逆向きの誤りもあります。見た目が共通だという理由だけで、新しいコンポーネントを作ることです。次の例では、角丸と背景色を持つ箱を `rounded-box` というコンポーネントにして、商品カードの中身を包んでいます。
 
-```css title="🙅‍♂ Not Recommended: 見た目だけをまとめた wrapper をコンポーネントにする"
+```css title="🙅‍♂ Not Recommended: 見た目だけをまとめた wrapper をコンポーネントにする" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.rounded-box) to (.scoped) {
   :scope {
@@ -136,7 +136,7 @@ Atomic Designの用語で言えば、Button、Link、Iconのようなatomはコ�
 
 親のコンポーネントの中の子要素が、その親の中でしか意味を持たないなら、別のコンポーネントにしません。親が構造全体を持っているなら、見出し、本文、フッター、内側を包む要素などの区画は、まず親のローカルな要素として扱います。カードを `card-header`、`card-body`、`card-footer` のようなコンポーネントに細かく分けると、次のようになります。
 
-```css title="🙅‍♂ Not Recommended: 親の中でしか意味を持たない区画をコンポーネントに分ける"
+```css title="🙅‍♂ Not Recommended: 親の中でしか意味を持たない区画をコンポーネントに分ける" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.card-header) to (.scoped) {
   :scope {
@@ -157,7 +157,7 @@ Atomic Designの用語で言えば、Button、Link、Iconのようなatomはコ�
 
 区画は親のスコープの中に書きます。次の例では、商品カードの `header` と `footer` をタイプセレクタで、意味を持たない `div` を `._body` で選んでいます。一方、フッターの中のボタンは別のコンポーネントです。ボタンはカードの外でも独立した役割を持ち、`type` 属性などを1つの定義から管理したいからです。子要素が親の外でも独立した責務と再利用の価値を持つなら、別のコンポーネントにしてかまいません。
 
-```css title="🙆‍♂ Recommended: 区画は親のスコープの中で選び、独立した役割を持つ部品だけをコンポーネントにする"
+```css title="🙆‍♂ Recommended: 区画は親のスコープの中で選び、独立した役割を持つ部品だけをコンポーネントにする" from="components/component-candidates"
 @scope (.scoped.product-card) to (.scoped) {
   header {
     display: block flex;

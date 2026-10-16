@@ -23,7 +23,7 @@ FlexboxとGridが普及してから、要素を並べるときに、まず `disp
 
 たとえば、カードを3列の格子状に並べるとき、Flexboxで書くと次のようになります。親で折り返しと間隔を指定し、子要素の幅は「親の幅から間隔の合計を引き、列数で割る」という計算で決めています。
 
-```css title="🙅‍♂ Not Recommended: 格子状の並びを、子要素の幅の計算で作る"
+```css title="🙅‍♂ Not Recommended: 格子状の並びを、子要素の幅の計算で作る" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._card-list {
   display: block flex;
@@ -74,7 +74,7 @@ FlexboxとGridが普及してから、要素を並べるときに、まず `disp
 
 本文をFlexboxやGridにして `gap` で間隔を作ると、通常フローの2つの仕組みが働かなくなります。1つは `float` で、フレックスアイテムとグリッドアイテムでは無視されるので、本文の中の画像に文字を回り込ませられません。もう1つはマージンの相殺です。通常フローなら隣り合う `margin` は大きいほうだけが残りますが、`gap` の中では `margin` が `gap` に足されるので、見出しの前だけ広げるといった調整の結果を読みにくくなります。
 
-```css title="🙅‍♂ Not Recommended: 記事の本文を Flexbox にして gap で間隔を作る"
+```css title="🙅‍♂ Not Recommended: 記事の本文を Flexbox にして gap で間隔を作る" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._content {
   display: block flex;
@@ -188,7 +188,7 @@ GridはFlexboxの上位互換ではありません。タグの一覧やグロー
 
 Flexboxは、折り返した行を1行ずつ独立して並べます。そのため、格子状の一覧の最終行の端数を中央に寄せるなら、Flexboxのほうが簡潔です。子の幅を列数と間隔から計算し、親に `justify-content: center` を指定すれば、最終行に残ったアイテムが中央に寄ります。Gridのアイテムは親が決めた列に置かれるので、同じことをするには、数量クエリで端数のアイテムの開始位置をずらします（「[11-5 件数で配置を組み替える](/layout-practice/quantity-layouts/)」）。
 
-```css title="🙆‍♂ Recommended: 列数から子の幅を計算し、最終行を中央に寄せる"
+```css title="🙆‍♂ Recommended: 列数から子の幅を計算し、最終行を中央に寄せる" from="layout-practice/last-row-center"
 @scope (.scoped.product-list) to (.scoped) {
   :scope {
     container: --scoped / inline-size;

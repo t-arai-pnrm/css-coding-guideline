@@ -46,7 +46,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 
 ページのCSSは、ページのルートに `scoped page-top` を付け、`@scope (.scoped.page-top) to (.scoped)` の中に書きます（「[9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)」）。ページのCSSから部品のルートは選べないので、各部品を帯の要素で包み、ページのCSSは帯だけを選びます。
 
-```html title="🙆‍♂ Recommended: 各セクションを帯で包み、帯に primary-layout を付ける"
+```html title="🙆‍♂ Recommended: 各セクションを帯で包み、帯に primary-layout を付ける" from="exercise/assemble-1"
 <main class="scoped page-top">
   <div class="_band _hero-band | primary-layout">
     <section class="scoped hero | pile" aria-labelledby="hero-heading">…</section>
@@ -69,7 +69,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 
 帯は、ページの `gap` で離さず、間を空けずに積みます。白い帯の間を `gap` で空けると、背景は `gap` の部分に描かれないので、2つの白い帯の間にページの淡いグレーの筋が入ります。そこで、上下の余白は、帯自身の `padding-block` で作ります（`section-padding-block`）。`padding` の領域には背景が描かれるので、白い面は帯の端から端まで途切れません。
 
-```css title="🙆‍♂ Recommended: 帯は間を空けずに積み、上下の余白と背景は帯が持つ"
+```css title="🙆‍♂ Recommended: 帯は間を空けずに積み、上下の余白と背景は帯が持つ" from="exercise/assemble-1"
 @scope (.scoped.page-top) to (.scoped) {
   :scope {
     display: block grid;
@@ -122,7 +122,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 
 そこで、背景と余白を、セクションの名前ではなく、CMSが出力する面の役割で決めます（「[11-2 余白を設計する](/layout-practice/spacing/#隣り合うセクションで変わる境目の余白)」）。
 
-```html title="🙆‍♂ Recommended: CMSに、ブロックの面の役割を data-surface として出力させる"
+```html title="🙆‍♂ Recommended: CMSに、ブロックの面の役割を data-surface として出力させる" use="diff" from="exercise/assemble-2"
 <main class="scoped page-top">
   <div class="primary-layout" data-surface="base">…</div>
   <section class="primary-layout" data-surface="surface">…</section>
@@ -130,7 +130,7 @@ import assembleChangedJs from '../../../demos/exercise/assemble-2/script.js?raw'
 </main>
 ```
 
-```css title="🙆‍♂ Recommended: 面の役割で背景を決め、同じ面が続く境目の余白を詰める"
+```css title="🙆‍♂ Recommended: 面の役割で背景を決め、同じ面が続く境目の余白を詰める" use="diff" from="exercise/assemble-2"
 @scope (.scoped.page-top) to (.scoped) {
   :scope {
     display: block grid;

@@ -79,7 +79,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 私は2020年の記事で、本文全体に `palt` と字間を指定する例を紹介していました。いまは、この書き方を勧めていません。
 
-```css title="🙅‍♂ Not Recommended: 本文全体の文字を詰める"
+```css title="🙅‍♂ Not Recommended: 本文全体の文字を詰める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer base {
   :root {
@@ -111,7 +111,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 見出しは、本文と違って文字を詰めます。大きな文字では、約物や仮名の周りのアキが目立ち、間延びして見えるからです。見出しには `font-kerning: normal` を指定し、日本語のときは `font-feature-settings: "palt"` も指定します。
 
-```css title="🙆‍♂ Recommended: 見出しだけを詰める"
+```css title="🙆‍♂ Recommended: 見出しだけを詰める" from="typography/heading-palt"
 @layer base {
   :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
     font-kerning: normal;
@@ -133,7 +133,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 `hgroup` の中の副題のように、見出しの要素ではないけれど詰めたい文字もあります。そうした場所のために、同じ指定をユーティリティとして用意しておきます。
 
-```css title="🙆‍♂ Recommended: 見出し以外を詰めるユーティリティ"
+```css title="🙆‍♂ Recommended: 見出し以外を詰めるユーティリティ" from="typography/heading-palt"
 .-kerning {
   font-kerning: normal;
 
@@ -201,7 +201,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 見出しの飾りやキャッチコピーのように、横組みのページの一部だけを縦書きにするときは、`writing-mode: vertical-rl` で組みます。`rotate: 90deg` や `transform: rotate(90deg)` で回しても縦に並んで見えますが、中身は横書きの行を倒しただけです。
 
-```css title="🙅‍♂ Not Recommended: 横書きの行を回して縦に見せる"
+```css title="🙅‍♂ Not Recommended: 横書きの行を回して縦に見せる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.hero) to (.scoped) {
   ._catch-text {
@@ -210,7 +210,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 }
 ```
 
-```css title="🙆‍♂ Recommended: 見出しを縦書きで組み、行の長さを論理プロパティで決める"
+```css title="🙆‍♂ Recommended: 見出しを縦書きで組み、行の長さを論理プロパティで決める" from="typography/vertical-catch"
 @scope (.scoped.hero) to (.scoped) {
   ._catch-text {
     max-inline-size: calc(160 / 16 * 1rem);
@@ -235,7 +235,7 @@ kiso.cssは、和文組版のための3つの初期値を `:root` に指定し�
 
 縦書きの中の英数字は、初期値の `text-orientation: mixed` では横に倒して組まれます。日付の「10」のような2桁の数字は、`text-combine-upright: all` を指定した `span` で囲み、1文字ぶんの幅に横並びで収めます。この組み方を縦中横といいます。`all` は囲んだ文字をすべて1文字ぶんに詰めるので、4桁の年や長い単語を囲むと、文字が潰れて読めなくなります。「CSS」のような数文字の略語を1文字ずつ立てたいときは、`text-orientation: upright` を指定します。欧文の単語や文は、`mixed` のまま横に倒したほうが読みやすいので、`upright` は短い略語にとどめます。{/* 要確認: 出典なし。縦中横を2桁の数字に、uprightを短い略語に限ること */}
 
-```css title="🙆‍♂ Recommended: 縦書きの中の英数字の向きを決めるユーティリティ"
+```css title="🙆‍♂ Recommended: 縦書きの中の英数字の向きを決めるユーティリティ" from="typography/vertical-catch"
 @layer utilities {
   .-combine-upright {
     text-combine-upright: all;

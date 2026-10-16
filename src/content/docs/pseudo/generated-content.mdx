@@ -35,7 +35,7 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 
 この性質は、次のような指定で問題になります。入力欄のラベルに「必須」を、価格に「円（税込）」を、CSSで足す書き方です。見た目は整いますが、読み上げで「必須」が伝わらなければ、ユーザーは入力が必須の項目を知らないまま送信します。翻訳した画面では、金額の数字だけが訳され、単位だけが日本語のまま残ります。
 
-```css title="🙅‍♂ Not Recommended: 意味のある文字を生成コンテンツで入れる"
+```css title="🙅‍♂ Not Recommended: 意味のある文字を生成コンテンツで入れる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .label--required {
   &::after {
@@ -74,7 +74,7 @@ import firstLetterCss from '../../../demos/pseudo/first-letter-line/style.css?ra
 
 作られた箱は、`display` を指定しなければインラインです。空のインラインの箱には `inline-size` と `block-size` が働かないので、線や図形を描くときは箱の種類を変えます。親がフレックスコンテナかグリッドコンテナなら、擬似要素はそのアイテムになり、`display` を指定しなくても大きさの指定が働きます。絶対配置した擬似要素も、ブロックの箱になります。空の擬似要素に `display: inline flow-root` を指定してアイコンを描く例は、第16章「[16-3 アイコンとSVG](/decoration/icons-and-masks/)」にあります。
 
-```css title="🙆‍♂ Recommended: 空の擬似要素で図形を描くときは、content と箱の種類を指定する"
+```css title="🙆‍♂ Recommended: 空の擬似要素で図形を描くときは、content と箱の種類を指定する" from="pseudo/generated-box"
 @scope (.scoped.status-label) to (.scoped) {
   :scope {
     &::before {
@@ -104,7 +104,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 `content` には、スラッシュの後ろに代替テキストを書けます。`content: "→" / ""` のように代替テキストを空にすると、矢印は画面に表示され、読み上げからは外れます。CSS Generated Content Module Level 3でも、装飾の擬似要素の代替テキストを空にすると読み上げを避けられる、と説明しています。
 
-```css title="🙆‍♂ Recommended: 装飾の記号は代替テキストを空にする"
+```css title="🙆‍♂ Recommended: 装飾の記号は代替テキストを空にする" from="pseudo/decorated-section"
 @scope (.scoped.more-link) to (.scoped) {
   :scope {
     &::after {
@@ -138,7 +138,7 @@ ChromeとFirefoxでは、読み込みに失敗して代替テキストを表示�
 
 そのため、`::marker` に指定するのは `color` と `font-size` だけにします。印の記号を変える、番号を太くする、印をアイコンにするといった装飾は、Safariだけ元の見た目のまま残ります。こうした装飾が必要なときは、`list-style-type: ""` でマーカーを空にし、`::before` で描きます。`list-style: none` で消すと、SafariのVoiceOverがリストとして読み上げなくなるからです（第8章「[8-3 グローバルに書いてはいけないもの](/reset/global-pitfalls/)」）。番号を円で囲む例は第16章「[16-7 文字とリストの装飾](/decoration/text-ornaments/)」にあります。
 
-```css title="🙆‍♂ Recommended: ::marker には color と font-size だけを指定する"
+```css title="🙆‍♂ Recommended: ::marker には color と font-size だけを指定する" from="pseudo/marker-props"
 @scope (.scoped.point-list) to (.scoped) {
   li {
     &::marker {
@@ -177,7 +177,7 @@ range.setEnd(textNode, 9);
 CSS.highlights.set('search-result', new Highlight(range));
 ```
 
-```css title="🙆‍♂ Recommended: 背景色に下線を組み合わせて範囲を示す"
+```css title="🙆‍♂ Recommended: 背景色に下線を組み合わせて範囲を示す" from="pseudo/highlight-search"
 ::highlight(search-result) {
   background-color: oklch(92% 0.12 95deg);
   color: oklch(20% 0 0deg);

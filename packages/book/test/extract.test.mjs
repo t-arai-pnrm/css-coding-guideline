@@ -73,3 +73,18 @@ test('節の冒頭に、読み方の区別と前提の1行を出す', async () =
   const index = await render('<p>本文</p>');
   assert.equal(index.querySelectorAll('.page-reading').length, 0);
 });
+
+test('コード例のキャプションに、区別と全体のデモ番号を添える', async () => {
+  const code = (title, attributes) =>
+    `<div class="expressive-code"><figure class="frame" ${attributes}><figcaption class="header"><span class="title">${title}</span></figcaption><pre><code><div class="ec-line"><div class="code">a {}</div></div></code></pre></figure></div>`;
+  const doc = await render(
+    code('🙆‍♂ Recommended: 閾値を1か所に集める', 'data-code-use="excerpt" data-code-from="values/fluid-heading"') +
+      code('🙅‍♂ Not Recommended: 物理プロパティで書く', 'data-code-issue="convention"') +
+      code('🙆‍♂ Recommended: 帯の分だけずらす', 'data-code-use="diff" data-code-from="exercise-files/sticky-header/finished/site-header.css"'),
+    { page: { id: 'values/math-functions', dir: 'values', slug: 'math-functions', label: '6-3', title: '6-3 計算関数', demos: [{ name: 'values/other', mentioned: [] }, { name: 'values/fluid-heading', mentioned: [] }] } },
+  );
+  const captions = [...doc.querySelectorAll('figure.code figcaption')].map((caption) => caption.textContent);
+  assert.match(captions[0], /推奨例・抜粋：閾値を1か所に集める（全体はデモ6-3-2）/);
+  assert.match(captions[1], /避ける例（規約との差）：物理プロパティで書く/);
+  assert.match(captions[2], /推奨例・差分：帯の分だけずらす（全体は配布ファイル site-header.css）/);
+});

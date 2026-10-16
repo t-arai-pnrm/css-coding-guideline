@@ -38,7 +38,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 拡大して現れるメニューでよく見かけるのが、次の書き方です。`scale: 0` の点から、要素の中央を起点に、500msかけて `ease` で広がります。
 
-```css title="🙅‍♂ Not Recommended: 中央の点から、弱いイージングでゆっくり広げる"
+```css title="🙅‍♂ Not Recommended: 中央の点から、弱いイージングでゆっくり広げる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.action-menu) to (.scoped) {
   ul {
@@ -128,7 +128,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 先ほどのメニューを直すと、次のようになります。ボタンの下に行頭側をそろえて開くので、`transform-origin` を左上の角にし、開始値を0.94にしています。消えるときも同じ値まで縮めます。
 
-```css title="🙆‍♂ Recommended: ボタンのある角から、1に近い値で広げる"
+```css title="🙆‍♂ Recommended: ボタンのある角から、1に近い値で広げる" from="motion/scale-in-origin"
 @scope (.scoped.action-menu) to (.scoped) {
   ul {
     --_scale-from: 1;
@@ -222,7 +222,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 点の列は手で書けないので、ジェネレーターで作ります（[MDNが紹介しているジェネレーター](https://linear-easing-generator.netlify.app/)があります）。揺れが収まるまでの時間はイージングの作り方で決まるので、コンポーネントに値を直接書かず、再生時間とセットでトークンにします。
 
-```css title="🙆‍♂ Recommended: ばねのイージングを、再生時間とセットでトークンにする"
+```css title="🙆‍♂ Recommended: ばねのイージングを、再生時間とセットでトークンにする" from="motion/spring-easing"
 :root {
   --duration--spring: 700ms;
   --ease--spring: linear(

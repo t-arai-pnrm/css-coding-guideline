@@ -31,7 +31,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 絶対配置の要素は、包含ブロックの辺からの距離で置かれます。ボタンのすぐ下に説明を出すなら、ボタンと説明を1つの要素で包み、その要素に `position: relative` を指定して包含ブロックにします。説明は、その要素の子孫に置くしかありません。
 
-```css title="🙅‍♂ Not Recommended: ボタンと説明を包み、包み込んだ要素の辺から説明の位置を決める"
+```css title="🙅‍♂ Not Recommended: ボタンと説明を包み、包み込んだ要素の辺から説明の位置を決める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .button-note {
   position: relative;
@@ -56,7 +56,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 アンカーにする要素には `anchor-name` で名前を付け、配置する要素には `position-anchor` でその名前を指定します。名前は、カスタムプロパティと同じく `--` で始まる識別子です（「[9-1 命名規則](/notation/naming/)」）。`position-anchor` で決めたアンカーは「デフォルトのアンカー」と呼ばれ、`position-area` と、名前を省いた `anchor()` の基準になります。
 
-```css title="🙆‍♂ Recommended: アンカーに名前を付け、配置する要素から参照する"
+```css title="🙆‍♂ Recommended: アンカーに名前を付け、配置する要素から参照する" from="layout/anchor-link"
 .field-note {
   position: relative;
 
@@ -119,7 +119,7 @@ import functionsCss from '../../../demos/layout/anchor-functions/style.css?raw';
 
 `anchor()` は、アンカーの辺の位置を返す関数で、`inset` のプロパティにだけ書けます。`inset-block-start: anchor(end)` は、配置する要素のブロック方向の始まりの辺を、アンカーの終わりの辺にそろえる指定です。辺は、`start` や `end` のような論理キーワード、`top` や `left` のような物理キーワード、中央の `center`、割合で指定します。`inside` は書いたプロパティと同じ側の辺を、`outside` は反対側の辺を指すので、`inset: anchor(inside)` と書くと、4辺をアンカーの4辺に重ねられます。
 
-```css title="🙆‍♂ Recommended: anchor() で、アンカーの下端と行頭側の辺にそろえる"
+```css title="🙆‍♂ Recommended: anchor() で、アンカーの下端と行頭側の辺にそろえる" from="layout/anchor-functions"
 .field-note {
   position: relative;
 

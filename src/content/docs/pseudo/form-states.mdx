@@ -36,7 +36,7 @@ import placeholderShownCss from '../../../demos/pseudo/placeholder-shown-scope/s
 
 こうした違いは、見た目の不具合として表に出ます。ページを開いた直後にエラーの赤い枠が出る、読み取り専用の灰色の背景がチェックボックスにまで付く、といった不具合です。名前だけを見て次のように書くと、どちらも起きます。
 
-```css title="🙅‍♂ Not Recommended: 擬似クラスの名前から条件を推し量って書く"
+```css title="🙅‍♂ Not Recommended: 擬似クラスの名前から条件を推し量って書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 input {
   /* 「誤った値を入力した」のつもりで、開いた時点の空の必須の欄にも当たる */
@@ -93,7 +93,7 @@ input {
 
 `:indeterminate` は、どちらとも決まっていない状態です。対象は3つあり、JavaScriptで `indeterminate` プロパティを `true` にしたチェックボックス、同じ `name` のどれもチェックされていないラジオボタン、`value` 属性のない `<progress>` に当てはまります。チェックボックスの中間の状態はHTMLの属性では書けないので、JavaScriptで設定します。
 
-```css title="🙆‍♂ Recommended: 中間の状態はチェックボックスに限って指定する"
+```css title="🙆‍♂ Recommended: 中間の状態はチェックボックスに限って指定する" from="pseudo/select-all"
 @scope (.scoped.check-field) to (.scoped) {
   input {
     &:checked,
@@ -119,7 +119,7 @@ input {
 
 `:read-write` は、ユーザーが編集できる要素に当てはまります。`readonly` を付けておらず、無効でもないテキストの入力欄と `<textarea>` に加えて、`contenteditable` を付けた要素も対象です。`:read-only` はそれ以外のすべての要素で、編集を前提としない要素はすべて含まれます。
 
-```css title="🙅‍♂ Not Recommended: input:read-only で読み取り専用の入力欄を選ぶ"
+```css title="🙅‍♂ Not Recommended: input:read-only で読み取り専用の入力欄を選ぶ" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 input {
   &:read-only {
@@ -159,7 +159,7 @@ input {
 
 注意したいのは、`placeholder` 属性のない入力欄には、値が空でも当てはまらないことです。そのため、`:not(:placeholder-shown)` で「入力済み」を判定すると、`placeholder` 属性のない入力欄は、空のままでも入力済みとして扱われます。
 
-```css title="🙅‍♂ Not Recommended: :not(:placeholder-shown) を「入力済み」の意味で使う"
+```css title="🙅‍♂ Not Recommended: :not(:placeholder-shown) を「入力済み」の意味で使う" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 input {
   &:not(:placeholder-shown) {
@@ -216,7 +216,7 @@ input {
 
 `aria-disabled="true"` を付けた要素は `:disabled` に、`aria-invalid="true"` を付けた要素は `:user-invalid` に当てはまりません。ARIA属性は支援技術に状態を伝えるだけで、ブラウザの状態は変えないからです（MDN）。片方にだけ見た目を指定すると、同じ「無効」や「エラー」の状態でも、見た目の変わらない要素が出ます。
 
-```css title="🙆‍♂ Recommended: ネイティブの状態と ARIA 属性の状態に、同じ見た目を当てる"
+```css title="🙆‍♂ Recommended: ネイティブの状態と ARIA 属性の状態に、同じ見た目を当てる" from="pseudo/aria-states"
 @scope (.scoped.profile-form) to (.scoped) {
   input {
     &:is(:user-invalid, [aria-invalid="true"]) {

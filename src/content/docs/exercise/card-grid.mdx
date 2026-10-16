@@ -53,7 +53,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 カードを作るときにやりがちなのは、カンプで測った幅と、次のカードとの間隔を、カード自身に書いてしまうことです。
 
-```css title="🙅‍♂ Not Recommended: カンプで測った幅と下の間隔を、カードに書く"
+```css title="🙅‍♂ Not Recommended: カンプで測った幅と下の間隔を、カードに書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.article-cards) to (.scoped) {
   ._card {
@@ -67,7 +67,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 カードの幅と間隔は、カードを並べるグリッドが決めます。一覧のルートに `grid` のコンポジションを付け、列の最小幅、最大数、間隔を、一覧のCSSの `:scope` から渡します（`composition-configurable-via-props`）。カードが決めるのは、中の配置、画像の比率、文字の階層だけです（「[10-2 コンポーネントの境界を守る](/components/boundaries/)」）。
 
-```css title="🙆‍♂ Recommended: 列の最小幅、最大数、間隔を、一覧のルートから grid に渡す"
+```css title="🙆‍♂ Recommended: 列の最小幅、最大数、間隔を、一覧のルートから grid に渡す" from="exercise/card-grid-1"
 @scope (.scoped.article-cards) to (.scoped) {
   :scope {
     --grid--column-min-width: calc(280 / 16 * 1rem);
@@ -83,7 +83,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 見出しの行数が違うカードを並べると、抜粋の位置は、見出しの長さの分だけずれます。見出しの高さを3行分に固定すれば位置はそろいますが、別の問題が残ります。
 
-```css title="🙅‍♂ Not Recommended: 見出しの高さを3行分に固定して、抜粋の位置をそろえる"
+```css title="🙅‍♂ Not Recommended: 見出しの高さを3行分に固定して、抜粋の位置をそろえる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.article-cards) to (.scoped) {
   h3 {
@@ -96,7 +96,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 本書では、各カードを `subgrid` にして、一覧のグリッドの行に参加させます。カードは、画像、日付とカテゴリー、見出し、抜粋の4行にまたがり、同じ行に並んだカードは、同じ4つの行を共有します。どの行の高さも、その行でいちばん高い要素に合わせて決まるので、見出しの行数が違っても、抜粋の上端がそろいます（「[7-9 Gridでアイテムをそろえる](/layout/grid-alignment/#サブグリッドでカードの行をそろえる)」）。
 
-```css title="🙆‍♂ Recommended: 各カードを4行にまたがらせ、一覧の行を subgrid で使う"
+```css title="🙆‍♂ Recommended: 各カードを4行にまたがらせ、一覧の行を subgrid で使う" from="exercise/card-grid-1"
 @scope (.scoped.article-cards) to (.scoped) {
   :scope {
     & > ._card {
@@ -147,7 +147,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 カードの行は、一覧のグリッドの行です。カードだけを一覧の外に取り出すと、行をそろえる相手がなくなり、`grid-row: span 4` の意味もなくなります。カードは一覧の中でしか成り立たないので、一覧とカードを1つのコンポーネント `article-cards` にし、カードは子要素の `._card` として書きます（`subgrid-list-as-one-component`）。21-10の料金プランも、同じ理由で一覧のコンポーネントにしています（「[21-10 料金プランを作る](/exercise/pricing/)」）。
 
-```html title="🙆‍♂ Recommended: 一覧のルートに grid を付け、行に入れる4つの要素をカードの直下に並べる"
+```html title="🙆‍♂ Recommended: 一覧のルートに grid を付け、行に入れる4つの要素をカードの直下に並べる" from="exercise/card-grid-1"
 <ul class="scoped article-cards | grid">
   <li class="_card">
     <img src="…" alt="" width="640" height="360">
@@ -165,7 +165,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 ページの2カラムは、メインの最小幅を480px相当、サイドの幅を240px相当、間隔を40pxにした `sidebar` で組みます。カードの一覧は、メインの列にそのまま置きます。
 
-```html title="🙆‍♂ Recommended: 2カラムを sidebar に任せ、値は style 属性で渡す"
+```html title="🙆‍♂ Recommended: 2カラムを sidebar に任せ、値は style 属性で渡す" from="exercise/card-grid-1"
 <div class="scoped page-column">
   <hgroup class="_page-heading">
     <p class="eyebrow" lang="en">Blog</p>
@@ -217,7 +217,7 @@ import cardGridChangedCss from '../../../demos/exercise/card-grid-2/style.css?ra
 
 置かれた幅で変わる4つの見た目に、それぞれ同じコンテナサイズクエリを書くと、閾値が4か所に分かれます。1か所を直し忘れると、どの幅のカンプにもない中間の形ができます。そこで、コンテナサイズクエリは `._card` のルールにだけ書き、幅の状態をフラグ `--_density` にして伝えます。ただし、カードを一覧の4行にまたがらせる `grid-row: span 4` は、一覧のグリッドでの配置なので、一覧のルールの `& > ._card` に書きます（`nest-child-placement-only`）。`._card` は自分のフラグを問い合わせられないので、ここだけは同じ閾値のクエリをもう1つ書き、値をそろえます。
 
-```css title="🙆‍♂ Recommended: コンテナサイズクエリは ._card だけに書き、画像、見出し、抜粋はフラグを読む"
+```css title="🙆‍♂ Recommended: コンテナサイズクエリは ._card だけに書き、画像、見出し、抜粋はフラグを読む" use="diff" from="exercise/card-grid-2"
 @scope (.scoped.article-cards) to (.scoped) {
   :scope {
     container: --scoped / inline-size;

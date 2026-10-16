@@ -26,7 +26,7 @@ import insideCss from '../../../demos/notation/conditions-inside/style.css?raw';
 
 Sassに慣れていると、HTMLの階層をそのままネストで写したくなります。見た目は整理されているようですが、このネストはHTMLの構造に強く依存します。リストを `ol` に変えたり、リンクを `button` に置き換えたりしただけで、セレクタが要素に一致しなくなります。
 
-```css title="🙅‍♂ Not Recommended: HTMLの階層をネストで写す"
+```css title="🙅‍♂ Not Recommended: HTMLの階層をネストで写す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .site-nav {
   ul {
@@ -86,7 +86,7 @@ Sassに慣れていると、HTMLの階層をそのままネストで写したく
 
 要素自身の擬似クラス、擬似要素、属性の状態は、主語のセレクタに連結せず、主語のルールの中に `&:popover-open` のようにネストして書きます。`[popover]:popover-open` や `._link::after` のように連結して別のルールにすると、同じ要素のスタイルが複数のルールに分かれます。基本のスタイルを変えた人が、離れた場所にある状態のルールに気付かないことがあります。
 
-```css title="🙅‍♂ Not Recommended: 状態を主語のセレクタに連結する"
+```css title="🙅‍♂ Not Recommended: 状態を主語のセレクタに連結する" issue="convention"
 /* 🙅‍♂ Not Recommended */
 [popover] {
   transition-duration: var(--duration--fast);
@@ -131,7 +131,7 @@ Stylelintには、この数え方に合う設定がありません。標準の `
 
 `@media` と `@container` を `@scope` の直下にまとめて書くと、上書きできない場合があります。例として、狭い画面ではナビゲーションのリンクを隠し、広い画面になったら表示するヘッダーを見てみます。
 
-```css title="🙅‍♂ Not Recommended: 条件のブロックを @scope の先頭にまとめる"
+```css title="🙅‍♂ Not Recommended: 条件のブロックを @scope の先頭にまとめる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.site-header) to (.scoped) {
   @media (width >= calc(640 / 16 * 1rem)) {
@@ -160,7 +160,7 @@ Stylelintには、この数え方に合う設定がありません。標準の `
 
 3つ目の書き方でも上書きできますが、Stylelintの並び順と衝突します。そこで本書では、条件付きのアットルールを各セレクタの中に書きます。セレクタの中なら、`order/order` の並び順（宣言が先、条件が後）と、上書きに必要な順番が一致します。条件の中の宣言は、同じセレクタの基本の宣言より後にあるものとして扱われるので、確実に上書きできます。
 
-```css title="🙆‍♂ Recommended: 条件をセレクタの中に書く"
+```css title="🙆‍♂ Recommended: 条件をセレクタの中に書く" from="notation/conditions-inside"
 @scope (.scoped.site-header) to (.scoped) {
   ul {
     display: none;
@@ -188,7 +188,7 @@ Stylelintには、この数え方に合う設定がありません。標準の `
 
 `@scope` の直下に置いた条件のブロックには、もう1つ問題があります。セレクタを書かずに、条件のブロックの中へ宣言をじかに書く書き方です。
 
-```css title="🙅‍♂ Not Recommended: 条件のブロックの中に宣言をじかに書く"
+```css title="🙅‍♂ Not Recommended: 条件のブロックの中に宣言をじかに書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.hero-section) to (.scoped) {
   @container style(--hero-section--size: large) {

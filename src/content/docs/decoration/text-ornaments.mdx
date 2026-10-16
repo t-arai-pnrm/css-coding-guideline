@@ -27,7 +27,7 @@ import cushionFrame from '../../../demos/decoration/text-cushion/frame.css?raw';
 
 `<ol>` の番号の色や大きさを変えたいときは、`::marker` を使います。リストの意味を保ったまま、`color`、`font-*`、`content` を指定できます。ただし、Safariが反映するのは `color` と `font-size` だけなので、指定はこの2つに限ります（「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」）。
 
-```css title="🙆‍♂ Recommended: マーカーの色を ::marker で変える"
+```css title="🙆‍♂ Recommended: マーカーの色を ::marker で変える" from="decoration/list-marker"
 ._step {
   &::marker {
     color: var(--foreground--accent);
@@ -73,7 +73,7 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 
 ただし、縁取りの線は字形の輪郭を中心に、内側と外側へ半分ずつ描かれます。初期値では塗りの上に線を重ねるので、線を太くするほど、内側の半分が塗りを覆って文字が細くなります。画数の多い漢字では、字の中のすき間が線で埋まり、読めなくなることもあります。
 
-```css title="🙅‍♂ Not Recommended: 太い縁取りを塗りの上に重ねる"
+```css title="🙅‍♂ Not Recommended: 太い縁取りを塗りの上に重ねる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._title {
   color: oklch(100% 0 0deg);
@@ -86,7 +86,7 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 
 `paint-order: stroke fill` を指定すると、線を先に描き、その上に塗りを重ねます。線の内側の半分は塗りに隠れ、外側の半分だけが縁取りとして見えます。字の形が崩れないので、縁取りを太くしても読みやすさを保てます。
 
-```css title="🙆‍♂ Recommended: 縁取りを塗りの下に描く"
+```css title="🙆‍♂ Recommended: 縁取りを塗りの下に描く" from="decoration/text-stroke"
 ._title {
   color: oklch(100% 0 0deg);
 
@@ -113,7 +113,7 @@ kiso.cssは、リストのマーカーを `list-style-type: ""` で空にして�
 
 インラインの要素が複数の行にまたがると、背景と `border` は行ごとの断片に分けて描かれます。初期値の `slice` では、1本の帯を行の端で切ったように描かれるので、折り返した位置の `padding` と `border` がなくなります。`clone` を指定すると、断片ごとに `padding` と `border` が付き、各行が独立した座布団になります。ブロックやインラインブロックの要素は、行をまたいでも1つの箱のままなので、行ごとには描けません。座布団は、必ずインラインの要素に付けます。
 
-```css title="🙆‍♂ Recommended: インラインの要素に clone を指定し、行の間隔を座布団の高さから決める"
+```css title="🙆‍♂ Recommended: インラインの要素に clone を指定し、行の間隔を座布団の高さから決める" from="decoration/text-cushion"
 @scope (.scoped.text-cushion) to (.scoped) {
   :scope {
     --_space: var(--text-cushion--space, 8px);

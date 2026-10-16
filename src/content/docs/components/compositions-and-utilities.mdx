@@ -20,7 +20,7 @@ import compositionsCss from '../../../demos/components/compositions/style.css?ra
 
 タグの一覧、ボタンの並び、フッターのリンク集のように、「横に並べて、入りきらなければ折り返す」配置はサイトのあちこちに出てきます。これを各コンポーネントで毎回書くと、似た指定が少しずつ違う形で散らばります。
 
-```css title="🙅‍♂ Not Recommended: 同じ配置をコンポーネントごとに書く"
+```css title="🙅‍♂ Not Recommended: 同じ配置をコンポーネントごとに書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .tag-list {
   display: block flex;
@@ -200,7 +200,7 @@ grid-template-columns: repeat(auto-fit, minmax(max(var(--_c--column-preferred-wi
 
 この強さの差は、バリエーションのスタイルや `@container` の中の指定にも及びます。次の例では、`feature-section` が見出しに、広い場所での大きな文字サイズと、`featured` のバリエーションの色を指定しています。しかし、見出しには `section-heading` のパターンが付いていて、パターンが `font-size` と `color` を持っています。コンポーネントの指定はどちらも反映されず、見出しはパターンの大きさと色のままです。
 
-```css title="🙅‍♂ Not Recommended: コンポーネントが変えたいプロパティをパターンに書く"
+```css title="🙅‍♂ Not Recommended: コンポーネントが変えたいプロパティをパターンに書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer patterns {
   .section-heading {

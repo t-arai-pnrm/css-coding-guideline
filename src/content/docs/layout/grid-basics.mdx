@@ -39,7 +39,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 次の例には、最初の2つの読み違えが含まれています。カードの数が増えると、3行目から高さがそろわなくなり、サイドバーも2行目で止まります。
 
-```css title="🙅‍♂ Not Recommended: 行の数が変わるグリッドで、行を明示的に決め、負の線番号でまたがらせる"
+```css title="🙅‍♂ Not Recommended: 行の数が変わるグリッドで、行を明示的に決め、負の線番号でまたがらせる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._layout {
   display: block grid;
@@ -147,7 +147,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 カードの一覧のように、行の数がアイテムの数で決まるグリッドでは、行を明示的に決める意味がありません。`grid-template-rows: repeat(2, 160px)` と書くと、3行目からは暗黙の行になり、160pxではなく中身の高さで並びます。行の大きさを `grid-auto-rows` で決めれば、何行になっても同じ高さで並びます。
 
-```css title="🙅‍♂ Not Recommended: アイテムの数で行数が変わるのに、行を明示的に決める"
+```css title="🙅‍♂ Not Recommended: アイテムの数で行数が変わるのに、行を明示的に決める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._gallery {
   display: block grid;
@@ -182,7 +182,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 線には名前を付けられます。`grid-template-columns` のトラックの間に `[--content-start]` のように角括弧で名前を書き、アイテムの側でその名前を指定します。本書では、自分で付ける線とエリアの名前を `--` で始めます（「[9-1 命名規則](/notation/naming/)」）。`--content-start` と `--content-end` のように、`-start` と `-end` で終わる名前の組を付けると、その間は `--content` という名前のエリアとして扱われます。アイテムは `grid-column: --content` だけで置けます。
 
-```css title="🙆‍♂ Recommended: 線に名前を付け、アイテムは名前で置く"
+```css title="🙆‍♂ Recommended: 線に名前を付け、アイテムは名前で置く" from="layout/grid-basics-named-lines"
 ._page {
   display: block grid;
   grid-template-columns:
@@ -213,7 +213,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 幅によって配置の構造が変わるレイアウトは、`grid-template` のエリアに名前を付けて書きます。エリアの名前は、そのエリアに置く子要素のクラス名とそろえ、`--` で始めます。`._image` を置くエリアは `--image` です。`--` で始める理由は、前の「線の番号と線の名前でアイテムを置く」で述べたとおりです。
 
-```css title="🙆‍♂ Recommended: エリアに名前を付け、条件ごとにテンプレートだけを書き換える"
+```css title="🙆‍♂ Recommended: エリアに名前を付け、条件ごとにテンプレートだけを書き換える" from="layout/grid-basics-areas"
 .feature-card {
   container: --feature-card / inline-size;
 }
@@ -261,7 +261,7 @@ Gridは2017年から主要なブラウザで使えますが、Gridを使った�
 
 テンプレートの書き方には、宣言全体を無効にする規則が2つあります。1つは、各行の文字列に同じ数のセルを書くことです。もう1つは、同じ名前を書いたセルが1つの長方形を作ることです。L字の形に並べたり、離れた2か所に同じ名前を書いたりすると、そのエリアだけでなく宣言全体が無効になります。エリアに置かない空きのセルは、名前の代わりに `.` を書きます。
 
-```css title="🙅‍♂ Not Recommended: 同じ名前のセルをL字に並べる"
+```css title="🙅‍♂ Not Recommended: 同じ名前のセルをL字に並べる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._layout {
   grid-template:

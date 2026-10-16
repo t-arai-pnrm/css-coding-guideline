@@ -29,7 +29,7 @@ CSSのレイアウトは、1つの仕組みではなく、通常フロー、Flex
 
 たとえば、インライン要素の上下の余白を `position: relative` と `top` でずらして作ると、その要素だけが行から浮き、文字の大きさを変えたときに重なります。正しい直し方は、要素を `inline flow-root` にして、ブロックの規則で余白を持たせることです。直し方を選ぶには、どの方式の規則が働いているかを知る必要があります。
 
-```css title="🙅‍♂ Not Recommended: インライン要素を位置指定でずらして余白に見せる"
+```css title="🙅‍♂ Not Recommended: インライン要素を位置指定でずらして余白に見せる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._tag {
   position: relative;
@@ -153,7 +153,7 @@ AIが生成するコードにも、同じ傾向があります。方式の違い
 
 カードの角にバッジを置くときは、カードに `position: relative` を指定して、カードを包含ブロックにします。
 
-```css title="🙆‍♂ Recommended: カードを包含ブロックにして、バッジを角に置く"
+```css title="🙆‍♂ Recommended: カードを包含ブロックにして、バッジを角に置く" from="layout/layout-containing-block"
 ._card {
   position: relative;
 

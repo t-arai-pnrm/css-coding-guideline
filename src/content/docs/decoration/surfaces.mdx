@@ -104,7 +104,7 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 
 ホバーで面を持ち上げるように影を変えるときは、`box-shadow` をトランジションさせず、`filter: drop-shadow()` の値を動かします。`box-shadow` を動かすと、動いている間は毎フレーム影を描き直します。ぼかしを含む影は描く計算が重く、層を重ねた段階の高い影ほど計算が増えるので、性能の低い端末ではかくつきます。
 
-```css title="🙅‍♂ Not Recommended: box-shadow のトークンをそのままトランジションさせる"
+```css title="🙅‍♂ Not Recommended: box-shadow のトークンをそのままトランジションさせる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.article-card) to (.scoped) {
   :scope {
@@ -124,7 +124,7 @@ import frostedCss from '../../../demos/decoration/frosted-header/style.css?raw';
 
 影のトークン `--shadow--*` は `box-shadow` の値なので、`drop-shadow()` にはそのまま渡せません。`drop-shadow()` は広がり（4つ目の値）と `inset` を持たず、複数の影は関数を並べて書くからです。そこで、高さを表す影を `drop-shadow()` の並びにしたトークン（`--drop-shadow--sm`、`--drop-shadow--md`、`--drop-shadow--lg`）を別に用意し、`filter` に指定して動かします。縁取りの `--shadow--xs` は、`box-shadow` に置いたまま動かしません。
 
-```css title="🙆‍♂ Recommended: 縁取りは box-shadow に残し、高さを表す層を drop-shadow() で動かす"
+```css title="🙆‍♂ Recommended: 縁取りは box-shadow に残し、高さを表す層を drop-shadow() で動かす" from="decoration/shadow-lift"
 @scope (.scoped.article-card) to (.scoped) {
   :scope {
     box-shadow: var(--shadow--xs);
@@ -177,7 +177,7 @@ Chromeで、2つの例のトランジションを1秒に延ばし、パフォー
 
 角丸は、`--rounded--sm`（4px）、`--rounded--md`（8px）、`--rounded--lg`（12px）の段階と、完全な角丸の `--rounded--full` をトークンにしています。`--rounded--full` の値は `calc(infinity * 1px)` です。`999px` のような大きな値を書く方法もありますが、「十分に大きい値」という意図は `infinity` のほうが正確に伝わります。角の曲線そのものを変える `corner-shape` や、画面いっぱいのときだけ角丸を消す書き方は、「[16-8 角の形を変える](/decoration/shapes/)」で説明しています。
 
-```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする"
+```css title="🙆‍♂ Recommended: 内側の角丸は、外側の角丸から余白を引いた値にする" from="decoration/nested-radius"
 @scope (.scoped.account-menu) to (.scoped) {
   :scope {
     --_radius: var(--rounded--lg);
@@ -203,7 +203,7 @@ Chromeで、2つの例のトランジションを1秒に延ばし、パフォー
 
 `backdrop-filter: blur()` で、要素の背後をぼかしたすりガラスの背景を作れます。効果を見せるには、要素の背景を半透明にします。ぼかしの対象になるのは、その要素の真後ろにあるピクセルだけです。固定ヘッダーの少し下にある色付きの要素は、ヘッダーに重なるまでぼかしに混ざらず、スクロールの途中で急に色が現れます。
 
-```css title="🙆‍♂ Recommended: 半透明の背景に backdrop-filter を重ねる"
+```css title="🙆‍♂ Recommended: 半透明の背景に backdrop-filter を重ねる" from="decoration/frosted-header"
 ._header {
   position: sticky;
   inset-block-start: 0;

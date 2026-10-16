@@ -77,7 +77,7 @@ kiso.cssは、リンクの下線をデフォルトで消し、下線の太さを
 
 そこで本書では、`:focus-visible` のときに、2色を重ねたリングを表示します。要素のすぐ外側を背景色（`Canvas`）、その外側を文字色（`CanvasText`）にすると、背景の明るさにかかわらず、どちらか一方は背景と区別できます。
 
-```css title="🙆‍♂ Recommended: :focus-visible に二重のフォーカスリングを定義する"
+```css title="🙆‍♂ Recommended: :focus-visible に二重のフォーカスリングを定義する" from="reset/focus-ring"
 @layer base {
   :focus-visible {
     --_b--ring-width: 3px;
@@ -110,7 +110,7 @@ kiso.cssは `outline-offset: 3px` を指定しているだけで、リングの�
 
 ページ内リンクで移動するときのスムーススクロールは、ルート要素に `scroll-behavior: smooth` を1行書けば実現できます。手軽なので広く使われていますが、この書き方には副作用があります。
 
-```css title="🙅‍♂ Not Recommended: スムーススクロールを一律に有効にする"
+```css title="🙅‍♂ Not Recommended: スムーススクロールを一律に有効にする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer base {
   :root {
@@ -170,7 +170,7 @@ window.addEventListener("load", () => {
 
 モーダルのダイアログを開いている間は、背面のページがスクロールしないようにするのが一般的です。以前は、`body` を `position: fixed` にしたり、`dialog` の `open` 属性で判定したりする方法が使われていました。
 
-```css title="🙅‍♂ Not Recommended: open 属性を持つ dialog で、背面のスクロールを止める"
+```css title="🙅‍♂ Not Recommended: open 属性を持つ dialog で、背面のスクロールを止める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer base {
   body:has(dialog[open]) {

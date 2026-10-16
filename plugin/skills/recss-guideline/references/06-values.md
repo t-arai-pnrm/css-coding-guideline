@@ -1,8 +1,8 @@
 # 第6章 値と単位：ルール
 
-- ガイドラインのバージョン: 0.74.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.75.0（2026-10-16 生成）
 - ルールの数: 30
-- 本文: 約8.8万字
+- 本文: 約8.9万字
 - 読む条件: px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr()
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,7 +15,7 @@
 - `values` 第6章 値と単位（約3,900字）https://t-arai-pnrm.github.io/recss-guideline/values/
 - `values/px-and-rem` 6-1 pxとremを使い分ける（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/values/px-and-rem/
 - `values/viewport-and-container-units` 6-2 ビューポート単位とコンテナ単位（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/values/viewport-and-container-units/
-- `values/math-functions` 6-3 計算関数で根拠を式に残す（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/
+- `values/math-functions` 6-3 計算関数で根拠を式に残す（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/values/math-functions/
 - `values/advanced-math-functions` 6-4 計算関数を応用する（約2.1万字）https://t-arai-pnrm.github.io/recss-guideline/values/advanced-math-functions/
 - `values/if-and-attr` 6-5 if()とattr()で条件と属性を値にする（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/values/if-and-attr/
 

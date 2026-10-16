@@ -22,7 +22,7 @@ import limitBadCss from '../../../demos/notation/scope-limit/style.bad.css?raw';
 
 BEMのクラス名は、2種類の関係を1つの名前に詰めています。`.media-card__title` は「`media-card` の中の見出し」というBlockとElementの関係を表します。`.media-card__title--large` は「その見出しの大きい版」というElementとModifierの関係を表します。この書き方は、MindBEMdingと呼ばれる記法として広く知られています。次の例は動作上の誤りではありませんが、本書では範囲をCSSの構文で表します。
 
-```css title="🙅‍♂ Not Recommended: 2つの関係を名前の連結で表す"
+```css title="🙅‍♂ Not Recommended: 2つの関係を名前の連結で表す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .media-card__title {
   font-size: calc(18 / 16 * 1rem);
@@ -101,7 +101,7 @@ BlockのModifierがElementの見た目を変える場合は、2通りの書き�
 
 ただ、コンポーネントの名前をクラスではなく属性に書く形は、見慣れないものです。本書では `data-*` 属性をバリエーションと状態に使うので、コンポーネントの名前と役割が混ざる点も気になります。
 
-```css title="🙅‍♂ Not Recommended: data 属性を下限にする（本書では採らない）"
+```css title="🙅‍♂ Not Recommended: data 属性を下限にする（本書では採らない）" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope ([data-scope="media-card"]) to ([data-scope]) {
   :scope {
@@ -114,7 +114,7 @@ BlockのModifierがElementの見た目を変える場合は、2通りの書き�
 
 3つ目は、FLOCSSの `c-` のような接頭辞を使い、下限を `to ([class|="c"])` にする案です。接頭辞はすでに多くの現場で守られているので、規則としては浸透させやすい案です。しかし、FLOCSSのLayout、Component、Projectの区別をComponentに集約しなければなりません。どれをLayoutにするかの線引きは人によって違い、区別しても得られるものは少ないからです。
 
-```css title="🙅‍♂ Not Recommended: 接頭辞を下限にする（本書では採らない）"
+```css title="🙅‍♂ Not Recommended: 接頭辞を下限にする（本書では採らない）" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.c-media-card) to ([class|="c"]) {
   :scope {

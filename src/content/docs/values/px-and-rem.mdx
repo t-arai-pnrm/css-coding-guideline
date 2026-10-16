@@ -22,7 +22,7 @@ remへの変換は `calc(24 / 16 * 1rem)` のようにピクセル値からの�
 
 単位の話題でよく見かけるのが、「アクセシビリティのために `font-size` はremで指定する」というルールです。方向は正しいのですが、このルールだけが独り歩きすると、極端な書き方が生まれます。すべてをpxで書く書き方と、余白や線までremで書く書き方です。
 
-```css title="🙅‍♂ Not Recommended: ルートの文字サイズを変えて、すべてをremで書く"
+```css title="🙅‍♂ Not Recommended: ルートの文字サイズを変えて、すべてをremで書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 html {
   font-size: 62.5%;
@@ -152,7 +152,7 @@ emのほかにも、その要素のフォントの寸法を基準にする単位
 
 単位を付けると、事情が変わります。`24px` や `1.5em` のように長さで指定すると、計算した後の長さがそのまま子要素に継承されます。本文の16pxに合わせた24pxの行の高さが32pxの見出しにもそのまま使われ、見出しが2行になると行が重なります。`%` で指定した場合も、計算後の長さが継承される点は同じです。
 
-```css title="🙅‍♂ Not Recommended: 単位のある line-height"
+```css title="🙅‍♂ Not Recommended: 単位のある line-height" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .article {
   line-height: 24px;
@@ -188,7 +188,7 @@ emのほかにも、その要素のフォントの寸法を基準にする単位
 
 たとえば、行頭のアイコンを1行目の中央に置くときは、アイコンの上下の `margin` を、1行の高さとアイコンの大きさの差の半分にします。文字の大きさや `line-height` を変えても、式を直す必要はありません。アイコンの配置の全体は「[11-13 アイコンを配置する](/layout-practice/icon-alignment/)」で説明しています。
 
-```css title="🙆‍♂ Recommended: 1行の高さを基準に、アイコンを1行目の中央に置く"
+```css title="🙆‍♂ Recommended: 1行の高さを基準に、アイコンを1行目の中央に置く" from="values/lh-icon"
 @scope (.scoped.feature-list) to (.scoped) {
   ._item {
     display: block flex;
@@ -216,7 +216,7 @@ remを使ったら、ブラウザの文字サイズの設定を大きくして�
 
 確かめるときは、文字が大きくなっているか、`padding` や線が太くなりすぎていないか、固定の高さから文字があふれていないかを見ます。高さを `height` で固定していると、文字が大きくなったときに中身があふれるので、高さは `min-block-size` で指定します（[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/#rule-min-block-size-over-fixed-height)）。ブレイクポイントをremで指定していれば、文字を大きくしたときに1カラムのレイアウトへ早めに切り替わることも確かめられます。
 
-```css title="🙅‍♂ Not Recommended: 高さを固定したボタン"
+```css title="🙅‍♂ Not Recommended: 高さを固定したボタン" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .button {
   block-size: 48px;

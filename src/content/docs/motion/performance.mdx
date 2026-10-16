@@ -58,7 +58,7 @@ Chromeで、それぞれを1秒間トランジションさせ、パフォーマ�
 
 下へスクロールしたとき、固定ヘッダーを隠す動きで比べます。次の例は、ヘッダーの `inset-block-start` を動かして画面の外に出しています。見た目は意図どおりに動きますが、`inset-block-start` を変えるとレイアウトが起きるので、毎フレーム位置の計算と描き直しが行われます。隠す量にヘッダーの高さを書く必要もあり、高さが変わるたびに値を直さなければなりません。
 
-```css title="🙅‍♂ Not Recommended: inset-block-start を動かして隠す"
+```css title="🙅‍♂ Not Recommended: inset-block-start を動かして隠す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
@@ -125,7 +125,7 @@ Chromeで、それぞれを1秒間トランジションさせ、パフォーマ�
 
 ポインターに追従する光の効果のように、JavaScriptからカスタムプロパティを毎フレーム書き換える実装があります。このとき、値を `:root` のようなグローバルな場所に書き込むと、ページ全体のスタイルが毎回計算し直されます。登録していないカスタムプロパティは継承するので、ルートの値が変わると、その値を受け継ぐすべての子孫の要素が、計算のやり直しの対象になるからです。
 
-```js title="🙅‍♂ Not Recommended: ポインターの位置をルートのカスタムプロパティに書き込む"
+```js title="🙅‍♂ Not Recommended: ポインターの位置をルートのカスタムプロパティに書き込む" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 document.addEventListener('pointermove', (event) => {
   document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
@@ -135,7 +135,7 @@ document.addEventListener('pointermove', (event) => {
 
 値は、それを使う要素だけに書き込みます。さらに、`@property` で `inherits: false` を指定して登録し、子孫に値を受け継がせないようにします。こうすると、値が変わっても計算し直すのはその要素だけです。名前は、`style` 属性で外から渡す値なので、公開プロパティの形にしています。
 
-```css title="🙆‍♂ Recommended: ポインターの位置を、継承しないカスタムプロパティで受ける"
+```css title="🙆‍♂ Recommended: ポインターの位置を、継承しないカスタムプロパティで受ける" from="motion/spotlight"
 @property --spotlight--x {
   syntax: "<length>";
   inherits: false;

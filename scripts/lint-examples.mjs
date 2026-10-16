@@ -1,6 +1,9 @@
 /**
  * 原稿（MDX）の中の「🙆‍♂ Recommended」のCSSコード例を取り出し、本書の Stylelint 設定で検証する。
  * 🙅‍♂ Not Recommended の例とラベルのないコード例は検証しない。
+ * あわせて、コード例の区別の属性（src/lib/code-labels.mjs の use、from、issue）を検査する。
+ * - エラー：use と issue の値が違う、from の指す先がない、Not Recommended に issue がない
+ * - 警告：from のデモの CSS に、抜粋の行がない（抜粋とデモの食い違い）。同じ見出しの下にデモがあるのに from がない
  * デモの CSS（src/demos）は `pnpm lint:css` で検証する。
  * 引数にファイルを渡すとそのファイルだけを検証する（複数の作業を同時に走らせても衝突しない）。
  *
@@ -10,11 +13,11 @@
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 import stylelint from 'stylelint';
+import { CODE_ISSUES, CODE_USES, NOT_RECOMMENDED, RECOMMENDED, fromExists, isDistributedFile, parseCodeMeta } from '../src/lib/code-labels.mjs';
 
 const ROOT = new URL('..', import.meta.url).pathname;
 const DOCS_DIR = join(ROOT, 'src/content/docs');
 const TMP_DIR = join(ROOT, `.tmp/examples-${process.pid}`);
-const RECOMMENDED = '🙆‍♂ Recommended';
 
 const listMdx = async (dir) => {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -33,8 +36,59 @@ const parseFence = (line) => {
   const match = line.match(/^(\s*)(`{3,}|~{3,})\s*([\w-]*)(.*)$/);
   if (!match) return null;
   const [, indent, fence, lang, meta] = match;
-  const title = meta.match(/title=(?:"([^"]*)"|'([^']*)')/);
-  return { indent, fence, lang, title: title ? (title[1] ?? title[2]) : '' };
+  return { indent, fence, lang, ...parseCodeMeta(meta) };
+};
+
+/** デモの CSS の行（前後の空白を除く）。from の抜粋を照らし合わせるのに使う */
+const demoLines = async (from) => {
+  for (const name of ['style.css', 'style.bad.css']) {
+    try {
+      return new Set((await readFile(join(ROOT, 'src/demos', from, name), 'utf8')).split('\n').map((line) => line.trim()));
+    } catch {
+      // 次の名前を試す
+    }
+  }
+  return new Set();
+};
+
+/** コード例の区別の属性を検査し、エラーと警告を返す */
+const checkLabels = async (source) => {
+  const lines = source.split('\n');
+  const problems = [];
+  for (let i = 0; i < lines.length; i++) {
+    const open = parseFence(lines[i]);
+    if (!open) continue;
+    const end = lines.findIndex(
+      (line, index) => index > i && line.trim().startsWith(open.fence) && line.trim().replace(/[`~]/g, '') === '',
+    );
+    if (end === -1) break;
+    const at = (severity, text) => problems.push({ line: i + 1, severity, text });
+    const recommended = open.title.startsWith(RECOMMENDED);
+    const notRecommended = open.title.startsWith(NOT_RECOMMENDED);
+    if (open.use && !CODE_USES[open.use]) at('error', `use="${open.use}" は ${Object.keys(CODE_USES).join('、')} のどれかにしてください。`);
+    if (open.issue && !CODE_ISSUES[open.issue]) at('error', `issue="${open.issue}" は ${Object.keys(CODE_ISSUES).join('、')} のどれかにしてください。`);
+    if (notRecommended && !open.issue) at('error', 'Not Recommended に issue（behavior か convention）を付けてください。');
+    if (open.from && !fromExists(open.from)) at('error', `from="${open.from}" の指す先がありません。`);
+    if (recommended && open.lang === 'css') {
+      if (open.from && !isDistributedFile(open.from) && (open.use ?? 'excerpt') === 'excerpt') {
+        const pool = await demoLines(open.from);
+        const missing = lines
+          .slice(i + 1, end)
+          .map((line) => line.trim())
+          .filter((line) => line && !line.startsWith('/*') && !line.startsWith('*') && line !== '}' && !pool.has(line));
+        if (missing.length) at('warning', `抜粋の ${missing.length} 行が、デモ ${open.from} の CSS にありません（例：${missing[0]}）。`);
+      }
+      if (!open.from) {
+        let start = i;
+        while (start > 0 && !/^#{2,3} /.test(lines[start])) start--;
+        let stop = end;
+        while (stop < lines.length && !/^#{2,3} /.test(lines[stop])) stop++;
+        if (lines.slice(start, stop).some((line) => /<Demo\b/.test(line))) at('warning', '同じ見出しの下にデモがあります。全体がデモにあるなら from を付けてください。');
+      }
+    }
+    i = end;
+  }
+  return problems;
 };
 
 const extractExamples = (source) => {
@@ -64,8 +118,17 @@ await mkdir(TMP_DIR, { recursive: true });
 
 const sources = process.argv.length > 2 ? process.argv.slice(2).map((file) => resolve(file)) : await listMdx(DOCS_DIR);
 const targets = [];
+let labelErrors = 0;
+let labelWarnings = 0;
+const verbose = process.env.LINT_EXAMPLES_VERBOSE === '1';
 for (const file of sources) {
-  const examples = extractExamples(await readFile(file, 'utf8'));
+  const source = await readFile(file, 'utf8');
+  for (const problem of await checkLabels(source)) {
+    if (problem.severity === 'error') labelErrors++;
+    else labelWarnings++;
+    if (problem.severity === 'error' || verbose) console.log(`${relative(ROOT, file)}:${problem.line}  ${problem.severity}  ${problem.text}`);
+  }
+  const examples = extractExamples(source);
   for (const [index, example] of examples.entries()) {
     const name = `${relative(DOCS_DIR, file).replaceAll('/', '__').replace(/\.mdx$/, '')}--${index + 1}.css`;
     const path = join(TMP_DIR, name);
@@ -74,10 +137,12 @@ for (const file of sources) {
   }
 }
 
+if (labelWarnings) console.log(`\nコード例の区別の警告が ${labelWarnings} 件あります（LINT_EXAMPLES_VERBOSE=1 で一覧を出します）。`);
+
 if (targets.length === 0) {
   await rm(TMP_DIR, { recursive: true, force: true });
   console.log('検証する Recommended のコード例はありません。');
-  process.exit(0);
+  process.exit(labelErrors > 0 ? 1 : 0);
 }
 
 const { results } = await stylelint.lint({
@@ -99,4 +164,4 @@ for (const result of results) {
 
 await rm(TMP_DIR, { recursive: true, force: true });
 console.log(`\n${targets.length} 件のコード例を検証しました。`);
-if (errorCount > 0) process.exit(1);
+if (errorCount > 0 || labelErrors > 0) process.exit(1);

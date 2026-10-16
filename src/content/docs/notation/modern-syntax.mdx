@@ -19,7 +19,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 次のコードは、昔の記事やAIの出力でよく見かける書き方です。どれも動きますが、物理的な方向の指定、1値の `display`、`transform` の関数、カンマ区切りの `rgba()` が混ざっています。
 
-```css title="🙅‍♂ Not Recommended: 物理プロパティ、1値の display、transform の関数で書く"
+```css title="🙅‍♂ Not Recommended: 物理プロパティ、1値の display、transform の関数で書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .modal {
   position: fixed;
@@ -83,7 +83,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 
 移動、回転、拡大・縮小には、`transform` の関数ではなく、`translate`、`rotate`、`scale` の個別のプロパティを使います。いちばんの利点は、変形ごとに値を変えられることです。矢印を45度回転させておき、ホバーとフォーカスで右に少し動かす例で比べます。
 
-```css title="🙅‍♂ Not Recommended: 動かすたびに回転も書き直す"
+```css title="🙅‍♂ Not Recommended: 動かすたびに回転も書き直す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._more-link {
   &::after {
@@ -193,7 +193,7 @@ AIは、学習したコードの量が多い古い記法を選びがちです。
 
 色の関数は、`rgb(0 0 0 / 80%)` のように値をスペースで区切り、不透明度は `/` の後ろに書きます。`rgba()` と `hsla()` は使わず、`rgb()` と `hsl()` にそろえます。色相には `210deg` のように単位を付けます。
 
-```css title="🙅‍♂ Not Recommended: 色の値をカンマで区切り、不透明度を rgba() で付ける"
+```css title="🙅‍♂ Not Recommended: 色の値をカンマで区切り、不透明度を rgba() で付ける" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._overlay {
   background-color: rgba(0, 0, 0, 0.6);

@@ -95,7 +95,7 @@ h2 {
 
 `legacy.css` をレイヤーに入れて読み込みます。素のタイプセレクタで見出しの色を決めるルールなので、`base` レイヤーが合います。
 
-```css title="🙆‍♂ Recommended: 引き継いだCSSを base レイヤーに入れて読み込む"
+```css title="🙆‍♂ Recommended: 引き継いだCSSを base レイヤーに入れて読み込む" use="diff" from="tasks/04-cascade/css/style.css"
 @layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
 
 @import url("kiso.css") layer(reset);

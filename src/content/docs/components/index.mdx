@@ -80,7 +80,7 @@ sidebar:
 
 カードどうしの間隔は並べる側が持ち、内側の余白はカードが公開プロパティで受け取ります。カードは、内側の余白を `--news-card--padding` で受け、`:scope` で内部プロパティに受けてデフォルト値を書きます。`tokens/sizes.css` には、16pxに当たる `--spacing--sm: 16;` を足しておきます。
 
-```css title="🙆‍♂ Recommended: カードは内側の余白を公開プロパティで受け取る"
+```css title="🙆‍♂ Recommended: カードは内側の余白を公開プロパティで受け取る" use="diff" from="tasks/10-components/css/components/news-card.css"
 @scope (.scoped.news-card) to (.scoped) {
   :scope {
     --_padding: var(--news-card--padding, calc(var(--spacing--md) * 1px));

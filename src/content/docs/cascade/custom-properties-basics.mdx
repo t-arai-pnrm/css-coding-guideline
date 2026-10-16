@@ -67,7 +67,7 @@ import fallbackCss from '../../../demos/cascade/custom-property-fallback/style.c
 
 注意が要るのは、カスタムプロパティの値に `var()` を書いた場合です。その `var()` は、宣言した要素の上で置き換えられてから子孫に継承されます。次の例では、`._title` で `--_accent` を変えても、下線の色は変わりません。
 
-```css title="🙅‍♂ Not Recommended: 置き換え済みの値を、子孫で参照先を変えて変えようとする"
+```css title="🙅‍♂ Not Recommended: 置き換え済みの値を、子孫で参照先を変えて変えようとする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.notice) to (.scoped) {
   :scope {
@@ -91,7 +91,7 @@ import fallbackCss from '../../../demos/cascade/custom-property-fallback/style.c
 
 `var()` には、カンマで区切った2つ目の引数に、フォールバックの値を書けます。フォールバックが使われるのは、参照したカスタムプロパティの値が「保証された無効値（guaranteed-invalid value）」のときです。カスタムプロパティの初期値はこの値なので、どこにも宣言されていない名前を参照すると、フォールバックが使われます。
 
-```css title="🙆‍♂ Recommended: 未定義のときの値を、var() の2つ目の引数に書く"
+```css title="🙆‍♂ Recommended: 未定義のときの値を、var() の2つ目の引数に書く" from="cascade/custom-property-fallback"
 @scope (.scoped.accent-cases) to (.scoped) {
   ._item {
     border-inline-start: 6px solid var(--_accent, var(--border--strong));
@@ -127,7 +127,7 @@ import fallbackCss from '../../../demos/cascade/custom-property-fallback/style.c
 
 `--_accent` に色ではない値が入ったときに備えて、同じプロパティの値を前の宣言に書いておく、という書き方を考えます。ふつうの宣言を重ねて、未対応のブラウザに従来の値を使わせるときと同じ発想です。
 
-```css title="🙅‍♂ Not Recommended: var() を使う宣言の前に、同じプロパティの値を書いてフォールバックにする"
+```css title="🙅‍♂ Not Recommended: var() を使う宣言の前に、同じプロパティの値を書いてフォールバックにする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.accent-cases) to (.scoped) {
   ._item {

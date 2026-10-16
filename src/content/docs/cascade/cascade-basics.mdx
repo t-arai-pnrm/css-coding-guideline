@@ -27,7 +27,7 @@ import revertKeywordsCss from '../../../demos/cascade/revert-keywords/style.css?
 
 ベーススタイルに、リンクの色を次のように書いたとします。一見すると問題のない指定ですが、この書き方が後の上書きを難しくします。
 
-```css title="🙅‍♂ Not Recommended: 詳細度の高いベーススタイルを、さらに高い詳細度で上書きする"
+```css title="🙅‍♂ Not Recommended: 詳細度の高いベーススタイルを、さらに高い詳細度で上書きする" issue="convention"
 /* 🙅‍♂ Not Recommended */
 a:link,
 a:visited {
@@ -98,7 +98,7 @@ a:link {}               /* 0.1.1 */
 
 リセットCSSのkiso.cssは、すべてのセレクタを `:where()` で包んで詳細度を0にしています。レイヤーなしで読み込まれても上書きしやすくするためです。CMSと共存する場合のようにレイヤーを使えない環境では、ベーススタイルのセレクタも同じように `:where()` で包みます（[4-2 セレクタで詳細度を設計する](/cascade/selectors/)）{/* CMSの節を公開したらリンクする: /operations/cms/ */}。
 
-```css title="🙆‍♂ Recommended: 順番はレイヤーで決め、詳細度は低くそろえる"
+```css title="🙆‍♂ Recommended: 順番はレイヤーで決め、詳細度は低くそろえる" from="cascade/layer-over-specificity"
 @layer base {
   a {
     &:any-link {

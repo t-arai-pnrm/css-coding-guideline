@@ -46,7 +46,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 フッターの紺の面は、21-2の紺の帯と同じく、ルートの配色を暗くして作ります。ルートに `color-scheme: dark` を指定し、同じ要素で背景色と文字色をトークンで指定し直します（「[15-4 ダークモード](/color-media/dark-mode/#一部のコンポーネントだけを暗い配色にする)」）。
 
-```css title="🙆‍♂ Recommended: フッターのルートで配色を暗くし、中の色はトークンで指定する"
+```css title="🙆‍♂ Recommended: フッターのルートで配色を暗くし、中の色はトークンで指定する" from="exercise/footer-1"
 @scope (.scoped.site-footer) to (.scoped) {
   :scope {
     color-scheme: dark;
@@ -82,7 +82,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 上の段は、幅の決まった会社の情報と、伸び縮みするリンクのまとまりを横に並べ、狭ければ縦に積む配置です。21-4の記事の行と同じく、`sidebar` のコンポジションを付け、値はフッターのCSSから渡します（「[21-4 記事リストを作る](/exercise/article-list/)」）。
 
-```html title="🙆‍♂ Recommended: 上の段に sidebar を、リンクのまとまりに cluster を、下の段に apart を付ける"
+```html title="🙆‍♂ Recommended: 上の段に sidebar を、リンクのまとまりに cluster を、下の段に apart を付ける" from="exercise/footer-1"
 <footer class="scoped site-footer">
   <div class="_top | sidebar">
     <div class="_company | side-column">…</div>
@@ -103,7 +103,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 </footer>
 ```
 
-```css title="🙆‍♂ Recommended: コンポジションの値は、フッターの子要素で公開プロパティに渡す"
+```css title="🙆‍♂ Recommended: コンポジションの値は、フッターの子要素で公開プロパティに渡す" from="exercise/footer-1"
 @scope (.scoped.site-footer) to (.scoped) {
   ._top {
     --sidebar--side-width: calc(280 / 16 * 1rem);
@@ -134,7 +134,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 リンクのまとまりでは、リンクを4pxの間隔で縦に詰めて並べるので、文字の高さのままでは、指で押し分けにくくなります。21-2の文字のリンクと同じく、高さを `--_hit-size` で受けて24px相当を確保し、指で操作できる環境では44px相当に広げます（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。切り替えるのは値だけなので、`min-block-size` の指定は1か所のままです。
 
-```css title="🙆‍♂ Recommended: リンクの高さを内部のプロパティで受け、指で操作する環境では値だけを変える"
+```css title="🙆‍♂ Recommended: リンクの高さを内部のプロパティで受け、指で操作する環境では値だけを変える" from="exercise/footer-1"
 @scope (.scoped.site-footer) to (.scoped) {
   a {
     --_hit-size: max(24px, 24 / 16 * 1rem);
@@ -154,7 +154,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 リンクのまとまりを並べるときにやりがちなのは、カンプの列の数をそのままグリッドに書く方法です。
 
-```css title="🙅‍♂ Not Recommended: カンプの列の数をグリッドに書き、狭い画面の列の数をメディアクエリで書く"
+```css title="🙅‍♂ Not Recommended: カンプの列の数をグリッドに書き、狭い画面の列の数をメディアクエリで書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.site-footer) to (.scoped) {
   ._groups {

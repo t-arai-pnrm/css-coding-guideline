@@ -21,7 +21,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 `:hover` をメディアクエリの条件なしに書くと、スマートフォンのようなタッチ操作の端末で問題が起きます。タップした要素にホバーのスタイルが当たったまま、ほかの場所をタップするまで残り続けます。リンクによっては、1回目のタップでホバーの表示だけが変わり、2回目でようやく移動することもあります。
 
-```css title="🙅‍♂ Not Recommended: 条件なしのホバーと、画面の幅によるホバーの判定"
+```css title="🙅‍♂ Not Recommended: 条件なしのホバーと、画面の幅によるホバーの判定" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._submit-button {
   &:hover {
@@ -127,7 +127,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ホバーの表現として手軽なのが、`opacity: 0.7` のように要素を透かす方法です。しかし、この方法はおすすめしません。背景だけでなく文字まで透けるので、コントラストが下がって読みにくくなります。背景に画像や別の色があると、それが透けて見えるのも問題です。
 
-```css title="🙅‍♂ Not Recommended: ホバーを透明度で表し、文字まで薄くする"
+```css title="🙅‍♂ Not Recommended: ホバーを透明度で表し、文字まで薄くする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._submit-button {
   &:hover {
@@ -205,7 +205,7 @@ import hoverBadCss from '../../../demos/interaction/hover-focus/style.bad.css?ra
 
 ホバーで位置や大きさが変わる要素を、そのまま `:hover` の対象にすると、ちらつくことがあります。カーソルが縁にあるとき要素が動くと、ホバーが外れて要素がもとの位置に戻り、戻るとまたホバーが当たる、という繰り返しになるからです。
 
-```css title="🙅‍♂ Not Recommended: ホバーを受ける要素自身を動かす"
+```css title="🙅‍♂ Not Recommended: ホバーを受ける要素自身を動かす" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._submit-button {
   &:hover {

@@ -24,7 +24,7 @@ import toastCss from '../../../demos/color-media/toast-palette/style.css?raw';
 
 色を16進数で指定してトークンにまとめたCSSを考えます。ボタンの背景を少し透過させたいときや、少し暗い色がほしいときに困ります。16進数のトークンからは不透明度を変えられないので、RGBの値を別のトークンとして用意することになります。
 
-```css title="🙅‍♂ Not Recommended: 透過させるためだけに RGB の値を別に持つ"
+```css title="🙅‍♂ Not Recommended: 透過させるためだけに RGB の値を別に持つ" issue="convention"
 /* 🙅‍♂ Not Recommended */
 :root {
   --color-primary: #e4a153;
@@ -144,7 +144,7 @@ import toastCss from '../../../demos/color-media/toast-palette/style.css?raw';
 
 枠線の色は `currentColor` にして、文字色と同じにします。背景の色は、文字色と、文字色に対比する白か黒を `color-mix()` で混ぜ、文字色を10%だけ残した色にします。対比する白か黒は `contrast-color(var(--_foreground))` で作ります。この関数は「[15-3 背景から文字色を決める](/color-media/contrast-text/)」で、背景色から文字色を選ぶ方法として説明しています。ここでは向きを逆にして、文字色から背景の色を選んでいます。Safari 18系に対応するときは、15-3と同じく `oklch(from var(--_foreground) sign(0.7 - l) 0 h)` に置き換えます。
 
-```css title="🙆‍♂ Recommended: 文字色から、枠線と背景の色を作る（対象の環境がSafari 26以上のとき）"
+```css title="🙆‍♂ Recommended: 文字色から、枠線と背景の色を作る（対象の環境がSafari 26以上のとき）" from="color-media/toast-palette"
 @scope (.scoped.toast) to (.scoped) {
   :scope {
     --_foreground: var(--toast--foreground, oklch(45% 0.12 250deg));

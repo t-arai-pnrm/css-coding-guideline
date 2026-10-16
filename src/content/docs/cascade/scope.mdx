@@ -30,7 +30,7 @@ import outerStylesCss from '../../../demos/cascade/scope-outer-styles/style.css?
 
 CSSのセレクタは、ページ全体のどの要素にも当てはまる可能性があります。そのため、コンポーネントのスタイルがほかのコンポーネントに漏れないように、これまではクラス名を工夫してきました。代表的なのが、BEMのようにコンポーネント名を接頭辞にする命名です。
 
-```css title="🙅‍♂ Not Recommended: 子孫セレクタで範囲を限ろうとする"
+```css title="🙅‍♂ Not Recommended: 子孫セレクタで範囲を限ろうとする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .news-card .title {
   color: var(--foreground--accent);
@@ -85,7 +85,7 @@ CSSのセレクタは、ページ全体のどの要素にも当てはまる可�
 
 ここからは、本書の規約です。下限に入れ子のコンポーネントの名前を並べると、カードの中に置く部品が増えるたびに、外側の `@scope` を書き直すことになります。そこで本書では、すべてのコンポーネントのルートに `scoped` のクラスを付け、`@scope (.scoped.<名前>) to (.scoped)` と書きます。下限の `.scoped` は、ルートの内側にある別のコンポーネントのルートすべてに当てはまるので、何を入れ子にしても、外側のスタイルはそこで止まります。
 
-```css title="🙆‍♂ Recommended: すべてのコンポーネントを、下限を .scoped にした @scope で書く"
+```css title="🙆‍♂ Recommended: すべてのコンポーネントを、下限を .scoped にした @scope で書く" from="cascade/donut-scope"
 @scope (.scoped.media-card) to (.scoped) {
   p {
     color: var(--foreground--accent);

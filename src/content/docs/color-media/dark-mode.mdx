@@ -25,7 +25,7 @@ import themeSwitchJs from '../../../demos/color-media/theme-switch/script.js?raw
 
 ダークモードへの対応でよく見るのは、コンポーネントごとに `prefers-color-scheme` のメディアクエリを書き、ダーク用の色を指定し直す書き方です。
 
-```css title="🙅‍♂ Not Recommended: コンポーネントごとにダークモードの色を書く"
+```css title="🙅‍♂ Not Recommended: コンポーネントごとにダークモードの色を書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._card {
   background-color: var(--color--neutral--100);
@@ -46,7 +46,7 @@ import themeSwitchJs from '../../../demos/color-media/theme-switch/script.js?raw
 
 ダークモードの色は、セマンティクスのトークンに `light-dark()` で両方の値を持たせます。`light-dark(ライトの色, ダークの色)` と書くと、要素に適用されている配色に合わせて、どちらか一方の値になります。
 
-```css title="🙆‍♂ Recommended: セマンティクスのトークンに、両方の配色の値を持たせる"
+```css title="🙆‍♂ Recommended: セマンティクスのトークンに、両方の配色の値を持たせる" from="color-media/theme-tokens"
 :root {
   --background--base: light-dark(var(--color--neutral--100), var(--color--neutral--900));
   --background--surface: light-dark(var(--color--neutral--200), var(--color--neutral--800));
@@ -102,7 +102,7 @@ import themeSwitchJs from '../../../demos/color-media/theme-switch/script.js?raw
 
 この仕組みは、トークンを `@property` で `<color>` 型として登録すると成り立ちません。登録したプロパティは、値を定義した `:root` の時点で色に計算され、その色が子孫に継承されます。`:root` がライトの配色なら、`color-scheme: dark` のコンポーネントの中でもライトの色のままです。
 
-```css title="🙅‍♂ Not Recommended: light-dark() で値を持たせるトークンを、色の型で登録する"
+```css title="🙅‍♂ Not Recommended: light-dark() で値を持たせるトークンを、色の型で登録する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @property --foreground--base {
   syntax: "<color>";
@@ -148,7 +148,7 @@ JavaScriptが無効な環境では、スクリプトが動かないので、メ�
 
 画像の明るさや影の強さのように、色以外のスタイルを配色で変えたい場合もあります。テンプレートでは、メタ要素の値から `--color-scheme--current` というカスタムプロパティを決めておき、スタイルクエリで分岐できるようにしています。
 
-```css title="🙆‍♂ Recommended: meta 要素の値から、いまの配色をカスタムプロパティにする"
+```css title="🙆‍♂ Recommended: meta 要素の値から、いまの配色をカスタムプロパティにする" from="color-media/theme-switch"
 :root {
   &:has(meta[name="color-scheme"][content="light only"]) {
     --color-scheme--current: --light;

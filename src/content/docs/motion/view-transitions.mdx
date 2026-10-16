@@ -68,7 +68,7 @@ if (document.startViewTransition) {
 
 切り替えの種類によって動きを変えたいときは、`document.startViewTransition()` に `types` を渡し、CSSでは `:active-view-transition-type()` で選びます。次の例は、テーマを切り替えるときだけ、新しい画面を上から塗り替えるように表示するものです。JavaScriptでは、`document.startViewTransition({ update, types: ['theme-toggle'] })` のように呼びます。
 
-```css title="🙆‍♂ Recommended: 切り替えの種類を選び、独自の動きは条件の中で指定する"
+```css title="🙆‍♂ Recommended: 切り替えの種類を選び、独自の動きは条件の中で指定する" from="motion/vt-theme"
 @keyframes --theme-toggle--reveal {
   from {
     clip-path: inset(0 0 100% 0);
@@ -113,7 +113,7 @@ if (document.startViewTransition) {
 
 カードの一覧のように同じ要素が並ぶ場合、以前は1枚ずつ別の名前を振る必要がありました。
 
-```css title="🙅‍♂ Not Recommended: 並んだ要素に、連番の名前を手で振る"
+```css title="🙅‍♂ Not Recommended: 並んだ要素に、連番の名前を手で振る" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.product-list) to (.scoped) {
   li {
@@ -146,7 +146,7 @@ if (document.startViewTransition) {
 
 `view-transition-name: match-element` を指定すると、ブラウザが要素そのものを手がかりに、要素ごとに一意の名前を内部で付けます。この名前はDOMから読めないので、CSSで選ぶための目印として `view-transition-class` も付けます。クラスは `::view-transition-group(.product-card)` のように、擬似要素の引数に `.` を付けて選びます。
 
-```css title="🙆‍♂ Recommended: 名前はブラウザに任せ、動きはクラスで指定する"
+```css title="🙆‍♂ Recommended: 名前はブラウザに任せ、動きはクラスで指定する" from="motion/vt-shuffle"
 @scope (.scoped.product-list) to (.scoped) {
   li {
     @media (prefers-reduced-motion: no-preference) {

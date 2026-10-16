@@ -47,7 +47,7 @@ import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
 
 ただし、コンテナ自身の見た目は、そのコンテナのサイズクエリでは変えられません。コンテナの幅を条件にコンテナ自身の幅や配置を変えられるとすると、変えた結果で幅が変わり、条件の成否が変わって、また見た目が変わるという循環が起こります。そのため `@container` は、コンテナの子孫のスタイルにだけ条件を付けます。ルートの `:scope` に `@container --scoped (…)` を書くと、ルート自身ではなく、さらに外側にある `--scoped` のコンテナ（外側のコンポーネントのルート）を問い合わせます。
 
-```css title="🙅‍♂ Not Recommended: ルート自身のスタイルで、ルートの幅を問い合わせる"
+```css title="🙅‍♂ Not Recommended: ルート自身のスタイルで、ルートの幅を問い合わせる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
@@ -69,7 +69,7 @@ import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
 
 画像と見出しを並べたカードで、置かれた場所が広いときに、配置、画像の縦横比、見出しの文字サイズをそろって変えたい場面を考えます。基本の書き方のまま、最初の例の `._body` と同じ形で `._thumbnail` と `._title` にもコンテナサイズクエリを書くと、同じ閾値が要素の数だけ並びます。
 
-```css title="🙅‍♂ Not Recommended: 子要素ごとに同じ閾値のコンテナサイズクエリを書く"
+```css title="🙅‍♂ Not Recommended: 子要素ごとに同じ閾値のコンテナサイズクエリを書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
@@ -108,7 +108,7 @@ import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
 
 この重複は、幅の状態を1つの要素でカスタムプロパティのフラグとして立て、子孫の要素がそのフラグを問い合わせる形に変えれば解消します。`@container style(--_density: --spacious)` は、祖先の要素の `--_density` の計算値が `--spacious` のときにだけ、中のスタイルを適用する書き方です。カスタムプロパティは継承するので、フラグを立てた要素の子孫なら、どの深さの要素からでも同じ値を読めます。
 
-```css title="🙆‍♂ Recommended: 閾値はフラグを宣言する要素に1回だけ書き、子孫はスタイルクエリで切り替える"
+```css title="🙆‍♂ Recommended: 閾値はフラグを宣言する要素に1回だけ書き、子孫はスタイルクエリで切り替える" from="components/density-event-card"
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -158,7 +158,7 @@ import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
 
 ホバーとフォーカスでも、幅と同じ形の重複が起こります。リンクにホバーしたとき、中のアイコンを動かし、ラベルに下線を引くとします。従来は、親の状態のセレクタの後ろに子孫結合子で子を続けて選んでいました。
 
-```css title="🙅‍♂ Not Recommended: 親の状態のセレクタから、子孫結合子で子を選ぶ"
+```css title="🙅‍♂ Not Recommended: 親の状態のセレクタから、子孫結合子で子を選ぶ" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.link-menu) to (.scoped) {
   a {
@@ -189,7 +189,7 @@ import hocusCss from '../../../demos/components/hocus-arrow-link/style.css?raw';
 
 幅のフラグと同じく、状態を1か所でフラグにします。リンクやボタンの状態のセレクタで `--_hocus: --true` を立て、子要素と擬似要素は `@container style(--_hocus: --true)` で切り替えます。ホバーを `@media (any-hover)` の中に書き、`:focus-visible` にも同じ変化を付けるという2つの条件は、フラグを立てる1か所にだけ書けば済みます（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。
 
-```css title="🙆‍♂ Recommended: ホバーとフォーカスでフラグを立て、子と擬似要素で問い合わせる"
+```css title="🙆‍♂ Recommended: ホバーとフォーカスでフラグを立て、子と擬似要素で問い合わせる" from="components/hocus-arrow-link"
 @scope (.scoped.link-menu) to (.scoped) {
   :scope {
     --_background: transparent;

@@ -31,7 +31,7 @@ import sizingCss from '../../../demos/layout/normal-flow-sizing/style.css?raw';
 
 通常フローは、`display: flex` や `grid` を指定する前の、何も起きていない状態だと思われがちです。そう考えると、`gap: 16px` を書いたのに子の間が空かない、`align-items: center` で中央に寄らないといった場面で、指定の誤りではなくブラウザの不具合を疑うことになります。実際には、通常フローがこれらのプロパティを使わない方式だというだけです。
 
-```css title="🙅‍♂ Not Recommended: ブロックのままの親に gap と align-items を書く"
+```css title="🙅‍♂ Not Recommended: ブロックのままの親に gap と align-items を書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._list {
   gap: 16px;
@@ -49,7 +49,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 この2つの方向は、物理的な上下左右ではなく、`writing-mode` で決まります。縦書きにすると、ブロック方向は右から左に、インライン方向は上から下に変わります。本書が `width` や `margin-top` ではなく、`inline-size` や `margin-block-start` のような論理プロパティを使うのは、書字方向が変わっても同じ意味で働くからです（「[9-9 論理プロパティと論理値](/notation/logical-properties/)」）。
 
-```css title="🙆‍♂ Recommended: 方向を論理プロパティで書く"
+```css title="🙆‍♂ Recommended: 方向を論理プロパティで書く" from="layout/normal-flow-directions"
 ._block {
   padding-inline-start: 8px;
   border-inline-start: 4px solid var(--foreground--accent);
@@ -105,7 +105,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 `inline flow-root`（`inline-block`）のボックスは、中の最後の行のベースラインを、行の中でそろえる基準にします。ただし、`overflow` を `hidden`、`auto`、`scroll` にしてスクロールコンテナにすると、基準は中の文字ではなく、ボックスの下の `margin` の端に変わります。CSS 2で決まった振る舞いが、互換性のために、いまの仕様（CSS Box Alignment）にも残っています。ボックスの下端がまわりの文字のベースラインにそろうので、ボックスは持ち上がり、中の文字はまわりの文字より高い位置に並びます。
 
-```css title="🙅‍♂ Not Recommended: 文中のラベルを overflow: hidden で切り取る"
+```css title="🙅‍♂ Not Recommended: 文中のラベルを overflow: hidden で切り取る" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._label {
   display: inline flow-root;
@@ -153,7 +153,7 @@ AIが生成するコードにも、この誤解が表れます。ブロックの
 
 匿名ボックスは、HTMLの改行や空白からも作られます。要素を `inline flow-root`（`inline-block`）にして横に並べると、タグの間の改行が1文字分の空白として行に入り、要素の間に意図しない隙間ができます。
 
-```css title="🙅‍♂ Not Recommended: inline flow-root（inline-block）で横に並べる"
+```css title="🙅‍♂ Not Recommended: inline flow-root（inline-block）で横に並べる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .tag-list {
   & > li {

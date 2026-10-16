@@ -46,7 +46,7 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 
 プランは、一覧のコンポーネント `pricing-plans` の子要素として書きます。プランは料金の一覧の中でしか使わず、後で説明するように、プランをまたいだ位置合わせも一覧が受け持つからです（`local-parts-stay-in-parent`）。
 
-```html title="🙆‍♂ Recommended: 一覧に switcher を付け、おすすめのプランは data-variant で選ぶ"
+```html title="🙆‍♂ Recommended: 一覧に switcher を付け、おすすめのプランは data-variant で選ぶ" from="exercise/pricing-1"
 <ul class="scoped pricing-plans | switcher">
   <li class="_plan">
     <div class="_name | cluster">
@@ -74,7 +74,7 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 
 おすすめかどうかは、置き場所ではなく、編集者がプランごとに選ぶ情報です。そこで、プランの `data-variant="recommended"` で選びます（「[9-2 BEMからの書き直しとバリエーション](/notation/variants/)」）。紺の面は、21-2の紺の帯と同じく、配色を暗くして作ります。
 
-```css title="🙆‍♂ Recommended: おすすめのプランだけ配色を暗くし、中の色はトークンに切り替えさせる"
+```css title="🙆‍♂ Recommended: おすすめのプランだけ配色を暗くし、中の色はトークンに切り替えさせる" from="exercise/pricing-1"
 @scope (.scoped.pricing-plans) to (.scoped) {
   ._plan {
     padding: 24px;
@@ -115,7 +115,7 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 
 ずれをそろえるために、説明や項目のリストに高さを与えると、中身の量の想定を値として埋め込むことになります。
 
-```css title="🙅‍♂ Not Recommended: 説明と項目のリストに、いちばん長いプランに合わせた高さを与える"
+```css title="🙅‍♂ Not Recommended: 説明と項目のリストに、いちばん長いプランに合わせた高さを与える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.pricing-plans) to (.scoped) {
   ._description {
@@ -132,7 +132,7 @@ import pricingChangedCss from '../../../demos/exercise/pricing-2/style.css?raw';
 
 本書では、各プランを `subgrid` にして、一覧のグリッドの行に参加させます。プランの5つの子要素が、一覧の5つの行に1つずつ入るので、同じ行に並んだ要素のうち、いちばん高いものに合わせて行の高さが決まります（「[7-9 Gridでアイテムをそろえる](/layout/grid-alignment/#サブグリッドでカードの行をそろえる)」）。
 
-```css title="🙆‍♂ Recommended: 各プランを5行にまたがらせ、一覧の行を subgrid で使う"
+```css title="🙆‍♂ Recommended: 各プランを5行にまたがらせ、一覧の行を subgrid で使う" use="diff" from="exercise/pricing-2"
 @scope (.scoped.pricing-plans) to (.scoped) {
   :scope {
     & > ._plan {

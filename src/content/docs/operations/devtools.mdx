@@ -20,7 +20,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 1つ目は、取り消し線が引かれている宣言です。ほかのルールの宣言に負けている（上書きされている）ことを示します。勝っている宣言は、同じプロパティを持つ別のルールとして、スタイルペインの上のほうに表示されます。2つの宣言を見比べ、レイヤー、詳細度、スコープの近さ、出現順のどこで差が付いたかを確かめます。スタイルペインでは、ルールの上に `@layer` や `@scope` の条件も表示されるので、まずレイヤーが同じかどうかを見ます。レイヤーが違えば、詳細度をいくら上げても順位は変わりません。カスケードの順位の決まり方は「[4-1 カスケード・詳細度・継承](/cascade/cascade-basics/)」、レイヤーの順位は「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」、スコープの近さは「[4-4 @scopeでスタイルを閉じ込める](/cascade/scope/)」で説明しています。
 
-```css title="🙅‍♂ Not Recommended: 負けた理由を確かめずに順位を引き上げる"
+```css title="🙅‍♂ Not Recommended: 負けた理由を確かめずに順位を引き上げる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._title {
   color: var(--color-text-accent) !important;
@@ -33,7 +33,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 3つ目は、取り消し線がなく、勝っているように見えるのに、表示が変わらない宣言です。ここには2つの場合があります。1つは、宣言が働く条件を満たしていない場合で、Flexコンテナでない要素の `justify-content` などがこれに当たります。Chromeは、こうした宣言の横に情報のアイコンを表示し、何が足りないかを説明します。もう1つは、未定義のカスタムプロパティを参照している場合です。
 
-```css title="🙅‍♂ Not Recommended: 未定義のカスタムプロパティを代替値なしで参照する"
+```css title="🙅‍♂ Not Recommended: 未定義のカスタムプロパティを代替値なしで参照する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._list {
   gap: var(--card-gap); /* 宣言したのは --card--gap */
@@ -88,7 +88,7 @@ Flexアイテムとグリッドアイテムが縮まないときは、`min-inlin
 
 よくある原因は3つです。1つ目は、名前の不一致です。`@container --scoped (…)` の名前がルートの `container-name` と違うと、名前の合うコンテナが祖先にないので、クエリは一致しません。2つ目は、コンテナ自身をクエリで変えようとしていることです。コンテナサイズクエリが問い合わせるのは祖先のコンテナなので、コンテナの要素自身の宣言は、自分の大きさでは切り替わりません。
 
-```css title="🙅‍♂ Not Recommended: コンテナ自身の余白を自分のクエリで切り替える"
+```css title="🙅‍♂ Not Recommended: コンテナ自身の余白を自分のクエリで切り替える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.card) to (.scoped) {
   :scope {

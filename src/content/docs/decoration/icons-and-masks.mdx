@@ -24,7 +24,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 単色のアイコンは、SVGを `mask-image` のマスクにして描けます。テンプレートでは、矢印のアイコンをdata URIのトークン（`--chevron--rightward` など）として定義し、擬似要素の `mask-image` で参照しています。色は `background-color` で塗るので、文字色やホバーの状態に合わせて変えられます。
 
-```css title="🙆‍♂ Recommended: マスクで切り抜き、背景色で塗る"
+```css title="🙆‍♂ Recommended: マスクで切り抜き、背景色で塗る" from="decoration/mask-icon"
 ._more {
   &::after {
     content: "";
@@ -48,7 +48,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 `display: inline flow-root` は、空の擬似要素に幅と高さを持たせるための指定です。親が `display: inline flex` のようなフレックスコンテナなら、擬似要素はフレックスアイテムとしてブロックの箱になるので、この指定は要りません。その代わり、フレックスアイテムの伸び縮みで、アイコンが正方形でなくなります。
 
-```css title="🙆‍♂ Recommended: フレックスアイテムのアイコンを、伸び縮みさせない"
+```css title="🙆‍♂ Recommended: フレックスアイテムのアイコンを、伸び縮みさせない" from="decoration/mask-icon"
 ._more {
   display: inline flex;
   gap: 4px;
@@ -78,7 +78,7 @@ import currentColorCss from '../../../demos/decoration/current-color-icon/style.
 
 インラインSVGのアイコンは、`fill` や `stroke` を `currentColor` にして、文字色に合わせます。ボタンの種類や状態ごとにアイコンの色を指定し直す必要がなくなり、文字色を変えるだけで、アイコンも一緒に変わります。
 
-```css title="🙅‍♂ Not Recommended: 状態ごとにアイコンの色を指定し直す"
+```css title="🙅‍♂ Not Recommended: 状態ごとにアイコンの色を指定し直す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 button {
   color: var(--foreground--base);
@@ -97,7 +97,7 @@ button {
 }
 ```
 
-```css title="🙆‍♂ Recommended: アイコンは文字色に合わせ、文字色だけを切り替える"
+```css title="🙆‍♂ Recommended: アイコンは文字色に合わせ、文字色だけを切り替える" from="decoration/current-color-icon"
 button {
   color: var(--foreground--base);
 
@@ -202,7 +202,7 @@ button {
 
 `<use>` で参照した図形は、`<use>` 要素のシャドウツリーに複製されます。外の文書に書いたスタイルのルールは、この複製した要素には当たりません。そのため、`.button path` のように、置いた場所の祖先から中の図形を選ぶことはできません。Chromeで確かめたところ、`.button path` に指定した `fill` は当たらず、図形は `svg` 要素から継承した色のままでした。
 
-```css title="🙅‍♂ Not Recommended: 置いた場所の祖先から、use の中の図形を選ぶ"
+```css title="🙅‍♂ Not Recommended: 置いた場所の祖先から、use の中の図形を選ぶ" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .button {
   & path {

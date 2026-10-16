@@ -17,6 +17,7 @@
  */
 import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
 import { buildSrcdoc, type DemoBase, type DemoBleed, type DemoScheme } from '../lib/demo';
+import { demoAnchor } from '../lib/code-labels.mjs';
 
 interface Props {
   /** デモの内容を表す説明。iframe の title とキャプションに使う。 */
@@ -71,6 +72,7 @@ const isAutoHeight = height === 'auto';
 ---
 
 <figure
+  id={demoAnchor(title)}
   class="scoped css-demo | not-content"
   data-css-demo
   data-auto-height={isAutoHeight ? '' : undefined}
@@ -112,7 +114,7 @@ const isAutoHeight = height === 'auto';
 </figure>
 <Tabs>
   <TabItem label="CSS">
-    <Code code={cssCode} lang="css" title={cssTitle} />
+    <Code code={cssCode} lang="css" title={cssTitle} meta={variant === 'recommended' ? 'use="complete"' : undefined} />
   </TabItem>
   {
     showHtml && (

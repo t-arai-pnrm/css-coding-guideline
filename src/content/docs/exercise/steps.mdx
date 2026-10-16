@@ -43,7 +43,7 @@ import stepsChangedCss from '../../../demos/exercise/steps-2/style.css?raw';
 
 番号は、HTMLに書かず、CSSのカウンターで数えます。`<ol>` で `counter-reset` し、各 `<li>` で `counter-increment` すれば、ステップの増減に合わせて、番号は自動で振り直されます。番号を丸で囲むので、`::marker` ではなく `::before` に描きます（「[16-7 文字とリストの装飾](/decoration/text-ornaments/)」）。
 
-```css title="🙆‍♂ Recommended: ol で数え始め、li ごとに数え、::before に番号を描く"
+```css title="🙆‍♂ Recommended: ol で数え始め、li ごとに数え、::before に番号を描く" from="exercise/steps-1"
 @scope (.scoped.steps) to (.scoped) {
   ol {
     counter-reset: --step;
@@ -75,7 +75,7 @@ import stepsChangedCss from '../../../demos/exercise/steps-2/style.css?raw';
 
 横と縦の並びは、置かれた幅で切り替えます。コンポーネントのルートをコンテナにし、`<ol>` のルールにだけコンテナサイズクエリを書いて、幅の状態をフラグ `--_density` にします。横に並べるときは、列の数を `repeat(5, 1fr)` のように書かず、`grid-auto-flow: column` でステップの数だけ列を作ります（「[7-8 Gridの基礎](/layout/grid-basics/)」）。
 
-```css title="🙆‍♂ Recommended: ステップの数だけ列を作り、横に並べられる幅を式で書く"
+```css title="🙆‍♂ Recommended: ステップの数だけ列を作り、横に並べられる幅を式で書く" from="exercise/steps-1"
 @scope (.scoped.steps) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -105,7 +105,7 @@ import stepsChangedCss from '../../../demos/exercise/steps-2/style.css?raw';
 
 線は、各ステップの `::after` で、自分の番号から次のステップの番号までを引きます。最後のステップを除くために、すべてのステップに線を引いてから最後だけを打ち消すのではなく、次のステップがある項目だけを `:has(+ li)` で選びます。
 
-```css title="🙆‍♂ Recommended: 次のステップがある項目だけを選び、線の向きはフラグで切り替える"
+```css title="🙆‍♂ Recommended: 次のステップがある項目だけを選び、線の向きはフラグで切り替える" from="exercise/steps-1"
 @scope (.scoped.steps) to (.scoped) {
   li {
     position: relative;
@@ -149,7 +149,7 @@ import stepsChangedCss from '../../../demos/exercise/steps-2/style.css?raw';
 
 直したのは、HTMLにステップを1つ足したことと、閾値の式の中のステップの数と間隔の数の2つの値です。
 
-```css title="🙆‍♂ Recommended: 閾値の式のステップの数と間隔の数を、6つに合わせて直す"
+```css title="🙆‍♂ Recommended: 閾値の式のステップの数と間隔の数を、6つに合わせて直す" use="diff" from="exercise/steps-2"
 @scope (.scoped.steps) to (.scoped) {
   ol {
     --_density: --compact;

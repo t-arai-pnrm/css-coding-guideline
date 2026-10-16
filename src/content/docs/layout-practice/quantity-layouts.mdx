@@ -32,7 +32,7 @@ import zoneLayoutCss from '../../../demos/layout-practice/zone-layout/style.css?
 
 最終行の端数を中央に寄せるときは、数えた子そのものの開始位置を変えるので、子の側で数えます（「[5-5 数量クエリ](/pseudo/quantity-queries/)」）。次のデモでは、列の最小幅が160px相当、間隔が24pxのグリッドに、2列分を占めるカードを並べています。1行に並ぶカードの数は、列の数の半分です。最終行に残ったカードの `grid-column-start` を、空いた列の半分だけ後ろにずらして中央に寄せます。
 
-```css title="🙆‍♂ Recommended: 最後のカードが奇数番目なら、2列目から始める（1行に2枚の場合）"
+```css title="🙆‍♂ Recommended: 最後のカードが奇数番目なら、2列目から始める（1行に2枚の場合）" from="layout-practice/centered-last-row"
 @scope (.scoped.product-cards) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -85,7 +85,7 @@ import zoneLayoutCss from '../../../demos/layout-practice/zone-layout/style.css?
 
 ゾーンの配置は、`grid-template` のエリアに名前を付け、ゾーンの有無と件数でテンプレートを書き換えて選びます。引用があれば特集の右に置き、引用がなければ特集を全幅に広げます。引用があり、新着記事が6件以上あれば、引用の列を新着記事の横まで縦に通します。
 
-```css title="🙆‍♂ Recommended: ゾーンの有無と件数で、テンプレートを書き換える"
+```css title="🙆‍♂ Recommended: ゾーンの有無と件数で、テンプレートを書き換える" from="layout-practice/zone-layout"
 @scope (.scoped.home-layout) to (.scoped) {
   :scope {
     container: --scoped / inline-size;

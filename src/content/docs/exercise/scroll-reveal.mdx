@@ -44,7 +44,7 @@ import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/styl
 
 画面に入ったことは、スクロール駆動アニメーションの `view()` のタイムラインで知ります。ただし、見た目そのものをスクロールの位置で動かすと、スクロールを止めたとき表示が途中のまま残り、動きの速さもスクロールの速さに左右されます。そこで、`view()` のタイムラインはきっかけにだけ使い、見た目は、時間で進むアニメーションを再生して動かします（「[18-9 スクロールに合わせて動かす](/motion/scroll-driven/#画面に入ったら1回だけ再生する)」）。
 
-```css title="🙆‍♂ Recommended: セクションのルートで --_in-view を切り替え、中身の一時停止したアニメーションを再生する"
+```css title="🙆‍♂ Recommended: セクションのルートで --_in-view を切り替え、中身の一時停止したアニメーションを再生する" from="exercise/scroll-reveal-1"
 @keyframes --page-top--in-view {
   from {
     --_in-view: --false;
@@ -120,7 +120,7 @@ import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/styl
 
 各カードの遅れは、`sibling-index()` で兄弟の中の順番から計算します。カードごとに `:nth-child()` で値を書く必要はなく、カードが増えても書き足すものはありません。
 
-```css title="🙆‍♂ Recommended: 順番から遅れを計算し、6枚目以降は同じ遅れにする"
+```css title="🙆‍♂ Recommended: 順番から遅れを計算し、6枚目以降は同じ遅れにする" use="diff" from="exercise/scroll-reveal-2"
 @scope (.scoped.page-top) to (.scoped) {
   ._strength {
     --_stagger: 80ms;

@@ -30,7 +30,7 @@ import emptyErrorCss from '../../../demos/pseudo/empty-error/style.css?raw';
 
 開いたメニューやアコーディオンには、JavaScriptで `.is-open` のようなクラスを付けて、スタイルを切り替えることがよくあります。しかし、`<details>` や `popover` 属性の要素は、ブラウザが自分で開閉し、開いているかどうかを要素の状態として持っています。そこにクラスを足すと、同じ状態を要素の状態とクラスの2か所で持つことになります。
 
-```css title="🙅‍♂ Not Recommended: 開閉の状態をクラスで表す"
+```css title="🙅‍♂ Not Recommended: 開閉の状態をクラスで表す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .filter-details.is-open {
   border-color: var(--foreground--accent);
@@ -61,7 +61,7 @@ import emptyErrorCss from '../../../demos/pseudo/empty-error/style.css?raw';
 
 `[open]` と `:open` を並べて書く必要もありません。セレクタリストの中に解釈できないセレクタが1つでもあると、ルール全体が無効になるからです。次の例は、`:open` に対応していないSafariでは、`[open]` の側も含めて当たりません。`:is()` で包めば無効にはなりません。しかし、`<details>` では2つが同じ要素を選ぶので、並べても選べる要素は増えません。
 
-```css title="🙅‍♂ Not Recommended: [open] と :open をセレクタリストに並べる"
+```css title="🙅‍♂ Not Recommended: [open] と :open をセレクタリストに並べる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 details {
   &:open,
@@ -71,7 +71,7 @@ details {
 }
 ```
 
-```css title="🙆‍♂ Recommended: details の開いた状態を [open] で選ぶ"
+```css title="🙆‍♂ Recommended: details の開いた状態を [open] で選ぶ" from="pseudo/details-open"
 @scope (.scoped.filter-details) to (.scoped) {
   :scope {
     border: 1px solid var(--border--base);
@@ -107,7 +107,7 @@ details {
 
 `<dialog>` の `open` 属性は、開き方を区別しません。`show()` でモーダルでないダイアログとして開いても、`showModal()` や `command="show-modal"` でモーダルとして開いても、`open` 属性が付きます。`:modal` は、そのうちモーダルとして開いたものだけに当てはまる擬似クラスです。モーダルのダイアログは背面の操作を止めてトップレイヤーに表示されるので、画面の中央に置く、背面を暗くするといった見た目は、この状態に結び付けます。
 
-```css title="🙆‍♂ Recommended: 開き方によって、ダイアログの置き方を変える"
+```css title="🙆‍♂ Recommended: 開き方によって、ダイアログの置き方を変える" from="pseudo/dialog-modes"
 @scope (.scoped.help-dialog) to (.scoped) {
   :scope {
     &:modal {
@@ -141,7 +141,7 @@ details {
 
 `:target` は、URLのフラグメント（`#` の後ろ）と同じ `id` を持つ要素に当てはまる擬似クラスです。ページ内リンクで移動すると、移動先の要素が `:target` になり、別のフラグメントに移るか、フラグメントのないURLに戻るまで当てはまり続けます。FAQの項目へのリンクで移動したとき、その項目に線を引いて、どこへ移動したかを示す用途に使えます。
 
-```css title="🙆‍♂ Recommended: ページ内リンクの移動先になった項目に線を引く"
+```css title="🙆‍♂ Recommended: ページ内リンクの移動先になった項目に線を引く" from="pseudo/target-faq"
 @scope (.scoped.faq-item) to (.scoped) {
   :scope {
     border-inline-start: 4px solid transparent;
@@ -182,7 +182,7 @@ Selectors Level 4の草案では、空白だけを含む要素も空とみなす
 
 そのため、`:empty` は、中身がないときの出力を制御できる要素にだけ使います。次の例は、入力欄のエラーの文言をJavaScriptで入れる領域を、文言がないときだけ隠します。HTMLでは、開始タグと終了タグの間に改行を入れないことが前提です。テンプレートやCMSが改行を出力しうる要素では、`:empty` で判定せず、中身がないときは要素そのものを出力しないようにします。
 
-```css title="🙆‍♂ Recommended: 文言がないときだけ、エラーの領域を隠す"
+```css title="🙆‍♂ Recommended: 文言がないときだけ、エラーの領域を隠す" from="pseudo/empty-error"
 @scope (.scoped.text-field) to (.scoped) {
   ._error {
     &:empty {

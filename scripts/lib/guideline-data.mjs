@@ -13,6 +13,7 @@ import { parse } from 'yaml';
 import { BASELINE_CHECKED, CHAPTERS, PARTS, chapterLabel } from '../../src/lib/book.mjs';
 import { RULE_KINDS } from '../../src/lib/rule-kinds.mjs';
 import { READINGS, needsReading, readingText } from '../../src/lib/reading.mjs';
+import { CODE_ISSUES, CODE_USES, NOT_RECOMMENDED, RECOMMENDED, fromText, parseCodeMeta } from '../../src/lib/code-labels.mjs';
 import { pageUrl } from '../../src/lib/site.mjs';
 
 const ROOT = new URL('../..', import.meta.url).pathname.replace(/\/$/, '');
@@ -221,8 +222,26 @@ const replaceComponents = (text, render) => {
 };
 
 /** MDX の本文を Markdown にする。 */
+/**
+ * コードフェンスの開始行の区別の属性（use、from、issue）を、タイトルの中の文に置き換える
+ * （例：🙆‍♂ Recommended（抜粋。全体：デモ「…」）: …）。AI はタイトルだけを読むため。
+ */
+const labelFences = (body) =>
+  body.replace(/^([ \t]*(?:`{3,}|~{3,})[\w-]*)[ \t]+(.*\btitle=.*)$/gm, (line, open, meta) => {
+    const { title, use, from, issue } = parseCodeMeta(meta);
+    let labelled = title;
+    if (title.startsWith(RECOMMENDED)) {
+      const notes = [CODE_USES[use ?? 'excerpt'], fromText(from)].filter(Boolean).join('。');
+      labelled = title.replace(RECOMMENDED, `${RECOMMENDED}（${notes}）`);
+    } else if (title.startsWith(NOT_RECOMMENDED) && CODE_ISSUES[issue]) {
+      labelled = title.replace(NOT_RECOMMENDED, `${NOT_RECOMMENDED}（${CODE_ISSUES[issue]}）`);
+    }
+    if (labelled === title && !use && !from && !issue) return line;
+    return `${open} title="${labelled}"`;
+  });
+
 const mdxBodyToMarkdown = (body, context) => {
-  const withoutImports = body.replace(/^import\s[^\n]*\n/gm, '');
+  const withoutImports = labelFences(body.replace(/^import\s[^\n]*\n/gm, ''));
   return mapOutsideFences(withoutImports, (segment) => {
     // インラインコードの中は置き換えないように、いったん退避する
     const codes = [];

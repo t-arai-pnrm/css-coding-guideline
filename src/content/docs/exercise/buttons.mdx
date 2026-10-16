@@ -50,7 +50,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 小見出しと見出しを包む要素を、`section-intro` のようなコンポーネントにしたくなるかもしれません。しかし、この組で決めたいのは見た目だけで、包む要素の種類や、リード文を置くかどうかは、セクションごとに違います（「[10-1 何をコンポーネントにするか](/components/what-is-a-component/)」）。そこで、小見出しに `eyebrow`、見出しに `section-heading` のパターンを付け、包む `<hgroup>` はセクションの子要素として書きます。
 
-```html title="🙆‍♂ Recommended: ボタンはコンポーネントのルートに、見出しの文字にはパターンを付ける"
+```html title="🙆‍♂ Recommended: ボタンはコンポーネントのルートに、見出しの文字にはパターンを付ける" from="exercise/buttons-1"
 <section>
   <hgroup class="_heading">
     <p class="eyebrow" lang="en">Service</p>
@@ -73,7 +73,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 3つの種類は、`data-variant` の値で分けます。主ボタンを属性のないデフォルトにし、`secondary` と `text` を足します。3つは同時に選ばない、1つの軸の値なので、属性は1つで足ります（「[9-2 BEMからの書き直しとバリエーション](/notation/variants/)」）。
 
-```css title="🙆‍♂ Recommended: 種類ごとに内部プロパティの値だけを変え、状態の指定は1か所に書く"
+```css title="🙆‍♂ Recommended: 種類ごとに内部プロパティの値だけを変え、状態の指定は1か所に書く" from="exercise/buttons-1"
 @scope (.scoped.action-control) to (.scoped) {
   :scope {
     --_background: var(--background--inverse);
@@ -115,7 +115,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 ホバーは、操作できる状態のリンクとボタンに絞り、`@media (any-hover)` の中に書きます。キーボードで操作する人にも同じ合図を出すため、`:focus-visible` にも同じ背景を指定します（「[17-1 ホバーとフォーカスを表す](/interaction/states-and-focus/)」）。
 
-```css title="🙆‍♂ Recommended: ルートで --_hocus を立て、矢印はフラグを読んで動かす"
+```css title="🙆‍♂ Recommended: ルートで --_hocus を立て、矢印はフラグを読んで動かす" from="exercise/buttons-1"
 @scope (.scoped.action-control) to (.scoped) {
   :scope {
     --_hit-size: max(24px, 24 / 16 * 1rem);
@@ -158,7 +158,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 パターンは `patterns` レイヤーに置き、小見出しと見出しの見た目だけを書きます。`patterns` はコンポーネントより後ろのレイヤーなので、パターンに書いたプロパティは、置かれたセクションのCSSから変えられなくなります（「[10-3 コンポジションとユーティリティ](/components/compositions-and-utilities/#パターンに書いてよいプロパティ)」）。
 
-```css title="🙆‍♂ Recommended: パターンには小見出しと見出しの見た目だけを書き、外側の余白は置く側に任せる"
+```css title="🙆‍♂ Recommended: パターンには小見出しと見出しの見た目だけを書き、外側の余白は置く側に任せる" from="exercise/buttons-1"
 @layer patterns {
   .eyebrow {
     inline-size: fit-content;
@@ -221,7 +221,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 紺の面のための種類を足す方法では、置き場所の違いをボタンの種類として扱うことになります。
 
-```css title="🙅‍♂ Not Recommended: 紺の面に置くときの見た目を、ボタンの種類として足す"
+```css title="🙅‍♂ Not Recommended: 紺の面に置くときの見た目を、ボタンの種類として足す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.action-control) to (.scoped) {
   :scope {
@@ -240,7 +240,7 @@ import buttonsChangedCss from '../../../demos/exercise/buttons-2/style.css?raw';
 
 本書では、ボタンを直さずに、帯の配色を暗くします。帯のルートに `color-scheme: dark` を指定し、同じ要素で文字色と背景色をトークンで指定し直します（「[15-4 ダークモード](/color-media/dark-mode/#一部のコンポーネントだけを暗い配色にする)」）。
 
-```css title="🙆‍♂ Recommended: 帯のルートで配色を暗くし、文字色と背景色を指定し直す"
+```css title="🙆‍♂ Recommended: 帯のルートで配色を暗くし、文字色と背景色を指定し直す" use="diff" from="exercise/buttons-2"
 @scope (.scoped.cta-band) to (.scoped) {
   :scope {
     display: block grid;

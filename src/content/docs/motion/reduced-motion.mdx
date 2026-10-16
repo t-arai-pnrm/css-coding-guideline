@@ -43,7 +43,7 @@ WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーシ�
 
 動きを減らす設定への対応として、全称セレクタと `!important` で、すべての要素の動きを止める書き方がよく使われています。以前の私も、この書き方をしていました。再生時間を0ではなく `1ms` にするのは、JavaScriptの `transitionend` や `animationend` のイベントを発火させるための工夫です。
 
-```css title="🙅‍♂ Not Recommended: 全称セレクタと !important で、すべての動きを止める"
+```css title="🙅‍♂ Not Recommended: 全称セレクタと !important で、すべての動きを止める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -114,7 +114,7 @@ WCAG 2.2の達成基準2.3.3「インタラクションによるアニメーシ�
 
 画面の端から滑り込むドロワーは、開いたことを伝える機能的な動きですが、画面の3分の1以上を占める要素が移動します。動きを減らす設定のときは移動をやめ、フェードだけを残します。
 
-```css title="🙆‍♂ Recommended: 動きを減らす設定のときは、移動をやめてフェードだけにする"
+```css title="🙆‍♂ Recommended: 動きを減らす設定のときは、移動をやめてフェードだけにする" from="motion/drawer-reduced"
 @scope (.scoped.site-drawer) to (.scoped) {
   :scope {
     --_translate-from: 0;

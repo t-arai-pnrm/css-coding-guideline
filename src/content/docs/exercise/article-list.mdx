@@ -48,7 +48,7 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 
 線は、行を並べる一覧（`article-list`）に描かせます。行の間の線は、2つの行の間にあるものなので、片方の行の `border` にすると、末尾の行の線を打ち消す指定が要ります（「[16-10 区切り線を引く](/decoration/separators/)」）。行（`article-row`）は、自分が一覧の何番目にあるかを知らずに済みます。
 
-```css title="🙆‍♂ Recommended: 行の間の線は一覧の gap に、上下の線は一覧の枠線に描く"
+```css title="🙆‍♂ Recommended: 行の間の線は一覧の gap に、上下の線は一覧の枠線に描く" from="exercise/article-list-1"
 @scope (.scoped.article-list) to (.scoped) {
   :scope {
     display: block grid;
@@ -65,7 +65,7 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 
 サムネイルと文字の並びは、幅の決まったサイドと、伸び縮みするメインの2つを横に並べ、狭ければ縦に積む配置です。そこで、行のルートに `sidebar` のコンポジションを付け、値は行のCSSから渡します（「[12-6 sidebar：メインとサイドの2カラムにし、狭ければ縦に積む](/compositions/sidebar/)」）。
 
-```html title="🙆‍♂ Recommended: 行のルートに sidebar を付け、画像をサイドに、文字をメインにする"
+```html title="🙆‍♂ Recommended: 行のルートに sidebar を付け、画像をサイドに、文字をメインにする" from="exercise/article-list-1"
 <article class="scoped article-row | sidebar">
   <img class="side-column" src="…" alt="" width="640" height="360">
   <div class="_body | main-column">
@@ -76,7 +76,7 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 </article>
 ```
 
-```css title="🙆‍♂ Recommended: sidebar の値は、行のルートで公開プロパティに渡す"
+```css title="🙆‍♂ Recommended: sidebar の値は、行のルートで公開プロパティに渡す" from="exercise/article-list-1"
 @scope (.scoped.article-row) to (.scoped) {
   :scope {
     --sidebar--side-width: calc(220 / 16 * 1rem);
@@ -98,7 +98,7 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 
 行を `<a>` で包むと、行の中身すべてがリンクのテキストになり、スクリーンリーダーは日付から抜粋までを続けてリンクとして読み上げます。そこで、リンクは見出しの `<a>` だけのままにし、その `::after` を行いっぱいに広げます（「[17-4 カード全体をリンクにする](/interaction/card-link/)」）。
 
-```css title="🙆‍♂ Recommended: 見出しのリンクを行いっぱいに広げ、状態はルートの --_has-hocus にまとめる"
+```css title="🙆‍♂ Recommended: 見出しのリンクを行いっぱいに広げ、状態はルートの --_has-hocus にまとめる" from="exercise/article-list-1"
 @scope (.scoped.article-row) to (.scoped) {
   :scope {
     --_has-hocus: --false;
@@ -150,7 +150,7 @@ import articleListChangedCss from '../../../demos/exercise/article-list-2/style.
 
 絞り込みは、各カテゴリーのページへのリンクです。今いるページのリンクには `aria-current="page"` を付け、スクリーンリーダーにも、今いるページだと伝えます。CSSは、この属性を状態のセレクタにして見た目を変えます。状態のためのクラスは足しません（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。
 
-```css title="🙆‍♂ Recommended: リンクを隙間なく並べ、ピルの形と今いるページの塗りを擬似要素に描く"
+```css title="🙆‍♂ Recommended: リンクを隙間なく並べ、ピルの形と今いるページの塗りを擬似要素に描く" from="exercise/article-list-1"
 @scope (.scoped.category-filter) to (.scoped) {
   ul {
     --cluster--gap: 0;
@@ -242,7 +242,7 @@ CMSで記事の登録が始まり、カンプになかった記事が入って�
 
 直す必要があったのは、カテゴリーがリンクになったことへの対応です。見出しのリンクの `::after` は行全体を覆うので、そのままではカテゴリーのリンクも覆い、カテゴリーを押しても記事へ移動します。そこで、カテゴリーのリンクを相対的な `z-index` で手前に出し、行のルートを重なりの単位にします。
 
-```css title="🙆‍♂ Recommended: カテゴリーのリンクを手前に出し、行のルートで重なりを閉じる"
+```css title="🙆‍♂ Recommended: カテゴリーのリンクを手前に出し、行のルートで重なりを閉じる" use="diff" from="exercise/article-list-2"
 @scope (.scoped.article-row) to (.scoped) {
   :scope {
     /* ... */

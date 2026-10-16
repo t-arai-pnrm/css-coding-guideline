@@ -49,7 +49,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 
 質問と回答は、`<details>` と `<summary>` で作ります。開閉はブラウザが受け持つので、キーボードでの操作や、開閉の状態の読み上げも、スクリプトなしで動きます。複数の `<details>` に同じ `name` 属性を付けると、1つを開いたときにほかが閉じます（「[17-6 開閉するUI](/interaction/disclosure/)」）。
 
-```html title="🙆‍♂ Recommended: 同じ name 属性の details で、1つだけを開くアコーディオンにする"
+```html title="🙆‍♂ Recommended: 同じ name 属性の details で、1つだけを開くアコーディオンにする" from="exercise/faq-1"
 <details name="faq" data-category="price" open>
   <summary>費用はどれくらいかかりますか？</summary>
   <div class="_answer">
@@ -60,7 +60,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 
 「Q」と「A」の印、「+」と「−」の印は、`::before` と `::after` の生成コンテンツで入れ、代替テキストを空にします。質問であることは `<summary>` が、開閉の状態はブラウザが伝えるので、印を読み上げても情報は増えません（「[5-8 生成コンテンツと装飾の擬似要素](/pseudo/generated-content/)」）。
 
-```css title="🙆‍♂ Recommended: 印は生成コンテンツで入れ、開いた状態は [open] で選ぶ"
+```css title="🙆‍♂ Recommended: 印は生成コンテンツで入れ、開いた状態は [open] で選ぶ" from="exercise/faq-1"
 @scope (.scoped.faq-accordion) to (.scoped) {
   summary {
     display: block grid;
@@ -95,7 +95,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 
 絞り込みは、同じページの中で表示を切り替える操作なので、`<a>` ではなく `<button>` で作ります。押されている状態は `aria-pressed` で表し、CSSはその属性を見て見た目を変えます。スクリプトが受け持つのは、`aria-pressed` と、各質問の `hidden` 属性を切り替えることだけです（「[17-3 状態を属性で表す](/interaction/state-attributes/)」）。
 
-```html title="🙆‍♂ Recommended: 絞り込みのボタンは hidden にしておき、スクリプトの初期化が終わってから表示する"
+```html title="🙆‍♂ Recommended: 絞り込みのボタンは hidden にしておき、スクリプトの初期化が終わってから表示する" from="exercise/faq-1"
 <div class="_filter | cluster" role="group" aria-label="カテゴリーで絞り込む" hidden>
   <button type="button" aria-pressed="true" data-category="all">すべて</button>
   <button type="button" aria-pressed="false" data-category="price">料金・お見積り</button>
@@ -125,7 +125,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 
 回答の中の要素を、`faq-accordion` のCSSから選んで見た目を付けると、`faq-accordion` がCMSの本文のすべての要素を知ることになります。
 
-```css title="🙅‍♂ Not Recommended: アコーディオンのCSSから、回答の中の要素を選ぶ"
+```css title="🙅‍♂ Not Recommended: アコーディオンのCSSから、回答の中の要素を選ぶ" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.faq-accordion) to (.scoped) {
   ._answer {
@@ -144,7 +144,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 
 本書では、編集者が自由にHTMLを入れる領域を、別のコンポーネントにします。名前は、見出し、段落、リストを含む編集領域を表す `rich-text` です（「[9-3 名前に使う語](/notation/terminology/)」）。回答の `._answer` の中に `rich-text` を置き、要素の見た目と要素の間の間隔は、`rich-text` が受け持ちます。
 
-```html title="🙆‍♂ Recommended: 回答の中に、CMSの本文を受け持つ rich-text を置く"
+```html title="🙆‍♂ Recommended: 回答の中に、CMSの本文を受け持つ rich-text を置く" use="diff" from="exercise/faq-2"
 <div class="_answer">
   <div class="scoped rich-text">
     <p>ページ数や機能によって変わります。サイトの種類ごとの目安は、次のとおりです。</p>
@@ -159,7 +159,7 @@ import faqChangedJs from '../../../demos/exercise/faq-2/script.js?raw';
 </div>
 ```
 
-```css title="🙆‍♂ Recommended: 編集領域の中は、要素の種類で選び、間隔も自分で作る"
+```css title="🙆‍♂ Recommended: 編集領域の中は、要素の種類で選び、間隔も自分で作る" use="diff" from="exercise/faq-2"
 @scope (.scoped.rich-text) to (.scoped) {
   :scope {
     & > * + * {

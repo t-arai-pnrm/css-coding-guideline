@@ -18,7 +18,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 CSSのクラス名は、ページ全体で共有される1つの名前空間に属します。別々のコンポーネントで同じ `.title` という名前を使うと、片方のために書いたスタイルがもう片方にも当たります。この衝突を避けるために広く使われてきたのが、BEMのように、コンポーネントの名前を子要素の名前の先頭に付ける方法です。
 
-```css title="🙅‍♂ Not Recommended: 名前の衝突を、コンポーネント名を繰り返す規則で避ける"
+```css title="🙅‍♂ Not Recommended: 名前の衝突を、コンポーネント名を繰り返す規則で避ける" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .media-card__image {
   aspect-ratio: 16 / 9;
@@ -98,7 +98,7 @@ CSSのクラス名は、ページ全体で共有される1つの名前空間に�
 
 HTMLの入れ子が深くなっても、子要素のクラス名は平らなままにします。コンポーネントの直下にある要素も、その下の下にある要素も、同じ `._kebab` の形で付け、親の名前を連結して階層を表しません。孫にあたる要素には、その要素の役割を名前にします。
 
-```html title="🙅‍♂ Not Recommended: 階層を名前につなげる"
+```html title="🙅‍♂ Not Recommended: 階層を名前につなげる" issue="convention"
 <!-- 🙅‍♂ Not Recommended -->
 <article class="scoped news-card">
   <ul class="_tags">
@@ -129,7 +129,7 @@ CSSでは、デザインが変わる前から、見た目の名前が実態と�
 
 ただし、使う側が選んだ値を表す名前は、見た目の語でも実態とずれません。`data-size="small"` は、幅にかかわらず小さい版を選んだことを表すからです（「[9-2 BEMからの書き直しとバリエーション](/notation/variants/)」）。避けるのは、幅や設定によって変わる結果を名前にすることです。
 
-```html title="🙅‍♂ Not Recommended: 見た目や汎用の語で名前を付ける"
+```html title="🙅‍♂ Not Recommended: 見た目や汎用の語で名前を付ける" issue="convention"
 <!-- 🙅‍♂ Not Recommended -->
 <div class="scoped contact-section">
   <div class="_wrapper">
@@ -198,7 +198,7 @@ CSSでは、デザインが変わる前から、見た目の名前が実態と�
 
 3つ目は、将来CSSに新しいキーワードが追加されても、自分で付けた名前と衝突しにくいことです。CSSのキーワードは `--` で始まらないので、`--` を付けておけば見分けられます。4つ目は、コードを読んだときに、自分で付けた名前だとすぐに分かることです。`fadeIn` や `image` のような名前は、CSSのキーワードと見た目の区別がつきません。
 
-```css title="🙅‍♂ Not Recommended: キーワードと見分けにくい名前"
+```css title="🙅‍♂ Not Recommended: キーワードと見分けにくい名前" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @keyframes fadeIn {
   from {

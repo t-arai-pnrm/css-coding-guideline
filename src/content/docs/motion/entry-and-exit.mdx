@@ -36,7 +36,7 @@ DOMに追加した要素も `@starting-style` の値から動き始めますが�
 
 退場は、`transition-behavior: allow-discrete` で動かします。この指定は、`display` のように途中の値がないプロパティもトランジションの対象にするものです。`transition-property` に `display` を加えると、閉じるときは `opacity` と `scale` の変化が終わるまで `display: none` への切り替えが待たされます。`overlay` も加えると、閉じる途中の要素がトップレイヤーに残ります。
 
-```css title="🙆‍♂ Recommended: 開いた瞬間の見た目を @starting-style で指定する"
+```css title="🙆‍♂ Recommended: 開いた瞬間の見た目を @starting-style で指定する" from="motion/popover-entry"
 @scope (.scoped.notice) to (.scoped) {
   :scope {
     --_scale-from: 1;
@@ -111,7 +111,7 @@ Firefoxは `display: none` へのトランジションに対応していませ�
 
 `@starting-style` の値が開始値になるのは、`display: none` から表示に切り替わったときだけではありません。JavaScriptの `append()` などでDOMに追加した要素も、最初のスタイル計算では直前の見た目を持たないので、`@starting-style` の値から動き始めます。追加する項目の基本のルールに書いておけば、状態のクラスを付け替えなくてもフェードインします。
 
-```css title="🙆‍♂ Recommended: 追加した項目を @starting-style の値からフェードインさせる"
+```css title="🙆‍♂ Recommended: 追加した項目を @starting-style の値からフェードインさせる" from="motion/list-insert"
 @scope (.scoped.invite-list) to (.scoped) {
   ._item {
     --_translate-from: 0;
@@ -186,7 +186,7 @@ Firefoxは `display: none` へのトランジションに対応していませ�
 
 `<details>` の開閉する部分は、`::details-content` 擬似要素で選べます。以前は、余白を付けたり高さを動かしたりするために、中身を `div` で包む必要がありました。`::details-content` を使えば包む要素は要らず、閉じる動きまでCSSだけで書けます。
 
-```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす"
+```css title="🙆‍♂ Recommended: 開閉する部分の高さと不透明度を動かす" from="motion/details-accordion"
 @scope (.scoped.faq-accordion) to (.scoped) {
   details {
     &::details-content {
@@ -235,7 +235,7 @@ SafariとFirefoxでも高さを動かすよう求められた場合に限り、`
 </details>
 ```
 
-```css title="🙆‍♂ Recommended: grid-template-rows で高さを動かす"
+```css title="🙆‍♂ Recommended: grid-template-rows で高さを動かす" from="motion/details-accordion"
 @scope (.scoped.faq-accordion) to (.scoped) {
   details {
     &::details-content {

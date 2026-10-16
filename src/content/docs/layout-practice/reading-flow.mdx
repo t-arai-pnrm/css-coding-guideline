@@ -40,7 +40,7 @@ CSSには、DOMの順番を変えずに見た目の順番だけを変える指�
 
 フォーカスの順番を変えるために、正の `tabindex` を使う方法もあります。しかし、正の値を持つ要素は、ページのほかのすべての要素より先にフォーカスされます。正の `tabindex` はアクセシビリティツリーの順番に反映されないので、読み上げの順番とも食い違います。
 
-```html title="🙅‍♂ Not Recommended: 正の tabindex でフォーカスの順番を見た目に合わせる"
+```html title="🙅‍♂ Not Recommended: 正の tabindex でフォーカスの順番を見た目に合わせる" issue="behavior"
 <!-- 🙅‍♂ Not Recommended -->
 <div class="_layout">
   <h2>スタンダードプラン</h2>
@@ -61,7 +61,7 @@ Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方�
 
 見た目とDOMの順番が今は一致していても、`reading-flow` を書きます。{/* 要確認: 出典なし */}読む順番を見た目と合わせることは、意味の通る順番を求めるWCAGから導かれる要件です。一方、順番が一致しているときにも書くのは本書の規約で、このルールの性質は「本書の規約」にしています。順番が一致していれば読む順番は変わらないので、書いて困ることはありません。書いてあれば、そのコンテナの読む順番を確かめたことがコードから分かり、あとでテンプレートを書き換えて順番が離れても、読む順番が見た目に追従します。
 
-```css title="🙆‍♂ Recommended: エリアで並べるグリッドに reading-flow を書く"
+```css title="🙆‍♂ Recommended: エリアで並べるグリッドに reading-flow を書く" from="layout-practice/reading-flow-card"
 @scope (.scoped.feature-card) to (.scoped) {
   ._layout {
     display: block grid;
@@ -130,7 +130,7 @@ Flexboxのコンテナに使う値は2つです。`flex-visual` は、書字方�
 
 値は、`1` か `-1` だけを使います。初期値0のほかの子に対して、`-1` は「すべての子より前」、`1` は「すべての子より後」を表すので、1つの値を見れば意図が分かります。`2` や `10` のような値を使い始めると、読む順番を知るために各子の値を集めて並べ直す必要が生じ、後から子を差し込むたびに値を積み増すことになります。z-indexの相対的な値を `--z--forwards`（1）と `--z--backwards`（-1）の2つに限っているのと同じ考え方です（「[10-4 デザイントークン](/components/design-tokens/)」）。
 
-```css title="🙅‍♂ Not Recommended: order に段階的な値を振って並べ替える"
+```css title="🙅‍♂ Not Recommended: order に段階的な値を振って並べ替える" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._plan {
   & > ._price {

@@ -20,7 +20,7 @@ WordPressのようなCMSでは、CMSの本体やプラグインのCSSが、レ�
 
 理由は、WordPressの本体が出力するCSSにあります。ブロックの標準のCSS、theme.jsonから生成されるグローバルスタイル、プラグインのCSSは、どれもレイヤーの外で出力されます。レイヤーの外のCSSは、詳細度に関係なくレイヤーの中のCSSに勝つので、テーマのCSSだけをレイヤーに入れると、テーマが構造的に負けます。この仕組みは「[4-3 カスケードレイヤーで順位を決める](/cascade/layers/)」で説明しています。
 
-```css title="🙅‍♂ Not Recommended: WordPressのテーマでレイヤーを宣言する"
+```css title="🙅‍♂ Not Recommended: WordPressのテーマでレイヤーを宣言する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer tokens, reset, base, vendors, compositions, pages, components, patterns, utilities;
 @import url("kiso.css") layer(reset);

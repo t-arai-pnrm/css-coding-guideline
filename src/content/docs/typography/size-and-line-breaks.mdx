@@ -21,7 +21,7 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 
 見出しの文字サイズを画面の幅で変えるとき、ブレイクポイントごとに値を切り替える書き方をよく見かけます。デザインカンプが画面の幅ごとに用意されていると、その値をそのまま書き写したくなるからです。
 
-```css title="🙅‍♂ Not Recommended: 文字サイズをブレイクポイントごとに切り替える"
+```css title="🙅‍♂ Not Recommended: 文字サイズをブレイクポイントごとに切り替える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._heading {
   font-size: 24px;
@@ -101,7 +101,7 @@ import breakCss from '../../../demos/typography/heading-line-breaks/style.css?ra
 
 `word-break: auto-phrase` を指定すると、ブラウザが文節の区切りを判断し、文節の間でだけ折り返します。さらに `text-wrap: balance` を組み合わせると、各行の長さがそろい、最後の行だけが短くなるのを防げます。
 
-```css title="🙆‍♂ Recommended: 見出しの折り返しを言語ごとに整える"
+```css title="🙆‍♂ Recommended: 見出しの折り返しを言語ごとに整える" from="typography/heading-line-breaks"
 @layer base {
   :is(:heading, h1, h2, h3, h4, h5, h6, caption) {
     &:lang(en) {
@@ -146,7 +146,7 @@ SafariやFirefoxでも文節で折り返したい場合は、JavaScriptのライ
 
 はみ出しを防ぐための指定にも注意します。URLや長い英単語は、途中に折り返せる位置がないので、狭い場所では要素の外へはみ出します。これを防ぐのは、kiso.cssが `:root` に指定している `overflow-wrap: anywhere` です。`word-break` は初期値のままにします。
 
-```css title="🙅‍♂ Not Recommended: はみ出しを防ぐために、どこでも折り返す"
+```css title="🙅‍♂ Not Recommended: はみ出しを防ぐために、どこでも折り返す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer base {
   p {

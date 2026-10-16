@@ -24,7 +24,7 @@ CMSで入力する本文のエリア（本文エリア）のスタイルは、�
 
 もうひとつの事情が、編集画面です。ブロックエディタは、公開ページとは別のHTMLの構造で本文を表示します。公開ページ用のセレクタ（`.content-area h2` など）だけでスタイルを書くと、編集画面ではWordPressの標準の見た目で表示されます。編集者は、公開ページを確かめるまで、見出しの大きさや余白が分かりません。
 
-```css title="🙅‍♂ Not Recommended: 公開ページとエディタで、別々のセレクタに書く"
+```css title="🙅‍♂ Not Recommended: 公開ページとエディタで、別々のセレクタに書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .content-area > * + * {
   margin-block-start: 20px;

@@ -54,7 +54,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 デザインの都合で、形まで作り直す必要がある場合もあります。そのときも、`input` を隠して別の要素で描く方法は使いません。
 
-```css title="🙅‍♂ Not Recommended: input を隠し、隣の要素でチェックボックスを描く"
+```css title="🙅‍♂ Not Recommended: input を隠し、隣の要素でチェックボックスを描く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._checkbox {
   display: none;
@@ -244,7 +244,7 @@ web-featuresのデータでは、SafariはSafari 26.2からの対応になって
 
 `:user-invalid` は、ユーザーが値を変えて入力欄を離れた後や、送信しようとした後にだけ当てはまる擬似クラスです。入力する前にエラーが表示されることはありません。
 
-```css title="🙆‍♂ Recommended: 入力した後にだけ、エラーの見た目にする"
+```css title="🙆‍♂ Recommended: 入力した後にだけ、エラーの見た目にする" from="interaction/form-controls"
 @scope (.scoped.contact-form) to (.scoped) {
   ._email-input {
     border-color: var(--foreground--muted);

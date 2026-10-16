@@ -52,7 +52,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 押せる範囲を決めるのは、`<a>` や `<button>` のような操作する要素自身の大きさです。ナビゲーションの `<li>` やリストのような外側の要素に `padding` を付けても、見た目の上では項目が大きくなるだけで、押せるのは文字の部分に限られます。項目の端を押しても反応しないので、ユーザーは押し損じたと感じます。
 
-```css title="🙅‍♂ Not Recommended: 外側の li に padding を付け、押せる範囲を文字だけにする"
+```css title="🙅‍♂ Not Recommended: 外側の li に padding を付け、押せる範囲を文字だけにする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._item {
   padding: 12px 16px;
@@ -61,7 +61,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 `padding` は、操作する要素自身に付けます。`<a>` は初期値でインラインなので、`display: block flow` か `display: inline flow-root` にして、上下の `padding` も押せる範囲と行の高さに含めます（「[7-3 ボックスモデルの基礎](/layout/box-model/)」）。
 
-```css title="🙆‍♂ Recommended: 操作する要素自身に padding を付ける"
+```css title="🙆‍♂ Recommended: 操作する要素自身に padding を付ける" from="interaction/hit-area-padding"
 @scope (.scoped.global-nav) to (.scoped) {
   a {
     display: block flow;
@@ -88,7 +88,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 メニュー、リスト、タブのように、ホバーした項目に背景が付く部品では、項目の間を `gap` や `margin` で空けません。間隔は、各項目の内側の `padding` で作ります。カーソルが項目の間の隙間を通るあいだは、どの項目にもホバーが当たらず、背景がいったん消えてから次の項目に付き直すからです。カーソルを縦に動かすと背景が点滅して見え、隙間で手を止めれば、背景の付いた項目が1つもなくなります。
 
-```css title="🙅‍♂ Not Recommended: 項目の間を gap で空け、隙間でホバーが外れる"
+```css title="🙅‍♂ Not Recommended: 項目の間を gap で空け、隙間でホバーが外れる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._list {
   display: block grid;
@@ -102,7 +102,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 隙間は、押せる範囲の外でもあります。隙間を押しても何も起きないので、ユーザーには押し損じたように見えます。項目の上下の `padding` を隙間のぶん増やせば、項目の並ぶ間隔は変えずに、隙間をなくせます。
 
-```css title="🙆‍♂ Recommended: 項目を隙間なく並べ、間隔を項目の padding で作る"
+```css title="🙆‍♂ Recommended: 項目を隙間なく並べ、間隔を項目の padding で作る" from="interaction/hover-item-gaps"
 @scope (.scoped.account-menu) to (.scoped) {
   :scope {
     display: block grid;
@@ -138,7 +138,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 ダイアログの閉じるボタンのように、デザインの都合で見た目を小さく保ちたい要素もあります。この場合は、擬似要素を要素の外にはみ出させて、押せる範囲だけを広げます。擬似要素は要素の一部なので、擬似要素を押せば要素を押したことになります。WCAGの「ターゲット」もポインターの操作を受け付ける領域を指すので、擬似要素で広げた範囲を大きさとして数えられます。
 
-```css title="🙆‍♂ Recommended: 擬似要素をはみ出させて、押せる範囲だけを広げる"
+```css title="🙆‍♂ Recommended: 擬似要素をはみ出させて、押せる範囲だけを広げる" from="interaction/pseudo-hit-area"
 @scope (.scoped.close-button) to (.scoped) {
   :scope {
     --_hit-size: max(24px, 24 / 16 * 1rem);
@@ -172,7 +172,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 この問題は、項目とサブメニューの間に、カーソルが通っても隣の項目に移らない三角形の領域を置くと防げます。カーソルの位置を頂点の1つとし、サブメニューの項目側の辺の両端を残りの2つの頂点とする三角形です。この領域は「安全な三角形」（safe triangle）と呼ばれます。三角形はホバーを受けている項目の擬似要素として描き、`clip-path: polygon()` で切り抜きます。CSS Maskingの仕様では、`clip-path` で切り抜いた外側はポインターの操作を受けないので、三角形の内側だけが項目の一部として働きます。
 
-```css title="🙆‍♂ Recommended: ホバー中の項目の擬似要素を三角形に切り抜き、サブメニューへの通り道にする"
+```css title="🙆‍♂ Recommended: ホバー中の項目の擬似要素を三角形に切り抜き、サブメニューへの通り道にする" from="interaction/safe-triangle"
 @scope (.scoped.action-menu) to (.scoped) {
   :scope {
     isolation: isolate;
@@ -230,7 +230,7 @@ import safeTriangleJs from '../../../demos/interaction/safe-triangle/script.js?r
 
 `touch-action` は、タッチ操作でブラウザがスクロールや拡大をするかどうかを決めるプロパティです。これを `html` や `body` に `none` で指定すると、ページ全体でスクロールとピンチでの拡大が止まります。`touch-action` も継承しませんが、ブラウザは、触れた要素からスクロールする祖先までの値を重ね合わせて、許す操作を決めるからです（MDN）。拡大して読む必要のあるユーザーが拡大できなくなる点は、`<meta name="viewport">` でズームを止めた場合と同じです（「[17-7 フォーム部品](/interaction/forms/)」）。
 
-```css title="🙅‍♂ Not Recommended: ページ全体のタッチ操作と文字の選択を止める"
+```css title="🙅‍♂ Not Recommended: ページ全体のタッチ操作と文字の選択を止める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 body {
   touch-action: none;

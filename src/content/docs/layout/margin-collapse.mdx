@@ -31,7 +31,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 お知らせの一覧の見出しの下に24px、本文の段落の上に40pxの余白を付けたとします。デザインカンプでは2つの余白を合わせた64pxの間隔を想定していても、ブラウザでは40pxになります。2つの `margin` が相殺し、大きいほうだけが残ったからです。
 
-```css title="🙅‍♂ Not Recommended: 上下の両方に margin を付けて、合計の間隔を期待する"
+```css title="🙅‍♂ Not Recommended: 上下の両方に margin を付けて、合計の間隔を期待する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._heading {
   margin-block-end: 24px;
@@ -56,7 +56,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 2つ目の場面は、親と最初の子、親と最後の子です。親に `border-block-start` と `padding-block-start` がなく、最初の子の前に文字もなければ、子の `margin-block-start` は親の `margin-block-start` と隣り合い、相殺します。親の `margin-block-start` が0でも相殺は起き、子の余白が親の外へ出ます。下の端でも同じことが起きますが、こちらは親の `block-size` が `auto` のときに限られます。
 
-```css title="🙅‍♂ Not Recommended: 背景の内側の余白を、最初の子の margin で取ろうとする"
+```css title="🙅‍♂ Not Recommended: 背景の内側の余白を、最初の子の margin で取ろうとする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._section {
   background-color: oklch(96% 0.02 250deg);
@@ -97,7 +97,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 次の悪い例は、見出しの直後だけ間を詰めるために、段落に負の `margin` を足したものです。間は24pxと-16pxを足した8pxになりますが、その値は相殺の計算を知らないと読み取れません。
 
-```css title="🙅‍♂ Not Recommended: 相殺の計算に頼って、負の margin で間を詰める"
+```css title="🙅‍♂ Not Recommended: 相殺の計算に頼って、負の margin で間を詰める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._heading {
   margin-block-end: 24px;
@@ -159,7 +159,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 }
 ```
 
-```css title="🙅‍♂ Not Recommended: 見えない padding や overflow で相殺を止める"
+```css title="🙅‍♂ Not Recommended: 見えない padding や overflow で相殺を止める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._section {
   overflow: hidden;

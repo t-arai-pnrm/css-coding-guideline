@@ -32,7 +32,7 @@ import ratioCss from '../../../demos/responsive/screen-ratio-image/style.css?raw
 
 メディアクエリでは、この要件を満たせません。メインエリアとサイドバーは同じページにあるので、ビューポートの幅はどちらも同じだからです。結局「サイドバー用」の属性（`data-placement="sidebar"` など）を用意し、置き場所ごとにスタイルを出し分けることになります。
 
-```css title="🙅‍♂ Not Recommended: 置き場所ごとに属性で出し分ける"
+```css title="🙅‍♂ Not Recommended: 置き場所ごとに属性で出し分ける" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
@@ -59,7 +59,7 @@ import ratioCss from '../../../demos/responsive/screen-ratio-image/style.css?raw
 
 コンポーネントのルートをコンテナにし、ルートの子孫でその幅を問い合わせます。コンテナ自身は自分の幅を問い合わせられないので、条件はルートの子孫に書きます。コンテナ自身が条件の結果で幅を変えると、条件の成否が循環してしまうためです（さらに詳しくは「[10-6 スタイルクエリで状態を伝える](/components/style-queries/#コンテナサイズクエリの基本)」）。ここからは、その書き方の規約を決めます。ルートのコンテナの名前は、どのコンポーネントでも `--scoped` にそろえます。ルートに付けるクラス `scoped` と同じ語なので、どの要素のコンテナなのかを覚える必要がありません。`--root` という名前は、`:root` と紛れるので採りません。
 
-```css title="🙆‍♂ Recommended: ルートを --scoped のコンテナにし、中の要素で判定する"
+```css title="🙆‍♂ Recommended: ルートを --scoped のコンテナにし、中の要素で判定する" from="responsive/container-card"
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -93,7 +93,7 @@ import ratioCss from '../../../demos/responsive/screen-ratio-image/style.css?raw
 
 AIが生成するコードでは、次のように名前のないコンテナと `width` の条件の組み合わせをよく見かけます。動作はしますが、ここまでに挙げた点がすべて守られていません。
 
-```css title="🙅‍♂ Not Recommended: 名前のないコンテナと width の条件"
+```css title="🙅‍♂ Not Recommended: 名前のないコンテナと width の条件" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.media-card) to (.scoped) {
   :scope {
@@ -118,7 +118,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
 切り替えられるのは、配置だけではありません。アイコンと「この記事をシェアする」のラベルを並べたシェアボタンを、本文の下とサイドバーの両方に置くとします。狭いサイドバーではラベルを隠してアイコンだけにしたい場合も、置き場所用の属性を足さずに書けます。
 
-```css title="🙆‍♂ Recommended: 置かれた場所が狭いときだけ、ラベルを視覚的に隠す"
+```css title="🙆‍♂ Recommended: 置かれた場所が狭いときだけ、ラベルを視覚的に隠す" from="responsive/share-button"
 @scope (.scoped.share-button) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -207,7 +207,7 @@ AIが生成するコードでは、次のように名前のないコンテナと
 
 この条件を使うのは、「1カラムのときは画像を横長にする」のように、要素が画面の幅のほとんどを占めるときの見た目が決まっている場合です。2カラムのセクションに置いた画像だけなら、ページの段組みと同じメディアクエリで切り替えられます。しかし、同じ画像の部品を `flex-wrap: wrap` の並びにも置くと、何個目がどの幅で折り返すかはブラウザが決めるので、閾値を書けません。同じ画面の幅でも、1行目に並んだ画像と、折り返して1行を1つで占める画像とで、見た目が分かれます。remやpxの閾値も使えません。320pxの画面で縦に積んだ272pxの画像を横長にし、1024pxの画面で2つ並んだ476pxの画像はそのままにしたいので、幅の大小が要件と逆になるからです。
 
-```css title="🙆‍♂ Recommended: 画面の幅の7割以上を占めるときだけ、画像を横長にする"
+```css title="🙆‍♂ Recommended: 画面の幅の7割以上を占めるときだけ、画像を横長にする" from="responsive/screen-ratio-image"
 @scope (.scoped.adaptive-image) to (.scoped) {
   :scope {
     container: --scoped / inline-size;

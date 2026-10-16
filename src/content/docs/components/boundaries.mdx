@@ -51,7 +51,7 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 
 外部関連型のレイアウトをルートに書くと、次のようなコンポーネントになります。
 
-```css title="🙅‍♂ Not Recommended: ルートに幅と外側の余白を持たせる"
+```css title="🙅‍♂ Not Recommended: ルートに幅と外側の余白を持たせる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.news-card) to (.scoped) {
   :scope {
@@ -121,7 +121,7 @@ AstroのようにCSSをコンポーネントのファイルの `<style>` に書�
 
 親のコンポーネントが、置いた子の見た目を場所に合わせて変えたいことがあります。このとき、親のCSSで子のクラス名を選んで上書きするのは避けます。
 
-```css title="🙅‍♂ Not Recommended: 親から子のコンポーネントの内部を上書きする"
+```css title="🙅‍♂ Not Recommended: 親から子のコンポーネントの内部を上書きする" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .hero .news-card {
   border-radius: 24px;
@@ -166,7 +166,7 @@ AIにコンポーネントの見た目の調整を頼むと、親のセレクタ
 
 `@scope` がなかったころは、要素にはすべてクラスを付けるのが安全な書き方でした。`.global-nav a` のように親のクラスと組み合わせたタイプセレクタは、入れ子にした別のコンポーネントのリンクにも当たります。詳細度も0.1.1に上がり、クラス1つのセレクタでは上書きできなくなります。この習慣を `@scope` の中に持ち込むと、要素の種類と同じ意味のクラス名が並びます。
 
-```html title="🙅‍♂ Not Recommended: 要素の種類と同じ意味のクラスをすべての要素に付ける"
+```html title="🙅‍♂ Not Recommended: 要素の種類と同じ意味のクラスをすべての要素に付ける" issue="convention"
 <!-- 🙅‍♂ Not Recommended -->
 <nav class="scoped global-nav">
   <ul class="_list">
@@ -234,7 +234,7 @@ AIにコンポーネントの見た目の調整を頼むと、親のセレクタ
 
 同じ種類の要素を、置かれた領域ごとに変えたくなったときは、その要素にクラスを付けます。領域の子要素のクラスとタイプセレクタを組み合わせて、`._summary p` のように選ぶことはしません。
 
-```css title="🙅‍♂ Not Recommended: 領域の子要素のクラスとタイプセレクタで、段落を区別する"
+```css title="🙅‍♂ Not Recommended: 領域の子要素のクラスとタイプセレクタで、段落を区別する" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.product-detail) to (.scoped) {
   ._summary p {
@@ -301,7 +301,7 @@ AIにコンポーネントの見た目の調整を頼むと、親のセレクタ
 
 タイプセレクタに擬似クラスを付けると、詳細度が逆転します。`a:focus-visible` の詳細度は0.1.1、`a:any-link:hover` は0.2.1で、どちらも `._sub-link` の0.1.0より高くなるからです。次の例では、ホバーしたときとキーボードでフォーカスしたときにリンクの文字色を変える指定を、共通のスタイルとして `a` の状態に書いています。サブのリンクは背景色と同じ色の文字になり、ホバーやフォーカスをしている間だけ読めなくなります。
 
-```css title="🙅‍♂ Not Recommended: 共通の a の状態で、子クラスの色まで変える"
+```css title="🙅‍♂ Not Recommended: 共通の a の状態で、子クラスの色まで変える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.global-nav) to (.scoped) {
   a {
@@ -327,7 +327,7 @@ AIにコンポーネントの見た目の調整を頼むと、親のセレクタ
 
 色のように役割ごとに違う指定は、`._main-link` と `._sub-link` の状態に書き、同じ状態どうしで詳細度をそろえます。`._sub-link:focus-visible` の詳細度は0.2.0で、`a:focus-visible` の0.1.1に勝ちます。`._sub-link:any-link:hover` も0.3.0で、`a:any-link:hover` の0.2.1に勝ちます。
 
-```css title="🙆‍♂ Recommended: 役割ごとに違う状態のスタイルは、子クラスの側に書く"
+```css title="🙆‍♂ Recommended: 役割ごとに違う状態のスタイルは、子クラスの側に書く" from="components/type-selectors-in-scope"
 @scope (.scoped.global-nav) to (.scoped) {
   a {
     &:focus-visible {
@@ -418,7 +418,7 @@ z-indexは、コンポーネントのルートと内部の要素で、指定し�
 
 コンポーネントのルートそのものには、相対的なz-indexを持たせません。ルートに `margin` を持たせないのと同じ理由で、隣のコンポーネントより手前に出るかどうかは、置かれる場所で決まることだからです。次のカードは、置き場所にかかわらず、周りの要素より1つ手前に出る指定です。
 
-```css title="🙅‍♂ Not Recommended: コンポーネントのルートに相対的な z-index を持たせる"
+```css title="🙅‍♂ Not Recommended: コンポーネントのルートに相対的な z-index を持たせる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.promo-card) to (.scoped) {
   :scope {

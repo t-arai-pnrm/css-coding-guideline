@@ -156,7 +156,7 @@ button.addEventListener('blur', cancel);
 
 2つの要素を同じ場所に重ね、片方を消しながらもう片方を出すクロスフェードでは、途中で両方が半透明になり、二重に写って見えます。コピーのボタンのアイコンを、押したあとにチェックの印へ切り替えるような場面です。消える側と現れる側に `filter: blur()` を数pxだけ掛けると、途中の重なりがぼけて、1つの形が別の形に変わったように見えます。{/* 要確認: 出典なし。ぼかしで二重写りを目立たなくする技法 */}
 
-```css title="🙆‍♂ Recommended: 切り替わるアイコンに、不透明度と小さなぼかしを組み合わせる"
+```css title="🙆‍♂ Recommended: 切り替わるアイコンに、不透明度と小さなぼかしを組み合わせる" from="motion/crossfade-blur"
 @scope (.scoped.copy-button) to (.scoped) {
   :scope {
     display: inline grid;
@@ -205,7 +205,7 @@ button.addEventListener('blur', cancel);
 
 プロパティごとにトランジションさせる書き方では、状態の値が状態のセレクタごとに散らばります。次の例では、ホバーとフォーカスの2つのセレクタに、同じ3つの値を書き並べています。持ち上げる距離を変えるときは両方を直し、動かすプロパティを足すときは `transition-property` の並びも直します。
 
-```css title="🙅‍♂ Not Recommended: 状態の値を、プロパティごとに状態のセレクタへ書き並べる"
+```css title="🙅‍♂ Not Recommended: 状態の値を、プロパティごとに状態のセレクタへ書き並べる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.link-card) to (.scoped) {
   :scope {
@@ -233,7 +233,7 @@ button.addEventListener('blur', cancel);
 
 カスタムプロパティを1つにまとめるには、型の登録が欠かせません。登録していないカスタムプロパティは文字の並びとして扱われるので、0と1の間の値が補間されず、値が変わった時点で切り替わります。`transition-behavior: allow-discrete` を指定しても、再生時間の半分の時点で切り替わるだけです。`@property` の記述子と、登録する場面の判断は「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」で説明しています。
 
-```css title="🙆‍♂ Recommended: 登録した1つの値から、3つのプロパティの値を計算する"
+```css title="🙆‍♂ Recommended: 登録した1つの値から、3つのプロパティの値を計算する" from="motion/registered-progress"
 @property --link-card--progress {
   syntax: "<number>";
   inherits: false;

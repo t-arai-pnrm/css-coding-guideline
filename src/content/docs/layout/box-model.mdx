@@ -31,7 +31,7 @@ import unsetCss from '../../../demos/layout/box-model-unset-box-sizing/style.css
 
 この仕組みのまま列の幅を合わせると、`calc(50% - 34px)` のような引き算が要素ごとに入り込みます。`padding` を変えるたびに引き算も直す必要があり、直し忘れると列の合計が親の幅を超えて折り返します。
 
-```css title="🙅‍♂ Not Recommended: padding と border の分を幅から引いて合わせる"
+```css title="🙅‍♂ Not Recommended: padding と border の分を幅から引いて合わせる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .card {
   box-sizing: content-box;
@@ -73,7 +73,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 最大幅を決めて中央に寄せ、左右に `padding` を付ける要素では、`border-box` が不便になります。`max-inline-size` に `padding` が含まれるので、内容の幅は最大幅から左右の `padding` を引いた分しかありません。内容を1140px相当に保とうとすると、最大幅に `padding` を足す `calc()` を書くことになり、`padding` の値を変えるたびに式も直す必要があります。
 
-```css title="🙅‍♂ Not Recommended: 最大幅に左右の padding を足して、内容の幅を保つ"
+```css title="🙅‍♂ Not Recommended: 最大幅に左右の padding を足して、内容の幅を保つ" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._content-inner {
   --_max-inline-size: calc(1140 / 16 * 1rem);
@@ -87,7 +87,7 @@ AIが生成するコードでは、コンポーネントごとに `box-sizing: b
 
 この要素だけ `box-sizing: unset` にすれば、足し算は要りません。`content-box` では `max-inline-size` が内容の領域の幅を指すので、指定した最大幅がそのまま内容の幅になり、`padding` はその外側に付きます。画面が狭いときは、ブロックの `auto` の幅が `padding` を含めて親に収まるので、はみ出しもしません（ルール `unset-box-sizing-for-content-max-width`）。
 
-```css title="🙆‍♂ Recommended: box-sizing を unset にして、最大幅を内容の幅にする"
+```css title="🙆‍♂ Recommended: box-sizing を unset にして、最大幅を内容の幅にする" from="layout/box-model-unset-box-sizing"
 ._content-inner {
   box-sizing: unset;
   max-inline-size: calc(1140 / 16 * 1rem);

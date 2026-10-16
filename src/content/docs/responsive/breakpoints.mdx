@@ -22,7 +22,7 @@ import productCss from '../../../demos/responsive/product-cards/style.css?raw';
 
 よく見かけるのは、スマートフォン、タブレット、PCという分類からブレイクポイントを決め、その境目の幅をそのまま条件に書く方法です。表示を切り替えるクラスにも、`sp` や `pc` のようなデバイスの名前が付きます。
 
-```css title="🙅‍♂ Not Recommended: デバイスの分類で決めた幅を、そのまま条件に書く"
+```css title="🙅‍♂ Not Recommended: デバイスの分類で決めた幅を、そのまま条件に書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .sp-only {
   @media (width >= 768px) {
@@ -85,7 +85,7 @@ import productCss from '../../../demos/responsive/product-cards/style.css?raw';
 
 コンテナサイズクエリでも同じです。次の例は、最小幅160px相当の列を最大8列まで並べるグリッドに、2列分の幅のカードを並べた商品の一覧です。1行に並ぶカードの枚数は列の数の半分なので、カードが5枚のとき、4列なら最後の行に1枚だけ残ります。この1枚を中央に寄せたいとします。
 
-```css title="🙆‍♂ Recommended: 列の最小幅と隙間から、カードが何枚並ぶかの範囲を式で書く"
+```css title="🙆‍♂ Recommended: 列の最小幅と隙間から、カードが何枚並ぶかの範囲を式で書く" from="responsive/product-cards"
 @scope (.scoped.product-cards) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -169,7 +169,7 @@ import productCss from '../../../demos/responsive/product-cards/style.css?raw';
 
 閾値を使い回そうとして、クエリの条件の中に `var()` を書くのは誤りです。AIが生成するコードにもよく見られます。
 
-```css title="🙅‍♂ Not Recommended: コンテナサイズクエリの条件に var() を書く"
+```css title="🙅‍♂ Not Recommended: コンテナサイズクエリの条件に var() を書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.card-group) to (.scoped) {
   ul {

@@ -19,7 +19,7 @@ import gridCss from '../../../demos/responsive/intrinsic-grid/style.css?raw';
 
 よくある進め方は、最初に「375px、768px、1024px」のようなブレイクポイントを決め、要素ごとにメディアクエリで見た目を切り替える方法です。デザインカンプの幅がそのままブレイクポイントになるので、一見すると分かりやすい方法です。
 
-```css title="🙅‍♂ Not Recommended: デバイスの幅を基準に列数を切り替える"
+```css title="🙅‍♂ Not Recommended: デバイスの幅を基準に列数を切り替える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.card-list) to (.scoped) {
   :scope {
@@ -109,7 +109,7 @@ import gridCss from '../../../demos/responsive/intrinsic-grid/style.css?raw';
 
 先ほどのカードの一覧は、イントリンシックな方法で書き直せます。Gridの `repeat()` に `auto-fit` と `minmax()` を組み合わせると、1つの指定で列数をブラウザが決めます。
 
-```css title="🙆‍♂ Recommended: 列数をブラウザに任せる"
+```css title="🙆‍♂ Recommended: 列数をブラウザに任せる" from="responsive/intrinsic-grid"
 @scope (.scoped.card-list) to (.scoped) {
   :scope {
     display: block grid;

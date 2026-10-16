@@ -18,7 +18,7 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 
 選択中のタブ、開いているメニュー、現在のページのリンクのような状態は、BEMのModifierのように、JavaScriptでクラスを付け外しして表すことがよくあります。しかし、こうした状態の多くは、アクセシビリティのためにARIA属性でも表す必要があります。クラスと属性の両方を切り替えると、同じ状態を2か所で管理することになります。
 
-```css title="🙅‍♂ Not Recommended: ARIA属性と別に、状態のクラスを付ける"
+```css title="🙅‍♂ Not Recommended: ARIA属性と別に、状態のクラスを付ける" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._tab.is-active {
   border-color: currentColor;
@@ -38,7 +38,7 @@ import tabsJs from '../../../demos/interaction/aria-selected-tabs/script.js?raw'
 
 HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`aria-current`、`aria-pressed` のようなARIA属性をセレクタにします。タブの選択やメニューの展開は、HTMLの要素だけでは表せず、ARIA属性で支援技術に伝える状態です。
 
-```css title="🙆‍♂ Recommended: ARIA属性をそのままセレクタにする"
+```css title="🙆‍♂ Recommended: ARIA属性をそのままセレクタにする" from="interaction/aria-selected-tabs"
 @scope (.scoped.product-tabs) to (.scoped) {
   ._tab {
     border-block-end: 2px solid transparent;

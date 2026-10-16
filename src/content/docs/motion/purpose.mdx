@@ -93,7 +93,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 次の例は、管理画面の数値のカードを、表示のたびに1枚ずつ下から滑り込ませるものです。カードの順番に応じて開始を遅らせているので、最後のカードが止まるまでに1秒近くかかります。カードはページを開くたびに表示されるので、表の「見た目を華やかにするだけ」に当たり、高頻度のUIには不要な動きです。
 
-```css title="🙅‍♂ Not Recommended: 毎回表示されるカードを1枚ずつ滑り込ませる"
+```css title="🙅‍♂ Not Recommended: 毎回表示されるカードを1枚ずつ滑り込ませる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.stat-card) to (.scoped) {
   :scope {

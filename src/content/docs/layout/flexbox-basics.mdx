@@ -51,7 +51,7 @@ Flexboxの不具合には、よく見かける型があります。2つのアイ
 
 次の例は、原因を確かめずに症状だけを抑えたものです。固定の幅のタブは、数が変わったり画面が狭くなったりすると、並びの幅に合わなくなります。URLは、末尾が切り取られて読めなくなります。
 
-```css title="🙅‍♂ Not Recommended: 規則を確かめずに、固定の幅と overflow: hidden で直す"
+```css title="🙅‍♂ Not Recommended: 規則を確かめずに、固定の幅と overflow: hidden で直す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._tab {
   /* flex-grow: 1 で幅がそろわないので、幅を固定する */
@@ -74,7 +74,7 @@ Flexboxの不具合には、よく見かける型があります。2つのアイ
 
 `column` で縦に積むと、`justify-content` と `align-items` の役割も入れ替わります。縦に積んだ要素を横の中央へ寄せるのは、`align-items: center` です。
 
-```css title="🙆‍♂ Recommended: 縦に積んだアイテムを、交差軸の align-items で横の中央に寄せる"
+```css title="🙆‍♂ Recommended: 縦に積んだアイテムを、交差軸の align-items で横の中央に寄せる" from="layout/flexbox-axes"
 ._stack {
   display: block flex;
   flex-direction: column;
@@ -150,7 +150,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 違いが出るのは、並べる向きを変えたときです。`flex-basis` は主軸の大きさなので、`flex-direction: column` にすると、幅のつもりで書いた200pxが高さになります。`inline-size` は、並べる向きに関係なく、インライン方向（横書きなら横）の大きさです。狭い場所では縦に積み、広い場所では横に並べる部品でも、`inline-size` で書いておけば、向きを変えたときに値の意味が変わりません。
 
-```css title="🙅‍♂ Not Recommended: 幅のつもりで flex-basis を書き、縦に積むと高さになる"
+```css title="🙅‍♂ Not Recommended: 幅のつもりで flex-basis を書き、縦に積むと高さになる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._media {
   display: block flex;
@@ -162,7 +162,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 }
 ```
 
-```css title="🙆‍♂ Recommended: 大きさは inline-size で書き、向きを変えても幅のままにする"
+```css title="🙆‍♂ Recommended: 大きさは inline-size で書き、向きを変えても幅のままにする" from="layout/flexbox-basis-size"
 ._media {
   display: block flex;
   flex-direction: column;
@@ -234,7 +234,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 本書のベーススタイルは、全称セレクタの `min-inline-size: 0` で、この問題を前もって防いでいます（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。使わない環境では、はみ出すアイテムに個別に指定します。要素の縮みすぎを `flex-shrink: 0` ではなく `min-inline-size: fit-content` で防ぐ理由は、「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で説明しています。
 
-```css title="🙆‍♂ Recommended: 長いURLを含む本文を、最小幅を0にして折り返させる"
+```css title="🙆‍♂ Recommended: 長いURLを含む本文を、最小幅を0にして折り返させる" from="layout/flexbox-min-size"
 ._body {
   min-inline-size: 0;
   overflow-wrap: anywhere;
@@ -255,7 +255,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 アイテムの間隔は、アイテムの `margin` ではなく、コンテナの `gap` で作ります（[`gap-over-child-margin`](/layout-practice/spacing/#rule-gap-over-child-margin)）。`gap` はアイテムの間にだけ入るので、行の端に余計な余白ができません。`gap` の分は、配る空間を計算する前に差し引かれます。
 
-```css title="🙆‍♂ Recommended: 数の変わるタグを折り返し、間隔を gap で作る"
+```css title="🙆‍♂ Recommended: 数の変わるタグを折り返し、間隔を gap で作る" from="layout/flexbox-wrap-gap"
 ._tags {
   display: block flex;
   flex-wrap: wrap;
@@ -279,7 +279,7 @@ Flexboxは、まず各アイテムの仮の大きさを `flex-basis` で決め�
 
 並べ替えてよいのは、順番に意味がなく、フォーカスできる要素も含まない並びです。装飾の画像と本文の左右を入れ替える程度なら、読み上げの妨げになりません。見た目の順番でフォーカスを移す `reading-flow` は、Baselineではありません。それでも `row-reverse` や `wrap-reverse` で並べ替えるときは、同じルールに `reading-flow` を指定します（「[11-12 表示順と読み上げ順を合わせる](/layout-practice/reading-flow/)」）。
 
-```css title="🙆‍♂ Recommended: HTML では見出しを先に書き、装飾の画像だけを見た目の先頭に出す"
+```css title="🙆‍♂ Recommended: HTML では見出しを先に書き、装飾の画像だけを見た目の先頭に出す" from="layout/flexbox-order"
 ._card {
   display: block flex;
   flex-direction: column;
@@ -314,7 +314,7 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 
 列の幅を確実にそろえたいときは、Gridで親が列を決めます。`grid-template-columns: repeat(3, 1fr)` は、先にコンテナの幅を3等分して列を作り、アイテムをその列の中に置きます。`padding` は列の内側に収まるので、`padding` の大きいアイテムは、幅ではなく内容の領域が狭くなります。`minmax(0, 1fr)` ではなく `1fr` と書く理由は、「[11-3 サイズと内容の変化に耐える](/layout-practice/defensive/)」で説明しています。
 
-```css title="🙅‍♂ Not Recommended: padding の違うアイテムを、flex: 1 で等分しようとする"
+```css title="🙅‍♂ Not Recommended: padding の違うアイテムを、flex: 1 で等分しようとする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._item-group {
   display: block flex;
@@ -333,7 +333,7 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 }
 ```
 
-```css title="🙆‍♂ Recommended: 列の幅を Grid で決め、padding を列の内側に収める"
+```css title="🙆‍♂ Recommended: 列の幅を Grid で決め、padding を列の内側に収める" from="layout/flexbox-equal-columns"
 ._item-group {
   display: block grid;
   grid-template-columns: repeat(3, 1fr);
@@ -360,7 +360,7 @@ FlexboxとGridは、大きさを決める向きが違います。Flexboxはア�
 
 サイドの `flex-shrink` を9999のような大きな値にすると、不足のほとんどをサイドが受け持ちます。縮む量の比は、`flex-shrink` に `flex-basis` を掛けた値で決まるので、メインが1×800で800、サイドが9999×400で3,999,600です。サイドが不足の約99.98%を受け持ち、メインはほぼ縮みません。
 
-```css title="🙆‍♂ Recommended: サイドを最小幅まで先に縮め、メインの幅を保つ"
+```css title="🙆‍♂ Recommended: サイドを最小幅まで先に縮め、メインの幅を保つ" from="layout/flexbox-shrink-priority"
 ._layout {
   display: block flex;
   gap: 24px;

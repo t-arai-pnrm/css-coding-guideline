@@ -24,7 +24,7 @@ import compareCss from '../../../demos/layout-practice/icon-float-vs-absolute/st
 
 行頭にアイコンを置くとき、よく見かけるのが、項目をFlexboxにして `align-items: center` を指定する書き方です。1行の項目なら、アイコンは文字の中央にそろいます。しかし、文章が2行以上になると、アイコンは項目全体の高さの中央に移り、どの行にもそろわなくなります。3行の項目では、アイコンが2行目の横に来て、項目の始まりが分かりにくくなります。
 
-```css title="🙅‍♂ Not Recommended: 項目全体の高さの中央にアイコンを置く"
+```css title="🙅‍♂ Not Recommended: 項目全体の高さの中央にアイコンを置く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._check {
   display: block flex;
@@ -86,7 +86,7 @@ Flexboxにはもう1つ問題があります。項目の中に `strong` や `a` 
 
 ボタンの末尾に矢印を置くと、ラベルが矢印の分だけ左へずれ、ボタンの中央に来なくなります。そこで、ボタンを `grid-template-columns: 1fr auto 1fr` の3列にし、左から順に空の `::before`、ラベル、矢印の `::after` を置きます。左右の列が同じ幅になるので、ラベルはボタンの中央に保たれます。
 
-```css title="🙆‍♂ Recommended: 左右の列を同じ幅にして、ラベルを中央に置く"
+```css title="🙆‍♂ Recommended: 左右の列を同じ幅にして、ラベルを中央に置く" from="layout-practice/icon-align-grid"
 ._button {
   display: block grid;
   grid-template-columns: 1fr auto 1fr;
@@ -118,7 +118,7 @@ Flexboxにはもう1つ問題があります。項目の中に `strong` や `a` 
 
 CMSで入力した本文のリストのように、項目の中身に `strong` や `a` が入ったり、段落が2つ以上入ったりする場面では、項目をGridやFlexboxにできません。中身のテキストやインライン要素が、それぞれ別のアイテムに分かれてしまうからです。この場面では、アイコンを擬似要素で描き、`float: inline-start` で行の始端に寄せます。中身は通常フローのまま流れるので、構造が変わっても崩れません。
 
-```css title="🙆‍♂ Recommended: float したアイコンを、項目の padding の中へ戻す"
+```css title="🙆‍♂ Recommended: float したアイコンを、項目の padding の中へ戻す" from="layout-practice/icon-float-vs-absolute"
 @scope (.scoped.notice-list) to (.scoped) {
   li {
     --_icon-size: 1em;
@@ -150,7 +150,7 @@ CMSで入力した本文のリストのように、項目の中身に `strong` �
 
 同じ配置は、`position: absolute` でも書けます。項目に `position: relative` を指定し、擬似要素を `inset-inline-start: 0` で `padding` の中に置きます。縦の位置は、`float` の版と同じ式を `inset-block-start` に書きます。擬似要素は項目の `line-height` を継承しているので、`1lh` は項目の1行の高さです。
 
-```css title="🙆‍♂ Recommended: 絶対配置で置くなら、位置を式で書く"
+```css title="🙆‍♂ Recommended: 絶対配置で置くなら、位置を式で書く" from="layout-practice/icon-float-vs-absolute"
 ._notice {
   --_icon-size: 1em;
   --_gap: 0.5em;

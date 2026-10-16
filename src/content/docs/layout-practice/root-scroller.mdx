@@ -37,7 +37,7 @@ JavaScriptからは、`document.scrollingElement` でルートスクローラー
 
 ページ全体が入れ子のスクロールコンテナになる書き方は、2つに分けられます。1つは、意図してページ全体をラッパーの中でスクロールさせるものです。ヘッダーとサイドバーを画面に残したまま本文だけをスクロールさせる管理画面や、全画面の演出をするページで見かけます。
 
-```css title="🙅‍♂ Not Recommended: html と body を固定し、ラッパーをスクロールさせる"
+```css title="🙅‍♂ Not Recommended: html と body を固定し、ラッパーをスクロールさせる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 html,
 body {
@@ -55,7 +55,7 @@ body {
 
 もう1つは、意図しないまま入れ子になるものです。横スクロールを防ぐ `overflow-x: hidden` と、全画面のレイアウトのための `height: 100%` を、`html` と `body` の両方に指定すると起きます。
 
-```css title="🙅‍♂ Not Recommended: html と body に、overflow-x: hidden と height: 100% を指定する"
+```css title="🙅‍♂ Not Recommended: html と body に、overflow-x: hidden と height: 100% を指定する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 html,
 body {
@@ -157,7 +157,7 @@ macOSのトラックパッドやiOSのSafariでは、ページの端を越えて
 
 `overscroll-behavior` の値は `auto`、`contain`、`none` の3つです。`contain` は、端に着いたスクロールが祖先のスクロールコンテナへ連鎖するのを止めますが、その要素自身の跳ね返りは残します。`none` は、連鎖に加えて跳ね返りも止めます。ルートスクローラーには連鎖する先の祖先がないので、跳ね返りを止めるには `none` が要ります。一方、タッチ端末でページの上端から下へ引っ張って再読み込みする操作（pull-to-refresh）は、ページの外への連鎖として扱われるので、`contain` でも `none` でも止まります。{/* 要検証: ブラウザ。ルートの contain で、Android の Chrome と iOS の Safari の引っ張って更新が止まり、跳ね返りは残ること */}
 
-```css title="🙅‍♂ Not Recommended: すべての環境で跳ね返りを止め、引っ張って更新まで止める"
+```css title="🙅‍♂ Not Recommended: すべての環境で跳ね返りを止め、引っ張って更新まで止める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer base {
   :root {

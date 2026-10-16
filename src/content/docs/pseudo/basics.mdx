@@ -26,7 +26,7 @@ import targetCss from '../../../demos/pseudo/pseudo-target/style.css?raw';
 
 1コロンの習慣は、あとから加わった擬似要素で誤りを生みます。旧記法が認められているのは上の4つだけなので、`li:marker` や `input:placeholder` は無効なセレクタになり、ルール全体が無視されます。すべての擬似要素を2コロンで書くと決めておけば、こうした誤りは起きません。本書のStylelintの設定では、`selector-pseudo-element-colon-notation` で1コロンの擬似要素を検出しています。
 
-```css title="🙅‍♂ Not Recommended: 擬似要素を1コロンで書く"
+```css title="🙅‍♂ Not Recommended: 擬似要素を1コロンで書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 a:hover,
 a:before {
@@ -91,7 +91,7 @@ li:marker {
 
 リンクにデフォルト値の `--_hocus: --false` を明示しているのは、外側の要素で立てたフラグを継承しないためです。矢印は、ホバーとフォーカスで右上へ少し動かしています。`translate` は非置換のインライン要素では働かないので、`::after` を `display: inline flow-root` にしています。変化を `opacity` で表さないのは、透けて読みにくくなるうえに、意図がコードから読み取れないからです（第17章のルール `no-opacity-for-hover`）。状態のセレクタは元の要素に書くので、擬似クラスを擬似要素の後ろに書き間違えることもありません。フラグとスタイルクエリで状態を伝える書き方は、「[10-6 スタイルクエリで状態を伝える](/components/style-queries/)」で説明しています。
 
-```css title="🙅‍♂ Not Recommended: 擬似要素の後ろに擬似クラスを書く"
+```css title="🙅‍♂ Not Recommended: 擬似要素の後ろに擬似クラスを書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .external-link::after:hover {
   translate: 2px -2px;
@@ -137,7 +137,7 @@ li:marker {
 
 解釈できないセレクタには、書き間違いのほかに、ブラウザがまだ対応していない擬似クラスが含まれます。たとえば、見出しをまとめて選ぶ `:heading` に対応しているのは、Safari 27だけです。次の例は、Safari 27では見出しと `caption` の両方に当たりますが、対応していないChromeやFirefoxではルールごと無視され、`caption` にもスタイルが当たりません。Chromeでは、このルールがスタイルシートから取り除かれることを確かめました。
 
-```css title="🙅‍♂ Not Recommended: 対応の分かれる擬似クラスを、セレクタリストに並べる"
+```css title="🙅‍♂ Not Recommended: 対応の分かれる擬似クラスを、セレクタリストに並べる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 :heading,
 caption {

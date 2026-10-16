@@ -97,7 +97,7 @@ import cardTagFrame from '../../../demos/layout-practice/anchored-card-tag/frame
 
 記事カードのカテゴリーを示すタグを、画像の行末側の上の角に重ねる例で考えます。タグは記事についての情報なので、HTMLでは本文の中の見出しの前に置きます。カードは置き場所の幅によって、画像と本文を縦に積んだり横に並べたりします。カードを包含ブロックにしてタグを絶対配置すると、タグが付くのはカードの角で、画像の角ではありません。
 
-```css title="🙅‍♂ Not Recommended: タグをカードの角に置き、横並びで画像の角からずらす"
+```css title="🙅‍♂ Not Recommended: タグをカードの角に置き、横並びで画像の角からずらす" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.article-card) to (.scoped) {
   :scope {
@@ -131,7 +131,7 @@ import cardTagFrame from '../../../demos/layout-practice/anchored-card-tag/frame
 
 画像をアンカーにすれば、タグをHTMLの位置に置いたまま、画像の角に重ねられます。画像に `anchor-name` を付け、タグの `inset-block-start` と `inset-inline-end` を、`anchor()` で画像の同じ側の辺にそろえます。`anchor()` の `start` と `end` は、書いたプロパティと同じ軸の、包含ブロックの書字方向から見た始まりと終わりの辺です（`self-start` と `self-end` は、配置する要素自身の書字方向で決まります）。カードは一覧で繰り返すので、前の見出しで説明したとおり、ルートの `anchor-scope` で名前の範囲をカードの中に限ります。
 
-```css title="🙆‍♂ Recommended: 画像をアンカーにして、タグを画像の角に重ねる"
+```css title="🙆‍♂ Recommended: 画像をアンカーにして、タグを画像の角に重ねる" from="layout-practice/anchored-card-tag"
 @scope (.scoped.article-card) to (.scoped) {
   :scope {
     position: relative;
@@ -168,7 +168,7 @@ import cardTagFrame from '../../../demos/layout-practice/anchored-card-tag/frame
 
 同じ書き方で、特集の表示のように、説明文を画像の下端に重ねることもできます。説明文の下端と行頭側・行末側の辺を、画像の同じ側の辺にそろえます。
 
-```css title="🙆‍♂ Recommended: 説明文を画像の下端に重ねる"
+```css title="🙆‍♂ Recommended: 説明文を画像の下端に重ねる" from="layout-practice/anchored-card-tag"
 @scope (.scoped.feature-card) to (.scoped) {
   :scope {
     position: relative;

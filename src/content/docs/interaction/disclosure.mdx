@@ -24,7 +24,7 @@ import drawerJs from '../../../demos/interaction/drawer-inert/script.js?raw';
 
 モーダルやアコーディオンは、`div` に `.is-open` のようなクラスを付け外しし、閉じているときは `display: none` で隠す形で作られてきました。この方法では、ブラウザが本来持っている振る舞いを、すべて自分で作り直すことになります。
 
-```css title="🙅‍♂ Not Recommended: クラスの付け外しで開閉する"
+```css title="🙅‍♂ Not Recommended: クラスの付け外しで開閉する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .modal {
   display: none;
@@ -110,7 +110,7 @@ viewer.addEventListener('command', (event) => {
 
 そこで、背面の要素だけを不活性にします。不活性になった要素は、クリックとフォーカスができなくなり、アクセシビリティツリーからも外れます。この状態は、HTMLでは `inert` 属性で、CSSでは `interactivity: inert` で指定できます。2025年3月の時点で、私はこの場面をCSSで次のように書いていました。
 
-```css title="🙅‍♂ Not Recommended: ページ全体を起点にした :has() で、ヘッダー以外を不活性にする"
+```css title="🙅‍♂ Not Recommended: ページ全体を起点にした :has() で、ヘッダー以外を不活性にする" issue="convention"
 /* 🙅‍♂ Not Recommended */
 body:has(.drawer-button[aria-expanded="true"]) {
   & :not(.global-header, .global-header *) {
@@ -240,7 +240,7 @@ const initializeDisclosure = (link) => {
 
 `hidden="until-found"` に対応したブラウザは、要素を `display: none` ではなく `content-visibility: hidden` で隠します。中身だけが隠れて要素自体は描画されるので、その要素の余白、枠線、背景は、閉じていても表示されます。これらは内側の要素に指定します。
 
-```css title="🙆‍♂ Recommended: 余白と背景は、内側の要素に指定する"
+```css title="🙆‍♂ Recommended: 余白と背景は、内側の要素に指定する" from="interaction/until-found-panel"
 @scope (.scoped.shipping-section) to (.scoped) {
   ._panel-inner {
     padding: 16px;

@@ -36,7 +36,7 @@ FlexboxとGridも、同じ基準で動きます。`flex-direction: row` の主�
 
 この仕組みを利用して、Gridのセルの並びを逆転させる目的で `direction: rtl` を指定するハックがあります。見た目の順番は入れ替わりますが、フォーカスの移動と読み上げはHTMLの順番のままです。キーボードで操作すると、フォーカスが右から左へ飛ぶように見えます。文字の方向まで変わるので、子の中で `direction: ltr` に戻す指定も要ります。
 
-```css title="🙅‍♂ Not Recommended: Gridのセルの並びを direction で逆にする"
+```css title="🙅‍♂ Not Recommended: Gridのセルの並びを direction で逆にする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._media {
   display: block grid;
@@ -89,7 +89,7 @@ body {
 
 私がブロックの中央寄せに `margin-inline: auto` を選ぶのは、短く書けるからではありません。`margin: 0 auto` や `margin: auto` は、左右のマージンと一緒に上下のマージンも上書きします。周りのレイアウトが `* + *` のセレクタ（フクロウセレクタ）で子の間に入れた余白も、`0` で消してしまいます。`margin-inline` はインライン方向のマージンだけを指定するので、この副作用がありません（「[7-3 ボックスモデルの基礎](/layout/box-model/#rule-margin-inline-auto-centering)」）。
 
-```css title="🙅‍♂ Not Recommended: 上下のマージンまで 0 にする"
+```css title="🙅‍♂ Not Recommended: 上下のマージンまで 0 にする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._figure {
   max-width: 640px;
@@ -114,7 +114,7 @@ body {
 
 書字方向で値を変える必要があるときは、論理プロパティに加えて `:dir(rtl)` で分岐します。たとえば「→」の矢印は、文字の向きが変わっても左右反転しません。RTLのページでは、`scale: -1 1` で矢印を反転させます。`:dir()` は、要素自身の `dir` 属性だけでなく、祖先から受け継いだ書字方向でも一致します。
 
-```css title="🙆‍♂ Recommended: 書字方向で変えるものは :dir(rtl) で分岐する"
+```css title="🙆‍♂ Recommended: 書字方向で変えるものは :dir(rtl) で分岐する" from="notation/writing-direction"
 @scope (.scoped.note) to (.scoped) {
   a {
     &::after {

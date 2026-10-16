@@ -26,7 +26,7 @@ import textSpacingFrame from '../../../demos/layout/text-element-spacing/frame.c
 
 お知らせのカードを縦に並べるとき、各カードへ `margin-block-end` を付け、最後のカードだけ0に戻す書き方は、今もよく見かけます。
 
-```css title="🙅‍♂ Not Recommended: 子の margin で並べる間隔を作り、最後だけ打ち消す"
+```css title="🙅‍♂ Not Recommended: 子の margin で並べる間隔を作り、最後だけ打ち消す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._card {
   margin-block-end: 24px;
@@ -85,7 +85,7 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 
 本書は、レイアウトの間隔を親の `gap` で作ります。カードの一覧、ヘッダーの中のロゴとナビゲーション、フォームの項目の並びのように、ボックスを並べる場面がこれにあたります。`gap` は要素と要素の間にだけ空き、相殺も起きないので、値がそのまま間隔になり、列の数を変えても子の側に何も書き足さずに済みます。
 
-```css title="🙆‍♂ Recommended: 並べる間隔は親の gap で作る"
+```css title="🙆‍♂ Recommended: 並べる間隔は親の gap で作る" from="layout/margin-role"
 ._card-list {
   display: block grid;
   gap: 24px;
@@ -94,7 +94,7 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 
 文章の要素の間の余白は、通常フローのまま `margin` で作ります。そのときは、次兄弟結合子で前の要素を条件にして選んだ後ろの要素の `margin-block-start` に付けます（ルール「[`block-margin-with-sibling-combinator`](/layout-practice/spacing/#rule-block-margin-with-sibling-combinator)」）。余白は要素そのものの性質ではなく、隣り合う2つの要素の関係から生まれるからです。前に要素があるときだけ余白が付くので、要素が欠けたり並びが変わったりしても、余計な余白が残りません。
 
-```css title="🙆‍♂ Recommended: 文章の要素の間は、後ろの要素の margin-block-start で作る"
+```css title="🙆‍♂ Recommended: 文章の要素の間は、後ろの要素の margin-block-start で作る" from="layout/margin-role"
 ._body {
   & > * + * {
     margin-block-start: 16px;
@@ -108,7 +108,7 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 
 2つ目のルールは、見出しの直後の要素の余白を狭くします。2つ目のセレクタは詳細度が高いので、見出しの直後では1つ目のルールに勝ちます。`:heading` はブラウザの対応が分かれるので、タイプセレクタと並べて `:is()` の中に書いています（「[5-1 擬似クラスと擬似要素の基本](/pseudo/basics/)」）。
 
-```css title="🙅‍♂ Not Recommended: 要素自身に margin-block-end を付け、最後の子で打ち消す"
+```css title="🙅‍♂ Not Recommended: 要素自身に margin-block-end を付け、最後の子で打ち消す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._body {
   & > p {
@@ -142,7 +142,7 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 
 段落、見出し、リストの項目の中の文字のような文字の要素には、文字の大きさや色、行の高さのような文字のスタイルだけを書きます。横方向の `margin` と `padding` は付けず、`display` も構造上の理由なく変えません。文字を左右から離したいときは、文字の要素ではなく、それを包む要素の `padding` か、親の `gap` で作ります。
 
-```css title="🙅‍♂ Not Recommended: 段落に横の margin を付けて、文字を内側へ寄せる"
+```css title="🙅‍♂ Not Recommended: 段落に横の margin を付けて、文字を内側へ寄せる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._body {
   & > p {
@@ -153,7 +153,7 @@ HTMLは、もともと論文のような縦に長い文書を書くための言�
 
 段落にだけ横の `margin` を付けると、同じ領域の見出しや画像とは左右の端がそろわなくなります。そろえるには、要素の種類ごとに同じ値を書き足すことになり、新しい種類の要素が入るたびに漏れが出ます。包む要素の `padding` にすれば、中に何が入っても左右の端は1か所で決まります。
 
-```css title="🙆‍♂ Recommended: 文字を左右から離す余白は、包む要素の padding で作る"
+```css title="🙆‍♂ Recommended: 文字を左右から離す余白は、包む要素の padding で作る" from="layout/text-element-spacing"
 ._body {
   padding-inline: 16px;
 }

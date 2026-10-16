@@ -112,7 +112,7 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 
 `position: absolute` の `inset` は、位置の基準になる親の箱から測る値です。親の `position: relative` と同じ場所に置けば、基準を変えるとき、一緒に見直せます。`position: sticky` も、コンポーネントの中の要素のスクロールを基準にするなら、同じ理由で親のネストに書きます。一方、ページのルートのスクロールに沿わせる `sticky` と、ビューポートを基準にする `fixed` は、親のレイアウトで決まらないので、子のルールに書いてかまいません。
 
-```css title="🙅‍♂ Not Recommended: 子自身の見た目まで親のネストに書く"
+```css title="🙅‍♂ Not Recommended: 子自身の見た目まで親のネストに書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.choice-list) to (.scoped) {
   ._option {
@@ -160,7 +160,7 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 
 `&` は、親のルールに一致した要素を表します。`&:hover` は親の要素自身のホバーで、`& > ._icon` は親の直下の子です。先頭に `&` と結合子のどちらもないセレクタをネストすると、親との間に子孫結合子があるものとして解釈されます。
 
-```css title="🙅‍♂ Not Recommended: & を省いた擬似クラス"
+```css title="🙅‍♂ Not Recommended: & を省いた擬似クラス" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._submit-button {
   :focus-visible {
@@ -179,7 +179,7 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 
 `&` の詳細度は、親のセレクタリストを `:is()` で包んだものと同じです。`:is()` の詳細度は、引数の中でいちばん高いセレクタの詳細度になります（「[4-2 セレクタで詳細度を設計する](/cascade/selectors/)」）。親が1つのセレクタなら、ネストした結果は親とネストしたセレクタをつないだものと変わりません。親が詳細度の違うセレクタのリストだと、どのセレクタで一致した要素にも、いちばん高い詳細度が付きます。
 
-```css title="🙅‍♂ Not Recommended: 詳細度の違うセレクタリストの中でネストする"
+```css title="🙅‍♂ Not Recommended: 詳細度の違うセレクタリストの中でネストする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.action-bar) to (.scoped) {
   button,
@@ -201,7 +201,7 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 
 このバーには、操作のボタンと、選択中の件数を示す `._selected-count` が並んでいます。2つは背景色を共有しているので、1つのセレクタリストにまとめています。`&:enabled` は `:is(button, ._selected-count):enabled` と同じ意味になり、詳細度は `0.2.0` です。`button` で一致した要素にも、`._selected-count` の `0.1.0` が使われます。後ろにある `button[data-variant="danger"]` は `0.1.1` なので負け、削除のボタンは赤になりません。親が `button` だけなら、どちらも `0.1.1` になり、後ろに書いた赤が勝ちます。
 
-```css title="🙆‍♂ Recommended: ネストするルールはセレクタごとに分ける"
+```css title="🙆‍♂ Recommended: ネストするルールはセレクタごとに分ける" from="notation/nesting-split-list"
 @scope (.scoped.action-bar) to (.scoped) {
   button,
   ._selected-count {
@@ -242,7 +242,7 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 
 ルールの中では、宣言をネストしたルールより前に書きます（「[9-7 プロパティの並び順](/notation/property-order/)」のルール `block-content-order`）。CSSの文法では、ネストしたルールの後ろに宣言を書くこともできます。この宣言は、その位置に置かれた別のルール（`CSSNestedDeclarations`）として扱われ、書いた順番がカスケードに影響します。
 
-```css title="🙅‍♂ Not Recommended: ネストしたルールの後ろに宣言を足す"
+```css title="🙅‍♂ Not Recommended: ネストしたルールの後ろに宣言を足す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._links {
   display: none;

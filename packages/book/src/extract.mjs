@@ -12,6 +12,7 @@ import { JSDOM, VirtualConsole } from 'jsdom';
 import { BASE, SITE, pageUrl } from '../../../src/lib/site.mjs';
 import { moveReferencesToNotes } from './notes.mjs';
 import { READINGS, readingText } from '../../../src/lib/reading.mjs';
+import { CODE_ISSUES, CODE_USES, isDistributedFile } from '../../../src/lib/code-labels.mjs';
 
 const SITE_BASE = `${BASE}/`;
 
@@ -120,7 +121,21 @@ export const extractPage = async (page, ctx) => {
     const figure = doc.createElement('figure');
     figure.className = 'code';
     const caption = doc.createElement('figcaption');
-    const label = title.replace(/🙆‍♂\s*Recommended:\s*/u, '推奨例：').replace(/🙅‍♂\s*Not Recommended:\s*/u, '避ける例：');
+    // コード例の区別（src/lib/code-labels.mjs）。Web 版のプラグイン（ec.config.mjs）が data 属性に残している
+    const labelled = block.querySelector('[data-code-use], [data-code-issue], [data-code-from]') ?? block;
+    const use = labelled.getAttribute('data-code-use');
+    const issue = labelled.getAttribute('data-code-issue');
+    const from = labelled.getAttribute('data-code-from');
+    const fromNote = (() => {
+      if (!from) return '';
+      if (isDistributedFile(from)) return `（全体は配布ファイル ${from.split('/').at(-1)}）`;
+      const index = page.demos.findIndex((demo) => demo.name === from);
+      return index === -1 ? '（全体は補足サイトのデモ）' : `（全体はデモ${page.label ?? page.id.replaceAll('/', '-')}-${index + 1}）`;
+    })();
+    const label = title
+      .replace(/🙆‍♂\s*Recommended:\s*/u, `推奨例${CODE_USES[use] ? `・${CODE_USES[use]}` : ''}：`)
+      .replace(/🙅‍♂\s*Not Recommended:\s*/u, `避ける例${CODE_ISSUES[issue] ? `（${CODE_ISSUES[issue]}）` : ''}：`)
+      .concat(fromNote);
     caption.textContent = `${label}${selection ? '（抜粋。全体は配布ファイル）' : ''}`;
     const pre = doc.createElement('pre');
     const code = doc.createElement('code');

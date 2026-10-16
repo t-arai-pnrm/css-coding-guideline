@@ -29,7 +29,7 @@ import pinFrame from '../../../demos/motion/horizontal-pin/frame.css?raw';
 
 以前は、スクロールに合わせた動きを `scroll` イベントで作るのが一般的でした。スクロールのたびに `scrollTop` や `getBoundingClientRect()` で位置を読み、その値からスタイルを書き換えます。
 
-```js title="🙅‍♂ Not Recommended: scroll イベントのたびに位置を読み、スタイルを書き換える"
+```js title="🙅‍♂ Not Recommended: scroll イベントのたびに位置を読み、スタイルを書き換える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 window.addEventListener('scroll', () => {
   for (const item of document.querySelectorAll('.feature-list li')) {
@@ -71,7 +71,7 @@ Firefoxはスクロール駆動アニメーションに対応していません�
 
 次の例は、ページを80pxスクロールするまでの間に、ヘッダーの背景をフェードインさせます。背景は擬似要素に描き、その `opacity` をスクロール量に合わせて変えます。
 
-```css title="🙆‍♂ Recommended: スクロールした量に合わせて、ヘッダーの背景を表示する"
+```css title="🙆‍♂ Recommended: スクロールした量に合わせて、ヘッダーの背景を表示する" from="motion/scroll-header"
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
     position: sticky;
@@ -142,7 +142,7 @@ Firefoxはスクロール駆動アニメーションに対応していません�
 
 きっかけには、カスタムプロパティを使います。ルートの `view()` のタイムラインで `--_in-view` を `--false` から `--true` に切り替えます。子は、一時停止したアニメーションを `@container style(--_in-view: --true)` の中で再生します。
 
-```css title="🙆‍♂ Recommended: view() のタイムラインで切り替えた値を、スタイルクエリで問い合わせて再生する"
+```css title="🙆‍♂ Recommended: view() のタイムラインで切り替えた値を、スタイルクエリで問い合わせて再生する" from="motion/reveal-on-view"
 @keyframes --reveal-card--in-view {
   from {
     --_in-view: --false;
@@ -300,7 +300,7 @@ root?.setAttribute('data-motion-mode', reduced ? 'reduced' : 'motion');
 
 この演出は、外側の `._body` と、列を横に並べた `ul` の2つの要素で作ります。`._body` には `view-timeline-name` でタイムラインの名前を付け、`min-block-size` に列の全体の幅を指定します。`ul` は `position: sticky` と `inset-block-start: 0` で画面の上端に留め、`animation-timeline` にそのタイムラインの名前を指定して動かします。`._body` が画面の上端を越えている間、`ul` は画面に留まったまま横へ動き、`._body` の下端が来ると一緒に上へ流れていきます。
 
-```css title="🙆‍♂ Recommended: 縦のスクロールに合わせて、留めた列を横に動かす"
+```css title="🙆‍♂ Recommended: 縦のスクロールに合わせて、留めた列を横に動かす" from="motion/horizontal-pin"
 @keyframes --translate-to {
   to {
     translate: var(--translate-to--x-value, 0) var(--translate-to--y-value, 0);

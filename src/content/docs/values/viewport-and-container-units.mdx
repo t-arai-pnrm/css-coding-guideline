@@ -22,7 +22,7 @@ import bandCss from '../../../demos/values/full-bleed-band/style.css?raw';
 
 画面の高さいっぱいのヒーローを作るとき、高さを `100vh` にする例をよく見かけます。PCのブラウザでは意図どおりに見えますが、スマートフォンでは下の部分がブラウザのツールバーに隠れることがあります。ヒーローの下端にボタンを置いていると、最初の表示でボタンが見えません。
 
-```css title="🙅‍♂ Not Recommended: vw と vh で画面いっぱいに広げる"
+```css title="🙅‍♂ Not Recommended: vw と vh で画面いっぱいに広げる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .hero {
   inline-size: 100vw;
@@ -103,7 +103,7 @@ import bandCss from '../../../demos/values/full-bleed-band/style.css?raw';
 
 文字サイズを `font-size: 5vw` や `4svi` のようにビューポート単位だけで決めると、画面の幅に比例して文字が大きくなります。手軽ですが、この書き方には大きな問題があります。ブラウザの文字サイズの設定を大きくしても、文字が大きくならないことです。
 
-```css title="🙅‍♂ Not Recommended: ビューポート単位だけで文字サイズを決める"
+```css title="🙅‍♂ Not Recommended: ビューポート単位だけで文字サイズを決める" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .hero-title {
   font-size: 5vw;
@@ -120,7 +120,7 @@ import bandCss from '../../../demos/values/full-bleed-band/style.css?raw';
 
 たとえば、`inline-size: 100vw` で要素を画面の幅いっぱいに広げる指定は、多くの場合なくても済みます。ブロック要素は、何も指定しなくても親の幅いっぱいに広がるからです。中央寄せのコンテンツから背景だけを画面の端まで広げたい場合も、グリッドの左右に余白の列を作る方法などで書けます。この方法は「[11-2 余白を設計する](/layout-practice/spacing/)」で扱います。
 
-```css title="🙆‍♂ Recommended: 左右の余白の列で、内容を中央に置き、背景は親の幅いっぱいに広げる"
+```css title="🙆‍♂ Recommended: 左右の余白の列で、内容を中央に置き、背景は親の幅いっぱいに広げる" from="values/full-bleed-band"
 @scope (.scoped.feature-band) to (.scoped) {
   :scope {
     display: block grid;

@@ -22,7 +22,7 @@ import reelInsetCss from '../../../demos/compositions/reel-inset/style.css?raw';
 
 横スクロールは、Flexboxでも組めます。ただ、フレックスアイテムは `flex-shrink` の初期値が `1` なので、並べただけでは、はみ出す前に子が縮みます。スクロールさせるには、すべての子に `flex-shrink: 0` を付けて縮まないようにし、幅も子の側で決める必要があります。
 
-```css title="🙅‍♂ Not Recommended: 縮まない指定と幅を、子の側で決める"
+```css title="🙅‍♂ Not Recommended: 縮まない指定と幅を、子の側で決める" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .tag-row {
   display: block flex;
@@ -100,7 +100,7 @@ Gridなら、親が `grid-auto-flow: column` で子を列として並べ、`grid
 
 <Baseline id="scroll-snap" />
 
-```css title="🙆‍♂ Recommended: カードを並べるコンポーネントで、スナップを付ける"
+```css title="🙆‍♂ Recommended: カードを並べるコンポーネントで、スナップを付ける" from="compositions/reel"
 @scope (.scoped.related-articles) to (.scoped) {
   :scope {
     scroll-snap-type: inline mandatory;

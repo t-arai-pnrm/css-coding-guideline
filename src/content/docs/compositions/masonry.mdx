@@ -80,7 +80,7 @@ import masonryCss from '../../../demos/compositions/masonry/style.css?raw';
 
 私が案件で使っているテンプレートの `masonry` は、これとは逆の形です。外側に `display: block grid-lanes` を書き、`@supports not (display: block grid-lanes)` の中でGridに戻しています。未対応の環境で通常のGridになる点は同じですが、本書はこの形を採りません。
 
-```css title="🙅‍♂ Not Recommended: 外側に grid-lanes を書き、@supports not で Grid に戻す"
+```css title="🙅‍♂ Not Recommended: 外側に grid-lanes を書き、@supports not で Grid に戻す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .masonry {
   /* ... */

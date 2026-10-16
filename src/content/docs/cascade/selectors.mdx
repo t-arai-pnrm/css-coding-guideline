@@ -21,7 +21,7 @@ import pseudoSpecificityCss from '../../../demos/cascade/pseudo-specificity/styl
 
 詳細度の問題は、多くの場合、上書きしたい側ではなく、上書きされる側の書き方から始まります。次の例では、フォームのボタンと見出しのスタイルを上書きしようとして、うまくいきません。
 
-```css title="🙅‍♂ Not Recommended: 詳細度の高いベーススタイルを、クラスで上書きできない"
+```css title="🙅‍♂ Not Recommended: 詳細度の高いベーススタイルを、クラスで上書きできない" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 input[type="submit"] {
   background-color: var(--background--accent);
@@ -54,7 +54,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 私は2020年に、`!important` を使わずに上書きする方法として、次のようなセレクタを紹介していました。同じクラスを連結する、`[class]` を足す、存在しないIDを `:not()` に入れる、といった技です。当時はセレクタのほかに詳細度を調整する手段がなく、既存のCSSを直せない場面での最終手段として使っていました。
 
-```css title="🙅‍♂ Not Recommended: 詳細度を上げるためだけのセレクタ"
+```css title="🙅‍♂ Not Recommended: 詳細度を上げるためだけのセレクタ" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .large-text.large-text {
   font-size: calc(24 / 16 * 1rem);
@@ -77,7 +77,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 上書きのためでなくても、セレクタには、外しても選ぶ要素が変わらない部分を書きません。クラスで選べる要素にタイプセレクタを連結した `a.nav-link`（過剰修飾）や、祖先をたどって書いた `.site-header .nav .nav-link` が、その例です。
 
-```css title="🙅‍♂ Not Recommended: 選ぶ要素は変わらないのに、タイプセレクタと祖先を足す"
+```css title="🙅‍♂ Not Recommended: 選ぶ要素は変わらないのに、タイプセレクタと祖先を足す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .site-header .nav a.nav-link {
   color: var(--foreground--base);
@@ -166,7 +166,7 @@ IDセレクタでは、スタイルを指定しません。詳細度が1.0.0に�
 
 `:is()` は、複数のセレクタをまとめて書くための擬似クラスです。引数の最大が全体の詳細度になるので、引数にIDセレクタや長いセレクタを1つ混ぜるだけで、ほかの引数に当てはまった要素まで高い詳細度になります。
 
-```css title="🙅‍♂ Not Recommended: 引数に詳細度の高いセレクタを混ぜる"
+```css title="🙅‍♂ Not Recommended: 引数に詳細度の高いセレクタを混ぜる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 :is(#sidebar, .card) ._title {
   font-size: 1rem;

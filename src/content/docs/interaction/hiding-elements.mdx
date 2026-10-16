@@ -59,7 +59,7 @@ import hidingJs from '../../../demos/interaction/hiding-methods/script.js?raw';
 
 `visibility: hidden` は、場所を残したまま、見た目と支援技術の両方から消します。フォーカスもできません。`display` と違い、トランジションの中で切り替わる時点が決まっているので、閉じるアニメーションを終えてから隠すパネルに向いています（「[18-8 重ねて出すパネルと順に出す要素](/motion/overlays-and-stagger/)」）。
 
-```css title="🙅‍♂ Not Recommended: visibility: hidden の中で、子要素だけ visible に戻す"
+```css title="🙅‍♂ Not Recommended: visibility: hidden の中で、子要素だけ visible に戻す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.mega-menu) to (.scoped) {
   ._panel {
@@ -167,7 +167,7 @@ CSSから同じ状態にする `interactivity: inert` もありますが、Basel
 
 `opacity: 0` と `clip-path` は、描画の結果を変えるだけで、要素の存在は変えません。そのため、見えなくなった要素も、読み上げとフォーカスの対象に残ります。閉じたメニューを透明にするだけだと、Tabキーで見えないリンクにフォーカスが移り、キーボードで操作するユーザーにはフォーカスが消えたように見えます。
 
-```css title="🙅‍♂ Not Recommended: 閉じたメニューを透明にするだけで隠す"
+```css title="🙅‍♂ Not Recommended: 閉じたメニューを透明にするだけで隠す" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.global-header) to (.scoped) {
   ._menu {

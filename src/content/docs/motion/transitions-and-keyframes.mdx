@@ -16,7 +16,7 @@ import Guideline from '../../../components/Guideline.astro';
 
 `transition: all` は手軽ですが、関係のないプロパティまでアニメーションします。たとえば、ブレイクポイントをまたいで余白が変わったときや、ダークモードに切り替えたときにも、要素がゆっくりと変化します。動かす必要のないプロパティまで毎フレーム補間するので、描画の負荷も増えます。
 
-```css title="🙅‍♂ Not Recommended: すべてのプロパティを対象にし、値を直接書く"
+```css title="🙅‍♂ Not Recommended: すべてのプロパティを対象にし、値を直接書く" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._card {
   transition: all 0.3s ease;

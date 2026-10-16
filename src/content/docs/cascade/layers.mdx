@@ -29,7 +29,7 @@ import forgottenLayerCss from '../../../demos/cascade/forgotten-layer/style.bad.
 
 たとえば、要素を視覚的に隠すユーティリティクラス `.-visually-hidden` は、どのコンポーネントの要素に付けても適用されなければなりません。レイヤーがなければ、ユーティリティとコンポーネントのクラスはどちらも0.1.0なので、頼れるのは書いた順番だけです。読み込む順番が変わっただけで適用されなくなるので、以前はユーティリティに `!important` を付けるのが一般的でした。
 
-```css title="🙅‍♂ Not Recommended: 読み込む順番に左右されないよう、ユーティリティに !important を付ける"
+```css title="🙅‍♂ Not Recommended: 読み込む順番に左右されないよう、ユーティリティに !important を付ける" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .-visually-hidden {
   position: absolute !important;
@@ -167,7 +167,7 @@ npx vite build
 
 レイヤー名を打ち間違えても、エラーにはなりません。先頭の `@layer` 文にない名前は、その場で新しいレイヤーとして作られ、それまでに現れたすべてのレイヤーの後ろに加わります。次の例では、`components` を `component` と書いたことで、`utilities` よりも後ろの、より強いレイヤーができてしまいます。
 
-```css title="🙅‍♂ Not Recommended: 本書の規約と異なるレイヤー名で順位が変わる"
+```css title="🙅‍♂ Not Recommended: 本書の規約と異なるレイヤー名で順位が変わる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @layer component {
   /* ... */

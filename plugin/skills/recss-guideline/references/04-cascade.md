@@ -1,6 +1,6 @@
 # 第4章 カスケードを制御する：ルール
 
-- ガイドラインのバージョン: 0.74.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.75.0（2026-10-16 生成）
 - ルールの数: 24
 - 本文: 約9万字
 - 読む条件: @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番
@@ -18,7 +18,7 @@
 - `cascade/layers` 4-3 カスケードレイヤーで順位を決める（約2万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/layers/
 - `cascade/scope` 4-4 @scopeでスタイルを閉じ込める（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/scope/
 - `cascade/nesting` 4-5 CSSネストの基礎（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/cascade/nesting/
-- `cascade/custom-properties-basics` 4-6 カスタムプロパティの基礎（約9,800字）https://t-arai-pnrm.github.io/recss-guideline/cascade/custom-properties-basics/
+- `cascade/custom-properties-basics` 4-6 カスタムプロパティの基礎（約9,900字）https://t-arai-pnrm.github.io/recss-guideline/cascade/custom-properties-basics/
 
 ## 4-1 カスケード・詳細度・継承
 

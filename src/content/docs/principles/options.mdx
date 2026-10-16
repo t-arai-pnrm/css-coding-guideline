@@ -49,7 +49,7 @@ CSSでは、1つの見た目を作る方法が複数あり、どれが適切か�
 
 カードを横に並べる場合も、「今はGridの時代だからGridで書く」と決めてしまうのではなく、並べ方の条件から選びます。最後の行に入るカードの数が列の数に満たないとき、そのカードを列の幅のまま並べるか、残りの幅いっぱいに広げるかで、適した方法が変わります。
 
-```css title="🙆‍♂ Recommended: 最後の行のカードも、列の幅をそろえて並べる"
+```css title="🙆‍♂ Recommended: 最後の行のカードも、列の幅をそろえて並べる" from="principles/grid-or-flex"
 ._grid {
   display: block grid;
   grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
@@ -57,7 +57,7 @@ CSSでは、1つの見た目を作る方法が複数あり、どれが適切か�
 }
 ```
 
-```css title="🙆‍♂ Recommended: 最後の行のカードを、残りの幅いっぱいに広げる"
+```css title="🙆‍♂ Recommended: 最後の行のカードを、残りの幅いっぱいに広げる" from="principles/grid-or-flex"
 ._flex {
   display: block flex;
   flex-wrap: wrap;

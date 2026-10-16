@@ -21,7 +21,7 @@ import patternsCss from '../../../demos/decoration/gradient-patterns/style.css?r
 
 3つの関数は、画像の各点の色を何で決めるかが違います。`linear-gradient()` は、グラデーションの線に沿った位置で色を決めます。線の向きは `90deg` のような角度か、`to bottom right` のようなキーワードで書きます。角度は `0deg` が上向きで、時計回りに増えます。`radial-gradient()` は、中心からの距離で色を決め、`circle` か `ellipse` の形と、`at` に続けた中心の位置を書きます。`conic-gradient()` は、中心の周りの角度で色を決め、`from` に始まりの角度を、`at` に中心の位置を書きます。
 
-```css title="🙆‍♂ Recommended: 色が変わる向きに合わせて関数を選ぶ"
+```css title="🙆‍♂ Recommended: 色が変わる向きに合わせて関数を選ぶ" from="decoration/gradient-kinds"
 ._band {
   background-image: linear-gradient(in oklch to bottom right, var(--background--inverse), var(--background--surface));
 }
@@ -53,7 +53,7 @@ import patternsCss from '../../../demos/decoration/gradient-patterns/style.css?r
 
 境界を分けるとき、同じ位置を前の色と後ろの色に2回ずつ書くと、境界を動かすたびに2か所を直すことになります。
 
-```css title="🙅‍♂ Not Recommended: 同じ境界の位置を、前の色と後ろの色に2回ずつ書く"
+```css title="🙅‍♂ Not Recommended: 同じ境界の位置を、前の色と後ろの色に2回ずつ書く" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._ratio {
   background-image: linear-gradient(to right, var(--background--inverse) 30%, var(--background--active) 30%, var(--background--active) 70%, var(--background--surface) 70%);
@@ -79,7 +79,7 @@ import patternsCss from '../../../demos/decoration/gradient-patterns/style.css?r
 
 斜めの縞をタイルで描くと、タイルの辺で縞がずれないように、タイルの大きさと縞の角度を合わせて計算することになります。`repeating-linear-gradient()` なら、繰り返しはグラデーションの線に沿って起きるので、停止位置に書いた長さがそのまま、縞に垂直な方向の幅になります。{/* 要確認: 出典なし。斜めの縞を repeating-linear-gradient() で描く判断 */}
 
-```css title="🙆‍♂ Recommended: 斜めの縞は、停止位置の並びを繰り返して描く"
+```css title="🙆‍♂ Recommended: 斜めの縞は、停止位置の並びを繰り返して描く" from="decoration/gradient-patterns"
 ._placeholder {
   background-image: repeating-linear-gradient(-45deg, var(--background--active) 0 8px, transparent 0 16px);
 }
@@ -87,7 +87,7 @@ import patternsCss from '../../../demos/decoration/gradient-patterns/style.css?r
 
 方眼は、線を1本だけ描いたグラデーションをタイルにして重ねます。次の例は、太い線を50pxごとに、細い線を10pxごとに引きます。1枚目と3枚目は横の線、`90deg` を付けた2枚目と4枚目は縦の線で、どれもタイルの始まりに線の太さだけ色を塗り、残りを透明にしています。`background-position` を線の太さだけ負の方向にずらすのは、要素の上端と左端に線が重ならないようにするためです。線の色は背景色に文字色を少し混ぜて作るので、ライトとダークのどちらでも背景になじみます。
 
-```css title="🙆‍♂ Recommended: 線を1本描いたグラデーションをタイルにして、方眼を作る"
+```css title="🙆‍♂ Recommended: 線を1本描いたグラデーションをタイルにして、方眼を作る" from="decoration/gradient-patterns"
 ._paper {
   --_line: color-mix(in oklab, var(--background--surface), var(--foreground--base) 12%);
 

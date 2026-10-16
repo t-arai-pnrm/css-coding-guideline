@@ -23,7 +23,7 @@ import switcherCss from '../../../demos/compositions/grid-switcher/style.css?raw
 
 カードの一覧の列数を、画面の幅ごとにメディアクエリで切り替える書き方はよく見かけます。スマートフォンでは1列、タブレットでは2列、デスクトップでは4列というように、デザインカンプの幅をそのまま条件にする方法です。
 
-```css title="🙅‍♂ Not Recommended: 画面の幅ごとに列数を切り替える"
+```css title="🙅‍♂ Not Recommended: 画面の幅ごとに列数を切り替える" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._card-list {
   display: block grid;
@@ -129,7 +129,7 @@ import switcherCss from '../../../demos/compositions/grid-switcher/style.css?raw
 
 コンポーネントのCSSが受け持つのは、セルの中身だけです。列の数と間隔は `grid` とHTMLの `style` 属性で決まるので、`news-list` のCSSには `grid-template-columns` と `gap` を書きません。
 
-```css title="🙆‍♂ Recommended: 列の数と間隔はコンポジションに任せ、セルの中だけを書く"
+```css title="🙆‍♂ Recommended: 列の数と間隔はコンポジションに任せ、セルの中だけを書く" from="compositions/grid"
 @layer components {
   @scope (.scoped.news-list) to (.scoped) {
     /* li を grid にして、中のカードをセルの高さいっぱいに伸ばす */

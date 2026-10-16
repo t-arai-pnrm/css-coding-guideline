@@ -16,7 +16,7 @@ BEMの名前を本書の命名に書き直すときは、2段階に分けて進�
 
 書き直す前のカードは、BEMで書いた次の形です。画像と見出しを持ち、編集者が選んだ記事だけを、修飾子 `--featured` で見出しを大きくします。
 
-```html title="🙅‍♂ Not Recommended: 名前の衝突と上書きの順番を、命名の規則で管理する"
+```html title="🙅‍♂ Not Recommended: 名前の衝突と上書きの順番を、命名の規則で管理する" issue="convention"
 <!-- 🙅‍♂ Not Recommended -->
 <article class="media-card media-card--featured">
   <div class="media-card__image"></div>
@@ -24,7 +24,7 @@ BEMの名前を本書の命名に書き直すときは、2段階に分けて進�
 </article>
 ```
 
-```css title="🙅‍♂ Not Recommended: 名前の衝突と上書きの順番を、命名の規則で管理する"
+```css title="🙅‍♂ Not Recommended: 名前の衝突と上書きの順番を、命名の規則で管理する" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .media-card__image {
   aspect-ratio: 16 / 9;
@@ -115,7 +115,7 @@ AIに名前を付けさせると、`.media-card__title` のようなBEMの名前
 
 2つの軸の値を、空白で区切って `data-variant` に詰める書き方は勧めません。`[data-variant="warning"]` は値の完全一致なので、`data-variant="warning small"` の要素には当たりません。そのため、`[data-variant~="warning"]` のように、空白で区切った単語の1つに一致するセレクタを使うことになります。
 
-```css title="🙅‍♂ Not Recommended: 2つの軸の値を data-variant に詰める"
+```css title="🙅‍♂ Not Recommended: 2つの軸の値を data-variant に詰める" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.status-badge) to (.scoped) {
   :scope {

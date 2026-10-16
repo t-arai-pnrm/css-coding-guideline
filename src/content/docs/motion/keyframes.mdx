@@ -21,7 +21,7 @@ import toastFrame from '../../../demos/motion/keyframes-toast/frame.css?raw';
 
 `@keyframes` でよく見かけるのは、`fadeInUp` のような名前で、不透明度と移動を1つにまとめ、始まりと終わりの値を両方書き込んだものです。この形では、フェードだけが欲しい場面で使い回せず、終わりの値が要素の本来の値と食い違うと、動きの最後で値が飛びます。
 
-```css title="🙅‍♂ Not Recommended: 複数のプロパティを持ち、終わりの値を書き込んだ @keyframes"
+```css title="🙅‍♂ Not Recommended: 複数のプロパティを持ち、終わりの値を書き込んだ @keyframes" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @keyframes fadeInUp {
   from {
@@ -76,7 +76,7 @@ import toastFrame from '../../../demos/motion/keyframes-toast/frame.css?raw';
 
 複数のプロパティを同時に動かしたいときは、`animation-name` にカンマ区切りで並べます。再生時間とイージングも同じ順に並べられるので、不透明度は早めに終え、移動はゆっくり止める、といった調整がプロパティごとにできます。値の数が名前より少ないときは、値のリストが繰り返して使われます。
 
-```css title="🙆‍♂ Recommended: 必要な動きを組み合わせ、起点だけを指定する"
+```css title="🙆‍♂ Recommended: 必要な動きを組み合わせ、起点だけを指定する" from="motion/keyframes-toast"
 @scope (.scoped.toast) to (.scoped) {
   :scope {
     --translate-from--y-value: 100%;

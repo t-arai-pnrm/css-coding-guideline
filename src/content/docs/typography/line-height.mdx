@@ -72,7 +72,7 @@ CSSの行は、`line-height` の高さを持つ箱として並びます。行の
 
 `line-height: 1` は使いません。ボタンやラベルのように1行で表示する前提の要素でも、指定しないようにします。コーディングしやすいからと、ベーススタイルの `line-height` を1にする方法もありますが、これも避けます。
 
-```css title="🙅‍♂ Not Recommended: ハーフレディングをなくすために行の高さを1にする"
+```css title="🙅‍♂ Not Recommended: ハーフレディングをなくすために行の高さを1にする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._submit-button {
   line-height: 1;
@@ -89,7 +89,7 @@ CSSの行は、`line-height` の高さを持つ箱として並びます。行の
 
 `text-box-trim` は、要素の1行目の上と最後の行の下にあるハーフレディングを取り除くプロパティです。行と行の間の行送りは変わりません。`line-height: 1` の代わりに使えば、改行したときの読みやすさを保ったまま、デザインカンプの余白に合わせられます。
 
-```css title="🙆‍♂ Recommended: ハーフレディングを取り除くユーティリティ"
+```css title="🙆‍♂ Recommended: ハーフレディングを取り除くユーティリティ" from="typography/text-box-trim"
 .-trim-both {
   text-box-trim: trim-both;
 
@@ -123,7 +123,7 @@ Adobe製のツールで作ったデザインカンプを再現する案件では
 
 アイコンとラベルを並べるボタンは、ボタン自身を `display: inline flex` にすることが多くあります。このボタン自身に `text-box` を指定しても、何も削られません。
 
-```css title="🙅‍♂ Not Recommended: Flexboxのボタン自身に text-box を指定する"
+```css title="🙅‍♂ Not Recommended: Flexboxのボタン自身に text-box を指定する" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.action-button) to (.scoped) {
   :scope {
@@ -196,7 +196,7 @@ CSS Inline Layout Module Level 3では、`text-box-trim` を指定できるの�
 </article>
 ```
 
-```css title="🙆‍♂ Recommended: 2カラムで画像と文章を並べ、文章の先頭のハーフレディングを取り除く"
+```css title="🙆‍♂ Recommended: 2カラムで画像と文章を並べ、文章の先頭のハーフレディングを取り除く" from="typography/media-text-trim"
 @scope (.scoped.media-text) to (.scoped) {
   :scope {
     container: --scoped / inline-size;

@@ -29,7 +29,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 この指定を、画面の幅と結果の数値だけで書くと、次のようになります。`336px` が何の幅から求めた値なのかは、式からは読み取れません。
 
-```css title="🙅‍♂ Not Recommended: 結果の数値だけで、はみ出しを切り替える"
+```css title="🙅‍♂ Not Recommended: 結果の数値だけで、はみ出しを切り替える" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .section-label {
   position: relative;
@@ -58,7 +58,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 前の見出しの式を本書の設計に整えると、次のようになります。最小値を負、中央を余白の差、最大値を0にする式の組み立ては変えていません。
 
-```css title="🙆‍♂ Recommended: 余白が広い分だけ、ラベルを本文の外へ出す"
+```css title="🙆‍♂ Recommended: 余白が広い分だけ、ラベルを本文の外へ出す" from="values/hanging-label"
 @scope (.scoped.article-header) to (.scoped) {
   :scope {
     --_content-width: calc(640 / 16 * 1rem);
@@ -105,7 +105,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 `abs()` は、引数の絶対値を返す関数です。兄弟の中の位置を数値で返す `sibling-index()` と、兄弟の数を返す `sibling-count()` と組み合わせると、並びの中央からの距離を式で表せます（「[5-4 子要素の位置で選ぶ](/pseudo/child-index/)」）。中央の位置は `(sibling-count() + 1) / 2` で、自分の位置との差の絶対値を `abs()` で取れば、中央の項目が0、両端に近いほど大きい値になります。この値に一定の長さを掛けて項目を下げると、中央を頂点にして、両端へ下がる弧の形に並びます。{/* 要確認: 出典なし。abs() で中央からの距離を求め、弧の形に並べる例 */}
 
-```css title="🙆‍♂ Recommended: 対応した環境でだけ、中央から離れた項目ほど下げる"
+```css title="🙆‍♂ Recommended: 対応した環境でだけ、中央から離れた項目ほど下げる" from="values/sibling-index-arc"
 @scope (.scoped.badge-row) to (.scoped) {
   :scope {
     --_step: 12px;
@@ -145,7 +145,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 この段階を、計算した結果の数値だけで並べると、次のようになります。`1.5625rem` が「16pxに1.25を2回掛けた値」であることは、コードからは読み取れません。比率を1.2に変えるときは、すべての段階を計算し直して書き換えることになります。
 
-```css title="🙅‍♂ Not Recommended: 比率から求めた段階を、結果の数値だけで並べる"
+```css title="🙅‍♂ Not Recommended: 比率から求めた段階を、結果の数値だけで並べる" issue="convention"
 /* 🙅‍♂ Not Recommended */
 .section-title {
   font-size: 1.5625rem;
@@ -246,7 +246,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 この割り算が使えなかった時期には、`tan(atan2(長さ, 1px))` という三角関数の組み合わせで同じ数値を得ていました。`atan2()` が2つの長さから角度を求め、`tan()` がその角度から比を求めるので、結果は2つの長さの比になります。ただし、角度を経由する回り道なので、式を読んでも割り算だとは分かりません。既存のコードやAIの出力でこの形を見つけたら、割り算に書き換えます。
 
-```css title="🙅‍♂ Not Recommended: 三角関数で単位を外す"
+```css title="🙅‍♂ Not Recommended: 三角関数で単位を外す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 :root {
   --viewport--width: tan(atan2(100svi, 1px));
@@ -279,7 +279,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 ただし、高さを `auto` まで動かすだけなら、`interpolate-size: allow-keywords` で足ります。本書はこの指定を、ベーススタイルの `:root` に1行で書いています（「[8-2 ベーススタイルに書くもの](/reset/base-styles/)」）。MDNも、計算を伴わないなら `calc-size()` ではなく `interpolate-size` を使うよう勧めています。`calc-size()` が要るのは、内容の大きさに値を足したり掛けたりしたうえで動かす場面だけです。使うとしても、直前に `block-size: auto` のような普通の値を書きます。未対応の環境では `calc-size()` を含む宣言が捨てられ、前の値が残るからです。
 
-```css title="🙅‍♂ Not Recommended: 計算を伴わないのに calc-size() で auto まで動かす"
+```css title="🙅‍♂ Not Recommended: 計算を伴わないのに calc-size() で auto まで動かす" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 .faq-item {
   &[open]::details-content {
@@ -300,7 +300,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 `@function` は、引数を受け取って値を返す関数を、CSSで定義するアットルールです。「[6-3 計算関数で根拠を式に残す](/values/math-functions/#計算はcssに任せる)」の傾きと切片の計算も、基準の値を引数として受け取る関数にまとめれば、使う側は関数を呼ぶだけで済みます。ただし、未対応の環境では、関数を呼んだ宣言が無効になります。その環境のために従来の式も書くことになり、重複を減らすという目的が果たせません。
 
-```css title="🙅‍♂ Not Recommended: @function で定義した関数を、従来の式なしで呼ぶ"
+```css title="🙅‍♂ Not Recommended: @function で定義した関数を、従来の式なしで呼ぶ" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @function --fluid(--min-size <number>, --max-size <number>) returns <length> {
   result: clamp(

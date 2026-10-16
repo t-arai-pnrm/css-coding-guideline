@@ -20,7 +20,7 @@ import stackingBadCss from '../../../demos/layout-practice/stacking-context/styl
 
 画像の上に見出しを重ねるヒーローを考えます。よくあるのは、見出しを絶対配置にして、`translate` で中央に寄せる書き方です。
 
-```css title="🙅‍♂ Not Recommended: 絶対配置と translate で見出しを重ねる"
+```css title="🙅‍♂ Not Recommended: 絶対配置と translate で見出しを重ねる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.hero) to (.scoped) {
   :scope {
@@ -66,7 +66,7 @@ Gridなら、すべての子要素を同じエリアに置くだけで重ねら�
 
 z-indexの値は、ページ全体で比べられるわけではありません。比べられるのは、同じ「スタッキングコンテキスト」の中にある要素どうしだけです。スタッキングコンテキストは、重なり順を決める単位です。その中の要素は、外の要素と比べるときに1つのまとまりとして扱われます。
 
-```css title="🙅‍♂ Not Recommended: 子要素の z-index を大きくして、祖先の順位を超えようとする"
+```css title="🙅‍♂ Not Recommended: 子要素の z-index を大きくして、祖先の順位を超えようとする" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.site-header) to (.scoped) {
   :scope {

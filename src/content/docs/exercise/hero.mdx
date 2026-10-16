@@ -43,7 +43,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 
 画像と文字のまとまりは、`pile` で同じグリッドのセルに重ねます。どちらもレイアウトの流れに残るので、ヒーローの高さは、画像と文字のまとまりのうち高いほうで決まります（「[12-10 pile：子要素を同じセルに重ねる](/compositions/pile/)」）。
 
-```html title="🙆‍♂ Recommended: ヒーローのルートに pile を付け、文字のまとまりの位置は style 属性で渡す"
+```html title="🙆‍♂ Recommended: ヒーローのルートに pile を付け、文字のまとまりの位置は style 属性で渡す" from="exercise/hero-1"
 <section class="scoped hero | pile" aria-labelledby="hero-heading">
   <img src="…" alt="" width="1600" height="900" fetchpriority="high">
   <div class="_body" style="--pile--alignment: center">
@@ -55,7 +55,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 </section>
 ```
 
-```css title="🙆‍♂ Recommended: 画像をセルいっぱいに広げ、文字のまとまりより奥に回す"
+```css title="🙆‍♂ Recommended: 画像をセルいっぱいに広げ、文字のまとまりより奥に回す" from="exercise/hero-1"
 @scope (.scoped.hero) to (.scoped) {
   img {
     z-index: var(--z--backwards);
@@ -84,7 +84,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 
 ヒーローの中の文字とボタンの色は、21-2の紺の帯と同じく、ルートの配色を暗くして切り替えます。ルートに `color-scheme: dark` を指定し、背景色と文字色をトークンで指定し直せば、中の `action-control` は白い主ボタンに、小見出しは明るいティールに変わります（「[15-4 ダークモード](/color-media/dark-mode/#一部のコンポーネントだけを暗い配色にする)」）。
 
-```css title="🙆‍♂ Recommended: 紺の配色にし、画像と文字の間に紺の層を重ねる"
+```css title="🙆‍♂ Recommended: 紺の配色にし、画像と文字の間に紺の層を重ねる" from="exercise/hero-1"
 @scope (.scoped.hero) to (.scoped) {
   :scope {
     overflow: clip;
@@ -126,7 +126,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 
 低い版は紺の帯で、ヒーローと見た目が似ています。そこで、ヒーローに `compact` の種類を足したくなりますが、その場合、種類ごとの違いがヒーローのCSSに条件として積み重なります。
 
-```css title="🙅‍♂ Not Recommended: 下層ページの帯を、ヒーローの種類として足す"
+```css title="🙅‍♂ Not Recommended: 下層ページの帯を、ヒーローの種類として足す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.hero) to (.scoped) {
   :scope {
@@ -161,7 +161,7 @@ import heroChangedCss from '../../../demos/exercise/hero-2/style.css?raw';
 
 下層ページの冒頭は、`page-header` という別のコンポーネントにします。紺の帯は、ヒーローと同じく `color-scheme: dark` とトークンで作るので、2つのコンポーネントの見た目は、同じトークンを参照することでそろいます（`share-look-with-tokens`）。
 
-```css title="🙆‍♂ Recommended: 別のコンポーネントでも、同じトークンを参照して見た目をそろえる"
+```css title="🙆‍♂ Recommended: 別のコンポーネントでも、同じトークンを参照して見た目をそろえる" use="diff" from="exercise/hero-2"
 @scope (.scoped.page-header) to (.scoped) {
   :scope {
     display: block grid;

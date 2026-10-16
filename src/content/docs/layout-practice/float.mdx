@@ -23,7 +23,7 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
 モーダルの右上に閉じるボタンを置く場面を考えます。ボタンを `position: absolute` で置くと、ボタンは通常フローから外れ、文章はボタンのある場所を避けません。
 
-```css title="🙅‍♂ Not Recommended: 閉じるボタンを絶対配置で置き、文章に避けさせない"
+```css title="🙅‍♂ Not Recommended: 閉じるボタンを絶対配置で置き、文章に避けさせない" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 ._body {
   position: relative;
@@ -106,7 +106,7 @@ FlexboxとGridが普及する前は、ページの段組みを `float` で組み
 
 モーダルの閉じるボタンも同じです。ボタンを `float: inline-end` で上端の角に置けば、見出しや本文はボタンを避けて折り返します。スクロールしてもボタンを上端に留めたいときは、`float` に `position: sticky` を組み合わせます。
 
-```css title="🙆‍♂ Recommended: 閉じるボタンを float で角に置き、sticky で上端に留める"
+```css title="🙆‍♂ Recommended: 閉じるボタンを float で角に置き、sticky で上端に留める" from="layout-practice/float-corner"
 ._body {
   --_padding-block: 16px;
   --_padding-inline: 24px;

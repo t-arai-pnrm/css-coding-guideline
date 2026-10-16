@@ -33,7 +33,7 @@ import sectionAdjacentCss from '../../../demos/layout-practice/section-adjacent-
 
 お知らせの一覧のように、同じ種類の要素を縦に並べる場面を考えます。子要素の下に `margin` を付け、最後の要素だけ打ち消す書き方をよく見かけます。
 
-```css title="🙅‍♂ Not Recommended: 子要素の margin で間隔を作り、最後だけ打ち消す"
+```css title="🙅‍♂ Not Recommended: 子要素の margin で間隔を作り、最後だけ打ち消す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._news-list {
   & > li {
@@ -88,7 +88,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 そこで私が勧めているのが、空のグリッドセルで余白を作る方法です。`grid-template` の中の `.` は、何も置かない空のセルを表します。要素を置く行の間に、高さを指定した空のセルの行を挟めば、その行の高さがそのまま余白になります。
 
-```css title="🙆‍♂ Recommended: 余白を、高さを指定した空のセルの行で作る"
+```css title="🙆‍♂ Recommended: 余白を、高さを指定した空のセルの行で作る" from="layout-practice/empty-grid-cells"
 @scope (.scoped.contact-section) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
@@ -198,7 +198,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 ページは、背景色の違うセクションを縦に並べて作ることがよくあります。このとき、セクションの間を親の `gap` や、セクションの外側の `margin` で空けると、背景が途切れます。セクションの背景は、`margin` の領域には描かれず、親の `gap` の部分にも描かれないからです。`gap` や `margin` で空けた部分には親の背景が見え、色の付いたセクションの間に、ページの背景の帯が挟まります。
 
-```css title="🙅‍♂ Not Recommended: セクションの間を、ページの gap で空ける"
+```css title="🙅‍♂ Not Recommended: セクションの間を、ページの gap で空ける" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.page-home) to (.scoped) {
   main {
@@ -218,7 +218,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 そこで、セクションの上下の余白は、各セクションのルートの `padding-block` で作ります。ページの側は、セクションを間隔なしで縦に積むだけにします。`padding` の領域には背景が描かれるので、背景はセクションの端から端まで途切れず、中身と背景の端の間にも余白が確保されます。
 
-```css title="🙆‍♂ Recommended: 上下の余白を、セクション自身の padding-block で作る"
+```css title="🙆‍♂ Recommended: 上下の余白を、セクション自身の padding-block で作る" from="layout-practice/section-spacing"
 @scope (.scoped.news-section) to (.scoped) {
   :scope {
     padding-block: 48px;
@@ -245,7 +245,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 ただし、ページのCSSからは、セクションのルートを選べません。`@scope (.scoped.page-home) to (.scoped)` の範囲は、内側のコンポーネントのルートで打ち切られるからです。そこで、ページは各セクションをOuterの要素（親が子のコンポーネントを包む要素）で包み、Outerどうしの並びを次兄弟結合子で調べます。詰める値は、セクションが公開する上の余白の公開プロパティに渡し、継承でセクションのルートに届けます。
 
-```css title="🙆‍♂ Recommended: 同じ背景が続く境目は、ページの側で後ろのセクションの上の余白を詰める"
+```css title="🙆‍♂ Recommended: 同じ背景が続く境目は、ページの側で後ろのセクションの上の余白を詰める" from="layout-practice/section-adjacent-spacing"
 @scope (.scoped.page-home) to (.scoped) {
   main {
     & > ._news-outer + ._campaign-outer {
@@ -329,7 +329,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 要素そのものに余白を付けると、この関係がコードから抜け落ちます。次の例は、見出しに下の余白を無条件に付け、段落にも下の余白を付けて、最後の段落だけ打ち消したものです。
 
-```css title="🙅‍♂ Not Recommended: 要素そのものに下の余白を付け、最後の子で打ち消す"
+```css title="🙅‍♂ Not Recommended: 要素そのものに下の余白を付け、最後の子で打ち消す" issue="convention"
 /* 🙅‍♂ Not Recommended */
 ._body {
   & > :is(:heading, h1, h2, h3, h4, h5, h6) {
@@ -350,7 +350,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 関係をセレクタで表せば、どの問題も起きません。
 
-```css title="🙆‍♂ Recommended: 前の要素を条件にして、後ろの要素の上に余白を付ける"
+```css title="🙆‍♂ Recommended: 前の要素を条件にして、後ろの要素の上に余白を付ける" from="layout-practice/sibling-margin"
 ._body {
   & > * + * {
     margin-block-start: 16px;

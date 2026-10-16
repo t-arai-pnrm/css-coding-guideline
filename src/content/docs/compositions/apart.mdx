@@ -24,7 +24,7 @@ import wrapCss from '../../../demos/compositions/apart-wrap/style.css?raw';
 
 サイトのヘッダーでは、ロゴを左端に、ナビゲーションを右端に置く配置がよく使われます。これをコンポーネントのCSSで書くと、次のようになりがちです。
 
-```css title="🙅‍♂ Not Recommended: 折り返しと最小の間隔のない両端の配置"
+```css title="🙅‍♂ Not Recommended: 折り返しと最小の間隔のない両端の配置" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.site-header) to (.scoped) {
   :scope {
@@ -45,7 +45,7 @@ import wrapCss from '../../../demos/compositions/apart-wrap/style.css?raw';
 
 `apart` は、`compositions` レイヤーに置く次のクラスです。ファイルの先頭には、公開プロパティの一覧をJSDocの形式で書きます。
 
-```css title="🙆‍♂ Recommended: 両端に分け、入りきらなければ折り返す"
+```css title="🙆‍♂ Recommended: 両端に分け、入りきらなければ折り返す" from="compositions/apart"
 /**
  * 子要素をインライン方向の両端に分けて配置し、入りきらなければ折り返す。
  *

@@ -52,7 +52,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 表そのものの `display` を `block` に変えて、表自体をスクロールさせる書き方も見かけます。ラッパーが要らないので手軽ですが、MDNによれば、`table` の `display` を `block`、`grid`、`flex` に変えると、ブラウザによってはアクセシビリティツリーでの扱いが変わります。その結果、スクリーンリーダーが表として正しく読み上げなくなることがあります。この不具合は主要なブラウザで修正されましたが（縦に積む方法の見出しを参照）、修正前の環境では表の意味が失われます。表の構造はHTMLのまま残し、スクロールは外側の要素に任せます。
 
-```css title="🙅‍♂ Not Recommended: 表の display を変えて、表自体をスクロールさせる"
+```css title="🙅‍♂ Not Recommended: 表の display を変えて、表自体をスクロールさせる" issue="behavior"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.sales-table) to (.scoped) {
   table {
@@ -148,7 +148,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 <Baseline id="font-variant-numeric" name="font-variant-numeric" />
 
-```css title="🙆‍♂ Recommended: 数字の幅をそろえ、数値の列を末尾に揃える"
+```css title="🙆‍♂ Recommended: 数字の幅をそろえ、数値の列を末尾に揃える" from="layout-practice/table-scroll"
 @scope (.scoped.sales-table) to (.scoped) {
   table {
     font-variant-numeric: tabular-nums;
@@ -179,7 +179,7 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 
 縦に積むには、`table`、`tbody`、`tr`、`td` の `display` を変える必要があります。`display` を変えた表は、以前は表として扱われなくなるブラウザがありました。この不具合は、Chromeは80、Firefoxは2022年、Safariは17で修正されています（表と `display` の不具合を追跡している記事で確認）。しかし、修正前のブラウザや、それと組み合わせた支援技術では、表の意味が失われます。MDNは、`display: grid` などで表の意味が上書きされる場合に、ARIAの表の `role` を書いて意味を加え直す方法を挙げています。そこで、HTMLの各要素に `role` を書きます。`table` には `role="table"`、`thead` と `tbody` には `role="rowgroup"`、`tr` には `role="row"` を書きます。見出しのセルには `role="columnheader"` か `role="rowheader"` を、データのセルには `role="cell"` を書きます。本書が対象にするブラウザは、どれも修正後の版です。それでも `role` を書くのは、古いブラウザと支援技術の組み合わせでも表として読めるようにするためで、書く手間は小さく済みます。
 
-```css title="🙆‍♂ Recommended: 狭いときだけ、行をカードのように縦に積む"
+```css title="🙆‍♂ Recommended: 狭いときだけ、行をカードのように縦に積む" from="layout-practice/table-stack"
 @scope (.scoped.order-table) to (.scoped) {
   :scope {
     container: --scoped / inline-size;
