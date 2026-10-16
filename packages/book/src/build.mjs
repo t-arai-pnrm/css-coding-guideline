@@ -12,6 +12,7 @@ import { createCapturer } from './capture.mjs';
 import { allPages, DIST, volumePages } from './pages.mjs';
 import { VOLUMES } from '../config/volumes.mjs';
 import { createIndexer, loadTerms, renderIndex } from './indexer.mjs';
+import { READINGS } from '../../../src/lib/reading.mjs';
 import { BASE, pageUrl } from '../../../src/lib/site.mjs';
 import { BASELINE_CHECKED } from '../../../src/lib/book.mjs';
 
@@ -73,6 +74,31 @@ for (const page of pages) {
 }
 await capturer.close();
 
+// 巻の設定の movePart：ページの見出しから後ろを切り出し、巻の末尾に別の節として置く。切り出した部分の id は、移した先のファイルで引く
+const movedIds = new Map();
+let movedToc = '';
+if (volume.movePart && files.size) {
+  const { page: movedPage, from, title: movedTitle } = volume.movePart;
+  const source = pages.find((page) => page.id === movedPage);
+  if (source) {
+    const sections = files.get(fileOf(source));
+    const index = sections.findIndex((html) => html.includes(`id="page-${keyOf(source.id)}"`));
+    const html = sections[index];
+    const start = html.indexOf(`<h2 id="${keyOf(source.id)}--${from}"`);
+    if (start === -1) throw new Error(`${movedPage} に見出し「${from}」がありません。config/volumes.mjs の movePart を見直してください。`);
+    const end = html.lastIndexOf('</section>');
+    sections[index] = `${html.slice(0, start)}</section>`;
+    const key = `${keyOf(source.id)}-part`;
+    const lastFile = [...files.keys()].at(-1);
+    files.get(lastFile).push(`<section class="page" id="page-${key}" data-title="${movedTitle}">
+<h1>${movedTitle}</h1>
+${html.slice(start, end)}</section>`);
+    for (const [, id] of html.slice(start, end).matchAll(/\bid="([^"]+)"/g)) movedIds.set(id, lastFile);
+    movedIds.set(`page-${key}`, lastFile);
+    movedToc = `<li class="toc-chapter"><a href="#page-${key}">${movedTitle}</a></li>`;
+  }
+}
+
 for (const [name, from] of assets) await copyFile(from, join(outDir, 'assets', name));
 await copyFile(join(HERE, 'src/paper.css'), join(outDir, 'paper.css'));
 
@@ -80,7 +106,7 @@ await copyFile(join(HERE, 'src/paper.css'), join(outDir, 'paper.css'));
 const linkAcross = (html, file) =>
   html.replace(/href="#([^"]+)"/g, (match, id) => {
     const key = id.startsWith('page-') ? id.slice('page-'.length) : id.split('--')[0];
-    const target = keyToFile.get(key);
+    const target = movedIds.get(id) ?? keyToFile.get(key);
     return target && target !== file ? `href="${target}#${id}"` : match;
   });
 
@@ -119,10 +145,10 @@ const preface = volume.preface
   ? printLinks(
       `<section class="volume-preface">
 <h1>この巻について</h1>
-<h2>前提とすること</h2>
-<p>${inline(volume.preface.prerequisite)}</p>
-<h2>この巻で身につくこと</h2>
-<p>${inline(volume.preface.goal)}</p>
+${volume.preface.prerequisite ? `<h2>前提とすること</h2>
+<p>${inline(volume.preface.prerequisite)}</p>` : ''}
+${volume.preface.goal ? `<h2>この巻で身につくこと</h2>
+<p>${inline(volume.preface.goal)}</p>` : ''}
 <h2>身についたかを確かめる</h2>
 <p>${inline(volume.preface.check)}</p>
 <h2>${volume.number === VOLUMES.length ? '巻末の付録と補足サイト' : '次の巻へ'}</h2>
@@ -150,8 +176,10 @@ ${parts.map((part) => part.outerHTML).join('\n')}
 };
 
 // 扉と目次：章の概要と節を、ページ番号付きで並べる
+// 節には、読み方の区別の印（基本・応用・参照）を添える
+const readingMark = (page) => (READINGS[page.reading] ? `<span class="toc-reading" data-reading="${page.reading}">${READINGS[page.reading].label}</span>` : '');
 const toc = pages
-  .map((page) => `<li class="${page.slug === 'index' ? 'toc-chapter' : 'toc-section'}"><a href="#page-${keyOf(page.id)}">${page.title}</a></li>`)
+  .map((page) => `<li class="${page.slug === 'index' ? 'toc-chapter' : 'toc-section'}"><a href="#page-${keyOf(page.id)}">${readingMark(page)}${page.title}</a></li>`)
   .join('\n');
 const front = `<section class="title-page">
 <p class="book-title">RECSSガイドライン</p>
@@ -163,8 +191,8 @@ ${await cheatSheet()}
 <section class="publication-info">
 <h1>この試し組みの使い方</h1>
 <p>本文とサンプルの版：v${version}。未確認の原稿を含む試し組みです。対応状況は${BASELINE_CHECKED}確認のデータで、全ブラウザの実機検証を表すものではありません。</p>
+<p>目次と節の冒頭の「基本」は初めて読むときに読む節、「応用」は要件が出たときに通して読む節、「参照」は必要な見出しを引いて使う節です。基本の節だけを読めば、各巻の判断の問いと手を動かす課題まで進めます。</p>
 <p>同じ巻への参照は節の名前とページ番号、別の巻は巻番号を示します。「補足サイト」とある付録は紙面には採録していません。デモ番号は、補足サイトの一覧と同じ番号です。</p>
-<p>図は指定した幅での静止画です。ホバー、フォーカス、スクロール、アニメーション、表示の設定による変化は、Web版で操作して確かめてください。</p>
 <h2>サンプルと補足</h2>
 <p class="support-url"><a href="${pageUrl('book-support')}">${pageUrl('book-support')}</a></p>
 <p>v${version}のZIPを選び、README.mdの手順に従ってください。デモはHTMLにCSSと必要なJavaScriptを含めています。第21章には開始版、中間版、完成版、第20章には設定の全文があります。</p>
@@ -177,6 +205,7 @@ ${await cheatSheet()}
 <h1>目次</h1>
 <ol>
 ${toc}
+${movedToc}
 <li class="toc-chapter"><a href="99-index.html#page-index">索引</a></li>
 </ol>
 </nav>`;

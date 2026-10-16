@@ -64,3 +64,12 @@ test('概念図と静止デモを掲載順に番号付けし、配布番号を�
   const captions = [...doc.querySelectorAll('figcaption')].map((item) => item.textContent);
   assert.deepEqual(captions, ['図7-1　概念図', '図7-2　動作（デモ7-4-1）']);
 });
+
+test('節の冒頭に、読み方の区別と前提の1行を出す', async () => {
+  const doc = await render('<p>本文</p>', { page: { id: 'values/advanced-math-functions', dir: 'values', slug: 'advanced-math-functions', label: '6-4', title: '6-4 計算関数を応用する', reading: 'applied', readingNote: '前提の1文です。' } });
+  const line = doc.querySelector('section > h1 + .page-reading');
+  assert.equal(line.querySelector('._label').textContent, '応用');
+  assert.match(line.textContent, /要件が出たときに、通して読む節です。前提の1文です。/);
+  const index = await render('<p>本文</p>');
+  assert.equal(index.querySelectorAll('.page-reading').length, 0);
+});

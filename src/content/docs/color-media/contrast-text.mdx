@@ -1,6 +1,7 @@
 ---
 title: "15-3 背景から文字色を決める"
 description: "背景色から文字色を黒か白に決めるときは、対象の環境が Safari 26 以上なら contrast-color(var(--_background)) と書きます。Safari 18系に対応するときや、切り替える明度や色を自分で決めたいときは、相対カラー構文と sign() で oklch(from var(--_background) sign(0.7 - l) 0 h) と書きます。どちらで決めた色も、実際の表示で読みやすさを確かめます。画像の上の文字に敷くフォールバックの背景色は、文字色から sign() で先に決め、対応する環境では contrast-color(currentColor) で上書きします。"
+reading: applied
 sidebar:
   order: 3
 ---

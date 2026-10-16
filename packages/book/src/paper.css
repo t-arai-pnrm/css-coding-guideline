@@ -111,6 +111,31 @@ body {
   content: leader(dotted) target-counter(attr(href), page);
 }
 
+/* 節の読み方の区別。目次では節の名前の前に、本文では節の見出しの直後に置く */
+.toc-reading {
+  display: inline-block;
+  min-inline-size: 7mm;
+  margin-inline-end: 1.5mm;
+  font-size: 6.5pt;
+  text-align: center;
+}
+
+.toc-reading[data-reading="basic"] {
+  font-weight: 700;
+}
+
+.page-reading {
+  font-size: 8pt;
+
+  & > ._label {
+    margin-inline-end: 2mm;
+    padding-inline: 1.5mm;
+    border: 0.3pt solid currentcolor;
+    border-radius: 1mm;
+    font-weight: 700;
+  }
+}
+
 /* ページと章 */
 section.page,
 section.chapter-opener {

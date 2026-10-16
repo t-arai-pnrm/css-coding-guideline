@@ -1,8 +1,8 @@
 # 第12章 レイアウトコンポジション：ルール
 
-- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.74.0（2026-10-16 生成）
 - ルールの数: 39
-- 本文: 約19万字
+- 本文: 約19.1万字
 - 読む条件: 要素を縦に積む、横に並べる、横にスクロールさせる、列に分けるなど、繰り返し使うレイアウトのパターン
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -12,7 +12,7 @@
 
 ## この章の節
 
-- `compositions` 第12章 レイアウトコンポジション（約4,400字）https://t-arai-pnrm.github.io/recss-guideline/compositions/
+- `compositions` 第12章 レイアウトコンポジション（約4,300字）https://t-arai-pnrm.github.io/recss-guideline/compositions/
 - `compositions/stack` 12-1 stack：子要素を縦に積み、間隔をそろえる（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/stack/
 - `compositions/prose` 12-2 prose：子ごとに変えられる間隔で、本文の流れを作る（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/prose/
 - `compositions/cluster` 12-3 cluster：子を横に並べ、入りきらなければ折り返す（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/compositions/cluster/

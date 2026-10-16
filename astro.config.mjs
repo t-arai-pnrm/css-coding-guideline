@@ -74,6 +74,9 @@ export default defineConfig({
       lastUpdated: true,
       favicon: '/favicon.svg',
       customCss: ['./src/styles/custom.css'],
+      // 節の冒頭とサイドバーに、読み方の区別（frontmatter の `reading`）を出す
+      components: { PageTitle: './src/components/PageTitle.astro' },
+      routeMiddleware: './src/lib/route-data.ts',
       sidebar: [
         {
           label: 'はじめに',

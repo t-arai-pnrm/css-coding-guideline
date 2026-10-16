@@ -1,6 +1,6 @@
 # 第14章 タイポグラフィと和文組版：ルール
 
-- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.74.0（2026-10-16 生成）
 - ルールの数: 32
 - 本文: 約8.3万字
 - 読む条件: font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割
@@ -12,12 +12,12 @@
 
 ## この章の節
 
-- `typography` 第14章 タイポグラフィと和文組版（約4,700字）https://t-arai-pnrm.github.io/recss-guideline/typography/
+- `typography` 第14章 タイポグラフィと和文組版（約4,600字）https://t-arai-pnrm.github.io/recss-guideline/typography/
 - `typography/fonts` 14-1 フォントを指定する（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/typography/fonts/
 - `typography/japanese-typesetting` 14-2 和文組版を整える（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/typography/japanese-typesetting/
 - `typography/line-height` 14-3 行の高さとハーフレディング（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/typography/line-height/
-- `typography/size-and-line-breaks` 14-4 文字サイズと改行（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/
-- `typography/text-roles` 14-5 文字の役割と色（約1万字）https://t-arai-pnrm.github.io/recss-guideline/typography/text-roles/
+- `typography/size-and-line-breaks` 14-4 文字サイズと改行（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/typography/size-and-line-breaks/
+- `typography/text-roles` 14-5 文字の役割と色（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/typography/text-roles/
 
 ## 14-1 フォントを指定する
 

@@ -1,0 +1,47 @@
+---
+/**
+ * Starlight の PageTitle の上書き。タイトルの直下に、節の読み方の区別（frontmatter の `reading`）を1行で出す。
+ * 区別の名前と文は src/lib/reading.mjs にある。紙版は packages/book/src/extract.mjs が同じ1行を出す。
+ */
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+import { READINGS, readingText } from '../lib/reading.mjs';
+
+const { reading, readingNote } = Astro.locals.starlightRoute.entry.data;
+const kind = reading ? READINGS[reading] : undefined;
+---
+
+<Default />
+{
+  kind && (
+    <p class="scoped page-reading" data-reading={reading}>
+      <span class="_label">{kind.label}</span>
+      <span class="_text">{readingText(reading, readingNote)}</span>
+    </p>
+  )
+}
+
+<style is:global>
+  @layer starlight, base, components;
+
+  @layer components {
+    @scope (.scoped.page-reading) to (.scoped) {
+      :scope {
+        display: block flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 0.5rem;
+        align-items: baseline;
+        margin-block-start: 0.75rem;
+        color: var(--sl-color-gray-2);
+        font-size: var(--sl-text-sm);
+      }
+
+      ._label {
+        padding-inline: 0.5rem;
+        border: 1px solid var(--sl-color-gray-4);
+        border-radius: 999px;
+        color: var(--sl-color-white);
+        font-weight: 600;
+      }
+    }
+  }
+</style>

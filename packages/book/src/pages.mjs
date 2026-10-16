@@ -17,7 +17,10 @@ const frontmatter = (source) => {
   const title = block.match(/^title:\s*"?(.*?)"?\s*$/m)?.[1] ?? '';
   const order = Number(block.match(/^\s+order:\s*(\d+)/m)?.[1] ?? 0);
   const draft = /^draft:\s*true/m.test(block);
-  return { title, order, draft };
+  // 節の読み方の区別（src/lib/reading.mjs）。目次の印と節の冒頭の1行に使う
+  const reading = block.match(/^reading:\s*(\w+)\s*$/m)?.[1] ?? null;
+  const readingNote = block.match(/^readingNote:\s*(.+?)\s*$/m)?.[1] ?? null;
+  return { title, order, draft, reading, readingNote };
 };
 
 /**
@@ -44,12 +47,12 @@ const labelOf = (title) => title.match(/^(\d+-\d+|第\d+章|付録[A-Z])\s/)?.[1
 /** 1つのページを読む */
 const readPage = async (dir, file) => {
   const source = await readFile(join(DOCS, dir, file), 'utf8');
-  const { title, order, draft } = frontmatter(source);
+  const { title, order, draft, reading, readingNote } = frontmatter(source);
   const slug = file.replace(/\.mdx$/, '');
   const id = slug === 'index' ? dir : `${dir}/${slug}`;
   const html = join(DIST, slug === 'index' ? dir : join(dir, slug), 'index.html');
   const chapter = CHAPTERS.find((item) => item.dir === dir) ?? null;
-  return { id, dir, slug, title, order, draft, label: labelOf(title), chapter: chapter?.number ?? null, html, demos: demoCalls(source) };
+  return { id, dir, slug, title, order, draft, reading, readingNote, label: labelOf(title), chapter: chapter?.number ?? null, html, demos: demoCalls(source) };
 };
 
 /** すべてのページ（下書きを除く）。リンク先の節番号と巻を引くのに使う */

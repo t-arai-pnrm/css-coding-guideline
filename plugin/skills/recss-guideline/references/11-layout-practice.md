@@ -1,8 +1,8 @@
 # 第11章 レイアウトを組む：ルール
 
-- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.74.0（2026-10-16 生成）
 - ルールの数: 61
-- 本文: 約26.6万字
+- 本文: 約26.7万字
 - 読む条件: 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -23,10 +23,10 @@
 - `layout-practice/anchor-positioning` 11-8 アンカーポジショニング（約1.9万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/anchor-positioning/
 - `layout-practice/overlap-detection` 11-9 要素どうしの重なりを検出する（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/overlap-detection/
 - `layout-practice/root-scroller` 11-10 ページのスクロールとルートスクローラー（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/root-scroller/
-- `layout-practice/masonry` 11-11 grid-lanesで石積みのレイアウトを組む（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/masonry/
+- `layout-practice/masonry` 11-11 grid-lanesで石積みのレイアウトを組む（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/masonry/
 - `layout-practice/reading-flow` 11-12 表示順と読み上げ順を合わせる（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/reading-flow/
 - `layout-practice/icon-alignment` 11-13 アイコンを配置する（約1.9万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/icon-alignment/
-- `layout-practice/float` 11-14 floatで文章を回り込ませる（約10,000字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/float/
+- `layout-practice/float` 11-14 floatで文章を回り込ませる（約1万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/float/
 - `layout-practice/tables` 11-15 表を組む（約2.4万字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/tables/
 - `layout-practice/truncation-and-skeletons` 11-16 文字の切り詰めと読み込み中の表示（約8,200字）https://t-arai-pnrm.github.io/recss-guideline/layout-practice/truncation-and-skeletons/
 

@@ -1,8 +1,8 @@
 # 第1章 CSSのマインドセット：ルール
 
-- ガイドラインのバージョン: 0.73.0（2026-10-16 生成）
+- ガイドラインのバージョン: 0.74.0（2026-10-16 生成）
 - ルールの数: 15
-- 本文: 約5.4万字
+- 本文: 約5.5万字
 - 読む条件: 新しい機能、ブラウザの対応状況、フォールバック、@supports
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -15,11 +15,11 @@
 - `principles` 第1章 CSSのマインドセット（約4,700字）https://t-arai-pnrm.github.io/recss-guideline/principles/
 - `principles/browser-suggestion` 1-1 CSSはブラウザへの「提案」である（約1万字）https://t-arai-pnrm.github.io/recss-guideline/principles/browser-suggestion/
 - `principles/browser-support` 1-2 ブラウザサポートとプログレッシブ・エンハンスメント（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/principles/browser-support/
-- `principles/layout-algorithms` 1-3 CSSはレイアウトのアルゴリズムの集まりである（約3,300字）https://t-arai-pnrm.github.io/recss-guideline/principles/layout-algorithms/
-- `principles/fundamentals` 1-4 基礎を固める（約3,100字）https://t-arai-pnrm.github.io/recss-guideline/principles/fundamentals/
-- `principles/no-memorizing` 1-5 解決策を丸暗記しない（約5,300字）https://t-arai-pnrm.github.io/recss-guideline/principles/no-memorizing/
+- `principles/layout-algorithms` 1-3 CSSはレイアウトのアルゴリズムの集まりである（約3,400字）https://t-arai-pnrm.github.io/recss-guideline/principles/layout-algorithms/
+- `principles/fundamentals` 1-4 基礎を固める（約3,200字）https://t-arai-pnrm.github.io/recss-guideline/principles/fundamentals/
+- `principles/no-memorizing` 1-5 解決策を丸暗記しない（約5,400字）https://t-arai-pnrm.github.io/recss-guideline/principles/no-memorizing/
 - `principles/tips` 1-6 Tipsとの付き合い方（約6,100字）https://t-arai-pnrm.github.io/recss-guideline/principles/tips/
-- `principles/options` 1-7 選択肢を多く持つ（約5,500字）https://t-arai-pnrm.github.io/recss-guideline/principles/options/
+- `principles/options` 1-7 選択肢を多く持つ（約5,600字）https://t-arai-pnrm.github.io/recss-guideline/principles/options/
 
 ## 1-1 CSSはブラウザへの「提案」である
 

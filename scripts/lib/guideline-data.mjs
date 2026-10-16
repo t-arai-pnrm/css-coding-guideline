@@ -12,6 +12,7 @@ import { features } from 'web-features';
 import { parse } from 'yaml';
 import { BASELINE_CHECKED, CHAPTERS, PARTS, chapterLabel } from '../../src/lib/book.mjs';
 import { RULE_KINDS } from '../../src/lib/rule-kinds.mjs';
+import { READINGS, needsReading, readingText } from '../../src/lib/reading.mjs';
 import { pageUrl } from '../../src/lib/site.mjs';
 
 const ROOT = new URL('../..', import.meta.url).pathname.replace(/\/$/, '');
@@ -277,6 +278,10 @@ export const loadPages = async (rules) => {
       continue;
     }
     const context = { id, file: relative(ROOT, file), imports: await resolveRawImports(body, file), rulesByPage };
+    // 第1〜20章の節には、読み方の区別（src/lib/reading.mjs）を必ず付ける
+    if (needsReading(id) && !READINGS[data.reading]) throw new Error(`${context.file}: frontmatter に reading（basic、applied、reference）を書いてください。`);
+    if (!needsReading(id) && data.reading) throw new Error(`${context.file}: このページには reading を付けません。`);
+    const reading = data.reading ? `> 読み方: ${READINGS[data.reading].label}。${readingText(data.reading, data.readingNote)}\n\n` : '';
     pages.push({
       id,
       title: String(data.title),
@@ -284,7 +289,7 @@ export const loadPages = async (rules) => {
       section: id.split('/')[0] || 'index',
       order: data.sidebar?.order ?? 0,
       url: pageUrl(id),
-      markdown: mdxBodyToMarkdown(body, context),
+      markdown: `${reading}${mdxBodyToMarkdown(body, context)}`,
     });
   }
   for (const page of rulesByPage.keys()) {

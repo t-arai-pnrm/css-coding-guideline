@@ -11,6 +11,7 @@ import { readFile } from 'node:fs/promises';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { BASE, SITE, pageUrl } from '../../../src/lib/site.mjs';
 import { moveReferencesToNotes } from './notes.mjs';
+import { READINGS, readingText } from '../../../src/lib/reading.mjs';
 
 const SITE_BASE = `${BASE}/`;
 
@@ -291,8 +292,12 @@ export const extractPage = async (page, ctx) => {
   ctx.indexer.mark(doc, content, page, key);
 
   const kind = page.slug === 'index' ? (page.dir === 'introduction' ? 'page' : 'chapter-opener') : 'page';
+  // 節の読み方の区別を、Web 版（src/components/PageTitle.astro）と同じ1行で出す
+  const reading = READINGS[page.reading]
+    ? `<p class="page-reading"><span class="_label">${READINGS[page.reading].label}</span>${readingText(page.reading, page.readingNote)}</p>\n`
+    : '';
   return `<section class="${kind}" id="page-${key}" data-title="${page.title}">
 <h1>${page.title}</h1>
-${content.innerHTML}
+${reading}${content.innerHTML}
 </section>`;
 };

@@ -59,7 +59,17 @@ const rulesLoader = async () => {
 };
 
 export const collections = {
-  docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema({
+      extend: z.object({
+        /** 節の読み方の区別。表示名と付けるページは src/lib/reading.mjs にある。 */
+        reading: z.enum(['basic', 'applied', 'reference']).optional(),
+        /** 区別の1行に続ける前提や読む時期（1文）。 */
+        readingNote: z.string().optional(),
+      }),
+    }),
+  }),
   i18n: defineCollection({ loader: i18nLoader(), schema: i18nSchema() }),
   rules: defineCollection({ loader: rulesLoader, schema: ruleSchema }),
 };
