@@ -92,7 +92,8 @@ for (const entry of await readdir(join(root, 'src/content/docs'), { withFileType
       };
       const id = `${label}-${index + 1}`;
       const name = `demos/${page}/${index + 1}/index.html`;
-      await put(name, buildSrcdoc({ html: raw('html'), css: raw('css'), js: raw('js'), base: text('base'), scheme: text('scheme') }));
+      const bleed = text('bleed') ?? (/\bbleed(?![=\w-])/.test(attr) ? 'all' : undefined);
+      await put(name, buildSrcdoc({ html: raw('html'), css: raw('css'), js: raw('js'), frame: raw('frame'), bleed, base: text('base'), scheme: text('scheme') }));
       demos.push({ id, page, title: text('title'), file: name, url: pageUrl(page), chapter: CHAPTERS.find((item) => item.dir === entry.name)?.number ?? 0, order: front.sidebar?.order ?? 0 });
     }
   }

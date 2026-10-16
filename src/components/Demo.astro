@@ -12,9 +12,11 @@
  *
  * 状態の切り替えに JavaScript が要るデモは、`script.js` を `js` に渡す。
  * JavaScript は本書の主題ではないので、コードのタブには出さない。
+ * 比べる区画を並べる、枠の余白を外すといった見せるための足場は、`style.css` に書かず、
+ * HTML の `data-demo-layout="compare"` か `bleed` を使う。それで表せない足場だけを `frame.css` に書き、`frame` に渡す。
  */
 import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
-import { buildSrcdoc, type DemoBase, type DemoScheme } from '../lib/demo';
+import { buildSrcdoc, type DemoBase, type DemoBleed, type DemoScheme } from '../lib/demo';
 
 interface Props {
   /** デモの内容を表す説明。iframe の title とキャプションに使う。 */
@@ -23,6 +25,10 @@ interface Props {
   css: string;
   /** デモを動かすためのスクリプト。iframe の中で実行し、タブには出さない。 */
   js?: string;
+  /** デモを見せるための足場の CSS（`frame.css`）。iframe の中で読み込み、タブには出さない。 */
+  frame?: string;
+  /** デモの枠の余白を外す。`true` か `all` で上下左右、`inline` で左右だけ。 */
+  bleed?: boolean | DemoBleed;
   /** `none` にするとブラウザのデフォルトスタイルのまま描画する。`exercise` は第21章の演習のサイトのトークンを重ねる。 */
   base?: DemoBase;
   /** `auto` で本のページのテーマに追従する。特定の色を見せるデモは `light` で固定する。 */
@@ -42,6 +48,8 @@ const {
   html,
   css,
   js,
+  frame,
+  bleed,
   base = 'kiso',
   scheme = 'auto',
   variant = 'recommended',
@@ -50,7 +58,7 @@ const {
   showHtml = true,
 } = Astro.props;
 
-const srcdoc = buildSrcdoc({ html, css, js, base, scheme });
+const srcdoc = buildSrcdoc({ html, css, js, frame, bleed: bleed === true ? 'all' : bleed || undefined, base, scheme });
 const label = {
   recommended: '🙆‍♂ Recommended',
   'not-recommended': '🙅‍♂ Not Recommended',

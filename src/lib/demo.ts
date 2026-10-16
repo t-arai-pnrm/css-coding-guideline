@@ -60,6 +60,11 @@ const TOKENS = [
  * kiso.css は `body` に `min-block-size: 100dvb` を指定しているが、そのままだと
  * iframe の高さを中身に合わせられないため、デモでは解除する。
  * テーマに追従させるため、背景と文字の色は `body` にセマンティクスのトークンで指定する。
+ *
+ * デモを見せるための足場（本文の主題ではないもの）も、ここに置く。デモの CSS のタブと AI 向けの配布物には出さない。
+ * - `body[data-demo-bleed]`: `<Demo bleed>` で付く。デモの枠の余白を外し、要素を枠の端まで届かせる（`inline` は左右だけ）
+ * - `[data-demo-layout="compare"]`: 比べる区画を横に並べ、狭ければ縦に積む。各区画の先頭の見出しは、ラベルの大きさにする
+ * 足場の説明は、付録I「デモの共通トークン」に書く。
  */
 const DEMO_BASE = `@layer base {
   *,
@@ -73,8 +78,38 @@ const DEMO_BASE = `@layer base {
     padding: 24px;
     background-color: var(--background--base);
     color: var(--foreground--base);
+
+    &[data-demo-bleed="all"] {
+      padding: unset;
+    }
+
+    &[data-demo-bleed="inline"] {
+      padding-inline: unset;
+    }
+  }
+}
+
+@layer compositions {
+  [data-demo-layout="compare"] {
+    display: block grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(240 / 16 * 1rem)), 1fr));
+    gap: 16px;
+
+    & > * {
+      display: block grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    & > * > :is(h2, h3, h4):first-child {
+      font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
+      line-height: var(--text--body-compact--leading);
+    }
   }
 }`;
+
+/** `<Demo bleed>` の値。`all` は上下左右、`inline` は左右だけの余白を外す。 */
+export type DemoBleed = 'all' | 'inline';
 
 /**
  * 第21章の演習のサイトの欧文の書体（14-1）。見出しと英字の小見出しの飾りなので、読み込みを待たない `optional` にする。
@@ -143,6 +178,8 @@ export const buildSrcdoc = ({
   base = 'kiso',
   scheme = 'auto',
   js,
+  frame,
+  bleed,
 }: {
   html: string;
   css: string;
@@ -150,6 +187,9 @@ export const buildSrcdoc = ({
   scheme?: DemoScheme;
   /** デモを動かすためのスクリプト。本文の主題ではないので、コードのタブには出さない。 */
   js?: string;
+  /** デモを見せるための足場の CSS（`frame.css`）。本文の主題ではないので、コードのタブには出さない。`style.css` より前に読み込む。 */
+  frame?: string;
+  bleed?: DemoBleed;
 }) => {
   const head = [
     '<meta charset="utf-8">',
@@ -171,7 +211,9 @@ export const buildSrcdoc = ({
       head.push(`<style>${fontFace}</style>`, `<style>${EXERCISE_BASE}</style>`);
     }
   }
+  if (frame) head.push(`<style>\n${frame}\n</style>`);
   head.push(`<style>\n${css}\n</style>`);
   const script = js ? `<script type="module">\n${js}\n</script>` : '';
-  return `<!doctype html><html lang="ja"><head>${head.join('')}</head><body>\n${html}\n${script}</body></html>`;
+  const body = bleed ? `<body data-demo-bleed="${bleed}">` : '<body>';
+  return `<!doctype html><html lang="ja"><head>${head.join('')}</head>${body}\n${html}\n${script}</body></html>`;
 };

@@ -4,7 +4,7 @@ description: 読む係のチェック表をもとに、「RECSSガイドライ�
 tools: Read, Grep, Glob, WebFetch, mcp__recss-guideline, mcp__plugin_recss-guideline_recss-guideline
 ---
 
-<!-- pnpm gen:ai で生成（v0.69.2）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
+<!-- pnpm gen:ai で生成（v0.70.0）。モデルは書かない。呼び出す側の指定か、利用者の設定で決まる。 -->
 
 あなたは、読む係のチェック表をもとに、CSSのレビューの指摘を確かめて判断する「判断する係」です。依頼文に、対象のCSS、関係する章、読了表、読む係が返したすべての結果、プロジェクトの規約のパスが書いてあります。行うのは読み取りだけです。
 

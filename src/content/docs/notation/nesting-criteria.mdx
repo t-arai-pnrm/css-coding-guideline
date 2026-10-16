@@ -99,6 +99,28 @@ BEMにたとえると、BlockとElementの関係（コンポーネントと、�
 
 `flex-shrink: 0` は、`._option` がFlexboxであるときにだけ意味を持つ宣言です。親が `display: block grid` に変われば、この宣言も一緒に見直す必要があります。親のルールの中に置けば、レイアウトを変える人がその場で気付けます。一方、`inline-size` と `aspect-ratio` はアイコン自身の大きさで、どの親に置かれても変わりません。これを `& > ._icon` のネストの中で指定すると、アイコンを別の親へ移したときに大きさが失われます。
 
+`flex-shrink` のほかにも、親のレイアウトや親のスクロールで意味が決まる宣言は、直下の子へのネストに書きます。`float`、`shape-outside`、`position: absolute` と `inset`、`scroll-snap-align`、`break-inside`、要素の外側の `margin` です。外側の `margin` には、要素の間の余白のほかに、`auto` で寄せる値と負の値も含みます。
+
+```css title="🙆‍♂ Recommended: 親を基準にした重ね方を、親のネストに書く"
+@scope (.scoped.product-card) to (.scoped) {
+  :scope {
+    position: relative;
+
+    & > ._badge {
+      position: absolute;
+      inset-block-start: 8px;
+      inset-inline-end: 8px;
+    }
+  }
+
+  ._badge {
+    padding-inline: 8px;
+  }
+}
+```
+
+`position: absolute` の `inset` は、位置の基準になる親の箱から測る値です。親の `position: relative` と同じ場所に置けば、基準を変えるとき、一緒に見直せます。`position: sticky` も、コンポーネントの中の要素のスクロールを基準にするなら、同じ理由で親のネストに書きます。一方、ページのルートのスクロールに沿わせる `sticky` と、ビューポートを基準にする `fixed` は、親のレイアウトで決まらないので、子のルールに書いてかまいません。
+
 ```css title="🙅‍♂ Not Recommended: 子自身の見た目まで親のネストに書く"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.choice-list) to (.scoped) {

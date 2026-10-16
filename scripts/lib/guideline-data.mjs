@@ -146,7 +146,8 @@ const renderComponent = (name, attributes, context) => {
       const css = variant === 'not-recommended' ? `/* 🙅‍♂ Not Recommended */\n${value('css')}` : value('css');
       // ページのデモと同じく、CSS を先に、HTML を後に置く
       const parts = [`**デモ: ${text('title')}**`, fence('css', css, label ? `${label}: style.css` : 'style.css')];
-      if (showHtml) parts.push(fence('html', value('html'), 'index.html'));
+      // 見せるための足場の属性（data-demo-*）は、デモの主題ではないので AI 向けには外す
+      if (showHtml) parts.push(fence('html', value('html').replace(/\s+data-demo-[\w-]+(="[^"]*")?/g, ''), 'index.html'));
       return parts.join('\n\n');
     }
     case 'Baseline':

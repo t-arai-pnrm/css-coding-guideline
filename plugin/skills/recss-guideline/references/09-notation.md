@@ -1,8 +1,8 @@
 # 第9章 記法の規約：ルール
 
-- ガイドラインのバージョン: 0.69.2（2026-10-16 生成）
+- ガイドラインのバージョン: 0.70.0（2026-10-16 生成）
 - ルールの数: 49
-- 本文: 約12.5万字
+- 本文: 約12.6万字
 - 読む条件: すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法）（常に読む）
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -18,7 +18,7 @@
 - `notation/terminology` 9-3 名前に使う語（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/notation/terminology/
 - `notation/scope-and-nesting` 9-4 @scopeとネストの使い分け（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/scope-and-nesting/
 - `notation/nesting` 9-5 ネストの書き方（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting/
-- `notation/nesting-criteria` 9-6 ネストの判断基準（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/
+- `notation/nesting-criteria` 9-6 ネストの判断基準（約1.5万字）https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/
 - `notation/property-order` 9-7 プロパティの並び順（約3,800字）https://t-arai-pnrm.github.io/recss-guideline/notation/property-order/
 - `notation/modern-syntax` 9-8 モダンな記法にそろえる（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/notation/modern-syntax/
 - `notation/logical-properties` 9-9 論理プロパティと論理値（約1.1万字）https://t-arai-pnrm.github.io/recss-guideline/notation/logical-properties/
@@ -168,7 +168,7 @@ https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/
 
 - 【推奨・実装上の判断】直下の子へネストしたルール（`& > ._icon`）には、`flex-shrink`、`grid-area`、`align-self` のように親のレイアウトによって意味が決まる宣言だけを書き、子自身の大きさや見た目は子のルールに書く。（`nest-child-placement-only`）
   - 理由: 親のレイアウトを変えるときに一緒に見直す宣言が親のルールの中にまとまり、子を別の親に移しても子自身の見た目が失われないため。
-  - 補足: `float`、`shape-outside`、`position` と `inset`、`scroll-snap-align`、`break-inside`、要素の間の `margin` も、親のレイアウトや親のスクロールによって意味が決まるので、直下の子へのネストに書けます。子の大きさ（`inline-size`、`aspect-ratio`）や色、`padding`、`border` は子のルールに書きます。コンポジションは子にクラスを付けられないので、直下の子を選んで配置を書きます。子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第10章のルール `parent-owns-child-placement` で扱います。親が `display: contents` にした要素を挟んでいても、その箱がないので子は実質的な直下の子です。サブグリッドの `article` の `grid-column` は、親の `ul` のルールに `& article` と書きます。
+  - 補足: `float`、`shape-outside`、`position` と `inset`、`scroll-snap-align`、`break-inside`、要素の外側の `margin`（要素の間の余白、`auto` で寄せる値、負の値）も、親のレイアウトや親のスクロールによって意味が決まるので、直下の子へのネストに書きます。`position` は、親を基準にする `absolute` と、コンポーネントの中の要素のスクロールを基準にする `sticky` が対象です。ページのルートのスクロールに沿わせる `sticky` と、ビューポートを基準にする `fixed` は、親のレイアウトで決まらないので、子のルールに書いてかまいません。子の大きさ（`inline-size`、`aspect-ratio`）や色、`padding`、`border` は子のルールに書きます。コンポジションは子にクラスを付けられないので、直下の子を選んで配置を書きます。子が自分の状態のルールやネストを持つなら、親のルールには入れず、同じ階層の独立したルールにします。子のコンポーネントの配置は、第10章のルール `parent-owns-child-placement` で扱います。親が `display: contents` にした要素を挟んでいても、その箱がないので子は実質的な直下の子です。サブグリッドの `article` の `grid-column` は、親の `ul` のルールに `& article` と書きます。
   - 詳細: https://t-arai-pnrm.github.io/recss-guideline/notation/nesting-criteria/#rule-nest-child-placement-only
 - 【推奨・仕様にもとづく制約】詳細度の違うセレクタを並べたセレクタリスト（`button, ._selected-count`）の中では、セレクタをネストしない。ネストが必要なら、セレクタごとのルールに分ける。（`no-nesting-under-selector-list`）
   - 理由: `&` の詳細度は親のセレクタリストを `:is()` で包んだものと同じになり、詳細度の低いほうのセレクタで一致した要素にも、リストの中でいちばん高い詳細度が付くため。

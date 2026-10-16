@@ -30,6 +30,7 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
   - 🙅‍♂ Not Recommended のデモは `style.bad.css` という名前にする（Stylelint の対象外になる）。
   - 悪い例と良い例、値の違いなどを比べるデモは、1つのデモの中に並べる（`data-*` 属性で片方だけ指定を変える）。比べる2つを別々のデモに分けない。
   - 状態の切り替えに JavaScript が要るデモは、`script.js` を置いて `<Demo js={…}>` に渡す。JavaScript のタブは出さない。CSS と HTML だけで作れるデモには使わない。
+  - 見せるための足場（比べる区画を並べるグリッド、区画のラベルの文字サイズ、デモの枠の余白を外す `body` の指定）は `style.css` に書かない。区画を並べる要素に `data-demo-layout="compare"` を付け、枠の余白は `<Demo bleed>`（左右だけなら `bleed="inline"`）で外す。仕組みは `src/lib/demo.ts` の `DEMO_BASE` にあり、付録I に説明がある。それで表せない足場だけを `frame.css` に書き、`<Demo frame={…}>` に渡す（タブと AI 向けの配布物には出ない）。
 - `src/demos/tokens/*.css`: すべてのデモに `@layer tokens` として読み込まれる共通トークン。デモの CSS では宣言し直さずに参照する。デモはサイトのテーマ（ライトとダーク）に追従するので、色はセマンティクスのトークンで書く。特定の色を見せるデモだけは `<Demo scheme="light">` で固定し、値を直接書いてよい。
 - `src/components/`
   - `Demo`：ライブデモ
@@ -93,6 +94,11 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - 複数の章に出てくる主張（内容は変わる、保守性を優先する、AI の出力を検証する、など）は、同じ説明を繰り返さず、その章が担う役割（なぜ／どこが受け持つか／どう耐えるか／どう確認するか）で書く。
 - デモは操作しなくても結論が分かるように、直前か直後の本文に「何を変えると、どこがどう変わるか」を書く（AI は本文だけを読む）。
   - 紙の書籍では、デモは静止図になるか、番号と補足サイトへの参照になり（`packages/book/config/demo-selection.json` の `print`）、タブが外れる。本文にWeb版の操作の部品（「幅のボタン」「CSSのタブ」）を書かない。幅は「幅を320pxにすると」「768pxのときは」と書き（静止図のラベル「幅 Npx」と対応する）、デモのコードは「デモのCSS」「デモのCSSの全体」と書く。デモの中の部品の操作（ボタンを押すと、など）は書いてよい。
+- コード例には、その見出しで説明している宣言と、それが働くのに要る宣言だけを書く（例：`gap` を説明するなら `display: block grid` と `gap`）。主題でない見た目（色、文字サイズ、角丸、`padding` など）は書かない。
+  - 消した位置にほかの宣言があると読み手が知る必要があるとき（並び順を見せる例など）だけ、`/* ... */` を置く。
+  - 🙅‍♂ Not Recommended の例も同じように削り、問題を起こしている宣言は残す。
+  - 直下にデモがあるときは、デモの CSS の一部をそのまま抜き出した形にする。デモの `style.css` は削らない（足場を除く）。
+  - 第21章（演習）は、1つのサイトを組み上げるコードなので対象外。
 - コード例のラベル
   - コードブロックのタイトルに `🙆‍♂ Recommended: …` と `🙅‍♂ Not Recommended: …` を付ける。`…` には、何が問題か、何を解決したかが分かる日本語を書く（例：「同じ閾値を3か所で管理する」「閾値を1か所に集める」）。
   - Not Recommended の例は、先頭行にも `/* 🙅‍♂ Not Recommended */` と書く。
@@ -131,7 +137,8 @@ CSS の記法と知識をまとめた日本語の技術書を、Astro Starlight 
 - ホバーとフォーカスで子要素や疑似要素を変えるときは、状態のセレクタで `--_hocus: --true`（既定値 `--false`）を立て、`@container style(--_hocus: --true)` で切り替える。要素自身の見た目は状態のセレクタに直接書き、子から親の向きは `:has()` を使う。状態のフラグの値は `--true` / `--false` にそろえる。
 - ホバーは `&:any-link:hover` か `&:enabled:hover` に絞り、`@media (any-hover)` の中に書く（`<summary>` と `<label>` は除く）。
 - ベーススタイルは `@layer base` の中に素のセレクタで書く。`:where()` で詳細度を0にするのは `@layer` を使えない場合（第19章）だけ。状態のセレクタをまとめるときは `:where()` ではなく `:is()` を使い、詳細度を残す。
-- `border-box` を取り消すときは `box-sizing: unset` と書く。
+- `border-box` を取り消すときは `box-sizing: unset` と書く。前の値（ブラウザのデフォルト、リセット、ベース、前のルール）を打ち消すときは、`0` や `none` ではなく `unset`、`revert`、`revert-layer`、`initial` のうち戻したい先に合うキーワードで書く（ルール `explicit-rollback-keyword`）。打ち消しが要らない値は、宣言ごと書かない。`0` そのものがデザインの値なら `0` のままにする。
+- 親の配置で意味が決まる宣言（`flex*`、`grid-area`、`align-self`、`float`、`shape-outside`、`position: absolute` と `inset`、コンポーネントの中の要素を基準にする `position: sticky`、`scroll-snap-align`、`break-inside`、外側の `margin`（`auto` と負の値を含む））は、親のルールの `& > ._child` や `& > .scoped` のネストに書く（ルール `nest-child-placement-only`、`parent-owns-child-placement`）。ページのルートのスクロールに沿わせる `sticky` と、`position: fixed` は例外。子要素の大きさは子のルールに、子のコンポーネントの大きさは置く側のネストに書く。
 - 要素の間のブロック方向の `margin` は、`& > * + *` や `& > :is(:heading, h1, h2, h3, h4, h5, h6) + *` のように次兄弟結合子で選んだ後ろの要素の `margin-block-start` に付ける。要素自身に条件なしの `margin-block-end` を付けたり、`:last-child` で打ち消したりしない。
 - 高さは `block-size` で固定せず、`min-block-size`、`max-block-size`、`aspect-ratio` で決める。正方形は `inline-size` と `aspect-ratio: 1` で書く。
 - デモの見た目は、共通トークン（`src/demos/tokens/`）で統一する。詳細と経緯は `DECISIONS.md` の「デモの共通トークンと見た目で決めたこと」にある。
