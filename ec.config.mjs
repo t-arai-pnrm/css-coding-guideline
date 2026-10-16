@@ -31,6 +31,7 @@ const codeLabels = () => ({
   name: 'recss-code-labels',
   baseStyles: `
     .recss-code-label {
+      align-content: center;
       margin-inline-start: 0.5rem;
       padding-inline: 0.4rem;
       border: 1px solid var(--sl-color-gray-4);
@@ -41,6 +42,7 @@ const codeLabels = () => ({
     }
 
     .recss-code-from {
+      align-content: center;
       margin-inline-start: 0.5rem;
       font-size: var(--sl-text-xs);
       font-weight: 400;
