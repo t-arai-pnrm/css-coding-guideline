@@ -72,7 +72,7 @@ import blockedCss from '../../../demos/layout/margin-collapse-blocked/style.css?
 
 <Figure src="layout/margin-collapse-cases" alt="margin が相殺する3つの場面を、上から順に3つの図で示したもの。margin は、アクセント色の半透明の破線の帯で描いている。1つ目は兄弟どうしで、上の要素Aの下の24pxの帯と、下の要素Bの上の40pxの帯が重なって1つになり、間は64pxではなく40pxになる。2つ目は親と最初の子で、親にborderとpaddingがないため、最初の子の上の24pxの帯が親の外へ出て、親の背景の外に空きができる。3つ目は中身のない要素で、高さ0の空の要素の上下のmarginも、前後のmarginと1つにまとまり、AとBの間は最大の32pxになる。" />
 
-次のデモは、段落、空の `<p>`、`<hr>` を並べた本文です。左は通常フローで、`* + *` で2つ目以降の要素に `margin-block-start: 16px` を付けています。右はGridで、`gap: 16px` で間隔を作っています。`<hr>` は、どちらも上下に24pxの `margin` を持ちます。
+次のデモは、段落、空の `<p>`、`<hr>` を並べた本文です。左は通常フローで、`* + :not(hr)` で区切り線を除く2つ目以降の要素に `margin-block-start: 16px` を付けています。右はGridで、`gap: 16px` で間隔を作っています。`<hr>` は、どちらも上下に24pxの `margin` を持ちます。
 
 <Demo title="空の p と hr の余白は、通常フローでは相殺し、Grid では gap に足される" html={emptyHtml} css={emptyCss} variant="neutral" />
 

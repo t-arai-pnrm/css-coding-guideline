@@ -60,7 +60,10 @@
         @container style(--_hocus: --true) {
           translate: 4px;
         }
+      }
 
+      /* キーボードでフォーカスしたときは、トランジションを掛けない */
+      &:not(:focus-visible)::after {
         @media (prefers-reduced-motion: no-preference) {
           transition-duration: var(--duration--fast);
           transition-property: translate;

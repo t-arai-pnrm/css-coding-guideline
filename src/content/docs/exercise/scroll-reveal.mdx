@@ -56,7 +56,7 @@ import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/styl
 }
 
 @scope (.scoped.page-top) to (.scoped) {
-  ._section {
+  section {
     --_in-view: --false;
 
     @supports (animation-timeline: view()) and (animation-range: entry) {
@@ -90,7 +90,7 @@ import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/styl
 }
 ```
 
-セクションのルートの `._section` は、`view()` のタイムラインで自分の位置を測り、要素の30%が画面に入った位置で `--_in-view` を `--true` に切り替えます。登録していないカスタムプロパティは補間されないので、キーフレームの中間で値が切り替わります。中身の `._section-body` は、一時停止したアニメーションの最初の見た目で待機し、`@container style(--_in-view: --true)` が当てはまったところで再生します。要素は自分自身の値を問い合わせられないので、切り替える要素と再生する要素を分けています。
+セクションのルートの `section` は、`view()` のタイムラインで自分の位置を測り、要素の30%が画面に入った位置で `--_in-view` を `--true` に切り替えます。登録していないカスタムプロパティは補間されないので、キーフレームの中間で値が切り替わります。中身の `._section-body` は、一時停止したアニメーションの最初の見た目で待機し、`@container style(--_in-view: --true)` が当てはまったところで再生します。要素は自分自身の値を問い合わせられないので、切り替える要素と再生する要素を分けています。
 
 動きは、サイト全体で使う `--fade-in` と `--translate-from` の `@keyframes` を組み合わせます。浮き上がる量は、`--translate-from--y-value` で渡します（「[18-6 @keyframesを設計する](/motion/keyframes/)」）。`--_in-view` を切り替える `@keyframes` は、このページだけで使うので、ページの名前を付けています。
 
@@ -114,7 +114,7 @@ import scrollRevealChangedCss from '../../../demos/exercise/scroll-reveal-2/styl
 
 <Demo base="exercise" scheme="light" title="要件の変更を終えたトップページ：強みのカードを、1枚ずつ遅らせて出す" html={scrollRevealChangedHtml} css={scrollRevealChangedCss} height="560px" />
 
-幅を1024pxや1280pxにして、デモの中を「私たちの強み」まで下へスクロールすると、3枚のカードが左から順に、80msずつ遅れて現れます。768px以下でカードが縦に並んだときは、上から順に現れます。`sibling-index()` に対応していない環境では、3枚が同時に現れれば完成です。
+幅を1024pxや1280pxにして、デモの中を「私たちの強み」まで下へスクロールすると、3枚のカードが左から順に、80msずつ遅れて現れます。カードが縦に並ぶ約696px未満の幅（閾値の648pxに、ページの余白の48pxを足した幅）では、上から順に現れます。`sibling-index()` に対応していない環境では、3枚が同時に現れれば完成です。
 
 ## 遅れを sibling-index() で計算する
 

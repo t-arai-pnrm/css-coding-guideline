@@ -46,6 +46,10 @@ HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`
       border-color: currentColor;
     }
 
+    &:enabled:not([aria-selected="true"]):focus-visible {
+      border-color: var(--border--base);
+    }
+
     &:enabled:not([aria-selected="true"]):hover {
       @media (any-hover) {
         border-color: var(--border--base);
@@ -57,7 +61,7 @@ HTMLの属性でも表せない状態は、`aria-selected`、`aria-expanded`、`
 
 ARIA属性をセレクタにすれば、支援技術に伝わる状態と見た目の状態が同じ属性から決まるので、両者がずれません。JavaScriptが属性の更新を忘れたら見た目も変わらないので、不具合にもすぐ気づけます。私は2020年ごろから、状態の管理は原則としてARIA属性とdata属性で行うと決めています。
 
-次のデモでは、スクリプトはタブの `aria-selected` 属性を書き換えるだけで、クラスは付け外ししていません。タブを押すか、タブにフォーカスして左右の矢印キーを押すと、`aria-selected="true"` になったタブへ下線が移ります。選択していないタブにマウスを重ねると、薄い色の下線が出ます。
+次のデモでは、スクリプトはタブの `aria-selected` 属性を書き換えるだけで、クラスは付け外ししていません。タブを押すか、タブにフォーカスして左右の矢印キーを押すと、`aria-selected="true"` になったタブへ下線が移ります。選択していないタブにマウスを重ねるかフォーカスすると、薄い色の下線が出ます。
 
 <Demo title='aria-selected="true" のタブに下線が付き、選択を移すと下線も移る' html={tabsHtml} css={tabsCss} js={tabsJs} widths={[]} />
 

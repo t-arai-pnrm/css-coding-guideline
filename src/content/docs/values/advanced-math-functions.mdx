@@ -66,7 +66,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
     container: --scoped / inline-size;
   }
 
-  ._inner {
+  ._article-inner {
     inline-size: min(100% - 2 * var(--_gutter), var(--_content-width));
     margin-inline: auto;
   }
@@ -86,7 +86,7 @@ import powCss from '../../../demos/values/pow-type-scale/style.css?raw';
 
 変えたのは4点です。1つ目に、数値には内部プロパティの名前を付け、本文の幅を `--_content-width`、最小の余白を `--_gutter`、はみ出させる量の上限を `--_overhang` にしました（「[10-5 公開プロパティと内部プロパティ](/components/custom-properties/)」）。2つ目に、基準の幅を、スクロールバーの幅を含む `100vw` から、ルートのコンテナの幅の `100cqi` に変えました。ページ全体の幅で決めてよい要素なら、`100svi` を使います（「[6-2 ビューポート単位とコンテナ単位](/values/viewport-and-container-units/)」）。
 
-3つ目に、ラベルをずらす手段を、書字方向に従わない `left` から `margin-inline-start` に変えました。4つ目に、本文の幅を決める `._inner` とラベルの `._label` を、`@scope` の中の子要素として分けました。境の672pxと720pxは、画面の幅ではなく、コンテナの幅で数えます。
+3つ目に、ラベルをずらす手段を、書字方向に従わない `left` から `margin-inline-start` に変えました。4つ目に、本文の幅を決める `._article-inner` とラベルの `._label` を、`@scope` の中の子要素として分けました。境の672pxと720pxは、画面の幅ではなく、コンテナの幅で数えます。
 
 次のデモの破線の枠が本文の幅です。480pxではラベルが枠の左端にそろい、696pxでは12px、1024pxでは24px、枠の外へ出ます。
 

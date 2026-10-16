@@ -11,8 +11,9 @@
       gap: 4px 16px;
     }
 
-    ._legend {
-      margin-block-end: 8px;
+    legend {
+      /* フィールドセットの見出しは Flexbox の項目ではないので、padding で下の間隔を空ける */
+      padding-block-end: 8px;
       font-weight: var(--font-weight--bold);
     }
 
@@ -29,7 +30,7 @@
     }
 
     /* 場所が残るかが分かるように、リンクを枠で囲む */
-    ._link {
+    a {
       padding-block: 4px;
       padding-inline: 12px;
       border: 1px solid var(--border--base);

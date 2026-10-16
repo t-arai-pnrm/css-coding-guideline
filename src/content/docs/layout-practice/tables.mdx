@@ -121,11 +121,11 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
       position: sticky;
       inset-block-start: 0;
       background-color: var(--background--base);
+    }
 
-      &:first-child {
-        inset-inline-start: 0;
-        z-index: var(--z--forwards);
-      }
+    &:is(thead *):first-child {
+      inset-inline-start: 0;
+      z-index: var(--z--forwards);
     }
 
     &:is(tbody *) {
@@ -243,13 +243,15 @@ kiso.cssは、`:root` に `overflow-wrap: anywhere` を指定しています。�
 列幅をデザインどおりに保ちたい表には、`table-layout: fixed` を指定します。2行目以降の中身を見ずに列の幅が決まるので、行の多い表でも描画が速くなります。列幅は、`<col>` 要素か最初の行のセルに指定した幅で決まり、指定のない列は残りの幅を分け合います。中身は列幅に影響しないので、長い文字列は、kiso.cssの `overflow-wrap: anywhere` によってセルの中で折り返します。{/* 要確認: 出典なし */}
 
 ```css title="🙆‍♂ Recommended: 列幅を中身ではなく、表の幅と列の指定で決める"
-._table {
-  inline-size: 100%;
-  table-layout: fixed;
-}
+@scope (.scoped.order-table) to (.scoped) {
+  table {
+    inline-size: 100%;
+    table-layout: fixed;
+  }
 
-._date-column {
-  inline-size: calc(120 / 16 * 1rem);
+  ._date-column {
+    inline-size: calc(120 / 16 * 1rem);
+  }
 }
 ```
 

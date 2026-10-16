@@ -6,6 +6,12 @@
       }
     }
 
+    section {
+      & > h3 + * {
+        margin-block-start: 8px;
+      }
+    }
+
     h3 {
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
@@ -14,7 +20,6 @@
     ._grid {
       display: block grid;
       gap: 8px;
-      margin-block-start: 8px;
 
       /* 2列目はどれも 1fr。1列目の値だけを変えて、トラックの幅を比べる */
       &[data-track="fr"] {

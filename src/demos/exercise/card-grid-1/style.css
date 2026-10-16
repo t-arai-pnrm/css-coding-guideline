@@ -134,9 +134,13 @@
       border-radius: var(--rounded--lg);
       box-shadow: var(--shadow--card);
       background-color: var(--background--surface);
-      transition-duration: var(--duration--base);
-      transition-property: box-shadow;
-      transition-timing-function: var(--ease--out-quint);
+
+      /* フォーカスの移動には、動きを付けない */
+      &:not(:has(:focus-visible)) {
+        transition-duration: var(--duration--base);
+        transition-property: box-shadow;
+        transition-timing-function: var(--ease--out-quint);
+      }
 
       /* 見出しのリンクにホバーしたら、影を深くする。カードの位置は動かさない */
       &:has(a:any-link:hover) {

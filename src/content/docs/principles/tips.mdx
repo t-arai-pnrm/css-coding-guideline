@@ -100,7 +100,8 @@ h2 {
 
 次のような2つのTipsがあったとします。1つは、要素の中身を上下左右の中央に置くのに、GridやFlexboxを使わず、ブロックレイアウトのまま `align-content` と `justify-items` を指定すればよいというものです。もう1つは、要素を中身の幅にして左右の中央に置くのは、`justify-self: center` の1行で済むというものです。
 
-```css
+```css title="🙅‍♂ Not Recommended: ChromeとEdgeだけが対応する指定をブロックレイアウトで使う"
+/* 🙅‍♂ Not Recommended */
 ._hero {
   min-block-size: 100svb;
   align-content: center;

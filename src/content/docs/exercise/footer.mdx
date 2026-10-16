@@ -86,7 +86,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 <footer class="scoped site-footer">
   <div class="_top | sidebar">
     <div class="_company | side-column">…</div>
-    <nav class="_navigation | main-column" aria-label="サイトの案内">
+    <nav class="main-column" aria-label="サイトの案内">
       <div class="_groups | cluster">
         <div class="_group">
           <h2>事業内容</h2>
@@ -130,7 +130,7 @@ import footerChangedCss from '../../../demos/exercise/footer-2/style.css?raw';
 
 会社の情報とリンクのまとまりが横に並ぶのは、280＋56＋480で816px相当の幅があるときです。上の段と下の段は、並びが入れ替わることのない2つの区画なので、間の線は下の段の上の枠線で描きます。下の段の `apart` は、ポリシーのリンクと著作権の表示を両端に分け、収まらなくなると著作権の表示を次の行へ回します（「[12-4 apart：子要素を両端に分ける](/compositions/apart/)」）。
 
-クラスの名前は、要素の役割で付けています。サイトの中を移動するリンクの集まりなので `navigation` で、2種類のリンクのリストは、どちらも `ul` なので `._group-links` と `._policy-links` で区別します（「[9-3 名前に使う語](/notation/terminology/)」）。
+クラスの名前は、要素の役割で付けています。サイトの中を移動するリンクの集まりは、`nav` 要素そのものが役割を表すので、クラスを付けません。2種類のリンクのリストは、どちらも `ul` なので `._group-links` と `._policy-links` で区別します（「[9-3 名前に使う語](/notation/terminology/)」）。
 
 リンクのまとまりでは、リンクを4pxの間隔で縦に詰めて並べるので、文字の高さのままでは、指で押し分けにくくなります。21-2の文字のリンクと同じく、高さを `--_hit-size` で受けて24px相当を確保し、指で操作できる環境では44px相当に広げます（「[17-2 押せる範囲とタッチ操作](/interaction/hit-area-and-touch/)」）。切り替えるのは値だけなので、`min-block-size` の指定は1か所のままです。
 

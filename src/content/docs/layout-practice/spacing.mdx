@@ -201,7 +201,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 @scope (.scoped.page-home) to (.scoped) {
   main {
     display: block grid;
-    gap: 80px;
+    gap: 48px;
   }
 }
 
@@ -212,14 +212,14 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 }
 ```
 
-この例では、お知らせのセクションの上下に、ページの背景が80pxずつ見えます。さらに、セクションの中に `padding` がないので、見出しは色の付いた領域の上端に接します。背景の上端から見出しまでの余白と、セクションどうしの間隔は、どちらもセクションの上下の余白です。それを親とセクションのどちらに書くかで迷うと、この例のように、片方に足りない余白が生まれます。
+この例では、お知らせのセクションの上下に、ページの背景が48pxずつ見えます。さらに、セクションの中に `padding` がないので、見出しは色の付いた領域の上端に接します。背景の上端から見出しまでの余白と、セクションどうしの間隔は、どちらもセクションの上下の余白です。それを親とセクションのどちらに書くかで迷うと、この例のように、片方に足りない余白が生まれます。
 
 そこで、セクションの上下の余白は、各セクションのルートの `padding-block` で作ります。ページの側は、セクションを間隔なしで縦に積むだけにします。`padding` の領域には背景が描かれるので、背景はセクションの端から端まで途切れず、中身と背景の端の間にも余白が確保されます。
 
 ```css title="🙆‍♂ Recommended: 上下の余白を、セクション自身の padding-block で作る"
 @scope (.scoped.news-section) to (.scoped) {
   :scope {
-    padding-block: calc(var(--spacing--xxl) * 1px);
+    padding-block: 48px;
     background-color: var(--background--surface);
   }
 }
@@ -254,9 +254,9 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 
 @scope (.scoped.campaign-section) to (.scoped) {
   :scope {
-    --_padding-block-start: var(--campaign-section--padding-block-start, calc(var(--spacing--xxl) * 1px));
+    --_padding-block-start: var(--campaign-section--padding-block-start, 48px);
 
-    padding-block: var(--_padding-block-start) calc(var(--spacing--xxl) * 1px);
+    padding-block: var(--_padding-block-start) 48px;
     background-color: var(--background--surface);
   }
 }
@@ -303,7 +303,7 @@ FlexboxやGridで並べた要素の間隔は、親の `gap` で作ります。`g
 @scope (.scoped.page-landing) to (.scoped) {
   main {
     & > [data-surface] {
-      padding-block: calc(var(--spacing--xxl) * 1px);
+      padding-block: 48px;
     }
 
     & > [data-surface="muted"] {

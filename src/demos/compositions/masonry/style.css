@@ -35,13 +35,11 @@
     --_c--column-max-count: var(--masonry--column-max-count, 5);
     --_c--column-min-width: var(--masonry--column-min-width, calc(320 / 16 * 1rem));
     --_c--tolerance: var(--masonry--tolerance, normal);
-
-    /* 要素の幅から列の間隔の合計を引き、最大の列数で割った幅 */
     --_c--column-preferred-width: calc(
       (100% - var(--_c--column-gap) * (var(--_c--column-max-count) - 1)) / var(--_c--column-max-count)
     );
 
-    /* 最小幅と、最大の列数で割った幅の大きいほう。ただし要素の幅は超えない */
+    /* 要素の幅より広い列ははみ出すので、min(100%, …) で要素の幅に収める */
     --_c--column-width: min(100%, max(var(--_c--column-min-width), var(--_c--column-preferred-width)));
 
     display: block grid;

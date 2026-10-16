@@ -24,6 +24,10 @@
         font-weight: var(--font-weight--bold);
       }
 
+      &:enabled:not([aria-selected="true"]):focus-visible {
+        border-color: var(--border--base);
+      }
+
       &:enabled:not([aria-selected="true"]):hover {
         @media (any-hover) {
           border-color: var(--border--base);

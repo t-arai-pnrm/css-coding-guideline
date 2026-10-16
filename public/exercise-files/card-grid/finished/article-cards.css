@@ -40,9 +40,13 @@
         border-radius: var(--rounded--lg);
         box-shadow: var(--shadow--card);
         background-color: var(--background--surface);
-        transition-duration: var(--duration--base);
-        transition-property: box-shadow;
-        transition-timing-function: var(--ease--out-quint);
+
+        /* フォーカスの移動には、動きを付けない */
+        &:not(:has(:focus-visible)) {
+          transition-duration: var(--duration--base);
+          transition-property: box-shadow;
+          transition-timing-function: var(--ease--out-quint);
+        }
 
         /* 見出しのリンクにホバーしたら、影を深くする。カードの位置は動かさない */
         &:has(a:any-link:hover) {
@@ -55,6 +59,13 @@
           box-shadow: var(--shadow--card-hover);
         }
       }
+
+      /* 画像が左の形では、日付とカテゴリー、見出しの2行にまたがらせる */
+      & > img {
+        @container style(--_density: --compact) {
+          grid-row: span 2;
+        }
+      }
     }
 
     img {
@@ -63,11 +74,6 @@
       aspect-ratio: 16 / 9;
       border-radius: var(--rounded--md);
       object-fit: cover;
-
-      /* 画像が左の形では、日付とカテゴリー、見出しの2行にまたがらせる */
-      @container style(--_density: --compact) {
-        grid-row: span 2;
-      }
     }
 
     ._meta {

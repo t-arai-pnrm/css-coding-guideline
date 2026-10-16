@@ -132,7 +132,7 @@ body {
 }
 ```
 
-次のデモでは、同じCSSで書いた注記を、左から右への横書き、`dir="rtl"`、`writing-mode: vertical-rl` の3つの中に置いています。RTLでは線と矢印が右から左に向き、縦書きでは線が上に移り、`margin-inline: auto` が上下の中央寄せとして働きます。
+次のデモでは、同じCSSで書いた注記を、左から右への横書き、`dir="rtl"`、`writing-mode: vertical-rl` の3つの中に置いています。RTLでは線と矢印が右から左に向き、縦書きでは線が上に移り、注記を置く側のGridの `justify-content: center` が上下の中央寄せとして働きます。注記の幅と中央寄せは、注記のルートではなく、置く側の要素に書いています。
 
 <Demo title="同じCSSで書いた注記を、3つの書字方向に置く" html={writingHtml} css={writingCss} />
 

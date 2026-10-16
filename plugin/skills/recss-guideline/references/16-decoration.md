@@ -1,6 +1,6 @@
 # 第16章 画像・装飾：ルール
 
-- ガイドラインのバージョン: 0.69.1（2026-10-15 生成）
+- ガイドラインのバージョン: 0.69.2（2026-10-16 生成）
 - ルールの数: 34
 - 本文: 約21.7万字
 - 読む条件: 画像、SVG、アイコン、mask、影、角丸、枠線、区切り線、印刷
@@ -13,7 +13,7 @@
 ## この章の節
 
 - `decoration` 第16章 画像・装飾（約5,300字）https://t-arai-pnrm.github.io/recss-guideline/decoration/
-- `decoration/images` 16-1 画像の配置と比率（約3.4万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/images/
+- `decoration/images` 16-1 画像の配置と比率（約3.3万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/images/
 - `decoration/image-loading` 16-2 画像の形式と読み込み（約8,400字）https://t-arai-pnrm.github.io/recss-guideline/decoration/image-loading/
 - `decoration/icons-and-masks` 16-3 アイコンとSVG（約1.6万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/icons-and-masks/
 - `decoration/clipping-and-masks` 16-4 clip-pathとマスクで見せる範囲を決める（約3.6万字）https://t-arai-pnrm.github.io/recss-guideline/decoration/clipping-and-masks/

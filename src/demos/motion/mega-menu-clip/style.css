@@ -71,7 +71,7 @@
 
     ._panel-links {
       display: block grid;
-      grid-template-columns: repeat(auto-fill, minmax(calc(160 / 16 * 1rem), 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(160 / 16 * 1rem)), 1fr));
     }
 
     ._panel-link {
@@ -80,10 +80,14 @@
       padding-inline: 12px;
       border-radius: var(--rounded--md);
 
-      @media (any-hover) {
-        &:any-link:hover {
+      &:any-link:hover {
+        @media (any-hover) {
           background-color: var(--background--hover);
         }
+      }
+
+      &:focus-visible {
+        background-color: var(--background--hover);
       }
     }
   }

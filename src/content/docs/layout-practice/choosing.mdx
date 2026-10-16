@@ -194,7 +194,7 @@ Flexboxは、折り返した行を1行ずつ独立して並べます。そのた
     container: --scoped / inline-size;
   }
 
-  ._list {
+  ul {
     --_column: 1;
     --_gap: 16px;
 
@@ -211,7 +211,7 @@ Flexboxは、折り返した行を1行ずつ独立して並べます。そのた
       --_column: 3;
     }
 
-    & > * {
+    & > li {
       flex-basis: calc((100% - var(--_gap) * (var(--_column) - 1)) / var(--_column));
     }
   }
@@ -230,7 +230,7 @@ Flexboxは、折り返した行を1行ずつ独立して並べます。そのた
     container: --scoped / inline-size;
   }
 
-  ._list {
+  ul {
     --_gap: 16px;
     --_second-row-column: 1;
     --_later-row-column: 1;

@@ -5,6 +5,17 @@
   }
 }
 
+@layer pages {
+  @scope (.scoped.page-demo) to (.scoped) {
+    /* カードを置く側が、最大幅と中央寄せを決める */
+    :scope {
+      display: block grid;
+      grid-template-columns: min(100%, calc(720 / 16 * 1rem));
+      justify-content: center;
+    }
+  }
+}
+
 @layer components {
   @scope (.scoped.hero-card) to (.scoped) {
     :scope {
@@ -13,8 +24,6 @@
 
       display: block grid;
       gap: 8px;
-      inline-size: min(100%, calc(720 / 16 * 1rem));
-      margin-inline: auto;
       padding-block: 64px;
       padding-inline: 24px;
       border-radius: calc(sign(100lvi - 100% - var(--_tolerance)) * var(--_radius)) / var(--_radius);

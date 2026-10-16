@@ -36,7 +36,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 ```css title="🙅‍♂ Not Recommended: 中央の点から、弱いイージングでゆっくり広げる"
 /* 🙅‍♂ Not Recommended */
 @scope (.scoped.action-menu) to (.scoped) {
-  ._list {
+  ul {
     transition-duration: 500ms;
     transition-property: opacity, scale, display, overlay;
     transition-timing-function: ease;
@@ -125,7 +125,7 @@ CSSのキーワードの `ease` や `ease-out` は、加速と減速がゆるや
 
 ```css title="🙆‍♂ Recommended: ボタンのある角から、1に近い値で広げる"
 @scope (.scoped.action-menu) to (.scoped) {
-  ._list {
+  ul {
     --_scale-from: 1;
 
     transform-origin: 0% 0%;

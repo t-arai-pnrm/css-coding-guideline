@@ -15,7 +15,11 @@
       line-height: var(--text--body-compact--leading);
     }
 
-    div {
+    /* 注記の幅と中央寄せは、置く側が決める */
+    ._frame {
+      display: block grid;
+      grid-template-columns: minmax(0, calc(320 / 16 * 1rem));
+      justify-content: center;
       padding: 16px;
       border: 1px dashed var(--border--strong);
 
@@ -30,8 +34,6 @@
     :scope {
       display: block grid;
       gap: 8px;
-      max-inline-size: calc(320 / 16 * 1rem);
-      margin-inline: auto;
       padding-block: 12px;
       padding-inline: 16px;
       border-inline-start: 4px solid var(--foreground--accent);

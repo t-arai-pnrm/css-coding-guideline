@@ -6,7 +6,7 @@ license: CC-BY-4.0
 
 # RECSSガイドライン Skill
 
-- ガイドラインのバージョン: 0.69.1（2026-10-15 生成）
+- ガイドラインのバージョン: 0.69.2（2026-10-16 生成）
 - ルールの数: 616（うち AI が誤りやすいもの 295）
 - 本書: https://t-arai-pnrm.github.io/recss-guideline/
 
@@ -104,11 +104,11 @@ Figma などのデザインツールのデザインから書くときは、「20
 | 第4章 カスケードを制御する | `references/04-cascade.md` | 24 | 約9.2万字 | @layer、!important、詳細度、セレクタの重ね掛け、:is()、:where()、上書きの順番 |
 | 第5章 擬似クラスと擬似要素 | `references/05-pseudo.md` | 28 | 約15.4万字 | :has()、:hover、:focus-visible、:nth-child()、::before、::after などの擬似クラスと擬似要素 |
 | 第6章 値と単位 | `references/06-values.md` | 30 | 約8.9万字 | px、rem、em、vw、vh、cqi などの単位、calc()、min()、max()、clamp()、if()、attr() |
-| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約27.9万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
+| 第7章 レイアウトの仕組み | `references/07-layout.md` | 41 | 約28万字 | display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ |
 | 第8章 リセットとベーススタイル | `references/08-reset.md` | 23 | 約4.9万字 | リセットCSS、要素セレクタだけのスタイル、:root や body のようにグローバルに書くスタイル |
 | 第9章 記法の規約 | `references/09-notation.md` | 49 | 約12.5万字 | **常に読む**。すべてのCSS（命名、バリエーション、ネスト、@scope、プロパティの並び、記法） |
 | 第10章 コンポーネントとカスタムプロパティ | `references/10-components.md` | 53 | 約16.9万字 | **常に読む**。すべてのCSS（コンポーネントの境界、カスタムプロパティ、デザイントークン） |
-| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 61 | 約26.9万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
+| 第11章 レイアウトを組む | `references/11-layout-practice.md` | 61 | 約26.8万字 | 余白の設計、内容の変化への耐性、はみ出しとスクロール、重なり、z-index、アンカーポジショニング、表 |
 | 第12章 レイアウトコンポジション | `references/12-compositions.md` | 39 | 約19.2万字 | 要素を縦に積む、横に並べる、横にスクロールさせる、列に分けるなど、繰り返し使うレイアウトのパターン |
 | 第13章 レスポンシブデザイン | `references/13-responsive.md` | 40 | 約11.6万字 | @media、@container、ブレイクポイント、画面幅やコンテナの幅による切り替え、safe-area |
 | 第14章 タイポグラフィと和文組版 | `references/14-typography.md` | 32 | 約8.4万字 | font-*、line-height、文字の大きさ、和文組版、改行、文字の色の役割 |

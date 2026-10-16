@@ -25,7 +25,8 @@
     ._flow {
       display: block flow-root;
 
-      & > * + * {
+      /* 区切り線は自分の margin で前後を空けるので、間隔の指定から外す */
+      & > * + :not(hr) {
         margin-block-start: 16px;
       }
     }

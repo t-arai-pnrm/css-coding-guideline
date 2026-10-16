@@ -56,14 +56,14 @@
       font-weight: var(--font-weight--bold);
       font-variant-numeric: tabular-nums;
       line-height: var(--text--price--leading);
+    }
 
-      /* 税の表示は、価格の桁数によらず次の行に置き、価格の行の高さをそろえる */
-      & > small {
-        display: block flow;
-        color: var(--foreground--muted);
-        font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
-        font-weight: var(--font-weight--regular);
-      }
+    /* 税の表示は、価格の桁数によらず次の行に置き、価格の行の高さをそろえる */
+    small {
+      display: block flow;
+      color: var(--foreground--muted);
+      font-size: calc(var(--text--caption--font-size) / 16 * 1rem);
+      font-weight: var(--font-weight--regular);
     }
 
     ._description {
@@ -78,18 +78,18 @@
       align-content: start;
       font-size: calc(var(--text--body-compact--font-size) / 16 * 1rem);
       line-height: var(--text--body-compact--leading);
+    }
 
-      & > li {
-        display: block grid;
-        grid-template-columns: auto 1fr;
-        gap: 8px;
+    ._feature {
+      display: block grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
 
-        /* 含まれる項目の印。項目の文字だけで内容は伝わるので、読み上げない */
-        &::before {
-          content: "✓" / "";
-          color: var(--foreground--brand);
-          font-weight: var(--font-weight--bold);
-        }
+      /* 含まれる項目の印。項目の文字だけで内容は伝わるので、読み上げない */
+      &::before {
+        content: "✓" / "";
+        color: var(--foreground--brand);
+        font-weight: var(--font-weight--bold);
       }
     }
   }

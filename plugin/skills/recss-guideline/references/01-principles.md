@@ -1,6 +1,6 @@
 # 第1章 CSSのマインドセット：ルール
 
-- ガイドラインのバージョン: 0.69.1（2026-10-15 生成）
+- ガイドラインのバージョン: 0.69.2（2026-10-16 生成）
 - ルールの数: 15
 - 本文: 約5.5万字
 - 読む条件: 新しい機能、ブラウザの対応状況、フォールバック、@supports
@@ -18,7 +18,7 @@
 - `principles/layout-algorithms` 1-3 CSSはレイアウトのアルゴリズムの集まりである（約3,300字）https://t-arai-pnrm.github.io/recss-guideline/principles/layout-algorithms/
 - `principles/fundamentals` 1-4 基礎を固める（約3,100字）https://t-arai-pnrm.github.io/recss-guideline/principles/fundamentals/
 - `principles/no-memorizing` 1-5 解決策を丸暗記しない（約5,700字）https://t-arai-pnrm.github.io/recss-guideline/principles/no-memorizing/
-- `principles/tips` 1-6 Tipsとの付き合い方（約6,000字）https://t-arai-pnrm.github.io/recss-guideline/principles/tips/
+- `principles/tips` 1-6 Tipsとの付き合い方（約6,100字）https://t-arai-pnrm.github.io/recss-guideline/principles/tips/
 - `principles/options` 1-7 選択肢を多く持つ（約5,600字）https://t-arai-pnrm.github.io/recss-guideline/principles/options/
 
 ## 1-1 CSSはブラウザへの「提案」である

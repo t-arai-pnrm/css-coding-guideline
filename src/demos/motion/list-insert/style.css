@@ -1,14 +1,22 @@
+@layer pages {
+  @scope (.scoped.invite-demo) to (.scoped) {
+    :scope {
+      display: block grid;
+      grid-template-columns: min(100%, calc(400 / 16 * 1rem));
+      justify-content: center;
+    }
+  }
+}
+
 @layer components {
   @scope (.scoped.invite-list) to (.scoped) {
     :scope {
       display: block grid;
       gap: 16px;
       justify-items: start;
-      max-inline-size: calc(400 / 16 * 1rem);
-      margin-inline: auto;
       padding-block: 24px;
 
-      & > ._list {
+      & > ul {
         justify-self: stretch;
       }
     }
@@ -19,7 +27,7 @@
       border-radius: var(--rounded--sm);
     }
 
-    ._list {
+    ul {
       display: block grid;
       gap: 8px;
     }

@@ -41,8 +41,10 @@
       border: 1px solid var(--border--base);
       border-radius: var(--rounded--md);
 
+      /* 中身の幅に戻し、余った高さを上に取ってカードの下端に寄せる */
       & > a {
         align-self: start;
+        margin-block-start: auto;
       }
     }
 
@@ -56,9 +58,7 @@
       font-size: calc(18 / 16 * 1rem);
     }
 
-    /* 余った高さを上に取ってカードの下端に寄せる。中身の幅に戻す align-self は li の中に書く */
     a {
-      margin-block-start: auto;
       padding-block: 8px;
       padding-inline: 16px;
       border-radius: var(--rounded--full);

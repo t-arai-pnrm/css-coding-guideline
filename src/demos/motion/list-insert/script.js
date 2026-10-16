@@ -1,5 +1,5 @@
 const root = document.querySelector('.scoped.invite-list');
-const list = root.querySelector('._list');
+const list = root.querySelector('ul');
 const names = ['高橋さん', '田中さん', '伊藤さん', '渡辺さん', '山本さん'];
 let count = 0;
 

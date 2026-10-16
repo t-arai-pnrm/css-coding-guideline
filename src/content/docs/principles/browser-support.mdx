@@ -88,6 +88,12 @@ Chrome、Edge、Firefoxは自動で更新されるので、多くのユーザー
       }
     }
   }
+
+  &:has(:focus-visible) {
+    @supports not (anchor-name: --card) {
+      background-color: oklch(96% 0.02 250deg);
+    }
+  }
 }
 ```
 

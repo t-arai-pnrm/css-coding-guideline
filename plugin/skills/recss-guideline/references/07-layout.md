@@ -1,8 +1,8 @@
 # 第7章 レイアウトの仕組み：ルール
 
-- ガイドラインのバージョン: 0.69.1（2026-10-15 生成）
+- ガイドラインのバージョン: 0.69.2（2026-10-16 生成）
 - ルールの数: 41
-- 本文: 約27.9万字
+- 本文: 約28万字
 - 読む条件: display、Flexbox、Grid、position、margin、ボックスモデル、幅と高さ
 
 このファイルは「RECSSガイドライン」のルールから自動生成しています。直接編集しないでください。
@@ -20,11 +20,11 @@
 - `layout/margin-role` 7-5 marginの役割（約1.4万字）https://t-arai-pnrm.github.io/recss-guideline/layout/margin-role/
 - `layout/margin-collapse` 7-6 マージンの相殺（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/layout/margin-collapse/
 - `layout/flexbox-basics` 7-7 Flexboxの基礎（約4.3万字）https://t-arai-pnrm.github.io/recss-guideline/layout/flexbox-basics/
-- `layout/grid-basics` 7-8 Gridの基礎（約2.5万字）https://t-arai-pnrm.github.io/recss-guideline/layout/grid-basics/
+- `layout/grid-basics` 7-8 Gridの基礎（約2.6万字）https://t-arai-pnrm.github.io/recss-guideline/layout/grid-basics/
 - `layout/grid-alignment` 7-9 Gridでアイテムをそろえる（約2.3万字）https://t-arai-pnrm.github.io/recss-guideline/layout/grid-alignment/
 - `layout/positioning` 7-10 positionの基礎（約2.9万字）https://t-arai-pnrm.github.io/recss-guideline/layout/positioning/
 - `layout/anchor-basics` 7-11 アンカーポジショニングの基礎（約2.6万字）https://t-arai-pnrm.github.io/recss-guideline/layout/anchor-basics/
-- `layout/display-contents` 7-12 display: contentsで箱をなくす（約1.7万字）https://t-arai-pnrm.github.io/recss-guideline/layout/display-contents/
+- `layout/display-contents` 7-12 display: contentsで箱をなくす（約1.8万字）https://t-arai-pnrm.github.io/recss-guideline/layout/display-contents/
 
 ## 7-1 レイアウトの基礎
 

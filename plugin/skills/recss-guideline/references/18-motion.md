@@ -1,6 +1,6 @@
 # 第18章 モーション：ルール
 
-- ガイドラインのバージョン: 0.69.1（2026-10-15 生成）
+- ガイドラインのバージョン: 0.69.2（2026-10-16 生成）
 - ルールの数: 31
 - 本文: 約20.2万字
 - 読む条件: transition、animation、@keyframes、prefers-reduced-motion、スクロール連動、View Transitions
@@ -23,7 +23,7 @@
 - `motion/overlays-and-stagger` 18-8 重ねて出すパネルと順に出す要素（約2万字）https://t-arai-pnrm.github.io/recss-guideline/motion/overlays-and-stagger/
 - `motion/scroll-driven` 18-9 スクロールに合わせて動かす（約3.2万字）https://t-arai-pnrm.github.io/recss-guideline/motion/scroll-driven/
 - `motion/performance` 18-10 動きの負荷を抑える（約2.2万字）https://t-arai-pnrm.github.io/recss-guideline/motion/performance/
-- `motion/view-transitions` 18-11 View Transitionsで画面の切り替えをつなぐ（約1.2万字）https://t-arai-pnrm.github.io/recss-guideline/motion/view-transitions/
+- `motion/view-transitions` 18-11 View Transitionsで画面の切り替えをつなぐ（約1.3万字）https://t-arai-pnrm.github.io/recss-guideline/motion/view-transitions/
 
 ## 18-1 動かすかどうかを決める
 

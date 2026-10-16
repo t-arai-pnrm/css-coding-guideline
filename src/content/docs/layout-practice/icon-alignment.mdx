@@ -55,7 +55,7 @@ Flexboxにはもう1つ問題があります。項目の中に `strong` や `a` 
     --_icon-size: 1em;
 
     display: block grid;
-    grid-template-columns: var(--_icon-size) minmax(0, 1fr);
+    grid-template-columns: var(--_icon-size) 1fr;
     column-gap: 0.5em;
     align-items: start;
 
@@ -77,7 +77,7 @@ Flexboxにはもう1つ問題があります。項目の中に `strong` や `a` 
 
 <Baseline id="lh" />
 
-行末にアイコンを置くリンクの一覧も、同じ形で書けます。リンクを `grid-template-columns: minmax(0, 1fr) var(--_icon-size)` の2列にし、丸い枠を描く `::before` と矢印を描く `::after` を、同じ右の列の1行目に重ねます。どちらの擬似要素にも同じ `margin-block` の式を指定すれば、リンクの文字が2行になっても、アイコンは1行目の横に残ります。
+行末にアイコンを置くリンクの一覧も、同じ形で書けます。リンクを `grid-template-columns: 1fr var(--_icon-size)` の2列にし、丸い枠を描く `::before` と矢印を描く `::after` を、同じ右の列の1行目に重ねます。どちらの擬似要素にも同じ `margin-block` の式を指定すれば、リンクの文字が2行になっても、アイコンは1行目の横に残ります。
 
 アイコンの大きさが1行の高さより大きいときは、式の値が負になり、アイコンは行の上下へはみ出して中央に置かれます。項目どうしの間隔が狭いと隣の項目に食い込むので、アイコンを大きくするときは、行の高さか項目の間隔も見直します。
 

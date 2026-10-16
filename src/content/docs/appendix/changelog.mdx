@@ -11,6 +11,26 @@ AI向けのスキル、プラグイン、MCPサーバーには、本書と同じ
 
 執筆中の版は `0.x` とし、すべての章の内容を著者が確認した時点で `1.0.0` にする予定です。`0.x` の間は、ルールを変えたり削除したりしたときも、マイナーバージョンを上げます。
 
+## 0.69.2（2026年10月16日）
+
+本書のルールに反していたコード例とデモを、ルールに合わせて直しました。本文の数値がデモと合っていなかった箇所も直しています。ルールは変えていません。
+
+- ネストを2層に収めました（ルール [`nesting-depth-one`](/notation/nesting/#rule-nesting-depth-one)）。「[11-15 表を組む](/layout-practice/tables/)」のコード例とデモで、角のセルの指定を `&:is(thead *):first-child` にしています。21-10の料金プランのデモでは、項目の見た目を `._feature` のルールに移しました。
+- 直下の子へのネストに書いていた子自身の見た目を、子のルールに移しました。反対に、子のルールに書いていた `margin-inline-start: auto` や `grid-row: span 2` は、親のネストに移しました（ルール [`nest-child-placement-only`](/notation/nesting-criteria/#rule-nest-child-placement-only)）。対象は「[12-4 apart：子要素を両端に分ける](/compositions/apart/)」のコード例、12-1のデモ、「[21-3 カード一覧とサイドバーを作る](/exercise/card-grid/)」、21-10、21-13、21-14のデモです。
+- ホバーで変える見た目を、`:focus-visible` にも指定しました（ルール [`hover-with-focus-visible`](/interaction/states-and-focus/#rule-hover-with-focus-visible)）。「[1-2 ブラウザサポートとプログレッシブ・エンハンスメント](/principles/browser-support/)」「[9-4 @scopeとネストの使い分け](/notation/scope-and-nesting/)」「[17-3 状態を属性で表す](/interaction/state-attributes/)」のコード例と、7-12、16-3、16-4、17-3、18-5、18-8のデモです。
+- キーボードでフォーカスを移したときに掛かっていたトランジションを外しました（ルール [`no-motion-on-focus-visible`](/interaction/states-and-focus/#rule-no-motion-on-focus-visible)）。10-6の矢印のリンクのデモと、21-3のカードの影です。
+- 要素の種類と同じ意味の子クラス（`._list`、`._link`、`._button` など）を外し、タイプセレクタで選ぶようにしました（ルール [`type-selector-in-scope`](/components/boundaries/#rule-type-selector-in-scope)）。第5、11、12、13、16、17、18、21章のコード例とデモが対象です。「何の」を併記していなかった `._inner`、`._container`、`._wrapper` と、Flexboxの列に使っていた `._columns` も、役割の名前に変えました。
+- コンポーネントのルートに書いていた幅と外側の `margin` を、置く側に移しました（ルール [`no-external-layout-on-root`](/components/boundaries/#rule-no-external-layout-on-root)）。9-9、16-8、18-7、18-9のデモです。「[9-9 論理プロパティと論理値](/notation/logical-properties/)」の本文も、置く側の指定に合わせて直しています。
+- `minmax()` の最小値を `min(100%, …)` で親の幅に収めました。列の `minmax(0, 1fr)` は `1fr` にしました（ルール [`minmax-min-capped-at-100-percent`](/layout-practice/defensive/#rule-minmax-min-capped-at-100-percent)、[`fr-without-minmax-zero`](/layout-practice/defensive/#rule-fr-without-minmax-zero)）。18-8と18-11のデモ、「[11-13 アイコンを配置する](/layout-practice/icon-alignment/)」です。18-11のデモで、内部プロパティを `style` 属性で渡していた箇所は、公開プロパティで受けるように直しました。
+- 本文の数値を、デモに合わせました。
+  - 「[7-7 Flexboxの基礎](/layout/flexbox-basics/)」：デモの `body` の左右の `padding` は24pxなので、コンテナの幅と表の値を、Chromeで測り直した値にしました。
+  - 「[7-6 マージンの相殺](/layout/margin-collapse/)」：通常フローの区切り線の上が16pxになっていたので、間隔の指定から `<hr>` を外し、本文のとおり上下とも24pxにしました。
+  - 「[11-2 余白を設計する](/layout-practice/spacing/)」：セクションの上下の余白のコード例を、デモと本文の48pxにそろえました。
+  - 「[12-2 prose](/compositions/prose/)」：小見出しの前の間隔を、デモのとおり40px相当にしました。
+  - 「[21-13 スクロールに合わせて表示する](/exercise/scroll-reveal/)」と「[21-15 確かめて、レビューする](/exercise/review/)」：強みのカードが1列になる幅を、768pxから、閾値から計算した幅に直しました。
+- 「[1-6 Tipsとの付き合い方](/principles/tips/)」のブロックレイアウトの `justify-self` の例に、Not Recommendedのラベルを付けました。
+- 演習の本文に残っていた、執筆前の節へのリンクの印を外し、リンクにしました。演習の配布ファイルも作り直しています。
+
 ## 0.69.1（2026年10月16日）
 
 親のレイアウトで意味が決まる宣言を、子のルールに書いていたコード例とデモを直しました（ルール [`nest-child-placement-only`](/notation/nesting-criteria/#rule-nest-child-placement-only)）。ルールは変えていません。
